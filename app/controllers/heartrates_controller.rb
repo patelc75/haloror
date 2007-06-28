@@ -40,10 +40,11 @@ class HeartratesController < ApplicationController
   def create
     @heartrate = Heartrate.new(params[:heartrate])
 		
-		#debugger if ENV['RAILS_ENV'] == 'development'
-		
+		#debugger if ENV['RAILS_ENV'] == 'development'		
 		#breakpoint "Let's have a closer look at @heartrate" 
-    respond_to do |format|
+    
+	#chirag: take the 'format' array returned from respond_to method and iterate over it
+	respond_to do |format| 
       if @heartrate.save
         flash[:notice] = 'Heartrate was successfully created.'
         #format.html { redirect_to heartrate_url(@heartrate) }
@@ -63,7 +64,7 @@ class HeartratesController < ApplicationController
     respond_to do |format|
       if @heartrate.update_attributes(params[:heartrate])
         flash[:notice] = 'Heartrate was successfully updated.'
-        format.html { redirect_to heartrate_url(@heartrate) }
+		format.html { redirect_to heartrate_url(@heartrate) }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

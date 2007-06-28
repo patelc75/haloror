@@ -2,12 +2,20 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 1) do
+ActiveRecord::Schema.define(:version => 2) do
 
   create_table "heartrates", :force => true do |t|
     t.column "sessionID", :integer
     t.column "timeStamp", :integer
     t.column "heartRate", :integer
+  end
+
+  create_table "raw_data_files", :force => true do |t|
+    t.column "filename",     :string
+    t.column "content_type", :string
+    t.column "size",         :integer
+    t.column "parent_id",    :integer
+    t.column "created_at",   :datetime
   end
 
 end

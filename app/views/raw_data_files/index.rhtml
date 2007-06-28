@@ -1,0 +1,17 @@
+<h1>Listing raw data files</h1>
+
+<ul id="raw_data_files">
+<% @raw_data_files.each do |raw_data_file| %>
+  <li id="raw_data_file_<%= raw_data_file.id %>">
+    <% if raw_data_file.image? %>
+      <%= link_to(image_tag(raw_data_file.public_filename(:thumb))) %><br />
+    <% end %>
+    <%= link_to(raw_data_file.filename, raw_data_file_path(raw_data_file)) %> (<%= link_to "Delete", raw_data_file_path(raw_data_file), :method => :delete, :confirm => "are you sure?"%>)
+  </li>
+<% end %>
+</ul>
+
+<br />
+
+<h2><%= link_to 'Upload a new raw data file', new_raw_data_file_path %></h2>
+

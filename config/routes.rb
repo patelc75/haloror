@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :raw_data_files
+
   map.resources :heartrates
 
   # The priority is based upon order of creation: first created -> highest priority.
