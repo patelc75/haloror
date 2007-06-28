@@ -1,0 +1,466 @@
+<html>
+<%= javascript_include_tag :defaults %>
+<head>
+<title>Halo Research</title>
+				<script>
+				  function myAppear( mydiv, bckgrd)
+					{ 
+						el = document.getElementById(mydiv); 
+						//el.style.background = bckgrd; 
+						el.style.display = 'none'; 
+						new Effect.Appear(mydiv);
+					}	
+				</script>
+				<style type="text/css" media="screen">
+				body{
+	font-family: verdana;
+	color: #333333;
+	line-height: 1.166;
+	margin: 0px;
+	padding: 0px;
+	width: 800px;
+	font-size: 24px;
+				}
+
+				a:link, a:visited, a:hover {
+					color: #006699;
+					text-decoration: none;
+				}
+
+				a:hover {
+					text-decoration: underline;
+				}
+				/* overrides decoration from previous rule for hovered links */
+
+				h1, h2, h3, h4, h5, h6 {
+					font-family: Arial,sans-serif;
+					margin: 0px;
+					padding-top: 0px;
+					padding-right: 0px;
+					padding-bottom: 0px;
+					padding-left: 0px;
+				}
+
+				h1{
+				 font-family: Verdana,Arial,sans-serif;
+				 font-size: 150%;
+				 color: #334d55;
+				}
+
+				h2{
+				 font-size: 114%;
+				 color: #006699;
+				}
+
+				h3{
+				 font-size: 100%;
+				 color: #334d55;
+				}
+
+				h4{
+				 font-size: 100%;
+				 font-weight: normal;
+				 color: #333333;
+				}
+
+				h5{
+				 font-size: 100%;
+				 color: #334d55;
+				}
+
+				ul{
+				 list-style-type: square;
+				}
+
+				ul ul{
+				 list-style-type: disc;
+				}
+
+				ul ul ul{
+				 list-style-type: none;
+				}
+
+				label{
+				 font: bold 100% Arial,sans-serif;
+				 color: #334d55;
+				}
+								
+
+				/***********************************************/
+				/* Layout Divs                                 */
+				/***********************************************/
+				#logo{
+				}
+				#masthead{
+                    margin: 0;
+                    width: 90%;
+                    font-weight: bold;
+                    border-bottom-width: 3px;
+                    border-bottom-style: solid;
+                    border-bottom-color: #666666;
+                    padding-top: 10px;
+                    padding-right: 0px;
+                    padding-bottom: 10px;
+                    padding-left: 0px;
+				}
+
+				#navBar{
+					padding: 0px;
+					background-color: #eeeeee;
+					border-right: 1px solid #ccc;
+					border-bottom: 1px solid #ccc;
+					margin-top: 0;
+					margin-right: 79%;
+					margin-bottom: 0;
+					margin-left: 0;
+				}
+
+				#content{
+					float:none;
+					width: 75%;
+					margin: 0;
+					padding-top: 15;
+					padding-right: 3%;
+					padding-bottom: 0;
+					padding-left: 0;
+				}
+
+				#footer{
+	margin: 0;
+	width: 90%;
+	font-weight: bold;
+	border-bottom-color: #666666;
+	padding-top: 10px;
+	padding-right: 0px;
+	padding-bottom: 10px;
+	padding-left: 0px;
+	border-top-style: solid;
+	font-size: 12px;
+				}
+				/***********************************************/
+				/*Component Divs                               */
+				/***********************************************/
+
+				#siteName{
+					margin: 0px;
+					padding: 0px 0px 10px 10px;
+				}
+
+
+				/*************** #pageName styles **************/
+
+				#pageName{
+					padding-top: 10px;
+					padding-right: 0px;
+					padding-bottom: 10px;
+					padding-left: 10px;
+				}
+
+
+				/************* #globalNav styles **************/
+
+				#globalNav{
+					color: #cccccc;
+					padding: 0px 0px 0px 10px;
+					white-space: nowrap;
+					font-weight: bold;
+					font-size: 20px;
+				}
+				/* 'nowrap' prevents links from line-wrapping if there are too many to fit in one line
+					 this will force a horizontal scrollbar if there isn't enough room for all links
+					 remove rule or change value to 'normal' if you want the links to line-wrap */
+
+				#globalNav img{
+				 display: block;
+				}
+
+				#globalNav a {
+					font-size: 90%;
+					padding: 0px 4px 0px 0px; 
+				}
+
+
+				/************* #breadCrumb styles *************/
+
+				#breadCrumb{
+					font-size: 80%;
+					padding: 5px 0px 5px 10px;
+				}
+
+
+				/************** .feature styles ***************/
+
+				.feature{
+					font-size: 24px;
+					padding-top: 0px;
+					vertical-align: top;
+				}
+
+				.feature h3{
+					padding-top: 0px;
+					vertical-align: top;
+				}
+
+				.feature img{
+					float: left;
+					padding: 0px 10px 0px 0px;
+					margin: 0 5px 5px 0;
+				}
+				/* adjust margins to change separation between the feature image and text flowing around it */
+
+
+				/************** .story styles *****************/
+
+				.story{
+					clear: both;
+					padding: 10px 0px 0px 10px;
+					font-size: 80%;
+				}
+
+				.story p{
+					padding: 0px 0px 10px 0px;
+				}
+
+
+				/************* #siteInfo styles ***************/
+
+				#siteInfo{
+	clear: both;
+	font-size: 14px;
+	color: #333333;
+	padding: 10px;
+	margin-top: 0px;
+	border-top-width: 3px;
+	border-right-width: 3px;
+	border-bottom-width: 3px;
+	border-left-width: 3px;
+	border-top-style: solid;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+	border-top-color: #666666;
+	border-right-color: #666666;
+	border-bottom-color: #666666;
+	border-left-color: #666666;
+				}
+				/* negative top margin pulls siteinfo up so its top border overlaps (and thus lines up with)
+					the bottom border of the navBar in cases where they "touch" */
+
+				#siteInfo img{
+					padding: 4px 4px 4px 0px;
+					vertical-align: middle;
+				}
+
+
+				/************* #search styles ***************/
+
+				#search{
+					padding: 5px 0px 5px 10px;
+					border-bottom: 1px solid #cccccc;
+					font-size: 90%;
+				}
+
+				#search form{
+				 margin: 0px;
+				 padding: 0px;
+				}
+
+				#search label{
+					display: block;
+					margin: 0px;
+					padding: 0px;
+				}
+
+
+				/*********** #navBar link styles ***********/
+
+				#navBar ul a:link, #navBar ul a:visited {display: block;}
+				#navBar ul {list-style: none; margin: 0; padding: 0;}
+
+				/* hack to fix IE/Win's broken rendering of block-level anchors in lists */
+				#navBar li {border-bottom: 1px solid #EEE;}
+
+				/* fix for browsers that don't need the hack */
+				html>body #navBar li {border-bottom: none;}
+
+
+				/*********** #sectionLinks styles ***********/
+				  #header {
+					background-image: url("HaloResearch1a.gif");
+					background-repeat: no-repeat;
+					background-position: top left;
+					height: 64px;
+				  }
+
+				#sectionLinks{
+					position: relative;
+					margin: 0px;
+					padding: 0px;
+					border-bottom: 1px solid #cccccc;
+					font-size: 90%;
+				}
+
+				#sectionLinks h3{
+					padding: 10px 0px 2px 10px;
+				}
+
+				#sectionLinks a:link{
+					padding: 2px 0px 2px 10px;
+					border-top: 1px solid #cccccc;
+					width: 100%;
+					voice-family: "\"}\""; 
+					voice-family:inherit;
+					width: auto;
+				}
+
+				#sectionLinks a:visited{
+					border-top: 1px solid #cccccc;
+					padding: 2px 0px 2px 10px;
+				}
+
+				#sectionLinks a:hover{
+					border-top: 1px solid #cccccc;
+					background-color: #dddddd;
+					padding: 2px 0px 2px 10px;
+				}
+
+
+				/*********** .relatedLinks styles ***********/
+
+				.relatedLinks{
+					margin: 0px;
+					padding: 0px 0px 10px 10px;
+					font-size: 90%;
+				}
+
+				.relatedLinks h3{
+					padding: 10px 0px 2px 0px;
+				}
+
+
+				/************** #advert styles **************/
+
+				#advert{
+					padding: 10px 0px 0px 10px;
+					font-size: 80%;
+					border-top: 1px solid #cccccc;
+				}
+
+				#advert img{
+					display: block;
+				}
+
+
+				/************** #headlines styles **************/
+
+				#headlines{
+					margin: 0px;
+					padding: 10px 0px 20px 10px;
+					font-size: 80%;
+				}
+
+				#headlines p{
+					padding: 5px 0px 5px 0px;
+				}
+				</style>
+
+</head>
+<body>
+<div id="logo">
+<%= image_tag('logo_sm.jpg')%>
+</div>
+ 
+<div id="masthead">
+  <!--div id="header"></div>-->
+	  <div id="globalNav"> <a href="mailto:chris@haloresearch.net">Heart Rate </a> |<a href="mailto:chris@haloresearch.net"> Falls</a> | <a href="mailto:chris@haloresearch.net">Activity	 </a> | <a href="mailto:chris@haloresearch.net">Respiration</a></div>
+</div>
+<!-- end masthead -->
+<div id="content">
+ 
+  <div id="pageName"><strong>Chris Otto - Heartrate </strong></div>
+  <div class="feature">
+    <table width="598" border="0">
+      <tr>
+        <td width="73">&nbsp;</td>
+        <td width="515"></p>
+          <%= periodically_call_remote(
+						:update => 'current-hr',
+						:url => { :action => :current },
+						#:complete => "myAppear('current-hr', '#ccc')",						
+						:frequency => 2 )%>
+						<table width="344" border="0">
+                  <tr>
+                    <th height="27" scope="row"><div align="left">Avg</div></th>
+                    <td><%= @avgHeartRate %></td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><div align="left">Max</div></th>
+                    <td><%= @maxHeartRate %></td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><div align="left">Min</div></th>
+                    <td><%= @minHeartRate %></td>
+                  </tr>
+                  <tr>
+                    <th colspan="2" scope="row">&nbsp;</th>
+                  </tr>
+                  <tr>
+                    <th colspan="2" scope="row"><div align="left">Current Heart Rate </div></th>
+                    </tr>
+									<tr>
+                                      <th width="94" scope="row"><div id="current-hr" style="border: 2px solid rgb(255, 0, 0); padding: 5px; background: rgb(255, 153, 153) none repeat scroll 0%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; color: rgb(0, 0, 0); font-family: verdana; font-size: 14pt; font-weight: bold;"> Default  </div> </th>
+                                      <td width="240">									  </td>
+                  </tr>
+          </table>    
+        </td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+  </div>
+  <div class="story"></div>
+</div>
+<!--end content -->
+<!--
+<div id="navBar">
+  <div id="search">
+    <form action="#">
+      <label>search</label>
+      <input name="searchFor" type="text" size="10" />
+      <input name="goButton" type="submit" value="go" />
+    </form>
+  </div>
+  <div id="sectionLinks">
+    <ul>
+      <li><a href="#">sectionLink</a></li>
+      <li><a href="#">sectionLink</a></li>
+      <li><a href="#">sectionLink</a></li>
+      <li><a href="#">sectionLink</a></li>
+      <li><a href="#">sectionLink</a></li>
+      <li><a href="#">sectionLink</a></li>
+    </ul>
+  </div>
+
+  <div class="relatedLinks">
+    <h3>Related Link Category</h3>
+    <ul>
+      <li><a href="#">Related Link</a></li>
+      <li><a href="#">Related Link</a></li>
+      <li><a href="#">Related Link</a></li>
+      <li><a href="#">Related Link</a></li>
+      <li><a href="#">Related Link</a></li>
+      <li><a href="#">Related Link</a></li>
+    </ul>
+  </div>
+ 
+</div>
+-->
+<!--end navbar -->
+
+<div id="footer">&copy;2007 Halo Research </div>
+<br />
+
+</body>
+</html>

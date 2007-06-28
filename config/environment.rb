@@ -58,3 +58,4 @@ end
 # Mime::Type.register "application/x-mobile", :mobile
 
 # Include your application configuration below
+#SCRIPT_LINES__ = {} if ENV['RAILS_ENV'] == 'development'

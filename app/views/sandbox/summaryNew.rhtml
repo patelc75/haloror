@@ -1,0 +1,84 @@
+<html>
+<head>
+<%= javascript_include_tag :defaults %>
+<title>Halo Research</title>
+		<script>
+		function myAppear( mydiv, bckgrd)
+		{ 
+			el = document.getElementById(mydiv); 
+			//el.style.background = bckgrd; 
+			el.style.display = 'none'; 
+			new Effect.Appear(mydiv);
+		}	
+		</script>
+        <link href="\2col_leftNav.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="masthead">
+	  <h1 id="siteName"><img src="/logo_sm.jpg"/></h1>
+  <div id="globalNav"> <a href="mailto:chris@haloresearch.net">our products </a> | <a href="mailto:chris@haloresearch.net">future technologies</a>| <a href="mailto:chris@haloresearch.net"> become a halo partner </a> | <a href="mailto:chris@haloresearch.net">about halo </a> | <a href="mailto:chris@haloresearch.net">contact us </a></div>
+</div>
+<!-- end masthead -->
+<div id="content">
+ 
+  <h2 id="pageName">Heartrate</h2>
+  <div class="feature">
+    <table width="598" border="0">
+      <tr>
+        <td width="36">&nbsp;</td>
+        <td width="552">			
+				<h2> Current  <div id="current-hr"> Unknown</div> </h2>
+				<%= periodically_call_remote(
+						:update => 'current-hr',
+						:url => { :action => :current },
+						:frequency => 1 )%>
+				Avg <%= @avgHeartRate %> <br> 
+				Max <%= @maxHeartRate %> <br>
+				Min <%= @minHeartRate %>
+	    </td>
+      </tr>
+    </table>
+  </div>
+  <div class="story"></div>
+</div>
+<!--end content -->
+<!--
+<div id="navBar">
+  <div id="search">
+    <form action="#">
+      <label>search</label>
+      <input name="searchFor" type="text" size="10" />
+      <input name="goButton" type="submit" value="go" />
+    </form>
+  </div>
+  <div id="sectionLinks">
+    <ul>
+      <li><a href="#">sectionLink</a></li>
+      <li><a href="#">sectionLink</a></li>
+      <li><a href="#">sectionLink</a></li>
+      <li><a href="#">sectionLink</a></li>
+      <li><a href="#">sectionLink</a></li>
+      <li><a href="#">sectionLink</a></li>
+    </ul>
+  </div>
+
+  <div class="relatedLinks">
+    <h3>Related Link Category</h3>
+    <ul>
+      <li><a href="#">Related Link</a></li>
+      <li><a href="#">Related Link</a></li>
+      <li><a href="#">Related Link</a></li>
+      <li><a href="#">Related Link</a></li>
+      <li><a href="#">Related Link</a></li>
+      <li><a href="#">Related Link</a></li>
+    </ul>
+  </div>
+ 
+</div>
+-->
+<!--end navbar -->
+
+<div class="style1" id="siteInfo">&copy;2007 Halo Research </div>
+<br />
+</body>
+</html>
