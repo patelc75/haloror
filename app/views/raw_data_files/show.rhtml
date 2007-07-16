@@ -1,6 +1,7 @@
-<%= @raw_data_file.filename %> <br>
+<b><%= @raw_data_file.filename %> </b><br>
 Content Type: <%= @raw_data_file.content_type%> <br>
 Size: <%= @raw_data_file.size%> bytes <br>
 Created: <%= @raw_data_file.created_at%> <br>
-<%= link_to 'Edit', edit_raw_data_file_path(@raw_data_file) %>
-<%= link_to 'Back', raw_data_files_path %>
+<!--%= link_to 'Edit', edit_raw_data_file_path(@raw_data_file) %-->
+<br>
+<%= link_to 'Show listing of all raw data files', raw_data_files_path %>
