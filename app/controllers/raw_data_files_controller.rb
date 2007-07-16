@@ -34,7 +34,7 @@ class RawDataFilesController < ApplicationController
   # POST /raw_data_files
   # POST /raw_data_files.xml
   def create
-    logger.debug{ "create params #{params} \n\n" }
+    #logger.debug{ "create params #{params} \n\n" }
     @raw_data_file = RawDataFile.new(params[:raw_data_file])
 	
     respond_to do |format|
