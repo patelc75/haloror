@@ -1,5 +1,5 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :raw_data_files
+  map.resources :raw_data_files, :member => {:download => :get}
 
   map.resources :heartrates
 

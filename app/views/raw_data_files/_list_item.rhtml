@@ -1,0 +1,6 @@
+<li id="raw_data_file_<%= list_item.id %>">
+<% if list_item.image? %>
+<%= link_to(image_tag(list_item.public_filename(:thumb))) %><br />
+<% end %>
+<%= link_to(list_item.filename, raw_data_file_path(list_item))%> (<%= link_to("download", download_raw_data_file_path(list_item))%>) (<%= link_to_remote("Delete", {:url => raw_data_file_path(list_item), :method => :delete, :confirm => "are you sure?"}) %>)
+</li>

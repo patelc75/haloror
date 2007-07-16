@@ -5,6 +5,6 @@ class RawDataFile < ActiveRecord::Base
 
   #validates_as_attachment ensures that size, content_type and filename are present 
   #and checks against the options given to has_attachment; in our case the original 
-  #should be no larger than 1 megabyte.
+  #should be no larger than 2 megabyte.
   validates_as_attachment # ok two lines if you want to do validation, and why wouldn't you?
 end

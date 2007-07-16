@@ -3,6 +3,10 @@
 
 <%= error_messages_for :raw_data_file %>
 
+
+<!--Creates a form and a scope around a specific model object, which is then used as a base for 
+questioning about values for the fields.-->
+
 <% form_for(:raw_data_file, :url => raw_data_files_path, :html => { :multipart => true }) do |form| %>
 
   <p>

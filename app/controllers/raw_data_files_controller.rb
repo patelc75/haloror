@@ -2,7 +2,7 @@ class RawDataFilesController < ApplicationController
   # GET /raw_data_files
   # GET /raw_data_files.xml
   def index
-    @raw_data_files = RawDataFile.find(:all)
+    @raw_data_files = RawDataFile.find(:all, :conditions => {:parent_id => nil}, :order => 'created_at DESC')
 
     respond_to do |format|
       format.html # index.rhtml
@@ -34,8 +34,9 @@ class RawDataFilesController < ApplicationController
   # POST /raw_data_files
   # POST /raw_data_files.xml
   def create
+    logger.debug{ "create params #{params} \n\n" }
     @raw_data_file = RawDataFile.new(params[:raw_data_file])
-
+	
     respond_to do |format|
       if @raw_data_file.save
         flash[:notice] = 'RawDataFile was successfully created.'
@@ -75,5 +76,14 @@ class RawDataFilesController < ApplicationController
       format.html { redirect_to raw_data_files_url }
       format.xml  { head :ok }
     end
+  end
+  
+  def download
+    @raw_data_file = RawDataFile.find(params[:id])
+    send_file("#{RAILS_ROOT}/public"+@raw_data_file.public_filename, 
+      :disposition => 'attachment',
+      :encoding => 'utf8', 
+      :type => @raw_data_file.content_type,
+      :filename => URI.encode(@raw_data_file.filename)) 
   end
 end
