@@ -75,6 +75,7 @@ class RawDataFilesController < ApplicationController
     respond_to do |format|
       format.html { redirect_to raw_data_files_url }
       format.xml  { head :ok }
+      format.js
     end
   end
   

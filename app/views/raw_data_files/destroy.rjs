@@ -1,0 +1,1 @@
+page.remove "raw_data_file_#{@raw_data_file.id}"
