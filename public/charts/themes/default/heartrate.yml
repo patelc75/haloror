@@ -1,0 +1,17 @@
+<%=chart :line %> 
+   <%=comp :axis_category %>
+     size: 18
+   
+   <%=comp :axis_value %>
+     size: 16
+     
+   <%=comp :legend_label %>
+     color: 4334F5
+     size: 16
+
+   <%=comp :series_color %>
+     color: 4334F5
+     
+   <%=comp :chart_value %>
+     size: 16
+     color: 4334F5
