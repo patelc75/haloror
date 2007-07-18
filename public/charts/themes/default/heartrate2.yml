@@ -26,6 +26,11 @@
      delay:     .5
      duration:  0.5 
      order:     series
+   
+   <%=comp :chart_pref %>
+     line_thickness:    2
+     point_shape:       none
+     fill_shape:        false
      
    <%=comp :legend_rect %>
      width:         320
@@ -37,10 +42,17 @@
      line_alpha:    0
      line_thickness:    0
      x:             190
-     y:             60
-          
+     y:             60             
+        
    <%=comp :chart_value %>
-     position:    above 
+     position:    cursor 
      size:        20
      color:       4334F5
      alpha:       75
+
+   <%=comp :axis_category %>
+     bold:  true
+     skip:  4
+     size:  16
+     orientation:   horizontal
+     

@@ -1,2 +1,4 @@
-<%= ziya_chart( url_for( :controller => 'chart', :action => 'line_chart'), :id => 'heartrate', :bgcolor => "white", :width => 400, :height => 250 ) %>
+<%= ziya_chart( url_for( :controller => 'chart', :action => 'line_chart_dots'), :id => 'heartrate', :width => 650, :height => 550, :bgcolor => "white") %>
+
+<%= ziya_chart( url_for( :controller => 'chart', :action => 'line_chart_continuous'), :id => 'heartrate2', :width => 650, :height => 550, :bgcolor => "white") %>
 
