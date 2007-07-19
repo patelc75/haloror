@@ -49,3 +49,9 @@
      thickness: 1
      alpha:     50
      type:      dotted
+     
+   <%=comp :axis_category %>
+     bold:  true
+     skip:  3
+     size:  16
+     orientation:   horizontal
