@@ -56,3 +56,8 @@
      size:  16
      orientation:   horizontal
      
+   <%=comp :chart_grid_v %>  
+     thickness: 1
+     alpha:     50
+     type:      dotted
+     

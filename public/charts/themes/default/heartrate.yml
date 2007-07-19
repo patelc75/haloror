@@ -44,3 +44,8 @@
      size:        20
      color:       4334F5
      alpha:       75
+     
+   <%=comp :chart_grid_v %>  
+     thickness: 1
+     alpha:     50
+     type:      dotted
