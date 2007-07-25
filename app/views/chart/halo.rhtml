@@ -1,0 +1,423 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head>
+
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="SHORTCUT ICON" href="http://groups.google.com/groups/img/3/favicon.ico"><title>Halo Research</title>
+  
+  <meta name="save" content="history">
+
+<script language="javascript"><!--
+  document.write('<style type="text/css">.scripthide { display: none; } .scriptinline { display: inline; } .scriptblock { display: block; }</style>');
+//--></script><style type="text/css">.scripthide { display: none; } .scriptinline { display: inline; } .scriptblock { display: block; }</style>
+<script language="javascript1.2"><!--
+  if (document.getElementById)
+    document.write('<style type="text/css">.script12hide { display: none; } .script12inline { display: inline; } .script12block { display: block; } .lnav { position: absolute; } .lnavch { margin-left:23.0ex;}</style>');
+//--></script><style type="text/css">.script12hide { display: none; } .script12inline { display: inline; } .script12block { display: block; } .lnav { position: absolute; } .lnavch { margin-left:23.0ex;}</style>
+<script language="javascript1.3"><!--
+  if (document.getElementById)
+    document.write('<style type="text/css">.script13hide { display: none; } .script13inline { display: inline; } .script13block { display: block; }</style>');
+//--></script><style type="text/css">.script13hide { display: none; } .script13inline { display: inline; } .script13block { display: block; }</style>
+<%= stylesheet_link_tag "style" %>  
+
+<script language="javascript"><!--
+
+// ----------------------------------
+// used for dynamic function generation on event handlers
+
+var loaddef = "";
+var resizedef = "";
+
+//-----------------------------------
+// Browser detection and support
+
+var agt = navigator.userAgent.toLowerCase();
+var is_opera = (agt.indexOf("opera") != -1);
+var is_ie = (agt.indexOf("msie") != -1) && document.all && !is_opera;
+var is_ie5 = (agt.indexOf("msie 5") != -1) && document.all;
+window.agt = agt;
+window.is_opera = is_opera;
+window.is_ie = is_ie;
+window.is_ie5 = is_ie5;
+
+// ----------------------------------
+// cross-browser functions
+
+var IE_all_cache = new Object();
+function IE_getElementById(id) {
+  if (IE_all_cache[id] == null) {
+    IE_all_cache[id] = document.all[id];
+  }
+  return IE_all_cache[id];
+}
+
+if (document.all) {
+  if (!document.getElementById) {
+    document.getElementById = IE_getElementById;
+  }
+}
+
+//----------------------------------
+// Timezone detection (sets cookie)
+
+try {
+  var tz_offset = (new Date()).getTimezoneOffset();
+  document.cookie = 'GTZ=' + tz_offset + ';path=/;expires=Mon, 01-Jan-2024 00:00:01 GMT';
+} catch(e) {}  // might not be able to set cookies through js
+
+// ---------------------------------
+// shelled functions for old javascript
+function tog() {}
+
+//--></script>
+<script language="javascript1.3"><!--
+
+// ----------------------------------
+// visibility functions
+
+function tog() {
+  // tog: toggle the visibility of html elements (arguments[1..]) from none to
+  // arguments[0].  Return what should be returned in a javascript onevent().
+  display = arguments[0];
+  for( var i=1; i<arguments.length; i++ ) {    
+    var x = document.getElementById(arguments[i]);
+    if (!x) continue;
+    if (x.style.display == "none" || x.style.display == "") {
+      x.style.display = display;
+    } else {
+      x.style.display = "none";
+    }
+  }
+
+  var e = is_ie ? window.event : this;
+  if (e) {
+    if (is_ie) {
+      e.cancelBubble = true;
+      e.returnValue = false;
+      return false;
+    } else {
+      return false;
+    }
+  }
+}
+
+
+
+//--></script>
+<script language="javascript"><!--
+function ad_resize() {}
+function if_resize() {}
+function fin_resize() {}
+function qs() {}
+//--></script>
+<script language="javascript1.2"><!--
+function if_resize(name, w, h) {
+  if (document.getElementById && document.getElementById(name)){
+    document.getElementById(name).style.height = h + "px";
+    document.getElementById(name).style.width = w + "px";
+  }
+}
+function ad_resize(w, h) {
+  if_resize("google_ads_frame",w,h);
+}
+function fin_resize(w, h) {
+  if_resize("google_finance_frame",w,h);
+}
+
+function qs(el) {
+  if (window.RegExp && window.encodeURIComponent) {
+    var qe=encodeURIComponent(document.gs.q.value);
+
+    if (qe == '') {
+      return 1;
+    }
+
+    if (el.href.indexOf("q=")!=-1) {
+      el.href=el.href.replace(new RegExp("q=[^&$]*"),"q="+qe);
+    } else {
+      el.href+="&q="+qe;
+    }
+  }
+  return 1;
+}
+
+//--></script>
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://groups.google.com/group/hsvrb/feed/rss_v2_0_msgs.xml">
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="http://groups.google.com/group/hsvrb/feed/atom_v1_0_msgs.xml">
+<style type="text/css"><!--
+    .mygp1 { padding-bottom: 7px;}
+    .mygp2 { padding-bottom: 7px; padding-left: 12px}
+  --></style><style type="text/css"><!--
+.sshdr {
+  padding: 0px 10px 0px 10px;
+}
+.sshdr table.sshdrt {
+  margin-top: -1px;
+  margin-bottom: -3px;
+}
+.sshdrtxt {
+  font-size : 114%;
+}
+.sshdrtxtsm {
+  font-size : 106%;
+}
+.ssabln,
+.ssabln:active,
+.ssabln:link,
+.ssabln:visited {
+  text-decoration: none;
+  color: #000
+}
+.ssabln:hover {
+  text-decoration: underline;
+}
+.ssabhln,
+.ssabhln:active,
+.ssabhln:link,
+.ssabhln:visited {
+  text-decoration: none;
+  color: #00c
+}
+.ssabhln:hover {
+  text-decoration: underline;
+}
+.ssibln,
+.ssibln:active,
+.ssibln:link,
+.ssibln:visited {
+  text-decoration: none;
+  color: #00c;
+}
+.ssibln:hover {
+  text-decoration: underline;
+}
+--></style><style type="text/css"><!--
+.modtxtidt {
+  padding: 0px 10px 0px 40px;
+}
+.modtxtidt-20 {
+  padding: 0px 10px 0px 24px;
+}
+--></style><style type="text/css"><!--
+        #moduleGroupInfo td {
+          font-size: 91%;
+        }
+        --></style><style type="text/css"><!--
+
+#moduleGroupInfo .moduleSMALL cat {
+  font-size: 0%;
+  padding-right:7px;
+}
+
+--></style><style type="text/css"><!--
+
+#moduleMembersListModule1 .moduleSMALL td {
+  font-size: 70%;
+}
+
+.mmlmc {
+  padding-right : 20px;
+  padding-top : 10px;
+  overflow : hidden;
+  white-space : nowrap;
+  
+    max-width: 200px;
+    display : inline;
+  
+}
+
+* html .mmlmc {
+  width : 180px;
+}
+
+.mmlimg {
+  padding-right : 5px;
+}
+
+--></style><style type="text/css"><!--
+
+--></style><link href="hsvrb2_files/highlighter.css" type="text/css" rel="stylesheet"></head><noscript><style type="text/css"><!--
+  .noscripthide { display:none; } .noscriptinline { display:inline; } .noscriptblock { display:block; }
+--></style></noscript><body onresize="" onload="" topmargin="0" leftmargin="0" bgcolor="white" marginheight="0" marginwidth="0">
+  
+  <div class="algnl hide padall8" id="myg_popup" style="border-style: solid; border-color: rgb(204, 204, 204) rgb(179, 179, 179) rgb(179, 179, 179) rgb(204, 204, 204); border-width: 1px 2px 2px; position: absolute; background-color: white; z-index: 2;">
+  <table border="0" cellpadding="0" cellspacing="0">
+  <col style="width: 23ex;">
+	 <tbody><tr>
+  <td class="mygp1" valign="top">
+  <a class="on" href="http://groups.google.com/group/Flying-Monkey-Arts?lnk=li">Flying Monkey Arts</a>&nbsp;<b><font dir="ltr" color="#6f6f6f">(3)</font></b>
+  </td>
+	 </tr>
+	 <tr>
+  <td class="mygp1" valign="top">
+  hsv.rb
+  </td>
+	 </tr>
+	 <tr>
+  <td class="mygp1" valign="top">
+  <a class="on" href="http://groups.google.com/group/loft108?lnk=li">loft108</a>
+  </td>
+	 </tr>
+	 <tr>
+  <td class="mygp1" valign="top">
+  <a class="on" href="http://groups.google.com/group/microsoft.public.vsnet.vstools.office?lnk=li">microsoft.pu...s.office</a>&nbsp;<b><font dir="ltr" color="#6f6f6f">(937)</font></b>
+  </td>
+	 </tr>
+	 <tr>
+  <td class="mygp1" valign="top">
+  <a class="on" href="http://groups.google.com/group/rubyonrails-talk?lnk=li">Ruby on Rails: Talk</a>&nbsp;<b><font dir="ltr" color="#6f6f6f">(480)</font></b>
+  </td>
+	 </tr>
+	 <tr>
+  <td class="mygp1" valign="top">
+  <a class="on" href="http://groups.google.com/group/ziya-plugin?lnk=li">ZiYa Plugin</a>&nbsp;<b><font dir="ltr" color="#6f6f6f">(21)</font></b>
+  </td>
+	 </tr>
+  <tr><td class="padb7 padt8" valign="bottom"><b>Recently visited</b>&nbsp;
+  <a href="http://groups.google.com/groups/clearrecent?Action.ClearRecent&amp;_done=%2Fgroup%2Fhsvrb" class="ucl">[clear]</a></td></tr>
+	 <tr>
+  <td class="mygp1" valign="top">
+  <a class="on" href="http://groups.google.com/group/comp.lang.ruby?lnk=lr">comp.lang.ruby</a>
+  </td>
+  </tr>
+	 <tr>
+  <td class="mygp1" valign="top">
+  <a class="on" href="http://groups.google.com/group/microsoft.public.dotnet.framework.adonet?lnk=lr">microsoft.pu...k.adonet</a>
+  </td>
+  </tr>
+	 <tr>
+  <td class="mygp1" valign="top">
+  <a class="on" href="http://groups.google.com/group/microsoft.public.word.tables?lnk=lr">microsoft.pu...d.tables</a>
+  </td>
+  </tr>
+	 <tr>
+  <td class="mygp1" valign="top">
+  <a class="on" href="http://groups.google.com/group/radrails?lnk=lr">RadRails</a>
+  </td>
+  </tr>
+	 <tr>
+  <td class="mygp1" valign="top">
+  <a class="on" href="http://groups.google.com/group/adobe-rubyonrails-ria-sdk?lnk=lr">Ruby on Rails RIA SDK by Adobe</a>
+  </td>
+  </tr>
+	 <tr>
+  <td class="mygp1" valign="top">
+  <a class="on" href="http://groups.google.com/group/rubyonrails-core?lnk=lr">Ruby on Rails: Core</a>
+  </td>
+  </tr>
+	 <tr>
+  <td class="mygp1" valign="top">
+  <a class="on" href="http://groups.google.com/group/travelingbocce?lnk=lr">Traveling Bocce League (2007)</a>
+  </td>
+  </tr>
+	 <tr>
+  <td class="mygp1" valign="top">
+  <a class="on" href="http://groups.google.com/group/SiteDesign?lnk=lr">Web Design and Development</a>
+  </td>
+  </tr>
+  </tbody></table>
+  <div class="padt8">
+  <a href="http://www.google.com/alerts?t=8"><img src="hsvrb2_files/envelope.gif" alt="Groups Alerts" border="0" height="15" width="16"></a>
+  <a href="http://www.google.com/alerts?t=8">Groups Alerts</a>
+  </div>
+  <div style="padding-top: 15px;">
+  <b><a href="http://groups.google.com/groups/create?lnk=l">Create a group...</a></b>
+  </div>
+  </div>
+<div class="gtopbar">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tbody><tr valign="middle">
+  <td class="maincell" width="132"><a href="http://groups.google.com/"><%= image_tag('halo_marc.jpg')%></a></td>
+  <td class="maincell" align="right" nowrap="nowrap"><nobr>
+  <b>merlemcgee@yahoo.com</b>|
+  <a class="on" href="http://groups.google.com/groups/profile?myprofile">Profile</a> |
+  <a target="_blank" href="http://groups.google.com/support?hl=en">Help</a> |
+  <a href="https://www.google.com/accounts/ManageAccount?hl=en">My Account</a> |
+  <a target="_top" href="http://groups.google.com/groups/signout?q=1&amp;_done=%2Fgroup%2Fhsvrb">Sign out</a><br /><form name="gs2" method="get" action="/group/hsvrb/search"><input name="q2" size="20" maxlength="2048" value="" style="width: 15ex;" type="text" />
+  
+  <table cellpadding="0" cellspacing="0"><tbody>
+  
+  <tr class="padl5"><input class="bt"  name="qt_g" value="Search Halo Research" type="submit">
+  </tr>
+
+</tbody></table>
+  </form>
+  </nobr></td>
+  </tr>
+  </tbody></table>
+  </div>
+<script language="javascript"><!--
+// Make functions exist for older browsers
+function toggle_watch() {}
+function toggleStar() {}
+//--></script>
+
+
+
+<div style="padding: 4px 10px; background-color: rgb(215, 234, 253);">
+  <table class="grhdr" cellpadding="0" cellspacing="0" width="100%"><tbody>
+  <tr valign="middle">
+	 <td height="42">
+  <div class="ghgrn">Merle McGee</div>  </td>
+  </tr>
+  </tbody></table>
+</div>
+  <div class="rf" style="width: 32ex;">
+  <div class="overflow-hide" style="position: absolute; margin-top: -1px; margin-left: -1px; z-index: 1;">
+  <div class="mrgl1" style="width: 22ex; ">
+  <div class="padb10 padr10">
+  <div class="rnsecs">
+  <div class="selsec">
+  <a class="secln" href="http://groups.google.com/group/hsvrb">Last 5 minutes</a>
+  </div>
+  <div class="sec">
+  <a class="secln" href="http://groups.google.com/group/hsvrb">Last 1 hour</a><a class="seclnact" href="http://groups.google.com/group/hsvrb/topics"></a>  </div>
+
+  <div class="sec"><a class="secln" href="http://groups.google.com/group/hsvrb">Last 6 hours</a><a class="seclnact" href="http://groups.google.com/group/hsvrb/topics"></a></div>
+
+  <div class="sec">
+  <a class="seclnact" href="http://groups.google.com/group/hsvrb/web"><a class="secln" href="http://groups.google.com/group/hsvrb">All day</a><a class="seclnact" href="http://groups.google.com/group/hsvrb/topics"></a></a>  </div>
+
+  <div class="sec">
+  <a class="secln" href="http://groups.google.com/group/hsvrb/files">Yesterday</a>  </div>
+  <div class="padt10"></div>
+  
+  </div>
+  
+<div class="padt5"></div>
+  <div id="google_ads_site"></div>
+  </div>
+</div>
+</div>
+</div>
+  <table class="wdth100 overflow-hide" style="table-layout: fixed;" cellpadding="0" cellspacing="0">
+  <col height="100%" width="1*"><col style="width: 32ex;"><tbody><tr valign="top">
+  <td class="overflow-hide" style="border-right: 1px solid rgb(22, 50, 245); border-bottom: 1px solid rgb(22, 50, 245); border-top: 1px solid rgb(22, 50, 245)"><%= ziya_chart( url_for( :controller => 'chart', :action => 'line_chart_discrete'), :id => 'heartrate', :width => 650, :height => 550, :bgcolor => "white") %>
+
+</td>
+  <td style="background-color: rgb(215, 234, 253);">
+  <div style="width: 32ex; height: 500px;">
+  <img alt="" height="500" width="1"></div>
+  </td></tr></tbody></table>
+  <div style="background-color: rgb(215, 234, 253);">
+<div class="padt10 padb10">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tbody><tr valign="center">
+  <td style="padding-right: 1em;" class="fontsize2" align="center"><a style="color: rgb(0, 0, 204);" target="_top" href="http://groups.google.com/intl/en/googlegroups/terms_of_service3.html">Terms of Service</a><font color="#333333"> - </font>
+  <a style="color: rgb(0, 0, 204);" target="_top" href="http://groups.google.com/intl/en/googlegroups/privacy3.html">Privacy Policy</a>  </td>
+  </tr>
+  <tr>
+  <td style="color: rgb(51, 51, 51);" class="fontsize1 padt5" align="center">©2007 Halo Research</td>
+  </tr>
+  </tbody></table>
+</div>
+  </div>
+<script language="javascript"><!--
+if( loaddef != "" ) {
+  window.onload=new Function( loaddef );
+}
+if( resizedef != "" ) {
+  window.onresize = new Function( resizedef );
+}
+//--></script>
+</body></html>
