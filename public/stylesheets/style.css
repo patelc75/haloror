@@ -98,9 +98,12 @@ body, td, input, textarea, select {
 }
 body {
 	font-size:125%;
+	height: 200px;
+	background-color: #D7EAFD;
 }
 table {
-font-size:inherit;
+	font-size:inherit;
+	position: relative;
 }
 input, textarea, select {
 font-size:100%;
@@ -272,8 +275,10 @@ left:9px;
 overflow:hidden;
 width:23ex;
 }
+.lnav { position: absolute; } 
 .lnavch {
 }
+.lnavch { margin-left:23.0ex;}
 .lnavi {
 font-size:100%;
 }
@@ -535,9 +540,9 @@ padding:1px 0px 4px;
 border:0pt none;
 }
 .ghgrn {
-color:#000000;
-font-size:189%;
-font-weight:bold;
+	color:#000000;
+	font-size:130%;
+	font-weight:bold;
 }
 .ghgrn .ln, .ghgrn .ln:visited, .ghgrn .ln:active, .ghgrn .ln:link {
 color:#000000;
@@ -550,23 +555,27 @@ text-decoration:underline;
 color:blue;
 }
 .rnsecs {
-	padding-top:20px;
+
+
+
+
+
 }
 .rnsecs .sec {
-	border-top-style: solid;
+	border-top-style: dotted;
 	border-right-style: solid;
-	border-bottom-style: solid;
-	border-left-style: solid;
+	border-bottom-style: dotted;
+	border-left-style: dotted;
 	border-top-color: #999999;
-	border-right-color: #999999;
+	border-right-color: #0066ff;
 	border-bottom-color: #999999;
 	border-left-color: #999999;
 	border-top-width: 1px;
-	border-right-width: 1px;
+	border-right-width: 3px;
 	border-bottom-width: 1px;
-	border-left-width: 0px;
+	border-left-width: 1px;
 	height: 35px;
-	padding-top: 0px;
+	padding-top: 10px;
 	padding-right: 10px;
 	padding-bottom: 5px;
 	padding-left: 10px;
@@ -578,7 +587,7 @@ font-weight:bold;
 text-decoration:none;
 }
 .rnsecs .sec .secln:hover, .rnsecs .sec .seclnact:hover {
-text-decoration:underline;
+	text-decoration:underline;
 }
 .rnsecs .sec .seclnd {
 color:#7777CC;
@@ -594,7 +603,7 @@ color:#7777CC;
 }
 .rnsecs .selsec {
 	background-color:white;
-	left:-1px;
+	left:0px;
 	margin-bottom:0px;
 	margin-right:0px;
 	position:relative;
@@ -603,17 +612,17 @@ color:#7777CC;
 	border-bottom-width: 3px;
 	border-left-width: 3px;
 	border-top-style: solid;
-	border-right-style: solid;
+	border-right-style: none;
 	border-bottom-style: solid;
 	border-left-style: solid;
 	border-top-color: #0066FF;
 	border-right-color: #0066FF;
 	border-bottom-color: #0066FF;
 	padding: 5px;
-	z-index: 99;
-	border-left-color: #FFFFFF;
+	border-left-color: #0000FF;
 	height: 35px;
 	vertical-align: middle;
+	margin-left: 0px;
 }
 .rnsecs .selsec .secln, .rnsecs .selsec .secln:visited, .rnsecs .selsec .secln:link {
 color:black;
@@ -894,10 +903,10 @@ height:0pt;
 float:left;
 }
 .rf {
-float:right;
+	float:left;
 }
 .clear {
-clear:both;
+	clear:right;
 }
 .padall0 {
 padding:0pt;
@@ -1116,7 +1125,7 @@ margin-left:0pt;
 padding-left:1px;
 }
 .mrgl1 {
-margin-left:1px;
+
 }
 .padl2 {
 padding-left:2px;
@@ -1236,7 +1245,7 @@ padding-right:9px;
 margin-right:9px;
 }
 .padr10 {
-padding-right:10px;
+	padding-left: 20px;
 }
 .mrgr10 {
 margin-right:10px;
@@ -1246,3 +1255,87 @@ margin-right:10px;
 background-color:
 #D7EAFD
 }
+
+.scripthide { display: none; } .scriptinline { display: inline; } .scriptblock { display: block; }.script12hide { display: none; } .script12inline { display: inline; } .script12block { display: block; } .script13hide { display: none; } .script13inline { display: inline; } .script13block { display: block; }    .mygp1 { padding-bottom: 7px;}
+    .mygp2 { padding-bottom: 7px; padding-left: 12px}
+.sshdr {
+  padding: 0px 10px 0px 10px;
+}
+.sshdr table.sshdrt {
+  margin-top: -1px;
+  margin-bottom: -3px;
+}
+.sshdrtxt {
+  font-size : 114%;
+}
+.sshdrtxtsm {
+  font-size : 106%;
+}
+.ssabln,
+.ssabln:active,
+.ssabln:link,
+.ssabln:visited {
+  text-decoration: none;
+  color: #000
+}
+.ssabln:hover {
+  text-decoration: underline;
+}
+.ssabhln,
+.ssabhln:active,
+.ssabhln:link,
+.ssabhln:visited {
+  text-decoration: none;
+  color: #00c
+}
+.ssabhln:hover {
+  text-decoration: underline;
+}
+.ssibln,
+.ssibln:active,
+.ssibln:link,
+.ssibln:visited {
+  text-decoration: none;
+  color: #00c;
+}
+.ssibln:hover {
+  text-decoration: underline;
+}
+.modtxtidt {
+  padding: 0px 10px 0px 40px;
+}
+.modtxtidt-20 {
+  padding: 0px 10px 0px 24px;
+}
+        #moduleGroupInfo td {
+          font-size: 91%;
+        }
+
+#moduleGroupInfo .moduleSMALL cat {
+  font-size: 0%;
+  padding-right:7px;
+}
+
+#moduleMembersListModule1 .moduleSMALL td {
+  font-size: 70%;
+}
+
+.mmlmc {
+  padding-right : 20px;
+  padding-top : 10px;
+  overflow : hidden;
+  white-space : nowrap;
+  
+    max-width: 200px;
+    display : inline;
+  
+}
+
+* html .mmlmc {
+  width : 180px;
+}
+
+.mmlimg {
+  padding-right : 5px;
+}
+  .noscripthide { display:none; } .noscriptinline { display:inline; } .noscriptblock { display:block; }
