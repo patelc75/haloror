@@ -52,6 +52,6 @@
      
    <%=comp :axis_category %>
      bold:  true
-     skip:  3
+     skip:  1
      size:  16
      orientation:   horizontal
