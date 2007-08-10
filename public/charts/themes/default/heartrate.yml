@@ -1,4 +1,8 @@
 <%=chart :line %> 
+   <%=comp :live_update %>
+     url: "/chart/refresh_data"
+     delay: 5
+    
    <%=comp :axis_category %>
      size: 18
    
