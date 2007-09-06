@@ -6,7 +6,10 @@ class ChartController < ApplicationController
   include Ziya
   
   def index
-
+    render(
+    :partial => 'heartrate_live', 
+    :layout => true
+    )
   end
     
   def heartrate_live
