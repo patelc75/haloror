@@ -1,7 +1,6 @@
 <%=chart :line %> 
    <%=comp :live_update %>
      url: "/chart/refresh_data"
-     delay: 5
     
    <%=comp :axis_category %>
      size: 18
@@ -25,11 +24,11 @@
      width:          520 
      positive_color:    FFFFFF
      
-   <%=comp :chart_transition %>
-     type:      slide_left
-     delay:     .5
-     duration:  0.5 
-     order:     series
+#   <%=comp :chart_transition %>
+#     type:      slide_left
+#     delay:     .5
+#     duration:  0.5 
+#     order:     series
      
    <%=comp :legend_rect %>
      width:         320
@@ -48,6 +47,7 @@
      size:        20
      color:       4334F5
      alpha:       75
+     decimals:    1
      
    <%=comp :chart_grid_v %>  
      thickness: 1

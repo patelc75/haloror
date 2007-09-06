@@ -1,16 +1,24 @@
 # == Schema Information
-# Schema version: 1
+# Schema version: 2
 #
 # Table name: heartrates
 #
-#  id        :integer(11)   not null, primary key
-#  sessionID :integer(11)   
-#  timeStamp :integer(11)   
-#  heartRate :integer(11)   
+#  id        :integer       not null, primary key
+#  user_id   :integer       
+#  timestamp :datetime      
+#  heartrate :integer       not null
 #
 
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-one:
+<% earth_size = 0 -%>
+mercury:
   id: 1
-two:
+  size: <%= earth_size / 50 %>
+
+venus:
   id: 2
+  size: <%= earth_size / 2 %>
+
+mars:
+  id: 3
+  size: <%= earth_size - 69 %>

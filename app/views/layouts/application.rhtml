@@ -1,112 +1,149 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-	<%= stylesheet_link_tag "layout" %>  
+    <%= javascript_include_tag :defaults %>
+    <%= stylesheet_link_tag "layout" %>  
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     
     <!-- Icon that goes on the browser tab -->
-    <link rel="shortcut icon" href="/icon.gif" type="image/gif">
-
+    <!--link rel="shortcut icon" href="/icon.gif" type="image/gif"-->
+    
     <title>Halo Research</title>
-    <LINK REL=StyleSheet HREF="layout.css" TYPE="text/css" MEDIA=screen>
+    <!--LINK REL=StyleSheet HREF="layout.css" TYPE="text/css" MEDIA=screen-->
     <meta name="save" content="history">
 </head>
 
 
 <body onresize="" onload="" topmargin="0" leftmargin="0" bgcolor="white" marginheight="0" marginwidth="0">
-
-<div class="gtopbar">
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
-    <tbody><tr valign="middle">
-    <td class="maincell" width="132"><a href="http://groups.google.com/"></a></td>
-    <td class="maincell" align="right" nowrap="nowrap">
-    	<nobr>
-        <b>merlemcgee@yahoo.com</b>|
-        <a class="on" href="http://groups.google.com/groups/profile?myprofile">Profile</a> |
-        <a target="_blank" href="http://groups.google.com/support?hl=en">Help</a> |
-        <a href="https://www.google.com/accounts/ManageAccount?hl=en">My Account</a> |
-        <a target="_top" href="http://groups.google.com/groups/signout?q=1&amp;_done=%2Fgroup%2Fhsvrb">Sign out</a><br />
-    	</nobr>
-    </td>
-    </tr>
-    </tbody>
-</table>
-</div>
-
-
-<div style="padding: 4px 10px;">
-  <table class="grhdr" cellpadding="0" cellspacing="0" width="100%"><tbody>
-  <tr valign="middle">
-	 <td height="42">
-  <div class="ghgrn"></div>  </td>
-  </tr>
-  </tbody></table>
-</div>
-
-
-
-</div>
-
-<div class="rf" style="position: relative; padding-top: 46px; padding-left: 10px">
-  <div class="overflow-hide" style="margin-left: -1px; z-index: 1; height: 650px;">
-    <div class="mrgl1" style="width: 15ex;">
-
-        <div class="rnsecs">
-		<div class="secblanktop" style="border-right-style: solid; border-right-width: 4px; border-right-color: #0000FF; height: 25px; margin-top: -3px;"></div>
-          <div class="selsec">Last 2 minutes</div>
-          <div class="sec"> Last 1 hour </div>
-          <div class="sec">Last 6 hours</div>
-          <div class="sec">All day</div>
-          <div class="sec"> Yesterday</div>
-          <div class="secblankbottom" style="border-right-style: solid; border-right-width: 4px; border-right-color: #0000FF; height: 344px; border-top-style: solid; border-top-width: 1px; border-top-color: #999999;"></div>
-          <div class="padt10"></div>
-        </div>
-        <div class="padt5"></div>
-    </div>
-
-  </div>
-</div>
-
-<div class="chartbodypad" style="float:left; width:750px; position:relative;">
- <div class="horizontalTabs">
- <div class="selectedTab"> 
-   <div align="center">Heartrate</div>
- </div>
- 
-  <div class="unselectedTab">
-    <div align="center">Activity</div>
-  </div>
-  
-    <div class="unselectedTab" style="width:120px;" >
-    <div align="center">Skin Temp</div>
-  </div>
-
-  <div class="paddingTab"></div>
-  </div>
-  <div class="chartBody">
-    <%= yield %>      
-  </div>
-
-
-<div style="position: relative; clear: both">
-        <table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr>
-        <td align="center">
+    
+    <div class="gtopbar">
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
-          <tbody>
-            <tr valign="center">
-              <td style="padding-right: 1em;" class="footer" align="center">
-              	<a target="_top">Terms of Service</a><font color="#333333"> - </font> 
-                <a target="_top">Privacy Policy</a> </td>
-            </tr>
-            <tr>
-              <td style="color: rgb(51, 51, 51);"align="center">©2007 Halo Research</td>
-            </tr>
-          </tbody>
-        </table></td>
-            </tr>
-      </tbody>
-      </table>
-</div>
-
+            <tbody><tr valign="middle">
+                    <td class="maincell" width="132"><a href="http://groups.google.com/"></a></td>
+                    <td class="maincell" align="right" nowrap="nowrap">
+                        <nobr>
+                            <b>merlemcgee@yahoo.com</b>|
+                            <a class="on" href="http://groups.google.com/groups/profile?myprofile">Profile</a> |
+                            <a target="_blank" href="http://groups.google.com/support?hl=en">Help</a> |
+                            <a href="https://www.google.com/accounts/ManageAccount?hl=en">My Account</a> |
+                            <a target="_top" href="http://groups.google.com/groups/signout?q=1&amp;_done=%2Fgroup%2Fhsvrb">Sign out</a><br />
+                        </nobr>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    
+    <div style="padding: 4px 10px;">
+        <table class="grhdr" cellpadding="0" cellspacing="0" width="100%"><tbody>
+                <tr valign="middle">
+                    <td height="42">
+                    <div class="ghgrn"></div>  </td>
+                </tr>
+        </tbody></table>
+    </div>
+    
+    
+    
+    </div>
+    
+    <div class="rf" style="position: relative; padding-top: 46px; padding-left: 10px">
+        <div class="overflow-hide" style="margin-left: -1px; z-index: 1; height: 650px;">
+            <div class="mrgl1" style="width: 15ex;">
+                <div class="rnsecs">
+                    <div class="secblanktop"></div>
+                    <div class="selsec"> 
+                        <%=link_to_remote("Live!",
+                            :update => 'chart',
+                            :url => url_for(:controller => 'chart', :action => 'heartrate_live'),
+                            :loading => "Element.show('loading'); ",
+                            :complete => "Element.hide('loading')",
+                            :before => "toggleTabs(this.parentNode);") %>
+                    </div>                    
+                    <div class="sec"> 
+                        <%=link_to_remote("Last half hour",
+                            :update => 'chart',
+                            :url => url_for(:controller => 'chart', :action => 'heartrate_last_half_hour'),
+                            :loading => "Element.show('loading'); ",
+                            :complete => "Element.hide('loading')",
+                            :before => "toggleTabs(this.parentNode);") %>
+                    </div>                                                                                                                                                                                                                                                  
+                    <div class="sec"> 
+                        <%=link_to_remote("Last hour",
+                            :update => 'chart',
+                            :url => url_for(:controller => 'chart', :action => 'heartrate_last_hour'),
+                            :loading => "Element.show('loading'); ",
+                            :complete => "Element.hide('loading')",
+                            :before => "toggleTabs(this.parentNode);") %>
+                    </div>
+                    <div class="sec"> 
+                        <%=link_to_remote("Last 6 hours",
+                            :update => 'chart',
+                            :url => url_for(:controller => 'chart', :action => 'heartrate_last_six_hours'),
+                            :loading => "Element.show('loading'); ",
+                            :complete => "Element.hide('loading')",
+                            :before => "toggleTabs(this.parentNode);") %>
+                    </div>
+                    <div class="sec"> 
+                        <%=link_to_remote("All day",
+                            :update => 'chart',
+                            :url => url_for(:controller => 'chart', :action => 'heartrate_all_day'),
+                            :loading => "Element.show('loading'); ",
+                            :complete => "Element.hide('loading')",
+                            :before => "toggleTabs(this.parentNode);") %>
+                        <!--a href=<%= url_for(:controller => 'chart', :action => 'heartrate_discrete', :start =>'2007-08-30 06:00:00-04', :finish => '2007-08-30 18:44:37-04', :trailing_slash => false) %>> All day </a--> 
+                    </div>
+                    <div class="secblankbottom"></div>
+                </div>
+                <div class="padt5"></div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="chartbodypad" style="float:left; width:750px; position:relative;">
+    <div class="horizontalTabs">
+        <div class="selectedTab"> 
+            <div align="center">Heartrate</div>
+        </div>
+        
+        <div class="unselectedTab">
+            <div align="center">Activity</div>
+        </div>
+        
+        <div class="unselectedTab" style="width:120px;" >
+            <div align="center">Skin Temp</div>
+        </div>
+        
+        <div class="paddingTab"></div>
+    </div>
+    <div class="chartBody">
+        <div align= "center" id="loading" style="display:none;">Loading... This will take a few seconds</div>
+        <div id="chart"><%= render :partial => 'heartrate_live' %></div>
+        <!--%= yield %-->      
+    </div>
+    
+    
+    <div style="position: relative; clear: both">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr>
+                    <td align="center">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tbody>
+                                <tr valign="center">
+                                    <td style="padding-right: 1em;" class="footer" align="center">
+                                        <a target="_top">Terms of Service</a><font color="#333333"> - </font> 
+                                    <a target="_top">Privacy Policy</a> </td>
+                                </tr>
+                                <tr>
+                                    <td style="color: rgb(51, 51, 51);"align="center">©2007 Halo Research</td>
+                                </tr>
+                            </tbody>
+                    </table></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
 </body>
 </html>

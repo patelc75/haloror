@@ -1,0 +1,9 @@
+<%= ziya_chart( url_for( :controller => 'chart', 
+                         :action => 'line_chart_discrete', 
+                         :start_time => start, 
+                         :finish_time => finish, 
+                         :trailing_slash => false), 
+                         :id => 'heartrate_discrete', 
+                         :width => 650, 
+                         :height => 550, 
+                         :bgcolor => "white") %>

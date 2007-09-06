@@ -1,34 +1,3 @@
-<html>
-    <head>
-        <title>Merle McGee Chart</title>
-    </head>
-    <body>
-			<OBJECT classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
-				 codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0"
-					WIDTH="400"
-					HEIGHT="250"
-					id="charts"
-					ALIGN="">
-			<PARAM NAME=movie VALUE="charts.swf?library_path=charts_library&xml_source=<%=url_for :action=>"report",:only_path=>true%>">
-			<PARAM NAME=quality VALUE=high>
-			<PARAM NAME=bgcolor VALUE=#666666>
-			<!-- We’re creating the URL dynamically with Rails helper method url_for, and 
-			we're passing in the :only_path=>true parameter because we only really need
-			the relative path, not the full url from the base of the server. It should work 
-			either way. If your app is different, you can pass in the other parameters 
-			like :controller -->
-			<EMBED src="charts.swf?library_path=charts_library&xml_source=<%=url_for :action=>"report",:only_path=>true%>" 
-			quality=high 
-			bgcolor=#666666 
-			WIDTH="400" 
-			HEIGHT="250" 
-			NAME="charts" 
-			ALIGN="" 
-			swLiveConnect="true" 
-			TYPE="application/x-shockwave-flash" 
-			PLUGINSPAGE="http://www.macromedia.com/go/getflashplayer">
-			</EMBED>
-			</OBJECT>
-    </body>
-</html>
+<%= ziya_chart( url_for( :controller => 'chart', :action => 'line_chart_discrete'), :id => 'heartrate', :width => 650, :height => 550, :bgcolor => "white") %>
 
+<%= ziya_chart( url_for( :controller => 'chart', :action => 'line_chart_continuous'), :id => 'heartrate2', :width => 650, :height => 550, :bgcolor => "white") %>

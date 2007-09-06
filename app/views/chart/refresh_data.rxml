@@ -1,6 +1,6 @@
 xml.chart do
   xml.live_update( :url=> url_for( :controller => 'chart', :action => 'refresh_data'),
-                   :delay => 5 )
+                   :delay => 0 )
   xml.chart_data do
     xml.row do
       xml.null
