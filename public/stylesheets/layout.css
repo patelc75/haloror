@@ -319,11 +319,10 @@ table {
     border-right-width: 4px; 
     border-right-color: #0000FF; 
     height: 25px; 
-    margin-top: -3px;
+    margin-top: -3px;   
 }
 
 #loading {
     color: #974B00;
     font-weight: bold;
-    align: center;
 }

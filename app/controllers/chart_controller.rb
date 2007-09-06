@@ -11,52 +11,52 @@ class ChartController < ApplicationController
     
   def heartrate_live
     render(
-      :partial => 'heartrate_live', 
-      :layout => false
+    :partial => 'heartrate_live', 
+    :layout => false
     )
   end
   
   def heartrate_last_half_hour
     render(
-      :partial => 'heartrate_discrete', 
-      :locals => {
-        :start =>'2007-08-30 18:14:37-04',
-        :finish => '2007-08-30 18:44:37-04',          
-      },
-      :layout => false
+    :partial => 'heartrate_discrete', 
+    :locals => {
+      :start =>'2007-08-30 18:14:37-04',
+      :finish => '2007-08-30 18:44:37-04',          
+    },
+    :layout => false
     )
   end 
   
   def heartrate_last_hour
     render(
-      :partial => 'heartrate_discrete', 
-      :locals => {
-        :start => '2007-08-30 17:14:37-04',          
-        :finish => '2007-08-30 18:44:37-04',                
-      },
-      :layout => false
+    :partial => 'heartrate_discrete', 
+    :locals => {
+      :start => '2007-08-30 17:44:37-04',          
+      :finish => '2007-08-30 18:44:37-04',                
+    },
+    :layout => false
     )
   end 
 
   def heartrate_last_six_hours
     render(
-      :partial => 'heartrate_discrete', 
-      :locals => {
-        :start => '2007-08-30 12:44:37-04',          
-        :finish => '2007-08-30 18:44:37-04',                
-      },
-      :layout => false
+    :partial => 'heartrate_discrete', 
+    :locals => {
+      :start => '2007-08-30 12:44:37-04',          
+      :finish => '2007-08-30 18:44:37-04',                
+    },
+    :layout => false
     )
   end 
 
   def heartrate_all_day
     render(
-      :partial => 'heartrate_discrete', 
-      :locals => {
-        :start =>'2007-08-30 06:00:00-04',
-        :finish => '2007-08-30 18:44:37-04',
-      },
-      :layout => false
+    :partial => 'heartrate_discrete', 
+    :locals => {
+      :start =>'2007-08-30 06:00:00-04',
+      :finish => '2007-08-30 18:44:37-04',
+    },
+    :layout => false
     )
   end 
   
@@ -129,23 +129,26 @@ class ChartController < ApplicationController
       puts x, @labels_array[i]
     end
   end
-  private
-
-  def round_to(num, x)
-    (num * 10**x).round.to_f / 10**x
-  end
-
+  
   def heartrate_post
     heartrate = Heartrate.new(:user_id => 817, :timestamp => Time.now, :heartrate => rand(5)+70)
     heartrate.save
   end
-
+  
   def refresh_data
     gen_live_data_sets
     
     #render a special view which as XML file s(chart/refres_data.rxml)
     render :template => 'chart/refresh_data', :layout => false
   end
+
+  private
+
+  def round_to(num, x)
+    (num * 10**x).round.to_f / 10**x
+  end
+
+
 
   def gen_live_data_sets    
     #get the latest 10 records (ordered by timestamp) from Heartrate table 
