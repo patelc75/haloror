@@ -21,10 +21,13 @@ namespace :halo do
   
   desc "post to the heartrate table with activerecords"  
   task :post_heartrate_with_activerecord => :environment  do
-    end_time = Time.new
-    start_time = end_time - 60 
-    #start_time = end_time - 24 * 60 * 60 #subtract 1 day in seconds
-    #start_time = end_time - 60 * 60 #subtract 1 day in seconds
+    #end_time = Time.new
+    end_time = Time.parse('2007-08-30 18:44:37-04') #hardcoded for demo 
+    
+    start_time = end_time - 24 * 60 * 60 #subtract 1 day in seconds
+    #start_time = end_time - 60 * 60 #subtract 1 hour in seconds
+    #start_time = end_time - 60 #subtract 1 minute in seconds
+    
     until start_time > end_time      
       start_time = start_time + 15 #send a REST posts with the timestamp incremented by 15 seconds
       puts "Posting #{start_time}"  
