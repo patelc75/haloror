@@ -5,9 +5,9 @@
 ActiveRecord::Schema.define(:version => 2) do
 
   create_table "heartrates", :force => true do |t|
-    t.column "sessionID", :integer
-    t.column "timeStamp", :integer
-    t.column "heartRate", :integer
+    t.column "user_id",   :integer
+    t.column "timestamp", :datetime
+    t.column "heartrate", :integer,  :null => false
   end
 
   create_table "raw_data_files", :force => true do |t|

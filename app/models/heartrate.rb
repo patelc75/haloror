@@ -1,13 +1,15 @@
 # == Schema Information
-# Schema version: 1
+# Schema version: 2
 #
 # Table name: heartrates
 #
-#  id        :integer(11)   not null, primary key
-#  sessionID :integer(11)   
-#  timeStamp :integer(11)   
-#  heartRate :integer(11)   
+#  id        :integer       not null, primary key
+#  user_id   :integer       
+#  timestamp :datetime      
+#  heartrate :integer       not null
 #
+
+require 'active_record'
 
 class Heartrate < ActiveRecord::Base
 end

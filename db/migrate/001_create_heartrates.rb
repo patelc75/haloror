@@ -1,9 +1,9 @@
 class CreateHeartrates < ActiveRecord::Migration
   def self.up
     create_table :heartrates do |t|
-			t.column :sessionID, :int
-			t.column :timeStamp, :int
-			t.column :heartRate, :int
+      t.column :user_id, :integer
+      t.column :timestamp, :timestamp_with_time_zone
+      t.column :heartrate, :integer, :limit => 1, :null=> false #will use smallint becuase of plug-in
     end
   end
 

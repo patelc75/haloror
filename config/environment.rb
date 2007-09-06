@@ -60,3 +60,5 @@ end
 # Include your application configuration below
 #hash used for ruby-debug gem, used to store Rails source code
 #SCRIPT_LINES__ = {} if ENV['RAILS_ENV'] == 'development'
+
+require 'postgre_extensions'

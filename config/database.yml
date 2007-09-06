@@ -18,10 +18,10 @@
 # Do not set this db to the same as development or production.
 
 development:
-  adapter: mysql
+  adapter: postgresql
   database: haloror
-  username: root
-  password:
+  username: postgres  
+  password: halo75halo
   host: localhost
   
 test:
@@ -32,7 +32,7 @@ test:
   host: localhost
 
 production:
-  adapter: mysql
+  adapter: postgresql
   database: haloresearch
   username: patelc75
   password: irdikt75

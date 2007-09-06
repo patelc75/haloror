@@ -1,3 +1,16 @@
+# == Schema Information
+# Schema version: 2
+#
+# Table name: raw_data_files
+#
+#  id           :integer       not null, primary key
+#  filename     :string(255)   
+#  content_type :string(255)   
+#  size         :integer       
+#  parent_id    :integer       
+#  created_at   :datetime      
+#
+
 class RawDataFile < ActiveRecord::Base
   #this is like a constructor
   has_attachment  :storage => :file_system, 

@@ -1,0 +1,60 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<XMI xmi.version = "1.1" xmlns:UML="href://org.omg/UML/1.3">
+<XMI.header>
+  <XMI.documentation>
+    <XMI.owner></XMI.owner>
+    <XMI.contact></XMI.contact>
+    <XMI.exporter>RubyOnRails.UML_dumper</XMI.exporter>
+    <XMI.exporterVersion>1.0</XMI.exporterVersion>
+    <XMI.notice></XMI.notice>
+  </XMI.documentation>
+  <XMI.metamodel xmi.name = "UML" xmi.version = "1.3"/>
+ </XMI.header>
+<XMI.content>
+<UML:Model xmi.id="UMLProject.1" name="haloror">
+  <UML:Namespace.ownedElement>
+    <UML:Model xmi.id="UMLModel.6" name="Design Model">
+      <UML:Namespace.ownedElement>
+        <UML:Class xmi.id="UMLClass.21" name="heartrates" participant="">
+          <UML:Classifier.feature>
+            <UML:Attribute xmi.id='UMLAttribute.23' name='id' type='X.22'/>
+            <UML:Attribute xmi.id='UMLAttribute.24' name='sessionID' type='X.22'/>
+            <UML:Attribute xmi.id='UMLAttribute.25' name='timeStamp' type='X.22'/>
+            <UML:Attribute xmi.id='UMLAttribute.26' name='heartRate' type='X.22'/>
+          </UML:Classifier.feature>
+        </UML:Class>
+        <UML:Class xmi.id="UMLClass.28" name="raw_data_files" participant="UMLAssociationEnd.18">
+          <UML:Classifier.feature>
+            <UML:Attribute xmi.id='UMLAttribute.29' name='id' type='X.22'/>
+            <UML:Attribute xmi.id='UMLAttribute.31' name='filename' type='X.30'/>
+            <UML:Attribute xmi.id='UMLAttribute.32' name='content_type' type='X.30'/>
+            <UML:Attribute xmi.id='UMLAttribute.33' name='size' type='X.22'/>
+            <UML:Attribute xmi.id='UMLAttribute.34' name='parent_id' type='X.22'/>
+            <UML:Attribute xmi.id='UMLAttribute.36' name='created_at' type='X.35'/>
+          </UML:Classifier.feature>
+        </UML:Class>
+        <UML:Class xmi.id="UMLClass.38" name="parents" participant="UMLAssociationEnd.19"/>
+                <UML:Association xmi.id="UMLAssociation.20">
+                  <UML:Association.connection>
+                    <UML:AssociationEnd xmi.id="UMLAssociationEnd.18" type="UMLClass.28"/>
+                    <UML:AssociationEnd xmi.id="UMLAssociationEnd.19" isNavigable="false" type="UMLClass.38"/>
+                  </UML:Association.connection>
+                </UML:Association>
+        <UML:Stereotype xmi.id="X.14" name="designModel" extendedElement="UMLModel.6"/>
+      </UML:Namespace.ownedElement>
+    </UML:Model>
+    <UML:DataType xmi.id='X.22' name='integer'/>
+    <UML:DataType xmi.id='X.35' name='datetime'/>
+    <UML:DataType xmi.id='X.30' name='string'/>
+  </UML:Namespace.ownedElement>
+</UML:Model>
+<UML:Diagram xmi.id="UMLClassDiagram.7" name="Main" diagramType="ClassDiagram" toolName="Rational Rose 98" owner="UMLModel.6">
+  <UML:Diagram.element>
+    <UML:DiagramElement xmi.id="UMLClassView.39" geometry="900, 100, 20, 20" style="LineColor.Red=28,LineColor.Green=28,LineColor.Blue=28,FillColor.Red=185,FillColor.Green=185,FillColor.Blue=185,AutomaticResize=1" subject="UMLClass.38"/>
+    <UML:DiagramElement xmi.id="UMLClassView.27" geometry="100, 100, 20, 20" style="AutomaticResize=1" subject="UMLClass.21"/>
+    <UML:DiagramElement xmi.id="UMLClassView.37" geometry="500, 100, 20, 20" style="AutomaticResize=1" subject="UMLClass.28"/>
+    <UML:DiagramElement xmi.id="UMLAssociationView.40" geometry="700, 100, 400, 0" subject="UMLAssociation.20"/>
+  </UML:Diagram.element>
+</UML:Diagram>
+</XMI.content>
+</XMI>
