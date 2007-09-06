@@ -119,7 +119,8 @@ class ChartController < ApplicationController
     @labels_array = Array.new
     interval = (end_time - start_time) / num_points #interval returned in seconds
     current_time = start_time
-    current_point = 0   // the data point that we're currently on
+    current_point = 0   #the data point that we're currently on
+    
     while current_point < num_points
       condition = "timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}'"
       average = Heartrate.average(:heartrate, :conditions => condition)
@@ -142,8 +143,8 @@ class ChartController < ApplicationController
   
   def refresh_data
     gen_live_data_sets
-    
-    #render a special view which as XML file s(chart/refres_data.rxml)
+
+    #render a special view which as XML file 
     render :template => 'chart/refresh_data', :layout => false
   end
 
