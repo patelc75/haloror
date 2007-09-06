@@ -119,10 +119,12 @@ class ChartController < ApplicationController
     @labels_array = Array.new
     interval = (end_time - start_time) / num_points #interval returned in seconds
     current_time = start_time
-    while current_time < end_time
+    current_point = 0   // the data point that we're currently on
+    while current_point < num_points
       condition = "timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}'"
       average = Heartrate.average(:heartrate, :conditions => condition)
       current_time = current_time + interval
+      current_point = current_point + 1
       @averages_array << round_to(average, 1)
       @labels_array << current_time.strftime("%H:%M:%S")
     end 
