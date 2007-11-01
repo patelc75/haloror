@@ -139,6 +139,7 @@ class ChartController < ApplicationController
   def heartrate_post
     heartrate = Heartrate.new(:user_id => 817, :timestamp => Time.now, :heartrate => rand(5)+70)
     heartrate.save
+	render :nothing => true
   end
   
   def refresh_data
@@ -172,16 +173,16 @@ class ChartController < ApplicationController
     session[:job_key]= MiddleMan.new_worker(:class => :heartrate_worker,
     :args => "Arguments used to instantiate a new HeartratepostWorker object")
     
-    #    session[:job_key] = worker
-    #    MiddleMan.schedule_worker(
-    #      :class => :heartrate_post_worker,
-    #      :args => "some arg to do_work",
-    #      :job_key => :simple_schedule,
-    #      :trigger_args => {
-    #        :start => Time.now,
-    #        :end => Time.now + 10.minutes,
-    #        :repeat_interval => 15.seconds
-    #      }
-    #    )
+        session[:job_key] = worker
+        MiddleMan.schedule_worker(
+          :class => :heartrate_post_worker,
+          :args => "some arg to do_work",
+          :job_key => :simple_schedule,
+          :trigger_args => {
+            :start => Time.now,
+            :end => Time.now + 10.minutes,
+            :repeat_interval => 15.seconds
+          }
+        )
   end
 end

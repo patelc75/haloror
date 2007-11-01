@@ -15,45 +15,108 @@
   <UML:Namespace.ownedElement>
     <UML:Model xmi.id="UMLModel.6" name="Design Model">
       <UML:Namespace.ownedElement>
-        <UML:Class xmi.id="UMLClass.21" name="heartrates" participant="">
+        <UML:Class xmi.id="UMLClass.30" name="call_orders" participant="UMLAssociationEnd.18 UMLAssociationEnd.21">
           <UML:Classifier.feature>
-            <UML:Attribute xmi.id='UMLAttribute.23' name='id' type='X.22'/>
-            <UML:Attribute xmi.id='UMLAttribute.24' name='sessionID' type='X.22'/>
-            <UML:Attribute xmi.id='UMLAttribute.25' name='timeStamp' type='X.22'/>
-            <UML:Attribute xmi.id='UMLAttribute.26' name='heartRate' type='X.22'/>
+            <UML:Attribute xmi.id='UMLAttribute.32' name='id' type='X.31'/>
+            <UML:Attribute xmi.id='UMLAttribute.33' name='user_id' type='X.31'/>
+            <UML:Attribute xmi.id='UMLAttribute.34' name='caregiver_id' type='X.31'/>
+            <UML:Attribute xmi.id='UMLAttribute.35' name='position' type='X.31'/>
           </UML:Classifier.feature>
         </UML:Class>
-        <UML:Class xmi.id="UMLClass.28" name="raw_data_files" participant="UMLAssociationEnd.18">
+        <UML:Class xmi.id="UMLClass.37" name="caregivers" participant="UMLAssociationEnd.22">
           <UML:Classifier.feature>
-            <UML:Attribute xmi.id='UMLAttribute.29' name='id' type='X.22'/>
-            <UML:Attribute xmi.id='UMLAttribute.31' name='filename' type='X.30'/>
-            <UML:Attribute xmi.id='UMLAttribute.32' name='content_type' type='X.30'/>
-            <UML:Attribute xmi.id='UMLAttribute.33' name='size' type='X.22'/>
-            <UML:Attribute xmi.id='UMLAttribute.34' name='parent_id' type='X.22'/>
-            <UML:Attribute xmi.id='UMLAttribute.36' name='created_at' type='X.35'/>
+            <UML:Attribute xmi.id='UMLAttribute.38' name='id' type='X.31'/>
+            <UML:Attribute xmi.id='UMLAttribute.40' name='first_name' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.41' name='last_name' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.42' name='address' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.43' name='city' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.44' name='state' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.45' name='home_phone' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.46' name='work_phone' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.47' name='cell_phone' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.48' name='relationship' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.49' name='email' type='X.39'/>
           </UML:Classifier.feature>
         </UML:Class>
-        <UML:Class xmi.id="UMLClass.38" name="parents" participant="UMLAssociationEnd.19"/>
+        <UML:Class xmi.id="UMLClass.51" name="heartrates" participant="UMLAssociationEnd.24">
+          <UML:Classifier.feature>
+            <UML:Attribute xmi.id='UMLAttribute.52' name='id' type='X.31'/>
+            <UML:Attribute xmi.id='UMLAttribute.53' name='user_id' type='X.31'/>
+            <UML:Attribute xmi.id='UMLAttribute.55' name='timestamp' type='X.54'/>
+            <UML:Attribute xmi.id='UMLAttribute.56' name='heartrate' type='X.31'/>
+          </UML:Classifier.feature>
+        </UML:Class>
+        <UML:Class xmi.id="UMLClass.58" name="raw_data_files" participant="UMLAssociationEnd.27">
+          <UML:Classifier.feature>
+            <UML:Attribute xmi.id='UMLAttribute.59' name='id' type='X.31'/>
+            <UML:Attribute xmi.id='UMLAttribute.60' name='filename' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.61' name='content_type' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.62' name='size' type='X.31'/>
+            <UML:Attribute xmi.id='UMLAttribute.63' name='parent_id' type='X.31'/>
+            <UML:Attribute xmi.id='UMLAttribute.64' name='created_at' type='X.54'/>
+          </UML:Classifier.feature>
+        </UML:Class>
+        <UML:Class xmi.id="UMLClass.66" name="users" participant="UMLAssociationEnd.19 UMLAssociationEnd.25">
+          <UML:Classifier.feature>
+            <UML:Attribute xmi.id='UMLAttribute.67' name='id' type='X.31'/>
+            <UML:Attribute xmi.id='UMLAttribute.68' name='login' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.69' name='email' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.71' name='crypted_password' type='X.70'/>
+            <UML:Attribute xmi.id='UMLAttribute.72' name='salt' type='X.70'/>
+            <UML:Attribute xmi.id='UMLAttribute.73' name='created_at' type='X.54'/>
+            <UML:Attribute xmi.id='UMLAttribute.74' name='updated_at' type='X.54'/>
+            <UML:Attribute xmi.id='UMLAttribute.75' name='remember_token' type='X.39'/>
+            <UML:Attribute xmi.id='UMLAttribute.76' name='remember_token_expires_at' type='X.54'/>
+            <UML:Attribute xmi.id='UMLAttribute.77' name='activation_code' type='X.70'/>
+            <UML:Attribute xmi.id='UMLAttribute.78' name='activated_at' type='X.54'/>
+          </UML:Classifier.feature>
+        </UML:Class>
+        <UML:Class xmi.id="UMLClass.80" name="parents" participant="UMLAssociationEnd.28"/>
                 <UML:Association xmi.id="UMLAssociation.20">
                   <UML:Association.connection>
-                    <UML:AssociationEnd xmi.id="UMLAssociationEnd.18" type="UMLClass.28"/>
-                    <UML:AssociationEnd xmi.id="UMLAssociationEnd.19" isNavigable="false" type="UMLClass.38"/>
+                    <UML:AssociationEnd xmi.id="UMLAssociationEnd.18" type="UMLClass.30"/>
+                    <UML:AssociationEnd xmi.id="UMLAssociationEnd.19" isNavigable="false" type="UMLClass.66"/>
+                  </UML:Association.connection>
+                </UML:Association>
+                <UML:Association xmi.id="UMLAssociation.23">
+                  <UML:Association.connection>
+                    <UML:AssociationEnd xmi.id="UMLAssociationEnd.21" type="UMLClass.30"/>
+                    <UML:AssociationEnd xmi.id="UMLAssociationEnd.22" isNavigable="false" type="UMLClass.37"/>
+                  </UML:Association.connection>
+                </UML:Association>
+                <UML:Association xmi.id="UMLAssociation.26">
+                  <UML:Association.connection>
+                    <UML:AssociationEnd xmi.id="UMLAssociationEnd.24" type="UMLClass.51"/>
+                    <UML:AssociationEnd xmi.id="UMLAssociationEnd.25" isNavigable="false" type="UMLClass.66"/>
+                  </UML:Association.connection>
+                </UML:Association>
+                <UML:Association xmi.id="UMLAssociation.29">
+                  <UML:Association.connection>
+                    <UML:AssociationEnd xmi.id="UMLAssociationEnd.27" type="UMLClass.58"/>
+                    <UML:AssociationEnd xmi.id="UMLAssociationEnd.28" isNavigable="false" type="UMLClass.80"/>
                   </UML:Association.connection>
                 </UML:Association>
         <UML:Stereotype xmi.id="X.14" name="designModel" extendedElement="UMLModel.6"/>
       </UML:Namespace.ownedElement>
     </UML:Model>
-    <UML:DataType xmi.id='X.22' name='integer'/>
-    <UML:DataType xmi.id='X.35' name='datetime'/>
-    <UML:DataType xmi.id='X.30' name='string'/>
+    <UML:DataType xmi.id='X.70' name='string(40)'/>
+    <UML:DataType xmi.id='X.31' name='integer'/>
+    <UML:DataType xmi.id='X.54' name='datetime'/>
+    <UML:DataType xmi.id='X.39' name='string'/>
   </UML:Namespace.ownedElement>
 </UML:Model>
 <UML:Diagram xmi.id="UMLClassDiagram.7" name="Main" diagramType="ClassDiagram" toolName="Rational Rose 98" owner="UMLModel.6">
   <UML:Diagram.element>
-    <UML:DiagramElement xmi.id="UMLClassView.39" geometry="900, 100, 20, 20" style="LineColor.Red=28,LineColor.Green=28,LineColor.Blue=28,FillColor.Red=185,FillColor.Green=185,FillColor.Blue=185,AutomaticResize=1" subject="UMLClass.38"/>
-    <UML:DiagramElement xmi.id="UMLClassView.27" geometry="100, 100, 20, 20" style="AutomaticResize=1" subject="UMLClass.21"/>
-    <UML:DiagramElement xmi.id="UMLClassView.37" geometry="500, 100, 20, 20" style="AutomaticResize=1" subject="UMLClass.28"/>
-    <UML:DiagramElement xmi.id="UMLAssociationView.40" geometry="700, 100, 400, 0" subject="UMLAssociation.20"/>
+    <UML:DiagramElement xmi.id="UMLClassView.81" geometry="700, 300, 20, 20" style="LineColor.Red=28,LineColor.Green=28,LineColor.Blue=28,FillColor.Red=185,FillColor.Green=185,FillColor.Blue=185,AutomaticResize=1" subject="UMLClass.80"/>
+    <UML:DiagramElement xmi.id="UMLClassView.50" geometry="500, 100, 20, 20" style="AutomaticResize=1" subject="UMLClass.37"/>
+    <UML:DiagramElement xmi.id="UMLClassView.57" geometry="900, 100, 20, 20" style="AutomaticResize=1" subject="UMLClass.51"/>
+    <UML:DiagramElement xmi.id="UMLClassView.36" geometry="100, 100, 20, 20" style="AutomaticResize=1" subject="UMLClass.30"/>
+    <UML:DiagramElement xmi.id="UMLClassView.65" geometry="1300, 100, 20, 20" style="AutomaticResize=1" subject="UMLClass.58"/>
+    <UML:DiagramElement xmi.id="UMLClassView.79" geometry="300, 300, 20, 20" style="AutomaticResize=1" subject="UMLClass.66"/>
+    <UML:DiagramElement xmi.id="UMLAssociationView.82" geometry="200, 200, 200, 200" subject="UMLAssociation.20"/>
+    <UML:DiagramElement xmi.id="UMLAssociationView.83" geometry="300, 100, 400, 0" subject="UMLAssociation.23"/>
+    <UML:DiagramElement xmi.id="UMLAssociationView.84" geometry="600, 200, 600, 200" subject="UMLAssociation.26"/>
+    <UML:DiagramElement xmi.id="UMLAssociationView.85" geometry="1000, 200, 600, 200" subject="UMLAssociation.29"/>
   </UML:Diagram.element>
 </UML:Diagram>
 </XMI.content>

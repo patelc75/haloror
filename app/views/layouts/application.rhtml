@@ -52,46 +52,46 @@
         <div class="overflow-hide" style="margin-left: -1px; z-index: 1; height: 650px;">
             <div class="mrgl1" style="width: 15ex;">
                 <div class="rnsecs">
-                    <div class="secblanktop"></div>
+                    <div class="secblanktop"></div>	
                     <div class="selsec"> 
                         <%=link_to_remote("Live!",
-                            :update => 'chart',
-                            :url => url_for(:controller => 'chart', :action => 'heartrate_live'),
-                            :loading => "Element.show('loading'); ",
-                            :complete => "Element.hide('loading')",
-                            :before => "toggleTabs(this.parentNode);") %>
+                        :update => 'chart',
+                        :url => url_for(:controller => 'chart', :action => 'heartrate_live'),
+                        :loading => "Element.show('loading'); ",
+                        :complete => "Element.hide('loading')",
+                        :before => "toggleVTabs(this.parentNode);") %>
                     </div>                    
                     <div class="sec"> 
                         <%=link_to_remote("Last half hour",
-                            :update => 'chart',
-                            :url => url_for(:controller => 'chart', :action => 'heartrate_last_half_hour'),
-                            :loading => "Element.show('loading'); ",
-                            :complete => "Element.hide('loading')",
-                            :before => "toggleTabs(this.parentNode);") %>
+                        :update => 'chart',
+                        :url => url_for(:controller => 'chart', :action => 'heartrate_last_half_hour'),
+                        :loading => "Element.show('loading'); ",
+                        :complete => "Element.hide('loading')",
+                        :before => "toggleVTabs(this.parentNode);") %>
                     </div>                                                                                                                                                                                                                                                  
                     <div class="sec"> 
                         <%=link_to_remote("Last hour",
-                            :update => 'chart',
-                            :url => url_for(:controller => 'chart', :action => 'heartrate_last_hour'),
-                            :loading => "Element.show('loading'); ",
-                            :complete => "Element.hide('loading')",
-                            :before => "toggleTabs(this.parentNode);") %>
+                        :update => 'chart',
+                        :url => url_for(:controller => 'chart', :action => 'heartrate_last_hour'),
+                        :loading => "Element.show('loading'); ",
+                        :complete => "Element.hide('loading')",
+                        :before => "toggleVTabs(this.parentNode);") %>
                     </div>
                     <div class="sec"> 
                         <%=link_to_remote("Last 6 hours",
-                            :update => 'chart',
-                            :url => url_for(:controller => 'chart', :action => 'heartrate_last_six_hours'),
-                            :loading => "Element.show('loading'); ",
-                            :complete => "Element.hide('loading')",
-                            :before => "toggleTabs(this.parentNode);") %>
+                        :update => 'chart',
+                        :url => url_for(:controller => 'chart', :action => 'heartrate_last_six_hours'),
+                        :loading => "Element.show('loading'); ",
+                        :complete => "Element.hide('loading')",
+                        :before => "toggleVTabs(this.parentNode);") %>
                     </div>
                     <div class="sec"> 
                         <%=link_to_remote("All day",
-                            :update => 'chart',
-                            :url => url_for(:controller => 'chart', :action => 'heartrate_all_day'),
-                            :loading => "Element.show('loading'); ",
-                            :complete => "Element.hide('loading')",
-                            :before => "toggleTabs(this.parentNode);") %>
+                        :update => 'chart',
+                        :url => url_for(:controller => 'chart', :action => 'heartrate_all_day'),
+                        :loading => "Element.show('loading'); ",
+                        :complete => "Element.hide('loading')",
+                        :before => "toggleVTabs(this.parentNode);") %>
                         <!--a href=<%= url_for(:controller => 'chart', :action => 'heartrate_discrete', :start =>'2007-08-30 06:00:00-04', :finish => '2007-08-30 18:44:37-04', :trailing_slash => false) %>> All day </a--> 
                     </div>
                     <div class="secblankbottom"></div>
@@ -104,16 +104,32 @@
     
     <div class="chartbodypad" style="float:left; width:750px; position:relative;">
     <div class="horizontalTabs">
+        <div class="paddingLeftTab"></div>
         <div class="selectedTab"> 
-            <div align="center">Heartrate</div>
+            <%=link_to_remote("Heartrate",
+            :update => 'chart',
+            :url => url_for(:controller => 'chart', :action => 'heartrate_last_half_hour'),
+            :loading => "Element.show('loading'); ",
+            :complete => "Element.hide('loading')",
+            :before => "toggleHTabs(this.parentNode);") %>
         </div>
         
         <div class="unselectedTab">
-            <div align="center">Activity</div>
+            <%=link_to_remote("Falls",
+            :update => 'chart',
+            :url => url_for(:controller => 'call_list', :action => 'show', :id  => '1'),
+            :loading => "Element.show('loading'); ",
+            :complete => "Element.hide('loading')",
+            :before => "toggleHTabs(this.parentNode);") %>
         </div>
         
-        <div class="unselectedTab" style="width:120px;" >
-            <div align="center">Skin Temp</div>
+        <div class="unselectedTab" >
+            <%=link_to_remote("Activity",
+            :update => 'chart',
+            :url => url_for(:controller => 'chart', :action => 'heartrate_last_half_hour'),
+            :loading => "Element.show('loading'); ",
+            :complete => "Element.hide('loading')",
+            :before => "toggleHTabs(this.parentNode);") %>
         </div>
         
         <div class="paddingTab"></div>

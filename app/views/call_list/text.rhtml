@@ -1,0 +1,11 @@
+<%= form_remote_tag :html => {
+	:id => @caregiver, 
+	:name => 'add_caregiver_form'}, 
+	:url => {:action => 'add_caregiver'} %>
+
+	First name: <%= text_field :caregiver, :first_name %>
+	
+	<%= submit_tag "Create" %>
+	
+	<a href="#" class="lbAction" rel="deactivate">cancel</a>
+<%= end_form_tag %>

@@ -1,0 +1,5 @@
+# TODO Operate on the page object
+page.select('.rnsecs .selsec').each do |item|
+  item.toggleClassName 'sec'
+  #this.parentNode.className = 'selsec'  
+end

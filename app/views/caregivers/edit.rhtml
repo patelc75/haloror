@@ -1,0 +1,62 @@
+<h1>Editing caregiver</h1>
+
+<%= error_messages_for :caregiver %>
+
+<% form_for(:caregiver, :url => caregiver_path(@caregiver), :html => { :method => :put }) do |f| %>
+  <p>
+    <b>First name</b><br />
+    <%= f.text_field :first_name %>
+  </p>
+
+  <p>
+    <b>Last name</b><br />
+    <%= f.text_field :last_name %>
+  </p>
+
+  <p>
+    <b>Address</b><br />
+    <%= f.text_field :address %>
+  </p>
+
+  <p>
+    <b>City</b><br />
+    <%= f.text_field :city %>
+  </p>
+
+  <p>
+    <b>State</b><br />
+    <%= f.text_field :state %>
+  </p>
+
+  <p>
+    <b>Home phone</b><br />
+    <%= f.text_field :home_phone %>
+  </p>
+
+  <p>
+    <b>Work phone</b><br />
+    <%= f.text_field :work_phone %>
+  </p>
+
+  <p>
+    <b>Cell phone</b><br />
+    <%= f.text_field :cell_phone %>
+  </p>
+
+  <p>
+    <b>Relationship</b><br />
+    <%= f.text_field :relationship %>
+  </p>
+
+  <p>
+    <b>Email</b><br />
+    <%= f.text_field :email %>
+  </p>
+
+  <p>
+    <%= submit_tag "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', caregiver_path(@caregiver) %> |
+<%= link_to 'Back', caregivers_path %>

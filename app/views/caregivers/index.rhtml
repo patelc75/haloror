@@ -1,0 +1,38 @@
+<h1>Listing caregivers</h1>
+
+<table>
+  <tr>
+    <th>First name</th>
+    <th>Last name</th>
+    <th>Address</th>
+    <th>City</th>
+    <th>State</th>
+    <th>Home phone</th>
+    <th>Work phone</th>
+    <th>Cell phone</th>
+    <th>Relationship</th>
+    <th>Email</th>
+  </tr>
+  
+<% for caregiver in @caregivers %>
+  <tr>
+    <td><%=h caregiver.first_name %></td>
+    <td><%=h caregiver.last_name %></td>
+    <td><%=h caregiver.address %></td>
+    <td><%=h caregiver.city %></td>
+    <td><%=h caregiver.state %></td>
+    <td><%=h caregiver.home_phone %></td>
+    <td><%=h caregiver.work_phone %></td>
+    <td><%=h caregiver.cell_phone %></td>
+    <td><%=h caregiver.relationship %></td>
+    <td><%=h caregiver.email %></td>
+    <td><%= link_to 'Show', caregiver_path(caregiver) %></td>
+    <td><%= link_to 'Edit', edit_caregiver_path(caregiver) %></td>
+    <td><%= link_to 'Destroy', caregiver_path(caregiver), :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New caregiver', new_caregiver_path %>

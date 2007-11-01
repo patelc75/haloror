@@ -1,0 +1,55 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+	<head>
+		<%= javascript_include_tag :defaults %>
+		<%= stylesheet_link_tag "sortable_list" %>  
+
+		<%= stylesheet_link_tag 'redbox' %>
+		<%= javascript_include_tag 'redbox' %>
+	</head>
+    <body>        
+        <h2><%= @call_list.login %>'s Caregivers</h2>
+
+		<div id="call-list">
+			<% @call_list.call_orders.each do |call_order| %>
+				<div id="item_<%= call_order.id %>">
+					<!--span class="column">
+						<%= call_order.position %>  
+					</span-->
+					<span class="column">
+						<% @caregiver = call_order.caregiver %>						
+						<table>
+							<tr>
+								<td width="100"><%= in_place_editor_field :caregiver, :last_name %> </td>
+								<td width="100"><%= in_place_editor_field :caregiver, :first_name %> </td>
+								<td width="100"><%= in_place_editor_field :caregiver, :home_phone %> </td>
+							</tr>
+						</table>	
+					</span>
+				</div>
+			<% end %>
+			<br>
+		</div>
+		<div>
+			<span id="add-new-row">
+		</div>
+			
+
+		<!--%=link_to_remote("Add new caregiver",
+				:update => 'add-new-row',
+				:url => url_for(:controller => 'chart', :action => 'heartrate_last_half_hour'),
+              :loading => "Element.show('loading'); ",
+              :complete => "Element.hide('loading')",
+              :before => "toggleVTabs(this.parentNode);") %-->
+			
+		
+		<!--%=link_to 'Add contact', {:action => 'text'}, :class => 'lbOn' %-->        
+		
+		<%= sortable_element 'call-list',
+        :url => { :action => "sort" , :id => @call_list },
+        :complete => visual_effect(:highlight, 'call-list'),
+		 :tag => 'div'
+        %>
+    </body>
+</html>

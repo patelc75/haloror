@@ -1,0 +1,52 @@
+@charset "utf-8";
+/* CSS Document */
+
+body, td, input, textarea, select {
+    font-family:"Trebuchet MS", geneva, sans-serif;
+}
+
+body {
+    font-size:125%;
+    background-color: #D7E9FF;
+}
+
+#row {
+	clear:left;
+	clear:right;
+	clear:both;
+}
+
+
+#item_1 {
+	clear:left;
+}
+
+#item_2 {
+	clear:left;
+}
+
+.column {
+/*	clear:left;*/
+	height: 78px;
+/*    width: 120px; */
+/*    float: left;*/
+    background-color: #FFFFFF;
+/*    font-size: 114%;  */
+/*    padding-top: 4px; */
+        
+/*    border-left-style: solid; */
+/*    border-left-width: 4px; */
+/*    border-left-color: #0000FF; */
+    
+/*    border-right-style:solid; */
+/*    border-right-color: #0000FF; */
+/*    border-right-width: 4px; */
+
+/*    border-top-style: solid;    */
+/*    border-top-color: #0000FF; */
+/*    border-top-width: 4px; */
+    
+/*	border-bottom-style: solid; */
+/*  border-bottom-color: #FFFFFF; */
+/*	border-bottom-width: 4px; */
+}

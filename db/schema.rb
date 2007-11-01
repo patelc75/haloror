@@ -2,7 +2,26 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 2) do
+ActiveRecord::Schema.define(:version => 5) do
+
+  create_table "call_orders", :force => true do |t|
+    t.column "user_id",      :integer
+    t.column "caregiver_id", :integer
+    t.column "position",     :integer
+  end
+
+  create_table "caregivers", :force => true do |t|
+    t.column "first_name",   :string
+    t.column "last_name",    :string
+    t.column "address",      :string
+    t.column "city",         :string
+    t.column "state",        :string
+    t.column "home_phone",   :string
+    t.column "work_phone",   :string
+    t.column "cell_phone",   :string
+    t.column "relationship", :string
+    t.column "email",        :string
+  end
 
   create_table "heartrates", :force => true do |t|
     t.column "user_id",   :integer
@@ -16,6 +35,19 @@ ActiveRecord::Schema.define(:version => 2) do
     t.column "size",         :integer
     t.column "parent_id",    :integer
     t.column "created_at",   :datetime
+  end
+
+  create_table "users", :force => true do |t|
+    t.column "login",                     :string
+    t.column "email",                     :string
+    t.column "crypted_password",          :string,   :limit => 40
+    t.column "salt",                      :string,   :limit => 40
+    t.column "created_at",                :datetime
+    t.column "updated_at",                :datetime
+    t.column "remember_token",            :string
+    t.column "remember_token_expires_at", :datetime
+    t.column "activation_code",           :string,   :limit => 40
+    t.column "activated_at",              :datetime
   end
 
 end

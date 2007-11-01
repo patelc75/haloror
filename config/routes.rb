@@ -1,7 +1,15 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :call_orders
+
   map.resources :raw_data_files, :member => {:download => :get}
 
   map.resources :heartrates
+
+  #map.resources :caregivers, :active_scaffold => true
+  map.resources :caregivers
+ 
+  #added automatically after running restful_authentication script
+  map.resources :users, :sessions  
 
   # The priority is based upon order of creation: first created -> highest priority.
   

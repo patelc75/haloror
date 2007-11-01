@@ -80,18 +80,22 @@ table {
 .rnsecs .sec a:hover, .rnsecs .sec span:hover {
     background:#FFFFFF none repeat scroll 0%;
     color:#505050;
+
+    border-top-style: solid;
     border-top-width: 3px;
+    border-top-color: #0000FF;
+    
+    border-right-style: none;
     border-right-width: 3px;
+    border-right-color: #0000FF;
+        
+    border-bottom-style: solid;
     border-bottom-width: 3px;
+    border-bottom-color: #0000FF;
+    
+    border-left-style: solid;
     border-left-width: 3px;
     border-left-color: #0000FF;
-    border-top-style: solid;
-    border-right-style: none;
-    border-bottom-style: solid;
-    border-left-style: solid;
-    border-top-color: #0000FF;
-    border-right-color: #0000FF;
-    border-bottom-color: #0000FF;
 }
 
 .rnsecs .sec .secln, .rnsecs .sec .secln:visited, .rnsecs .sec .secln:link, .rnsecs .sec .seclnact, .rnsecs .sec .seclnact:visited, .rnsecs .sec .seclnact:link {
@@ -230,55 +234,132 @@ table {
 .horizontalTabs {
 
 }
+.horizontalTabs .unselectedTab a, .horizontalTabs .unselectedTab span {
+    display:block;
+    letter-spacing:-1px;
+    text-decoration:none;
+/*    width:15ex;*/
+    height: 46px;
+    padding-top: 5px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    padding-left: 10px;   
+}
+
+.horizontalTabs .selectedTab a, .horizontalTabs .selectedTab span {
+    display:block;
+    letter-spacing:-1px;
+    text-decoration:none;
+/*    width:15ex;*/
+    height: 42px;
+/*    padding-top: 5px;*/
+    padding-top: 5px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    padding-left: 10px;   
+    margin-top: 0px;
+/*    horizontal-align: middle;*/
+}
+
+.horizontalTabs .unselectedTab a:hover, .horizontalTabs .unselectedTab span:hover {
+    background:#FFFFFF none repeat scroll 0%;
+    color:#505050;
+    padding-top: 4px;
+/*    margin-left: -4px;*/
+/*    margin-bottom: 0px; */
+    height:50px;
+/*    width: 120px;*/
+/*    font-size: 114%;*/
+/*    padding-top: 4px;*/
+/*    float: left;*/
+
+    border-right-style:solid;
+    border-right-width: 3px;
+    border-right-color: #0000FF;
+
+    border-left-style: solid;
+    border-left-width: 3px;
+    border-left-color: #0000FF;
+    
+    border-top-style: solid;
+    border-top-width: 3px;
+    border-top-color: #0000FF;
+    
+    border-bottom-style: none;
+    border-bottom-width: 3px;
+    border-bottom-color: #FFFFFF;
+}
 
 .selectedTab {
-    border-right-width: 4px;
-    border-right-style:solid;
-    height:43px;
+    height:48px;
     width: 120px;
+    float: left;
+    background-color: #FFFFFF;
+    font-size: 114%;
+/*    padding-top: 4px;*/
+    margin-left: -4px;
+    margin-bottom: 0px;
+        
     border-left-style: solid;
     border-left-width: 4px;
     border-left-color: #0000FF;
+    
+    border-right-style:solid;
     border-right-color: #0000FF;
+    border-right-width: 4px;
+
+    border-top-style: solid;    
     border-top-color: #0000FF;
-    border-top-style: solid;
     border-top-width: 4px;
-    float: left;
-    background-color: #FFFFFF;
+    
     border-bottom-style: solid;
     border-bottom-color: #FFFFFF;
-    font-size: 114%;
-    padding-top: 4px;
-    border-bottom-width: 4px;
-    margin-left: -4px;
-    margin-bottom: 0px;
+    border-bottom-width: 4px;        
 }
 
-.unselectedTab {
-    border-right-width: 2px;
-    border-right-style:solid;
-    height:45px;
-    width: 100px;
-    border-left-style: none;
-    border-left-width: 1px;
+.horizontalTabs .unselectedTab {
+    height: 50px;
+    width: 120px;
+    float: left;
+/*    padding-top: 4px;*/
+    font-size: 114%;
+    background-color: #E9E9E9;
+    
+    border-left-style: solid;
+    border-left-width: 2px;
     border-left-color: #797979;
+
+    border-right-style:solid;
+    border-right-width: 1px;    
     border-right-color: #797979;
-    border-top-color: #797979;
+    
     border-top-style: solid;
     border-top-width: 2px;
+    border-top-color: #797979;
+
+    border-bottom-style: solid;
+    border-bottom-width: 4px;    
+    border-bottom-color: #0000FF;
+}
+
+.paddingLeftTab {
+    border-right-width: 3px;
+    height:47px;
+    width: 15px;
+    border-right-color: #F0F0F0;
     float: left;
     border-bottom-style: solid;
     border-bottom-color: #0000FF;
     border-bottom-width: 4px;
-    padding-top: 4px;
+    padding-top: 5px;
     font-size: 114%;
-    background-color: #E9E9E9;
+    border-right-style: none;
 }
 
 .paddingTab {
     border-right-width: 3px;
-    height:46px;
-    width: 381px;
+    height:47px;
+    width: 344px;
     border-right-color: #F0F0F0;
     float: left;
     border-bottom-style: solid;
@@ -308,7 +389,7 @@ table {
     border-right-style: solid; 
     border-right-width: 4px; 
     border-right-color: #0000FF; 
-    height: 339px; 
+    height: 331px; 
     border-top-style: solid; 
     border-top-width: 1px; 
     border-top-color: #999999;
@@ -319,7 +400,7 @@ table {
     border-right-width: 4px; 
     border-right-color: #0000FF; 
     height: 25px; 
-    margin-top: -3px;   
+    margin-top: 6px;   
 }
 
 #loading {
