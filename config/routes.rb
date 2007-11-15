@@ -10,6 +10,10 @@ ActionController::Routing::Routes.draw do |map|
  
   #added automatically after running restful_authentication script
   map.resources :users, :sessions  
+  
+  map.signup '/signup', :controller => 'users', :action => 'new'
+  map.login  '/login', :controller => 'session', :action => 'new'
+  map.logout '/logout', :controller => 'session', :action => 'destroy'
 
   # The priority is based upon order of creation: first created -> highest priority.
   

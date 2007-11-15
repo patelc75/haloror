@@ -2,25 +2,12 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 5) do
+ActiveRecord::Schema.define(:version => 7) do
 
   create_table "call_orders", :force => true do |t|
     t.column "user_id",      :integer
     t.column "caregiver_id", :integer
     t.column "position",     :integer
-  end
-
-  create_table "caregivers", :force => true do |t|
-    t.column "first_name",   :string
-    t.column "last_name",    :string
-    t.column "address",      :string
-    t.column "city",         :string
-    t.column "state",        :string
-    t.column "home_phone",   :string
-    t.column "work_phone",   :string
-    t.column "cell_phone",   :string
-    t.column "relationship", :string
-    t.column "email",        :string
   end
 
   create_table "heartrates", :force => true do |t|
@@ -48,6 +35,16 @@ ActiveRecord::Schema.define(:version => 5) do
     t.column "remember_token_expires_at", :datetime
     t.column "activation_code",           :string,   :limit => 40
     t.column "activated_at",              :datetime
+    t.column "type",                      :string
+    t.column "first_name",                :string
+    t.column "last_name",                 :string
+    t.column "address",                   :string
+    t.column "city",                      :string
+    t.column "state",                     :string
+    t.column "home_phone",                :string
+    t.column "work_phone",                :string
+    t.column "cell_phone",                :string
+    t.column "relationship",              :string
   end
 
 end

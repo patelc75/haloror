@@ -42,6 +42,7 @@ Rails::Initializer.run do |config|
   # config.active_record.default_timezone = :utc
   
   # See Rails::Configuration for more options
+  config.active_record.observers = :user_observer
 end
 
 # Add new inflection rules using the following format 
@@ -60,5 +61,18 @@ end
 # Include your application configuration below
 #hash used for ruby-debug gem, used to store Rails source code
 #SCRIPT_LINES__ = {} if ENV['RAILS_ENV'] == 'development'
+  ActionMailer::Base.delivery_method = :smtp 
+  ActionMailer::Base.raise_delivery_errors = true
+
+  
+  ActionMailer::Base.smtp_settings = {
+	:address => "smtp.mail.yahoo.com" ,
+	:port => 25,
+	:domain => "www.haloresearch.net" ,
+	:authentication => :login,
+	:user_name => "patelc75" ,
+	:password => "irdiktanic" ,
+  }
+
 
 require 'postgre_extensions'
