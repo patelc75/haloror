@@ -1,0 +1,18 @@
+<h1>Listing panics</h1>
+
+<table>
+  <tr>
+  </tr>
+  
+<% for panic in @panics %>
+  <tr>
+    <td><%= link_to 'Show', panic_path(panic) %></td>
+    <td><%= link_to 'Edit', edit_panic_path(panic) %></td>
+    <td><%= link_to 'Destroy', panic_path(panic), :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New panic', new_panic_path %>

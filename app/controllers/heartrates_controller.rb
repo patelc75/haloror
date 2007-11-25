@@ -84,4 +84,7 @@ class HeartratesController < ApplicationController
       format.xml  { head :ok }
     end
   end
+  
+  def dummy
+  end
 end

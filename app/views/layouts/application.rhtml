@@ -108,7 +108,7 @@
         <div class="selectedTab"> 
             <%=link_to_remote("Heartrate",
             :update => 'chart',
-            :url => url_for(:controller => 'chart', :action => 'heartrate_last_half_hour'),
+            :url => url_for(:controller => 'chart', :action => 'heartrate_live'),
             :loading => "Element.show('loading'); ",
             :complete => "Element.hide('loading')",
             :before => "toggleHTabs(this.parentNode);") %>
@@ -124,9 +124,10 @@
         </div>
         
         <div class="unselectedTab" >
+			<!--%= link_to "Panic" , :controller => 'sandbox', :action => 'critical_email' %-->
             <%=link_to_remote("Activity",
             :update => 'chart',
-            :url => url_for(:controller => 'chart', :action => 'heartrate_last_half_hour'),
+            :url => url_for(:controller => 'chart', :action => 'activity_live'),
             :loading => "Element.show('loading'); ",
             :complete => "Element.hide('loading')",
             :before => "toggleHTabs(this.parentNode);") %>
@@ -134,6 +135,7 @@
         
         <div class="paddingTab"></div>
     </div>
+	
     <div class="chartBody">
         <div align= "center" id="loading" style="display:none;">Loading... This will take a few seconds</div>
         <div id="chart"><%= render :partial => 'heartrate_live' %></div>

@@ -1,4 +1,10 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :falls
+
+  map.resources :activities
+
+  map.resources :panics
+
   map.resources :call_orders
 
   map.resources :raw_data_files, :member => {:download => :get}

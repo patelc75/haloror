@@ -18,6 +18,13 @@ class ChartController < ApplicationController
     :layout => false
     )
   end
+
+  def activity_live
+    render(
+    :partial => 'activity_live', 
+    :layout => false
+    )
+  end
   
   def heartrate_last_half_hour
     render(
@@ -63,14 +70,24 @@ class ChartController < ApplicationController
     )
   end 
   
-  def line_chart_live
+  def line_chart_activity_live
     #start_background_task
-    gen_live_data_sets
-    graph  = Ziya::Charts::Line.new( nil, nil, "heartrate_live" )
+	gen_live_activity_data_sets
+    graph  = Ziya::Charts::Line.new( nil, nil, "activity_live" )
+    graph.add :axis_category_text, @categories
+    graph.add :series, "Discrete Activity", @series_b 
+    render :xml => graph.to_xml
+  end
+  
+  def line_chart_heartrate_live
+    #start_background_task
+	gen_live_heartrate_data_sets
+    graph  = Ziya::Charts::Line.new( nil, nil, "heartrate_live" )  #points to heartrate_live.yml
     graph.add :axis_category_text, @categories
     graph.add :series, "Discrete Heartrate", @series_b 
     render :xml => graph.to_xml
   end
+  
 
   def line_chart_discrete
     graph  = Ziya::Charts::Line.new( nil, nil, "heartrate_discrete" ) #write up this line in the blog
@@ -142,11 +159,25 @@ class ChartController < ApplicationController
 	render :nothing => true
   end
   
+  def activity_post
+    activity = Activity.new(:user_id => 817, :timestamp => Time.now, :activity => rand(10000)+9000)
+    activity.save
+	render :nothing => true
+  end
+  
+  
   def refresh_data
-    gen_live_data_sets
+    gen_live_heartrate_data_sets
 
     #render a special view which as XML file 
     render :template => 'chart/refresh_data', :layout => false
+  end
+  
+  def refresh_activity_data
+    gen_live_activity_data_sets
+
+    #render a special view which as XML file 
+    render :template => 'chart/refresh_activity_data', :layout => false
   end
 
   private
@@ -156,13 +187,24 @@ class ChartController < ApplicationController
   end
 
 
-
-  def gen_live_data_sets    
+  def gen_live_heartrate_data_sets    
     #get the latest 10 records (ordered by timestamp) from Heartrate table 
-    heartrates = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse 
+    heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse 
     
-    @categories =  heartrates.map {|a| a.timestamp.strftime("%H:%M:%S") }
-    @series_b  = heartrates.map {|a| a.heartrate }
+    @categories =  heartrate.map {|a| a.timestamp.strftime("%H:%M:%S") }
+    @series_b  = heartrate.map {|a| a.heartrate }
+    
+    # random data with fixed arbitrary timestamps
+    #    @categories = %w{ 8:32:15AM 8:32:30AM 8:32:45AM 8:33:00AM 8:33:15AM 8:33:30AM 8:33:45AM 8:34:00AM 8:34:15AM 8:34:30AM}
+    #    @series_b    = [ rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70 ]    
+  end
+
+  def gen_live_activity_data_sets    
+    #get the latest 10 records (ordered by timestamp) from Heartrate table 
+    activity = Activity.find(:all , :limit => 10, :order => "timestamp DESC").reverse 
+    
+    @categories =  activity.map {|a| a.timestamp.strftime("%H:%M:%S") }
+    @series_b  = activity.map {|a| a.activity }
     
     # random data with fixed arbitrary timestamps
     #    @categories = %w{ 8:32:15AM 8:32:30AM 8:32:45AM 8:33:00AM 8:33:15AM 8:33:30AM 8:33:45AM 8:34:00AM 8:34:15AM 8:34:30AM}

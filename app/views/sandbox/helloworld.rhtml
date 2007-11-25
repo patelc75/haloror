@@ -1,8 +1,19 @@
 <html>
     <head>
         <title>Hello from Halo!</title>
+    <%= javascript_include_tag :defaults %>
+		<%= slider_stylesheet %>
     </head>
     <body>
-        <h1>Hello from Halo!</h1>
+        <h1>Hello from Halo!</h1>		
+		<!-- this calls a form -->
+		<%= form_remote_tag(:url => {:action => "hello_world_submit"}, :update => 'chart') %>
+		
+		  <!-- creates hidden field -->
+		  <%= slider_field :chart, :dummy, :range => 1..10 %> 
+		  <%= submit_tag %>
+		</form>
+		<div id='chart'><%= @display %></div>
     </body>
 </html>
+

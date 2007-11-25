@@ -2,6 +2,18 @@ class SandboxController < ApplicationController
   #layout "application", :except => "chart"
 
   def helloworld
+	@heartrate = Heartrate.new
+	@display = 0
+	render :layout => false
+  end
+  
+  def hello_world_submit
+	@display = params[:chart][:dummy]
+	render :layout => false
+  end
+  
+  def critical_email
+	email = CriticalMailer.panic_notification
   end
 
   def summary

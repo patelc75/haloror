@@ -2,10 +2,10 @@
 
 <!--declare a chart object and call one of the methods in line_chart_* methods in chart_controller.rb-->
 <%= ziya_chart( url_for( :controller => 'chart', 
-                         :action => 'line_chart_live'), 
+                         :action => 'line_chart_heartrate_live'), 
                          :id => 'heartrate_live', 
                          :width => 650, 
                          :height => 550, 
                          :bgcolor => "white") %>
 
-<%= periodically_call_remote( :url => { :action => :heartrate_post }, :frequency => 15 )%>
+<!--%= periodically_call_remote( :url => { :action => :heartrate_post }, :frequency => 15 )%-->

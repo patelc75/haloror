@@ -1,9 +1,13 @@
 require 'digest/sha1'
 class User < ActiveRecord::Base
+  has_many :heartrates
+  has_many :panics
+  
   has_many :call_orders, :order => :position
   has_many :caregivers, :through => :call_orders
 
   # Virtual attribute for the unencrypted password
+  cattr_accessor :current_user #stored in memory instead of table
   attr_accessor :password
 
   validates_presence_of     :login, :email

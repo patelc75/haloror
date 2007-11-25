@@ -1,0 +1,12 @@
+<h1>Editing panic</h1>
+
+<%= error_messages_for :panic %>
+
+<% form_for(:panic, :url => panic_path(@panic), :html => { :method => :put }) do |f| %>
+  <p>
+    <%= submit_tag "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', panic_path(@panic) %> |
+<%= link_to 'Back', panics_path %>

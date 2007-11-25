@@ -15,4 +15,8 @@ class ApplicationController < ActionController::Base
   def default_url_options(options)
   { :trailing_slash => true }
   end
+  
+  before_filter do |c|
+     User.current_user = User.find(c.session[:user]) unless c.session[:user].nil?
+  end
 end

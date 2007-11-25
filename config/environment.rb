@@ -42,7 +42,7 @@ Rails::Initializer.run do |config|
   # config.active_record.default_timezone = :utc
   
   # See Rails::Configuration for more options
-  config.active_record.observers = :user_observer
+  config.active_record.observers = :user_observer, :panic_observer, :fall_observer
 end
 
 # Add new inflection rules using the following format 
@@ -64,15 +64,31 @@ end
   ActionMailer::Base.delivery_method = :smtp 
   ActionMailer::Base.raise_delivery_errors = true
 
+#   ActionMailer::Base.smtp_settings = {
+# 	:address => "67.207.146.58" ,
+# 	:port => 25,
+# 	:domain => "haloresearch.net" ,
+# 	:authentication => :login
+# 	:user_name => "patelc75" ,
+# 	:password => "irdiktanic" 
+#   }
   
-  ActionMailer::Base.smtp_settings = {
-	:address => "smtp.mail.yahoo.com" ,
+    ActionMailer::Base.smtp_settings = {
+	:address => "mail.haloresearch.net" ,
 	:port => 25,
-	:domain => "www.haloresearch.net" ,
+	:domain => "haloresearch.net" ,
 	:authentication => :login,
-	:user_name => "patelc75" ,
-	:password => "irdiktanic" ,
+	:user_name => "chirag@haloresearch.net" ,
+	:password => "irdikt75" 
   }
 
+#   ActionMailer::Base.smtp_settings = {
+# 	:address => "boromir.apid.com" ,
+# 	:port => 25,
+# 	:domain => "=apid.com" ,
+# 	:authentication => :login,
+# 	:user_name => "pjdavis" ,
+# 	:password => "a1p9i8d5qwe" 
+#   }
 
 require 'postgre_extensions'

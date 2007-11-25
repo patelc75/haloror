@@ -1,0 +1,12 @@
+<h1>Editing fall</h1>
+
+<%= error_messages_for :fall %>
+
+<% form_for(:fall, :url => fall_path(@fall), :html => { :method => :put }) do |f| %>
+  <p>
+    <%= submit_tag "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', fall_path(@fall) %> |
+<%= link_to 'Back', falls_path %>
