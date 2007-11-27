@@ -31,9 +31,9 @@ test:
   password:
   host: localhost
 
-production:
-  adapter: postgresql
-  database: haloresearch
-  username: patelc75
-  password: irdikt75
-  host: localhost
+  production:
+    adapter: mysql
+    database: db2298_halo
+    username: db2298_halo
+    password: halodb27
+    host: internal-db.s2298.gridserver.com
