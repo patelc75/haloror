@@ -1,0 +1,6 @@
+---
+mode: development
+port: 3000
+bundle: /Applications/Locomotive2/Bundles/standardRailsMar2007.locobundle
+runs_at_launch: 0
+identifier: halo
