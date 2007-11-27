@@ -1,18 +1,148 @@
 @charset "utf-8";
 /* CSS Document */
 
-body, td, input, textarea, select {
-    font-family:"Trebuchet MS", geneva, sans-serif;
+body {
+    font: 12px Verdana, "Lucida Grande", Helvetica, Arial, sans-serif;
+	
+	margin:0;
 }
 
-body {
-    font-size:125%;
-    height: 200px;
-    background-color: #D7E9FF;
+.container
+{
+	width:950px;
+	margin-left:auto;
+	margin-right:auto;
 }
-table {
-    font-size:inherit;
-    position: relative;
+
+#user-info
+{
+	color:#fff;
+	float:right;
+	
+	padding-top:10px;
+}
+
+#user-info a
+{
+	color:#fff;
+}
+
+#header
+{
+	background:url('/images/header-bg.gif') top left repeat-x;
+	height:191px;
+	
+	margin-bottom:20px;
+}
+
+#footer
+{
+	text-align:center;
+	clear:both;
+	
+	padding-top:20px;
+}
+
+#logo
+{
+	margin-top:73px;
+	float:left;
+}
+
+#people
+{
+	float:right;
+	margin-top:13px;
+}
+
+#main-col
+{
+	width:710px;
+	background:url('/images/main-col-bg.gif') repeat-y;
+	float:left;
+}
+
+#main-col-header
+{
+	background:url('/images/main-col-header.gif') no-repeat;
+	
+	height:45px;
+	
+	font-size:1.6em;
+	color:#fff;
+	
+	padding-left:20px;
+	padding-top:10px;
+}
+
+.content
+{
+	padding:5px;
+}
+
+.big
+{
+	font-size:1.6em;
+	color:#4691b1;
+}
+
+#slider-labels
+{
+	width:595px;
+	float:right;
+}
+
+.slider-label, .slider-label-end
+{
+	float:left;
+	width:127px;
+	text-align:center;
+}
+
+.slider-label-end
+{
+	width:105px;
+}
+
+#main-col-footer
+{
+	background:url('/images/main-col-footer.gif') no-repeat;
+	height:12px;
+}
+
+#right-col
+{
+	float:right;
+	width:235px;
+	
+	margin-left:5px;
+	background:url('/images/right-col-bg.gif') repeat-y;
+}
+
+#right-col-header
+{
+	background:url('/images/right-col-header.gif') no-repeat;
+	height:11px;
+}
+
+#right-col-footer
+{
+	background:url('/images/right-col-footer.gif') no-repeat;
+	height:11px;
+}
+
+.divider
+{
+	margin-left:20px;
+	margin-right:20px;
+	
+	color:#585858;
+}
+
+.user
+{
+	color:#d6e94f;
+	font-weight:bold;
 }
 
 .footer {
@@ -371,15 +501,11 @@ table {
 }
 
 .chartBody {
-    border-right: 4px solid rgb(22, 50, 245);
-    border-bottom: 4px solid rgb(22, 50, 245);
     background-color: #FFFFFF;
     clear:left;
     width:700px;
     height:600px;
     position:relative;
-    border-right-color: #0000FF;
-    border-left-color: #0000FF;
     padding-top: 15px;
     padding-left: 15px;
     padding-right: 10px;
