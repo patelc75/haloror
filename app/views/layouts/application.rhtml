@@ -9,13 +9,13 @@
     <!--link rel="shortcut icon" href="/icon.gif" type="image/gif"-->
     
     <title>Halo Research</title>
-    <!--LINK REL=StyleSheet HREF="layout.css" TYPE="text/css" MEDIA=screen-->
     <meta name="save" content="history">
 </head>
 
 
-<body onresize="" onload="" topmargin="0" leftmargin="0" bgcolor="white" marginheight="0" marginwidth="0">
+<body>
     
+<!--
     <div class="gtopbar">
         <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tbody><tr valign="middle">
@@ -33,135 +33,109 @@
             </tbody>
         </table>
     </div>
+<<<<<<< .mine
+-->
+
+	<div id="header">
+		<div class="container">
+			<div id="user-info">
+				Welcome, <span class="user">Emily McGee</span> <span class="divider">|</span> <a href="#" style="margin-right:20px">Account Settings</a> <a href="#" style="font-weight:bold">Logout</a>
+			</div>
+			<img src="/images/halo-logo.gif" alt="Halo Research" id="logo" />
+			<img src="/images/header-people.gif" alt="People" id="people" />
+		</div>
+	</div>
+
+    <div class="container">
+        <div align="center" id="loading" style="display:none;height:0;width:0;overflow:hidden">Loading... This will take a few seconds</div>
+		<div id="main-col">
+			<div id="main-col-header">
+				Family Member: <select><option>Merle McGee</option></select>
+			</div>
+			<div class="content">
+        		<div id="chart"><%= render :partial => 'heartrate_live' %></div>
+				<p>&nbsp;</p>
+				<div style="background:url('/images/slider-track.gif') top right no-repeat;text-align:center;height:12px">
+					<div id="track" style="width:520px; height:12px;float:right;margin-right:33px">
+						<div id="handle" style="width:42px; height:42px;position:relative;margin-top:-15px;margin-left:-15px;cursor:move;background:url('/images/slider-handle.png')"></div>
+					</div>
+				</div>
+				<br />
+				<br />
+				<div id="slider-labels">
+					<div class="slider-label-end">
+						Now
+					</div>
+					<div class="slider-label">
+						Last 1/2 Hour
+					</div>
+					<div class="slider-label">
+						Last Hour
+					</div>
+					<div class="slider-label">
+						Last 4-6 Hours
+					</div>
+					<div class="slider-label-end">
+						All Day
+					</div>
+				</div>
+				<br />
+				<br />
+				
+				<!--
+				<p id="debug3">&nbsp;</p>
+			-->
+
+				<script type="text/javascript" language="javascript">
+				// <![CDATA[
+
+					// horizontal slider control with preset values
+					new Control.Slider('handle', 'track', {
+						range: $R(1, 5),
+						values: [1, 2, 3, 4, 5],
+						sliderValue: 1, // won't work if set to 0 due to a bug(?) in script.aculo.us
+						//onSlide: function(v){ $('debug3').innerHTML = 'slide: ' + v },
+						onChange: function(v)	{ 
+													if(v == 1)		new Ajax.Updater('chart', '/chart/heartrate_live/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+													else if(v == 2) new Ajax.Updater('chart', '/chart/heartrate_last_half_hour/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+													else if(v == 3) new Ajax.Updater('chart', '/chart/heartrate_last_hour/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+													else if(v == 4)	new Ajax.Updater('chart', '/chart/heartrate_last_six_hours/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+													else if(v == 5) new Ajax.Updater('chart', '/chart/heartrate_all_day/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+												}
+					});
+				// ]]>
+				</script>
+			</div>
+			<div id="main-col-footer"></div>
+		</div>
+		<div id="right-col">
+			<div id="right-col-header"></div>
+			<div class="content">
+				<%= render :partial => 'battery' %>
+				<%= render :partial => 'temperature_average' %>
+				<%= render :partial => 'heartrate_average' %>
+				<%= render :partial => 'activity_average' %>
+			</div>
+			<div id="right-col-footer"></div>
+		</div>
+        <!--%= yield %-->
     
     
-    <div style="padding: 4px 10px;">
-        <table class="grhdr" cellpadding="0" cellspacing="0" width="100%"><tbody>
-                <tr valign="middle">
-                    <td height="42">
-                    <div class="ghgrn"></div>  </td>
-                </tr>
-        </tbody></table>
+    
     </div>
     
     
     
-    </div>
-    
-    <div class="rf" style="position: relative; padding-top: 46px; padding-left: 10px">
-        <div class="overflow-hide" style="margin-left: -1px; z-index: 1; height: 650px;">
-            <div class="mrgl1" style="width: 15ex;">
-                <div class="rnsecs">
-                    <div class="secblanktop"></div>	
-                    <div class="selsec"> 
-                        <%=link_to_remote("Live!",
-                        :update => 'chart',
-                        :url => url_for(:controller => 'chart', :action => 'heartrate_live'),
-                        :loading => "Element.show('loading'); ",
-                        :complete => "Element.hide('loading')",
-                        :before => "toggleVTabs(this.parentNode);") %>
-                    </div>                    
-                    <div class="sec"> 
-                        <%=link_to_remote("Last half hour",
-                        :update => 'chart',
-                        :url => url_for(:controller => 'chart', :action => 'heartrate_last_half_hour'),
-                        :loading => "Element.show('loading'); ",
-                        :complete => "Element.hide('loading')",
-                        :before => "toggleVTabs(this.parentNode);") %>
-                    </div>                                                                                                                                                                                                                                                  
-                    <div class="sec"> 
-                        <%=link_to_remote("Last hour",
-                        :update => 'chart',
-                        :url => url_for(:controller => 'chart', :action => 'heartrate_last_hour'),
-                        :loading => "Element.show('loading'); ",
-                        :complete => "Element.hide('loading')",
-                        :before => "toggleVTabs(this.parentNode);") %>
-                    </div>
-                    <div class="sec"> 
-                        <%=link_to_remote("Last 6 hours",
-                        :update => 'chart',
-                        :url => url_for(:controller => 'chart', :action => 'heartrate_last_six_hours'),
-                        :loading => "Element.show('loading'); ",
-                        :complete => "Element.hide('loading')",
-                        :before => "toggleVTabs(this.parentNode);") %>
-                    </div>
-                    <div class="sec"> 
-                        <%=link_to_remote("All day",
-                        :update => 'chart',
-                        :url => url_for(:controller => 'chart', :action => 'heartrate_all_day'),
-                        :loading => "Element.show('loading'); ",
-                        :complete => "Element.hide('loading')",
-                        :before => "toggleVTabs(this.parentNode);") %>
-                        <!--a href=<%= url_for(:controller => 'chart', :action => 'heartrate_discrete', :start =>'2007-08-30 06:00:00-04', :finish => '2007-08-30 18:44:37-04', :trailing_slash => false) %>> All day </a--> 
-                    </div>
-                    <div class="secblankbottom"></div>
-                </div>
-                <div class="padt5"></div>
-            </div>
-            
-        </div>
-    </div>
-    
-    <div class="chartbodypad" style="float:left; width:750px; position:relative;">
-    <div class="horizontalTabs">
-        <div class="paddingLeftTab"></div>
-        <div class="selectedTab"> 
-            <%=link_to_remote("Heartrate",
-            :update => 'chart',
-            :url => url_for(:controller => 'chart', :action => 'heartrate_live'),
-            :loading => "Element.show('loading'); ",
-            :complete => "Element.hide('loading')",
-            :before => "toggleHTabs(this.parentNode);") %>
-        </div>
-        
-        <div class="unselectedTab">
-            <%=link_to_remote("Falls",
-            :update => 'chart',
-            :url => url_for(:controller => 'call_list', :action => 'show', :id  => '1'),
-            :loading => "Element.show('loading'); ",
-            :complete => "Element.hide('loading')",
-            :before => "toggleHTabs(this.parentNode);") %>
-        </div>
-        
-        <div class="unselectedTab" >
-			<!--%= link_to "Panic" , :controller => 'sandbox', :action => 'critical_email' %-->
-            <%=link_to_remote("Activity",
-            :update => 'chart',
-            :url => url_for(:controller => 'chart', :action => 'activity_live'),
-            :loading => "Element.show('loading'); ",
-            :complete => "Element.hide('loading')",
-            :before => "toggleHTabs(this.parentNode);") %>
-        </div>
-        
-        <div class="paddingTab"></div>
-    </div>
+   
 	
-    <div class="chartBody">
-        <div align= "center" id="loading" style="display:none;">Loading... This will take a few seconds</div>
-        <div id="chart"><%= render :partial => 'heartrate_live' %></div>
-        <!--%= yield %-->      
-    </div>
     
-    
-    <div style="position: relative; clear: both">
-        <table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr>
-                    <td align="center">
-                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                            <tbody>
-                                <tr valign="center">
-                                    <td style="padding-right: 1em;" class="footer" align="center">
-                                        <a target="_top">Terms of Service</a><font color="#333333"> - </font> 
-                                    <a target="_top">Privacy Policy</a> </td>
-                                </tr>
-                                <tr>
-                                    <td style="color: rgb(51, 51, 51);"align="center">©2007 Halo Research</td>
-                                </tr>
-                            </tbody>
-                    </table></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <div id="footer">
+		<div class="container">
+			<p>
+				&copy; Halo Research <span class="divider">|</span> Terms of Service <span class="divider">|</span> Privacy Policy
+			</p>
+		</div>
+	</div>
     
 </body>
 </html>
