@@ -6,12 +6,40 @@ class ChartController < ApplicationController
   include Ziya
   
   def index
+    @battery = Battery.find(:first, :order=>"id DESC")
+    @gauge_width = 50 * (@battery.percentage/100.0)
+    
     render(
     :partial => 'heartrate_live', 
     :layout => true
     )
   end
-    
+  
+  def gen_activity_pie
+    g = Gruff::Pie.new("95x95")
+    g.theme = {
+       :colors => %w(#51ade0 #cae947 #7d939f #a6babc #666648),
+       :marker_color => 'blue',
+       :background_colors => %w(#f2f2f2 #f2f2f2)
+     }
+     
+     g.hide_legend = 1
+     g.hide_line_markers = 1
+     g.hide_line_numbers = 1
+     g.hide_title
+
+    g.data("Running", [45])
+    g.data("Walking", [15])
+    g.data("Standing", [10])
+    g.data("Sleeping", [15])
+    g.data("Sitting", [15])
+
+    send_data(g.to_blob, 
+              :disposition => 'inline', 
+              :type => 'image/png', 
+              :filename => "timers.png")
+  end
+
   def heartrate_live
     render(
     :partial => 'heartrate_live', 
