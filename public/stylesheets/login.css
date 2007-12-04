@@ -1,0 +1,21 @@
+#login-col
+{
+	width:400px;
+	
+	margin-left:auto;
+	margin-right:auto;
+	
+	background:url('/images/login-col-bg.gif') repeat-y;
+}
+
+#login-col-header
+{
+	background:url('/images/login-col-header.gif') no-repeat;
+	height:11px;
+}
+
+#login-col-footer
+{
+	background:url('/images/login-col-footer.gif') no-repeat;
+	height:11px;
+}
