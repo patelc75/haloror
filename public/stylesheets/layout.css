@@ -20,6 +20,8 @@ body {
 	float:right;
 	
 	padding-top:10px;
+	width:500px;
+	text-align:right;
 }
 
 #user-info a
