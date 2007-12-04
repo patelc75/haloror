@@ -32,11 +32,14 @@
 				Family Member: <select><option>Merle McGee</option></select>
 			</div>
 			<div class="content">
-        		<div id="chart"><%= render :partial => 'heartrate_live' %></div>
+        		<div id="chart">
+					<%= render :partial => 'heartrate_live' %>
+					<!--%= render :partial => 'activity_live' %-->
+				</div>
 				<p>&nbsp;</p>
 				<div style="background:url('/images/slider-track.gif') top right no-repeat;text-align:center;height:12px">
-					<div id="track" style="width:520px; height:12px;float:right;margin-right:33px">
-						<div id="handle" style="width:42px; height:42px;position:relative;margin-top:-15px;margin-left:-15px;cursor:move;background:url('/images/slider-handle.png')"></div>
+					<div id="track" style="width:550px; height:12px;float:right;margin-right:33px">
+						<div id="handle" style="width:42px; height:42px;position:relative;margin-top:-15px;margin-left:10px;cursor:move;background:url('/images/slider-handle.png')"></div>
 					</div>
 				</div>
 				<br />
