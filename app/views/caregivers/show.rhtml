@@ -1,8 +1,0 @@
-<% for column in Caregiver.content_columns %>
-	<p>
-		<b><%= column.human_name %>:</b>
-		<%= in_place_editor_field :caregiver, column.name, {}, :rows => 1 %>
-	</p>
-<% end %>
-
-<%= link_to 'Back', :action => 'list' %>
