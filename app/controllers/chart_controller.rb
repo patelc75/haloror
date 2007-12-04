@@ -37,7 +37,7 @@ class ChartController < ApplicationController
     send_data(g.to_blob, 
               :disposition => 'inline', 
               :type => 'image/png', 
-              :filename => "timers.png")
+              :filename => "activity.png")
   end
 
   def heartrate_live
