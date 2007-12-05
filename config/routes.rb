@@ -1,18 +1,15 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :events  
+  map.resources :batteries
+  map.resources :skin_temps
   map.resources :falls
-
   map.resources :activities
-
   map.resources :panics
-
   map.resources :call_orders
-
   map.resources :raw_data_files, :member => {:download => :get}
-
   map.resources :heartrates
-
-  #map.resources :caregivers, :active_scaffold => true
   map.resources :caregivers
+  #map.resources :caregivers, :active_scaffold => true
  
   #added automatically after running restful_authentication script
   map.resources :users, :sessions  

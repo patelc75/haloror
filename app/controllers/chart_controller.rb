@@ -255,4 +255,9 @@ class ChartController < ApplicationController
           }
         )
   end
+  
+  def tabbed
+	logger.info "test"
+	render :layout => false
+  end
 end

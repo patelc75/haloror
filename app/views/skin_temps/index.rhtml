@@ -1,0 +1,18 @@
+<h1>Listing skin_temps</h1>
+
+<table>
+  <tr>
+  </tr>
+  
+<% for skin_temp in @skin_temps %>
+  <tr>
+    <td><%= link_to 'Show', skin_temp_path(skin_temp) %></td>
+    <td><%= link_to 'Edit', edit_skin_temp_path(skin_temp) %></td>
+    <td><%= link_to 'Destroy', skin_temp_path(skin_temp), :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New skin_temp', new_skin_temp_path %>
