@@ -3,7 +3,7 @@ class CreateActivities < ActiveRecord::Migration
     create_table :activities do |t|
 	  t.column :user_id, :integer
       t.column :timestamp, :timestamp_with_time_zone
-      t.column :activity, :integer, :limit => 4, :null=> false 
+      t.column :activity, :integer, :limit => 2, :null=> false 
     end
   end
 

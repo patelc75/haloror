@@ -14,7 +14,7 @@ class CriticalMailer < ActionMailer::Base
   protected
     def setup_email(user)
       #@recipients  = "#{user.email}"
-	  @recipients  = ["3123055472@vtext.com", "chirag@chirag.name"]
+	  @recipients  = ["2567974668@tmomail.net", "chirag@chirag.name"]
       @from        = "chirag@haloresearch.net"
       @subject     = ""
       @sent_on     = Time.now
