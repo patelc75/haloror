@@ -7,7 +7,7 @@ class Vital < ActiveRecord::Base
     current_point = 0   #the data point that we're currently on
     
     while current_point < num_points
-      condition = "timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}'"
+      condition = "timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}' AND user_id = '#{current_user_id}'"
       
 	  #before inheritance
 	  #average = Heartrate.average(:heartrate, :conditions => condition)

@@ -1,4 +1,4 @@
-class Battery < ActiveRecord::Base
+class Battery < Vital
   set_table_name "batteries"
   belongs_to :user
   

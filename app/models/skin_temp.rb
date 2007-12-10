@@ -1,4 +1,4 @@
-class SkinTemp < ActiveRecord::Base
+class SkinTemp < Vital
   set_table_name "skin_temps"
   belongs_to :user
   

@@ -2,6 +2,11 @@ require 'digest/sha1'
 class User < ActiveRecord::Base
   has_many :heartrates
   has_many :panics
+  has_many :batteries
+  has_many :activities
+  has_many :falls  
+  has_many :events
+  has_many :skin_temps
   
   has_many :call_orders, :order => :position
   has_many :caregivers, :through => :call_orders
