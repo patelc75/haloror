@@ -2,7 +2,7 @@ class UsersController < ApplicationController
 
   # render new.rhtml
   def new
-	render :layout => false
+	  #render :layout => false
   end
 
   def create
