@@ -4,6 +4,7 @@ class CreateCallOrders < ActiveRecord::Migration
       t.column :user_id, :integer
       t.column :caregiver_id, :integer      
       t.column :position, :integer
+      t.column :active, :integer
     end
   end
 
