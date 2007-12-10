@@ -1,0 +1,61 @@
+<%=chart :line %> 
+   <%=comp :live_update %>
+     url: "/chart/refresh_data"
+    
+   <%=comp :axis_category %>
+     size: 18
+   
+   <%=comp :axis_value %>
+     size: 16
+     
+   <%=comp :legend_label %>
+     color: 4334F5
+     size: 16
+
+   <%=comp :series_color %>
+     color: 4334F5
+     
+   <%=comp :chart_value %>
+     size: 16
+     color: 4334F5
+     
+   <%=comp :chart_rect %>
+     height:         400
+     width:          520 
+     positive_color:    FFFFFF
+     
+#   <%=comp :chart_transition %>
+#     type:      slide_left
+#     delay:     .5
+#     duration:  0.5 
+#     order:     series
+     
+   <%=comp :legend_rect %>
+     width:         320
+     height:        5
+     margin:        5
+     fill_color:    000000
+     fill_alpha:    7 
+     line_color:    000000
+     line_alpha:    0
+     line_thickness:    0
+     x:             190
+     y:             60
+          
+   <%=comp :chart_value %>
+     position:    above 
+     size:        20
+     color:       4334F5
+     alpha:       75
+     decimals:    1
+     
+   <%=comp :chart_grid_v %>  
+     thickness: 1
+     alpha:     50
+     type:      dotted
+     
+   <%=comp :axis_category %>
+     bold:  true
+     skip:  1
+     size:  16
+     orientation:   horizontal

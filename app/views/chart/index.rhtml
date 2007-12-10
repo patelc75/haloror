@@ -1,0 +1,73 @@
+<div id="main-col">
+	<div id="main-col-header">
+		Family Member: <select><option>Merle McGee</option></select>
+	</div>
+	<div class="content">
+		<input type="checkbox" onClick="overlay('heartrate', this.checked)" checked /> Heartrate <input type="checkbox" onClick="overlay('activity', this.checked)" checked /> Activity <input type="checkbox" onClick="overlay('skin_temp', this.checked)" checked /> Skin Temp
+		<div id="chart">
+			<%= render :partial => 'chart_live' %>
+		</div>
+		<p>&nbsp;</p>
+		<div style="background:url('/images/slider-track.gif') top right no-repeat;text-align:center;height:12px">
+			<div id="track" style="width:550px; height:12px;float:right;margin-right:33px">
+				<div id="handle" style="width:42px; height:42px;position:relative;margin-top:-15px;margin-left:10px;cursor:move;background:url('/images/slider-handle.png')"></div>
+			</div>
+		</div>
+		<br />
+		<br />
+		<div id="slider-labels">
+			<div class="slider-label-end">
+				Now
+			</div>
+			<div class="slider-label">
+				Last 1/2 Hour
+			</div>
+			<div class="slider-label">
+				Last Hour
+			</div>
+			<div class="slider-label">
+				Last 4-6 Hours
+			</div>
+			<div class="slider-label-end">
+				All Day
+			</div>
+		</div>
+		<br />
+		<br />
+		
+		<!--
+		<p id="debug3">&nbsp;</p>
+	-->
+
+		<script type="text/javascript" language="javascript">
+		// <![CDATA[
+
+			// horizontal slider control with preset values
+			new Control.Slider('handle', 'track', {
+				range: $R(1, 5),
+				values: [1, 2, 3, 4, 5],
+				sliderValue: 1, // won't work if set to 0 due to a bug(?) in script.aculo.us
+				//onSlide: function(v){ $('debug3').innerHTML = 'slide: ' + v },
+				onChange: function(v)	{ 
+											if(v == 1)		new Ajax.Updater('chart', '/chart/chart_live/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+											else if(v == 2) new Ajax.Updater('chart', '/chart/heartrate_last_half_hour/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+											else if(v == 3) new Ajax.Updater('chart', '/chart/heartrate_last_hour/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+											else if(v == 4)	new Ajax.Updater('chart', '/chart/heartrate_last_six_hours/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+											else if(v == 5) new Ajax.Updater('chart', '/chart/heartrate_all_day/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+										}
+			});
+		// ]]>
+		</script>
+	</div>
+	<div id="main-col-footer"></div>
+</div>
+<div id="right-col">
+	<div id="right-col-header"></div>
+	<div class="content">
+		<%= render :partial => 'battery' %>
+		<%= render :partial => 'temperature_average' %>
+		<%= render :partial => 'heartrate_average' %>
+		<%= render :partial => 'activity_average' %>
+	</div>
+	<div id="right-col-footer"></div>
+</div>
