@@ -17,7 +17,20 @@ function overlay(w, val)
 			break;
 	}
 	
-	new Ajax.Request('/chart/update_overlay/', {method:'post', parameters:{'heartrate':heartrate,'activity':activity,'skin_temp':skin_temp}});
+	SetCookie('heartrate', heartrate, 7);
+	SetCookie('activity', activity, 7);
+	SetCookie('skin_temp', skin_temp, 7);
+	
+	//new Ajax.Request('/chart/update_overlay/', {method:'post', parameters:{'heartrate':heartrate,'activity':activity,'skin_temp':skin_temp}});
+}
+
+function SetCookie(cookieName,cookieValue,nDays) {
+ var today = new Date();
+ var expire = new Date();
+ if (nDays==null || nDays==0) nDays=1;
+ expire.setTime(today.getTime() + 3600000*24*nDays);
+ document.cookie = cookieName+"="+escape(cookieValue)
+                 + ";expires="+expire.toGMTString();
 }
 
 function move_li(list_id,li_id,dir){
