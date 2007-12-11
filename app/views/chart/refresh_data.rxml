@@ -10,9 +10,21 @@ xml.chart do
     end
     xml.row do
       xml.string( "Discrete Heartrate" )      
-      @series_b.each do |c|
+      @heartrate_series.each do |c|
         c.is_a?(String) ? xml.string( c ) : xml.number( c )
       end
     end      
+    xml.row do
+      xml.string( "Activity" )      
+      @activity_series.each do |c|
+        c.is_a?(String) ? xml.string( c ) : xml.number( c )
+      end
+    end
+    xml.row do
+      xml.string( "Skin Temperature" )      
+      @skintemp_series.each do |c|
+        c.is_a?(String) ? xml.string( c ) : xml.number( c )
+      end
+    end
   end
 end    
