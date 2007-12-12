@@ -76,7 +76,7 @@ function move_li(list_id,li_id,dir){
 
 	  new Ajax.Request('/call_list/sort/1/', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize("call_list")})
 	
-	  document.getElementById(li_id).style.backgroundImage = 'url(\'/images/call_list-item_bg.gif\')';
+	  document.getElementById(li_id).style.backgroundImage = 'url(\'/images/call_list-item.gif\')';
 	
 	Sortable.create("call_list", {onUpdate:function(){new Ajax.Request('/call_list/sort/1/', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize("call_list")})}, tag:'li'})
       }

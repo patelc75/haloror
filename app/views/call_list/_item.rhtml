@@ -1,0 +1,71 @@
+<% @caregiver = call_order.caregiver %>
+
+<div style="padding-top:25px;float:left;width:50px">
+	<a href="#" onClick="move_li('call_list', 'item_<%=call_order.id%>', 'up')">
+		<img src="/images/call_list-up.png" border="0" />
+	</a>
+	<br />
+	<a href="#" onClick="move_li('call_list', 'item_<%=call_order.id%>', 'down')">
+		<img src="/images/call_list-down.png" border="0" />
+	</a>
+</div>
+
+
+<div style="float:left;background:url('/images/call_list-image_bg.png') no-repeat;height:87px;width:125px;margin-top:5px">
+	<% if @caregiver.image != '' %>
+		
+	<% else %>
+		<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
+	<% end %>
+</div>
+
+<div style="float:left;padding-top:40px;width:175px">
+	<%= in_place_editor_field :caregiver, :first_name %>
+	<%= in_place_editor_field :caregiver, :last_name %>
+</div>
+
+<div style="float:left;padding-top:25px;width:150px">
+	<% if call_order.active == 0 %>
+		<img src="/images/call_list-active_disabled.png" border="0" />
+	<% else %>
+		<img src="/images/call_list-active.png" border="0" />
+	<% end %>
+	<br />
+	<% if call_order.active == 0 %>
+		<img src="/images/call_list-away.png" border="0" />
+	<% else %>
+		<img src="/images/call_list-away_disabled.png" border="0" />
+	<% end %>
+</div>
+
+<div style="float:left;padding-top:25px;width:75px">
+	<% unless @caregiver.home_phone %>
+		<img src="/images/call_list-phone-inactive.png" border="0" />
+	<% else %>
+		<img src="/images/call_list-phone.png" border="0" />
+	<% end %>
+</div>
+
+<div style="float:left;padding-top:25px;width:75px">
+	<% unless @caregiver.email %>
+		<img src="/images/call_list-email-inactive.png" border="0" />
+	<% else %>
+		<img src="/images/call_list-email.png" border="0" />
+	<% end %>
+</div>
+
+<div style="float:left;padding-top:25px;width:125px">
+	<% unless @caregiver.cell_phone %>
+		<img src="/images/call_list-textmessage-inactive.png" border="0" />
+	<% else %>
+		<img src="/images/call_list-textmessage.png" border="0" />
+	<% end %>
+</div>
+
+<div style="float:left;padding-top:35px;width:50px">
+	<input type="checkbox" />
+</div>
+
+<div style="float:left;padding-top:35px;width:75px">
+	<%=link_to_remote_redbox('Edit Info', :url => {:controller => 'call_orders' , :action => 'redir_to_edit' , :id => call_order.id})%>
+</div>
