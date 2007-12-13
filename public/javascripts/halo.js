@@ -1,16 +1,17 @@
-var heartrate 	= true;
-var activity 	= true;
-var skin_temp 	= true;
+var heartrate 	= "true";
+var skin_temp 	= "true";
 
 function overlay(w, val)
 {
+	if(val == false)
+		val = "false";
+	else
+		val = "true";
+		
 	switch(w)
 	{
 		case 'heartrate':
 			heartrate = val;
-			break;
-		case 'activity':
-			activity = val;
 			break;
 		case 'skin_temp':
 			skin_temp = val;
@@ -18,10 +19,9 @@ function overlay(w, val)
 	}
 	
 	SetCookie('heartrate', heartrate, 7);
-	SetCookie('activity', activity, 7);
 	SetCookie('skin_temp', skin_temp, 7);
 	
-	//new Ajax.Request('/chart/update_overlay/', {method:'post', parameters:{'heartrate':heartrate,'activity':activity,'skin_temp':skin_temp}});
+	//new Ajax.Request('/chart/update_overlay/', {method:'post', parameters:{'heartrate':heartrate,'skin_temp':skin_temp}});
 }
 
 function SetCookie(cookieName,cookieValue,nDays) {
