@@ -15,7 +15,7 @@ class ChartController < ApplicationController
     #)
     
     cookies[:heartrate] = "true"
-    cookies[:activity] = "true"
+    #cookies[:activity] = "true"
     cookies[:skin_temp] = "true"
   end
   
@@ -107,12 +107,25 @@ class ChartController < ApplicationController
     graph.add :series, "Discrete Heartrate", @heartrate_series 
     
     # activity
-    gen_live_activity_data_sets
-    graph.add :series, "Activity", @activity_series
+    #gen_live_activity_data_sets
+    #graph.add :series, "Activity", @activity_series
     
     # skin temp
     gen_live_skintemp_data_sets
     graph.add :series, "Skin Temperature", @skintemp_series
+    
+    render :xml => graph.to_xml
+  end
+  
+  def activity_chart_live
+    #start_background_task
+    
+    graph  = Ziya::Charts::Column.new( nil, nil, "activity_chart_live" )  #points to chart_live.yml
+    
+    # activity
+    gen_live_activity_data_sets
+    graph.add :axis_category_text, @activity_categories
+    graph.add :series, "Activity", @activity_series
     
     render :xml => graph.to_xml
   end
@@ -196,7 +209,7 @@ class ChartController < ApplicationController
   
   def update_overlay
     cookies[:heartrate] = params[:heartrate]
-    cookies[:activity] = params[:activity]
+    #cookies[:activity] = params[:activity]
     cookies[:skin_temp] = params[:skin_temp]
     
     render :layout => false
@@ -204,11 +217,18 @@ class ChartController < ApplicationController
   
   def refresh_data
     gen_live_heartrate_data_sets
-    gen_live_activity_data_sets
+    #gen_live_activity_data_sets
     gen_live_skintemp_data_sets
 
     #render a special view which as XML file 
     render :template => 'chart/refresh_data', :layout => false
+  end
+  
+  def refresh_activity_data
+    gen_live_activity_data_sets
+
+    #render a special view which as XML file 
+    render :template => 'chart/refresh_activity_data', :layout => false
   end
 
   def round_to(num, x)
@@ -236,11 +256,13 @@ class ChartController < ApplicationController
   def gen_live_activity_data_sets    
     activity = Activity.find(:all , :limit => 10, :order => "timestamp DESC").reverse 
     
-    if cookies[:activity] == "true"
-      @activity_series  = activity.map {|a| (50*1600 - a.activity)/1600 }        #put in terms of heartrate
-    else
-      @activity_series = {}
-    end
+    @activity_categories =  activity.map {|a| a.timestamp.strftime("%H:%M:%S") }
+    
+    #if cookies[:activity] == "true"
+      @activity_series  = activity.map {|a| a.activity }        #put in terms of heartrate
+    #else
+      #@activity_series = {}
+    #end
   end
   
   def gen_live_skintemp_data_sets    

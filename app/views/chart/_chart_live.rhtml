@@ -5,8 +5,15 @@
 <%= ziya_chart( url_for( :controller => 'chart', 
                          :action => 'line_chart_live'), 
                          :id => 'chart_live', 
-                         :width => 650, 
-                         :height => 550, 
+                         :width => 675, 
+                         :height => 215, 
+                         :bgcolor => "#efefef") %>
+
+<%= ziya_chart( url_for( :controller => 'chart', 
+                         :action => 'activity_chart_live'), 
+                         :id => 'activity_chart_live', 
+                         :width => 675, 
+                         :height => 160, 
                          :bgcolor => "#efefef") %>
 </div>
 <div style="clear:both"></div>

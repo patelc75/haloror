@@ -14,12 +14,12 @@ xml.chart do
         c.is_a?(String) ? xml.string( c ) : xml.number( c )
       end
     end      
-    xml.row do
-      xml.string( "Activity" )      
-      @activity_series.each do |c|
-        c.is_a?(String) ? xml.string( c ) : xml.number( c )
-      end
-    end
+    #xml.row do
+    #  xml.string( "Activity" )      
+    #  @activity_series.each do |c|
+    #    c.is_a?(String) ? xml.string( c ) : xml.number( c )
+    #  end
+    #end
     xml.row do
       xml.string( "Skin Temperature" )      
       @skintemp_series.each do |c|
