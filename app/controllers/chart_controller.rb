@@ -26,7 +26,7 @@ class ChartController < ApplicationController
        :marker_color => 'blue',
        :background_colors => %w(#f2f2f2 #f2f2f2)
      }
-     
+     g.font_color = '#f2f2f2'
      g.hide_legend = 1
      g.hide_line_markers = 1
      g.hide_line_numbers = 1
@@ -104,15 +104,11 @@ class ChartController < ApplicationController
 	  gen_live_heartrate_data_sets
     graph.add :axis_category_text, @categories
     
-    graph.add :series, "Discrete Heartrate", @heartrate_series 
-    
-    # activity
-    #gen_live_activity_data_sets
-    #graph.add :series, "Activity", @activity_series
+    graph.add(:series, "Discrete Heartrate", @heartrate_series, @heartrate_labels) 
     
     # skin temp
     gen_live_skintemp_data_sets
-    graph.add :series, "Skin Temperature", @skintemp_series
+    graph.add (:series, "Skin Temperature", @skintemp_series, @skintemp_labels)
     
     render :xml => graph.to_xml
   end
@@ -209,10 +205,9 @@ class ChartController < ApplicationController
   
   def update_overlay
     cookies[:heartrate] = params[:heartrate]
-    #cookies[:activity] = params[:activity]
     cookies[:skin_temp] = params[:skin_temp]
     
-    render :layout => false
+    render :nothing => true
   end
   
   def refresh_data
@@ -244,8 +239,10 @@ class ChartController < ApplicationController
     
     if cookies[:heartrate] == "true"
       @heartrate_series  = heartrate.map {|a| a.heartrate }
+      @heartrate_labels  = heartrate.map {|a| a.heartrate }
     else
       @heartrate_series = {}
+      @heartrate_labels = {}
     end
     
     # random data with fixed arbitrary timestamps
@@ -270,8 +267,10 @@ class ChartController < ApplicationController
     
     if cookies[:skin_temp] == "true"
       @skintemp_series  = skin_temp.map {|a| (a.skin_temp - 68)/0.2 }        #put in terms of heartrate
+      @skintemp_labels  = skin_temp.map {|a| a.skin_temp}
     else
       @skintemp_series = {}
+      @skintemp_labels = {}
     end
   end
   

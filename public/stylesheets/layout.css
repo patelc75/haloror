@@ -606,3 +606,14 @@ body {
     color: #974B00;
     font-weight: bold;
 }
+
+.pie-label
+{
+	width:10px;
+	height:10px;
+	
+	float:left;
+	
+	margin-top:2px;
+	margin-right:5px;
+}

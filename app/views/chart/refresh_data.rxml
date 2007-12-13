@@ -14,15 +14,30 @@ xml.chart do
         c.is_a?(String) ? xml.string( c ) : xml.number( c )
       end
     end      
-    #xml.row do
-    #  xml.string( "Activity" )      
-    #  @activity_series.each do |c|
-    #    c.is_a?(String) ? xml.string( c ) : xml.number( c )
-    #  end
-    #end
     xml.row do
       xml.string( "Skin Temperature" )      
       @skintemp_series.each do |c|
+        c.is_a?(String) ? xml.string( c ) : xml.number( c )
+      end
+    end
+  end
+  
+  xml.chart_value_text do
+    xml.row do
+      xml.null
+      @categories.each do |c|
+        xml.string(  )
+      end
+    end
+    xml.row do
+      xml.null()
+      @heartrate_labels.each do |c|
+        c.is_a?(String) ? xml.string( c ) : xml.number( c )
+      end
+    end      
+    xml.row do
+      xml.null()
+      @skintemp_labels.each do |c|
         c.is_a?(String) ? xml.string( c ) : xml.number( c )
       end
     end
