@@ -3,18 +3,19 @@
 		Family Member: <select><option>Merle McGee</option></select>
 	</div>
 	<div class="content">
-		<input type="checkbox" name="heartrate" onClick="overlay('heartrate', this.checked)" checked /> Heartrate <!--<input type="checkbox" onClick="overlay('activity', this.checked)" checked /> Activity --><input type="checkbox" name="skin_temp" onClick="overlay('skin_temp', this.checked)" checked /> Skin Temp
-		<div id="chart">
-			<%= render :partial => 'chart_live' %>
+		<span style="color:#5c5c5c;font-size:1.3em;margin-right:35px">Show Me:</span> <input type="checkbox" name="heartrate" onClick="overlay('heartrate', this.checked)" checked /> Heartrate <!--<input type="checkbox" onClick="overlay('activity', this.checked)" checked /> Activity --><input type="checkbox" name="skin_temp" onClick="overlay('skin_temp', this.checked)" checked /> Skin Temp
+		<div id="chart" style="float:right">
+			<%= render :partial => 'chart' %>
 		</div>
 		<p>&nbsp;</p>
+		<span style="color:#5c5c5c;font-size:1.3em;float:left;margin-top:-5px;position:relative">Timeline:</span>
 		<div style="background:url('/images/slider-track.gif') top right no-repeat;text-align:center;height:12px">
 			<div id="track" style="width:550px; height:12px;float:right;margin-right:33px">
 				<div id="handle" style="width:42px; height:42px;position:relative;margin-top:-15px;margin-left:10px;cursor:move;background:url('/images/slider-handle.png')"></div>
 			</div>
 		</div>
 		<br />
-		<br />
+		<br />		
 		<div id="slider-labels">
 			<div class="slider-label-end">
 				Now
@@ -49,11 +50,11 @@
 				sliderValue: 1, // won't work if set to 0 due to a bug(?) in script.aculo.us
 				//onSlide: function(v){ $('debug3').innerHTML = 'slide: ' + v },
 				onChange: function(v)	{ 
-											if(v == 1)		new Ajax.Updater('chart', '/chart/chart_live/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
-											else if(v == 2) new Ajax.Updater('chart', '/chart/heartrate_last_half_hour/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
-											else if(v == 3) new Ajax.Updater('chart', '/chart/heartrate_last_hour/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
-											else if(v == 4)	new Ajax.Updater('chart', '/chart/heartrate_last_six_hours/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
-											else if(v == 5) new Ajax.Updater('chart', '/chart/heartrate_all_day/', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+											if(v == 1)		new Ajax.Updater('chart', '/chart/view/?type=live', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+											else if(v == 2) new Ajax.Updater('chart', '/chart/view/?type=last_half_hour', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+											else if(v == 3) new Ajax.Updater('chart', '/chart/view/?type=last_hour', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+											else if(v == 4)	new Ajax.Updater('chart', '/chart/view/?type=last_six_hours', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
+											else if(v == 5) new Ajax.Updater('chart', '/chart/view/?type=all_day', {asynchronous:true, evalScripts:true, onComplete:function(request){Element.hide('loading')}, onLoading:function(request){Element.show('loading'); }});
 										}
 			});
 		// ]]>

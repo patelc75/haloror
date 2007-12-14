@@ -9,14 +9,10 @@ class ChartController < ApplicationController
     @battery = Battery.find(:first, :order=>"id DESC")
     @gauge_width = 50 * (@battery.percentage/100.0)
     
-    #render(
-    #:partial => 'chart_live', 
-    #:layout => true
-    #)
-    
     cookies[:heartrate] = "true"
-    #cookies[:activity] = "true"
     cookies[:skin_temp] = "true"
+    
+    cookies[:chart_type] = "live"
   end
   
   def gen_activity_pie
@@ -44,16 +40,17 @@ class ChartController < ApplicationController
               :filename => "activity.png")
   end
 
-  def chart_live
-    render(
-    :partial => 'chart_live', 
-    :layout => false
-    )
+  def view
+    if params[:type] != false
+      cookies[:chart_type] = params[:type]
+    end
+    
+    render(:layout => false , :partial => 'chart')
   end
   
-  def heartrate_last_half_hour
+  def chart_last_half_hour
     render(
-    :partial => 'heartrate_discrete', 
+    :partial => 'chart_last_half_hour', 
     :locals => {
       :start =>'2007-08-30 18:14:37-04',
       :finish => '2007-08-30 18:44:37-04',          
@@ -62,7 +59,7 @@ class ChartController < ApplicationController
     )
   end 
   
-  def heartrate_last_hour
+  def chart_last_hour
     render(
     :partial => 'heartrate_discrete', 
     :locals => {
@@ -73,7 +70,7 @@ class ChartController < ApplicationController
     )
   end 
 
-  def heartrate_last_six_hours
+  def chart_last_six_hours
     render(
     :partial => 'heartrate_discrete', 
     :locals => {
@@ -84,7 +81,7 @@ class ChartController < ApplicationController
     )
   end 
 
-  def heartrate_all_day
+  def chart_all_day
     render(
     :partial => 'heartrate_discrete', 
     :locals => {
@@ -95,38 +92,56 @@ class ChartController < ApplicationController
     )
   end 
   
-  def line_chart_live
+  
+  
+  def line_chart
     #start_background_task
     
-    graph  = Ziya::Charts::Line.new( nil, nil, "chart_live" )  #points to chart_live.yml
+    graph  = Ziya::Charts::Line.new( nil, nil, "line_chart" )  #points to chart_live.yml
     
     # heartrate
-	  gen_live_heartrate_data_sets
+	  gen_heartrate_data_sets
     graph.add :axis_category_text, @categories
     
     graph.add(:series, "Discrete Heartrate", @heartrate_series, @heartrate_labels) 
     
     # skin temp
-    gen_live_skintemp_data_sets
+    gen_skintemp_data_sets
     graph.add (:series, "Skin Temperature", @skintemp_series, @skintemp_labels)
     
     render :xml => graph.to_xml
   end
   
-  def activity_chart_live
+  def activity_chart
     #start_background_task
     
-    graph  = Ziya::Charts::Column.new( nil, nil, "activity_chart_live" )  #points to chart_live.yml
+    graph  = Ziya::Charts::Column.new( nil, nil, "activity_chart" )  #points to chart_live.yml
     
     # activity
-    gen_live_activity_data_sets
+    gen_activity_data_sets
     graph.add :axis_category_text, @activity_categories
     graph.add :series, "Activity", @activity_series
     
     render :xml => graph.to_xml
   end
   
+  
+  def refresh_data
+    gen_heartrate_data_sets
+    gen_skintemp_data_sets
 
+    #render a special view which as XML file 
+    render :template => 'chart/refresh_data', :layout => false
+  end
+  
+  def refresh_activity_data
+    gen_activity_data_sets
+
+    #render a special view which as XML file 
+    render :template => 'chart/refresh_activity_data', :layout => false
+  end
+  
+  
   def line_chart_discrete
     graph  = Ziya::Charts::Line.new( nil, nil, "heartrate_discrete" ) #write up this line in the blog
     
@@ -209,31 +224,26 @@ class ChartController < ApplicationController
     
     render :nothing => true
   end
-  
-  def refresh_data
-    gen_live_heartrate_data_sets
-    #gen_live_activity_data_sets
-    gen_live_skintemp_data_sets
 
-    #render a special view which as XML file 
-    render :template => 'chart/refresh_data', :layout => false
-  end
-  
-  def refresh_activity_data
-    gen_live_activity_data_sets
-
-    #render a special view which as XML file 
-    render :template => 'chart/refresh_activity_data', :layout => false
-  end
 
   def round_to(num, x)
     (num * 10**x).round.to_f / 10**x
   end
 
-
-  def gen_live_heartrate_data_sets    
-    #get the latest 10 records (ordered by timestamp) from Heartrate table 
-    heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse 
+  def gen_heartrate_data_sets    
+    #get the latest 10 records (ordered by timestamp) from Heartrate table
+    
+    if cookies[:chart_type] == 'live'
+      heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    elsif cookies[:chart_type] == 'last_half_hour'
+      heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    elsif cookies[:chart_type] == 'last_hour'
+      heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    elsif cookies[:chart_type] == 'last_six_hours'
+      heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    elsif cookies[:chart_type] == 'all_day'
+      heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    end
     
     @categories =  heartrate.map {|a| a.timestamp.strftime("%H:%M:%S") }
     
@@ -250,24 +260,40 @@ class ChartController < ApplicationController
     #    @series_b    = [ rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70 ]    
   end
 
-  def gen_live_activity_data_sets    
-    activity = Activity.find(:all , :limit => 10, :order => "timestamp DESC").reverse 
+  def gen_activity_data_sets
+    if cookies[:chart_type] == 'live'
+      activity = Activity.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    elsif cookies[:chart_type] == 'last_half_hour'
+      activity = Activity.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    elsif cookies[:chart_type] == 'last_hour'
+      activity = Activity.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    elsif cookies[:chart_type] == 'last_six_hours'
+      activity = Activity.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    elsif cookies[:chart_type] == 'all_day'
+      activity = Activity.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    end
     
     @activity_categories =  activity.map {|a| a.timestamp.strftime("%H:%M:%S") }
     
-    #if cookies[:activity] == "true"
-      @activity_series  = activity.map {|a| a.activity }        #put in terms of heartrate
-    #else
-      #@activity_series = {}
-    #end
+    @activity_series  = activity.map {|a| a.activity }
   end
   
-  def gen_live_skintemp_data_sets    
-    skin_temp = SkinTemp.find(:all , :limit => 10, :order => "timestamp DESC").reverse 
+  def gen_skintemp_data_sets 
+    if cookies[:chart_type] == 'live'
+      skin_temp = SkinTemp.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    elsif cookies[:chart_type] == 'last_half_hour'
+      skin_temp = SkinTemp.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    elsif cookies[:chart_type] == 'last_hour'
+      skin_temp = SkinTemp.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    elsif cookies[:chart_type] == 'last_six_hours'
+      skin_temp = SkinTemp.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    elsif cookies[:chart_type] == 'all_day'
+      skin_temp = SkinTemp.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+    end
     
     if cookies[:skin_temp] == "true"
       @skintemp_series  = skin_temp.map {|a| (a.skin_temp - 68)/0.2 }        #put in terms of heartrate
-      @skintemp_labels  = skin_temp.map {|a| a.skin_temp}
+      @skintemp_labels  = skin_temp.map {|a| a.skin_temp.to_s + ' F'}
     else
       @skintemp_series = {}
       @skintemp_labels = {}
