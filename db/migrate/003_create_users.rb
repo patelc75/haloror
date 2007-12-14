@@ -1,7 +1,8 @@
 class CreateUsers < ActiveRecord::Migration
   def self.up
     create_table "users", :force => true do |t|
-      #restful_authentication generated stuff
+	  t.column :id, :primary_key, :null => false 
+	  #restful_authentication generated stuff
 	  t.column :login,                     :string
       t.column :email,                     :string
       t.column :crypted_password,          :string, :limit => 40
