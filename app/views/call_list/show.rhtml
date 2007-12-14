@@ -35,9 +35,9 @@
 			<% @call_list.call_orders.each do |call_order| %>
 				<% @caregiver = call_order.caregiver %>
 				
-				<li id="item_<%= call_order.id %>" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px;" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOut="this.style.backgroundImage = 'url(\'/images/call_list-item.gif\')'">
+				
 					<%= render :partial => "item", :locals => { :call_order => call_order } %>
-				</li>
+				
 			<% end %>
 			</ul>     
 

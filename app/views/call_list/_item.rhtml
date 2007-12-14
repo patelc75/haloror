@@ -1,71 +1,128 @@
 <% @caregiver = call_order.caregiver %>
 
-<div style="padding-top:25px;float:left;width:50px">
-	<a href="#" onClick="move_li('call_list', 'item_<%=call_order.id%>', 'up')">
-		<img src="/images/call_list-up.png" border="0" />
-	</a>
-	<br />
-	<a href="#" onClick="move_li('call_list', 'item_<%=call_order.id%>', 'down')">
-		<img src="/images/call_list-down.png" border="0" />
-	</a>
-</div>
+<%
+	if call_order.active == 0
+		img = 'call_list-item-away'
+	else
+		img = 'call_list-item'
+	end
+%>
+<div id="item_contain_<%= call_order.id %>">
+	<li id="item_<%= call_order.id %>" style="padding-left:10px;background:url('/images/<%=img%>.gif') no-repeat;height:100px;" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOut="this.style.backgroundImage = 'url(\'/images/<%=img%>.gif\')'">
+		<div style="padding-top:25px;float:left;width:50px">
+			
+			<%
+				if call_order.active == 0
+					img = '-away'
+				else
+					img = ''
+				end
+			%>
+			
+			<a href="#" onClick="move_li('call_list', 'item_<%=call_order.id%>', 'up')">
+				<img src="/images/call_list-up<%=img%>.png" border="0" />
+			</a>
+			<br />
+			<a href="#" onClick="move_li('call_list', 'item_<%=call_order.id%>', 'down')">
+				<img src="/images/call_list-down<%=img%>.png" border="0" />
+			</a>
+		</div>
 
 
-<div style="float:left;background:url('/images/call_list-image_bg.png') no-repeat;height:87px;width:125px;margin-top:5px">
-	<% if @caregiver.image != '' %>
+		<% 
+			if call_order.active == 0
+				opacity = '.5'
+			else
+				opacity = '1'
+			end
+		%>
+		<div style="float:left;background:url('/images/call_list-image_bg.png') no-repeat;height:87px;width:125px;margin-top:5px;opacity:<%=opacity%>">
+			<% if @caregiver.image != '' %>
 		
-	<% else %>
-		<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
-	<% end %>
-</div>
+			<% else %>
+				<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
+			<% end %>
+		</div>
 
-<div style="float:left;padding-top:40px;width:175px">
-	<%= in_place_editor_field :caregiver, :first_name %>
-	<%= in_place_editor_field :caregiver, :last_name %>
-</div>
+		<div style="float:left;padding-top:40px;width:175px">
+			<%
+				if call_order.active == 0
+					color = "lightgray"
+				else
+					color = ""
+				end
+			%>
+			
+			<%= in_place_editor_field :caregiver, :first_name, :style => "color:"+color %>
+			<%= in_place_editor_field :caregiver, :last_name, :style => "color:"+color %>
+		</div>
 
-<div style="float:left;padding-top:25px;width:150px">
-	<% if call_order.active == 0 %>
-		<img src="/images/call_list-active_disabled.png" border="0" />
-	<% else %>
-		<img src="/images/call_list-active.png" border="0" />
-	<% end %>
-	<br />
-	<% if call_order.active == 0 %>
-		<img src="/images/call_list-away.png" border="0" />
-	<% else %>
-		<img src="/images/call_list-away_disabled.png" border="0" />
-	<% end %>
-</div>
+		<div style="float:left;padding-top:25px;width:150px">
+			<% 
+				if call_order.active == 0 
+					img = 'call_list-active_disabled'
+				else
+					img = 'call_list-active'
+				end
+			%>
+	
+			<%=link_to_remote(image_tag(img), :update => "item_contain_"+call_order.id.to_s,:url => { :action => "activate",:id => call_order.id })%>
+	
+			<br />
+	
+			<% 
+				#if call_order.active == 1
+					img = 'call_list-away_disabled'
+				#else
+				#	img = 'call_list-away'
+				#end
+			%>
+	
+			<%=link_to_remote(image_tag(img), :update => "item_contain_"+call_order.id.to_s,:url => { :action => "deactivate",:id => call_order.id })%>
+		</div>
 
-<div style="float:left;padding-top:25px;width:75px">
-	<% unless @caregiver.home_phone %>
-		<img src="/images/call_list-phone-inactive.png" border="0" />
-	<% else %>
-		<img src="/images/call_list-phone.png" border="0" />
-	<% end %>
-</div>
+		<div style="float:left;padding-top:25px;width:75px">
+			<% 
+				if call_order.phone_active == 0 or call_order.active == 0
+					img = 'call_list-phone-inactive'
+				else
+					img = 'call_list-phone'
+				end
+			%>
+	
+			<%=link_to_remote(image_tag(img), :update => "item_contain_"+call_order.id.to_s,:url => { :action => "toggle_phone",:id => call_order.id })%>
+		</div>
 
-<div style="float:left;padding-top:25px;width:75px">
-	<% unless @caregiver.email %>
-		<img src="/images/call_list-email-inactive.png" border="0" />
-	<% else %>
-		<img src="/images/call_list-email.png" border="0" />
-	<% end %>
-</div>
+		<div style="float:left;padding-top:25px;width:75px">
+			<% 
+				if call_order.email_active == 0 or call_order.active == 0 
+					img = 'call_list-email-inactive'
+				else
+					img = 'call_list-email'
+				end
+			%>
+	
+			<%=link_to_remote(image_tag(img), :update => "item_contain_"+call_order.id.to_s,:url => { :action => "toggle_email",:id => call_order.id })%>
+		</div>
 
-<div style="float:left;padding-top:25px;width:125px">
-	<% unless @caregiver.cell_phone %>
-		<img src="/images/call_list-textmessage-inactive.png" border="0" />
-	<% else %>
-		<img src="/images/call_list-textmessage.png" border="0" />
-	<% end %>
-</div>
+		<div style="float:left;padding-top:25px;width:125px">
+			<% 
+				if call_order.text_active == 0 or call_order.active == 0
+					img = 'call_list-textmessage-inactive'
+				else
+					img = 'call_list-textmessage'
+				end
+			%>
+	
+			<%=link_to_remote(image_tag(img), :update => "item_contain_"+call_order.id.to_s,:url => { :action => "toggle_text",:id => call_order.id })%>
+		</div>
 
-<div style="float:left;padding-top:35px;width:50px">
-	<input type="checkbox" />
-</div>
+		<div style="float:left;padding-top:35px;width:50px">
+			<input type="checkbox" />
+		</div>
 
-<div style="float:left;padding-top:35px;width:75px">
-	<%=link_to_remote_redbox('Edit Info', :url => {:controller => 'call_orders' , :action => 'redir_to_edit' , :id => call_order.id})%>
+		<div style="float:left;padding-top:35px;width:75px">
+			<%=link_to_remote_redbox('Edit Info', :url => {:controller => 'call_orders' , :action => 'redir_to_edit' , :id => call_order.id})%>
+		</div>
+	</li>
 </div>

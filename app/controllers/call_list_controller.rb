@@ -39,4 +39,64 @@ class CallListController < ApplicationController
 
      render :action => show, :layout => false
   end
+  
+  def toggle_phone
+    @call_order = CallOrder.find(params[:id])
+
+    if @call_order.phone_active == 0
+      @call_order.phone_active = 1
+    else
+      @call_order.phone_active = 0
+    end
+    
+    @call_order.save
+    
+    render :partial => "call_list/item", :locals => { :call_order => @call_order }
+  end
+  
+  def toggle_email
+    @call_order = CallOrder.find(params[:id])
+
+    if @call_order.email_active == 0
+      @call_order.email_active = 1
+    else
+      @call_order.email_active = 0
+    end
+    
+    @call_order.save
+    
+    render :partial => "call_list/item", :locals => { :call_order => @call_order }
+  end
+  
+  def toggle_text
+    @call_order = CallOrder.find(params[:id])
+
+    if @call_order.text_active == 0
+      @call_order.text_active = 1
+    else
+      @call_order.text_active = 0
+    end
+    
+    @call_order.save
+    
+    render :partial => "call_list/item", :locals => { :call_order => @call_order }
+  end
+  
+  def activate
+    @call_order = CallOrder.find(params[:id])
+    @call_order.active = 1
+    
+    @call_order.save
+    
+    render :partial => "call_list/item", :locals => { :call_order => @call_order }
+  end
+  
+  def deactivate
+    @call_order = CallOrder.find(params[:id])
+    @call_order.active = 0
+    
+    @call_order.save
+    
+    render :partial => "call_list/item", :locals => { :call_order => @call_order }
+  end
 end

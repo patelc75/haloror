@@ -1,4 +1,4 @@
-<% remote_form_for(:call_order, :url => call_order_path(@call_order), :html => { :method => :put }, :update => 'item_'+params[:id]) do |f| %>
+<% remote_form_for(:call_order, :url => call_order_path(@call_order), :html => { :method => :put }, :update => 'item_contain_'+params[:id]) do |f| %>
 
 	<%caregiver = @call_order.caregiver%>
 	
