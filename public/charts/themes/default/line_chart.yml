@@ -1,0 +1,60 @@
+<%=chart :line %> 
+
+    <%=comp :live_update %>
+        url: "/chart/refresh_data"
+        
+    <%=comp :axis_category %>
+        size: 10
+        alpha: 0
+
+    <%=comp :axis_value %>
+        size: 10
+
+    <%comp :axis_ticks %>
+        value_ticks: false
+        category_ticks: false
+
+    <%=comp :legend_label %>
+        color: 4334F5
+        size: 10
+
+    <%=comp :series_color %>
+        color: 4334F5
+
+    <%=comp :chart_value %>
+        size: 10
+        color: 4334F5
+
+    <%=comp :chart_rect %>
+        height:         200
+        width:          570 
+        positive_color:    FFFFFF
+        y: 10
+
+    <%=comp :legend_label %>
+        size:          0
+        alpha:          0
+    
+    <%=comp :legend_rect %>
+        width:         0
+        height:        0
+        margin:        0
+        fill_color:    000000
+        fill_alpha:    7 
+        line_color:    000000
+        line_alpha:    0
+        line_thickness:    0
+        x:             -100
+        y:             -100
+  
+    <%=comp :chart_value %>
+        position:    above 
+        size:        10
+        color:       4334F5
+        alpha:       75
+        decimals:    1
+
+    <%=comp :chart_grid_v %>  
+        thickness: 1
+        alpha:     50
+        type:      dotted
