@@ -4,7 +4,7 @@ class CreateHeartrates < ActiveRecord::Migration
 	  t.column :id, :primary_key, :null => false 
 	  t.column :user_id, :integer
       t.column :timestamp, :timestamp_with_time_zone
-      t.column :heartrate, :integer, :limit => 1, :null=> false #will use smallint becuase of plug-in
+      t.column :heartrate, :integer, :limit => 1, :null=> false #will use smallint because of plug-in
     end
   end
 
