@@ -9,7 +9,7 @@ namespace :halo do
     
 	if ENV['vital'] == nil
 	  puts ""	
-	  puts "You forgot vital. vital = heartrate, skin_temp, actvity, or all"
+	  puts "You forgot vital. vital = heartrate, skin_temp, actvity, battery, or all"
 	  puts ""
 	  print_usage = true
 	else
@@ -112,6 +112,20 @@ namespace :halo do
 			elsif ENV['method'] == "curl"
 			  skin_temp_xml = "<skin_temp><skin_temp>#{random_skin_temp}</skin_temp><user_id>#{ENV['user_id']}</user_id><timestamp>#{start_time}</timestamp></skin_temp>"
 			  curl_cmd ='curl -H "Content-Type: text/xml" -d "' + skin_temp_xml + '" ' + ENV['url'] + '/skin_temps'    
+			  puts curl_cmd
+			  system(curl_cmd)    				
+			end		
+		  end
+
+		if ENV['vital'] == "battery" || ENV['vital'] == "all"
+			random_percentage = rand(100)
+			puts "#{start_time}: Posting battery of #{random_percentage} "  
+			if ENV['method'] == "activerecord"
+			  battery = Battery.new(:user_id => ENV['user_id'], :timestamp => start_time, :percentage => random_percentage, :time_remaining => 0)
+			  battery.save
+			elsif ENV['method'] == "curl"
+			  battery_xml = "<battery><percentage>#{random_percentage}</percentage><time_remaining>0</time_remaining><user_id>#{ENV['user_id']}</user_id><timestamp>#{start_time}</timestamp></battery>"
+			  curl_cmd ='curl -H "Content-Type: text/xml" -d "' + battery_xml + '" ' + ENV['url'] + '/batteries'    
 			  puts curl_cmd
 			  system(curl_cmd)    				
 			end		
