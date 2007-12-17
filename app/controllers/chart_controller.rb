@@ -9,6 +9,8 @@ class ChartController < ApplicationController
     @battery = Battery.find(:first, :order=>"id DESC")
     @gauge_width = 50 * (@battery.percentage/100.0)
     
+    @events = Event.find(:all, :limit => 10, :order => "id desc")
+    
     cookies[:heartrate] = "true"
     cookies[:skin_temp] = "true"
     

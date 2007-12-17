@@ -1,0 +1,12 @@
+Recent Events:
+
+<% @events.each do |event| %>
+	<p>
+		<b><%=event.timestamp.to_date.to_s(:long)%></b>
+		<br />
+		<%=event.kind%>
+	</p>
+	
+<% end %>
+
+<div style="clear:both"></div>
