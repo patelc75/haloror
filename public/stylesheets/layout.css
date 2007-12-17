@@ -617,3 +617,8 @@ body {
 	margin-top:2px;
 	margin-right:5px;
 }
+
+img
+{
+	border:0;
+}

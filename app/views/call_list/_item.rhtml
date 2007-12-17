@@ -7,8 +7,13 @@
 		img = 'call_list-item'
 	end
 %>
-<div id="item_contain_<%= call_order.id %>">
+
+	<% unless params[:noli] == 'true/'%>
 	<li id="item_<%= call_order.id %>" style="padding-left:10px;background:url('/images/<%=img%>.gif') no-repeat;height:100px;" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOut="this.style.backgroundImage = 'url(\'/images/<%=img%>.gif\')'">
+	<%end%>
+		<div style="float:left;width:35px;padding-top:40px" id="item_<%= call_order.id %>_position">
+			<%=position%>
+		</div>
 		<div style="padding-top:25px;float:left;width:50px">
 			
 			<%
@@ -66,7 +71,7 @@
 				end
 			%>
 	
-			<%=link_to_remote(image_tag(img), :update => "item_contain_"+call_order.id.to_s,:url => { :action => "activate",:id => call_order.id })%>
+			<%=link_to_remote(image_tag(img), :update => "item_"+call_order.id.to_s,:url => { :action => "activate", :id => call_order.id, :noli => 'true' }, :complete => 'updatePositions()')%>
 	
 			<br />
 	
@@ -78,7 +83,7 @@
 				#end
 			%>
 	
-			<%=link_to_remote(image_tag(img), :update => "item_contain_"+call_order.id.to_s,:url => { :action => "deactivate",:id => call_order.id })%>
+			<%=link_to_remote(image_tag(img), :update => "item_"+call_order.id.to_s,:url => { :action => "deactivate",:id => call_order.id, :noli => 'true'}, :complete => 'updatePositions()')%>
 		</div>
 
 		<div style="float:left;padding-top:25px;width:75px">
@@ -90,7 +95,7 @@
 				end
 			%>
 	
-			<%=link_to_remote(image_tag(img), :update => "item_contain_"+call_order.id.to_s,:url => { :action => "toggle_phone",:id => call_order.id })%>
+			<%=link_to_remote(image_tag(img), :update => "item_"+call_order.id.to_s,:url => { :action => "toggle_phone",:id => call_order.id,:noli => 'true' }, :complete => 'updatePositions()')%>
 		</div>
 
 		<div style="float:left;padding-top:25px;width:75px">
@@ -102,10 +107,10 @@
 				end
 			%>
 	
-			<%=link_to_remote(image_tag(img), :update => "item_contain_"+call_order.id.to_s,:url => { :action => "toggle_email",:id => call_order.id })%>
+			<%=link_to_remote(image_tag(img), :update => "item_"+call_order.id.to_s,:url => { :action => "toggle_email",:id => call_order.id,:noli => 'true' }, :complete => 'updatePositions()')%>
 		</div>
 
-		<div style="float:left;padding-top:25px;width:125px">
+		<div style="float:left;padding-top:25px;width:100px">
 			<% 
 				if call_order.text_active == 0 or call_order.active == 0
 					img = 'call_list-textmessage-inactive'
@@ -114,7 +119,7 @@
 				end
 			%>
 	
-			<%=link_to_remote(image_tag(img), :update => "item_contain_"+call_order.id.to_s,:url => { :action => "toggle_text",:id => call_order.id })%>
+			<%=link_to_remote(image_tag(img), :update => "item_"+call_order.id.to_s,:url => { :action => "toggle_text",:id => call_order.id,:noli => 'true' }, :complete => 'updatePositions()')%>
 		</div>
 
 		<div style="float:left;padding-top:35px;width:50px">
@@ -122,7 +127,8 @@
 		</div>
 
 		<div style="float:left;padding-top:35px;width:75px">
-			<%=link_to_remote_redbox('Edit Info', :url => {:controller => 'call_orders' , :action => 'redir_to_edit' , :id => call_order.id})%>
+			<%=link_to_remote_redbox('Edit Info', :url => {:controller => 'call_orders' , :action => 'redir_to_edit' , :id => call_order.id}, :complete => 'updatePositions()')%>
 		</div>
+	<% unless params[:noli] == 'true/'%>
 	</li>
-</div>
+	<%end%>

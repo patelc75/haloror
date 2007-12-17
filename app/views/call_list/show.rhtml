@@ -3,6 +3,9 @@
 		Account Settings: <span style="color:#000;font-size:.75em"><%= @call_list.login %>'s Caregivers</span>
 	</div>
 	<div class="content">
+			<div style="float:left;width:35px">
+				&nbsp;
+			</div>
 			<div style="float:left;width:70px">
 				&nbsp;
 			</div>
@@ -32,18 +35,19 @@
 			</div>
 			<p>&nbsp;</p>
       		<ul id="call_list">
+			<% position = 1 %>
 			<% @call_list.call_orders.each do |call_order| %>
 				<% @caregiver = call_order.caregiver %>
 				
 				
-					<%= render :partial => "item", :locals => { :call_order => call_order } %>
-				
+					<%= render :partial => "item", :locals => { :call_order => call_order , :position => position } %>
+				<% position = position+1 %>
 			<% end %>
 			</ul>     
 
 		<%= sortable_element 'call_list',
         :url => { :action => "sort" , :id => @call_list },
-
+		:onChange => "updatePositions",	
 		 :tag => 'li'
         %>
 	</div>
