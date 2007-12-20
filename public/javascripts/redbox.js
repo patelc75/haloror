@@ -12,16 +12,21 @@ var RedBox = {
   {
     this.showOverlay();
     Element.show('RB_loading');
-    this.setWindowPosition();
+    this.setWindowPositions();
   },
 
   addHiddenContent: function(id)
   {
     this.removeChildrenFromNode($('RB_window'));
     this.moveChildren($(id), $('RB_window'));
+    this.activateRBWindow();
+  },
+  
+  activateRBWindow: function()
+  {
     Element.hide('RB_loading');
     new Effect.Appear('RB_window', {duration: 0.4, queue: 'end'});  
-    this.setWindowPosition();
+    this.setWindowPositions();
   },
 
   close: function()
@@ -52,7 +57,7 @@ var RedBox = {
   setOverlaySize: function()
   {
     if (window.innerHeight && window.scrollMaxY)
-    {  
+    {
       yScroll = window.innerHeight + window.scrollMaxY;
     } 
     else if (document.body.scrollHeight > document.body.offsetHeight)
@@ -61,27 +66,31 @@ var RedBox = {
     }
     else
     { // Explorer Mac...would also work in Explorer 6 Strict, Mozilla and Safari
-      yScroll = document.body.offsetHeight;
+      yScroll = window.innerHeight;
+		//alert(window.innerHeight);
     }
+	
     $("RB_overlay").style['height'] = yScroll +"px";
   },
 
-  setWindowPosition: function()
+  setWindowPositions: function()
+  {
+    this.setWindowPosition('RB_window');
+    this.setWindowPosition('RB_loading');
+  },
+
+  setWindowPosition: function(window_id)
   {
     var pagesize = this.getPageSize();  
   
-    $("RB_window").style['width'] = 'auto';
-    $("RB_window").style['height'] = 'auto';
-
-    var dimensions = Element.getDimensions($("RB_window"));
+    var dimensions = Element.getDimensions($(window_id));
     var width = dimensions.width;
     var height = dimensions.height;        
     
-    $("RB_window").style['left'] = ((pagesize[0] - width)/2) + "px";
-    $("RB_window").style['top'] = ((pagesize[1] - height)/2) + "px";
+    $(window_id).style['left'] = ((pagesize[0] - width)/2) + "px";
+    $(window_id).style['top'] = (window.pageYOffset + ((pagesize[1] - height)/2)) + "px";
   },
-
-
+  
   getPageSize: function() {
     var de = document.documentElement;
     var w = window.innerWidth || self.innerWidth || (de&&de.clientWidth) || document.body.clientWidth;
@@ -113,7 +122,7 @@ var RedBox = {
     content.style['display'] = 'block';
     $('RB_window').appendChild(content);  
 
-    this.setWindowPosition();
+    this.setWindowPositions();
   },
   
   hideSelectBoxes: function()
