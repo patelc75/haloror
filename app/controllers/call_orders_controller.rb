@@ -29,6 +29,8 @@ class CallOrdersController < ApplicationController
   # GET /call_orders/1;edit
   def edit
     @call_order = CallOrder.find(params[:id])
+    
+    render :layout => 'lightbox'
   end
 
   # POST /call_orders

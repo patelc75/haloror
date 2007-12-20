@@ -119,3 +119,108 @@ function move_li(list_id,li_id,dir){
       }
     }
   }
+
+function toggleContact(id, status, what)
+{
+	if(active[id] && isset(active[id][what]))
+		status = active[id][what];
+	
+	if(!active[id])
+		active[id] = [];
+			
+	if(status == 0)
+		status = 1;
+	else
+		status = 0;
+		
+	active[id][what] = status;
+	
+	
+	obj = document.getElementById('item_'+what+'_'+id);
+	
+	if(status)
+		obj.src = '/images/call_list-'+what+'.png';
+	else
+		obj.src = '/images/call_list-'+what+'-inactive.png';
+}
+
+var active = [];
+var caregiverActive = [];
+
+function toggleCaregiver(action, id, phone_active, email_active, text_active)
+{
+	if(!active[id])
+		active[id] = [];
+		
+	if(!isset(active[id]['phone']))
+		active[id]['phone'] = phone_active;
+	if(!isset(active[id]['email']))
+		active[id]['email'] = email_active;
+	if(!isset(active[id]['text']))
+		active[id]['text'] = text_active;
+	
+	if(action == 'disable')
+	{
+		document.getElementById('item_'+id+'_position').innerHTML = '&nbsp;';
+		document.getElementById('item_up_'+id).src = '/images/call_list-up-away.png';
+		document.getElementById('item_down_'+id).src = '/images/call_list-down-away.png';
+		document.getElementById('item_image_'+id).style.opacity = '.5';
+		document.getElementById('item_firstname_'+id).style.color = 'gray';
+		document.getElementById('item_lastname_'+id).style.color = 'gray';
+		document.getElementById('item_active_'+id).src = '/images/call_list-active_disabled.png';
+		document.getElementById('item_away_'+id).src = '/images/call_list-away.png';
+		document.getElementById('item_phone_'+id).src = '/images/call_list-phone-inactive.png';
+		document.getElementById('item_email_'+id).src = '/images/call_list-email-inactive.png';
+		document.getElementById('item_text_'+id).src = '/images/call_list-text-inactive.png';
+		document.getElementById('item_edit_'+id).style.color = 'gray';
+
+		callListImg[id] = '/images/call_list-item-away.gif';
+	}
+	else if(action == 'enable')
+	{
+		document.getElementById('item_up_'+id).src = '/images/call_list-up.png';
+		document.getElementById('item_down_'+id).src = '/images/call_list-down.png';
+		document.getElementById('item_image_'+id).style.opacity = '1';
+		document.getElementById('item_firstname_'+id).style.color = 'inherit';
+		document.getElementById('item_lastname_'+id).style.color = 'inherit';
+		document.getElementById('item_active_'+id).src = '/images/call_list-active.png';
+		document.getElementById('item_away_'+id).src = '/images/call_list-away_disabled.png';
+		
+		if(active[id]['phone'])
+			document.getElementById('item_phone_'+id).src = '/images/call_list-phone.png';
+			
+		if(active[id]['email'])
+			document.getElementById('item_email_'+id).src = '/images/call_list-email.png';
+			
+		if(active[id]['text'])
+			document.getElementById('item_text_'+id).src = '/images/call_list-text.png';
+			
+		document.getElementById('item_edit_'+id).style.color = 'inherit';
+
+		callListImg[id] = '/images/call_list-item.gif';
+		
+		updatePositions();
+	}
+	
+	swapCallListBg(id);
+}
+
+var defaultCallListImg = '/images/call_list-item.gif';
+var callListImg = [];
+
+function swapCallListBg(id, img)
+{
+	if(callListImg[id])
+		img = callListImg[id];
+	else if(img)
+		img = img;
+	else
+		img = defaultCallListImg;
+		
+	document.getElementById('item_'+id).style.background = "url('"+img+"') no-repeat";
+}
+
+function isset( variable )
+{
+return( typeof( variable ) != 'undefined' );
+}

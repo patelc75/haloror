@@ -1,53 +1,55 @@
-<% remote_form_for(:call_order, :url => call_order_path(@call_order), :html => { :method => :put }, :update => 'item_contain_'+params[:id]) do |f| %>
+<div style="margin:10px">
+		<% remote_form_for(:call_order, :url => call_order_path(@call_order), :html => { :method => :put }, :update => 'item_contain_'+params[:id]) do |f| %>
 
-	<%caregiver = @call_order.caregiver%>
-	
-	<label for="email">Email</label>
-	<br />
-	<%= f.text_field :email , :value => caregiver.email %>
-	<br />
-	<br />
-	<label for="first_name">First Name</label>
-	<br />
-	<%= f.text_field :first_name , :value => caregiver.first_name %>
-	<br />
-	<br />
-	<label for="last_name">Last Name</label>
-	<br />
-	<%= f.text_field :last_name , :value => caregiver.last_name %>
-	<br />
-	<br />
-	<label for="address">Address</label>
-	<br />
-	<%= f.text_field :address , :value => caregiver.address %>
-	<br />
-	<br />
-	<label for="city">City/State</label>
-	<br />
-	<%= f.text_field :city , :value => caregiver.city %> <%= f.text_field :state , :value => caregiver.state %>
-	<br />
-	<br />
-	<label for="home_phone">Home Phone</label>
-	<br />
-	<%= f.text_field :home_phone , :value => caregiver.home_phone %>
-	<br />
-	<br />
-	<label for="work_phone">Work Phone</label>
-	<br />
-	<%= f.text_field :work_phone , :value => caregiver.work_phone %>
-	<br />
-	<br />
-	<label for="cell_phone">Cell Phone</label>
-	<br />
-	<%= f.text_field :cell_phone , :value => caregiver.cell_phone %>
-	<br />
-	<br />
-	<label for="relationship">Relationship</label>
-	<br />
-	<%= f.text_field :relationship , :value => caregiver.relationship %>
-	<br />
-	<br />
-  <p>
-    <%= submit_tag "Update" , :onclick => "RedBox.close();" %>
-  </p>
-<% end %>
+			<%caregiver = @call_order.caregiver%>
+
+			<label for="email">Email</label>
+			<br />
+			<%= f.text_field :email , :value => caregiver.email %>
+			<br />
+			<br />
+			<label for="first_name">First Name</label>
+			<br />
+			<%= f.text_field :first_name , :value => caregiver.first_name %>
+			<br />
+			<br />
+			<label for="last_name">Last Name</label>
+			<br />
+			<%= f.text_field :last_name , :value => caregiver.last_name %>
+			<br />
+			<br />
+			<label for="address">Address</label>
+			<br />
+			<%= f.text_field :address , :value => caregiver.address %>
+			<br />
+			<br />
+			<label for="city">City/State</label>
+			<br />
+			<%= f.text_field :city , :value => caregiver.city %> <%= f.text_field :state , :value => caregiver.state %>
+			<br />
+			<br />
+			<label for="home_phone">Home Phone</label>
+			<br />
+			<%= f.text_field :home_phone , :value => caregiver.home_phone %>
+			<br />
+			<br />
+			<label for="work_phone">Work Phone</label>
+			<br />
+			<%= f.text_field :work_phone , :value => caregiver.work_phone %>
+			<br />
+			<br />
+			<label for="cell_phone">Cell Phone</label>
+			<br />
+			<%= f.text_field :cell_phone , :value => caregiver.cell_phone %>
+			<br />
+			<br />
+			<label for="relationship">Relationship</label>
+			<br />
+			<%= f.text_field :relationship , :value => caregiver.relationship %>
+			<br />
+			<br />
+			<div align="center">
+				<input name="commit" type="image" src="/images/update.gif" onClick="RedBox.close()" /> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
+			</div>
+		<% end %>
+</div>
