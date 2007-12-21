@@ -1,4 +1,8 @@
-<div style="margin:10px">
+<img src="/images/lightbox-col-header.png">
+
+<div id="lightbox-col"><div class="lightbox-content">
+
+<div style="width:380px;">
 		<% remote_form_for(:call_order, :url => call_order_path(@call_order), :html => { :method => :put }, :update => 'item_contain_'+params[:id]) do |f| %>
 
 			<%caregiver = @call_order.caregiver%>
@@ -25,7 +29,7 @@
 			<br />
 			<label for="city">City/State</label>
 			<br />
-			<%= f.text_field :city , :value => caregiver.city %> <%= f.text_field :state , :value => caregiver.state %>
+			<%= f.text_field :city , :value => caregiver.city %> <%= f.text_field :state , :value => caregiver.state, :size => 15 %>
 			<br />
 			<br />
 			<label for="home_phone">Home Phone</label>
@@ -52,4 +56,6 @@
 				<input name="commit" type="image" src="/images/update.gif" onClick="RedBox.close()" /> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
 			</div>
 		<% end %>
-</div>
+</div></div></div>
+
+<img src="/images/lightbox-col-footer.png">

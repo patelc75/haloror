@@ -3,13 +3,15 @@
 <%
 	if call_order.active == 0
 		img = '/images/call_list-item-away.gif'
+		className = 'inactive'
 	else
 		img = '/images/call_list-item.gif'
+		className = 'active'
 	end
 %>
 
 	<% unless params[:noli] == 'true/'%>
-	<li id="item_<%= call_order.id %>" style="padding-left:10px;background:url('<%=img%>') no-repeat;height:100px;" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOut="swapCallListBg(<%=call_order.id%>, '<%=img%>')">
+	<li id="item_<%= call_order.id %>" class="<%=className%>" style="padding-left:10px;background:url('<%=img%>') no-repeat;height:100px;" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOut="swapCallListBg(<%=call_order.id%>, '<%=img%>')">
 	<%end%>
 		<div style="float:left;width:35px;padding-top:40px" id="item_<%= call_order.id %>_position">
 			<% if call_order.active == 1 %>
@@ -26,11 +28,11 @@
 				end
 			%>
 			
-			<a href="#" onClick="move_li('call_list', 'item_<%=call_order.id%>', 'up')">
+			<a href="#" onClick="move_li('call_list', 'item_<%=call_order.id%>', 'up', <%=call_order.id%>)">
 				<img src="/images/call_list-up<%=img%>.png" border="0" id="item_up_<%=call_order.id%>" />
 			</a>
 			<br />
-			<a href="#" onClick="move_li('call_list', 'item_<%=call_order.id%>', 'down')">
+			<a href="#" onClick="move_li('call_list', 'item_<%=call_order.id%>', 'down', <%=call_order.id%>)">
 				<img src="/images/call_list-down<%=img%>.png" border="0" id="item_down_<%=call_order.id%>" />
 			</a>
 		</div>
@@ -45,7 +47,7 @@
 		%>
 		<div style="float:left;background:url('/images/call_list-image_bg.png') no-repeat;height:87px;width:125px;margin-top:5px;opacity:<%=opacity%>" id="item_image_<%=call_order.id%>">
 			<% if @caregiver.image != '' %>
-		
+				<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
 			<% else %>
 				<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
 			<% end %>

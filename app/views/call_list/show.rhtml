@@ -2,55 +2,60 @@
 	<div id="call_list-col-header">
 		Account Settings: <span style="color:#000;font-size:.75em"><%= @call_list.login %>'s Caregivers</span>
 	</div>
-	<div class="content">
-			<div style="float:left;width:35px">
-				&nbsp;
-			</div>
-			<div style="float:left;width:70px">
-				&nbsp;
-			</div>
-			<div style="float:left;width:125px">
-				&nbsp;
-			</div>
-			<div style="float:left;width:175px">
-				Name
-			</div>
-			<div style="float:left;width:150px">
-				Status
-			</div>
-			<div style="float:left;width:75px">
-				Call
-			</div>
-			<div style="float:left;width:75px">
-				Email
-			</div>
-			<div style="float:left;width:125px">
-				Text Message
-			</div>
-			<div style="float:left;width:50px">
+	<% if @call_list.call_orders.count > 0 %>
+		<div class="content">
+				<div style="float:left;width:35px">
+					&nbsp;
+				</div>
+				<div style="float:left;width:70px">
+					&nbsp;
+				</div>
+				<div style="float:left;width:125px">
+					&nbsp;
+				</div>
+				<div style="float:left;width:175px">
+					Name
+				</div>
+				<div style="float:left;width:150px">
+					Status
+				</div>
+				<div style="float:left;width:75px">
+					Call
+				</div>
+				<div style="float:left;width:75px">
+					Email
+				</div>
+				<div style="float:left;width:125px">
+					Text Message
+				</div>
+				<div style="float:left;width:50px">
 				
-			</div>
-			<div style="float:left;width:75px">
+				</div>
+				<div style="float:left;width:75px">
 				
-			</div>
-			<p>&nbsp;</p>
-      		<ul id="call_list">
-			<% position = 1 %>
-			<% @call_list.call_orders.each do |call_order| %>
-				<% @caregiver = call_order.caregiver %>
+				</div>
+				<p>&nbsp;</p>
+	      		<ul id="call_list">
+				<% position = 1 %>
+				<% @call_list.call_orders.each do |call_order| %>
+					<% @caregiver = call_order.caregiver %>
 				
 				
-					<%= render :partial => "item", :locals => { :call_order => call_order , :position => position } %>
-				<% position = position+1 %>
-			<% end %>
-			</ul>     
+						<%= render :partial => "item", :locals => { :call_order => call_order , :position => position } %>
+					<% position = position+1 %>
+				<% end %>
+				</ul>
+				
+				<%=link_to_remote_redbox(image_tag('add-caregiver.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), :url => {:controller => 'call_orders' , :action => 'new'})%>
+				
+				<div style="clear:both"></div>
 
-		<%= sortable_element 'call_list',
-        :url => { :action => "sort" , :id => @call_list },
-		:onChange => "updatePositions",	
-		 :tag => 'li'
-        %>
-	</div>
-	<div id="blah"></div>
+			<%= sortable_element 'call_list',
+	        :url => { :action => "sort" , :id => @call_list },
+			:onChange => "updatePositions",	
+			 :tag => 'li'
+	        %>
+		</div>
+	<% end %>
 	<div id="call_list-col-footer"></div>
 </div>

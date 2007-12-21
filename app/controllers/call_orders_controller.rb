@@ -23,14 +23,14 @@ class CallOrdersController < ApplicationController
 
   # GET /call_orders/new
   def new
-    @call_order = CallOrder.new
+    @call_order = User.new
   end
 
   # GET /call_orders/1;edit
   def edit
     @call_order = CallOrder.find(params[:id])
     
-    render :layout => 'lightbox'
+    render :layout => false
   end
 
   # POST /call_orders

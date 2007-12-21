@@ -106,7 +106,7 @@ class ChartController < ApplicationController
     
     # heartrate
 	  gen_heartrate_data_sets
-    graph.add :axis_category_text, @categories
+    #graph.add :axis_category_text, @categories
     
     graph.add(:series, "Discrete Heartrate", @heartrate_series, @heartrate_labels) 
     

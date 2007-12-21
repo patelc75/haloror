@@ -33,7 +33,7 @@
 
 #RB_window {
   z-index: 102;
-  background-color: #FFFFFF;
+  background: none;
   display: block;
   text-align: left;
   overflow: hidden;

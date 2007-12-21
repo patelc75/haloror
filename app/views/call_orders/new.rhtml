@@ -1,11 +1,59 @@
-<h1>New call_order</h1>
+<img src="/images/lightbox-col-header.png">
 
-<%= error_messages_for :call_order %>
+<div id="lightbox-col"><div class="lightbox-content">
 
-<% form_for(:call_order, :url => call_orders_path) do |f| %>
-  <p>
-    <%= submit_tag "Create" %>
-  </p>
-<% end %>
+<div style="width:380px;">
+		<% remote_form_for(:call_order, :url => call_orders_path, :html => { :method => :put }) do |f| %>
 
-<%= link_to 'Back', call_orders_path %>
+			<label for="email">Email</label>
+			<br />
+			<%= f.text_field :email %>
+			<br />
+			<br />
+			<label for="first_name">First Name</label>
+			<br />
+			<%= f.text_field :first_name %>
+			<br />
+			<br />
+			<label for="last_name">Last Name</label>
+			<br />
+			<%= f.text_field :last_name %>
+			<br />
+			<br />
+			<label for="address">Address</label>
+			<br />
+			<%= f.text_field :address %>
+			<br />
+			<br />
+			<label for="city">City/State</label>
+			<br />
+			<%= f.text_field :city %> <%= f.text_field :state , :size => 15 %>
+			<br />
+			<br />
+			<label for="home_phone">Home Phone</label>
+			<br />
+			<%= f.text_field :home_phone %>
+			<br />
+			<br />
+			<label for="work_phone">Work Phone</label>
+			<br />
+			<%= f.text_field :work_phone %>
+			<br />
+			<br />
+			<label for="cell_phone">Cell Phone</label>
+			<br />
+			<%= f.text_field :cell_phone %>
+			<br />
+			<br />
+			<label for="relationship">Relationship</label>
+			<br />
+			<%= f.text_field :relationship %>
+			<br />
+			<br />
+			<div align="center">
+				<input name="commit" type="image" src="/images/update.gif" onClick="RedBox.close()" /> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
+			</div>
+		<% end %>
+</div></div></div>
+
+<img src="/images/lightbox-col-footer.png">

@@ -83,7 +83,7 @@ body {
 #main-col
 {
 	width:710px;
-	background:url('/images/main-col-bg.gif') repeat-y;
+	background:#efefef url('/images/main-col-bg.gif') repeat-y;
 	float:left;
 }
 
@@ -121,6 +121,41 @@ body {
 	background:url('/images/login-col-footer.gif') no-repeat;
 	height:11px;
 }
+
+
+
+
+
+#lightbox-col
+{
+	width:400px;
+	
+	margin-left:auto;
+	margin-right:auto;
+	
+	background:url('/images/login-col-bg.gif') repeat-y;
+}
+
+#lightbox-col-header
+{
+	background:url('/images/login-col-header.png') no-repeat;
+	height:11px;
+}
+
+#lightbox-col-footer
+{
+	background:url('/images/login-col-footer.gif') no-repeat;
+	height:11px;
+}
+
+.lightbox-content
+{
+	padding:5px;
+}
+
+
+
+
 
 #call_list-col
 {

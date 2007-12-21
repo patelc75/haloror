@@ -45,7 +45,7 @@ var RedBox = {
     }
     else
     {
-      new Insertion.Top(document.body, '<div id="RB_redbox" align="center"><div id="RB_window" style="display: none;"></div><div id="RB_overlay" style="display: none;"></div></div>');      
+      new Insertion.Top(document.body, '<div id="RB_redbox" align="center"><div id="RB_window" style="display: none;"></div><div id="RB_overlay" style="display: none;"></div>');      
     }
     new Insertion.Bottom('RB_redbox', '<div id="RB_loading" style="display: none"></div>');  
 
@@ -110,6 +110,7 @@ var RedBox = {
 
   moveChildren: function(source, destination)
   {
+	
     while (source.hasChildNodes())
     {
       destination.appendChild(source.firstChild);
