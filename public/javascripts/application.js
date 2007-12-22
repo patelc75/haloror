@@ -168,6 +168,7 @@ function toggleCaregiver(action, id, phone_active, email_active, text_active)
 	
 	if(action == 'disable')
 	{
+		
 		document.getElementById('item_'+id+'_position').innerHTML = '&nbsp;';
 		document.getElementById('item_up_'+id).src = '/images/call_list-up-away.png';
 		document.getElementById('item_down_'+id).src = '/images/call_list-down-away.png';
@@ -179,7 +180,8 @@ function toggleCaregiver(action, id, phone_active, email_active, text_active)
 		document.getElementById('item_phone_'+id).src = '/images/call_list-phone-inactive.png';
 		document.getElementById('item_email_'+id).src = '/images/call_list-email-inactive.png';
 		document.getElementById('item_text_'+id).src = '/images/call_list-text-inactive.png';
-		document.getElementById('item_edit_'+id).style.color = 'gray';
+		
+		document.getElementById('item_edit_'+id).getElementsByTagName('a')[0].style.color = 'gray';
 
 		callListImg[id] = '/images/call_list-item-away.gif';
 	
@@ -204,7 +206,7 @@ function toggleCaregiver(action, id, phone_active, email_active, text_active)
 		if(active[id]['text'])
 			document.getElementById('item_text_'+id).src = '/images/call_list-text.png';
 		
-		document.getElementById('item_edit_'+id).style.color = 'inherit';
+		document.getElementById('item_edit_'+id).getElementsByTagName('a')[0].style.color = 'inherit';
 
 		callListImg[id] = '/images/call_list-item.gif';
 	

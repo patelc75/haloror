@@ -17,6 +17,7 @@
   width: 100%;
   position: absolute;
   top: 0px;
+  z-index:105;
 }
 
 #RB_loading {

@@ -133,7 +133,7 @@ body {
 	margin-left:auto;
 	margin-right:auto;
 	
-	background:url('/images/login-col-bg.gif') repeat-y;
+	
 }
 
 #lightbox-col-header
@@ -151,6 +151,7 @@ body {
 .lightbox-content
 {
 	padding:5px;
+	background:url('/images/lightbox-col-bg.png') center repeat-y;
 }
 
 

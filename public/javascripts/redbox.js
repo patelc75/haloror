@@ -45,7 +45,7 @@ var RedBox = {
     }
     else
     {
-      new Insertion.Top(document.body, '<div id="RB_redbox" align="center"><div id="RB_window" style="display: none;"></div><div id="RB_overlay" style="display: none;"></div>');      
+      new Insertion.Top(document.body, '<div id="RB_redbox" align="center"><div id="RB_window" style="display: none;"></div><div id="RB_overlay" style="display: none;"></div></div>');      
     }
     new Insertion.Bottom('RB_redbox', '<div id="RB_loading" style="display: none"></div>');  
 
@@ -56,9 +56,12 @@ var RedBox = {
 
   setOverlaySize: function()
   {
-    if (window.innerHeight && window.scrollMaxY)
-    {
-      yScroll = window.innerHeight + window.scrollMaxY;
+    if (window.innerHeight)
+    {  
+	  if(window.scrollMaxY)
+      	yScroll = window.innerHeight + window.scrollMaxY;
+	  else
+	    yScroll = window.innerHeight;
     } 
     else if (document.body.scrollHeight > document.body.offsetHeight)
     { // all but Explorer Mac
@@ -66,10 +69,8 @@ var RedBox = {
     }
     else
     { // Explorer Mac...would also work in Explorer 6 Strict, Mozilla and Safari
-      yScroll = window.innerHeight;
-		//alert(window.innerHeight);
+      yScroll = document.body.offsetHeight;
     }
-	
     $("RB_overlay").style['height'] = yScroll +"px";
   },
 
@@ -110,7 +111,6 @@ var RedBox = {
 
   moveChildren: function(source, destination)
   {
-	
     while (source.hasChildNodes())
     {
       destination.appendChild(source.firstChild);
