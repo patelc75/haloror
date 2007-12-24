@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :orientations
+  map.resources :steps
   map.resources :events  
   map.resources :batteries
   map.resources :skin_temps
@@ -17,6 +19,8 @@ ActionController::Routing::Routes.draw do |map|
   map.signup '/signup', :controller => 'users', :action => 'new'
   map.login  '/login', :controller => 'sessions', :action => 'new'
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
+  map.activate '/activate/:activation_code', :controller => 'users', :action => 'activate'
+
 
   # The priority is based upon order of creation: first created -> highest priority.
   

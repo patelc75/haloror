@@ -1,0 +1,11 @@
+<h1>New orientation</h1>
+
+<%= error_messages_for :orientation %>
+
+<% form_for(:orientation, :url => orientations_path) do |f| %>
+  <p>
+    <%= submit_tag "Create" %>
+  </p>
+<% end %>
+
+<%= link_to 'Back', orientations_path %>

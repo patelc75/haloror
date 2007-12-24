@@ -1,0 +1,18 @@
+<h1>Listing steps</h1>
+
+<table>
+  <tr>
+  </tr>
+  
+<% for step in @steps %>
+  <tr>
+    <td><%= link_to 'Show', step_path(step) %></td>
+    <td><%= link_to 'Edit', edit_step_path(step) %></td>
+    <td><%= link_to 'Destroy', step_path(step), :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New step', new_step_path %>

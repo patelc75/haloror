@@ -129,8 +129,40 @@ namespace :halo do
 			  puts curl_cmd
 			  system(curl_cmd)    				
 			end		
-		  end
 		end
+		  
+		if ENV['vital'] == "steps" || ENV['vital'] == "all"
+			random_steps = rand(20)
+			puts "#{start_time} to #{start_time+15}: Posting steps of #{random_steps} "  
+			if ENV['method'] == "activerecord"
+			  step = Step.new(:user_id => ENV['user_id'], :begin_timestamp => start_time, :end_timestamp => start_time+15, :steps => random_steps)
+			  step.save
+			elsif ENV['method'] == "curl"
+			  steps_xml = "<step><steps>#{random_steps}</steps><user_id>#{ENV['user_id']}</user_id><begin_timestamp>#{start_time}</begin_timestamp><end_timestamp>#{start_time+15}</end_timestamp></step>"
+			  curl_cmd ='curl -H "Content-Type: text/xml" -d "' + steps_xml + '" ' + ENV['url'] + '/steps'    
+			  puts curl_cmd
+			  system(curl_cmd)    				
+			end		
+		end
+
+		if ENV['vital'] == "orientation" || ENV['vital'] == "all"
+			random_orientation = rand(2)
+			puts "#{start_time}: Posting orientation of #{random_orientation} "  
+			if ENV['method'] == "activerecord"
+			  orientation = Orientation.new(:user_id => ENV['user_id'], :timestamp => start_time, :orientation => random_orientation)
+			  orientation .save
+			elsif ENV['method'] == "curl"
+			  orientation_xml = "<orientation><orientation>#{random_orientation}</orientation><user_id>#{ENV['user_id']}</user_id><timestamp>#{start_time}</timestamp></orientation>"
+			  curl_cmd ='curl -H "Content-Type: text/xml" -d "' + orientation_xml + '" ' + ENV['url'] + '/orientations'    
+			  puts curl_cmd
+			  system(curl_cmd)    				
+			end		
+		end		
+		
+	    puts "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
+		puts "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
+		puts ""
+      end
 	end
   end
 end

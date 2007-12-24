@@ -1,5 +1,4 @@
 class UsersController < ApplicationController
-
   # render new.rhtml
   def new
 	  #render :layout => false
@@ -23,5 +22,30 @@ class UsersController < ApplicationController
       flash[:notice] = "Signup complete!"
     end
     redirect_back_or_default('/')
+  end
+  
+  def update
+    @user = User.find(params[:id])
+    respond_to do |format|
+      if @user.update_attributes!(params[:user])
+		puts "look closer"
+	
+	    flash[:notice] = 'User was successfully updated.'
+        format.html { redirect_to user_url(@user) }
+        format.xml  { head :ok }
+      else
+        format.html { render :action => "edit" }
+        format.xml  { render :xml => @user.errors.to_xml }
+      end
+	end
+  end
+  
+  def edit
+    @call_order = User.find(params[:id])
+    render :layout => false
+  end
+  
+  def redir_to_edit
+    redirect_to_url '/users/'+params[:id]+';edit/'
   end
 end

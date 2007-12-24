@@ -1,0 +1,12 @@
+<h1>Editing step</h1>
+
+<%= error_messages_for :step %>
+
+<% form_for(:step, :url => step_path(@step), :html => { :method => :put }) do |f| %>
+  <p>
+    <%= submit_tag "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', step_path(@step) %> |
+<%= link_to 'Back', steps_path %>

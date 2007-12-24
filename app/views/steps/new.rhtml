@@ -1,0 +1,11 @@
+<h1>New step</h1>
+
+<%= error_messages_for :step %>
+
+<% form_for(:step, :url => steps_path) do |f| %>
+  <p>
+    <%= submit_tag "Create" %>
+  </p>
+<% end %>
+
+<%= link_to 'Back', steps_path %>
