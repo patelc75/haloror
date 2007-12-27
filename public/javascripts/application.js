@@ -23,6 +23,7 @@ function toggleHTabs(current) {
 }
 
 function updatePositions(li_id) {
+	//alert('Updating');
 	obj = document.getElementById('call_list'); // get parent list
 	CN = obj.childNodes; // get nodes
 	x = 0;
@@ -69,59 +70,6 @@ function SetCookie(cookieName,cookieValue,nDays) {
  document.cookie = cookieName+"="+escape(cookieValue)
                  + ";expires="+expire.toGMTString();
 }
-
-function move_li(list_id,li_id,dir,id){
-  obj = document.getElementById(list_id); // get parent list
-  CN = obj.childNodes; // get nodes
-  x = 0;
-  while(x < CN.length){ // loop through elements for the desired one
-    if(CN[x].id == li_id){
-      new_obj = CN[x].cloneNode(true); //create copy of node
-      break; // End the loop since we found the element
-    }else{
-      x++;
-      }
-    }
-  if(new_obj){
-    if(dir == 'down'){ // Count up, as the higher the number, the lower on the page
-      y = x + 1;
-      while(y < CN.length){ // loop trhough elements from past the point of the desired element
-        if(CN[y].tagName == 'LI'){ // check if node is the right kind
-          old_obj = CN[y].cloneNode(true);
-          break; // End the loop
-        }else{
-          y++;
-          }
-        }
-      }
-    if(dir == 'up'){ // Count down, as the lower the number, the higher on the page
-      if(x > 0){
-        y = x - 1;
-        while(y >= 0){ // loop trhough elements from past the point of the desired element
-          if(CN[y].tagName == 'LI'){ // check if node is the right kind
-            old_obj = CN[y].cloneNode(true);
-            break; // End the loop
-          }else{
-            y--;
-            }
-          }
-        }
-      }
-    if(old_obj){ // if there is an object to replace, replace it.
-      obj.replaceChild(new_obj,CN[y]);
-      obj.replaceChild(old_obj,CN[x]);
-
-	  new Ajax.Request('/call_list/sort/1/', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize("call_list")})
-	
-	  //document.getElementById(li_id).style.backgroundImage = 'url(\'/images/call_list-item.gif\')';
-	
-	Sortable.create("call_list", {onUpdate:function(){new Ajax.Request('/call_list/sort/1/', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize("call_list")})}, tag:'li'})
-	updatePositions();
-
-	swapCallListBg(id);
-      }
-    }
-  }
 
 function toggleContact(id, status, what)
 {
@@ -235,5 +183,91 @@ function swapCallListBg(id, img)
 
 function isset( variable )
 {
-return( typeof( variable ) != 'undefined' );
+	return( typeof( variable ) != 'undefined' );
+}
+
+/*
+	moves an element in a drag and drop list one position up
+*/
+
+function moveElementUpforList(list, key) {
+	var sequence=Sortable.sequence(list);
+	var newsequence=[];
+	var reordered=false;
+
+	//move only, if there is more than one element in the list
+	if (sequence.length>1) for (var j=0; j<sequence.length; j++) {
+
+		//move, if not already first element, the element is not null
+		if (j>0 && sequence[j].length>0 && sequence[j]==key) {
+			var temp=newsequence[j-1];
+			newsequence[j-1]=key;
+			newsequence[j]=temp;
+			reordered=true;
+		}
+		
+		//if element not found, just copy array element
+		else {
+			newsequence[j]=sequence[j];
+		}
+	}
+
+	if (reordered) Sortable.setSequence(list,newsequence);
+	return reordered;
+}
+
+/*
+moves an element in a drag and drop list one position down
+*/
+
+function moveElementDownforList(list, key) {
+	var sequence=Sortable.sequence(list);
+	var newsequence=[];
+	var reordered=false;
+
+	//move, if not already last element, the element is not null
+	if (sequence.length>1) for (var j=0; j<sequence.length; j++) {
+
+		//move, if not already first element, the element is not null
+		if (j<(sequence.length-1) && sequence[j].length>0 && sequence[j]==key) {
+			newsequence[j+1]=key;
+			newsequence[j]=sequence[j+1];
+			reordered=true;
+			j++;
+		}
+		
+		//if element not found, just copy array element
+		else {
+			newsequence[j]=sequence[j];
+		}
+	}
+
+	if (reordered) Sortable.setSequence(list,newsequence);
+	return reordered;
+}
+
+/*
+handles moving up
+*/
+
+function moveElementUp(key,id,call_order) {
+	moveElementUpforList('call_list', key);
+	updatePositions();
+	
+	new Ajax.Request('/call_list/sort/'+call_order+'/', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize("call_list")})
+
+	swapCallListBg(id);
+}
+
+/*
+handles moving down
+*/
+
+function moveElementDown(key,id,call_order) {
+	moveElementDownforList('call_list', key);
+	updatePositions();
+	
+	new Ajax.Request('/call_list/sort/'+call_order+'/', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize("call_list")})
+
+	swapCallListBg(id);
 }

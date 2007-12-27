@@ -28,11 +28,11 @@
 				end
 			%>
 			
-			<a href="#" onClick="move_li('call_list', 'item_<%=call_order.id%>', 'up', <%=call_order.id%>)">
+			<a href="#" onClick="moveElementUp(<%=position%>, <%=call_order.id%>, <%=params[:id]%>)">
 				<img src="/images/call_list-up<%=img%>.png" border="0" id="item_up_<%=call_order.id%>" />
 			</a>
 			<br />
-			<a href="#" onClick="move_li('call_list', 'item_<%=call_order.id%>', 'down', <%=call_order.id%>)">
+			<a href="#" onClick="moveElementDown(<%=position%>, <%=call_order.id%>, <%=params[:id]%>)">
 				<img src="/images/call_list-down<%=img%>.png" border="0" id="item_down_<%=call_order.id%>" />
 			</a>
 		</div>
@@ -75,7 +75,6 @@
 				end
 			%>
 	
-			<!--%=link_to_remote(image_tag(img), :update => "item_"+call_order.id.to_s,:url => { :action => "activate", :id => call_order.id, :noli => 'true' }, :complete => 'updatePositions()')%-->
 			<%=link_to_remote(image_tag(img, :id => 'item_active_'+call_order.id.to_s), :url => { :action => "activate",:id => call_order.id}, :before => 'toggleCaregiver(\'enable\','+call_order.id.to_s+', '+call_order.phone_active.to_s+', '+call_order.email_active.to_s+', '+call_order.text_active.to_s+')')%>
 			<br />
 	
@@ -87,7 +86,6 @@
 				end
 			%>
 	
-			<!--%=link_to_remote(image_tag(img), :update => "item_"+call_order.id.to_s,:url => { :action => "deactivate",:id => call_order.id, :noli => 'true'}, :complete => 'updatePositions()')%-->
 			<%=link_to_remote(image_tag(img, :id => 'item_away_'+call_order.id.to_s), :url => { :action => "deactivate",:id => call_order.id}, :before => 'toggleCaregiver(\'disable\', '+call_order.id.to_s+', '+call_order.phone_active.to_s+', '+call_order.email_active.to_s+', '+call_order.text_active.to_s+')')%>
 		</div>
 
