@@ -55,16 +55,16 @@ class CallOrdersController < ApplicationController
   def update
     @call_order = CallOrder.find(params[:id])
     
-    #respond_to do |format|
-    #  if @call_order.update_attributes(params[:call_order])
-    #    flash[:notice] = 'CallOrder was successfully updated.'
-    #    format.html { redirect_to call_order_url(@call_order) }
-    #    format.xml  { head :ok }
-    #  else
-    #    format.html { render :action => "edit" }
-    #    format.xml  { render :xml => @call_order.errors.to_xml }
-    #  end
-    #end
+    respond_to do |format|
+      if @call_order.update_attributes(params[:call_order])
+        flash[:notice] = 'CallOrder was successfully updated.'
+        format.html { redirect_to call_order_url(@call_order) }
+        format.xml  { head :ok }
+      else
+        format.html { render :action => "edit" }
+        format.xml  { render :xml => @call_order.errors.to_xml }
+      end
+	end
   end
 
   # DELETE /call_orders/1
