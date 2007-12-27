@@ -98,7 +98,7 @@
 				end
 			%>
 			
-			<%=link_to_remote(image_tag(img, :id => 'item_phone_'+call_order.id.to_s), :url => { :action => "toggle_phone",:id => call_order.id }, :before => 'toggleContact('+call_order.id.to_s+', '+call_order.phone_active.to_s+', \'phone\')', :complete => 'updatePositions()')%>
+			<%=link_to_remote(image_tag(img, :id => 'item_phone_'+call_order.id.to_s), :url => { :action => "toggle_phone",:id => call_order.id }, :before => 'toggleContact('+position.to_s+','+call_order.id.to_s+', '+call_order.phone_active.to_s+', \'phone\')', :complete => 'updatePositions()')%>
 		</div>
 
 		<div style="float:left;padding-top:25px;width:75px">
@@ -110,7 +110,7 @@
 				end
 			%>
 	
-			<%=link_to_remote(image_tag(img, :id => 'item_email_'+call_order.id.to_s), :url => { :action => "toggle_email",:id => call_order.id }, :before => 'toggleContact('+call_order.id.to_s+', '+call_order.email_active.to_s+', \'email\')', :complete => 'updatePositions()')%>
+			<%=link_to_remote(image_tag(img, :id => 'item_email_'+call_order.id.to_s), :url => { :action => "toggle_email",:id => call_order.id }, :before => 'toggleContact('+position.to_s+','+call_order.id.to_s+', '+call_order.email_active.to_s+', \'email\')', :complete => 'updatePositions()')%>
 		</div>
 
 		<div style="float:left;padding-top:25px;width:100px">
@@ -122,7 +122,7 @@
 				end
 			%>
 	
-			<%=link_to_remote(image_tag(img, :id => 'item_text_'+call_order.id.to_s), :url => { :action => "toggle_text",:id => call_order.id }, :before => 'toggleContact('+call_order.id.to_s+', '+call_order.text_active.to_s+', \'text\')', :complete => 'updatePositions()')%>
+			<%=link_to_remote(image_tag(img, :id => 'item_text_'+call_order.id.to_s), :url => { :action => "toggle_text",:id => call_order.id }, :before => 'toggleContact('+position.to_s+','+call_order.id.to_s+', '+call_order.text_active.to_s+', \'text\')', :complete => 'updatePositions()')%>
 		</div>
 
 		<div style="float:left;padding-top:35px;width:50px">

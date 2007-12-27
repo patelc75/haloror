@@ -70,9 +70,9 @@ function SetCookie(cookieName,cookieValue,nDays) {
                  + ";expires="+expire.toGMTString();
 }
 
-function toggleContact(id, status, what)
+function toggleContact(pos, id, status, what)
 {
-	if(document.getElementById('item_'+id).className == 'active')
+	if(document.getElementById('item_'+id+'_'+pos).className == 'active')
 	{
 		if(active[id] && isset(active[id][what]))
 			status = active[id][what];
@@ -116,7 +116,7 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 	if(action == 'disable')
 	{
 		
-		document.getElementById('item_'+id+'_position').innerHTML = '&nbsp;';
+		document.getElementById('item_'+id+'_'+pos+'_position').innerHTML = '&nbsp;';
 		document.getElementById('item_up_'+id).src = '/images/call_list-up-away.png';
 		document.getElementById('item_down_'+id).src = '/images/call_list-down-away.png';
 		document.getElementById('item_image_'+id).style.opacity = '.5';
@@ -132,7 +132,7 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 
 		callListImg[id] = '/images/call_list-item-away.gif';
 	
-		document.getElementById('item_'+id).className = 'inactive';
+		document.getElementById('item_'+id+'_'+pos).className = 'inactive';
 	}
 	else if(action == 'enable')
 	{
@@ -157,7 +157,7 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 
 		callListImg[id] = '/images/call_list-item.gif';
 	
-		document.getElementById('item_'+id).className = 'active';
+		document.getElementById('item_'+id+'_'+pos).className = 'active';
 	
 		updatePositions();
 	}
