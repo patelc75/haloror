@@ -23,7 +23,6 @@ function toggleHTabs(current) {
 }
 
 function updatePositions(li_id) {
-	//alert('Updating');
 	obj = document.getElementById('call_list'); // get parent list
 	CN = obj.childNodes; // get nodes
 	x = 0;
@@ -101,7 +100,7 @@ function toggleContact(id, status, what)
 var active = [];
 var caregiverActive = [];
 
-function toggleCaregiver(action, id, phone_active, email_active, text_active)
+function toggleCaregiver(action, pos, id, phone_active, email_active, text_active)
 {
 	if(!active[id])
 		active[id] = [];
@@ -163,13 +162,13 @@ function toggleCaregiver(action, id, phone_active, email_active, text_active)
 		updatePositions();
 	}
 	
-	swapCallListBg(id);
+	swapCallListBg(pos, id);
 }
 
 var defaultCallListImg = '/images/call_list-item.gif';
 var callListImg = [];
 
-function swapCallListBg(id, img)
+function swapCallListBg(pos, id, img)
 {
 	if(callListImg[id])
 		img = callListImg[id];
@@ -178,7 +177,7 @@ function swapCallListBg(id, img)
 	else
 		img = defaultCallListImg;
 		
-	document.getElementById('item_'+id).style.background = "url('"+img+"') no-repeat";
+	document.getElementById('item_'+id+'_'+pos).style.background = "url('"+img+"') no-repeat";
 }
 
 function isset( variable )
@@ -227,7 +226,6 @@ function moveElementDownforList(list, key) {
 
 	//move, if not already last element, the element is not null
 	if (sequence.length>1) for (var j=0; j<sequence.length; j++) {
-
 		//move, if not already first element, the element is not null
 		if (j<(sequence.length-1) && sequence[j].length>0 && sequence[j]==key) {
 			newsequence[j+1]=key;
@@ -250,24 +248,49 @@ function moveElementDownforList(list, key) {
 handles moving up
 */
 
-function moveElementUp(key,id,call_order) {
-	moveElementUpforList('call_list', key);
+function moveElementUp(pos,id,call_order) {
+	moveElementUpforList('call_list', pos);
 	updatePositions();
 	
-	new Ajax.Request('/call_list/sort/'+call_order+'/', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize("call_list")})
+	new Ajax.Request('/call_list/sort/'+call_order+'/', {asynchronous:true, evalScripts:true, parameters:serialize()})
 
-	swapCallListBg(id);
+	swapCallListBg(pos, id);
 }
 
 /*
 handles moving down
 */
 
-function moveElementDown(key,id,call_order) {
-	moveElementDownforList('call_list', key);
+function moveElementDown(pos,id,call_order) {
+	moveElementDownforList('call_list', pos);
 	updatePositions();
 	
-	new Ajax.Request('/call_list/sort/'+call_order+'/', {asynchronous:true, evalScripts:true, parameters:Sortable.serialize("call_list")})
+	new Ajax.Request('/call_list/sort/'+call_order+'/', {asynchronous:true, evalScripts:true, parameters:serialize()})
+	
+	swapCallListBg(pos,id);
+}
 
-	swapCallListBg(id);
+function serialize()
+{
+	var str;
+	
+	obj = document.getElementById('call_list'); // get parent list
+	CN = obj.childNodes; // get nodes
+	x = 0;
+	pos = 1;
+	while(x < CN.length){ // loop through elements
+		var id = CN[x].id;
+		var arr = new Array();
+		arr = id.split('_');
+		
+		if(str)
+			str += '&call_list[]='+arr[1];
+		else
+			str = 'call_list[]='+arr[1];
+		
+		x++;
+		pos++;
+	}
+	
+	return str;
 }

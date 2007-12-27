@@ -11,9 +11,9 @@
 %>
 
 	<% unless params[:noli] == 'true/'%>
-	<li id="item_<%= call_order.id %>" class="<%=className%>" style="padding-left:10px;background:url('<%=img%>') no-repeat;height:100px;cursor:pointer" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOut="swapCallListBg(<%=call_order.id%>, '<%=img%>')">
+	<li id="item_<%=call_order.id%>_<%= position %>" class="<%=className%>" style="padding-left:10px;background:url('<%=img%>') no-repeat;height:100px;cursor:pointer" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOut="swapCallListBg(<%=position%>, <%=call_order.id%>, '<%=img%>')">
 	<%end%>
-		<div style="float:left;width:35px;padding-top:40px" id="item_<%= call_order.id %>_position">
+		<div style="float:left;width:35px;padding-top:40px" id="item_<%=call_order.id%>_<%= position %>_position">
 			<% if call_order.active == 1 %>
 				<%=position%>
 			<% end %>
@@ -75,7 +75,7 @@
 				end
 			%>
 	
-			<%=link_to_remote(image_tag(img, :id => 'item_active_'+call_order.id.to_s), :url => { :action => "activate",:id => call_order.id}, :before => 'toggleCaregiver(\'enable\','+call_order.id.to_s+', '+call_order.phone_active.to_s+', '+call_order.email_active.to_s+', '+call_order.text_active.to_s+')')%>
+			<%=link_to_remote(image_tag(img, :id => 'item_active_'+call_order.id.to_s), :url => { :action => "activate",:id => call_order.id}, :before => 'toggleCaregiver(\'enable\', '+position.to_s+', '+call_order.id.to_s+', '+call_order.phone_active.to_s+', '+call_order.email_active.to_s+', '+call_order.text_active.to_s+')')%>
 			<br />
 	
 			<% 
@@ -86,7 +86,7 @@
 				end
 			%>
 	
-			<%=link_to_remote(image_tag(img, :id => 'item_away_'+call_order.id.to_s), :url => { :action => "deactivate",:id => call_order.id}, :before => 'toggleCaregiver(\'disable\', '+call_order.id.to_s+', '+call_order.phone_active.to_s+', '+call_order.email_active.to_s+', '+call_order.text_active.to_s+')')%>
+			<%=link_to_remote(image_tag(img, :id => 'item_away_'+call_order.id.to_s), :url => { :action => "deactivate",:id => call_order.id}, :before => 'toggleCaregiver(\'disable\', '+position.to_s+', '+call_order.id.to_s+', '+call_order.phone_active.to_s+', '+call_order.email_active.to_s+', '+call_order.text_active.to_s+')')%>
 		</div>
 
 		<div style="float:left;padding-top:25px;width:75px">

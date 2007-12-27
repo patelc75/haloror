@@ -50,11 +50,16 @@
 				
 				<div style="clear:both"></div>
 
-			<%= sortable_element 'call_list',
+			<!--%= sortable_element 'call_list',
 	        :url => { :action => "sort" , :id => @call_list },
-			:onChange => "updatePositions",	
+			:onChange => "updatePositions",
 			 :tag => 'li'
-	        %>
+	        %-->
+			<script type="text/javascript">
+			//<![CDATA[
+			Sortable.create("call_list", {onChange:updatePositions, onUpdate:function(){new Ajax.Request('/call_list/sort/<%=params[:id]%>/', {asynchronous:true, evalScripts:true, parameters:serialize()})}, tag:'li'})
+			//]]>
+			</script>
 		</div>
 	<% end %>
 	<div id="call_list-col-footer"></div>
