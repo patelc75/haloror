@@ -91,6 +91,13 @@ class User < ActiveRecord::Base
     self.remember_token            = nil
     save(false)
   end
+  
+  def get_patients
+# 	@x = Array.new
+# 	for role in roles
+# 	 @X << [role.authorizable_id, role.Auth
+#   end
+  end
 
   protected
   # before filter 
