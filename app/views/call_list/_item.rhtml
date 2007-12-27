@@ -11,8 +11,11 @@
 %>
 
 	<% unless params[:noli] == 'true/'%>
-	<li id="item_<%=call_order.id%>_<%= position %>" class="<%=className%>" style="padding-left:10px;background:url('<%=img%>') no-repeat;height:100px;cursor:pointer" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOut="swapCallListBg(<%=position%>, <%=call_order.id%>, '<%=img%>')">
+	<li id="item_<%=call_order.id%>_<%= position %>" class="<%=className%>" style="padding-left:10px;background:url('<%=img%>') no-repeat;height:100px;cursor:pointer" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')';toggleTooltip(<%=call_order.id%>)" onMouseOut="swapCallListBg(<%=position%>, <%=call_order.id%>, '<%=img%>');toggleTooltip(<%=call_order.id%>)"">
 	<%end%>
+		<div id="item_<%=call_order.id%>_tooltip" style="position:absolute;left:350px;top:-20px;height:73px;width:221px;background:url('/images/tooltip.png');display:none">
+			
+		</div>
 		<div style="float:left;width:35px;padding-top:40px" id="item_<%=call_order.id%>_<%= position %>_position">
 			<% if call_order.active == 1 %>
 				<%=position%>

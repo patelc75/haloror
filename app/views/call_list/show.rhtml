@@ -57,7 +57,7 @@
 	        %-->
 			<script type="text/javascript">
 			//<![CDATA[
-			Sortable.create("call_list", {onChange:updatePositions, onUpdate:function(){new Ajax.Request('/call_list/sort/<%=params[:id]%>/', {asynchronous:true, evalScripts:true, parameters:serialize()})}, tag:'li'})
+			Sortable.create("call_list", {onChange:updatePositions, onUpdate:function(){new Ajax.Request('/call_list/sort/<%=params[:id]%>/', {asynchronous:true, evalScripts:true, parameters:serialize()});showTooltip=false}, tag:'li'})
 			//]]>
 			</script>
 		</div>

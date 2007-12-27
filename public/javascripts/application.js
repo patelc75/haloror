@@ -294,3 +294,15 @@ function serialize()
 	
 	return str;
 }
+
+var showTooltip = true;
+
+function toggleTooltip(id)
+{
+	var e = document.getElementById('item_'+id+'_tooltip');
+	
+	if(e.style.display == 'none' && showTooltip)
+		e.style.display = 'block';
+	else
+		e.style.display = 'none';
+}		
