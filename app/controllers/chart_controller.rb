@@ -190,25 +190,35 @@ class ChartController < ApplicationController
 
   
   def average_data(num_points, start_time, end_time)
-    @averages_array = Array.new  #results of averaging from database
-    @labels_array = Array.new
+    @heartrate_series = Array.new(num_points, 0)  #results of averaging from database
+    @categories = Array.new(num_points, 0) 
     interval = (end_time - start_time) / num_points #interval returned in seconds
     current_time = start_time
     current_point = 0   #the data point that we're currently on
     
+	#breakpoint "Let's have a closer look"
+	
     while current_point < num_points
       condition = "timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}'"
       average = Heartrate.average(:heartrate, :conditions => condition)
+	  puts "Average--------------------------------------------" + average.to_s
       current_time = current_time + interval
-      current_point = current_point + 1
-      @averages_array << round_to(average, 1)
-      @labels_array << current_time.strftime("%H:%M:%S")
+      
+	  #@heartrate_series << round_to(average, 1)
+	  @heartrate_series[current_point] = round_to(average, 1)
+      
+	  #@categories << current_time.strftime("%H:%M:%S")
+	  @categories[current_point] = current_time.strftime("%H:%M:%S")
+
+	  current_point += 1
     end 
     
-    #for debugging
-    @averages_array.each_with_index() do |x, i| 
-      puts x, @labels_array[i]
-    end
+	@heartrate_labels = @heartrate_series
+#     #for debugging
+#	puts @heartrate_series
+#    @heartrate_series.each_with_index() do |x, i| 
+#      puts x, @heartrate_series[i]
+#    end
   end
   
   def heartrate_post
@@ -237,28 +247,33 @@ class ChartController < ApplicationController
 
   def gen_heartrate_data_sets    
     #get the latest 10 records (ordered by timestamp) from Heartrate table
-    
+    end_time = Time.now
+	
     if cookies[:chart_type] == 'live'
       heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+	  @categories =  heartrate.map {|a| a.timestamp.strftime("%H:%M:%S") }
+	  if cookies[:heartrate] == "true"
+        @heartrate_series  = heartrate.map {|a| a.heartrate }
+        @heartrate_labels  = heartrate.map {|a| a.heartrate }
+      else
+        @heartrate_series = {}
+        @heartrate_labels = {}
+	  end
     elsif cookies[:chart_type] == 'last_half_hour'
-      heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+	  start_time = end_time - 30 * 60
+	  average_data(10, start_time, end_time) 
     elsif cookies[:chart_type] == 'last_hour'
-      heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+      start_time = end_time - 60 * 60
+	  average_data(10, start_time, end_time) 
     elsif cookies[:chart_type] == 'last_six_hours'
-      heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+      start_time = end_time - 6 * 60 * 60
+	  average_data(10, start_time, end_time)
     elsif cookies[:chart_type] == 'all_day'
-      heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+      start_time = end_time - 24 * 60 * 60
+	  heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
     end
     
-    @categories =  heartrate.map {|a| a.timestamp.strftime("%H:%M:%S") }
-    
-    if cookies[:heartrate] == "true"
-      @heartrate_series  = heartrate.map {|a| a.heartrate }
-      @heartrate_labels  = heartrate.map {|a| a.heartrate }
-    else
-      @heartrate_series = {}
-      @heartrate_labels = {}
-    end
+
     
     # random data with fixed arbitrary timestamps
     #    @categories = %w{ 8:32:15AM 8:32:30AM 8:32:45AM 8:33:00AM 8:33:15AM 8:33:30AM 8:33:45AM 8:34:00AM 8:34:15AM 8:34:30AM}
