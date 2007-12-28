@@ -11,12 +11,12 @@
 %>
 
 	<% unless params[:noli] == 'true/'%>
-	<li id="item_<%=call_order.id%>_<%= position %>" class="<%=className%>" style="padding-left:10px;background:url('<%=img%>') no-repeat;height:100px;cursor:pointer" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')';toggleTooltip(<%=call_order.id%>)" onMouseOut="swapCallListBg(<%=position%>, <%=call_order.id%>, '<%=img%>');toggleTooltip(<%=call_order.id%>)"">
+	<li id="item_<%=call_order.id%>_<%= i %>" class="<%=className%>" style="padding-left:10px;background:url('<%=img%>') no-repeat;height:100px;cursor:pointer" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')';toggleTooltip(<%=call_order.id%>)" onMouseOut="swapCallListBg(<%=i%>, <%=call_order.id%>, '<%=img%>');toggleTooltip(<%=call_order.id%>)">
 	<%end%>
-		<div id="item_<%=call_order.id%>_tooltip" style="position:absolute;left:350px;top:-20px;height:73px;width:221px;background:url('/images/tooltip.png');display:none">
+		<div id="item_<%=call_order.id%>_tooltip" style="position:absolute;left:350px;top:-40px;height:73px;width:221px;background:url('/images/tooltip.png');display:none">
 			
 		</div>
-		<div style="float:left;width:35px;padding-top:40px" id="item_<%=call_order.id%>_<%= position %>_position">
+		<div style="float:left;width:35px;padding-top:40px" id="item_<%=call_order.id%>_<%= i %>_position">
 			<% if call_order.active == 1 %>
 				<%=position%>
 			<% end %>
@@ -31,11 +31,11 @@
 				end
 			%>
 			
-			<a href="#" onClick="moveElementUp(<%=position%>, <%=call_order.id%>, <%=params[:id]%>)">
+			<a href="#" onClick="moveElementUp(<%=i%>, <%=call_order.id%>, <%=params[:id]%>)">
 				<img src="/images/call_list-up<%=img%>.png" border="0" id="item_up_<%=call_order.id%>" />
 			</a>
 			<br />
-			<a href="#" onClick="moveElementDown(<%=position%>, <%=call_order.id%>, <%=params[:id]%>)">
+			<a href="#" onClick="moveElementDown(<%=i%>, <%=call_order.id%>, <%=params[:id]%>)">
 				<img src="/images/call_list-down<%=img%>.png" border="0" id="item_down_<%=call_order.id%>" />
 			</a>
 		</div>
@@ -78,7 +78,7 @@
 				end
 			%>
 	
-			<%=link_to_remote(image_tag(img, :id => 'item_active_'+call_order.id.to_s), :url => { :action => "activate",:id => call_order.id}, :before => 'toggleCaregiver(\'enable\', '+position.to_s+', '+call_order.id.to_s+', '+call_order.phone_active.to_s+', '+call_order.email_active.to_s+', '+call_order.text_active.to_s+')')%>
+			<%=link_to_remote(image_tag(img, :id => 'item_active_'+call_order.id.to_s), :url => { :action => "activate",:id => call_order.id}, :before => 'toggleCaregiver(\'enable\', '+i.to_s+', '+call_order.id.to_s+', '+call_order.phone_active.to_s+', '+call_order.email_active.to_s+', '+call_order.text_active.to_s+')')%>
 			<br />
 	
 			<% 
@@ -89,7 +89,7 @@
 				end
 			%>
 	
-			<%=link_to_remote(image_tag(img, :id => 'item_away_'+call_order.id.to_s), :url => { :action => "deactivate",:id => call_order.id}, :before => 'toggleCaregiver(\'disable\', '+position.to_s+', '+call_order.id.to_s+', '+call_order.phone_active.to_s+', '+call_order.email_active.to_s+', '+call_order.text_active.to_s+')')%>
+			<%=link_to_remote(image_tag(img, :id => 'item_away_'+call_order.id.to_s), :url => { :action => "deactivate",:id => call_order.id}, :before => 'toggleCaregiver(\'disable\', '+i.to_s+', '+call_order.id.to_s+', '+call_order.phone_active.to_s+', '+call_order.email_active.to_s+', '+call_order.text_active.to_s+')')%>
 		</div>
 
 		<div style="float:left;padding-top:25px;width:75px">
@@ -101,7 +101,7 @@
 				end
 			%>
 			
-			<%=link_to_remote(image_tag(img, :id => 'item_phone_'+call_order.id.to_s), :url => { :action => "toggle_phone",:id => call_order.id }, :before => 'toggleContact('+position.to_s+','+call_order.id.to_s+', '+call_order.phone_active.to_s+', \'phone\')', :complete => 'updatePositions()')%>
+			<%=link_to_remote(image_tag(img, :id => 'item_phone_'+call_order.id.to_s), :url => { :action => "toggle_phone",:id => call_order.id }, :before => 'toggleContact('+i.to_s+','+call_order.id.to_s+', '+call_order.phone_active.to_s+', \'phone\')', :complete => 'updatePositions()')%>
 		</div>
 
 		<div style="float:left;padding-top:25px;width:75px">
@@ -113,7 +113,7 @@
 				end
 			%>
 	
-			<%=link_to_remote(image_tag(img, :id => 'item_email_'+call_order.id.to_s), :url => { :action => "toggle_email",:id => call_order.id }, :before => 'toggleContact('+position.to_s+','+call_order.id.to_s+', '+call_order.email_active.to_s+', \'email\')', :complete => 'updatePositions()')%>
+			<%=link_to_remote(image_tag(img, :id => 'item_email_'+call_order.id.to_s), :url => { :action => "toggle_email",:id => call_order.id }, :before => 'toggleContact('+i.to_s+','+call_order.id.to_s+', '+call_order.email_active.to_s+', \'email\')', :complete => 'updatePositions()')%>
 		</div>
 
 		<div style="float:left;padding-top:25px;width:100px">
@@ -125,7 +125,7 @@
 				end
 			%>
 	
-			<%=link_to_remote(image_tag(img, :id => 'item_text_'+call_order.id.to_s), :url => { :action => "toggle_text",:id => call_order.id }, :before => 'toggleContact('+position.to_s+','+call_order.id.to_s+', '+call_order.text_active.to_s+', \'text\')', :complete => 'updatePositions()')%>
+			<%=link_to_remote(image_tag(img, :id => 'item_text_'+call_order.id.to_s), :url => { :action => "toggle_text",:id => call_order.id }, :before => 'toggleContact('+i.to_s+','+call_order.id.to_s+', '+call_order.text_active.to_s+', \'text\')', :complete => 'updatePositions()')%>
 		</div>
 
 		<div style="float:left;padding-top:35px;width:50px">

@@ -29,9 +29,13 @@ function updatePositions(li_id) {
 	pos = 1;
 	while(x < CN.length){ // loop through elements for the desired one
 		if(document.getElementById(CN[x].id).className == 'active')
+		{
 			document.getElementById(CN[x].id+'_position').innerHTML = pos;
+			pos++;
+		}
+		
 		x++;
-		pos++;
+		
 	}
 }
 
@@ -94,7 +98,7 @@ function toggleContact(pos, id, status, what)
 			obj.src = '/images/call_list-'+what+'.png';
 		else
 			obj.src = '/images/call_list-'+what+'-inactive.png';
-	}
+	}	
 }
 
 var active = [];
@@ -139,8 +143,8 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 		document.getElementById('item_up_'+id).src = '/images/call_list-up.png';
 		document.getElementById('item_down_'+id).src = '/images/call_list-down.png';
 		document.getElementById('item_image_'+id).style.opacity = '1';
-		document.getElementById('item_firstname_'+id).style.color = 'inherit';
-		document.getElementById('item_lastname_'+id).style.color = 'inherit';
+		document.getElementById('item_firstname_'+id).style.color = '';
+		document.getElementById('item_lastname_'+id).style.color = '';
 		document.getElementById('item_active_'+id).src = '/images/call_list-active.png';
 		document.getElementById('item_away_'+id).src = '/images/call_list-away_disabled.png';
 	
@@ -153,15 +157,14 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 		if(active[id]['text'])
 			document.getElementById('item_text_'+id).src = '/images/call_list-text.png';
 		
-		document.getElementById('item_edit_'+id).getElementsByTagName('a')[0].style.color = 'inherit';
+		document.getElementById('item_edit_'+id).getElementsByTagName('a')[0].style.color = '';
 
 		callListImg[id] = '/images/call_list-item.gif';
 	
 		document.getElementById('item_'+id+'_'+pos).className = 'active';
-	
-		updatePositions();
 	}
 	
+	updatePositions();
 	swapCallListBg(pos, id);
 }
 

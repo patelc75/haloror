@@ -37,18 +37,22 @@
 				<p>&nbsp;</p>
 	      		<ul id="call_list">
 				<% position = 1 %>
+				<% i = 1 %>
 				<% @call_list.call_orders.each do |call_order| %>
 					<% @caregiver = call_order.caregiver %>
 				
 				
-						<%= render :partial => "item", :locals => { :call_order => call_order , :position => position } %>
-					<% position = position+1 %>
+						<%= render :partial => "item", :locals => { :call_order => call_order , :position => position , :i => i } %>
+					<% 
+						if call_order.active == 1
+							position = position+1 
+						end
+					%>
+					<% i = i+1 %>
 				<% end %>
 				</ul>
 				
-				<%=link_to_remote_redbox(image_tag('add-caregiver.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), :url => {:controller => 'call_orders' , :action => 'new'})%>
 				
-				<div style="clear:both"></div>
 
 			<!--%= sortable_element 'call_list',
 	        :url => { :action => "sort" , :id => @call_list },
@@ -62,5 +66,8 @@
 			</script>
 		</div>
 	<% end %>
+	<%=link_to_remote_redbox(image_tag('add-caregiver.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), :url => {:controller => 'call_orders' , :action => 'new'})%>
+	
+	<div style="clear:both"></div>
 	<div id="call_list-col-footer"></div>
 </div>
