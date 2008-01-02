@@ -99,4 +99,20 @@ class CallListController < ApplicationController
     
     render :partial => "call_list/item", :locals => { :call_order => @call_order }
   end
+  
+  def set_caregiver_first_name
+    User.update(params[:id], {:first_name => params[:value]})
+    
+    @name = params[:value]
+    
+    render :layout => false, :inline => "<%= @name %>"
+  end
+  
+  def set_caregiver_last_name
+    User.update(params[:id], {:last_name => params[:value]})
+    
+    @name = params[:value]
+    
+    render :layout => false, :inline => "<%= @name %>"
+  end
 end
