@@ -1,6 +1,6 @@
 require 'time'
 
-namespace :halo do
+namespace :halo do  
   desc "post random vitals data with either activerecord or curl"  
   task :post => :environment  do
     end_time = Time.now
@@ -36,7 +36,7 @@ namespace :halo do
 
 	if ENV['increment'] == nil
 	  puts ""
-	  puts "You forgot increment. increment = seconds between each post"
+	  puts "You forgot increment. increment = seconds between each timestamp"
 	  puts ""
 	  print_usage = true
 	else
@@ -54,6 +54,15 @@ namespace :halo do
 	  puts "User ID: #{ENV['user_id']}"
 	end
 	
+	if ENV['frequency'] == nil
+	  puts ""
+	  puts "You forgot frequency. frequency = seconds between each post (frequency=0 means no delay)"
+	  puts ""
+	  print_usage = true
+	else
+	  puts "Frequency: #{ENV['frequency']}"
+	end
+	
 	if ENV['url'] == nil &&  ENV['method'] == "curl"
 	  puts ""
 	  puts "You forgot the url. Example: http://localhost:3000"
@@ -66,10 +75,10 @@ namespace :halo do
 	if print_usage == true
 	  puts ""
 	  puts "Example Usage with curl: "
-	  puts "rake halo:post vital=all method=curl url=http://localhost:3000 increment=15 duration=5000 user_id=333"	
+	  puts "rake halo:post vital=all method=curl url=http://localhost:3000 increment=15 duration=5000 user_id=333 frequency=5"	
 	  puts ""
 	  puts "Example Usage with activerecord: "
-	  puts "rake halo:post vital=all method=activerecord increment=15 duration=5000 user_id=333"	
+	  puts "rake halo:post vital=all method=activerecord increment=15 duration=5000 user_id=333 frequency=5"	
 	  puts ""
 	else
 		until start_time > end_time      
@@ -162,6 +171,8 @@ namespace :halo do
 	    puts "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
 		puts "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
 		puts ""
+		
+		sleep(ENV['frequency'].to_i)
       end
 	end
   end
