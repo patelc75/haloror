@@ -121,16 +121,16 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 	{
 		
 		document.getElementById('item_'+id+'_'+pos+'_position').innerHTML = '&nbsp;';
-		document.getElementById('item_up_'+id).src = '/images/call_list-up-away.png';
-		document.getElementById('item_down_'+id).src = '/images/call_list-down-away.png';
+		document.getElementById('item_up_'+id).src = '/images/call_list-up-away.gif';
+		document.getElementById('item_down_'+id).src = '/images/call_list-down-away.gif';
 		document.getElementById('item_image_'+id).style.opacity = '.5';
 		document.getElementById('item_firstname_'+id).style.color = 'gray';
 		document.getElementById('item_lastname_'+id).style.color = 'gray';
-		document.getElementById('item_active_'+id).src = '/images/call_list-active_disabled.png';
-		document.getElementById('item_away_'+id).src = '/images/call_list-away.png';
-		document.getElementById('item_phone_'+id).src = '/images/call_list-phone-inactive.png';
-		document.getElementById('item_email_'+id).src = '/images/call_list-email-inactive.png';
-		document.getElementById('item_text_'+id).src = '/images/call_list-text-inactive.png';
+		document.getElementById('item_active_'+id).src = '/images/call_list-active_disabled.gif';
+		document.getElementById('item_away_'+id).src = '/images/call_list-away.gif';
+		document.getElementById('item_phone_'+id).src = '/images/call_list-phone-inactive.gif';
+		document.getElementById('item_email_'+id).src = '/images/call_list-email-inactive.gif';
+		document.getElementById('item_text_'+id).src = '/images/call_list-text-inactive.gif';
 		
 		document.getElementById('item_edit_'+id).getElementsByTagName('a')[0].style.color = 'gray';
 
@@ -140,22 +140,22 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 	}
 	else if(action == 'enable')
 	{
-		document.getElementById('item_up_'+id).src = '/images/call_list-up.png';
-		document.getElementById('item_down_'+id).src = '/images/call_list-down.png';
+		document.getElementById('item_up_'+id).src = '/images/call_list-up.gif';
+		document.getElementById('item_down_'+id).src = '/images/call_list-down.gif';
 		document.getElementById('item_image_'+id).style.opacity = '1';
 		document.getElementById('item_firstname_'+id).style.color = '';
 		document.getElementById('item_lastname_'+id).style.color = '';
-		document.getElementById('item_active_'+id).src = '/images/call_list-active.png';
-		document.getElementById('item_away_'+id).src = '/images/call_list-away_disabled.png';
+		document.getElementById('item_active_'+id).src = '/images/call_list-active.gif';
+		document.getElementById('item_away_'+id).src = '/images/call_list-away_disabled.gif';
 	
 		if(active[id]['phone'])
-			document.getElementById('item_phone_'+id).src = '/images/call_list-phone.png';
+			document.getElementById('item_phone_'+id).src = '/images/call_list-phone.gif';
 		
 		if(active[id]['email'])
-			document.getElementById('item_email_'+id).src = '/images/call_list-email.png';
+			document.getElementById('item_email_'+id).src = '/images/call_list-email.gif';
 		
 		if(active[id]['text'])
-			document.getElementById('item_text_'+id).src = '/images/call_list-text.png';
+			document.getElementById('item_text_'+id).src = '/images/call_list-text.gif';
 		
 		document.getElementById('item_edit_'+id).getElementsByTagName('a')[0].style.color = '';
 

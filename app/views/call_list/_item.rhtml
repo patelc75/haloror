@@ -13,7 +13,7 @@
 	<% unless params[:noli] == 'true/'%>
 	<li id="item_<%=call_order.id%>_<%= i %>" class="<%=className%>" style="padding-left:10px;background:url('<%=img%>') no-repeat;height:100px;cursor:pointer" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')';toggleTooltip(<%=call_order.id%>)" onMouseOut="swapCallListBg(<%=i%>, <%=call_order.id%>, '<%=img%>');toggleTooltip(<%=call_order.id%>)">
 	<%end%>
-		<div id="item_<%=call_order.id%>_tooltip" style="position:absolute;left:350px;top:-40px;height:73px;width:221px;background:url('/images/tooltip.png');display:none">
+		<div id="item_<%=call_order.id%>_tooltip" style="position:absolute;left:350px;top:-40px;height:73px;width:221px;background:url('/images/tooltip.gif');display:none">
 			
 		</div>
 		<div style="float:left;width:35px;padding-top:40px" id="item_<%=call_order.id%>_<%= i %>_position">
@@ -32,11 +32,11 @@
 			%>
 			
 			<a href="#" onClick="moveElementUp(<%=i%>, <%=call_order.id%>, <%=params[:id]%>)">
-				<img src="/images/call_list-up<%=img%>.png" border="0" id="item_up_<%=call_order.id%>" />
+				<img src="/images/call_list-up<%=img%>.gif" border="0" id="item_up_<%=call_order.id%>" />
 			</a>
 			<br />
 			<a href="#" onClick="moveElementDown(<%=i%>, <%=call_order.id%>, <%=params[:id]%>)">
-				<img src="/images/call_list-down<%=img%>.png" border="0" id="item_down_<%=call_order.id%>" />
+				<img src="/images/call_list-down<%=img%>.gif" border="0" id="item_down_<%=call_order.id%>" />
 			</a>
 		</div>
 
@@ -48,7 +48,7 @@
 				opacity = '1'
 			end
 		%>
-		<div style="float:left;background:url('/images/call_list-image_bg.png') no-repeat;height:87px;width:125px;margin-top:5px;opacity:<%=opacity%>" id="item_image_<%=call_order.id%>">
+		<div style="float:left;background:url('/images/call_list-image_bg.gif') no-repeat;height:87px;width:125px;margin-top:5px;opacity:<%=opacity%>" id="item_image_<%=call_order.id%>">
 			<% if @caregiver.image != '' %>
 				<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
 			<% else %>
@@ -72,9 +72,9 @@
 		<div style="float:left;padding-top:25px;width:150px">
 			<% 
 				if call_order.active == 0 
-					img = 'call_list-active_disabled'
+					img = 'call_list-active_disabled.gif'
 				else
-					img = 'call_list-active'
+					img = 'call_list-active.gif'
 				end
 			%>
 	
@@ -83,9 +83,9 @@
 	
 			<% 
 				if call_order.active == 1
-					img = 'call_list-away_disabled'
+					img = 'call_list-away_disabled.gif'
 				else
-					img = 'call_list-away'
+					img = 'call_list-away.gif'
 				end
 			%>
 	
@@ -95,9 +95,9 @@
 		<div style="float:left;padding-top:25px;width:75px">
 			<% 
 				if call_order.phone_active == 0 or call_order.active == 0
-					img = 'call_list-phone-inactive'
+					img = 'call_list-phone-inactive.gif'
 				else
-					img = 'call_list-phone'
+					img = 'call_list-phone.gif'
 				end
 			%>
 			
@@ -107,9 +107,9 @@
 		<div style="float:left;padding-top:25px;width:75px">
 			<% 
 				if call_order.email_active == 0 or call_order.active == 0 
-					img = 'call_list-email-inactive'
+					img = 'call_list-email-inactive.gif'
 				else
-					img = 'call_list-email'
+					img = 'call_list-email.gif'
 				end
 			%>
 	
@@ -119,9 +119,9 @@
 		<div style="float:left;padding-top:25px;width:100px">
 			<% 
 				if call_order.text_active == 0 or call_order.active == 0
-					img = 'call_list-text-inactive'
+					img = 'call_list-text-inactive.gif'
 				else
-					img = 'call_list-text'
+					img = 'call_list-text.gif'
 				end
 			%>
 	
