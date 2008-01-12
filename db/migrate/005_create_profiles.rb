@@ -2,8 +2,7 @@ class CreateProfiles < ActiveRecord::Migration
   def self.up
     create_table :profiles do |t|	
 	  t.column :id, :primary_key, :null => false
-	  # t.column :user_id, :integer
-	  t.column :type, :string
+	  t.column :user_id, :integer
 	  t.column :first_name, :string
 	  t.column :last_name, :string
 	  t.column :address, :string

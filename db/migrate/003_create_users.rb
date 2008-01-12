@@ -16,6 +16,8 @@ class CreateUsers < ActiveRecord::Migration
       t.column :activated_at, :datetime
       
       t.column :image, :string
+	  
+	  t.column :type, :string
     end
   end
 
