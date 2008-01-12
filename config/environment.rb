@@ -40,6 +40,7 @@ Rails::Initializer.run do |config|
 
   # Make Active Record use UTC-base instead of local time
   # config.active_record.default_timezone = :utc
+  config.action_controller.session = { :session_key => "_myapp_session", :secret => "some secret phrase of at least 30 characters" }
   
   # See Rails::Configuration for more options
   config.active_record.observers = :user_observer, :panic_observer, :fall_observer
