@@ -41,7 +41,7 @@ class UsersController < ApplicationController
   end
   
   def edit
-    @call_order = User.find(params[:id])
+    @user = User.find(params[:id])
     render :layout => false
   end
   

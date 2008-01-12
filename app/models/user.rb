@@ -7,9 +7,10 @@ class User < ActiveRecord::Base
   has_many :falls  
   has_many :events
   has_many :skin_temps
+  has_one  :profile
   
   has_many :call_orders, :order => :position
-  has_many :caregivers, :through => :call_orders
+  has_many :caregivers, :through => :call_orders #self referential many to many
 
   # Virtual attribute for the unencrypted password
   cattr_accessor :current_user #stored in memory instead of table
@@ -114,4 +115,8 @@ class User < ActiveRecord::Base
   def make_activation_code
     self.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
   end 
+end
+
+class Caregiver < User
+	
 end
