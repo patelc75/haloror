@@ -39,6 +39,8 @@ body {
 	padding-top:10px;
 	width:500px;
 	text-align:right;
+	
+	height:28px;
 }
 
 #user-info a
@@ -77,7 +79,6 @@ body {
 #people
 {
 	float:right;
-	margin-top:13px;
 }
 
 #main-col
