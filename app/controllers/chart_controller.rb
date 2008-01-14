@@ -112,7 +112,7 @@ class ChartController < ApplicationController
     
     # skin temp
     gen_skintemp_data_sets
-    graph.add (:series, "Skin Temperature", @skintemp_series, @skintemp_labels)
+    graph.add(:series, "Skin Temperature", @skintemp_series, @skintemp_labels)
     
     render :xml => graph.to_xml
   end
