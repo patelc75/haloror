@@ -55,6 +55,7 @@
 				<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
 			<% end %>
 		</div>
+		
 
 		<div style="float:left;padding-top:40px;width:175px">
 			<%
@@ -64,8 +65,14 @@
 					color = ""
 				end
 			%>
+		
+					<span id="item_firstname_<%=call_order.id.to_s%>" style="color:<%=color%>"><%=@caregiver.profile.first_name%></span>
+					
+							<span id="item_lastname_<%=call_order.id.to_s%>" style="color:<%=color%>"><%=@caregiver.profile.last_name%></span>
 			
 		</div>
+		
+		
 
 		<div style="float:left;padding-top:25px;width:150px">
 			<% 
