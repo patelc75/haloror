@@ -7,6 +7,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params[:user])
     @user.save!
+    Profile.create(:user_id => @user.id)
     self.current_user = @user
     #redirect_back_or_default('/')
     flash[:notice] = "Thanks for signing up!"
