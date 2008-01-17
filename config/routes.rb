@@ -14,7 +14,10 @@ ActionController::Routing::Routes.draw do |map|
   #map.resources :caregivers, :active_scaffold => true
  
   #added automatically after running restful_authentication script
-  map.resources :users, :sessions  
+  map.resources :users do |user|
+    user.resource :profile
+  end
+  map.resources :sessions  
   
   map.signup '/signup', :controller => 'users', :action => 'new'
   map.login  '/login', :controller => 'sessions', :action => 'new'

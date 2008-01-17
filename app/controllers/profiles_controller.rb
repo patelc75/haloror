@@ -51,7 +51,7 @@ class ProfilesController < ApplicationController
   # PUT /profiles/1
   # PUT /profiles/1.xml
   def update
-    @profile = Profile.find(params[:id])
+    @profile = Profile.find_by_user_id(params[:user_id])
 
     respond_to do |format|
       if @profile.update_attributes(params[:profile])

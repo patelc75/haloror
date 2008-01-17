@@ -138,7 +138,8 @@
 		</div>
 
 		<div style="float:left;padding-top:35px;width:75px" id="item_edit_<%=call_order.id%>">
-			<%=link_to_remote_redbox('Edit Info', :url => {:controller => 'users' , :action => 'redir_to_edit' , :id => @caregiver.id}, :complete => 'updatePositions()')%>
+			<% puts edit_user_url(@caregiver)%>
+			<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "users", :action => "ajax_edit", :id => @caregiver.id }, :html => {:method => :get, :complete => 'updatePositions()'})%>
 		</div>
 	<% unless params[:noli] == 'true/'%>
 	</li>

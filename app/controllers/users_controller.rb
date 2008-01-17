@@ -44,9 +44,14 @@ class UsersController < ApplicationController
   def edit
     @user = User.find(params[:id])
     render :layout => false
-  end
+  end  
+  
+  def ajax_edit
+    @user = User.find(params[:id])
+    render :layout => false
+    end
   
   def redir_to_edit
-    redirect_to_url '/users/'+params[:id]+';edit/'
+    redirect_to '/users/'+params[:id]+';edit/'
   end
 end
