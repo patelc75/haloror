@@ -136,14 +136,14 @@ class ChartController < ApplicationController
     gen_skintemp_data_sets
 
     #render a special view which as XML file 
-    render :template => 'chart/refresh_data', :layout => false
+    render :template => 'chart/refresh_data.xml.builder', :layout => false
   end
   
   def refresh_activity_data
     gen_activity_data_sets
 
     #render a special view which as XML file 
-    render :template => 'chart/refresh_activity_data', :layout => false
+    render :template => 'chart/refresh_activity_data.xml.builder', :layout => false
   end
   
   
