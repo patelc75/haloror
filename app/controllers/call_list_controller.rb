@@ -1,8 +1,18 @@
 class CallListController < ApplicationController
   def show
-    #layout :none	
     @call_list = User.find(params[:id])
-    #render(:layout => false) # never use a layout
+    
+    @num_ref = {}
+    @num_ref[0] = 'th'
+    @num_ref[1] = 'st'
+    @num_ref[2] = 'nd'
+    @num_ref[3] = 'rd'
+    @num_ref[4] = 'th'
+    @num_ref[5] = 'th'
+    @num_ref[6] = 'th'
+    @num_ref[7] = 'th'
+    @num_ref[8] = 'th'
+    @num_ref[9] = 'th'
   end
   
   def sort
