@@ -12,6 +12,7 @@ class CreateProfiles < ActiveRecord::Migration
       t.column :work_phone, :string
 	  t.column :cell_phone, :string
 	  t.column :relationship, :string
+	  t.column :email, :string
     end
   end
 
