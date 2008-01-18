@@ -14,7 +14,9 @@
 	<li id="item_<%=call_order.id%>_<%= i %>" class="<%=className%>" style="padding-left:10px;background:url('<%=img%>') no-repeat;height:100px;cursor:pointer" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')';toggleTooltip(<%=call_order.id%>)" onMouseOut="swapCallListBg(<%=i%>, <%=call_order.id%>, '<%=img%>');toggleTooltip(<%=call_order.id%>)">
 	<%end%>
 		<div id="item_<%=call_order.id%>_tooltip" style="position:absolute;left:350px;top:-40px;height:73px;width:221px;background:url('/images/tooltip.gif');display:none">
-			
+			<div style="float:right;margin-right:3px;margin-top:3px">
+				<a href="javascript:void(0)" onClick="disableTooltip(<%=call_order.id%>)" style="color:#000;text-decoration:none">[x]</a>
+			</div>
 		</div>
 		<div style="float:left;width:35px;padding-top:40px" id="item_<%=call_order.id%>_<%= i %>_position">
 			<% if call_order.active == 1 %>
@@ -62,13 +64,13 @@
 				if call_order.active == 0
 					color = "gray"
 				else
-					color = ""
+					color = "#4691b1"
 				end
 			%>
 		
-					<span id="item_firstname_<%=call_order.id.to_s%>" style="color:<%=color%>"><%=@caregiver.profile.first_name%></span>
+					<span id="item_firstname_<%=call_order.id.to_s%>" style="font-weight:bold;color:<%=color%>"><%=@caregiver.profile.first_name%></span>
 					
-							<span id="item_lastname_<%=call_order.id.to_s%>" style="color:<%=color%>"><%=@caregiver.profile.last_name%></span>
+							<span id="item_lastname_<%=call_order.id.to_s%>" style="font-weight:bold;color:<%=color%>"><%=@caregiver.profile.last_name%></span>
 			
 		</div>
 		

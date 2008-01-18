@@ -258,6 +258,7 @@ function moveElementUp(pos,id,call_order) {
 	new Ajax.Request('/call_list/sort/'+call_order+'/', {asynchronous:true, evalScripts:true, parameters:serialize()})
 
 	swapCallListBg(pos, id);
+	toggleTooltip(id);
 }
 
 /*
@@ -271,6 +272,7 @@ function moveElementDown(pos,id,call_order) {
 	new Ajax.Request('/call_list/sort/'+call_order+'/', {asynchronous:true, evalScripts:true, parameters:serialize()})
 	
 	swapCallListBg(pos,id);
+	toggleTooltip(id);
 }
 
 function serialize()
@@ -308,4 +310,11 @@ function toggleTooltip(id)
 		e.style.display = 'block';
 	else
 		e.style.display = 'none';
+}
+
+function disableTooltip(id)
+{
+	showTooltip = false;
+	
+	toggleTooltip(id);
 }		
