@@ -20,7 +20,14 @@
 		</div>
 		<div style="float:left;width:35px;padding-top:40px" id="item_<%=call_order.id%>_<%= i %>_position">
 			<% if call_order.active == 1 %>
-				<%=position%>
+				<%
+					s_pos = position.to_s
+					start = s_pos.length - 1
+					
+					pos_end = @num_ref[s_pos[start,1].to_i]
+				%>
+				
+				<%=position%><%=pos_end%>
 			<% end %>
 		</div>
 		<div style="padding-top:25px;float:left;width:50px">

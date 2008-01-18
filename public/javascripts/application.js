@@ -23,6 +23,18 @@ function toggleHTabs(current) {
 }
 
 function updatePositions(li_id) {
+	var num_ref = new Hash();
+	num_ref[0] = 'th';
+	num_ref[1] = 'st';
+	num_ref[2] = 'nd';
+	num_ref[3] = 'rd';
+	num_ref[4] = 'th';
+	num_ref[5] = 'th';
+	num_ref[6] = 'th';
+	num_ref[7] = 'th';
+	num_ref[8] = 'th';
+	num_ref[9] = 'th';
+	
 	obj = document.getElementById('call_list'); // get parent list
 	CN = obj.childNodes; // get nodes
 	x = 0;
@@ -30,7 +42,11 @@ function updatePositions(li_id) {
 	while(x < CN.length){ // loop through elements for the desired one
 		if(document.getElementById(CN[x].id).className == 'active')
 		{
-			document.getElementById(CN[x].id+'_position').innerHTML = pos;
+			pos = pos+''
+			var start = pos.length-1;
+			var pos_end = num_ref[pos.substr(start,1)];
+			
+			document.getElementById(CN[x].id+'_position').innerHTML = pos+pos_end;
 			pos++;
 		}
 		
