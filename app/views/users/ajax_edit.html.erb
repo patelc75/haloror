@@ -1,8 +1,11 @@
-<img src="/images/lightbox-col-header.png">
+<!-- start lightbox header -->
 
-<div id="lightbox-col"><div class="lightbox-content">
+<div id="lightbox-col"><img src="/images/lightbox-col-header.gif"><div class="lightbox-content">
 
 <div style="width:380px;">
+
+<!-- end lightbox header -->
+
 		<% remote_form_for @user.profile, :url => user_profile_path(@user) do |f|  %>
 			<%caregiver = @user%>
 
@@ -54,6 +57,7 @@
 				<input name="commit" type="image" src="/images/update.gif" onClick="RedBox.close()" /> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
 			</div>
 		<% end %>
-</div></div></div>
-
-<img src="/images/lightbox-col-footer.png">
+		
+<!-- start lightbox footer -->
+</div></div><img src="/images/lightbox-col-footer.gif"></div>
+<!-- end lightbox footer -->
