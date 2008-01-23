@@ -5,6 +5,8 @@ require "drb"
 class ChartController < ApplicationController
   include Ziya
   
+  layout "application"
+  
   def index
     @battery = Battery.find(:first, :order=>"id DESC")
     @gauge_width = 50 * (@battery.percentage/100.0)
@@ -53,51 +55,6 @@ class ChartController < ApplicationController
     render(:layout => false , :partial => 'chart')
   end
   
-  def chart_last_half_hour
-    render(
-    :partial => 'chart_last_half_hour', 
-    :locals => {
-      :start =>'2007-08-30 18:14:37-04',
-      :finish => '2007-08-30 18:44:37-04',          
-    },
-    :layout => false
-    )
-  end 
-  
-  def chart_last_hour
-    render(
-    :partial => 'heartrate_discrete', 
-    :locals => {
-      :start => '2007-08-30 17:44:37-04',          
-      :finish => '2007-08-30 18:44:37-04',                
-    },
-    :layout => false
-    )
-  end 
-
-  def chart_last_six_hours
-    render(
-    :partial => 'heartrate_discrete', 
-    :locals => {
-      :start => '2007-08-30 12:44:37-04',          
-      :finish => '2007-08-30 18:44:37-04',                
-    },
-    :layout => false
-    )
-  end 
-
-  def chart_all_day
-    render(
-    :partial => 'heartrate_discrete', 
-    :locals => {
-      :start =>'2007-08-30 06:00:00-04',
-      :finish => '2007-08-30 18:44:37-04',
-    },
-    :layout => false
-    )
-  end 
-  
-  
   
   def line_chart
     #start_background_task
@@ -112,6 +69,10 @@ class ChartController < ApplicationController
     
     # skin temp
     gen_skintemp_data_sets
+	
+	logger.debug{ "logger: skintemp_series =#{@skintemp_series} \n" }    
+	logger.debug{ "logger: skintemp_labels =#{@skintemp_labels} \n" }    
+
     graph.add(:series, "Skin Temperature", @skintemp_series, @skintemp_labels)
     
     render :xml => graph.to_xml
@@ -201,7 +162,7 @@ class ChartController < ApplicationController
     while current_point < num_points
       condition = "timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}'"
       average = Heartrate.average(:heartrate, :conditions => condition)
-	  puts "Average--------------------------------------------" + average.to_s
+	  #puts "Average--------------------------------------------" + average.to_s
       current_time = current_time + interval
       
 	  #@heartrate_series << round_to(average, 1)
@@ -249,9 +210,16 @@ class ChartController < ApplicationController
     #get the latest 10 records (ordered by timestamp) from Heartrate table
     end_time = Time.now
 	
-    if cookies[:chart_type] == 'live'
-      heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+	#logger.debug{ "logger: current_user_id =#{current_user.id} \n" }    
+	
+	if cookies[:chart_type] == 'live'
+      heartrate = Heartrate.find(:all , 
+								:limit => 10, 
+								:order => "timestamp DESC", 
+								:conditions => "user_id = '#{current_user.id}'").reverse
+	  
 	  @categories =  heartrate.map {|a| a.timestamp.strftime("%H:%M:%S") }
+	  
 	  if cookies[:heartrate] == "true"
         @heartrate_series  = heartrate.map {|a| a.heartrate }
         @heartrate_labels  = heartrate.map {|a| a.heartrate }
@@ -259,6 +227,7 @@ class ChartController < ApplicationController
         @heartrate_series = {}
         @heartrate_labels = {}
 	  end
+	  
     elsif cookies[:chart_type] == 'last_half_hour'
 	  start_time = end_time - 30 * 60
 	  average_data(10, start_time, end_time) 
@@ -270,7 +239,8 @@ class ChartController < ApplicationController
 	  average_data(10, start_time, end_time)
     elsif cookies[:chart_type] == 'all_day'
       start_time = end_time - 24 * 60 * 60
-	  heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
+	  average_data(10, start_time, end_time)
+	  #heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
     end
     
 
@@ -298,7 +268,7 @@ class ChartController < ApplicationController
     @activity_series  = activity.map {|a| a.activity }
   end
   
-  def gen_skintemp_data_sets 
+  def gen_skintemp_data_sets
     if cookies[:chart_type] == 'live'
       skin_temp = SkinTemp.find(:all , :limit => 10, :order => "timestamp DESC").reverse
     elsif cookies[:chart_type] == 'last_half_hour'
