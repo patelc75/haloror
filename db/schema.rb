@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 16) do
+ActiveRecord::Schema.define(:version => 14) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id"
@@ -20,18 +20,18 @@ ActiveRecord::Schema.define(:version => 16) do
   create_table "batteries", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
-    t.integer  "percentage",     :null => false
-    t.integer  "time_remaining", :null => false
+    t.integer  "percentage",     :limit => 1, :null => false
+    t.integer  "time_remaining",              :null => false
   end
 
   create_table "call_orders", :force => true do |t|
     t.integer "user_id"
     t.integer "caregiver_id"
     t.integer "position"
-    t.integer "active",       :null => false
-    t.integer "phone_active", :null => false
-    t.integer "email_active", :null => false
-    t.integer "text_active",  :null => false
+    t.integer "active",       :limit => 1, :null => false
+    t.integer "phone_active", :limit => 1, :null => false
+    t.integer "email_active", :limit => 1, :null => false
+    t.integer "text_active",  :limit => 1, :null => false
   end
 
   create_table "events", :force => true do |t|
@@ -44,13 +44,13 @@ ActiveRecord::Schema.define(:version => 16) do
   create_table "falls", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
-    t.integer  "magnitude", :null => false
+    t.integer  "magnitude", :limit => 2, :null => false
   end
 
   create_table "heartrates", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
-    t.integer  "heartrate", :null => false
+    t.integer  "heartrate", :limit => 1, :null => false
   end
 
   create_table "orientations", :force => true do |t|
@@ -65,6 +65,7 @@ ActiveRecord::Schema.define(:version => 16) do
   end
 
   create_table "profiles", :force => true do |t|
+    t.integer "user_id"
     t.string  "first_name"
     t.string  "last_name"
     t.string  "address"
@@ -74,8 +75,7 @@ ActiveRecord::Schema.define(:version => 16) do
     t.string  "work_phone"
     t.string  "cell_phone"
     t.string  "relationship"
-    t.integer "user_id"
-    t.string  "email"
+    t.string  "email",        :default => "", :null => false
   end
 
   create_table "raw_data_files", :force => true do |t|
@@ -89,14 +89,14 @@ ActiveRecord::Schema.define(:version => 16) do
   create_table "skin_temps", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
-    t.integer  "skin_temp", :null => false
+    t.integer  "skin_temp", :limit => 2, :null => false
   end
 
   create_table "steps", :force => true do |t|
     t.integer  "user_id"
     t.datetime "begin_timestamp"
     t.datetime "end_timestamp"
-    t.integer  "steps",           :null => false
+    t.integer  "steps",           :limit => 1, :null => false
   end
 
   create_table "users", :force => true do |t|
