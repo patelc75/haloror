@@ -25,14 +25,16 @@
 	<div id="header">
 		<div class="container">
 			<div id="user-info">
-				Welcome, 
+			<% unless current_user == :false %>
+				Welcome, <%=current_user.profile.first_name%>
 				<span class="user">
 
 				</span>				
 				<span class="divider">|</span> 
 				<%= link_to 'Account Settings', :controller => 'call_list', :action => 'show', :id => current_user.id %>
 				<span class="divider">|</span> 
-				<a href="#" style="font-weight:bold">Logout</a>
+				<a href="/logout" style="font-weight:bold">Logout</a>
+			<% end %>
 			</div>
 			<img src="/images/halo-logo-2.gif" alt="Halo Research" id="logo-2" />
 			<img src="/images/header-people.gif" alt="People" id="people" />
