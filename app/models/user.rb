@@ -1,5 +1,7 @@
 require 'digest/sha1'
 class User < ActiveRecord::Base
+  acts_as_authorized_user
+  
   has_many :heartrates
   has_many :panics
   has_many :batteries
@@ -28,7 +30,7 @@ class User < ActiveRecord::Base
   before_create :make_activation_code 
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
-  attr_accessible :login, :email, :password, :password_confirmation
+  #attr_accessible :login, :email, :password, :password_confirmation
   
   # Activates the user in the database.
   def activate
