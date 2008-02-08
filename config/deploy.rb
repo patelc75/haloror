@@ -44,7 +44,7 @@ namespace :deploy do
     sudo "#{lsws_cmd} stop" 
   end
 
-  task :after_update, :roles => :app do
+  task :after_update_test, :roles => :app do
     sudo <<-CMD
     sh -c "chown -R #{cap_user}:#{cap_group} #{release_path} && chmod -R g+w #{release_path}"
     CMD
@@ -53,9 +53,9 @@ namespace :deploy do
   end
 end
 
-after "deploy", "deploy:cleanup"
-after "deploy", "deploy:restart"
-after "deploy", "after_update"
+#after "deploy", "deploy:cleanup"
+after "deploy", "deploy:restart_test"
+#after "deploy", "deploy:after_update_test"
 
 
 #set :use_sudo, false 
