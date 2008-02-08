@@ -1,0 +1,17 @@
+development:
+    adapter: postgresql
+    database: haloror2
+    username: madhukarpadma
+
+test:
+    adapter: postgresql 
+    database: haloror2_test
+    username: madhukarpadma
+
+production:
+    adapter: postgresql
+    database: haloror
+    username: postgres
+    password:
+    host: localhost
+
