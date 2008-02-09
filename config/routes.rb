@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :vitals
+
   map.resources :orientations
   map.resources :steps
   map.resources :events  
