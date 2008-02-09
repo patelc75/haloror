@@ -234,7 +234,8 @@ class ChartController < ApplicationController
 	  
     elsif cookies[:chart_type] == 'last_half_hour'
 	  start_time = end_time - 30 * 60
-	  average_data(10, start_time, end_time) 
+	  Heartrate.average_data(10, start_time, end_time)
+	  #average_data(10, start_time, end_time) 
     elsif cookies[:chart_type] == 'last_hour'
       start_time = end_time - 60 * 60
 	  average_data(10, start_time, end_time) 

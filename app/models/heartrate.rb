@@ -19,4 +19,8 @@ class Heartrate < Vital
   def self.get_average(condition)
 	Heartrate.average(:heartrate, :conditions => condition)
   end
+  
+  def self.format_average(average)
+	round_to(average, 1)
+  end
 end

@@ -1,4 +1,4 @@
-class Step < ActiveRecord::Base
+class Step < Vital
   set_table_name "steps"
   belongs_to :user
   
