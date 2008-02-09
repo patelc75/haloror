@@ -3,15 +3,14 @@ set :repository,  "http://svn2.assembla.com/svn/halotrac/trunk/"
 #ssh_options[:port] = 80
 #set :secure_ssh_port, 80
 set :user, "web" 
-
+#set :runner, nil
+#default_run_options[:pty] = true
 #set :cap_user, "caprec"
 #set :cap_group, "caprec"
-set :cap_user, "madhukarpadma"
-set :cap_group, "madhukarpadma"
-
-
- 
+#set :cap_user, "mywebapp"
+#set :cap_group, "mywebapp"
 set :lsws_cmd, "/opt/lsws/bin/lswsctrl"
+
 # If you aren't deploying to /u/apps/#{application} on the target
 # servers (which is the default), you can specify the actual location
 # via the :deploy_to variable:
@@ -28,33 +27,60 @@ role :app, "67-207-132-26.slicehost.net"
 role :web, "67-207-132-26.slicehost.net"
 role :db,  "67-207-132-26.slicehost.net", :primary => true
 
+#task :after_update_code, :roles => :app do
+ # sudo <<-CMD
+  #sh -c "chown -R #{cap_user}:#{cap_group} #{release_path} &&
+   #      chmod -R g+w #{release_path}"
+  #CMD
+#end
+
+#task :restart, :roles => :app do
+ # sudo "#{lsws_cmd} restart"
+#end
+
+
+#task :restart, :roles => :app do
+ # sudo "#{lsws_cmd} restart"
+#end
+
 namespace :deploy do
   desc "Restart litespeed web server" 
-  task :restart_test, :roles => :app do
+  task :restart, :roles => :app do
     sudo "#{lsws_cmd} restart" 
   end
-
-  desc "Start litespeed web server" 
-  task :start_test, :roles => :app do
-    sudo "#{lsws_cmd} start" 
-  end
-
+  
   desc "Stop litespeed server" 
-  task :stop_test, :roles => :app do
+  task :stop, :roles => :app do
     sudo "#{lsws_cmd} stop" 
   end
+  
+  desc "Start litespeed web server" 
+  task :start, :roles => :app do
+    sudo "#{lsws_cmd} start" 
+  end
+end  
+  
+#  desc "Start litespeed web server" 
+ # task :start_test, :roles => :app do
+  #  sudo "#{lsws_cmd} start" 
+  #end
 
-  task :after_update_test, :roles => :app do
-    sudo <<-CMD
-    sh -c "chown -R #{cap_user}:#{cap_group} #{release_path} && chmod -R g+w #{release_path}"
-    CMD
+  #desc "Stop litespeed server" 
+  #task :stop_test, :roles => :app do
+   # sudo "#{lsws_cmd} stop" 
+  #end
+
+  #task :after_update_test, :roles => :app do
+   # sudo <<-CMD
+    #sh -c "chown -R #{cap_user}:#{cap_group} #{release_path} && chmod -R g+w #{release_path}"
+    #CMD
     #sudo "chmod -R 2770 /home/web/captest" 
     #sudo "chgrp -R www-data /home/web/captest"
-  end
-end
+  #end
+#end
 
-#after "deploy", "deploy:cleanup"
-after "deploy", "deploy:restart_test"
+after "deploy", "deploy:cleanup"
+after "deploy", "deploy:restart"
 #after "deploy", "deploy:after_update_test"
 
 
@@ -67,15 +93,17 @@ after "deploy", "deploy:restart_test"
 
 
 #deploy.task :restart_web_server, :roles => :web do
- # "/opt/lsws restart"
+ # /opt/lsws/bin/lswsctrl restart"
 #end
 
 
-#2)task :restart_web_server, :roles => :web do
-# "/opt/lsws restart"
+#task :restart_web_server, :roles => :app do
+ 
+#task :restart_web_server do
+ #"#{lsws_cmd} restart"
 #end
 
-#2)after "deploy:start", :restart_web_server
+#after "deploy:start", :restart_web_server
 
 #role :app, "67-207-132-26.slicehost.net"
 #role :web, "67-207-132-26.slicehost.net"
