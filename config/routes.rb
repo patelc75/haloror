@@ -13,6 +13,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :raw_data_files, :member => {:download => :get}
   map.resources :heartrates
   map.resources :caregivers
+  map.resources :profiles
   #map.resources :caregivers, :active_scaffold => true
  
   #added automatically after running restful_authentication script
