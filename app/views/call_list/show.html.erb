@@ -2,71 +2,67 @@
 	<div id="call_list-col-header">
 		Account Settings: <span style="color:#000;font-size:.75em"><%= @call_list.profile.first_name %> <%= @call_list.profile.last_name %>'s Caregivers</span>
 	</div>
-	<% if @call_list.call_orders.count > 0 %>
-		<div class="content">
-				<div style="float:left;width:35px">
-					<div style="margin-left:15px">Call<br />Order</div>
-				</div>
-				<div style="float:left;width:70px">
-					&nbsp;
-				</div>
-				<div style="float:left;width:125px">
-					&nbsp;
-				</div>
-				<div style="float:left;width:175px">
-					Name
-				</div>
-				<div style="float:left;width:150px">
-					Status
-				</div>
-				<div style="float:left;width:75px">
-					Call
-				</div>
-				<div style="float:left;width:75px">
-					Email
-				</div>
-				<div style="float:left;width:125px">
-					Text Message
-				</div>
-				<div style="float:left;width:50px">
-				
-				</div>
-				<div style="float:left;width:75px">
-				
-				</div>
-				<p>&nbsp;</p>
-	      		<ul id="call_list">
-				<% position = 1 %>
-				<% i = 1 %>
-				<% @call_list.call_orders.each do |call_order| %>
-					<% @caregiver = call_order.caregiver %>
-				
-				
-						<%= render :partial => "item", :locals => { :call_order => call_order , :position => position , :i => i } %>
-					<% 
-						if call_order.active == 1
-							position = position+1 
-						end
-					%>
-					<% i = i+1 %>
-				<% end %>
-				</ul>
-				
-				
+	
+	<% 
+		call_list_header_display = 'block'
+		if @caregivers.empty? 
+			call_list_header_display = 'none'
+		end
+	%>
 
-			<!--%= sortable_element 'call_list',
-	        :url => { :action => "sort" , :id => @call_list },
-			:onChange => "updatePositions",
-			 :tag => 'li'
-	        %-->
-			<script type="text/javascript">
-			//<![CDATA[
-			Sortable.create("call_list", {onChange:updatePositions, onUpdate:function(){new Ajax.Request('/call_list/sort/<%=params[:id]%>/', {asynchronous:true, evalScripts:true, parameters:serialize()});showTooltip=false}, tag:'li'})
-			//]]>
-			</script>
+	<div class="content">
+		<div id="call_list_header" style="display:<%=call_list_header_display%>">
+			<div style="float:left;width:35px">
+				<div style="margin-left:15px">Order</div>
+			</div>
+			<div style="float:left;width:70px">
+				&nbsp;
+			</div>
+			<div style="float:left;width:125px">
+				&nbsp;
+			</div>
+			<div style="float:left;width:175px">
+				Name
+			</div>
+			<div style="float:left;width:150px">
+				Status
+			</div>
+			<div style="float:left;width:75px">
+				Call
+			</div>
+			<div style="float:left;width:75px">
+				Email
+			</div>
+			<div style="float:left;width:100px">
+				Text Message
+			</div>
+			<div style="float:left;width:50px">
+				Remove
+			</div>
+			<div style="float:left;width:75px">
+		
+			</div>
 		</div>
-	<% end %>
-	<%=link_to_remote_redbox(image_tag('add-caregiver.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), :url => {:controller => 'call_orders' , :action => 'new'})%>
+		<p>&nbsp;</p>
+     	<ul id="call_list">
+			<%= render :partial => "load_caregivers", :locals => { :caregivers => @caregivers } %>
+		</ul>
+			
+			
+
+		<!--%= sortable_element 'call_list',
+        :url => { :action => "sort" , :id => @call_list },
+		:onChange => "updatePositions",
+		 :tag => 'li'
+        %-->
+		<script type="text/javascript">
+		//<![CDATA[
+		Sortable.create("call_list", {onChange:updatePositions, onUpdate:function(){new Ajax.Request('/call_list/sort/', {asynchronous:true, evalScripts:true, parameters:serialize()});showTooltip=false}, tag:'li'})
+		//]]>
+		</script>
+	</div>
+
+	<%=link_to_remote_redbox(image_tag('add-caregiver.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), :url => {:controller => 'users' , :action => 'new_caregiver'})%>
 	
 	<div style="clear:both"></div>
 	<div id="call_list-col-footer"></div>

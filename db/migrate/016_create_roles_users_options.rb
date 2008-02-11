@@ -1,6 +1,6 @@
 class CreateRolesUsersOptions < ActiveRecord::Migration
   def self.up
-    create_table :roles_users_options, :id => false do |t|
+    create_table :roles_users_options do |t|
       t.column :roles_users_id,          :integer
       t.column :removed,          :boolean
     end

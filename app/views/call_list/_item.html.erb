@@ -1,7 +1,7 @@
-<% @caregiver = call_order.caregiver %>
+
 
 <%
-	if call_order.active == 0
+	if !opts.active?
 		img = '/images/call_list-item-away.gif'
 		className = 'inactive'
 	else
@@ -10,146 +10,174 @@
 	end
 %>
 
-	<% unless params[:noli] == 'true/'%>
-	<li id="item_<%=call_order.id%>_<%= i %>" class="<%=className%>" style="padding-left:10px;background:url('<%=img%>') no-repeat;height:100px;cursor:pointer" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')';toggleTooltip(<%=call_order.id%>)" onMouseOut="swapCallListBg(<%=i%>, <%=call_order.id%>, '<%=img%>');toggleTooltip(<%=call_order.id%>)">
-	<%end%>
-		<div id="item_<%=call_order.id%>_tooltip" style="position:absolute;left:350px;top:-40px;height:73px;width:221px;background:url('/images/tooltip.gif');display:none">
-			<div style="float:right;margin-right:3px;margin-top:3px">
-				<a href="javascript:void(0)" onClick="disableTooltip(<%=call_order.id%>)" style="color:#000;text-decoration:none">[x]</a>
-			</div>
+<% unless params[:noli] == 'true/'%>
+	<li id="item_<%=caregiver.id%>_<%= i %>" class="<%=className%>" style="padding-left:10px;background:url('<%=img%>') no-repeat;height:100px;cursor:pointer" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')';toggleTooltip(<%=caregiver.id%>)" onMouseOut="swapCallListBg(<%=i%>, <%=caregiver.id%>, '<%=img%>');toggleTooltip(<%=caregiver.id%>)">
+<%end%>
+	
+	<!--TOOLTIP-->
+	
+	<div id="item_<%=caregiver.id%>_tooltip" style="position:absolute;left:350px;top:-40px;height:73px;width:221px;background:url('/images/tooltip.gif');display:none">
+		<div style="float:right;margin-right:3px;margin-top:3px">
+			<a href="javascript:void(0)" onClick="disableTooltip(<%=caregiver.id%>)"><img src="/images/tooltip-close.gif" style="margin-right:5px;margin-top:3px" /></a>
 		</div>
-		<div style="float:left;width:35px;padding-top:40px;color:#4691b1;font-size:16px" id="item_<%=call_order.id%>_<%= i %>_position">
-			<% if call_order.active == 1 %>
-				<%
-					s_pos = position.to_s
-					start = s_pos.length - 1
-					
-					pos_end = @num_ref[s_pos[start,1].to_i]
-				%>
-				
-				<%=position%><%=pos_end%>
-			<% end %>
-		</div>
-		<div style="padding-top:25px;float:left;width:50px">
-			
+	</div>
+	
+	<!--POSITION-->
+	
+	<div style="float:left;width:35px;padding-top:40px;color:#4691b1;font-size:16px" id="item_<%=caregiver.id%>_<%= i %>_position">
+		<% if opts.active? %>
 			<%
-				if call_order.active == 0
-					img = '-away'
-				else
-					img = ''
-				end
+				s_pos = position.to_s
+				start = s_pos.length - 1
+				
+				pos_end = @num_ref[s_pos[start,1].to_i]
 			%>
 			
-			<a href="#" onClick="moveElementUp(<%=i%>, <%=call_order.id%>, <%=params[:id]%>)">
-				<img src="/images/call_list-up<%=img%>.gif" border="0" id="item_up_<%=call_order.id%>" />
-			</a>
-			<br />
-			<a href="#" onClick="moveElementDown(<%=i%>, <%=call_order.id%>, <%=params[:id]%>)">
-				<img src="/images/call_list-down<%=img%>.gif" border="0" id="item_down_<%=call_order.id%>" />
-			</a>
-		</div>
-
-
-		<% 
-			if call_order.active == 0
-				opacity = '.5'
+			<%=position%><%=pos_end%>
+		<% end %>
+	</div>
+	
+	<!--ARROWS-->
+	
+	<div style="padding-top:25px;float:left;width:50px">
+		<%
+			unless opts.active?
+				img = '-away'
 			else
-				opacity = '1'
+				img = ''
 			end
 		%>
-		<div style="float:left;background:url('/images/call_list-image_bg.gif') no-repeat;height:87px;width:125px;margin-top:5px;opacity:<%=opacity%>" id="item_image_<%=call_order.id%>">
-			<% if @caregiver.image != '' %>
-				<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
-			<% else %>
-				<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
-			<% end %>
-		</div>
+		<a href="#" onClick="moveElementUp(<%=i%>, <%=caregiver.id%>, <%=current_user.id%>)">
+			<img src="/images/call_list-up<%=img%>.gif" border="0" id="item_up_<%=caregiver.id%>" />
+		</a>
+		<br />
+		<a href="#" onClick="moveElementDown(<%=i%>, <%=caregiver.id%>, <%=current_user.id%>)">
+			<img src="/images/call_list-down<%=img%>.gif" border="0" id="item_down_<%=caregiver.id%>" />
+		</a>
+	</div>
+
+	<!--PROFILE IMAGE-->
+
+	<% 
+		unless opts.active?
+			opacity = '.5'
+		else
+			opacity = '1'
+		end
+	%>
+	<div style="float:left;background:url('/images/call_list-image_bg.gif') no-repeat;height:87px;width:125px;margin-top:5px;opacity:<%=opacity%>" id="item_image_<%=caregiver.id%>">
+		<% if caregiver.image != '' %>
+			<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
+		<% else %>
+			<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
+		<% end %>
+	</div>
+	
+	<!--NAME-->
+
+	<div style="float:left;padding-top:40px;width:175px">
+		<%
+			unless opts.active?
+				color = "gray"
+			else
+				color = "#4691b1"
+			end
+		%>
 		
-
-		<div style="float:left;padding-top:40px;width:175px">
-			<%
-				if call_order.active == 0
-					color = "gray"
-				else
-					color = "#4691b1"
-				end
-			%>
+		<span id="item_firstname_<%=caregiver.id.to_s%>" style="font-weight:bold;color:<%=color%>"><%=caregiver.profile.first_name%></span>
+		<span id="item_lastname_<%=caregiver.id.to_s%>" style="font-weight:bold;color:<%=color%>"><%=caregiver.profile.last_name%></span>
+	</div>
+	
+	<!--ACTIVE/AWAY-->
+	
+	<div style="float:left;padding-top:25px;width:150px">
+		<% 
+			unless opts.active?
+				img = 'call_list-active_disabled.gif'
+			else
+				img = 'call_list-active.gif'
+			end
+		%>
 		
-					<span id="item_firstname_<%=call_order.id.to_s%>" style="font-weight:bold;color:<%=color%>"><%=@caregiver.profile.first_name%></span>
-					
-							<span id="item_lastname_<%=call_order.id.to_s%>" style="font-weight:bold;color:<%=color%>"><%=@caregiver.profile.last_name%></span>
-			
-		</div>
+		<%=link_to_remote(image_tag(img, :id => 'item_active_'+caregiver.id.to_s), :url => { :action => "activate",:id => opts.id}, :before => 'toggleCaregiver(\'enable\', '+i.to_s+', '+caregiver.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
+		<br />
 		
+		<% 
+			if opts.active?
+				img = 'call_list-away_disabled.gif'
+			else
+				img = 'call_list-away.gif'
+			end
+		%>
+
+		<%=link_to_remote(image_tag(img, :id => 'item_away_'+caregiver.id.to_s), :url => { :action => "deactivate",:id => opts.id}, :before => 'toggleCaregiver(\'disable\', '+i.to_s+', '+caregiver.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
+	</div>
+
+	<!--PHONE-->
+
+	<div style="float:left;padding-top:25px;width:75px">
+		<% 
+			if !opts.phone_active? or !opts.active?
+				img = 'call_list-phone-inactive.gif'
+			else
+				img = 'call_list-phone.gif'
+			end
+		%>
 		
-
-		<div style="float:left;padding-top:25px;width:150px">
-			<% 
-				if call_order.active == 0 
-					img = 'call_list-active_disabled.gif'
-				else
-					img = 'call_list-active.gif'
-				end
-			%>
+		<%=link_to_remote(image_tag(img, :id => 'item_phone_'+caregiver.id.to_s), :url => { :action => "toggle_phone",:id => opts.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\')', :complete => 'updatePositions()')%>
+	</div>
 	
-			<%=link_to_remote(image_tag(img, :id => 'item_active_'+call_order.id.to_s), :url => { :action => "activate",:id => call_order.id}, :before => 'toggleCaregiver(\'enable\', '+i.to_s+', '+call_order.id.to_s+', '+call_order.phone_active.to_s+', '+call_order.email_active.to_s+', '+call_order.text_active.to_s+')')%>
-			<br />
-	
-			<% 
-				if call_order.active == 1
-					img = 'call_list-away_disabled.gif'
-				else
-					img = 'call_list-away.gif'
-				end
-			%>
-	
-			<%=link_to_remote(image_tag(img, :id => 'item_away_'+call_order.id.to_s), :url => { :action => "deactivate",:id => call_order.id}, :before => 'toggleCaregiver(\'disable\', '+i.to_s+', '+call_order.id.to_s+', '+call_order.phone_active.to_s+', '+call_order.email_active.to_s+', '+call_order.text_active.to_s+')')%>
-		</div>
+	<!--EMAIL-->
 
-		<div style="float:left;padding-top:25px;width:75px">
-			<% 
-				if call_order.phone_active == 0 or call_order.active == 0
-					img = 'call_list-phone-inactive.gif'
-				else
-					img = 'call_list-phone.gif'
-				end
-			%>
-			
-			<%=link_to_remote(image_tag(img, :id => 'item_phone_'+call_order.id.to_s), :url => { :action => "toggle_phone",:id => call_order.id }, :before => 'toggleContact('+i.to_s+','+call_order.id.to_s+', '+call_order.phone_active.to_s+', \'phone\')', :complete => 'updatePositions()')%>
-		</div>
+	<div style="float:left;padding-top:25px;width:75px">
+		<% 
+			if !opts.email_active? or !opts.active?
+				img = 'call_list-email-inactive.gif'
+			else
+				img = 'call_list-email.gif'
+			end
+		%>
 
-		<div style="float:left;padding-top:25px;width:75px">
-			<% 
-				if call_order.email_active == 0 or call_order.active == 0 
-					img = 'call_list-email-inactive.gif'
-				else
-					img = 'call_list-email.gif'
-				end
-			%>
-	
-			<%=link_to_remote(image_tag(img, :id => 'item_email_'+call_order.id.to_s), :url => { :action => "toggle_email",:id => call_order.id }, :before => 'toggleContact('+i.to_s+','+call_order.id.to_s+', '+call_order.email_active.to_s+', \'email\')', :complete => 'updatePositions()')%>
-		</div>
+		<%=link_to_remote(image_tag(img, :id => 'item_email_'+caregiver.id.to_s), :url => { :action => "toggle_email",:id => opts.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.email_active.to_s+', \'email\')', :complete => 'updatePositions()')%>
+	</div>
 
-		<div style="float:left;padding-top:25px;width:100px">
-			<% 
-				if call_order.text_active == 0 or call_order.active == 0
-					img = 'call_list-text-inactive.gif'
-				else
-					img = 'call_list-text.gif'
-				end
-			%>
-	
-			<%=link_to_remote(image_tag(img, :id => 'item_text_'+call_order.id.to_s), :url => { :action => "toggle_text",:id => call_order.id }, :before => 'toggleContact('+i.to_s+','+call_order.id.to_s+', '+call_order.text_active.to_s+', \'text\')', :complete => 'updatePositions()')%>
-		</div>
+	<!--TEXT-->
 
-		<div style="float:left;padding-top:35px;width:50px">
-			<input type="checkbox" />
-		</div>
+	<div style="float:left;padding-top:25px;width:100px">
+		<% 
+			if !opts.text_active? or !opts.active?
+				img = 'call_list-text-inactive.gif'
+			else
+				img = 'call_list-text.gif'
+			end
+		%>
 
-		<div style="float:left;padding-top:35px;width:75px" id="item_edit_<%=call_order.id%>">
-			<% puts edit_user_url(@caregiver)%>
-			<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "users", :action => "ajax_edit", :id => @caregiver.id }, :html => {:method => :get, :complete => 'updatePositions()'})%>
-		</div>
-	<% unless params[:noli] == 'true/'%>
-	</li>
-	<%end%>
+		<%=link_to_remote(image_tag(img, :id => 'item_text_'+caregiver.id.to_s), :url => { :action => "toggle_text",:id => opts.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\')', :complete => 'updatePositions()')%>
+	</div>
+
+	<!--DELETE-->
+
+	<div style="float:left;padding-top:25px;width:50px">
+		<% 
+			if !opts.active? 
+				img = image_tag("call_list-trash-inactive.gif",:id => 'item_trash_'+caregiver.id.to_s)
+			else
+				img = image_tag("call_list-trash.gif",:id => 'item_trash_'+caregiver.id.to_s)
+			end
+		%>
+		
+		<%=link_to_remote img, :update => "response",
+		    :url => { :controller => "users", :action => "destroy_caregiver", :id => opts.id, :position => i, :caregiver_id => caregiver.id },
+			:confirm => "Are you sure?"
+		%>
+	</div>
+
+	<!--EDIT-->
+
+	<div style="float:left;padding-top:35px;width:75px" id="item_edit_<%=caregiver.id%>">
+		<!--% puts edit_user_url(caregiver)%-->
+		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "users", :action => "ajax_edit", :id => caregiver.id }, :html => {:method => :get, :complete => 'updatePositions()'})%>
+	</div>
+<% unless params[:noli] == 'true/'%>
+</li>
+<%end%>
