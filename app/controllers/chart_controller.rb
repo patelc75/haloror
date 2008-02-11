@@ -8,7 +8,7 @@ class ChartController < ApplicationController
   layout "application"
   
   def index
-    if current_user == :false
+    unless logged_in?
       redirect_to '/login'
     else
       @battery = Battery.find(:first, :order=>"id DESC")

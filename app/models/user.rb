@@ -1,6 +1,7 @@
 require 'digest/sha1'
 class User < ActiveRecord::Base
   acts_as_authorized_user
+  acts_as_authorizable
   
   has_many :heartrates
   has_many :panics
@@ -13,6 +14,9 @@ class User < ActiveRecord::Base
   has_many :orientations
   has_many :steps
   has_many :vitals
+  belongs_to :role
+  has_one :roles_user
+  has_one :roles_users_option
   
   has_many :call_orders, :order => :position
   has_many :caregivers, :through => :call_orders #self referential many to many

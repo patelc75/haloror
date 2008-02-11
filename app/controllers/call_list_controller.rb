@@ -1,32 +1,40 @@
 class CallListController < ApplicationController
   def show
-    if current_user == :false
+    unless logged_in?
       redirect_to '/login'
     else
       @call_list = User.find(params[:id])
-    
-      @num_ref = {}
-      @num_ref[0] = 'th'
-      @num_ref[1] = 'st'
-      @num_ref[2] = 'nd'
-      @num_ref[3] = 'rd'
-      @num_ref[4] = 'th'
-      @num_ref[5] = 'th'
-      @num_ref[6] = 'th'
-      @num_ref[7] = 'th'
-      @num_ref[8] = 'th'
-      @num_ref[9] = 'th'
+      number_ext
     end
+    
+    @user = User.find(1)
+    
+    get_caregivers
+  end
+  
+  def get_caregivers
+    # loop through assigned roles, check for removed = 1
+    
+    @caregivers = {}
+    
+    current_user.has_caregivers.each do |caregiver|
+      unless caregiver.roles_users_option.removed
+        @caregivers[caregiver.roles_users_option.position] = caregiver
+      end
+    end
+    
+    @caregivers.sort
   end
   
   def sort
-    @call_list = User.find(params[:id])
-    @call_list.call_orders.each do |call_order|
-      call_order.position = params['call_list'].index(call_order.id.to_s) + 1
-      call_order.save
+    get_caregivers
+    
+    @caregivers.each do |position, caregiver|
+      opts = caregiver.roles_users_option
+      opts.position = params['call_list'].index(opts.user_id.to_s) + 1
+      opts.save
     end
 
-    render :action => show, :layout => false
   end
   
   def text
@@ -55,61 +63,55 @@ class CallListController < ApplicationController
   end
   
   def toggle_phone
-    @call_order = CallOrder.find(params[:id])
+    opts = RolesUsersOption.find(params[:id])
 
-    if @call_order.phone_active == 0
-      @call_order.phone_active = 1
+    if !opts.phone_active
+      state = 1
     else
-      @call_order.phone_active = 0
+      state = 0
     end
     
-    @call_order.save
+    RolesUsersOption.update(params[:id], {:phone_active => state})
     
     render :partial => "call_list/item", :locals => { :call_order => @call_order }
   end
   
   def toggle_email
-    @call_order = CallOrder.find(params[:id])
+    opts = RolesUsersOption.find(params[:id])
 
-    if @call_order.email_active == 0
-      @call_order.email_active = 1
+    if !opts.email_active
+      state = 1
     else
-      @call_order.email_active = 0
+      state = 0
     end
     
-    @call_order.save
+    RolesUsersOption.update(params[:id], {:email_active => state})
     
     render :partial => "call_list/item", :locals => { :call_order => @call_order }
   end
   
   def toggle_text
-    @call_order = CallOrder.find(params[:id])
+    opts = RolesUsersOption.find(params[:id])
 
-    if @call_order.text_active == 0
-      @call_order.text_active = 1
+    if !opts.text_active
+      state = 1
     else
-      @call_order.text_active = 0
+      state = 0
     end
     
-    @call_order.save
+    RolesUsersOption.update(params[:id], {:text_active => state})
     
     render :partial => "call_list/item", :locals => { :call_order => @call_order }
   end
   
   def activate
-    @call_order = CallOrder.find(params[:id])
-    @call_order.active = 1
-    
-    @call_order.save
-    
+    RolesUsersOption.update(params[:id], {:active => 1})
+
     render :partial => "call_list/item", :locals => { :call_order => @call_order }
   end
   
   def deactivate
-    @call_order = CallOrder.find(params[:id])
-    @call_order.active = 0
-    
-    @call_order.save
+    RolesUsersOption.update(params[:id], {:active => 0})
     
     render :partial => "call_list/item", :locals => { :call_order => @call_order }
   end

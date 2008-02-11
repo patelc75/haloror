@@ -147,6 +147,7 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 		document.getElementById('item_phone_'+id).src = '/images/call_list-phone-inactive.gif';
 		document.getElementById('item_email_'+id).src = '/images/call_list-email-inactive.gif';
 		document.getElementById('item_text_'+id).src = '/images/call_list-text-inactive.gif';
+		document.getElementById('item_trash_'+id).src = '/images/call_list-trash-inactive.gif';
 		
 		document.getElementById('item_edit_'+id).getElementsByTagName('a')[0].style.color = 'gray';
 
@@ -163,6 +164,7 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 		document.getElementById('item_lastname_'+id).style.color = '';
 		document.getElementById('item_active_'+id).src = '/images/call_list-active.gif';
 		document.getElementById('item_away_'+id).src = '/images/call_list-away_disabled.gif';
+		document.getElementById('item_trash_'+id).src = '/images/call_list-trash.gif';
 	
 		if(active[id]['phone'])
 			document.getElementById('item_phone_'+id).src = '/images/call_list-phone.gif';
@@ -271,7 +273,7 @@ function moveElementUp(pos,id,call_order) {
 	moveElementUpforList('call_list', pos);
 	updatePositions();
 	
-	new Ajax.Request('/call_list/sort/'+call_order+'/', {asynchronous:true, evalScripts:true, parameters:serialize()})
+	new Ajax.Request('/call_list/sort/', {asynchronous:true, evalScripts:true, parameters:serialize()})
 
 	swapCallListBg(pos, id);
 	toggleTooltip(id);
@@ -285,7 +287,7 @@ function moveElementDown(pos,id,call_order) {
 	moveElementDownforList('call_list', pos);
 	updatePositions();
 	
-	new Ajax.Request('/call_list/sort/'+call_order+'/', {asynchronous:true, evalScripts:true, parameters:serialize()})
+	new Ajax.Request('/call_list/sort/', {asynchronous:true, evalScripts:true, parameters:serialize()})
 	
 	swapCallListBg(pos,id);
 	toggleTooltip(id);
@@ -333,4 +335,4 @@ function disableTooltip(id)
 	showTooltip = false;
 	
 	toggleTooltip(id);
-}		
+}

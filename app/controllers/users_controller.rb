@@ -54,4 +54,51 @@ class UsersController < ApplicationController
   def redir_to_edit
     redirect_to '/users/'+params[:id]+';edit/'
   end
+  
+  def new_caregiver
+    # get removed caregivers 
+    
+    @removed_caregivers = []
+    
+    current_user.has_caregivers.each do |caregiver|
+      if caregiver.roles_users_option.removed
+        @removed_caregivers.push(caregiver)
+      end
+    end
+    
+    render :layout => false
+  end
+  
+  def create_caregiver
+    user = User.new(params[:user])
+    user.save!
+    profile = Profile.create(:user_id => user.id, :email => user.email)
+    #self.current_user = @user
+    
+    role = user.has_role 'caregiver', current_user
+    
+    #@user = User.find(user.id)
+    @role = user.roles_user
+    
+    RolesUsersOption.create(:role_id => @role.role_id, :user_id => user.id)
+    
+    redirect_to :controller => 'profiles', :action => 'edit_caregiver_profile', :id => profile.id
+  rescue ActiveRecord::RecordInvalid
+    render :partial => 'caregiver_form'
+  end
+  
+  def destroy_caregiver
+    #Role.delete(params[:id])
+    #RolesUser.delete_all "role_id = #{params[:id]}"
+    
+    RolesUsersOption.update(params[:id], {:removed => 1})
+    
+    render :layout =>false
+  end
+  
+  def restore_caregiver_role
+    RolesUsersOption.update(params[:id], {:removed => 0})
+    
+    refresh_caregivers
+  end
 end

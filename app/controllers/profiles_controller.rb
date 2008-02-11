@@ -76,4 +76,14 @@ class ProfilesController < ApplicationController
       format.xml  { head :ok }
     end
   end
+  
+  def edit_caregiver_profile
+    @profile = Profile.find(params[:id])
+  end
+  
+  def update_caregiver_profile
+    Profile.update(params[:id], params[:profile])
+    
+    refresh_caregivers
+  end
 end

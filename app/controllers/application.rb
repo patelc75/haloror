@@ -19,4 +19,34 @@ class ApplicationController < ActionController::Base
   before_filter do |c|
      User.current_user = User.find(c.session[:user]) unless c.session[:user].nil?
   end
+  
+  def number_ext
+    @num_ref = {}
+    @num_ref[0] = 'th'
+    @num_ref[1] = 'st'
+    @num_ref[2] = 'nd'
+    @num_ref[3] = 'rd'
+    @num_ref[4] = 'th'
+    @num_ref[5] = 'th'
+    @num_ref[6] = 'th'
+    @num_ref[7] = 'th'
+    @num_ref[8] = 'th'
+    @num_ref[9] = 'th'
+  end
+  
+  def refresh_caregivers
+    number_ext
+    
+    # loop through assigned roles, check for removed = 1
+    
+    caregivers = []
+    
+    current_user.has_caregivers.each do |caregiver|
+      unless caregiver.roles_users_option.removed
+        caregivers.push(caregiver)
+      end
+    end
+    
+    render :layout => false, :partial => 'call_list/load_caregivers', :locals => {:caregivers => caregivers}
+  end
 end

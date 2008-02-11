@@ -129,7 +129,7 @@ body {
 
 #lightbox-col
 {
-	width:400px;
+	width:404px;
 	
 	margin-left:auto;
 	margin-right:auto;
@@ -151,8 +151,8 @@ body {
 
 .lightbox-content
 {
-	padding:5px;
-	background:url('/images/lightbox-col-bg.png') center repeat-y;
+	padding:10px;
+	background:url('/images/lightbox-col-bg.gif') center repeat-y;
 }
 
 
@@ -660,4 +660,9 @@ body {
 img
 {
 	border:0;
+}
+
+#response
+{
+
 }

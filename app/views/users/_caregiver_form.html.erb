@@ -1,0 +1,17 @@
+<% remote_form_for :user, :url => {:controller => 'users', :action => 'create_caregiver'}, :update => 'container' do |f| -%>
+	<%= error_messages_for :user %>
+	<%= f.hidden_field :password, :value => 'tmp_pass' %>
+	<%= f.hidden_field :password_confirmation, :value => 'tmp_pass' %>
+	<label for="login">Desired Username</label>
+	<br/>
+	<%= f.text_field :login %>
+	<br />
+	<br />
+	<label for="email">Email</label><br/>
+	<%= f.text_field :email %>
+	<br />
+	<br />
+	<div align="center">
+		<input name="commit" type="image" src="/images/next.gif" /> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
+	</div>
+<% end -%>
