@@ -68,7 +68,6 @@ var RedBox = {
 
   setWindowPosition: function()
   {
-	alert('aewf');
     var pagesize = this.getPageSize();  
   
     $("RB_window").style['width'] = 'auto';
