@@ -25,7 +25,7 @@
 	<div id="header">
 		<div class="container">
 			<div id="user-info">
-			<% unless current_user == :false %>
+			<% if logged_in? %>
 				Welcome, <%=current_user.profile.first_name%>
 				<span class="user">
 
