@@ -23,4 +23,8 @@ class Heartrate < Vital
   def self.format_average(average)
 	round_to(average, 1)
   end
+  
+  def self.get_latest(vital)
+	@series_data  = vital.map {|a| a.heartrate }
+  end
 end

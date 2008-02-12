@@ -4,7 +4,7 @@ xml.chart do
   xml.chart_data do
     xml.row do
       xml.null
-      @activity_categories.each do |c|
+      @categories.each do |c|
         xml.string( c )
       end
     end      

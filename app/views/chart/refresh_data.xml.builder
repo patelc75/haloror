@@ -9,7 +9,7 @@ xml.chart do
       end
     end
     xml.row do
-      xml.string( "Discrete Heartrate" )      
+      xml.string( "Heartrate" )      
       @heartrate_series.each do |c|
         c.is_a?(String) ? xml.string( c ) : xml.number( c )
       end
