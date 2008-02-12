@@ -2,14 +2,21 @@ class Vital < ActiveRecord::Base
 
   belongs_to :user
   
-  def self.latest_data(num_points, id)
+  def self.latest_data(num_points, id)	
     vital = find(:all , 
       :limit => num_points, 
       :order => "timestamp DESC", 
       :conditions => "user_id = '#{id}'").reverse
 		
-    @series_data = get_latest(vital)
-    @categories =  vital.map {|a| a.timestamp.strftime("%H:%M:%S") }
+    #logger.debug{ "Vital.latest_data: vital =#{vital} \n" }    
+
+    if(vital.empty?)
+      @series_data = Array.new(num_points, 0)  #results of averaging from database
+      @categories = Array.new(num_points, 0)       
+    elsif
+      @series_data = get_latest(vital)
+      @categories =  vital.map {|a| a.timestamp.strftime("%H:%M:%S") }      
+    end
 	
     values = [@series_data,  @categories]
   end
