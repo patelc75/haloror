@@ -66,31 +66,33 @@ class UsersController < ApplicationController
       end
     end
     
+    @max_position = get_max_caregiver_position
+    
+    @password = random_password
+    
     render :layout => false
   end
   
   def create_caregiver
-    user = User.new(params[:user])
-    user.save!
-    profile = Profile.create(:user_id => user.id, :email => user.email)
-    #self.current_user = @user
+    @user = User.new(params[:user])
+    @user.save!
     
-    role = user.has_role 'caregiver', current_user
+    profile = Profile.create(:user_id => @user.id, :email => @user.email)
     
-    #@user = User.find(user.id)
-    @role = user.roles_user
+    role = @user.has_role 'caregiver', current_user
+    @role = @user.roles_user
     
-    RolesUsersOption.create(:role_id => @role.role_id, :user_id => user.id)
+    update_from_position(params[:position], @role.role_id, @user.id)
+    
+    RolesUsersOption.create(:role_id => @role.role_id, :user_id => @user.id, :position => params[:position], :active => 1)
     
     redirect_to :controller => 'profiles', :action => 'edit_caregiver_profile', :id => profile.id
   rescue ActiveRecord::RecordInvalid
+    @max_position = get_max_caregiver_position
     render :partial => 'caregiver_form'
   end
   
   def destroy_caregiver
-    #Role.delete(params[:id])
-    #RolesUser.delete_all "role_id = #{params[:id]}"
-    
     RolesUsersOption.update(params[:id], {:removed => 1})
     
     render :layout =>false
@@ -100,5 +102,23 @@ class UsersController < ApplicationController
     RolesUsersOption.update(params[:id], {:removed => 0})
     
     refresh_caregivers
+  end
+  
+  def get_max_caregiver_position
+    get_caregivers
+    @caregivers.size + 1
+  end
+  
+  def update_from_position(position, role_id, user_id)
+    caregivers = RolesUsersOption.find(:all, "position >= #{position} and role_id = #{role_id} and user_id = #{user_id}")
+    
+    caregivers.each do |caregiver|
+      caregiver.position+=1
+      caregiver.save
+    end
+  end
+  
+  def random_password
+    Digest::SHA1.hexdigest("--#{Time.now.to_s}--")[0,6]
   end
 end

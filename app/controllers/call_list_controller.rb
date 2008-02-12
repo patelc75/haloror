@@ -12,20 +12,6 @@ class CallListController < ApplicationController
     get_caregivers
   end
   
-  def get_caregivers
-    # loop through assigned roles, check for removed = 1
-    
-    @caregivers = {}
-    
-    current_user.has_caregivers.each do |caregiver|
-      unless caregiver.roles_users_option.removed
-        @caregivers[caregiver.roles_users_option.position] = caregiver
-      end
-    end
-    
-    @caregivers.sort
-  end
-  
   def sort
     get_caregivers
     

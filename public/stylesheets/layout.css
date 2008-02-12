@@ -664,5 +664,34 @@ img
 
 #response
 {
+	display:none;
+}
 
+ul.removed_caregivers 
+{
+	padding:0;
+}
+
+ul.removed_caregivers li
+{
+	list-style:none;
+	height:41px;
+	
+	background:url('/images/call_list-item-small.gif') no-repeat;
+	
+	padding-top:12px;
+	padding-left:10px;
+}
+
+ul.removed_caregivers li a
+{
+	color:#4691b1;
+	font-weight:bold;
+	
+	text-decoration:none;
+}
+
+#position_label
+{
+	font-size:3em;
 }

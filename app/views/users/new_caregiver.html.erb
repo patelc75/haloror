@@ -9,15 +9,21 @@
 			%>
 				<div id="removed_caregivers">
 					<p>
-						Choose a recently removed caregiver or <a href="#" onClick="$('removed_caregivers').style.display='none';$('caregiver_form').style.display='block'">continue adding a new caregiver</a>.
+						Choose a recently removed caregiver:
 					</p>
-					<ul>
+					<ul class="removed_caregivers">
 					<% @removed_caregivers.each do |caregiver| %>
 						<% user = User.find(caregiver.user_id)%>
 						
-						<li><%=link_to_remote user.profile.first_name+" "+user.profile.last_name, :update => 'call_list', :url => {:controller => 'users', :action => 'restore_caregiver_role', :id => caregiver.roles_users_option.id}, :complete => "RedBox.close()"%></li>
+						<li onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag-small.gif\')'" onMouseOut="this.style.backgroundImage = 'url(\'/images/call_list-item-small.gif\')'"><%=link_to_remote user.profile.first_name+" "+user.profile.last_name, :update => 'call_list', :url => {:controller => 'users', :action => 'restore_caregiver_role', :id => caregiver.roles_users_option.id}, :complete => "RedBox.close()"%></li>
 					<% end %>
 					</ul>
+					
+					<div align="center">
+						or
+						<br />
+						<a href="#" onClick="$('removed_caregivers').style.display='none';$('caregiver_form').style.display='block'"><%=image_tag('add-caregiver.gif')%></a> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
+					</div>
 				</div>
 			<% end %>
 	

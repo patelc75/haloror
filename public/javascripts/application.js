@@ -160,8 +160,8 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 		document.getElementById('item_up_'+id).src = '/images/call_list-up.gif';
 		document.getElementById('item_down_'+id).src = '/images/call_list-down.gif';
 		document.getElementById('item_image_'+id).style.opacity = '1';
-		document.getElementById('item_firstname_'+id).style.color = '';
-		document.getElementById('item_lastname_'+id).style.color = '';
+		document.getElementById('item_firstname_'+id).style.color = '#4691b1';
+		document.getElementById('item_lastname_'+id).style.color = '#4691b1';
 		document.getElementById('item_active_'+id).src = '/images/call_list-active.gif';
 		document.getElementById('item_away_'+id).src = '/images/call_list-away_disabled.gif';
 		document.getElementById('item_trash_'+id).src = '/images/call_list-trash.gif';
@@ -335,4 +335,34 @@ function disableTooltip(id)
 	showTooltip = false;
 	
 	toggleTooltip(id);
+}
+
+
+
+
+var maxPosition = false;
+
+function positionLabel(direction)
+{
+	var currentValue = parseInt($('position').value);
+	
+	if(maxPosition == false)
+		maxPosition = currentValue;
+		
+	if(direction == 'increment')
+	{
+		if((currentValue+1)<=maxPosition)
+		{
+			value = currentValue+1;
+			
+		}
+	}
+	else if(direction == 'decrement')
+	{
+		if((currentValue-1)>0)
+		value = currentValue-1;		
+	}
+	
+	$('position').value = value;
+	$('position_label').innerText = value;
 }

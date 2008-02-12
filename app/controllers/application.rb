@@ -39,15 +39,9 @@ class ApplicationController < ActionController::Base
     
     # loop through assigned roles, check for removed = 1
     
-    caregivers = []
+    get_caregivers
     
-    current_user.has_caregivers.each do |caregiver|
-      unless caregiver.roles_users_option.removed
-        caregivers.push(caregiver)
-      end
-    end
-    
-    render :layout => false, :partial => 'call_list/load_caregivers', :locals => {:caregivers => caregivers}
+    render :layout => false, :partial => 'call_list/load_caregivers', :locals => {:caregivers => @caregivers}
   end
   
   def get_caregivers
@@ -61,6 +55,6 @@ class ApplicationController < ActionController::Base
       end
     end
     
-    @caregivers.sort
+    @caregivers = @caregivers.sort
   end
 end

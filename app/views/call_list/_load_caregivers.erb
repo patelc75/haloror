@@ -1,6 +1,6 @@
 <% position = 1 %>
 <% i = 1 %>
-	
+
 <% caregivers.each do |position, caregiver| %>
 	<%= render :partial => "call_list/item", :locals => { :caregiver => User.find(caregiver.user_id), :opts => caregiver.roles_users_option, :position => position , :i => i, :role => caregiver } %>
 
