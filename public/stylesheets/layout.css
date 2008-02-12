@@ -129,7 +129,7 @@ body {
 
 #lightbox-col
 {
-	width:404px;
+	width:418px;
 	
 	margin-left:auto;
 	margin-right:auto;
@@ -152,6 +152,8 @@ body {
 .lightbox-content
 {
 	padding:10px;
+	padding-left:15px;
+	padding-right:15px;
 	background:url('/images/lightbox-col-bg.gif') center repeat-y;
 }
 
