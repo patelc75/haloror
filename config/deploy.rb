@@ -59,6 +59,28 @@ namespace :deploy do
     sudo "#{lsws_cmd} start" 
   end
 end  
+
+
+
+#def run_task_on_single_host
+ # Capistrano::Configuration::Roles.class_eval do
+  #  yield
+  #end
+#end
+
+#if ENV['server']
+ # run_task_on_single_host do
+  #  alias old_role role
+   # def role(which, *args)
+    #  options = args.last.is_a?(Hash) ? args.pop : {}
+     # which = which.to_sym
+      #args.each do |host|
+       # next unless ENV['server'] == host
+        #roles[which] << ServerDefinition.new(host, options)
+      #end
+    #end
+  #end
+#end
   
 #  desc "Start litespeed web server" 
  # task :start_test, :roles => :app do
@@ -79,7 +101,7 @@ end
   #end
 #end
 
-after "deploy", "deploy:cleanup"
+#after "deploy", "deploy:cleanup"
 after "deploy", "deploy:restart"
 #after "deploy", "deploy:after_update_test"
 
