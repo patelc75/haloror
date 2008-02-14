@@ -5,7 +5,7 @@ class PanicObserver < ActiveRecord::Observer
 	
 	def after_save(panic)
 		Event.create(:user_id => panic.user_id, 
-					:kind => panic.class_name, 
+					:kind => Panic.class_name, 
 					:kind_id => panic.id, 
 					:timestamp => panic.timestamp)
 	end

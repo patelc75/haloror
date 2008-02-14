@@ -12,13 +12,14 @@ class CriticalMailer < ActionMailer::Base
   end
   
   protected
-    def setup_email(user)
-      #@recipients  = "#{user.email}"
-	  #@recipients  = ["2567974668@tmomail.net", "chirag@chirag.name"]
-	  @recipients  = ["chirag@chirag.name"]
-      @from        = "chirag@haloresearch.net"
-      @subject     = ""
-      @sent_on     = Time.now
-      @body[:user] = user  #sends params to body
-    end
+  def setup_email(user)
+    #@recipients  = "#{user.email}"
+    #@recipients  = ["2567974668@tmomail.net", "chirag@chirag.name"]
+	  
+    @recipients  = ["#{user.email}"]
+    @from        = "no-reply@halomonitoring.com"
+    @subject     = ""
+    @sent_on     = Time.now
+    @body[:user] = user  #sends params to body
+  end
 end

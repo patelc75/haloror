@@ -16,7 +16,7 @@ class UserMailer < ActionMailer::Base
   protected
     def setup_email(user)
       @recipients  = "#{user.email}"
-      @from        = "chirag@haloresearch.net"
+      @from        = "no-reply@halomonitoring.com"
       @subject     = "Halo: "
       @sent_on     = Time.now
       @body[:user] = user
