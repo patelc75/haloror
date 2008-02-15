@@ -364,5 +364,5 @@ function positionLabel(direction)
 	}
 	
 	$('position').value = value;
-	$('position_label').innerText = value;
+	$('position_label').innerHTML = value;
 }
