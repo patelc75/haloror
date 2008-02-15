@@ -50,8 +50,9 @@ class ApplicationController < ActionController::Base
     @caregivers = {}
     
     current_user.has_caregivers.each do |caregiver|
-      unless caregiver.roles_users_option.removed
-        @caregivers[caregiver.roles_users_option.position] = caregiver
+      user = User.find(caregiver.user_id)
+      unless user.roles_users_option.removed
+        @caregivers[user.roles_users_option.position] = caregiver
       end
     end
     

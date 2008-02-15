@@ -1,11 +1,14 @@
 <% position = 1 %>
 <% i = 1 %>
 
-<% caregivers.each do |position, caregiver| %>
-	<%= render :partial => "call_list/item", :locals => { :caregiver => User.find(caregiver.user_id), :opts => caregiver.roles_users_option, :position => position , :i => i, :role => caregiver } %>
+<% 
+	caregivers.each do |position, caregiver| 
+		user = User.find(caregiver.user_id)
+%>
+	<%= render :partial => "call_list/item", :locals => { :caregiver => user, :opts => user.roles_users_option, :position => position , :i => i, :role => caregiver } %>
 
 	<% 
-		if caregiver.roles_users_option.active
+		if user.roles_users_option.active
 			position = position+1 
 		end
 	%>
