@@ -3,10 +3,8 @@ require 'time'
 namespace :halo do  
   desc "post random vitals data with either activerecord or curl"  
   task :post => :environment  do
-    end_time = Time.now
-    #end_time = Time.parse('2007-08-30 18:44:37-04') #hardcoded for demo 
-	start_time = end_time - ENV['duration'].to_i  #24 x 60 x 60 = 1 day
-    
+	#end_time = Time.parse('2007-08-30 18:44:37-04') #hardcoded for demo 
+
 	if ENV['vital'] == nil
 	  puts ""	
 	  puts "You forgot vital. vital = heartrate, skin_temp, actvity, battery, or all"
@@ -40,8 +38,6 @@ namespace :halo do
 	  puts ""
 	  print_usage = true
 	else
-	  puts "Start time: #{start_time}" 
-	  puts "End time: #{end_time}"
       puts "Increment: #{ENV['increment']} seconds"
 	end
 
@@ -71,16 +67,37 @@ namespace :halo do
 	else
 	  puts "URL: #{ENV['url']}\n"
 	end
+
+	if ENV['type'] == nil
+	  puts ""
+	  puts "You forgot the type. type = 'live' or 'historical'"
+	  puts ""
+	  print_usage = true
+	else
+	  puts "Type: #{ENV['type']}"
+	end
+	
 	
 	if print_usage == true
 	  puts ""
 	  puts "Example Usage with curl: "
-	  puts "rake halo:post vital=all method=curl url=http://localhost:3000 increment=15 duration=5000 user_id=333 frequency=5"	
+	  puts "rake halo:post vital=all method=curl url=http://localhost:3000 increment=15 duration=5000 user_id=333 frequency=5 type=historical"	
 	  puts ""
-	  puts "Example Usage with activerecord: "
-	  puts "rake halo:post vital=all method=activerecord increment=15 duration=5000 user_id=333 frequency=5"	
+	  puts "Example Usage with activerecord (for same server): "
+	  puts "rake halo:post vital=all method=activerecord url=http://localhost:3000 increment=15 duration=5000 user_id=333 frequency=5 type=live"	
 	  puts ""
 	else
+		if(ENV['type'] == "live")
+		  start_time = Time.now
+		  end_time = start_time + ENV['duration'].to_i  
+	    elsif (ENV['type'] == "historical")
+		  end_time = Time.now
+		  start_time = end_time - ENV['duration'].to_i 
+	    end
+		
+		puts "Start time: #{start_time}" 
+	    puts "End time: #{end_time}"
+
 		until start_time > end_time      
 		  start_time = start_time + ENV['increment'].to_i #send a REST posts with the timestamp incremented by 15 seconds
 		  
@@ -168,8 +185,8 @@ namespace :halo do
 			end		
 		end		
 		
+		puts ""		
 	    puts "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
-		puts "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
 		puts ""
 		
 		sleep(ENV['frequency'].to_i)
