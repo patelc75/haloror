@@ -1,0 +1,2 @@
+module MgmtQueriesHelper
+end

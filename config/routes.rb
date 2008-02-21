@@ -1,4 +1,12 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :mgmt_acks
+
+  map.resources :mgmt_queries
+
+  map.resources :mgmt_responses
+
+  map.resources :mgmt_cmds
+
   map.resources :vitals
 
   map.resources :orientations

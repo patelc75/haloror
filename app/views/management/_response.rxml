@@ -1,0 +1,6 @@
+xml.management_response_server do
+  xml.device_id response.mgmt_cmd.device_id
+  xml.cmd_type response.mgmt_cmd.cmd_type
+  xml.user_id response.mgmt_cmd.device.user_id
+  xml.timestamp response.timestamp_server
+end

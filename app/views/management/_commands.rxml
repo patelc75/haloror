@@ -1,0 +1,7 @@
+for cmd in cmds
+  xml.management_cmd_server do
+    xml.device_id cmd.device_id
+    xml.cmd_type cmd.cmd_type
+    xml.timestamp cmd.timestamp_sent
+  end
+end
