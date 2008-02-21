@@ -366,3 +366,14 @@ function positionLabel(direction)
 	$('position').value = value;
 	$('position_label').innerHTML = value;
 }
+
+function headerDisplay()
+{
+	obj = document.getElementById('call_list'); // get parent list
+	CN = obj.childNodes; // get nodes
+	
+	if(CN.length > 2)
+		$('call_list_header').style.display = 'block';
+	else
+		$('call_list_header').style.display = 'none';
+}
