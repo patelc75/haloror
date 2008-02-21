@@ -1,0 +1,12 @@
+<h1>Editing vital</h1>
+
+<%= error_messages_for :vital %>
+
+<% form_for(@vital) do |f| %>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @vital %> |
+<%= link_to 'Back', vitals_path %>

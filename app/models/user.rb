@@ -18,8 +18,8 @@ class User < ActiveRecord::Base
   has_one :roles_user
   has_one :roles_users_option
   
-  has_many :call_orders, :order => :position
-  has_many :caregivers, :through => :call_orders #self referential many to many
+  #has_many :call_orders, :order => :position
+  #has_many :caregivers, :through => :call_orders #self referential many to many
 
   # Virtual attribute for the unencrypted password
   cattr_accessor :current_user #stored in memory instead of table

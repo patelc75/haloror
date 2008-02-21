@@ -8,7 +8,7 @@ class Vital < ActiveRecord::Base
       :order => "timestamp DESC", 
       :conditions => "user_id = '#{id}'").reverse
 		
-    #logger.debug{ "Vital.latest_data: vital =#{vital} \n" }    
+    #logger.debug{ "Vital.latest_data: vital =#{vital} \n" }
 
     if(vital.empty?)
       @series_data = Array.new(num_points, 0)  #results of averaging from database
