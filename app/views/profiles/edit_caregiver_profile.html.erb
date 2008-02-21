@@ -1,3 +1,10 @@
+<% if params[:frame] %>
+	<div id="lightbox-col">
+		<img src="/images/lightbox-col-header.gif" /><br />
+		<div class="lightbox-content">
+			<div style="width:380px;" id="container">
+<% end %>
+
 <%= error_messages_for :profile %>
 
 <% remote_form_for(:profile, :update => 'call_list', :url => {:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]}) do |f| %>
@@ -47,4 +54,12 @@
   	<div align="center">
 		<input name="commit" type="image" src="/images/update.gif" onClick="RedBox.close()" /> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
 	</div>
+<% end %>
+
+<% if params[:frame] %>
+
+</div>
+</div>
+<img src="/images/lightbox-col-footer.gif" />
+</div>
 <% end %>
