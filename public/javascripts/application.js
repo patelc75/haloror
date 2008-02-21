@@ -136,7 +136,7 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 	if(action == 'disable')
 	{
 		
-		document.getElementById('item_'+id+'_'+pos+'_position').innerHTML = '&nbsp;';
+		document.getElementById('item_'+id+'_'+pos+'_position').innerHTML = 'Away';
 		document.getElementById('item_up_'+id).src = '/images/call_list-up-away.gif';
 		document.getElementById('item_down_'+id).src = '/images/call_list-down-away.gif';
 		document.getElementById('item_image_'+id).style.opacity = '.5';
