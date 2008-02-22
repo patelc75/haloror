@@ -1,6 +1,6 @@
 class PanicObserver < ActiveRecord::Observer
   def before_save(panic)
-    email = CriticalMailer.deliver_panic_notification(panic.user)
+    email = CriticalMailer.deliver_panic_notification(panic)
   end
 	
   def after_save(panic)
