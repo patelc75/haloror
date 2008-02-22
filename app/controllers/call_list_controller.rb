@@ -1,12 +1,10 @@
 class CallListController < ApplicationController
+
+  before_filter :authenticate, :only => 'show'
+
   def show
-    unless logged_in?
-      redirect_to '/login'
-    else
-      @call_list = User.find(params[:id])
-      number_ext
-    end
-    
+    @call_list = User.find(params[:id])
+    number_ext
     @user = User.find(1)
     
     get_caregivers

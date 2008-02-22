@@ -58,4 +58,13 @@ class ApplicationController < ActionController::Base
     
     @caregivers = @caregivers.sort
   end
+
+  protected
+  def authenticate
+    unless logged_in?
+      return redirect_to('/login')
+    end
+    true
+  end
+  
 end

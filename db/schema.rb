@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 18) do
+ActiveRecord::Schema.define(:version => 37) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id"
@@ -24,14 +24,28 @@ ActiveRecord::Schema.define(:version => 18) do
     t.integer  "time_remaining", :null => false
   end
 
-  create_table "call_orders", :force => true do |t|
+  create_table "device_infos", :force => true do |t|
+    t.integer "device_id"
+    t.string  "serial_number"
+    t.string  "mac_address"
+    t.string  "vendor"
+    t.string  "model"
+    t.string  "kind"
+    t.integer "kind_id"
+  end
+
+  create_table "devices", :force => true do |t|
     t.integer "user_id"
-    t.integer "caregiver_id"
-    t.integer "position"
-    t.integer "active",       :null => false
-    t.integer "phone_active", :null => false
-    t.integer "email_active", :null => false
-    t.integer "text_active",  :null => false
+    t.string  "serial_number"
+  end
+
+  create_table "dial_ups", :force => true do |t|
+    t.integer "phone_number"
+  end
+
+  create_table "dial_ups_gateways", :id => false, :force => true do |t|
+    t.integer "gateway_id"
+    t.integer "dial_up_id"
   end
 
   create_table "events", :force => true do |t|
@@ -47,10 +61,61 @@ ActiveRecord::Schema.define(:version => 18) do
     t.integer  "magnitude", :null => false
   end
 
+  create_table "firmware_upgrades", :force => true do |t|
+    t.integer "ftp_id"
+    t.string  "version"
+  end
+
+  create_table "ftps", :force => true do |t|
+    t.string "server_name"
+    t.string "login"
+    t.string "password"
+    t.string "path"
+  end
+
+  create_table "gateways", :force => true do |t|
+    t.string  "serial_number"
+    t.string  "mac_address"
+    t.string  "vendor"
+    t.string  "model"
+    t.string  "kind"
+    t.integer "kind_id"
+  end
+
   create_table "heartrates", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
     t.integer  "heartrate", :null => false
+  end
+
+  create_table "mgmt_acks", :force => true do |t|
+    t.integer  "mgmt_cmd_id"
+    t.datetime "timestamp_device"
+    t.datetime "timestamp_server"
+  end
+
+  create_table "mgmt_cmds", :force => true do |t|
+    t.integer  "device_id"
+    t.integer  "user_id"
+    t.string   "cmd_type"
+    t.datetime "timestamp_initiated"
+    t.datetime "timestamp_sent"
+    t.string   "originator"
+    t.string   "status"
+    t.boolean  "pending",             :default => true
+  end
+
+  create_table "mgmt_queries", :force => true do |t|
+    t.integer  "device_id"
+    t.datetime "timestamp_device"
+    t.datetime "timestamp_server"
+    t.integer  "poll_rate"
+  end
+
+  create_table "mgmt_responses", :force => true do |t|
+    t.integer  "mgmt_cmd_id"
+    t.datetime "timestamp_device"
+    t.datetime "timestamp_server"
   end
 
   create_table "orientations", :force => true do |t|
@@ -65,6 +130,7 @@ ActiveRecord::Schema.define(:version => 18) do
   end
 
   create_table "profiles", :force => true do |t|
+    t.integer "user_id"
     t.string  "first_name"
     t.string  "last_name"
     t.string  "address"
@@ -74,8 +140,8 @@ ActiveRecord::Schema.define(:version => 18) do
     t.string  "work_phone"
     t.string  "cell_phone"
     t.string  "relationship"
-    t.integer "user_id"
     t.string  "email"
+    t.string  "text_email"
   end
 
   create_table "raw_data_files", :force => true do |t|
@@ -84,6 +150,32 @@ ActiveRecord::Schema.define(:version => 18) do
     t.integer  "size"
     t.integer  "parent_id"
     t.datetime "created_at"
+  end
+
+  create_table "roles", :force => true do |t|
+    t.string   "name",              :limit => 40
+    t.string   "authorizable_type", :limit => 30
+    t.integer  "authorizable_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "roles_users", :id => false, :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "role_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "roles_users_options", :force => true do |t|
+    t.integer "role_id"
+    t.boolean "removed",      :default => false
+    t.boolean "active",       :default => false
+    t.boolean "phone_active", :default => false
+    t.boolean "email_active", :default => false
+    t.boolean "text_active",  :default => false
+    t.integer "position",     :default => 0
+    t.integer "user_id"
   end
 
   create_table "skin_temps", :force => true do |t|
@@ -115,13 +207,10 @@ ActiveRecord::Schema.define(:version => 18) do
   end
 
   create_table "vitals", :force => true do |t|
-    t.integer  "heartrate"
-    t.integer  "heartrate_var"
-    t.integer  "activity"
-    t.integer  "orientation"
-    t.integer  "respiration"
-    t.datetime "timestamp"
-    t.integer  "user_id"
+    t.integer "heartrate"
+    t.integer "hrv"
+    t.integer "activity"
+    t.integer "orientation"
   end
 
 end
