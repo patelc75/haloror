@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+
   # render new.rhtml
   def new
 	  #render :layout => false
@@ -6,8 +7,12 @@ class UsersController < ApplicationController
 
   def create
     @user = User.new(params[:user])
-    @user.save!
-    Profile.create(:user_id => @user.id)
+    if @user.valid?
+      User.transaction do
+        @user.save!
+        Profile.create(:user_id => @user.id)
+      end
+    end
     self.current_user = @user
     #redirect_back_or_default('/')
     #flash[:notice] = "Thanks for signing up!"
