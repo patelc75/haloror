@@ -12,7 +12,11 @@ class ChartController < ApplicationController
       redirect_to '/login'
     else
       @battery = Battery.find(:first, :order=>"id DESC")
-      @gauge_width = 50 * (@battery.percentage/100.0)
+      if @battery
+        @gauge_width = 50 * (@battery.percentage/100.0)
+      else
+        @gauge_width = 0
+      end
     
       @events = Event.find(:all, :limit => 10, :order => "id desc")
     

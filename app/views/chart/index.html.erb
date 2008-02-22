@@ -67,9 +67,15 @@
 <div id="right-col">
 	<div id="right-col-header"></div>
 	<div class="content">
-		<%= render :partial => 'battery' %>
-		<%= render :partial => 'temperature_average' %>
-		<%= render :partial => 'heartrate_average' %>
+                <% if @battery -%>
+  		  <%= render :partial => 'battery' %>
+                <% end -%>
+                <% if @temp -%>
+		  <%= render :partial => 'temperature_average' %>
+                <% end -%>
+                <% if @heartrate -%>
+		  <%= render :partial => 'heartrate_average' %>
+                <% end -%>
 		<%= render :partial => 'activity_average' %>
 		<%= render :partial => 'events' %>
 	</div>
