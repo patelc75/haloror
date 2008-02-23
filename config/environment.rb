@@ -96,3 +96,6 @@ end
 #   }
 
 require 'postgre_extensions'
+
+# Load jobs as defined by the rufus scheduler
+require File.join(File.dirname(__FILE__), 'jobs', 'init')
