@@ -21,7 +21,8 @@ class ChartController < ApplicationController
       @events = Event.find(:all, :limit => 10, :order => "id desc")
     
       @temp = SkinTemp.find(:first, :order => 'id desc')
-      @heartrate = Heartrate.find(:first, :order => 'id desc')
+      #@heartrate = Heartrate.find(:first, :order => 'id desc')
+      @heartrate = Heartrate.find(:last, :order => 'id',:conditions => "user_id = '#{current_user.id}'")
     
       cookies[:heartrate] = "true"
       cookies[:skin_temp] = "true"
