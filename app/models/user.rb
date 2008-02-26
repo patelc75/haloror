@@ -18,6 +18,8 @@ class User < ActiveRecord::Base
   has_one :roles_user
   has_one :roles_users_option
   
+  has_many :devices
+  
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
 
