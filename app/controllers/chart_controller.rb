@@ -11,7 +11,7 @@ class ChartController < ApplicationController
     unless logged_in?
       redirect_to '/login'
     else
-      @battery = Battery.find(:first, :order=>"id DESC")
+      @battery = Battery.find(:first,:conditions => "user_id = '#{current_user.id}'",:order => "timestamp DESC")
       if @battery
         @gauge_width = 50 * (@battery.percentage/100.0)
       else
@@ -20,15 +20,11 @@ class ChartController < ApplicationController
     
       @events = Event.find(:all, :limit => 10, :order => "id desc")
     
-      @temp = SkinTemp.find(:first, :order => 'id desc')
-      @heartrate = Heartrate.find(:first, :order => 'id desc')
-      #@heartrate = Heartrate.find(:last, :order => 'timestamp',:conditions => "user_id = '#{current_user.id}'")
-    
-      cookies[:heartrate] = "true"
-      cookies[:skin_temp] = "true"
-    
-      cookies[:chart_type] = "live"
-    end
+      @temp = SkinTemp.find(:first,:conditions => "user_id = '#{current_user.id}'",:order => "timestamp DESC")
+      #@temp = SkinTemp.find(:first, :order => 'id desc')
+     
+     @heartrate = Heartrate.find(:first,:conditions => "user_id = '#{current_user.id}'",:order => "timestamp DESC")
+     end
   end
   
   def gen_activity_pie
