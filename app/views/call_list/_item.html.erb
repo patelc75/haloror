@@ -24,7 +24,7 @@
 	
 	<!--POSITION-->
 	
-	<div style="float:left;width:35px;padding-top:40px;color:#4691b1;font-size:16px" id="item_<%=caregiver.id%>_<%= i %>_position">
+	<div style="float:left;width:55px;padding-top:40px;color:#4691b1;font-size:16px" id="item_<%=caregiver.id%>_<%= i %>_position">
 		<% if opts.active? %>
 			<%
 				s_pos = position.to_s
@@ -34,6 +34,8 @@
 			%>
 			
 			<%=position%><%=pos_end%>
+		<% else %>
+			Away
 		<% end %>
 	</div>
 	
@@ -75,7 +77,7 @@
 	
 	<!--NAME-->
 
-	<div style="float:left;padding-top:40px;width:175px">
+	<div style="float:left;padding-top:40px;width:155px">
 		<%
 			unless opts.active?
 				color = "gray"
