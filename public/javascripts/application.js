@@ -40,14 +40,17 @@ function updatePositions(li_id) {
 	x = 0;
 	pos = 1;
 	while(x < CN.length){ // loop through elements for the desired one
-		if(document.getElementById(CN[x].id).className == 'active')
+		if(document.getElementById(CN[x].id))
 		{
-			pos = pos+''
-			var start = pos.length-1;
-			var pos_end = num_ref[pos.substr(start,1)];
-			
-			document.getElementById(CN[x].id+'_position').innerHTML = pos+pos_end;
-			pos++;
+			if(document.getElementById(CN[x].id).className == 'active')
+			{
+				pos = pos+''
+				var start = pos.length-1;
+				var pos_end = num_ref[pos.substr(start,1)];
+
+				document.getElementById(CN[x].id+'_position').innerHTML = pos+pos_end;
+				pos++;
+			}
 		}
 		
 		x++;
