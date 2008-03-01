@@ -8,7 +8,14 @@
 ## critical to ensure jobs you care a lot about get dedicated
 ## processes.
 
-jobs_type = ENV['jobs_type']
+## To start up the background jobs, start up a rails server using something like:
+## export JOBS_TYPE=task
+## thin -e production -p 8900 -a 127.0.0.1 -u web -g web -l /home/web/haloror/log/task-production.log start >> /home/web/haloror/log/task-production.log 2>&1
+
+## To install rufus: gem install rufus-scheduler
+## To install thin: gem install thin
+
+jobs_type = ENV['JOBS_TYPE']
 if jobs_type
   jobs_type = jobs_type.strip.downcase
   puts "Scheduling jobs for server of type #{jobs_type}"
