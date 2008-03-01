@@ -94,16 +94,20 @@ namespace :deploy do
   desc "Restart litespeed web server" 
   task :restart, :roles => :app do
     sudo "#{lsws_cmd} restart" 
+    sudo "thin stop"
+    sudo "export JOBS_TYPE=task; thin -e production -p 8900 -a 127.0.0.1 -u web -g web -l /home/web/haloror/log/task-production.log start >> /home/web/haloror/log/task-production.log 2>&1"
   end
   
   desc "Stop litespeed server" 
   task :stop, :roles => :app do
     sudo "#{lsws_cmd} stop" 
+    sudo "thin stop"
   end
   
   desc "Start litespeed web server" 
   task :start, :roles => :app do
     sudo "#{lsws_cmd} start" 
+    sudo "export JOBS_TYPE=task; thin -e production -p 8900 -a 127.0.0.1 -u web -g web -l /home/web/haloror/log/task-production.log start >> /home/web/haloror/log/task-production.log 2>&1"
   end
 
   desc "copy database.yml file"
