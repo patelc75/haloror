@@ -2,7 +2,7 @@ class Vital < ActiveRecord::Base
 
   belongs_to :user
   
-  def self.latest_data(num_points, id)	
+  def self.latest_data(num_points, id, column)	
     vital = find(:all , 
       :limit => num_points, 
       :order => "timestamp DESC", 
@@ -14,14 +14,15 @@ class Vital < ActiveRecord::Base
       @series_data = Array.new(num_points, 0)  #results of averaging from database
       @categories = Array.new(num_points, 0)       
     elsif
-      @series_data = get_latest(vital)
+      #@series_data = get_latest(vital)
+	  @series_data = vital.map {|a| a.send(column) }
       @categories =  vital.map {|a| a.timestamp.strftime("%H:%M:%S") }      
     end
 	
     values = [@series_data,  @categories]
   end
   
-  def self.average_data(num_points, start_time, end_time, id)
+  def self.average_data(num_points, start_time, end_time, id, column)
     @series_data = Array.new(num_points, 0)  #results of averaging from database
     @categories = Array.new(num_points, 0) 
     interval = (end_time - start_time) / num_points #interval returned in seconds
@@ -35,10 +36,10 @@ class Vital < ActiveRecord::Base
       #average = Heartrate.average(:heartrate, :conditions => condition)
 
       #after inheritance
-      average = get_average(condition)
-      
-
-      
+      #average = get_average(condition)    #using polymorphism
+      #average = average("'#{column}'", condition) #if column is passed in as :heartrate
+      average = average(column, :conditions => condition)
+	  
       current_time = current_time + interval
 
       #@series_data[current_point] = format_average(average)

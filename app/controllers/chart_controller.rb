@@ -66,26 +66,26 @@ class ChartController < ApplicationController
     
     graph  = Ziya::Charts::Line.new( nil, nil, "line_chart" )  #points to chart_live.yml
 
-    gen_data_sets(Heartrate)
-
     #graph.add :axis_category_text, @categories
     
     if cookies[:heartrate] == "false"
       @series_data = {}
       @series_labels = {}
+    elsif
+      gen_data_sets(Vital, 'heartrate')
     end
     
     graph.add(:series, "Heartrate", @series_data, @series_labels)
-
-    gen_data_sets(SkinTemp)
 	
     if cookies[:skin_temp] == "false"
       @series_data = {}
       @series_labels = {}
+    elsif
+      gen_data_sets(SkinTemp, 'skin_temp')
     end
 	
-#     logger.debug{ "logger: @series_data =#{@series_data} \n" }    
-#     logger.debug{ "logger: @series_labels =#{@series_labels} \n" }    
+    #     logger.debug{ "logger: @series_data =#{@series_data} \n" }    
+    #     logger.debug{ "logger: @series_labels =#{@series_labels} \n" }    
 
     graph.add(:series, "Skin Temperature", @series_data, @series_labels)
     
@@ -96,47 +96,47 @@ class ChartController < ApplicationController
   def activity_chart
     graph  = Ziya::Charts::Column.new( nil, nil, "activity_chart" )  #points to chart_live.yml
     
-	#gen_activity_data_sets
+    #gen_activity_data_sets
     #graph.add :axis_category_text, @activity_categories
     #graph.add :series, "Activity", @activity_series
 	
-	gen_data_sets(Activity)
-	graph.add(:series, "Activity", @series_data, @series_labels)
-	graph.add(:axis_category_text, @categories)
+    gen_data_sets(Vital, 'activity')
+    graph.add(:series, "Activity", @series_data, @series_labels)
+    graph.add(:axis_category_text, @categories)
     
     render :xml => graph.to_xml
   end
   
   
   def refresh_data
-	if cookies[:skin_temp] == "false"
+    if cookies[:skin_temp] == "false"
       @series_data = {}
       @series_labels = {}
-	elsif
-	  gen_data_sets(SkinTemp)
+    elsif
+      gen_data_sets(SkinTemp, 'skin_temp')
     end
 
-	@skintemp_series = @series_data
-	@skintemp_labels = @series_labels	
+    @skintemp_series = @series_data
+    @skintemp_labels = @series_labels	
 	
 	
     if cookies[:heartrate] == "false"
       @series_data = {}
       @series_labels = {}
-	elsif
-	  gen_data_sets(Heartrate)
+    elsif
+      gen_data_sets(Vital, :heartrate) 
     end
 
     @heartrate_series = @series_data
     @heartrate_labels = @series_labels
 
     #render a special view which as XML file 
-    render :template => 'chart/refresh_data.xml.builder', :layout => false
+      render :template => 'chart/refresh_data.xml.builder', :layout => false
   end
   
   def refresh_activity_data
-	gen_data_sets(Activity)
-	@activity_series = @series_data
+    gen_data_sets(Vital, :activity)
+    @activity_series = @series_data
     #render a special view which as XML file 
     render :template => 'chart/refresh_activity_data.xml.builder', :layout => false
   end
@@ -208,14 +208,14 @@ class ChartController < ApplicationController
     (num * 10**x).round.to_f / 10**x
   end
 
-  def gen_data_sets(model)
+  def gen_data_sets(model, column)
     #get the latest 10 records (ordered by timestamp) from Heartrate table
     end_time = Time.now
 	
     #logger.debug{ "logger: current_user_id =#{current_user.id} \n" }    
 	
     if cookies[:chart_type] == 'live'
-      @series_data, @categories = model.latest_data(10, current_user.id)
+      @series_data, @categories = model.latest_data(10, current_user.id, column)
     elsif
       if cookies[:chart_type] == 'last_half_hour'
         start_time = end_time - 30 * 60
@@ -227,7 +227,7 @@ class ChartController < ApplicationController
         start_time = end_time - 24 * 60 * 60
       end
 	  
-      @series_data, @categories = model.average_data(10, start_time, end_time, current_user.id)
+      @series_data, @categories = model.average_data(10, start_time, end_time, current_user.id, column)
     end
 	
     #average_data(10, start_time, end_time) 
@@ -236,106 +236,6 @@ class ChartController < ApplicationController
     # random data with fixed arbitrary timestamps
     #    @categories = %w{ 8:32:15AM 8:32:30AM 8:32:45AM 8:33:00AM 8:33:15AM 8:33:30AM 8:33:45AM 8:34:00AM 8:34:15AM 8:34:30AM}
     #    @series_b    = [ rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70 ]      
-  end
-  
-  
-  def gen_heartrate_data_sets  
-    #get the latest 10 records (ordered by timestamp) from Heartrate table
-    end_time = Time.now
-	
-    #logger.debug{ "logger: current_user_id =#{current_user.id} \n" }    
-	
-    if cookies[:chart_type] == 'live'
-      heartrate = Heartrate.find(:all , 
-        :limit => 10, 
-        :order => "timestamp DESC", 
-        :conditions => "user_id = '#{current_user.id}'").reverse
-	  
-      @categories =  heartrate.map {|a| a.timestamp.strftime("%H:%M:%S") }
-	  
-      if cookies[:heartrate] == "true"
-        @heartrate_series  = heartrate.map {|a| a.heartrate }
-        @heartrate_labels  = heartrate.map {|a| a.heartrate }
-      else
-        @heartrate_series = {}
-        @heartrate_labels = {}
-      end
-	  
-    elsif cookies[:chart_type] == 'last_half_hour'
-      start_time = end_time - 30 * 60
-      Heartrate.average_data(10, start_time, end_time)
-      #average_data(10, start_time, end_time) 
-    elsif cookies[:chart_type] == 'last_hour'
-      start_time = end_time - 60 * 60
-      average_data(10, start_time, end_time) 
-    elsif cookies[:chart_type] == 'last_six_hours'
-      start_time = end_time - 6 * 60 * 60
-      average_data(10, start_time, end_time)
-    elsif cookies[:chart_type] == 'all_day'
-      start_time = end_time - 24 * 60 * 60
-      average_data(10, start_time, end_time)
-      #heartrate = Heartrate.find(:all , :limit => 10, :order => "timestamp DESC").reverse
-    end
-        
-    # random data with fixed arbitrary timestamps
-    #    @categories = %w{ 8:32:15AM 8:32:30AM 8:32:45AM 8:33:00AM 8:33:15AM 8:33:30AM 8:33:45AM 8:34:00AM 8:34:15AM 8:34:30AM}
-    #    @series_b    = [ rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70, rand(4)+70 ]    
-  end
-
-  def gen_activity_data_sets
-    if cookies[:chart_type] == 'live'
-      activity = Activity.find(:all , :limit => 10, :order => "timestamp DESC").reverse
-    elsif cookies[:chart_type] == 'last_half_hour'
-      activity = Activity.find(:all , :limit => 10, :order => "timestamp DESC").reverse
-    elsif cookies[:chart_type] == 'last_hour'
-      activity = Activity.find(:all , :limit => 10, :order => "timestamp DESC").reverse
-    elsif cookies[:chart_type] == 'last_six_hours'
-      activity = Activity.find(:all , :limit => 10, :order => "timestamp DESC").reverse
-    elsif cookies[:chart_type] == 'all_day'
-      activity = Activity.find(:all , :limit => 10, :order => "timestamp DESC").reverse
-    end
-    
-    @activity_categories =  activity.map {|a| a.timestamp.strftime("%H:%M:%S") }    
-    @activity_series  = activity.map {|a| a.activity }
-  end
-  
-  def gen_skintemp_data_sets
-    if cookies[:chart_type] == 'live'
-      skin_temp = SkinTemp.find(:all , :limit => 10, :order => "timestamp DESC").reverse
-    elsif cookies[:chart_type] == 'last_half_hour'
-      skin_temp = SkinTemp.find(:all , :limit => 10, :order => "timestamp DESC").reverse
-    elsif cookies[:chart_type] == 'last_hour'
-      skin_temp = SkinTemp.find(:all , :limit => 10, :order => "timestamp DESC").reverse
-    elsif cookies[:chart_type] == 'last_six_hours'
-      skin_temp = SkinTemp.find(:all , :limit => 10, :order => "timestamp DESC").reverse
-    elsif cookies[:chart_type] == 'all_day'
-      skin_temp = SkinTemp.find(:all , :limit => 10, :order => "timestamp DESC").reverse
-    end
-    
-    if cookies[:skin_temp] == "true"
-      @skintemp_series  = skin_temp.map {|a| (a.skin_temp - 68)/0.2 }        #put in terms of heartrate
-      @skintemp_labels  = skin_temp.map {|a| a.skin_temp.to_s + ' F'}
-    else
-      @skintemp_series = {}
-      @skintemp_labels = {}
-    end
-  end
-  
-  def start_background_task
-    session[:job_key]= MiddleMan.new_worker(:class => :heartrate_worker,
-      :args => "Arguments used to instantiate a new HeartratepostWorker object")
-    
-    session[:job_key] = worker
-    MiddleMan.schedule_worker(
-      :class => :heartrate_post_worker,
-      :args => "some arg to do_work",
-      :job_key => :simple_schedule,
-      :trigger_args => {
-        :start => Time.now,
-        :end => Time.now + 10.minutes,
-        :repeat_interval => 15.seconds
-      }
-    )
   end
   
   def tabbed
