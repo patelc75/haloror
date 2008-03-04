@@ -1,0 +1,15 @@
+<%=render :partial=>'nav'%>
+
+<p>
+	Select a Device: <%=select(:user, :device, current_user.devices.collect {|d| [ d.id, d.id ]}, {}, {:onchange => "new Ajax.Updater('chatter','/management/?device_id='+this.value)"})%>
+	-or-
+	Enter a device id: <input type="text" id="device_id" /> <input type="button" value="Go" onclick="new Ajax.Updater('chatter', '/management/?device_id='+$('device_id').value)" />
+</p>
+
+<p style="color:gray;font-weight:bold">
+	Pending commands are grayed out.
+</p>
+
+<div id="chatter">
+	<%=render :partial => 'chatter', :locals => {:chatter => @chatter}%>
+</div>

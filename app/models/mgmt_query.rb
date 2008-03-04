@@ -3,6 +3,7 @@ class MgmtQuery < ActiveRecord::Base
   MINUTES_INTERVAL = 15
 
   belongs_to :mgmt_cmd
+  belongs_to :device
 
   # Each user's wireless gateway queries the server every MINUTES_INTERVAL
   # minutes. We need to detect the devices that have not connected in

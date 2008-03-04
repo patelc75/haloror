@@ -1,0 +1,30 @@
+<%=render :partial=>'nav'%>
+
+<h2>Issue Commands</h2>
+
+<% remote_form_for :management_cmd_device, :url => {:controller => 'mgmt_cmds',:action => 'create_many'}, :update => 'issue_cmd' do |f|%>
+	<p>
+		<%=f.radio_button :cmd_type, 'info'%> Info Request
+	</p>
+	<p>
+		<%=f.radio_button :cmd_type, 'reset'%> Reset
+	</p>
+	<p>
+		<%=f.radio_button :cmd_type, 'firmware_upgrade'%> Firmware Upgrade
+	</p>
+	<p>
+		<%=f.radio_button :cmd_type, 'device_registration'%> Device Registration
+	</p>
+	<p>
+		<%=f.radio_button :cmd_type, 'user_registration'%> User Registration
+	</p>
+	<p>&nbsp;</p>
+	<p>Enter a range of device ids (min-max) -or- ids separated by commas:</p>
+	<%=f.text_field 'ids'%>
+	<p>&nbsp;</p>
+	<%=f.submit 'Send Command'%>
+<% end %>
+
+<div id="issue_cmd">
+	
+</div>

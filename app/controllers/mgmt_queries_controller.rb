@@ -44,7 +44,7 @@ class MgmtQueriesController < ApplicationController
     end
     
     if @cmd
-      render :layout => false, :partial => "management/commands", :locals => {:cmd => @cmd, :more => @more}
+      render :layout => false, :partial => "management/command", :locals => {:cmd => @cmd, :more => @more}
     else
       render :nothing => true
     end

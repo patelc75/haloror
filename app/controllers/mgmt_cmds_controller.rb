@@ -51,4 +51,62 @@ class MgmtCmdsController < ApplicationController
     
     render :layout =>false, :partial => "management/response", :locals => {:response => response}
   end
+  
+  def create_many
+    @success = true
+    @message = 'Command created!'
+    
+    request = params[:management_cmd_device]
+    
+    if !request[:cmd_type].empty? && !request[:ids].empty?
+      cmd = {}
+      cmd[:cmd_type] = request[:cmd_type]
+      cmd[:timestamp_initiated] = Time.now
+      cmd[:originator] = 'server'
+    
+      if /-/.match(request[:ids])     # range of device ids
+        arr = request[:ids].split('-')
+      
+        min = arr[0].to_i
+        max = arr[1].to_i
+        
+        if min && max
+          count = min
+          while count <= max
+            cmd[:device_id] = count
+        
+            MgmtCmd.create(cmd)
+            count+=1
+          end
+        else
+          @success = false
+          @message = 'Please provide a min and max for the range of device ids.'
+        end
+      elsif /,/.match(request[:ids])  # multiple device ids
+        request[:ids].split(',').each do |id|          
+          if id
+            cmd[:device_id] = id
+            MgmtCmd.create(cmd)
+          end
+        end
+      else                            # single device id
+        cmd[:device_id] = request[:ids]
+        MgmtCmd.create(cmd)
+      end
+    else
+      @success = false
+      if !request[:cmd_type]        
+        @message = 'Please select a command type.'
+      else
+        @message = 'Please provide device ids.'
+      end
+    end
+    
+    render :layout => false
+  end
+  
+  def delete
+    MgmtCmd.delete(params[:id])
+    render :nothing => true
+  end
 end

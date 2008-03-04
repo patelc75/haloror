@@ -67,4 +67,11 @@ class ApplicationController < ActionController::Base
     true
   end
   
+  def authenticate_admin
+    unless logged_in? && current_user.is_administrator?
+      return redirect_to('/login')
+    end
+    true
+  end
+  
 end

@@ -1,6 +1,7 @@
 class Device < ActiveRecord::Base
   has_one :device_info
   has_many :mgmt_cmds
+  has_many :mgmt_queries
   
   belongs_to :user
   

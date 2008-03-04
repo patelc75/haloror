@@ -13,7 +13,7 @@ class UsersController < ApplicationController
         Profile.create(:user_id => @user.id)
       end
     end
-    self.current_user = @user
+    #self.current_user = @user
     #redirect_back_or_default('/')
     #flash[:notice] = "Thanks for signing up!"
 	#render :nothing => true
@@ -68,7 +68,7 @@ class UsersController < ApplicationController
     current_user.has_caregivers.each do |caregiver|
       user = User.find(caregiver.user_id)
       if user.roles_users_option.removed
-        @removed_caregivers.push(caregiver)
+        @removed_caregivers.push caregiver
       end
     end
     
@@ -92,6 +92,8 @@ class UsersController < ApplicationController
     
     RolesUsersOption.create(:role_id => @role.role_id, :user_id => @user.id, :position => params[:position], :active => 1)
     
+
+
     redirect_to :controller => 'profiles', :action => 'edit_caregiver_profile', :id => profile.id
   rescue ActiveRecord::RecordInvalid
     @max_position = get_max_caregiver_position

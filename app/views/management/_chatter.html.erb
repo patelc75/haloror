@@ -1,0 +1,21 @@
+<% if chatter.length > 0 %>
+	<% chatter.sort_by { |row| row[:timestamp] }.each do |row| %>
+		<% color = 'gray' if !row[:query_group] && row[:type] == 'cmd' %>
+	
+		<div style="color:<%=color%>;clear:both" id="<%=row[:type]%>_<%=row[:id]%>">
+			<div style="width:200px;float:left">
+				<%=row[:type]%> <i><%=row[:cmd_type]%></i>
+			</div>
+			<div style="width:250px;float:left">
+				<%=row[:timestamp]%> 
+			</div>
+			<% if !row[:query_group] && row[:type] == 'cmd' %>
+				<div style="width:250px;float:left">
+					<a href="javascript:void(0)" onclick="if(confirm('Are you sure?')){new Ajax.Request('/mgmt_<%=row[:type]%>s/delete/?id=<%=row[:id]%>');$('<%=row[:type]%>_<%=row[:id]%>').style.display = 'none'}">Delete</a>
+				</div>
+			<% end %>
+		</div>
+	<% end %>
+<% else %>
+	<p>No commands found.</p>
+<% end %>
