@@ -1,6 +1,8 @@
 class MgmtCmdsController < ApplicationController
   # POST /mgmt_cmds
   def create
+    registration_device_id = '4294967295'
+    
     # 1. Create mgmt_cmd
     request = params[:management_cmd_device]
     
@@ -17,7 +19,7 @@ class MgmtCmdsController < ApplicationController
     
     # Call correct method in device model (if applicable)
     
-    if cmd.cmd_type == 'device_registration'  #create device
+    if cmd.cmd_type == 'device_registration' && request[:device_id] == registration_device_id  #create device
       unless device = Device.find_by_serial_number(request[:serial_num])
         device = Device.new
         device.serial_number = request[:serial_num]
@@ -28,7 +30,7 @@ class MgmtCmdsController < ApplicationController
     end
     
     # link to user
-    if request[:device_id]
+    if request[:device_id] && request[:device_id] != registration_device_id
       if device = Device.find(request[:device_id])
         if cmd.cmd_type == 'user_registration'
           user_id = device.register_user 
