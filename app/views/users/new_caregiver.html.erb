@@ -13,9 +13,18 @@
 					</p>
 					<ul class="removed_caregivers">
 					<% @removed_caregivers.each do |caregiver| %>
-						<% user = User.find(caregiver.user_id)%>
+						<% 
+							user = User.find(caregiver.user_id)
+							
+							if user.profile.first_name && user.profile.last_name
+								name = user.profile.first_name+" "+user.profile.last_name
+							else
+								name = "(no name provided)"
+							end
+							
+						%>
 						
-						<li onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag-small.gif\')'" onMouseOut="this.style.backgroundImage = 'url(\'/images/call_list-item-small.gif\')'"><%=link_to_remote user.profile.first_name+" "+user.profile.last_name, :update => 'call_list', :url => {:controller => 'users', :action => 'restore_caregiver_role', :id => caregiver.roles_users_option.id}, :complete => "RedBox.close();headerDisplay()"%></li>
+						<li onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag-small.gif\')'" onMouseOut="this.style.backgroundImage = 'url(\'/images/call_list-item-small.gif\')'"><%=link_to_remote name, :update => 'call_list', :url => {:controller => 'users', :action => 'restore_caregiver_role', :id => caregiver.roles_users_option.id}, :complete => "RedBox.close();headerDisplay()"%></li>
 					<% end %>
 					</ul>
 					
