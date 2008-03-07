@@ -48,9 +48,28 @@
 	<%= f.text_field :cell_phone %>
 	<br />
 	<br />
+	<select id="profile_carrier_id" name="profile[carrier_id]">
+	<% if @profile.carrier_id == 0 or @profile.carrier_id == nil -%>
+    <option value="" selected="selected" >
+    Please select the Service Provider </option>
+    <% end -%>
+    <% @carrier = Carrier.find(:all, :order => "id")
+    @carrier.each do |carrier| %>
+	<option value="<%= carrier.id %>"
+	<% if @profile.carrier_id == carrier.id -%> selected="selected"<% end -%>
+	>
+	<%= carrier.name %> 
+    </option>
+    <% end %>
+    </select>
+	
+	<br/>
+	<br />
 	<label for="relationship">Relationship</label>
 	<br />
 	<%= f.text_field :relationship %>
+    <br/>
+    <br/>
   	<div align="center">
 		<input name="commit" type="image" src="/images/update.gif" onClick="RedBox.close()" /> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
 	</div>
