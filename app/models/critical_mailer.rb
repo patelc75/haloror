@@ -35,7 +35,7 @@ class CriticalMailer < ActionMailer::Base
      em_bool = opts.email_active
      tm_bool = opts.text_active
       if tm_bool == true
-       @recipients  << ["#{caregiver.profile.text_email}"] 
+       @recipients  << ["#{caregiver.profile.cell_phone}" + "#{caregiver.profile.carrier.domain}"] 
       end
      if em_bool == true
      @recipients  << ["#{caregiver.email}"] 
