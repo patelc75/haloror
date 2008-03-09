@@ -380,3 +380,35 @@ function headerDisplay()
 	else
 		$('call_list_header').style.display = 'none';
 }
+
+function show_group(id)
+{
+	if($('group_'+id).style.display == 'none')
+	{
+		$('control_'+id).innerHTML = '[-]';
+		$('group_'+id).style.display = 'block';
+	}
+	else
+	{
+		$('control_'+id).innerHTML = '[+]';
+		$('group_'+id).style.display = 'none';
+	}
+}
+
+var alerts = Array();
+function toggleAlert(id,active,type)
+{
+	if(!alerts[type])
+		alerts[type] = Array();
+		
+	if(active || alerts[type][id])
+	{
+		alerts[type][id] = false;
+		$('alert_'+type+'_'+id).src = '/images/call_list-'+type+'-inactive.gif';
+	}
+	else
+	{
+		alerts[type][id] = true;
+		$('alert_'+type+'_'+id).src = '/images/call_list-'+type+'.gif';
+	}
+}
