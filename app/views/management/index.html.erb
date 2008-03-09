@@ -1,15 +1,21 @@
 <%=render :partial=>'nav'%>
 
 <p>
-	Select a Device: <%=select(:user, :device, current_user.devices.collect {|d| [ d.id, d.id ]}, {}, {:onchange => "new Ajax.Updater('chatter','/management/?device_id='+this.value)"})%>
+	Select a Device: <%=select(:user, :device, current_user.devices.collect {|d| [ d.id, d.id ]}, {}, {:onchange => "new Ajax.Updater('chatter','/management/"+@type+"/?device_id='+this.value)"})%>
 	-or-
-	Enter a device id: <input type="text" id="device_id" /> <input type="button" value="Go" onclick="new Ajax.Updater('chatter', '/management/?device_id='+$('device_id').value)" />
+	Enter a device id: <input type="text" id="device_id" /> <input type="button" value="Go" onclick="new Ajax.Updater('chatter', '/management/<%=@type%>/?device_id='+$('device_id').value)" />
 </p>
+
+<div>
+	<%=link_to_remote "Query Stream", :update => "chatter", :url => {:action => "stream"}%>
+	|
+	<%=link_to_remote "Query Groups", :update => "chatter", :url => {:action => "group"}%>
+</div>
 
 <p style="color:gray;font-weight:bold">
 	Pending commands are grayed out.
 </p>
 
 <div id="chatter">
-	<%=render :partial => 'chatter', :locals => {:chatter => @chatter}%>
+	<%=render :partial => 'chatter_' + @type, :locals => {:chatter => @chatter}%>
 </div>

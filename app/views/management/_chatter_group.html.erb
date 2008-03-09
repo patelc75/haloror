@@ -1,0 +1,41 @@
+<% if chatter.length > 0 %>
+	<% chatter.sort_by { |row| row[:timestamp] }.reverse.each do |row| %>
+		<% color = 'gray' unless row.mgmt_ack %>
+	
+		<a href="javascript:void(0)" onClick="show_group(<%=row.id%>)" id="control_<%=row.id%>" style="float:left;text-decoration:none;margin-left:-30px">[+]</a>
+		
+		<%=render :partial => 'row', :locals => {:row => row, :color => color}%>
+		
+		<div id="group_<%=row.id%>" style="margin-left:10px;display:none">
+			<% if query = MgmtQuery.find(:first, :conditions => {:mgmt_cmd_id => row.id}) %>
+				<%
+					query[:type] = 'query'
+					query[:timestamp] = query[:timestamp_server]
+				%>
+				<%=render :partial => 'row', :locals => {:row => query, :color => color}%>
+				
+				<% if ack = row.mgmt_ack %>
+					<%
+						ack[:timestamp] = ack[:timestamp_server]
+						ack[:type] = 'ack'
+					%>
+		
+					<%=render :partial => 'row', :locals => {:row => ack, :color => color}%>
+				<% end %>
+
+				<% if response = row.mgmt_response %>
+					<%
+						response[:timestamp] = response[:timestamp_server]
+						response[:type] = 'response'
+					%>
+					
+					<%=render :partial => 'row', :locals => {:row => response, :color => color}%>
+				<% end %>
+			<% end %>			
+		</div>
+		
+		<div style="clear:both"></div>
+	<% end %>
+<% else %>
+	<p>No commands found.</p>
+<% end %>

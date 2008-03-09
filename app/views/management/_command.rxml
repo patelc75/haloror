@@ -3,16 +3,14 @@ xml.management_cmd_server do
   xml.cmd_type cmd.cmd_type
   xml.timestamp cmd.timestamp_sent
   
-  if more
-    xml.version more.version
-    
-    if more.ftp
-      xml.ftp do
-        xml.server_name more.ftp.server_name
-        xml.login more.ftp.login
-        xml.password more.ftp.password
-        xml.path more.ftp.path
-      end
-    end
-  end
+  # if cmd.cmd
+  #     for column in cmd.cmd.class.column_names
+  #       obj = cmd.cmd.send(column)
+  #       unless obj.is_a? Integer
+  #         #xml.tag!(obj.class.table_name)
+  #       else
+  #         xml.tag!(column, nil, obj.is_a?(Integer))
+  #       end
+  #     end
+  #   end
 end

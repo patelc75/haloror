@@ -1,0 +1,9 @@
+<% if chatter.length > 0 %>
+	<% chatter.sort_by { |row| row[:timestamp] }.reverse.each do |row| %>
+		<% color = 'gray' if !row[:query_group] && row[:type] == 'cmd' %>
+	
+		<%=render :partial => 'row', :locals => {:row => row, :color => color}%>
+	<% end %>
+<% else %>
+	<p>No commands found.</p>
+<% end %>

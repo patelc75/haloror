@@ -17,7 +17,7 @@ class MgmtQueriesController < ApplicationController
     cmds.each do |cmd|
       similar = MgmtCmd.find(:all, :conditions => {:timestamp_initiated => cmd.timestamp_initiated})
     
-      if similar.length == 5
+      if similar.length == 50
         cmd.pending = false
         cmd.save
       else
@@ -44,6 +44,7 @@ class MgmtQueriesController < ApplicationController
     end
     
     if @cmd
+      #render :xml => @cmd.cmd.to_xml
       render :layout => false, :partial => "management/command", :locals => {:cmd => @cmd, :more => @more}
     else
       render :nothing => true
@@ -53,10 +54,10 @@ class MgmtQueriesController < ApplicationController
   def send_command(cmd, query)
     if cmd
       # 3. Get more info
-      @more = nil
-      if cmd.cmd_type == 'firmware_upgrade' && cmd.cmd_id
-        @more = FirmwareUpgrade.find(cmd.cmd_id)
-      end
+      # @more = nil
+      #       if cmd.cmd_type == 'firmware_upgrade' && cmd.cmd_id
+      #         @more = FirmwareUpgrade.find(cmd.cmd_id)
+      #       end
       
       # 4. Link cmd to query
 

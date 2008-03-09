@@ -1,0 +1,15 @@
+<div style="color:<%=color%>" id="<%=row[:type]%>_<%=row[:id]%>">
+	<div style="width:200px;float:left">
+		<%=row[:type]%> <i><%=row[:cmd_type]%></i>
+	</div>
+	<div style="width:250px;float:left">
+		<%=row[:timestamp]%> 
+	</div>
+	<% if row[:pending] %>
+		<div style="width:250px;float:left">
+			<a href="javascript:void(0)" onclick="if(confirm('Are you sure?')){new Ajax.Request('/mgmt_<%=row[:type]%>s/delete/?id=<%=row[:id]%>');$('<%=row[:type]%>_<%=row[:id]%>').style.display = 'none'}">Delete</a>
+		</div>
+	<% end %>
+</div>
+
+<div style="clear:both"></div>
