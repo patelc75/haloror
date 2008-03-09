@@ -92,7 +92,7 @@
 	
 	<!--ACTIVE/AWAY-->
 	
-	<div style="float:left;padding-top:25px;width:150px">
+	<div style="float:left;padding-top:25px;width:100px">
 		<% 
 			unless opts.active?
 				img = 'call_list-active_disabled.gif'
@@ -176,9 +176,11 @@
 
 	<!--EDIT-->
 	
-	<div style="float:left;padding-top:35px;width:75px" id="item_edit_<%=caregiver.id%>">
+	<div style="float:left;padding-top:35px;width:125px" id="item_edit_<%=caregiver.id%>">
 		<!--% puts edit_user_url(caregiver)%-->
 		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true }, :html => {:method => :get, :complete => 'updatePositions()'})%>
+		|
+		<%=link_to('More', :controller => "alerts", :action => "index", :id => caregiver.id)%>
 	</div>
 <% unless params[:noli] == 'true/'%>
 </li>
