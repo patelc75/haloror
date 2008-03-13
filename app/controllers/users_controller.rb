@@ -7,16 +7,16 @@ class UsersController < ApplicationController
 
   def create
     @user = User.new(params[:user])
-    if @user.valid?
+    #if @user.valid?
       User.transaction do
         @user.save!
         Profile.create(:user_id => @user.id)
       end
-    end
+    #end
     #self.current_user = @user
     #redirect_back_or_default('/')
     #flash[:notice] = "Thanks for signing up!"
-	#render :nothing => true
+	  #render :nothing => true
   rescue ActiveRecord::RecordInvalid
     render :action => 'new'
   end
