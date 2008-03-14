@@ -10,7 +10,21 @@ class UsersController < ApplicationController
     #if @user.valid?
       User.transaction do
         @user.save!
+        
+        # create profile
         Profile.create(:user_id => @user.id)
+        
+        # create chest strap device
+        @strap = Device.new
+        @strap.user_id = @user.id
+        @strap.serial_number = params[:strap_serial_number]
+        @strap.save!
+        
+        # create gateway device
+        @gateway = Device.new
+        @gateway.user_id = @user.id
+        @gateway.serial_number = params[:gateway_serial_number]
+        @gateway.save!
       end
     #end
     #self.current_user = @user

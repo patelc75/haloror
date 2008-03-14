@@ -27,7 +27,8 @@ class User < ActiveRecord::Base
   cattr_accessor :current_user #stored in memory instead of table
   attr_accessor :password
 
-  validates_presence_of     :login, :email, :serial_number
+  validates_presence_of     :login, :email
+  #validates_presence_of     :serial_number
   
   validates_presence_of     :password,                   :if => :password_required?
   validates_presence_of     :password_confirmation,      :if => :password_required?
@@ -36,7 +37,7 @@ class User < ActiveRecord::Base
   
   validates_length_of       :login,    :within => 3..40
   validates_length_of       :email,    :within => 3..100
-  validates_length_of       :serial_number, :is => 10
+  #validates_length_of       :serial_number, :is => 10
   
   validates_uniqueness_of   :login, :email, :case_sensitive => false
   
