@@ -4,7 +4,23 @@ class RestfulAuthController < ApplicationController
   layout nil
   
   DEFAULT_HASH_KEY="226f3834726d5531683d4f4b5a2d202729695853662543375c226c6447"
+  
+  def authorize
+    timestamp = get_hash_value_from_array([:timestamp, :begin_timestamp], params)
+    #raise "Auth failed: timestamp missing" if timestamp == nil
     
+    if(params[:gateway_id])
+      serial_num = Device.find(params[:gateway_id].to_i).serial_number;
+      raise "Auth failed: hash check failed " unless is_hash_valid?(timestamp + serial_num, params[:auth])
+    else
+      cmd_type = get_hash_value_from_array([:cmd_type], params)
+      originator = get_hash_value_from_array([:originator], params)
+      
+      raise "Auth failed: gateway_id missing" unless cmd_type == "device_registration" || originator == "server"
+    end
+  end
+  
+  private
   def get_hash_value(key, hsh)
     if hsh[key]
       # if key is found return value
@@ -35,22 +51,6 @@ class RestfulAuthController < ApplicationController
     return nil
   end
   
-  def authorize
-    timestamp = get_hash_value_from_array([:timestamp, :begin_timestamp], params)
-    #raise "Auth failed: timestamp missing" if timestamp == nil
-    
-    if(params[:gateway_id])
-      serial_num = Device.find(params[:gateway_id].to_i).serial_number;
-      raise "Auth failed: hash check failed " unless is_hash_valid?(timestamp + serial_num, params[:auth])
-    else
-      cmd_type = get_hash_value_from_array([:cmd_type], params)
-      originator = get_hash_value_from_array([:originator], params)
-      
-      raise "Auth failed: gateway_id missing" unless cmd_type == "device_registration" || originator == "server"
-    end
-  end
-  
-  #prviate
   def is_hash_valid?(string, hash)
     puts hash
     #return true if hash == Digest::SHA256.hexdigest(DEFAULT_HASH_KEY + string)
