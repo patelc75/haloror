@@ -1,4 +1,4 @@
-class MgmtResponsesController < ApplicationController
+class MgmtResponsesController < RestfulAuthController
   def create
     # 1. Create Response, link with Cmd
     request = params[:management_response_device]

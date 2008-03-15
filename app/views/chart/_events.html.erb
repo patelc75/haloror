@@ -2,7 +2,9 @@ Recent Events:
 
 <% @events.each do |event| %>
 	<p>
-		<b><%=event.timestamp.to_date.to_s(:long)%></b>
+		<b><!--%=event.timestamp.to_date.to_s(:long)%-->
+                    <%=event.timestamp.to_s%>
+                </b>
 		<br />
 		<%=event.kind%>
 	</p>

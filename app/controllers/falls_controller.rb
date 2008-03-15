@@ -1,4 +1,4 @@
-class FallsController < ApplicationController
+class FallsController < RestfulAuthController
   # GET /falls
   # GET /falls.xml
   def index

@@ -1,4 +1,4 @@
-class ActivitiesController < ApplicationController
+class ActivitiesController < RestfulAuthController
   # GET /activities
   # GET /activities.xml
   def index

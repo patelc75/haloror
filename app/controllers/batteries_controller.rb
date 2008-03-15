@@ -1,4 +1,4 @@
-class BatteriesController < ApplicationController
+class BatteriesController < RestfulAuthController
   # GET /batteries
   # GET /batteries.xml
   def index
@@ -34,6 +34,7 @@ class BatteriesController < ApplicationController
   # POST /batteries
   # POST /batteries.xml
   def create
+    
     @battery = Battery.new(params[:battery])
 
     respond_to do |format|

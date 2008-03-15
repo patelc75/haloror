@@ -1,4 +1,4 @@
-class StepsController < ApplicationController
+class StepsController < RestfulAuthController
   # GET /steps
   # GET /steps.xml
   def index

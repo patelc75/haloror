@@ -1,4 +1,4 @@
-class PanicsController < ApplicationController
+class PanicsController < RestfulAuthController
   # GET /panics
   # GET /panics.xml
   def index

@@ -1,0 +1,2 @@
+module RestfulAuthHelper
+end

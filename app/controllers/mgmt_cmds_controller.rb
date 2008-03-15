@@ -1,4 +1,4 @@
-class MgmtCmdsController < ApplicationController
+class MgmtCmdsController < RestfulAuthController
   # POST /mgmt_cmds
   def create
     registration_device_id = '4294967295'

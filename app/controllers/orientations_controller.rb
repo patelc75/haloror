@@ -1,4 +1,4 @@
-class OrientationsController < ApplicationController
+class OrientationsController < RestfulAuthController
   # GET /orientations
   # GET /orientations.xml
   def index

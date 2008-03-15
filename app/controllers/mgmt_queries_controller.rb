@@ -1,4 +1,4 @@
-class MgmtQueriesController < ApplicationController
+class MgmtQueriesController < RestfulAuthController
   # POST /mgmt_queries
   def create
     # 1. Create mgmt_query

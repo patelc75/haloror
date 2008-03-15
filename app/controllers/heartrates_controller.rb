@@ -2,7 +2,7 @@
 # This controller's primary purpose is to allow REST access to
 # the Heartrate model (database)
 
-class HeartratesController < ApplicationController
+class HeartratesController < RestfulAuthController
   # GET /heartrates
   # GET /heartrates.xml
   def index
@@ -18,7 +18,7 @@ class HeartratesController < ApplicationController
   # GET /heartrates/1.xml
   def show
     @heartrate = Heartrate.find(params[:id])
-		#debugger if ENV['RAILS_ENV'] == 'development'
+    #debugger if ENV['RAILS_ENV'] == 'development'
     respond_to do |format|
       #format.html # show.rhtml
       format.xml  { render :xml => @heartrate.to_xml }
@@ -39,12 +39,12 @@ class HeartratesController < ApplicationController
   # POST /heartrates.xml
   def create
     @heartrate = Heartrate.new(params[:heartrate])
-		
-		#debugger if ENV['RAILS_ENV'] == 'development'		
-		#breakpoint "Let's have a closer look at @heartrate" 
+    	
+    #debugger if ENV['RAILS_ENV'] == 'development'		
+    #breakpoint "Let's have a closer look at @heartrate" 
     
-	#chirag: take the 'format' array returned from respond_to method and iterate over it
-	respond_to do |format| 
+    #chirag: take the 'format' array returned from respond_to method and iterate over it
+    respond_to do |format| 
       if @heartrate.save
         flash[:notice] = 'Heartrate was successfully created.'
         #format.html { redirect_to heartrate_url(@heartrate) }
@@ -64,7 +64,7 @@ class HeartratesController < ApplicationController
     respond_to do |format|
       if @heartrate.update_attributes(params[:heartrate])
         flash[:notice] = 'Heartrate was successfully updated.'
-		format.html { redirect_to heartrate_url(@heartrate) }
+        format.html { redirect_to heartrate_url(@heartrate) }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

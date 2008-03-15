@@ -1,4 +1,4 @@
-class MgmtAcksController < ApplicationController
+class MgmtAcksController < RestfulAuthController
   def create
     # 1. Create Ack, link with Cmd
     request = params[:management_ack_device]

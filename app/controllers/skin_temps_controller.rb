@@ -1,4 +1,4 @@
-class SkinTempsController < ApplicationController
+class SkinTempsController < RestfulAuthController
   # GET /skin_temps
   # GET /skin_temps.xml
   def index

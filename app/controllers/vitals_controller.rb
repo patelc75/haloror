@@ -1,4 +1,4 @@
-class VitalsController < ApplicationController
+class VitalsController < RestfulAuthController
   # GET /vitals
   # GET /vitals.xml
   def index
