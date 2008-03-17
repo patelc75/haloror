@@ -214,7 +214,7 @@ class ChartController < ApplicationController
 	
     #logger.debug{ "logger: current_user_id =#{current_user.id} \n" }    
 	
-    if cookies[:chart_type] == 'live'
+    if cookies[:chart_type] == 'live' || !cookies[:chart_type]
       @series_data, @categories = model.latest_data(10, current_user.id, column)
     elsif
       if cookies[:chart_type] == 'last_half_hour'
