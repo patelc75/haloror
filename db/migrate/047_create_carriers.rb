@@ -5,7 +5,7 @@ class CreateCarriers < ActiveRecord::Migration
       t.column :name, :string
       t.column :domain, :string
     end
-    Carrier.create(:name => "Cingular (now AT&T)", :domain => "@cingularname.com")
+    Carrier.create(:name => "Cingular (now AT&T)", :domain => "@cingularme.com")
     Carrier.create(:name => "Verizon", :domain => "@vtext.com")
     Carrier.create(:name => "Boost Mobile", :domain => "@myboostmobile.com")
     Carrier.create(:name => "Nextel", :domain => "@messaging.nextel.com")
