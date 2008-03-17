@@ -5,8 +5,8 @@ class FallObserver < ActiveRecord::Observer
 	
   def after_save(fall)
     Event.create(:user_id => fall.user_id, 
-      :kind => Fall.class_name, 
-      :kind_id => fall.id, 
+      :event_type => Fall.class_name, 
+      :event_id => fall.id, 
       :timestamp => fall.timestamp)
   end
 end
