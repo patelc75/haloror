@@ -8,7 +8,11 @@ class ManagementController < ApplicationController
       @type = 'stream'
     end
     
-    @chatter = get_queries(@type, get_device)
+    @chatter = Array.new
+    
+    if device = get_device
+      @chatter = get_queries(@type, device)
+    end
   end
   
   def stream    
