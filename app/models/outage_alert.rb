@@ -16,14 +16,11 @@ class OutageAlert < ActiveRecord::Base
       logger.debug("[OutageAlert] Detected an outage for user #{device.user_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
 
       Event.create(:user_id => device.user_id, 
-                   :kind => OutageAlert.class_name, 
-                   :kind_id => id, 
+                   :event_type => OutageAlert.class_name, 
+                   :event_id => id, 
                    :timestamp => created_at || Time.now)
 
       CriticalMailer.deliver_outage_alert_notification(self)
     end
   end
-  
 end
-
-
