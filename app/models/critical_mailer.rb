@@ -6,9 +6,9 @@ class CriticalMailer < ActionMailer::Base
     setup_email(device)
     @subject    += "Outage for Device #{outage.device_id}"
     body :outage_created_at => outage.created_at,
-         :login     => device.user.login,
-         :user_id   => device.user.id,
-         :device_id => device.id
+      :login     => device.user.login,
+      :user_id   => device.user.id,
+      :device_id => device.id
   end
 
   def fall_notification(fall)
@@ -28,23 +28,23 @@ class CriticalMailer < ActionMailer::Base
   
   protected
   def setup_email(critical_event)
-  @recipients = Array.new
-  @recipients << ["#{critical_event.user.email}","#{critical_event.user.profile.text_email}"]
-  critical_event.user.has_caregivers.each do |caregiver|
-     opts = caregiver.roles_users_option
-     em_bool = opts.email_active
-     tm_bool = opts.text_active
+    @recipients = Array.new
+    @recipients << ["#{critical_event.user.email}","#{critical_event.user.profile.text_email}"]
+    critical_event.user.has_caregivers.each do |caregiver|
+      opts = caregiver.roles_users_option
+      em_bool = opts.email_active
+      tm_bool = opts.text_active
       if tm_bool == true
-       @recipients  << ["#{caregiver.profile.cell_phone}" + "#{caregiver.profile.carrier.domain}"] 
+        @recipients  << ["#{caregiver.profile.cell_phone}" + "#{caregiver.profile.carrier.domain}"] 
       end
-     if em_bool == true
-     @recipients  << ["#{caregiver.email}"] 
-     end
+      if em_bool == true
+        @recipients  << ["#{caregiver.email}"] 
+      end
     end
     @from        = "no-reply@halomonitoring.com"
     @subject     = "[HALO] "
     @sent_on     = Time.now
     @body[:user] = critical_event.user  #sends params to body
-end
+  end
 end
 	

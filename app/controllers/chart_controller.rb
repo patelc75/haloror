@@ -18,13 +18,13 @@ class ChartController < ApplicationController
         @gauge_width = 0
       end
     
-      @events = Event.find(:all, :limit => 10, :order => "id desc")
+      @events = Event.find(:all, :limit => 10, :order => "id desc",:conditions => "user_id = '#{current_user.id}'")
     
       @temp = SkinTemp.find(:first,:conditions => "user_id = '#{current_user.id}'",:order => "timestamp DESC")
       #@temp = SkinTemp.find(:first, :order => 'id desc')
      
-     @heartrate = Heartrate.find(:first,:conditions => "user_id = '#{current_user.id}'",:order => "timestamp DESC")
-     end
+      @heartrate = Heartrate.find(:first,:conditions => "user_id = '#{current_user.id}'",:order => "timestamp DESC")
+    end
   end
   
   def gen_activity_pie
@@ -64,7 +64,7 @@ class ChartController < ApplicationController
   def line_chart
     #start_background_task
     
-    graph  = Ziya::Charts::Line.new( nil, nil, "line_chart" )  #points to chart_live.yml
+    graph  = Ziya::Charts::Line.new( nil, nil, "line_chart" )  #points to line_chart.yml
 
     #graph.add :axis_category_text, @categories
     
@@ -84,8 +84,8 @@ class ChartController < ApplicationController
       gen_data_sets(SkinTemp, 'skin_temp')
     end
 	
-    #     logger.debug{ "logger: @series_data =#{@series_data} \n" }    
-    #     logger.debug{ "logger: @series_labels =#{@series_labels} \n" }    
+    # logger.debug{ "logger: @series_data =#{@series_data} \n" }    
+    # logger.debug{ "logger: @series_labels =#{@series_labels} \n" }    
 
     graph.add(:series, "Skin Temperature", @series_data, @series_labels)
     
@@ -124,14 +124,14 @@ class ChartController < ApplicationController
       @series_data = {}
       @series_labels = {}
     elsif
-      gen_data_sets(Vital, :heartrate) 
+      gen_data_sets(Vital, 'heartrate') 
     end
 
     @heartrate_series = @series_data
     @heartrate_labels = @series_labels
 
     #render a special view which as XML file 
-      render :template => 'chart/refresh_data.xml.builder', :layout => false
+    render :template => 'chart/refresh_data.xml.builder', :layout => false
   end
   
   def refresh_activity_data
