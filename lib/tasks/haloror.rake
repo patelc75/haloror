@@ -112,6 +112,7 @@ namespace :halo do
       puts "End time: #{end_time}"
 
       until start_time > end_time      
+        puts "user_id: #{ENV['user_id']}"
         start_time = start_time + ENV['increment'].to_i #send a REST posts with the timestamp incremented by 15 seconds
 		  
         #        if ENV['vital'] == "heartrate" || ENV['vital'] == "all"
