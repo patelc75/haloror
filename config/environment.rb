@@ -96,3 +96,11 @@ end
 #   }
 
 require 'postgre_extensions'
+
+# Exception notifier coding 
+
+ExceptionNotifier.exception_recipients = %w(exceptions@halomonitoring.com)  
+# defaults to exception.notifier@default.com
+ExceptionNotifier.sender_address = %("Application Error" <app.error@myapp.com>)
+# defaults to "[ERROR] "
+ExceptionNotifier.email_prefix = "[APP] "

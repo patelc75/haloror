@@ -3,6 +3,8 @@
 
 class ApplicationController < ActionController::Base
   include AuthenticatedSystem
+  include ExceptionNotifiable 
+  local_addresses.clear # always send email notifications instead of displaying the error  
 
   # Pick a unique cookie name to distinguish our session data from others'
   session :session_key => '_HaloRoR2_session_id'  
