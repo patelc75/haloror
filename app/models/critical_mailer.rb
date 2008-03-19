@@ -28,19 +28,35 @@ class CriticalMailer < ActionMailer::Base
   
   protected
   def setup_email(critical_event)
-    @recipients = Array.new
-    @recipients << ["#{critical_event.user.email}","#{critical_event.user.profile.text_email}"]
-    critical_event.user.has_caregivers.each do |caregiver|
-      opts = caregiver.roles_users_option
-      em_bool = opts.email_active
-      tm_bool = opts.text_active
-      if tm_bool == true
-        @recipients  << ["#{caregiver.profile.cell_phone}" + "#{caregiver.profile.carrier.domain}"] 
-      end
-      if em_bool == true
-        @recipients  << ["#{caregiver.email}"] 
+  @recipients = Array.new
+  
+  if critical_event.user.profile.cell_phone != nil
+   @recipients << ["#{critical_event.user.profile.cell_phone}" + "#{critical_event.user.profile.carrier.domain}"]
+  end
+  
+  if critical_event.user.email !=nil
+   @recipients << ["#{critical_event.user.email}"]
+  end
+  
+  critical_event.user.has_caregivers.each do |caregiver|
+     opts = caregiver.roles_users_option
+     em_bool = opts.email_active
+     tm_bool = opts.text_active
+   
+    if caregiver.profile.cell_phone != nil 
+     if tm_bool == true
+       @recipients  << ["#{caregiver.profile.cell_phone}" + "#{caregiver.profile.carrier.domain}"] 
       end
     end
+    
+    if caregiver.email != nil   
+     if em_bool == true
+     @recipients  << ["#{caregiver.email}"] 
+     end
+    end
+  
+  end
+  
     @from        = "no-reply@halomonitoring.com"
     @subject     = "[HALO] "
     @sent_on     = Time.now
