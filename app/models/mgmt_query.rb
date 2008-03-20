@@ -16,12 +16,9 @@ class MgmtQuery < ActiveRecord::Base
           " (select id from device_latest_queries where updated_at > now() - interval '#{MINUTES_INTERVAL} minutes') "
     MgmtQuery.connection.execute(sql)
 
-    sql = 'select d.* ' <<
-      "  from devices d " <<
-      "  left outer join device_latest_queries on device_latest_queries.id = d.id and device_latest_queries.updated_at > now() - interval '#{MINUTES_INTERVAL} minutes' " <<
-      " where device_latest_queries.id is null "
-
-    Device.find_by_sql(sql).each do |device|
+    devices = Device.find(:all,
+                          :conditions => "id in (select dlq.id from device_latest_queries dlq where dlq.updated_at < now() - interval '#{MINUTES_INTERVAL} minutes')")
+    devices.each do |device|
       begin
         MgmtQuery.process_alert(device)
       rescue Exception => e

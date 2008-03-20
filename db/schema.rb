@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 37) do
+ActiveRecord::Schema.define(:version => 55) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id"
@@ -17,11 +17,61 @@ ActiveRecord::Schema.define(:version => 37) do
     t.integer  "activity",  :null => false
   end
 
+  create_table "alert_groups", :force => true do |t|
+    t.string   "magnitude"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "alert_options", :force => true do |t|
+    t.integer  "role_id"
+    t.integer  "alert_types_id"
+    t.boolean  "phone_active"
+    t.boolean  "email_active"
+    t.boolean  "text_active"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "alert_types", :force => true do |t|
+    t.integer  "alert_groups_id"
+    t.string   "type"
+    t.boolean  "phone_active"
+    t.boolean  "email_active"
+    t.boolean  "text_active"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "alerts", :force => true do |t|
+    t.integer  "roles_users_option_id"
+    t.string   "event_kind"
+    t.boolean  "email_active"
+    t.boolean  "phone_active"
+    t.boolean  "text_active"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "batteries", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
     t.integer  "percentage",     :null => false
     t.integer  "time_remaining", :null => false
+  end
+
+  create_table "call_center_steps", :force => true do |t|
+    t.string   "type"
+    t.text     "text"
+    t.text     "answer"
+    t.integer  "next_step_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "carriers", :force => true do |t|
+    t.string "name"
+    t.string "domain"
   end
 
   create_table "device_infos", :force => true do |t|
@@ -34,9 +84,20 @@ ActiveRecord::Schema.define(:version => 37) do
     t.integer "kind_id"
   end
 
+  create_table "device_latest_queries", :force => true do |t|
+    t.datetime "updated_at", :default => '2008-03-01 18:09:57', :null => false
+  end
+
+  add_index "device_latest_queries", ["updated_at"], :name => "device_latest_queries_updated_at_idx"
+
   create_table "devices", :force => true do |t|
     t.integer "user_id"
     t.string  "serial_number"
+  end
+
+  create_table "devices_users", :force => true do |t|
+    t.integer "device_id"
+    t.integer "user_id"
   end
 
   create_table "dial_ups", :force => true do |t|
@@ -50,9 +111,10 @@ ActiveRecord::Schema.define(:version => 37) do
 
   create_table "events", :force => true do |t|
     t.integer  "user_id"
-    t.string   "kind"
-    t.integer  "kind_id"
     t.datetime "timestamp"
+    t.string   "event_type"
+    t.integer  "event_id"
+    t.string   "level"
   end
 
   create_table "falls", :force => true do |t|
@@ -64,6 +126,7 @@ ActiveRecord::Schema.define(:version => 37) do
   create_table "firmware_upgrades", :force => true do |t|
     t.integer "ftp_id"
     t.string  "version"
+    t.string  "hash_key", :null => false
   end
 
   create_table "ftps", :force => true do |t|
@@ -101,8 +164,8 @@ ActiveRecord::Schema.define(:version => 37) do
     t.datetime "timestamp_initiated"
     t.datetime "timestamp_sent"
     t.string   "originator"
-    t.string   "status"
     t.boolean  "pending",             :default => true
+    t.integer  "cmd_id"
   end
 
   create_table "mgmt_queries", :force => true do |t|
@@ -110,6 +173,7 @@ ActiveRecord::Schema.define(:version => 37) do
     t.datetime "timestamp_device"
     t.datetime "timestamp_server"
     t.integer  "poll_rate"
+    t.integer  "mgmt_cmd_id"
   end
 
   create_table "mgmt_responses", :force => true do |t|
@@ -123,6 +187,17 @@ ActiveRecord::Schema.define(:version => 37) do
     t.datetime "timestamp"
     t.boolean  "orientation"
   end
+
+  create_table "outage_alerts", :force => true do |t|
+    t.integer  "device_id",                      :null => false
+    t.integer  "number_attempts", :default => 1, :null => false
+    t.datetime "reconnected_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "outage_alerts", ["device_id"], :name => "outage_alerts_device_id_idx"
+  add_index "outage_alerts", ["device_id"], :name => "outage_alerts_outage_idx"
 
   create_table "panics", :force => true do |t|
     t.integer  "user_id"
@@ -142,6 +217,7 @@ ActiveRecord::Schema.define(:version => 37) do
     t.string  "relationship"
     t.string  "email"
     t.string  "text_email"
+    t.integer "carrier_id"
   end
 
   create_table "raw_data_files", :force => true do |t|
@@ -204,13 +280,16 @@ ActiveRecord::Schema.define(:version => 37) do
     t.datetime "activated_at"
     t.string   "image"
     t.string   "type"
+    t.string   "serial_number"
   end
 
   create_table "vitals", :force => true do |t|
-    t.integer "heartrate"
-    t.integer "hrv"
-    t.integer "activity"
-    t.integer "orientation"
+    t.integer  "heartrate"
+    t.integer  "hrv"
+    t.integer  "activity"
+    t.integer  "orientation"
+    t.datetime "timestamp"
+    t.integer  "user_id"
   end
 
 end
