@@ -11,7 +11,7 @@ class OutageAlert < ActiveRecord::Base
 
   # If we have detected an outage after our retry period, notify the
   # user immediately
-  def after_save
+  def after_create
     if number_attempts >= MAX_ATTEMPTS_BEFORE_NOTIFICATION
       logger.debug("[OutageAlert] Detected an outage for user #{device.user_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
 
