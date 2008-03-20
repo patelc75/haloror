@@ -11,8 +11,9 @@ class OutageAlert < ActiveRecord::Base
 
   # If we have detected an outage after our retry period, notify the
   # user immediately
-  def after_create
-    if number_attempts >= MAX_ATTEMPTS_BEFORE_NOTIFICATION
+  def after_save
+    #if number_attempts >= MAX_ATTEMPTS_BEFORE_NOTIFICATION
+    if number_attempts == 1
       logger.debug("[OutageAlert] Detected an outage for user #{device.user_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
 
       Event.create(:user_id => device.user_id, 
@@ -23,4 +24,4 @@ class OutageAlert < ActiveRecord::Base
       CriticalMailer.deliver_outage_alert_notification(self)
     end
   end
-end
+end 
