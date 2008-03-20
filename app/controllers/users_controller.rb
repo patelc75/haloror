@@ -1,14 +1,20 @@
 class UsersController < ApplicationController
+include UsersHelper
 
-  # render new.rhtml
+before_filter:set_user
+
+def set_user
+ UsersHelper.current_host = request.host
+end
+
+ 
   def new
 	  #render :layout => false
   end
 
   def create
     @user = User.new(params[:user])
-    #if @user.valid?
-      User.transaction do
+    User.transaction do
         @user.save!
         
         # create profile
