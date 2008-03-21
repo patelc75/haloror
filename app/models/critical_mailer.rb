@@ -30,11 +30,11 @@ class CriticalMailer < ActionMailer::Base
   def setup_email(critical_event)
   @recipients = Array.new
   
-  if critical_event.user.profile.cell_phone != nil
+  if critical_event.user.profile.cell_phone != nil and critical_event.user.profile.cell_phone != ""
    @recipients << ["#{critical_event.user.profile.cell_phone}" + "#{critical_event.user.profile.carrier.domain}"]
   end
   
-  if critical_event.user.email !=nil
+  if critical_event.user.email != nil and critical_event.user.email != ""
    @recipients << ["#{critical_event.user.email}"]
   end
   
@@ -43,14 +43,14 @@ class CriticalMailer < ActionMailer::Base
      em_bool = opts.email_active
      tm_bool = opts.text_active
    
-    if caregiver.profile.cell_phone != nil 
-     if tm_bool == true
-       @recipients  << ["#{caregiver.profile.cell_phone}" + "#{caregiver.profile.carrier.domain}"] 
+    if tm_bool == true
+    if caregiver.profile.cell_phone != nil and caregiver.profile.cell_phone != ""
+      @recipients  << ["#{caregiver.profile.cell_phone}" + "#{caregiver.profile.carrier.domain}"] 
       end
     end
     
-    if caregiver.email != nil   
-     if em_bool == true
+    if em_bool == true
+    if caregiver.email != nil and caregiver.email != ""
      @recipients  << ["#{caregiver.email}"] 
      end
     end
