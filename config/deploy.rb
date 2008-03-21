@@ -57,6 +57,6 @@ end
 after "deploy", "deploy:cleanup"
 #after "deploy", "deploy:restart"
 after "deploy", "deploy:after_update_code"
-after "deploy", "deploy:migrate"
+#after "deploy", "deploy:migrate"
 
 

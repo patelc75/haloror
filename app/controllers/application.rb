@@ -4,6 +4,7 @@
 class ApplicationController < ActionController::Base
   include AuthenticatedSystem
   include ExceptionNotifiable 
+  
   local_addresses.clear # always send email notifications instead of displaying the error  
 
   # Pick a unique cookie name to distinguish our session data from others'
@@ -20,6 +21,14 @@ class ApplicationController < ActionController::Base
   
   before_filter do |c|
      User.current_user = User.find(c.session[:user]) unless c.session[:user].nil?
+  end
+  
+  before_filter :set_user
+  
+  def set_user
+  # UsersHelper.current_user1 = session[:user]
+   UsersHelper.current_uri = request.request_uri
+  # logger.debug("[application.rb] UsersHelper.current_uri #{UsersHelper.current_uri}.")  
   end
   
   def number_ext
