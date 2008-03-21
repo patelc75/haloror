@@ -39,8 +39,8 @@ class StepsController < RestfulAuthController
     respond_to do |format|
       if @step.save
         flash[:notice] = 'Step was successfully created.'
-        #format.html { redirect_to step_url(@step) }
-        format.html { render :xml => @step }
+        format.html { redirect_to step_url(@step) }
+        #format.html { render :xml => @step }
         format.xml  { head :created, :location => step_url(@step) }
       else
         format.html { render :action => "new" }
