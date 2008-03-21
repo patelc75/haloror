@@ -33,7 +33,8 @@ class MgmtCmdsController < RestfulAuthController
     if request[:device_id] && request[:device_id] != registration_device_id
       if device = Device.find(request[:device_id])
         if cmd.cmd_type == 'user_registration'
-          user_id = device.register_user 
+          #user_id = device.register_user 
+          user_id = device.user_id
           cmd.user_id = user_id
         else
           cmd.user_id = device.user.id
