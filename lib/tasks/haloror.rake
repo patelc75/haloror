@@ -19,7 +19,7 @@ namespace :halo do
 
     if ENV['vital'] == nil
       puts ""	
-      puts "You forgot vital. vital = heartrate, skin_temp, actvity, battery, or all"
+      puts "You forgot vital. vital = vitals, skin_temp, battery, or all"
       puts ""
       print_usage = true
     else
@@ -114,35 +114,7 @@ namespace :halo do
       until start_time > end_time      
         puts "user_id: #{ENV['user_id']}"
         start_time = start_time + ENV['increment'].to_i #send a REST posts with the timestamp incremented by 15 seconds
-		  
-        #        if ENV['vital'] == "heartrate" || ENV['vital'] == "all"
-        #          random_heartrate = rand(7)+70
-        #          puts "#{start_time}: Posting heartrate of #{random_heartrate}"  
-        #          if ENV['method'] == "activerecord"
-        #            heartrate = Heartrate.new(:user_id => ENV['user_id'], :timestamp => start_time, :heartrate => random_heartrate)
-        #            heartrate.save
-        #          elsif ENV['method'] == "curl"
-        #            heartrate_xml = "<heartrate><heartrate>#{random_heartrate}</heartrate><user_id>#{ENV['user_id']}</user_id><timestamp>#{start_time}</timestamp></heartrate>"
-        #            curl_cmd ='curl -H "Content-Type: text/xml" -d "' + heartrate_xml + '" ' + ENV['url'] + '/heartrates'    
-        #            puts curl_cmd
-        #            system(curl_cmd)    		
-        #          end
-        #        end
-		  
-        #        if ENV['vital'] == "activity" || ENV['vital'] == "all"
-        #          random_activity = rand(25000)+10000
-        #          puts "#{start_time}: Posting activty of #{random_activity}"  
-        #          if ENV['method'] == "activerecord"
-        #            activity = Activity.new(:user_id => ENV['user_id'], :timestamp => start_time, :activity => random_activity)
-        #            activity.save	  
-        #          elsif ENV['method'] == "curl"
-        #            activity_xml = "<activity><activity>#{random_activity}</activity><user_id>#{ENV['user_id']}</user_id><timestamp>#{start_time}</timestamp></activity>"
-        #            curl_cmd ='curl -H "Content-Type: text/xml" -d "' + activity_xml + '" ' + ENV['url'] + '/activities'    
-        #            puts curl_cmd
-        #            system(curl_cmd)    		
-        #          end
-        #        end
-		  
+		  		  
         if ENV['vital'] == "skin_temp" || ENV['vital'] == "all"
           random_skin_temp = rand(5)+96
           puts "#{start_time}: Posting skin temp of #{random_skin_temp} "  
@@ -184,20 +156,6 @@ namespace :halo do
             system(curl_cmd)    				
           end		
         end
-
-        #        if ENV['vital'] == "orientation" || ENV['vital'] == "all"
-        #          random_orientation = rand(2)
-        #          puts "#{start_time}: Posting orientation of #{random_orientation} "  
-        #          if ENV['method'] == "activerecord"
-        #            orientation = Orientation.new(:user_id => ENV['user_id'], :timestamp => start_time, :orientation => random_orientation)
-        #            orientation.save
-        #          elsif ENV['method'] == "curl"
-        #            orientation_xml = "<orientation><orientation>#{random_orientation}</orientation><user_id>#{ENV['user_id']}</user_id><timestamp>#{start_time}</timestamp></orientation>"
-        #            curl_cmd ='curl -H "Content-Type: text/xml" -d "' + orientation_xml + '" ' + ENV['url'] + '/orientations'    
-        #            puts curl_cmd
-        #            system(curl_cmd)    				
-        #          end		
-        #        end
 		
         if ENV['vital'] == "vitals" || ENV['vital'] == "all"
           if ENV['method'] == "activerecord"
