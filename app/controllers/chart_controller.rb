@@ -23,7 +23,7 @@ class ChartController < ApplicationController
       @temp = SkinTemp.find(:first,:conditions => "user_id = '#{current_user.id}'",:order => "timestamp DESC")
       #@temp = SkinTemp.find(:first, :order => 'id desc')
      
-      @heartrate = Heartrate.find(:first,:conditions => "user_id = '#{current_user.id}'",:order => "timestamp DESC")
+      @vital = Vital.find(:first,:conditions => "user_id = '#{current_user.id}'",:order => "timestamp DESC")
     end
   end
   
@@ -242,4 +242,9 @@ class ChartController < ApplicationController
     logger.info "test"
     render :layout => false
   end
+  
+  def error  
+      raise RuntimeError, "Generating an error"  
+  end
+
 end
