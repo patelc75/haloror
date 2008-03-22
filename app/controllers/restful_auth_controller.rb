@@ -16,7 +16,7 @@ class RestfulAuthController < ApplicationController
       cmd_type = get_hash_value_from_array([:cmd_type], params)
       originator = get_hash_value_from_array([:originator], params)
       
-      raise "Auth failed: gateway_id missing" unless cmd_type == "device_registration" || originator == "server"
+      raise "Auth failed: gateway_id missing" unless cmd_type == "device_registration" or originator == "server" or cmd_type == "user_registration"
     end
   end
   
