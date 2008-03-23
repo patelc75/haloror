@@ -10,6 +10,8 @@ class MgmtQuery < ActiveRecord::Base
   # a while and create notifications of outages after a certain number
   # of failures.
   def MgmtQuery.job_detect_disconnected_users
+    ActiveRecord::Base.logger.debug("MgmtQuery.job_detect_disconnected_users running at #{Time.now}")
+
     ## Find devices that were previously signaling errors but have
     ## come back online.
     sql = 'update outage_alerts set reconnected_at = now() where reconnected_at is null and device_id in ' <<

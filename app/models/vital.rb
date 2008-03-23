@@ -80,4 +80,44 @@ class Vital < ActiveRecord::Base
       class_eval("average(:#{column})")
     end
   end
+
+  # Creates alerts for users that have become unavailable
+  def Vital.job_detect_unavailable_devices
+    ActiveRecord::Base.logger.debug("Vital.job_detect_unavailable_devices running at #{Time.now}")
+
+    ## Find devices that were previously signaling errors but have
+    ## come back online.
+    sql = 'update device_unavailable_alerts set reconnected_at = now() where reconnected_at is null and user_id in ' <<
+          " (select id from user_strap_status where is_fastened > 0) "
+    Vital.connection.execute(sql)
+
+    users = User.find(:all,
+                      :conditions => "id in (select id from user_strap_status where is_fastened = 0)")
+    users.each do |user|
+      begin
+        Vital.process_user_unavailable(user)
+      rescue Exception => e
+        logger.fatal("Error processing unavailable device alert for user #{user.inspect}: #{e}")
+        raise e if ENV['RAILS_ENV'] == "development"
+      end
+    end
+  end
+
+  private
+  def self.process_user_unavailable(user)
+    alert = DeviceUnavailableAlert.find(:first,
+                                        :order => 'created_at desc',
+                                        :conditions => ['reconnected_at is null and user_id = ?', user.id])
+
+    if alert
+      alert.number_attempts += 1
+      alert.save!
+    else
+      alert = DeviceUnavailableAlert.new
+      alert.user = user
+      alert.save!
+    end
+  end
+
+
 end

@@ -7,6 +7,16 @@ class CriticalMailer < ActionMailer::Base
     body :alert_type => device_alert.class, 
       :timestamp => device_alert.timestamp
   end
+
+  # alert: DeviceUnavailableAlert
+  def device_unavailable_alert_notification(alert)
+    setup_email(alert.user)
+    @subject    += "Device Unavailable for User #{alert.user_id}"
+    body :alert_created_at => alert.created_at,
+      :login     => alert.user.login,
+      :user_id   => alert.user.id,
+      :alert_id => alert.id
+  end
   
   def outage_alert_notification(outage)
     device = outage.device

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 55) do
+ActiveRecord::Schema.define(:version => 64) do
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id"
@@ -60,6 +60,34 @@ ActiveRecord::Schema.define(:version => 55) do
     t.integer  "time_remaining", :null => false
   end
 
+  create_table "battery_charge_completes", :force => true do |t|
+    t.integer  "device_id"
+    t.datetime "timestamp"
+    t.integer  "percentage",     :null => false
+    t.integer  "time_remaining", :null => false
+  end
+
+  create_table "battery_criticals", :force => true do |t|
+    t.integer  "device_id"
+    t.datetime "timestamp"
+    t.integer  "percentage",     :null => false
+    t.integer  "time_remaining", :null => false
+  end
+
+  create_table "battery_pluggeds", :force => true do |t|
+    t.integer  "device_id"
+    t.datetime "timestamp"
+    t.integer  "percentage",     :null => false
+    t.integer  "time_remaining", :null => false
+  end
+
+  create_table "battery_unpluggeds", :force => true do |t|
+    t.integer  "device_id"
+    t.datetime "timestamp"
+    t.integer  "percentage",     :null => false
+    t.integer  "time_remaining", :null => false
+  end
+
   create_table "call_center_steps", :force => true do |t|
     t.string   "type"
     t.text     "text"
@@ -89,6 +117,17 @@ ActiveRecord::Schema.define(:version => 55) do
   end
 
   add_index "device_latest_queries", ["updated_at"], :name => "device_latest_queries_updated_at_idx"
+
+  create_table "device_unavailable_alerts", :force => true do |t|
+    t.integer  "user_id",                        :null => false
+    t.integer  "number_attempts", :default => 1, :null => false
+    t.datetime "reconnected_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "device_unavailable_alerts", ["user_id"], :name => "device_unavailable_alerts_device_unavailable_idx"
+  add_index "device_unavailable_alerts", ["user_id"], :name => "device_unavailable_alerts_user_id_idx"
 
   create_table "devices", :force => true do |t|
     t.integer "user_id"
@@ -265,6 +304,21 @@ ActiveRecord::Schema.define(:version => 55) do
     t.datetime "begin_timestamp"
     t.datetime "end_timestamp"
     t.integer  "steps",           :null => false
+  end
+
+  create_table "strap_fasteneds", :force => true do |t|
+    t.integer  "device_id"
+    t.datetime "timestamp"
+  end
+
+  create_table "strap_removeds", :force => true do |t|
+    t.integer  "device_id"
+    t.datetime "timestamp"
+  end
+
+  create_table "user_strap_status", :force => true do |t|
+    t.integer  "is_fastened", :null => false
+    t.datetime "updated_at",  :null => false
   end
 
   create_table "users", :force => true do |t|

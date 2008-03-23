@@ -6,7 +6,6 @@
 class OutageAlert < ActiveRecord::Base
   MAX_ATTEMPTS_BEFORE_NOTIFICATION = 5
 
-  belongs_to :user
   belongs_to :device
 
   # If we have detected an outage after our retry period, notify the
