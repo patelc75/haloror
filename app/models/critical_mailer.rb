@@ -22,7 +22,7 @@ class CriticalMailer < ActionMailer::Base
     @panic = panic
     setup_email(panic)
     @subject    += 'Merle panicked'
-    #@body[:url]  = "Merle panicked on #{Time.now
+    #@body[:url]  = "Merle panicked on #{Time.now}"
     body :timestamp => panic.timestamp
   end
   
