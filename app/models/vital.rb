@@ -91,8 +91,18 @@ class Vital < ActiveRecord::Base
           " (select id from user_strap_status where is_fastened > 0) "
     Vital.connection.execute(sql)
 
+    # We need to find all users where:
+    #
+    # a) Vitals have not been posted to for a specific interval
+    # AND 
+    # b) the chest strap is “fastened”
+    conds = []
+    conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{MgmtQuery::MINUTES_INTERVAL} minutes')"
+    conds << "id in (select id from user_strap_status where is_fastened > 0)"
+
     users = User.find(:all,
-                      :conditions => "id in (select id from user_strap_status where is_fastened = 0)")
+                      :conditions => conds.join(' and '))
+
     users.each do |user|
       begin
         Vital.process_user_unavailable(user)
