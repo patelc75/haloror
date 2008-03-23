@@ -1,10 +1,10 @@
 class CriticalMailer < ActionMailer::Base
   
-  ## Accepts instance of OutageAlert
   def device_alert_notification(device_alert)
     setup_email(device_alert.device.user)
-    @subject    += 'Battery event'
-    body :alert_type => device_alert.class, 
+    description = camelcase_to_spaced(device_alert.class.to_s)
+    @subject    += "#{description} event"
+    body :alert_type => description, 
       :timestamp => device_alert.timestamp
   end
 
@@ -78,6 +78,10 @@ class CriticalMailer < ActionMailer::Base
     @subject     = "[HALO] "
     @sent_on     = Time.now
     @body[:user] = user  #sends params to body
+  end
+  
+  def camelcase_to_spaced(word)
+    word.gsub(/([A-Z])/, " \\1")
   end
 end
 	
