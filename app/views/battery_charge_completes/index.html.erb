@@ -1,0 +1,18 @@
+<h1>Listing battery_charge_completes</h1>
+
+<table>
+  <tr>
+  </tr>
+
+<% for battery_charge_complete in @battery_charge_completes %>
+  <tr>
+    <td><%= link_to 'Show', battery_charge_complete %></td>
+    <td><%= link_to 'Edit', edit_battery_charge_complete_path(battery_charge_complete) %></td>
+    <td><%= link_to 'Destroy', battery_charge_complete, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New battery_charge_complete', new_battery_charge_complete_path %>

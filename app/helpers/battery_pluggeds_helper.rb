@@ -1,0 +1,2 @@
+module BatteryPluggedsHelper
+end

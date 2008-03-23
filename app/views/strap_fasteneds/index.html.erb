@@ -1,0 +1,18 @@
+<h1>Listing strap_fasteneds</h1>
+
+<table>
+  <tr>
+  </tr>
+
+<% for strap_fastened in @strap_fasteneds %>
+  <tr>
+    <td><%= link_to 'Show', strap_fastened %></td>
+    <td><%= link_to 'Edit', edit_strap_fastened_path(strap_fastened) %></td>
+    <td><%= link_to 'Destroy', strap_fastened, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New strap_fastened', new_strap_fastened_path %>

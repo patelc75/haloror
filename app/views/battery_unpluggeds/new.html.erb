@@ -1,0 +1,11 @@
+<h1>New battery_unplugged</h1>
+
+<%= error_messages_for :battery_unplugged %>
+
+<% form_for(@battery_unplugged) do |f| %>
+  <p>
+    <%= f.submit "Create" %>
+  </p>
+<% end %>
+
+<%= link_to 'Back', battery_unpluggeds_path %>

@@ -1,0 +1,2 @@
+module BatteryUnpluggedsHelper
+end

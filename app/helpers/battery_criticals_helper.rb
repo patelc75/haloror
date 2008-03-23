@@ -1,0 +1,2 @@
+module BatteryCriticalsHelper
+end

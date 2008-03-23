@@ -1,0 +1,2 @@
+module BatteryChargeCompletesHelper
+end

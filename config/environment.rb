@@ -4,10 +4,10 @@ DEFAULT_REDIRECTION_HASH = { :controller => 'sessions', :action => 'new' }
 # Rawk Coding
 
 class Logger
-   def format_message(severity, timestamp, progname, msg)
-     "#{msg} (pid:#{$$})\n"
-   end
- end
+  def format_message(severity, timestamp, progname, msg)
+    "#{msg} (pid:#{$$})\n"
+  end
+end
 
 
 # Be sure to restart your web server when you modify this file.
@@ -55,7 +55,7 @@ Rails::Initializer.run do |config|
   config.action_controller.session = { :session_key => "_myapp_session", :secret => "some secret phrase of at least 30 characters" }
   
   # See Rails::Configuration for more options
-  config.active_record.observers = :user_observer, :panic_observer, :fall_observer
+  config.active_record.observers = :user_observer, :panic_observer, :fall_observer, :device_alert_observer
 end
 
 # Add new inflection rules using the following format 
@@ -74,35 +74,18 @@ end
 # Include your application configuration below
 #hash used for ruby-debug gem, used to store Rails source code
 #SCRIPT_LINES__ = {} if ENV['RAILS_ENV'] == 'development'
-  ActionMailer::Base.delivery_method = :smtp 
-  ActionMailer::Base.raise_delivery_errors = true
-
-#   ActionMailer::Base.smtp_settings = {
-# 	:address => "67.207.146.58" ,
-# 	:port => 25,
-# 	:domain => "haloresearch.net" ,
-# 	:authentication => :login
-# 	:user_name => "patelc75" ,
-# 	:password => "irdiktanic" 
-#   }
+ActionMailer::Base.delivery_method = :smtp 
+ActionMailer::Base.raise_delivery_errors = true
   
-    ActionMailer::Base.smtp_settings = {
-	:address => "mail.haloresearch.net" ,
-	:port => 25,
-	:domain => "haloresearch.net" ,
-	:authentication => :login,
-	:user_name => "chirag@haloresearch.net" ,
-	:password => "irdikt75" 
-  }
+ActionMailer::Base.smtp_settings = {
+  :address => "mail.haloresearch.net" ,
+  :port => 25,
+  :domain => "haloresearch.net" ,
+  :authentication => :login,
+  :user_name => "chirag@haloresearch.net" ,
+  :password => "irdikt75" 
+}
 
-#   ActionMailer::Base.smtp_settings = {
-# 	:address => "boromir.apid.com" ,
-# 	:port => 25,
-# 	:domain => "=apid.com" ,
-# 	:authentication => :login,
-# 	:user_name => "pjdavis" ,
-# 	:password => "a1p9i8d5qwe" 
-#   }
 
 require 'postgre_extensions'
 

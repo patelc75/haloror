@@ -1,0 +1,18 @@
+<h1>Listing battery_unpluggeds</h1>
+
+<table>
+  <tr>
+  </tr>
+
+<% for battery_unplugged in @battery_unpluggeds %>
+  <tr>
+    <td><%= link_to 'Show', battery_unplugged %></td>
+    <td><%= link_to 'Edit', edit_battery_unplugged_path(battery_unplugged) %></td>
+    <td><%= link_to 'Destroy', battery_unplugged, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New battery_unplugged', new_battery_unplugged_path %>

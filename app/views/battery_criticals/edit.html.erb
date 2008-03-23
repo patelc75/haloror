@@ -1,0 +1,12 @@
+<h1>Editing battery_critical</h1>
+
+<%= error_messages_for :battery_critical %>
+
+<% form_for(@battery_critical) do |f| %>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @battery_critical %> |
+<%= link_to 'Back', battery_criticals_path %>
