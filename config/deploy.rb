@@ -24,21 +24,30 @@ end
 namespace :deploy do
   desc "Restart litespeed web server" 
   task :restart, :roles => :app do
-    sudo "#{lsws_cmd} restart" 
-    sudo "thin stop"
-    sudo "export JOBS_TYPE=task; thin -e production -p 8900 -a 127.0.0.1 -u web -g web -l /home/web/haloror/log/task-production.log start >> /home/web/haloror/log/task-production.log 2>&1"
+    sudo "#{lsws_cmd} restart"
+    sudo "cd #{deploy_to}; ./config/jobs/control.rb -e production task restart"
   end
   
   desc "Stop litespeed server" 
   task :stop, :roles => :app do
     sudo "#{lsws_cmd} stop" 
-    sudo "thin stop"
+    stop_background_jobs
   end
   
   desc "Start litespeed web server" 
   task :start, :roles => :app do
     sudo "#{lsws_cmd} start" 
-    sudo "export JOBS_TYPE=task; thin -e production -p 8900 -a 127.0.0.1 -u web -g web -l /home/web/haloror/log/task-production.log start >> /home/web/haloror/log/task-production.log 2>&1"
+    start_background_jobs
+  end
+
+  desc "Stop script/runner which is used to run background jobs"
+  task :stop_background_jobs, :roles => :app do
+    sudo "cd #{deploy_to}; ./config/jobs/control.rb -e production task stop"
+  end
+
+  desc "Start script/runner which is used to run background jobs"
+  task :start_background_jobs, :roles => :app do
+    sudo "cd #{deploy_to}; ./config/jobs/control.rb -e production task start"
   end
 
   desc "copy database.yml file"
