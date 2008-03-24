@@ -1,10 +1,10 @@
 class AlertsController < ApplicationController
   def index
-    @alerts = User.find(params[:id]).roles_users_option.alerts
+    @alerts = RolesUser.find(params[:id]).alert_options
   end
   
   def toggle_phone
-    alert = Alert.find(params[:id])
+    alert = AlertOption.find(params[:id])
 
     if !alert.phone_active
       alert.phone_active = true
@@ -18,7 +18,7 @@ class AlertsController < ApplicationController
   end
   
   def toggle_email
-    alert = Alert.find(params[:id])
+    alert = AlertOption.find(params[:id])
 
     if !alert.email_active
       alert.email_active = true
@@ -32,7 +32,7 @@ class AlertsController < ApplicationController
   end
   
   def toggle_text
-    alert = Alert.find(params[:id])
+    alert = AlertOption.find(params[:id])
 
     if !alert.text_active
       alert.text_active = true

@@ -9,7 +9,7 @@
 			<% @alerts.each do |alert| %>
 				<li class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px">
 					<div style="float:left;padding-top:45px;width:150px">
-						<%=alert.event_kind%>
+						<%=alert.alert_type.alert_type%>
 					</div>
 					<div style="float:right">
 						<!--PHONE-->
