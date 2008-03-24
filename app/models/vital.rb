@@ -22,7 +22,7 @@ class Vital < ActiveRecord::Base
     values = [@series_data,  @categories]
   end
   
-  def self.average_data(num_points, start_time, end_time, id, column)
+  def self.average_data(num_points, start_time, end_time, id, column, format)
     @series_data = Array.new(num_points, 0)  #results of averaging from database
     @categories = Array.new(num_points, 0) 
     interval = (end_time - start_time) / num_points #interval returned in seconds
@@ -48,7 +48,14 @@ class Vital < ActiveRecord::Base
       elsif
         @series_data[current_point] = average.round(1)
       end
-      @categories[current_point] = current_time.strftime("%H:%M:%S")
+      
+      if format
+        @categories[current_point] = current_time.strftime(format)  
+      else
+        @categories[current_point] = current_time
+      end
+      
+      
 
       current_point = current_point + 1
       #@averages_array << round_to(average, 1)
