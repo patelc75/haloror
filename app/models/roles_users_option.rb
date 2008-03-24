@@ -1,4 +1,4 @@
 class RolesUsersOption < ActiveRecord::Base
-  belongs_to :role
+  belongs_to :roles_user
   has_many :alerts
 end
