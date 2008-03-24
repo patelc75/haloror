@@ -108,9 +108,9 @@ end
     role = @user.has_role 'caregiver', current_user
     @role = @user.roles_user
     
-    update_from_position(params[:position], @role.role_id, @user.id)
+    update_from_position(params[:position], @role.id, @user.id)
     
-    RolesUsersOption.create(:role_id => @role.role_id, :user_id => @user.id, :position => params[:position], :active => 1)
+    RolesUsersOption.create(:roles_user_id => @role.id, :user_id => @user.id, :position => params[:position], :active => 1)
     
 
 
@@ -137,8 +137,8 @@ end
     @caregivers.size + 1
   end
   
-  def update_from_position(position, role_id, user_id)
-    caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and role_id = #{role_id} and user_id = #{user_id}")
+  def update_from_position(position, roles_user_id, user_id)
+    caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and roles_user_id = #{roles_user_id} and user_id = #{user_id}")
     
     caregivers.each do |caregiver|
       caregiver.position+=1
