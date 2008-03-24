@@ -180,7 +180,7 @@
 		<!--% puts edit_user_url(caregiver)%-->
 		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true }, :html => {:method => :get, :complete => 'updatePositions()'})%>
 		|
-		<%=link_to('More', :controller => "alerts", :action => "index", :id => caregiver.id)%>
+		<%=link_to('More', :controller => "alerts", :action => "index", :id => caregiver.roles_users_option.id)%>
 	</div>
 <% unless params[:noli] == 'true/'%>
 </li>

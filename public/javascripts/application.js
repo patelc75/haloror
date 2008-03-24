@@ -328,7 +328,7 @@ function toggleTooltip(id)
 	var e = document.getElementById('item_'+id+'_tooltip');
 	
 	if(e.style.display == 'none' && showTooltip)
-		e.style.display = 'block';
+		e.style.display = 'inline';
 	else
 		e.style.display = 'none';
 }
