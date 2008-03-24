@@ -3,15 +3,12 @@ class User < ActiveRecord::Base
   acts_as_authorized_user
   acts_as_authorizable
   
-  has_many :heartrates
   has_many :panics
   has_many :batteries
-  has_many :activities
   has_many :falls  
   has_many :events
   has_many :skin_temps
   has_one  :profile
-  has_many :orientations
   has_many :steps
   has_many :vitals
   belongs_to :role

@@ -3,6 +3,15 @@ class Device < ActiveRecord::Base
   has_many :mgmt_cmds
   has_many :mgmt_queries
   
+  has_many :battery_charge_completes
+  has_many :battery_criticals
+  has_many :battery_pluggeds
+  has_many :battery_unpluggeds
+  has_many :strap_fasteneds
+  has_many :strap_removeds
+  has_many :device_unavailable_alerts
+  has_many :outage_alerts
+  
   belongs_to :user
   
   validates_presence_of     :serial_number
