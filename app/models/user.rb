@@ -117,6 +117,18 @@ class User < ActiveRecord::Base
 # 	 @X << [role.authorizable_id, role.Auth
 #   end
   end
+  
+  def patients
+    patients = []
+    
+    RolesUser.find(:all, :conditions => "user_id = #{self.id}").each do |role_user|
+      if role_user.role.name == 'caregiver'
+        patients << User.find(role_user.role.authorizable_id)
+      end
+    end
+    
+    patients
+  end
 
   protected
   # before filter 
