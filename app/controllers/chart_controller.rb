@@ -7,6 +7,10 @@ class ChartController < ApplicationController
   
   layout "application"
   
+  def flex
+    
+  end
+  
   def index
     unless logged_in?
       redirect_to '/login'
