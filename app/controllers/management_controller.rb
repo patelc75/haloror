@@ -109,10 +109,4 @@ class ManagementController < ApplicationController
     
     chatter
   end
-  
-  def auth
-    current_user.has_role 'administrator'
-    
-    render :nothing => true
-  end
 end
