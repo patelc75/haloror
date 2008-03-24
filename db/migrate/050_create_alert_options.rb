@@ -2,8 +2,8 @@ class CreateAlertOptions < ActiveRecord::Migration
   def self.up
     create_table :alert_options do |t|
       t.column :id, :primary_key, :null => false
-      t.column :role_id, :integer
-      t.column :alert_types_id, :integer
+      t.column :roles_user_id, :integer
+      t.column :alert_type_id, :integer
       t.column :phone_active, :boolean
       t.column :email_active, :boolean
       t.column :text_active, :boolean

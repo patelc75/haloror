@@ -3,7 +3,7 @@ class CreateAlertTypes < ActiveRecord::Migration
     create_table :alert_types do |t|
       t.column :id, :primary_key, :null => false
       t.column :alert_groups_id, :integer
-      t.column :type, :string
+      t.column :alert_type, :string
       t.column :phone_active, :boolean
       t.column :email_active, :boolean
       t.column :text_active, :boolean

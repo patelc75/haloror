@@ -1,7 +1,7 @@
 class CreateRoles < ActiveRecord::Migration
   def self.up
-    create_table :roles_users, :force => true, :id => false  do |t|
-      #t.column :id, :primary_key, :null => false
+    create_table :roles_users, :force => true do |t|
+      t.column :id, :primary_key, :null => false
       t.column :user_id,          :integer
       t.column :role_id,          :integer
       t.column :created_at,       :datetime
