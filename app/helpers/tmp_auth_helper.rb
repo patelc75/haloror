@@ -1,0 +1,2 @@
+module TmpAuthHelper
+end
