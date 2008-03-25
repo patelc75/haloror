@@ -1,4 +1,4 @@
-#!/usr/bin/env /web/halo/script/runner
+#!/usr/bin/env ./script/runner
 
 # Executable to startup the job processor. Accepts one parameter - the
 # name of the file containing the tasks to run
