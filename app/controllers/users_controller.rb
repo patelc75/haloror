@@ -1,42 +1,44 @@
 class UsersController < ApplicationController
-include UsersHelper
+  include UsersHelper
 
-before_filter:set_user
+  before_filter:set_user
 
-def set_user
- UsersHelper.current_host = request.host
-end
+  def set_user
+    UsersHelper.current_host = request.host
+  end
 
  
   def new
-	  #render :layout => false
+    #render :layout => false
   end
 
   def create
     @user = User.new(params[:user])
     User.transaction do
-        @user.save!
+      @user.save!
         
-        # create profile
-        Profile.create(:user_id => @user.id)
+      # create profile
+      Profile.create(:user_id => @user.id)
         
-        # create chest strap device
-        @strap = Device.new
-        @strap.user_id = @user.id
-        @strap.serial_number = params[:strap_serial_number]
-        @strap.save!
+      # create chest strap device
+      @strap = Device.new
+      @strap.user_id = @user.id
+      @strap.serial_number = params[:strap_serial_number]
+      @strap.device_type = get_device_type(@strap)
+      @strap.save!
         
-        # create gateway device
-        @gateway = Device.new
-        @gateway.user_id = @user.id
-        @gateway.serial_number = params[:gateway_serial_number]
-        @gateway.save!
-      end
+      # create gateway device
+      @gateway = Device.new
+      @gateway.user_id = @user.id
+      @gateway.serial_number = params[:gateway_serial_number]
+      @gateway.device_type = get_device_type(@gateway)
+      @gateway.save!
+    end
     #end
     #self.current_user = @user
     #redirect_back_or_default('/')
     #flash[:notice] = "Thanks for signing up!"
-	  #render :nothing => true
+    #render :nothing => true
   rescue ActiveRecord::RecordInvalid
     render :action => 'new'
   end
@@ -54,16 +56,16 @@ end
     @user = User.find(params[:id])
     respond_to do |format|
       if @user.update_attributes!(params[:user])
-		puts "look closer"
+        puts "look closer"
 	
-	    flash[:notice] = 'User was successfully updated.'
+        flash[:notice] = 'User was successfully updated.'
         format.html { redirect_to user_url(@user) }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
         format.xml  { render :xml => @user.errors.to_xml }
       end
-	end
+    end
   end
   
   def edit
@@ -74,7 +76,7 @@ end
   def ajax_edit
     @user = User.find(params[:id])
     render :layout => false
-    end
+  end
   
   def redir_to_edit
     redirect_to '/users/'+params[:id]+';edit/'
@@ -148,5 +150,19 @@ end
   
   def random_password
     Digest::SHA1.hexdigest("--#{Time.now.to_s}--")[0,6]
+  end
+  
+  private
+  def get_device_type(device)
+    device_type = ""
+    if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
+      device_type = "Halo Chest Strap"
+    elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
+      device_type = "Halo Gateway"
+    else
+      device_type = "Unknown Device"
+    end
+    
+    device_type
   end
 end

@@ -3,11 +3,13 @@ class CreateUserStrapStatus < ActiveRecord::Migration
   def self.up
     create_table "user_strap_status", :force => true do |t|
       t.column :id, :primary_key, :null => false
+      t.column :device_id, :integer, :null => false, :references => 'devices'
       t.column :is_fastened, :integer, :null => false
       t.datetime "updated_at", :null => false
     end
 
     execute "alter table user_strap_status add constraint user_strap_status_id_fk foreign key (id) references users on delete cascade"
+    execute "alter table user_strap_status add constraint user_strap_status_device_id_fk foreign key (device_id) references devices on delete cascade"
     execute "comment on column user_strap_status.is_fastened is 'A denormalization of the strap_removeds and strap_fasteneds tables. If > 0, it indicates the last event we received was the strap is fastened. If 0, the last event we received is that the strap is NOT fastened'"
     
     ## Create a trigger that captures the latest management query and
@@ -25,9 +27,9 @@ begin
     raise exception 'Could not find device with ID=%', p_device_id;
   end if;
 
-  update user_strap_status set is_fastened = p_is_fastened, updated_at = now() where id = v_user_id;
+  update user_strap_status set is_fastened = p_is_fastened, device_id = p_device_id, updated_at = now() where id = v_user_id;
   if NOT FOUND then
-    insert into user_strap_status (id, is_fastened, updated_at) values (v_user_id, p_is_fastened, now());
+    insert into user_strap_status (id, is_fastened, device_id, updated_at) values (v_user_id, p_is_fastened, p_device_id, now());
   end if;
 end;
 $$ language plpgsql;
