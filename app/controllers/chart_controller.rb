@@ -231,7 +231,7 @@ class ChartController < ApplicationController
         start_time = end_time - 24 * 60 * 60
       end
 	  
-      @series_data, @categories = model.average_data(10, start_time, end_time, current_user.id, column)
+      @series_data, @categories = model.average_data(10, start_time, end_time, current_user.id, column, nil)
     end
 	
     #average_data(10, start_time, end_time) 
