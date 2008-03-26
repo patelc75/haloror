@@ -7,7 +7,7 @@ class FlexController < ApplicationController
     unless query = params[:ChartQuery]
       query = {}
       query[:num_points] = '0'
-      query[:user_id] = 2
+      query[:user_id] = current_user.id
       query[:startdate] = Time.now - 600
       query[:enddate] = Time.now.to_s
       
