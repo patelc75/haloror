@@ -9,7 +9,7 @@ class DeviceAlertObserver < ActiveRecord::Observer
     Event.create(:user_id => alert.device.user_id, 
       :event_type => alert.class.to_s, 
       :event_id => alert.id, 
-      :timestamp => alert.timestamp,
-      :level => "Battery")
+      :timestamp => alert.timestamp
+    )
   end
 end
