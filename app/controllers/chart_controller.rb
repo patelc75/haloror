@@ -15,19 +15,21 @@ class ChartController < ApplicationController
     unless logged_in?
       redirect_to '/login'
     else
-      @battery = Battery.find(:first,:conditions => "user_id = '#{current_user.id}'",:order => "timestamp DESC")
+      @user = which_user?
+      
+      @battery = Battery.find(:first,:conditions => "user_id = '#{@user.id}'",:order => "timestamp DESC")
       if @battery
         @gauge_width = 50 * (@battery.percentage/100.0)
       else
         @gauge_width = 0
       end
     
-      @events = Event.find(:all, :limit => 10, :order => "id desc",:conditions => "user_id = '#{current_user.id}'")
+      @events = Event.find(:all, :limit => 10, :order => "id desc",:conditions => "user_id = '#{@user.id}'")
     
-      @temp = SkinTemp.find(:first,:conditions => "user_id = '#{current_user.id}'",:order => "timestamp DESC")
+      @temp = SkinTemp.find(:first,:conditions => "user_id = '#{@user.id}'",:order => "timestamp DESC")
       #@temp = SkinTemp.find(:first, :order => 'id desc')
      
-      @vital = Vital.find(:first,:conditions => "user_id = '#{current_user.id}'",:order => "timestamp DESC")
+      @vital = Vital.find(:first,:conditions => "user_id = '#{@user.id}'",:order => "timestamp DESC")
     end
   end
   
@@ -57,6 +59,8 @@ class ChartController < ApplicationController
   end
 
   def view
+    @user = which_user?
+    
     if params[:type] != false
       cookies[:chart_type] = params[:type]
     end
@@ -67,7 +71,7 @@ class ChartController < ApplicationController
   
   def line_chart
     #start_background_task
-    
+    @user = which_user?
     graph  = Ziya::Charts::Line.new( nil, nil, "line_chart" )  #points to line_chart.yml
 
     #graph.add :axis_category_text, @categories
@@ -76,7 +80,7 @@ class ChartController < ApplicationController
       @series_data = {}
       @series_labels = {}
     elsif
-      gen_data_sets(Vital, 'heartrate')
+      gen_data_sets(Vital, 'heartrate', @user)
     end
     
     graph.add(:series, "Heartrate", @series_data, @series_labels)
@@ -85,7 +89,7 @@ class ChartController < ApplicationController
       @series_data = {}
       @series_labels = {}
     elsif
-      gen_data_sets(SkinTemp, 'skin_temp')
+      gen_data_sets(SkinTemp, 'skin_temp', @user)
     end
 	
     # logger.debug{ "logger: @series_data =#{@series_data} \n" }    
@@ -98,13 +102,14 @@ class ChartController < ApplicationController
   
   
   def activity_chart
+    @user = which_user?
     graph  = Ziya::Charts::Column.new( nil, nil, "activity_chart" )  #points to chart_live.yml
     
     #gen_activity_data_sets
     #graph.add :axis_category_text, @activity_categories
     #graph.add :series, "Activity", @activity_series
 	
-    gen_data_sets(Vital, 'activity')
+    gen_data_sets(Vital, 'activity', @user)
     graph.add(:series, "Activity", @series_data, @series_labels)
     graph.add(:axis_category_text, @categories)
     
@@ -113,11 +118,13 @@ class ChartController < ApplicationController
   
   
   def refresh_data
+    @user = User.find(cookies[:chart_user])
+    
     if cookies[:skin_temp] == "false"
       @series_data = {}
       @series_labels = {}
     elsif
-      gen_data_sets(SkinTemp, 'skin_temp')
+      gen_data_sets(SkinTemp, 'skin_temp', @user)
     end
 
     @skintemp_series = @series_data
@@ -128,7 +135,7 @@ class ChartController < ApplicationController
       @series_data = {}
       @series_labels = {}
     elsif
-      gen_data_sets(Vital, 'heartrate') 
+      gen_data_sets(Vital, 'heartrate', @user) 
     end
 
     @heartrate_series = @series_data
@@ -139,7 +146,9 @@ class ChartController < ApplicationController
   end
   
   def refresh_activity_data
-    gen_data_sets(Vital, :activity)
+    @user = User.find(cookies[:chart_user])
+    
+    gen_data_sets(Vital, :activity, @user)
     @activity_series = @series_data
     #render a special view which as XML file 
     render :template => 'chart/refresh_activity_data.xml.builder', :layout => false
@@ -212,14 +221,13 @@ class ChartController < ApplicationController
     (num * 10**x).round.to_f / 10**x
   end
 
-  def gen_data_sets(model, column)
+  def gen_data_sets(model, column, user)
     #get the latest 10 records (ordered by timestamp) from Heartrate table
     end_time = Time.now
-	
     #logger.debug{ "logger: current_user_id =#{current_user.id} \n" }    
 	
     if cookies[:chart_type] == 'live' || !cookies[:chart_type]
-      @series_data, @categories = model.latest_data(10, current_user.id, column)
+      @series_data, @categories = model.latest_data(10, user.id, column)
     elsif
       if cookies[:chart_type] == 'last_half_hour'
         start_time = end_time - 30 * 60
@@ -249,6 +257,18 @@ class ChartController < ApplicationController
   
   def error  
       raise RuntimeError, "Generating an error"  
+  end
+  
+  def which_user?
+    if params[:id] && current_user.is_administrator?
+      user = User.find(params[:id])
+    else
+      user = current_user
+    end
+    
+    cookies[:chart_user] = user.id.to_s
+    
+    user
   end
 
 end

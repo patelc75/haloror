@@ -1,0 +1,66 @@
+.table
+{
+	
+}
+
+.row
+{
+	clear:both;
+	
+	padding-top:10px;
+}
+
+.header
+{
+	font-weight:bold;
+}
+
+.header div
+{
+	padding-bottom:10px;
+}
+
+.row div
+{
+	float:left;
+}
+
+.col-25
+{
+	width:25px;
+}
+
+.col-50
+{
+	width:50px;
+}
+
+.col-75
+{
+	width:75px;
+}
+
+.col-100
+{
+	width:100px;
+}
+
+.col-125
+{
+	width:125px;
+}
+
+.col-150
+{
+	width:150px;
+}
+
+.col-175
+{
+	width:175px;
+}
+
+.col-200
+{
+	width:200px;
+}

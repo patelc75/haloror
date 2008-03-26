@@ -1,0 +1,59 @@
+xml.instruct! :xml, :version => "1.0"
+xml.DataRoot(:averaging => averaging, :num_points => query[:num_points], :startdate => query[:startdate], :enddate => query[:enddate]) do
+  xml.User(:id => query[:user_id], :first_name => user.profile[:first_name], :last_name => user.profile[:last_name], :status => 'Good', :time_remaining => battery.time_remaining) do
+    
+    xml.LastReading do
+      xml.heartrate(last_reading[:heartrate])
+      xml.hr_min(last_reading[:hr_min])
+      xml.hr_max(last_reading[:hr_max])
+      xml.battery(".#{last_reading[:battery]}")
+      xml.activity(last_reading[:activity])
+      xml.skin_temp(last_reading[:skin_temp])
+      xml.steps(last_reading[:steps])
+    end
+    
+    xml.DataReadings do
+      data.each do |timestamp, group|
+        xml.DataReading(:datetime => timestamp.to_time-100) do
+          xml.heartrate(90)
+        end
+        
+        xml.DataReading(:datetime => timestamp) do
+          group.each do |reading|
+              if reading.type.to_s == 'Vital' || reading[:type] == 'Vital'
+                if reading[:heartrate] and reading[:hrv]
+                  xml.heartrate(reading[:heartrate])
+                  xml.hr_min(reading[:heartrate]-reading[:hrv]/2)
+                  xml.hr_max(reading[:heartrate]+reading[:hrv]/2)
+                end
+                
+                if reading[:activity]
+                  xml.activity(reading[:activity])
+                end
+              elsif reading.type.to_s == 'SkinTemp' || reading[:type] == 'SkinTemp'
+                if reading[:skin_temp]
+                  xml.skin_temp(reading[:skin_temp])
+                end
+              elsif reading.type.to_s == 'Step' || reading[:type] == 'Step'
+                if reading[:steps]
+                  xml.steps(reading[:steps])
+                end
+              elsif reading.type.to_s == 'Battery' || reading[:type] == 'Battery'
+                if reading[:percentage]
+                  xml.battery(".#{reading[:percentage]}")
+                end
+              end
+          end
+        end
+      end
+    end
+    
+    xml.Events do
+      events.each do |event|
+        xml.event(:datetime => event.timestamp, :description => event.string(user), :link => "http://#{request.host}/events/#{event.id}")
+      end
+    end
+  end
+  
+  xml.User(:first_name => 'Joe')
+end

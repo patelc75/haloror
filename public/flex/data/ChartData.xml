@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<DataRoot averaging="none" startdate="" enddate ="" TimeRemaining="125">
+	<User name="Betty" id="5" Status="Good" TimeRemaining="60"> <!--in minutes-->
+		<!--NOTE: Typical upper bound for a fall type activity is 50000-->
+		<DataReadings>
+			<DataReading datetime="1/1/2008 08:00" battery=".57"
+				HeartRate="89" hrMin="88" hrMax="90"
+				Breathing ="44"
+				Activity ="50000" 
+				SkinTemp ="98.7"
+				Steps ="10"
+				ADL="Sitting"/>
+			<DataReading datetime="1/1/2008 08:01" battery=".57"
+				HeartRate="88" hrMin="87" hrMax="90"
+				Breathing="43"
+				Activity ="5000" 
+				SkinTemp="98.6"
+				Steps="9"
+				ADL="Sitting"/>
+			<DataReading datetime="1/1/2008 08:02" battery=".57"
+				HeartRate="87" hrMin="86" hrMax="89"
+				Breathing="43"
+				Activity ="25000" 
+				SkinTemp="98.5"
+				Steps="2"
+				ADL="Sitting"/>
+			<DataReading datetime="1/1/2008 08:03" battery=".57"
+				HeartRate="92" hrMin="89" hrMax="93"
+				Breathing="46"
+				Activity ="50000" 
+				SkinTemp="98.9"
+				Steps="20"
+				ADL="Standing"/>
+			<DataReading datetime="1/1/2008 08:04" battery=".56"
+				HeartRate="92" hrMin="91" hrMax="93"
+				Breathing="46"
+				Activity ="5000" 
+				SkinTemp="99.0"
+				Steps="15"
+				ADL="Sitting"/>
+			<DataReading datetime="1/1/2008 08:05" battery=".55"
+				HeartRate="89" hrMin="89" hrMax="91"
+				Breathing="44"
+				Activity ="15000" 
+				SkinTemp="98.7"
+				Steps="10"
+				ADL="Sitting"/>
+			<DataReading datetime="1/1/2008 08:06" battery=".54"
+				HeartRate="89" hrMin="88" hrMax="90"
+				Breathing="44"
+				Activity ="5000" 
+				SkinTemp="98.7"
+				Steps="10"
+				ADL="Standing"/>
+			<DataReading datetime="1/1/2008 08:07" battery=".53"
+				HeartRate="89" hrMin="87" hrMax="90"
+				Breathing="44"
+				Activity ="25000" 
+				SkinTemp="98.7"
+				Steps="10"
+				ADL="Standing"/>
+			<DataReading datetime="1/1/2008 08:08" battery=".52"
+				HeartRate="89" hrMin="87" hrMax="90"
+				Breathing="44"
+				Activity ="5000" 
+				SkinTemp="98.7"
+				Steps="10"
+				ADL="Running"/>
+			<DataReading datetime="1/1/2008 08:09" battery=".51"
+				HeartRate="89" hrMin="87" hrMax="90"
+				Breathing="44"
+				Activity ="7500" 
+				SkinTemp="98.7"
+				Steps="10"
+				ADL="Running"/>
+			<DataReading datetime="1/1/2008 08:10" battery=".50"
+				HeartRate="89" hrMin="87" hrMax="90"
+				Breathing="44"
+				Activity ="5000" 
+				SkinTemp="98.7"
+				Steps="10"
+				ADL="Standing"/>
+			<DataReading datetime="1/1/2008 08:10" battery=".49"
+				HeartRate="89" hrMin="87" hrMax="90"
+				Breathing="44"
+				Activity ="50000" 
+				SkinTemp="98.7"
+				Steps="10"
+				ADL="Sitting"/>
+		</DataReadings>
+		<Events>
+			<Event
+			Description=""
+			Link=""/>
+		</Events>			
+	</User>
+	<User name = "Billy" id="255" Status="Alert" TimeRemaining="65">
+		<DataReadings>
+			<DataReading datetime="1/1/2008 08:10" battery=".75"
+				HeartRate="92" hrMin="90" hrMax="93"
+				Breathing="84"
+				Activity ="50000" 
+				SkinTemp="99.7"
+				Steps="35"
+				ADL="Sleeping"/>
+		</DataReadings>
+	</User>
+	<User name = "Joe"  id="99000" Status="Charging" TimeRemaining="45">
+		<DataReadings>
+			<DataReading datetime="1/1/2008 08:10" battery=".42"
+				HeartRate="88" hrMin="87" hrMax="90"
+				Breathing="64"
+				Activity ="5000" 
+				SkinTemp="97.9"
+				Steps="7"
+				ADL="Running"/>
+		</DataReadings>
+	</User>
+	<User name = "Chirag"  id="99000" Status="Removed" TimeRemaining="15">
+		<DataReadings>
+			<DataReading datetime="1/1/2008 08:10" battery=".42"
+				HeartRate="88" hrMin="87" hrMax="90"
+				Breathing="64"
+				Activity ="5000" 
+				SkinTemp="97.9"
+				Steps="7"
+				ADL="Playing Tennis or Coding, not sure"/>
+		</DataReadings>
+	</User>
+	<User name = "Chris"  id="99001" Status="OutOfRange" TimeRemaining="15">
+		<DataReadings>
+			<DataReading datetime="1/1/2008 08:10" battery=".42"
+				HeartRate="88" hrMin="87" hrMax="90"
+				Breathing="64"
+				Activity ="5000" 
+				SkinTemp="97.9"
+				Steps="7"
+				ADL="Playing Tennis or Coding, not sure"/>
+		</DataReadings>
+	</User>
+</DataRoot>
