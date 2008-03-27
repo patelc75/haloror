@@ -7,7 +7,13 @@ class SessionsController < ApplicationController
 
   def create
     self.current_user = User.authenticate(params[:login], params[:password])
+    
     if logged_in?
+      log = AccessLog.new
+      log.user_id = current_user.id
+      log.status = 'successful'
+      log.save
+      
       if params[:remember_me] == "1"
         self.current_user.remember_me
         cookies[:auth_token] = { :value => self.current_user.remember_token , 
@@ -16,11 +22,25 @@ class SessionsController < ApplicationController
       redirect_back_or_default('/chart')
       flash[:notice] = "Logged in successfully"
     else
+      log = AccessLog.new
+      
+      if user = User.find_by_login(params[:login])
+        log.user_id = user.id
+      end
+      
+      log.status = 'failed'
+      log.save
+      
       render :action => 'new'
     end
   end
 
   def destroy
+    log = AccessLog.new
+    log.user_id = current_user.id
+    log.status = 'logout'
+    log.save
+    
     self.current_user.forget_me if logged_in?
     cookies.delete :auth_token
     reset_session
