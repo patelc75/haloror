@@ -1,9 +1,9 @@
 <%= javascript_include_tag :defaults %>
-
 <!--declare a chart object and call one of the methods in line_chart_* methods in chart_controller.rb-->
 <div style="float:right">
 <%= ziya_chart( url_for( :controller => 'chart', 
-                         :action => 'line_chart'), 
+                         :action => 'line_chart',
+						 :id => @user.id), 
                          :id => 'line_chart', 
                          :width => 675, 
                          :height => 215, 
@@ -11,7 +11,8 @@
 </div>
 <div style="float:right">
 	<%= ziya_chart( url_for( :controller => 'chart', 
-	                         :action => 'activity_chart'), 
+	                         :action => 'activity_chart',
+							 :id => @user.id), 
 	                         :id => 'activity_chart', 
 	                         :width => 675, 
 	                         :height => 200,

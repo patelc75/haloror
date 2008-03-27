@@ -1,5 +1,5 @@
 xml.chart do
-  xml.live_update( :url=> url_for( :controller => 'chart', :action => 'refresh_activity_data'),
+  xml.live_update( :url=> url_for( :controller => 'chart', :action => 'refresh_activity_data', :id => @user.id),
                    :delay => 5 )
   xml.chart_data do
     xml.row do

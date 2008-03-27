@@ -1,5 +1,6 @@
 <%= ziya_chart( url_for( :controller => 'chart', 
-                         :action => 'line_chart_discrete', 
+                         :action => 'line_chart_discrete',
+ 						 :id => @user.id,
                          :start_time => start, 
                          :finish_time => finish, 
                          :trailing_slash => false), 

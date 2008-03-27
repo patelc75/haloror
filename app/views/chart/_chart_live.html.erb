@@ -3,14 +3,16 @@
 <!--declare a chart object and call one of the methods in line_chart_* methods in chart_controller.rb-->
 <div style="float:right">
 <%= ziya_chart( url_for( :controller => 'chart', 
-                         :action => 'line_chart_live'), 
+                         :action => 'line_chart_live',
+						 :id => @user.id), 
                          :id => 'chart_live', 
                          :width => 675, 
                          :height => 215, 
                          :bgcolor => "#efefef") %>
 
 <%= ziya_chart( url_for( :controller => 'chart', 
-                         :action => 'activity_chart_live'), 
+                         :action => 'activity_chart_live',
+						 :id => @user.id), 
                          :id => 'activity_chart_live', 
                          :width => 675, 
                          :height => 160, 
