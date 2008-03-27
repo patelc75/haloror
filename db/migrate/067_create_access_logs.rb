@@ -3,7 +3,7 @@ class CreateAccessLogs < ActiveRecord::Migration
     create_table :access_logs do |t|
       t.column :id, :primary_key, :null => false
       t.column :user_id, :integer
-      t.column :string, :string
+      t.column :status, :string
       t.timestamps
     end
   end
