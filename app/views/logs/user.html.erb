@@ -1,0 +1,54 @@
+<h1>Access History</h1>
+<!-- amcolumn script-->
+	<!-- <div id="flashcontent">
+			<strong>You need to upgrade your Flash Player</strong>
+		</div>
+
+		<script type="text/javascript">
+			// <![CDATA[		
+			var so = new SWFObject("/amcharts/amcolumn.swf", "amcolumn", "600", "400", "8", "#ffffff");
+			so.addVariable("path", "/amcharts/");
+			so.addVariable("settings_file", escape("/amcharts/settings/access.xml"));
+			so.addVariable("data_file", escape("/logs/chart_data/<%=params[:id]%>"));
+			so.addVariable("preloader_color", "#ffffff");
+			so.write("flashcontent");
+			// ]]>
+		</script> -->
+<!-- end of amcolumn script -->
+
+<div class="table">
+	<div class="row header">
+		<div class="col-75">
+			User ID
+		</div>
+		<div class="col-200">
+			Status
+		</div>
+		<div class="col-200">
+			Timestamp
+		</div>
+	</div>
+	<% @logs.each do |log| %>
+		<div class="row">
+			<div class="col-75">
+				<%=log.user_id%>
+			</div>
+			<div class="col-200">
+				<% 
+					if log.status == 'successful'
+						color = 'green'
+					elsif log.status == 'logout'
+						color = 'gray'
+					else
+						color = 'red'
+					end
+				%>
+				
+				<span style="color:<%=color%>"><%=log.status%></span>
+			</div>
+			<div class="col-250">
+				<%=log.created_at%>
+			</div>
+		</div>
+	<% end %>
+</div>
