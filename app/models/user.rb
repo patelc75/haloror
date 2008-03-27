@@ -17,6 +17,8 @@ class User < ActiveRecord::Base
   
   has_many :devices
   
+  has_many :access_logs
+  
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
 
