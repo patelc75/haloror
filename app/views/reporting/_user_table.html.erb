@@ -1,0 +1,91 @@
+<div class="row header">
+	<div class="col-25">
+		&nbsp;
+	</div>
+	<div class="col-75">
+		<%=link_to_remote "User Id", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'id'}%>
+	</div>
+	<div class="col-200">
+		Name
+	</div>
+	<div class="col-100">
+		<%=link_to_remote "Login", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'login'}%>
+	</div>
+	<div class="col-150">
+		Role(s)
+	</div>
+	<div class="col-150">
+		Last Login
+	</div>
+	<div class="col-200">
+		
+	</div>
+</div>
+<% users.each do |user| %>
+	<%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
+	
+	<div id="user_<%=user.id%>-hidden" style="display:none">
+		<% caregivers = user.has_caregivers %>
+		<% if caregivers.length > 0 %>
+			<div class="row">
+				<div class="col-25">&nbsp;</div>
+				<div class="col-200">
+					<h3>Caregivers</h3>
+				</div>
+			</div>
+			
+			<% caregivers.each do |caregiver| %>
+				<% caregiver[:id] = caregiver[:user_id]%>
+				<%=render :partial => 'reporting/table/user_row', :locals => {:user => caregiver, :toggle => false, :caregiver => true}%>
+			<% end %>
+			<br />
+			<br />
+		<% end %>
+		
+		<% devices = user.devices %>
+		<% if devices.length > 0 %>
+			<div class="row">
+				<div class="col-25">&nbsp;</div>
+				<div class="col-200">
+					<h3>Devices</h3>
+				</div>
+			</div>
+			
+			<% devices.each do |device| %>
+				<div class="row">
+					<div class="col-25">&nbsp;</div>
+					<div class="col-100">
+						(type)
+					</div>
+					<div class="col-200">
+						(recent battery reading)
+					</div>
+					<div class="col-100">
+						(last charge)
+					</div>
+					<div class="col-100">
+						<a href="#">Stats</a>
+					</div>
+				</div>
+			<% end %>
+			<br />
+			<br />
+		<% end %>
+		
+		<% patients = user.patients %>
+		<% if patients.length > 0 %>
+			<div class="row">
+				<div class="col-25">&nbsp;</div>
+				<div class="col-200">
+					<h3>Patients</h3>
+				</div>
+			</div>
+			
+			<% patients.each do |patient| %>
+				<%=render :partial => 'reporting/table/user_row', :locals => {:user => patient, :toggle => false, :caregiver => false}%>
+			<% end %>
+			<br />
+			<br />
+		<% end %>
+	</div>
+<% end %>
