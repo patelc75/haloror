@@ -60,6 +60,10 @@ class ApplicationController < ActionController::Base
     
     @caregivers = @caregivers.sort
   end
+  
+  def camelcase_to_spaced(word)
+    word.gsub(/([A-Z])/, " \\1")
+  end
 
   protected
   def authenticate
