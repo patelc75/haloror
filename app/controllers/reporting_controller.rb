@@ -1,6 +1,10 @@
 class ReportingController < ApplicationController
-  def index
+  def users
     @users = User.find(:all)
+  end
+  
+  def devices
+    @devices = Device.find(:all)
   end
   
   def sort_user_table

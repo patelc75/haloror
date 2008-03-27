@@ -1,0 +1,36 @@
+<div class="row header">
+	<div class="col-75">
+		Device ID
+	</div>
+	<div class="col-75">
+		User ID
+	</div>
+	<div class="col-150">
+		Serial Number
+	</div>
+	<div class="col-150">
+		Device Type
+	</div>
+	<div class="col-200">
+		
+	</div>
+</div>
+<% devices.each do |device| %>
+	<div class="row">
+		<div class="col-75">
+			<%=device[:id]%>
+		</div>
+		<div class="col-75">
+			<a href="/reporting/users/#user_<%=device[:user_id]%>" title="<%=User.find(device[:user_id]).login%>"><%=device[:user_id]%></a>
+		</div>
+		<div class="col-150">
+			<%=device[:serial_number]%>
+		</div>
+		<div class="col-150">
+			(waiting on migration)
+		</div>
+		<div class="col-200">
+			<a href="/management/?device_id=<%=device[:id]%>">Manage</a> | <a href="#">Stats</a>
+		</div>
+	</div>
+<% end %>
