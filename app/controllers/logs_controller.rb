@@ -7,14 +7,17 @@ class LogsController < ApplicationController
     @logs = {}
     
     User.find(params[:id]).access_logs.each do |log|
-      unless @logs[log.created_at]
-        @logs[log.created_at] = {:successful => 0, :failed => 0}
+      date = log.created_at.to_date.to_s(:db)
+      #date = date[0]
+      
+      unless @logs[date]
+        @logs[date] = {:successful => 0, :failed => 0}
       end
       
       if log.status == 'successful'
-        @logs[log.created_at][:successful] += 1
+        @logs[date][:successful] += 1
       elsif log.status == 'failed'
-        @logs[log.created_at][:failed] += 1
+        @logs[date][:failed] += 1
       end      
     end
     

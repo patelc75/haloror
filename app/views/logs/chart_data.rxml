@@ -3,7 +3,7 @@ xml.chart do
   xml.series do
     i = 0
     @logs.each do |timestamp, status|
-      xml.value(timestamp, :xid => i)
+      xml.value(timestamp.to_date.to_formatted_s(:short), :xid => i)
       i += 1
     end
   end
