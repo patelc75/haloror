@@ -5,7 +5,7 @@ class CallListController < ApplicationController
   def show
     @call_list = User.find(params[:id])
     number_ext
-    @user = User.find(1)
+    #@user = User.find(1)
     
     get_caregivers
   end
