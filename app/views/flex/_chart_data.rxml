@@ -14,10 +14,6 @@ xml.DataRoot(:averaging => averaging, :num_points => query[:num_points], :startd
     
     xml.DataReadings do
       data.each do |timestamp, group|
-        xml.DataReading(:datetime => timestamp.to_time-100) do
-          xml.heartrate(90)
-        end
-        
         xml.DataReading(:datetime => timestamp) do
           group.each do |reading|
               if reading.type.to_s == 'Vital' || reading[:type] == 'Vital'
@@ -54,6 +50,4 @@ xml.DataRoot(:averaging => averaging, :num_points => query[:num_points], :startd
       end
     end
   end
-  
-  xml.User(:first_name => 'Joe')
 end
