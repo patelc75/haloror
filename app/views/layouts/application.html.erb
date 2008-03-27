@@ -6,6 +6,7 @@
 	<%= javascript_include_tag "halo" %>
 	<%= javascript_include_tag 'redbox' %>
 	<%= javascript_include_tag 'reporting' %>
+	<%= javascript_include_tag 'swfobject' %>
 	
     <%= stylesheet_link_tag "layout" %> 
 	<%= stylesheet_link_tag 'redbox' %>
@@ -39,7 +40,13 @@
 				<%= link_to 'Account Settings', :controller => 'call_list', :action => 'show', :id => current_user.id %>
 				<% end %>
 				
-				<span class="divider">|</span> 
+				|
+				<% if current_user.is_administrator? %>
+					<%= link_to 'Management', :controller => 'management', :action => 'index' %>
+					|
+					<%= link_to 'Reporting', :controller => 'reporting', :action => 'index' %>
+					<span class="divider">|</span>
+				<% end %>
 				<a href="/logout" style="font-weight:bold">Logout</a>
 			<% end %>
 			</div>
