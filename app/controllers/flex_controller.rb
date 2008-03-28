@@ -8,14 +8,16 @@ class FlexController < ApplicationController
       query = {}
       query[:num_points] = '0'
       #query[:user_id] = current_user.id
-      query[:user_id] = 10
+      query[:user_id] = 2
       query[:startdate] = Time.now - 600
       query[:enddate] = Time.now.to_s
       
       query[:startdate] = query[:startdate].to_s
     end
     
-    query[:enddate] = Time.now unless query[:enddate]
+    unless query[:enddate]
+      query[:enddate] = Time.now
+    end
     
     if query[:num_points] == '0'
       data = discrete_chart_data(query)
@@ -25,8 +27,14 @@ class FlexController < ApplicationController
       averaging = 'true'
     end
     
+    user = User.find(query[:user_id])
+    
+    status = {}
+    status[:connectivity] = get_status('connectivity', user)
+    status[:battery] = get_status('battery', user)
+    
     events = Event.find(:all, :conditions => "user_id = '#{query[:user_id]}' and timestamp <= '#{query[:enddate]}' and timestamp >= '#{query[:startdate]}'")    
-    render :partial => 'chart_data', :locals => {:data => data, :query => query, :user => User.find(query[:user_id]), :averaging => averaging, :events => events, :battery => Battery.find(:first), :last_reading => get_last_reading(query[:user_id])}
+    render :partial => 'chart_data', :locals => {:data => data, :query => query, :user => user, :averaging => averaging, :events => events, :battery => Battery.find(:first), :last_reading => get_last_reading(query[:user_id]), :status => status}
   end
   
   protected
@@ -111,5 +119,16 @@ class FlexController < ApplicationController
     end
     
     reading
+  end
+  
+  def get_status(kind, user)
+    event = nil
+    user.events.each do |event|
+      if event.alert_type.alert_group.group_type == kind
+        return event.alert_type.alert_type
+      end
+    end
+    
+    'Good'
   end
 end

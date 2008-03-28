@@ -1,6 +1,6 @@
 xml.instruct! :xml, :version => "1.0"
 xml.DataRoot(:averaging => averaging, :num_points => query[:num_points], :startdate => query[:startdate], :enddate => query[:enddate]) do
-  xml.User(:id => query[:user_id], :first_name => user.profile[:first_name], :last_name => user.profile[:last_name], :status => 'Good', :time_remaining => battery.time_remaining) do
+  xml.User(:id => query[:user_id], :first_name => user.profile[:first_name], :last_name => user.profile[:last_name], :battery_status => status[:battery], :connectivity_status => status[:connectivity], :time_remaining => battery.time_remaining) do
     
     xml.LastReading do
       xml.heartrate(last_reading[:heartrate])
