@@ -1,7 +1,11 @@
 require 'time'
 
 namespace :halo do  
-  desc "post random vitals data with either activerecord or curl"  
+  desc "railroad command to generate schema"
+  task :railroad => :environment  do
+    system('railroad -a -i -M | dot -Tpng > models.png')
+  end
+  
   def delete
     puts ""
     puts "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
@@ -14,6 +18,8 @@ namespace :halo do
     Step.delete_all(["begin_timestamp > ? AND user_id = ?" , Time.now, ENV['user_id']])
   end
   
+  
+  desc "post random vitals data with either activerecord or curl"  
   task :post => :environment  do
     #end_time = Time.parse('2007-08-30 18:44:37-04') #hardcoded for demo 
 
