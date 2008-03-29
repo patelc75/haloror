@@ -12,6 +12,9 @@
 		Device Type
 	</div>
 	<div class="col-200">
+		Recent Battery Reading
+	</div>
+	<div class="col-200">
 		
 	</div>
 </div>
@@ -28,6 +31,13 @@
 		</div>
 		<div class="col-150">
 			(waiting on migration)
+		</div>
+		<div class="col-200">
+			<% if battery = device.batteries.first %>
+				<a href="/batteries/device/<%=device.id%>"><%=battery.percentage%>%, <%=battery.time_remaining%> min (<%=battery.timestamp.to_s(:short)%>)</a>
+			<% else %>
+				(no battery readings)
+			<% end %>
 		</div>
 		<div class="col-200">
 			<a href="/management/?device_id=<%=device[:id]%>">Manage</a> | <a href="#">Stats</a>
