@@ -11,6 +11,7 @@ class Device < ActiveRecord::Base
   has_many :strap_removeds
   has_many :device_unavailable_alerts
   has_many :outage_alerts
+  has_many :batteries
   
   belongs_to :user
   
