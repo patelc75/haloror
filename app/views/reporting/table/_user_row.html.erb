@@ -18,7 +18,9 @@
 			<a href="#user_<%=user.id%>">
 		<% end %>
 		
-		<%=user.profile[:first_name]%> <%=user.profile[:last_name]%>
+		<% if profile = user.profile %>
+			<%=profile[:first_name]%> <%=profile[:last_name]%>
+		<% end %>
 		
 		<% if caregiver %>
 			</a>
