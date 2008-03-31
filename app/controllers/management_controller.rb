@@ -15,16 +15,24 @@ class ManagementController < ApplicationController
     end
   end
   
-  def stream    
+  def stream
+    @type = 'stream'
+    
     if device = get_device
-      render :partial => 'chatter_stream', :locals => {:chatter => get_queries("stream", device)}
+      @chatter = get_queries("stream", device)
     end
+    
+    render :action => 'index'
   end
   
-  def group    
+  def group
+    @type = 'group'
+    
     if device = get_device
-      render :partial => 'chatter_group', :locals => {:chatter => get_queries("group", device)}
+      @chatter = get_queries("group", device)
     end
+    
+    render :action => 'index'
   end
   
   def roles
@@ -65,7 +73,7 @@ class ManagementController < ApplicationController
     unless params[:device_id] && device = Device.find(params[:device_id])
       device = current_user.devices.first
     end
-    
+    @device = device
     device
   rescue ActiveRecord::RecordNotFound
     render :partial => 'device_not_found'

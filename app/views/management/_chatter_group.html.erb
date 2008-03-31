@@ -2,9 +2,7 @@
 	<% chatter.sort_by { |row| row[:timestamp] }.reverse.each do |row| %>
 		<% color = 'gray' unless row.mgmt_ack %>
 	
-		<a href="javascript:void(0)" onClick="show_group(<%=row.id%>)" id="control_<%=row.id%>" style="float:left;text-decoration:none;margin-left:-30px">[+]</a>
-		
-		<%=render :partial => 'row', :locals => {:row => row, :color => color}%>
+		<%=render :partial => 'row', :locals => {:row => row, :color => color, :group => true}%>
 		
 		<div id="group_<%=row.id%>" style="margin-left:10px;display:none">
 			<% if query = MgmtQuery.find(:first, :conditions => {:mgmt_cmd_id => row.id}) %>

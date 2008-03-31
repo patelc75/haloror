@@ -1,15 +1,13 @@
 <%=render :partial=>'nav'%>
 
 <p>
-	Select a Device: <%=select(:user, :device, current_user.devices.collect {|d| [ d.id, d.id ]}, {}, {:onchange => "new Ajax.Updater('chatter','/management/"+@type+"/?device_id='+this.value)"})%>
+	Select a Device: <%=select(:device, :id, current_user.devices.collect {|d| [ d.id, d.id ]}, {}, {:onchange => "document.location = '/management/#{@type}/?device_id='+this.value"})%>
 	-or-
-	Enter a device id: <input type="text" id="device_id" /> <input type="button" value="Go" onclick="new Ajax.Updater('chatter', '/management/<%=@type%>/?device_id='+$('device_id').value)" />
+	Enter a device id: <input type="text" id="device_id" /> <input type="button" value="Go" onclick="document.location = '/management/<%=@type%>/?device_id='+$('device_id').value" />
 </p>
 
 <div>
-	<%=link_to_remote "Query Stream", :update => "chatter", :url => {:action => "stream"}%>
-	|
-	<%=link_to_remote "Query Groups", :update => "chatter", :url => {:action => "group"}%>
+	<a href="/management/stream<%="/?device_id=#{params[:device_id]}" unless params[:device_id] == nil%>">Query Stream</a> | <a href="/management/group<%="/?device_id=#{params[:device_id]}" unless params[:device_id] == nil%>">Query Groups</a>
 </div>
 
 <p style="color:gray;font-weight:bold">
