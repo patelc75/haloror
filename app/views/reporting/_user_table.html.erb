@@ -43,19 +43,18 @@
 		<% end %>
 		
 		<% devices = user.devices %>
-		<% if devices.length > 0 %>
-			<div class="row">
-				<div class="col-25">&nbsp;</div>
-				<div class="col-200">
-					<h3>Devices</h3>
-				</div>
+		<div class="row">
+			<div class="col-25">&nbsp;</div>
+			<div class="col-200">
+				<h3>Devices</h3>
 			</div>
-			
+		</div>
+		<% if devices.length > 0 %>
 			<% devices.each do |device| %>
 				<div class="row">
 					<div class="col-25">&nbsp;</div>
-					<div class="col-100">
-						(type)
+					<div class="col-150">
+						<%=device.device_type%>
 					</div>
 					<div class="col-200">
 						(recent battery reading)
@@ -70,7 +69,16 @@
 			<% end %>
 			<br />
 			<br />
+		<% else %>
+			
 		<% end %>
+		
+		<div class="row">
+			<form action="/users/add_device_to_user" method="post">
+				<input type="hidden" name="user_id" value="<%=user.id%>" />
+				Add a device: <input type="text" name="serial_number" /> <input type="submit" value="Add" />
+			</form>
+		</div>
 		
 		<% patients = user.patients %>
 		<% if patients.length > 0 %>

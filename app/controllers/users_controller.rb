@@ -32,6 +32,12 @@ class UsersController < ApplicationController
   rescue ActiveRecord::RecordInvalid
     render :action => 'new'
   end
+  
+  def add_device_to_user    
+    register_user_with_device(User.find(params[:user_id]),params[:serial_number])
+    
+    redirect_to :controller => 'reporting', :action => 'users'
+  end
 
   def activate
     self.current_user = User.find_by_activation_code(params[:activation_code])
@@ -157,7 +163,6 @@ class UsersController < ApplicationController
   end
   
   def register_user_with_device(user, serial_number)
-    # create chest strap device
     unless device = Device.find_by_serial_number(serial_number)
       device = Device.new
       device.serial_number = serial_number

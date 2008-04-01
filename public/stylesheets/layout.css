@@ -11,6 +11,11 @@ img {
 	border:0;
 }
 
+h3 a {
+	font-size:10px;
+	font-weight:normal;
+}
+
 .container
 {
 	width:950px;
