@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<DataRoot averaging="false" num_points="0" startdate="" enddate ="">
+<!-- -->
+    <User last_name="Auto" first_name="Chris"  id="99001" battery_status="Critical" connectivity_status="Device Available" time_remaining="15">
+        <DataReadings/>
+        <LastReading datetime="Thu Mar 20 08:15 -0500 2008" battery=".05"
+            heartrate="88" hr_min="87" hr_max="90"
+            breathing="64"
+            activity="5000" 
+            skin_temp="97.9"
+            steps="7"
+            adl="Playing Tennis or Coding, not sure"/>
+    </User>
+<!-- -->    
+	<User last_name="Lee" first_name="Betty" id="5" battery_status="Normal" connectivity_status="Device Unavailable" time_remaining="59"> <!--in minutes-->
+		<!--NOTE: Typical upper bound for a fall type activity is 50000-->
+        <LastReading datetime="Fri Mar 21 08:10 -0500 2008" battery=".57"
+                heartrate="99" hr_min="88" hr_max="90"
+                breathing="44"
+                activity="50000" 
+                skin_temp="98.7"
+                steps="10"
+                adl="Relaxing"/>
+		<DataReadings>
+			<!-- This first node shows that attributes or child nodes can both be handled, as long
+				as the child nodes are singular! Attributes save a LOT of bandwidth, however... -->
+			<DataReading datetime="Thu Mar 20 08:10 -0500 2008" battery=".57">
+				<heartrate>99</heartrate>
+				<hr_min>88</hr_min>
+				<hr_max>90</hr_max>
+				<breathing>44</breathing>
+				<activity>50000</activity>
+				<skin_temp>78.7</skin_temp>
+				<steps>10</steps>
+				<adl>Sitting</adl>
+			</DataReading>
+<!-- -->
+			<DataReading datetime="Thu Mar 20 08:11 -0500 2008" battery=".57"
+				heartrate="98" hr_min="87" hr_max="90"
+				breathing="43"
+				activity="5000" 
+				skin_temp="98.6"
+				steps="9"
+				adl="Relaxing"/>
+			<DataReading datetime="Thu Mar 20 08:12 -0500 2008" battery=".57"
+				heartrate="97" hr_min="86" hr_max="89"
+				breathing="43"
+				activity="25000" 
+				skin_temp="98.5"
+				steps="2"
+				adl="Relaxing"/>
+			<DataReading datetime="Thu Mar 20 08:13 -0500 2008" battery=".57"
+				heartrate="82" hr_min="89" hr_max="93"
+				breathing="46"
+				activity="50000" 
+				skin_temp="98.9"
+				steps="20"
+				adl="Standing"/>
+			<DataReading datetime="Thu Mar 20 08:14 -0500 2008" battery=".56"
+				heartrate="82" hr_min="91" hr_max="93"
+				breathing="46"
+				activity="5000" 
+				skin_temp="99.0"
+				steps="15"
+				adl="Relaxing"/>
+			<DataReading datetime="Thu Mar 20 08:15 -0500 2008" battery=".55"
+				heartrate="99" hr_min="89" hr_max="91"
+				breathing="44"
+				activity="15000" 
+				skin_temp="98.7"
+				steps="10"
+				adl="Relaxing"/>
+			<DataReading datetime="Thu Mar 20 08:16 -0500 2008" battery=".54"
+				heartrate="79" hr_min="88" hr_max="90"
+				breathing="44"
+				activity="5000" 
+				skin_temp="98.7"
+				steps="10"
+				adl="Standing"/>
+			<DataReading datetime="Thu Mar 20 08:17 -0500 2008" battery=".53"
+				heartrate="89" hr_min="87" hr_max="90"
+				breathing="44"
+				activity="25000" 
+				skin_temp="98.7"
+				steps="10"
+				adl="Standing"/>
+			<DataReading datetime="Thu Mar 20 08:18 -0500 2008" battery=".52"
+				heartrate="79" hr_min="87" hr_max="90"
+				breathing="44"
+				activity="5000" 
+				skin_temp="98.7"
+				steps="10"
+				adl="Running"/>
+			<DataReading datetime="Thu Mar 20 08:19 -0500 2008" battery=".51"
+				heartrate="89" hr_min="87" hr_max="90"
+				breathing="44"
+				activity="7500" 
+				skin_temp="98.7"
+				steps="10"
+				adl="Running"/>
+<!-- -->				
+		</DataReadings>
+		<Events>
+			<Event datetime="Thu Mar 20 10:23:01 -0500 2008"
+			description="Betty Lee Fell"
+			link="www.halomonitoring.com"/>
+		</Events>			
+	</User>
+<!-- -->
+	<User last_name="Bob" first_name="Billy" id="255" battery_status="Normal" connectivity_status="Gateway Offline" time_remaining="65">
+		<DataReadings />
+		<LastReading datetime="Thu Mar 20 08:15 -0500 2008" battery=".75"
+            heartrate="92" hr_min="90" hr_max="93"
+            breathing="84"
+            activity="50000" 
+            skin_temp="99.7"
+            steps="35"
+            adl="Sleeping"/>
+	</User>
+	<User last_name="Schmoe" first_name="Joe"  id="99000" battery_status="Normal" connectivity_status="Device Available" time_remaining="45">
+		<DataReadings />
+		<LastReading datetime="Thu Mar 20 08:15 -0500 2008" battery=".42"
+            heartrate="88" hr_min="87" hr_max="90"
+            breathing="64"
+            activity="5000" 
+            skin_temp="97.9"
+            steps="7"
+            adl="Running"/>
+	</User>
+	<User last_name="Codesmith" first_name="Chirag"  id="99002" battery_status="Plugged In" connectivity_status="Strap Removed" time_remaining="15">
+		<DataReadings />
+		<LastReading datetime="Thu Mar 20 08:15 -0500 2008" battery=".42"
+            heartrate="88" hr_min="87" hr_max="90"
+            breathing="64"
+            activity="5000" 
+            skin_temp="97.9"
+            steps="7"
+            adl="Playing Tennis or Coding, not sure"/>
+	</User>
+<!-- -->
+</DataRoot>
