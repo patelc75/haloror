@@ -13,7 +13,8 @@ class Device < ActiveRecord::Base
   has_many :outage_alerts
   has_many :batteries
   
-  belongs_to :user
+  #belongs_to :user
+  has_and_belongs_to_many :users
   
   validates_presence_of     :serial_number
   validates_length_of       :serial_number, :is => 10

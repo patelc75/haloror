@@ -14,6 +14,19 @@ class MgmtResponsesController < RestfulAuthController
       
       cmd.pending = false
       cmd.save
+      
+      if request[:info]
+        info = DeviceInfo.new
+      end
+      
+      # <user_id>UID</user_id> 
+      #       <serial_num>sn</serial_num> 
+      #       <mac_address>MAC</mac_address> 
+      #       <vendor>vendorString</vendor> 
+      #       <model>modelString</model> 
+      #       <hardware_version>hdwVersion</hardware_version> 
+      #       <software_version>swVersion</software_version> 
+      
     end
     
     render :nothing => true

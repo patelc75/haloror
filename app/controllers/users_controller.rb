@@ -19,20 +19,10 @@ class UsersController < ApplicationController
         
       # create profile
       Profile.create(:user_id => @user.id)
-        
-      # create chest strap device
-      @strap = Device.new
-      @strap.user_id = @user.id
-      @strap.serial_number = params[:strap_serial_number]
-      @strap.device_type = get_device_type(@strap)
-      @strap.save!
-        
-      # create gateway device
-      @gateway = Device.new
-      @gateway.user_id = @user.id
-      @gateway.serial_number = params[:gateway_serial_number]
-      @gateway.device_type = get_device_type(@gateway)
-      @gateway.save!
+      
+      # register with strap/gateway
+      register_user_with_device(@user,params[:strap_serial_number])
+      register_user_with_device(@user,params[:gateway_serial_number])
     end
     #end
     #self.current_user = @user
@@ -164,5 +154,20 @@ class UsersController < ApplicationController
     end
     
     device_type
+  end
+  
+  def register_user_with_device(user, serial_number)
+    # create chest strap device
+    unless device = Device.find_by_serial_number(serial_number)
+      device = Device.new
+      device.serial_number = serial_number
+      device.device_type = get_device_type(device)
+      device.save
+    end
+    
+    assoc = DevicesUsers.new
+    assoc.user_id = user.id
+    assoc.device_id = device.id
+    assoc.save
   end
 end

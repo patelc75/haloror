@@ -1,8 +1,8 @@
 xml.management_response_server do
   xml.device_id response.mgmt_cmd.device_id
   xml.cmd_type response.mgmt_cmd.cmd_type
-  if response.mgmt_cmd.device.user
-    xml.user_id response.mgmt_cmd.device.user.id
+  if response.mgmt_cmd.device and response.mgmt_cmd.device.users
+    xml.user_id response.mgmt_cmd.device.users.first.id
   end
   xml.timestamp response.timestamp_server
 end
