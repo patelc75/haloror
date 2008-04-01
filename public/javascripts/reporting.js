@@ -13,3 +13,19 @@ function toggle_user_hidden(user_id)
 		$('user_'+user_id+'-toggle').innerHTML = '[+]';
 	}		
 }
+
+function toggle_device_hidden(device_id)
+{
+	var cur = $('device_'+device_id+'-hidden').style.display;
+	
+	if(cur == 'none')
+	{
+		$('device_'+device_id+'-hidden').style.display = 'block';
+		$('device_'+device_id+'-toggle').innerHTML = '[-]';
+	}		
+	else
+	{
+		$('device_'+device_id+'-hidden').style.display = 'none';
+		$('device_'+device_id+'-toggle').innerHTML = '[+]';
+	}		
+}

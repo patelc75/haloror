@@ -1,9 +1,9 @@
 <div class="row header">
-	<div class="col-75">
-		Device ID
+	<div class="col-25">
+		&nbsp;
 	</div>
 	<div class="col-75">
-		User ID
+		Device ID
 	</div>
 	<div class="col-150">
 		Serial Number
@@ -20,12 +20,13 @@
 </div>
 <% devices.each do |device| %>
 	<div class="row">
+		<div class="col-25">
+			<a href="javascript:void(0)" onClick="toggle_device_hidden(<%=device.id%>)" id="device_<%=device.id%>-toggle">[+]</a>
+		</div>
 		<div class="col-75">
 			<%=device[:id]%>
 		</div>
-		<div class="col-75">
-			<a href="/reporting/users/#user_<%=device[:user_id]%>" title="<%=User.find(device[:user_id]).login%>"><%=device[:user_id]%></a>
-		</div>
+		
 		<div class="col-150">
 			<%=device[:serial_number]%>
 		</div>
@@ -42,5 +43,10 @@
 		<div class="col-200">
 			<a href="/management/?device_id=<%=device[:id]%>">Manage</a> | <a href="#">Stats</a>
 		</div>
+	</div>
+	<div id="device_<%=device.id%>-hidden" style="display:none">
+		<% device.users.each do |user| %>
+			<%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => false, :caregiver => false}%>
+		<% end %>
 	</div>
 <% end %>
