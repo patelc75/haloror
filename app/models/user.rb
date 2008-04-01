@@ -121,7 +121,7 @@ class User < ActiveRecord::Base
     patients = []
     
     RolesUser.find(:all, :conditions => "user_id = #{self.id}").each do |role_user|
-      if role_user.role.name == 'caregiver'
+      if role_user.role and role_user.role.name == 'caregiver'
         patients << User.find(role_user.role.authorizable_id)
       end
     end
