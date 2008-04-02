@@ -9,7 +9,9 @@ class CriticalMailer < ActionMailer::Base
     description = camelcase_to_spaced(device_alert.class.to_s)
     @subject    += "#{description} event"
     body :alert_type => description, 
-      :timestamp => device_alert.timestamp
+      :timestamp => device_alert.timestamp,
+      :login     => device_alert.user.login,
+      :user_id   => device_alert.user.id
   end
 
   # alert: DeviceUnavailableAlert
@@ -27,9 +29,9 @@ class CriticalMailer < ActionMailer::Base
     setup_email(user)
     @subject    += "Device Available for User #{user.id}"
     body :alert_created_at => alert.created_at,
-         :login     => user.login,
-         :user_id   => user.id,
-         :alert_id => alert.id
+      :login     => user.login,
+      :user_id   => user.id,
+      :alert_id => alert.id
   end
   
   def gateway_online_notification(alert, user)
@@ -37,9 +39,9 @@ class CriticalMailer < ActionMailer::Base
     setup_email(user)
     @subject    += "Device #{alert.device_id} Is Back Online"
     body :alert_created_at => alert.created_at,
-         :login     => user.login,
-         :user_id   => user.id,
-         :device_id => device.id
+      :login     => user.login,
+      :user_id   => user.id,
+      :device_id => device.id
   end
 
   def gateway_offline_notification(outage, user)
@@ -47,9 +49,9 @@ class CriticalMailer < ActionMailer::Base
     setup_email(user)
     @subject    += "Outage for Device #{outage.device_id}"
     body :outage_created_at => outage.created_at,
-         :login     => user.login,
-         :user_id   => user.id,
-         :device_id => device.id
+      :login     => user.login,
+      :user_id   => user.id,
+      :device_id => device.id
   end
 
   def fall_notification(fall)
