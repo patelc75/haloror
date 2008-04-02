@@ -14,12 +14,14 @@ class OutageAlert < ActiveRecord::Base
     if number_attempts == MAX_ATTEMPTS_BEFORE_NOTIFICATION
       logger.debug("[OutageAlert] Detected an outage for user #{device.user_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
 
-      Event.create(:user_id => device.user_id, 
-                   :event_type => OutageAlert.class_name, 
-                   :event_id => id, 
-                   :timestamp => created_at || Time.now)
-      
-      CriticalMailer.deliver_outage_alert_notification(self)
+      device.users.each do |user|
+        Event.create(:user_id => user.id, 
+                     :event_type => OutageAlert.class_name, 
+                     :event_id => id, 
+                     :timestamp => created_at || Time.now)
+        
+        CriticalMailer.deliver_gateway_offline_notification(self, user)
+      end
     end
   end
 end 

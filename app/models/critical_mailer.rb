@@ -22,14 +22,24 @@ class CriticalMailer < ActionMailer::Base
       :alert_id => alert.id
   end
   
-  def outage_alert_notification(outage)
+  def gateway_online_notification(alert, user)
+    device = alert.device
+    setup_email(user)
+    @subject    += "Device #{alert.device_id} Is Back Online"
+    body :alert_created_at => alert.created_at,
+         :login     => user.login,
+         :user_id   => user.id,
+         :device_id => device.id
+  end
+
+  def gateway_offline_notification(outage, user)
     device = outage.device
-    setup_email(outage.device.user)
+    setup_email(user)
     @subject    += "Outage for Device #{outage.device_id}"
     body :outage_created_at => outage.created_at,
-      :login     => device.user.login,
-      :user_id   => device.user.id,
-      :device_id => device.id
+         :login     => user.login,
+         :user_id   => user.id,
+         :device_id => device.id
   end
 
   def fall_notification(fall)

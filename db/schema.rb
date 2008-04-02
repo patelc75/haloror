@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 80) do
+ActiveRecord::Schema.define(:version => 82) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -104,6 +104,13 @@ ActiveRecord::Schema.define(:version => 80) do
     t.string "domain"
   end
 
+  create_table "device_available_alerts", :force => true do |t|
+    t.integer  "device_id",  :null => false
+    t.datetime "created_at", :null => false
+  end
+
+  add_index "device_available_alerts", ["device_id"], :name => "device_available_alerts_device_id_idx"
+
   create_table "device_infos", :force => true do |t|
     t.integer "device_id"
     t.string  "serial_number"
@@ -177,6 +184,13 @@ ActiveRecord::Schema.define(:version => 80) do
     t.string "password"
     t.string "path"
   end
+
+  create_table "gateway_online_alerts", :force => true do |t|
+    t.integer  "device_id",  :null => false
+    t.datetime "created_at", :null => false
+  end
+
+  add_index "gateway_online_alerts", ["device_id"], :name => "gateway_online_alerts_device_id_idx"
 
   create_table "gateways", :force => true do |t|
     t.string  "serial_number"
