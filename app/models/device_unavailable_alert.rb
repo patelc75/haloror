@@ -8,7 +8,7 @@
 #    specific interval AND the chest strap is "fastened". 
 #
 # The status of the chest strap is denormalized into the table named
-# user_strap_status which records the latest event for a given user
+# device_strap_status which records the latest event for a given device
 # (i.e. is the strap fastened or removed)
 #
 

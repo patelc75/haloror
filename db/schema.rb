@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 85) do
+ActiveRecord::Schema.define(:version => 86) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -129,6 +129,11 @@ ActiveRecord::Schema.define(:version => 85) do
   end
 
   add_index "device_latest_queries", ["updated_at"], :name => "device_latest_queries_updated_at_idx"
+
+  create_table "device_strap_status", :force => true do |t|
+    t.integer  "is_fastened", :null => false
+    t.datetime "updated_at",  :null => false
+  end
 
   create_table "device_unavailable_alerts", :force => true do |t|
     t.integer  "device_id",                      :null => false
@@ -341,12 +346,6 @@ ActiveRecord::Schema.define(:version => 85) do
     t.integer  "device_id"
     t.datetime "timestamp"
     t.integer  "user_id"
-  end
-
-  create_table "user_strap_status", :force => true do |t|
-    t.integer  "device_id",   :null => false
-    t.integer  "is_fastened", :null => false
-    t.datetime "updated_at",  :null => false
   end
 
   create_table "users", :force => true do |t|

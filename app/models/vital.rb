@@ -93,19 +93,24 @@ class Vital < ActiveRecord::Base
     ActiveRecord::Base.logger.debug("Vital.job_detect_unavailable_devices running at #{Time.now}")
 
     ## Find devices that were previously signaling errors but have
-    ## come back online.
-    sql = 'update device_unavailable_alerts set reconnected_at = now() where reconnected_at is null and user_id in ' <<
-          " (select id from user_strap_status where is_fastened > 0) "
-    Vital.connection.execute(sql)
+    ## come back Online.
+    alerts = DeviceUnavailableAlert.find(:all,
+                                         :conditions => 'reconnected_at is null and device_id in (select id from device_strap_status where is_fastened > 0)')
+    alerts.each do |alert|
+      DeviceUnavailableAlert.transaction do
+        DeviceAvailableAlert.create(:device => alert.device)
+        alert.reconnected_at = Time.now
+        alert.save!
+      end
+    end
 
-    # We need to find all users where:
-    #
+    # We need to find all devices where:
     # a) Vitals have not been posted to for a specific interval
     # AND 
     # b) the chest strap is “fastened”
     conds = []
     conds << "id in (select v.device_id from latest_vitals v where v.updated_at < now() - interval '#{MgmtQuery::MINUTES_INTERVAL} minutes')"
-    conds << "id in (select du.device_id from user_strap_status uss, devices_users du where uss.is_fastened > 0 and uss.user_id = du.user_id)"
+    conds << "id in (select status.id from device_strap_status status where is_fastened > 0)"
 
     devices = Device.find(:all,
                           :conditions => conds.join(' and '))
