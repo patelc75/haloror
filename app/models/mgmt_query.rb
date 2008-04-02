@@ -20,8 +20,7 @@ class MgmtQuery < ActiveRecord::Base
                                      " (select id from device_latest_queries where updated_at > now() - interval '#{MINUTES_INTERVAL} minutes')")
     reconnected.each do |device|
       Device.transaction do
-        GatewayOnlineAlert.create :device => device, 
-        AlertType.create :alert_group_id => 5, :type => OutageAlert.class_name
+        GatewayOnlineAlert.create(:device => device)
 
         OutageAlert.find(:all, 
                          :conditions => ['device_id = ? and reconnected_at is null', device.id]).each do |alert|
