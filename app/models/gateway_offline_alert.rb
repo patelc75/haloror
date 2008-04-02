@@ -3,7 +3,7 @@
 # of an outage from the actual processing of it to ensure we can
 # quickly detect and then process in parallel.
 
-class OutageAlert < ActiveRecord::Base
+class GatewayOfflineAlert < ActiveRecord::Base
   MAX_ATTEMPTS_BEFORE_NOTIFICATION = 5
 
   belongs_to :device
@@ -12,11 +12,11 @@ class OutageAlert < ActiveRecord::Base
   # user immediately
   def after_save
     if number_attempts == MAX_ATTEMPTS_BEFORE_NOTIFICATION
-      logger.debug("[OutageAlert] Detected an outage for user #{device.user_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
+      logger.debug("[GatewayOfflineAlert] Detected an outage for user #{device.user_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
 
       device.users.each do |user|
         Event.create(:user_id => user.id, 
-                     :event_type => OutageAlert.class_name, 
+                     :event_type => GatewayOfflineAlert.class_name, 
                      :event_id => id, 
                      :timestamp => created_at || Time.now)
         

@@ -14,15 +14,17 @@ class MgmtQuery < ActiveRecord::Base
     ActiveRecord::Base.logger.debug("MgmtQuery.job_detect_disconnected_users running at #{Time.now}")
 
     ## Find devices that were previously signaling errors but have
-    ## come back online. Trigger a "Reconnect" event for these devices
+    ## come back online. Trigger a "Reconnect" event for these
+    ## devices. In practice, there should be very few of these alerts
+    ## so we process them one by one as the devices come back online.
     reconnected = Device.find_by_sql(:all,
-                                     :conditions => 'id in (select device_id from outage_alerts where reconnected_at is null and device_id in ' <<
+                                     :conditions => 'id in (select device_id from gateway_offline_alerts where reconnected_at is null and device_id in ' <<
                                      " (select id from device_latest_queries where updated_at > now() - interval '#{MINUTES_INTERVAL} minutes'))")
     reconnected.each do |device|
       Device.transaction do
         GatewayOnlineAlert.create(:device => device)
 
-        OutageAlert.find(:all, 
+        GatewayOfflineAlert.find(:all, 
                          :conditions => ['device_id = ? and reconnected_at is null', device.id]).each do |alert|
           alert.reconnected_at = Time.now
           alert.save!
@@ -45,7 +47,7 @@ class MgmtQuery < ActiveRecord::Base
 
   private
   def MgmtQuery.process_alert(device)
-    alert = OutageAlert.find(:first,
+    alert = GatewayOfflineAlert.find(:first,
                              :order => 'created_at desc',
                              :conditions => ['reconnected_at is null and device_id = ?', device.id])
 
@@ -53,7 +55,7 @@ class MgmtQuery < ActiveRecord::Base
       alert.number_attempts += 1
       alert.save!
     else
-      alert = OutageAlert.new
+      alert = GatewayOfflineAlert.new
       alert.device = device
       alert.save!
     end

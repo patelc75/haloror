@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 82) do
+ActiveRecord::Schema.define(:version => 83) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -48,6 +48,9 @@ ActiveRecord::Schema.define(:version => 82) do
     t.boolean  "text_active"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "bar", :force => true do |t|
   end
 
   create_table "batteries", :force => true do |t|
@@ -185,6 +188,17 @@ ActiveRecord::Schema.define(:version => 82) do
     t.string "path"
   end
 
+  create_table "gateway_offline_alerts", :force => true do |t|
+    t.integer  "device_id",                      :null => false
+    t.integer  "number_attempts", :default => 1, :null => false
+    t.datetime "reconnected_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "gateway_offline_alerts", ["device_id"], :name => "outage_alerts_device_id_idx"
+  add_index "gateway_offline_alerts", ["device_id"], :name => "outage_alerts_outage_idx"
+
   create_table "gateway_online_alerts", :force => true do |t|
     t.integer  "device_id",  :null => false
     t.datetime "created_at", :null => false
@@ -247,17 +261,6 @@ ActiveRecord::Schema.define(:version => 82) do
     t.datetime "timestamp"
     t.boolean  "orientation"
   end
-
-  create_table "outage_alerts", :force => true do |t|
-    t.integer  "device_id",                      :null => false
-    t.integer  "number_attempts", :default => 1, :null => false
-    t.datetime "reconnected_at"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "outage_alerts", ["device_id"], :name => "outage_alerts_device_id_idx"
-  add_index "outage_alerts", ["device_id"], :name => "outage_alerts_outage_idx"
 
   create_table "panics", :force => true do |t|
     t.integer  "user_id"

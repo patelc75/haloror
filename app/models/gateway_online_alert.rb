@@ -1,5 +1,5 @@
 # This alert indicates that a device that went offline via an
-# OutageAlert has come back online.
+# GatewayOfflineAlert has come back online.
 
 class GatewayOnlineAlert < ActiveRecord::Base
   belongs_to :device
