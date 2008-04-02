@@ -150,8 +150,11 @@ class UsersController < ApplicationController
   
   private
   def get_device_type(device)
-    device_type = ""
-    if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
+    if(device.serial_number == nil)
+      device_type = "Invalid serial num"
+    elsif(device.serial_number.length != 10)
+      device_type = "Invalid serial num"
+    elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
       device_type = "Halo Chest Strap"
     elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
       device_type = "Halo Gateway"
