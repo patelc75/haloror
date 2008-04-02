@@ -71,8 +71,10 @@ class CriticalMailer < ActionMailer::Base
   def setup_email(user)
     @recipients = Array.new
     
-    if user.profile.cell_phone != nil and user.profile.cell_phone != "" and user.profile.carrier != nil
-      @recipients << ["#{user.profile.cell_phone}" + "#{user.profile.carrier.domain}"]
+    if profile = user.profile
+      if profile.cell_phone != nil and profile.cell_phone != "" and profile.carrier != nil
+        @recipients << ["#{profile.cell_phone}" + "#{profile.carrier.domain}"]
+      end
     end
   
     if user.email != nil and user.email != ""
