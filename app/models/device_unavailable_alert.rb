@@ -14,18 +14,20 @@
 
 class DeviceUnavailableAlert < ActiveRecord::Base
   
-  belongs_to :user
-
+  belongs_to :device
+  
   def after_save
     if number_attempts == GatewayOfflineAlert::MAX_ATTEMPTS_BEFORE_NOTIFICATION 
-      logger.debug("[DeviceUnavailableAlert] Detected an outage for user #{user_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
+      logger.debug("[DeviceUnavailableAlert] Detected an outage for device #{device_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
 
-      Event.create(:user_id => user_id, 
-        :event_type => DeviceUnavailableAlert.class_name, 
-        :event_id => id, 
-        :timestamp => created_at || Time.now)
-      
-      CriticalMailer.deliver_device_unavailable_alert_notification(self)
+      device.users.each do |user|
+        Event.create(:user_id => user.id, 
+                     :event_type => DeviceUnavailableAlert.class_name, 
+                     :event_id => id, 
+                     :timestamp => created_at || Time.now)
+        
+        CriticalMailer.deliver_device_unavailable_alert_notification(self, user)
+      end
     end
   end
 end 

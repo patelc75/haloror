@@ -104,34 +104,34 @@ class Vital < ActiveRecord::Base
     # AND 
     # b) the chest strap is “fastened”
     conds = []
-    conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{MgmtQuery::MINUTES_INTERVAL} minutes')"
-    conds << "id in (select id from user_strap_status where is_fastened > 0)"
+    conds << "id in (select v.device_id from latest_vitals v where v.updated_at < now() - interval '#{MgmtQuery::MINUTES_INTERVAL} minutes')"
+    conds << "id in (select du.device_id from user_strap_status uss, devices_users du where uss.is_fastened > 0 and uss.user_id = du.user_id)"
 
-    users = User.find(:all,
-                      :conditions => conds.join(' and '))
+    devices = Device.find(:all,
+                          :conditions => conds.join(' and '))
 
-    users.each do |user|
+    devices.each do |device|
       begin
-        Vital.process_user_unavailable(user)
+        Vital.process_device_unavailable(device)
       rescue Exception => e
-        logger.fatal("Error processing unavailable device alert for user #{user.inspect}: #{e}")
+        logger.fatal("Error processing unavailable device alert for device #{device.inspect}: #{e}")
         raise e if ENV['RAILS_ENV'] == "development"
       end
     end
   end
 
   private
-  def self.process_user_unavailable(user)
+  def self.process_device_unavailable(device)
     alert = DeviceUnavailableAlert.find(:first,
                                         :order => 'created_at desc',
-                                        :conditions => ['reconnected_at is null and user_id = ?', user.id])
+                                        :conditions => ['reconnected_at is null and device_id = ?', device.id])
 
     if alert
       alert.number_attempts += 1
       alert.save!
     else
       alert = DeviceUnavailableAlert.new
-      alert.user = user
+      alert.device = device
       alert.save!
     end
   end

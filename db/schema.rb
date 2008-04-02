@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 83) do
+ActiveRecord::Schema.define(:version => 85) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -131,15 +131,15 @@ ActiveRecord::Schema.define(:version => 83) do
   add_index "device_latest_queries", ["updated_at"], :name => "device_latest_queries_updated_at_idx"
 
   create_table "device_unavailable_alerts", :force => true do |t|
-    t.integer  "user_id",                        :null => false
+    t.integer  "device_id",                      :null => false
     t.integer  "number_attempts", :default => 1, :null => false
     t.datetime "reconnected_at"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "device_unavailable_alerts", ["user_id"], :name => "device_unavailable_alerts_device_unavailable_idx"
-  add_index "device_unavailable_alerts", ["user_id"], :name => "device_unavailable_alerts_user_id_idx"
+  add_index "device_unavailable_alerts", ["device_id"], :name => "device_unavailable_alerts_device_id_idx"
+  add_index "device_unavailable_alerts", ["device_id"], :name => "device_unavailable_alerts_device_unavailable_idx"
 
   create_table "devices", :force => true do |t|
     t.integer "user_id"
@@ -222,6 +222,7 @@ ActiveRecord::Schema.define(:version => 83) do
   end
 
   create_table "latest_vitals", :force => true do |t|
+    t.integer  "device_id",  :null => false
     t.datetime "updated_at", :null => false
   end
 
