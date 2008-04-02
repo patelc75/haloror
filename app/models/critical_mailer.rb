@@ -21,6 +21,16 @@ class CriticalMailer < ActionMailer::Base
       :user_id   => alert.user.id,
       :alert_id => alert.id
   end
+
+  # alert: DeviceAvailableAlert
+  def device_available_alert_notification(alert, user)
+    setup_email(user)
+    @subject    += "Device Available for User #{user.id}"
+    body :alert_created_at => alert.created_at,
+         :login     => user.login,
+         :user_id   => user.id,
+         :alert_id => alert.id
+  end
   
   def gateway_online_notification(alert, user)
     device = alert.device
