@@ -109,7 +109,7 @@ class Vital < ActiveRecord::Base
     # AND 
     # b) the chest strap is “fastened”
     conds = []
-    conds << "id in (select v.device_id from latest_vitals v where v.updated_at < now() - interval '#{MgmtQuery::MINUTES_INTERVAL} minutes')"
+    conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{MgmtQuery::MINUTES_INTERVAL} minutes')"
     conds << "id in (select status.id from device_strap_status status where is_fastened > 0)"
 
     devices = Device.find(:all,
