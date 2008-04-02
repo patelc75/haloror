@@ -9,7 +9,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 65) do
+ActiveRecord::Schema.define(:version => 80) do
+
+  create_table "access_logs", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "status"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "activities", :force => true do |t|
     t.integer  "user_id"
@@ -18,7 +25,7 @@ ActiveRecord::Schema.define(:version => 65) do
   end
 
   create_table "alert_groups", :force => true do |t|
-    t.string   "magnitude"
+    t.string   "group_type"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -34,20 +41,10 @@ ActiveRecord::Schema.define(:version => 65) do
   end
 
   create_table "alert_types", :force => true do |t|
-    t.integer  "alert_groups_id"
+    t.integer  "alert_group_id"
     t.string   "type"
     t.boolean  "phone_active"
     t.boolean  "email_active"
-    t.boolean  "text_active"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "alerts", :force => true do |t|
-    t.integer  "roles_users_option_id"
-    t.string   "event_kind"
-    t.boolean  "email_active"
-    t.boolean  "phone_active"
     t.boolean  "text_active"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -58,6 +55,7 @@ ActiveRecord::Schema.define(:version => 65) do
     t.datetime "timestamp"
     t.integer  "percentage",     :null => false
     t.integer  "time_remaining", :null => false
+    t.integer  "device_id"
   end
 
   create_table "battery_charge_completes", :force => true do |t|
@@ -65,6 +63,7 @@ ActiveRecord::Schema.define(:version => 65) do
     t.datetime "timestamp"
     t.integer  "percentage",     :null => false
     t.integer  "time_remaining", :null => false
+    t.integer  "user_id"
   end
 
   create_table "battery_criticals", :force => true do |t|
@@ -72,6 +71,7 @@ ActiveRecord::Schema.define(:version => 65) do
     t.datetime "timestamp"
     t.integer  "percentage",     :null => false
     t.integer  "time_remaining", :null => false
+    t.integer  "user_id"
   end
 
   create_table "battery_pluggeds", :force => true do |t|
@@ -79,6 +79,7 @@ ActiveRecord::Schema.define(:version => 65) do
     t.datetime "timestamp"
     t.integer  "percentage",     :null => false
     t.integer  "time_remaining", :null => false
+    t.integer  "user_id"
   end
 
   create_table "battery_unpluggeds", :force => true do |t|
@@ -86,6 +87,7 @@ ActiveRecord::Schema.define(:version => 65) do
     t.datetime "timestamp"
     t.integer  "percentage",     :null => false
     t.integer  "time_remaining", :null => false
+    t.integer  "user_id"
   end
 
   create_table "call_center_steps", :force => true do |t|
@@ -108,12 +110,12 @@ ActiveRecord::Schema.define(:version => 65) do
     t.string  "mac_address"
     t.string  "vendor"
     t.string  "model"
-    t.string  "kind"
-    t.integer "kind_id"
+    t.string  "device_info_type"
+    t.integer "device_info_id"
   end
 
   create_table "device_latest_queries", :force => true do |t|
-    t.datetime "updated_at", :default => '2008-03-01 18:09:57', :null => false
+    t.datetime "updated_at", :null => false
   end
 
   add_index "device_latest_queries", ["updated_at"], :name => "device_latest_queries_updated_at_idx"
@@ -132,6 +134,7 @@ ActiveRecord::Schema.define(:version => 65) do
   create_table "devices", :force => true do |t|
     t.integer "user_id"
     t.string  "serial_number"
+    t.string  "device_type"
   end
 
   create_table "devices_users", :force => true do |t|
@@ -153,7 +156,7 @@ ActiveRecord::Schema.define(:version => 65) do
     t.datetime "timestamp"
     t.string   "event_type"
     t.integer  "event_id"
-    t.string   "level"
+    t.integer  "alert_type_id"
   end
 
   create_table "falls", :force => true do |t|
@@ -313,14 +316,17 @@ ActiveRecord::Schema.define(:version => 65) do
   create_table "strap_fasteneds", :force => true do |t|
     t.integer  "device_id"
     t.datetime "timestamp"
+    t.integer  "user_id"
   end
 
   create_table "strap_removeds", :force => true do |t|
     t.integer  "device_id"
     t.datetime "timestamp"
+    t.integer  "user_id"
   end
 
   create_table "user_strap_status", :force => true do |t|
+    t.integer  "device_id",   :null => false
     t.integer  "is_fastened", :null => false
     t.datetime "updated_at",  :null => false
   end
