@@ -94,8 +94,13 @@ class Vital < ActiveRecord::Base
 
     ## Find devices that were previously signaling errors but have
     ## come back Online.
+    conds = []
+    conds << "reconnected_at is null"
+    conds << "id in (select v.id from latest_vitals v where v.updated_at >= now() - interval '#{MgmtQuery::MINUTES_INTERVAL} minutes')"
+    conds << "id in (select status.id from device_strap_status status where is_fastened > 0)"
+    
     alerts = DeviceUnavailableAlert.find(:all,
-                                         :conditions => 'reconnected_at is null and device_id in (select id from device_strap_status where is_fastened > 0)')
+                                         :conditions => conds.join(' and '))
     alerts.each do |alert|
       DeviceUnavailableAlert.transaction do
         DeviceAvailableAlert.create(:device => alert.device)
