@@ -17,15 +17,15 @@ class MgmtQuery < ActiveRecord::Base
     ## come back online. Trigger a "Reconnect" event for these
     ## devices. In practice, there should be very few of these alerts
     ## so we process them one by one as the devices come back online.
-    reconnected = Device.find_by_sql(:all,
-                                     :conditions => 'id in (select device_id from gateway_offline_alerts where reconnected_at is null and device_id in ' <<
-                                     " (select id from device_latest_queries where updated_at > now() - interval '#{MINUTES_INTERVAL} minutes'))")
+    reconnected = Device.find(:all,
+                              :conditions => 'id in (select device_id from gateway_offline_alerts where reconnected_at is null and device_id in ' <<
+                              " (select id from device_latest_queries where updated_at > now() - interval '#{MINUTES_INTERVAL} minutes'))")
     reconnected.each do |device|
       Device.transaction do
         GatewayOnlineAlert.create(:device => device)
 
         GatewayOfflineAlert.find(:all, 
-                         :conditions => ['device_id = ? and reconnected_at is null', device.id]).each do |alert|
+                                 :conditions => ['device_id = ? and reconnected_at is null', device.id]).each do |alert|
           alert.reconnected_at = Time.now
           alert.save!
         end
