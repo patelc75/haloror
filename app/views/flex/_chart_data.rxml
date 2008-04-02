@@ -10,6 +10,9 @@ xml.DataRoot(:averaging => averaging, :num_points => query[:num_points], :startd
       xml.activity(last_reading[:activity])
       xml.skin_temp(last_reading[:skin_temp])
       xml.steps(last_reading[:steps])
+      xml.battery_outlet_status(status[:battery_outlet_status])
+      xml.battery_level_status(status[:battery_level_status])
+      xml.battery_percentage(battery.percentage)
     end
     
     xml.DataReadings do
