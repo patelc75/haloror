@@ -1,3 +1,3 @@
-class StrapRemoved < ActiveRecord::Base
-  belongs_to :device
+class StrapRemoved < DeviceAlert
+  set_table_name "strap_removeds"
 end

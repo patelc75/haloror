@@ -1,3 +1,3 @@
-class BatteryChargeComplete < ActiveRecord::Base
-  belongs_to :device
+class BatteryChargeComplete < DeviceAlert
+  set_table_name "battery_charge_completes"
 end

@@ -1,3 +1,3 @@
-class BatteryPlugged < ActiveRecord::Base
-  belongs_to :device
+class BatteryPlugged < DeviceAlert
+  set_table_name "battery_pluggeds"
 end

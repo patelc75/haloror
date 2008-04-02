@@ -4,7 +4,7 @@ class CriticalMailer < ActionMailer::Base
     if(device_alert.device == nil)
       raise "#{device_alert.class.to_s}: device_id = #{device_alert.device_id} does not exist"
     else
-      setup_email(device_alert.device.user)  
+      setup_email(device_alert.user)
     end
     description = camelcase_to_spaced(device_alert.class.to_s)
     @subject    += "#{description} event"

@@ -1,3 +1,3 @@
-class BatteryCritical < ActiveRecord::Base
-  belongs_to :device
+class BatteryCritical < DeviceAlert
+  set_table_name "battery_crticials"
 end

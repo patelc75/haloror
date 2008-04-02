@@ -1,3 +1,3 @@
-class StrapFastened < ActiveRecord::Base
-  belongs_to :device
+class StrapFastened < DeviceAlert
+  set_table_name "strap_fasteneds"
 end
