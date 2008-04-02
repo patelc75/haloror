@@ -1,4 +1,4 @@
-class Device < ActiveRecord::Base
+  class Device < ActiveRecord::Base
   has_one :device_info
   has_many :mgmt_cmds
   has_many :mgmt_queries
@@ -15,7 +15,7 @@ class Device < ActiveRecord::Base
   has_many :batteries
   
   #belongs_to :user
-  has_and_belongs_to_many :users
+  has_many :users, :through => :device_users
   
   validates_presence_of     :serial_number
   validates_length_of       :serial_number, :is => 10

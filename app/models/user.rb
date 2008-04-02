@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
   has_one :roles_users_option
   
   #has_many :devices
-  has_and_belongs_to_many :devices
+  has_many :devices, :through => :device_users
   
   has_many :access_logs
   
@@ -112,10 +112,10 @@ class User < ActiveRecord::Base
   end
   
   def get_patients
-# 	@x = Array.new
-# 	for role in roles
-# 	 @X << [role.authorizable_id, role.Auth
-#   end
+    # 	@x = Array.new
+    # 	for role in roles
+    # 	 @X << [role.authorizable_id, role.Auth
+    #   end
   end
   
   def patients
