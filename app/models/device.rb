@@ -1,4 +1,4 @@
-  class Device < ActiveRecord::Base
+class Device < ActiveRecord::Base
   has_one :device_info
   has_many :mgmt_cmds
   has_many :mgmt_queries
@@ -15,6 +15,7 @@
   has_many :batteries
   
   #belongs_to :user
+  has_many :devices_users
   has_many :users, :through => :devices_users
   
   validates_presence_of     :serial_number
