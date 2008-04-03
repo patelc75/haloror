@@ -9,6 +9,7 @@ class CreateDevices < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :devices
+    drop_table :devices if
+    ActiveRecord::Base.connection.tables.include?(:devices)
   end
 end

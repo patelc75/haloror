@@ -11,6 +11,7 @@ class CreateDeviceAvailableAlerts < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :device_available_alerts
+    drop_table :device_available_alerts if
+        ActiveRecord::Base.connection.tables.include?(:device_available_alerts)
   end
 end

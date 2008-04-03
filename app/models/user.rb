@@ -16,6 +16,7 @@ class User < ActiveRecord::Base
   has_one :roles_users_option
   
   #has_many :devices
+  has_many :devices_users
   has_many :devices, :through => :devices_users
   
   has_many :access_logs
