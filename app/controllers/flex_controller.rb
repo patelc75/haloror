@@ -8,7 +8,7 @@ class FlexController < ApplicationController
       query = {}
       query[:num_points] = '0'
       #query[:user_id] = current_user.id
-      query[:user_id] = 1
+      query[:user_id] = current_user.id
       query[:startdate] = Time.now - 600
       query[:enddate] = Time.now.to_s
       
