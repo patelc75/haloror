@@ -1,6 +1,6 @@
 class CreateDeviceUnavailableAlerts < ActiveRecord::Migration
   def self.up
-    drop_table "device_unavailable_alerts"
+    drop_table "device_unavailable_alerts" rescue Exception
     ## Note: Maintain exact same table structure as outage_alerts
     create_table "device_unavailable_alerts", :force => true do |t|
       t.column :id, :primary_key, :null => false
@@ -19,7 +19,7 @@ class CreateDeviceUnavailableAlerts < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table "device_unavailable_alerts"
+    drop_table "device_unavailable_alerts" rescue Exception
 
     create_table "device_unavailable_alerts", :force => true do |t|
       t.column :id, :primary_key, :null => false

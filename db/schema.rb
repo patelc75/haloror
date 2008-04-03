@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 88) do
+ActiveRecord::Schema.define(:version => 92) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -31,8 +31,8 @@ ActiveRecord::Schema.define(:version => 88) do
   end
 
   create_table "alert_options", :force => true do |t|
-    t.integer  "role_id"
-    t.integer  "alert_types_id"
+    t.integer  "roles_user_id"
+    t.integer  "alert_type_id"
     t.boolean  "phone_active"
     t.boolean  "email_active"
     t.boolean  "text_active"
@@ -42,15 +42,12 @@ ActiveRecord::Schema.define(:version => 88) do
 
   create_table "alert_types", :force => true do |t|
     t.integer  "alert_group_id"
-    t.string   "type"
+    t.string   "alert_type"
     t.boolean  "phone_active"
     t.boolean  "email_active"
     t.boolean  "text_active"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "bar", :force => true do |t|
   end
 
   create_table "batteries", :force => true do |t|
@@ -107,6 +104,9 @@ ActiveRecord::Schema.define(:version => 88) do
     t.string "domain"
   end
 
+  create_table "device_alerts", :force => true do |t|
+  end
+
   create_table "device_available_alerts", :force => true do |t|
     t.integer  "device_id",  :null => false
     t.datetime "created_at", :null => false
@@ -147,9 +147,8 @@ ActiveRecord::Schema.define(:version => 88) do
   add_index "device_unavailable_alerts", ["device_id"], :name => "device_unavailable_alerts_device_unavailable_idx"
 
   create_table "devices", :force => true do |t|
-    t.integer "user_id"
-    t.string  "serial_number"
-    t.string  "device_type"
+    t.string "serial_number"
+    t.string "device_type"
   end
 
   create_table "devices_users", :force => true do |t|
@@ -304,7 +303,7 @@ ActiveRecord::Schema.define(:version => 88) do
     t.datetime "updated_at"
   end
 
-  create_table "roles_users", :id => false, :force => true do |t|
+  create_table "roles_users", :force => true do |t|
     t.integer  "user_id"
     t.integer  "role_id"
     t.datetime "created_at"
@@ -312,13 +311,13 @@ ActiveRecord::Schema.define(:version => 88) do
   end
 
   create_table "roles_users_options", :force => true do |t|
-    t.integer "role_id"
-    t.boolean "removed",      :default => false
-    t.boolean "active",       :default => false
-    t.boolean "phone_active", :default => false
-    t.boolean "email_active", :default => false
-    t.boolean "text_active",  :default => false
-    t.integer "position",     :default => 0
+    t.integer "roles_users_id"
+    t.boolean "removed",        :default => false
+    t.boolean "active",         :default => false
+    t.boolean "phone_active",   :default => false
+    t.boolean "email_active",   :default => false
+    t.boolean "text_active",    :default => false
+    t.integer "position",       :default => 0
     t.integer "user_id"
   end
 

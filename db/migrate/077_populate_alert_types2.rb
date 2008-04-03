@@ -12,7 +12,7 @@ class PopulateAlertTypes2 < ActiveRecord::Migration
     AlertType.create :alert_group_id => 2, :type => StrapRemoved.class_name
     AlertType.create :alert_group_id => 2, :type => BatteryCritical.class_name
     AlertType.create :alert_group_id => 2, :type => DeviceUnavailableAlert.class_name
-    AlertType.create :alert_group_id => 2, :type => OutageAlert.class_name
+    AlertType.create :alert_group_id => 2, :type => GatewayOfflineAlert.class_name
     
     # critical
     AlertType.create :alert_group_id => 3, :type => Fall.class_name
@@ -28,7 +28,7 @@ class PopulateAlertTypes2 < ActiveRecord::Migration
     AlertType.create :alert_group_id => 5, :type => StrapRemoved.class_name
     AlertType.create :alert_group_id => 5, :type => StrapFastened.class_name
     AlertType.create :alert_group_id => 5, :type => DeviceUnavailableAlert.class_name
-    AlertType.create :alert_group_id => 5, :type => OutageAlert.class_name
+    AlertType.create :alert_group_id => 5, :type => GatewayOfflineAlert.class_name
   end
 
   def self.down

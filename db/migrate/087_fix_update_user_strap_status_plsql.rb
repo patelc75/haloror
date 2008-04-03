@@ -2,9 +2,9 @@ class FixUpdateUserStrapStatusPlsql < ActiveRecord::Migration
 
   def self.up
     execute "drop trigger device_strap_status_fasteneds_trigger on strap_fasteneds" rescue Exception
-    execute "drop trigger device_strap_status_fasteneds_trigger on strap_removeds" rescue Exception
-    execute "drop trigger user_strap_status_removeds_trigger ON strap_removeds" rescue Exception
+    execute "drop trigger device_strap_status_removeds_trigger on strap_removeds" rescue Exception
     execute "drop trigger user_strap_status_fasteneds_trigger on strap_fasteneds" rescue Exception
+    execute "drop trigger user_strap_status_removeds_trigger ON strap_removeds" rescue Exception
     ddl = <<-eos
 create or replace function set_device_strap_status(
   p_device_id    in integer,
