@@ -54,10 +54,10 @@ class MgmtQueriesController < RestfulAuthController
   def send_command(cmd, query)
     if cmd
       # 3. Get more info
-      # @more = nil
-      #       if cmd.cmd_type == 'firmware_upgrade' && cmd.cmd_id
-      #         @more = FirmwareUpgrade.find(cmd.cmd_id)
-      #       end
+      @more = nil
+      if cmd.cmd_type == 'firmware_upgrade' && cmd.cmd_id
+        @more = FirmwareUpgrade.find(cmd.cmd_id)
+      end
       
       # 4. Link cmd to query
 
