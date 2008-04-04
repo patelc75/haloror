@@ -2,7 +2,7 @@ xml.instruct! :xml, :version => "1.0"
 xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate], :enddate => query[:enddate]) do
   xml.User(:id => query[:user_id], :first_name => user.profile[:first_name], :last_name => user.profile[:last_name], :connectivity_status => status[:connectivity], :time_remaining => battery[:time_remaining]) do
     
-    xml.LastReading do
+    xml.LastReading(:datetime => Time.now) do
       xml.heartrate(last_reading[:heartrate])
       xml.hr_min(last_reading[:hr_min])
       xml.hr_max(last_reading[:hr_max])
