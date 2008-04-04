@@ -1,34 +1,35 @@
 <% if chatter.length > 0 %>
 	<% chatter.sort_by { |row| row[:timestamp] }.reverse.each do |row| %>
-		<% color = 'gray' unless row.mgmt_ack %>
+		<%
+			cmd = MgmtCmd.find(row.mgmt_cmd_id)
+			cmd[:type] = 'cmd'
+			cmd[:timestmap] = cmd[:timestamp_server]
+		%>
+		
+		<% color = 'gray' unless cmd.mgmt_ack %>
 	
 		<%=render :partial => 'row', :locals => {:row => row, :color => color, :group => true}%>
 		
 		<div id="group_<%=row.id%>" style="margin-left:10px;display:none">
-			<% if query = MgmtQuery.find(:first, :conditions => {:mgmt_cmd_id => row.id}) %>
-				<%
-					query[:type] = 'query'
-					query[:timestamp] = query[:timestamp_server]
-				%>
-				<%=render :partial => 'row', :locals => {:row => query, :color => color}%>
-				
-				<% if ack = row.mgmt_ack %>
-					<%
-						ack[:timestamp] = ack[:timestamp_server]
-						ack[:type] = 'ack'
-					%>
-		
-					<%=render :partial => 'row', :locals => {:row => ack, :color => color}%>
-				<% end %>
 
-				<% if response = row.mgmt_response %>
-					<%
-						response[:timestamp] = response[:timestamp_server]
-						response[:type] = 'response'
-					%>
-					
-					<%=render :partial => 'row', :locals => {:row => response, :color => color}%>
-				<% end %>
+			<%=render :partial => 'row', :locals => {:row => cmd, :color => color}%>
+			
+			<% if ack = cmd.mgmt_ack %>
+				<%
+					ack[:timestamp] = ack[:timestamp_server]
+					ack[:type] = 'ack'
+				%>
+	
+				<%=render :partial => 'row', :locals => {:row => ack, :color => color}%>
+			<% end %>
+
+			<% if response = cmd.mgmt_response %>
+				<%
+					response[:timestamp] = response[:timestamp_server]
+					response[:type] = 'response'
+				%>
+				
+				<%=render :partial => 'row', :locals => {:row => response, :color => color}%>
 			<% end %>			
 		</div>
 		

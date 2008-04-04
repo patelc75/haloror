@@ -92,10 +92,16 @@ class ManagementController < ApplicationController
   def query_group(device)
     chatter = Array.new
     
-    device.mgmt_cmds.each do |cmd|
-        cmd[:timestamp] = cmd[:timestamp_initiated]
-        cmd[:type] = 'cmd'
-        chatter << cmd
+    # device.mgmt_cmds.each do |cmd|
+    #     cmd[:timestamp] = cmd[:timestamp_initiated]
+    #     cmd[:type] = 'cmd'
+    #     chatter << cmd
+    # end
+    
+    device.mgmt_queries.each do |query|
+      query[:timestamp] = query[:timestamp_initiated]
+      query[:type] = 'query'
+      chatter << query
     end
     
     chatter
