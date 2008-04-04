@@ -1,0 +1,5 @@
+<% if battery = device.batteries.first %>
+	<a href="/batteries/device/<%=device.id%>"><%=battery.percentage%>%, <%=battery.time_remaining%> min (<%=battery.timestamp.to_s(:short)%>)</a>
+<% else %>
+	(no battery readings)
+<% end %>

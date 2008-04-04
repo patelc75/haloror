@@ -76,4 +76,9 @@ class EventsController < ApplicationController
       format.xml  { head :ok }
     end
   end
+  
+  def user
+    @events = User.find(params[:id]).events
+    render :layout => 'application'
+  end
 end

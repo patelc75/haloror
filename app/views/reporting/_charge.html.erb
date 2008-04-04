@@ -1,0 +1,5 @@
+<% if charge = device.battery_charge_completes.first %>
+	at (<%=charge.timestamp.to_s(:short)%>); <%=charge.percentage%>%, <%=charge.time_remaining%> min 
+<% else %>
+	(no recent charges)
+<% end %>

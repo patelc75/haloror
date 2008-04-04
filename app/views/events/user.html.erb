@@ -1,0 +1,38 @@
+<div class="table">
+	<div class="row header">
+		<div class="col-75">
+			User ID
+		</div>
+		<div class="col-150">
+			Timestamp
+		</div>
+		<div class="col-150">
+			Alert Type
+		</div>
+		<div class="col-150">
+			Event Type
+		</div>
+		<div class="col-300">
+			Event Details
+		</div>
+	</div>
+	<% @events.each do |event| %>
+		<div class="row">
+			<div class="col-75">
+				<%=event[:user_id]%>
+			</div>
+			<div class="col-150">
+				<%=event[:timestamp].to_s(:short)%>
+			</div>
+			<div class="col-150">
+				<%=event.alert_type[:alert_type]%>
+			</div>
+			<div class="col-150">
+				<%=event[:event_type]%>
+			</div>
+			<div class="col-300">
+				<%=event.event.type%>
+			</div>
+		</div>
+	<% end %>
+</div>

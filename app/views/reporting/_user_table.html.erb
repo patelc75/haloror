@@ -50,17 +50,32 @@
 			</div>
 		</div>
 		<% if devices.length > 0 %>
+			<div class="row header">
+				<div class="col-25">&nbsp;</div>
+				<div class="col-150">
+					Device Type
+				</div>
+				<div class="col-225">
+					Latest Battery Reading
+				</div>
+				<div class="col-300">
+					Last Charge
+				</div>
+				<div class="col-100">
+
+				</div>
+			</div>
 			<% devices.each do |device| %>
 				<div class="row">
 					<div class="col-25">&nbsp;</div>
 					<div class="col-150">
-						<%=device.device_type%>
+						<%=device.device_type%>&nbsp;
 					</div>
-					<div class="col-200">
-						(recent battery reading)
+					<div class="col-225">
+						<%=render :partial => 'battery_reading', :locals => {:device => device}%>&nbsp;
 					</div>
-					<div class="col-100">
-						(last charge)
+					<div class="col-300">
+						<%=render :partial => 'charge', :locals => {:device => device}%>&nbsp;
 					</div>
 					<div class="col-100">
 						<a href="#">Stats</a>

@@ -31,20 +31,22 @@
 			<%=device[:serial_number]%>
 		</div>
 		<div class="col-150">
-			(waiting on migration)
+			<%=device[:device_type]%>
 		</div>
 		<div class="col-200">
-			<% if battery = device.batteries.first %>
-				<a href="/batteries/device/<%=device.id%>"><%=battery.percentage%>%, <%=battery.time_remaining%> min (<%=battery.timestamp.to_s(:short)%>)</a>
-			<% else %>
-				(no battery readings)
-			<% end %>
+			<%=render :partial => 'battery_reading', :locals => {:device => device}%>
 		</div>
 		<div class="col-200">
 			<a href="/management/?device_id=<%=device[:id]%>">Manage</a> | <a href="#">Stats</a>
 		</div>
 	</div>
 	<div id="device_<%=device.id%>-hidden" style="display:none">
+		<div class="row">
+			<div class="col-25">&nbsp;</div>
+			<div class="col-200">
+				<h3>Users</h3>
+			</div>
+		</div>
 		<% device.users.each do |user| %>
 			<%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => false, :caregiver => false}%>
 		<% end %>
