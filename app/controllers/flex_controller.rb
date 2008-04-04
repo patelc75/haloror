@@ -30,7 +30,7 @@ class FlexController < ApplicationController
     user = User.find(query[:user_id])
     
     status = {}
-    status[:connectivity] = 'Good' unless status[:connectivity] = get_status('connectivity', user)
+    status[:connectivity] = 'Device Available' unless status[:connectivity] = get_status('connectivity', user)
     
     status[:battery_outlet_status] = 'Unknown' unless status[:battery_outlet_status] = get_status('battery_outlet_status', user)
     status[:battery_level_status] = 'Normal' unless status[:battery_level_status] = get_status('battery_level_status', user)
