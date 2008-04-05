@@ -25,7 +25,10 @@
 				<%=event[:timestamp].to_s(:short)%>
 			</div>
 			<div class="col-150">
-				<%=event.alert_type[:alert_type]%>
+				<% if alert_type = event.alert_type %>
+					<%=alert_type[:alert_type]%>
+				<% end %>
+				&nbsp;
 			</div>
 			<div class="col-150">
 				<%=event[:event_type]%>
