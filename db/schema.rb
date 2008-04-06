@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 92) do
+ActiveRecord::Schema.define(:version => 93) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -31,8 +31,8 @@ ActiveRecord::Schema.define(:version => 92) do
   end
 
   create_table "alert_options", :force => true do |t|
-    t.integer  "roles_user_id"
-    t.integer  "alert_type_id"
+    t.integer  "role_id"
+    t.integer  "alert_types_id"
     t.boolean  "phone_active"
     t.boolean  "email_active"
     t.boolean  "text_active"
@@ -42,12 +42,15 @@ ActiveRecord::Schema.define(:version => 92) do
 
   create_table "alert_types", :force => true do |t|
     t.integer  "alert_group_id"
-    t.string   "alert_type"
+    t.string   "type"
     t.boolean  "phone_active"
     t.boolean  "email_active"
     t.boolean  "text_active"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "bar", :force => true do |t|
   end
 
   create_table "batteries", :force => true do |t|
@@ -122,6 +125,10 @@ ActiveRecord::Schema.define(:version => 92) do
     t.string  "model"
     t.string  "device_info_type"
     t.integer "device_info_id"
+    t.integer "user_id"
+    t.string  "hardware_version"
+    t.string  "software_version"
+    t.integer "mgmt_response_id"
   end
 
   create_table "device_latest_queries", :force => true do |t|
@@ -303,7 +310,7 @@ ActiveRecord::Schema.define(:version => 92) do
     t.datetime "updated_at"
   end
 
-  create_table "roles_users", :force => true do |t|
+  create_table "roles_users", :id => false, :force => true do |t|
     t.integer  "user_id"
     t.integer  "role_id"
     t.datetime "created_at"
@@ -311,13 +318,13 @@ ActiveRecord::Schema.define(:version => 92) do
   end
 
   create_table "roles_users_options", :force => true do |t|
-    t.integer "roles_users_id"
-    t.boolean "removed",        :default => false
-    t.boolean "active",         :default => false
-    t.boolean "phone_active",   :default => false
-    t.boolean "email_active",   :default => false
-    t.boolean "text_active",    :default => false
-    t.integer "position",       :default => 0
+    t.integer "role_id"
+    t.boolean "removed",      :default => false
+    t.boolean "active",       :default => false
+    t.boolean "phone_active", :default => false
+    t.boolean "email_active", :default => false
+    t.boolean "text_active",  :default => false
+    t.integer "position",     :default => 0
     t.integer "user_id"
   end
 
