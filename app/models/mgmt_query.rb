@@ -39,7 +39,7 @@ class MgmtQuery < ActiveRecord::Base
         MgmtQuery.process_alert(device)
       rescue Exception => e
         logger.fatal("Error processing outage alert for device #{device.inspect}: #{e}")
-        raise e if ENV['RAILS_ENV'] == "development"
+        raise e if ENV['RAILS_ENV'] == "development" || ENV['RAILS_ENV'] == "test"
       end
     end
   end

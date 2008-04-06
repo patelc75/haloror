@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 93) do
+ActiveRecord::Schema.define(:version => 95) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -158,7 +158,7 @@ ActiveRecord::Schema.define(:version => 93) do
     t.string "device_type"
   end
 
-  create_table "devices_users", :force => true do |t|
+  create_table "devices_users", :id => false, :force => true do |t|
     t.integer "device_id"
     t.integer "user_id"
   end

@@ -172,10 +172,8 @@ class UsersController < ApplicationController
       device.device_type = get_device_type(device)
       device.save
     end
-    
-    assoc = DevicesUsers.new
-    assoc.user_id = user.id
-    assoc.device_id = device.id
-    assoc.save
+
+    device.users << user
+    device.save
   end
 end

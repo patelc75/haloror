@@ -125,7 +125,7 @@ class Vital < ActiveRecord::Base
         Vital.process_device_unavailable(device)
       rescue Exception => e
         logger.fatal("Error processing unavailable device alert for device #{device.inspect}: #{e}")
-        raise e if ENV['RAILS_ENV'] == "development"
+        raise e if ENV['RAILS_ENV'] == "development" || ENV['RAILS_ENV'] == "test"
       end
     end
   end

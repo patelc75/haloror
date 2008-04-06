@@ -12,8 +12,8 @@ class GatewayOfflineAlert < ActiveRecord::Base
   # user immediately
   def after_save
     if number_attempts >= MAX_ATTEMPTS_BEFORE_NOTIFICATION
-      logger.debug("[GatewayOfflineAlert] Detected an outage for user #{device.user_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
-
+      logger.debug("[GatewayOfflineAlert] Detected an outage for device #{device_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
+      
       device.users.each do |user|
         Event.create(:user_id => user.id, 
                      :event_type => GatewayOfflineAlert.class_name, 
