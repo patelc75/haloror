@@ -2,12 +2,30 @@ class UsersController < ApplicationController
   include UsersHelper
 
   before_filter:set_user
-
+  
   def set_user
     UsersHelper.current_host = request.host
   end
 
- 
+  def choose_timezone
+    
+  end
+  
+  def save_timezone
+    user = User.find(current_user.id)
+    user.tz = tzinfo_from_timezone(TimeZone.new(params[:user][:timezone_name]))
+    user.save
+  end
+  
+  def tzinfo_from_timezone(timezone) 
+    TZInfo::Timezone.all.each do |tz|
+      if tz.current_period.utc_offset.to_i == timezone.utc_offset.to_i
+        return tz
+      end
+    end
+    return nil   
+  end
+  
   def new
     #render :layout => false
   end
