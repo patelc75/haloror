@@ -126,7 +126,7 @@
 			end
 		%>
 		
-		<%=link_to_remote(image_tag(img, :id => 'item_phone_'+caregiver.id.to_s), :url => { :action => "toggle_phone",:id => opts.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\')', :complete => 'updatePositions()')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_phone_'+caregiver.id.to_s), :url => { :action => "toggle_phone",:id => caregiver.roles_user.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\')', :complete => 'updatePositions()')%>
 	</div>
 	
 	<!--EMAIL-->
@@ -140,7 +140,7 @@
 			end
 		%>
 
-		<%=link_to_remote(image_tag(img, :id => 'item_email_'+caregiver.id.to_s), :url => { :action => "toggle_email",:id => opts.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.email_active.to_s+', \'email\')', :complete => 'updatePositions()')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_email_'+caregiver.id.to_s), :url => { :action => "toggle_email",:id => caregiver.roles_user.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.email_active.to_s+', \'email\')', :complete => 'updatePositions()')%>
 	</div>
 
 	<!--TEXT-->
@@ -154,7 +154,7 @@
 			end
 		%>
 
-		<%=link_to_remote(image_tag(img, :id => 'item_text_'+caregiver.id.to_s), :url => { :action => "toggle_text",:id => opts.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\')', :complete => 'updatePositions()')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_text_'+caregiver.id.to_s), :url => { :action => "toggle_text",:id => caregiver.roles_user.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\')', :complete => 'updatePositions()')%>
 	</div>
 
 	<!--DELETE-->
@@ -180,7 +180,7 @@
 		<!--% puts edit_user_url(caregiver)%-->
 		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true }, :html => {:method => :get, :complete => 'updatePositions()'})%>
 		|
-		<%=link_to('More', :controller => "alerts", :action => "index", :id => caregiver.roles_users_option.id)%>
+		<%=link_to('More', :controller => "alerts", :action => "index", :id => caregiver.roles_user.id)%>
 	</div>
 <% unless params[:noli] == 'true/'%>
 </li>

@@ -46,44 +46,53 @@ class CallListController < ApplicationController
      render :action => show, :layout => false
   end
   
-  def toggle_phone
-    opts = RolesUsersOption.find(params[:id])
-
-    if !opts.phone_active
+  def toggle_critical(what, roles_user_id)
+    opts = RolesUsersOption.find_by_roles_users_id(roles_user_id)
+    orig_opts = opts
+    column = "#{what}_active"
+    
+    if !opts[column.to_sym]
       state = 1
     else
       state = 0
     end
     
-    RolesUsersOption.update(params[:id], {:phone_active => state})
+    opts[column.to_sym] = state
+    opts.save
     
-    render :partial => "call_list/item", :locals => { :call_order => @call_order }
+    #RolesUsersOption.update(params[:id], {column.to_sym => state})
+    
+    alert_group_id = AlertGroup.find_by_group_type('critical').id
+    AlertType.find(:all, :conditions => "alert_group_id = #{alert_group_id}").each do |alert_type|
+      unless alert_opt = AlertOption.find(:first, :conditions => "roles_user_id = #{roles_user_id} and alert_type_id = #{alert_type.id}")
+        alert_opt = AlertOption.new
+        alert_opt.roles_user_id = roles_user_id
+        alert_opt.alert_type_id = alert_type.id
+        alert_opt.phone_active = opts.phone_active
+        alert_opt.email_active = opts.email_active
+        alert_opt.text_active = opts.text_active
+        alert_opt.save
+      end
+      
+      alert_opt[column.to_sym] = opts[column.to_sym]
+      alert_opt.save
+    end
+  end
+  
+  def toggle_phone
+    toggle_critical('phone', params[:id])
+    
+    #render :partial => "call_list/item", :locals => { :call_order => @call_order }
   end
   
   def toggle_email
-    opts = RolesUsersOption.find(params[:id])
-
-    if !opts.email_active
-      state = 1
-    else
-      state = 0
-    end
-    
-    RolesUsersOption.update(params[:id], {:email_active => state})
+    toggle_critical('email', params[:id])
     
     render :partial => "call_list/item", :locals => { :call_order => @call_order }
   end
   
   def toggle_text
-    opts = RolesUsersOption.find(params[:id])
-
-    if !opts.text_active
-      state = 1
-    else
-      state = 0
-    end
-    
-    RolesUsersOption.update(params[:id], {:text_active => state})
+    toggle_critical('text', params[:id])
     
     render :partial => "call_list/item", :locals => { :call_order => @call_order }
   end
