@@ -108,7 +108,7 @@ class UsersController < ApplicationController
     
     update_from_position(params[:position], @role.id, @user.id)
     
-    RolesUsersOption.create(:roles_user_id => @role.id, :user_id => @user.id, :position => params[:position], :active => 1)
+    RolesUsersOption.create(:roles_users_id => @role.id, :user_id => @user.id, :position => params[:position], :active => 1)
     
 
 
@@ -136,7 +136,7 @@ class UsersController < ApplicationController
   end
   
   def update_from_position(position, roles_user_id, user_id)
-    caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and roles_user_id = #{roles_user_id} and user_id = #{user_id}")
+    caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and roles_users_id = #{roles_user_id} and user_id = #{user_id}")
     
     caregivers.each do |caregiver|
       caregiver.position+=1
