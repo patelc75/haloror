@@ -1,5 +1,7 @@
 require 'digest/sha1'
 class User < ActiveRecord::Base
+  composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
+                
   acts_as_authorized_user
   acts_as_authorizable
   
