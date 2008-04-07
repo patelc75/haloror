@@ -16,4 +16,10 @@ class ReportingController < ApplicationController
     
     render :partial => 'user_table', :locals => {:users => users, :sortby => params[:col], :reverse => false}
   end
+  
+  def search_user_table
+    users = User.find(:all, :conditions => "login like '%#{params[:query]}%' or first_name like '%#{params[:query]}%' or last_name like '%#{params[:query]}%'",:include => [ :profile ])
+        
+    render :partial => 'user_table', :locals => {:users => users, :sortby => 'id', :reverse => false}
+  end
 end
