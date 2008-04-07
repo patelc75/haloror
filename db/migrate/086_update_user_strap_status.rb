@@ -54,6 +54,8 @@ create trigger device_strap_status_removeds_trigger after insert on strap_remove
   end
 
   def self.down
+    drop_table :device_strap_status if
+    ActiveRecord::Base.connection.tables.include?(:device_strap_status)
   end
 
 end
