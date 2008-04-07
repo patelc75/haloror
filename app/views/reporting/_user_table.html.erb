@@ -6,7 +6,7 @@
 		<%=link_to_remote "User Id", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'id'}%>
 	</div>
 	<div class="col-200">
-		Name
+		<%=link_to_remote "Name", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'name'}%>
 	</div>
 	<div class="col-100">
 		<%=link_to_remote "Login", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'login'}%>
@@ -21,94 +21,16 @@
 		
 	</div>
 </div>
-<% users.each do |user| %>
-	<%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
-	
-	<div id="user_<%=user.id%>-hidden" style="display:none">
-		<% caregivers = user.has_caregivers %>
-		<% if caregivers.length > 0 %>
-			<div class="row">
-				<div class="col-25">&nbsp;</div>
-				<div class="col-200">
-					<h3>Caregivers</h3>
-				</div>
-			</div>
-			
-			<% caregivers.each do |caregiver| %>
-				<% caregiver[:id] = caregiver[:user_id]%>
-				<%=render :partial => 'reporting/table/user_row', :locals => {:user => caregiver, :toggle => false, :caregiver => true}%>
-			<% end %>
-			<br />
-			<br />
-		<% end %>
-		
-		<% devices = user.devices %>
-		<div class="row">
-			<div class="col-25">&nbsp;</div>
-			<div class="col-200">
-				<h3>Devices</h3>
-			</div>
-		</div>
-		<% if devices.length > 0 %>
-			<div class="row header">
-				<div class="col-25">&nbsp;</div>
-				<div class="col-150">
-					Device Type
-				</div>
-				<div class="col-225">
-					Latest Battery Reading
-				</div>
-				<div class="col-300">
-					Last Charge
-				</div>
-				<div class="col-100">
+<% if sortby == 'name' %>
+	<% users.sort_by { |user| user.profile[:last_name] }.each do |user| %>
+		<%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
 
-				</div>
-			</div>
-			<% devices.each do |device| %>
-				<div class="row">
-					<div class="col-25">&nbsp;</div>
-					<div class="col-150">
-						<%=device.device_type%>&nbsp;
-					</div>
-					<div class="col-225">
-						<%=render :partial => 'battery_reading', :locals => {:device => device}%>&nbsp;
-					</div>
-					<div class="col-300">
-						<%=render :partial => 'charge', :locals => {:device => device}%>&nbsp;
-					</div>
-					<div class="col-100">
-						<a href="#">Stats</a>
-					</div>
-				</div>
-			<% end %>
-			<br />
-			<br />
-		<% else %>
-			
-		<% end %>
-		
-		<div class="row">
-			<form action="/users/add_device_to_user" method="post">
-				<input type="hidden" name="user_id" value="<%=user.id%>" />
-				Add a device: <input type="text" name="serial_number" /> <input type="submit" value="Add" />
-			</form>
-		</div>
-		
-		<% patients = user.patients %>
-		<% if patients.length > 0 %>
-			<div class="row">
-				<div class="col-25">&nbsp;</div>
-				<div class="col-200">
-					<h3>Patients</h3>
-				</div>
-			</div>
-			
-			<% patients.each do |patient| %>
-				<%=render :partial => 'reporting/table/user_row', :locals => {:user => patient, :toggle => false, :caregiver => false}%>
-			<% end %>
-			<br />
-			<br />
-		<% end %>
-	</div>
+		<%=render :partial => 'reporting/user_hidden', :locals => {:user => user}%>
+	<% end %>
+<% else %>
+	<% users.sort_by { |user| user[sortby.to_sym] }.each do |user| %>
+		<%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
+
+		<%=render :partial => 'reporting/user_hidden', :locals => {:user => user}%>
+	<% end %>
 <% end %>
