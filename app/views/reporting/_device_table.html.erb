@@ -37,7 +37,7 @@
 			<%=render :partial => 'battery_reading', :locals => {:device => device}%>
 		</div>
 		<div class="col-200">
-			<a href="/management/?device_id=<%=device[:id]%>">Manage</a> | <a href="#">Stats</a>
+			<a href="/management/?device_id=<%=device[:id]%>">Manage</a> | <a href="/devices/stats/<%=device[:id]%>">Stats</a>
 		</div>
 	</div>
 	<div id="device_<%=device.id%>-hidden" style="display:none">

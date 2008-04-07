@@ -1,0 +1,17 @@
+<h3>Hours Not Worn</h3>
+<!-- amcolumn script-->
+	<div id="flashcontent">
+			<strong>You need to upgrade your Flash Player</strong>
+		</div>
+
+		<script type="text/javascript">
+			// <![CDATA[		
+			var so = new SWFObject("/amcharts/amline.swf", "amcolumn", "600", "400", "8", "#ffffff");
+			//so.addVariable("path", "/amcharts/");
+			so.addVariable("settings_file", "/amcharts/settings/device_worn.xml");
+			so.addVariable("data_file", escape("/devices/data/<%=params[:id]%>/?type=not_worn"));
+			so.addVariable("preloader_color", "#ffffff");
+			so.write("flashcontent");
+			// ]]>
+		</script>
+<!-- end of amcolumn script -->
