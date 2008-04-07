@@ -45,7 +45,7 @@
 			var so = new SWFObject("/amcharts/amline.swf", "amcolumn", "600", "400", "8", "#ffffff");
 			//so.addVariable("path", "/amcharts/");
 			so.addVariable("settings_file", "/amcharts/settings/device_worn.xml");
-			so.addVariable("data_file", escape("/devices/data/<%=params[:id]%>/?type=not_worn"));
+			so.addVariable("data_file", escape("/devices/data/<%=params[:id]%>/?type=battery_charge"));
 			so.addVariable("preloader_color", "#ffffff");
 			so.write("charging");
 			// ]]>

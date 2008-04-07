@@ -2,7 +2,7 @@ xml.instruct! :xml, :version => "1.0"
 xml.chart do
   xml.series do
     i = 0
-    @periods.each do |time,hours|
+    @periods.sort.each do |time,hours|
       xml.value(time.to_date.to_formatted_s(:short), :xid => i)
       i += 1
     end
@@ -11,7 +11,7 @@ xml.chart do
   xml.graphs do
     i = 0
     xml.graph(:gid => 1) do
-      @periods.each do |time,hours|
+      @periods.sort.each do |time,hours|
         xml.value(hours, :xid => i)
         i += 1
       end
