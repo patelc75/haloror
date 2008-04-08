@@ -99,7 +99,9 @@ class ManagementController < ApplicationController
     # end
     
     device.mgmt_queries.each do |query|
-      query[:timestamp] = query[:timestamp_initiated]
+      next unless query[:timestamp_device]
+      
+      query[:timestamp] = query[:timestamp_device]
       query[:type] = 'query'
       chatter << query
     end
