@@ -7,7 +7,7 @@ class MgmtCmdsController < RestfulAuthController
     request = params[:management_cmd_device]
     
     cmd = MgmtCmd.new
-    cmd.cmd_type = request[:cmd_type]
+    cmd.cmd_type = request[:cmd_type]    
     cmd.timestamp_initiated = request[:timestamp]
     cmd.device_id = request[:device_id] 
     
@@ -64,6 +64,7 @@ class MgmtCmdsController < RestfulAuthController
     if !request[:cmd_type].empty? && !request[:ids].empty?
       cmd = {}
       cmd[:cmd_type] = request[:cmd_type]
+      cmd[:cmd_id] = params[request[:cmd_type].to_sym]
       cmd[:timestamp_initiated] = Time.now
       cmd[:originator] = 'server'
     

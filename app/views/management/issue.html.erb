@@ -10,7 +10,7 @@
 		<%=f.radio_button :cmd_type, 'reset'%> Reset
 	</p>
 	<p>
-		<%=f.radio_button :cmd_type, 'firmware_upgrade'%> Firmware Upgrade
+		<%=f.radio_button :cmd_type, 'firmware_upgrade'%> Firmware Upgrade <%=render :partial => 'firmware_upgrade'%>
 	</p>
 	<p>
 		<%=f.radio_button :cmd_type, 'device_registration'%> Device Registration

@@ -1,0 +1,7 @@
+(choose a version) 
+<select name="firmware_upgrade">
+	<option></option>
+	<% FirmwareUpgrade.find(:all).each do |firmware| %>
+		<option value="<%=firmware.id%>"><%=firmware.version%></option>
+	<% end %>
+</select>
