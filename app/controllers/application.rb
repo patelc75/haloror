@@ -2,6 +2,8 @@
 # Likewise, all the methods added will be available for all controllers.
 
 class ApplicationController < ActionController::Base
+  helper_method :format_datetime
+  
   include AuthenticatedSystem
   include ExceptionNotifiable 
   local_addresses.clear # always send email notifications instead of displaying the error  
@@ -67,9 +69,9 @@ class ApplicationController < ActionController::Base
     word.gsub(/([A-Z])/, " \\1")
   end
   
-  def format_datetime(datetime)
+  def format_datetime(datetime,user)
     return datetime if !datetime.respond_to?(:strftime)
-    datetime = @user.tz.utc_to_local(datetime) if @user
+    datetime = user.tz.utc_to_local(datetime) if user
     datetime.strftime("%m-%d-%Y %I:%M %p")
   end
   
