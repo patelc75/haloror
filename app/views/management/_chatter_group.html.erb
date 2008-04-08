@@ -1,4 +1,4 @@
-<% if chatter.length > 0 %>
+<% if chatter and chatter.length > 0 %>
 	<% chatter.sort_by { |row| row[:timestamp] }.reverse.each do |row| %>
 		<%
 			cmd = MgmtCmd.find(row.mgmt_cmd_id)
