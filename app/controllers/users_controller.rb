@@ -124,7 +124,7 @@ class UsersController < ApplicationController
     role = @user.has_role 'caregiver', current_user
     @role = @user.roles_user
     
-    update_from_position(params[:position], @role.id, @user.id)
+    update_from_position(params[:position], @role.role_id, @user.id)
     
     RolesUsersOption.create(:roles_users_id => @role.id, :user_id => @user.id, :position => params[:position], :active => 1)
     
