@@ -10,7 +10,8 @@
 <% remote_form_for(:profile, :update => 'call_list', :url => {:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]}) do |f| %>
 	<label for="email">Email</label>
 	<br />
-	<%= f.text_field :email %>
+	<input type="hidden" name="user_id" value="<%=@user.id%>" />
+	<%= text_field_tag :email, @user.email %>
 	<br />	
 	<br />
 	<label for="first_name">First Name</label>

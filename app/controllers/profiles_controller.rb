@@ -79,9 +79,14 @@ class ProfilesController < ApplicationController
   
   def edit_caregiver_profile
     @profile = Profile.find(params[:id])
+    @user = User.find(@profile[:user_id])
   end
   
   def update_caregiver_profile
+    user = User.find(params[:user_id])
+    user.email = params[:email]
+    user.save
+    
     Profile.update(params[:id], params[:profile])
     
     refresh_caregivers
