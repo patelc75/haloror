@@ -1,3 +1,3 @@
 class Ftp < ActiveRecord::Base
-  has_one :firmware_upgrade
+  has_many :firmware_upgrades
 end

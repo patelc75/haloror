@@ -2,6 +2,6 @@
 <select name="firmware_upgrade">
 	<option></option>
 	<% FirmwareUpgrade.find(:all).each do |firmware| %>
-		<option value="<%=firmware.id%>"><%=firmware.version%></option>
+		<option value="<%=firmware.id%>"><%=firmware.version%> (<%=firmware.ftp[:server_name]%>)</option>
 	<% end %>
 </select>
