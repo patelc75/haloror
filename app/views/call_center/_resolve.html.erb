@@ -1,0 +1,5 @@
+<% if event.resolved_by %>
+	Resolved by <%=User.find(event.resolved_by).login%> at <%=event.resolved_at.to_s(:short)%>
+<% else %>
+	<%=link_to_remote "Resolve", :update => "#{event.id}_resolve", :url => { :action => "resolve", :id => event.id }%>
+<% end %>

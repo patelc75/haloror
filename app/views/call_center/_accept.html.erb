@@ -1,0 +1,5 @@
+<% if event.accepted_by %>
+	Accepted by <%=User.find(event.accepted_by).login%> at <%=event.accepted_at.to_s(:short)%>
+<% else %>
+	<%=link_to_remote "Accept", :update => "#{event.id}_accept", :url => { :action => "accept", :id => event.id }%>
+<% end %>

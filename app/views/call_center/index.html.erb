@@ -1,0 +1,38 @@
+<div class="table">
+	<div class="row header">
+		<div class="col-150">
+			Event Type
+		</div>
+		<div class="col-100">
+			Timestamp
+		</div>
+		<div class="col-200">
+			Name
+		</div>
+		<div class="col-250">
+			Status
+		</div>
+		<div class="col-250">
+			Resolve
+		</div>
+	</div>
+	<% @events.sort_by {|event| event[:timestamp]}.reverse.each do |event| %>
+		<div class="row">
+			<div class="col-150">
+				<%=event.alert_type.alert_type%>
+			</div>
+			<div class="col-100">
+				<%=event.timestamp.to_s(:short)%>
+			</div>
+			<div class="col-200">
+				<%=event.user.profile[:first_name]%> <%=event.user.profile[:last_name]%>
+			</div>
+			<div class="col-250" id="<%=event.id%>_accept">
+				<%=render :partial => 'accept', :locals => {:event => event}%>
+			</div>
+			<div class="col-250" id="<%=event.id%>_resolve">
+				<%=render :partial => 'resolve', :locals => {:event => event}%>
+			</div>
+		</div>
+	<% end %>
+</div>
