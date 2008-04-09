@@ -138,6 +138,11 @@ class UsersController < ApplicationController
 
     redirect_to :controller => 'profiles', :action => 'edit_caregiver_profile', :id => profile.id
   rescue ActiveRecord::RecordInvalid
+    # check if email exists
+    if @existing_id = User.find_by_email(params[:user][:email]).id
+      @add_existing = true
+    end
+    
     @max_position = get_max_caregiver_position
     render :partial => 'caregiver_form'
   end
@@ -151,6 +156,16 @@ class UsersController < ApplicationController
   def restore_caregiver_role
     RolesUsersOption.update(params[:id], {:removed => 0})
     
+    refresh_caregivers
+  end
+  
+  def add_existing
+    @user = User.find(params[:id])
+    
+    role = @user.has_role 'caregiver', current_user
+    @role = @user.roles_user
+    
+    RolesUsersOption.create(:roles_users_id => @role.id, :user_id => @user.id, :position => current_user.has_caregivers.length, :active => 1)
     refresh_caregivers
   end
   
