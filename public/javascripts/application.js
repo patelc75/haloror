@@ -95,7 +95,7 @@ function SetCookie(cookieName,cookieValue,nDays) {
 
 function toggleContact(pos, id, status, what)
 {
-	if(!$('user-'+id+'_'+what).value)
+	if(what != 'email' && !$('user-'+id+'_'+what).value)
 	{
 		//RedBox.loading();
 		//RedBox.addHiddenContent('hidden_content_extra_info-'+id);
