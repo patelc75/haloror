@@ -97,9 +97,9 @@ function toggleContact(pos, id, status, what)
 {
 	if(!$('user-'+id+'_'+what).value)
 	{
-		RedBox.loading();
-		RedBox.addHiddenContent('hidden_content_extra_info-'+id);
-		
+		//RedBox.loading();
+		//RedBox.addHiddenContent('hidden_content_extra_info-'+id);
+		new Ajax.Updater('hidden_content_extra_info', '/users/existing_info/'+id, {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('hidden_content_extra_info'); }, onLoading:function(request){RedBox.loading(); }});
 		return false;
 	}
 	else

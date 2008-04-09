@@ -117,8 +117,6 @@
 
 	<!--PHONE-->
 
-	<%=render :partial => "/call_list/extra_info_lightbox", :locals => {:caregiver => caregiver}%>
-
 	<div style="float:left;padding-top:25px;width:75px">
 		<input type="hidden" id="user-<%=caregiver.id%>_phone" value="<%=caregiver.profile.home_phone%>" />
 		<% 

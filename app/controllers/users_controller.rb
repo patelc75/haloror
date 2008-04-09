@@ -117,6 +117,10 @@ class UsersController < ApplicationController
     render :layout => false
   end
   
+  def existing_info
+    render :partial => 'call_list/extra_info_lightbox', :locals => {:caregiver_id => params[:id]}
+  end
+  
   def create_caregiver
     @user = User.new(params[:user])
     @user.save!
