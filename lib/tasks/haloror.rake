@@ -140,10 +140,10 @@ namespace :halo do
           random_heartrate = rand(7)+70
           random_hrv = rand(5)
           random_activity = rand(25000)+10000
-          if ENV['method'] == "activerecord"
-            
+          
+          puts "#{start_time}: Posting vitals of orientation: #{random_orientation} heartrate: #{random_heartrate} hrv: #{random_hrv} activity: #{random_activity} "  
+          if ENV['method'] == "activerecord"          
             vitals = Vital.new(:user_id => ENV['user_id'], :timestamp => start_time, :orientation => random_orientation, :heartrate => random_heartrate, :hrv => random_hrv, :activity => random_activity)
-            puts vitals
             vitals.save
           elsif ENV['method'] == "curl"
             
