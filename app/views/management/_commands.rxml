@@ -4,7 +4,8 @@ xml.management_cmd_server do
   xml.timestamp cmd.timestamp_sent
   
   if more
-    xml.version more.version
+    xml.version more[:version]
+    xml.filename more[:filename]
     
     if more.ftp
       xml.ftp do
