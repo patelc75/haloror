@@ -95,29 +95,40 @@ function SetCookie(cookieName,cookieValue,nDays) {
 
 function toggleContact(pos, id, status, what)
 {
-	if(document.getElementById('item_'+id+'_'+pos).className == 'active')
+	if(!$('user-'+id+'_'+what).value)
 	{
-		if(active[id] && isset(active[id][what]))
-			status = active[id][what];
-	
-		if(!active[id])
-			active[id] = [];
-			
-		if(status == 0)
-			status = 1;
-		else
-			status = 0;
+		RedBox.loading();
+		RedBox.addHiddenContent('hidden_content_extra_info-'+id);
 		
-		active[id][what] = status;
+		return false;
+	}
+	else
+	{
+		if(document.getElementById('item_'+id+'_'+pos).className == 'active')
+		{
+			if(active[id] && isset(active[id][what]))
+				status = active[id][what];
+			
+			if(!active[id])
+				active[id] = [];
+			
+			if(status == 0)
+				status = 1;
+			else
+				status = 0;
+			
+			active[id][what] = status;
+			
+			obj = document.getElementById('item_'+what+'_'+id);
+
+			if(status)
+				obj.src = '/images/call_list-'+what+'.png';
+			else
+				obj.src = '/images/call_list-'+what+'-inactive.png';
+		}
+	}
 	
-	
-		obj = document.getElementById('item_'+what+'_'+id);
-	
-		if(status)
-			obj.src = '/images/call_list-'+what+'.png';
-		else
-			obj.src = '/images/call_list-'+what+'-inactive.png';
-	}	
+	return true;
 }
 
 var active = [];

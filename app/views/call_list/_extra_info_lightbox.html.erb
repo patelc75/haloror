@@ -1,0 +1,16 @@
+<div id="hidden_content_extra_info-<%=caregiver.id%>" style="display: none;">
+	<div id="lightbox-col">
+		<img src="/images/lightbox-col-header.gif" /><br />
+		<div class="lightbox-content">
+			<div style="width:380px;" id="container">
+				You are missing this information. Would you like to enter it now?
+				<br />
+				<br />
+				<%=link_to_remote_redbox('Yes', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true }, :html => {:method => :get, :complete => ''})%>
+				|
+				<a href="javascript:void(0)" onClick="RedBox.close()">No</a>
+			</div>
+		</div>
+		<img src="/images/lightbox-col-footer.gif" />
+	</div>
+</div>
