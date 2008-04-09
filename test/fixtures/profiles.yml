@@ -1,5 +1,35 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-one:
+
+
+madhu:
   id: 1
-two:
+  user_id: 1
+  email: test_user@halomonitoring.com
+  first_name: madhu 
+  cell_phone: 66276237626723
+  carrier_id: 1
+
+aaron:
   id: 2
+  user_id: 2
+  email: test_caregiver1@halomonitoring.com
+  first_name: aaron
+  cell_phone: 787878787878878
+  carrier_id: 1
+  
+chip:
+  id: 3
+  user_id: 3
+  email: test_caregiver2@halomonitoring.com
+  first_name: chip
+  cell_phone: 999939393939339
+  carrier_id: 1  
+  
+  
+
+
+
+#one:
+ # id: 1
+#two:
+ # id: 2
