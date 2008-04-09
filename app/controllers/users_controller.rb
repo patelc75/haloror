@@ -39,8 +39,10 @@ class UsersController < ApplicationController
       Profile.create(:user_id => @user.id)
       
       # register with strap/gateway
-      register_user_with_device(@user,params[:strap_serial_number])
-      register_user_with_device(@user,params[:gateway_serial_number])
+      
+
+      @strap = register_user_with_device(@user,params[:strap_serial_number])
+      @gateway = register_user_with_device(@user,params[:gateway_serial_number])
     end
     #end
     #self.current_user = @user
@@ -103,8 +105,8 @@ class UsersController < ApplicationController
     
     current_user.has_caregivers.each do |caregiver|
       user = User.find(caregiver.user_id)
-      if user.roles_users_option.removed
-        @removed_caregivers.push caregiver
+      if user.roles_users_option[:removed]
+        @removed_caregivers << caregiver
       end
     end
     
@@ -119,7 +121,7 @@ class UsersController < ApplicationController
     @user = User.new(params[:user])
     @user.save!
     
-    profile = Profile.create(:user_id => @user.id, :email => @user.email)
+    profile = Profile.create(:user_id => @user.id)
     
     role = @user.has_role 'caregiver', current_user
     @role = @user.roles_user
@@ -188,10 +190,10 @@ class UsersController < ApplicationController
       device = Device.new
       device.serial_number = serial_number
       device.device_type = get_device_type(device)
-      device.save
+      device.save!
     end
 
     device.users << user
-    device.save
+    device.save!
   end
 end
