@@ -1,34 +1,38 @@
 ActionController::Routing::Routes.draw do |map|
+  #device alert models derived from RestfulAuthController
   map.resources :battery_pluggeds
   map.resources :battery_unpluggeds
   map.resources :battery_charge_completes
   map.resources :strap_fasteneds
   map.resources :battery_criticals
   map.resources :strap_removeds
+  
+  #mgmt protocol models derived from RestfulAuthController
   map.resources :mgmt_acks
   map.resources :mgmt_queries
   map.resources :mgmt_responses
   map.resources :mgmt_cmds
+  
+  #device data models derviced from RestfulAuthController
   map.resources :vitals
-
-  map.resources :orientations
   map.resources :steps
-  map.resources :events  
   map.resources :batteries
   map.resources :skin_temps
   map.resources :falls
-  map.resources :activities
   map.resources :panics
+  map.resources :vitals
+  
+  #misc models 
+  map.resources :events  
   map.resources :call_orders
   map.resources :raw_data_files, :member => {:download => :get}
-  map.resources :heartrates
-  map.resources :caregivers
+  
+  #user related models
   map.resources :profiles
-  map.resources :vitals
-  #map.resources :caregivers, :active_scaffold => true
- 
-  #added automatically after running restful_authentication script
-  map.resources :users, :sessions  
+  map.resources :users, :sessions  #added automatically after running restful_authentication script
+  
+  #deprecated models
+  #map.resources :caregivers, :active_scaffold => true 
   
   map.connect '', :controller => 'chart', :action => 'index'
   
