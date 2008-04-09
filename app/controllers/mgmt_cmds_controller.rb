@@ -79,7 +79,7 @@ class MgmtCmdsController < RestfulAuthController
           while count <= max
             cmd[:device_id] = count
         
-            MgmtCmd.create(cmd)
+            MgmtCmd.create(cmd) unless MgmtCmd.find_by_device_id(count)
             count+=1
           end
         else
@@ -90,12 +90,12 @@ class MgmtCmdsController < RestfulAuthController
         request[:ids].split(',').each do |id|          
           if id
             cmd[:device_id] = id
-            MgmtCmd.create(cmd)
+            MgmtCmd.create(cmd) unless MgmtCmd.find_by_device_id(id)
           end
         end
       else                            # single device id
         cmd[:device_id] = request[:ids]
-        MgmtCmd.create(cmd)
+        MgmtCmd.create(cmd) unless MgmtCmd.find_by_device_id(request[:ids])
       end
     else
       @success = false
