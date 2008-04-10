@@ -79,7 +79,7 @@ class DevicesController < ApplicationController
     
     # does strap begin day out of range?
     if unavailable_before and available_before
-      if unavailable_before.timestamp < available_before.timestamp
+      if unavailable_before.created_at < available_before.created_at
         cur_time = start_time.to_i
       end 
     end

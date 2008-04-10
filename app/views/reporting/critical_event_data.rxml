@@ -1,0 +1,28 @@
+xml.instruct! :xml, :version => "1.0"
+xml.chart do
+  xml.series do
+    i = 0
+    @periods.sort.each do |time,hours|
+      xml.value(time.to_date.to_formatted_s(:short), :xid => i)
+      i += 1
+    end
+  end
+  
+  xml.graphs do
+    i = 0
+    xml.graph(:gid => 0) do
+      @periods.sort.each do |time,data|
+        xml.value(data[:falls], :xid => i)
+        i += 1
+      end
+    end
+    
+    i=0
+    xml.graph(:gid => 1) do
+      @periods.sort.each do |time,data|
+        xml.value(data[:panics], :xid => i)
+        i += 1
+      end
+    end
+  end
+end

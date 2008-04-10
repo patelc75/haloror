@@ -22,4 +22,25 @@ class ReportingController < ApplicationController
         
     render :partial => 'user_table', :locals => {:users => users, :sortby => 'id', :reverse => false}
   end
+  
+  def summary
+    @critically_low = Battery.find(:all, :conditions => "time_remaining < 10")
+  end
+  
+  def critical_event_data
+    @periods = {}
+    
+    i = 0
+    now = Date.today.to_time
+    while i < 30
+      time = now.ago(i*86400)
+      data = {}
+      data[:falls] = Event.find(:all, :include => 'alert_type', :conditions => "timestamp > '#{time}' and timestamp < '#{time.tomorrow}' and alert_type = 'Fall'").length
+      data[:panics] = Event.find(:all, :include => 'alert_type', :conditions => "timestamp > '#{time}' and timestamp < '#{time.tomorrow}' and alert_type = 'Panic'").length
+      @periods[time] = data
+      i += 1
+    end
+    
+    render :layout => false
+  end
 end
