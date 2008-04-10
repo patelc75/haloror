@@ -423,3 +423,17 @@ function toggleAlert(id,active,type)
 		$('alert_'+type+'_'+id).src = '/images/call_list-'+type+'.gif';
 	}
 }
+
+function toggle_device_info(id)
+{
+	if($('info-'+id).style.display == 'block')
+	{
+		$('toggle_info-'+id).innerHTML = '[+]';
+		$('info-'+id).style.display = 'none'
+	}
+	else
+	{
+		$('toggle_info-'+id).innerHTML = '[-]';
+		$('info-'+id).style.display = 'block'
+	}	
+}

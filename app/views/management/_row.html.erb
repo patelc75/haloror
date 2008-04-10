@@ -1,3 +1,6 @@
+<% if cmd_type == 'info' %>
+<div style="float:left;margin-right:5px"><a href="javascript:void(0)" id="toggle_info-<%=row.id%>" onclick="toggle_device_info(<%=row.id%>)" style="text-decoration:none">[+]</a></div>
+<% end %>
 <div style="color:<%=color%>" id="<%=row[:type]%>_<%=row[:id]%>">
 	<% if group %>
 		<a href="javascript:void(0)" onClick="show_group(<%=row.id%>)" id="control_<%=row.id%>" style="float:left;text-decoration:none;margin-left:-30px">[+]</a>
@@ -12,6 +15,17 @@
 	<% if row[:pending] %>
 		<div style="width:250px;float:left">
 			<a href="javascript:void(0)" onclick="if(confirm('Are you sure?')){new Ajax.Request('/mgmt_<%=row[:type]%>s/delete/?id=<%=row[:id]%>');$('<%=row[:type]%>_<%=row[:id]%>').style.display = 'none'}">Delete</a>
+		</div>
+	<% end %>
+	
+	<% if cmd_type == 'info' %>
+		<div id="info-<%=row.id%>" style="display:none;clear:left;padding-left:25px;padding-top:5px">
+			Mac Address: <%=row.device_info.mac_address%><br />
+			Software Version: <%=row.device_info.software_version%><br />
+			Hardware Version: <%=row.device_info.hardware_version%><br />
+			Vendor: <%=row.device_info.vendor%><br />
+			Serial Number: <%=row.device_info.serial_number%><br />
+			Model: <%=row.device_info.model%></p>
 		</div>
 	<% end %>
 </div>

@@ -2,7 +2,7 @@
 	<% chatter.sort_by { |row| row[:timestamp] }.reverse.each do |row| %>
 		<% color = 'gray' if !row[:query_group] && row[:type] == 'cmd' %>
 	
-		<%=render :partial => 'row', :locals => {:row => row, :color => color, :group => false}%>
+		<%=render :partial => 'row', :locals => {:row => row, :color => color, :group => false, :cmd_type => false}%>
 	<% end %>
 <% else %>
 	<p>No commands found.</p>

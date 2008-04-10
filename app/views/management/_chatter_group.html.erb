@@ -29,7 +29,7 @@
 					response[:type] = 'response'
 				%>
 				
-				<%=render :partial => 'row', :locals => {:row => response, :color => color}%>
+				<%=render :partial => 'row', :locals => {:row => response, :color => color, :cmd_type => cmd.cmd_type}%>
 			<% end %>			
 		</div>
 		
