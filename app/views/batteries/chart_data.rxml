@@ -2,8 +2,8 @@ xml.instruct! :xml, :version => "1.0"
 xml.chart do
   xml.series do
     i = 0
-    @readings.each do |timestamp, reading|
-      xml.value(timestamp.to_date.to_formatted_s(:short), :xid => i)
+    @readings.each do |reading|
+      xml.value(reading.timestamp.to_s(:short), :xid => i)
       i += 1
     end
   end
@@ -11,7 +11,7 @@ xml.chart do
   xml.graphs do
     i = 0
     xml.graph(:gid => 0) do
-      @readings.each do |timestamp, reading|
+      @readings.each do |reading|
         xml.value(reading[:percentage], :xid => i)
         i += 1
       end
@@ -19,7 +19,7 @@ xml.chart do
     
     i = 0
     xml.graph(:gid => 1) do
-      @readings.each do |timestamp, reading|
+      @readings.each do |reading|
         xml.value(reading[:time_remaining], :xid => i)
         i += 1
       end

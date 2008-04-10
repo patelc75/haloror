@@ -86,14 +86,17 @@ class BatteriesController < RestfulAuthController
   def chart_data
     device = Device.find(params[:id])
     
-    @readings = {}
-    device.batteries.each do |reading|
-      #date = reading.timestamp.to_date.to_s(:db)
-      date = reading.timestamp.to_s
-      
-      @readings[date] = []
-      @readings[date] = reading
-    end
+    @readings = device.batteries
+    
+    # @readings = {}
+    #     
+    #     device.batteries.each do |reading|
+    #       #date = reading.timestamp.to_date.to_s(:db)
+    #       date = reading.timestamp.to_s
+    #       
+    #       @readings[date] = []
+    #       @readings[date] = reading
+    #     end
     
     render :layout => false
     
