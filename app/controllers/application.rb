@@ -24,6 +24,8 @@ class ApplicationController < ActionController::Base
      User.current_user = User.find(c.session[:user]) unless c.session[:user].nil?
   end
   
+  before_filter :authenticated?
+  
   def number_ext
     @num_ref = {}
     @num_ref[0] = 'th'
@@ -76,6 +78,14 @@ class ApplicationController < ActionController::Base
   end
   
   protected
+  def authenticated?
+    unless (controller_name == 'users' && (action_name == 'new' || action_name == 'create' || action_name == 'activate') || 
+      controller_name == 'sessions' && (action_name == 'new' || action_name == 'destroy'))
+     return authenticate
+    else
+      return true
+    end
+  end
   def authenticate
     unless logged_in?
       return redirect_to('/login')

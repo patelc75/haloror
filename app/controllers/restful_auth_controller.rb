@@ -1,9 +1,18 @@
 class RestfulAuthController < ApplicationController
-  before_filter :authorize, :only => [:create]
+  make_resourceful do 
+    actions :all
+    
+    response_for :create do |format|
+      format.xml { head :ok }  
+    end
+  end
   session :off
   layout nil
   
   DEFAULT_HASH_KEY="226f3834726d5531683d4f4b5a2d202729695853662543375c226c6447"
+  def authenticated?
+    return authorize
+  end
   
   def authorize
     timestamp = get_hash_value_from_array([:timestamp, :begin_timestamp], params)
