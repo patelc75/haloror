@@ -20,7 +20,6 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :skin_temps
   map.resources :falls
   map.resources :panics
-  map.resources :vitals
   
   #misc models 
   map.resources :events  
