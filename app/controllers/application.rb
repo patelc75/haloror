@@ -80,7 +80,7 @@ class ApplicationController < ActionController::Base
   protected
   def authenticated?
     unless (controller_name == 'users' && (action_name == 'new' || action_name == 'create' || action_name == 'activate') || 
-      controller_name == 'sessions' && (action_name == 'new' || action_name == 'destroy'))
+      controller_name == 'sessions')
      return authenticate
     else
       return true
