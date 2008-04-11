@@ -3,8 +3,7 @@ Recent Events:
 <% @events.each do |event| %>
   <p>
     <b><!--%=event.timestamp.to_date.to_s(:long)%-->
-    <%=event.event_type%> @ <%=event.timestamp.to_s%>
-    </b>
+    <%=event.event_type%> </b> @ <%=event.timestamp.to_s%>
   </p>
 
 <% end %>

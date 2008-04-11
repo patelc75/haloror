@@ -13,11 +13,13 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :mgmt_responses
   map.resources :mgmt_cmds
   
-  #device data models derviced from RestfulAuthController
+  #device data models derived from RestfulAuthController
   map.resources :vitals
   map.resources :steps
   map.resources :batteries
   map.resources :skin_temps
+  
+  #critical device data models derived from RestfulAuthController
   map.resources :falls
   map.resources :panics
   

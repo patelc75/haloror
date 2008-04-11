@@ -35,8 +35,6 @@ begin
 end;
 $$ language plpgsql;
 
-create trigger device_strap_status_removeds_trigger after insert on strap_removeds
-   for each row execute procedure device_strap_status_removeds_trigger_function();
  
     eos
     execute ddl

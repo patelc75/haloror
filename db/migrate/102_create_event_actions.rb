@@ -1,6 +1,7 @@
 class CreateEventActions < ActiveRecord::Migration
   def self.up
     create_table :event_actions do |t|
+      t.column :id, :primary_key, :null => false
       t.column :user_id, :integer
       t.column :event_id, :integer
       t.column :description, :string      
