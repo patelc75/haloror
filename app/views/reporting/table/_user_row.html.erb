@@ -46,6 +46,10 @@
 		
 	</div>
 	<div class="col-200">
-		<%=link_to_remote_redbox('Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile.id, :frame => true }, :html => {:method => :get})%> | <a href="/events/user/<%=user.id%>">Events</a> | <a href="/chart/index/<%=user.id%>">Chart</a>
+		<% if user.profile %>
+			<%=link_to_remote_redbox('Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile[:id], :frame => true }, :html => {:method => :get})%> | <a href="/events/user/<%=user[:id]%>">Events</a> | <a href="/chart/index/<%=user[:id]%>">Chart</a>
+		<% else %>
+			&nbsp;
+		<% end %>
 	</div>
 </div>
