@@ -134,7 +134,7 @@ class FlexController < ApplicationController
   def get_status(kind, user)
     event = nil
     user.events.each do |event|
-      if event.alert_type.alert_group.group_type == kind
+      if event.alert_type and event.alert_type.alert_group.group_type == kind
         return event.alert_type.alert_type
       end
     end
