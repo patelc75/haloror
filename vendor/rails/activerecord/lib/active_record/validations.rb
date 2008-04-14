@@ -34,7 +34,7 @@ module ActiveRecord
       :too_long => "is too long (maximum is %d characters)",
       :too_short => "is too short (minimum is %d characters)",
       :wrong_length => "is the wrong length (should be %d characters)",
-      :taken => " The User allready exists, if you want to continue with existing USER press YES or press NO ",
+      :taken => " The User already exists, if you want to continue with existing USER press YES above",
       #:taken => "has already been taken,if you want to continue with ",
       :not_a_number => "is not a number",
       :greater_than => "must be greater than %d",
