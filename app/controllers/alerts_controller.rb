@@ -1,14 +1,18 @@
 class AlertsController < ApplicationController
   def index
     @alert_types = []
-    AlertGroup.find(:all, :conditions => "group_type != 'critical'").each do |group|
-      AlertType.find(:all, :conditions => "alert_group_id = #{group.id}").each do |type|
-        @alert_types << type
-      end
+    #AlertGroup.find(:all, :conditions => "group_type != 'critical'").each do |group|
+    #AlertType.find(:all, :conditions => "alert_group_id = #{group.id}").each do |type|
+    AlertType.find(:all).each do |type|    
+      @alert_types << type        
     end
   end
+
   
   def toggle(what)    
+    #if alert_opt = AlertOption.find(:first,:conditions => "roles_user_id = #{params[:id]} and alert_type_id = #{alert.id}")
+
+   
     unless alert_opt = AlertOption.find(:first, :conditions => "roles_user_id = #{params[:roles_user_id]} and alert_type_id = #{params[:id]}")
       alert_type = AlertType.find(params[:id])
       
