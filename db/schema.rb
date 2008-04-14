@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 95) do
+ActiveRecord::Schema.define(:version => 105) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -18,21 +18,20 @@ ActiveRecord::Schema.define(:version => 95) do
     t.datetime "updated_at"
   end
 
-  create_table "activities", :force => true do |t|
-    t.integer  "user_id"
-    t.datetime "timestamp"
-    t.integer  "activity",  :null => false
-  end
-
   create_table "alert_groups", :force => true do |t|
     t.string   "group_type"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
+  create_table "alert_groups_alert_types", :id => false, :force => true do |t|
+    t.integer "alert_group_id"
+    t.integer "alert_type_id"
+  end
+
   create_table "alert_options", :force => true do |t|
-    t.integer  "role_id"
-    t.integer  "alert_types_id"
+    t.integer  "roles_user_id"
+    t.integer  "alert_type_id"
     t.boolean  "phone_active"
     t.boolean  "email_active"
     t.boolean  "text_active"
@@ -41,16 +40,12 @@ ActiveRecord::Schema.define(:version => 95) do
   end
 
   create_table "alert_types", :force => true do |t|
-    t.integer  "alert_group_id"
-    t.string   "type"
+    t.string   "alert_type"
     t.boolean  "phone_active"
     t.boolean  "email_active"
     t.boolean  "text_active"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "bar", :force => true do |t|
   end
 
   create_table "batteries", :force => true do |t|
@@ -172,12 +167,24 @@ ActiveRecord::Schema.define(:version => 95) do
     t.integer "dial_up_id"
   end
 
+  create_table "event_actions", :force => true do |t|
+    t.integer  "event_id"
+    t.string   "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "events", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
     t.string   "event_type"
     t.integer  "event_id"
+    t.string   "level"
     t.integer  "alert_type_id"
+    t.integer  "accepted_by"
+    t.datetime "accepted_at"
+    t.integer  "resolved_by"
+    t.datetime "resolved_at"
   end
 
   create_table "falls", :force => true do |t|
@@ -190,6 +197,7 @@ ActiveRecord::Schema.define(:version => 95) do
     t.integer "ftp_id"
     t.string  "version"
     t.string  "hash_key", :null => false
+    t.string  "filename"
   end
 
   create_table "ftps", :force => true do |t|
@@ -224,12 +232,6 @@ ActiveRecord::Schema.define(:version => 95) do
     t.string  "model"
     t.string  "kind"
     t.integer "kind_id"
-  end
-
-  create_table "heartrates", :force => true do |t|
-    t.integer  "user_id"
-    t.datetime "timestamp"
-    t.integer  "heartrate", :null => false
   end
 
   create_table "latest_vitals", :force => true do |t|
@@ -267,12 +269,6 @@ ActiveRecord::Schema.define(:version => 95) do
     t.datetime "timestamp_server"
   end
 
-  create_table "orientations", :force => true do |t|
-    t.integer  "user_id"
-    t.datetime "timestamp"
-    t.boolean  "orientation"
-  end
-
   create_table "panics", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
@@ -289,7 +285,6 @@ ActiveRecord::Schema.define(:version => 95) do
     t.string  "work_phone"
     t.string  "cell_phone"
     t.string  "relationship"
-    t.string  "email"
     t.string  "text_email"
     t.integer "carrier_id"
   end
@@ -310,7 +305,7 @@ ActiveRecord::Schema.define(:version => 95) do
     t.datetime "updated_at"
   end
 
-  create_table "roles_users", :id => false, :force => true do |t|
+  create_table "roles_users", :force => true do |t|
     t.integer  "user_id"
     t.integer  "role_id"
     t.datetime "created_at"
@@ -318,13 +313,13 @@ ActiveRecord::Schema.define(:version => 95) do
   end
 
   create_table "roles_users_options", :force => true do |t|
-    t.integer "role_id"
-    t.boolean "removed",      :default => false
-    t.boolean "active",       :default => false
-    t.boolean "phone_active", :default => false
-    t.boolean "email_active", :default => false
-    t.boolean "text_active",  :default => false
-    t.integer "position",     :default => 0
+    t.integer "roles_users_id"
+    t.boolean "removed",        :default => false
+    t.boolean "active",         :default => false
+    t.boolean "phone_active",   :default => false
+    t.boolean "email_active",   :default => false
+    t.boolean "text_active",    :default => false
+    t.integer "position",       :default => 0
     t.integer "user_id"
   end
 
@@ -367,6 +362,7 @@ ActiveRecord::Schema.define(:version => 95) do
     t.string   "image"
     t.string   "type"
     t.string   "serial_number"
+    t.string   "time_zone"
   end
 
   create_table "vitals", :force => true do |t|

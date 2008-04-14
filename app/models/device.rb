@@ -10,6 +10,7 @@ class Device < ActiveRecord::Base
   has_many :strap_fasteneds
   has_many :strap_removeds
   has_many :device_unavailable_alerts
+  has_many :device_available_alerts
   has_many :gateway_offline_alerts
   has_many :gateway_online_alerts
   has_many :batteries
