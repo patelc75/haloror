@@ -1,10 +1,24 @@
+User Time Zone :  <%=@user.profile.time_zone%>
+
+<br/>
+<br/>
+
 Recent Events:
 
 <% @events.each do |event| %>
   <p>
-    <b><!--%=event.timestamp.to_date.to_s(:long)%-->
-    <%=event.event_type%> </b> @ <%=event.timestamp.to_s%>
-  </p>
+    
+   <b><!--%=event.timestamp.to_date.to_s(:long)%-->
+
+   
+   
+    <%=event.event_type%> </b> @ 
+  
+     
+
+ <%=@user.profile.tz.utc_to_local(event.timestamp).strftime("%m-%d-%Y %I:%M %p")%>
+  
+   </p>
 
 <% end %>
 

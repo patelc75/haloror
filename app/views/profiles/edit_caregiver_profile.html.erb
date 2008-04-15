@@ -55,7 +55,7 @@
     Please select the Service Provider </option>
     <% end -%>
     <% @carrier = Carrier.find(:all, :order => "id")
-    @carrier.each do |carrier| %>
+	@carrier.each do |carrier| %>
 	<option value="<%= carrier.id %>"
 	<% if @profile.carrier_id == carrier.id -%> selected="selected"<% end -%>
 	>
@@ -66,6 +66,17 @@
 	
 	<br/>
 	<br />
+	
+	
+	<label for="time_zone">Select Time Zone</label>
+
+
+		
+		<%= time_zone_select 'profile', 'time_zone', TZInfo::Timezone.all.sort, :model => TZInfo::Timezone %> 
+	
+	<br/>
+	<br />
+	
 	<label for="relationship">Relationship</label>
 	<br />
 	<%= f.text_field :relationship %>
