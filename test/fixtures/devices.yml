@@ -7,7 +7,7 @@
 #   column: value
 madhu:
   id: 1
-  user_id: 1
+  #user_id: 1
   serial_number: 0123456789
   #email: madhukarpadma@yahoo.com
   #first_name: madhukar

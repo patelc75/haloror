@@ -2,7 +2,7 @@
 
 aaron:
   id: 1
-  role_id: 1
+  roles_users_id: 1
   removed: FALSE
   active: TRUE
   phone_active: TRUE
@@ -13,7 +13,7 @@ aaron:
 
 chip:
   id: 2
-  role_id: 1
+  roles_users_id: 1
   removed: FALSE
   active: TRUE
   phone_active: TRUE
