@@ -9,13 +9,19 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 105) do
+ActiveRecord::Schema.define(:version => 107) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
     t.string   "status"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "activities", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "timestamp"
+    t.integer  "activity",  :null => false
   end
 
   create_table "alert_groups", :force => true do |t|
@@ -43,6 +49,16 @@ ActiveRecord::Schema.define(:version => 105) do
     t.string   "alert_type"
     t.boolean  "phone_active"
     t.boolean  "email_active"
+    t.boolean  "text_active"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "alerts", :force => true do |t|
+    t.integer  "roles_users_option_id"
+    t.string   "event_kind"
+    t.boolean  "email_active"
+    t.boolean  "phone_active"
     t.boolean  "text_active"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -167,7 +183,17 @@ ActiveRecord::Schema.define(:version => 105) do
     t.integer "dial_up_id"
   end
 
+  create_table "emails", :force => true do |t|
+    t.string   "from"
+    t.string   "to"
+    t.integer  "last_send_attempt", :default => 0
+    t.text     "mail"
+    t.datetime "created_on"
+    t.integer  "priority"
+  end
+
   create_table "event_actions", :force => true do |t|
+    t.integer  "user_id"
     t.integer  "event_id"
     t.string   "description"
     t.datetime "created_at"
@@ -179,7 +205,6 @@ ActiveRecord::Schema.define(:version => 105) do
     t.datetime "timestamp"
     t.string   "event_type"
     t.integer  "event_id"
-    t.string   "level"
     t.integer  "alert_type_id"
     t.integer  "accepted_by"
     t.datetime "accepted_at"
@@ -196,8 +221,9 @@ ActiveRecord::Schema.define(:version => 105) do
   create_table "firmware_upgrades", :force => true do |t|
     t.integer "ftp_id"
     t.string  "version"
-    t.string  "hash_key", :null => false
     t.string  "filename"
+    t.text    "description"
+    t.date    "date_added"
   end
 
   create_table "ftps", :force => true do |t|
@@ -234,6 +260,12 @@ ActiveRecord::Schema.define(:version => 105) do
     t.integer "kind_id"
   end
 
+  create_table "heartrates", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "timestamp"
+    t.integer  "heartrate", :null => false
+  end
+
   create_table "latest_vitals", :force => true do |t|
     t.datetime "updated_at", :null => false
   end
@@ -267,6 +299,12 @@ ActiveRecord::Schema.define(:version => 105) do
     t.integer  "mgmt_cmd_id"
     t.datetime "timestamp_device"
     t.datetime "timestamp_server"
+  end
+
+  create_table "orientations", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "timestamp"
+    t.boolean  "orientation"
   end
 
   create_table "panics", :force => true do |t|
