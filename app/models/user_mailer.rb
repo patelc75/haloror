@@ -1,4 +1,4 @@
-class UserMailer < ActionMailer::Base
+class UserMailer < ActionMailer::ARMailer
    include UsersHelper
   def signup_notification(user)
   setup_email(user)

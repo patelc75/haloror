@@ -1,4 +1,4 @@
-class CriticalMailer < ActionMailer::Base
+class CriticalMailer < ActionMailer::ARMailer
   
   def device_alert_notification(device_alert)
     if(device_alert.device == nil)
@@ -8,6 +8,7 @@ class CriticalMailer < ActionMailer::Base
     end
     description = camelcase_to_spaced(device_alert.class.to_s)
     @subject    += "#{description} event"
+    self.priority = device_alert.priority
     body :alert_type => description, 
       :timestamp => device_alert.timestamp,
       :login     => device_alert.user.login,
@@ -18,6 +19,7 @@ class CriticalMailer < ActionMailer::Base
   def device_unavailable_alert_notification(alert, user)
     setup_email(user)
     @subject    += "Device Unavailable for User #{user.id}"
+    self.priority = alert.priority
     body :alert_created_at => alert.created_at,
       :login     => user.login,
       :user_id   => user.id,
@@ -28,6 +30,7 @@ class CriticalMailer < ActionMailer::Base
   def device_available_alert_notification(alert, user)
     setup_email(user)
     @subject    += "Device Available for User #{user.id}"
+    self.priority = alert.priority
     body :alert_created_at => alert.created_at,
       :login     => user.login,
       :user_id   => user.id,
@@ -38,6 +41,7 @@ class CriticalMailer < ActionMailer::Base
     device = alert.device
     setup_email(user)
     @subject    += "Device #{alert.device_id} Is Back Online"
+    self.priority = alert.priority
     body :alert_created_at => alert.created_at,
       :login     => user.login,
       :user_id   => user.id,
@@ -48,6 +52,7 @@ class CriticalMailer < ActionMailer::Base
     device = outage.device
     setup_email(user)
     @subject    += "Outage for Device #{outage.device_id}"
+    self.priority = outage.priority    
     body :outage_created_at => outage.created_at,
       :login     => user.login,
       :user_id   => user.id,
@@ -57,6 +62,7 @@ class CriticalMailer < ActionMailer::Base
   def fall_notification(fall)
     setup_email(fall.user)
     @subject    += 'Merle fell'
+    self.priority = fall.priority
     #@body[:url]  = "Merle fell on #{Time.now}"
     body :timestamp => fall.timestamp
   end
@@ -65,6 +71,7 @@ class CriticalMailer < ActionMailer::Base
     @panic = panic
     setup_email(panic.user)
     @subject    += 'Merle panicked'
+    self.priority = panic.priority
     #@body[:url]  = "Merle panicked on #{Time.now}"
     body :timestamp => panic.timestamp
   end

@@ -3,7 +3,7 @@
 
 class GatewayOnlineAlert < ActiveRecord::Base
   belongs_to :device
-
+  include Priority
   def after_save
     device.users.each do |user|
       Event.create(:user_id => user.id, 

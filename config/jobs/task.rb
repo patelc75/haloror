@@ -5,3 +5,5 @@ SCHEDULER.schedule_every('10s') { ActiveRecord::Base.logger.debug("Job scheduler
 SCHEDULER.schedule_every('1m') { MgmtQuery.job_detect_disconnected_users }
 
 SCHEDULER.schedule_every('1m') { Vital.job_detect_unavailable_devices }
+
+SCHEDULER.schedule_every('1m') { Email.notify_by_priority }

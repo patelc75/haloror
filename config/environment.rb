@@ -74,7 +74,7 @@ end
 # Include your application configuration below
 #hash used for ruby-debug gem, used to store Rails source code
 #SCRIPT_LINES__ = {} if ENV['RAILS_ENV'] == 'development'
-ActionMailer::Base.delivery_method = :smtp 
+ActionMailer::Base.delivery_method = :activerecord
 ActionMailer::Base.raise_delivery_errors = true
   
 ActionMailer::Base.smtp_settings = {
@@ -85,8 +85,41 @@ ActionMailer::Base.smtp_settings = {
   :user_name => "chirag@haloresearch.net" ,
   :password => "irdikt75" 
 }
+require 'rubygems'
+require 'action_mailer/ar_sendmail'
 
+class ActionMailer::ARMailer < ActionMailer::Base
+  attr_accessor :priority
+  def perform_delivery_activerecord(mail)
+    if self.priority.nil?
+      self.priority = Priority::LOW
+    end
+    if self.priority > Priority::THRESH_HOLD
+       emails = []
+       ar_sendmail = ActionMailer::ARSendmail.new
+       mail.destinations.each do |destination|
+         emails << Email.new(:mail => mail.encoded, :to => destination,
+                               :from => mail.from.first, :priority => self.priority)
+       end
+      ar_sendmail.deliver(emails)      
+    else
+      mail.destinations.each do |destination|
+        Email.create  :mail => mail.encoded, :to => destination,
+                              :from => mail.from.first, :priority => self.priority
+      end
+    end
+  end
+end
+class ActionMailer::ARSendmail
+  def find_emails
+    options = { :conditions => ['last_send_attempt < ?', Time.now.to_i - 300], :order => :priority }
+    options[:limit] = batch_size unless batch_size.nil?
+    mail = @email_class.find :all, options
 
+    log "found #{mail.length} emails to send"
+    mail
+  end
+end
 require 'postgre_extensions'
 
 # Exception notifier coding 
