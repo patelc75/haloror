@@ -11,7 +11,8 @@ class CreateAlertGroupsAlertTypes < ActiveRecord::Migration
     drop_table :alerts if
     ActiveRecord::Base.connection.tables.include?(:alerts)
     
-    remove_column :alert_types, :alert_group_id
+    remove_column :alert_types, :alert_group_id if
+    ActiveRecord::Base.connection.tables.include?(:alert_types)
   end
 
   def self.down
