@@ -11,7 +11,7 @@ class GatewayOfflineAlert < ActiveRecord::Base
   # If we have detected an outage after our retry period, notify the
   # user immediately
   def after_save
-    if number_attempts >= MAX_ATTEMPTS_BEFORE_NOTIFICATION
+    if number_attempts == MAX_ATTEMPTS_BEFORE_NOTIFICATION
       logger.debug("[GatewayOfflineAlert] Detected an outage for device #{device_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
       
       device.users.each do |user|
