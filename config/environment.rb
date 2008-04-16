@@ -86,7 +86,7 @@ ActionMailer::Base.smtp_settings = {
   :password => "irdikt75" 
 }
 require 'rubygems'
-#require 'action_mailer/ar_sendmail'
+require 'action_mailer/ar_sendmail'
 
 class ActionMailer::ARMailer < ActionMailer::Base
   attr_accessor :priority
