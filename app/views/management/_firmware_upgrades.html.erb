@@ -1,0 +1,229 @@
+<% fus = FirmwareUpgrade.find(:all, :include => 'ftp') 
+		fus_json = "{ 'rows': ["
+		count = 0
+		fus.each do |fu|
+			fus_json = fus_json + fu.to_json()
+			count = count + 1
+			unless count == fus.length
+				fus_json = "#{fus_json}, "
+			end
+		end
+		fus_json = "#{fus_json} ] }"
+		
+%>
+		
+		
+
+<script language="javascript">
+Ext.onReady(function(){
+		var data =   <%= fus_json %> ;
+    Ext.QuickTips.init();
+
+  
+    // shorthand alias
+    var fm = Ext.form;
+		
+		var FirmwareUpgrade = Ext.data.Record.create([
+				{name: 'id'},
+		    {name: 'version'}, 
+		    {name: 'filename'},
+				{name: 'description'},
+				{name: 'date_added'}
+		]);
+		var reader = new Ext.data.JsonReader({  
+		    root: "rows",
+	    	id: "id"          
+			}, FirmwareUpgrade);
+		var store = new Ext.data.Store({
+		  data: data,
+			reader: reader,
+			fields: ['id', 'version', 'filename', 'description', 'date_added'],
+			sortInfo:{field:'version', direction:'ASC'}			
+		});
+		
+		
+    // the column model has information about grid columns
+    // dataIndex maps the column to the specific data field in
+    // the data store (created below)
+    var cm = new Ext.grid.ColumnModel([{
+           id:'version',
+           header: "Version",
+           dataIndex: 'version',
+           width: 220,
+           editor: new fm.TextField({
+               allowBlank: false
+           })
+        },
+				{
+		       id:'filename',
+		       header: "Filename",
+		       dataIndex: 'filename',
+		       width: 220,
+		       editor: new fm.TextField({
+		           allowBlank: false
+		           })
+		    },
+				{
+				    id:'description',
+				    header: "Description",
+				    dataIndex: 'description',
+				    width: 220,
+				    editor: new fm.TextField({
+				        allowBlank: false
+				        })
+				},
+				{
+           header: "Date Added",
+           dataIndex: 'date_added',
+           width: 150,
+           editor: new fm.DateField({
+                format: 'm/d/y',
+                minValue: '01/01/08'
+            })
+        }
+    ]);
+
+    // by default columns are sortable
+    cm.defaultSortable = true;
+
+
+
+
+		var selModel =  new Ext.grid.RowSelectionModel();	
+			
+    // create the editor grid
+    var grid = new Ext.grid.EditorGridPanel({
+        store: store,
+				selModel: selModel,
+        cm: cm,
+        renderTo: 'editor-grid',
+        width:800,
+        height:400,
+        autoExpandColumn:'version',
+        title:'Edit Firmware Upgrades?',
+        frame:true,
+        clicksToEdit:1,
+        tbar: [{
+            text: 'Add Firmware Upgrades',
+            handler : function(){
+                var p = new FirmwareUpgrade({
+										id: 0,
+                    version: 'New Version',
+                    filename: 'filename',
+										description: 'description',
+                    date_added: (new Date()).clearTime()	});  
+                grid.stopEditing();
+								Ext.Ajax.request( 
+							  {   
+							  	waitMsg: 'Saving changes...',
+							    url: '/management/firmware_upgrade',
+							    method: 'POST', 
+							    params: {
+							              task: "create",
+							              key: 'id',
+							              keyID: 0,                       
+							            },
+
+							   success: function(response,options){
+							                            var responseData = Ext.util.JSON.decode(response.responseText);
+							                            var newID = responseData.newID;
+																					p.id = newID;
+							                            store.commitChanges();
+									}
+							  });
+                store.insert(0, p);
+                grid.startEditing(0, 0);
+            }
+						},{
+						text: 'Delete Firmware Upgrades',
+            handler : confirmDeleteFirmwareUpgrades
+						}]
+					
+    });
+
+    // trigger the data store load
+   store.loadData(data);
+grid.addListener('afteredit', handleEdit);
+grid.show();
+
+function handleEdit(oGrid_Event) {
+  if (oGrid_Event.value instanceof Date)
+  {   
+     var fieldValue = oGrid_Event.value.format('Y-m-d H:i:s');
+  } else
+  {
+  var fieldValue = oGrid_Event.value;
+}    
+  Ext.Ajax.request( 
+  {   
+  	waitMsg: 'Saving changes...',
+    url: '/management/firmware_upgrade',
+    method: 'POST', 
+    params: {
+              task: "update",
+              key: 'id',
+              keyID: oGrid_Event.record.data.id,
+              field: oGrid_Event.field,
+              value: fieldValue,
+              originalValue: oGrid_Event.record.modified                        
+            },
+                                                  
+   success: function(response,options){
+                        if(oGrid_Event.record.data.id == 0){
+                            var responseData = Ext.util.JSON.decode(response.responseText);
+                            var newID = responseData.newID;
+                            oGrid_Event.record.set('newRecord','no');
+                            oGrid_Event.record.set('id',newID);
+                            store.commitChanges();
+                        } else {
+                            store.commitChanges();
+                        }
+           }
+  }); 
+}; 
+
+function confirmDeleteFirmwareUpgrades(){
+   if(grid.selModel.getCount() == 1) 
+   {
+     Ext.MessageBox.confirm('Confirmation','Are you sure you want to delete this Firmware Upgrade', deleteFirmwareUpgrades);
+   } else if(grid.selModel.getCount() > 1){
+     Ext.MessageBox.confirm('Confirmation','Delete these Firmware Upgrades?', deleteFirmwareUpgrades);
+   } 
+ }
+
+function deleteFirmwareUpgrades(btn){
+    if(btn=='yes'){
+         var selections = grid.selModel.getSelections();
+         var fus = [];
+				 var fus_records = [];
+         for(i = 0; i< grid.selModel.getCount(); i++){
+          fus.push(selections[i].json.id);
+					fus_records.push(selections[i]);
+         }
+           ids = Ext.encode(fus);
+         Ext.Ajax.request({  
+            waitMsg: 'Please Wait',
+            url: '/management/firmware_upgrade_delete', 
+            params: { 
+               task: "DELETEFIRMWARE", 
+               ids:  ids
+              }, 
+            success: function(response){
+	              for(i = 0; i < fus_records.length; i++)
+								{
+									store.remove(fus_records[i]);
+								}
+            },
+            failure: function(response){
+              var result=response.responseText;
+              Ext.MessageBox.alert('error','could not connect to the database. retry later');      
+              }
+         });
+      }  
+  }
+
+});
+</script>
+
+<div id="editor-grid"></div>
+
