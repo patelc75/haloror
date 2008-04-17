@@ -1,0 +1,1 @@
+rake halo:post vital=all method=activerecord increment=15 duration=21600 user_id=52 frequency=2 type=live
