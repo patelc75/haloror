@@ -65,10 +65,31 @@ class AlertsTest < ActiveSupport::TestCase
   end
   
   def test_vitals
+    user = get_test_user
+    device = get_test_device
     setup_email
+
+    Vital.connection.execute("delete from latest_vitals")
+    Vital.connection.execute("delete from vitals")
+    Vital.connection.execute("delete from device_unavailable_alerts")
+    Vital.connection.execute("delete from device_available_alerts")
+
     Vital.job_detect_unavailable_devices
     assert_number_emails(0)
-    
+
+    assert_equal 0, DeviceUnavailableAlert.count(:all)
+    assert_number_emails(0)
+    assert_equal 1, user.devices.size
+    assert_number_emails(0)
+
+    Vital.create( :user => user, :timestamp => Time.now )
+    assert_number_emails(0)
+    assert_equal 1, Vital.connection.select_value('select count(*) from latest_vitals').to_i
+
+    assert_number_emails(0)
+
+    Vital.job_detect_unavailable_devices
+    assert_number_emails(0)
   end
 
   private

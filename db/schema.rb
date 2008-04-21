@@ -9,19 +9,13 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 107) do
+ActiveRecord::Schema.define(:version => 109) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
     t.string   "status"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "activities", :force => true do |t|
-    t.integer  "user_id"
-    t.datetime "timestamp"
-    t.integer  "activity",  :null => false
   end
 
   create_table "alert_groups", :force => true do |t|
@@ -36,8 +30,8 @@ ActiveRecord::Schema.define(:version => 107) do
   end
 
   create_table "alert_options", :force => true do |t|
-    t.integer  "roles_user_id"
-    t.integer  "alert_type_id"
+    t.integer  "role_id"
+    t.integer  "alert_types_id"
     t.boolean  "phone_active"
     t.boolean  "email_active"
     t.boolean  "text_active"
@@ -46,22 +40,16 @@ ActiveRecord::Schema.define(:version => 107) do
   end
 
   create_table "alert_types", :force => true do |t|
-    t.string   "alert_type"
+    t.integer  "alert_group_id"
     t.boolean  "phone_active"
     t.boolean  "email_active"
     t.boolean  "text_active"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "alert_type",     :null => false
   end
 
-  create_table "alerts", :force => true do |t|
-    t.integer  "roles_users_option_id"
-    t.string   "event_kind"
-    t.boolean  "email_active"
-    t.boolean  "phone_active"
-    t.boolean  "text_active"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+  create_table "bar", :force => true do |t|
   end
 
   create_table "batteries", :force => true do |t|
@@ -159,6 +147,7 @@ ActiveRecord::Schema.define(:version => 107) do
     t.datetime "reconnected_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "priority"
   end
 
   add_index "device_unavailable_alerts", ["device_id"], :name => "device_unavailable_alerts_device_id_idx"
@@ -260,12 +249,6 @@ ActiveRecord::Schema.define(:version => 107) do
     t.integer "kind_id"
   end
 
-  create_table "heartrates", :force => true do |t|
-    t.integer  "user_id"
-    t.datetime "timestamp"
-    t.integer  "heartrate", :null => false
-  end
-
   create_table "latest_vitals", :force => true do |t|
     t.datetime "updated_at", :null => false
   end
@@ -301,12 +284,6 @@ ActiveRecord::Schema.define(:version => 107) do
     t.datetime "timestamp_server"
   end
 
-  create_table "orientations", :force => true do |t|
-    t.integer  "user_id"
-    t.datetime "timestamp"
-    t.boolean  "orientation"
-  end
-
   create_table "panics", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
@@ -325,6 +302,7 @@ ActiveRecord::Schema.define(:version => 107) do
     t.string  "relationship"
     t.string  "text_email"
     t.integer "carrier_id"
+    t.string  "time_zone"
   end
 
   create_table "raw_data_files", :force => true do |t|
@@ -351,13 +329,13 @@ ActiveRecord::Schema.define(:version => 107) do
   end
 
   create_table "roles_users_options", :force => true do |t|
-    t.integer "roles_users_id"
-    t.boolean "removed",        :default => false
-    t.boolean "active",         :default => false
-    t.boolean "phone_active",   :default => false
-    t.boolean "email_active",   :default => false
-    t.boolean "text_active",    :default => false
-    t.integer "position",       :default => 0
+    t.integer "role_id"
+    t.boolean "removed",      :default => false
+    t.boolean "active",       :default => false
+    t.boolean "phone_active", :default => false
+    t.boolean "email_active", :default => false
+    t.boolean "text_active",  :default => false
+    t.integer "position",     :default => 0
     t.integer "user_id"
   end
 
