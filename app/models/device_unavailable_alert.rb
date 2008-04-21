@@ -17,7 +17,7 @@ class DeviceUnavailableAlert < ActiveRecord::Base
   belongs_to :device
   
   def after_save
-    if number_attempts >= GatewayOfflineAlert::MAX_ATTEMPTS_BEFORE_NOTIFICATION 
+    if reconnected_at.nil? && number_attempts >= GatewayOfflineAlert::MAX_ATTEMPTS_BEFORE_NOTIFICATION 
       logger.debug("[DeviceUnavailableAlert] Detected an outage for device #{device_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
 
       device.users.each do |user|

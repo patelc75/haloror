@@ -104,9 +104,11 @@ class AlertsTest < ActiveSupport::TestCase
     assert_is_fastened(device.id)
     Vital.create( :user => user, :timestamp => Time.now )
     assert_equal 1, Vital.connection.select_value('select count(*) from latest_vitals').to_i
+
     Vital.job_detect_unavailable_devices
     assert_equal 1, DeviceAvailableAlert.count(:all)
-    assert_number_emails(2)
+    assert_number_emails(1)
+    
   end
 
   private
