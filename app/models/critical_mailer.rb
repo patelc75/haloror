@@ -92,21 +92,22 @@ class CriticalMailer < ActionMailer::ARMailer
   
     user.has_caregivers.each do |caregiver|
       opts = caregiver.roles_users_option
-      em_bool = opts.email_active
-      tm_bool = opts.text_active
+      if (opts)  #check for null until we figure out a better way to get roles_users_options
+        em_bool = opts.email_active
+        tm_bool = opts.text_active
    
-      if tm_bool == true
-        if caregiver.profile.cell_phone != nil and caregiver.profile.cell_phone != ""
-          @recipients  << ["#{caregiver.profile.cell_phone}" + "#{caregiver.profile.carrier.domain}"] 
+        if tm_bool == true
+          if caregiver.profile.cell_phone != nil and caregiver.profile.cell_phone != ""
+            @recipients  << ["#{caregiver.profile.cell_phone}" + "#{caregiver.profile.carrier.domain}"] 
+          end
         end
-      end
     
-      if em_bool == true
-        if caregiver.email != nil and caregiver.email != ""
-          @recipients  << ["#{caregiver.email}"] 
+        if em_bool == true
+          if caregiver.email != nil and caregiver.email != ""
+            @recipients  << ["#{caregiver.email}"] 
+          end
         end
       end
-  
     end
   
     @from        = "no-reply@myhalomonitor.com"
