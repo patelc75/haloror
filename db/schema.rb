@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 109) do
+ActiveRecord::Schema.define(:version => 110) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -112,6 +112,7 @@ ActiveRecord::Schema.define(:version => 109) do
   create_table "device_available_alerts", :force => true do |t|
     t.integer  "device_id",  :null => false
     t.datetime "created_at", :null => false
+    t.integer  "priority"
   end
 
   add_index "device_available_alerts", ["device_id"], :name => "device_available_alerts_device_id_idx"

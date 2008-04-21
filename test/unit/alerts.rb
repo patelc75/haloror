@@ -35,17 +35,12 @@ class AlertsTest < ActiveSupport::TestCase
     num = Device.connection.select_value("select count(*) from device_strap_status where id = #{device.id}").to_i
     assert_equal 0, num
 
-    event = StrapFastened.new
-    event.device = device
-    event.user = get_test_user
-    event.timestamp = Time.now
-    event.save!
+    create_strap_fastened(device, get_test_user)
 
     num = Device.connection.select_value("select count(*) from device_strap_status where id = #{device.id}").to_i
     assert_equal 1, num
 
-    num = Device.connection.select_value("select count(*) from device_strap_status where is_fastened > 0 and id = #{device.id}").to_i
-    assert_equal 1, num
+    assert_is_fastened(device.id)
 
     event = StrapRemoved.new
     event.device = device
@@ -90,9 +85,45 @@ class AlertsTest < ActiveSupport::TestCase
 
     Vital.job_detect_unavailable_devices
     assert_number_emails(0)
+
+    create_strap_fastened(device, user)
+    setup_email
+
+    Vital.connection.execute("update latest_vitals set updated_at = now() - interval '1 hour'")
+
+    4.times do
+      Vital.job_detect_unavailable_devices
+      assert_number_emails(0)
+    end
+    Vital.job_detect_unavailable_devices
+    assert_number_emails(1)
+
+    assert_equal 1, DeviceUnavailableAlert.count(:all)
+
+    setup_email
+    assert_is_fastened(device.id)
+    Vital.create( :user => user, :timestamp => Time.now )
+    assert_equal 1, Vital.connection.select_value('select count(*) from latest_vitals').to_i
+    Vital.job_detect_unavailable_devices
+    assert_equal 1, DeviceAvailableAlert.count(:all)
+    assert_number_emails(2)
   end
 
   private
+  def assert_is_fastened(device_id)
+    num = Device.connection.select_value("select count(*) from device_strap_status where is_fastened > 0 and id = #{device_id}").to_i
+    assert_equal 1, num
+  end
+    
+  def create_strap_fastened(device, user)
+    event = StrapFastened.new
+    event.device = device
+    event.user = user
+    event.timestamp = Time.now
+    event.save!
+    event
+  end
+
   def assert_number_emails(num)
     assert_equal num, ActionMailer::Base.deliveries.size
   end
