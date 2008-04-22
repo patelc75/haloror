@@ -25,6 +25,7 @@ class ApplicationController < ActionController::Base
   end
   
   before_filter :authenticated?
+  around_filter :set_timezone
   
   def number_ext
     @num_ref = {}
@@ -39,6 +40,22 @@ class ApplicationController < ActionController::Base
     @num_ref[8] = 'th'
     @num_ref[9] = 'th'
   end
+  
+
+  
+ private
+  def set_timezone
+      if logged_in? && !current_user.profile.time_zone.nil?
+        TzTime.zone = current_user.profile.tz
+     else
+        TzTime.zone = TZInfo::Timezone.new(ENV['TZ'])
+      end
+      yield
+      TzTime.reset!
+    end
+  
+  
+  
   
   def refresh_caregivers
     number_ext
