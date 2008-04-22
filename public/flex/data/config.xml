@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<root>
+	
+	<Version>1.1</Version>
+	
+	<!-- Uncomment the appropriate configuration... -->
+	
+	<!-- Basic Live Mode -->
+	<Config
+		ChartFile="-1"
+		Debug="true"
+		dataServiceURL="http://sdev.halomonitor.com/flex/chart" />		
+	
+	
+	<!-- Basic File Mode 
+	<Config
+		ChartFile="0"
+		Debug="true"
+		dataServiceURL="data/ChartData" /> -->
+
+	
+	<!-- ***********************************************************************************************
+	NOTE: (ChartFile = -1) means we are running in Live Rails mode, in this case the URL is a web address.
+	If ChartFile is 0 or greater, the code uses XML files as URLs.
+	The file name is appended with (+ chartFile + ".xml") by the code to simulate live mode for
+	how ever many files of the specified type are available.
+	
+	Change the dataServiceURL value to point to a different data provider.
+	___________________________
+	Alternative Configurations:
+		/**** Using ChartFile mode ****/
+		// Default data from a cURL request, stored in a file...
+		dataServiceURL="data/newdata"
+		
+		// Files requested from previous cRUL testing...
+		dataServiceURL="data/CurlData"
+		___________________________
+		/**** Live Mode URLs ****/
+		
+		/**** NOTE: ****
+		 * You must log into the server.  
+		 * If you don't log in first, the chart will generate an error. 
+		 * http://sdev.halomonitor.com/login
+		 * username: guest, password: guest
+		 ***/
+		 
+		dataServiceURL="http://sdev.halomonitor.com/flex/chart"
+		
+		// FYI: (an old login was username: bryan, password: test)
+		
+		/**Local debugging**/
+		dataServiceURL="http://localhost:3000/flex/chart"
+		
+		/**Old Server...**/	
+		dataServiceURL="http://67-207-146-58.slicehost.net/flex/chart"
+		
+		//* http://idev.myhalomonitor.com/login
+		dataServiceURL="http://idev.myhalomonitor.com/flex/chart"
+	************************************************************************************************ -->	
+</root>
