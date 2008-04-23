@@ -23,7 +23,8 @@ class CriticalMailer < ActionMailer::ARMailer
     body :alert_created_at => alert.created_at,
       :login     => user.login,
       :user_id   => user.id,
-      :alert_id => alert.id
+      :alert_id => alert.id,
+      :device_id => alert.device_id
   end
 
   # alert: DeviceAvailableAlert
@@ -34,7 +35,8 @@ class CriticalMailer < ActionMailer::ARMailer
     body :alert_created_at => alert.created_at,
       :login     => user.login,
       :user_id   => user.id,
-      :alert_id => alert.id
+      :alert_id => alert.id,
+      :device_id => alert.device_id
   end
   
   def gateway_online_notification(alert, user)
