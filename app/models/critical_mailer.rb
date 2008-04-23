@@ -40,7 +40,7 @@ class CriticalMailer < ActionMailer::ARMailer
   def gateway_online_notification(alert, user)
     device = alert.device
     setup_email(user)
-    @subject    += "Device #{alert.device_id} Is Back Online"
+    @subject    += "Gateway #{alert.device_id} Is Back Online"
     self.priority = alert.priority
     body :alert_created_at => alert.created_at,
       :login     => user.login,
@@ -51,7 +51,7 @@ class CriticalMailer < ActionMailer::ARMailer
   def gateway_offline_notification(outage, user)
     device = outage.device
     setup_email(user)
-    @subject    += "Outage for Device #{outage.device_id}"
+    @subject    += "Gateway Offline for Device #{outage.device_id}"
     self.priority = outage.priority    
     body :outage_created_at => outage.created_at,
       :login     => user.login,
