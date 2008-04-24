@@ -47,7 +47,7 @@ class CallListController < ApplicationController
   end
   
   def toggle_critical(what, roles_user_id)
-    opts = RolesUsersOption.find_by_roles_users_id(roles_user_id)
+    opts = RolesUsersOption.find_by_roles_user_id(roles_user_id)
     orig_opts = opts
     column = "#{what}_active"
     
