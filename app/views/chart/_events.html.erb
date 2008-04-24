@@ -1,19 +1,12 @@
 <!--User Time Zone :-->  <!--%=@user.profile.time_zone%> -->
 <!--User Time Zone :-->  <!--%=@user.profile.time_zone%> -->
-User Time Zone:   
-<br/>
-<%=TzTime.zone%> 
 
-
-<br/>
-<br/>
 
 
 
 
 
 Recent Events:
-
 <% @events.each do |event| %> 
 
   <p>
@@ -22,16 +15,20 @@ Recent Events:
 
    
    
-    <%=event.event_type%> </b> @ 
+    <%=event.event_type%> </b> @ <br/> 
 <!--%=event.timestamp.to_s%>-->
      
 
-<%=TzTime.zone.utc_to_local(event.timestamp).strftime("%m-%d-%Y %I:%M %p")%>
+<%=TzTime.zone.utc_to_local(event.timestamp).strftime("%a %m-%d-%Y %I:%M %p")%>
 
  
   
    </p>
 
 <% end %>
+User Time Zone:   
+<br/>
+<%=TzTime.zone%> 
+
 
 <div style="clear:both"></div>
