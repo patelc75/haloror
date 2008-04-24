@@ -1,5 +1,7 @@
 <div id="main-col">
-	<%=render :partial => 'layouts/choose_patient'%>
+	<div id="main-col-header">		
+		<%=render :partial => 'layouts/choose_patient'%>
+	</div>
 	<div class="content">
 		<span style="color:#5c5c5c;font-size:1.3em;margin-right:35px">Show Me:</span> <input type="checkbox" name="heartrate" onClick="overlay('heartrate', this.checked)" checked /> Heartrate <!--<input type="checkbox" onClick="overlay('activity', this.checked)" checked /> Activity --><input type="checkbox" name="skin_temp" onClick="overlay('skin_temp', this.checked)" checked /> Skin Temp
 		<div id="chart" style="float:right">
