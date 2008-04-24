@@ -1,5 +1,8 @@
 class MgmtCmdsController < RestfulAuthController
   # POST /mgmt_cmds
+  skip_before_filter :authenticated?
+  before_filter :authenticated, :only => [:create]
+  
   def create
     registration_device_id = '4294967295'
     
