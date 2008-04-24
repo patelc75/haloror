@@ -1,13 +1,5 @@
 <div id="main-col">
-	<div id="main-col-header">
-		Patients:
-		<select onchange="document.location = '/chart/index/'+this.value">
-			<option></option>
-		<% current_user.is_caregiver_for_what.each do |patient| %>
-			<option value="<%=patient.id%>"><%=patient.login%></option>
-		<% end %>
-		</select>
-	</div>
+	<%=render :partial => 'layouts/choose_patient'%>
 	<div class="content">
 		<span style="color:#5c5c5c;font-size:1.3em;margin-right:35px">Show Me:</span> <input type="checkbox" name="heartrate" onClick="overlay('heartrate', this.checked)" checked /> Heartrate <!--<input type="checkbox" onClick="overlay('activity', this.checked)" checked /> Activity --><input type="checkbox" name="skin_temp" onClick="overlay('skin_temp', this.checked)" checked /> Skin Temp
 		<div id="chart" style="float:right">
@@ -21,7 +13,6 @@
 			<div id="handle" style="width:42px; height:42px;position:relative;margin-top:-15px;margin-left:-20px;cursor:move;background:url('/images/slider-handle.gif')"></div>
 		</div>
 		</div>
-			
 		<br />
 		<br />		
 		<div id="slider-labels">
