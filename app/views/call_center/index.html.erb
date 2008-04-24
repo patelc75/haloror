@@ -19,13 +19,13 @@
 	<% @events.sort_by {|event| event[:timestamp]}.reverse.each do |event| %>
 		<div class="row">
 			<div class="col-150">
-				<%=event.alert_type.alert_type%>
+				<%=event.event_type%>&nbsp;
 			</div>
 			<div class="col-100">
 				<%=event.timestamp.to_s(:short)%>
 			</div>
 			<div class="col-200">
-				<%=event.user.profile[:first_name]%> <%=event.user.profile[:last_name]%>
+				<a href="/call_list/show/<%=event.user[:id]%>"><%=event.user.profile[:first_name]%> <%=event.user.profile[:last_name]%></a>
 			</div>
 			<div class="col-250" id="<%=event.id%>_accept">
 				<%=render :partial => 'accept', :locals => {:event => event}%>
