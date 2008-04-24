@@ -73,8 +73,8 @@ class FlexController < ApplicationController
   
   def get_model_data(model, query)
     model.find(:all, :conditions => "user_id = #{query[:user_id]} and timestamp <= '#{query[:enddate]}' and timestamp >= '#{query[:startdate]}'")
-  rescue ActiveRecord::StatementInvalid
-    model.find(:all, :conditions => "user_id = #{query[:user_id]} and end_timestamp <= '#{query[:enddate]}' and begin_timestamp >= '#{query[:startdate]}'")
+  #rescue ActiveRecord::StatementInvalid
+    #model.find(:all, :conditions => "user_id = #{query[:user_id]} and end_timestamp <= '#{query[:enddate]}' and begin_timestamp >= '#{query[:startdate]}'")
   end
   
   def average_chart_data(query)
