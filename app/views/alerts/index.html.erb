@@ -32,9 +32,15 @@
 								else
 									img = 'call_list-phone.gif'
 								end
+								
+								if alert[:phone_active]
+									phone_active = 1
+								else
+									phone_active = 0
+								end
 							%>
 
-							<%=link_to_remote(image_tag(img, :id => 'alert_phone_'+alert.id.to_s), :url => { :action => "toggle_phone",:id => alert.id, :roles_user_id => params[:id] }, :before => 'toggleAlert('+alert.id.to_s+', '+alert[:phone_active].to_s+', \'phone\')')%>
+							<%=link_to_remote(image_tag(img, :id => 'alert_phone_'+alert.id.to_s), :url => { :action => "toggle_phone",:id => alert.id, :roles_user_id => params[:id] }, :before => 'toggleAlert('+alert.id.to_s+', '+phone_active.to_s+', \'phone\')')%>
 						</div>
 
 						<!--EMAIL-->
@@ -46,9 +52,15 @@
 								else
 									img = 'call_list-email.gif'
 								end
+								
+								if alert[:email_active]
+									email_active = 1
+								else
+									email_active = 0
+								end
 							%>
 
-							<%=link_to_remote(image_tag(img, :id => 'alert_email_'+alert.id.to_s), :url => { :action => "toggle_email",:id => alert.id, :roles_user_id => params[:id] }, :before => 'toggleAlert('+alert.id.to_s+', '+alert[:email_active].to_s+', \'email\')')%>
+							<%=link_to_remote(image_tag(img, :id => 'alert_email_'+alert.id.to_s), :url => { :action => "toggle_email",:id => alert.id, :roles_user_id => params[:id] }, :before => 'toggleAlert('+alert.id.to_s+', '+email_active.to_s+', \'email\')')%>
 						</div>
 
 						<!--TEXT-->
@@ -60,9 +72,15 @@
 								else
 									img = 'call_list-text.gif'
 								end
+								
+								if alert[:text_active]
+									text_active = 1
+								else
+									text_active = 0
+								end
 							%>
 
-							<%=link_to_remote(image_tag(img, :id => 'alert_text_'+alert.id.to_s), :url => { :action => "toggle_text",:id => alert.id, :roles_user_id => params[:id] }, :before => 'toggleAlert('+alert.id.to_s+', '+alert[:text_active].to_s+', \'text\')')%>
+							<%=link_to_remote(image_tag(img, :id => 'alert_text_'+alert.id.to_s), :url => { :action => "toggle_text",:id => alert.id, :roles_user_id => params[:id] }, :before => 'toggleAlert('+alert.id.to_s+', '+text_active.to_s+', \'text\')')%>
 						</div>
 					</div>
 				</li>
