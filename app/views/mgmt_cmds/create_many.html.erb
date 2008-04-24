@@ -1,5 +1,14 @@
-<% if @success %>
-	<p style="color:green"><%=@message%></p>
+<% if @pending.length > 0 %>
+	<p style="color:red">Commands were not created for the following devices because a pending command already exists:</p>
+	<ul>
+		<% @pending.each do |id| %>
+			<li><%=id%></li>
+		<% end %>
+	</ul>
 <% else %>
-	<p style="color:red"><%=@message%></p>
+	<% if @success %>
+		<p style="color:green"><%=@message%></p>
+	<% else %>
+		<p style="color:red"><%=@message%></p>
+	<% end %>
 <% end %>

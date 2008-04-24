@@ -61,6 +61,7 @@ class MgmtCmdsController < RestfulAuthController
   def create_many
     @success = true
     @message = 'Command created!'
+    @pending = []
     
     request = params[:management_cmd_device]
     
@@ -82,7 +83,12 @@ class MgmtCmdsController < RestfulAuthController
           while count <= max
             cmd[:device_id] = count
         
-            MgmtCmd.create(cmd) unless MgmtCmd.find_by_device_id(count)
+            if MgmtCmd.find(:first, :conditions => "device_id = #{count} and pending = true")
+              @pending << count
+            else              
+              MgmtCmd.create(cmd)
+            end
+            
             count+=1
           end
         else
@@ -93,12 +99,22 @@ class MgmtCmdsController < RestfulAuthController
         request[:ids].split(',').each do |id|          
           if id
             cmd[:device_id] = id
-            MgmtCmd.create(cmd) unless MgmtCmd.find_by_device_id(id)
+            
+            if MgmtCmd.find(:first, :conditions => "device_id = #{count} and pending = true")
+              @pending << id
+            else              
+              MgmtCmd.create(cmd)
+            end
           end
         end
       else                            # single device id
         cmd[:device_id] = request[:ids]
-        MgmtCmd.create(cmd) unless MgmtCmd.find_by_device_id(request[:ids])
+        
+        if MgmtCmd.find(:first, :conditions => "device_id = #{request[:ids]} and pending = true")
+          @pending << request[:ids]
+        else      
+          MgmtCmd.create(cmd)
+        end
       end
     else
       @success = false
