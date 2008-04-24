@@ -1,8 +1,9 @@
 class MgmtCmdsController < RestfulAuthController
   # POST /mgmt_cmds
   skip_before_filter :authenticated?
-  before_filter :authenticated, :only => [:create]
+  before_filter :authenticated?, :only => [:create]
   
+  #this create method is called for both outbound and inbound (server or device originated)
   def create
     registration_device_id = '4294967295'
     
