@@ -28,6 +28,16 @@ class MgmtResponsesController < RestfulAuthController
           info.save
         end      
       end
+    else
+      # create null command (cmd_type => no command)
+      cmd = MgmtCmd.new
+      cmd.device_id = request[:device_id]
+      cmd.cmd_type = 'no_command'
+      cmd.save
+      
+      # link null response to command
+      response = MgmtResponse.new
+      response.mgmt_cmd_id = cmd.id
     end
     
     render :nothing => true
