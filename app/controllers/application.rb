@@ -67,12 +67,12 @@ class ApplicationController < ActionController::Base
     render :layout => false, :partial => 'call_list/load_caregivers', :locals => {:caregivers => @caregivers}
   end
   
-  def get_caregivers
+  def get_caregivers(user)
     # loop through assigned roles, check for removed = 1
     
     @caregivers = {}
     
-    current_user.has_caregivers.each do |caregiver|
+    user.has_caregivers.each do |caregiver|
       user = User.find(caregiver.user_id)
       if opts = user.roles_users_option
         unless opts.removed

@@ -7,7 +7,13 @@ class CallListController < ApplicationController
     number_ext
     #@user = User.find(1)
     
-    get_caregivers
+    if params[:id]
+      user = User.find(params[:id])
+    else
+      user = current_user
+    end
+    
+    get_caregivers(user)
   end
   
   def sort
