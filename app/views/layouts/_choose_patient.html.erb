@@ -1,7 +1,10 @@
-
-	Patients:	
-	<select onchange="document.location = '/<%=params[:controller]%>/<%=params[:action]%>/'+this.value">
+Halo User:	
+<select onchange="if(this.value != ''){document.location = '/<%=params[:controller]%>/<%=params[:action]%>/'+this.value}">
+	<% if current_user.is_halouser? %>
+		<option value="<%=current_user.id%>"><%=current_user.login%></option>
+	<% end %>
+	<option value="">---</option>
 	<% current_user.is_caregiver_for_what.each do |patient| %>
 		<option value="<%=patient.id%>"><%=patient.login%></option>
 	<% end %>
-	</select>
+</select>
