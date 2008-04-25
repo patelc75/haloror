@@ -36,7 +36,7 @@ class ManagementController < ApplicationController
   end
   
   def roles
-    @roles = ['administrator', 'operator', 'caregiver']
+    @roles = ['administrator', 'operator', 'caregiver', 'halouser']
     
     @users = {''=>''}
     
