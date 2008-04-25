@@ -38,9 +38,10 @@ class UsersController < ApplicationController
       # create profile
       Profile.create(:user_id => @user.id)
       
-      # register with strap/gateway
+      # create halouser role
+      @user.is_halouser
       
-
+      # register with strap/gateway
       @strap = register_user_with_device(@user,params[:strap_serial_number])
       @gateway = register_user_with_device(@user,params[:gateway_serial_number])
     end
