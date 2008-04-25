@@ -27,11 +27,16 @@ class UsersController < ApplicationController
   end
   
   def new
-    #render :layout => false
+    @user = User.new
+    @gateway = Device.new
+    @strap = Device.new
   end
 
   def create
     @user = User.new(params[:user])
+    @gateway = @user.devices.build(params[:gateway])
+    @strap = @user.devices.build(params[:strap])
+    
     User.transaction do
       @user.save!
         
@@ -41,9 +46,12 @@ class UsersController < ApplicationController
       # create halouser role
       @user.is_halouser
       
+      @gateway.set_type
+      @strap.set_type
+      
       # register with strap/gateway
-      @strap = register_user_with_device(@user,params[:strap_serial_number])
-      @gateway = register_user_with_device(@user,params[:gateway_serial_number])
+      #register_user_with_device(@user,@strap)
+      #register_user_with_device(@user,@gateway)
     end
     #end
     #self.current_user = @user
@@ -205,14 +213,15 @@ class UsersController < ApplicationController
     device_type
   end
   
-  def register_user_with_device(user, serial_number)
-    unless device = Device.find_by_serial_number(serial_number)
-      device = Device.new
-      device.serial_number = serial_number
-      device.device_type = get_device_type(device)
-      device.save!
-    end
+  def register_user_with_device(user, device)
+    # unless device = Device.find_by_serial_number(serial_number)
+    #   device = Device.new
+    #   device.serial_number = serial_number
+    #   device.device_type = get_device_type(device)
+    #   device.save!
+    # end
 
+    #device.device_type = get_device_type(device)
     device.users << user
     device.save!
   end
