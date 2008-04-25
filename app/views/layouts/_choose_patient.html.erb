@@ -4,7 +4,8 @@ Halo User:
 		<option value="<%=current_user.id%>"><%=current_user.login%></option>
 	<% end %>
 	<option value="">---</option>
-	<% current_user.is_caregiver_for_what.each do |patient| %>		
-		<option value="<%=patient.id%>" <%='selected' if params[:id] == patient.id %>><%=patient.login%></option>
+	<% current_user.is_caregiver_for_what.each do |patient| %>
+		<%=debug params%>
+		<option value="<%=patient.id%>" <%='selected' if params[:id].to_i == patient.id %>><%=patient.login%></option>
 	<% end %>
 </select>
