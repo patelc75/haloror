@@ -1,7 +1,7 @@
 class CallCenterController < ApplicationController
   def index
-    @events = Event.find(:all)
-  end
+    @events = Event.find(:all, :conditions => "event_type = 'Fall' or event_type = 'Panic'")
+  end 
   
   def accept
     # event = Event.find(params[:id])
