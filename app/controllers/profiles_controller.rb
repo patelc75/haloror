@@ -89,6 +89,6 @@ class ProfilesController < ApplicationController
     
     Profile.update(params[:id], params[:profile])
     
-    refresh_caregivers
+    refresh_caregivers(user)
   end
 end
