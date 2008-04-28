@@ -57,12 +57,12 @@ class ApplicationController < ActionController::Base
   
   
   
-  def refresh_caregivers
+  def refresh_caregivers(user)
     number_ext
     
     # loop through assigned roles, check for removed = 1
     
-    get_caregivers
+    get_caregivers(user)
     
     render :layout => false, :partial => 'call_list/load_caregivers', :locals => {:caregivers => @caregivers}
   end
