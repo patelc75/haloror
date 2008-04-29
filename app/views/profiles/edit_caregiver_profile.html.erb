@@ -11,6 +11,8 @@
 	<label for="email">Email</label>
 	<br />
 	<input type="hidden" name="user_id" value="<%=@user.id%>" />
+	<input type="hidden" name="patient_id" value="<%=params[:user_id]%>" />
+	
 	<%= text_field_tag :email, @user.email %>
 	<br />	
 	<br />

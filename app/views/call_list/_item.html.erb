@@ -172,7 +172,7 @@
 		%>
 		
 		<%=link_to_remote img, :update => "response",
-		    :url => { :controller => "users", :action => "destroy_caregiver", :id => opts.id, :position => i, :caregiver_id => caregiver.id },
+		    :url => { :controller => "users", :action => "destroy_caregiver", :id => caregiver.roles_users_option.id, :position => i, :caregiver_id => caregiver.id },
 			:confirm => "Are you sure?"
 		%>
 	</div>
@@ -181,7 +181,7 @@
 	
 	<div style="float:left;padding-top:35px;width:125px" id="item_edit_<%=caregiver.id%>">
 		<!--% puts edit_user_url(caregiver)%-->
-		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true }, :html => {:method => :get, :complete => 'updatePositions()'})%>
+		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true, :user_id => params[:id] }, :html => {:method => :get, :complete => 'updatePositions()'})%>
 		|
 		<%=link_to('More', :controller => "alerts", :action => "index", :id => caregiver.roles_user.id)%>
 	</div>

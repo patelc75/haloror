@@ -136,16 +136,16 @@ class UsersController < ApplicationController
     
     profile = Profile.create(:user_id => @user.id)
     
-    role = @user.has_role 'caregiver', current_user
+    #patient = User.find(params[:user_id].to_i)
+    role = @user.has_role 'caregiver', User.find(params[:user_id].to_i)
     @role = @user.roles_user
     
     update_from_position(params[:position], @role.role_id, @user.id)
     
     RolesUsersOption.create(:roles_user_id => @role.id, :user_id => @user.id, :position => params[:position], :active => 1)
     
-
-
-    redirect_to :controller => 'profiles', :action => 'edit_caregiver_profile', :id => profile.id
+    redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}"
+    #redirect_to :controller => 'profiles', :action => 'edit_caregiver_profile', :id => profile.id, :user_id => params[:user_id]
   rescue ActiveRecord::RecordInvalid
     # check if email exists
     if @existing_id = User.find_by_email(params[:user][:email]).id
