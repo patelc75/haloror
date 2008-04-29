@@ -119,7 +119,7 @@ class UsersController < ApplicationController
       end
     end
     
-    @max_position = get_max_caregiver_position
+    @max_position = get_max_caregiver_position(current_user)
     
     @password = random_password
     
@@ -152,7 +152,7 @@ class UsersController < ApplicationController
       @add_existing = true
     end
     
-    @max_position = get_max_caregiver_position
+    @max_position = get_max_caregiver_position(@user)
     render :partial => 'caregiver_form'
   end
   
@@ -165,7 +165,7 @@ class UsersController < ApplicationController
   def restore_caregiver_role
     RolesUsersOption.update(params[:id], {:removed => 0})
     
-    refresh_caregivers
+    refresh_caregivers(current_user)
   end
   
   def add_existing
@@ -175,11 +175,11 @@ class UsersController < ApplicationController
     @role = @user.roles_user
     
     RolesUsersOption.create(:roles_users_id => @role.id, :user_id => @user.id, :position => current_user.has_caregivers.length, :active => 1)
-    refresh_caregivers
+    refresh_caregivers(@user)
   end
   
-  def get_max_caregiver_position
-    get_caregivers
+  def get_max_caregiver_position(user)
+    get_caregivers(user)
     @caregivers.size + 1
   end
   
