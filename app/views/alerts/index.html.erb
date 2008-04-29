@@ -7,7 +7,18 @@
 	<div class="content">
 		<ul id="call_list">
 			<% @alert_types.each do |alert| %>
-				<% next if alert.alert_group.length == 1 and alert.alert_group[0].group_type == 'critical'%>
+				<%
+					critical = false
+					alert.alert_group.each do |group|
+						if group.group_type == 'critical'
+							critical = true
+							break
+						end
+					end
+					
+					next if critical
+				%>
+				
 				<% 
 					if alert_opt = AlertOption.find(:first,:conditions => "roles_user_id = #{params[:id]} and alert_type_id = #{alert.id}")
 						alert[:phone_active] = alert_opt.phone_active
