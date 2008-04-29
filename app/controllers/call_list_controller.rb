@@ -68,8 +68,7 @@ class CallListController < ApplicationController
     
     #RolesUsersOption.update(params[:id], {column.to_sym => state})
     
-    alert_group_id = AlertGroup.find_by_group_type('critical').id
-    AlertType.find(:all, :conditions => "alert_group_id = #{alert_group_id}").each do |alert_type|
+    AlertGroup.find_by_group_type('critical').alert_types.each do |alert_type|
       unless alert_opt = AlertOption.find(:first, :conditions => "roles_user_id = #{roles_user_id} and alert_type_id = #{alert_type.id}")
         alert_opt = AlertOption.new
         alert_opt.roles_user_id = roles_user_id
@@ -83,6 +82,20 @@ class CallListController < ApplicationController
       alert_opt[column.to_sym] = opts[column.to_sym]
       alert_opt.save
     end
+    # AlertType.find(:all, :conditions => "alert_group_id = #{alert_group_id}").each do |alert_type|
+    #   unless alert_opt = AlertOption.find(:first, :conditions => "roles_user_id = #{roles_user_id} and alert_type_id = #{alert_type.id}")
+    #     alert_opt = AlertOption.new
+    #     alert_opt.roles_user_id = roles_user_id
+    #     alert_opt.alert_type_id = alert_type.id
+    #     alert_opt.phone_active = opts.phone_active
+    #     alert_opt.email_active = opts.email_active
+    #     alert_opt.text_active = opts.text_active
+    #     alert_opt.save
+    #   end
+    #   
+    #   alert_opt[column.to_sym] = opts[column.to_sym]
+    #   alert_opt.save
+    # end
   end
   
   def toggle_phone
