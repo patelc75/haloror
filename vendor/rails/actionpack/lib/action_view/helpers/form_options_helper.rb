@@ -385,7 +385,7 @@ module ActionView
         value = value(object)
         content_tag("select",
           add_options(
-            time_zone_options_for_select(value, priority_zones, options[:model] || TimeZone),
+            time_zone_options_for_select(value || options[:default], priority_zones, options[:model] || TimeZone),
             options, value
           ), html_options
         )

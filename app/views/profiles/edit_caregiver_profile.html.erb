@@ -51,6 +51,7 @@
 	<%= f.text_field :cell_phone %>
 	<br />
 	<br />
+	
 	<select id="profile_carrier_id" name="profile[carrier_id]">
 	<% if @profile.carrier_id == 0 or @profile.carrier_id == nil -%>
     <option value="" selected="selected" >
@@ -73,13 +74,14 @@
 	<label for="time_zone">Select Time Zone</label>
 
 
-		
-		<%= time_zone_select 'profile', 'time_zone', TZInfo::Timezone.all.sort, :model => TZInfo::Timezone %> 
+
+		<%= time_zone_select ('profile', 'time_zone', TZInfo::Timezone.all.sort, :model => TZInfo::Timezone, :default => "America/Chicago" )%> 
 	
 	<br/>
 	<br />
 	
-	<label for="relationship">Relationship</label>
+	
+    <label for="relationship">Relationship</label>
 	<br />
 	<%= f.text_field :relationship %>
     <br/>
