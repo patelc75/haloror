@@ -113,7 +113,7 @@ class UsersController < ApplicationController
     @removed_caregivers = []
     
     current_user.has_caregivers.each do |caregiver|
-      user = User.find(caregiver.user_id)
+      user = User.find(caregiver.id)
       if user and user.roles_users_option and user.roles_users_option[:removed]
         @removed_caregivers << caregiver
       end

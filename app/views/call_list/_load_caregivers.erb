@@ -3,8 +3,8 @@
 
 <% 
 	caregivers.each do |position, caregiver|
-		user = User.find(caregiver.user_id)
-		roles_user = RolesUser.find(:first, :conditions => "role_id = #{caregiver[:role_id]} and user_id = #{user[:id]}")
+		user = User.find(caregiver.id)
+		roles_user = RolesUser.find(:first, :conditions => "role_id = #{caregiver.roles_user[:role_id]} and user_id = #{user[:id]}")
 %>
 
 	<%= render :partial => "call_list/item", :locals => { :caregiver => user, :opts => roles_user.roles_users_option, :position => position , :i => i, :role => caregiver } %>
