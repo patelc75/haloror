@@ -127,7 +127,7 @@ class UsersController < ApplicationController
   end
   
   def existing_info
-    render :partial => 'call_list/extra_info_lightbox', :locals => {:caregiver_id => params[:id]}
+    render :partial => 'call_list/extra_info_lightbox', :locals => {:caregiver_id => params[:id], :user_id => params[:user_id]}
   end
   
   def create_caregiver
