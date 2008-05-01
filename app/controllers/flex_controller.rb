@@ -4,7 +4,9 @@ class FlexController < ApplicationController
     #@models = [Vital, SkinTemp, Step, Battery]
     @models = [Vital, SkinTemp, Battery]
     
-    query = params[:ChartQuery]
+    unless query = params[:ChartQuery]
+      query = {}
+    end
     
     # initialization
     if query[:userID] == nil
@@ -20,13 +22,13 @@ class FlexController < ApplicationController
     
     query[:user_id] = query[:userID]
     
-    unless query[:enddate]
-      query[:enddate] = Time.now
+    if query[:enddate] == nil
+      query[:enddate] = Time.now.to_s
     end
     
     user = User.find(query[:user_id])
-    query[:startdate] = format_datetime(query[:startdate], user)
-    query[:enddate] = format_datetime(query[:enddate], user)
+    #query[:startdate] = format_datetime(query[:startdate].to_time, user)
+    #query[:enddate] = format_datetime(query[:enddate].to_time, user)
     
     if query[:num_points] == '0'
       data = discrete_chart_data(query)
