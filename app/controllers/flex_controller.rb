@@ -32,7 +32,7 @@ class FlexController < ApplicationController
     
     data = {}
     
-    if query[:enddate] != '' and query[:startdate] != ''
+    if query[:enddate] and query[:startdate]
       if query[:num_points] == '0'
         data = discrete_chart_data(query)
         averaging = 'false'
@@ -56,7 +56,11 @@ class FlexController < ApplicationController
       battery = {}
     end
     
-    events = Event.find(:all, :conditions => "user_id = '#{query[:user_id]}' and timestamp <= '#{query[:enddate]}' and timestamp >= '#{query[:startdate]}'")    
+    events = {}
+    if query[:enddate] and query[:startdate]
+      events = Event.find(:all, :conditions => "user_id = '#{query[:user_id]}' and timestamp <= '#{query[:enddate]}' and timestamp >= '#{query[:startdate]}'")    
+    end
+    
     render :partial => 'chart_data', :locals => {:data => data, :query => query, :user => user, :averaging => averaging, :events => events, :battery => battery, :last_reading => get_last_reading(query[:user_id]), :status => status}
   end
   
@@ -85,9 +89,7 @@ class FlexController < ApplicationController
   end
   
   def get_model_data(model, query)
-    if query[:enddate] and query[:startdate]
-      model.find(:all, :conditions => "user_id = #{query[:user_id]} and timestamp <= '#{query[:enddate]}' and timestamp >= '#{query[:startdate]}'")
-    end
+    model.find(:all, :conditions => "user_id = #{query[:user_id]} and timestamp <= '#{query[:enddate]}' and timestamp >= '#{query[:startdate]}'")
   #rescue ActiveRecord::StatementInvalid
     #model.find(:all, :conditions => "user_id = #{query[:user_id]} and end_timestamp <= '#{query[:enddate]}' and begin_timestamp >= '#{query[:startdate]}'")
   end
