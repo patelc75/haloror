@@ -4,7 +4,9 @@ class FlexController < ApplicationController
     #@models = [Vital, SkinTemp, Step, Battery]
     @models = [Vital, SkinTemp, Battery]
     
-    unless query = params[:ChartQuery]
+    query = params[:ChartQuery]
+    
+    unless query[:user_id]
       query = {}
       query[:num_points] = '0'
       #query[:user_id] = 2
