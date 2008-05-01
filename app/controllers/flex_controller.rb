@@ -22,7 +22,7 @@ class FlexController < ApplicationController
     
     query[:user_id] = query[:userID]
     
-    if query[:enddate] == nil
+    if query[:enddate] == nil && query[:startdate] != nil
       query[:enddate] = Time.now.to_s
     end
     
@@ -30,6 +30,9 @@ class FlexController < ApplicationController
     #query[:startdate] = format_datetime(query[:startdate].to_time, user)
     #query[:enddate] = format_datetime(query[:enddate].to_time, user)
     
+    data = {}
+    
+    unless query[:enddate] == nil or query[:startdate] == nil
     if query[:num_points] == '0'
       data = discrete_chart_data(query)
       averaging = 'false'
