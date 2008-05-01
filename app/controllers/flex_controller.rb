@@ -6,7 +6,7 @@ class FlexController < ApplicationController
     
     query = params[:ChartQuery]
     
-    unless query[:userID]
+    if query[:userID] == nil
       query = {}
       query[:num_points] = '0'
       #query[:user_id] = 2
@@ -16,6 +16,8 @@ class FlexController < ApplicationController
       
       query[:startdate] = query[:startdate].to_s
     end
+    
+    query[:user_id] = query[:userID]
     
     unless query[:enddate]
       query[:enddate] = Time.now
@@ -29,7 +31,7 @@ class FlexController < ApplicationController
       averaging = 'true'
     end
     
-    query[:user_id] = query[:userID]
+    
     
     user = User.find(query[:user_id])
     
