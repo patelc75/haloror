@@ -6,11 +6,11 @@ class FlexController < ApplicationController
     
     query = params[:ChartQuery]
     
-    unless query[:user_id]
+    unless query[:userID]
       query = {}
       query[:num_points] = '0'
       #query[:user_id] = 2
-      query[:user_id] = current_user.id
+      query[:userID] = current_user.id
       query[:startdate] = Time.now - 600
       query[:enddate] = Time.now.to_s
       
@@ -29,7 +29,7 @@ class FlexController < ApplicationController
       averaging = 'true'
     end
     
-    user = User.find(query[:user_id])
+    user = User.find(query[:userID])
     
     status = {}
     status[:connectivity] = 'Device Available' unless status[:connectivity] = get_status('connectivity', user)
@@ -45,8 +45,8 @@ class FlexController < ApplicationController
       battery = {}
     end
     
-    events = Event.find(:all, :conditions => "user_id = '#{query[:user_id]}' and timestamp <= '#{query[:enddate]}' and timestamp >= '#{query[:startdate]}'")    
-    render :partial => 'chart_data', :locals => {:data => data, :query => query, :user => user, :averaging => averaging, :events => events, :battery => battery, :last_reading => get_last_reading(query[:user_id]), :status => status}
+    events = Event.find(:all, :conditions => "user_id = '#{query[:userID]}' and timestamp <= '#{query[:enddate]}' and timestamp >= '#{query[:startdate]}'")    
+    render :partial => 'chart_data', :locals => {:data => data, :query => query, :user => user, :averaging => averaging, :events => events, :battery => battery, :last_reading => get_last_reading(query[:userID]), :status => status}
   end
   
   protected
