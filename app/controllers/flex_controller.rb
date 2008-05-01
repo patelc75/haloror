@@ -33,12 +33,13 @@ class FlexController < ApplicationController
     data = {}
     
     unless query[:enddate] == nil or query[:startdate] == nil
-    if query[:num_points] == '0'
-      data = discrete_chart_data(query)
-      averaging = 'false'
-    else
-      data = average_chart_data(query)
-      averaging = 'true'
+      if query[:num_points] == '0'
+        data = discrete_chart_data(query)
+        averaging = 'false'
+      else
+        data = average_chart_data(query)
+        averaging = 'true'
+      end
     end
     
     status = {}
