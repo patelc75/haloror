@@ -6,6 +6,7 @@ class FlexController < ApplicationController
     
     query = params[:ChartQuery]
     
+    # initialization
     if query[:userID] == nil
       query = {}
       query[:num_points] = '0'
@@ -23,6 +24,10 @@ class FlexController < ApplicationController
       query[:enddate] = Time.now
     end
     
+    user = User.find(query[:user_id])
+    query[:startdate] = format_datetime(query[:startdate], user)
+    query[:enddate] = format_datetime(query[:enddate], user)
+    
     if query[:num_points] == '0'
       data = discrete_chart_data(query)
       averaging = 'false'
@@ -30,10 +35,6 @@ class FlexController < ApplicationController
       data = average_chart_data(query)
       averaging = 'true'
     end
-    
-    
-    
-    user = User.find(query[:user_id])
     
     status = {}
     status[:connectivity] = 'Device Available' unless status[:connectivity] = get_status('connectivity', user)
