@@ -85,7 +85,9 @@ class FlexController < ApplicationController
   end
   
   def get_model_data(model, query)
-    model.find(:all, :conditions => "user_id = #{query[:user_id]} and timestamp <= '#{query[:enddate]}' and timestamp >= '#{query[:startdate]}'")
+    if query[:enddate] and query[:startdate]
+      model.find(:all, :conditions => "user_id = #{query[:user_id]} and timestamp <= '#{query[:enddate]}' and timestamp >= '#{query[:startdate]}'")
+    end
   #rescue ActiveRecord::StatementInvalid
     #model.find(:all, :conditions => "user_id = #{query[:user_id]} and end_timestamp <= '#{query[:enddate]}' and begin_timestamp >= '#{query[:startdate]}'")
   end
