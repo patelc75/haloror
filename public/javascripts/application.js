@@ -126,9 +126,9 @@ function toggleContact(pos, id, status, what, user_id)
 			else
 				obj.src = '/images/call_list-'+what+'-inactive.png';
 		}
+		
+		return true;
 	}
-	
-	return true;
 }
 
 var active = [];
