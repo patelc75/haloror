@@ -26,7 +26,7 @@
 			&nbsp;
 		<% end %>
 		
-		<% if caregiver %>
+		<% if caregiver and user.profile %>
 			</a>
 			(<%=user.profile[:relationship]%>)
 		<% end %>
