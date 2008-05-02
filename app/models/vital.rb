@@ -22,56 +22,101 @@ class Vital < ActiveRecord::Base
     values = [@series_data,  @categories]
   end
   
-  def self.average_data(num_points, start_time, end_time, id, column, format)
-    @series_data = Array.new(num_points, 0)  #results of averaging from database
-    @categories = Array.new(num_points, 0) 
+  def self.average_data_optimize(num_points, start_time, end_time, id, column, format)
+
+    series_data = Array.new(num_points, 0)  #results of averaging from database
+    categories = Array.new(num_points, 0) 
     interval = (end_time - start_time) / num_points #interval returned in seconds
     current_time = start_time
     current_point = 0   #the data point that we're currently on
-
-    while current_point < num_points
-      condition = "timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}' AND user_id = '#{id}'"
-
-      #before inheritance
-      #average = Heartrate.average(:heartrate, :conditions => condition)
-
-      #after inheritance
-      #average = get_average(condition)    #using polymorphism
-      #average = average("'#{column}'", condition) #if column is passed in as :heartrate
-      average = average(column, :conditions => condition)
-	  
-      current_time = current_time + interval
-
-      #@series_data[current_point] = format_average(average)
-      if(average == nil)
-        @series_data[current_point] = 0
-      elsif
-        @series_data[current_point] = average.round(1)
-      end
+ 
+    select = ""
+    while current_point < num_points 
       
-      if format
-        @categories[current_point] = current_time.strftime(format)  
+      if current_point == 0
+        select << "select avg(#{column}) as average from #{table_name} where user_id = '#{id}' AND (timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}') "
       else
-        @categories[current_point] = current_time
+        select << " UNION ALL select avg(#{column}) as average from #{table_name} where user_id = '#{id}' AND (timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}') "
       end
-      
-      
+      current_time = current_time + interval
+      current_point = current_point + 1
+    end
+    current_time = start_time
+    current_point = 0
+    connection.select_all(select).collect do |result|
+      current_time = current_time + interval
+      RAILS_DEFAULT_LOGGER.debug result.length
+      RAILS_DEFAULT_LOGGER.debug result.inspect
+      RAILS_DEFAULT_LOGGER.debug current_time.inspect
+      average = result['average']
+      if(average == nil)
+        series_data[current_point] = 0
+      elsif
+        series_data[current_point] = average.to_f.round(1)
+      end
+
+      if format
+        categories[current_point] = current_time.strftime(format)  
+      else
+        categories[current_point] = current_time
+      end
 
       current_point = current_point + 1
-      #@averages_array << round_to(average, 1)
-      #@averages_array <<  ((average * 10).truncate.to_f / 10)
-      #@labels_array << current_time.strftime("%H:%M:%S")
-    end 
 
-    #     puts "above the loop"
-    #     #for debugging
-    #     @averages_array.each_with_index() do |x, i| 
-    #       puts x, @labels_array[i]
-    #       puts "HW"
-    #     end
-	
-    values = [@series_data,  @categories]
+    end
+    values = [series_data,  categories]
+    
   end
+  def self.average_data(num_points, start_time, end_time, id, column, format)
+        @series_data = Array.new(num_points, 0)  #results of averaging from database
+        @categories = Array.new(num_points, 0) 
+        interval = (end_time - start_time) / num_points #interval returned in seconds
+        current_time = start_time
+        current_point = 0   #the data point that we're currently on
+    
+        while current_point < num_points
+          condition = "timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}' AND user_id = '#{id}'"
+    
+          #before inheritance
+          #average = Heartrate.average(:heartrate, :conditions => condition)
+    
+          #after inheritance
+          #average = get_average(condition)    #using polymorphism
+          #average = average("'#{column}'", condition) #if column is passed in as :heartrate
+          average = average(column, :conditions => condition)
+        
+          current_time = current_time + interval
+    
+          #@series_data[current_point] = format_average(average)
+          if(average == nil)
+            @series_data[current_point] = 0
+          elsif
+            @series_data[current_point] = average.round(1)
+          end
+          
+          if format
+            @categories[current_point] = current_time.strftime(format)  
+          else
+            @categories[current_point] = current_time
+          end
+          
+          
+    
+          current_point = current_point + 1
+          #@averages_array << round_to(average, 1)
+          #@averages_array <<  ((average * 10).truncate.to_f / 10)
+          #@labels_array << current_time.strftime("%H:%M:%S")
+        end 
+    
+        #     puts "above the loop"
+        #     #for debugging
+        #     @averages_array.each_with_index() do |x, i| 
+        #       puts x, @labels_array[i]
+        #       puts "HW"
+        #     end
+      
+        values = [@series_data,  @categories]
+      end
 
   def self.method_missing(methId, *args)
     method = methId.id2name.to_s

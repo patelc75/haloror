@@ -103,8 +103,12 @@ class FlexController < ApplicationController
     
     @models.each do |model|
       columns[model.class_name].each do |column|
-        averages, times = model.average_data(query[:num_points].to_i, query[:startdate].to_time, query[:enddate].to_time, query[:user_id], column, nil)
-        
+        averages, times = []
+        if params[:optimize]
+          averages, times = model.average_data_optimize(query[:num_points].to_i, query[:startdate].to_time, query[:enddate].to_time, query[:user_id], column, nil)
+        else
+          averages, times = model.average_data(query[:num_points].to_i, query[:startdate].to_time, query[:enddate].to_time, query[:user_id], column, nil)
+        end
         i = 0
         times.each do |time|
           unless data[time]
