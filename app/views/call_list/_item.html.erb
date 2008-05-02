@@ -166,7 +166,7 @@
 		%>
 		
 		<%=link_to_remote img, :update => "response",
-		    :url => { :controller => "users", :action => "destroy_caregiver", :id => caregiver.roles_users_option.id, :position => i, :caregiver_id => caregiver.id },
+		    :url => { :controller => "users", :action => "destroy_caregiver", :id => caregiver.roles_user.roles_users_option.id, :position => i, :caregiver_id => caregiver.id },
 			:confirm => "Are you sure?"
 		%>
 	</div>

@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
   has_many :vitals
   #belongs_to :role
   has_one :roles_user
-  has_one :roles_users_option
+  #has_one :roles_users_option
   
   has_many :roles_users
   has_many :roles, :through => :roles_users, :include => [:roles_user]

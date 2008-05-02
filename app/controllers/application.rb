@@ -74,7 +74,7 @@ class ApplicationController < ActionController::Base
 
     user.has_caregivers.each do |caregiver|
       user = User.find(caregiver.roles_user.user_id)
-      if opts = user.roles_users_option
+      if opts = user.roles_user.roles_users_option
         unless opts.removed
           @caregivers[opts.position] = caregiver
         end
@@ -91,7 +91,7 @@ class ApplicationController < ActionController::Base
   def format_datetime(datetime,user)
     return datetime if !datetime.respond_to?(:strftime)
     datetime = user.tz.utc_to_local(datetime) if user
-    datetime.strftime("%m-%d-%Y %I:%M %p")
+    #datetime.strftime("%m-%d-%Y %I:%M %p")
   end
   
   protected
