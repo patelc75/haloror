@@ -1,7 +1,7 @@
 
 
 <%
-	if !opts.active?
+	if opts and !opts.active?
 		img = '/images/call_list-item-away.gif'
 		className = 'inactive'
 	else
