@@ -95,29 +95,33 @@ class CriticalMailer < ActionMailer::ARMailer
     user.has_caregivers.each do |caregiver|
       #opts = caregiver.roles_users_option
       
-      #from load_caregiver.erb
-      user = User.find(caregiver.user_id)
+      #see load_caregiver.erb for another example of this loop
+      user = User.find(caregiver.id)
       roles_user = RolesUser.find(:first, :conditions => "role_id = #{caregiver.roles_user[:role_id]} and user_id = #{user[:id]}")
       
       alert_type_id = AlertType.find(:first, :conditions => "alert_type='#{alert.class.to_s}'").id
-      alert_option = AlertOption.find(:first, :conditions => "alert_type_id=#{alert_type_id} and roles_user_id=#{roles_user.roles_user_id}")
       
-      if (alert_option)  #check for null until we figure out a better way to get roles_users_options
-        em_bool = alert_option.email_active
-        tm_bool = alert_option.text_active
+      if(alert_type_id)
+        alert_option = AlertOption.find(:first, :conditions => "alert_type_id=#{alert_type_id} and roles_user_id=#{roles_user.roles_user_id}")
+
+        if (alert_option)  #check for null until we figure out a better way to get roles_users_options
+          em_bool = alert_option.email_active
+          tm_bool = alert_option.text_active
    
-        if tm_bool == true
-          if user.profile.cell_phone != nil and user.profile.cell_phone != ""
-            @recipients  << ["#{user.profile.cell_phone}" + "#{user.profile.carrier.domain}"] 
+          if tm_bool == true
+            if user.profile.cell_phone != nil and user.profile.cell_phone != ""
+              @recipients  << ["#{user.profile.cell_phone}" + "#{user.profile.carrier.domain}"] 
+            end
           end
-        end
     
-        if em_bool == true
-          if user.email != nil and user.email != ""
-            @recipients  << ["#{user.email}"] 
+          if em_bool == true
+            if user.email != nil and user.email != ""
+              @recipients  << ["#{user.email}"] 
+            end
           end
         end
       end
+      
     end
   
     @from        = "no-reply@myhalomonitor.com"
