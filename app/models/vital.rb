@@ -23,7 +23,7 @@ class Vital < ActiveRecord::Base
   end
   
   def self.average_data_optimize(num_points, start_time, end_time, id, column, format)
-
+    RAILS_DEFAULT_LOGGER.info "Vital::average_data_optimize"
     series_data = Array.new(num_points, 0)  #results of averaging from database
     categories = Array.new(num_points, 0) 
     interval = (end_time - start_time) / num_points #interval returned in seconds
