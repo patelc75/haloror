@@ -5,9 +5,11 @@
 	caregivers.each do |position, caregiver|
 		user = User.find(caregiver.id)
 		roles_user = RolesUser.find(:first, :conditions => "role_id = #{caregiver.roles_user[:role_id]} and user_id = #{user[:id]}")
+		
+		next unless opts = roles_user.roles_users_option
 %>
 
-	<%= render :partial => "call_list/item", :locals => { :caregiver => user, :opts => roles_user.roles_users_option, :position => position , :i => i, :role => caregiver } %>
+	<%= render :partial => "call_list/item", :locals => { :caregiver => user, :opts => opts, :position => position , :i => i, :role => caregiver } %>
 
 	<% 
 		if user.roles_user.roles_users_option.active
