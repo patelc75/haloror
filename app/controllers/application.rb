@@ -64,7 +64,7 @@ class ApplicationController < ActionController::Base
     
     get_caregivers(user)
     
-    render :layout => false, :partial => 'call_list/load_caregivers', :locals => {:caregivers => @caregivers}
+    render :layout => false, :partial => 'call_list/load_caregivers', :locals => {:caregivers => @caregivers,:user => @user}
   end
   
   def get_caregivers(user)

@@ -283,11 +283,11 @@ function moveElementDownforList(list, key) {
 handles moving up
 */
 
-function moveElementUp(pos,id,call_order) {
+function moveElementUp(pos,id,user_id) {
 	moveElementUpforList('call_list', pos);
 	updatePositions();
 	
-	new Ajax.Request('/call_list/sort/', {asynchronous:true, evalScripts:true, parameters:serialize()})
+	new Ajax.Request('/call_list/sort/?user_id='+user_id, {asynchronous:true, evalScripts:true, parameters:serialize()})
 
 	swapCallListBg(pos, id);
 	toggleTooltip(id);
@@ -297,11 +297,11 @@ function moveElementUp(pos,id,call_order) {
 handles moving down
 */
 
-function moveElementDown(pos,id,call_order) {
+function moveElementDown(pos,id,user_id) {
 	moveElementDownforList('call_list', pos);
 	updatePositions();
 	
-	new Ajax.Request('/call_list/sort/', {asynchronous:true, evalScripts:true, parameters:serialize()})
+	new Ajax.Request('/call_list/sort/?user_id='+user_id, {asynchronous:true, evalScripts:true, parameters:serialize()})
 	
 	swapCallListBg(pos,id);
 	toggleTooltip(id);

@@ -43,11 +43,11 @@
 				img = ''
 			end
 		%>
-		<a href="#" onClick="moveElementUp(<%=i%>, <%=caregiver.id%>, <%=current_user.id%>)">
+		<a href="#" onClick="moveElementUp(<%=i%>, <%=caregiver.id%>, <%=params[:id]%>)">
 			<img src="/images/call_list-up<%=img%>.gif" border="0" id="item_up_<%=caregiver.id%>" />
 		</a>
 		<br />
-		<a href="#" onClick="moveElementDown(<%=i%>, <%=caregiver.id%>, <%=current_user.id%>)">
+		<a href="#" onClick="moveElementDown(<%=i%>, <%=caregiver.id%>, <%=params[:id]%>)">
 			<img src="/images/call_list-down<%=img%>.gif" border="0" id="item_down_<%=caregiver.id%>" />
 		</a>
 	</div>

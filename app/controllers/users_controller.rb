@@ -114,7 +114,7 @@ class UsersController < ApplicationController
     
     current_user.has_caregivers.each do |caregiver|
       user = User.find(caregiver.id)
-      if user and user.roles_users_option and user.roles_users_option[:removed]
+      if user and user.roles_user.roles_users_option and user.roles_user.roles_users_option[:removed]
         @removed_caregivers << caregiver
       end
     end
@@ -148,10 +148,11 @@ class UsersController < ApplicationController
     #redirect_to :controller => 'profiles', :action => 'edit_caregiver_profile', :id => profile.id, :user_id => params[:user_id]
   rescue ActiveRecord::RecordInvalid
     # check if email exists
-    if @existing_id = User.find_by_email(params[:user][:email]).id
+    if existing_user = User.find_by_email(params[:user][:email])
+      @existing_id = existing_user[:id]
       @add_existing = true
     end
-    
+        
     @max_position = get_max_caregiver_position(@user)
     render :partial => 'caregiver_form'
   end
@@ -169,13 +170,14 @@ class UsersController < ApplicationController
   end
   
   def add_existing
-    @user = User.find(params[:id])
+    @patient = User.find(params[:user_id])
+    @caregiver = User.find(params[:id])
     
-    role = @user.has_role 'caregiver', current_user
-    @role = @user.roles_user
+    role = @caregiver.has_role 'caregiver', @patient
+    @role = @caregiver.roles_user
     
-    RolesUsersOption.create(:roles_users_id => @role.id, :user_id => @user.id, :position => current_user.has_caregivers.length, :active => 1)
-    refresh_caregivers(@user)
+    RolesUsersOption.create(:roles_user_id => @role.id, :user_id => @caregiver.id, :position => @patient.has_caregivers.length, :active => 1)
+    refresh_caregivers(@patient)
   end
   
   def get_max_caregiver_position(user)
