@@ -19,7 +19,7 @@
 	<!--POSITION-->
 	
 	<div style="float:left;width:55px;padding-top:40px;color:#4691b1;font-size:16px" id="item_<%=caregiver.id%>_<%= i %>_position">
-		<% if opts.active? %>
+		<% if opts and opts.active? %>
 			<%
 				s_pos = position.to_s
 				start = s_pos.length - 1
@@ -37,7 +37,7 @@
 	
 	<div style="padding-top:25px;float:left;width:50px">
 		<%
-			unless opts.active?
+			if opts and !opts.active?
 				img = '-away'
 			else
 				img = ''
@@ -55,7 +55,7 @@
 	<!--PROFILE IMAGE-->
 
 	<% 
-		unless opts.active?
+		if opts and !opts.active?
 			opacity = '.5'
 		else
 			opacity = '1'
@@ -73,7 +73,7 @@
 
 	<div style="float:left;padding-top:40px;width:155px">
 		<%
-			unless opts.active?
+			if opts and !opts.active?
 				color = "gray"
 			else
 				color = "#4691b1"
@@ -88,7 +88,7 @@
 	
 	<div style="float:left;padding-top:25px;width:100px">
 		<% 
-			unless opts.active?
+			if opts and !opts.active?
 				img = 'call_list-active_disabled.gif'
 			else
 				img = 'call_list-active.gif'
@@ -99,7 +99,7 @@
 		<br />
 		
 		<% 
-			if opts.active?
+			if opts and opts.active?
 				img = 'call_list-away_disabled.gif'
 			else
 				img = 'call_list-away.gif'
@@ -114,7 +114,7 @@
 	<div style="float:left;padding-top:25px;width:75px">
 		<input type="hidden" id="user-<%=caregiver.id%>_phone" value="<%=caregiver.profile.home_phone%>" />
 		<% 
-			if !opts.phone_active? or !opts.active?
+			if opts and !opts.phone_active? or !opts.active?
 				img = 'call_list-phone-inactive.gif'
 			else
 				img = 'call_list-phone.gif'
@@ -128,7 +128,7 @@
 
 	<div style="float:left;padding-top:25px;width:75px">
 		<% 
-			if !opts.email_active? or !opts.active?
+			if opts and !opts.email_active? or !opts.active?
 				img = 'call_list-email-inactive.gif'
 			else
 				img = 'call_list-email.gif'
@@ -144,7 +144,7 @@
 		<input type="hidden" id="user-<%=caregiver.id%>_text" value="<%=caregiver.profile.cell_phone%>" />
 		
 		<% 
-			if !opts.text_active? or !opts.active?
+			if opts and !opts.text_active? or !opts.active?
 				img = 'call_list-text-inactive.gif'
 			else
 				img = 'call_list-text.gif'
@@ -158,7 +158,7 @@
 
 	<div style="float:left;padding-top:25px;width:50px">
 		<% 
-			if !opts.active? 
+			if opts and !opts.active? 
 				img = image_tag("call_list-trash-inactive.gif",:id => 'item_trash_'+caregiver.id.to_s)
 			else
 				img = image_tag("call_list-trash.gif",:id => 'item_trash_'+caregiver.id.to_s)
