@@ -93,14 +93,14 @@ class CriticalMailer < ActionMailer::ARMailer
     end
   
     user.has_caregivers.each do |caregiver|
-      opts = caregiver.roles_users_option
+      #opts = caregiver.roles_users_option
       
       #from load_caregiver.erb
       user = User.find(caregiver.user_id)
-      #roles_user = RolesUser.find(:first, :conditions => "role_id = #{caregiver[:role_id]} and user_id = #{user[:id]}")
+      roles_user = RolesUser.find(:first, :conditions => "role_id = #{caregiver.roles_user[:role_id]} and user_id = #{user[:id]}")
       
       alert_type_id = AlertType.find(:first, :conditions => "alert_type='#{alert.class.to_s}'").id
-      alert_option = AlertOption.find(:first, :conditions => "alert_type_id=#{alert_type_id} and roles_user_id=#{opts.roles_user_id}")
+      alert_option = AlertOption.find(:first, :conditions => "alert_type_id=#{alert_type_id} and roles_user_id=#{roles_user.roles_user_id}")
       
       if (alert_option)  #check for null until we figure out a better way to get roles_users_options
         em_bool = alert_option.email_active
