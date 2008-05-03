@@ -102,7 +102,7 @@ class CriticalMailer < ActionMailer::ARMailer
       alert_type_id = AlertType.find(:first, :conditions => "alert_type='#{alert.class.to_s}'").id
       
       if(alert_type_id)
-        alert_option = AlertOption.find(:first, :conditions => "alert_type_id=#{alert_type_id} and roles_user_id=#{roles_user.roles_user_id}")
+        alert_option = AlertOption.find(:first, :conditions => "alert_type_id=#{alert_type_id} and roles_user_id=#{roles_user.id}")
 
         if (alert_option)  #check for null until we figure out a better way to get roles_users_options
           em_bool = alert_option.email_active
