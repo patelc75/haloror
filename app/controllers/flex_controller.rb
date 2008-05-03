@@ -97,9 +97,13 @@ class FlexController < ApplicationController
   def average_chart_data(query)
     #average_data(num_points, start_time, end_time, id, column)
     columns = {'Vital' => ['heartrate','activity'],'SkinTemp' => 'skin_temp','Step' => 'steps','Battery' => 'percentage'}
-    
+        
     
     data = {}
+    if(params[:optimize])
+      @models = [Vital, SkinTemp]
+      columns = {'Vital' => ['heartrate','activity'],'SkinTemp' => 'skin_temp','Step' => 'steps'}
+    end
     
     @models.each do |model|
       columns[model.class_name].each do |column|
