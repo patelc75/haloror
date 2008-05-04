@@ -100,10 +100,6 @@ class FlexController < ApplicationController
         
     
     data = {}
-    if(params[:optimize])
-      @models = [Vital, SkinTemp]
-      columns = {'Vital' => ['heartrate','activity'],'SkinTemp' => 'skin_temp','Step' => 'steps'}
-    end
     
     @models.each do |model|
       columns[model.class_name].each do |column|
