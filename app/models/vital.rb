@@ -3,9 +3,10 @@ class Vital < ActiveRecord::Base
   belongs_to :user
   
   def self.latest_data(num_points, id, column)	
+    #sorts by ID instead of by timestamp
     vital = find(:all , 
       :limit => num_points, 
-      :order => "timestamp DESC", 
+      :order => "id DESC", 
       :conditions => "user_id = '#{id}'").reverse
 		
     #logger.debug{ "Vital.latest_data: vital =#{vital} \n" }
@@ -15,7 +16,7 @@ class Vital < ActiveRecord::Base
       @categories = Array.new(num_points, 0)       
     elsif
       #@series_data = get_latest(vital)
-	  @series_data = vital.map {|a| a.send(column) }
+      @series_data = vital.map {|a| a.send(column) }
       @categories =  vital.map {|a| a.timestamp.strftime("%H:%M:%S") }      
     end
 	
@@ -68,55 +69,55 @@ class Vital < ActiveRecord::Base
     
   end
   def self.average_data(num_points, start_time, end_time, id, column, format)
-        @series_data = Array.new(num_points, 0)  #results of averaging from database
-        @categories = Array.new(num_points, 0) 
-        interval = (end_time - start_time) / num_points #interval returned in seconds
-        current_time = start_time
-        current_point = 0   #the data point that we're currently on
+    @series_data = Array.new(num_points, 0)  #results of averaging from database
+    @categories = Array.new(num_points, 0) 
+    interval = (end_time - start_time) / num_points #interval returned in seconds
+    current_time = start_time
+    current_point = 0   #the data point that we're currently on
     
-        while current_point < num_points
-          condition = "timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}' AND user_id = '#{id}'"
+    while current_point < num_points
+      condition = "timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}' AND user_id = '#{id}'"
     
-          #before inheritance
-          #average = Heartrate.average(:heartrate, :conditions => condition)
+      #before inheritance
+      #average = Heartrate.average(:heartrate, :conditions => condition)
     
-          #after inheritance
-          #average = get_average(condition)    #using polymorphism
-          #average = average("'#{column}'", condition) #if column is passed in as :heartrate
-          average = average(column, :conditions => condition)
+      #after inheritance
+      #average = get_average(condition)    #using polymorphism
+      #average = average("'#{column}'", condition) #if column is passed in as :heartrate
+      average = average(column, :conditions => condition)
         
-          current_time = current_time + interval
+      current_time = current_time + interval
     
-          #@series_data[current_point] = format_average(average)
-          if(average == nil)
-            @series_data[current_point] = 0
-          elsif
-            @series_data[current_point] = average.round(1)
-          end
-          
-          if format
-            @categories[current_point] = current_time.strftime(format)  
-          else
-            @categories[current_point] = current_time
-          end
-          
-          
-    
-          current_point = current_point + 1
-          #@averages_array << round_to(average, 1)
-          #@averages_array <<  ((average * 10).truncate.to_f / 10)
-          #@labels_array << current_time.strftime("%H:%M:%S")
-        end 
-    
-        #     puts "above the loop"
-        #     #for debugging
-        #     @averages_array.each_with_index() do |x, i| 
-        #       puts x, @labels_array[i]
-        #       puts "HW"
-        #     end
-      
-        values = [@series_data,  @categories]
+      #@series_data[current_point] = format_average(average)
+      if(average == nil)
+        @series_data[current_point] = 0
+      elsif
+        @series_data[current_point] = average.round(1)
       end
+          
+      if format
+        @categories[current_point] = current_time.strftime(format)  
+      else
+        @categories[current_point] = current_time
+      end
+          
+          
+    
+      current_point = current_point + 1
+      #@averages_array << round_to(average, 1)
+      #@averages_array <<  ((average * 10).truncate.to_f / 10)
+      #@labels_array << current_time.strftime("%H:%M:%S")
+    end 
+    
+    #     puts "above the loop"
+    #     #for debugging
+    #     @averages_array.each_with_index() do |x, i| 
+    #       puts x, @labels_array[i]
+    #       puts "HW"
+    #     end
+      
+    values = [@series_data,  @categories]
+  end
 
   def self.method_missing(methId, *args)
     method = methId.id2name.to_s
@@ -145,7 +146,7 @@ class Vital < ActiveRecord::Base
     conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"
     
     alerts = DeviceUnavailableAlert.find(:all,
-                                         :conditions => conds.join(' and '))
+      :conditions => conds.join(' and '))
     alerts.each do |alert|
       DeviceUnavailableAlert.transaction do
         DeviceAvailableAlert.create(:device => alert.device)
@@ -163,7 +164,7 @@ class Vital < ActiveRecord::Base
     conds << "id in (select status.id from device_strap_status status where is_fastened > 0)"
 
     devices = Device.find(:all,
-                          :conditions => conds.join(' and '))
+      :conditions => conds.join(' and '))
 
     devices.each do |device|
       begin
@@ -178,8 +179,8 @@ class Vital < ActiveRecord::Base
   private
   def self.process_device_unavailable(device)
     alert = DeviceUnavailableAlert.find(:first,
-                                        :order => 'created_at desc',
-                                        :conditions => ['reconnected_at is null and device_id = ?', device.id])
+      :order => 'created_at desc',
+      :conditions => ['reconnected_at is null and device_id = ?', device.id])
 
     if alert
       alert.number_attempts += 1

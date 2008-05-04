@@ -16,10 +16,10 @@ class RestfulAuthController < ApplicationController
   
   def authorize
     timestamp = get_hash_value_from_array([:timestamp, :begin_timestamp], params)
-    #raise "Auth failed: timestamp missing" if timestamp == nil
     
     if(params[:gateway_id])
       serial_num = Device.find(params[:gateway_id].to_i).serial_number;
+      raise "Auth failed: timestamp missing" if timestamp == nil
       raise "Auth failed: hash check failed " unless is_hash_valid?(timestamp + serial_num, params[:auth])
     else
       cmd_type = get_hash_value_from_array([:cmd_type], params)

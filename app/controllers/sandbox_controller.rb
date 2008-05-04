@@ -2,18 +2,18 @@ class SandboxController < ApplicationController
   #layout "application", :except => "chart"
 
   def helloworld
-	@heartrate = Heartrate.new
-	@display = 0
-	render :layout => false
+    @heartrate = Heartrate.new
+    @display = 0
+    render :layout => false
   end
   
   def hello_world_submit
-	@display = params[:chart][:dummy]
-	render :layout => false
+    @display = params[:chart][:dummy]
+    render :layout => false
   end
   
   def critical_email
-	email = CriticalMailer.panic_notification
+    email = CriticalMailer.panic_notification
   end
 
   def summary
@@ -49,6 +49,10 @@ class SandboxController < ApplicationController
     render :xml => graph.to_s
   end  
 
+  def assign_role
+    User.find(17).has_role 'halouser'
+  end
+  
   def current
     @recentHeartRate = Heartrate.find(:first, :order => 'id DESC')
     @currentHeartRate = @recentHeartRate.heartRate

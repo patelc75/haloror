@@ -1,3 +1,6 @@
-We detected that Merle McGee pressed the panic button on <%= @timestamp %>
-
+<% if @user.profile %>
+We detected that <%= "#{@user.profile.first_name}" %> <%= "#{@user.profile.last_name}" %> pressed the panic button on <%= @timestamp %>
+<% else %>
+We detected that <%= "{#@user.login}" %> pressed the panic button on <%= @timestamp %>  
+<% end %>  
 The Halo server received the event on <%= "#{Time.now}" %>

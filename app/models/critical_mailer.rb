@@ -63,19 +63,30 @@ class CriticalMailer < ActionMailer::ARMailer
 
   def fall_notification(fall)
     setup_email(fall.user, fall)
-    @subject    += 'Merle fell'
+    if(fall.user.profile)
+      @subject    += "#{fall.user.profile.first_name} #{fall.user.profile.last_name} fell"
+    else
+      @subject    += "#{fall.user.login} fell"
+    end
+    
     self.priority = fall.priority
-    #@body[:url]  = "Merle fell on #{Time.now}"
-    body :timestamp => fall.timestamp
+
+    body :timestamp => fall.timestamp,
+      :user => fall.user
   end
   
   def panic_notification(panic)
     @panic = panic
     setup_email(panic.user, panic)
-    @subject    += 'Merle panicked'
+    if(panic.user.profile)
+      @subject    += "#{panic.user.profile.first_name} #{panic.user.profile.last_name} panicked"
+    else
+      @subject    += "#{panic.user.login} panicked"
+    end
     self.priority = panic.priority
-    #@body[:url]  = "Merle panicked on #{Time.now}"
-    body :timestamp => panic.timestamp
+
+    body :timestamp => panic.timestamp,
+      :user => panic.user
   end
   
   protected
