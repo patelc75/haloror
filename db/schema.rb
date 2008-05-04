@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 110) do
+ActiveRecord::Schema.define(:version => 114) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -40,16 +40,22 @@ ActiveRecord::Schema.define(:version => 110) do
   end
 
   create_table "alert_types", :force => true do |t|
-    t.integer  "alert_group_id"
+    t.string   "alert_type"
     t.boolean  "phone_active"
     t.boolean  "email_active"
     t.boolean  "text_active"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "alert_type",     :null => false
   end
 
-  create_table "bar", :force => true do |t|
+  create_table "alerts", :force => true do |t|
+    t.integer  "roles_users_option_id"
+    t.string   "event_kind"
+    t.boolean  "email_active"
+    t.boolean  "phone_active"
+    t.boolean  "text_active"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "batteries", :force => true do |t|
@@ -59,6 +65,8 @@ ActiveRecord::Schema.define(:version => 110) do
     t.integer  "time_remaining", :null => false
     t.integer  "device_id"
   end
+
+  add_index "batteries", ["user_id", "timestamp"], :name => "index_batteries_on_timestamp_and_user_id"
 
   create_table "battery_charge_completes", :force => true do |t|
     t.integer  "device_id"
@@ -195,11 +203,7 @@ ActiveRecord::Schema.define(:version => 110) do
     t.datetime "timestamp"
     t.string   "event_type"
     t.integer  "event_id"
-    t.integer  "alert_type_id"
-    t.integer  "accepted_by"
-    t.datetime "accepted_at"
-    t.integer  "resolved_by"
-    t.datetime "resolved_at"
+    t.string   "level"
   end
 
   create_table "falls", :force => true do |t|
@@ -346,6 +350,8 @@ ActiveRecord::Schema.define(:version => 110) do
     t.integer  "skin_temp", :null => false
   end
 
+  add_index "skin_temps", ["user_id", "timestamp"], :name => "index_skin_temps_on_timestamp_and_user_id"
+
   create_table "steps", :force => true do |t|
     t.integer  "user_id"
     t.datetime "begin_timestamp"
@@ -390,5 +396,7 @@ ActiveRecord::Schema.define(:version => 110) do
     t.datetime "timestamp"
     t.integer  "user_id"
   end
+
+  add_index "vitals", ["timestamp", "user_id"], :name => "index_vitals_on_timestamp_and_user_id"
 
 end
