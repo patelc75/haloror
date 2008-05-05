@@ -1,12 +1,17 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
-aaron:
-  user_id: 2
-  role_id: 1  
+madhu:
+  #id: 1
+  id: 5
+  #user_id: 2
+  user_id: 84
+  #role_id: 1  
+  role_id: 3
 
-chip:
-  user_id: 3
-  role_id: 1    
+aaron:
+  id: 6
+  user_id: 85
+  role_id: 4    
   
     
 

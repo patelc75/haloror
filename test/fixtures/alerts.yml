@@ -1,5 +1,16 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
+
+#madhu:
+ # id: 1
+  #roles_users_option_id: 1
+  #event_kind: BatteryCritical
+  #email_active: TRUE
+  #email_active: TRUE
+  #phone_active: TRUE
+  #text_active: TRUE
+      
+
 # one:
 #   column: value
 #

@@ -1,5 +1,13 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
+madhu:
+  device_id: 56
+  #device_id: 1
+  #user_id: 1
+  user_id: 84
+
+
+
 # one:
 #   column: value
 #

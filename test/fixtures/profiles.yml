@@ -2,28 +2,32 @@
 
 
 madhu:
-  id: 1
-  user_id: 1
-  text_email: test_user@halomonitoring.com
-  first_name: madhu 
+  #id: 1
+  id: 68
+  #user_id: 1
+  user_id: 84
+  first_name: hickup 
   cell_phone: 66276237626723
   carrier_id: 1
+  time_zone: UTC
 
 aaron:
-  id: 2
-  user_id: 2
-  text_email: test_caregiver1@halomonitoring.com
-  first_name: aaron
+  #id: 2
+  id: 69
+  #user_id: 2
+  user_id: 85
+  first_name: review
   cell_phone: 787878787878878
   carrier_id: 1
+  time_zone: UTC
   
-chip:
-  id: 3
-  user_id: 3
-  text_email: test_caregiver2@halomonitoring.com
-  first_name: chip
-  cell_phone: 999939393939339
-  carrier_id: 1  
+#chip:
+ # id: 3
+  #user_id: 3
+  #text_email: test_caregiver2@halomonitoring.com
+  #first_name: chip
+  #cell_phone: 999939393939339
+  #carrier_id: 1  
   
   
 

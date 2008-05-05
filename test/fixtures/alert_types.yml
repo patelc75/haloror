@@ -1,5 +1,44 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
+batterychargecomplete:
+  id: 41
+  alert_type: BatteryChargeComplete
+
+batteryunplugged:
+  id: 42
+  alert_type: BatteryUnplugged
+
+batteryplugged:
+  id: 43
+  alert_type: BatteryPlugged
+
+strapfastened:
+  id: 44
+  alert_type: StrapFastened 
+  
+strapremoved:
+  id: 45
+  alert_type: StrapRemoved
+  
+batterycritical:
+  id: 46
+  alert_type: BatteryCritical
+  
+fall:
+  id: 49
+  alert_type: Fall
+  
+panic:
+  id: 50 
+  alert_type: Panic    
+  
+
+  
+
+  
+
+
+
 # one:
 #   column: value
 #

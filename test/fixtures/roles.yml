@@ -1,10 +1,12 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
 madhu:
-  id: 1
+  #id: 1
+  id: 4
   name: caregiver
   authorizable_type: User
-  authorizable_id: 1
+  #authorizable_id: 1
+  authorizable_id: 84
 
 
 

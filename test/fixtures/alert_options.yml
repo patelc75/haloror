@@ -1,5 +1,100 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
+aaron:
+  #id: 1
+  id: 17
+  roles_user_id: 6
+  #roles_user_id: 1
+  alert_type_id: 41
+  #removed: FALSE
+  #active: TRUE
+  #phone_active: TRUE
+  email_active: TRUE
+  text_active: TRUE
+  #position: 1
+  #user_id: 2
+  #user_id: 85
+  
+kyle:
+  #id: 1
+  id: 18
+  roles_user_id: 6
+  #roles_user_id: 1
+  alert_type_id: 46
+  #removed: FALSE
+  #active: TRUE
+  #phone_active: TRUE
+  email_active: TRUE
+  text_active: TRUE
+  #position: 1
+  #user_id: 2
+  #user_id: 85
+  
+eric:
+  #id: 1
+  id: 19
+  roles_user_id: 6
+  #roles_user_id: 1
+  alert_type_id: 42
+  #removed: FALSE
+  #active: TRUE
+  #phone_active: TRUE
+  email_active: TRUE
+  text_active: TRUE
+  #position: 1
+  #user_id: 2
+  #user_id: 85
+  
+cartman:
+  #id: 1
+  id: 20
+  roles_user_id: 6
+  #roles_user_id: 1
+  alert_type_id: 43
+  #removed: FALSE
+  #active: TRUE
+  #phone_active: TRUE
+  email_active: TRUE
+  text_active: TRUE
+  #position: 1
+  #user_id: 2
+  #user_id: 85 
+  
+bryan:
+  #id: 1
+  id: 21
+  roles_user_id: 6
+  #roles_user_id: 1
+  alert_type_id: 44
+  #removed: FALSE
+  #active: TRUE
+  #phone_active: TRUE
+  email_active: TRUE
+  text_active: TRUE
+  #position: 1
+  #user_id: 2
+  #user_id: 85 
+  
+randy:
+  #id: 1
+  id: 22
+  roles_user_id: 6
+  #roles_user_id: 1
+  alert_type_id: 45
+  #removed: FALSE
+  #active: TRUE
+  #phone_active: TRUE
+  email_active: TRUE
+  text_active: TRUE
+  #position: 1
+  #user_id: 2
+  #user_id: 85
+  
+
+
+
+
+
 # one:
 #   column: value
 #

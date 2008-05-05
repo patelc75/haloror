@@ -1,27 +1,29 @@
 madhu:
-  id: 1
-  login: madhu
-  email: test_user@halomonitoring.com
+  #id: 1
+  id: 84 
+  login: hickup
+  email: stewie.halo@yahoo.com
   salt: 7e3041ebc2fc05a40c60028e2c4901a81035d3cd
   crypted_password: 00742970dc9e6319f8019fd54864d3ea740f04b1 # test
   created_at: <%= 5.days.ago.to_s :db %>
   activation_code: 8f24789ae988411ccf33ab0c30fe9106fab32e9b 
   activated_at: <%= 5.days.ago.to_s :db %> 
 aaron:
-  id: 2
-  login: aaron
-  email: aaron@example.com
+  id: 85
+  #id: 2
+  login: review
+  email: test_caregiver1@halomonitoring.com
   salt: 7e3041ebc2fc05a40c60028e2c4901a81035d3cd
   crypted_password: 00742970dc9e6319f8019fd54864d3ea740f04b1 # test
   created_at: <%= 1.days.ago.to_s :db %>
   activation_code: 8f24789ae988411ccf33ab0c30fe9106fab32e9a
   activated_at: <%= 1.days.ago.to_s :db %>  
-chip:  
-  id: 3
-  login: chip
-  email: chip@example.com
-  salt: 7e3041ebc2fc05a40c60028e2c4901a81035d3cd
-  crypted_password: 00742970dc9e6319f8019fd54864d3ea740f04b1 # test
-  created_at: <%= 2.days.ago.to_s :db %>
-  activation_code: 8f24789ae988411ccf33ab0c30fe9106fab32e9c
-  activated_at: <%= 2.days.ago.to_s :db %> 
+#chip:  
+ # id: 3
+ # login: chip
+ # email: chip@example.com
+ # salt: 7e3041ebc2fc05a40c60028e2c4901a81035d3cd
+ # crypted_password: 00742970dc9e6319f8019fd54864d3ea740f04b1 # test
+  #created_at: <%= 2.days.ago.to_s :db %>
+  #activation_code: 8f24789ae988411ccf33ab0c30fe9106fab32e9c
+  #activated_at: <%= 2.days.ago.to_s :db %> 

@@ -1,0 +1,49 @@
+cingular:
+  id: 1
+  name: Cingular
+  domain: @cingularname.com
+  
+verizon:
+  id: 2
+  name: Verizon
+  domain: @vtext.com
+  
+boost:
+  id: 3
+  name: boost
+  domain: @myboostmobile.com
+  
+nextel:
+  id: 4
+  name: nextel
+  domain: @messaging.nextel.com
+  
+alltel:
+  id: 5
+  name: alltel
+  domain: @message.alltel.com
+  
+sprint:
+  id: 6
+  name: sprint
+  domain: @messaging.sprintpcs.com
+  
+attwireless:
+  id: 7
+  name: at&t
+  domain: @mmode.com
+
+virgin:
+  id: 8
+  name: virgin
+  domain: @vmobl.com
+  
+tmobile:
+  id: 9
+  name: t-mobile
+  domain: @tmomail.net
+  
+notinlist:
+  id: 10 
+  name: notinlist
+  domain: @teleflip.com
