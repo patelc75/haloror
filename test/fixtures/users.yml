@@ -1,8 +1,8 @@
 madhu:
   #id: 1
   id: 84 
-  login: hickup
-  email: stewie.halo@yahoo.com
+  login: test_user
+  email: test_user@yahoo.com
   salt: 7e3041ebc2fc05a40c60028e2c4901a81035d3cd
   crypted_password: 00742970dc9e6319f8019fd54864d3ea740f04b1 # test
   created_at: <%= 5.days.ago.to_s :db %>
@@ -11,7 +11,7 @@ madhu:
 aaron:
   id: 85
   #id: 2
-  login: review
+  login: test_caregiver
   email: test_caregiver1@halomonitoring.com
   salt: 7e3041ebc2fc05a40c60028e2c4901a81035d3cd
   crypted_password: 00742970dc9e6319f8019fd54864d3ea740f04b1 # test
