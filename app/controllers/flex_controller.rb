@@ -81,11 +81,11 @@ class FlexController < ApplicationController
           timestamp = row[:end_timestamp]
         end
         
-        unless data[timestamp.to_formatted_s(:rfc822)]
-          data[timestamp.to_formatted_s(:rfc822)] = []
+        unless data[timestamp]
+          data[timestamp] = []
         end
         
-        data[timestamp.to_formatted_s(:rfc822)] << row
+        data[timestamp] << row
       end
     end
     
