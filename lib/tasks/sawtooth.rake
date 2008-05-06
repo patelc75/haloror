@@ -9,7 +9,8 @@ namespace :sawtooth do
   def delete
     puts ""
     puts "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
-    puts "Deleting Vital, SkinTemp, Battery, and Step for all posts past #{Time.now} for user_id=#{ENV['user_id']}"
+    puts "Deleting Vital, SkinTemp, Battery, and Step for all posts"
+    puts "past #{Time.now.utc} for user_id=#{ENV['user_id']}"
     puts "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
     puts ""
     Vital.delete_all(["timestamp > ? AND user_id = ?" , Time.now.utc, ENV['user_id']])
@@ -149,14 +150,13 @@ namespace :sawtooth do
 		
       puts "Start time: #{start_time}" 
       puts "End time: #{end_time}"
+      puts 
 
       randhr = rand(10) + 60
       hr = randhr
       direction = "up" 
     
       until start_time > end_time     
-        puts "user_id: #{ENV['user_id']}"
-        
         if(ENV['type'] == "live")
           start_time = Time.now.utc
         else  
@@ -190,7 +190,8 @@ namespace :sawtooth do
         end           
      
         if ENV['vital'] == "skin_temp" || ENV['vital'] == "all"
-          puts "#{start_time}: Posting skin temp of #{random_skin_temp} "  
+          print "user_id #{ENV['user_id']} | "
+          print "#{start_time}: skin temp #{random_skin_temp} | "  
           if ENV['method'] == "activerecord"
             skin_temp = SkinTemp.new(:user_id => ENV['user_id'], :timestamp => start_time, :skin_temp => random_skin_temp)
             skin_temp.save
@@ -210,7 +211,7 @@ namespace :sawtooth do
           random_hrv = rand(5)          
           random_activity = rand(25000)+10000
 
-          puts "#{start_time}: Posting vitals of orientation: #{random_orientation} heartrate: #{random_heartrate} hrv: #{random_hrv} activity: #{random_activity} "  
+          print "orientation #{random_orientation} | hr #{random_heartrate} | hrv #{random_hrv} | activity #{random_activity} | "  
           if ENV['method'] == "activerecord"          
             vitals = Vital.new(:user_id => ENV['user_id'], :timestamp => start_time, :orientation => random_orientation, :heartrate => random_heartrate, :hrv => random_hrv, :activity => random_activity)
             vitals.save
@@ -224,7 +225,7 @@ namespace :sawtooth do
         end
         
         if ENV['vital'] == "battery" || ENV['vital'] == "all"
-          puts "#{start_time}: Posting battery of #{random_percentage} "  
+          print "battery #{random_percentage} | "  
           if ENV['method'] == "activerecord"
             battery = Battery.new(:user_id => ENV['user_id'], :timestamp => start_time, :percentage => random_percentage, :time_remaining => 0)
             battery.save
@@ -237,7 +238,7 @@ namespace :sawtooth do
         end
   
         if ENV['vital'] == "steps" || ENV['vital'] == "all"
-          puts "#{start_time} to #{start_time+15}: Posting steps of #{random_steps} "  
+          print "steps #{random_steps}"  
           if ENV['method'] == "activerecord"
             step = Step.new(:user_id => ENV['user_id'], :begin_timestamp => start_time, :end_timestamp => start_time+15, :steps => random_steps)
             step.save
@@ -249,11 +250,9 @@ namespace :sawtooth do
             system(curl_cmd)    				
           end		
         end
-		
-        puts ""		
-        puts "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
-        puts ""
-		
+	
+        puts
+        puts
         sleep(ENV['frequency'].to_i)
       end
     end
