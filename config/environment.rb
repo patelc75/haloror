@@ -138,4 +138,4 @@ ExceptionNotifier.email_prefix = "[APP] "
 
 ActiveRecord::Base.default_timezone = :utc # Store all times in the db in UTC
 require 'tzinfo/lib/tzinfo' # Use tzinfo library to convert to and from the users timezone
-ENV['TZ'] = 'America/Chicago' # This makes Time.now return time in UTC
+ENV['TZ'] = 'UTC' # This makes Time.now return time in UTC
