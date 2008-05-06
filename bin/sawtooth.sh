@@ -1,1 +1,1 @@
-puts "rake halo:post vital=all  method=curl url=http://localhost:3000 increment=15 duration=5000 user_id=60 frequency=5 type=historical swing=10 slope=10 choice=random"
+rake sawtooth:post vital=all method=activerecord increment=15 duration=5000 user_id=1 frequency=5 type=live swing=10 slope=10 curve=random

@@ -1,6 +1,6 @@
 require 'time'
 
-namespace :halo do  
+namespace :sawtooth do  
   desc "railroad command to generate schema"
   task :railroad => :environment  do
     system('railroad -a -i -M | dot -Tpng > models.png')
@@ -12,10 +12,10 @@ namespace :halo do
     puts "Deleting Vital, SkinTemp, Battery, and Step for all posts past #{Time.now} for user_id=#{ENV['user_id']}"
     puts "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
     puts ""
-    Vital.delete_all(["timestamp > ? AND user_id = ?" , Time.now, ENV['user_id']])
-    SkinTemp.delete_all(["timestamp > ? AND user_id = ?" , Time.now, ENV['user_id']])
-    Battery.delete_all(["timestamp > ? AND user_id = ?" , Time.now, ENV['user_id']])
-    Step.delete_all(["begin_timestamp > ? AND user_id = ?" , Time.now, ENV['user_id']])
+    Vital.delete_all(["timestamp > ? AND user_id = ?" , Time.now.utc, ENV['user_id']])
+    SkinTemp.delete_all(["timestamp > ? AND user_id = ?" , Time.now.utc, ENV['user_id']])
+    Battery.delete_all(["timestamp > ? AND user_id = ?" , Time.now.utc, ENV['user_id']])
+    Step.delete_all(["begin_timestamp > ? AND user_id = ?" , Time.now.utc, ENV['user_id']])
   end
   
   
@@ -88,52 +88,39 @@ namespace :halo do
 
     if ENV['type'] == nil
       puts ""
-      puts "You forgot the type. type = 'live' or 'historical'"
+      puts "You forgot the type. type = 'live' or 'historical' or 'future'"
       puts ""
       print_usage = true
     else
       puts "Type: #{ENV['type']}"
     end
     
-    #if ENV['move'] == nil
-     # puts ""	
-    #  puts "You forgot direction. move = 'up' or 'down'"
-    #  puts ""
-     # print_usage = true
-    #else
-     # puts "Move: #{ENV['move']}" 
-    #end
-    
-    
-    if ENV['swing'] == nil
+    if ENV['curve'] == nil
       puts ""
-      puts "You forgot the Swing.It is the width of sawtooth. Example: Swing=10 "
+      puts "You forgot the curve. curve = random  or sawooth"
+      puts ""
+      print_usage = true
+    else
+      puts "Slope: #{ENV['curve']}"
+    end
+    
+    if ENV['swing'] == nil and ENV['curve'] == "sawtooth"
+      puts ""
+      puts "You forgot the swing. It is the width of sawtooth. Example: Swing=10 "
       puts ""
       print_usage = true
     else
       puts "Swing: #{ENV['swing']}"
     end
 	
-	   if ENV['slope'] == nil
-        puts ""
-        puts "You forgot the Slope. It is the increment number. Example: Slope=5 "
-        puts ""
-        print_usage = true
-      else
-        puts "Slope: #{ENV['slope']}"
-      end
-  
-  
-  
-      if ENV['choice'] == nil
-          puts ""
-          puts "You forgot the Choice. Example: choice=random  "
-          puts ""
-          print_usage = true
-        else
-          puts "Slope: #{ENV['choice']}"
-        end
-
+    if ENV['slope'] == nil and ENV['curve'] == "sawtooth"
+      puts ""
+      puts "You forgot the slope. It is the increment number. Example: Slope=5 "
+      puts ""
+      print_usage = true
+    else
+      puts "Slope: #{ENV['slope']}"
+    end
   
 	
     if print_usage == true
@@ -144,116 +131,83 @@ namespace :halo do
       #puts "rake halo:post vital=all  method=curl url=http://localhost:3000 increment=15 duration=5000 user_id=60 frequency=5 type=historical move=up swing=10 slope=10
       #"
       
-      puts "rake halo:post vital=all  method=curl url=http://localhost:3000 increment=15 duration=5000 user_id=60 frequency=5 type=historical swing=10 slope=10 choice=random"
+      puts "rake halo:post vital=all  method=curl url=http://localhost:3000 increment=15 duration=5000 user_id=60 frequency=5 type=historical swing=10 slope=10 curve=random"
       
       puts ""
       puts "Example Usage with activerecord (for same server): "
       puts "rake halo:post vital=all method=activerecord url=http://localhost:3000 increment=15 duration=5000 user_id=333 frequency=5 type=live"	
       puts ""
     else
-      if(ENV['type'] == "live")
+      if(ENV['type'] == "live" or ENV['type'] == "future" ) 
         delete
-        start_time = Time.now
+        start_time = Time.now.utc
         end_time = start_time + ENV['duration'].to_i  
       elsif (ENV['type'] == "historical")
-        end_time = Time.now
-        # end_time = end_time1.to_time
-        # end_time = "Mon Dec 25 15:52:55 -0600 2007"
+        end_time = Time.now.utc
         start_time = end_time - ENV['duration'].to_i 
-        #start_time1 = "Thu Apr 24 12:12:02 -0500 2008"
-        #end_time1 = "Thu Apr 24 13:35:22 -0500 2008"
-        #start_time = start_time1.to_time
-        #end_time = end_time1.to_time
-         
-       # start_time = end_time.to_time - ENV['duration'].to_i 
       end
 		
       puts "Start time: #{start_time}" 
       puts "End time: #{end_time}"
 
-
+      randhr = rand(10) + 60
+      hr = randhr
+      direction = "up" 
     
-     randhr = rand(10) + 60
-      #randhr = 96 
-      hr = randhr 
-     # direction = ENV['move']
-     direction = "up" 
-    
-     until start_time > end_time     
-     
-     
-      
+      until start_time > end_time     
         puts "user_id: #{ENV['user_id']}"
-        start_time = start_time + ENV['increment'].to_i #send a REST posts with the timestamp incremented by 15 seconds
-        #puts " Check Point 2 #{start_time}"
-        calculathash = Digest::SHA256.hexdigest(start_time.to_s+"0123456789")
-       
-		  		  
-       #direction = ENV['move']
         
-  
- 
- 
-   
- #  while hr != nil
+        if(ENV['type'] == "live")
+          start_time = Time.now.utc
+        else  
+          start_time = start_time + ENV['increment'].to_i #send a REST posts with the timestamp incremented by 15 seconds
+        end
+        
+        calculathash = Digest::SHA256.hexdigest(start_time.to_s+"0123456789")
      
-     if hr == (randhr + ENV['swing'].to_i)
-       direction = "down"
-     elsif hr == (randhr - ENV['swing'].to_i)
-       direction = "up"
-     end  
-     
-      
+        if hr == (randhr + ENV['swing'].to_i)
+          direction = "down"
+        elsif hr == (randhr - ENV['swing'].to_i)
+          direction = "up"
+        end  
 
-     if (direction == "up")
-           
-        hr += ENV['slope'].to_i
-           
-     elsif (direction == "down")
-         
-        hr -= ENV['slope'].to_i
-         
-     end              
+        if (direction == "up")           
+          hr += ENV['slope'].to_i
+        elsif (direction == "down")         
+          hr -= ENV['slope'].to_i
+        end              
        
-     if ENV['choice'] == "sawtooth"
-       random_skin_temp = hr + 30
-       random_heartrate = hr
-       random_percentage = hr + 30
-       random_steps = hr - 50 
-    elsif ENV['choice'] == "random"
-       random_skin_temp = rand(5)+96
-       random_heartrate = rand(7)+70
-       random_percentage = rand(100)
-       random_steps = rand(20)
-     end
-           
+        if ENV['curve'] == "sawtooth"
+          random_skin_temp = hr + 30
+          random_heartrate = hr
+          random_percentage = hr + 30
+          random_steps = hr - 50 
+        elsif ENV['curve'] == "random"
+          random_skin_temp = rand(5)+96
+          random_heartrate = rand(7)+70
+          random_percentage = rand(100)
+          random_steps = rand(20)
+        end           
      
-      if ENV['vital'] == "skin_temp" || ENV['vital'] == "all"
-         # random_skin_temp = rand(5)+96
-        # random_skin_temp = hr + 30
-          
-          puts "Check Point 4 : #{start_time}: Posting skin temp of #{random_skin_temp} "  
+        if ENV['vital'] == "skin_temp" || ENV['vital'] == "all"
+          puts "#{start_time}: Posting skin temp of #{random_skin_temp} "  
           if ENV['method'] == "activerecord"
             skin_temp = SkinTemp.new(:user_id => ENV['user_id'], :timestamp => start_time, :skin_temp => random_skin_temp)
             skin_temp.save
           elsif ENV['method'] == "curl"
-             skin_temp_xml = "<skin_temp><skin_temp>#{random_skin_temp}</skin_temp><timestamp>#{start_time}</timestamp><user_id>#{ENV['user_id']}</user_id></skin_temp>"
+            skin_temp_xml = "<skin_temp><skin_temp>#{random_skin_temp}</skin_temp><timestamp>#{start_time}</timestamp><user_id>#{ENV['user_id']}</user_id></skin_temp>"
             #curl_cmd ='curl -H "Content-Type: text/xml" -d "' + skin_temp_xml + '" ' +'"' + ENV['url'] + "/skin_temps?gateway_id=30&auth=1b092333716e1204c973ec651cab4a6470acbb29fa1e94fca20a2ccd6bdde82a'+'" '   
-           # curl_cmd ='curl -v -H "Content-Type: text/xml" -d "' + skin_temp_xml + '" ' +'"' + 'http://localhost:3000/skin_temps?gateway_id=30&auth='+ "#{calculathash}"+'" ' 
+            # curl_cmd ='curl -v -H "Content-Type: text/xml" -d "' + skin_temp_xml + '" ' +'"' + 'http://localhost:3000/skin_temps?gateway_id=30&auth='+ "#{calculathash}"+'" ' 
             curl_cmd ='curl -v -H "Content-Type: text/xml" -d "' + skin_temp_xml + '" ' +'"' + ENV['url'] + '/skin_temps?gateway_id=30&auth='+ "#{calculathash}"+'" ' 
             puts curl_cmd
-            puts "hi 2"
-            system(curl_cmd)    				
-         
+            system(curl_cmd)    				         
           end
-      end
+        end
       
       
-      if ENV['vital'] == "vitals" || ENV['vital'] == "all"
+        if ENV['vital'] == "vitals" || ENV['vital'] == "all"
           random_orientation = rand(90)
-         # random_heartrate = hr
-          random_hrv = rand(5)
-          
+          random_hrv = rand(5)          
           random_activity = rand(25000)+10000
 
           puts "#{start_time}: Posting vitals of orientation: #{random_orientation} heartrate: #{random_heartrate} hrv: #{random_hrv} activity: #{random_activity} "  
@@ -270,7 +224,6 @@ namespace :halo do
         end
         
         if ENV['vital'] == "battery" || ENV['vital'] == "all"
-         # random_percentage = hr + 30
           puts "#{start_time}: Posting battery of #{random_percentage} "  
           if ENV['method'] == "activerecord"
             battery = Battery.new(:user_id => ENV['user_id'], :timestamp => start_time, :percentage => random_percentage, :time_remaining => 0)
@@ -283,34 +236,19 @@ namespace :halo do
           end		
         end
   
-  
-  
-         if ENV['vital'] == "steps" || ENV['vital'] == "all"
-         #   random_steps = hr - 50 
+        if ENV['vital'] == "steps" || ENV['vital'] == "all"
+          puts "#{start_time} to #{start_time+15}: Posting steps of #{random_steps} "  
+          if ENV['method'] == "activerecord"
+            step = Step.new(:user_id => ENV['user_id'], :begin_timestamp => start_time, :end_timestamp => start_time+15, :steps => random_steps)
+            step.save
+          elsif ENV['method'] == "curl"
 
-            puts "#{start_time} to #{start_time+15}: Posting steps of #{random_steps} "  
-            if ENV['method'] == "activerecord"
-              step = Step.new(:user_id => ENV['user_id'], :begin_timestamp => start_time, :end_timestamp => start_time+15, :steps => random_steps)
-              step.save
-            elsif ENV['method'] == "curl"
-
-              steps_xml = "<step><steps>#{random_steps}</steps><user_id>#{ENV['user_id']}</user_id><begin_timestamp>#{start_time}</begin_timestamp><end_timestamp>#{start_time+15}</end_timestamp></step>"
-              curl_cmd ='curl -H "Content-Type: text/xml" -d "' + steps_xml + '" ' +'"' + ENV['url'] + '/steps?gateway_id=30&auth='+ "#{calculathash}"+'" '   
-              puts curl_cmd
-              system(curl_cmd)    				
-            end		
-          end
-      
-      
-       #while hr !=nil end 
-  #end 
-  
-
-       
-
-     
-		
-     	
+            steps_xml = "<step><steps>#{random_steps}</steps><user_id>#{ENV['user_id']}</user_id><begin_timestamp>#{start_time}</begin_timestamp><end_timestamp>#{start_time+15}</end_timestamp></step>"
+            curl_cmd ='curl -H "Content-Type: text/xml" -d "' + steps_xml + '" ' +'"' + ENV['url'] + '/steps?gateway_id=30&auth='+ "#{calculathash}"+'" '   
+            puts curl_cmd
+            system(curl_cmd)    				
+          end		
+        end
 		
         puts ""		
         puts "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
@@ -320,4 +258,4 @@ namespace :halo do
       end
     end
   end
- end
+end
