@@ -91,7 +91,8 @@ class ApplicationController < ActionController::Base
   def format_datetime(datetime,user)
     return datetime if !datetime.respond_to?(:strftime)
     datetime = user.tz.utc_to_local(datetime) if user
-    datetime.strftime("%m-%d-%Y %I:%M %p")
+    #datetime.strftime("%m-%d-%Y %H:%M")
+    datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
   end
   
   protected
