@@ -164,9 +164,14 @@ class UsersController < ApplicationController
   end
   
   def restore_caregiver_role
-    RolesUsersOption.update(params[:id], {:removed => 0})
+    user = User.find(params[:user_id])
     
-    refresh_caregivers(current_user)
+    opt = RolesUsersOption.find(params[:id])
+    opt.removed = false
+    opt.position = get_max_caregiver_position(user)
+    opt.save
+    
+    refresh_caregivers(user)
   end
   
   def add_existing
@@ -176,7 +181,16 @@ class UsersController < ApplicationController
     role = @caregiver.has_role 'caregiver', @patient
     @role = @caregiver.roles_user
     
-    RolesUsersOption.create(:roles_user_id => @role.id, :user_id => @caregiver.id, :position => @patient.has_caregivers.length, :active => 1)
+    unless opt = RolesUsersOption.find(:first, :conditions => "roles_user_id = #{@role.id} and user_id = #{@caregiver.id}")
+      opt = RolesUsersOption.create(:roles_user_id => @role.id, :user_id => @caregiver.id)
+    end
+    
+    opt.active = true
+    opt.position = get_max_caregiver_position(@patient)-1
+    #opt.position = 1
+    opt.removed = false
+    opt.save
+    
     refresh_caregivers(@patient)
   end
   
