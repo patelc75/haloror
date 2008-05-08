@@ -13,7 +13,7 @@ class UsersController < ApplicationController
   
   def save_timezone
     user = User.find(current_user.id)
-    user.tz = tzinfo_from_timezone(TimeZone.new(params[:user][:timezone_name]))
+    user.profile.tz = tzinfo_from_timezone(TimeZone.new(params[:user][:timezone_name]))
     user.save
   end
   
@@ -127,6 +127,8 @@ class UsersController < ApplicationController
   end
   
   def existing_info
+    #look up here
+    if(params[:what]== "email")
     render :partial => 'call_list/extra_info_lightbox', :locals => {:caregiver_id => params[:id], :user_id => params[:user_id]}
   end
   

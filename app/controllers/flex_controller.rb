@@ -93,8 +93,9 @@ class FlexController < ApplicationController
   end
   
   def get_model_data(model, query)
+    #find() defaults to order by id (not order by timestamp)
     model.find(:all, :conditions => "user_id = #{query[:user_id]} and timestamp <= '#{query[:enddate]}' and timestamp >= '#{query[:startdate]}'")
-  #rescue ActiveRecord::StatementInvalid
+    #rescue ActiveRecord::StatementInvalid
     #model.find(:all, :conditions => "user_id = #{query[:user_id]} and end_timestamp <= '#{query[:enddate]}' and begin_timestamp >= '#{query[:startdate]}'")
   end
   

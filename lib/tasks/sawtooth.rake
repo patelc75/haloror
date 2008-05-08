@@ -191,7 +191,7 @@ namespace :sawtooth do
      
         if ENV['vital'] == "skin_temp" || ENV['vital'] == "all"
           print "user_id #{ENV['user_id']} | "
-          print "#{start_time}: skin temp #{random_skin_temp} | "  
+          print "#{start_time}| skin temp #{random_skin_temp} | "  
           if ENV['method'] == "activerecord"
             skin_temp = SkinTemp.new(:user_id => ENV['user_id'], :timestamp => start_time, :skin_temp => random_skin_temp)
             skin_temp.save
