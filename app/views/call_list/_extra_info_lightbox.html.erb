@@ -5,7 +5,7 @@
 	<img src="/images/lightbox-col-header.gif" /><br />
 	<div class="lightbox-content">
 		<div style="width:380px;" id="container">
-			You are missing this information. Would you like to enter it now?
+			<%= missing%>
 			<br />
 			<br />
 			<%=link_to_remote_redbox('Yes', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :user_id => user_id, :frame => true }, :html => {:method => :get, :complete => ''})%>

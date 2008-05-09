@@ -113,6 +113,7 @@
 
 	<div style="float:left;padding-top:25px;width:75px">
 		<input type="hidden" id="user-<%=caregiver.id%>_phone" value="<%=caregiver.profile.home_phone%>" />
+		<input type="hidden" id="user-<%=caregiver.id%>_phone2" value="<%=caregiver.profile.cell_phone%>" />
 		<% 
 			if !opts.phone_active? or !opts.active?
 				img = 'call_list-phone-inactive.gif'
@@ -142,6 +143,7 @@
 
 	<div style="float:left;padding-top:25px;width:100px">
 		<input type="hidden" id="user-<%=caregiver.id%>_text" value="<%=caregiver.profile.cell_phone%>" />
+		 <input type="hidden" id="user-<%=caregiver.id%>_text2" value="<%=caregiver.profile.carrier_id%>" /> 
 		
 		<% 
 			if !opts.text_active? or !opts.active?

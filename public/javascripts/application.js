@@ -95,11 +95,11 @@ function SetCookie(cookieName,cookieValue,nDays) {
 
 function toggleContact(pos, id, status, what, user_id)
 {
-	if(what != 'email' && !$('user-'+id+'_'+what).value)
+	if(what != 'email' && (!$('user-'+id+'_'+what).value || !$('user-'+id+'_'+what+'2').value))
 	{
 		//RedBox.loading();
 		//RedBox.addHiddenContent('hidden_content_extra_info-'+id);
-		new Ajax.Updater('hidden_content_extra_info', '/users/existing_info/'+id+'/?user_id='+user_id, {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('hidden_content_extra_info'); }, onLoading:function(request){RedBox.loading(); }});
+		new Ajax.Updater('hidden_content_extra_info', '/users/existing_info/'+id+'/?user_id='+user_id+'&what='+what, {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('hidden_content_extra_info'); }, onLoading:function(request){RedBox.loading(); }});
 		return false;
 	}
 	else
