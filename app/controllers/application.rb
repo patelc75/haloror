@@ -45,7 +45,7 @@ class ApplicationController < ActionController::Base
   
   private
   def set_timezone
-    if logged_in? && !current_user.profile.time_zone.nil?
+    if logged_in? && !current_user.profile.tz.nil?
       TzTime.zone = current_user.profile.tz
     else
       TzTime.zone = TZInfo::Timezone.new(ENV['TZ'])
