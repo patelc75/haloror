@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
   end
   
   before_filter :authenticated?
-  around_filter :set_timezone
+  #around_filter :set_timezone
   
   def number_ext
     @num_ref = {}
@@ -53,9 +53,6 @@ class ApplicationController < ActionController::Base
     yield
     TzTime.reset!
   end
-  
-  
-  
   
   def refresh_caregivers(user)
     number_ext
