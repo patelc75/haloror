@@ -7,11 +7,12 @@ class CreateDeviceAvailableAlerts < ActiveRecord::Migration
     end
 
     add_index 'device_available_alerts', %w(device_id), :name => 'device_available_alerts_device_id_idx'
-
   end
 
   def self.down
     drop_table :device_available_alerts if
-        ActiveRecord::Base.connection.tables.include?(:device_available_alerts)
+      ActiveRecord::Base.connection.tables.include?(:device_available_alerts)
+        
+    remove_index :device_available_alerts, :device_available_alerts_device_id_idx
   end
 end
