@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 114) do
+ActiveRecord::Schema.define(:version => 115) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -171,6 +171,9 @@ ActiveRecord::Schema.define(:version => 114) do
     t.integer "device_id"
     t.integer "user_id"
   end
+
+  add_index "devices_users", ["device_id"], :name => "index_devices_users_on_device_id"
+  add_index "devices_users", ["user_id"], :name => "index_devices_users_on_user_id"
 
   create_table "dial_ups", :force => true do |t|
     t.integer "phone_number"

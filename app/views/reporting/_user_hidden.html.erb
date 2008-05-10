@@ -1,5 +1,5 @@
 <div id="user_<%=user.id%>-hidden" style="display:none">
-	<% caregivers = user.has_caregivers(:include => [:devices, :roles, :roles_users, :access_logs, :profile]) %>
+	<% caregivers = user.caregivers %>
 	<% if caregivers.length > 0 %>
 		<div class="row">
 			<div class="col-25">&nbsp;</div>
@@ -16,7 +16,7 @@
 		<br />
 	<% end %>
 	
-	<% devices = user.devices.find(:all, :include => [:batteries, :battery_charge_completes]) %>
+	<% devices = user.devices %>
 	<div class="row">
 		<div class="col-25">&nbsp;</div>
 		<div class="col-200">

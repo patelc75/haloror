@@ -128,14 +128,19 @@ class User < ActiveRecord::Base
     patients = []
     
     RolesUser.find(:all, :conditions => "user_id = #{self.id}").each do |role_user|
-      if role_user.role and role_user.role.name == 'caregiver'
-        patients << User.find(role_user.role.authorizable_id, :include => [:roles, :roles_users, :access_logs, :profile])
-      end
-    end
+                          if role_user.role and role_user.role.name == 'caregiver'
+                            patients << User.find(role_user.role.authorizable_id, :include => [:roles, :roles_users, :access_logs, :profile, {:devices => :battery_charge_completes}])
+                          end
+                        end
     
     patients
   end
-
+  def caregivers
+    caregivers = []
+    caregivers = self.has_caregivers
+    caregivers
+  end
+  
   protected
   # before filter 
   def encrypt_password
