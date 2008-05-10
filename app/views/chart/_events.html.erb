@@ -20,17 +20,17 @@ Recent Events:
      
 
 <!--%=TzTime.zone.utc_to_local(event.timestamp).strftime("%a %m-%d-%Y %I:%M %p")%-->
-<% if @tz %>
-  <%=@tz.utc_to_local(event.timestamp).strftime("%a %m-%d-%Y %I:%M %p")%>
-<% end %> 
+<!--% if @tz %-->
+  <!--%=@tz.utc_to_local(event.timestamp).strftime("%a %m-%d-%Y %I:%M %p")%-->
+<!--% end %--> 
   
    </p>
 
 <% end %>
 User Time Zone:   
 <br/>
-<% if @tz %>
-<%=@tz%> 
-<% end %> 
+<!--% if @tz %-->
+<!--%=@tz%--> 
+<!--% end %--> 
 
 <div style="clear:both"></div>
