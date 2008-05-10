@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 115) do
+ActiveRecord::Schema.define(:version => 116) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -17,6 +17,8 @@ ActiveRecord::Schema.define(:version => 115) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "access_logs", ["user_id"], :name => "index_access_logs_on_user_id"
 
   create_table "alert_groups", :force => true do |t|
     t.string   "group_type"
@@ -66,6 +68,7 @@ ActiveRecord::Schema.define(:version => 115) do
     t.integer  "device_id"
   end
 
+  add_index "batteries", ["device_id"], :name => "index_batteries_on_device_id"
   add_index "batteries", ["user_id", "timestamp"], :name => "index_batteries_on_timestamp_and_user_id"
 
   create_table "battery_charge_completes", :force => true do |t|
@@ -76,6 +79,8 @@ ActiveRecord::Schema.define(:version => 115) do
     t.integer  "user_id"
   end
 
+  add_index "battery_charge_completes", ["device_id"], :name => "index_battery_charge_completes_on_device_id"
+
   create_table "battery_criticals", :force => true do |t|
     t.integer  "device_id"
     t.datetime "timestamp"
@@ -83,6 +88,8 @@ ActiveRecord::Schema.define(:version => 115) do
     t.integer  "time_remaining", :null => false
     t.integer  "user_id"
   end
+
+  add_index "battery_criticals", ["device_id"], :name => "index_battery_criticals_on_device_id"
 
   create_table "battery_pluggeds", :force => true do |t|
     t.integer  "device_id"
@@ -313,6 +320,8 @@ ActiveRecord::Schema.define(:version => 115) do
     t.string  "time_zone"
   end
 
+  add_index "profiles", ["user_id"], :name => "index_profiles_on_user_id"
+
   create_table "raw_data_files", :force => true do |t|
     t.string   "filename"
     t.string   "content_type"
@@ -335,6 +344,9 @@ ActiveRecord::Schema.define(:version => 115) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "roles_users", ["role_id"], :name => "index_roles_users_on_role_id"
+  add_index "roles_users", ["user_id"], :name => "index_roles_users_on_user_id"
 
   create_table "roles_users_options", :force => true do |t|
     t.integer "role_id"

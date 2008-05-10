@@ -1,6 +1,6 @@
 class ReportingController < ApplicationController
   def users
-    @users = User.find(:all, :include => [:roles, :roles_users, :access_logs, :profile, {:devices => [:battery_charge_completes]}])
+    @users = User.find(:all, :include => [:roles, :roles_users, :access_logs, :profile, {:devices => :battery_charge_completes}])
   end
   
   def devices
