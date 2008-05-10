@@ -25,7 +25,6 @@ class ApplicationController < ActionController::Base
   end
   
   before_filter :authenticated?
-  #around_filter :set_timezone
   
   def number_ext
     @num_ref = {}
@@ -44,16 +43,6 @@ class ApplicationController < ActionController::Base
   
   
   private
-  def set_timezone
-    if logged_in? && !current_user.profile.tz.nil?
-      TzTime.zone = current_user.profile.tz
-    else
-      TzTime.zone = TZInfo::Timezone.new(ENV['TZ'])
-    end
-    yield
-    TzTime.reset!
-  end
-  
   def refresh_caregivers(user)
     number_ext
     
@@ -95,7 +84,7 @@ class ApplicationController < ActionController::Base
   protected
   def authenticated?
     unless (controller_name == 'users' && (action_name == 'new' || action_name == 'create' || action_name == 'activate') || 
-      controller_name == 'sessions' || controller_name == 'flex' && action_name == 'chart')
+          controller_name == 'sessions' || controller_name == 'flex' && action_name == 'chart')
       return authenticate
     else
       return true

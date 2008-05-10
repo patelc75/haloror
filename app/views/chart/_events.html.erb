@@ -20,7 +20,7 @@ Recent Events:
      
 
 <!--%=TzTime.zone.utc_to_local(event.timestamp).strftime("%a %m-%d-%Y %I:%M %p")%-->
-
+<%=@tz.utc_to_local(event.timestamp).strftime("%a %m-%d-%Y %I:%M %p")%>
  
   
    </p>
@@ -28,7 +28,7 @@ Recent Events:
 <% end %>
 User Time Zone:   
 <br/>
-<!--%=TzTime.zone%--> 
+<%=@tz%> 
 
 
 <div style="clear:both"></div>

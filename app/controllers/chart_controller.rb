@@ -16,7 +16,7 @@ class ChartController < ApplicationController
       redirect_to '/login'
     else
       @user = which_user?
-      
+           
       @battery = Battery.find(:first,:conditions => "user_id = '#{@user.id}'",:order => "timestamp DESC")
       if @battery
         @gauge_width = 50 * (@battery.percentage/100.0)
@@ -25,7 +25,11 @@ class ChartController < ApplicationController
       end
     
       @events = Event.find(:all, :limit => 10, :order => "id desc",:conditions => "user_id = '#{@user.id}'")
-    
+      
+      if(@user.profile)
+        @tz = @user.profile.tz
+      end
+      
       @temp = SkinTemp.find(:first,:conditions => "user_id = '#{@user.id}'",:order => "timestamp DESC")
       #@temp = SkinTemp.find(:first, :order => 'id desc')
      
