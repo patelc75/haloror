@@ -75,10 +75,19 @@ class ApplicationController < ActionController::Base
   end
   
   def format_datetime(datetime,user)
+    lookup = {-7 => 'PST', -6 => 'MST', -5 => 'CST', -4 => 'EST'}
+    original_datetime = datetime
+    
     return datetime if !datetime.respond_to?(:strftime)
     datetime = user.profile.tz.utc_to_local(datetime) if user and user.profile and user.profile.tz 
     #datetime.strftime("%m-%d-%Y %H:%M")
-    datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
+    #datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
+    
+    newdate = datetime.strftime("%a %b %d %H:%M:%S")
+    
+    offset = datetime.hour - original_datetime.hour
+    
+    return "#{newdate} #{lookup[offset]} #{datetime.strftime("%Y")}"
   end
   
   protected
