@@ -1,5 +1,5 @@
 <!--User Time Zone :-->  <!--%=@user.profile.time_zone%> -->
-<!--User Time Zone :-->  <!--%=@user.profile.time_zone%> -->
+
 
 
 
@@ -19,18 +19,17 @@ Recent Events:
 <!--%=event.timestamp.to_s%>-->
      
 
-<!--%=TzTime.zone.utc_to_local(event.timestamp).strftime("%a %m-%d-%Y %I:%M %p")%-->
-<!--% if @tz %-->
-  <!--%=@tz.utc_to_local(event.timestamp).strftime("%a %m-%d-%Y %I:%M %p")%-->
-<!--% end %--> 
+
+  <%=@tzs.utc_to_local(event.timestamp).strftime("%a %m-%d-%Y %I:%M %p")%>
+
   
    </p>
 
 <% end %>
 User Time Zone:   
 <br/>
-<!--% if @tz %-->
-<!--%=@tz%--> 
-<!--% end %--> 
+
+<%=@tzs%> 
+
 
 <div style="clear:both"></div>

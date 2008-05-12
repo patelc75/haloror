@@ -26,8 +26,10 @@ class ChartController < ApplicationController
     
       @events = Event.find(:all, :limit => 10, :order => "id desc",:conditions => "user_id = '#{@user.id}'")
       
-      if(@user.profile)
-        @tz = @user.profile.tz
+      if(@user.profile.time_zone)
+        @tzs = @user.profile.tz
+      else
+        @tzs = TZInfo::Timezone.get('America/Chicago') 
       end
       
       @temp = SkinTemp.find(:first,:conditions => "user_id = '#{@user.id}'",:order => "timestamp DESC")
