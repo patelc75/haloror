@@ -127,30 +127,27 @@ class UsersController < ApplicationController
   end
   
   def existing_info
-     @userinfo = User.find(params[:id])
-     @usercellinfo = @userinfo.profile.cell_phone
-     @userhomeinfo = @userinfo.profile.home_phone
-     @usercarrierid = @userinfo.profile.carrier_id
+    @userinfo = User.find(params[:id])
+    @usercellinfo = @userinfo.profile.cell_phone
+    @userhomeinfo = @userinfo.profile.home_phone
+    @usercarrierid = @userinfo.profile.carrier_id
 
 
-      if ("text" == params[:what])
-       #  if (User.find(params[:user_id]).cell_phone  == nil ) 
-         if (@usercellinfo == nil || @usercarrierid == nil ||@usercellinfo == "" || @usercarrierid == "" )
-         missingwhat = "You are missing Cell Phone or Cell Carrier Type of this caregiver" 
-         end
-       end
-
-
-      if ("phone" == params[:what])
-        if(@userhomeinfo == nil || @usercellinfo == nil || @usercellinfo == "" || @userhomeinfo == ""  )
-         missingwhat = "You are missing Cell Phone or Home Phone of this caregiver"
-        end
+    if ("text" == params[:what])
+      if (@usercellinfo == nil || @usercarrierid == nil ||@usercellinfo == "" || @usercarrierid == "" )
+        missingwhat = "The caretiver must include both a Cell Phone and Cell Carrier Provider. Would you like to enter both now?" 
       end
+    end
+
+
+    if ("phone" == params[:what])
+      if(@userhomeinfo == nil || @usercellinfo == nil || @usercellinfo == "" || @userhomeinfo == ""  )
+        missingwhat = "This caregiver must have either a Cell Phone or a Home Phone? Would you like enter one or both now?"
+      end
+    end
 
     render :partial => 'call_list/extra_info_lightbox', :locals => {:caregiver_id => params[:id], :user_id => params[:user_id], :missing => missingwhat}  
-
-
-    end
+  end
   
   def create_caregiver
     @user = User.new(params[:user])
