@@ -78,14 +78,22 @@ end
 ActionMailer::Base.delivery_method = :smtp
 ActionMailer::Base.raise_delivery_errors = true
   
-ActionMailer::Base.smtp_settings = {
-  :address => "mail.haloresearch.net" ,
-  :port => 25,
-  :domain => "haloresearch.net" ,
-  :authentication => :login,
-  :user_name => "chirag@haloresearch.net" ,
-  :password => "irdikt75" 
-}
+if (ENV['RAILS_ENV'] == 'production')
+  ActionMailer::Base.smtp_settings = {
+    :address => "localhost" ,
+    :port => 25,
+    :domain => "halomonitor.com"
+  }
+else
+  ActionMailer::Base.smtp_settings = {
+    :address => "mail.haloresearch.net" ,
+    :port => 25,
+    :domain => "haloresearch.net" ,
+    :authentication => :login,
+    :user_name => "chirag@haloresearch.net" ,
+    :password => "irdikt75" 
+  }
+end
 
 require 'rubygems'
 require 'action_mailer/ar_sendmail'
