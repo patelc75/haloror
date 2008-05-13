@@ -127,26 +127,26 @@ class UsersController < ApplicationController
   end
   
   def existing_info
-    @userinfo = User.find(params[:id])
-    @usercellinfo = @userinfo.profile.cell_phone
-    @userhomeinfo = @userinfo.profile.home_phone
-    @usercarrierid = @userinfo.profile.carrier_id
+    @user_info = User.find(params[:id])
+    @user_cell_info = @user_info.profile.cell_phone
+    @user_home_info = @user_info.profile.home_phone
+    @user_carrier_id = @user_info.profile.carrier_id
 
 
     if ("text" == params[:what])
-      if (@usercellinfo == nil || @usercarrierid == nil ||@usercellinfo == "" || @usercarrierid == "" )
-        missingwhat = "The caretiver must include both a Cell Phone and Cell Carrier Provider. Would you like to enter both now?" 
+      if (@user_cell_info == nil || @user_carrier_id == nil ||@user_cell_info == "" || @user_carrier_id == "" )
+        missing_what = "The caregiver must include both a Cell Phone and Cell Carrier Provider. Would you like to enter both now?" 
       end
     end
 
 
     if ("phone" == params[:what])
-      if(@userhomeinfo == nil || @usercellinfo == nil || @usercellinfo == "" || @userhomeinfo == ""  )
-        missingwhat = "This caregiver must have either a Cell Phone or a Home Phone? Would you like enter one or both now?"
-      end
+     if ((@user_cell_info == "" or @user_cell_info == nil) and (@user_home_info == nil or @user_home_info == "" ))
+         missing_what = "This caregiver must have either a Cell Phone or a Home Phone? Would you like enter one or both now?"
+       end
     end
-
-    render :partial => 'call_list/extra_info_lightbox', :locals => {:caregiver_id => params[:id], :user_id => params[:user_id], :missing => missingwhat}  
+  render :partial => 'call_list/extra_info_lightbox', :locals => {:caregiver_id => params[:id], :user_id => params[:user_id], :missing => missing_what} 
+    
   end
   
   def create_caregiver
