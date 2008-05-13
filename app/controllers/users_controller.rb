@@ -1,6 +1,9 @@
 class UsersController < ApplicationController
   include UsersHelper
 
+
+
+
   before_filter:set_user
   
   def set_user
@@ -171,9 +174,17 @@ class UsersController < ApplicationController
       @existing_id = existing_user[:id]
       @add_existing = true
     end
-        
+   
+  # old code without if else
+   #render :partial => 'caregiver_form'
+  
+   #new code with if else and created a new partial existing_caregiver_form and removed <% if @add_existing %> function in  caregiver_form   
     @max_position = get_max_caregiver_position(@user)
-    render :partial => 'caregiver_form'
+     if (@add_existing == true )
+         render :partial => 'existing_caregiver_form'
+         else
+         render :partial => 'caregiver_form'
+    end
   end
   
   def destroy_caregiver

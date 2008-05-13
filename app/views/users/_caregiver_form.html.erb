@@ -15,9 +15,7 @@
 		</div>
 	<% end %>
 	
-	<% if @add_existing %>
-		Add this user to your profile? <%=link_to_remote 'Yes', :update => 'call_list', :url => {:controller => 'users', :action => 'add_existing', :id => @existing_id, :user_id => params[:user_id]}, :complete => "RedBox.close();headerDisplay()"%>
-	<% end %>
+
 	
 	<%= error_messages_for :user %>
 	<%=hidden_field_tag :position, @max_position %>

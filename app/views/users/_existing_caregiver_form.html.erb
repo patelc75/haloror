@@ -1,0 +1,14 @@
+<% remote_form_for :user, :url => {:controller => 'users', :action => 'create_caregiver'}, :update => 'container' do |f| -%>
+	
+	
+	<% if @add_existing %>
+	   <%=User.find(@existing_id).email%> already exists. Do you want to add this existing user? 
+		<br />
+		<br />
+		
+		<%=link_to_remote 'Yes', :update => 'call_list', :url => {:controller => 'users', :action => 'add_existing', :id => @existing_id, :user_id => params[:user_id]}, :complete => "RedBox.close();headerDisplay()"%>  	<a href="javascript:void(0)" onClick="RedBox.close()">No</a>
+	<% end %>
+	
+	
+	
+<% end -%>
