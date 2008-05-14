@@ -1,4 +1,9 @@
-
+<%
+	# this is a hack...need to refactor pieces of caregiver table (/b)
+	unless user_id = params[:patient_id]
+		user_id = params[:id]
+	end
+%>
 
 <%
 	if !opts.active?
@@ -43,11 +48,11 @@
 				img = ''
 			end
 		%>
-		<a href="#" onClick="moveElementUp(<%=i%>, <%=caregiver.id%>, <%=params[:id]%>)">
+		<a href="#" onClick="moveElementUp(<%=i%>, <%=caregiver.id%>, <%=user_id%>)">
 			<img src="/images/call_list-up<%=img%>.gif" border="0" id="item_up_<%=caregiver.id%>" />
 		</a>
 		<br />
-		<a href="#" onClick="moveElementDown(<%=i%>, <%=caregiver.id%>, <%=params[:id]%>)">
+		<a href="#" onClick="moveElementDown(<%=i%>, <%=caregiver.id%>, <%=user_id%>)">
 			<img src="/images/call_list-down<%=img%>.gif" border="0" id="item_down_<%=caregiver.id%>" />
 		</a>
 	</div>
@@ -122,7 +127,7 @@
 			end
 		%>
 		
-		<%=link_to_remote(image_tag(img, :id => 'item_phone_'+caregiver.id.to_s), :url => { :action => "toggle_phone",:id => caregiver.roles_user.id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+params[:id]+')', :complete => 'updatePositions()')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_phone_'+caregiver.id.to_s), :url => { :action => "toggle_phone",:id => caregiver.roles_user.id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')', :complete => 'updatePositions()')%>
 	</div>
 	
 	<!--EMAIL-->
@@ -136,7 +141,7 @@
 			end
 		%>
 
-		<%=link_to_remote(image_tag(img, :id => 'item_email_'+caregiver.id.to_s), :url => { :action => "toggle_email",:id => caregiver.roles_user.id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.email_active.to_s+', \'email\', '+params[:id]+')', :complete => 'updatePositions()')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_email_'+caregiver.id.to_s), :url => { :action => "toggle_email",:id => caregiver.roles_user.id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.email_active.to_s+', \'email\', '+user_id+')', :complete => 'updatePositions()')%>
 	</div>
 
 	<!--TEXT-->
@@ -153,7 +158,7 @@
 			end
 		%>
 
-		<%=link_to_remote(image_tag(img, :id => 'item_text_'+caregiver.id.to_s), :url => { :action => "toggle_text",:id => caregiver.roles_user.id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\', '+params[:id]+')', :complete => 'updatePositions()')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_text_'+caregiver.id.to_s), :url => { :action => "toggle_text",:id => caregiver.roles_user.id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\', '+user_id+')', :complete => 'updatePositions()')%>
 	</div>
 
 	<!--DELETE-->
@@ -177,12 +182,8 @@
 	
 	<div style="float:left;padding-top:35px;width:125px" id="item_edit_<%=caregiver.id%>">
 		<!--% puts edit_user_url(caregiver)%-->
-		<%
-			unless edit_id = params[:patient_id]
-				edit_id = params[:id]
-			end
-		%>
-		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true, :user_id => edit_id }, :html => {:method => :get, :complete => 'updatePositions()'})%>
+		
+		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true, :user_id => user_id }, :html => {:method => :get, :complete => 'updatePositions()'})%>
 		|
 		<%=link_to('More', :controller => "alerts", :action => "index", :id => caregiver.roles_user.id)%>
 	</div>

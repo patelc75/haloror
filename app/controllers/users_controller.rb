@@ -206,6 +206,7 @@ class UsersController < ApplicationController
   
   def add_existing
     @patient = User.find(params[:user_id])
+    params[:patient_id] = params[:user_id]
     @caregiver = User.find(params[:id])
     
     role = @caregiver.has_role 'caregiver', @patient
