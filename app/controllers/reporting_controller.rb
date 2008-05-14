@@ -43,4 +43,41 @@ class ReportingController < ApplicationController
     
     render :layout => false
   end
+  
+  def lost_data
+    if user_id = params[:id]
+      @user = User.find(user_id)
+      prev_timestamp = nil
+      
+      if last = VitalScan.find(:first, :conditions => "user_id = #{user_id}", :order => "timestamp desc")
+        conds = " and timestamp > '#{last.timestamp}'"
+      else
+        conds = ""
+      end
+      
+      Vital.find(:all, :order => 'timestamp asc', :limit => 1000, :conditions => "user_id = #{user_id}#{conds}").each do |reading|
+        if prev_timestamp and (reading.timestamp - prev_timestamp) > 15 
+          # create row in lost_data table
+          lost = LostData.new
+          lost.user_id = reading.user_id
+          lost.begin_time = prev_timestamp
+          lost.end_time = reading.timestamp
+          lost.save
+        end
+      
+        prev_timestamp = reading.timestamp
+      end
+      
+      if prev_timestamp != last.timestamp
+        last = VitalScan.new
+        last.user_id = user_id
+        last.timestamp = prev_timestamp
+        last.save
+      end
+      
+      @lost_data = LostData.find(:all, :conditions => "user_id = #{user_id}", :order => "id desc")
+    else
+      redirect_to '/'
+    end    
+  end
 end
