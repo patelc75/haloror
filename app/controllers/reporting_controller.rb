@@ -11,7 +11,7 @@ class ReportingController < ApplicationController
   end
   
   def devices
-    @devices = Device.find(:all, :include => [:battery_charge_completes, {:users => [:roles, :roles_users, :access_logs, :profile]}])
+    @devices = Device.find(:all, :include => :battery_charge_completes)
   end
   
   def device_hidden
