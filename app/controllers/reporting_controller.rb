@@ -1,4 +1,6 @@
 class ReportingController < ApplicationController
+  LOST_DATA_GAP = 15.seconds
+  
   def users
     @users = User.find(:all, :include => [:roles, :roles_users, :access_logs, :profile, {:devices => :battery_charge_completes}])
   end
@@ -50,13 +52,13 @@ class ReportingController < ApplicationController
       prev_timestamp = nil
       
       if last = VitalScan.find(:first, :conditions => "user_id = #{user_id}", :order => "timestamp desc")
-        conds = " and timestamp > '#{last.timestamp}'"
+        conds = " and timestamp > '#{last.timestamp.to_s(:db)}'"
       else
         conds = ""
       end
       
-      Vital.find(:all, :order => 'timestamp asc', :limit => 1000, :conditions => "user_id = #{user_id}#{conds}").each do |reading|
-        if prev_timestamp and (reading.timestamp - prev_timestamp) > 15 
+      Vital.find(:all, :order => 'timestamp asc', :conditions => "user_id = #{user_id}#{conds}").each do |reading|
+        if prev_timestamp and (reading.timestamp - prev_timestamp) > LOST_DATA_GAP
           # create row in lost_data table
           lost = LostData.new
           lost.user_id = reading.user_id
@@ -68,7 +70,7 @@ class ReportingController < ApplicationController
         prev_timestamp = reading.timestamp
       end
       
-      if prev_timestamp != last.timestamp
+      if !last or prev_timestamp != last.timestamp
         last = VitalScan.new
         last.user_id = user_id
         last.timestamp = prev_timestamp
