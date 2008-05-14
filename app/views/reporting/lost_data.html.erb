@@ -1,5 +1,5 @@
 <h2>Missing data for <%=@user.login%>:</h2>
 <p>&nbsp;</p>
 <% @lost_data.each do |reading| %>
-	<p><%=reading.begin_time.to_s(:short)%> - <%=reading.end_time.to_s(:short)%></p>	
+	<p><%=reading.begin_time.to_s(:db)%> - <%=reading.end_time.to_s(:db)%></p>
 <% end %>
