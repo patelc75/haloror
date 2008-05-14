@@ -5,6 +5,9 @@ function toggle_user_hidden(user_id)
 	if(cur == 'none')
 	{
 		$('user_'+user_id+'-hidden').style.display = 'block';
+		new Ajax.Updater('user_'+user_id+'-hidden', 
+										 '/reporting/user_hidden?user_id='+user_id, 
+										 {asynchronous:true, evalScripts:true});
 		$('user_'+user_id+'-toggle').innerHTML = '[-]';
 	}		
 	else
@@ -21,6 +24,9 @@ function toggle_device_hidden(device_id)
 	if(cur == 'none')
 	{
 		$('device_'+device_id+'-hidden').style.display = 'block';
+		new Ajax.Updater('device_'+device_id+'-hidden', 
+										 '/reporting/device_hidden?device_id='+device_id, 
+										 {asynchronous:true, evalScripts:true});
 		$('device_'+device_id+'-toggle').innerHTML = '[-]';
 	}		
 	else

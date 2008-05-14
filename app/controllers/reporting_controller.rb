@@ -2,13 +2,22 @@ class ReportingController < ApplicationController
   LOST_DATA_GAP = 15.seconds
   
   def users
-    @users = User.find(:all, :include => [:roles, :roles_users, :access_logs, :profile, {:devices => :battery_charge_completes}])
+    @users = User.find(:all, :include => [:roles, :roles_users, :access_logs, :profile])
+  end
+  
+  def user_hidden
+    @user = User.find(params[:user_id], :include => [:roles, :roles_users, :access_logs, :profile, {:devices => :battery_charge_completes}])
+    render :partial => 'user_hidden', :layout => false
   end
   
   def devices
     @devices = Device.find(:all, :include => [:battery_charge_completes, {:users => [:roles, :roles_users, :access_logs, :profile]}])
   end
   
+  def device_hidden
+    @device = Device.find(params[:device_id], :include => [:battery_charge_completes, {:users => [:roles, :roles_users, :access_logs, :profile]}])
+    render :partial => 'device_hidden', :layout => false
+  end
   def sort_user_table
     #order = "#{params[:col]} asc"
     

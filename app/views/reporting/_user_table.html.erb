@@ -25,12 +25,12 @@
 	<% users.sort_by { |user| user.profile[:last_name] }.each do |user| %>
 		<%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
 
-		<%=render :partial => 'reporting/user_hidden', :locals => {:user => user}%>
+		<div id="user_<%=user.id%>-hidden" style="display:none"></div>
 	<% end %>
 <% else %>
 	<% users.sort_by { |user| user[sortby.to_sym] }.each do |user| %>
 		<%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
 
-		<%=render :partial => 'reporting/user_hidden', :locals => {:user => user}%>
+		<div id="user_<%=user.id%>-hidden" style="display:none"></div>
 	<% end %>
 <% end %>

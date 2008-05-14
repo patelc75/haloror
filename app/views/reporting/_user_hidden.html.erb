@@ -1,4 +1,4 @@
-<div id="user_<%=user.id%>-hidden" style="display:none">
+	<% user = @user %>
 	<% caregivers = user.caregivers %>
 	<% if caregivers.length > 0 %>
 		<div class="row">
@@ -86,4 +86,3 @@
 		<br />
 		<br />
 	<% end %>
-</div>
