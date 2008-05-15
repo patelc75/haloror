@@ -6,16 +6,16 @@ class ReportingController < ApplicationController
   end
   
   def user_hidden
-    @user = User.find(params[:user_id], :include => [:roles, :roles_users, :access_logs, :profile, {:devices => :battery_charge_completes}])
+    @user = User.find(params[:user_id], :include => [:roles, :roles_users, :access_logs, :profile, {:devices => [:battery_charge_completes, :batteries]}])
     render :partial => 'user_hidden', :layout => false
   end
   
   def devices
-    @devices = Device.find(:all, :include => :battery_charge_completes)
+    @devices = Device.find(:all, :include => [:battery_charge_completes, :batteries])
   end
   
   def device_hidden
-    @device = Device.find(params[:device_id], :include => [:battery_charge_completes, {:users => [:roles, :roles_users, :access_logs, :profile]}])
+    @device = Device.find(params[:device_id], :include => [:battery_charge_completes, :batteries, {:users => [:roles, :roles_users, :access_logs, :profile]}])
     render :partial => 'device_hidden', :layout => false
   end
   def sort_user_table
