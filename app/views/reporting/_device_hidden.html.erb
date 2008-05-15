@@ -5,7 +5,7 @@
 			<h3>Users</h3>
 		</div>
 	</div>
-	<% users = device.users.find(:all, :include => [:roles, :roles_users, :access_logs, :profile])
+	<% users = device.users
 		 users.each do |user| %>
 		<%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => false, :caregiver => false}%>
 	<% end %>
