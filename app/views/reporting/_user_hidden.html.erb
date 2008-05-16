@@ -1,4 +1,4 @@
-	<% user = @user %>
+	<% user = @user if @user	%>
 	<% caregivers = user.caregivers %>
 	<% if caregivers.length > 0 %>
 		<div class="row">
