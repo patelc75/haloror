@@ -1,0 +1,63 @@
+/* CSS file */
+
+StatusLabel {
+	fontWeight: bold;
+}
+
+Panel {
+   borderStyle: solid;
+   borderAlpha: 0.52;
+   borderThickness: 0;
+   borderThicknessLeft: 5;
+   borderThicknessTop: 5;
+   borderThicknessBottom: 5;
+   borderThicknessRight: 5;
+   roundedBottomCorners: true;
+   backgroundAlpha: 1;
+   highlightAlphas: 0.32, 0.08;
+   headerColors: #193244, #528acb;
+   footerColors: #cccccc, #c7c7c7;
+   backgroundColor: #f3f2f6;
+   dropShadowEnabled: true;
+   shadowDistance: 2;
+   shadowDirection: right;
+   dropShadowColor: #999999;
+   titleStyleName: "HaloPanelTitle";
+}
+
+.sidebarPanel {
+	headerHeight:0;
+}
+
+.secondaryPanel {
+	headerHeight:0;
+	dropShadowEnabled:false;
+}
+
+.HaloPanelTitle {
+   letterSpacing: 0;
+   color: #ffffff;
+   textAlign: left;
+   fontFamily: Verdana;
+   fontWeight: bold;
+}
+
+.HaloButton {
+	color: #009DFF;
+	fillAlphas: 1.0, 1.0;
+	fillColors: #193244, #528ACB, #528ACB, #193244;
+}
+
+Label.lastStatusLabel
+{
+	color: #22A7C3;
+	fontSize: 18;
+	fontWeight: bold;
+}
+.HaloSlider
+{
+	fillAlphas: 1.0, 1.0;
+	fillColors: #193244, #528ACB, #528ACB, #193244;
+	trackColors: #02F530,#02F530;
+}
+
