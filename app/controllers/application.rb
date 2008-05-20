@@ -75,41 +75,48 @@ class ApplicationController < ActionController::Base
   end
   
   def format_datetime(datetime,user)
-    lookup = {-7 => 'PST', -6 => 'MST', -5 => 'CST', -4 => 'EST'}
+    lookup = {-8 => 'PST', -7 => 'MST', -6 => 'CST', -5 => 'EST'}
     original_datetime = datetime
     
     return datetime if !datetime.respond_to?(:strftime)
-    datetime = user.profile.tz.utc_to_local(datetime) if user and user.profile and user.profile.tz 
-    #datetime.strftime("%m-%d-%Y %H:%M")
-    #datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
     
-    newdate = datetime.strftime("%a %b %d %H:%M:%S")
-    
-    offset = datetime.hour - original_datetime.hour
-    
-    return "#{newdate} #{lookup[offset]} #{datetime.strftime("%Y")}"
-  end
-  
-  protected
-  def authenticated?
-    unless (controller_name == 'users' && (action_name == 'new' || action_name == 'create' || action_name == 'activate') || 
-          controller_name == 'sessions' || controller_name == 'flex' && action_name == 'chart')
-      return authenticate
+    if user and user.profile and user.profile.time_zone
+      tz = user.profile.tz
     else
-      return true
+      tz = TZInfo::Timezone.get('America/Chicago')
     end
-  end
-  def authenticate
-    unless logged_in?
-      return redirect_to('/login')
+    
+    datetime = tz.utc_to_local(datetime) 
+      #datetime.strftime("%m-%d-%Y %H:%M")
+      #datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
+    
+      newdate = datetime.strftime("%a %b %d %H:%M:%S")
+    
+      offset = datetime.hour - original_datetime.hour
+    
+      return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
     end
-    true
-  end
   
-  def authenticate_admin
-    unless logged_in? && current_user.is_administrator?
-      return redirect_to('/login')
+    protected
+    def authenticated?
+      unless (controller_name == 'users' && (action_name == 'new' || action_name == 'create' || action_name == 'activate') || 
+            controller_name == 'sessions' || controller_name == 'flex' && action_name == 'chart')
+        return authenticate
+      else
+        return true
+      end
     end
-    true
+    def authenticate
+      unless logged_in?
+        return redirect_to('/login')
+      end
+      true
+    end
+  
+    def authenticate_admin
+      unless logged_in? && current_user.is_administrator?
+        return redirect_to('/login')
+      end
+      true
+    end
   end
-end
