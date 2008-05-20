@@ -9,7 +9,7 @@
 			<% @alert_types.each do |alert| %>
 				<%
 					critical = false
-					alert.alert_group.each do |group|
+					alert.alert_groups.each do |group|
 						if group.group_type == 'critical'
 							critical = true
 							break
