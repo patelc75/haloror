@@ -1,6 +1,6 @@
 require 'time'
 
-namespace :sawtooth do  
+namespace :halo do  
   desc "railroad command to generate schema"
   task :railroad => :environment  do
     system('railroad -a -i -M | dot -Tpng > models.png')
