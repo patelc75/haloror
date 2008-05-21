@@ -12,11 +12,17 @@
 	<br />
 	<input type="hidden" name="user_id" value="<%=@user.id%>" />
 	<input type="hidden" name="patient_id" value="<%=params[:user_id]%>" />
+        <input type="hidden" name="roles_user_id" value="<%=params[:roles_user_id]%>" />
 	
 	<%= text_field_tag :email, @user.email %>
 	<br />	
-	<br />
-	<label for="first_name">First Name</label>
+	
+           
+       
+       <br />
+   
+
+        <label for="first_name">First Name</label>
 	<br />
 	<%= f.text_field :first_name %>
 	<br />
@@ -25,7 +31,23 @@
 	<br />
 	<%= f.text_field :last_name %>
 	<br />
+	
+<br />
+   <% if @roles %>     
+        
+
+  
+      
+        <label for="relationship"> Relationship </label>
 	<br />
+
+	<%= text_field_tag :relationship, @roles.relationship %>
+      
+       <br />
+       <br />
+       <% end %>
+        
+        
 	<label for="address">Address</label>
 	<br />
 	<%= f.text_field :address %>
@@ -73,18 +95,18 @@
 	
 	<label for="time_zone">Select Time Zone</label>
 
-
-
-		<%= time_zone_select ('profile', 'time_zone', TZInfo::Timezone.us_zones, :model => TZInfo::Timezone, :default => "America/Chicago" )%> 
+	<%= time_zone_select ('profile', 'time_zone', TZInfo::Timezone.us_zones, :model => TZInfo::Timezone, :default => "America/Chicago" )%> 
 	
 	<br/>
 	<br />
+
+  
+ 
 	
 	
-    <!--label for="relationship"--> <!--Relationship--> <!--/label-->
-	<!--br /-->
-	<!--%= f.text_field :relationship %-->
-    <!--br/-->
+	
+ 
+    <br/>
     <br/>
   	<div align="center">
 		<input name="commit" type="image" src="/images/update.gif" onClick="RedBox.close()" /> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>

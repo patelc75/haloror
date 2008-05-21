@@ -8,7 +8,7 @@
 			<%= missing%>
 			<br />
 			<br />
-			<%=link_to_remote_redbox('Yes', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :user_id => user_id, :frame => true }, :html => {:method => :get, :complete => ''})%>
+			<%=link_to_remote_redbox('Yes', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :user_id => user_id, :frame => true,  :roles_user_id =>caregiver.roles_user.id }, :html => {:method => :get, :complete => ''})%>
 			|
 			<a href="javascript:void(0)" onClick="RedBox.close()">No</a>
 		</div>
