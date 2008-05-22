@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 116) do
+ActiveRecord::Schema.define(:version => 120) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -268,6 +268,12 @@ ActiveRecord::Schema.define(:version => 116) do
     t.datetime "updated_at", :null => false
   end
 
+  create_table "lost_datas", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "begin_time"
+    t.datetime "end_time"
+  end
+
   create_table "mgmt_acks", :force => true do |t|
     t.integer  "mgmt_cmd_id"
     t.datetime "timestamp_device"
@@ -314,7 +320,6 @@ ActiveRecord::Schema.define(:version => 116) do
     t.string  "home_phone"
     t.string  "work_phone"
     t.string  "cell_phone"
-    t.string  "relationship"
     t.string  "text_email"
     t.integer "carrier_id"
     t.string  "time_zone"
@@ -338,6 +343,8 @@ ActiveRecord::Schema.define(:version => 116) do
     t.datetime "updated_at"
   end
 
+  add_index "roles", ["authorizable_id"], :name => "index_roles_on_authorizable_id"
+
   create_table "roles_users", :force => true do |t|
     t.integer  "user_id"
     t.integer  "role_id"
@@ -357,6 +364,7 @@ ActiveRecord::Schema.define(:version => 116) do
     t.boolean "text_active",  :default => false
     t.integer "position",     :default => 0
     t.integer "user_id"
+    t.string  "relationship"
   end
 
   create_table "skin_temps", :force => true do |t|
@@ -401,6 +409,11 @@ ActiveRecord::Schema.define(:version => 116) do
     t.string   "type"
     t.string   "serial_number"
     t.string   "time_zone"
+  end
+
+  create_table "vital_scans", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "timestamp"
   end
 
   create_table "vitals", :force => true do |t|
