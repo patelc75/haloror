@@ -123,7 +123,27 @@ namespace :halo do
       puts "Slope: #{ENV['slope']}"
     end
   
-	
+    if ENV['gateway_id'] == nil 
+       puts ""
+      puts "You forgot the gateway_id."
+      puts ""
+      print_usage = true
+    else
+      puts "gateway id: #{ENV['gateway_id']}"
+      
+    end
+    
+    if ENV['gateway_serial_num'] == nil 
+       puts ""
+      puts "You forgot the Gateway serial number."
+      puts ""
+      print_usage = true
+    else
+      puts "gateway serial number: #{ENV['gateway_serial_num']}"
+      
+    end
+  
+      
     if print_usage == true
       puts ""
       puts "Example Usage with curl: "
@@ -145,7 +165,22 @@ namespace :halo do
         end_time = start_time + ENV['duration'].to_i  
       elsif (ENV['type'] == "historical")
         end_time = Time.now.utc
-        start_time = end_time - ENV['duration'].to_i 
+        start_time = end_time - ENV['duration'].to_i
+     elsif (ENV['type'] == "range")
+        
+        if (ENV['end_date'] != nil and ENV['start_date'] != nil)
+        end_time = ENV['end_date'].to_time
+        start_time = ENV['start_date'].to_time
+        elsif (ENV['end_date'] == nil and ENV['start_date'] != nil)
+          start_time = ENV['start_date'].to_time
+          end_time = start_time + ENV['duration'].to_i
+          elsif (ENV['start_date'] == nil and ENV['end_date'] != nil )
+            end_time = ENV['end_date'].to_time
+            start_time = end_time - ENV['duration'].to_i
+           elsif (ENV['start_date'] == nil and ENV['end_date'] == nil)
+           puts " You have to enter either Start date or End date if you want to choose the range option"
+         end
+       
       end
 		
       puts "Start time: #{start_time}" 
@@ -162,8 +197,8 @@ namespace :halo do
         else  
           start_time = start_time + ENV['increment'].to_i #send a REST posts with the timestamp incremented by 15 seconds
         end
-        
-        calculathash = Digest::SHA256.hexdigest(start_time.to_s+"0123456789")
+        calculathash = Digest::SHA256.hexdigest(start_time.to_s+ENV['gateway_serial_num'])
+        #calculathash = Digest::SHA256.hexdigest(start_time.to_s+"0123456789")
      
         if hr == (randhr + ENV['swing'].to_i)
           direction = "down"
@@ -198,8 +233,9 @@ namespace :halo do
           elsif ENV['method'] == "curl"
             skin_temp_xml = "<skin_temp><skin_temp>#{random_skin_temp}</skin_temp><timestamp>#{start_time}</timestamp><user_id>#{ENV['user_id']}</user_id></skin_temp>"
             #curl_cmd ='curl -H "Content-Type: text/xml" -d "' + skin_temp_xml + '" ' +'"' + ENV['url'] + "/skin_temps?gateway_id=30&auth=1b092333716e1204c973ec651cab4a6470acbb29fa1e94fca20a2ccd6bdde82a'+'" '   
-            # curl_cmd ='curl -v -H "Content-Type: text/xml" -d "' + skin_temp_xml + '" ' +'"' + 'http://localhost:3000/skin_temps?gateway_id=30&auth='+ "#{calculathash}"+'" ' 
-            curl_cmd ='curl -v -H "Content-Type: text/xml" -d "' + skin_temp_xml + '" ' +'"' + ENV['url'] + '/skin_temps?gateway_id=30&auth='+ "#{calculathash}"+'" ' 
+            
+           # curl_cmd ='curl -v -H "Content-Type: text/xml" -d "' + skin_temp_xml + '" ' +'"' + 'http://localhost:3000/skin_temps?gateway_id=30&auth='+ "#{calculathash}"+'" ' 
+           curl_cmd ='curl -v -H "Content-Type: text/xml" -d "' + skin_temp_xml + '" ' +'"' + ENV['url'] + '/skin_temps?gateway_id=' + "#{ENV['gateway_id']}" '&auth=' + "#{calculathash}"+'" ' 
             puts curl_cmd
             system(curl_cmd)    				         
           end
@@ -218,7 +254,9 @@ namespace :halo do
           elsif ENV['method'] == "curl"
 
             vital_xml="<vital><activity>#{random_activity}</activity><heartrate>#{random_heartrate}</heartrate><hrv>#{random_hrv}</hrv><orientation>#{random_orientation}</orientation><timestamp>#{start_time}</timestamp><user_id>#{ENV['user_id']}</user_id></vital>"
-            curl_cmd ='curl -H "Content-Type: text/xml" -d "' + vital_xml + '" '  +'"'  + ENV['url'] + '/vitals?gateway_id=30&auth='+ "#{calculathash}"+'" ' 
+           # curl_cmd ='curl -H "Content-Type: text/xml" -d "' + vital_xml + '" '  +'"'  + ENV['url'] + '/vitals?gateway_id='+ "#{ENV['gateway_id']}&auth='+ "#{calculathash}"+'" ' 
+           curl_cmd ='curl -H "Content-Type: text/xml" -d "' + vital_xml + '" '  +'"'  + ENV['url'] + '/vitals?gateway_id=' + "#{ENV['gateway_id']}" '&auth=' + "#{calculathash}"+'" ' 
+
             puts curl_cmd
             system(curl_cmd)    				
           end		
@@ -231,8 +269,7 @@ namespace :halo do
             battery.save
           elsif ENV['method'] == "curl"
             battery_xml = "<battery><percentage>#{random_percentage}</percentage><time_remaining>0</time_remaining><user_id>#{ENV['user_id']}</user_id><timestamp>#{start_time}</timestamp></battery>"
-            curl_cmd ='curl -H "Content-Type: text/xml" -d "' + battery_xml + '" ' +'"' + ENV['url'] + '/batteries?gateway_id=30&auth='+ "#{calculathash}"+'" '
-            puts curl_cmd
+            curl_cmd ='curl -H "Content-Type: text/xml" -d "' + battery_xml + '" ' +'"' + ENV['url'] + '/batteries?gateway_id=' + "#{ENV['gateway_id']}" '&auth=' + "#{calculathash}"+'" ' 
             system(curl_cmd)    				
           end		
         end
@@ -245,7 +282,7 @@ namespace :halo do
           elsif ENV['method'] == "curl"
 
             steps_xml = "<step><steps>#{random_steps}</steps><user_id>#{ENV['user_id']}</user_id><begin_timestamp>#{start_time}</begin_timestamp><end_timestamp>#{start_time+15}</end_timestamp></step>"
-            curl_cmd ='curl -H "Content-Type: text/xml" -d "' + steps_xml + '" ' +'"' + ENV['url'] + '/steps?gateway_id=30&auth='+ "#{calculathash}"+'" '   
+            curl_cmd ='curl -H "Content-Type: text/xml" -d "' + steps_xml + '" ' +'"' + ENV['url'] + '/steps?gateway_id=' + "#{ENV['gateway_id']}" '&auth=' + "#{calculathash}"+'" '    
             puts curl_cmd
             system(curl_cmd)    				
           end		
