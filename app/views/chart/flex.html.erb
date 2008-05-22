@@ -1,3 +1,14 @@
+<%
+	if current_user.is_administrator?
+		admin = 'true'
+	else
+		admin = 'false'
+	end
+%>
+
+<script language="JavaScript" type="text/javascript">
+	var is_admin = <%=admin%>;
+</script>
 <script src="/flex/HaloChartConfig.js" language="javaScript"></script>
 <script>
 // Version check for the Flash Player that has the ability to start Player Product Install (6.0r65)
