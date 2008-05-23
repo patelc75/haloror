@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+
+
   #device alert models derived from RestfulAuthController
   map.resources :battery_pluggeds
   map.resources :battery_unpluggeds
@@ -6,6 +8,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :strap_fasteneds
   map.resources :battery_criticals
   map.resources :strap_removeds
+  
   
   #mgmt protocol models derived from RestfulAuthController
   map.resources :mgmt_acks
@@ -22,6 +25,9 @@ ActionController::Routing::Routes.draw do |map|
   #critical device data models derived from RestfulAuthController
   map.resources :falls
   map.resources :panics
+  
+  #other models derived from RestfulAuthController
+  map.resources :halo_debug_msgs
   
   #misc models 
   map.resources :events  

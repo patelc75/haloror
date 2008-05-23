@@ -1,0 +1,12 @@
+<h1>Editing halo_debug_msgs</h1>
+
+<%= error_messages_for :halo_debug_msgs %>
+
+<% form_for(@halo_debug_msgs) do |f| %>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @halo_debug_msgs %> |
+<%= link_to 'Back', halo_debug_msgs_path %>

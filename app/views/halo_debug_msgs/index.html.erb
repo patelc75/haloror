@@ -1,0 +1,18 @@
+<h1>Listing halo_debug_msgs</h1>
+
+<table>
+  <tr>
+  </tr>
+  
+  <% for halo_debug_msg in @halo_debug_msgs %>
+    <tr>
+      <td><%= link_to 'Show', halo_debug_msg %></td>
+      <td><%= link_to 'Edit', edit_halo_debug_msg_path(halo_debug_msg) %></td>
+      <td><%= link_to 'Destroy', halo_debug_msg, :confirm => 'Are you sure?', :method => :delete %></td>
+    </tr>
+  <% end %>
+</table>
+
+<br />
+
+<%= link_to 'New halo_debug_msgs', new_halo_debug_msgs_path %>
