@@ -160,12 +160,24 @@ namespace :halo do
       puts ""
     else
       if(ENV['type'] == "live" or ENV['type'] == "future" ) 
+       if ENV['end_date'] != nil
+        start_time = Time.now.utc
+         end_time = ENV['end_date'].to_time
+       elsif
         delete
         start_time = Time.now.utc
         end_time = start_time + ENV['duration'].to_i  
+       end
+        
       elsif (ENV['type'] == "historical")
-        end_time = Time.now.utc
-        start_time = end_time - ENV['duration'].to_i
+        if ENV['start_date'] != nil
+           end_time = Time.now.utc
+           start_time = ENV['start_date'].to_time
+        elsif
+           end_time = Time.now.utc
+           start_time = end_time - ENV['duration'].to_i
+        end
+        
      elsif (ENV['type'] == "range")
         
         if (ENV['end_date'] != nil and ENV['start_date'] != nil)
@@ -186,8 +198,9 @@ namespace :halo do
       puts "Start time: #{start_time}" 
       puts "End time: #{end_time}"
       puts 
-
+       #remoed it .new
       randhr = rand(10) + 60
+      #randhr = rand(100) + 500
       hr = randhr
       direction = "up" 
     
@@ -200,28 +213,36 @@ namespace :halo do
         calculathash = Digest::SHA256.hexdigest(start_time.to_s+ENV['gateway_serial_num'])
         #calculathash = Digest::SHA256.hexdigest(start_time.to_s+"0123456789")
      
-        if hr == (randhr + ENV['swing'].to_i)
+     
+                
+         if hr == (randhr + ENV['swing'].to_i)
           direction = "down"
         elsif hr == (randhr - ENV['swing'].to_i)
           direction = "up"
         end  
-
+       
+    
         if (direction == "up")           
           hr += ENV['slope'].to_i
         elsif (direction == "down")         
           hr -= ENV['slope'].to_i
-        end              
+        end  
+
        
         if ENV['curve'] == "sawtooth"
           random_skin_temp = hr + 30
           random_heartrate = hr
           random_percentage = hr + 30
           random_steps = hr - 50 
+          #new
+          random_activity = hr + 10000
         elsif ENV['curve'] == "random"
           random_skin_temp = rand(5)+96
           random_heartrate = rand(7)+70
           random_percentage = rand(100)
           random_steps = rand(20)
+          #new
+          random_activity = rand(25000)+10000
         end           
      
         if ENV['vital'] == "skin_temp" || ENV['vital'] == "all"
@@ -245,7 +266,8 @@ namespace :halo do
         if ENV['vital'] == "vitals" || ENV['vital'] == "all"
           random_orientation = rand(90)
           random_hrv = rand(5)          
-          random_activity = rand(25000)+10000
+          #new removed
+          # random_activity = rand(25000)+10000      
 
           print "orientation #{random_orientation} | hr #{random_heartrate} | hrv #{random_hrv} | activity #{random_activity} | "  
           if ENV['method'] == "activerecord"          

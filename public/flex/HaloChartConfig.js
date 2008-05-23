@@ -10,8 +10,8 @@ function getConfig() {
     
     if (config.ChartFile == -1) 
 	{
-		config.dataServiceURL = "http://"+window.location.hostname+"/flex/chart";
-        //config.dataServiceURL = "http://sdev.halomonitor.com/flex/chart";
+		//config.dataServiceURL = "http://"+window.location.hostname+"/flex/chart";
+        config.dataServiceURL = "http://localhost:3000/flex/chart";
         //config.dataServiceURL = "http://idev.myhalomonitor.com/flex/chart";
     }
 	else

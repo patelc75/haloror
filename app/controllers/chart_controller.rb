@@ -14,16 +14,12 @@ class ChartController < ApplicationController
   
   def index
     
-    if Socket.gethostname == "cc.halomonitor.com"
+    if request.host == "local"
       redirect_to '/call_center'
-      
     end
     
-    
-   if  Socket.gethostname == "backup.cc.halomonitor.com"
-     
+    if request.host == "backup.cc.halomonitor.com"
       render :partial => 'call_center/warning'
-   
     end
     
     unless logged_in?
@@ -277,7 +273,7 @@ class ChartController < ApplicationController
   end
   
   def error  
-      raise RuntimeError, "Generating an error"  
+    raise RuntimeError, "Generating an error"  
   end
   
   def which_user?
