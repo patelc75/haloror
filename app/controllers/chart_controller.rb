@@ -10,9 +10,24 @@ class ChartController < ApplicationController
   def flex
     
   end
+
   
   def index
+    
+    if Socket.gethostname == "cc.halomonitor.com"
+      redirect_to '/call_center'
+      
+    end
+    
+    
+   if  Socket.gethostname == "backup.cc.halomonitor.com"
+     
+      render :partial => 'call_center/warning'
+   
+    end
+    
     unless logged_in?
+      
       redirect_to '/login'
     else
       @user = which_user?
