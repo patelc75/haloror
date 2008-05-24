@@ -35,9 +35,9 @@ class Vital < ActiveRecord::Base
     while current_point < num_points 
       
       if current_point == 0
-        select << "select avg(#{column}) as average from #{table_name} where user_id = '#{id}' AND (timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}') "
+        select << "select avg(#{column}) as average from #{table_name} where user_id = '#{id}' AND (timestamp >= '#{current_time}' AND timestamp < '#{current_time + interval}') "
       else
-        select << " UNION ALL select avg(#{column}) as average from #{table_name} where user_id = '#{id}' AND (timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}') "
+        select << " UNION ALL select avg(#{column}) as average from #{table_name} where user_id = '#{id}' AND (timestamp >= '#{current_time}' AND timestamp < '#{current_time + interval}') "
       end
       current_time = current_time + interval
       current_point = current_point + 1
@@ -68,6 +68,39 @@ class Vital < ActiveRecord::Base
     values = [series_data,  categories]
     
   end
+  
+  def self.sum_data(num_points, start_time, end_time, id, column, format)
+    @series_data = Array.new(num_points, 0)  #results of averaging from database
+    @categories = Array.new(num_points, 0) 
+    interval = (end_time - start_time) / num_points #interval returned in seconds
+    current_time = start_time
+    current_point = 0   #the data point that we're currently on
+    
+    while current_point < num_points
+      condition = "begin_timestamp >= '#{current_time}' AND begin_timestamp < '#{current_time + interval}' AND user_id = '#{id}'"
+    
+      sum = sum(column, :conditions => condition)
+        
+      current_time = current_time + interval
+    
+      if(sum == nil)
+        @series_data[current_point] = 0
+      elsif
+        @series_data[current_point] = sum.to_f.round(1)
+      end
+          
+      if format
+        @categories[current_point] = current_time.strftime(format)  
+      else
+        @categories[current_point] = current_time
+      end
+       
+      current_point = current_point + 1
+    end 
+    
+    values = [@series_data,  @categories]
+  end
+  
   def self.average_data(num_points, start_time, end_time, id, column, format)
     @series_data = Array.new(num_points, 0)  #results of averaging from database
     @categories = Array.new(num_points, 0) 
@@ -76,7 +109,7 @@ class Vital < ActiveRecord::Base
     current_point = 0   #the data point that we're currently on
     
     while current_point < num_points
-      condition = "timestamp > '#{current_time}' AND timestamp < '#{current_time + interval}' AND user_id = '#{id}'"
+      condition = "timestamp >= '#{current_time}' AND timestamp < '#{current_time + interval}' AND user_id = '#{id}'"
     
       #before inheritance
       #average = Heartrate.average(:heartrate, :conditions => condition)
@@ -100,9 +133,7 @@ class Vital < ActiveRecord::Base
       else
         @categories[current_point] = current_time
       end
-          
-          
-    
+       
       current_point = current_point + 1
       #@averages_array << round_to(average, 1)
       #@averages_array <<  ((average * 10).truncate.to_f / 10)
@@ -119,6 +150,8 @@ class Vital < ActiveRecord::Base
     values = [@series_data,  @categories]
   end
 
+  
+  
   def self.method_missing(methId, *args)
     method = methId.id2name.to_s
     method_action = method[0...method.index("_").to_i]

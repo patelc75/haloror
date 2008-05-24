@@ -16,7 +16,7 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
     end
     
     xml.DataReadings do
-      data.sort_by { |d| d}.reverse.each do |timestamp, group|
+      data.sort_by { |d| d}.each do |timestamp, group|
         xml.DataReading(:datetime => format_datetime(timestamp, user)) do
           group.each do |reading|
               if reading.type.to_s == 'Vital' || reading[:type] == 'Vital'

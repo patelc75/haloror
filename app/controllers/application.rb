@@ -75,7 +75,7 @@ class ApplicationController < ActionController::Base
   end
   
   def format_datetime(datetime,user)
-    lookup = {-8 => 'PST', -7 => 'MST', -6 => 'CST', -5 => 'EST'}
+    #lookup = {-7 => 'PST', -6 => 'MST', -5 => 'CST', -4 => 'EST'}
     original_datetime = datetime
     
     return datetime if !datetime.respond_to?(:strftime)

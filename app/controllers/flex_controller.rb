@@ -1,8 +1,8 @@
 class FlexController < ApplicationController
   def chart
     # gather data from these models
-    #@models = [Vital, SkinTemp, Step, Battery]
-    @models = [Vital, SkinTemp, Battery]
+    @models = [Vital, SkinTemp, Step, Battery]
+    #@models = [Vital, SkinTemp, Battery]
     
     unless query = params[:ChartQuery]
       query = {}
@@ -48,8 +48,6 @@ class FlexController < ApplicationController
     status[:battery_outlet_status] = 'Unknown' unless status[:battery_outlet_status] = get_status('battery_outlet_status', user)
     status[:battery_level_status] = 'Normal' unless status[:battery_level_status] = get_status('battery_level_status', user)
     
-    
-    
     #status[:battery] = get_status('battery', user)
     
     unless battery = Battery.find(:first)
@@ -78,7 +76,7 @@ class FlexController < ApplicationController
         if row[:timestamp]
           timestamp = row[:timestamp]
         else
-          timestamp = row[:end_timestamp]
+          timestamp = row[:begin_timestamp]
         end
         
         unless data[timestamp]
@@ -112,7 +110,12 @@ class FlexController < ApplicationController
         if params[:optimize]
           averages, times = model.average_data_optimize(query[:num_points].to_i, query[:startdate].to_time, query[:enddate].to_time, query[:user_id], column, nil)
         else
-          averages, times = model.average_data(query[:num_points].to_i, query[:startdate].to_time, query[:enddate].to_time, query[:user_id], column, nil)
+          if model.class_name == "Step"
+            averages, times = model.sum_data(query[:num_points].to_i, query[:startdate].to_time, query[:enddate].to_time, query[:user_id], column, nil)
+          else
+            averages, times = model.average_data(query[:num_points].to_i, query[:startdate].to_time, query[:enddate].to_time, query[:user_id], column, nil)
+          end
+          
         end
         i = 0
         times.each do |time|
