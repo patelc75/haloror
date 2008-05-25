@@ -42,6 +42,7 @@ class MgmtQuery < ActiveRecord::Base
         raise e if ENV['RAILS_ENV'] == "development" || ENV['RAILS_ENV'] == "test"
       end
     end
+    ActiveRecord::Base.verify_active_connections!()
   end
   
 
