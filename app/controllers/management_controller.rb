@@ -200,7 +200,7 @@ class ManagementController < ApplicationController
     
     device.mgmt_cmds.each do |cmd|
       unless cmd.mgmt_ack
-        #next unless cmd[:timestamp_initiated]
+        next unless cmd[:timestamp_initiated]
         
         cmd[:timestamp] = cmd[:timestamp_initiated]
         cmd[:query_group] = false
