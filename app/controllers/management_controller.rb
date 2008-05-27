@@ -164,23 +164,31 @@ class ManagementController < ApplicationController
     # get query groups
     
     device.mgmt_queries.each do |query|
+      next unless query[:timestamp_server]
+      
       query[:timestamp] = query[:timestamp_server]
       query[:type] = 'query'
       chatter << query
     
       if cmd = query.mgmt_cmd
+        next unless cmd[:timestamp_sent]
+        
         cmd[:timestamp] = cmd[:timestamp_sent]
         cmd[:query_group] = true
         cmd[:type] = 'cmd'
         chatter << cmd
       
         if ack = cmd.mgmt_ack
+          next unless ack[:timestamp_server]
+          
           ack[:timestamp] = ack[:timestamp_server]
           ack[:type] = 'ack'
           chatter << ack
         end
       
         if response = cmd.mgmt_response
+          next unless response[:timestamp_server]
+          
           response[:timestamp] = response[:timestamp_server]
           response[:type] = 'response'
           chatter << response
@@ -192,6 +200,8 @@ class ManagementController < ApplicationController
     
     device.mgmt_cmds.each do |cmd|
       unless cmd.mgmt_ack
+        #next unless cmd[:timestamp_initiated]
+        
         cmd[:timestamp] = cmd[:timestamp_initiated]
         cmd[:query_group] = false
         cmd[:type] = 'cmd'
