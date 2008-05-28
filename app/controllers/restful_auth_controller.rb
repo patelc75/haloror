@@ -1,4 +1,7 @@
 class RestfulAuthController < ApplicationController
+  skip_before_filter :authenticated?
+  before_filter :authenticated?, :only => [:create]
+    
   make_resourceful do 
     actions :all
     
@@ -20,7 +23,7 @@ class RestfulAuthController < ApplicationController
     if(params[:gateway_id])
       serial_num = Device.find(params[:gateway_id].to_i).serial_number;
       raise "Auth failed: timestamp missing" if timestamp == nil
-      raise "Auth failed: hash check failed " unless is_hash_valid?(timestamp + serial_num, params[:auth])
+      raise "Auth failed: hash check failed " unless is_hash_valid?(timestamp.strip + serial_num.strip, params[:auth])
     else
       cmd_type = get_hash_value_from_array([:cmd_type], params)
       originator = get_hash_value_from_array([:originator], params)
