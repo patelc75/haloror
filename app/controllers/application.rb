@@ -77,7 +77,6 @@ class ApplicationController < ActionController::Base
   def format_datetime(datetime,user)
     #lookup = {-7 => 'PST', -6 => 'MST', -5 => 'CST', -4 => 'EST'}
     original_datetime = datetime
-    
     return datetime if !datetime.respond_to?(:strftime)
     
     if user and user.profile and user.profile.time_zone
@@ -85,17 +84,19 @@ class ApplicationController < ActionController::Base
     else
       tz = TZInfo::Timezone.get('America/Chicago')
     end
-    
     datetime = tz.utc_to_local(datetime) 
-      #datetime.strftime("%m-%d-%Y %H:%M")
-      #datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
+    #datetime.strftime("%m-%d-%Y %H:%M")
+    #datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
     
-      newdate = datetime.strftime("%a %b %d %H:%M:%S")
-    
-      offset = datetime.hour - original_datetime.hour
-    
-      return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
+    newdate = datetime.strftime("%a %b %d %H:%M:%S")
+    offset = datetime.hour - original_datetime.hour
+      
+    if datetime.day != original_datetime.day  
+      offset = offset - 24
     end
+      
+    return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
+  end
   
     protected
     def authenticated?
