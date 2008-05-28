@@ -1,0 +1,4 @@
+<!-- See http://corelib.rubyonrails.org/classes/CGI.html for more environment variables -->
+HTTP_HOST: <%= request.env["HTTP_HOST"].to_s %>
+<br>
+SERVER_NAME: <%= request.env["SERVER_NAME"].to_s %>
