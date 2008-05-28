@@ -82,30 +82,8 @@ class ProfilesController < ApplicationController
   def edit_caregiver_profile
     @profile = Profile.find(params[:id])
     @user = User.find(@profile[:user_id])
-    #@roled = RolesUser.find(params[:role_id])
     
-      @roles = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
-    
-  # if (@roles)
-   #  @roles = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
-   #elsif
-    #  @roles = <RolesUsersOption id: 19, roles_user_id: 22, removed: false, active: true, phone_active: false, email_active: false, text_active: false, position: 1, user_id: 85, relationship: "daughter">
-
-   #end
-   # @roled = RolesUser.find(@profile[:user_id])
-    
-    
-    #@new = RolesUser
-  #  @roles = RolesUsersOption.find_by_user_id(@profile[:user_id])
-   
-#    if(@roles)
- #   @roles = RolesUsersOption.find_by_user_id(@profile[:user_id])
-  #  else
-   #   @roles = RolesUsersOption.find_by_user_id("88")
-   # end
-    
-    #@roles = RolesUsersOption.find_by_roles_user_id(@roled[:user_id])
-    #@roles = @roled.
+    @roles = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
   end
   
   def update_caregiver_profile
@@ -113,19 +91,11 @@ class ProfilesController < ApplicationController
     user.email = params[:email]
     
     user.save
-    #by me 
-    
-    #roled = RolesUsersOption.find_by_user_id(params[:user_id])
-    #roled.relationship = params[:relationship]
-    #roled.save
-    #
-    #by me 2
-     @roles = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
-     @roles.relationship = params[:relationship]
-     @roles.save
-     
-    
-    
+
+    @roles = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
+    @roles.relationship = params[:relationship]
+    @roles.save
+        
     Profile.update(params[:id], params[:profile])
     
     refresh_caregivers(User.find(params[:patient_id]))

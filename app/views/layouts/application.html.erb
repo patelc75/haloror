@@ -63,7 +63,7 @@
 				</span>				
 				<span class="divider">|</span> 
 				<% if params[:controller] == 'call_list' %>
-				<%=link_to_remote_redbox('My Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id, :roles_user_id =>current_user.roles_user.id }, :html => {:method => :get})%>
+				<%=link_to_remote_redbox('My Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%>
 				<% else %>				
 				<%= link_to 'Account Settings', :controller => 'call_list', :action => 'show', :id => current_user.id %>
                                 |
