@@ -139,22 +139,22 @@ class FlexController < ApplicationController
   def get_last_reading(user_id)
     reading = {}
     
-    if vitals = Vital.find(:first, :conditions => "user_id = #{user_id}")
+    if vitals = Vital.find(:first, :conditions => "user_id = #{user_id}", :order => 'id desc')
       reading[:heartrate] = vitals.heartrate
       reading[:hr_min] = vitals.heartrate - vitals.hrv / 2
       reading[:hr_max] = vitals.heartrate + vitals.hrv / 2
       reading[:activity] = vitals.activity
     end
     
-    if battery = Battery.find(:first, :conditions => "user_id = #{user_id}")
+    if battery = Battery.find(:first, :conditions => "user_id = #{user_id}", :order => 'id desc')
       reading[:battery] = battery.percentage
     end
     
-    if skin_temp = SkinTemp.find(:first, :conditions => "user_id = #{user_id}")
+    if skin_temp = SkinTemp.find(:first, :conditions => "user_id = #{user_id}", :order => 'id desc')
       reading[:skin_temp] = skin_temp.skin_temp
     end
     
-    if steps = Step.find(:first, :conditions => "user_id = #{user_id}")
+    if steps = Step.find(:first, :conditions => "user_id = #{user_id}", :order => 'id desc')
       reading[:steps] = steps.steps
     end
     
