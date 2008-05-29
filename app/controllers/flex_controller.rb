@@ -54,10 +54,7 @@ class FlexController < ApplicationController
       battery = {}
     end
     
-    events = {}
-    if query[:enddate] and query[:startdate]
-      events = Event.find(:all, :conditions => "user_id = '#{query[:user_id]}' and timestamp <= '#{query[:enddate]}' and timestamp >= '#{query[:startdate]}'")    
-    end
+    events = Event.find(:all, :conditions => "user_id = '#{query[:user_id]}'", :order => 'timestamp desc', :limit => 10)
     
     if params[:test]
       render :partial => 'chart_data_test', :locals => {:data => data, :query => query, :user => user, :averaging => averaging, :events => events, :battery => battery, :last_reading => get_last_reading(query[:user_id]), :status => status}
