@@ -15,8 +15,13 @@ function getConfig() {
     
     if (config.ChartFile == -1) {
     
-    	/* Get the URL from the current location: */
-    	config.dataServiceURL = "http://" + window.location.hostname + "/flex/chart";
+    	if (window.location.hostname == "localhost")
+            hostName = "localhost:3000";
+        else
+            hostName = window.location.hostname;
+         
+         /* Get the URL from the current location: */
+    	config.dataServiceURL = "http://" + hostName + "/flex/chart";
         
          /* NOTE:
     	 * The above line of code ONLY works in live server mode where the javascript file
@@ -39,9 +44,8 @@ function getConfig() {
     }
     
     if (config.Debug == true && config.Admin == true){
-    	//alert(config.dataServiceURL);
+    	alert(config.dataServiceURL);
     }
     
-    return config;
-                
+    return config;             
 }
