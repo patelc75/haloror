@@ -83,7 +83,9 @@ class ProfilesController < ApplicationController
     @profile = Profile.find(params[:id])
     @user = User.find(@profile[:user_id])
     
-    @roles = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
+    if(params[:roles_user_id])
+      @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
+    end
   end
   
   def update_caregiver_profile
@@ -92,12 +94,16 @@ class ProfilesController < ApplicationController
     
     user.save
 
-    @roles = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
-    @roles.relationship = params[:relationship]
-    @roles.save
+    if(params[:roles_user_id])
+      @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
+      @roles_users_option.relationship = params[:relationship]
+      @roles_users_option.save
+    end
         
     Profile.update(params[:id], params[:profile])
     
-    refresh_caregivers(User.find(params[:patient_id]))
+    if(params[:patient_id])
+      refresh_caregivers(User.find(params[:patient_id]))
+    end
   end
 end
