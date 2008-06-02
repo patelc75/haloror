@@ -103,38 +103,25 @@ class CriticalMailer < ActionMailer::ARMailer
       @recipients << ["#{user.email}"]
     end
   
-    user.has_caregivers.each do |caregiver|
-      #opts = caregiver.roles_users_option
-      
-      #see load_caregiver.erb for another example of this loop
-      user = User.find(caregiver.id)
-      roles_user = RolesUser.find(:first, :conditions => "role_id = #{caregiver.roles_user[:role_id]} and user_id = #{user[:id]}")
-      
-      alert_type_id = AlertType.find(:first, :conditions => "alert_type='#{alert.class.to_s}'").id
-      
-      if(alert_type_id)
-        alert_option = AlertOption.find(:first, :conditions => "alert_type_id=#{alert_type_id} and roles_user_id=#{roles_user.id}")
+    user.caregivers.each do |caregiver|
 
-        if (alert_option)  #check for null until we figure out a better way to get roles_users_options
-          em_bool = alert_option.email_active
-          tm_bool = alert_option.text_active
-   
-          if tm_bool == true
-            if user.profile.cell_phone != nil and user.profile.cell_phone != ""
-              @recipients  << ["#{user.profile.cell_phone}" + "#{user.profile.carrier.domain}"] 
-            end
+      alert_option = user.alert_option_by_type(caregiver, alert)
+      
+      if (alert_option)  #check for null until we figure out a better way to get roles_users_options
+        em_bool = alert_option.email_active
+        tm_bool = alert_option.text_active
+        if tm_bool == true
+          if care_user.profile.cell_phone != nil and care_user.profile.cell_phone != ""
+            @recipients  << ["#{care_user.profile.cell_phone}" + "#{care_user.profile.carrier.domain}"]
           end
-    
-          if em_bool == true
-            if user.email != nil and user.email != ""
-              @recipients  << ["#{user.email}"] 
-            end
+        end
+        if em_bool == true
+          if care_user.email != nil and care_user.email != ""
+            @recipients  << ["#{care_user.email}"]
           end
         end
       end
-      
-    end
-  
+    end  
     @from        = "no-reply@myhalomonitor.com"
     @subject     = "[HALO] "
     @sent_on     = Time.now

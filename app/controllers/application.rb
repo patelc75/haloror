@@ -53,21 +53,8 @@ class ApplicationController < ActionController::Base
     render :layout => false, :partial => 'call_list/load_caregivers', :locals => {:caregivers => @caregivers,:user => @user}
   end
   
-  def get_caregivers(user)
-    # loop through assigned roles, check for removed = 1
-    
-    @caregivers = {}
-    
-    user.has_caregivers.each do |caregiver|
-      user = User.find(caregiver.roles_user.user_id)
-      if opts = user.roles_user.roles_users_option
-        unless opts.removed
-          @caregivers[opts.position] = caregiver
-        end
-      end
-    end
-    
-    @caregivers = @caregivers.sort
+  def get_caregivers(user)    
+    @caregivers = user.caregivers_sorted_by_position
   end
   
   def camelcase_to_spaced(word)

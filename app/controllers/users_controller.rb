@@ -191,8 +191,14 @@ class UsersController < ApplicationController
   end
   
   def destroy_caregiver
-    RolesUsersOption.update(params[:id], {:removed => 1})
+    option = RolesUsersOption.find(params[:id])
+    options = RolesUsersOption.find(:all, :conditions => "position > #{option.position} and roles_users.role_id = #{option.roles_user.role_id}", :include => :roles_user )
     
+    options.each do |opt|
+      opt.position-=1
+      opt.save
+    end
+    RolesUsersOption.update(params[:id], {:removed => 1, :position => 0})
     render :layout =>false
   end
   

@@ -140,7 +140,30 @@ class User < ActiveRecord::Base
     caregivers = self.has_caregivers
     caregivers
   end
+  # returns the user's alert options for this caregiver and type
+  def alert_option_by_type(caregiver, type) 
+    alert_option = nil
+    role_user = caregiver.roles_users.find(:first, :conditions => "roles.authorizable_id = #{self.id}", :include => :role)
+    alert_type = AlertType.find(:first, :conditions => "alert_type='#{alert.class.to_s}'")
+    
+    if(alert_type)
+      alert_option = AlertOption.find(:first, :conditions => "alert_type_id=#{alert_type.id} and roles_user_id=#{roles_user.id}")
+    end
+    return alert_option
+  end
   
+  def caregivers_sorted_by_position
+    cgs = {}
+    caregivers.each do |caregiver|
+      user = User.find(caregiver.roles_user.user_id)
+      if opts = user.roles_user.roles_users_option
+        unless opts.removed
+          cgs[opts.position] = caregiver
+        end
+      end
+    end
+      cgs = cgs.sort
+  end
   protected
   # before filter 
   def encrypt_password
