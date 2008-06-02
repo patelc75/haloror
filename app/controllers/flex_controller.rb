@@ -1,16 +1,16 @@
 class FlexController < ApplicationController
-  @@query = {}
+  @query = {}
   
   # gather data from these models
-  @@models = [Vital, SkinTemp, Step, Battery]
+  @models = [Vital, SkinTemp, Step, Battery]
   
   # array to store all user data in; users[0] is the default user
-  @@users = []
+  @users = []
   
   # default statuses
-  @@default_connectivity_status = 'Device Available'  
-  @@default_battery_outlet_status = 'Unknown'
-  @@default_battery_level_status = 'Normal'
+  @default_connectivity_status = 'Device Available'  
+  @default_battery_outlet_status = 'Unknown'
+  @default_battery_level_status = 'Normal'
   
   def chart
     # build query hash
@@ -20,32 +20,32 @@ class FlexController < ApplicationController
     gather_data
     
     if params[:test]
-      render :partial => 'chart_data_test', :locals => {:query => @@query, :users => @@users}
+      render :partial => 'chart_data_test', :locals => {:query => @query, :users => @users}
     else
-      render :partial => 'chart_data', :locals => {:query => @@query, :users => @@users}
+      render :partial => 'chart_data', :locals => {:query => @query, :users => @users}
     end
   end
   
   protected
   
   def gather_data
-    default_user = User.find(@@query[:user_id])
+    default_user = User.find(@query[:user_id])
     
     # get data for default user
-    @@users << get_data_for_user(default_user, false)
+    @users << get_data_for_user(default_user, false)
     
     # get lastreading for each user the default_user is a caregiver of
     default_user.is_caregiver_for_what.each do |patient|
-      @@users << get_data_for_user(patient)
+      @users << get_data_for_user(patient)
     end
   end
   
   def get_data_for_user(user, last_reading_only = true)
     user_data = user
-    averaging = @@query[:num_points].to_i == 0 ? false : true
+    averaging = @query[:num_points].to_i == 0 ? false : true
     
     # get vital data
-    if @@query[:enddate] and @@query[:startdate] and !last_reading_only
+    if @query[:enddate] and @query[:startdate] and !last_reading_only
       if averaging
         vital_data = average_chart_data
       else
@@ -64,16 +64,16 @@ class FlexController < ApplicationController
     user_data[:status] = {}
     
     unless user_data[:status][:connectivity] = get_status('connectivity', user)
-      user_data[:status][:connectivity] = @@default_connectivity_status
+      user_data[:status][:connectivity] = @default_connectivity_status
     end
     
     # get battery status
     unless user_data[:status][:battery_outlet] = get_status('battery_outlet_status', user)
-      user_data[:status][:battery_outlet] = @@default_battery_outlet_status
+      user_data[:status][:battery_outlet] = @default_battery_outlet_status
     end
     
     unless user_data[:status][:battery_level] = get_status('battery_level_status', user)
-      user_data[:status][:battery_level] = @@default_battery_level_status
+      user_data[:status][:battery_level] = @default_battery_level_status
     end
     
     # get last battery reading
@@ -82,7 +82,7 @@ class FlexController < ApplicationController
     end
     
     # get events
-    user_data[:events] = Event.find(:all, :conditions => "user_id = '#{@@query[:user_id]}'", :order => 'timestamp desc', :limit => 10)
+    user_data[:events] = Event.find(:all, :conditions => "user_id = '#{@query[:user_id]}'", :order => 'timestamp desc', :limit => 10)
     
     return user_data
   end
@@ -90,7 +90,7 @@ class FlexController < ApplicationController
   def discrete_chart_data
     data = {}
     
-    @@models.each do |model|
+    @models.each do |model|
       get_model_data(model).each do |row|
         if row[:timestamp]
           timestamp = row[:timestamp]
@@ -112,9 +112,9 @@ class FlexController < ApplicationController
   def get_model_data(model)
     #find() defaults to order by id (not order by timestamp)
     if model.class_name == "Step"
-      model.find(:all, :conditions => "user_id = #{@@query[:user_id]} and begin_timestamp < '#{@@query[:enddate]}' and begin_timestamp >= '#{@@query[:startdate]}'")
+      model.find(:all, :conditions => "user_id = #{@query[:user_id]} and begin_timestamp < '#{@query[:enddate]}' and begin_timestamp >= '#{@query[:startdate]}'")
     else
-      model.find(:all, :conditions => "user_id = #{@@query[:user_id]} and timestamp < '#{@@query[:enddate]}' and timestamp >= '#{@@query[:startdate]}'")
+      model.find(:all, :conditions => "user_id = #{@query[:user_id]} and timestamp < '#{@query[:enddate]}' and timestamp >= '#{@query[:startdate]}'")
     end
     #rescue ActiveRecord::StatementInvalid
     #model.find(:all, :conditions => "user_id = #{query[:user_id]} and end_timestamp <= '#{query[:enddate]}' and begin_timestamp >= '#{query[:startdate]}'")
@@ -127,16 +127,16 @@ class FlexController < ApplicationController
     
     data = {}
     
-    @@models.each do |model|
+    @models.each do |model|
       columns[model.class_name].each do |column|
         averages, times = []
         if params[:optimize]
-          averages, times = model.average_data_optimize(@@query[:num_points].to_i, @@query[:startdate].to_time, @@query[:enddate].to_time, @@query[:user_id], column, nil)
+          averages, times = model.average_data_optimize(@query[:num_points].to_i, @query[:startdate].to_time, @query[:enddate].to_time, @query[:user_id], column, nil)
         else
           if model.class_name == "Step"
-            averages, times = model.sum_data(@@query[:num_points].to_i, @@query[:startdate].to_time, @@query[:enddate].to_time, @@query[:user_id], column, nil)
+            averages, times = model.sum_data(@query[:num_points].to_i, @query[:startdate].to_time, @query[:enddate].to_time, @query[:user_id], column, nil)
           else
-            averages, times = model.average_data(@@query[:num_points].to_i, @@query[:startdate].to_time, @@query[:enddate].to_time, @@query[:user_id], column, nil)
+            averages, times = model.average_data(@query[:num_points].to_i, @query[:startdate].to_time, @query[:enddate].to_time, @query[:user_id], column, nil)
           end
           
         end
@@ -202,23 +202,23 @@ class FlexController < ApplicationController
   end
   
   def build_query_hash
-    unless @@query = params[:ChartQuery]
-      @@query = {}
+    unless @query = params[:ChartQuery]
+      @query = {}
     end
     
     # if no user id from chart, we want to run initialization
-    initialize_chart if @@query[:userID].nil?
+    initialize_chart if @query[:userID].nil?
     
     # map userID to user_id
-    @@query[:user_id] = @@query[:userID]
+    @query[:user_id] = @query[:userID]
     
-    @@query[:enddate] = Time.now if @@query[:enddate] == nil && @@query[:startdate] != nil
+    @query[:enddate] = Time.now if @query[:enddate] == nil && @query[:startdate] != nil
   end
   
   def initialize_chart
-    @@query[:num_points] = 0                        # we want discreet data
-    @@query[:userID] = current_user.id              # default user is the one who's currently logged in
-    @@query[:enddate] = Time.now                    # enddate is now
-    @@query[:startdate] = @@query[:enddate] - 600   # startdate is enddate - 10 minutes
+    @query[:num_points] = 0                        # we want discreet data
+    @query[:userID] = current_user.id              # default user is the one who's currently logged in
+    @query[:enddate] = Time.now                    # enddate is now
+    @query[:startdate] = @query[:enddate] - 600   # startdate is enddate - 10 minutes
   end
 end
