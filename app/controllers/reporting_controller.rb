@@ -79,7 +79,7 @@ class ReportingController < ApplicationController
         prev_timestamp = reading.timestamp
       end
       
-      if !last or prev_timestamp != last.timestamp
+      if (!last or prev_timestamp != last.timestamp) and !prev_timestamp.nil?
         last = VitalScan.new
         last.user_id = user_id
         last.timestamp = prev_timestamp
