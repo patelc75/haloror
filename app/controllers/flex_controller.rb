@@ -1,18 +1,18 @@
 class FlexController < ApplicationController
-  @query = {}
-  
-  # gather data from these models
-  @models = [Vital, SkinTemp, Step, Battery]
-  
-  # array to store all user data in; users[0] is the default user
-  @users = []
-  
-  # default statuses
-  @default_connectivity_status = 'Device Available'  
-  @default_battery_outlet_status = 'Unknown'
-  @default_battery_level_status = 'Normal'
-  
   def chart
+    @query = {}
+
+    # gather data from these models
+    @models = [Vital, SkinTemp, Step, Battery]
+
+    # array to store all user data in; users[0] is the default user
+    @users = []
+
+    # default statuses
+    @default_connectivity_status = 'Device Available'  
+    @default_battery_outlet_status = 'Unknown'
+    @default_battery_level_status = 'Normal'
+    
     # build query hash
     build_query_hash
     
