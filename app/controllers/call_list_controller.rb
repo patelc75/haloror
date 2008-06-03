@@ -20,7 +20,7 @@ class CallListController < ApplicationController
     get_caregivers(User.find(params[:user_id]))
     
     @caregivers.each do |position, caregiver|
-      opts = caregiver.roles_user.roles_users_option
+      opts = current_user.roles_user_by_caregiver(caregiver)		
       opts.position = params['call_list'].index(opts.user_id.to_s) + 1
       opts.save
     end

@@ -127,7 +127,7 @@
 			end
 		%>
 		
-		<%=link_to_remote(image_tag(img, :id => 'item_phone_'+caregiver.id.to_s), :url => { :action => "toggle_phone",:id => caregiver.roles_user.id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')', :complete => 'updatePositions()')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_phone_'+caregiver.id.to_s), :url => { :action => "toggle_phone",:id => current_user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')', :complete => 'updatePositions()')%>
 	</div>
 	
 	<!--EMAIL-->
@@ -141,7 +141,7 @@
 			end
 		%>
 
-		<%=link_to_remote(image_tag(img, :id => 'item_email_'+caregiver.id.to_s), :url => { :action => "toggle_email",:id => caregiver.roles_user.id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.email_active.to_s+', \'email\', '+user_id+')', :complete => 'updatePositions()')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_email_'+caregiver.id.to_s), :url => { :action => "toggle_email",:id => current_user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.email_active.to_s+', \'email\', '+user_id+')', :complete => 'updatePositions()')%>
 	</div>
 
 	<!--TEXT-->
@@ -158,7 +158,7 @@
 			end
 		%>
 
-		<%=link_to_remote(image_tag(img, :id => 'item_text_'+caregiver.id.to_s), :url => { :action => "toggle_text",:id => caregiver.roles_user.id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\', '+user_id+')', :complete => 'updatePositions()')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_text_'+caregiver.id.to_s), :url => { :action => "toggle_text",:id => current_user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\', '+user_id+')', :complete => 'updatePositions()')%>
 	</div>
 
 	<!--DELETE-->
@@ -173,7 +173,7 @@
 		%>
 		
 		<%=link_to_remote img, :update => "response",
-		    :url => { :controller => "users", :action => "destroy_caregiver", :id => caregiver.roles_user.roles_users_option.id, :position => i, :caregiver_id => caregiver.id },
+		    :url => { :controller => "users", :action => "destroy_caregiver", :id => current_user.roles_user_by_caregiver(caregiver).roles_users_option.id, :position => i, :caregiver_id => caregiver.id },
 			:confirm => "Are you sure?"
 		%>
 	</div>
@@ -183,9 +183,9 @@
 	<div style="float:left;padding-top:35px;width:125px" id="item_edit_<%=caregiver.id%>">
 		<!--% puts edit_user_url(caregiver)%-->
 		
-		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true, :user_id => user_id, :roles_user_id => caregiver.roles_user.id }, :html => {:method => :get, :complete => 'updatePositions()'})%>
+		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true, :user_id => user_id, :roles_user_id => current_user.roles_user_by_caregiver(caregiver).id }, :html => {:method => :get, :complete => 'updatePositions()'})%>
 		|
-		<%=link_to('More', :controller => "alerts", :action => "index", :id => caregiver.roles_user.id)%>
+		<%=link_to('More', :controller => "alerts", :action => "index", :id => current_user.roles_user_by_caregiver(caregiver).id)%>
 	</div>
 	
 	<!--TOOLTIP-->

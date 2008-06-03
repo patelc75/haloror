@@ -58,9 +58,9 @@
 			</div>
 		</div>
 		<p>&nbsp;</p>
-     	<ul id="call_list">
+		  <div="call_list_div">    
 			<%= render :partial => "load_caregivers", :locals => { :caregivers => @caregivers } %>
-		</ul>
+		  </div>
 			
 			
 
@@ -69,11 +69,7 @@
 		:onChange => "updatePositions",
 		 :tag => 'li'
         %-->
-		<script type="text/javascript">
-		//<![CDATA[
-		Sortable.create("call_list", {onChange:updatePositions, onUpdate:function(){new Ajax.Request('/call_list/sort/?user_id='+<%=params[:id]%>, {asynchronous:true, evalScripts:true, parameters:serialize()});showTooltip=false}, tag:'li'})
-		//]]>
-		</script>
+		
 	</div>
 	<div style="float:left;margin-right:10px;margin-top:15px;margin-left:15px;font-weight:bold" >
 	<%= link_to '<< Back To Chart', :controller => 'chart', :id => current_user.id %>

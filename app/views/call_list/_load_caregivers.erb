@@ -1,19 +1,28 @@
+<ul id="call_list">
+
 <% position = 1 %>
 <% i = 1 %>
 
 <% 
 	caregivers.each do |position, caregiver|
-		user = User.find(caregiver.id)
-		roles_user = RolesUser.find(:first, :conditions => "role_id = #{caregiver.roles_user[:role_id]} and user_id = #{user[:id]}")		
+		
+		roles_user = current_user.roles_user_by_caregiver(caregiver)		
 %>
 		<% if opts = roles_user.roles_users_option %>
-			<%= render :partial => "call_list/item", :locals => { :caregiver => user, :opts => opts, :position => position , :i => i, :role => caregiver } %>			
+			<%= render :partial => "call_list/item", :locals => { :caregiver => caregiver, :opts => opts, :position => position , :i => i, :role => caregiver } %>			
 		<% end %>
 
 	<% 
-		if user.roles_user.roles_users_option.active
+		if roles_user.roles_users_option.active
 			position = position+1 
 		end
 	%>
 	<% i = i+1 %>
 <% end %>
+
+</ul>
+<script type="text/javascript">
+//<![CDATA[
+Sortable.create("call_list", {onChange:updatePositions, onUpdate:function(){new Ajax.Request('/call_list/sort/?user_id='+<%=params[:id]%>, {asynchronous:true, evalScripts:true, parameters:serialize()});showTooltip=false}, tag:'li'})
+//]]>
+</script>

@@ -14,11 +14,11 @@ class User < ActiveRecord::Base
   has_many :steps
   has_many :vitals
   #belongs_to :role
-  has_one :roles_user
+  #has_one :roles_user
   #has_one :roles_users_option
   
   has_many :roles_users
-  has_many :roles, :through => :roles_users, :include => [:roles_user]
+  has_many :roles, :through => :roles_users, :include => [:roles_users]
   
   has_and_belongs_to_many :devices
   
@@ -140,10 +140,16 @@ class User < ActiveRecord::Base
     caregivers = self.has_caregivers
     caregivers
   end
+  def roles_user_by_role(role)
+    self.roles_users.find(:first, :conditions => "role_id = #{role.id}", :include => :role)
+  end
+  def roles_user_by_caregiver(caregiver)
+    caregiver.roles_users.find(:first, :conditions => "roles.authorizable_id = #{self.id}", :include => :role)
+  end
   # returns the user's alert options for this caregiver and type
   def alert_option_by_type(caregiver, type) 
     alert_option = nil
-    role_user = caregiver.roles_users.find(:first, :conditions => "roles.authorizable_id = #{self.id}", :include => :role)
+    roles_user = roles_user_by_caregiver(caregiver)
     alert_type = AlertType.find(:first, :conditions => "alert_type='#{alert.class.to_s}'")
     
     if(alert_type)
@@ -155,14 +161,21 @@ class User < ActiveRecord::Base
   def caregivers_sorted_by_position
     cgs = {}
     caregivers.each do |caregiver|
-      user = User.find(caregiver.roles_user.user_id)
-      if opts = user.roles_user.roles_users_option
+      roles_user = roles_user_by_caregiver(caregiver)
+      if opts = roles_user.roles_users_option
         unless opts.removed
           cgs[opts.position] = caregiver
         end
       end
     end
       cgs = cgs.sort
+  end
+  def roles_user_by_role_name(role_name)
+    if self.roles_users
+      return self.roles_users.find(:first, :conditions => "roles.name = '#{role_name}' AND user_id = #{self.id}", :include => :role)
+    else
+      return nil
+    end
   end
   protected
   # before filter 
@@ -181,6 +194,3 @@ class User < ActiveRecord::Base
   end 
 end
 
-class Caregiver < User
-	
-end

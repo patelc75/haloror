@@ -115,10 +115,13 @@ class UsersController < ApplicationController
     
     @removed_caregivers = []
     
-    current_user.has_caregivers.each do |caregiver|
-      user = User.find(caregiver.id)
-      if user and user.roles_user.roles_users_option and user.roles_user.roles_users_option[:removed]
-        @removed_caregivers << caregiver
+    current_user.caregivers.each do |caregiver|
+      if caregiver
+        caregiver.roles_users.each do |roles_user|
+          if roles_user.roles_users_option and roles_user.roles_users_option[:removed]
+            @removed_caregivers << caregiver
+          end
+        end 
       end
     end
     
@@ -159,15 +162,17 @@ class UsersController < ApplicationController
     profile = Profile.create(:user_id => @user.id)
     
     #patient = User.find(params[:user_id].to_i)
-    role = @user.has_role 'caregiver', User.find(params[:user_id].to_i)
-    @role = @user.roles_user
+    patient = User.find(params[:user_id].to_i)
+    role = @user.has_role 'caregiver', patient
+    caregiver = @user
+    @roles_user = patient.roles_user_by_caregiver(caregiver)
     
-    update_from_position(params[:position], @role.role_id, @user.id)
+    update_from_position(params[:position], @roles_user.role_id, caregiver.id)
     
-    RolesUsersOption.create(:roles_user_id => @role.id, :user_id => @user.id, :position => params[:position], :active => 1)
+    RolesUsersOption.create(:roles_user_id => @roles_user.id, :user_id => caregiver.id, :position => params[:position], :active => 1)
     
    
-    redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@role.id}"
+    redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
    
     
     #redirect_to :controller => 'profiles', :action => 'edit_caregiver_profile', :id => profile.id, :user_id => params[:user_id]
@@ -219,10 +224,10 @@ class UsersController < ApplicationController
     @caregiver = User.find(params[:id])
     
     role = @caregiver.has_role 'caregiver', @patient
-    @role = @caregiver.roles_user
+    @roles_user = @patient.roles_user_by_caregiver(@caregiver)
     
-    unless opt = RolesUsersOption.find(:first, :conditions => "roles_user_id = #{@role.id} and user_id = #{@caregiver.id}")
-      opt = RolesUsersOption.create(:roles_user_id => @role.id, :user_id => @caregiver.id)
+    unless opt = RolesUsersOption.find(:first, :conditions => "roles_user_id = #{@roles_user.id} and user_id = #{@caregiver.id}")
+      opt = RolesUsersOption.create(:roles_user_id => @roles_user.id, :user_id => @caregiver.id)
     end
     
     opt.active = true
