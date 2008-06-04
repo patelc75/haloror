@@ -169,7 +169,7 @@ class UsersController < ApplicationController
     
     update_from_position(params[:position], @roles_user.role_id, caregiver.id)
     
-    RolesUsersOption.create(:roles_user_id => @roles_user.id, :user_id => caregiver.id, :position => params[:position], :active => 1)
+    RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => 1)
     
    
     redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
@@ -226,7 +226,7 @@ class UsersController < ApplicationController
     role = @caregiver.has_role 'caregiver', @patient
     @roles_user = @patient.roles_user_by_caregiver(@caregiver)
     
-    unless opt = RolesUsersOption.find(:first, :conditions => "roles_user_id = #{@roles_user.id} and user_id = #{@caregiver.id}")
+    unless opt = RolesUsersOption.find(:first, :conditions => "roles_user_id = #{@roles_user.id}")
       opt = RolesUsersOption.create(:roles_user_id => @roles_user.id, :user_id => @caregiver.id)
     end
     
@@ -245,7 +245,7 @@ class UsersController < ApplicationController
   end
   
   def update_from_position(position, roles_user_id, user_id)
-    caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and roles_user_id = #{roles_user_id} and user_id = #{user_id}")
+    caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and roles_user_id = #{roles_user_id}")
     
     caregivers.each do |caregiver|
       caregiver.position+=1

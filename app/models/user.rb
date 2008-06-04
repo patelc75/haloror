@@ -177,6 +177,11 @@ class User < ActiveRecord::Base
       return nil
     end
   end
+  
+  def operators
+    User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
+  end
+  
   protected
   # before filter 
   def encrypt_password

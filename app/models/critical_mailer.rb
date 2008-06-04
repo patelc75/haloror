@@ -63,6 +63,7 @@ class CriticalMailer < ActionMailer::ARMailer
 
   def fall_notification(fall)
     setup_email(fall.user, fall)
+    @recipients << fall.user.operators
     if(fall.user.profile)
       @subject    += "#{fall.user.profile.first_name} #{fall.user.profile.last_name} fell"
     else
@@ -78,6 +79,7 @@ class CriticalMailer < ActionMailer::ARMailer
   def panic_notification(panic)
     @panic = panic
     setup_email(panic.user, panic)
+    @recipients << panic.user.operators
     if(panic.user.profile)
       @subject    += "#{panic.user.profile.first_name} #{panic.user.profile.last_name} panicked"
     else
@@ -93,15 +95,15 @@ class CriticalMailer < ActionMailer::ARMailer
   def setup_email(user, alert)
     @recipients = Array.new
     
-    if profile = user.profile
-      if profile.cell_phone != nil and profile.cell_phone != "" and   profile.carrier != nil
-        @recipients << ["#{profile.cell_phone}" + "#{profile.carrier.domain}"]
-      end
-    end
-  
-    if user.email != nil and user.email != ""
-      @recipients << ["#{user.email}"]
-    end
+    # if profile = user.profile
+    #       if profile.cell_phone != nil and profile.cell_phone != "" and   profile.carrier != nil
+    #         @recipients << ["#{profile.cell_phone}" + "#{profile.carrier.domain}"]
+    #       end
+    #     end
+    #   
+    #     if user.email != nil and user.email != ""
+    #       @recipients << ["#{user.email}"]
+    #     end
   
     user.caregivers.each do |caregiver|
 

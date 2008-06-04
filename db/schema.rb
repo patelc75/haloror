@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 120) do
+ActiveRecord::Schema.define(:version => 124) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -32,8 +32,8 @@ ActiveRecord::Schema.define(:version => 120) do
   end
 
   create_table "alert_options", :force => true do |t|
-    t.integer  "role_id"
-    t.integer  "alert_types_id"
+    t.integer  "roles_user_id"
+    t.integer  "alert_type_id"
     t.boolean  "phone_active"
     t.boolean  "email_active"
     t.boolean  "text_active"
@@ -42,19 +42,10 @@ ActiveRecord::Schema.define(:version => 120) do
   end
 
   create_table "alert_types", :force => true do |t|
+    t.integer  "alert_group_id"
     t.string   "alert_type"
     t.boolean  "phone_active"
     t.boolean  "email_active"
-    t.boolean  "text_active"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "alerts", :force => true do |t|
-    t.integer  "roles_users_option_id"
-    t.string   "event_kind"
-    t.boolean  "email_active"
-    t.boolean  "phone_active"
     t.boolean  "text_active"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -68,7 +59,6 @@ ActiveRecord::Schema.define(:version => 120) do
     t.integer  "device_id"
   end
 
-  add_index "batteries", ["device_id"], :name => "index_batteries_on_device_id"
   add_index "batteries", ["user_id", "timestamp"], :name => "index_batteries_on_timestamp_and_user_id"
 
   create_table "battery_charge_completes", :force => true do |t|
@@ -174,6 +164,11 @@ ActiveRecord::Schema.define(:version => 120) do
     t.string "device_type"
   end
 
+  create_table "devices_user", :force => true do |t|
+    t.integer "device_id"
+    t.integer "user_id"
+  end
+
   create_table "devices_users", :id => false, :force => true do |t|
     t.integer "device_id"
     t.integer "user_id"
@@ -213,7 +208,6 @@ ActiveRecord::Schema.define(:version => 120) do
     t.datetime "timestamp"
     t.string   "event_type"
     t.integer  "event_id"
-    t.string   "level"
   end
 
   create_table "falls", :force => true do |t|
@@ -262,6 +256,20 @@ ActiveRecord::Schema.define(:version => 120) do
     t.string  "model"
     t.string  "kind"
     t.integer "kind_id"
+  end
+
+  create_table "halo_debug_msgs", :force => true do |t|
+    t.integer  "source_mote_id"
+    t.datetime "timestamp"
+    t.integer  "dbg_type"
+    t.integer  "param1"
+    t.integer  "param2"
+    t.integer  "param3"
+    t.integer  "param4"
+    t.integer  "param5"
+    t.integer  "param6"
+    t.integer  "param7"
+    t.integer  "param8"
   end
 
   create_table "latest_vitals", :force => true do |t|
@@ -356,14 +364,13 @@ ActiveRecord::Schema.define(:version => 120) do
   add_index "roles_users", ["user_id"], :name => "index_roles_users_on_user_id"
 
   create_table "roles_users_options", :force => true do |t|
-    t.integer "role_id"
-    t.boolean "removed",      :default => false
-    t.boolean "active",       :default => false
-    t.boolean "phone_active", :default => false
-    t.boolean "email_active", :default => false
-    t.boolean "text_active",  :default => false
-    t.integer "position",     :default => 0
-    t.integer "user_id"
+    t.integer "roles_user_id"
+    t.boolean "removed",       :default => false
+    t.boolean "active",        :default => false
+    t.boolean "phone_active",  :default => false
+    t.boolean "email_active",  :default => false
+    t.boolean "text_active",   :default => false
+    t.integer "position",      :default => 0
     t.string  "relationship"
   end
 
