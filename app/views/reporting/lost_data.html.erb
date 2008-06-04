@@ -1,5 +1,19 @@
-<h2>Missing data for <%=@user.login%>:</h2>
+<h2>Lost data for <%=@user.login%>:</h2>
+All times are in <%= @user.profile.time_zone %> timezone
 <p>&nbsp;</p>
-<% @lost_data.each do |reading| %>
-	<p><%=reading.begin_time.to_s(:db)%> - <%=reading.end_time.to_s(:db)%></p>
-<% end %>
+<p>
+  <table>
+    <tr>
+      <td><b>Start</b></td>
+        <td>&nbsp;&nbsp;</td>
+        <td><b>End</b></td>
+        </tr>
+        <% @lost_data.each do |reading| %>
+          <tr>
+            <td><%=format_datetime(reading.begin_time.to_s(:db), @user)%></td>
+              <td></td>
+              <td><%=format_datetime(reading.end_time.to_s(:db), @user)%></td>
+              </tr>
+            <% end %>
+          </table>
+  </p>
