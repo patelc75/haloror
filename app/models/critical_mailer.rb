@@ -111,13 +111,13 @@ class CriticalMailer < ActionMailer::ARMailer
         em_bool = alert_option.email_active
         tm_bool = alert_option.text_active
         if tm_bool == true
-          if care_user.profile.cell_phone != nil and care_user.profile.cell_phone != ""
-            @recipients  << ["#{care_user.profile.cell_phone}" + "#{care_user.profile.carrier.domain}"]
+          if caregiver.profile.cell_phone != nil and caregiver.profile.cell_phone != ""
+            @recipients  << ["#{caregiver.profile.cell_phone}" + "#{caregiver.profile.carrier.domain}"]
           end
         end
         if em_bool == true
-          if care_user.email != nil and care_user.email != ""
-            @recipients  << ["#{care_user.email}"]
+          if caregiver.email != nil and caregiver.email != ""
+            @recipients  << ["#{caregiver.email}"]
           end
         end
       end
