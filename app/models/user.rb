@@ -150,7 +150,7 @@ class User < ActiveRecord::Base
   def alert_option_by_type(caregiver, type) 
     alert_option = nil
     roles_user = roles_user_by_caregiver(caregiver)
-    alert_type = AlertType.find(:first, :conditions => "alert_type='#{alert.class.to_s}'")
+    alert_type = AlertType.find(:first, :conditions => "alert_type='#{type.class.to_s}'")
     
     if(alert_type)
       alert_option = AlertOption.find(:first, :conditions => "alert_type_id=#{alert_type.id} and roles_user_id=#{roles_user.id}")
