@@ -102,18 +102,21 @@ class CallListController < ApplicationController
     toggle_critical('phone', params[:id]) unless User.find(params[:user_id]).profile.home_phone.empty?
     
     #render :partial => "call_list/item", :locals => { :call_order => @call_order }
+    render :text => '', :layout => false
   end
   
   def toggle_email
     toggle_critical('email', params[:id]) if User.find(params[:user_id]).email
     
-    render :partial => "call_list/item", :locals => { :call_order => @call_order }
+    #render :partial => "call_list/item", :locals => { :call_order => @call_order }
+    render :text => '', :layout => false
   end
   
   def toggle_text
     toggle_critical('text', params[:id]) unless User.find(params[:user_id]).profile.cell_phone.empty?
     
-    render :partial => "call_list/item", :locals => { :call_order => @call_order }
+    #render :partial => "call_list/item", :locals => { :call_order => @call_order }
+    render :text => '', :layout => false
   end
   
   def activate

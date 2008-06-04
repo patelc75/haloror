@@ -158,7 +158,7 @@
 			end
 		%>
 
-		<%=link_to_remote(image_tag(img, :id => 'item_text_'+caregiver.id.to_s), :url => { :action => "toggle_text",:id => current_user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\', '+user_id+')', :complete => 'updatePositions()')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_text_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_text",:id => current_user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\', '+user_id+')', :complete => 'updatePositions()')%>
 	</div>
 
 	<!--DELETE-->

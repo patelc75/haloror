@@ -101,8 +101,8 @@ if (what )
 
 	//if(what != 'email' && (!$('user-'+id+'_'+what).value || !$('user-'+id+'_'+what+'2').value))
 
-  if(what != 'email' && (( (  !$('user-'+id+'_'+'text').value || !$('user-'+id+'_'+'text'+'2').value  ) && what == 'text') 
-          || (( (!$('user-'+id+'_'+'phone').value && !$('user-'+id+'_'+'phone'+'2').value ) && what == 'phone' ) ) )  )
+  if(what != 'email' && (( !(  $('user-'+id+'_'+'text').value && $('user-'+id+'_'+'text'+'2').value  ) && what == 'text') 
+                     || (( !(  $('user-'+id+'_'+'phone').value || $('user-'+id+'_'+'phone'+'2').value ) && what == 'phone' ) ) )  )
 	{
 	  //RedBox.loading();
 		//RedBox.addHiddenContent('hidden_content_extra_info-'+id);
