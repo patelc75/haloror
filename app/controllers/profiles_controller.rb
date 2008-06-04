@@ -94,7 +94,7 @@ class ProfilesController < ApplicationController
     
     user.save
 
-    if(params[:roles_user_id])
+    if(!params[:roles_user_id].blank?)
       @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
       @roles_users_option.relationship = params[:relationship]
       @roles_users_option.save
@@ -102,7 +102,7 @@ class ProfilesController < ApplicationController
         
     Profile.update(params[:id], params[:profile])
     
-    if(params[:patient_id])
+    if(!params[:patient_id].blank?)
       refresh_caregivers(User.find(params[:patient_id]))
     end
   end
