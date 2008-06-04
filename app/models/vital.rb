@@ -176,7 +176,8 @@ class Vital < ActiveRecord::Base
     conds = []
     conds << "reconnected_at is null"
     conds << "device_id in (select v.id from latest_vitals v where v.updated_at >= now() - interval '#{MgmtQuery::MINUTES_INTERVAL} minutes')"
-    conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"
+# Temporary disabled until strap_fastened is reliable
+    # conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"
     
     alerts = DeviceUnavailableAlert.find(:all,
       :conditions => conds.join(' and '))
@@ -194,7 +195,8 @@ class Vital < ActiveRecord::Base
     # b) the chest strap is “fastened”
     conds = []
     conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{MgmtQuery::MINUTES_INTERVAL} minutes')"
-    conds << "id in (select status.id from device_strap_status status where is_fastened > 0)"
+# Temporary disabled until strap_fastened is reliable
+    # conds << "id in (select status.id from device_strap_status status where is_fastened > 0)"
 
     devices = Device.find(:all,
       :conditions => conds.join(' and '))
