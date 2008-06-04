@@ -1,6 +1,6 @@
 class MgmtQuery < ActiveRecord::Base
 
-  MINUTES_INTERVAL = 15
+  MINUTES_INTERVAL = 1
 
   belongs_to :mgmt_cmd
   belongs_to :device
