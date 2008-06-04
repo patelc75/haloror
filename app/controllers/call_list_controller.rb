@@ -116,14 +116,12 @@ class CallListController < ApplicationController
   
   def activate
     RolesUsersOption.update(params[:id], {:active => 1})
-
-    render :partial => "call_list/item", :locals => { :call_order => @call_order }
+    render :text => '', :layout => false
   end
   
   def deactivate
     RolesUsersOption.update(params[:id], {:active => 0})
-    
-    render :partial => "call_list/item", :locals => { :call_order => @call_order }
+    render :text => '', :layout => false
   end
   
   def set_caregiver_first_name

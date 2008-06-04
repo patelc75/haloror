@@ -100,7 +100,7 @@
 			end
 		%>
 		
-		<%=link_to_remote(image_tag(img, :id => 'item_active_'+caregiver.id.to_s), :url => { :action => "activate",:id => opts.id}, :before => 'toggleCaregiver(\'enable\', '+i.to_s+', '+caregiver.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_active_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "activate",:id => opts.id}, :before => 'toggleCaregiver(\'enable\', '+i.to_s+', '+caregiver.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
 		<br />
 		
 		<% 
@@ -111,7 +111,7 @@
 			end
 		%>
 
-		<%=link_to_remote(image_tag(img, :id => 'item_away_'+caregiver.id.to_s), :url => { :action => "deactivate",:id => opts.id}, :before => 'toggleCaregiver(\'disable\', '+i.to_s+', '+caregiver.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_away_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "deactivate",:id => opts.id}, :before => 'toggleCaregiver(\'disable\', '+i.to_s+', '+caregiver.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
 	</div>
 
 	<!--PHONE-->
