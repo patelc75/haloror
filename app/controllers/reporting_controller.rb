@@ -22,7 +22,13 @@ class ReportingController < ApplicationController
     #order = "#{params[:col]} asc"
     
     #users = User.find(:all, :order => order)
-    users = User.find(:all)
+    
+    if params[:col] == 'name'
+      users = User.find(:all, :include => :profile, :order => 'profiles.last_name')
+    else
+      users = User.find(:all, :include => :profile, :order => params[:col])
+    end
+    
     sortby = 'id'
     
     render :partial => 'user_table', :locals => {:users => users, :sortby => params[:col], :reverse => false}
