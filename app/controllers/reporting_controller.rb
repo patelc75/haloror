@@ -52,8 +52,8 @@ class ReportingController < ApplicationController
     while i < 30
       time = now.ago(i*86400)
       data = {}
-      data[:falls] = Event.find(:all, :include => 'alert_type', :conditions => "timestamp > '#{time}' and timestamp < '#{time.tomorrow}' and alert_type = 'Fall'").length
-      data[:panics] = Event.find(:all, :include => 'alert_type', :conditions => "timestamp > '#{time}' and timestamp < '#{time.tomorrow}' and alert_type = 'Panic'").length
+      data[:falls] = Event.find(:all, :conditions => "timestamp > '#{time}' and timestamp < '#{time.tomorrow}' and event_type = 'Fall'").length
+      data[:panics] = Event.find(:all, :conditions => "timestamp > '#{time}' and timestamp < '#{time.tomorrow}' and event_type = 'Panic'").length
       @periods[time] = data
       i += 1
     end
