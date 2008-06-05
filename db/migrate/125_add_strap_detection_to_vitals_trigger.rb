@@ -5,9 +5,9 @@ class AddStrapDetectionToVitalsTrigger < ActiveRecord::Migration
     declare
       row record;
     begin
-      for row in (select device_strap_status.id from devices_strap_status inner join devices_users 
-                    on devices_strap_status.id = devices_users.device_id where 
-                    devices_strap_status.is_fastened = 0 and devices_users.user_id = new.user_id) loop
+      for row in (select device_strap_status.id from device_strap_status inner join device_users 
+                    on device_strap_status.id = device_users.device_id where 
+                    device_strap_status.is_fastened = 0 and device_users.user_id = new.user_id) loop
           update latest_vitals set updated_at = now() where id = row.id;
       if NOT FOUND then
           insert into latest_vitals (id, updated_at) values (row.id, now());
