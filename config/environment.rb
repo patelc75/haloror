@@ -106,22 +106,24 @@ class ActionMailer::ARMailer < ActionMailer::Base
     if self.priority.nil?
       self.priority = Priority::LOW
     end
-    if self.priority > Priority::THRESH_HOLD
-      emails = []
-      ar_sendmail = ActionMailer::ARSendmail.new
-      mail.destinations.each do |destination|
-        emails << Email.new(:mail => mail.encoded, :to => destination,
-          :from => mail.from.first, :priority => self.priority)
-      end
-      ar_sendmail.deliver(emails)      
-    else
-      mail.destinations.each do |destination|
-        Email.create  :mail => mail.encoded, :to => destination,
-          :from => mail.from.first, :priority => self.priority
+    if !mail.destinations.blank?
+      if self.priority > Priority::THRESH_HOLD
+        emails = []
+        ar_sendmail = ActionMailer::ARSendmail.new
+        mail.destinations.each do |destination|
+          emails << Email.new(:mail => mail.encoded, :to => destination,
+            :from => mail.from.first, :priority => self.priority)
+          end
+          ar_sendmail.deliver(emails)      
+        else
+          mail.destinations.each do |destination|
+            Email.create  :mail => mail.encoded, :to => destination,
+            :from => mail.from.first, :priority => self.priority
+          end
+        end
       end
     end
   end
-end
 
 class ActionMailer::ARSendmail
   def find_emails
