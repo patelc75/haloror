@@ -60,7 +60,19 @@ class ReportingController < ApplicationController
     
     render :layout => false
   end
-  
+  def lost_data_summary
+    @user = current_user
+    @users = []
+    if !params[:lost_data].blank?
+      @lost_data = LostData.new(params[:lost_data])
+      begin_time = @lost_data.begin_time
+      end_time = @lost_data.end_time
+      user_ids = LostData.user_ids_with_lost_data(begin_time, end_time)
+      if user_ids && user_ids.size > 0
+        @users = User.find(:all, :conditions => "users.id IN (#{user_ids.join(',')})", :include => [:roles, :roles_users, :access_logs, :profile])
+      end 
+    end   
+  end
   def lost_data
     if user_id = params[:id]
       @user = User.find(user_id)
