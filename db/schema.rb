@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 124) do
+ActiveRecord::Schema.define(:version => 125) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
