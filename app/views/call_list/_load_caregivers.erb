@@ -1,4 +1,4 @@
-<ul id="call_list">
+
 
 <% position = 1 %>
 <% i = 1 %>
@@ -21,9 +21,4 @@
 	<% i = i+1 %>
 <% end %>
 
-</ul>
-<script type="text/javascript">
-//<![CDATA[
-Sortable.create("call_list", {onChange:updatePositions, onUpdate:function(){new Ajax.Request('/call_list/sort/?user_id='+<%=params[:id]%>, {asynchronous:true, evalScripts:true, parameters:serialize()});showTooltip=false}, tag:'li'})
-//]]>
-</script>
+

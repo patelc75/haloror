@@ -59,7 +59,14 @@
 		</div>
 		<p>&nbsp;</p>
 		  <div="call_list_div">    
+			<ul id="call_list">
 			<%= render :partial => "load_caregivers", :locals => { :caregivers => @caregivers } %>
+			</ul>
+			<script type="text/javascript">
+			//<![CDATA[
+			Sortable.create("call_list", {onChange:updatePositions, onUpdate:function(){new Ajax.Request('/call_list/sort/?user_id='+<%=params[:id]%>, {asynchronous:true, evalScripts:true, parameters:serialize()});showTooltip=false}, tag:'li'})
+			//]]>
+			</script>
 		  </div>
 			
 			
