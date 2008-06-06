@@ -227,7 +227,7 @@ class UsersController < ApplicationController
     @roles_user = @patient.roles_user_by_caregiver(@caregiver)
     
     unless opt = RolesUsersOption.find(:first, :conditions => "roles_user_id = #{@roles_user.id}")
-      opt = RolesUsersOption.create(:roles_user_id => @roles_user.id, :user_id => @caregiver.id)
+      opt = RolesUsersOption.create(:roles_user_id => @roles_user.id)
     end
     
     opt.active = true
