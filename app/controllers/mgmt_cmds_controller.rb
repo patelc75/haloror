@@ -84,7 +84,7 @@ class MgmtCmdsController < RestfulAuthController
           while count <= max
             cmd[:device_id] = count
         
-            if MgmtCmd.find(:first, :conditions => "device_id = #{count} and pending = true")
+            if MgmtCmd.find(:first, :conditions => "device_id = #{count} and pending = true and originator = 'device'")
               @pending << count
             else              
               MgmtCmd.create(cmd)
@@ -101,7 +101,7 @@ class MgmtCmdsController < RestfulAuthController
           if id
             cmd[:device_id] = id
             
-            if MgmtCmd.find(:first, :conditions => "device_id = #{count} and pending = true")
+            if MgmtCmd.find(:first, :conditions => "device_id = #{count} and pending = true and originator = 'device'")
               @pending << id
             else              
               MgmtCmd.create(cmd)
@@ -111,7 +111,7 @@ class MgmtCmdsController < RestfulAuthController
       else                            # single device id
         cmd[:device_id] = request[:ids]
         
-        if MgmtCmd.find(:first, :conditions => "device_id = #{request[:ids]} and pending = true")
+        if MgmtCmd.find(:first, :conditions => "device_id = #{request[:ids]} and pending = true and originator = 'device'")
           @pending << request[:ids]
         else      
           MgmtCmd.create(cmd)
