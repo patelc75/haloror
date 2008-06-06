@@ -115,7 +115,7 @@ class CriticalMailer < ActionMailer::ARMailer
     #       @recipients << ["#{user.email}"]
     #     end
         
-    recipients_setup(user, user.alert_option)
+    recipients_setup(user, user.alert_option(alert))
     user.caregivers.each do |caregiver|
       recipients_setup(caregiver, user.alert_option_by_type(caregiver, alert))  
     end  
@@ -124,22 +124,32 @@ class CriticalMailer < ActionMailer::ARMailer
     @sent_on     = Time.now
     @body[:user] = user  #sends params to body
   end
+  
   def recipients_setup(user, alert_option)
     if (alert_option)  #check for null until we figure out a better way to get roles_users_options
-      em_bool = alert_option.email_active
-      tm_bool = alert_option.text_active
-      if tm_bool == true
+      email_bool = alert_option.email_active
+      text_msg_bool = alert_option.text_active
+      iping_call_bool = alert_option.phone_active
+      
+      if text_msg_bool == true
         if !user.profile.cell_phone.blank?
           @recipients  << ["#{user.profile.cell_phone}" + "#{user.profile.carrier.domain}"]
         end
       end
-      if em_bool == true
+      if email_bool == true
         if !user.email.blank?
           @recipients  << ["#{user.email}"]
         end
       end
+      
+      if iping_call_bool == true
+        if !user.profile.phone_email.blank?
+          @recipients  << ["#{user.profile.phone_email}"]
+        end
+      end
     end    
   end
+  
   def camelcase_to_spaced(word)
     word.gsub(/([A-Z])/, " \\1")
   end
