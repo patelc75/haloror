@@ -146,6 +146,16 @@ class User < ActiveRecord::Base
   def roles_user_by_caregiver(caregiver)
     caregiver.roles_users.find(:first, :conditions => "roles.authorizable_id = #{self.id}", :include => :role)
   end
+  def alert_option(type)
+    alert_option = nil
+    roles_user = roles_user_by_role_name('halouser')
+    alert_type = AlertType.find(:first, :conditions => "alert_type='#{type.class.to_s}'")
+    
+    if(alert_type)
+      alert_option = AlertOption.find(:first, :conditions => "alert_type_id=#{alert_type.id} and roles_user_id=#{roles_user.id}")
+    end
+    return alert_option
+  end
   # returns the user's alert options for this caregiver and type
   def alert_option_by_type(caregiver, type) 
     alert_option = nil

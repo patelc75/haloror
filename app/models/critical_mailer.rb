@@ -114,32 +114,32 @@ class CriticalMailer < ActionMailer::ARMailer
     #     if user.email != nil and user.email != ""
     #       @recipients << ["#{user.email}"]
     #     end
-  
+        
+    recipients_setup(user, user.alert_option)
     user.caregivers.each do |caregiver|
-
-      alert_option = user.alert_option_by_type(caregiver, alert)
-      
-      if (alert_option)  #check for null until we figure out a better way to get roles_users_options
-        em_bool = alert_option.email_active
-        tm_bool = alert_option.text_active
-        if tm_bool == true
-          if caregiver.profile.cell_phone != nil and caregiver.profile.cell_phone != ""
-            @recipients  << ["#{caregiver.profile.cell_phone}" + "#{caregiver.profile.carrier.domain}"]
-          end
-        end
-        if em_bool == true
-          if caregiver.email != nil and caregiver.email != ""
-            @recipients  << ["#{caregiver.email}"]
-          end
-        end
-      end
+      recipients_setup(caregiver, user.alert_option_by_type(caregiver, alert))  
     end  
     @from        = "no-reply@myhalomonitor.com"
     @subject     = "[HALO] "
     @sent_on     = Time.now
     @body[:user] = user  #sends params to body
   end
-  
+  def recipients_setup(user, alert_option)
+    if (alert_option)  #check for null until we figure out a better way to get roles_users_options
+      em_bool = alert_option.email_active
+      tm_bool = alert_option.text_active
+      if tm_bool == true
+        if !user.profile.cell_phone.blank?
+          @recipients  << ["#{user.profile.cell_phone}" + "#{user.profile.carrier.domain}"]
+        end
+      end
+      if em_bool == true
+        if !user.email.blank?
+          @recipients  << ["#{user.email}"]
+        end
+      end
+    end    
+  end
   def camelcase_to_spaced(word)
     word.gsub(/([A-Z])/, " \\1")
   end
