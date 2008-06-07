@@ -9,7 +9,7 @@
 <tr><td>
 	Select a Device: <%=select(:device, :id, current_user.devices.collect {|d| [ d.id, d.id ]})%>
 </td><td>	-or-
-	Enter a device id: <input type="text" id="device_id2" />
+	Enter a device id: <input type="text" name="device_id2" id="device_id2" />
 	</td><td><%= submit_tag 'Go'%> 
 </td></tr>
 </table>
