@@ -21,7 +21,10 @@ function toggleHTabs(current) {
     node[0].className = 'unselectedTab';
     current.className = 'selectedTab';
 }
-
+function updateOperators(){
+	alert("aha");
+	window.location="/call_center/operators";
+}
 function updatePositions(li_id) {
 	var num_ref = new Hash();
 	num_ref[0] = 'th';
@@ -93,6 +96,7 @@ function SetCookie(cookieName,cookieValue,nDays) {
                  + ";expires="+expire.toGMTString();
 }
 
+//if pos is null assume an operator not a caregiver
 function toggleContact(pos, id, status, what, user_id)
 {
 
@@ -106,12 +110,24 @@ if (what )
 	{
 	  //RedBox.loading();
 		//RedBox.addHiddenContent('hidden_content_extra_info-'+id);
-		new Ajax.Updater('hidden_content_extra_info', '/users/existing_info/'+id+'/?user_id='+user_id+'&what='+what, {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('hidden_content_extra_info'); }, onLoading:function(request){RedBox.loading(); }});
+		if(pos != null){
+			new Ajax.Updater('hidden_content_extra_info', '/users/existing_info/'+id+'/?user_id='+user_id+'&what='+what, {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('hidden_content_extra_info'); }, onLoading:function(request){RedBox.loading(); }});
+		}else{
+			new Ajax.Updater('hidden_content_extra_info', '/users/existing_info/'+id+'/?user_id='+user_id+'&what='+what+'&operator=true', {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('hidden_content_extra_info'); }, onLoading:function(request){RedBox.loading(); }});
+			
+		}
 		return false;
 	}
 	else
 	{
-		if(document.getElementById('item_'+id+'_'+pos).className == 'active')
+		b = false
+		if(pos != null){
+			b = document.getElementById('item_'+id+'_'+pos).className == 'active'
+		}else{
+		  b = document.getElementById('item_'+id).className == 'active'
+		}
+			
+		if(b)
 		{
 			if(active[id] && isset(active[id][what]))
 				status = active[id][what];
@@ -140,7 +156,7 @@ if (what )
 
 var active = [];
 var caregiverActive = [];
-
+//if pos is null assume an operator not a caregiver
 function toggleCaregiver(action, pos, id, phone_active, email_active, text_active)
 {
 	if(!active[id])
@@ -156,10 +172,13 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 	
 	if(action == 'disable')
 	{
+		if(pos != null){
+			document.getElementById('item_'+id+'_'+pos+'_position').innerHTML = 'Away';
+			document.getElementById('item_up_'+id).src = '/images/call_list-up-away.gif';
+			document.getElementById('item_down_'+id).src = '/images/call_list-down-away.gif';
+		}
 		
-		document.getElementById('item_'+id+'_'+pos+'_position').innerHTML = 'Away';
-		document.getElementById('item_up_'+id).src = '/images/call_list-up-away.gif';
-		document.getElementById('item_down_'+id).src = '/images/call_list-down-away.gif';
+		
 		document.getElementById('item_image_'+id).style.opacity = '.5';
 		document.getElementById('item_firstname_'+id).style.color = 'gray';
 		document.getElementById('item_lastname_'+id).style.color = 'gray';
@@ -169,23 +188,31 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 		document.getElementById('item_email_'+id).src = '/images/call_list-email-inactive.gif';
 		document.getElementById('item_text_'+id).src = '/images/call_list-text-inactive.gif';
 		document.getElementById('item_trash_'+id).src = '/images/call_list-trash-inactive.gif';
-		
 		document.getElementById('item_edit_'+id).getElementsByTagName('a')[0].style.color = 'gray';
+		
+		
 
 		callListImg[id] = '/images/call_list-item-away.gif';
-	
-		document.getElementById('item_'+id+'_'+pos).className = 'inactive';
+	   if(pos != null){
+			  document.getElementById('item_'+id+'_'+pos).className = 'inactive';
+		  }else{
+			document.getElementById('item_'+id).className = 'inactive';
+			}
 	}
 	else if(action == 'enable')
 	{
-		document.getElementById('item_up_'+id).src = '/images/call_list-up.gif';
-		document.getElementById('item_down_'+id).src = '/images/call_list-down.gif';
+		if(pos != null){
+			document.getElementById('item_up_'+id).src = '/images/call_list-up.gif';
+			document.getElementById('item_down_'+id).src = '/images/call_list-down.gif';
+		}
+		
 		document.getElementById('item_image_'+id).style.opacity = '1';
 		document.getElementById('item_firstname_'+id).style.color = '#4691b1';
 		document.getElementById('item_lastname_'+id).style.color = '#4691b1';
 		document.getElementById('item_active_'+id).src = '/images/call_list-active.gif';
 		document.getElementById('item_away_'+id).src = '/images/call_list-away_disabled.gif';
 		document.getElementById('item_trash_'+id).src = '/images/call_list-trash.gif';
+		document.getElementById('item_edit_'+id).getElementsByTagName('a')[0].style.color = '';
 	
 		if(active[id]['phone'])
 			document.getElementById('item_phone_'+id).src = '/images/call_list-phone.gif';
@@ -196,20 +223,24 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 		if(active[id]['text'])
 			document.getElementById('item_text_'+id).src = '/images/call_list-text.gif';
 		
-		document.getElementById('item_edit_'+id).getElementsByTagName('a')[0].style.color = '';
 
 		callListImg[id] = '/images/call_list-item.gif';
-	
-		document.getElementById('item_'+id+'_'+pos).className = 'active';
+	  if(pos != null){
+		  document.getElementById('item_'+id+'_'+pos).className = 'active';
+	  }else{
+		document.getElementById('item_'+id).className = 'active';
+		}
 	}
-	
-	updatePositions();
+	if(pos != null){
+	  updatePositions();
+  }
 	swapCallListBg(pos, id);
 }
 
 var defaultCallListImg = '/images/call_list-item.gif';
 var callListImg = [];
 
+//if pos is null assume an operator not a caregiver
 function swapCallListBg(pos, id, img)
 {
 	if(callListImg[id])
@@ -219,7 +250,11 @@ function swapCallListBg(pos, id, img)
 	else
 		img = defaultCallListImg;
 		
-	document.getElementById('item_'+id+'_'+pos).style.background = "url('"+img+"') no-repeat";
+	if(pos != null){
+	  document.getElementById('item_'+id+'_'+pos).style.background = "url('"+img+"') no-repeat";
+	}else{
+		document.getElementById('item_'+id).style.background = "url('"+img+"') no-repeat";
+	}
 }
 
 function isset( variable )

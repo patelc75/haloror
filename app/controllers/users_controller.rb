@@ -137,21 +137,25 @@ class UsersController < ApplicationController
     @user_cell_info = @user_info.profile.cell_phone
     @user_home_info = @user_info.profile.home_phone
     @user_carrier_id = @user_info.profile.carrier_id
-
+    type = 'caregiver'
+    if !params[:operator].blank?
+      type = 'operator'
+    end
+    missing_what = nil
 
     if ("text" == params[:what])
       if (@user_cell_info == nil || @user_carrier_id == nil ||@user_cell_info == "" || @user_carrier_id == "" )
-        missing_what = "The caregiver must include both a Cell Phone and Cell Carrier Provider. Would you like to enter both now?" 
+        missing_what = "The #{type} must include both a Cell Phone and Cell Carrier Provider. Would you like to enter both now?" 
       end
     end
 
 
     if ("phone" == params[:what])
      if ((@user_cell_info == "" or @user_cell_info == nil) and (@user_home_info == nil or @user_home_info == "" ))
-         missing_what = "This caregiver must have either a Cell Phone or a Home Phone? Would you like enter one or both now?"
+         missing_what = "This #{type} must have either a Cell Phone or a Home Phone? Would you like enter one or both now?"
        end
     end
-  render :partial => 'call_list/extra_info_lightbox', :locals => {:caregiver_id => params[:id], :user_id => params[:user_id], :missing => missing_what} 
+  render :partial => 'call_list/extra_info_lightbox', :locals => {:id => params[:id], :user_id => params[:user_id], :missing => missing_what} 
     
   end
   
@@ -193,6 +197,13 @@ class UsersController < ApplicationController
          else
          render :partial => 'caregiver_form'
     end
+  end
+  
+  def destroy_operator
+    RolesUsersOption.update(params[:id], {:removed => 1, :position => 0})
+    @operators = User.operators
+    number_ext
+    render :layout =>false, :partial => 'call_center/operators'
   end
   
   def destroy_caregiver

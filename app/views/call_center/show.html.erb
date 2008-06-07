@@ -1,0 +1,45 @@
+<div id="hidden_content_extra_info">
+</div>
+
+<div id="call_list-col">
+
+	<div class="content">
+		<p>&nbsp;</p>
+		<div id="call_list_header" style="display:block">
+			<div style="float:left;width:125px">
+				&nbsp;
+			</div>
+			<div style="float:left;width:155px">
+				Name
+			</div>
+			<div style="float:left;width:100px">
+				Status
+			</div>
+			<div style="float:left;width:75px">
+				Call
+			</div>
+			<div style="float:left;width:75px">
+				Email
+			</div>
+			<div style="float:left;width:100px">
+				Text Message
+			</div>
+			<div style="float:left;width:50px">
+				Remove
+			</div>
+			<div style="float:left;width:75px">
+		
+			</div>
+		</div>
+		<p>&nbsp;</p>
+		  <div="call_list_div">    
+			<ul id="call_list">
+			<%= render :partial => "operators", :locals => { :operators => @operators } %>
+			</ul>
+		  </div>
+	</div>
+	
+	
+	<div style="clear:both"></div>
+	<div id="call_list-col-footer"></div>
+</div>

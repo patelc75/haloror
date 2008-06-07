@@ -43,6 +43,11 @@ class ApplicationController < ActionController::Base
   
   
   private
+  def refresh_operators()
+    @operators = User.operators
+    number_ext
+    render :partial => 'call_center/operators', :layout => false
+  end
   def refresh_caregivers(user)
     number_ext
     

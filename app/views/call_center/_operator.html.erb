@@ -1,0 +1,161 @@
+<%
+  user_id = operator.id.to_s
+	if !opts.active?
+		img = '/images/call_list-item-away.gif'
+		className = 'inactive'
+	else
+		img = '/images/call_list-item.gif'
+		className = 'active'
+	end
+%>
+
+<% unless params[:noli] == 'true/'%>
+	<div id="item_<%=operator.id%>" class="<%=className%>" style="padding-left:10px;background:url('<%=img%>') no-repeat;height:100px;cursor:pointer" onMouseDown="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')'" onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag.gif\')';toggleTooltip(<%=operator.id%>)" onMouseOut="swapCallListBg(null, <%=operator.id%>, '<%=img%>');toggleTooltip(<%=operator.id%>)">
+<%end%>
+	
+	
+	
+	
+
+	<!--PROFILE IMAGE-->
+
+	<% 
+		unless opts.active?
+			opacity = '.5'
+		else
+			opacity = '1'
+		end
+	%>
+	<div style="float:left;background:url('/images/call_list-image_bg.gif') no-repeat;height:87px;width:125px;margin-top:5px;opacity:<%=opacity%>" id="item_image_<%=operator.id%>">
+		<% if operator.image != '' %>
+			<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
+		<% else %>
+			<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
+		<% end %>
+	</div>
+	
+	<!--NAME-->
+
+	<div style="float:left;padding-top:40px;width:155px">
+		<%
+			unless opts.active?
+				color = "gray"
+			else
+				color = "#4691b1"
+			end
+		%>
+		
+		<span id="item_firstname_<%=operator.id.to_s%>" style="font-weight:bold;color:<%=color%>"><%=operator.profile.first_name%></span>
+		<span id="item_lastname_<%=operator.id.to_s%>" style="font-weight:bold;color:<%=color%>"><%=operator.profile.last_name%></span>
+	</div>
+	
+	<!--ACTIVE/AWAY-->
+	
+	<div style="float:left;padding-top:25px;width:100px">
+		<% 
+			unless opts.active?
+				img = 'call_list-active_disabled.gif'
+			else
+				img = 'call_list-active.gif'
+			end
+		%>
+		
+		<%=link_to_remote(image_tag(img, :id => 'item_active_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "activate",:id => opts.id}, :before => 'toggleCaregiver(\'enable\', null, '+operator.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
+		<br />
+		
+		<% 
+			if opts.active?
+				img = 'call_list-away_disabled.gif'
+			else
+				img = 'call_list-away.gif'
+			end
+		%>
+
+		<%=link_to_remote(image_tag(img, :id => 'item_away_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "deactivate",:id => opts.id}, :before => 'toggleCaregiver(\'disable\', null, '+operator.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
+	</div>
+
+	<!--PHONE-->
+
+	<div style="float:left;padding-top:25px;width:75px">
+		<input type="hidden" id="user-<%=operator.id%>_phone" value="<%=operator.profile.home_phone%>" />
+		<input type="hidden" id="user-<%=operator.id%>_phone2" value="<%=operator.profile.cell_phone%>" />
+		<% 
+			if !opts.phone_active? or !opts.active?
+				img = 'call_list-phone-inactive.gif'
+			else
+				img = 'call_list-phone.gif'
+			end
+		%>
+		
+		<%=link_to_remote(image_tag(img, :id => 'item_phone_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "toggle_phone",:id => operator.roles_user_by_role_name('operator').id,:user_id => operator.id }, :before => 'toggleContact(null,'+operator.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')')%>
+	</div>
+	
+	<!--EMAIL-->
+
+	<div style="float:left;padding-top:25px;width:75px">
+		<% 
+			if !opts.email_active? or !opts.active?
+				img = 'call_list-email-inactive.gif'
+			else
+				img = 'call_list-email.gif'
+			end
+		%>
+
+		<%=link_to_remote(image_tag(img, :id => 'item_email_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "toggle_email",:id => operator.roles_user_by_role_name('operator').id,:user_id => operator.id }, :before => 'toggleContact(null,'+operator.id.to_s+', '+opts.email_active.to_s+', \'email\', '+user_id+')')%>
+	</div>
+
+	<!--TEXT-->
+
+	<div style="float:left;padding-top:25px;width:100px">
+		<input type="hidden" id="user-<%=operator.id%>_text" value="<%=operator.profile.cell_phone%>" />
+		 <input type="hidden" id="user-<%=operator.id%>_text2" value="<%=operator.profile.carrier_id%>" /> 
+		
+		<% 
+			if !opts.text_active? or !opts.active?
+				img = 'call_list-text-inactive.gif'
+			else
+				img = 'call_list-text.gif'
+			end
+			
+			unless user
+				user = current_user
+			end
+		%>
+
+		<%=link_to_remote(image_tag(img, :id => 'item_text_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "toggle_text",:id => operator.roles_user_by_role_name('operator').id,:user_id => operator.id }, :before => 'toggleContact(null,'+operator.id.to_s+', '+opts.text_active.to_s+', \'text\', '+user_id+')')%>
+	</div>
+	
+	<!--DELETE-->
+
+	<div style="float:left;padding-top:25px;width:50px">
+		<% 
+			if !opts.active? 
+				img = image_tag("call_list-trash-inactive.gif",:id => 'item_trash_'+operator.id.to_s)
+			else
+				img = image_tag("call_list-trash.gif",:id => 'item_trash_'+operator.id.to_s)
+			end
+		%>
+		
+		<%=link_to_remote img, :update => "call_list",
+		    :url => { :controller => "users", :action => "destroy_operator", :id => operator.roles_user_by_role_name('operator').roles_users_option.id, :operator_id => operator.id },
+			:confirm => "Are you sure?"
+		%>
+	</div>
+	<!--EDIT-->
+	
+	<div style="float:left;padding-top:35px;width:125px" id="item_edit_<%=operator.id%>">
+		<!--% puts edit_user_url(operator)%-->
+		
+		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => operator.profile.id, :frame => true, :roles_user_id => operator.roles_user_by_role_name('operator').id, :operator => true }, :html => {:method => :get})%>
+	</div>
+	
+	<!--TOOLTIP-->
+	
+	<div id="item_<%=operator.id%>_tooltip" style="top:-65px;margin-left:-600px;position:absolute;height:73px;width:221px;background:url('/images/tooltip.gif');display:none">
+		<div style="float:right;margin-right:3px;margin-top:3px">
+			<a href="javascript:void(0)" onClick="disableTooltip(<%=operator.id%>)"><img src="/images/tooltip-close.gif" style="margin-right:5px;margin-top:3px" /></a>
+		</div>
+	</div>
+<% unless params[:noli] == 'true/'%>
+</div>
+<%end%>

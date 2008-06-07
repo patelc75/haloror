@@ -1,0 +1,22 @@
+<div id="hidden_content_extra_info">
+</div>
+<% position = 1 %>
+<% i = 1 %>
+
+<% 
+	user = @user
+	@operators.each do |operator|
+		
+		roles_user = operator.roles_user_by_role_name('operator')		
+%>
+		<% if opts = roles_user.roles_users_option %>
+			<%= render :partial => "call_center/operator", :locals => { :user => user, :operator => operator, :opts => opts, :position => position , :i => i, :role => operator } %>			
+		<% end %>
+
+	<% 
+		if roles_user.roles_users_option.active
+			position = position+1 
+		end
+	%>
+	<% i = i+1 %>
+<% end %>

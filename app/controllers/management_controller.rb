@@ -9,7 +9,7 @@ class ManagementController < ApplicationController
     end
     
     @chatter = Array.new
-    
+    set_times
     if device = get_device
       @chatter = get_queries(@type, device)
     end
@@ -17,7 +17,7 @@ class ManagementController < ApplicationController
   
   def stream
     @type = 'stream'
-    
+    set_times
     if device = get_device
       @chatter = get_queries("stream", device)
     end
@@ -27,7 +27,7 @@ class ManagementController < ApplicationController
   
   def group
     @type = 'group'
-    
+    set_times
     if device = get_device
       @chatter = get_queries("group", device)
     end
@@ -114,8 +114,14 @@ class ManagementController < ApplicationController
   protected
   
   def get_device
-    unless params[:device_id] && device = Device.find(params[:device_id])
-      device = current_user.devices.first
+    if params[:device_id2].blank?
+      unless params[:device_id] && device = Device.find(params[:device_id])
+        device = current_user.devices.first
+      end
+    else
+      unless params[:device_id2] && device = Device.find(params[:device_id2])
+        device = current_user.devices.first
+      end
     end
     @device = device
     device
@@ -141,8 +147,8 @@ class ManagementController < ApplicationController
     #     cmd[:type] = 'cmd'
     #     chatter << cmd
     # end
-    
-    device.mgmt_queries.each do |query|
+    queries = device.mgmt_queries.find(:all, :conditions => "timestamp_device > '#{@begin_time}' AND timestamp_device < '#{@end_time}'")
+    queries.each do |query|
       next unless query[:timestamp_device]
       
       query[:timestamp] = query[:timestamp_device]
@@ -163,7 +169,7 @@ class ManagementController < ApplicationController
     
     # get query groups
     
-    device.mgmt_queries.each do |query|
+    device.mgmt_queries.find(:all, :conditions => "timestamp_server > '#{@begin_time}' AND timestamp_server < '#{@end_time}'").each do |query|
       next unless query[:timestamp_server]
       
       query[:timestamp] = query[:timestamp_server]
@@ -198,7 +204,7 @@ class ManagementController < ApplicationController
     
     # get pending commands
     
-    device.mgmt_cmds.each do |cmd|
+    device.mgmt_cmds.find(:all, :conditions => "timestamp_initiated > '#{@begin_time}' AND timestamp_initiated < '#{@end_time}'").each do |cmd|
       unless cmd.mgmt_ack
         next unless cmd[:timestamp_initiated]
         
@@ -210,5 +216,16 @@ class ManagementController < ApplicationController
     end
     
     chatter
+  end
+  def set_times
+    @query = LostData.new(params[:query])
+    @begin_time = Time.now
+    @end_time = @begin_time
+    if !@query.begin_time.blank?
+      @begin_time = @query.begin_time
+    end
+    if !@query.end_time.blank?
+      @end_time = @query.end_time
+    end
   end
 end

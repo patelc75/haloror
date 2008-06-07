@@ -72,20 +72,7 @@
 
 				</span>				
 				<span class="divider">|</span> 
-				<% if params[:controller] == 'call_list' %>
-				<%=link_to_remote_redbox('My Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true }, :html => {:method => :get})%>
-				<% else %>				
-				<%= link_to 'Account Settings', :controller => 'call_list', :action => 'show', :id => current_user.id %>
-				<% end %>
-				
-				|
-				<% if current_user.is_administrator? %>
-					<%= link_to 'Management', :controller => 'management', :action => 'index' %>
-					|
-					<%= link_to 'Reporting', :controller => 'reporting', :action => 'index' %>
-					<span class="divider">|</span>
-				<% end %>
-				<a href="/logout" style="font-weight:bold">Logout</a>
+				<%= render :partial => '/layouts/links' %>
 			<% end %>
 			</div>
 			<img src="/images/halo-logo-2.gif" alt="Halo Research" id="logo-2" />

@@ -1,4 +1,4 @@
-<% caregiver = User.find(caregiver_id) %>
+<% user = User.find(id) %>
 
 
 
@@ -9,7 +9,17 @@
 			<%= missing%>
 			<br />
 			<br />
-			<%=link_to_remote_redbox('Yes', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :user_id => user_id, :frame => true,  :roles_user_id => current_user.roles_user_by_caregiver(caregiver).id }, :html => {:method => :get, :complete => ''})%>
+			<%
+					roles_user_id = nil
+					operator = nil
+					if !params[:operator].blank?
+						roles_user_id = user.roles_user_by_role_name('operator').id
+						operator = true
+					else
+						roles_user_id = current_user.roles_user_by_caregiver(user).id
+					end
+			%>
+			<%=link_to_remote_redbox('Yes', :url =>{ :controller => "profiles", :action => 'edit_caregiver_profile', :id => user.profile.id, :operator => operator, :user_id => user_id, :frame => true,  :roles_user_id => roles_user_id }, :html => {:method => :get, :complete => ''})%>
 			|
 			<a href="javascript:void(0)" onClick="RedBox.close()">No</a>
 		</div>

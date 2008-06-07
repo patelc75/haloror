@@ -78,11 +78,10 @@ class ProfilesController < ApplicationController
       format.xml  { head :ok }
     end
   end
-  
+
   def edit_caregiver_profile
     @profile = Profile.find(params[:id], :include => :user)
     @user = @profile.user
-    
     if(!params[:roles_user_id].blank?)
       @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
     end
@@ -101,8 +100,10 @@ class ProfilesController < ApplicationController
     end
         
     Profile.update(params[:id], params[:profile])
-    
-    if(!params[:patient_id].blank?)
+    RAILS_DEFAULT_LOGGER.warn("********operator=#{params[:operator]}")
+    if(!params[:operator].blank?)
+      refresh_operators()
+    elsif(!params[:patient_id].blank?)
       refresh_caregivers(User.find(params[:patient_id]))
     end
   end

@@ -13,7 +13,7 @@
         <input type="hidden" name="user_id" value="<%=@user.id%>" />
         <input type="hidden" name="patient_id" value="<%=params[:user_id]%>" />
         <input type="hidden" name="roles_user_id" value="<%=params[:roles_user_id]%>" />
-      
+				<input type="hidden" name="operator" value="<%=params[:operator]%>"/>
         <%= text_field_tag :email, @user.email %>
         <br />	
       

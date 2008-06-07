@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 125) do
+ActiveRecord::Schema.define(:version => 126) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -328,7 +328,7 @@ ActiveRecord::Schema.define(:version => 125) do
     t.string  "home_phone"
     t.string  "work_phone"
     t.string  "cell_phone"
-    t.string  "text_email"
+    t.string  "phone_email"
     t.integer "carrier_id"
     t.string  "time_zone"
   end

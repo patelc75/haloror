@@ -1,11 +1,20 @@
 <%=render :partial=>'nav'%>
-
-<p>
-	Select a Device: <%=select(:device, :id, current_user.devices.collect {|d| [ d.id, d.id ]}, {}, {:onchange => "document.location = '/management/#{@type}/?device_id='+this.value"})%>
-	-or-
-	Enter a device id: <input type="text" id="device_id" /> <input type="button" value="Go" onclick="document.location = '/management/<%=@type%>/?device_id='+$('device_id').value" />
-</p>
-
+<div id="date_range" class="date_range">
+	<form action="<%= "/management/#{@type}/" %>">
+	<table>
+		<tr><td>All times are in UTC timezone</td></tr>
+	  <tr><td>Begin Time</td>&nbsp;&nbsp;<td>End Time</td></tr>
+	  <tr><td><%= datetime_select :query, "begin_time"%></td>&nbsp;&nbsp;<td><%= datetime_select :query, "end_time" %></td>&nbsp;&nbsp;<td></tr>
+	
+<tr><td>
+	Select a Device: <%=select(:device, :id, current_user.devices.collect {|d| [ d.id, d.id ]})%>
+</td><td>	-or-
+	Enter a device id: <input type="text" id="device_id2" />
+	</td><td><%= submit_tag 'Go'%> 
+</td></tr>
+</table>
+</form>
+</div>
 <div>
 	<a href="/management/stream<%="/?device_id=#{params[:device_id]}" unless params[:device_id] == nil%>">Query Stream</a> | <a href="/management/group<%="/?device_id=#{params[:device_id]}" unless params[:device_id] == nil%>">Query Groups</a>
 </div>

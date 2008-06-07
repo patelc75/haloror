@@ -32,4 +32,9 @@ class CallCenterController < ApplicationController
     
     render :partial => 'resolve', :locals => {:event => Event.find(params[:id])}
   end
+  
+  def show
+    @operators = User.operators
+    number_ext
+  end
 end

@@ -188,8 +188,16 @@ class User < ActiveRecord::Base
     end
   end
   
-  def operators
-    User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
+  def self.operators
+    os = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
+    os2 = []
+    os.each do |operator|
+      opt = operator.roles_user_by_role_name('operator').roles_users_option
+      if !opt.removed
+        os2 << operator
+      end
+    end
+    return os2
   end
   
   protected
