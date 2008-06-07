@@ -117,11 +117,11 @@ class ManagementController < ApplicationController
     device = nil
     if params[:device_id2].blank?
       if params[:device] && params[:device][:id]
-        device = Device.find(params[:device][:id]
+        device = Device.find(params[:device][:id])
       end
     else
       if params[:device_id2]
-        device = Device.find(params[:device_id2]
+        device = Device.find(params[:device_id2])
       end
     end
     unless device
