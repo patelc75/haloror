@@ -114,14 +114,18 @@ class ManagementController < ApplicationController
   protected
   
   def get_device
+    device = nil
     if params[:device_id2].blank?
-      unless params[:device_id] && device = Device.find(params[:device_id])
-        device = current_user.devices.first
+      if params[:device] && params[:device][:id]
+        device = Device.find(params[:device][:id]
       end
     else
-      unless params[:device_id2] && device = Device.find(params[:device_id2])
-        device = current_user.devices.first
+      if params[:device_id2]
+        device = Device.find(params[:device_id2]
       end
+    end
+    unless device
+      device = current_user.devices.first
     end
     @device = device
     device
