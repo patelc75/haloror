@@ -1,0 +1,6 @@
+<select name="ftp">
+  <option>Select FTP site</option>
+  <% Ftp.find(:all).each do |ftp| %>
+    <option value="<%=ftp.id%>"><%=ftp[:server_name]%> (<%= ftp.path ? ftp[:path] : ''%>)</option>
+  <% end %>
+</select>

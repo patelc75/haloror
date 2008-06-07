@@ -1,7 +1,7 @@
-(choose a version) 
 <select name="firmware_upgrade">
-	<option></option>
-	<% FirmwareUpgrade.find(:all).each do |firmware| %>
-		<option value="<%=firmware.id%>"><%=firmware[:filename]%> | <%=firmware.version%> (<%= firmware.ftp ? firmware.ftp[:server_name] : ''%>)</option>
-	<% end %>
+  <option>Select Firmware</option>
+  <% FirmwareUpgrade.find(:all).each do |firmware| %>
+    <option value="<%=firmware.id%>"><%=firmware[:filename]%> | <%=firmware.version%> </option>
+  <% end %>
 </select>
+

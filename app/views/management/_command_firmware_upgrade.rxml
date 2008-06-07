@@ -1,0 +1,24 @@
+xml.management_cmd_server do
+  xml.device_id cmd.device_id
+  xml.cmd_type cmd.cmd_type
+  xml.timestamp cmd.timestamp_sent
+  
+  if more
+    xml.version more[:version]
+    xml.filename more[:filename]
+    
+    #use first entry in ftp table instead of mapping from Firmware upgrade table
+    #(because ExtJS table doesn't support mapping
+    ftp =  Ftp.find(:first)
+    #ftp = more.ftp 
+    
+    if ftp 
+      xml.ftp do
+        xml.server_name ftp.server_name
+        xml.login ftp.login
+        xml.password ftp.password
+        xml.path ftp.path
+      end
+    end
+  end
+end

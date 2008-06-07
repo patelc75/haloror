@@ -66,7 +66,8 @@ class UsersController < ApplicationController
   end
   
   def add_device_to_user    
-    register_user_with_device(User.find(params[:user_id]),params[:serial_number])
+    
+    register_user_with_serial_num(User.find(params[:user_id]),params[:serial_number])
     
     redirect_to :controller => 'reporting', :action => 'users'
   end
@@ -285,13 +286,13 @@ class UsersController < ApplicationController
     device_type
   end
   
-  def register_user_with_device(user, device)
-    # unless device = Device.find_by_serial_number(serial_number)
-    #   device = Device.new
-    #   device.serial_number = serial_number
-    #   device.device_type = get_device_type(device)
-    #   device.save!
-    # end
+  def register_user_with_serial_num(user, serial_number)
+    unless device = Device.find_by_serial_number(serial_number)
+      device = Device.new
+      device.serial_number = serial_number
+      device.device_type = get_device_type(device)
+      device.save!
+    end
 
     #device.device_type = get_device_type(device)
     device.users << user

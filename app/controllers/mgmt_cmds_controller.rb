@@ -22,7 +22,6 @@ class MgmtCmdsController < RestfulAuthController
     end
     
     # Call correct method in device model (if applicable)
-    
     if cmd.cmd_type == 'device_registration' && request[:device_id] == registration_device_id  #create device
       unless device = Device.find_by_serial_number(request[:serial_num])
         device = Device.new
@@ -46,9 +45,11 @@ class MgmtCmdsController < RestfulAuthController
       end
     end
     
-    cmd.save
+    if(cmd.originator == "device")
+      cmd.pending = false
+    end
     
-    
+    cmd.save    
     
     # 3. Create mgmt_response
     response = MgmtResponse.new
@@ -84,7 +85,7 @@ class MgmtCmdsController < RestfulAuthController
           while count <= max
             cmd[:device_id] = count
         
-            if MgmtCmd.find(:first, :conditions => "device_id = #{count} and pending = true and originator = 'device'")
+            if MgmtCmd.find(:first, :conditions => "device_id = #{count} and pending = true and originator = 'server'")
               @pending << count
             else              
               MgmtCmd.create(cmd)
@@ -101,7 +102,7 @@ class MgmtCmdsController < RestfulAuthController
           if id
             cmd[:device_id] = id
             
-            if MgmtCmd.find(:first, :conditions => "device_id = #{count} and pending = true and originator = 'device'")
+            if MgmtCmd.find(:first, :conditions => "device_id = #{count} and pending = true")
               @pending << id
             else              
               MgmtCmd.create(cmd)
@@ -111,7 +112,7 @@ class MgmtCmdsController < RestfulAuthController
       else                            # single device id
         cmd[:device_id] = request[:ids]
         
-        if MgmtCmd.find(:first, :conditions => "device_id = #{request[:ids]} and pending = true and originator = 'device'")
+        if MgmtCmd.find(:first, :conditions => "device_id = #{request[:ids]} and pending = true")
           @pending << request[:ids]
         else      
           MgmtCmd.create(cmd)
