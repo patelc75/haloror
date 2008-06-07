@@ -193,7 +193,7 @@ class User < ActiveRecord::Base
     os2 = []
     os.each do |operator|
       opt = operator.roles_user_by_role_name('operator').roles_users_option
-      if !opt.removed
+      if opt && !opt.removed
         os2 << operator
       end
     end
