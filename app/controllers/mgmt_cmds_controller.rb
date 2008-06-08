@@ -63,70 +63,33 @@ class MgmtCmdsController < RestfulAuthController
   def create_many
     @success = true
     @message = 'Command created!'
-    @pending = []
+    @pending_cmds = []
     
-    request = params[:management_cmd_device]
+    request = params[:management_cmd_device] #from the issue commands form
     
-    if !request[:cmd_type].empty? && !request[:ids].empty?
-      cmd = {}
-      cmd[:cmd_type] = request[:cmd_type]
-      cmd[:cmd_id] = params[request[:cmd_type].to_sym]
-      cmd[:timestamp_initiated] = Time.now
-      cmd[:originator] = 'server'
-    
-      if /-/.match(request[:ids])     # range of device ids
-        arr = request[:ids].split('-')
-      
-        min = arr[0].to_i
-        max = arr[1].to_i
-        
-        if min && max
-          count = min
-          while count <= max
-            cmd[:device_id] = count
-        
-            if MgmtCmd.find(:first, :conditions => "device_id = #{count} and pending = true and originator = 'server'")
-              @pending << count
-            else              
-              MgmtCmd.create(cmd)
-            end
-            
-            count+=1
-          end
-        else
-          @success = false
-          @message = 'Please provide a min and max for the range of device ids.'
-        end
-      elsif /,/.match(request[:ids])  # multiple device ids
-        request[:ids].split(',').each do |id|          
-          if id
-            cmd[:device_id] = id
-            
-            if MgmtCmd.find(:first, :conditions => "device_id = #{count} and pending = true")
-              @pending << id
-            else              
-              MgmtCmd.create(cmd)
-            end
-          end
-        end
-      else                            # single device id
-        cmd[:device_id] = request[:ids]
-        
-        if MgmtCmd.find(:first, :conditions => "device_id = #{request[:ids]} and pending = true")
-          @pending << request[:ids]
-        else      
-          MgmtCmd.create(cmd)
-        end
-      end
-    else
+    if request[:cmd_type] == nil
       @success = false
-      if !request[:cmd_type]        
-        @message = 'Please select a command type.'
+      @message = 'Please select a command type.'
+    else
+      if !request[:ids].empty?
+        cmd = {}
+        cmd[:cmd_type] = request[:cmd_type]
+        cmd[:cmd_id] = params[request[:cmd_type].to_sym]
+        cmd[:timestamp_initiated] = Time.now
+        cmd[:originator] = 'server'
+      
+        if /-/.match(request[:ids])     
+          create_cmds_for_range_of_devices(request[:ids], cmd)
+        elsif /,/.match(request[:ids]) 
+          create_cmds_for_devices_separated_by_commas(request[:ids], cmd)
+        elsif                     
+          create_cmd_for_single_id(request[:ids], cmd)
+        end
       else
-        @message = 'Please provide device ids.'
+        @success = false
+        @message = 'Please provide device ids.'        
       end
     end
-    
     render :layout => false
   end
   
@@ -134,4 +97,52 @@ class MgmtCmdsController < RestfulAuthController
     MgmtCmd.delete(params[:id])
     render :nothing => true
   end
-end
+    
+  private
+    
+  def create_cmds_for_range_of_devices(ids, cmd)
+    arr = ids.split('-')
+      
+    min = arr[0].to_i
+    max = arr[1].to_i
+      
+    if min && max
+      count = min
+      while count <= max
+        cmd[:device_id] = count
+          
+        @pending_cmds += MgmtCmd.pending_server_cmds_by_type(count, cmd[:cmd_type])
+        if @pending_cmds.length == 0
+          MgmtCmd.create(cmd)
+        end
+          
+        count+=1
+      end
+    else
+      @success = false
+      @message = 'Please provide a min and max for the range of device ids.'
+    end
+  end
+    
+  def create_cmds_for_devices_separated_by_commas(ids, cmd)
+    ids.split(',').each do |id|          
+      if id
+        cmd[:device_id] = id
+          
+        @pending_cmds += MgmtCmd.pending_server_cmds_by_type(id, cmd[:cmd_type])
+        if @pending_cmds.length == 0
+          MgmtCmd.create(cmd)
+        end
+      end
+    end
+  end
+    
+  def create_cmd_for_single_id(id, cmd)
+    cmd[:device_id] = id
+      
+    @pending_cmds = MgmtCmd.pending_server_cmds_by_type(id, cmd[:cmd_type])
+    if @pending_cmds.length == 0
+      MgmtCmd.create(cmd)
+    end
+  end
+end 
