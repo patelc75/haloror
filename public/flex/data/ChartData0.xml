@@ -40,7 +40,7 @@
 			<DataReading datetime="Thu Mar 20 08:01 -0500 2008" battery_percentage=".57"
 				heartrate="88" hr_min="87" hr_max="90"
 				breathing="43"
-				activity="5000" 
+				activity="" 
 				skin_temp="98.6"
 				steps="9"
 				adl="Sitting"/>
@@ -61,7 +61,6 @@
 			<DataReading datetime="Thu Mar 20 08:04 -0500 2008" battery_percentage=".56"
 				heartrate="92" hr_min="91" hr_max="93"
 				breathing="46"
-				activity="5000" 
 				skin_temp="99.0"
 				steps="15"
 				adl="Sitting"/>
@@ -75,21 +74,18 @@
 			<DataReading datetime="Thu Mar 20 08:06 -0500 2008" battery_percentage=".54"
 				heartrate="89" hr_min="88" hr_max="90"
 				breathing="44"
-				activity="5000" 
 				skin_temp="98.7"
 				steps="10"
 				adl="Standing"/>
 			<DataReading datetime="Thu Mar 20 08:07 -0500 2008" battery_percentage=".53"
 				heartrate="89" hr_min="87" hr_max="90"
 				breathing="44"
-				activity="25000" 
 				skin_temp="98.7"
 				steps="10"
 				adl="Standing"/>
 			<DataReading datetime="Thu Mar 20 08:08 -0500 2008" battery_percentage=".52"
 				heartrate="89" hr_min="87" hr_max="90"
 				breathing="44"
-				activity="5000" 
 				skin_temp="98.7"
 				steps="10"
 				adl="Running"/>

@@ -1,26 +1,46 @@
 function getConfig() {
     var config = new Object;
     
-    config.Version = "1.4.5";
+    config.Version = "1.5";
 	
     config.Debug = true;
 	
-	// is current_user an admin?
-	config.Admin = true;
+	config.Admin = true; // is current_user an admin?
 
-    config.ChartFile = -1;
+    config.ChartFile = -1; //change this value to 0 if you want to run file-based tests
     
     config.TimerInterval = 15;
 	config.Timeout = 60;
+	
+	config.heartRateAxisMin = 0;
+	config.heartRateAxisMax = 150;
+	config.heartRateColor = "#FF0505";
+    config.heartRateVarColor = "#F3C7C7";
     
+	config.skinTempAxisMin = 90;
+	config.skinTempAxisMax = 110;
+	config.skinTempColor = "#FDD705";
+	
+	config.breathingAxisMin = 0;
+	config.breathingAxisMax = 50;
+	config.breathingColor = "#EF04FE";
+    
+    config.stepsColor = "#0491FE";
+    
+    config.activityColor = "#FE8504";
+    
+    /* set the URL based on the file test mode */
     if (config.ChartFile == -1) {
     
-    	if (window.location.hostname == "localhost")
+        var hostName;
+        
+    	if (window.location.hostname == "localhost"){
             hostName = "localhost:3000";
-        else
+        }else{
             hostName = window.location.hostname;
-         
-         /* Get the URL from the current location: */
+        }
+
+    	/* Get the URL from the current location: */
     	config.dataServiceURL = "http://" + hostName + "/flex/chart";
         
          /* NOTE:
@@ -39,13 +59,15 @@ function getConfig() {
     }else{
     	/* use a static file for testing... */
     	
+    	//config.dataServiceURL = "data/results";
         config.dataServiceURL = "data/ChartData";
         //config.dataServiceURL = "data/ChartData_CrossUTCDate";
     }
     
     if (config.Debug == true && config.Admin == true){
-    	alert(config.dataServiceURL);
+    	//alert(config.dataServiceURL);
     }
     
-    return config;             
+    return config;
+                
 }

@@ -27,7 +27,7 @@
 			<!-- This first node shows that attributes or child nodes can both be handled, as long
 				as the child nodes are singular! Attributes save a LOT of bandwidth, however... -->
 			<DataReading datetime="Thu Mar 20 08:10 -0500 2008" battery_percentage=".57">
-				<heartrate>99</heartrate>
+				<heartrate>0</heartrate>
 				<hr_min>88</hr_min>
 				<hr_max>90</hr_max>
 				<breathing>44</breathing>
