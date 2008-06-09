@@ -167,7 +167,16 @@ class User < ActiveRecord::Base
     end
     return alert_option
   end
-  
+  def alert_option_by_type_operator(operator, type) 
+    alert_option = nil
+    roles_user = operator.roles_user_by_role_name('operator')
+    alert_type = AlertType.find(:first, :conditions => "alert_type='#{type.class.to_s}'")
+    
+    if(alert_type)
+      alert_option = AlertOption.find(:first, :conditions => "alert_type_id=#{alert_type.id} and roles_user_id=#{roles_user.id}")
+    end
+    return alert_option
+  end
   def caregivers_sorted_by_position
     cgs = {}
     caregivers.each do |caregiver|
