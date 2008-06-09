@@ -63,7 +63,7 @@ class CriticalMailer < ActionMailer::ARMailer
 
   def fall_notification(fall)
     setup_email(fall.user, fall)
-    operators = fall.user.operators
+    operators = User.operators
     if operators
       operators.each do |operator|
         @recipients << operator.email
@@ -84,7 +84,7 @@ class CriticalMailer < ActionMailer::ARMailer
   def panic_notification(panic)
     @panic = panic
     setup_email(panic.user, panic)
-    operators = panic.user.operators
+    operators = User.operators
     if operators
       operators.each do |operator|
         @recipients << operator.email
