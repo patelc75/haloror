@@ -66,7 +66,7 @@ class CriticalMailer < ActionMailer::ARMailer
     operators = User.operators
     if operators
       operators.each do |operator|
-       recipients_setup(operator, operator.alert_option(fall))
+       recipients_setup(operator, operator.alert_option_by_type(fall))
       end
     end
     if(fall.user.profile)
@@ -87,7 +87,7 @@ class CriticalMailer < ActionMailer::ARMailer
     operators = User.operators
     if operators
       operators.each do |operator|
-        recipients_setup(operator, operator.alert_option(panic))
+        recipients_setup(operator, operator.alert_option_by_type(panic))
       end
     end
     if(panic.user.profile)
