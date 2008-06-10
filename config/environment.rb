@@ -151,3 +151,10 @@ ExceptionNotifier.email_prefix = "[APP] "
 ActiveRecord::Base.default_timezone = :utc # Store all times in the db in UTC
 require 'tzinfo/lib/tzinfo' # Use tzinfo library to convert to and from the users timezone
 ENV['TZ'] = 'UTC' # This makes Time.now return time in UTC and assumes all data in DB is this timezone
+
+GATEWAY_OFFLINE_TIMEOUT=5
+GATEWAY_OFFLINE_POLL_RATE='5m'
+DEVICE_UNAVAILABLE_TIMEOUT=5
+DEVICE_UNAVAILABLE_POLL_RATE='1m'
+EMAIL_NOTIFICATION_RATE='1m'
+MAX_ATTEMPTS_BEFORE_NOTIFICATION=1

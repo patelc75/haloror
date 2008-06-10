@@ -20,7 +20,7 @@ class AlertsTest < ActiveSupport::TestCase
     assert_equal 1, MgmtQuery.connection.select_value("select count(*) from device_latest_queries").to_i
 
     yesterday = 1.days.ago
-    1.upto(GatewayOfflineAlert::MAX_ATTEMPTS_BEFORE_NOTIFICATION - 1) do
+    1.upto(MAX_ATTEMPTS_BEFORE_NOTIFICATION - 1) do
       create_and_test_mgmt_query(device, yesterday, 0)
     end
     assert_equal yesterday.to_s, Time.parse(MgmtQuery.connection.select_value("select updated_at from device_latest_queries")).to_s

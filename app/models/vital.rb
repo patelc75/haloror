@@ -175,7 +175,7 @@ class Vital < ActiveRecord::Base
     ## come back Online.
     conds = []
     conds << "reconnected_at is null"
-    conds << "device_id in (select v.id from latest_vitals v where v.updated_at >= now() - interval '#{MgmtQuery::MINUTES_INTERVAL} minutes')"
+    conds << "device_id in (select v.id from latest_vitals v where v.updated_at >= now() - interval '#{DEVICE_UNAVAILABLE_TIMEOUT} minutes')"
     conds << "device_id in (select d.id from devices d where d.device_type = '#{DEVICE_CHEST_STRAP_TYPE}')"
     conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"
     
@@ -194,7 +194,7 @@ class Vital < ActiveRecord::Base
     # AND 
     # b) the chest strap is “fastened”
     conds = []
-    conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{MgmtQuery::MINUTES_INTERVAL} minutes')"
+    conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{DEVICE_UNAVAILABLE_TIMEOUT} minutes')"
     conds << "id in (select d.id from devices d where d.device_type = '#{DEVICE_CHEST_STRAP_TYPE}')"
     conds << "id in (select status.id from device_strap_status status where is_fastened > 0)"
 

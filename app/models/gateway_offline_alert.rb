@@ -4,7 +4,6 @@
 # quickly detect and then process in parallel.
 
 class GatewayOfflineAlert < ActiveRecord::Base
-  MAX_ATTEMPTS_BEFORE_NOTIFICATION = 5
   include Priority
   belongs_to :device
 
