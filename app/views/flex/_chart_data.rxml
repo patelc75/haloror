@@ -52,7 +52,7 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
       xml.Events do
         if user[:events].length > 0
           user[:events].each do |event|
-            xml.event(:datetime => format_datetime(event.timestamp, user), :description => event.string(user), :link => "http://#{request.host}/events/#{event.id}")
+            xml.Event(:datetime => format_datetime(event.timestamp, user), :description => event.string(user), :link => "http://#{request.host}/events/#{event.id}")
           end
         end
       end
