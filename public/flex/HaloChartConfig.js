@@ -1,7 +1,7 @@
 function getConfig() {
     var config = new Object;
     
-    config.Version = "1.5";
+    config.Version = "1.5.1";
 	
     config.Debug = true;
 	
@@ -11,6 +11,7 @@ function getConfig() {
     
     config.TimerInterval = 15;
 	config.Timeout = 60;
+	config.MinutesLive = 10; //minutes
 	
 	config.heartRateAxisMin = 0;
 	config.heartRateAxisMax = 150;
@@ -51,7 +52,8 @@ function getConfig() {
     	 */
     	 
         if(config.dataServiceURL == "http:///flex/chart"){
-	    	config.dataServiceURL = "http://www.myhalomonitor.com/flex/chart";
+	    	config.dataServiceURL = "http://sdev.myhalomonitor.com/flex/chart";
+	    	//config.dataServiceURL = "http://www.myhalomonitor.com/flex/chart";
 	        //config.dataServiceURL = "http://idev.myhalomonitor.com/flex/chart";
 	        //config.dataServiceURL = "http://sdev.halomonitor.com/flex/chart";
 	    }  
