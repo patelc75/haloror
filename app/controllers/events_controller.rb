@@ -82,7 +82,7 @@ class EventsController < ApplicationController
     events_per_page = 25
     conditions = "user_id = #{user.id}"
     total = Event.count(:conditions => conditions)
-    @events = Event.paginate :page => params[:page], :conditions => conditions, :per_page => events_per_page
+    @events = Event.paginate :page => params[:page], :order => "timestamp DESC", :conditions => conditions, :per_page => events_per_page
     render :layout => 'application'
   end
 end
