@@ -78,7 +78,11 @@ class EventsController < ApplicationController
   end
   
   def user
-    @events = User.find(params[:id]).events
+    user = User.find(params[:id])
+    events_per_page = 25
+    conditions = "user_id = #{user.id}"
+    total = Event.count(:conditions => conditions)
+    @events = Event.paginate :page => params[:page], :conditions => conditions, :per_page => events_per_page
     render :layout => 'application'
   end
 end

@@ -16,7 +16,7 @@
 			Event Details
 		</div>
 	</div>
-	<% @events.sort_by{|event| event[:timestamp]}.reverse.each do |event| %>
+	<% @events.each do |event| %>
 		<div class="row">
 			<div class="col-75">
 				<%=event[:user_id]%>
@@ -38,4 +38,5 @@
 			</div>
 		</div>
 	<% end %>
+	<%= will_paginate @events %>
 </div>
