@@ -98,6 +98,7 @@ else
 end
 
 require 'rubygems'
+require 'will_paginate'
 require 'action_mailer/ar_sendmail'
 
 class ActionMailer::ARMailer < ActionMailer::Base
