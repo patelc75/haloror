@@ -1,7 +1,7 @@
 function getConfig() {
     var config = new Object;
     
-    config.Version = "1.5.1";
+    config.Version = "1.5.2";
 	
     config.Debug = true;
 	
