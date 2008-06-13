@@ -13,6 +13,7 @@ class User < ActiveRecord::Base
   has_one  :profile
   has_many :steps
   has_many :vitals
+  has_many :halo_debug_msgs
   #belongs_to :role
   #has_one :roles_user
   #has_one :roles_users_option

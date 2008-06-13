@@ -1,5 +1,5 @@
 class MgmtCmd < ActiveRecord::Base
-  has_one :mgmt_response
+  belongs_to :mgmt_response
   has_one :mgmt_ack
   has_one :mgmt_query
   

@@ -53,7 +53,7 @@ class MgmtCmdsController < RestfulAuthController
     
     # 3. Create mgmt_response
     response = MgmtResponse.new
-    response.mgmt_cmd_id = cmd.id
+    response.mgmt_cmds << cmd
     response.timestamp_server = Time.now
     response.save
     
