@@ -61,18 +61,22 @@
 				<span class="user">
 
 				</span>				
-				<span class="divider">|</span> 
+				<span class="divider">|</span>
 				<%= render :partial => '/layouts/links' %>
 			<% end %>
 			</div>
 			<img src="/images/halo-logo-2.gif" alt="Halo Research" id="logo-2" />
 			<img src="/images/header-people.gif" alt="People" id="people" />
+			
+				
 		</div>
 	</div>
-
-    <div class="container">
+   <div class="container">
         <div align="center" id="loading" style="display:none;height:0;width:0;overflow:hidden">
 			Loading... This will take a few seconds
+		</div>
+		<div align="center" id="inProgress" style="display:none">
+				<img src="/images/processing.gif"/>
 		</div>
 		
         <%= yield %>

@@ -1,5 +1,24 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
+Ajax.Responders.register({
+  onCreate: function() {
+    Ajax.activeRequestCount++;
+		if(Ajax.activeRequestCount > 0){
+		  	if($('inProgress')){
+				  $('inProgress').show();
+			  }
+		}
+  },
+  onComplete: function() {
+    Ajax.activeRequestCount--;
+		if(Ajax.activeRequestCount <= 0){
+		  if($('inProgress')){
+		    $('inProgress').hide();
+		  }
+		}
+  }
+});
+
 Element.addMethods({
     toggleClassName: function(element, className) {
         if (!(element = $(element))) return;
@@ -478,4 +497,8 @@ function toggle_device_info(id)
 		$('toggle_info-'+id).innerHTML = '[-]';
 		$('info-'+id).style.display = 'block'
 	}	
+	
+
+
+	
 }

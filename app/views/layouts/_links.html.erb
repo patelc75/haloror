@@ -1,9 +1,10 @@
-<%=link_to_remote_redbox('My Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%>
+
+<%=link_to_remote_redbox('My Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :frame => true,:id => current_user.profile.id, :user_id => current_user.id  }, :html => {:method => :get})%>
 <% caregiver = current_user.is_caregiver? 
 %>
 <% if current_user.is_halouser? %>
 |
-<%=link_to('My Alerts', :controller => "alerts", :action => "index", :id => current_user.roles_user_by_role_name('halouser').id)%>
+<%=link_to('My Alerts', :controller => "alerts", :action => "index", :id => current_user.id)%>
 <% if !caregiver %>
 |
 <%= link_to 'My Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %>
