@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 127) do
+ActiveRecord::Schema.define(:version => 129) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -270,6 +270,7 @@ ActiveRecord::Schema.define(:version => 127) do
     t.integer  "param6"
     t.integer  "param7"
     t.integer  "param8"
+    t.integer  "user_id"
   end
 
   create_table "latest_vitals", :force => true do |t|
@@ -388,6 +389,8 @@ ActiveRecord::Schema.define(:version => 127) do
     t.datetime "end_timestamp"
     t.integer  "steps",           :null => false
   end
+
+  add_index "steps", ["user_id", "begin_timestamp"], :name => "index_steps_on_begin_timestamp_and_user_id"
 
   create_table "strap_fasteneds", :force => true do |t|
     t.integer  "device_id"
