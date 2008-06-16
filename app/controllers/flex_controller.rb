@@ -45,7 +45,7 @@ class FlexController < ApplicationController
     averaging = @query[:num_points].to_i == 0 ? false : true
     
     # get vital data
-    if @query[:enddate] and @query[:startdate] and !last_reading_only
+    if !@query[:enddate].blank? and !@query[:startdate].blank? and !last_reading_only
       if averaging
         vital_data = average_chart_data
       else
@@ -130,7 +130,7 @@ class FlexController < ApplicationController
     @models.each do |model|
       columns[model.class_name].each do |column|
         averages, times = []
-        if params[:optimize]
+        if !params[:optimize].blank?
           averages, times = model.average_data_optimize(@query[:num_points].to_i, @query[:startdate].to_time, @query[:enddate].to_time, @query[:user_id], column, nil)
         else
           if model.class_name == "Step"
@@ -212,7 +212,7 @@ class FlexController < ApplicationController
     # map userID to user_id
     @query[:user_id] = @query[:userID]
     
-    @query[:enddate] = Time.now if @query[:enddate] == nil && @query[:startdate] != nil
+    @query[:enddate] = Time.now if @query[:enddate].blank? && !@query[:startdate].blank?
   end
   
   def initialize_chart
