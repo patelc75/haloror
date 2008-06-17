@@ -242,7 +242,7 @@ class FlexController < ApplicationController
       
       vital_heartrate_row = {:type => 'Vital', :heartrate => heart_rate, :hrv => 0}
       vital_activity_row = {:type => 'Vital', :activity => activity, :hrv => 0}
-      timestamp = format_datetime(Time.parse(result['ts']), user)
+      timestamp = Time.parse(result['ts'])
       data[timestamp] = [] unless data[timestamp]
       data[timestamp] << vital_heartrate_row 
       data[timestamp] << vital_activity_row 
@@ -256,7 +256,7 @@ class FlexController < ApplicationController
         average = 0
       end
       skin_temp_row = {:type => 'SkinTemp', :skin_temp => average, :hrv => 0}
-      timestamp = format_datetime(Time.parse(result['ts']), user)
+      timestamp = Time.parse(result['ts'])
       data[timestamp] = [] unless data[timestamp]
       data[timestamp] << skin_temp_row 
     end
@@ -269,7 +269,7 @@ class FlexController < ApplicationController
         sum_result = 0
       end
       steps_row = {:type => 'Step', :steps => sum_result, :hrv => 0}
-      timestamp = format_datetime(Time.parse(result['ts']), user)
+      timestamp = Time.parse(result['ts'])
       data[timestamp] = [] unless data[timestamp]
       data[timestamp] << steps_row
     end
@@ -282,7 +282,7 @@ class FlexController < ApplicationController
           average = 0
         end
         battery_percentage_row = {:type => 'Battery', :percentage => average, :hrv => 0}
-        timestamp = format_datetime(Time.parse(result['ts']), user)
+        timestamp = Time.parse(result['ts'])
         data[timestamp] = [] unless data[timestamp]
         data[timestamp] << battery_percentage_row 
       end
