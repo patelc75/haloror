@@ -703,3 +703,25 @@ ul.removed_caregivers li a
 {
 	font-size:3em;
 }
+
+#my_links
+{
+	position:absolute;
+	text-align:left;
+	margin-left:445px;
+	padding:5px;
+	background:#000;
+	display:none;
+}
+
+#my_links ul
+{
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+
+#my_links li
+{
+	
+}
