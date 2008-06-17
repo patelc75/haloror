@@ -1,5 +1,6 @@
 class FlexController < ApplicationController
   def chart
+    
     @query = {}
 
     # gather data from these models
@@ -43,11 +44,13 @@ class FlexController < ApplicationController
   def get_data_for_user(user, last_reading_only = true)
     user_data = user
     averaging = @query[:num_points].to_i == 0 ? false : true
-    
+    vital_data = nil
     # get vital data
     if !@query[:enddate].blank? and !@query[:startdate].blank? and !last_reading_only
-      if averaging
-        vital_data = average_chart_data
+      if averaging 
+          interval = (@query[:enddate].to_time - @query[:startdate].to_time) / @query[:num_points].to_i
+          vital_data = average_data_record(user, interval, @query[:num_points].to_i, @query[:startdate].to_time)
+         #  vital_data = average_chart_data
       else
         vital_data = discrete_chart_data
       end
@@ -130,16 +133,12 @@ class FlexController < ApplicationController
     @models.each do |model|
       columns[model.class_name].each do |column|
         averages, times = []
-        if !params[:optimize].blank?
-          averages, times = model.average_data_optimize(@query[:num_points].to_i, @query[:startdate].to_time, @query[:enddate].to_time, @query[:user_id], column, nil)
-        else
           if model.class_name == "Step"
             averages, times = model.sum_data(@query[:num_points].to_i, @query[:startdate].to_time, @query[:enddate].to_time, @query[:user_id], column, nil)
           else
             averages, times = model.average_data(@query[:num_points].to_i, @query[:startdate].to_time, @query[:enddate].to_time, @query[:user_id], column, nil)
           end
           
-        end
         i = 0
         times.each do |time|
           unless data[time]
@@ -221,4 +220,74 @@ class FlexController < ApplicationController
     @query[:enddate] = Time.now                    # enddate is now
     @query[:startdate] = @query[:enddate] - 600   # startdate is enddate - 10 minutes
   end
+  
+  def average_data_record(user, interval, num_points, start_time)
+    data = {}
+    timestamp = nil
+    select = "select * from average_data_record_vitals(#{user.id}, '#{interval} seconds', #{num_points}, '#{format_datetime(start_time, user)}')"
+    Vital.connection.select_all(select).collect do |result|
+      heart_rate = result['average_heartrate']
+      if !heart_rate.blank?
+        heart_rate = heart_rate.to_f.round(1)
+      else
+        heart_rate = 0
+      end
+      
+      activity = result['average_activity']
+      if !activity.blank?
+        activity = activity.to_f.round(1)
+      else
+        activity = 0
+      end
+      
+      vital_heartrate_row = {:type => 'Vital', :heartrate => heart_rate, :hrv => 0}
+      vital_activity_row = {:type => 'Vital', :activity => activity, :hrv => 0}
+      timestamp = format_datetime(Time.parse(result['ts']), user)
+      data[timestamp] = [] unless data[timestamp]
+      data[timestamp] << vital_heartrate_row 
+      data[timestamp] << vital_activity_row 
+    end
+    select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{format_datetime(start_time, user)}', 'skin_temps', 'skin_temp')"
+    SkinTemp.connection.select_all(select).collect do |result|
+      average = result['skin_temp']
+      if !average.blank?
+        average = average.to_f.round(1)
+      else
+        average = 0
+      end
+      skin_temp_row = {:type => 'SkinTemp', :skin_temp => average, :hrv => 0}
+      timestamp = format_datetime(Time.parse(result['ts']), user)
+      data[timestamp] = [] unless data[timestamp]
+      data[timestamp] << skin_temp_row 
+    end
+    select = "select * from sum_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{format_datetime(start_time, user)}', 'steps', 'steps')"
+    Step.connection.select_all(select).collect do |result|
+      sum_result = result['sum_result']
+      if !sum_result.blank?
+        sum_result = sum_result.to_f.round(1)
+      else
+        sum_result = 0
+      end
+      steps_row = {:type => 'Step', :steps => sum_result, :hrv => 0}
+      timestamp = format_datetime(Time.parse(result['ts']), user)
+      data[timestamp] = [] unless data[timestamp]
+      data[timestamp] << steps_row
+    end
+      select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{format_datetime(start_time, user)}', 'batteries', 'percentage')"
+      Battery.connection.select_all(select).collect do |result|
+        average = result['skin_temp']
+        if !average.blank?
+          average = average.to_f.round(1)
+        else
+          average = 0
+        end
+        battery_percentage_row = {:type => 'Battery', :percentage => average, :hrv => 0}
+        timestamp = format_datetime(Time.parse(result['ts']), user)
+        data[timestamp] = [] unless data[timestamp]
+        data[timestamp] << battery_percentage_row 
+      end
+    return data
+  end
+  
+  
 end
