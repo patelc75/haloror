@@ -11,7 +11,8 @@ class Event < ActiveRecord::Base
   def string(user)
     strings = {'Fall' => 'Fell'}
     
-    "#{user.profile.first_name} #{strings[self.event_type]}"
+    # "#{user.profile.first_name} #{strings[self.event_type]}"
+    "#{user.profile.first_name}: #{self.event_type}"
   end
   
   def accepted?
