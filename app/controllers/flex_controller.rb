@@ -194,7 +194,7 @@ class FlexController < ApplicationController
     event_id_array = Event.connection.select_all("select max(events.id) as id from events inner join alert_types on events.event_type = alert_types.alert_type where  events.user_id = #{user.id} AND alert_types.id in (select alert_type_id from alert_groups_alert_types where alert_group_id = (select alert_groups.id from alert_groups where group_type = '#{kind}'))")
     if event_id_array.size > 0
       id_hash = event_id_array[0] 
-      event_id = id_hash[:id]
+      event_id = id_hash["id"]
       return Event.find(event_id).alert_type.alert_type
     end
         # 
