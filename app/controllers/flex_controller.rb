@@ -192,7 +192,7 @@ class FlexController < ApplicationController
   def get_status(kind, user)
     event = nil
     event_id_array = Event.connection.select_all("select max(events.id) from events inner join alert_types on events.event_type = alert_types.alert_type where  events.user_id = #{user.id} AND alert_types.id in (select alert_type_id from alert_groups_alert_types where alert_group_id = (select alert_groups.id from alert_groups where group_type = '#{kind}'))")
-    return Event.find(evnet_id_array[0]).alert_type.alert_type if event_id_array.size > 0
+    return Event.find(event_id_array[0]).alert_type.alert_type if event_id_array.size > 0
         # 
         # user.events.each do |event|
         #   if event.alert_type and event.alert_type.alert_group[:group_type] == kind
