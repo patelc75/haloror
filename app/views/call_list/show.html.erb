@@ -79,7 +79,7 @@
 		
 	</div>
 	<div style="float:left;margin-right:10px;margin-top:15px;margin-left:15px;font-weight:bold" >
-	<%= link_to '<< Back To Chart', :controller => 'chart', :id => current_user.id %>
+	<%= link_to '<< Back To Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %>
 	</div>
 	
 	<%=link_to_remote_redbox(image_tag('add-caregiver.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), :url => {:controller => 'users' , :action => 'new_caregiver', :user_id => params[:id]})%>

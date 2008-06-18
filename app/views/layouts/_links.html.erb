@@ -19,7 +19,7 @@
 		<% if caregiver %>
 			<li><%= link_to 'Caregiver Table', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
 		<% end %>
-		
+		  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
 		<% if current_user.is_administrator? %>
 			<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
 			<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'index' %></li>
