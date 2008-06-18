@@ -704,24 +704,10 @@ ul.removed_caregivers li a
 	font-size:3em;
 }
 
-#my_links
-{
-	position:absolute;
-	text-align:left;
-	margin-left:445px;
-	padding:5px;
-	background:#000;
-	display:none;
-}
-
-#my_links ul
-{
-	list-style:none;
-	margin:0;
-	padding:0;
-}
-
-#my_links li
-{
-	
-}
+#my_links {padding: 0; margin: 0; float:right; }
+#my_links li {list-style-type: none;
+  
+  position: relative; margin: 0; padding: 0;}
+#my_links ul {display: none;background:black;padding:5px;text-align:left;}
+#my_links li:hover > ul {display: block; position: absolute; top: -1px; left: 100%;}
+#my_links li a {display: block;}

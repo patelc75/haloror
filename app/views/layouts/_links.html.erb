@@ -1,30 +1,31 @@
 <% caregiver = current_user.is_caregiver? %>
 
-<a onmouseover="$('my_links').style.display = 'block'" onmouseout="$('my_links').style.display = 'none'">My Links</a>
+<ul id="my_links">
+	<li>
+		My Links&nbsp;
+		<ul>
+			<li><%=link_to_remote_redbox('My&nbsp;Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%></li>
 
-<div id="my_links" onmouseover="$('my_links').style.display = 'block'" onmouseout="$('my_links').style.display = 'none'">
-	<ul>
-		<li><%=link_to_remote_redbox('My Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%></li>
-		
-		<% if current_user.is_halouser? %>
-			<li><%=link_to('My Alerts', :controller => "alerts", :action => "index", :id => current_user.roles_user_by_role_name('halouser').id)%></li>
+			<% if current_user.is_halouser? %>
+				<li><%=link_to('My Alerts', :controller => "alerts", :action => "index", :id => current_user.roles_user_by_role_name('halouser').id)%></li>
 
-			<% if !caregiver %>
-				<li><%= link_to 'My Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
+				<% if !caregiver %>
+					<li><%= link_to 'My Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
+				<% end %>
+
+				<li><%= link_to 'My Events', :controller => 'events', :action => 'user', :id => current_user.id %></li>
 			<% end %>
-			
-			<li><%= link_to 'My Events', :controller => 'events', :action => 'user', :id => current_user.id %></li>
-		<% end %>
-		
-		<% if caregiver %>
-			<li><%= link_to 'Caregiver Table', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
-		<% end %>
-		  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
-		<% if current_user.is_administrator? %>
-			<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
-			<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'index' %></li>
-			<li><%= link_to 'Operators', :controller => 'call_center', :action => 'show' %></li>
-		<% end %>
-		<li><a href="/logout" style="font-weight:bold">Logout</a></li>
-	</ul>
-</div>
+
+			<% if caregiver %>
+				<li><%= link_to 'Caregiver Table', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
+			<% end %>
+			  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
+			<% if current_user.is_administrator? %>
+				<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
+				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'index' %></li>
+				<li><%= link_to 'Operators', :controller => 'call_center', :action => 'show' %></li>
+			<% end %>
+			<li><a href="/logout" style="font-weight:bold">Logout</a></li>
+		</ul>
+	</li>
+</ul>
