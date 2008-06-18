@@ -52,9 +52,11 @@
 
 
 <body>
-	<div id="inProgress">
-		<img src="/images/processing.gif"/>
+	<% if 'reporting' == controller.controller_name %>
+	<div align="center" id="inProgress" style="display:none">
+			<img src="/images/processing.gif"/>
 	</div>
+	<% end %>
 	<div id="response"></div>
 	<div id="header">
 		<div class="container">
@@ -69,9 +71,7 @@
 			<% end %>
 			</div>
 			<img src="/images/halo-logo-2.gif" alt="Halo Research" id="logo-2" />
-			<img src="/images/header-people.gif" alt="People" id="people" />
-			
-				
+			<img src="/images/header-people.gif" alt="People" id="people" />			
 		</div>		
 	</div>
    <div class="container">
