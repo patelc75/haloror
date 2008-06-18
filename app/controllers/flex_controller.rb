@@ -195,9 +195,11 @@ class FlexController < ApplicationController
     if event_id_array.size > 0
       id_hash = event_id_array[0] 
       event_id = id_hash["id"]
-      event = Event.find(event_id)
-      if event && event.alert_type
-        return event.alert_type.alert_type
+      if !event_id.blank?
+        event = Event.find(event_id)
+        if event && event.alert_type
+          return event.alert_type.alert_type
+        end
       end
     end
         # 
