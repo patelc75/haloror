@@ -1,4 +1,4 @@
-<% if charge = device.battery_charge_completes.first %>
+<% if charge = BatteryChargeComplete.find(:first, :conditions => "device_id = #{device.id}") %>
 	at (<%=charge.timestamp.to_s(:short)%>); <%=charge.percentage%>%, <%=charge.time_remaining%> min 
 <% else %>
 	(no recent charges)
