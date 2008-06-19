@@ -1,4 +1,4 @@
-<% if battery = Battery.find(:first, :conditions => "device_id = #{device.id}") %>
+<% if battery = Battery.find(:first, :conditions => "device_id = #{device.id}", :order => "timestamp desc") %>
 	<a href="/batteries/device/<%=device.id%>"><%=battery.percentage%>%, <%=battery.time_remaining%> min (<%=battery.timestamp.to_s(:short)%>)</a>
 <% else %>
 	(no battery readings)
