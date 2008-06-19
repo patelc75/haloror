@@ -252,8 +252,22 @@ class FlexController < ApplicationController
         activity = 0
       end
       
-      vital_heartrate_row = {:type => 'Vital', :heartrate => heart_rate, :hrv => 0}
-      vital_activity_row = {:type => 'Vital', :activity => activity, :hrv => 0}
+      hrv = result['average_hrv']
+      if !hrv.blank?
+        hrv = hrv.to_f.round(1)
+      else
+        hrv = 0
+      end
+      
+      orientation = result['average_orientation']
+      if !orientation.blank?
+        orientation = orientation.to_f.round(1)
+      else
+        orientation = 0
+      end
+      
+      vital_heartrate_row = {:type => 'Vital', :heartrate => heart_rate, :hrv => hrv}
+      vital_activity_row = {:type => 'Vital', :activity => activity, :orientation => orientation}
       timestamp = Time.parse(result['ts'])
       data[timestamp] = [] unless data[timestamp]
       data[timestamp] << vital_heartrate_row 
@@ -267,7 +281,7 @@ class FlexController < ApplicationController
       else
         average = 0
       end
-      skin_temp_row = {:type => 'SkinTemp', :skin_temp => average, :hrv => 0}
+      skin_temp_row = {:type => 'SkinTemp', :skin_temp => average}
       timestamp = Time.parse(result['ts'])
       data[timestamp] = [] unless data[timestamp]
       data[timestamp] << skin_temp_row 
@@ -280,7 +294,7 @@ class FlexController < ApplicationController
       else
         sum_result = 0
       end
-      steps_row = {:type => 'Step', :steps => sum_result, :hrv => 0}
+      steps_row = {:type => 'Step', :steps => sum_result}
       timestamp = Time.parse(result['ts'])
       data[timestamp] = [] unless data[timestamp]
       data[timestamp] << steps_row
@@ -293,7 +307,7 @@ class FlexController < ApplicationController
         else
           average = 0
         end
-        battery_percentage_row = {:type => 'Battery', :percentage => average, :hrv => 0}
+        battery_percentage_row = {:type => 'Battery', :percentage => average}
         timestamp = Time.parse(result['ts'])
         data[timestamp] = [] unless data[timestamp]
         data[timestamp] << battery_percentage_row 
