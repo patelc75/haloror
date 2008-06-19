@@ -119,7 +119,7 @@ class CriticalMailer < ActionMailer::ARMailer
     user.caregivers.each do |caregiver|
       recipients_setup(caregiver, user.alert_option_by_type(caregiver, alert))  
     end  
-    @from        = "no-reply@myhalomonitor.com"
+    @from        = "no-reply@halomonitoring.com"
     @subject     = "[HALO] "
     @sent_on     = Time.now
     @body[:user] = user  #sends params to body
