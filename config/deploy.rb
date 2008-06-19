@@ -25,7 +25,7 @@ namespace :deploy do
   desc "Restart litespeed web server" 
   task :restart, :roles => :app do
     sudo "#{lsws_cmd} restart"
-    sudo "cd #{deploy_to}; export RAILS_ENV=production; ./config/jobs/control.rb task restart"
+    sudo "cd #{deploy_to}; export RAILS_ENV=production; ./config/jobs/control.rb task restart &"
   end
   
   desc "Stop litespeed server" 
@@ -47,7 +47,7 @@ namespace :deploy do
 
   desc "Start script/runner which is used to run background jobs"
   task :start_background_jobs, :roles => :app do
-    sudo "cd #{deploy_to}; export RAILS_ENV=production; ./config/jobs/control.rb task start"
+    sudo "cd #{deploy_to}; export RAILS_ENV=production; ./config/jobs/control.rb task start &"
   end
 
   desc "copy database.yml file"

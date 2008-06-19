@@ -21,7 +21,7 @@ class MgmtCmdsController < RestfulAuthController
       cmd.originator = params[:originator]
     end
     
-    # Call correct method in device model (if applicable)
+    # for device_id, it is searched in the device table by serial num
     if cmd.cmd_type == 'device_registration' && request[:device_id] == registration_device_id  #create device
       unless device = Device.find_by_serial_number(request[:serial_num])
         device = Device.new
@@ -36,11 +36,11 @@ class MgmtCmdsController < RestfulAuthController
     if request[:device_id] && request[:device_id] != registration_device_id
       if device = Device.find(request[:device_id])
         if cmd.cmd_type == 'user_registration'
-          #user_id = device.register_user 
-          user_id = device.users.first.id
-          cmd.user_id = user_id
-        else
-          cmd.user_id = device.users.first.id
+          if(device.users.first)
+            cmd.user_id = device.users.first.id
+          else
+            cmd.user_id = nil
+          end
         end
       end
     end
