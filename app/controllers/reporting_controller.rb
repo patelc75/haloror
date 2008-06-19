@@ -15,7 +15,7 @@ class ReportingController < ApplicationController
   end
   
   def device_hidden
-    @device = Device.find(params[:device_id], :include => :users)
+    @device = Device.find(params[:device_id])
     render :partial => 'device_hidden', :layout => false
   end
   def sort_user_table
