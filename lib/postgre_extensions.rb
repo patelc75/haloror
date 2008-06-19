@@ -16,7 +16,8 @@ class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
       :time        => { :name => "time" },
       :date        => { :name => "date" },
       :binary      => { :name => "bytea" },
-      :boolean     => { :name => "boolean" }
+      :boolean     => { :name => "boolean" },
+      :real        => { :name => "real" }
     }
   end
 end
