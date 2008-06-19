@@ -37,20 +37,43 @@ class UsersController < ApplicationController
 
   def create
     @user = User.new(params[:user])
-    @gateway = @user.devices.build(params[:gateway])
-    @strap = @user.devices.build(params[:strap])
+    @gateway = nil
+    @strap = nil
+    #check if gateway exists
+    if !params[:gateway][:serial_number].blank?
+      @gateway = Device.find_by_serial_number(params[:gateway][:serial_number])
+      if @gateway
+        @user.devices << @gateway
+      else
+        @gateway = @user.devices.build(params[:gateway])
+      end
+    end
     
+    #check is strap exists and if it is assigned to a user or not
+    #could have been registered without assigning a user
+    if !params[:strap][:serial_number].blank?
+      @strap = Device.find_by_serial_number(params[:strap][:serial_number])
+      if @strap && !@strap.users.blank?
+        flash[:warning] = "Chest Strap with Serial Number #{params[:strap][:serial_number]} is already assigned to a user."
+        throw Exception.new
+      end
+      if @strap
+        @user.devices << @strap
+      else
+          @strap = @user.devices.build(params[:strap])          
+      end
+    end
     User.transaction do
-      @user.save!
+        @user.save!
         
       # create profile
-      Profile.create(:user_id => @user.id)
+        Profile.create(:user_id => @user.id)
       
       # create halouser role
-      @user.is_halouser
+        @user.is_halouser
       
-      @gateway.set_type
-      @strap.set_type
+        @gateway.set_type
+        @strap.set_type
       
       # register with strap/gateway
       #register_user_with_device(@user,@strap)
@@ -61,7 +84,7 @@ class UsersController < ApplicationController
     #redirect_back_or_default('/')
     #flash[:notice] = "Thanks for signing up!"
     #render :nothing => true
-  rescue ActiveRecord::RecordInvalid
+  rescue
     render :action => 'new'
   end
   

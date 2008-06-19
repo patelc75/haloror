@@ -5,6 +5,9 @@
     <%= error_messages_for :user %>
     <%= error_messages_for :gateway %>
     <%= error_messages_for :strap %>
+		<div id="errors">
+			<%= flash[:warning]%>
+		<div>
 
     <div style="width:200px;margin-left:auto;margin-right:auto">
       <% form_tag :action => 'create' do -%>
