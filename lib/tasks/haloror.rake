@@ -240,7 +240,7 @@ namespace :halo do
           random_skin_temp = rand(5)+96
           random_heartrate = rand(7)+70
           random_percentage = rand(100)
-          random_steps = rand(20)
+          random_steps = (rand() + rand(6) + 95.6).round(1)
           #new
           random_activity = rand(25000)+10000
         end           
