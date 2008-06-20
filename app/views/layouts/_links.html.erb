@@ -34,7 +34,11 @@ function header_link_to(){
 		  <% if current_user.is_administrator? %>
 		window.location = "<%= url_for(:controller => 'call_center', :action => 'show', :my_links => 'Operators') %>";
 		  <% end %>
-	}
+	}else if("Info" == selection){
+		  <% if current_user.is_administrator? %>
+		window.location = "<%= url_for(:controller => 'util', :action => 'info', :my_links => 'Info') %>";
+			<% end %>
+			}
 	return false;
 }
 </script>
@@ -57,6 +61,8 @@ function header_link_to(){
 	<option name="Management" value="Management" <%= params[:my_links] == 'Management' ? 'selected' : ''%>>Management</option>
 	<option name="Reporting" value="Reporting" <%= params[:my_links] == 'Reporting' ? 'selected' : ''%>>Reporting</option>
 	<option name="Operators" value="Operators" <%= params[:my_links] == 'Operators' ? 'selected' : ''%>>Operators</option>
+	<option name="Info" value="Info" <%= params[:my_links] == 'Info' ? 'selected' : ''%>>Info</option>
+	
 			<% end %>
 </select>
 			|
