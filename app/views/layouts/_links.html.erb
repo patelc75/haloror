@@ -3,22 +3,37 @@
 
 function header_link_to(){
 	var selection = $F("header_links")
+
 	if("My Alerts" == selection){
+			<% if current_user.is_halouser? %>
 		window.location = "<%= url_for(:controller => 'alerts', :action => 'index', :my_links => 'My Alerts', :id => current_user.roles_user_by_role_name('halouser').id) %>";
+		<% end %>
 	}else if("My Caregivers" == selection){
+			<% if current_user.is_halouser? && !caregiver %>
 		window.location = "<%= url_for(:controller => 'call_list', :action => 'show', :my_links => 'My Caregivers', :id => current_user.id) %>";
+			<% end %>
 	}else if("My Events" == selection){
+			<% if current_user.is_halouser? %>
 		window.location = "<%= url_for(:controller => 'events', :action => 'user', :my_links => 'My Events', :id => current_user.id) %>";
+			<% end %>
 	}else if("Caregivers" == selection){
+		  <% if caregiver %>
 		window.location = "<%= url_for(:controller => 'call_list', :action => 'show', :my_links => 'Caregivers', :id => current_user.id) %>";
+		  <% end %>
 	}else if("Chart" == selection){
 		window.location = "<%= url_for(:controller => 'chart', :action => 'flex', :my_links => 'Chart', :id => current_user.id) %>";
 	}else if("Management" == selection){
+		  <% if current_user.is_administrator? %>
 		window.location = "<%= url_for(:controller => 'management', :action => 'index', :my_links => 'Management') %>";
+		  <% end %>
 	}else if("Reporting" == selection){
+		  <% if current_user.is_administrator? %>
 		window.location = "<%= url_for(:controller => 'reporting', :action => 'index', :my_links => 'Reporting') %>";
+		  <% end %>
 	}else if("Operators" == selection){
+		  <% if current_user.is_administrator? %>
 		window.location = "<%= url_for(:controller => 'call_center', :action => 'index', :my_links => 'Operators') %>";
+		  <% end %>
 	}
 	return false;
 }
