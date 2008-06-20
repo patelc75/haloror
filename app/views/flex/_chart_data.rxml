@@ -10,6 +10,7 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
         xml.activity(user[:last_reading][:activity])
         xml.skin_temp(user[:last_reading][:skin_temp])
         xml.steps(user[:last_reading][:steps])
+        xml.adl(user[:last_reading][:adl])
         xml.battery_outlet_status(user[:status][:battery_outlet])
         xml.battery_level_status(user[:status][:battery_level])
         xml.battery_percentage(user[:battery][:percentage].to_f/100)
@@ -20,29 +21,33 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
           user[:data_readings].sort_by { |d| d}.each do |timestamp, group|
             xml.DataReading(:datetime => format_datetime(timestamp, user)) do
               group.each do |reading|
-                  if reading.type.to_s == 'Vital' || reading[:type] == 'Vital'
-                    if reading[:heartrate] and reading[:hrv]
-                      xml.heartrate(reading[:heartrate])
-                      xml.hr_min(reading[:heartrate]-reading[:hrv]/2)
-                      xml.hr_max(reading[:heartrate]+reading[:hrv]/2)
-                    end
+                if reading.type.to_s == 'Vital' || reading[:type] == 'Vital'  #averaged data uses hashes and and discrete data uses objects 
+                  if reading[:heartrate] and reading[:hrv]
+                    xml.heartrate(reading[:heartrate])
+                    xml.hr_min(reading[:heartrate]-reading[:hrv]/2)
+                    xml.hr_max(reading[:heartrate]+reading[:hrv]/2)
+                  end
 
-                    if reading[:activity]
-                      xml.activity(reading[:activity])
-                    end
-                  elsif reading.type.to_s == 'SkinTemp' || reading[:type] == 'SkinTemp'
-                    if reading[:skin_temp]
-                      xml.skin_temp(reading[:skin_temp])
-                    end
-                  elsif reading.type.to_s == 'Step' || reading[:type] == 'Step'
-                    if reading[:steps]
-                      xml.steps(reading[:steps])
-                    end
-                  elsif reading.type.to_s == 'Battery' || reading[:type] == 'Battery'
-                    if reading[:percentage]
-                      xml.battery(".#{reading[:percentage]}")
+                  if reading[:activity]
+                    xml.activity(reading[:activity])
+                    if reading[:orientation]
+                      #xml.orientation(reading[:orientation])
+                      xml.adl(Vital.get_adl(reading[:orientation], reading[:activity]))
                     end
                   end
+                elsif reading.type.to_s == 'SkinTemp' || reading[:type] == 'SkinTemp'
+                  if reading[:skin_temp]
+                    xml.skin_temp(reading[:skin_temp])
+                  end
+                elsif reading.type.to_s == 'Step' || reading[:type] == 'Step'
+                  if reading[:steps]
+                    xml.steps(reading[:steps])
+                  end
+                elsif reading.type.to_s == 'Battery' || reading[:type] == 'Battery'
+                  if reading[:percentage]
+                    xml.battery(".#{reading[:percentage]}")
+                  end
+                end
               end
             end
           end

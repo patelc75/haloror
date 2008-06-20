@@ -23,6 +23,20 @@ class Vital < ActiveRecord::Base
     values = [@series_data,  @categories]
   end
   
+  def self.get_adl(orientation, activity)
+    if(orientation > MIN_ADL_RESTING_ORIENTATION &&
+          orientation < MAX_ADL_RESTING_ORIENTATION &&
+          activity    < MIN_ADL_RESTING_ACTIVITY )
+      "Resting"
+    else
+      "Not Resting"
+    end
+  end
+  
+  def adl() 
+    Vital.get_adl(orientation, activity)
+  end
+  
   def self.average_data_optimize(num_points, start_time, end_time, id, column, format)
     RAILS_DEFAULT_LOGGER.info "Vital::average_data_optimize"
     series_data = Array.new(num_points, 0)  #results of averaging from database

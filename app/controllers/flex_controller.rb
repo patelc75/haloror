@@ -48,9 +48,9 @@ class FlexController < ApplicationController
     # get vital data
     if !@query[:enddate].blank? and !@query[:startdate].blank? and !last_reading_only
       if averaging 
-          interval = (@query[:enddate].to_time - @query[:startdate].to_time) / @query[:num_points].to_i
-          vital_data = average_data_record(user, interval, @query[:num_points].to_i, @query[:startdate].to_time)
-         #  vital_data = average_chart_data
+        interval = (@query[:enddate].to_time - @query[:startdate].to_time) / @query[:num_points].to_i
+        vital_data = average_data_record(user, interval, @query[:num_points].to_i, @query[:startdate].to_time)
+        #  vital_data = average_chart_data
       else
         vital_data = discrete_chart_data
       end
@@ -133,11 +133,11 @@ class FlexController < ApplicationController
     @models.each do |model|
       columns[model.class_name].each do |column|
         averages, times = []
-          if model.class_name == "Step"
-            averages, times = model.sum_data(@query[:num_points].to_i, @query[:startdate].to_time, @query[:enddate].to_time, @query[:user_id], column, nil)
-          else
-            averages, times = model.average_data(@query[:num_points].to_i, @query[:startdate].to_time, @query[:enddate].to_time, @query[:user_id], column, nil)
-          end
+        if model.class_name == "Step"
+          averages, times = model.sum_data(@query[:num_points].to_i, @query[:startdate].to_time, @query[:enddate].to_time, @query[:user_id], column, nil)
+        else
+          averages, times = model.average_data(@query[:num_points].to_i, @query[:startdate].to_time, @query[:enddate].to_time, @query[:user_id], column, nil)
+        end
           
         i = 0
         times.each do |time|
@@ -172,6 +172,7 @@ class FlexController < ApplicationController
       end
       
       reading[:activity] = vitals.activity
+      reading[:adl] = vitals.adl
     end
     
     if battery = Battery.find(:first, :conditions => "user_id = #{user.id}", :order => 'id desc')
@@ -202,13 +203,13 @@ class FlexController < ApplicationController
         end
       end
     end
-        # 
-        # user.events.each do |event|
-        #   if event.alert_type and event.alert_type.alert_group[:group_type] == kind
-        #     return event.alert_type.alert_type
-        #   end
-        # end
-        # 
+    # 
+    # user.events.each do |event|
+    #   if event.alert_type and event.alert_type.alert_group[:group_type] == kind
+    #     return event.alert_type.alert_type
+    #   end
+    # end
+    # 
     return false
   end
   
@@ -297,19 +298,19 @@ class FlexController < ApplicationController
       data[timestamp] = [] unless data[timestamp]
       data[timestamp] << steps_row
     end
-      select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{format_datetime(start_time, user)}', 'batteries', 'percentage')"
-      Battery.connection.select_all(select).collect do |result|
-        average = result['skin_temp']
-        if !average.blank?
-          average = average.to_f.round(1)
-        else
-          average = 0
-        end
-        battery_percentage_row = {:type => 'Battery', :percentage => average}
-        timestamp = Time.parse(result['ts'])
-        data[timestamp] = [] unless data[timestamp]
-        data[timestamp] << battery_percentage_row 
+    select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{format_datetime(start_time, user)}', 'batteries', 'percentage')"
+    Battery.connection.select_all(select).collect do |result|
+      average = result['skin_temp']
+      if !average.blank?
+        average = average.to_f.round(1)
+      else
+        average = 0
       end
+      battery_percentage_row = {:type => 'Battery', :percentage => average}
+      timestamp = Time.parse(result['ts'])
+      data[timestamp] = [] unless data[timestamp]
+      data[timestamp] << battery_percentage_row 
+    end
     return data
   end
   

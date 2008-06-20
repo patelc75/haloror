@@ -1,16 +1,7 @@
+# Be sure to restart your web server when you modify this file.
+
 AUTHORIZATION_MIXIN = 'object roles'
 DEFAULT_REDIRECTION_HASH = { :controller => 'sessions', :action => 'new' }
-
-# Rawk Coding
-
-class Logger
-  def format_message(severity, timestamp, progname, msg)
-    "#{msg} (pid:#{$$})\n"
-  end
-end
-
-
-# Be sure to restart your web server when you modify this file.
 
 # Uncomment below to force Rails into production mode when 
 # you don't control web/app server and can't set it the proper way
@@ -139,23 +130,26 @@ end
 
 require 'postgre_extensions'
 
-# Exception notifier coding 
-
 ExceptionNotifier.exception_recipients = %w(exceptions@halomonitoring.com)  
 # defaults to exception.notifier@default.com
-ExceptionNotifier.sender_address = %("Application Error" <app.error@myapp.com>)
+ExceptionNotifier.sender_address = %("HaloRoR Error" <	no-reply@halomonitoring.com>)
 # defaults to "[ERROR] "
-ExceptionNotifier.email_prefix = "[APP] "
+ExceptionNotifier.email_prefix = "[HaloRoR] "
 
 # Timezone Setup
-
 ActiveRecord::Base.default_timezone = :utc # Store all times in the db in UTC
 require 'tzinfo/lib/tzinfo' # Use tzinfo library to convert to and from the users timezone
 ENV['TZ'] = 'UTC' # This makes Time.now return time in UTC and assumes all data in DB is this timezone
 
+#Rufus-related constants
 GATEWAY_OFFLINE_TIMEOUT=20
 GATEWAY_OFFLINE_POLL_RATE='1m'
 DEVICE_UNAVAILABLE_TIMEOUT=5
 DEVICE_UNAVAILABLE_POLL_RATE='1m'
 EMAIL_NOTIFICATION_RATE='1m'
 MAX_ATTEMPTS_BEFORE_NOTIFICATION=1
+
+#ADL-related constants
+MIN_ADL_RESTING_ORIENTATION=75
+MAX_ADL_RESTING_ORIENTATION=105
+MIN_ADL_RESTING_ACTIVITY=1000
