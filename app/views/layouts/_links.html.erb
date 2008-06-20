@@ -1,31 +1,48 @@
 <% caregiver = current_user.is_caregiver? %>
+<script language="javascript" type="text/javascript">
 
-<ul id="my_links">
-	<li>
-		My Links&nbsp;
-		<ul>
-			<li><%=link_to_remote_redbox('My&nbsp;Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%></li>
-
-			<% if current_user.is_halouser? %>
-				<li><%=link_to('My Alerts', :controller => "alerts", :action => "index", :id => current_user.roles_user_by_role_name('halouser').id)%></li>
-
+function header_link_to(){
+	var selection = $F("header_links")
+	if("My Alerts" == selection){
+		window.location = "<%= url_for(:controller => 'alerts', :action => 'index', :my_links => 'My Alerts', :id => current_user.roles_user_by_role_name('halouser').id) %>";
+	}else if("My Caregivers" == selection){
+		window.location = "<%= url_for(:controller => 'call_list', :action => 'show', :my_links => 'My Caregivers', :id => current_user.id) %>";
+	}else if("My Events" == selection){
+		window.location = "<%= url_for(:controller => 'events', :action => 'user', :my_links => 'My Events', :id => current_user.id) %>";
+	}else if("Caregivers" == selection){
+		window.location = "<%= url_for(:controller => 'call_list', :action => 'show', :my_links => 'Caregivers', :id => current_user.id) %>";
+	}else if("Chart" == selection){
+		window.location = "<%= url_for(:controller => 'chart', :action => 'flex', :my_links => 'Chart', :id => current_user.id) %>";
+	}else if("Management" == selection){
+		window.location = "<%= url_for(:controller => 'management', :action => 'index', :my_links => 'Management') %>";
+	}else if("Reporting" == selection){
+		window.location = "<%= url_for(:controller => 'reporting', :action => 'index', :my_links => 'Reporting') %>";
+	}else if("Operators" == selection){
+		window.location = "<%= url_for(:controller => 'call_center', :action => 'index', :my_links => 'Operators') %>";
+	}
+	return false;
+}
+</script>
+   <%=link_to_remote_redbox('My&nbsp;Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%>
+   |
+<select name="my_links" id="header_links" onchange="javascript:header_link_to();">
+	<option name="My Links" value="My Links" <%= params[:my_links] == 'My Links' ? 'selected' : ''%>>My Links</option>
+  			<% if current_user.is_halouser? %>
+	<option name="My Alerts" value="My Alerts" <%= params[:my_links] == 'My Alerts' ? 'selected' : ''%>>My Alerts</option>
 				<% if !caregiver %>
-					<li><%= link_to 'My Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
+	<option name="My Caregivers" value="My Caregivers" <%= params[:my_links] == 'My Caregivers' ? 'selected' : ''%>>My Caregivers</option>
 				<% end %>
-
-				<li><%= link_to 'My Events', :controller => 'events', :action => 'user', :id => current_user.id %></li>
+  <option name="My Events" value="My Events" <%= params[:my_links] == 'My Events' ? 'selected' : ''%>>My Events</option>
 			<% end %>
-
 			<% if caregiver %>
-				<li><%= link_to 'Caregiver Table', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
+	<option name="Caregivers" value="Caregivers" <%= params[:my_links] == 'Caregivers' ? 'selected' : ''%>>Caregivers</option>
 			<% end %>
-			  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
+  <option name="Chart" value="Chart" <%= params[:my_links] == 'Chart' ? 'selected' : ''%>>Chart</option>
 			<% if current_user.is_administrator? %>
-				<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
-				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'index' %></li>
-				<li><%= link_to 'Operators', :controller => 'call_center', :action => 'show' %></li>
+	<option name="Management" value="Management" <%= params[:my_links] == 'Management' ? 'selected' : ''%>>Management</option>
+	<option name="Reporting" value="Reporting" <%= params[:my_links] == 'Reporting' ? 'selected' : ''%>>Reporting</option>
+	<option name="Operators" value="Operators" <%= params[:my_links] == 'Operators' ? 'selected' : ''%>>Operators</option>
 			<% end %>
-			<li><a href="/logout" style="font-weight:bold">Logout</a></li>
-		</ul>
-	</li>
-</ul>
+</select>
+			|
+			<a href="/logout" style="font-weight:bold">Logout</a>
