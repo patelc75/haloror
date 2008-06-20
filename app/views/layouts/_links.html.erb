@@ -32,7 +32,7 @@ function header_link_to(){
 		  <% end %>
 	}else if("Operators" == selection){
 		  <% if current_user.is_administrator? %>
-		window.location = "<%= url_for(:controller => 'call_center', :action => 'index', :my_links => 'Operators') %>";
+		window.location = "<%= url_for(:controller => 'call_center', :action => 'show', :my_links => 'Operators') %>";
 		  <% end %>
 	}
 	return false;
