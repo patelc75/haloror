@@ -1,20 +1,33 @@
 class StrapOffAlert < DeviceAlert
  set_table_name "strap_off_alerts"
+ DEVICE_CHEST_STRAP_TYPE = 'Halo Chest Strap'
   def self.job_detect_straps_off
-    select = "select id from device_strap_status where updated_at < now() - interval '#{STRAP_OFF_TIMEOUT} minutes' AND is_fastened = 0"
-    StrapOffAlert.connection.select_all(select).collect do |row|
-      RAILS_DEFAULT_LOGGER.warn("***********#{row}")
-      alert = StrapOffAlert.find(:first,
-                               :order => 'created_at desc',
-                               :conditions => ['device_id = ?', row['id']])
-      if alert
-        alert.number_attempts += 1
+
+    conds = []
+    conds << "reconnected_at is null"
+    conds << "device_id in (select d.id from devices d where d.device_type = '#{DEVICE_CHEST_STRAP_TYPE}')"
+    conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"
+    
+    alerts = StrapOffAlert.find(:all,
+      :conditions => conds.join(' and '))
+    alerts.each do |alert|
+        alert.reconnected_at = Time.now
         alert.save!
-      else
-        alert = StrapOffAlert.new(:device_id => row['id'], :created_at => Time.now)
-        alert.save!
-      end
     end
+
+    conds = []
+    conds << "id in (select ss.id from device_strap_status ss where ss.updated_at < now() - interval '#{STRAP_OFF_TIMEOUT} minutes')"
+    conds << "id in (select d.id from devices d where d.device_type = '#{DEVICE_CHEST_STRAP_TYPE}')"
+    conds << "id in (select status.id from device_strap_status status where is_fastened = 0)"
+
+    devices = Device.find(:all,
+      :conditions => conds.join(' and '))
+
+    devices.each do |device|
+     process_device_strap_off(device)
+    end
+    ActiveRecord::Base.verify_active_connections!()
+    true
   end
   
   def after_save
@@ -26,6 +39,21 @@ class StrapOffAlert < DeviceAlert
                    :timestamp => created_at || Time.now)
         CriticalMailer.deliver_strap_off_notification(self, user)
       end
+    end
+  end
+  private
+  def self.process_device_strap_off(device)
+    alert = StrapOffAlert.find(:first,
+      :order => 'created_at desc',
+      :conditions => ['reconnected_at is null and device_id = ?', device.id])
+
+    if alert
+      alert.number_attempts += 1
+      alert.save!
+    else
+      alert = StrapOffAlert.new
+      alert.device = device
+      alert.save!
     end
   end
 end

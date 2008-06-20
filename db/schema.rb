@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 133) do
+ActiveRecord::Schema.define(:version => 138) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -152,6 +152,7 @@ ActiveRecord::Schema.define(:version => 133) do
     t.datetime "reconnected_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "priority"
   end
 
   add_index "device_unavailable_alerts", ["device_id"], :name => "device_unavailable_alerts_device_id_idx"
@@ -160,6 +161,11 @@ ActiveRecord::Schema.define(:version => 133) do
   create_table "devices", :force => true do |t|
     t.string "serial_number"
     t.string "device_type"
+  end
+
+  create_table "devices_user", :force => true do |t|
+    t.integer "device_id"
+    t.integer "user_id"
   end
 
   create_table "devices_users", :id => false, :force => true do |t|
@@ -189,6 +195,7 @@ ActiveRecord::Schema.define(:version => 133) do
   end
 
   create_table "event_actions", :force => true do |t|
+    t.integer  "user_id"
     t.integer  "event_id"
     t.string   "description"
     t.datetime "created_at"
@@ -200,7 +207,6 @@ ActiveRecord::Schema.define(:version => 133) do
     t.datetime "timestamp"
     t.string   "event_type"
     t.integer  "event_id"
-    t.string   "level"
   end
 
   create_table "falls", :force => true do |t|
@@ -383,11 +389,23 @@ ActiveRecord::Schema.define(:version => 133) do
     t.integer  "steps",           :null => false
   end
 
+  add_index "steps", ["user_id", "begin_timestamp"], :name => "index_steps_on_begin_timestamp_and_user_id"
+
   create_table "strap_fasteneds", :force => true do |t|
     t.integer  "device_id"
     t.datetime "timestamp"
     t.integer  "user_id"
   end
+
+  create_table "strap_off_alerts", :force => true do |t|
+    t.integer  "device_id",                      :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "update_at"
+    t.integer  "number_attempts", :default => 1, :null => false
+    t.datetime "reconnected_at"
+  end
+
+  add_index "strap_off_alerts", ["device_id"], :name => "index_strap_off_alerts_on_device_id"
 
   create_table "strap_removeds", :force => true do |t|
     t.integer  "device_id"
