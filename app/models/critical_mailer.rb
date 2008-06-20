@@ -61,6 +61,17 @@ class CriticalMailer < ActionMailer::ARMailer
       :device_id => device.id
   end
 
+  def strap_off_notification(alert, user)
+    device = alert.device
+    setup_email(user, alert)
+    @subject    += "Strap Off for Device #{alert.device_id}"
+    self.priority = alert.priority    
+    body :alert_created_at => alert.created_at,
+      :login     => user.login,
+      :user_id   => user.id,
+      :device_id => device.id
+  end
+
   def fall_notification(fall)
     setup_email(fall.user, fall)
     operators = User.operators
@@ -114,7 +125,7 @@ class CriticalMailer < ActionMailer::ARMailer
     #     if user.email != nil and user.email != ""
     #       @recipients << ["#{user.email}"]
     #     end
-        
+    
     recipients_setup(user, user.alert_option(alert))
     user.caregivers.each do |caregiver|
       recipients_setup(caregiver, user.alert_option_by_type(caregiver, alert))  
@@ -147,7 +158,7 @@ class CriticalMailer < ActionMailer::ARMailer
           @recipients  << ["#{user.profile.phone_email}"]
         end
       end
-    end    
+    end  
   end
   
   def camelcase_to_spaced(word)

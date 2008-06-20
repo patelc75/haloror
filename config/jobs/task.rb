@@ -8,4 +8,6 @@ SCHEDULER.schedule_every(GATEWAY_OFFLINE_POLL_RATE) { MgmtQuery.job_detect_disco
 
 SCHEDULER.schedule_every(DEVICE_UNAVAILABLE_POLL_RATE) { Vital.job_detect_unavailable_devices }
 
+SCHEDULER.schedule_every(STRAP_OFF_POLL_RATE) { StrapOffAlert.job_detect_straps_off }
+
 SCHEDULER.schedule_every(EMAIL_NOTIFICATION_RATE) { Email.notify_by_priority }
