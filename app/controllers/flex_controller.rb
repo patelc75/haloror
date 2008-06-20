@@ -266,12 +266,10 @@ class FlexController < ApplicationController
         orientation = 0
       end
       
-      vital_heartrate_row = {:type => 'Vital', :heartrate => heart_rate, :hrv => hrv}
-      vital_activity_row = {:type => 'Vital', :activity => activity, :orientation => orientation}
+      vital_row = {:type => 'Vital', :heartrate => heart_rate, :hrv => hrv, :activity => activity, :orientation => orientation}
       timestamp = Time.parse(result['ts'])
       data[timestamp] = [] unless data[timestamp]
-      data[timestamp] << vital_heartrate_row 
-      data[timestamp] << vital_activity_row 
+      data[timestamp] << vital_row
     end
     select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{format_datetime(start_time, user)}', 'skin_temps', 'skin_temp')"
     SkinTemp.connection.select_all(select).collect do |result|

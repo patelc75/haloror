@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 130) do
+ActiveRecord::Schema.define(:version => 133) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -298,6 +298,7 @@ ActiveRecord::Schema.define(:version => 130) do
     t.string   "originator"
     t.boolean  "pending",             :default => true
     t.integer  "cmd_id"
+    t.integer  "mgmt_response_id"
   end
 
   create_table "mgmt_queries", :force => true do |t|
@@ -309,7 +310,6 @@ ActiveRecord::Schema.define(:version => 130) do
   end
 
   create_table "mgmt_responses", :force => true do |t|
-    t.integer  "mgmt_cmd_id"
     t.datetime "timestamp_device"
     t.datetime "timestamp_server"
   end
@@ -378,7 +378,7 @@ ActiveRecord::Schema.define(:version => 130) do
   create_table "skin_temps", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
-    t.integer  "skin_temp", :null => false
+    t.float    "skin_temp", :null => false
   end
 
   add_index "skin_temps", ["user_id", "timestamp"], :name => "index_skin_temps_on_timestamp_and_user_id"
