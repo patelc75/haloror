@@ -23,6 +23,8 @@ Panel {
    shadowDirection: right;
    dropShadowColor: #999999;
    titleStyleName: "HaloPanelTitle";
+   color:#000;
+   fontFamily:Helvetica;
 }
 
 .sidebarPanel {
@@ -34,6 +36,20 @@ Panel {
 	dropShadowEnabled:false;
 }
 
+.statusPanel{
+	headerColors: #02F530, #f3f2f6;
+	headerHeight: 15;
+}
+
+
+.StatusPanelTitle {
+   letterSpacing: 0;
+   color: #193244;
+   textAlign: left;
+   fontFamily: Verdana;
+   fontWeight: bold;
+}
+
 .HaloPanelTitle {
    letterSpacing: 0;
    color: #ffffff;
@@ -43,9 +59,25 @@ Panel {
 }
 
 .HaloButton {
-	color: #009DFF;
+	color: #2D627A;
 	fillAlphas: 1.0, 1.0;
-	fillColors: #193244, #528ACB, #528ACB, #193244;
+	fillColors: #fdfdfd, #abc9d7, #abc9d7, #a09f9f;
+	cornerRadius: 5;
+	paddingTop: 5;
+}
+
+.HaloDateButton {
+	color: #2D627A;
+	fillColors: #fdfdfd, #abc9d7, #abc9d7, #a09f9f;
+	cornerRadius: 5;
+	paddingTop: 5;
+	alpha: .5;
+}
+
+.HaloDateIcon {
+	cornerRadius: 2;
+	fillColors: #02F530, #02F560;
+	alpha: .5;
 }
 
 Label.lastStatusLabel
@@ -59,5 +91,22 @@ Label.lastStatusLabel
 	fillAlphas: 1.0, 1.0;
 	fillColors: #193244, #528ACB, #528ACB, #193244;
 	trackColors: #02F530,#02F530;
+	
+	thumbSkin: Embed(source="images/grabber.png");
+	trackSkin: Embed(source="images/slider-bg.png");
+	
+	tickColor: #f3f2f6;
 }
 
+.sidebarBig
+{
+	color:#4691b1;
+	fontSize:23;
+}
+
+.eventText
+{
+	color:#4790b3;
+	border-thickness-bottom:1;
+	text-decoration:underline;
+}

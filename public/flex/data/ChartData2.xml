@@ -103,9 +103,9 @@
 <!-- -->				
 		</DataReadings>
 		<Events>
-			<Event datetime="Thu Mar 20 10:23:01 -0500 2008"
-			description="Betty Lee Fell"
-			link="www.halomonitoring.com"/>
+			<Event datetime="Thu Mar 20 10:25:01 -0500 2008"
+			description="Betty Lee Fell Asleep"
+            link="www.halomonitoring.com/events.jsp?eventid=5"/>
 		</Events>			
 	</User>
 <!-- -->

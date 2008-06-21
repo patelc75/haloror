@@ -95,19 +95,22 @@
 				activity="7500" 
 				skin_temp="98.7"
 				steps="10"
-				adl="Running"/>
-<!-- -->				
+				adl="Running"/>				
 		</DataReadings>
-		<Events>
-			<Event datetime="Thu Mar 20 10:23:01 -0500 2008"
+<!-- Comment out these lines to test a no-event state -->
+        <Events>
+            <Event datetime="Thu Mar 20 10:21:01 -0500 2008"
+            description="Burt Kissed Betty Lee"
+            link="www.halomonitoring.com/events.jsp?eventid=1"/>
+			<Event datetime="Thu Mar 20 10:22:01 -0500 2008"
 			description="Betty Lee Fell"
-			link="www.halomonitoring.com"/>
-			<Event datetime="Thu Mar 20 10:24:01 -0500 2008"
+            link="www.halomonitoring.com/events.jsp?eventid=2"/>
+			<Event datetime="Thu Mar 20 10:23:01 -0500 2008"
 			description="See Betty Lee Run"
-			link="www.halomonitoring.com"/>
+            link="www.halomonitoring.com/events.jsp?eventid=3"/>
 		</Events>			
+<!-- -->        
 	</User>
-<!-- -->
 	<User last_name="Bob" first_name="Billy" id="255"  connectivity_status="Gateway Offline" time_remaining="65">
 		<DataReadings />
 		<LastReading datetime="Thu Mar 20 08:10 -0500 2008" battery_percentage=".75"
