@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 138) do
+ActiveRecord::Schema.define(:version => 140) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -406,6 +406,13 @@ ActiveRecord::Schema.define(:version => 138) do
   end
 
   add_index "strap_off_alerts", ["device_id"], :name => "index_strap_off_alerts_on_device_id"
+
+  create_table "strap_on_alerts", :force => true do |t|
+    t.integer  "device_id",  :null => false
+    t.datetime "created_at", :null => false
+  end
+
+  add_index "strap_on_alerts", ["device_id"], :name => "index_strap_on_alerts_on_device_id"
 
   create_table "strap_removeds", :force => true do |t|
     t.integer  "device_id"

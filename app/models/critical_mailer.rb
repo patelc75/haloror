@@ -61,6 +61,17 @@ class CriticalMailer < ActionMailer::ARMailer
       :device_id => device.id
   end
 
+  def strap_on_notification(alert, user)
+    device = alert.device
+    setup_email(user, alert)
+    @subject    += "Strap On for Device #{alert.device_id}"
+    self.priority = alert.priority    
+    body :alert_created_at => alert.created_at,
+      :login     => user.login,
+      :user_id   => user.id,
+      :device_id => device.id
+  end
+
   def strap_off_notification(alert, user)
     device = alert.device
     setup_email(user, alert)

@@ -11,19 +11,21 @@ class StrapOffAlert < DeviceAlert
     alerts = StrapOffAlert.find(:all,
       :conditions => conds.join(' and '))
     alerts.each do |alert|
+        soa = StrapOnAlert.new(:device_id => alert.device_id)
+        soa.save!
         alert.reconnected_at = Time.now
         alert.save!
     end
 
     conds = []
-    conds << "id in (select ss.id from device_strap_status ss where ss.updated_at < now() - interval '#{STRAP_OFF_TIMEOUT} minutes')"
+    conds << "id in (select ss.id from device_strap_status ss where is_fastened = 0 AND ss.updated_at < now() - interval '#{STRAP_OFF_TIMEOUT} minutes')"
     conds << "id in (select d.id from devices d where d.device_type = '#{DEVICE_CHEST_STRAP_TYPE}')"
-    conds << "id in (select status.id from device_strap_status status where is_fastened = 0)"
 
     devices = Device.find(:all,
       :conditions => conds.join(' and '))
 
     devices.each do |device|
+      
      process_device_strap_off(device)
     end
     ActiveRecord::Base.verify_active_connections!()
