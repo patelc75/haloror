@@ -1,5 +1,5 @@
 class MgmtResponsesController < RestfulAuthController
-  @@responses_cmds = {"info" => ["firmware_upgrade", "reset", "info"]}
+  @@responses_cmds = {"info" => ["firmware_upgrade", "info"], "reset" => ["reset"]}
   
   def conditions_from_hash(response)
     conds = []
@@ -54,7 +54,10 @@ class MgmtResponsesController < RestfulAuthController
       
       # link null response to command
       response = MgmtResponse.new
+      response.timestamp_device = request[:timestamp]
+      response.timestamp_server = Time.now
       response.mgmt_cmds << cmd
+      response.save
     end
     
     render :nothing => true
