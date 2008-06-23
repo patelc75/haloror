@@ -1,7 +1,7 @@
 function getConfig() {
     var config = new Object;
     
-    config.Version = "1.5.3.66";  //add the SVN check-in version to the last digit as build #
+    config.Version = "1.5.3.67";  //add the SVN check-in version to the last digit as build #
 	
     config.Debug = true;
 	
