@@ -1,0 +1,11 @@
+Story:  Plugging in the battery
+
+	As a device
+	I want to issue a battery plugged command
+	So that the healthserver displays the batter plugged icon
+
+	Scenario:  Plug in the battery
+
+		Given a 'device'
+		When I issue a 'battery plugged command'	
+		Then the user should verify 'battery plugged icon'
