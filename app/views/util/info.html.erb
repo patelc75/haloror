@@ -22,3 +22,23 @@ MIN_ADL_RESTING_ORIENTATION=<%= MIN_ADL_RESTING_ORIENTATION %><br>
 MAX_ADL_RESTING_ORIENTATION=<%= MAX_ADL_RESTING_ORIENTATION %><br>
 MIN_ADL_RESTING_ACTIVITY=<%= MIN_ADL_RESTING_ACTIVITY %><br>
 <br>
+<b>Mgmt protocol-related Constants </b><br>
+MGMT_CMD_NUM_RETRIES_WITHOUT_MGMT_ACK=<%= MGMT_CMD_RETRIES_WITHOUT_MGMT_ACK %><br>
+<br>
+
+<b>Alert Types and Groups</b>
+<table>
+  <tr>
+  <td><b>Alert Type   </b></td>
+  <td><b>Group </b></td>
+  <td><b>Group </b></td>
+  </tr>
+  <% @alert_types.each do |alert_type| %>
+    <tr>
+    <td><%= alert_type.alert_type %> </td>
+    <% alert_type.alert_groups.each do |group| %> 
+      <td><%= group.group_type %> </td>
+    <% end %>
+    <tr>
+  <% end %>
+</table>

@@ -13,6 +13,7 @@ class UtilController < ApplicationController
   end
   
   def info
+    @alert_types = AlertType.find(:all)
     #render :text => request.host
     #render :text => request.env["HTTP_HOST"].to_s
   end
