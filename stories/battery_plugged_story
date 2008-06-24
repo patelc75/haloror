@@ -6,6 +6,14 @@ Story:  Plugging in the battery
 
 	Scenario:  Plug in the battery
 
-		Given a 'device'
-		When I issue a 'battery plugged command'	
+		Given a 'device id', 'user id', 'battery percentage', 'time remaining', and a 'gateway id'
+		When I issue a 'battery plugged command'
 		Then the user should verify 'battery plugged icon'
+		
+	Scenario:  Plug in the battery for device 2 registered to user 2
+	
+		Given a '2' and a '2' and a '50' and a '550' and a '2'
+		When I issue a 'battery plugged command'
+		Then the user should verify 'battery plugged icon'
+		
+		
