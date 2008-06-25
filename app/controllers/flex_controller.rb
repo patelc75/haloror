@@ -66,7 +66,7 @@ class FlexController < ApplicationController
     # get connectivity status
     user_data[:status] = {}
     
-    unless user_data[:status][:connectivity] = get_status('connectivity', user)
+    unless user_data[:status][:connectivity] = camelcase_to_spaced(get_status('connectivity', user))
       user_data[:status][:connectivity] = @default_connectivity_status
     end
     
@@ -198,8 +198,8 @@ class FlexController < ApplicationController
       event_id = id_hash["id"]
       if !event_id.blank?
         event = Event.find(event_id)
-        if event && event.alert_type
-          return event.alert_type.alert_type
+        if event && event.event_type
+          return event.event_type
         end
       end
     end

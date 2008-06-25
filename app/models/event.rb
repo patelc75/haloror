@@ -1,6 +1,6 @@
 class Event < ActiveRecord::Base
   belongs_to :user
-  belongs_to :alert_type
+  #belongs_to :alert_type
   
   belongs_to :event, :polymorphic => true
   

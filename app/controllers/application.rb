@@ -64,7 +64,7 @@ class ApplicationController < ActionController::Base
   end
   
   def camelcase_to_spaced(word)
-    word.gsub(/([A-Z])/, " \\1")
+    word.gsub(/([A-Z])/, " \\1").strip
   end
   
   def format_datetime(datetime,user)
