@@ -1,7 +1,7 @@
 function getConfig() {
     var config = new Object;
     
-    config.Version = "1.5.3.67";  //add the SVN check-in version to the last digit as build #
+    //config.Version = "";  *Depricated!*
 	
     config.Debug = true;
 	
@@ -18,7 +18,7 @@ function getConfig() {
 	config.heartRateColor = "#FF0505";
     config.heartRateVarColor = "#F3C7C7";
     
-	config.skinTempAxisMin = 90;
+	config.skinTempAxisMin = 70;
 	config.skinTempAxisMax = 110;
 	config.skinTempColor = "#FDD705";
 	
