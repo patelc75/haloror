@@ -66,7 +66,7 @@ class FlexController < ApplicationController
     # get connectivity status
     user_data[:status] = {}
     
-    unless user_data[:status][:connectivity] = camelcase_to_spaced(get_status('connectivity', user))
+    unless user_data[:status][:connectivity] = get_status('connectivity', user)
       user_data[:status][:connectivity] = @default_connectivity_status
     end
     
@@ -94,6 +94,7 @@ class FlexController < ApplicationController
     data = {}
     
     @models.each do |model|
+      time_previous = nil
       get_model_data(model).each do |row|
         if row[:timestamp]
           timestamp = row[:timestamp]
@@ -101,11 +102,17 @@ class FlexController < ApplicationController
           timestamp = row[:begin_timestamp]
         end
         
-        unless data[timestamp]
-          data[timestamp] = []
+        move_on = false
+        if time_previous == timestamp
+          move_on = true
         end
-        
-        data[timestamp] << row
+        time_previous = timestamp
+        unless move_on
+          unless data[timestamp]
+            data[timestamp] = []
+          end
+          data[timestamp] << row
+        end
       end
     end
     
@@ -115,9 +122,9 @@ class FlexController < ApplicationController
   def get_model_data(model)
     #find() defaults to order by id (not order by timestamp)
     if model.class_name == "Step"
-      model.find(:all, :conditions => "user_id = #{@query[:user_id]} and begin_timestamp < '#{@query[:enddate]}' and begin_timestamp >= '#{@query[:startdate]}'")
+      model.find(:all, :order => 'begin_timestamp desc', :conditions => "user_id = #{@query[:user_id]} and begin_timestamp < '#{@query[:enddate]}' and begin_timestamp >= '#{@query[:startdate]}'")
     else
-      model.find(:all, :conditions => "user_id = #{@query[:user_id]} and timestamp < '#{@query[:enddate]}' and timestamp >= '#{@query[:startdate]}'")
+      model.find(:all, :order => 'timestamp desc', :conditions => "user_id = #{@query[:user_id]} and timestamp < '#{@query[:enddate]}' and timestamp >= '#{@query[:startdate]}'")
     end
     #rescue ActiveRecord::StatementInvalid
     #model.find(:all, :conditions => "user_id = #{query[:user_id]} and end_timestamp <= '#{query[:enddate]}' and begin_timestamp >= '#{query[:startdate]}'")
@@ -266,7 +273,6 @@ class FlexController < ApplicationController
       else
         orientation = 0
       end
-      
       vital_row = {:type => 'Vital', :heartrate => heart_rate, :hrv => hrv, :activity => activity, :orientation => orientation}
       timestamp = Time.parse(result['ts'])
       data[timestamp] = [] unless data[timestamp]
@@ -274,7 +280,7 @@ class FlexController < ApplicationController
     end
     select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{format_datetime(start_time, user)}', 'skin_temps', 'skin_temp')"
     SkinTemp.connection.select_all(select).collect do |result|
-      average = result['skin_temp']
+      average = result['average']
       if !average.blank?
         average = average.to_f.round(1)
       else
@@ -300,7 +306,7 @@ class FlexController < ApplicationController
     end
     select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{format_datetime(start_time, user)}', 'batteries', 'percentage')"
     Battery.connection.select_all(select).collect do |result|
-      average = result['skin_temp']
+      average = result['average']
       if !average.blank?
         average = average.to_f.round(1)
       else
