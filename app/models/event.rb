@@ -30,4 +30,46 @@ class Event < ActiveRecord::Base
     
     return false
   end
+  
+  def self.camelcase_to_spaced(word)
+    word.gsub(/([A-Z])/, " \\1").strip
+  end
+  
+  def self.get_latest_event_by_type_and_user(type, user_id)
+    event = Event.find(:first, :order => "timestamp DESC", :conditions => "event_type = '#{type}' and user_id='#{user_id}'")
+    if(event == nil)
+      event = Event.new
+      event.timestamp = "Jan 1 1970 00:00:00 -0000"
+      event.event_type = "Not found"
+    end
+    
+    event
+  end
+  
+  def self.get_connectivity_state_by_user(user)
+    gateway_online = Event.get_latest_event_by_type_and_user('GatewayOnlineAlert', user.id)
+    if Event.get_latest_event_by_type_and_user('GatewayOfflineAlert', user.id).timestamp > gateway_online.timestamp
+      Event.camelcase_to_spaced('GatewayOfflineAlert')
+    else
+      connected_state = gateway_online
+      device_unavailable = Event.get_latest_event_by_type_and_user('DeviceAvailableAlert', user.id)
+      if Event.get_latest_event_by_type_and_user('DeviceUnavailableAlert', user.id).timestamp > device_unavailable.timestamp
+        Event.camelcase_to_spaced('DeviceUnavailableAlert')
+      else
+        if(device_unavailable.timestamp > connected_state.timestamp)
+          connected_state = device_unavailable
+        end
+        strap_removed = Event.get_latest_event_by_type_and_user('StrapFastened', user.id)
+        if Event.get_latest_event_by_type_and_user('StrapRemoved', user.id).timestamp > strap_removed.timestamp
+          Event.camelcase_to_spaced('StrapRemoved')
+        else
+          if(strap_removed.timestamp > connected_state.timestamp)
+            connected_state = strap_removed
+          end
+            
+          Event.camelcase_to_spaced(connected_state.event_type.to_s)
+        end
+      end          
+    end
+  end
 end

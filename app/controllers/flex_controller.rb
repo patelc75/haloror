@@ -66,8 +66,8 @@ class FlexController < ApplicationController
     # get connectivity status
     user_data[:status] = {}
     
-    unless user_data[:status][:connectivity] = get_status('connectivity', user)
-      user_data[:status][:connectivity] = @default_connectivity_status
+    unless user_data[:status][:connectivity] 
+      user_data[:status][:connectivity] = Event.get_connectivity_state_by_user(user)
     end
     
     # get battery status
