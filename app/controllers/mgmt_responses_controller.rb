@@ -47,9 +47,10 @@ class MgmtResponsesController < RestfulAuthController
       # create null command (cmd_type => no command)
       cmd = MgmtCmd.new
       cmd.device_id = request[:device_id]
-      cmd.cmd_type = 'no_command'
-      cmd.originator = "server"
+      cmd.cmd_type = request[:cmd_type]
+      cmd.originator = "neither"
       cmd.pending = false
+      cnd.timestamp_initiated = request[:timestamp]
       cmd.save
       
       # link null response to command
