@@ -317,7 +317,9 @@ class UsersController < ApplicationController
       device.save!
     end
 
-    #device.device_type = get_device_type(device)
+    unless device.device_type
+      device.device_type = get_device_type(device)      
+    end
     device.users << user
     device.save!
   end
