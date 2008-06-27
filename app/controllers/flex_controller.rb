@@ -71,21 +71,21 @@ class FlexController < ApplicationController
     end
     
     # get battery status
-    unless user_data[:status][:battery_outlet] = get_status('battery_outlet_status', user)
+    unless user_data[:status][:battery_outlet] = get_status('battery', user)
       user_data[:status][:battery_outlet] = @default_battery_outlet_status
     end
     
-    unless user_data[:status][:battery_level] = get_status('battery_level_status', user)
+    unless user_data[:status][:battery_level] = get_status('battery', user)
       user_data[:status][:battery_level] = @default_battery_level_status
     end
     
     # get last battery reading
-    unless user_data[:battery] = Battery.find(:first, :order => 'id desc')
+    unless user_data[:battery] = Battery.find(:first, :order => 'id desc', :conditions => "user_id = '#{user.id}'")
       user_data[:battery] = {}
     end
     
     # get events
-    user_data[:events] = Event.find(:all, :conditions => "user_id = '#{@query[:user_id]}'", :order => 'timestamp desc', :limit => 10)
+    user_data[:events] = Event.find(:all, :conditions => "user_id = '#{user.id}'", :order => 'timestamp desc', :limit => 10)
     
     return user_data
   end
@@ -167,7 +167,7 @@ class FlexController < ApplicationController
   def get_last_reading_for_user(user)
     reading = {}
     
-    if vitals = Vital.find(:first, :conditions => "user_id = #{user.id}", :order => 'id desc')
+    if vitals = Vital.find(:first, :conditions => "user_id = #{user.id}", :order => 'timestamp desc')
       reading[:heartrate] = vitals[:heartrate]
       
       if vitals.hrv
@@ -182,15 +182,15 @@ class FlexController < ApplicationController
       reading[:adl] = vitals.adl
     end
     
-    if battery = Battery.find(:first, :conditions => "user_id = #{user.id}", :order => 'id desc')
+    if battery = Battery.find(:first, :conditions => "user_id = #{user.id}", :order => 'timestamp desc')
       reading[:battery] = battery.percentage
     end
     
-    if skin_temp = SkinTemp.find(:first, :conditions => "user_id = #{user.id}", :order => 'id desc')
+    if skin_temp = SkinTemp.find(:first, :conditions => "user_id = #{user.id}", :order => 'timestamp desc')
       reading[:skin_temp] = skin_temp.skin_temp
     end
     
-    if steps = Step.find(:first, :conditions => "user_id = #{user.id}", :order => 'id desc')
+    if steps = Step.find(:first, :conditions => "user_id = #{user.id}", :order => 'begin_timestamp desc')
       reading[:steps] = steps.steps
     end
     
@@ -206,7 +206,7 @@ class FlexController < ApplicationController
       if !event_id.blank?
         event = Event.find(event_id)
         if event && event.event_type
-          return event.event_type
+          return camelcase_to_spaced(event.event_type)
         end
       end
     end
