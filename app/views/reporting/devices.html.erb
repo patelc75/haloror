@@ -1,5 +1,5 @@
 <%=render :partial => 'nav'%>
 
 <div id="device-table" class="table">
-	<%=render :partial => 'device_table', :locals => {:devices => @devices}%>
+	<%=render :partial => 'device_table', :locals => {:user => @user, :devices => @devices}%>
 </div>

@@ -54,7 +54,7 @@
 					<%=render :partial => 'charge', :locals => {:device => device}%>&nbsp;
 				</div>
 				<div class="col-100">
-					<a href="/devices/stats/<%=device.id%>">Stats</a>
+					<a href="/devices/stats/<%=device.id%>">Stats</a> | <a href="/reporting/remove_user_mapping/<%=user.id%>?device_id=<%= device.id %>&users=true">Remove</a>
 				</div>
 			</div>
 		<% end %>

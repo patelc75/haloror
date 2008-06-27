@@ -7,5 +7,5 @@
 	</div>
 	<% users = device.users
 		 users.each do |user| %>
-		<%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => false, :caregiver => false}%>
+		<%=render :partial => 'reporting/table/user_row', :locals => {:device => device, :user => user, :toggle => false, :caregiver => false}%>
 	<% end %>

@@ -109,4 +109,15 @@ class ReportingController < ApplicationController
       redirect_to '/'
     end    
   end
+  
+  def remove_user_mapping
+    user_id = params[:id]
+    device_id = params[:device_id]
+    Device.connection.delete "delete from devices_users where device_id = #{device_id} and user_id = #{user_id} "
+    if params[:users].blank?
+      redirect_to '/reporting/devices'
+    else
+      redirect_to '/reporting/users'
+    end
+  end
 end
