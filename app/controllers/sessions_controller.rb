@@ -27,14 +27,21 @@ class SessionsController < ApplicationController
       if user = User.find_by_login(params[:login])
         log.user_id = user.id
       end
-      
+
       log.status = 'failed'
       log.save
-      
-      render :action => 'new'
+    
+     @show_redbox = true
+     
+    render :action => 'new'
+
     end
   end
-
+ 
+  def failure
+    render :partial => 'failure'
+  end
+  
   def destroy
     log = AccessLog.new
     log.user_id = current_user.id
