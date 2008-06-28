@@ -16,7 +16,7 @@ class MgmtResponsesController < RestfulAuthController
     conditions = conditions_from_hash(request[:cmd_type])    
     cmds = MgmtCmd.find(:all, :conditions => "(#{conditions}) and device_id = #{request[:device_id]} and timestamp_sent is not null and pending = true", :order => "id asc")
     if !cmds.blank?
-      response = MgmtResponse.new
+      response = MgmtResponse.new 
       #response.mgmt_cmd_id = cmd.id
       response.timestamp_device = request[:timestamp]
       response.timestamp_server = Time.now
@@ -50,7 +50,7 @@ class MgmtResponsesController < RestfulAuthController
       cmd.cmd_type = request[:cmd_type]
       cmd.originator = "neither"
       cmd.pending = false
-      cnd.timestamp_initiated = request[:timestamp]
+      cmd.timestamp_initiated = request[:timestamp]
       cmd.save
       
       # link null response to command
