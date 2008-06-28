@@ -250,28 +250,28 @@ class FlexController < ApplicationController
       if !heart_rate.blank?
         heart_rate = heart_rate.to_f.round(1)
       else
-        heart_rate = 0
+        heart_rate = -1
       end
       
       activity = result['average_activity']
       if !activity.blank?
         activity = activity.to_f.round(1)
       else
-        activity = 0
+        activity = -1
       end
       
       hrv = result['average_hrv']
       if !hrv.blank?
         hrv = hrv.to_f.round(1)
       else
-        hrv = 0
+        hrv = -1
       end
       
       orientation = result['average_orientation']
       if !orientation.blank?
         orientation = orientation.to_f.round(1)
       else
-        orientation = 0
+        orientation = -1
       end
       vital_row = {:type => 'Vital', :heartrate => heart_rate, :hrv => hrv, :activity => activity, :orientation => orientation}
       timestamp = Time.parse(result['ts'])
@@ -284,7 +284,7 @@ class FlexController < ApplicationController
       if !average.blank?
         average = average.to_f.round(1)
       else
-        average = 0
+        average = -1
       end
       skin_temp_row = {:type => 'SkinTemp', :skin_temp => average}
       timestamp = Time.parse(result['ts'])
@@ -297,7 +297,7 @@ class FlexController < ApplicationController
       if !sum_result.blank?
         sum_result = sum_result.to_f.round(1)
       else
-        sum_result = 0
+        sum_result = -1
       end
       steps_row = {:type => 'Step', :steps => sum_result}
       timestamp = Time.parse(result['ts'])
@@ -310,7 +310,7 @@ class FlexController < ApplicationController
       if !average.blank?
         average = average.to_f.round(1)
       else
-        average = 0
+        average = -1
       end
       battery_percentage_row = {:type => 'Battery', :percentage => average}
       timestamp = Time.parse(result['ts'])
