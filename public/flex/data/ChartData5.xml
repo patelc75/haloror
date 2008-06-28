@@ -3,7 +3,7 @@
 <!-- -->
     <User last_name="Auto" first_name="Chris"  id="99001" connectivity_status="Device Unavailable" time_remaining="15">
         <DataReadings/>
-        <LastReading datetime="Thu Mar 20 08:30 -0500 2008" battery_percentage=".05"
+        <LastReading datetime="Thu Mar 20 08:30 -0700 2008" battery_percentage=".05"
             heartrate="88" hr_min="87" hr_max="90"
             breathing="64"
             activity="5000" 
@@ -13,9 +13,9 @@
             battery_outlet_status="Unplugged" battery_level_status="Critical" />
     </User>
 <!-- -->    
-	<User last_name="Lee" first_name="Betty" id="5" connectivity_status="Device Unavailable" time_remaining="55"> <!--in minutes-->
+    <User last_name="Lee" first_name="Betty" id="5" timezone="-0700" connectivity_status="Device Unavailable" time_remaining="55"> <!--in minutes-->
 		<!--NOTE: Typical upper bound for a fall type activity is 50000-->
-        <LastReading datetime="Fri Mar 21 08:40 -0500 2008" battery_percentage=".57"
+        <LastReading datetime="Fri Mar 21 08:40 -0700 2008" battery_percentage=".20"
                 heartrate="70" hr_min="65" hr_max="80"
                 breathing="44"
                 activity="50000" 
@@ -25,7 +25,7 @@
                 battery_outlet_status="Unplugged" battery_level_status="Normal" />
 		<DataReadings>
 			<!-- This file contains only a single DataReading!  -->
-			<DataReading datetime="Thu Mar 20 08:50 -0500 2008" battery_percentage=".57">
+			<DataReading datetime="Thu Mar 20 08:50 -0700 2008" battery_percentage=".57">
 				<heartrate>70</heartrate>
 				<hr_min>65</hr_min>
 				<hr_max>80</hr_max>
@@ -37,7 +37,7 @@
 			</DataReading>		
 		</DataReadings>
 		<Events>
-			<Event datetime="Thu Mar 20 10:23:01 -0500 2008"
+			<Event datetime="Thu Mar 20 10:23:01 -0700 2008"
 			description="Betty Lee Fell, No. 6 REPEAT!"
             link="www.halomonitoring.com/events.jsp?eventid=6"/>
 		</Events>			
@@ -45,7 +45,7 @@
 <!-- -->
 	<User last_name="Bob" first_name="Billy" id="255" connectivity_status="Gateway Offline" time_remaining="65">
 		<DataReadings />
-		<LastReading datetime="Thu Mar 20 08:30 -0500 2008" battery_percentage=".75"
+		<LastReading datetime="Thu Mar 20 08:30 -0700 2008" battery_percentage=".75"
             heartrate="92" hr_min="90" hr_max="93"
             breathing="84"
             activity="50000" 
@@ -56,7 +56,7 @@
 	</User>
 	<User last_name="Schmoe" first_name="Joe"  id="99000" connectivity_status="Device Available" time_remaining="45">
 		<DataReadings />
-		<LastReading datetime="Thu Mar 20 08:30 -0500 2008" battery_percentage=".42"
+		<LastReading datetime="Thu Mar 20 08:30 -0700 2008" battery_percentage=".42"
             heartrate="88" hr_min="87" hr_max="90"
             breathing="64"
             activity="5000" 
@@ -67,7 +67,7 @@
 	</User>
 	<User last_name="Codesmith" first_name="Chirag"  id="99002" connectivity_status="Strap Removed" time_remaining="15">
 		<DataReadings />
-		<LastReading datetime="Thu Mar 20 08:30 -0500 2008" battery_percentage=".42"
+		<LastReading datetime="Thu Mar 20 08:30 -0700 2008" battery_percentage=".42"
             heartrate="88" hr_min="87" hr_max="90"
             breathing="64"
             activity="5000" 

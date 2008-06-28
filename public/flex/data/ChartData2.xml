@@ -3,7 +3,7 @@
 <!-- -->
     <User last_name="Auto" first_name="Chris"  id="99001" connectivity_status="Device Unavailable" time_remaining="15">
         <DataReadings/>
-        <LastReading datetime="Thu Mar 20 08:20 -0500 2008" battery_percentage=".05"
+        <LastReading datetime="Thu Mar 20 08:20 -0700 2008" battery_percentage=".05"
             heartrate="88" hr_min="87" hr_max="90"
             breathing="64"
             activity="5000" 
@@ -13,9 +13,9 @@
             battery_outlet_status="Unplugged" battery_level_status="Critical" />
     </User>
 <!-- -->    
-	<User last_name="Lee" first_name="Betty" id="5" connectivity_status="Strap Removed" time_remaining="58"> <!--in minutes-->
+    <User last_name="Lee" first_name="Betty" id="5" timezone="-0700" connectivity_status="Strap Removed" time_remaining="58"> <!--in minutes-->
 		<!--NOTE: Typical upper bound for a fall type activity is 50000-->
-        <LastReading datetime="Fri Mar 21 08:20 -0500 2008" battery_percentage=".57"
+        <LastReading datetime="Fri Mar 21 08:20 -0700 2008" battery_percentage=".57"
                 heartrate="89" hr_min="88" hr_max="90"
                 breathing="44"
                 activity="50000" 
@@ -26,7 +26,7 @@
 		<DataReadings>
 			<!-- This first node shows that attributes or child nodes can both be handled, as long
 				as the child nodes are singular! Attributes save a LOT of bandwidth, however... -->
-			<DataReading datetime="Thu Mar 20 08:20 -0500 2008" battery_percentage=".57">
+			<DataReading datetime="Thu Mar 20 08:20 -0700 2008" battery_percentage=".57">
 				<heartrate>89</heartrate>
 				<hr_min>88</hr_min>
 				<hr_max>90</hr_max>
@@ -37,63 +37,63 @@
 				<adl>Sitting</adl>
 			</DataReading>
 <!-- -->
-			<DataReading datetime="Thu Mar 20 08:21 -0500 2008" battery_percentage=".57"
+			<DataReading datetime="Thu Mar 20 08:21 -0700 2008" battery_percentage=".57"
 				heartrate="88" hr_min="87" hr_max="90"
 				breathing="43"
 				activity="5000" 
 				skin_temp="98.6"
 				steps="9"
 				adl="Sleeping"/>
-			<DataReading datetime="Thu Mar 20 08:22 -0500 2008" battery_percentage=".57"
+			<DataReading datetime="Thu Mar 20 08:22 -0700 2008" battery_percentage=".57"
 				heartrate="87" hr_min="86" hr_max="89"
 				breathing="43"
 				activity="25000" 
 				skin_temp="98.5"
 				steps="2"
 				adl="Sleeping"/>
-			<DataReading datetime="Thu Mar 20 08:23 -0500 2008" battery_percentage=".57"
+			<DataReading datetime="Thu Mar 20 08:23 -0700 2008" battery_percentage=".57"
 				heartrate="92" hr_min="89" hr_max="93"
 				breathing="46"
 				activity="50000" 
 				skin_temp="98.9"
 				steps="20"
 				adl="Standing"/>
-			<DataReading datetime="Thu Mar 20 08:24 -0500 2008" battery_percentage=".56"
+			<DataReading datetime="Thu Mar 20 08:24 -0700 2008" battery_percentage=".56"
 				heartrate="92" hr_min="91" hr_max="93"
 				breathing="46"
 				activity="5000" 
 				skin_temp="99.0"
 				steps="15"
 				adl="Sleeping"/>
-			<DataReading datetime="Thu Mar 20 08:25 -0500 2008" battery_percentage=".55"
+			<DataReading datetime="Thu Mar 20 08:25 -0700 2008" battery_percentage=".55"
 				heartrate="89" hr_min="89" hr_max="91"
 				breathing="44"
 				activity="15000" 
 				skin_temp="98.7"
 				steps="10"
 				adl="Sleeping"/>
-			<DataReading datetime="Thu Mar 20 08:26 -0500 2008" battery_percentage=".54"
+			<DataReading datetime="Thu Mar 20 08:26 -0700 2008" battery_percentage=".54"
 				heartrate="89" hr_min="88" hr_max="90"
 				breathing="44"
 				activity="5000" 
 				skin_temp="98.7"
 				steps="10"
 				adl="Standing"/>
-			<DataReading datetime="Thu Mar 20 08:27 -0500 2008" battery_percentage=".53"
+			<DataReading datetime="Thu Mar 20 08:27 -0700 2008" battery_percentage=".53"
 				heartrate="89" hr_min="87" hr_max="90"
 				breathing="44"
 				activity="25000" 
 				skin_temp="98.7"
 				steps="10"
 				adl="Standing"/>
-			<DataReading datetime="Thu Mar 20 08:28 -0500 2008" battery_percentage=".52"
+			<DataReading datetime="Thu Mar 20 08:28 -0700 2008" battery_percentage=".52"
 				heartrate="89" hr_min="87" hr_max="90"
 				breathing="44"
 				activity="5000" 
 				skin_temp="98.7"
 				steps="10"
 				adl="Running"/>
-			<DataReading datetime="Thu Mar 20 08:29 -0500 2008" battery_percentage=".51"
+			<DataReading datetime="Thu Mar 20 08:29 -0700 2008" battery_percentage=".51"
 				heartrate="89" hr_min="87" hr_max="90"
 				breathing="44"
 				activity="7500" 
@@ -103,15 +103,21 @@
 <!-- -->				
 		</DataReadings>
 		<Events>
-			<Event datetime="Thu Mar 20 10:25:01 -0500 2008"
+			<Event datetime="Thu Mar 20 10:25:01 -0700 2008"
 			description="Betty Lee Fell Asleep"
             link="www.halomonitoring.com/events.jsp?eventid=5"/>
+            <Event datetime="Thu Mar 20 10:22:01 -0700 2008"
+            description="Betty Lee Fell"
+            link="www.halomonitoring.com/events.jsp?eventid=2"/>
+            <Event datetime="Thu Mar 20 10:23:01 -0700 2008"
+            description="See Betty Lee Run"
+            link="www.halomonitoring.com/events.jsp?eventid=3"/>
 		</Events>			
 	</User>
 <!-- -->
 	<User last_name="Bob" first_name="Billy" id="255"connectivity_status="Gateway Offline" time_remaining="65">
 		<DataReadings />
-		<LastReading datetime="Thu Mar 20 08:20 -0500 2008" battery_percentage=".75"
+		<LastReading datetime="Thu Mar 20 08:20 -0700 2008" battery_percentage=".75"
             heartrate="92" hr_min="90" hr_max="93"
             breathing="84"
             activity="50000" 
@@ -122,7 +128,7 @@
 	</User>
 	<User last_name="Schmoe" first_name="Joe"  id="99000" connectivity_status="Device Available" time_remaining="45">
 		<DataReadings />
-		<LastReading datetime="Thu Mar 20 08:20 -0500 2008" battery_percentage=".42"
+		<LastReading datetime="Thu Mar 20 08:20 -0700 2008" battery_percentage=".42"
             heartrate="88" hr_min="87" hr_max="90"
             breathing="64"
             activity="5000" 
@@ -133,7 +139,7 @@
 	</User>
 	<User last_name="Codesmith" first_name="Chirag"  id="99002" connectivity_status="Strap Removed" time_remaining="15">
 		<DataReadings />
-		<LastReading datetime="Thu Mar 20 08:20 -0500 2008" battery_percentage=".42"
+		<LastReading datetime="Thu Mar 20 08:20 -0700 2008" battery_percentage=".42"
             heartrate="88" hr_min="87" hr_max="90"
             breathing="64"
             activity="5000" 
