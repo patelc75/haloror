@@ -16,7 +16,7 @@
 			Resolve
 		</div>
 	</div>
-	<% @events.sort_by {|event| event[:timestamp]}.reverse.each do |event| %>
+	<% @events.each do |event| %>
 		<div class="row">
 			<div class="col-150">
 				<%=event.event_type%>&nbsp;
