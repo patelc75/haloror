@@ -36,7 +36,7 @@ class FlexController < ApplicationController
     @users << get_data_for_user(default_user, false)
     
     # get lastreading for each user the default_user is a caregiver of
-    default_user.is_caregiver_for_what.each do |patient|
+    default_user.patients.each do |patient|
       @users << get_data_for_user(patient)
     end
   end
