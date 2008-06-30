@@ -169,7 +169,7 @@ class FlexController < ApplicationController
     
     if vitals = Vital.find(:first, :conditions => "user_id = #{user.id}", :order => 'timestamp desc')
       reading[:heartrate] = vitals[:heartrate]
-      
+      reading[:timestamp] = vitals[:timestamp]
       if vitals.hrv
         reading[:hr_min] = vitals.heartrate - vitals.hrv / 2
         reading[:hr_max] = vitals.heartrate + vitals.hrv / 2
