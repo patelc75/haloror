@@ -1,7 +1,5 @@
 class RestfulAuthController < ApplicationController
-  skip_before_filter :authenticated?
-  before_filter :authenticated?, :only => [:create]
-    
+   
   make_resourceful do 
     actions :all
     
@@ -14,12 +12,16 @@ class RestfulAuthController < ApplicationController
   
   DEFAULT_HASH_KEY="226f3834726d5531683d4f4b5a2d202729695853662543375c226c6447"
   def authenticated?
-    return authorize
+    if action_name == 'create'
+      return authorize
+    else
+      return false
+    end
   end
   
   def authorize
     timestamp = get_hash_value_from_array([:timestamp, :begin_timestamp], params)
-    
+    puts "timestamp #{timestamp}"
     if(params[:gateway_id])
       serial_num = Device.find(params[:gateway_id].to_i).serial_number;
       raise "Auth failed: timestamp missing" if timestamp == nil
