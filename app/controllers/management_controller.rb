@@ -205,6 +205,32 @@ class ManagementController < ApplicationController
         end
       end
     end
+      
+    device.mgmt_cmds.find(:all,
+                          :conditions => "id NOT IN (select mgmt_cmd_id from mgmt_queries) AND timestamp_initiated > '#{@begin_time}' AND timestamp_initiated < '#{@end_time}'").each do |cmd|
+      next unless cmd[:timestamp_sent]
+                   
+      cmd[:timestamp] = cmd[:timestamp_sent]
+      cmd[:query_group] = false
+      cmd[:type] = 'cmd'
+      chatter << cmd
+                 
+      if ack = cmd.mgmt_ack
+        next unless ack[:timestamp_server]
+        ack[:timestamp] = ack[:timestamp_server]
+        ack[:type] = 'ack'
+        chatter << ack
+      end
+                 
+      if response = cmd.mgmt_response
+         next unless response[:timestamp_server]
+                     
+         response[:timestamp] = response[:timestamp_server]
+         response[:type] = 'response'
+         chatter << response
+      end
+                 
+    end
     
     # get pending commands
     
