@@ -4,8 +4,22 @@ function getConfig() {
     //config.Version = "";  *Depricated!*
 	
     config.Debug = true;
+
+		//make request to check for admin status
+		new Ajax.Request('/sessions/is_admin', {
+		asynchronous: false,  
+		method: 'get',
+		  onSuccess: function(transport) {
+				if(transport.responseText.match(/true/)){
+					config.Admin = true;
+				}
+				else{
+					config.Admin = false;
+				}
+		  }
+		});
 	
-	config.Admin = true; // is current_user an admin?
+	//config.Admin = true; // is current_user an admin?
 
     config.ChartFile = -1; //change this value to 0 if you want to run file-based tests
     
