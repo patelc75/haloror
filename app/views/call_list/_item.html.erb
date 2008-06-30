@@ -1,8 +1,6 @@
 <%
 	# this is a hack...need to refactor pieces of caregiver table (/b)
-	unless user_id = params[:patient_id]
-		user_id = params[:id]
-	end
+	user_id = @user.id.to_s
 %>
 
 <%

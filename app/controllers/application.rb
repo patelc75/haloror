@@ -97,7 +97,8 @@ class ApplicationController < ActionController::Base
             controller_name == 'sessions' || 
             controller_name == 'flex' && action_name == 'chart' || 
             controller_name == 'util' && action_name == 'check' ||
-            controller_name == 'util' && action_name == 'hostname')
+            controller_name == 'util' && action_name == 'hostname' ||
+            controller_name == 'security')
         return authenticate
       else
         return true

@@ -3,17 +3,17 @@ class CallListController < ApplicationController
   before_filter :authenticate, :only => 'show'
 
   def show
-    @call_list = User.find(params[:id])
     number_ext
-    #@user = User.find(1)
-    
-    if params[:id]
-      user = User.find(params[:id])
+    if(!params[:id].blank?)
+      @user = User.find(params[:id])
+      get_caregivers(@user)
+      unless((@user.id == current_user.id) || @caregivers.include?(current_user))    
+        redirect_to :action => 'unauthorized', :controller => 'security'
+      end
     else
-      user = current_user
+      @user = current_user
+      get_caregivers(@user)
     end
-    
-    get_caregivers(user)
   end
   
   def sort

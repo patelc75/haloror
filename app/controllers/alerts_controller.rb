@@ -6,37 +6,51 @@ class AlertsController < ApplicationController
     AlertType.find(:all).each do |type|    
       @alert_types << type        
     end
+    roles_user = RolesUser.find(params[:id])
+    if roles_user.user_id == current_user.id
+      @roles_user = roles_user
+    else
+      redirect_to :action => 'unauthorized', :controller => 'security'
+    end
   end
 
   
-  def toggle(what)    
+  def toggle(what) 
+    
+    roles_user = RolesUser.find(params[:id])
+    if roles_user.user_id == current_user.id
+      @roles_user = roles_user
+       
     #if alert_opt = AlertOption.find(:first,:conditions => "roles_user_id = #{params[:id]} and alert_type_id = #{alert.id}")
 
    
-    unless alert_opt = AlertOption.find(:first, :conditions => "roles_user_id = #{params[:roles_user_id]} and alert_type_id = #{params[:id]}")
-      alert_type = AlertType.find(params[:id])
+      unless alert_opt = AlertOption.find(:first, :conditions => "roles_user_id = #{@roles_user.id} and alert_type_id = #{params[:id]}")
+        alert_type = AlertType.find(params[:id])
       
-      alert_opt = AlertOption.new
-      alert_opt.roles_user_id = params[:roles_user_id]
-      alert_opt.alert_type_id = alert_type.id
-      alert_opt.phone_active = alert_type.phone_active
-      alert_opt.email_active = alert_type.email_active
-      alert_opt.text_active = alert_type.text_active
+        alert_opt = AlertOption.new
+        alert_opt.roles_user_id = @roles_user.id
+        alert_opt.alert_type_id = alert_type.id
+        alert_opt.phone_active = alert_type.phone_active
+        alert_opt.email_active = alert_type.email_active
+        alert_opt.text_active = alert_type.text_active
+        alert_opt.save
+      end
+    
+      column = "#{what}_active"
+    
+      if !alert_opt[column.to_sym]
+        state = 1
+      else
+        state = 0
+      end
+    
+      alert_opt[column.to_sym] = state
       alert_opt.save
-    end
     
-    column = "#{what}_active"
-    
-    if !alert_opt[column.to_sym]
-      state = 1
+      render :nothing => true
     else
-      state = 0
+      redirect_to :action => 'unauthorized', :controller => 'security'
     end
-    
-    alert_opt[column.to_sym] = state
-    alert_opt.save
-    
-    render :nothing => true
   end
   
   def toggle_phone

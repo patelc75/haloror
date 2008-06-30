@@ -4,10 +4,10 @@
 <div id="call_list-col">
 	<div id="call_list-col-header">
 		Account Settings: <span style="color:#000;font-size:.75em">
-			<% if profile = @call_list.profile and profile[:first_name] %>
+			<% if profile = @user.profile and profile[:first_name] %>
 				<%=profile[:first_name] %><%=" #{profile[:last_name]}" if profile[:last_name] %>'s
 			<% else %>
-				<%=@call_list[:login]%>'s
+				<%=@user[:login]%>'s
 			<% end %>
 			
 			Caregivers
