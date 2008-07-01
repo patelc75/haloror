@@ -37,11 +37,17 @@ class MgmtResponsesController < RestfulAuthController
       end
       
       cmds.each do |cmd|
-        #unless cmd.mgmt_response
+        if !request[:info].blank? && cmd.cmd_type == 'firmware_upgrade' && cmd.cmd_id
+          firmware_upgrade = FirmwareUpgrade.find(cmd.cmd_id)
+          if firmware_upgrade && firmware_upgrade.version != request[:info][:software_version]
+            cmd.pending = true
+          end
+        end
+        if !cmd.pending.blank?
+          cmd.pending = false
+        end
         response.mgmt_cmds << cmd
-        cmd.pending = false
         cmd.save
-        #end
       end
     else
       # create null command (cmd_type => no command)
