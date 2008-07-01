@@ -4,23 +4,25 @@ function getConfig() {
     //config.Version = "";  *Depricated!*
 	
     config.Debug = true;
-
-		//make request to check for admin status
-		new Ajax.Request('/sessions/is_admin', {
-		asynchronous: false,  
-		method: 'get',
-		  onSuccess: function(transport) {
-				if(transport.responseText.match(/true/)){
-					config.Admin = true;
-				}
-				else{
-					config.Admin = false;
-				}
-		  }
-		});
+    
+    //make request to check to check if current user is admin
+    try{
+	    new Ajax.Request('/sessions/is_admin', {
+	        asynchronous: false,  
+	        method: 'get',
+	        onSuccess: function(transport) {
+	            if(transport.responseText.match(/true/)){
+	                config.Admin = true;
+	            }
+	            else{
+	                config.Admin = false;
+	            }
+	        }
+	    });
+    }catch(err){
+    	config.Admin = true;
+    }
 	
-	//config.Admin = true; // is current_user an admin?
-
     config.ChartFile = -1; //change this value to 0 if you want to run file-based tests
     
     config.TimerInterval = 15;
@@ -66,6 +68,7 @@ function getConfig() {
     	 */
     	 
         if(config.dataServiceURL == "http:///flex/chart"){
+        	//config.dataServiceURL = "http://www.myhalomonitor.com/flex/chart";
 	    	config.dataServiceURL = "http://sdev.myhalomonitor.com/flex/chart";
 	    	//config.dataServiceURL = "http://www.myhalomonitor.com/flex/chart";
 	        //config.dataServiceURL = "http://idev.myhalomonitor.com/flex/chart";
@@ -78,6 +81,7 @@ function getConfig() {
     	//config.dataServiceURL = "data/results";
         config.dataServiceURL = "data/ChartData";
         //config.dataServiceURL = "data/ChartData_CrossUTCDate";
+        //config.dataServiceURL = "data/OneSec_results";
     }
     
     if (config.Debug == true && config.Admin == true){
