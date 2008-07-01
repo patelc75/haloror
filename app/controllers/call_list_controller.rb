@@ -7,7 +7,7 @@ class CallListController < ApplicationController
     if(!params[:id].blank?)
       @user = User.find(params[:id])
       get_caregivers(@user)
-      unless((@user.id == current_user.id) || current_user.patients.include?(@user))    
+      unless((@user.id == current_user.id) || current_user.patients.include?(@user) || current_user.is_administrator?)    
         redirect_to :action => 'unauthorized', :controller => 'security'
       end
     else

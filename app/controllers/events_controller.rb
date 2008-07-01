@@ -79,7 +79,7 @@ class EventsController < ApplicationController
   
   def user
     user = User.find(params[:id])
-    if(user.id == current_user.id || @current_user.patients.include?(user)) 
+    if(user.id == current_user.id || @current_user.patients.include?(user) || current_user.is_administrator?) 
       events_per_page = 25
       conditions = "user_id = #{user.id}"
       total = Event.count(:conditions => conditions)

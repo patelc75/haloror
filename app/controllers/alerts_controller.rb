@@ -7,7 +7,7 @@ class AlertsController < ApplicationController
       @alert_types << type        
     end
     roles_user = RolesUser.find(params[:id])
-    if roles_user.user_id == current_user.id
+    if roles_user.user_id == current_user.id || current_user.is_administrator?
       @roles_user = roles_user
     else
       redirect_to :action => 'unauthorized', :controller => 'security'
@@ -18,7 +18,7 @@ class AlertsController < ApplicationController
   def toggle(what) 
     
     roles_user = RolesUser.find(params[:id])
-    if roles_user.user_id == current_user.id
+    if roles_user.user_id == current_user.id || current_user.is_administrator?
       @roles_user = roles_user
        
     #if alert_opt = AlertOption.find(:first,:conditions => "roles_user_id = #{params[:id]} and alert_type_id = #{alert.id}")

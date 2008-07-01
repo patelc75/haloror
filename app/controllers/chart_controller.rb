@@ -8,7 +8,9 @@ class ChartController < ApplicationController
   layout "application"
   
   def flex
-    
+    if !params[:id].blank? && current_user.is_administrator?
+      session[:halo_user_id] = params[:id]
+    end
   end
 
   

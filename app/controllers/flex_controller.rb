@@ -225,15 +225,18 @@ class FlexController < ApplicationController
     end
     
     # if no user id from chart, we want to run initialization
-    if @query[:userID].nil?
+    if @query[:userID].nil? && session[:halo_user_id].blank?
       initialize_chart 
+    elsif @query[:userID].nil?
+      @default_user = User.find(session[:halo_user_id])
+      @query[:userID] = session[:halo_user_id]
     else
       @default_user = User.find(@query[:userID])
     end
     
     
     #current_user must be a caregiver for user with id userID or self
-    unless @default_user.id == current_user.id || current_user.patients.include?(@default_user)
+    unless @default_user.id == current_user.id || current_user.patients.include?(@default_user) || current_user.is_administrator?
       redirect_to :action => 'unauthorized', :controller => 'security'
     end
     
