@@ -7,7 +7,7 @@ function getConfig() {
     
     //make request to check to check if current user is admin
     try{
-	    new Ajax.Request('/sessions/is_admin', {
+	    new Ajax.Request('/security/is_admin/', {
 	        asynchronous: false,  
 	        method: 'get',
 	        onSuccess: function(transport) {

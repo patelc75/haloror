@@ -55,11 +55,5 @@ class SessionsController < ApplicationController
     redirect_back_or_default('/')
   end
   
-  def is_admin
-    if current_user && current_user.is_administrator()
-      render :text => 'true'
-    else
-      render :text => 'false'
-    end
-  end
+  
 end
