@@ -30,13 +30,12 @@ class FlexController < ApplicationController
   protected
   
   def gather_data
-    default_user = User.find(@query[:user_id])
     
     # get data for default user
-    @users << get_data_for_user(default_user, false)
+    @users << get_data_for_user(@default_user, false)
     
-    # get lastreading for each user the default_user is a caregiver of
-    default_user.patients.each do |patient|
+    # get lastreading for each user the @default_user is a caregiver of
+    @default_user.patients.each do |patient|
       @users << get_data_for_user(patient)
     end
   end
@@ -226,7 +225,17 @@ class FlexController < ApplicationController
     end
     
     # if no user id from chart, we want to run initialization
-    initialize_chart if @query[:userID].nil?
+    if @query[:userID].nil?
+      initialize_chart 
+    else
+      @default_user = User.find(@query[:userID])
+    end
+    
+    
+    #current_user must be a caregiver for user with id userID or self
+    unless @default_user.id == current_user.id || current_user.patients.include?(@default_user)
+      redirect_to :action => 'unauthorized', :controller => 'security'
+    end
     
     # map userID to user_id
     @query[:user_id] = @query[:userID]
@@ -237,6 +246,7 @@ class FlexController < ApplicationController
   def initialize_chart
     @query[:num_points] = 0                        # we want discreet data
     @query[:userID] = current_user.id              # default user is the one who's currently logged in
+    @default_user = current_user
     @query[:enddate] = Time.now                    # enddate is now
     @query[:startdate] = @query[:enddate] - 600   # startdate is enddate - 10 minutes
   end
