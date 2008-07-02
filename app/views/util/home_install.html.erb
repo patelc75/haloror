@@ -1,0 +1,15 @@
+<b>Unactivated users</b>
+<table>
+  <tr>
+    <td><b>id</b></td>
+    <td><b>login</b></td>
+    <td><b>Activate</b></td>
+  </tr>
+  <% @users.each do |user| %>
+    <tr>
+    <td><%= user.id %> </td>
+    <td><%= user.login %> </td>
+    <td><%= link_to 'Activate', :controller => 'users', :action => 'activate', :id => user.activation_code %></td>
+  </tr>
+  <% end %>
+</table>

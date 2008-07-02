@@ -21,4 +21,8 @@ class UtilController < ApplicationController
   def hostname
     render :layout => false
   end
+  
+  def home_install
+    @users = User.find(:all, :conditions => 'activation_code is not null')
+  end
 end
