@@ -30,13 +30,28 @@ class FlexController < ApplicationController
   protected
   
   def gather_data
-    
+    sent_first = false
     # get data for default user
-    @users << get_data_for_user(@default_user, false)
-    
+    if(@default_user.is_halouser?)
+      @users << get_data_for_user(@default_user, false)
+      sent_first = true
+    end
     # get lastreading for each user the @default_user is a caregiver of
-    @default_user.patients.each do |patient|
-      @users << get_data_for_user(patient)
+    if(sent_first)
+      @default_user.patients.each do |patient|
+        @users << get_data_for_user(patient)
+      end
+    else
+      patients = @default_user.patients
+      if patients && patients.size > 0
+        @users << get_data_for_user(patients[0], false)
+        if patients.size > 1
+          patients = patients.slice(1, patients.size - 1)
+          patients.each do |patient|
+            @users << get_data_for_user(patient)
+          end
+        end
+      end
     end
   end
   
