@@ -16,14 +16,18 @@ class FlexController < ApplicationController
     
     # build query hash
     build_query_hash
-    
-    # gather data
-    gather_data
-    
-    if params[:test]
-      render :partial => 'chart_data_test', :locals => {:query => @query, :users => @users}
+    #current_user must be a caregiver for user with id userID or self
+    unless @default_user.id == current_user.id || current_user.patients.include?(@default_user) || current_user.is_administrator?
+      redirect_to :action => 'unauthorized', :controller => 'security'
     else
-      render :partial => 'chart_data', :locals => {:query => @query, :users => @users}
+      # gather data
+      gather_data
+    
+      if params[:test]
+        render :partial => 'chart_data_test', :locals => {:query => @query, :users => @users}
+      else
+        render :partial => 'chart_data', :locals => {:query => @query, :users => @users}
+      end
     end
   end
   
@@ -250,10 +254,7 @@ class FlexController < ApplicationController
     end
     
     
-    #current_user must be a caregiver for user with id userID or self
-    unless @default_user.id == current_user.id || current_user.patients.include?(@default_user) || current_user.is_administrator?
-      redirect_to :action => 'unauthorized', :controller => 'security'
-    end
+    
     
     # map userID to user_id
     @query[:user_id] = @query[:userID]
