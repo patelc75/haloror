@@ -23,11 +23,8 @@ class UtilController < ApplicationController
   end
   
   def home_install
-    #events_per_page = 25
-    #conditions = "event_type = 'Fall' or event_type = 'Panic'"
-    #@users = User.paginate :page => params[:page], :order => "created_at DESC", :conditions => conditions, :per_page => events_per_page
-
-    @users = User.find(:all, :order => "created_at DESC")
+     events_per_page = 25
+     @users = User.paginate :page => params[:page], :order => "created_at DESC", :per_page => events_per_page
   end
   
   def delete_panics
