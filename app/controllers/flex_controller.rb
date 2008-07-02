@@ -17,9 +17,7 @@ class FlexController < ApplicationController
     # build query hash
     build_query_hash
     #current_user must be a caregiver for user with id userID or self
-    unless @default_user.id == current_user.id || current_user.patients.include?(@default_user) || current_user.is_administrator?
-      redirect_to :action => 'unauthorized', :controller => 'security'
-    else
+    if current_user != :false && (@default_user.id == current_user.id || current_user.patients.include?(@default_user) || current_user.is_administrator?)
       # gather data
       gather_data
     
@@ -28,6 +26,8 @@ class FlexController < ApplicationController
       else
         render :partial => 'chart_data', :locals => {:query => @query, :users => @users}
       end
+    else
+      redirect_to :action => 'unauthorized', :controller => 'security'
     end
   end
   
