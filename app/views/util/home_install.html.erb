@@ -1,15 +1,24 @@
-<b>Unactivated users</b>
+<h1>Home install</h1>
+<br>
 <table>
   <tr>
-    <td><b>id</b></td>
-    <td><b>login</b></td>
-    <td><b>Activate</b></td>
+    <td><b>id&nbsp</b></td>
+    <td><b>login&nbsp</b></td>
+    <td><b>Activated?&nbsp</b></td>
+    <td><b>See Events&nbsp</b></td>
+    <td><b>Delete User's Panics&nbsp</b></td>
   </tr>
   <% @users.each do |user| %>
     <tr>
-    <td><%= user.id %> </td>
-    <td><%= user.login %> </td>
-    <td><%= link_to 'Activate', :controller => 'users', :action => 'activate', :id => user.activation_code %></td>
-  </tr>
+      <td><%= user.id %> </td>
+      <td><%= user.login %> </td>
+      <% if user.activation_code != nil %>
+      <td><%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %></td>
+      <% else %>
+      <td>Activated</td>
+      <% end %>
+      <td><%= link_to 'Events', :controller => 'events', :action => 'user', :id => user.id %></td>
+      <td><%= link_to 'Delete Panics', :action => 'delete_panics', :id => user.id %></td>
+    </tr>
   <% end %>
 </table>
