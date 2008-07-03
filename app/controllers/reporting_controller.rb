@@ -2,11 +2,11 @@ class ReportingController < ApplicationController
   LOST_DATA_GAP = 15.seconds
   
   def users
-    @users = User.find(:all, :include => [:roles, :roles_users, :access_logs, :profile])
+    @users = User.find(:all, :include => [:roles, :roles_users])
   end
   
   def user_hidden
-    @user = User.find(params[:user_id], :include => [:roles, :roles_users, :access_logs, :profile])
+    @user = User.find(params[:user_id], :include => [:roles, :roles_users])
     render :partial => 'user_hidden', :layout => false
   end
   
