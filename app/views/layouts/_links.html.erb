@@ -16,7 +16,7 @@
 			<% end %>
 
 			<% if caregiver %>
-				<li><%= link_to 'Caregiver&nbsp;Table', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
+				<li><%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
 			<% end %>
 			  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
 			<% if current_user.is_administrator? %>
