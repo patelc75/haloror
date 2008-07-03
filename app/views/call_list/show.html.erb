@@ -11,7 +11,7 @@
 		  else
 				name = "#{@user[:login]}'s"
 			end %>
-			<%=link_to_remote_redbox(name, :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => params[:id], :frame => true,:user_id => current_user.id }, :html => {:method => :get})%>
+			<%=link_to_remote_redbox(name, :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => params[:id], :frame => true,:user_id => params[:id] }, :html => {:method => :get})%>
 			<% if @user.is_halouser? %>
 			Caregivers
 			<% end %>
