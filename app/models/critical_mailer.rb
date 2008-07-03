@@ -1,5 +1,5 @@
 class CriticalMailer < ActionMailer::ARMailer
-  
+    
   def device_alert_notification(device_alert)
     if(device_alert.device == nil)
       raise "#{device_alert.class.to_s}: device_id = #{device_alert.device_id} does not exist"
@@ -88,7 +88,7 @@ class CriticalMailer < ActionMailer::ARMailer
     operators = User.operators
     if operators
       operators.each do |operator|
-       recipients_setup(operator, operator.alert_option_by_type_operator(operator,fall))
+        recipients_setup(operator, operator.alert_option_by_type_operator(operator,fall))
       end
     end
     if(fall.user.profile)
@@ -121,6 +121,15 @@ class CriticalMailer < ActionMailer::ARMailer
 
     body :timestamp => panic.timestamp,
       :user => panic.user
+  end
+
+  def test_email(to, subject, body)
+    @from        = "no-reply@halomonitoring.com"
+    @subject     = "[HALO] " + subject
+    @sent_on     = Time.now
+    @body[:user] = body  #sends params to body
+    @recipients  = to
+    self.priority = Priority.IMMEDIATE
   end
   
   protected

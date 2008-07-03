@@ -23,8 +23,8 @@ class UtilController < ApplicationController
   end
   
   def home_install
-     events_per_page = 25
-     @users = User.paginate :page => params[:page], :order => "created_at DESC", :per_page => events_per_page
+    events_per_page = 25
+    @users = User.paginate :page => params[:page], :order => "created_at DESC", :per_page => events_per_page
   end
   
   def delete_panics
@@ -32,4 +32,13 @@ class UtilController < ApplicationController
     Panic.delete_all("user_id = #{params[:id]}")
     redirect_to :controller => :events, :action => :user, :id => params[:id]
   end
+  
+  def send_test_email
+    
+  end
+  
+  def deliver_test_email
+    email = CriticalMailer.deliver_test_email(params[:to], params[:subject], params[:body])
+  end
+  
 end

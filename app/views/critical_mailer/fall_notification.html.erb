@@ -1,6 +1,8 @@
+Hello,
 <% if @user.profile %>
 We detected that <%= "#{@user.profile.first_name}" %> <%= "#{@user.profile.last_name}" %> fell on <%= @timestamp %>
 <% else %>
 We detected that <%= "{#@user.login}" %> pressed the panic button on <%= @timestamp %>  
 <% end %>  
 The Halo server received the event on <%= "#{Time.now}" %>
+Thanks, Halo Staff

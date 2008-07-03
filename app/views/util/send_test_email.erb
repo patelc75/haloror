@@ -1,0 +1,11 @@
+<h1>Send test email</h1>
+<br>
+  <%= form_tag :action => "deliver_test_email" %>
+   To: <%= text_field_tag 'to' %>
+<br />
+   Subject: <%= text_field_tag 'subject'%>
+<br>
+  <%= text_area_tag 'body', "This is a test", nil, :rows => 10, :cols => 25%>
+<br />
+   <%= submit_tag %>
+   </form>
