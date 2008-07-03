@@ -127,9 +127,9 @@ class CriticalMailer < ActionMailer::ARMailer
     @from        = "no-reply@halomonitoring.com"
     @subject     = "[HALO] " + subject
     @sent_on     = Time.now
-    @body[:user] = body  #sends params to body
+    @body[:body_text] = body  #sends params to body
     @recipients  = to
-    self.priority = Priority.IMMEDIATE
+    self.priority = Priority::IMMEDIATE
   end
   
   protected

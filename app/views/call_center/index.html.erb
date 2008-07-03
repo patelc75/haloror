@@ -9,11 +9,14 @@
 		<div class="col-200">
 			Name
 		</div>
-		<div class="col-250">
+		<div class="col-200">
 			Status
 		</div>
-		<div class="col-250">
+		<div class="col-200">
 			Resolve
+		</div>
+		<div class="col-100">
+			Chart
 		</div>
 	</div>
 	<% @events.each do |event| %>
@@ -27,11 +30,14 @@
 			<div class="col-200">
 				<a href="/call_list/show/<%=event.user[:id]%>"><%=event.user.profile[:first_name]%> <%=event.user.profile[:last_name]%></a>
 			</div>
-			<div class="col-250" id="<%=event.id%>_accept">
+			<div class="col-200" id="<%=event.id%>_accept">
 				<%=render :partial => 'accept', :locals => {:event => event}%>
 			</div>
-			<div class="col-250" id="<%=event.id%>_resolve">
+			<div class="col-200" id="<%=event.id%>_resolve">
 				<%=render :partial => 'resolve', :locals => {:event => event}%>
+			</div>
+			<div class="col-100">
+				<a target="_blank" href="/chart/flex/<%= event.user.id %>">Chart</a>
 			</div>
 		</div>
 	<% end %>
