@@ -80,8 +80,8 @@ class ProfilesController < ApplicationController
   end
 
   def edit_caregiver_profile
-    @user = User.find(params[:id], :include => :profile)
-    @profile = @user.profile
+    @profile = Profile.find(params[:id], :include => :user)
+    @user = @profile.user
     if(!params[:roles_user_id].blank?)
       @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
     end
