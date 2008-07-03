@@ -1,33 +1,32 @@
 <% caregiver = current_user.is_caregiver? %>
 <ul id="my_links">
 	<li>
-		My Links&nbsp;
+		My&nbsp;Links&nbsp;
 		<ul>
 			<li><%=link_to_remote_redbox('My&nbsp;Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%></li>
 
 			<% if current_user.is_halouser? %>
-				<li><%=link_to('My Alerts', :controller => "alerts", :action => "index", :id => current_user.roles_user_by_role_name('halouser').id)%></li>
+				<li><%=link_to('My&nbsp;Alerts', :controller => "alerts", :action => "index", :id => current_user.roles_user_by_role_name('halouser').id)%></li>
 
 				<% if !caregiver %>
-					<li><%= link_to 'My Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
+					<li><%= link_to 'My&nbsp;Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
 				<% end %>
 
-				<li><%= link_to 'My Events', :controller => 'events', :action => 'user', :id => current_user.id %></li>
+				<li><%= link_to 'My&nbsp;Events', :controller => 'events', :action => 'user', :id => current_user.id %></li>
 			<% end %>
 
 			<% if caregiver %>
-				<li><%= link_to 'Caregiver Table', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
+				<li><%= link_to 'Caregiver&nbsp;Table', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
 			<% end %>
 			  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
 			<% if current_user.is_administrator? %>
 				<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
 				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'index' %></li>
 				<li><%= link_to 'Operators', :controller => 'call_center', :action => 'show' %></li>
-				<li><%= link_to 'Call Center', url_for(:controller => 'call_center', :action => 'index', :my_links => 'Call Center') %></li>
+				<li><%= link_to 'Call&nbsp;Center', url_for(:controller => 'call_center', :action => 'index') %></li>
 				<li><%= link_to 'Info', url_for(:controller => 'util', :action => 'info', :my_links => 'Info') %></li>
-				<li><%= link_to 'Home Installs', url_for(:controller => 'util', :action => 'home_install', :my_links => 'Home Installs') %></li>
-			<% end %>
-			<li><a href="/logout" style="font-weight:bold">Logout</a></li>
+				<li><%= link_to 'Home&nbsp;Installs', url_for(:controller => 'util', :action => 'home_install') %></li>
+			<% end %>			
 		</ul>
 	</li>
 </ul>

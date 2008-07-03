@@ -70,12 +70,12 @@
 		<div class="container">
 			<div id="user-info">
 			<% if logged_in? %>
+				<%= render :partial => '/layouts/links' %>
+				
 				Welcome, <%=current_user.profile.first_name%> <!--% if ENV['RAILS_ENV'] == "development"%--> (#<%=current_user.id%>) <!--% end %-->
-				<span class="user">
-
-				</span>				
-				<span class="divider">|</span> 
-					<%= render :partial => '/layouts/links' %>				
+				<span class="divider">|</span>
+				<a href="/logout" style="font-weight:bold">Logout</a>
+				<span class="divider">|</span> 					
 			<% end %>
 			</div>
 			<img src="/images/halo-logo-2.gif" alt="Halo Research" id="logo-2" />
