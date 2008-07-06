@@ -3,6 +3,15 @@ class ReportingController < ApplicationController
   
   def users
     @users = User.find(:all, :include => [:roles, :roles_users])
+    @roles = ['administrator', 'operator', 'caregiver', 'halouser']
+    
+    @user_names = {''=>''}
+    
+    User.find(:all).each do |user|
+      if user
+        @user_names[user.login] = user.id
+      end
+    end
   end
   
   def user_hidden
