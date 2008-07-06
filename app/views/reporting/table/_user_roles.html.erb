@@ -1,4 +1,9 @@
-<% user.roles.each do |role| %>
-	<%=role.name%>
-<% end %>
+<% rs = []
+	 user.roles.each do |role| 
+	  rs << role.name
+   end 
+%>
+<%  rs.uniq.sort.each do |name| %>
+			<%= name %>
+<%  end %>
 &nbsp;
