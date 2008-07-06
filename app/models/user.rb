@@ -202,8 +202,13 @@ class User < ActiveRecord::Base
     os = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
     os2 = []
     os.each do |operator|
-      opt = operator.roles_user_by_role_name('operator').roles_users_option
-      if opt && !opt.removed
+      role = operator.roles_user_by_role_name('operator')
+      opt = role.roles_users_option
+      if opt.blank? 
+        opt = RolesUsersOption.new(:roles_user_id => role.id, :active => true, :removed => false)
+        opt.save!
+        os2 << operator
+      elsif !opt.removed
         os2 << operator
       end
     end

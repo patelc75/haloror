@@ -11,12 +11,9 @@
 %>
 		<% if opts = roles_user.roles_users_option %>
 			<%= render :partial => "call_center/operator", :locals => { :user => user, :operator => operator, :opts => opts, :position => position , :i => i, :role => operator } %>			
-		<% end %>
-
-	<% 
-		if roles_user.roles_users_option.active
-			position = position+1 
-		end
-	%>
+		<% 		if opts.active
+							position = position+1 
+					end				
+		end %>
 	<% i = i+1 %>
 <% end %>
