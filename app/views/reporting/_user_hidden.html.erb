@@ -9,7 +9,6 @@
 		</div>
 		
 		<% caregivers.each do |caregiver| %>
-			<% caregiver[:id] = caregiver[:user_id]%>
 			<%=render :partial => 'reporting/table/user_row', :locals => {:user => caregiver, :toggle => false, :caregiver => true}%>
 		<% end %>
 		<br />
