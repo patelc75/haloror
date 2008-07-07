@@ -46,7 +46,7 @@ class User < ActiveRecord::Base
   validates_length_of       :email,    :within => 3..100
   #validates_length_of       :serial_number, :is => 10
   
-  validates_uniqueness_of   :login, :email, :case_sensitive => false
+  validates_uniqueness_of   :login, :case_sensitive => false
   
   before_save :encrypt_password
   before_create :make_activation_code
