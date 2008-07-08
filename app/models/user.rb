@@ -129,10 +129,10 @@ class User < ActiveRecord::Base
     patients = []
     
     RolesUser.find(:all, :conditions => "user_id = #{self.id}").each do |role_user|
-                          if role_user.role and role_user.role.name == 'caregiver' and role_user.roles_users_option and !role_user.roles_users_option.removed
-                            patients << User.find(role_user.role.authorizable_id, :include => [:roles, :roles_users, :access_logs, :profile])
-                          end
-                        end
+      if role_user.role and role_user.role.name == 'caregiver' and role_user.roles_users_option and !role_user.roles_users_option.removed
+        patients << User.find(role_user.role.authorizable_id, :include => [:roles, :roles_users, :access_logs, :profile])
+      end
+    end
     
     patients
   end
@@ -188,7 +188,7 @@ class User < ActiveRecord::Base
         end
       end
     end
-      cgs = cgs.sort
+    cgs = cgs.sort
   end
   def roles_user_by_role_name(role_name)
     if self.roles_users
@@ -213,6 +213,14 @@ class User < ActiveRecord::Base
       end
     end
     return os2
+  end
+  
+  def name()
+    if(profile and profile.last_name and profile.first_name)
+      profile.first_name + " " + profile.last_name 
+    else
+      login
+    end
   end
   
   protected
