@@ -1,6 +1,6 @@
 class StrapOffAlert < DeviceAlert
- set_table_name "strap_off_alerts"
- DEVICE_CHEST_STRAP_TYPE = 'Halo Chest Strap'
+  set_table_name "strap_off_alerts"
+  DEVICE_CHEST_STRAP_TYPE = 'Halo Chest Strap'
   def self.job_detect_straps_off
     ActiveRecord::Base.logger.debug("StrapOffAlert.job_detect_straps_off running at #{Time.now}")
     conds = []
@@ -11,10 +11,10 @@ class StrapOffAlert < DeviceAlert
     alerts = StrapOffAlert.find(:all,
       :conditions => conds.join(' and '))
     alerts.each do |alert|
-        soa = StrapOnAlert.new(:device_id => alert.device_id)
-        soa.save!
-        alert.reconnected_at = Time.now
-        alert.save!
+      soa = StrapOnAlert.new(:device_id => alert.device_id)
+      soa.save!
+      alert.reconnected_at = Time.now
+      alert.save!
     end
 
     conds = []
@@ -26,7 +26,7 @@ class StrapOffAlert < DeviceAlert
 
     devices.each do |device|
       
-     process_device_strap_off(device)
+      process_device_strap_off(device)
     end
     ActiveRecord::Base.verify_active_connections!()
     true
@@ -36,13 +36,18 @@ class StrapOffAlert < DeviceAlert
     if number_attempts == MAX_ATTEMPTS_BEFORE_NOTIFICATION_STRAP_OFF
       device.users.each do |user|
         Event.create(:user_id => user.id, 
-                   :event_type => StrapOffAlert.class_name, 
-                   :event_id => id, 
-                   :timestamp => created_at || Time.now)
+          :event_type => StrapOffAlert.class_name, 
+          :event_id => id, 
+          :timestamp => created_at || Time.now)
         CriticalMailer.deliver_strap_off_notification(self, user)
       end
     end
   end
+  
+  def to_s
+    "Strap has been off for at least #{STRAP_OFF_TIMEOUT} minutes"
+  end
+  
   private
   def self.process_device_strap_off(device)
     alert = StrapOffAlert.find(:first,

@@ -1,12 +1,13 @@
 class CriticalMailer < ActionMailer::ARMailer
-    
+  include UtilityHelper
+  
   def device_alert_notification(device_alert)
     if(device_alert.device == nil)
       raise "#{device_alert.class.to_s}: device_id = #{device_alert.device_id} does not exist"
     else
       setup_email(device_alert.user, device_alert)
     end
-    description = camelcase_to_spaced(device_alert.class.to_s)
+    description = UtilityHelper.camelcase_to_spaced(device_alert.class.to_s)
     @subject    += "#{description} event"
     self.priority = device_alert.priority
     body :alert_type => description, 
@@ -91,13 +92,9 @@ class CriticalMailer < ActionMailer::ARMailer
         recipients_setup(operator, operator.alert_option_by_type_operator(operator,fall))
       end
     end
-    if(fall.user.profile)
-      @subject    += "#{fall.user.profile.first_name} #{fall.user.profile.last_name} fell"
-    else
-      @subject    += "#{fall.user.login} fell"
-    end
     
-    self.priority = fall.priority
+    @subject      += fall.to_s
+    self.priority  = fall.priority
 
     body :timestamp => fall.timestamp,
       :user => fall.user
@@ -112,20 +109,37 @@ class CriticalMailer < ActionMailer::ARMailer
         recipients_setup(operator, operator.alert_option_by_type_operator(operator,panic))
       end
     end
-    if(panic.user.profile)
-      @subject    += "#{panic.user.profile.first_name} #{panic.user.profile.last_name} panicked"
-    else
-      @subject    += "#{panic.user.login} panicked"
-    end
+    
+    @subject      += panic.to_s
     self.priority = panic.priority
 
     body :timestamp => panic.timestamp,
       :user => panic.user
   end
 
+  def call_center_notification(event_action)
+    @from        = "no-reply@halomonitoring.com"
+    @subject     = "[HALO] "
+    @sent_on     = Time.now
+    @recipients = Array.new
+    
+    operators = User.operators
+    if operators
+      operators.each do |operator|
+        recipients_setup(operator, operator.alert_option_by_type_operator(operator,event_action.event.event))
+      end
+    end
+    
+    @subject      += event_action.to_s
+    self.priority  = event_action.priority
+
+    body :event_action => event_action
+  end
+  
   def test_email(to, subject, body)
     @from        = "no-reply@halomonitoring.com"
-    @subject     = "[HALO] " + subject
+    @subject     = "[HALO] " 
+    @subject     += subject unless subject.blank?
     @sent_on     = Time.now
     @body[:body_text] = body  #sends params to body
     @recipients  = to
@@ -179,10 +193,6 @@ class CriticalMailer < ActionMailer::ARMailer
         end
       end
     end  
-  end
-  
-  def camelcase_to_spaced(word)
-    word.gsub(/([A-Z])/, " \\1")
   end
 end
 	

@@ -63,9 +63,7 @@ class ApplicationController < ActionController::Base
     @caregivers = user.caregivers_sorted_by_position
   end
   
-  def camelcase_to_spaced(word)
-    word.gsub(/([A-Z])/, " \\1").strip
-  end
+
   
   def format_datetime(datetime,user)
     #lookup = {-7 => 'PST', -6 => 'MST', -5 => 'CST', -4 => 'EST'}

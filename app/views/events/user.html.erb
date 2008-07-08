@@ -22,10 +22,10 @@
 				<%=event[:timestamp].to_s(:short)%>
 			</div>
 			<div class="col-150">
-				<%=event[:event_type]%>
+				<%=UtilityHelper.camelcase_to_spaced(event[:event_type])%>
 			</div>
 			<div class="col-300">
-				<%=event.event.type%>
+				<%=event.event.to_s%>
 			</div>
 		</div>
 	<% end %>

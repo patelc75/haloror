@@ -17,4 +17,8 @@ class DeviceAvailableAlert < ActiveRecord::Base
       end
     end
   end
+  
+  def to_s
+    "Device available (back in range or battery charging) on #{created_at}"
+  end
 end 

@@ -46,7 +46,7 @@ Rails::Initializer.run do |config|
   config.action_controller.session = { :session_key => "_myapp_session", :secret => "some secret phrase of at least 30 characters" }
   
   # See Rails::Configuration for more options
-  config.active_record.observers = :user_observer, :panic_observer, :fall_observer, :device_alert_observer
+  config.active_record.observers = :user_observer, :panic_observer, :fall_observer, :device_alert_observer, :event_action_observer
 end
 
 # Add new inflection rules using the following format 

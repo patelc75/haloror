@@ -28,7 +28,7 @@
 				<%=event.timestamp.to_s(:short)%>
 			</div>
 			<div class="col-200">
-				<a href="/call_list/show/<%=event.user[:id]%>"><%=event.user.profile[:first_name]%> <%=event.user.profile[:last_name]%></a>
+				<a href="/call_list/show/<%=event.user[:id]%>"><%=event.user.name%></a>
 			</div>
 			<div class="col-200" id="<%=event.id%>_accept">
 				<%=render :partial => 'accept', :locals => {:event => event}%>

@@ -1,4 +1,6 @@
 class FlexController < ApplicationController
+  include UtilityHelper
+  
   def chart
     
     @query = {}
@@ -224,7 +226,7 @@ class FlexController < ApplicationController
       if !event_id.blank?
         event = Event.find(event_id)
         if event && event.event_type
-          return camelcase_to_spaced(event.event_type)
+          return UtilityHelper.camelcase_to_spaced(event.event_type)
         end
       end
     end

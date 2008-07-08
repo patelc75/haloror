@@ -15,12 +15,16 @@ class GatewayOfflineAlert < ActiveRecord::Base
       
       device.users.each do |user|
         Event.create(:user_id => user.id, 
-                     :event_type => GatewayOfflineAlert.class_name, 
-                     :event_id => id, 
-                     :timestamp => created_at || Time.now)
+          :event_type => GatewayOfflineAlert.class_name, 
+          :event_id => id, 
+          :timestamp => created_at || Time.now)
         
         CriticalMailer.deliver_gateway_offline_notification(self, user)
       end
     end
+  end
+  
+  def to_s
+    "Gateway offline for at least #{GATEWAY_OFFLINE_TIMEOUT} minutes"
   end
 end 

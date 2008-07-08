@@ -22,12 +22,16 @@ class DeviceUnavailableAlert < ActiveRecord::Base
 
       device.users.each do |user|
         Event.create(:user_id => user.id, 
-                     :event_type => DeviceUnavailableAlert.class_name, 
-                     :event_id => id, 
-                     :timestamp => created_at || Time.now)
+          :event_type => DeviceUnavailableAlert.class_name, 
+          :event_id => id, 
+          :timestamp => created_at || Time.now)
         
         CriticalMailer.deliver_device_unavailable_alert_notification(self, user)
       end
     end
+  end
+  
+  def to_s
+    "Device Unavailable (out of range or battery dead) for at least #{DEVICE_UNAVAILABLE_TIMEOUT} minutes"
   end
 end 

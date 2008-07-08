@@ -4,14 +4,7 @@
 <div id="call_list-col">
 	<div id="call_list-col-header">
 		Account Settings: <span style="color:#000;font-size:.75em">
-			<% name = nil
-			if profile = @user.profile and !profile[:first_name].blank? 
-				name = profile[:first_name]
-				name = name + " #{profile[:last_name]}'s" if profile[:last_name]
-		  else
-				name = "#{@user[:login]}'s"
-			end %>
-			<%=link_to_remote_redbox(name, :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => @user.profile.id, :frame => true,:user_id => @user.id }, :html => {:method => :get})%>
+			<%=link_to_remote_redbox(@user.name + "`s", :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => @user.profile.id, :frame => true,:user_id => @user.id }, :html => {:method => :get})%>
 			<% if @user.is_halouser? %>
 			Caregivers
 			<% end %>
