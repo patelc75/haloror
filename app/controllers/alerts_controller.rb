@@ -17,7 +17,7 @@ class AlertsController < ApplicationController
   
   def toggle(what) 
     
-    roles_user = RolesUser.find(params[:id])
+    roles_user = RolesUser.find(params[:roles_user_id])
     if roles_user.user_id == current_user.id || current_user.is_administrator?
       @roles_user = roles_user
        
@@ -45,7 +45,7 @@ class AlertsController < ApplicationController
       end
     
       alert_opt[column.to_sym] = state
-      alert_opt.save
+      alert_opt.save!
     
       render :nothing => true
     else
