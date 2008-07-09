@@ -1,0 +1,2 @@
+page["notes_#{@note.id}"].replace_html ''
+page["notes_column_#{@note.id}"].replace_html h(@note.notes)

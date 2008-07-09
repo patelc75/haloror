@@ -1,6 +1,9 @@
 <div class="table">
 	<div class="row header">
 <div class="col-100">
+	Actions
+</div>
+<div class="col-100">
 	User ID
 </div>
 <div class="col-100">
@@ -17,6 +20,11 @@
 	<% @notes.each do |note| %>
 	<div class="row">
 		<div class="col-100">
+			<%= link_to_remote 'edit', :update => "notes_#{note.id}", :url => {:controller => 'call_center', :action => 'edit_note', :id => note.id }%> 
+			&nbsp;|&nbsp; 
+			<%= link_to 'delete', :controller => 'call_center', :action => 'delete_note', :id => note.id %>
+		</div>
+		<div class="col-100">
 			<%= note.user_id %>
 		</div>
 		<div class="col-100">
@@ -25,9 +33,12 @@
 		<div class="col-250">
 			<%= note.created_at %>
 		</div>
-		<div class="col-350">
+		<div id="notes_column_<%= note.id %>" class="col-350">
 			<%= h(note.notes) %>
 		</div>
+	</div>
+	<div id="notes_<%= note.id %>">
+	
 	</div>
 	<% end %>
 <% end %>

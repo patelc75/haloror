@@ -1,0 +1,6 @@
+<%= form_remote_tag :url => url_for(:controller => 'call_center', :action => 'save_note')  %>
+<input type="hidden" name="id" value="<%= @note.id %>" />
+
+<%= text_area_tag :notes, @note.notes, :cols => 100, :rows => 5 %>
+<%= submit_tag 'Save Note' %>
+</form>

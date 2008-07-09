@@ -38,7 +38,9 @@
                                 <a target="_blank" href="/chart/flex/<%= event.user.id %>">Chart</a>
 			</div>
 			<div class="col-75">
-				<%= link_to_remote 'Notes', :update => "notes_#{event.id}", :url => {:action => 'new_note', :event_id => event.id, :user_id => event.user.id }%>
+				<%= link_to_remote '+', :update => "notes_#{event.id}", :url => {:action => 'toggle_note', :new_note => true, :event_id => event.id, :user_id => event.user.id }%>
+				&nbsp;
+					<%= link_to_remote '-', :update => "notes_#{event.id}", :url => {:action => 'toggle_note' }%>
 			</div>
 			<div class="col-150" id="<%=event.id%>_accept">
 				<%=render :partial => 'accept', :locals => {:event => event}%>
