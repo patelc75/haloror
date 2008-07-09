@@ -1,7 +1,7 @@
 <!-- See http://corelib.rubyonrails.org/classes/CGI.html for more environment variables -->
-HTTP_HOST: <%= request.env["HTTP_HOST"].to_s %>
-<br>
-SERVER_NAME: <%= request.env["SERVER_NAME"].to_s %>
+HTTP_HOST: <%= request.env["HTTP_HOST"].to_s %> <br>
+SERVER_NAME: <%= request.env["SERVER_NAME"].to_s %> <br>
+PostgreSQL Version: <%= ActiveRecord::Base.connection.select_value("SELECT  VERSION()") %>
 <br><br>
 <b>Rufus Constants </b><br>
 GATEWAY_OFFLINE_TIMEOUT= <%= GATEWAY_OFFLINE_TIMEOUT %><br>
