@@ -1,5 +1,5 @@
 <% if action = event.accepted? %>
-	Accepted by <%=action.user.login%> at <%=action.created_at.to_s(:short)%>
+	Accepted by <%=action.user.login%> at <%=format_datetime(action.created_at,current_user).to_time.strftime("%I:%M%p on %a %m/%d/%Y")%>
 <% else %>
 	<%=link_to_remote "Accept", :update => "#{event.id}_accept", :url => { :action => "accept", :id => event.id }%>
 <% end %>
