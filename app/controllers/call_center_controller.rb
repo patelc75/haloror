@@ -39,4 +39,32 @@ class CallCenterController < ApplicationController
     @operators = User.operators
     number_ext
   end
+  
+  def new_note
+    @event_id = params[:event_id]
+    @user_id = params[:user_id]
+    @note = Note.new
+    render :partial => 'notes', :layout => false
+  end
+  
+  def save_note
+    note = Note.new()
+    note.notes = params[:notes]
+    note.event_id = params[:event_id]
+    note.user_id = params[:user_id]
+    note.created_at = Time.now
+    note.save!
+    render :text => '', :layout => false
+  end
+  
+  def all_user_notes
+    user_id = params[:id]
+    @notes = Note.find(:all, :conditions => "user_id = #{user_id}")
+    render :template => 'call_center/all_notes'
+  end
+  def all_event_notes
+    event_id = params[:id]
+    @notes = Note.find(:all, :conditions => "event_id = #{event_id}")
+    render :template => 'call_center/all_notes'
+  end
 end

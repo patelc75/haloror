@@ -1,0 +1,34 @@
+<div class="table">
+	<div class="row header">
+<div class="col-100">
+	User ID
+</div>
+<div class="col-100">
+	Event ID
+</div>
+<div class="col-250">
+	Created At
+</div>
+<div class="col-350">
+	Note
+</div>
+</div>
+<% if @notes %>
+	<% @notes.each do |note| %>
+	<div class="row">
+		<div class="col-100">
+			<%= note.user_id %>
+		</div>
+		<div class="col-100">
+			<%= note.event_id %>
+		</div>
+		<div class="col-250">
+			<%= note.created_at %>
+		</div>
+		<div class="col-350">
+			<%= h(note.notes) %>
+		</div>
+	</div>
+	<% end %>
+<% end %>
+</div>

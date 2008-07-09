@@ -5,6 +5,7 @@ class User < ActiveRecord::Base
   acts_as_authorized_user
   acts_as_authorizable
   
+  has_many :notes
   has_many :panics
   has_many :batteries
   has_many :falls  

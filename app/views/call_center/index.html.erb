@@ -12,6 +12,9 @@
 		<div class="col-75">
 			Chart
 		</div>
+		<div class="col-75">
+			Notes
+		</div>
 		<div class="col-150">
 			Accept
 		</div>
@@ -34,12 +37,17 @@
 			<div class="col-75">
                                 <a target="_blank" href="/chart/flex/<%= event.user.id %>">Chart</a>
 			</div>
+			<div class="col-75">
+				<%= link_to_remote 'Notes', :update => "notes_#{event.id}", :url => {:action => 'new_note', :event_id => event.id, :user_id => event.user.id }%>
+			</div>
 			<div class="col-150" id="<%=event.id%>_accept">
 				<%=render :partial => 'accept', :locals => {:event => event}%>
 			</div>
 			<div class="col-150" id="<%=event.id%>_resolve">
 				<%=render :partial => 'resolve', :locals => {:event => event}%>
 			</div>
+		</div>
+		<div id="notes_<%=event.id %>">
 		</div>
 	<% end %>
         <br>

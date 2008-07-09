@@ -1,6 +1,7 @@
 class Event < ActiveRecord::Base
   include UtilityHelper
   
+  has_many :notes
   belongs_to :user
   #belongs_to :alert_type
   

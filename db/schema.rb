@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 140) do
+ActiveRecord::Schema.define(:version => 143) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -59,6 +59,7 @@ ActiveRecord::Schema.define(:version => 140) do
   end
 
   add_index "batteries", ["user_id", "timestamp"], :name => "index_batteries_on_timestamp_and_user_id"
+  add_index "batteries", ["user_id", "timestamp", "percentage"], :name => "index_batteries_on_timestamp_and_user_id_and_percentage"
 
   create_table "battery_charge_completes", :force => true do |t|
     t.integer  "device_id"
@@ -313,6 +314,13 @@ ActiveRecord::Schema.define(:version => 140) do
     t.datetime "timestamp_server"
   end
 
+  create_table "notes", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "event_id"
+    t.datetime "created_at"
+    t.text     "notes"
+  end
+
   create_table "panics", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
@@ -381,6 +389,7 @@ ActiveRecord::Schema.define(:version => 140) do
   end
 
   add_index "skin_temps", ["user_id", "timestamp"], :name => "index_skin_temps_on_timestamp_and_user_id"
+  add_index "skin_temps", ["user_id", "timestamp", "skin_temp"], :name => "index_skin_temps_on_timestamp_and_user_id_and_skin_temp"
 
   create_table "steps", :force => true do |t|
     t.integer  "user_id"
@@ -390,6 +399,7 @@ ActiveRecord::Schema.define(:version => 140) do
   end
 
   add_index "steps", ["user_id", "begin_timestamp"], :name => "index_steps_on_begin_timestamp_and_user_id"
+  add_index "steps", ["user_id", "begin_timestamp", "steps"], :name => "index_steps_on_begin_timestamp_and_user_id_and_steps"
 
   create_table "strap_fasteneds", :force => true do |t|
     t.integer  "device_id"
@@ -452,5 +462,6 @@ ActiveRecord::Schema.define(:version => 140) do
   end
 
   add_index "vitals", ["timestamp", "user_id"], :name => "index_vitals_on_timestamp_and_user_id"
+  add_index "vitals", ["heartrate", "timestamp", "user_id"], :name => "index_vitals_on_timestamp_and_user_id_and_heartrate"
 
 end
