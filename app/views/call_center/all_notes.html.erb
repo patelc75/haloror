@@ -9,7 +9,13 @@
 <div class="col-100">
 	Event ID
 </div>
-<div class="col-250">
+<div class="col-100">
+	Event Type
+</div>
+<div class="col-200">
+	Event Timestamp
+</div>
+<div class="col-200">
 	Created At
 </div>
 <div class="col-350">
@@ -30,7 +36,13 @@
 		<div class="col-100">
 			<%= note.event_id %>
 		</div>
-		<div class="col-250">
+		<div class="col-100">
+			<%= note.event.event_type %>
+		</div>
+		<div class="col-200">
+			<%= note.event.timestamp %>
+		</div>
+		<div class="col-200">
 			<%= note.created_at %>
 		</div>
 		<div id="notes_column_<%= note.id %>" class="col-350">

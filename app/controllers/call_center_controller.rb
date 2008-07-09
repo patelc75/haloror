@@ -58,12 +58,14 @@ class CallCenterController < ApplicationController
       note.event_id = params[:event_id]
       note.user_id = params[:user_id]
       note.created_at = Time.now
+      note.created_by = current_user.id
       note.notes = params[:notes]
       note.save!
       render :text => '', :layout => false
     else 
       note = Note.find(params[:id])
       user_id = note.user_id
+      note.created_by = current_user.id
       note.notes = params[:notes]
       note.save!
       @note = note
@@ -84,12 +86,12 @@ class CallCenterController < ApplicationController
   end
   def all_user_notes
     user_id = params[:id]
-    @notes = Note.find(:all, :conditions => "user_id = #{user_id}")
+    @notes = Note.find(:all, :conditions => "user_id = #{user_id}", :order => "created_at desc")
     render :template => 'call_center/all_notes'
   end
   def all_event_notes
     event_id = params[:id]
-    @notes = Note.find(:all, :conditions => "event_id = #{event_id}")
+    @notes = Note.find(:all, :conditions => "event_id = #{event_id}", :order => "created_at desc")
     render :template => 'call_center/all_notes'
   end
 end

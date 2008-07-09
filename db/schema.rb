@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 143) do
+ActiveRecord::Schema.define(:version => 144) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -319,6 +319,7 @@ ActiveRecord::Schema.define(:version => 143) do
     t.integer  "event_id"
     t.datetime "created_at"
     t.text     "notes"
+    t.integer  "created_by"
   end
 
   create_table "panics", :force => true do |t|
