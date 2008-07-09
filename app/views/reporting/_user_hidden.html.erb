@@ -32,9 +32,12 @@
 			<div class="col-225">
 				Latest Battery Reading
 			</div>
-			<div class="col-300">
+			<div class="col-200">
 				Last Charge
 			</div>
+				<div class="col-150">
+					Software Version
+				</div>
 			<div class="col-100">
 
 			</div>
@@ -49,8 +52,14 @@
 				<div class="col-225">
 					<%=render :partial => 'battery_reading', :locals => {:device => device}%>&nbsp;
 				</div>
-				<div class="col-300">
+				<div class="col-200">
 					<%=render :partial => 'charge', :locals => {:device => device}%>&nbsp;
+				</div>
+				<div class="col-150">&nbsp;
+					<% info = DeviceInfo.find(:first, :include => :mgmt_response, :conditions => "device_id = #{device.id}", :order => "mgmt_responses.timestamp_server desc")%>
+					<% if info %>
+					<%= info.software_version %>
+					<% end %>
 				</div>
 				<div class="col-100">
 					<a href="/devices/stats/<%=device.id%>">Stats</a> | <a href="/reporting/remove_user_mapping/<%=user.id%>?device_id=<%= device.id %>&users=true">Remove</a>
