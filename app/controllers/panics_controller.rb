@@ -36,7 +36,6 @@ class PanicsController < RestfulAuthController
   #   def create
   #     @panic = Panic.new(params[:panic])
   # 
-  #   #email = CriticalMailer.panic_notification
   #   #put this in panics model 
   #   
   #     respond_to do |format|

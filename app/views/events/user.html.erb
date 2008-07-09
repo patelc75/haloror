@@ -1,34 +1,30 @@
+<big>Events for <%= @user.name %> (<%= @user.id %>)</big> - all times are in <%= current_user.profile.time_zone if current_user.profile %> timezone <br>
 <div class="table">
-	<div class="row header">
-		<div class="col-75">
-			User ID
-		</div>
-		<div class="col-150">
-			Timestamp
-		</div>
-		<div class="col-150">
-			Event Type
-		</div>
-		<div class="col-300">
-			Event Details
-		</div>
-	</div>
-	<% @events.each do |event| %>
-		<div class="row">
-			<div class="col-75">
-				<%=event[:user_id]%>
-			</div>
-			<div class="col-150">
-				<%=event[:timestamp].to_s(:short)%>
-			</div>
-			<div class="col-150">
-				<%=UtilityHelper.camelcase_to_spaced(event[:event_type])%>
-			</div>
-			<div class="col-300">
-				<%=event.event.to_s%>
-			</div>
-		</div>
-	<% end %>
-        <br><br>
-	<%= will_paginate @events %>
+  <div class="row header">
+    <div class="col-150">
+      Timestamp
+    </div>
+    <div class="col-150">
+      Event Type
+    </div>
+    <div class="col-300">
+      Event Details
+    </div>
+  </div>
+  <% @events.each do |event| %>
+    <div class="row">
+      <div class="col-150">
+        <%=format_datetime(event[:timestamp],current_user).to_time.strftime("%I:%M%p on %a %m/%d/%Y")%>
+      </div>
+      <div class="col-150">
+        <%=UtilityHelper.camelcase_to_spaced(event[:event_type])%>
+      </div>
+      <div class="col-300">
+        <%=event.event.to_s%>
+      </div>
+    </div>
+  <% end %>
+  <br>
+  <br>
+  <center><big><%= will_paginate @events %></big></center>
 </div>

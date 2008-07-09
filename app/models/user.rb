@@ -224,6 +224,10 @@ class User < ActiveRecord::Base
     end
   end
   
+  def to_s()
+    name
+  end
+  
   protected
   # before filter 
   def encrypt_password

@@ -13,12 +13,12 @@ class DeviceAvailableAlert < ActiveRecord::Base
                      :event_id => id, 
                      :timestamp => created_at || Time.now)
         
-        CriticalMailer.deliver_device_available_alert_notification(self, user)
+        CriticalMailer.deliver_background_task_notification(self, user)
       end
     end
   end
   
   def to_s
-    "Device available (back in range or battery charging) on #{created_at}"
+    "Device Available (back in range or battery alive again) on #{created_at}"
   end
 end 

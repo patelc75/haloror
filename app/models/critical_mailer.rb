@@ -1,174 +1,135 @@
 class CriticalMailer < ActionMailer::ARMailer
   include UtilityHelper
-  
-  def device_alert_notification(device_alert)
-    if(device_alert.device == nil)
-      raise "#{device_alert.class.to_s}: device_id = #{device_alert.device_id} does not exist"
-    else
-      setup_email(device_alert.user, device_alert)
-    end
-    description = UtilityHelper.camelcase_to_spaced(device_alert.class.to_s)
-    @subject    += "#{description} event"
-    self.priority = device_alert.priority
-    body :alert_type => description, 
-      :timestamp => device_alert.timestamp,
-      :login     => device_alert.user.login,
-      :user_id   => device_alert.user.id
-  end
+  #  def device_unavailable_alert_notification(alert, user)
+  ##    setup_email(user, alert)
+  ##    @subject    += "Device Unavailable for User #{user.id}"
+  ##    self.priority = alert.priority
+  #    body :alert_created_at => alert.created_at,
+  #      :login     => user.login,
+  #      :user_id   => user.id,
+  #      :alert_id => alert.id,
+  #      :device_id => alert.device_id
+  #  end
+  #
+  #  # alert: DeviceAvailableAlert
+  #  def device_available_alert_notification(alert, user)
+  #    setup_email(user, alert)
+  #    @subject    += "Device Available for User #{user.id}"
+  #    self.priority = alert.priority
+  #    body :alert_created_at => alert.created_at,
+  #      :login     => user.login,
+  #      :user_id   => user.id,
+  #      :alert_id => alert.id,
+  #      :device_id => alert.device_id
+  #  end
+  #  
+  #  def gateway_online_notification(alert, user)
+  #    device = alert.device
+  #    setup_email(user, alert)
+  #    @subject    += "Gateway #{alert.device_id} Is Back Online"
+  #    self.priority = alert.priority
+  #    body :alert_created_at => alert.created_at,
+  #      :login     => user.login,
+  #      :user_id   => user.id,
+  #      :device_id => device.id
+  #  end
+  #
+  #  def gateway_offline_notification(outage, user)
+  #    device = outage.device
+  #    setup_email(user, outage)
+  #    @subject    += "Gateway Offline for Device #{outage.device_id}"
+  #    self.priority = outage.priority    
+  #    body :outage_created_at => outage.created_at,
+  #      :login     => user.login,
+  #      :user_id   => user.id,
+  #      :device_id => device.id
+  #  end
+  #
+  #  def strap_on_notification(alert, user)
+  #    device = alert.device
+  #    setup_email(user, alert)
+  #    @subject    += "Strap On for Device #{alert.device_id}"
+  #    self.priority = alert.priority    
+  #    body :alert_created_at => alert.created_at,
+  #      :login     => user.login,
+  #      :user_id   => user.id,
+  #      :device_id => device.id
+  #  end
+  #
+  #  def strap_off_notification(alert, user)
+  #    device = alert.device
+  #    setup_email(user, alert)
+  #    @subject    += "Strap Off for Device #{alert.device_id}"
+  #    self.priority = alert.priority    
+  #    body :alert_created_at => alert.created_at,
+  #      :login     => user.login,
+  #      :user_id   => user.id,
+  #      :device_id => device.id
+  #  end
+  def background_task_notification(alert, user)
+    body = "Alert ID: #{alert.id}\n" +
+      "User #{user.name} (#{user.id})\n" +
+      "Device ID: #{alert.device.id}\n" +
+      "Detected at #{alert.created_at}"
 
-  # alert: DeviceUnavailableAlert
-  def device_unavailable_alert_notification(alert, user)
-    setup_email(user, alert)
-    @subject    += "Device Unavailable for User #{user.id}"
+    setup_message(alert.to_s, body)
+    setup_caregivers(user, alert)
+    setup_operators(alert)
     self.priority = alert.priority
-    body :alert_created_at => alert.created_at,
-      :login     => user.login,
-      :user_id   => user.id,
-      :alert_id => alert.id,
-      :device_id => alert.device_id
-  end
-
-  # alert: DeviceAvailableAlert
-  def device_available_alert_notification(alert, user)
-    setup_email(user, alert)
-    @subject    += "Device Available for User #{user.id}"
-    self.priority = alert.priority
-    body :alert_created_at => alert.created_at,
-      :login     => user.login,
-      :user_id   => user.id,
-      :alert_id => alert.id,
-      :device_id => alert.device_id
-  end
-  
-  def gateway_online_notification(alert, user)
-    device = alert.device
-    setup_email(user, alert)
-    @subject    += "Gateway #{alert.device_id} Is Back Online"
-    self.priority = alert.priority
-    body :alert_created_at => alert.created_at,
-      :login     => user.login,
-      :user_id   => user.id,
-      :device_id => device.id
-  end
-
-  def gateway_offline_notification(outage, user)
-    device = outage.device
-    setup_email(user, outage)
-    @subject    += "Gateway Offline for Device #{outage.device_id}"
-    self.priority = outage.priority    
-    body :outage_created_at => outage.created_at,
-      :login     => user.login,
-      :user_id   => user.id,
-      :device_id => device.id
-  end
-
-  def strap_on_notification(alert, user)
-    device = alert.device
-    setup_email(user, alert)
-    @subject    += "Strap On for Device #{alert.device_id}"
-    self.priority = alert.priority    
-    body :alert_created_at => alert.created_at,
-      :login     => user.login,
-      :user_id   => user.id,
-      :device_id => device.id
-  end
-
-  def strap_off_notification(alert, user)
-    device = alert.device
-    setup_email(user, alert)
-    @subject    += "Strap Off for Device #{alert.device_id}"
-    self.priority = alert.priority    
-    body :alert_created_at => alert.created_at,
-      :login     => user.login,
-      :user_id   => user.id,
-      :device_id => device.id
-  end
-
-  def fall_notification(fall)
-    setup_email(fall.user, fall)
-    operators = User.operators
-    if operators
-      operators.each do |operator|
-        recipients_setup(operator, operator.alert_option_by_type_operator(operator,fall))
-      end
-    end
-    
-    @subject      += fall.to_s
-    self.priority  = fall.priority
-
-    body :timestamp => fall.timestamp,
-      :user => fall.user
   end
   
-  def panic_notification(panic)
-    @panic = panic
-    setup_email(panic.user, panic)
-    operators = User.operators
-    if operators
-      operators.each do |operator|
-        recipients_setup(operator, operator.alert_option_by_type_operator(operator,panic))
-      end
-    end
-    
-    @subject      += panic.to_s
-    self.priority = panic.priority
-
-    body :timestamp => panic.timestamp,
-      :user => panic.user
+  def device_event_notification(event)
+    setup_message(event.to_s, event.email_body)
+    setup_caregivers(event.user, event)
+    setup_operators(event)
+    self.priority  = event.priority
   end
 
   def call_center_notification(event_action)
-    @from        = "no-reply@halomonitoring.com"
-    @subject     = "[HALO] "
-    @sent_on     = Time.now
-    @recipients = Array.new
-    
-    operators = User.operators
-    if operators
-      operators.each do |operator|
-        recipients_setup(operator, operator.alert_option_by_type_operator(operator,event_action.event.event))
-      end
-    end
-    
-    @subject      += event_action.to_s
+    setup_message(event_action.to_s, event_action.email_body)
+    setup_operators(event_action.event.event)
+    setup_caregivers(user, alert) if(event_action.description == "resolved")
     self.priority  = event_action.priority
-
-    body :event_action => event_action
   end
   
-  def test_email(to, subject, body)
-    @from        = "no-reply@halomonitoring.com"
-    @subject     = "[HALO] " 
-    @subject     += subject unless subject.blank?
-    @sent_on     = Time.now
-    @body[:body_text] = body  #sends params to body
-    @recipients  = to
+  def test_email(to, subject, body) 
+    setup_message(subject, body)
+    @recipients  << to
     self.priority = Priority::IMMEDIATE
   end
   
   protected
-  def setup_email(user, alert)
+  #  def setup_email(user, alert)
+  #    setup_message()
+  #    setup_caregivers(user, alert)
+  #    @body[:user] = user  #sends params to body
+  #  end
+  
+  def setup_message(subject, msg_body)
+    @from        = "no-reply@halomonitoring.com"
+    @subject     = "[HALO] "
+    @subject     += subject unless subject.blank?
+    @sent_on     = Time.now
     @recipients = Array.new
-    
-    # if profile = user.profile
-    #       if profile.cell_phone != nil and profile.cell_phone != "" and   profile.carrier != nil
-    #         @recipients << ["#{profile.cell_phone}" + "#{profile.carrier.domain}"]
-    #       end
-    #     end
-    #   
-    #     if user.email != nil and user.email != ""
-    #       @recipients << ["#{user.email}"]
-    #     end
-    
+    body msg_body
+  end
+      
+  def setup_caregivers(user, alert)
     recipients_setup(user, user.alert_option(alert))
     user.caregivers.each do |caregiver|
       recipients_setup(caregiver, user.alert_option_by_type(caregiver, alert))  
-    end  
-    @from        = "no-reply@halomonitoring.com"
-    @subject     = "[HALO] "
-    @sent_on     = Time.now
-    @body[:user] = user  #sends params to body
+    end
   end
+  
+  def setup_operators(event)
+    operators = User.operators
+    if operators
+      operators.each do |operator|
+        recipients_setup(operator, operator.alert_option_by_type_operator(operator,event))
+      end
+    end
+  end
+
   
   def recipients_setup(user, alert_option)
     if (alert_option)  #check for null until we figure out a better way to get roles_users_options

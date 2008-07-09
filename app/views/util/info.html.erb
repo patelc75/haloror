@@ -1,9 +1,12 @@
 <!-- See http://corelib.rubyonrails.org/classes/CGI.html for more environment variables -->
-HTTP_HOST: <%= request.env["HTTP_HOST"].to_s %> <br>
-SERVER_NAME: <%= request.env["SERVER_NAME"].to_s %> <br>
-UNIX hostname: <%= `hostname` %><br>
-PostgreSQL Version: <%= ActiveRecord::Base.connection.select_value("SELECT  VERSION()") %>
-<br><br>
+HTTP_HOST: <code><%= request.env["HTTP_HOST"].to_s %></code> <br>
+SERVER_NAME: <code><%= request.env["SERVER_NAME"].to_s %></code> <br>
+UNIX hostname: <code><%= `hostname` %></code><br>
+Database: <code><%= ActiveRecord::Base.connection.select_value("SELECT  VERSION()") %></code><br>
+SMTP server: <code> <%= ActionMailer::Base.smtp_settings[:address] %></code><br>
+Ruby: <code> <%= "#{RUBY_VERSION} (#{RUBY_RELEASE_DATE}) on #{RUBY_PLATFORM}" %> </code><br>
+Rails: <code> <%= "#{Rails::VERSION::STRING}" %> </code><br>
+<br>
 <b>Rufus Constants </b><br>
 GATEWAY_OFFLINE_TIMEOUT= <%= GATEWAY_OFFLINE_TIMEOUT %><br>
 GATEWAY_OFFLINE_POLL_RATE= <%= GATEWAY_OFFLINE_POLL_RATE %><br>

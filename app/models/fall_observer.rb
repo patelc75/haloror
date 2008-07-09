@@ -1,6 +1,6 @@
 class FallObserver < ActiveRecord::Observer
   def before_save(fall)
-    email = CriticalMailer.deliver_fall_notification(fall)
+    email = CriticalMailer.deliver_device_event_notification(fall)
   end
 	
   def after_save(fall)

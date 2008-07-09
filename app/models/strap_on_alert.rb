@@ -8,7 +8,7 @@ class StrapOnAlert < DeviceAlert
         :event_type => StrapOnAlert.class_name, 
         :event_id => id, 
         :timestamp => created_at || Time.now)
-      CriticalMailer.deliver_strap_on_notification(self, user)
+      CriticalMailer.deliver_background_task_notification(self, user)
     end
   end
   

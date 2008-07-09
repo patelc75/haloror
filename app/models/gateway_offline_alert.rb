@@ -19,7 +19,7 @@ class GatewayOfflineAlert < ActiveRecord::Base
           :event_id => id, 
           :timestamp => created_at || Time.now)
         
-        CriticalMailer.deliver_gateway_offline_notification(self, user)
+        CriticalMailer.deliver_background_task_notification(self, user)
       end
     end
   end

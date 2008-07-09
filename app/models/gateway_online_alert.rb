@@ -10,7 +10,7 @@ class GatewayOnlineAlert < ActiveRecord::Base
         :event_type => GatewayOnlineAlert.class_name, 
         :event_id => id, 
         :timestamp => created_at || Time.now)
-      CriticalMailer.deliver_gateway_online_notification(self, user)
+      CriticalMailer.deliver_background_task_notification(self, user)
     end
   end
   
