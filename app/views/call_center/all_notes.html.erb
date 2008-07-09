@@ -15,6 +15,9 @@
 <div class="col-200">
 	Event Timestamp
 </div>
+<div class="col-100">
+	Created By
+</div>
 <div class="col-200">
 	Created At
 </div>
@@ -42,6 +45,9 @@
 		<div class="col-200">
 			<%= note.event.timestamp %>
 		</div>
+			<div class="col-100">
+				<%= note.user.name if note.user %>
+			</div>
 		<div class="col-200">
 			<%= note.created_at %>
 		</div>
