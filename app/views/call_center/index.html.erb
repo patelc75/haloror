@@ -1,47 +1,49 @@
 <div class="table">
 	<div class="row header">
-		<div class="col-150">
-			Event Type
+		<div class="col-75">
+			Event <br>Type
 		</div>
-		<div class="col-100">
+		<div class="col-200">
 			Timestamp
 		</div>
-		<div class="col-200">
+		<div class="col-150">
 			Name
 		</div>
-		<div class="col-200">
-			Status
-		</div>
-		<div class="col-200">
-			Resolve
-		</div>
-		<div class="col-100">
+		<div class="col-75">
 			Chart
+		</div>
+		<div class="col-150">
+			Accept
+		</div>
+		<div class="col-150">
+			Resolve
 		</div>
 	</div>
 	<% @events.each do |event| %>
 		<div class="row">
-			<div class="col-150">
+			<div class="col-75">
 				<%=event.event_type%>&nbsp;
 			</div>
-			<div class="col-100">
-				<%=event.timestamp.to_s(:short)%>
-			</div>
 			<div class="col-200">
-				<a href="/call_list/show/<%=event.user[:id]%>"><%=event.user.name%></a>
+				<!--%=event.timestamp.to_s(:short)%-->
+				<%=format_datetime(event.timestamp, current_user).to_time.strftime("%I:%M%p on %a %m/%d/%Y")%>
 			</div>
-			<div class="col-200" id="<%=event.id%>_accept">
+			<div class="col-150">
+				<a href="/call_list/show/<%=event.user[:id]%>"><%=event.user.name%></a> (<%=event.user.id%>)
+			</div>
+			<div class="col-75">
+                                <a target="_blank" href="/chart/flex/<%= event.user.id %>">Chart</a>
+			</div>
+			<div class="col-150" id="<%=event.id%>_accept">
 				<%=render :partial => 'accept', :locals => {:event => event}%>
 			</div>
-			<div class="col-200" id="<%=event.id%>_resolve">
+			<div class="col-150" id="<%=event.id%>_resolve">
 				<%=render :partial => 'resolve', :locals => {:event => event}%>
-			</div>
-			<div class="col-100">
-				<a target="_blank" href="/chart/flex/<%= event.user.id %>">Chart</a>
 			</div>
 		</div>
 	<% end %>
         <br>
         <br>
-	<%= will_paginate @events %>
+	<br>
+	<center><big><%= will_paginate @events %></big></center>
 </div>
