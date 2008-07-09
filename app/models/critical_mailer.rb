@@ -88,7 +88,7 @@ class CriticalMailer < ActionMailer::ARMailer
   def call_center_notification(event_action)
     setup_message(event_action.to_s, event_action.email_body)
     setup_operators(event_action.event.event)
-    setup_caregivers(user, alert) if(event_action.description == "resolved")
+    setup_caregivers(event_action.event.user, alert) if(event_action.description == "resolved")
     self.priority  = event_action.priority
   end
   
