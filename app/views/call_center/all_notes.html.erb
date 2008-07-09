@@ -45,8 +45,12 @@
 		<div class="col-200">
 			<%= note.event.timestamp %>
 		</div>
-			<div class="col-100">
-				<% user = User.find(note.created_by)%>
+			<div class="col-100">&nbsp;
+				<% user = nil
+				 	if !note.created_by.blank?
+								user = User.find(note.created_by)
+			    end
+				%>
 				<%= user.name if user %>
 			</div>
 		<div class="col-200">
