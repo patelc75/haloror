@@ -78,10 +78,10 @@ class EventsController < ApplicationController
   # end
   
   def user
-    user = User.find(params[:id])
-    if(user.id == current_user.id || @current_user.patients.include?(user) || current_user.is_administrator?) 
+    @user = User.find(params[:id])
+    if(@user.id == current_user.id || @current_user.patients.include?(@user) || current_user.is_administrator?) 
       events_per_page = 25
-      conditions = "user_id = #{user.id}"
+      conditions = "user_id = #{@user.id}"
       total = Event.count(:conditions => conditions)
       @events = Event.paginate :page => params[:page], :order => "timestamp DESC", :conditions => conditions, :per_page => events_per_page
       render :layout => 'application'
