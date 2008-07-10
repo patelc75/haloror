@@ -10,7 +10,7 @@ class Panic < ActiveRecord::Base
     return :panic
   end
   def to_s
-    "#{user.name} panicked on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
+    "#{user.name} panicked at #{UtilityHelper.format_datetime_readable(timestamp, user)}"
   end
   
   def email_body

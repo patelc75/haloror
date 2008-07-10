@@ -1,6 +1,6 @@
 <h1>Home install</h1>
+<big><%= link_to 'Send Test Email', :action => 'send_test_email'%></big>
 <br>
-<%= link_to 'Send Test Email', :action => 'send_test_email'%>
 <br>
 <table>
   <tr>
@@ -8,7 +8,7 @@
     <td><b>login&nbsp</b></td>
     <td><b>Activated?&nbsp</b></td>
     <td><b>See Events&nbsp</b></td>
-    <td><b>Delete User's Panics&nbsp</b></td>
+    <td><b>Delete User's Panics and Falls</b><br> (and associated accept/resolve actions<br> and notes)&nbsp</td>
   </tr>
   <% @users.each do |user| %>
     <tr>
@@ -20,7 +20,7 @@
       <td>Activated</td>
       <% end %>
       <td><%= link_to 'Events', :controller => 'events', :action => 'user', :id => user.id %></td>
-      <td><%= link_to 'Delete Panics', :action => 'delete_panics', :id => user.id %></td>
+      <td><%= link_to 'Delete Panics & Falls, etc', :action => 'delete_panics_and_falls', :id => user.id%></td>
     </tr>
   <% end %>
 </table>

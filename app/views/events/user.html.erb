@@ -1,4 +1,4 @@
-<big>Events for <%= @user.name %> (<%= @user.id %>)</big> - all times are in <%= current_user.profile.time_zone if current_user.profile %> timezone <br>
+<big>Events for <%= @user.name %> (<%= @user.id %>)</big> - all times are in <%= @user.profile.time_zone if @user.profile %> timezone <br>
 <div class="table">
   <div class="row header">
     <div class="col-150">

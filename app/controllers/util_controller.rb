@@ -27,9 +27,16 @@ class UtilController < ApplicationController
     @users = User.paginate :page => params[:page], :order => "created_at DESC", :per_page => events_per_page
   end
   
-  def delete_panics
-    Event.delete_all("event_type = 'Panic' and user_id = #{params[:id]}")
-    Panic.delete_all("user_id = #{params[:id]}")
+  def delete_panics_and_falls
+    Event.find(:all, :conditions => "(event_type = 'Fall' or event_type = 'Panic') and user_id = #{params[:id]}").each do |event|
+      event.event_actions.each do |ea|
+        EventAction.delete(ea.id)
+      end 
+      event.notes.each do |note|
+        Note.delete(note.id)
+      end
+      event.class.delete(event.id)
+    end
     redirect_to :controller => :events, :action => :user, :id => params[:id]
   end
   
