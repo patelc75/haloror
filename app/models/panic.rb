@@ -1,4 +1,5 @@
 class Panic < ActiveRecord::Base
+  include UtilityHelper
   belongs_to :user
   include Priority
   def priority
@@ -6,12 +7,12 @@ class Panic < ActiveRecord::Base
   end
   
   def to_s
-    "#{user.name} panicked on #{timestamp}"
+    "#{user.name} panicked on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
   end
   
-    def email_body
-    "Hello,\nWe detected that #{user.name} pressed the panic button on #{timestamp}" +
-    "\n\nThe Halo server received the event #{Time.now} \n\n" +
-    "Sincerely, Halo Staff"
+  def email_body
+    "Hello,\nWe detected that #{user.name} pressed the panic button on #{UtilityHelper.format_datetime_readable(timestamp, user)}" +
+      "\n\nThe Halo server received the event #{UtilityHelper.format_datetime_readable(Time.now, user)} \n\n" +
+      "Sincerely, Halo Staff"
   end
 end
