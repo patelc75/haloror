@@ -1,9 +1,11 @@
 class CriticalMailer < ActionMailer::ARMailer
+  include UtilityHelper
+    
   def background_task_notification(alert, user)
     body = "Alert ID: #{alert.id}\n" +
       "User #{user.name} (#{user.id})\n" +
       "Device ID: #{alert.device.id}\n" +
-      "Detected at #{alert.created_at.strftime("%I:%M%p on %a %m/%d/%Y")}"
+      "Detected at #{UtilityHelper.format_datetime_readable(alert.created_at, user)}"
 
     setup_message(alert.to_s, body)
     setup_caregivers(user, alert)
