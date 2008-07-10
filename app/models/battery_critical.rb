@@ -6,6 +6,6 @@ class BatteryCritical < DeviceAlert
   end
   
   def to_s
-    "Battery critically low on #{timestamp}"
+    "Battery critically low on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
   end
 end

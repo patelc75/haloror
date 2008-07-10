@@ -4,7 +4,7 @@ class EventAction < ActiveRecord::Base
   belongs_to :event
   
   def to_s
-    "#{event.user.name}'s #{event.event_type} #{description} by Operator #{user.name}"
+    "#{event.user.name if event}'s #{event.event_type if event} #{description} by Operator #{user.name if user}"
   end
   
   include Priority

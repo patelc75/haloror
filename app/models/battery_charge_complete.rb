@@ -6,6 +6,6 @@ class BatteryChargeComplete < DeviceAlert
   end
   
   def to_s
-    "Battery fully charged on #{timestamp}"
+    "Battery fully charged on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
   end
 end

@@ -6,6 +6,6 @@ class BatteryUnplugged < DeviceAlert
   end
   
   def to_s
-    "Battery unplugged on #{timestamp}"
+    "Battery unplugged on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
   end
 end
