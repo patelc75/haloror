@@ -4,6 +4,6 @@ class StrapRemoved < DeviceAlert
     return :strap_removed
   end
   def to_s
-    "Strap taken off on #{created_at.strftime("%I:%M%p UTC on %a %m/%d/%Y")}"
+    "Strap taken off on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
   end
 end
