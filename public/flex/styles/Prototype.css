@@ -1,5 +1,26 @@
-/* CSS file */
+/* CSS file for Halo Monitoring Flex Chart*/
+Application
+{
+	backgroundGradientColors: #FFFFFF, #FFFFFF;
+	backgroundGradientAlphas: 1.0, 1.0;
+}
 
+ColumnChart
+{
+	gutterLeft: 0;
+	gutterRight: 0;
+	gutterTop: 0;
+	gutterBottom: 0;
+}
+
+AreaChart
+{
+	gutterLeft: 0;
+	gutterRight: 0;
+	gutterTop: 0;
+	gutterBottom: 0;
+}
+	
 StatusLabel {
 	fontWeight: bold;
 }
@@ -27,6 +48,20 @@ Panel {
    fontFamily:Helvetica;
 }
 
+LinkButton
+{
+	paddingLeft: 0;
+	paddingRight: 0;
+	paddingTop: 0;
+	paddingBottom: 0;	
+}
+
+Button
+{
+	fillAlphas: 1,1;
+	cornerRadius: 2;
+}
+
 .sidebarPanel {
 	headerHeight:0;
 }
@@ -37,8 +72,7 @@ Panel {
 }
 
 .statusPanel{
-	headerColors: #02F530, #f3f2f6;
-	headerHeight: 15;
+	headerColors: #99FF00, #8AE600;
 }
 
 
@@ -109,4 +143,42 @@ Label.lastStatusLabel
 	color:#4790b3;
 	border-thickness-bottom:1;
 	text-decoration:underline;
+}
+
+.eventPopUp
+{
+	backgroundColor:#ffff00;
+	backgroundAlpha:0.5;
+	headerHeight:15;
+	headerColors:#888800, #444400; 
+}
+
+.eventPopUpTitle
+{
+   letterSpacing: 0;
+   color: #ffffff;
+   textAlign: left;
+   fontFamily: Verdana;
+   fontWeight: bold;
+}
+
+.sliderDateLabel
+{
+	fontFamily: Arial;
+	fontSize: 12;
+	color: #000000;
+	fontWeight:normal;
+}
+
+.sliderBox
+{
+	/*NOTE: The yAxisStroke node does not support styles and must be changed in MXML! */
+	borderColor:#99FF00;
+	borderStyle:solid;
+	backgroundColor:#f3f2f6;
+}
+
+.haloChartStyle
+{
+	tickPlacement: none;
 }
