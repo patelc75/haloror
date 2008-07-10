@@ -3,9 +3,7 @@ class BundleController < RestfulAuthController
   
   @@bundled_models = [Vital, StrapRemoved, StrapFastened, Step, SkinTemp, Fall, Panic, Battery, BatteryChargeComplete, BatteryCritical, BatteryPlugged, BatteryUnplugged]
   def create
-    bundle = params[:bundle]
-    data = {}
-    
+    bundle = params[:bundle]    
     @@bundled_models[0].transaction do
       @@bundled_models.each do |model|
         value = bundle[model.node_name]
