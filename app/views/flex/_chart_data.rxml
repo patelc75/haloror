@@ -23,9 +23,11 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
               group.each do |reading|
                 if reading.type.to_s == 'Vital' || reading[:type] == 'Vital'  #averaged data uses hashes and and discrete data uses objects 
                   if reading[:heartrate] and reading[:hrv]
-                    xml.heartrate(reading[:heartrate])
-                    xml.hr_min(reading[:heartrate]-reading[:hrv]/2)
-                    xml.hr_max(reading[:heartrate]+reading[:hrv]/2)
+                    xml.heartrate(reading[:heartrate])  
+                    if reading[:heartrate] != -1 and reading[:hrv] != -1
+                      xml.hr_min(reading[:heartrate]-reading[:hrv]/2)
+                      xml.hr_max(reading[:heartrate]+reading[:hrv]/2)
+                    end
                   end
 
                   if reading[:activity]
