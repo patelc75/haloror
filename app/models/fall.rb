@@ -7,11 +7,11 @@ class Fall < ActiveRecord::Base
   end
   
   def to_s
-    "#{user.name} fell on #{timestamp}"
+    "#{user.name}(#{user.id}) fell on #{timestamp}"
   end
   
   def email_body
-    "Hello,\nWe detected that #{user.name} fell on #{timestamp}\n\n" +
+    "Hello,\nWe detected that #{to_s}\n\n" +
     "The Halo server received the event #{Time.now} \n\n" +
     "Sincerely, Halo Staff"
   end

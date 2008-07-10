@@ -1,4 +1,6 @@
 class CallCenterController < ApplicationController
+  include UtilityHelper
+  
   def index
     events_per_page = 25
     conditions = "event_type = 'Fall' or event_type = 'Panic'"

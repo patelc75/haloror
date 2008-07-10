@@ -13,6 +13,6 @@ class StrapOnAlert < DeviceAlert
   end
   
   def to_s
-    "Strap back on on #{created_at}"
+    "Strap back on on #{created_at.strftime("%I:%M%p on %a %m/%d/%Y")}"
   end
 end

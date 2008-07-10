@@ -1,4 +1,5 @@
 class EventsController < ApplicationController
+  include UtilityHelper
   # GET /events
   # GET /events.xml
   # def index

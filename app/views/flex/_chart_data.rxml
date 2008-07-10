@@ -2,7 +2,7 @@ xml.instruct! :xml, :version => "1.0"
 xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate], :enddate => query[:enddate]) do
   users.each do |user|
     xml.User(:id => user[:id], :first_name => user.profile[:first_name], :last_name => user.profile[:last_name], :connectivity_status => user[:status][:connectivity], :time_remaining => user[:battery][:time_remaining], :timezone => get_timezone_offset(user)) do
-      xml.LastReading(:datetime => format_datetime(user[:last_reading][:timestamp], user)) do
+      xml.LastReading(:datetime => UtilityHelper.format_datetime_readable(user[:last_reading][:timestamp], user)) do
         xml.heartrate(user[:last_reading][:heartrate])
         xml.hr_min(user[:last_reading][:hr_min])
         xml.hr_max(user[:last_reading][:hr_max])
@@ -57,7 +57,7 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
       xml.Events do
         if user[:events].length > 0
           user[:events].each do |event|
-            xml.Event(:datetime => format_datetime(event.timestamp, user), :description => event.string(user), :link => "http://#{request.host}/events/#{event.id}")
+            xml.Event(:datetime => UtilityHelper.format_datetime_readable(event.timestamp, user), :description => event.string(user), :link => "http://#{request.host}/events/#{event.id}")
           end
         end
       end

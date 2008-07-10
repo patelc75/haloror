@@ -14,7 +14,9 @@
   <% @events.each do |event| %>
     <div class="row">
       <div class="col-150">
-        <%=format_datetime(event[:timestamp],current_user).to_time.strftime("%I:%M%p on %a %m/%d/%Y")%>
+        <%= UtilityHelper.format_datetime_readable(event[:timestamp],current_user) %>
+        <!--%=format_datetime(event[:timestamp],current_user).to_time.strftime("%I:%M%p on %a %m/%d/%Y")%-->
+        <!--%=format_datetime(event[:timestamp],current_user).to_time.strftime("%I:%M%p on %a %m/%d/%Y")%-->
       </div>
       <div class="col-150">
         <%=UtilityHelper.camelcase_to_spaced(event[:event_type])%>

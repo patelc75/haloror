@@ -29,7 +29,7 @@
 			</div>
 			<div class="col-200">
 				<!--%=event.timestamp.to_s(:short)%-->
-				<%=format_datetime(event.timestamp, current_user).to_time.strftime("%I:%M%p on %a %m/%d/%Y")%>
+				<%=UtilityHelper.format_datetime_readable(event.timestamp, current_user) %>
 			</div>
 			<div class="col-150">
 				<a href="/call_list/show/<%=event.user[:id]%>"><%=event.user.name%></a> (<%=event.user.id%>)

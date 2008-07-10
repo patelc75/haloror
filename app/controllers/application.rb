@@ -2,7 +2,6 @@
 # Likewise, all the methods added will be available for all controllers.
 
 class ApplicationController < ActionController::Base
-  helper_method :format_datetime
   
   include AuthenticatedSystem
   include ExceptionNotifiable 
@@ -39,9 +38,7 @@ class ApplicationController < ActionController::Base
     @num_ref[8] = 'th'
     @num_ref[9] = 'th'
   end
-  
-  
-  
+ 
   private
   def refresh_operators()
     @operators = User.operators
@@ -63,33 +60,7 @@ class ApplicationController < ActionController::Base
     @caregivers = user.caregivers_sorted_by_position
   end
   
-
-  
-  def format_datetime(datetime,user)
-    #lookup = {-7 => 'PST', -6 => 'MST', -5 => 'CST', -4 => 'EST'}
-    original_datetime = datetime
-    return datetime if !datetime.respond_to?(:strftime)
-    
-    if user and user.profile and user.profile.time_zone
-      tz = user.profile.tz
-    else
-      tz = TZInfo::Timezone.get('America/Chicago')
-    end
-    datetime = tz.utc_to_local(datetime) 
-    #datetime.strftime("%m-%d-%Y %H:%M")
-    #datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
-    
-    newdate = datetime.strftime("%a %b %d %H:%M:%S")
-    offset = datetime.hour - original_datetime.hour
-      
-    if datetime.day != original_datetime.day  
-      offset = offset - 24
-    end
-      
-    return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
-  end
-  
-    protected
+  protected
     def authenticated?
       unless (controller_name == 'users' && (action_name == 'new' || action_name == 'create' || action_name == 'activate') || 
             controller_name == 'sessions' || 

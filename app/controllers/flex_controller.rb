@@ -275,7 +275,7 @@ class FlexController < ApplicationController
   def average_data_record(user, interval, num_points, start_time)
     data = {}
     timestamp = nil
-    select = "select * from average_data_record_vitals(#{user.id}, '#{interval} seconds', #{num_points}, '#{format_datetime(start_time, user)}')"
+    select = "select * from average_data_record_vitals(#{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime_readable(start_time, user)}')"
     Vital.connection.select_all(select).collect do |result|
       heart_rate = result['average_heartrate']
       if !heart_rate.blank?
@@ -309,7 +309,7 @@ class FlexController < ApplicationController
       data[timestamp] = [] unless data[timestamp]
       data[timestamp] << vital_row
     end
-    select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{format_datetime(start_time, user)}', 'skin_temps', 'skin_temp')"
+    select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime_readable(start_time, user)}', 'skin_temps', 'skin_temp')"
     SkinTemp.connection.select_all(select).collect do |result|
       average = result['average']
       if !average.blank?
@@ -322,7 +322,7 @@ class FlexController < ApplicationController
       data[timestamp] = [] unless data[timestamp]
       data[timestamp] << skin_temp_row 
     end
-    select = "select * from sum_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{format_datetime(start_time, user)}', 'steps', 'steps')"
+    select = "select * from sum_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime_readable(start_time, user)}', 'steps', 'steps')"
     Step.connection.select_all(select).collect do |result|
       sum_result = result['sum_result']
       if !sum_result.blank?
@@ -335,7 +335,7 @@ class FlexController < ApplicationController
       data[timestamp] = [] unless data[timestamp]
       data[timestamp] << steps_row
     end
-    select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{format_datetime(start_time, user)}', 'batteries', 'percentage')"
+    select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime_readable(start_time, user)}', 'batteries', 'percentage')"
     Battery.connection.select_all(select).collect do |result|
       average = result['average']
       if !average.blank?

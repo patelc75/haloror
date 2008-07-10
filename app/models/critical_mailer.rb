@@ -3,7 +3,7 @@ class CriticalMailer < ActionMailer::ARMailer
     body = "Alert ID: #{alert.id}\n" +
       "User #{user.name} (#{user.id})\n" +
       "Device ID: #{alert.device.id}\n" +
-      "Detected at #{alert.created_at}"
+      "Detected at #{alert.created_at.strftime("%I:%M%p on %a %m/%d/%Y")}"
 
     setup_message(alert.to_s, body)
     setup_caregivers(user, alert)

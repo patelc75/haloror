@@ -1,4 +1,5 @@
 class ReportingController < ApplicationController
+  include UtilityHelper
   LOST_DATA_GAP = 15.seconds
   
   def users

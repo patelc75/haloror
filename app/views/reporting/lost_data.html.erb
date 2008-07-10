@@ -10,9 +10,9 @@ All times are in <%= @user.profile.time_zone %> timezone
         </tr>
         <% @lost_data.each do |reading| %>
           <tr>
-            <td><%=format_datetime(reading.begin_time.to_s(:db), @user)%></td>
+            <td><%=UtilityHelper.format_datetime_readable(reading.begin_time.to_s(:db), @user)%></td>
               <td></td>
-              <td><%=format_datetime(reading.end_time.to_s(:db), @user)%></td>
+              <td><%=UtilityHelper.format_datetime_readable(reading.end_time.to_s(:db), @user)%></td>
               </tr>
             <% end %>
           </table>
