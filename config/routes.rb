@@ -1,6 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
 
-
+  map.resources :bundle
   #device alert models derived from RestfulAuthController
   map.resources :battery_pluggeds
   map.resources :battery_unpluggeds
