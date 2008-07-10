@@ -1,5 +1,8 @@
 class SkinTemp < Vital
   set_table_name "skin_temps"
+  def self.node_name
+    return :skin_temp
+  end
   
   def self.get_average(condition)
     SkinTemp.average(:skin_temp, :conditions => condition)

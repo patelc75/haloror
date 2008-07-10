@@ -1,7 +1,9 @@
 class Vital < ActiveRecord::Base
   DEVICE_CHEST_STRAP_TYPE = 'Halo Chest Strap'
   belongs_to :user
-  
+  def self.node_name
+    return :vital
+  end
   def self.latest_data(num_points, id, column)	
     #sorts by ID instead of by timestamp
     vital = find(:all , 

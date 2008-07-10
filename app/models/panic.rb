@@ -6,6 +6,9 @@ class Panic < ActiveRecord::Base
     return IMMEDIATE
   end
   
+  def self.node_name
+    return :panic
+  end
   def to_s
     "#{user.name} panicked on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
   end

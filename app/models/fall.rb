@@ -7,6 +7,9 @@ class Fall < ActiveRecord::Base
     return IMMEDIATE
   end
   
+  def self.node_name
+    return :fall
+  end
   def to_s
     "#{user.name}(#{user.id}) fell on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
   end
