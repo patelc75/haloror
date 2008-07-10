@@ -1,4 +1,5 @@
 class Fall < ActiveRecord::Base
+  include UtilityHelper
   belongs_to :user
   
   include Priority

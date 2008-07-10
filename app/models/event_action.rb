@@ -1,4 +1,5 @@
 class EventAction < ActiveRecord::Base
+  include UtilityHelper
   belongs_to :user
   belongs_to :event
   
@@ -12,8 +13,8 @@ class EventAction < ActiveRecord::Base
   end
   
   def email_body
-    "#{event.event_type} #{description} on #{Time.now}\n\n" +
-    "Event ID:#{event.id} User:#{event.user.name} (#{event.user_id})\n\n" +
-    "Sincerely, Halo Staff"
+    "#{event.event_type} #{description} on #{UtilityHelper.format_datetime_readable(Time.now, event.user)}\n\n" +
+      "Event ID:#{event.id} User:#{event.user.name} (#{event.user_id})\n\n" +
+      "Sincerely, Halo Staff"
   end
 end
