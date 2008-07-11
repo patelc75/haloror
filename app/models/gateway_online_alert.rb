@@ -15,6 +15,6 @@ class GatewayOnlineAlert < ActiveRecord::Base
   end
   
   def to_s
-    "Gateway back online on #{created_at.strftime("%I:%M%p UTC on %a %m/%d/%Y")}"
+    "Gateway back online"
   end
 end 

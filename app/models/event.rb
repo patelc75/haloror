@@ -9,8 +9,6 @@ class Event < ActiveRecord::Base
   
   has_many :event_actions
   
-  acts_as_authorizable #get of rid this?
-  
   def string(user)
     strings = {'Fall' => 'Fell'}
     

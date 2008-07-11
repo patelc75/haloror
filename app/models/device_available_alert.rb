@@ -19,6 +19,6 @@ class DeviceAvailableAlert < ActiveRecord::Base
   end
   
   def to_s
-    "Device Available (back in range or battery alive again) on #{created_at.strftime("%I:%M%p UTC on %a %m/%d/%Y")}"
+    "Device Available (back in range or battery alive again)"
   end
 end 
