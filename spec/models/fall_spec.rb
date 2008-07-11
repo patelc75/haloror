@@ -4,9 +4,25 @@ describe Fall do
   
   before(:all) do
     @no_records = Fall.count
-    curl_cmd = 'curl -v -H "Content-Type: text/xml" -d "<fall><magnitude>60</magnitude><timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp><user_id>1</user_id></fall>" "http://localhost:3000/falls?gateway_id=1&auth=9ad3cad0f0e130653ec377a47289eaf7f22f83edb81e406c7bd7919ea725e024"'
+    fall = Fall.new
+    user = User.find_by_login(USER)
+    fall.user_id = user.id
+    gateway = user.devices.find(:first, :conditions => "device_type = '#{HALO_GATEWAY}'")
+    timestamp = set_timestamp(fall)
+    auth = generate_auth(timestamp, gateway.id)
+    
+    curl_cmd = BEGIN_CURL 
+    curl_cmd += '\''
+    curl_cmd += get_xml(fall)
+    curl_cmd += '\' '
+    curl_cmd += '"http://'
+    curl_cmd += SITE_URL
+    curl_cmd += '/falls'
+    curl_cmd += '?gateway_id=' + gateway.id.to_s
+    curl_cmd += '&auth=' + auth
+    curl_cmd += '"'
     puts curl_cmd
-    system(curl_cmd)
+    `#{curl_cmd}`
   end
 
   it "should have one more fall" do
