@@ -7,14 +7,15 @@ describe Fall do
     fall = Fall.new
     user = User.find_by_login(USER)
     fall.user_id = user.id
+    fall.magnitude = 60
     gateway = user.devices.find(:first, :conditions => "device_type = '#{HALO_GATEWAY}'")
     timestamp = set_timestamp(fall)
     auth = generate_auth(timestamp, gateway.id)
     
     curl_cmd = BEGIN_CURL 
-    curl_cmd += '\''
+    curl_cmd += '"'
     curl_cmd += get_xml(fall)
-    curl_cmd += '\' '
+    curl_cmd += '" '
     curl_cmd += '"http://'
     curl_cmd += SITE_URL
     curl_cmd += '/falls'

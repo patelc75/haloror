@@ -44,6 +44,7 @@ CAREGIVER2='test_caregiver2'
 OPERATOR='test_operator'
 USER='test_user'
 HALO_GATEWAY='Halo Gateway'
+SITE_URL = "localhost:3000"
 
 #  curl
 BEGIN_CURL='curl -v -H "Content-Type: text/xml" -d '
@@ -59,17 +60,20 @@ def set_timestamp(model)
   end
   return nil
 end
-
+#.strftime("%a %b %d %H:%M:%S -0600 %Y")
 def generate_auth(timestamp, gateway_id)
   ts = timestamp.strftime("%a %b %d %H:%M:%S -0600 %Y")
+  Hash::XML_FORMATTING['datetime'] = Proc.new { |datetime| 
+  datetime.strftime("%a %b %d %H:%M:%S -0600 %Y") }  
   serial_number = Device.find_by_id(gateway_id).serial_number
   serial_number.strip!
-  sn = "#{@ts}#{@serial_number}"
+  sn = "#{ts}#{serial_number}"
+  puts sn
   return Digest::SHA256.hexdigest(sn)
 end
 
 def get_xml(model)
-  xml = model.to_xml(:dasherize => false, :skip_instruct => true)
+  xml = model.to_xml(:dasherize => false, :skip_instruct => true, :skip_types => true)
   xml.gsub!("\n", '')
   return xml
 end
