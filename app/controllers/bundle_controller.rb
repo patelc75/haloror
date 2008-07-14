@@ -30,3 +30,4 @@ class BundleController < RestfulAuthController
     end
   end
 end
+
