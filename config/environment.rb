@@ -71,13 +71,13 @@ ActionMailer::Base.delivery_method = :activerecord
 #ActionMailer::Base.delivery_method = :smtp
 ActionMailer::Base.raise_delivery_errors = true
   
-#if (ENV['RAILS_ENV'] == 'production')
-#  ActionMailer::Base.smtp_settings = {
-#    :address => "localhost" ,
-#    :port => 25,
-#    :domain => "halomonitor.com"
-#  }
-#else
+if (ENV['RAILS_ENV'] == 'production')
+  ActionMailer::Base.smtp_settings = {
+    :address => "localhost" ,
+    :port => 25,
+    :domain => "halomonitor.com"
+  }
+else
   ActionMailer::Base.smtp_settings = {
     :address => "mail.haloresearch.net" ,
     :port => 25,
@@ -86,7 +86,7 @@ ActionMailer::Base.raise_delivery_errors = true
     :user_name => "chirag@haloresearch.net" ,
     :password => "irdikt75" 
   }
-#end
+end
 
 require 'rubygems'
 require 'will_paginate'
