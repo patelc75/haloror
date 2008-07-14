@@ -6,6 +6,10 @@ class RestfulAuthController < ApplicationController
     response_for :create do |format|
       format.xml { head :ok }  
     end
+    
+    response_for :create_fails do |format|
+      format.xml {head :internal_server_error }
+    end
   end
   session :off
   layout nil
