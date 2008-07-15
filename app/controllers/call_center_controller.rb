@@ -4,7 +4,7 @@ class CallCenterController < ApplicationController
   def index
     events_per_page = 25
     conditions = "event_type = 'Fall' or event_type = 'Panic'"
-    @events = Event.paginate :page => params[:page], :order => "timestamp DESC", :conditions => conditions, :per_page => events_per_page
+    @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => conditions, :per_page => events_per_page
   end 
   
   def accept
