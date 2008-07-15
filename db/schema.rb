@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 144) do
+ActiveRecord::Schema.define(:version => 145) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -340,6 +340,7 @@ ActiveRecord::Schema.define(:version => 144) do
     t.string  "phone_email"
     t.integer "carrier_id"
     t.string  "time_zone"
+    t.string  "zipcode"
   end
 
   add_index "profiles", ["user_id"], :name => "index_profiles_on_user_id"
