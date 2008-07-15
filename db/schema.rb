@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 145) do
+ActiveRecord::Schema.define(:version => 147) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -208,12 +208,14 @@ ActiveRecord::Schema.define(:version => 145) do
     t.datetime "timestamp"
     t.string   "event_type"
     t.integer  "event_id"
+    t.datetime "timestamp_server"
   end
 
   create_table "falls", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
     t.integer  "magnitude", :null => false
+    t.integer  "device_id"
   end
 
   create_table "firmware_upgrades", :force => true do |t|
@@ -325,6 +327,7 @@ ActiveRecord::Schema.define(:version => 145) do
   create_table "panics", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
+    t.integer  "device_id"
   end
 
   create_table "profiles", :force => true do |t|
