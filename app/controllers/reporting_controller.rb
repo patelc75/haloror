@@ -36,7 +36,7 @@ class ReportingController < ApplicationController
     if params[:col] == 'name'
       users = User.find(:all, :include => :profile, :order => 'profiles.last_name')
     else
-      users = User.find(:all, :include => :profile, :order => params[:col])
+      users = User.find(:all, :order => params[:col])
     end
     
     sortby = 'id'
