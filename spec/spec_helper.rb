@@ -87,19 +87,41 @@ def set_model_values(model)
   end
 end
 
-def get_curl_cmd(model)  
-  user = get_user
-  model.user_id = user.id
-  device = get_device(user)
-  model.device_id = device.id
-  gateway = get_gateway(user)
-  timestamp = set_timestamp(model)
-  auth = generate_auth(timestamp, gateway.id)  
+def get_bundled_curl_cmd(models)
   curl_cmd = BEGIN_CURL 
   curl_cmd += '"'
-  curl_cmd += get_xml(model)
-  curl_cmd += '" '
-  curl_cmd += '"http://'
+  
+  user = get_user
+  device = get_device(user)
+  gateway = get_gateway(user)
+  ts = Time.now
+  auth = generate_auth(ts, gateway.id)
+  
+  curl_cmd += '<bundle><timestamp>'
+  curl_cmd += ts.strftime("%a %b %d %H:%M:%S -0600 %Y")
+  curl_cmd += '</timestamp>'
+  models.each do |model|    
+    curl_cmd += get_xml(user.id, device.id, ts, model)
+  end
+  curl_cmd += '</bundle>" "http://'
+  curl_cmd += SITE_URL
+  curl_cmd += '/bundle?gateway_id=' + gateway.id.to_s  
+  curl_cmd += '&auth=' + auth
+  curl_cmd += '"'
+  puts curl_cmd
+  return curl_cmd
+end
+def get_curl_cmd(model)  
+  user = get_user
+  device = get_device(user)
+  gateway = get_gateway(user)  
+  ts = Time.now
+  auth = generate_auth(ts, gateway.id)
+  
+  curl_cmd = BEGIN_CURL 
+  curl_cmd += '"'
+  curl_cmd += get_xml(user.id, device.id, ts, model)
+  curl_cmd += '" "http://'
   curl_cmd += SITE_URL
   curl_cmd += '/'
   curl_cmd += get_model_url(model)
@@ -122,15 +144,14 @@ def get_gateway(user)
   user.devices.find(:first, :conditions => "device_type = '#{HALO_GATEWAY}'")
 end
 
-def set_timestamp(model)
+def set_timestamp(timestamp, model)
   if model.respond_to? :timestamp
-    model.timestamp = Time.now
-    return model.timestamp
+    model.timestamp = timestamp
+    model.timestamp
   elsif model.respond_to? :begin_timestamp
-    model.begin_timestamp = Time.now
-    return modle.begin_timestamp
+    model.begin_timestamp = timestamp
+    modle.begin_timestamp
   end
-  return nil
 end
 #.strftime("%a %b %d %H:%M:%S -0600 %Y")
 def generate_auth(timestamp, gateway_id)
@@ -144,7 +165,10 @@ def generate_auth(timestamp, gateway_id)
   return Digest::SHA256.hexdigest(sn)
 end
 
-def get_xml(model)
+def get_xml(user_id, device_id, timestamp, model)
+  model.user_id = user_id
+  model.device_id = device_id
+  set_timestamp(timestamp, model)
   xml = model.to_xml(:dasherize => false, :skip_instruct => true, :skip_types => true)
   xml.gsub!("\n", '')
   return xml
