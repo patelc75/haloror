@@ -32,7 +32,7 @@
 				%>
 				<li class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px">
 					<div style="float:left;padding-top:45px;width:150px">
-						<%=alert.alert_type%>
+						<%=UtilityHelper.camelcase_to_spaced(alert.alert_type)%>
 					</div>
 					<div style="float:right">
 						<!--PHONE-->

@@ -1,8 +1,4 @@
-class Fall < ActiveRecord::Base
-  include UtilityHelper
-  belongs_to :user
-  
-  include Priority
+class Fall < DeviceAlert
   def priority
     return IMMEDIATE
   end
@@ -10,13 +6,13 @@ class Fall < ActiveRecord::Base
   def self.node_name
     return :fall
   end
+  
   def to_s
     "#{user.name}(#{user.id}) fell at #{UtilityHelper.format_datetime_readable(timestamp, user)}"
   end
   
   def email_body
     "Hello,\nWe detected that #{to_s}\n\n" +
-    "The Halo server received the event #{UtilityHelper.format_datetime_readable(Time.now, user)} \n\n" +
-    "Sincerely, Halo Staff"
+    "The Halo server received the event #{UtilityHelper.format_datetime_readable(Time.now, user)} \n\n"
   end
 end

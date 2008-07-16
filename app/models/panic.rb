@@ -1,7 +1,4 @@
-class Panic < ActiveRecord::Base
-  include UtilityHelper
-  belongs_to :user
-  include Priority
+class Panic < DeviceAlert
   def priority
     return IMMEDIATE
   end

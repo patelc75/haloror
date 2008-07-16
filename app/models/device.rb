@@ -3,6 +3,8 @@ class Device < ActiveRecord::Base
   has_many :mgmt_cmds
   has_many :mgmt_queries
   
+  has_many :falls
+  has_many :panics
   has_many :battery_charge_completes
   has_many :battery_criticals
   has_many :battery_pluggeds
