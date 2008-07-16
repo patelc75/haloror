@@ -5,9 +5,7 @@ class MgmtQuery < ActiveRecord::Base
   belongs_to :mgmt_cmd
   belongs_to :device
   
-  def self.node_name
-    :managment_query_device
-  end
+  
   # Each user's wireless gateway queries the server every
   # MINUTES_INTERVAL minutes. We need to detect the devices that have
   # not connected in a while and create notifications of outages after

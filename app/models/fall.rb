@@ -1,10 +1,7 @@
 class Fall < DeviceAlert
+  set_table_name("falls")
   def priority
     return IMMEDIATE
-  end
-  
-  def self.node_name
-    return :fall
   end
   
   def to_s

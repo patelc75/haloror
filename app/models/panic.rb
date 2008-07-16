@@ -1,4 +1,5 @@
 class Panic < DeviceAlert
+  set_table_name('panics')
   def priority
     return IMMEDIATE
   end

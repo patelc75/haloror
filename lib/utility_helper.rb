@@ -47,4 +47,9 @@ module UtilityHelper
   def self.camelcase_to_spaced(word)
     word.gsub(/([A-Z])/, " \\1").strip
   end
+  
+  def self.camelcase_to_underscored(word)
+    word.gsub!(/([A-Z])/, "_\\1")
+    return word[1, word.size - 1]
+  end
 end
