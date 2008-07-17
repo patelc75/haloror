@@ -1,6 +1,7 @@
 class ActionMailer::ARMailer < ActionMailer::Base
   attr_accessor :priority
   def perform_delivery_activerecord(mail)
+    RAILS_DEFAULT_LOGGER.warn("perform_delivery_activerecord")
     if self.priority.nil?
       self.priority = Priority::LOW
     end
@@ -22,7 +23,8 @@ class ActionMailer::ARMailer < ActionMailer::Base
               RAILS_DEFAULT_LOGGER.warn("Error sending mail:  #{e}")
               email = Email.new(:mail => 'Error sending mail',          :to => 'exceptions@halomonitoring.com', 
                                 :from => 'no-reply@halomonitoring.com', :priority => 100)
-              ar_sendmail.deliver(email)
+              ar_sendmail = ActionMailer::ARSendmail.new
+              ar_sendmail.deliver([email])
             end
           end
         end
