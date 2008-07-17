@@ -16,4 +16,9 @@ class Panic < DeviceAlert
       "\n\nThe Halo server received the event #{UtilityHelper.format_datetime_readable(Time.now, user)} \n\n" +
       "Sincerely, Halo Staff"
   end
+  
+  def self.new_initialize(random=false)
+    model = self.new
+    return model    
+  end
 end

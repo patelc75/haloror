@@ -6,8 +6,7 @@ describe Models do
     @no_records = 0
     CLAZZES.each do |clazz|
       @no_records += clazz.count
-      model = clazz.new
-      set_model_values(model)
+      model = clazz.new_initialize(IS_RANDOM)
       curl_cmd = get_curl_cmd(model)
       `#{curl_cmd}`
     end

@@ -1,6 +1,7 @@
 # This file is copied to ~/spec when you run 'ruby script/generate rspec'
 # from the project root directory.
 ENV["RAILS_ENV"] = "development"
+IS_RANDOM=true
 require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
 require 'spec'
 require 'spec/rails'
@@ -48,44 +49,6 @@ HALO_CHEST_STRAP='Halo Chest Strap'
 SITE_URL = "localhost:3000"
 BEGIN_CURL='curl -v -H "Content-Type: text/xml" -d '
 CLAZZES = [BatteryChargeComplete, BatteryPlugged, BatteryUnplugged, BatteryCritical, StrapFastened, StrapRemoved, Fall, Panic]
-
-
-BATTERY_CHARGE_COMPLETE_METHODS = {:percentage= => 100, :time_remaining= => 1000}
-BATTERY_PLUGGED_METHODS         = {:percentage= => 60,  :time_remaining= => 500}
-BATTERY_UNPLUGGED_METHODS       = {:percentage= => 50,  :time_remaining= => 500}
-BATTERY_CRITICAL_METHODS        = {:percentage= => 10,  :time_remaining= => 100}
-STRAP_FASTENED_METHODS          = {}
-STRAP_REMOVED_METHODS           = {}
-FALL_METHODS                    = {:magnitude=  => 60}
-PANIC_METHODS                   = {}
-
-CLAZZ_TO_METHODS = {BatteryChargeComplete => BATTERY_CHARGE_COMPLETE_METHODS, 
-                    BatteryPlugged        => BATTERY_PLUGGED_METHODS, 
-                    BatteryUnplugged      => BATTERY_UNPLUGGED_METHODS,
-                    BatteryCritical       => BATTERY_CRITICAL_METHODS,
-                    StrapFastened         => STRAP_FASTENED_METHODS,
-                    StrapRemoved          => STRAP_REMOVED_METHODS,
-                    Fall                  => FALL_METHODS,
-                    Panic                 => PANIC_METHODS}
-                    
-#refactor to pluralize the model name and generate the path
-CLAZZ_TO_PATHS = {BatteryChargeComplete   => 'battery_charge_completes',
-                  BatteryPlugged          => 'battery_pluggeds', 
-                  BatteryUnplugged        => 'battery_unpluggeds',
-                  BatteryCritical         => 'battery_criticals',
-                  StrapFastened           => 'strap_fasteneds',
-                  StrapRemoved            => 'strap_removeds',
-                  Fall                    => 'falls',
-                  Panic                   => 'panics'} 
-
-
-#helper methods
-def set_model_values(model)
-  methods_hash = CLAZZ_TO_METHODS[model.class]
-  methods_hash.each do |key, value|
-    model.send(key, value)
-  end
-end
 
 def get_bundled_curl_cmd(models)
   curl_cmd = BEGIN_CURL 
@@ -175,5 +138,5 @@ def get_xml(user_id, device_id, timestamp, model)
 end
 
 def get_model_url(model)
-  return CLAZZ_TO_PATHS[model.class]
+  return model.class.to_s.pluralize.underscore
 end
