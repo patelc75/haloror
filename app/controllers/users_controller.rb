@@ -90,7 +90,7 @@ class UsersController < ApplicationController
   
   def add_device_to_user    
     
-    register_user_with_serial_num(User.find(params[:user_id]),params[:serial_number])
+    register_user_with_serial_num(User.find(params[:user_id]),params[:serial_number].strip)
     
     redirect_to :controller => 'reporting', :action => 'users'
   end
