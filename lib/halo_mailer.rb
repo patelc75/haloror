@@ -18,7 +18,7 @@ class ActionMailer::ARMailer < ActionMailer::Base
             begin
               Email.create  :mail => mail.encoded,    :to => destination, 
                             :from => mail.from.first, :priority => self.priority
-            rescue Error => e
+            rescue RuntimeError => e
               RAILS_DEFAULT_LOGGER.warn("Error sending mail:  #{e}")
               email = Email.new(:mail => 'Error sending mail',          :to => 'exceptions@halomonitoring.com', 
                                 :from => 'no-reply@halomonitoring.com', :priority => 100)
