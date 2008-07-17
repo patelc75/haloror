@@ -21,12 +21,15 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
           user[:data_readings].sort_by { |d| d}.each do |timestamp, group|
             xml.DataReading(:datetime => UtilityHelper.format_datetime(timestamp, user)) do
               group.each do |reading|
-                if reading.type.to_s == 'Vital' || reading[:type] == 'Vital'  #averaged data uses hashes and and discrete data uses objects 
+                if reading.class.to_s == 'Vital' || reading[:type] == 'Vital'  #averaged data uses hashes and and discrete data uses objects 
                   if reading[:heartrate] and reading[:hrv]
                     xml.heartrate(reading[:heartrate])  
-                    if reading[:heartrate] != -1 and reading[:hrv] != -1
+                    if reading[:hrv] != -1
                       xml.hr_min(reading[:heartrate]-reading[:hrv]/2)
                       xml.hr_max(reading[:heartrate]+reading[:hrv]/2)
+                    else
+                      xml.hr_min(-1)
+                      xml.hr_max(-1)                      
                     end
                   end
 
@@ -37,15 +40,15 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
                       xml.adl(Vital.get_adl(reading[:orientation], reading[:activity]))
                     end
                   end
-                elsif reading.type.to_s == 'SkinTemp' || reading[:type] == 'SkinTemp'
+                elsif reading.class.to_s == 'SkinTemp' || reading[:type] == 'SkinTemp'
                   if reading[:skin_temp]
                     xml.skin_temp(reading[:skin_temp])
                   end
-                elsif reading.type.to_s == 'Step' || reading[:type] == 'Step'
+                elsif reading.class.to_s == 'Step' || reading[:type] == 'Step'
                   if reading[:steps]
                     xml.steps(reading[:steps])
                   end
-                elsif reading.type.to_s == 'Battery' || reading[:type] == 'Battery'
+                elsif reading.class.to_s == 'Battery' || reading[:type] == 'Battery'
                   if reading[:percentage]
                     xml.battery(".#{reading[:percentage]}")
                   end
