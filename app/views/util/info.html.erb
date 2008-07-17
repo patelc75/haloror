@@ -1,6 +1,6 @@
 <!-- See http://corelib.rubyonrails.org/classes/CGI.html for more environment variables -->
 HTTP_HOST: <code><%= request.env["HTTP_HOST"].to_s %></code> <br>
-SERVER_NAME: <code><%= request.env["SERVER_NAME"].to_s %></code> <br>
+REMOTE_ADDR: <code><%= request.env["REMOTE_ADDR"].to_s %></code> <br>
 UNIX hostname: <code><%= `hostname` %></code><br>
 Database: <code><%= ActiveRecord::Base.connection.select_value("SELECT  VERSION()") %></code><br>
 SMTP server: <code> <%= ActionMailer::Base.smtp_settings[:address] %></code><br>
