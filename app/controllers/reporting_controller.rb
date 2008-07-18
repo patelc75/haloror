@@ -1,6 +1,5 @@
 class ReportingController < ApplicationController
   include UtilityHelper
-  LOST_DATA_GAP = 17.seconds
   
   def users
     @users = User.find(:all, :include => [:roles, :roles_users])
