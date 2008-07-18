@@ -115,7 +115,7 @@ class ReportingController < ApplicationController
         last.save
       end
       
-      @lost_data = LostData.find(:all, :conditions => "user_id = #{user_id}", :order => "id desc")
+      @lost_data = LostData.paginate(:page => params[:page], :per_page => 25, :conditions => "user_id = #{user_id}", :order => "id desc")
     else
       redirect_to '/'
     end    

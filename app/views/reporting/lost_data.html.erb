@@ -10,10 +10,13 @@ All times are in <%= @user.profile.time_zone %> timezone
         </tr>
         <% @lost_data.each do |reading| %>
           <tr>
-            <td><%=UtilityHelper.format_datetime_readable(reading.begin_time.to_s(:db), @user)%></td>
+            <td><%=reading.begin_time.to_s(:db)%></td>
               <td></td>
-              <td><%=UtilityHelper.format_datetime_readable(reading.end_time.to_s(:db), @user)%></td>
+              <td><%=reading.end_time.to_s(:db)%></td>
               </tr>
             <% end %>
-          </table>
+          </table>	
+						<br>
+				    <br>
+				    <center><big><%= will_paginate @lost_data %></big></center>
   </p>
