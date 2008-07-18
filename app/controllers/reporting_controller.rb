@@ -1,6 +1,6 @@
 class ReportingController < ApplicationController
   include UtilityHelper
-  LOST_DATA_GAP = 15.seconds
+  LOST_DATA_GAP = 17.seconds
   
   def users
     @users = User.find(:all, :include => [:roles, :roles_users])
@@ -93,20 +93,22 @@ class ReportingController < ApplicationController
       else
         conds = ""
       end
-      
-      Vital.find(:all, :order => 'timestamp asc', :conditions => "user_id = #{user_id}#{conds}").each do |reading|
-        if prev_timestamp and (reading.timestamp - prev_timestamp) > LOST_DATA_GAP
-          # create row in lost_data table
-          lost = LostData.new
-          lost.user_id = reading.user_id
-          lost.begin_time = prev_timestamp
-          lost.end_time = reading.timestamp
-          lost.save
-        end
-      
-        prev_timestamp = reading.timestamp
+      end_time = Time.now
+      begin_time = nil
+      begin_time = last.timestamp if last
+      if begin_time
+        LostData.connection.select_all("select * from lost_data_function(#{user_id}, '#{begin_time.to_s(:db)}', '#{end_time.to_s(:db)})', '#{LOST_DATA_GAP} seconds')")
+      else
+        LostData.connection.select_all("select * from lost_data_function(#{user_id}, null, '#{end_time.to_s(:db)})', '#{LOST_DATA_GAP} seconds')")
       end
-      
+      lost_data = nil
+      if begin_time
+        lost_data = LostData.find(:first, :order => "end_time desc", :conditions => "user_id = #{user_id} AND end_time > '#{begin_time.to_s(:db)}'")
+      else
+        lost_data = LostData.find(:first, :order => "end_time desc", :conditions => "user_id = #{user_id}")
+      end
+      prev_timestamp = lost_data.end_time if lost_data
+            
       if (!last or prev_timestamp != last.timestamp) and !prev_timestamp.nil?
         last = VitalScan.new
         last.user_id = user_id
