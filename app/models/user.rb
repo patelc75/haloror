@@ -159,6 +159,7 @@ class User < ActiveRecord::Base
           cg_array << caregiver
         end
       end
+      cg_array.sort! do |a,b| a.position <=> b.position end
       return cg_array
     else
       return []
@@ -173,6 +174,7 @@ class User < ActiveRecord::Base
           cg_array << caregiver
         end
       end
+      cg_array.sort! do |a,b| a.position <=> b.position end
       return cg_array
     else
       return []
