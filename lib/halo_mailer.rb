@@ -22,7 +22,7 @@ class ActionMailer::ARMailer < ActionMailer::Base
             rescue RuntimeError => e
               RAILS_DEFAULT_LOGGER.warn("Error sending mail:  #{e}")
               email = Email.new(:mail => 'Error sending mail',          :to => 'exceptions@halomonitoring.com', 
-                                :from => 'no-reply@halomonitoring.com', :priority => 100
+                                :from => 'no-reply@halomonitoring.com', :priority => 100,
 								:subject => 'Error sending mail')
               ar_sendmail = ActionMailer::ARSendmail.new
               ar_sendmail.deliver([email])
