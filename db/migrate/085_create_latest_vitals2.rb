@@ -1,4 +1,4 @@
-class CreateLatestVitals < ActiveRecord::Migration
+class CreateLatestVitals2 < ActiveRecord::Migration
 
   def self.up
     begin
