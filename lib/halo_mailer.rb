@@ -6,7 +6,7 @@ class ActionMailer::ARMailer < ActionMailer::Base
       self.priority = Priority::LOW
     end
     if !mail.destinations.blank?
-      if self.priority > Priority::THRESH_HOLD
+      if self.priority > Priority::THRESH_HOLD || ENV['RAILS_ENV'] == 'development'
         emails = []
         ar_sendmail = ActionMailer::ARSendmail.new
         mail.destinations.each do |destination|
