@@ -137,6 +137,47 @@ class User < ActiveRecord::Base
     
     patients
   end
+  def is_caregiver_for?(user)
+    
+  end
+  def is_active_caregiver?(caregiver)
+    roles_user = self.roles_user_by_caregiver(caregiver)
+    if roles_user
+      opt = roles_user.roles_users_option
+      if opt && !opt.removed && opt.active
+        return true
+      end
+    end
+    return false
+  end
+  def active_caregivers
+    cg_array = []
+    cgs = self.caregivers
+    if !cgs.nil?
+      cgs.each do |caregiver|
+        if self.is_active_caregiver?(caregiver)
+          cg_array << caregiver
+        end
+      end
+      return cg_array
+    else
+      return []
+    end
+  end
+  def inactive_caregivers
+    cg_array = []
+    cgs = self.caregivers
+    if !cgs.nil?
+      cgs.each do |caregiver|
+        if !self.is_active_caregiver?(caregiver)
+          cg_array << caregiver
+        end
+      end
+      return cg_array
+    else
+      return []
+    end
+  end
   def caregivers
     caregivers = []
     caregivers = self.has_caregivers
