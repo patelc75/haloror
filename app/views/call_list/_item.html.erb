@@ -125,7 +125,7 @@
 			end
 		%>
 		
-		<%=link_to_remote(image_tag(img, :id => 'item_phone_'+caregiver.id.to_s), :url => { :action => "toggle_phone",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')', :complete => 'updatePositions()')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_phone_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_phone",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')', :complete => 'updatePositions()')%>
 	</div>
 	
 	<!--EMAIL-->
@@ -139,7 +139,7 @@
 			end
 		%>
 
-		<%=link_to_remote(image_tag(img, :id => 'item_email_'+caregiver.id.to_s), :url => { :action => "toggle_email",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.email_active.to_s+', \'email\', '+user_id+')', :complete => 'updatePositions()')%>
+		<%=link_to_remote(image_tag(img, :id => 'item_email_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_email",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.email_active.to_s+', \'email\', '+user_id+')', :complete => 'updatePositions()')%>
 	</div>
 
 	<!--TEXT-->
