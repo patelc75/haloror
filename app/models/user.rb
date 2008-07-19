@@ -20,7 +20,7 @@ class User < ActiveRecord::Base
   #has_one :roles_users_option
   
   has_many :roles_users
-  has_many :roles, :through => :roles_users, :include => [:roles_users]
+  has_many :roles, :through => :roles_users#, :include => [:roles_users]
   
   has_and_belongs_to_many :devices
   
