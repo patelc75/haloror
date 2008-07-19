@@ -1,4 +1,4 @@
-class CreateDeviceUnavailableAlerts < ActiveRecord::Migration
+class CreateDeviceUnavailableAlerts2 < ActiveRecord::Migration
   def self.up
     drop_table "device_unavailable_alerts" rescue Exception
     ## Note: Maintain exact same table structure as outage_alerts
