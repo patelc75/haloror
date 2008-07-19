@@ -145,6 +145,7 @@ class User < ActiveRecord::Base
     if roles_user
       opt = roles_user.roles_users_option
       if opt && !opt.removed && opt.active
+        caregiver[:position] = opt.position
         return true
       end
     end
@@ -159,7 +160,7 @@ class User < ActiveRecord::Base
           cg_array << caregiver
         end
       end
-      cg_array.sort! do |a,b| a.position <=> b.position end
+      cg_array.sort! do |a,b| a[:position] <=> b[:position] end
       return cg_array
     else
       return []
@@ -174,7 +175,7 @@ class User < ActiveRecord::Base
           cg_array << caregiver
         end
       end
-      cg_array.sort! do |a,b| a.position <=> b.position end
+      cg_array.sort! do |a,b| a[:position] <=> b[:position] end
       return cg_array
     else
       return []
@@ -270,6 +271,23 @@ class User < ActiveRecord::Base
   def to_s()
     name
   end
+  
+  def format_phone(number)
+    number.blank? ? "N/A" : number.strip 
+  end
+  
+  def contact_info()
+    name + ": Home #{format_phone(profile.home_phone)} | Cell #{format_phone(profile.cell_phone)} | Work #{format_phone(profile.work_phone)}"  
+  end
+  
+  def contact_info_by_alert_option(alert_option)
+    if opts = alert_option.roles_user.roles_users_option
+      unless opts.removed
+        "(#{opts.position}) " + contact_info()
+      end
+    end
+  end
+  
   
   protected
   # before filter 
