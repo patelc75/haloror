@@ -16,6 +16,15 @@ class Event < ActiveRecord::Base
     "#{user.profile.first_name}: #{self.event_type}"
   end
   
+  def notes_string
+    string = "Event Notes\n"
+    notes.each do |note|
+      string += UtilityHelper.format_datetime_readable(note.created_at, user) + " by " + note.creator.name() + "\n" +
+        note.notes + "\n\n"
+    end
+    string
+  end
+  
   def accepted?
     EventAction.find(:all, :conditions => "event_id = '#{self.id}'").each do |action|
       return action if action.description == 'accepted'

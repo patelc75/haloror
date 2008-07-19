@@ -48,8 +48,8 @@
 			<div class="col-100">&nbsp;
 				<% user = nil
 				 	if !note.created_by.blank?
-								user = User.find(note.created_by)
-			    end
+					  user = note.creator
+					end
 				%>
 				<%= user.name if user %>
 			</div>
