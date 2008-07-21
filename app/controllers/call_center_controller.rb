@@ -63,7 +63,13 @@ class CallCenterController < ApplicationController
       note.created_by = current_user.id
       note.notes = params[:notes]
       note.save!
-      render :text => '', :layout => false
+      if params[:new_note]
+        redirect_to :controller => 'call_center', :action => 'all_user_notes', :id => params[:user_id]
+      elsif params[:new_event_id]
+        redirect_to :controller => 'call_center', :action => 'all_event_notes', :id => params[:event_id]
+      else
+        render :text => '', :layout => false
+      end
     else 
       note = Note.find(params[:id])
       user_id = note.user_id
@@ -75,7 +81,17 @@ class CallCenterController < ApplicationController
     end
     
   end
-  
+  def add_event_note
+    event = Event.find(params[:event_id])
+    @note = Note.new()
+    @note.user_id = params[:user_id]
+    @note.event = event
+    render :partial => 'add_event_note', :layout => false
+  end
+  def add_note
+    @note = Note.new(:user_id => params[:user_id])
+    render :partial => 'add_note', :layout => false
+  end
   def edit_note
     @note = Note.find(params[:id])
     render :partial => 'note', :layout => false
@@ -87,13 +103,18 @@ class CallCenterController < ApplicationController
     redirect_to :action => 'all_user_notes', :id => user_id
   end
   def all_user_notes
+    @title = "User Notes"
     user_id = params[:id]
+    @user_id = user_id
     @notes = Note.find(:all, :conditions => "user_id = #{user_id}", :order => "created_at desc")
     render :template => 'call_center/all_notes'
   end
   def all_event_notes
-    event_id = params[:id]
-    @notes = Note.find(:all, :conditions => "event_id = #{event_id}", :order => "created_at desc")
+    @title = "Event Notes"
+    @event_id = params[:id]
+    event = Event.find(@event_id)
+    @user_id = event.user_id
+    @notes = Note.find(:all, :conditions => "event_id = #{@event_id}", :order => "created_at desc")
     render :template => 'call_center/all_notes'
   end
 end

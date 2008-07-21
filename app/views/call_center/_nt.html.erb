@@ -1,0 +1,6 @@
+<input type="hidden" name="id" value="<%= @note.id %>" />
+<input type="hidden" name="user_id" value="<%= @note.user_id%>">
+<input type="hidden" name="event_id" value="<%= @note.event ? @note.event.id.to_s : ''%>">
+
+<%= text_area_tag :notes, @note.notes, :cols => 100, :rows => 5 %>
+<%= submit_tag 'Save Note' %>

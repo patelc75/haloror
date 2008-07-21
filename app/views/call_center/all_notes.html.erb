@@ -1,3 +1,5 @@
+<h2><%= @title %></h2>
+
 <div class="table">
 	<div class="row header">
 <div class="col-100">
@@ -36,14 +38,14 @@
 		<div class="col-100">
 			<%= note.user_id %>
 		</div>
-		<div class="col-100">
+		<div class="col-100">&nbsp;
 			<%= note.event_id %>
 		</div>
-		<div class="col-100">
-			<%= note.event.event_type %>
+		<div class="col-100">&nbsp;
+			<%= note.event.event_type if note.event %>
 		</div>
-		<div class="col-200">
-			<%= note.event.timestamp %>
+		<div class="col-200">&nbsp;
+			<%= note.event.timestamp if note.event %>
 		</div>
 			<div class="col-100">&nbsp;
 				<% user = nil
@@ -65,4 +67,16 @@
 	</div>
 	<% end %>
 <% end %>
+  <div class="row">
+	  <div class="col-100">
+		<% if @event_id %>
+			<%= link_to_remote 'Add Note', :update => 'new_note_id', :url => {:controller => 'call_center', :action => 'add_event_note', :event_id => @event_id, :user_id => @user_id}%> 
+		<% else %>
+			<%= link_to_remote 'Add Note', :update => 'new_note_id', :url => {:controller => 'call_center', :action => 'add_note', :user_id => @user_id}%> 
+			<%end%>
+		</div>
+	  <div id='new_note_id'>
+		
+		</div>
+	</div>
 </div>

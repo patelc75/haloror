@@ -13,7 +13,7 @@ class ActionMailer::ARMailer < ActionMailer::Base
           emails << Email.new(:mail => mail.encoded,    :to => destination,
                               :from => mail.from.first, :priority => self.priority)
           end
-          ar_sendmail.deliver(emails)      
+          ar_sendmail.deliver(emails)
         else
           mail.destinations.each do |destination|
             begin
