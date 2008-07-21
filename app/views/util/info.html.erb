@@ -1,5 +1,5 @@
 <!-- See http://corelib.rubyonrails.org/classes/CGI.html for more environment variables -->
-SERVER_NAME : <code><%= request.env["SERVER_NAME "].to_s %></code> <br>
+HOST_NAME : <code><%= request.env["HOST_NAME "].to_s %></code> <br>
 SERVER_ADDR: <code><%= request.env["SERVER_ADDR"].to_s %></code> <br>
 REMOTE_ADDR: <code><%= request.env["REMOTE_ADDR"].to_s %></code> <br>
 UNIX hostname: <code><%= `hostname` %></code><br>
@@ -9,20 +9,20 @@ Ruby: <code> <%= "#{RUBY_VERSION} (#{RUBY_RELEASE_DATE}) on #{RUBY_PLATFORM}" %>
 Rails: <code> <%= "#{Rails::VERSION::STRING}" %> </code><br>
 <br>
 <b>Rufus Constants </b><br>
-GATEWAY_OFFLINE_TIMEOUT= <%= GATEWAY_OFFLINE_TIMEOUT %><br>
+GATEWAY_OFFLINE_TIMEOUT= <%= GATEWAY_OFFLINE_TIMEOUT %>m<br>
 GATEWAY_OFFLINE_POLL_RATE= <%= GATEWAY_OFFLINE_POLL_RATE %><br>
-DEVICE_UNAVAILABLE_TIMEOUT= <%= DEVICE_UNAVAILABLE_TIMEOUT %><br>
+DEVICE_UNAVAILABLE_TIMEOUT= <%= DEVICE_UNAVAILABLE_TIMEOUT %>m<br>
 DEVICE_UNAVAILABLE_POLL_RATE= <%= DEVICE_UNAVAILABLE_POLL_RATE %><br>
 EMAIL_NOTIFICATION_RATE= <%= EMAIL_NOTIFICATION_RATE %><br>
 MAX_ATTEMPTS_BEFORE_NOTIFICATION= <%= MAX_ATTEMPTS_BEFORE_NOTIFICATION %><br>
-STRAP_OFF_TIMEOUT= <%= STRAP_OFF_TIMEOUT %><br>
+STRAP_OFF_TIMEOUT= <%= STRAP_OFF_TIMEOUT %>m<br>
 STRAP_OFF_POLL_RATE= <%= STRAP_OFF_POLL_RATE %><br>
 MAX_ATTEMPTS_BEFORE_NOTIFICATION_STRAP_OFF= <%= MAX_ATTEMPTS_BEFORE_NOTIFICATION_STRAP_OFF %><br>
 
 
 <br><br>
 <b>Lost Data</b><br>
-LOST_DATA_GAP = 17.seconds<br>
+LOST_DATA_GAP = <%= LOST_DATA_GAP %><br>
 <br><br>
 
 <b>ADL-related Constants </b><br>
