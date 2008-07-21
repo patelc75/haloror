@@ -101,6 +101,18 @@ if flag == "start" || flag == "restart"
     ActiveRecord::Base.logger = RAILS_DEFAULT_LOGGER
     
     SCHEDULER = Rufus::Scheduler.new
+    class << SCHEDULER
+     def lwarn (&block)      
+        email = Email.new(:mail => 'Error in Rufus::',            :to => 'exceptions_www@halomonitoring.com', 
+                          :from => 'no-reply@halomonitoring.com', :priority => 100)
+        ar_sendmail = ActionMailer::ARSendmail.new
+        ar_sendmail.deliver([email])
+        RAILS_DEFAULT_LOGGER.warn("Error in Rufus::")
+        message = block.call
+        RAILS_DEFAULT_LOGGER.warn(message)
+        puts message
+     end
+    end
     require scheduler_file
     SCHEDULER.start
   end
