@@ -1,5 +1,5 @@
 <!-- See http://corelib.rubyonrails.org/classes/CGI.html for more environment variables -->
-HOST_NAME : <code><%= request.env["HOST_NAME "].to_s %></code> <br>
+HOST_NAME : <code><%= request.env["HOST_NAME"].to_s %></code> <br>
 SERVER_ADDR: <code><%= request.env["SERVER_ADDR"].to_s %></code> <br>
 REMOTE_ADDR: <code><%= request.env["REMOTE_ADDR"].to_s %></code> <br>
 UNIX hostname: <code><%= `hostname` %></code><br>
@@ -22,7 +22,7 @@ MAX_ATTEMPTS_BEFORE_NOTIFICATION_STRAP_OFF= <%= MAX_ATTEMPTS_BEFORE_NOTIFICATION
 
 <br><br>
 <b>Lost Data</b><br>
-LOST_DATA_GAP = <%= LOST_DATA_GAP %><br>
+LOST_DATA_GAP = <%= LOST_DATA_GAP %>s<br>
 <br><br>
 
 <b>ADL-related Constants </b><br>
