@@ -6,6 +6,5 @@ class Email < ActiveRecord::Base
     rescue
       RAILS_DEFAULT_LOGGER.warn("RESCUE called in Email.notify_by_priority")
     end
-    ActiveRecord::Base.verify_active_connections!()
   end
 end

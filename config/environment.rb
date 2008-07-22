@@ -47,6 +47,7 @@ Rails::Initializer.run do |config|
   
   # See Rails::Configuration for more options
   config.active_record.observers = :user_observer, :device_event_observer, :event_action_observer
+
 end
 
 # Add new inflection rules using the following format 
@@ -67,25 +68,31 @@ end
 #SCRIPT_LINES__ = {} if ENV['RAILS_ENV'] == 'development'
 
 
-ActionMailer::Base.delivery_method = :activerecord
-#ActionMailer::Base.delivery_method = :smtp
+#ActionMailer::Base.delivery_method = :activerecord
+ActionMailer::Base.delivery_method = :smtp
 ActionMailer::Base.raise_delivery_errors = true
-  
+SMTP_SETTINGS_LOCALHOST={
+  :address => "localhost" ,
+  :port => 25,
+  :domain => "halomonitor.com"
+}
+SMTP_SETTINGS_SERVER2={
+  :address => "10.2.128.20" ,
+  :port => 25,
+  :domain => "halomonitor.com"
+}
+SMTP_SETTINGS_DEVELOPMENT = {
+  :address => "mail.haloresearch.net" ,
+  :port => 25,
+  :domain => "haloresearch.net" ,
+  :authentication => :login,
+  :user_name => "chirag@haloresearch.net" ,
+  :password => "irdikt75" 
+}
 if (ENV['RAILS_ENV'] == 'production')
-  ActionMailer::Base.smtp_settings = {
-    :address => "localhost" ,
-    :port => 25,
-    :domain => "halomonitor.com"
-  }
+  ActionMailer::Base.smtp_settings = SMTP_SETTINGS_LOCALHOST
 else
-  ActionMailer::Base.smtp_settings = {
-    :address => "mail.haloresearch.net" ,
-    :port => 25,
-    :domain => "haloresearch.net" ,
-    :authentication => :login,
-    :user_name => "chirag@haloresearch.net" ,
-    :password => "irdikt75" 
-  }
+  ActionMailer::Base.smtp_settings = SMTP_SETTINGS_DEVELOPMENT
 end
 
 require 'rubygems'

@@ -28,7 +28,6 @@ class StrapOffAlert < DeviceAlert
       
       process_device_strap_off(device)
     end
-    ActiveRecord::Base.verify_active_connections!()
     true
   end
   
