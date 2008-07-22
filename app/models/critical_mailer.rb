@@ -1,6 +1,7 @@
 class CriticalMailer < ActionMailer::ARMailer
   include UtilityHelper
-    
+  include ServerInstance
+  
   def background_task_notification(alert, user)
     body = "User #{user.name} (#{user.id})\n" +
       "Detected at #{UtilityHelper.format_datetime_readable(alert.created_at, user)}\n" +
@@ -15,14 +16,14 @@ class CriticalMailer < ActionMailer::ARMailer
     setup_caregivers(event.user, event, :recepients)
     self.priority  = event.priority
   end
-    
+  
   def device_event_operator(event)
     setup_caregivers(event.user, event, :caregiver_info)
     setup_message(event.to_s, @caregiver_info)
     setup_operators(event, :recepients, :include_phone_call) 
     self.priority  = event.priority
   end
-
+  
   def call_center_caregiver(event_action)
     setup_message(event_action.to_s, event_action.email_body)
     setup_caregivers(event_action.event.user, event_action.event.event, :recepients)
@@ -43,15 +44,15 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   protected
-
+  
   def setup_message(subject, msg_body)
     @from        = "no-reply@halomonitoring.com"
-    @subject     = "[HALO] "
+    @subject     = "[" + ServerInstance.current_host_short_string + "] "
     @subject     += subject unless subject.blank?
     @sent_on     = Time.now
     body msg_body
   end
-      
+  
   def setup_caregivers(user, alert, mode)
     self_alert = user.alert_option(alert)
     recipients_setup(user, self_alert, mode)
@@ -71,7 +72,7 @@ class CriticalMailer < ActionMailer::ARMailer
       end
     end
   end
-
+  
   
   def recipients_setup(user, alert_option, mode, phone = :no_phone_call)
     @recipients = Array.new if @recipients.nil?
@@ -103,4 +104,3 @@ class CriticalMailer < ActionMailer::ARMailer
     end  
   end
 end
-	

@@ -1,19 +1,4 @@
-class UsersController < ApplicationController
-  include UsersHelper
-
-
-
-
-  before_filter:set_user
-  
-  def set_user
-    UsersHelper.current_host = request.host
-  end
-
-  def choose_timezone
-    
-  end
-  
+class UsersController < ApplicationController  
   def save_timezone
     user = User.find(current_user.id)
     user.profile.tz = tzinfo_from_timezone(TimeZone.new(params[:user][:timezone_name]))
