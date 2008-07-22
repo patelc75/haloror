@@ -17,7 +17,6 @@ class DeviceAlert < ActiveRecord::Base
   
   def email_body
     alert_name = UtilityHelper.camelcase_to_spaced(self.class.to_s)
-    #datetime = format_datetime(timestamp,user).to_time.strftime("%I:%M%p on %a %m/%d/%Y")
     "We have detected a #{alert_name} event for #{user.name} (#{user_id}) at #{UtilityHelper.format_datetime_readable(timestamp,user)} "
   end
 end
