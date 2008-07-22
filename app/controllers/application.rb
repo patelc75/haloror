@@ -2,9 +2,10 @@
 # Likewise, all the methods added will be available for all controllers.
 
 class ApplicationController < ActionController::Base
-  
+  include ServerInstance
   include AuthenticatedSystem
-  include ExceptionNotifiable 
+  include ExceptionNotifiable
+  
   local_addresses.clear # always send email notifications instead of displaying the error  
   
   # Pick a unique cookie name to distinguish our session data from others'
@@ -24,6 +25,11 @@ class ApplicationController < ActionController::Base
   end
   
   before_filter :authenticated?
+  before_filter:set_host
+  
+  def set_host
+    ServerInstance.current_host = request.host
+  end
   
   def number_ext
     @num_ref = {}
@@ -38,7 +44,7 @@ class ApplicationController < ActionController::Base
     @num_ref[8] = 'th'
     @num_ref[9] = 'th'
   end
- 
+  
   private
   def refresh_operators()
     @operators = User.operators
@@ -61,29 +67,29 @@ class ApplicationController < ActionController::Base
   end
   
   protected
-    def authenticated?
-      unless (controller_name == 'users' && (action_name == 'new' || action_name == 'create' || action_name == 'activate') || 
-            controller_name == 'sessions' || 
-            controller_name == 'flex' && action_name == 'chart' || 
-            controller_name == 'util' && action_name == 'check' ||
-            controller_name == 'util' && action_name == 'hostname' ||
-            controller_name == 'security')
-        return authenticate
-      else
-        return true
-      end
-    end
-    def authenticate
-      unless logged_in?
-        return redirect_to('/login')
-      end
-      true
-    end
-  
-    def authenticate_admin
-      unless logged_in? && current_user.is_administrator?
-        return redirect_to('/login')
-      end
-      true
+  def authenticated?
+    unless (controller_name == 'users' && (action_name == 'new' || action_name == 'create' || action_name == 'activate') || 
+      controller_name == 'sessions' || 
+      controller_name == 'flex' && action_name == 'chart' || 
+      controller_name == 'util' && action_name == 'check' ||
+      controller_name == 'util' && action_name == 'hostname' ||
+      controller_name == 'security')
+      return authenticate
+    else
+      return true
     end
   end
+  def authenticate
+    unless logged_in?
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin
+    unless logged_in? && current_user.is_administrator?
+      return redirect_to('/login')
+    end
+    true
+  end
+end
