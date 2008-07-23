@@ -68,8 +68,8 @@ end
 #SCRIPT_LINES__ = {} if ENV['RAILS_ENV'] == 'development'
 
 
-ActionMailer::Base.delivery_method = :activerecord
-#ActionMailer::Base.delivery_method = :smtp
+#ActionMailer::Base.delivery_method = :activerecord
+ActionMailer::Base.delivery_method = :smtp
 ActionMailer::Base.raise_delivery_errors = true
 SMTP_SETTINGS_LOCALHOST={
   :address => "localhost" ,
