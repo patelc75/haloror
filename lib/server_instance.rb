@@ -2,7 +2,13 @@ module ServerInstance
   @@hosts = ["sdev", "idev", "ldev", "dev"]
   
   def self.current_host
-    Thread.current[:host]
+    if Thread.current[:host].nil?
+      @prefix = "RUFUS "
+      `hostname`.strip
+    else
+      @prefix = ""
+      Thread.current[:host]
+    end
   end
   
   def self.current_host=(host)
@@ -12,13 +18,18 @@ module ServerInstance
   def self.current_host_short_string()
     @@hosts.each do |host|
       if in_hostname? host
-        return host.upcase
+        return @prefix + host.upcase
       end
     end
-    "HALO"
+    
+    if in_hostname? "com"
+      @prefix + "HALO"  
+    else
+      @prefix + current_host
+    end
   end
   
-  def self.in_hostname? string
+  def self.in_hostname? string    
     current_host.split('.').include? string
   end
 end
