@@ -5,9 +5,8 @@ class BundleController < RestfulAuthController
                       SkinTemp, Battery, BatteryChargeComplete, 
                       BatteryCritical, BatteryPlugged, BatteryUnplugged, 
                       Fall, Panic]
-  def index
-    bundle = params[:xml] 
-    bundle = Hash.from_xml(bundle)
+  def create
+    bundle = params[:bundle]
     RAILS_DEFAULT_LOGGER.warn(bundle)
     begin
       @@bundled_models[0].transaction do
