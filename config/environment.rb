@@ -90,7 +90,7 @@ SMTP_SETTINGS_DEVELOPMENT = {
   :password => "irdikt75" 
 }
 if (ENV['RAILS_ENV'] == 'production')
-  ActionMailer::Base.smtp_settings = SMTP_SETTINGS_LOCALHOST
+  ActionMailer::Base.smtp_settings = SMTP_SETTINGS_SERVER2
 else
   ActionMailer::Base.smtp_settings = SMTP_SETTINGS_DEVELOPMENT
 end
