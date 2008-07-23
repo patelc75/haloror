@@ -48,7 +48,8 @@ HALO_GATEWAY='Halo Gateway'
 HALO_CHEST_STRAP='Halo Chest Strap'
 SITE_URL = "idev.myhalomonitor.com"
 BEGIN_CURL='curl -v -H "Content-Type: text/xml" -d '
-CLAZZES = [BatteryChargeComplete, BatteryPlugged, BatteryUnplugged, BatteryCritical, StrapFastened, StrapRemoved, Vital]
+CLAZZES = [BatteryChargeComplete, BatteryPlugged, BatteryUnplugged, BatteryCritical, StrapFastened, StrapRemoved, Vital,
+           BatteryChargeComplete, BatteryPlugged, BatteryUnplugged, BatteryCritical, StrapFastened, StrapRemoved, Vital]
 
 def get_bundled_curl_cmd(models)
   curl_cmd = BEGIN_CURL 
