@@ -23,6 +23,16 @@ module UtilityHelper
     return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
   end
   
+  def self.log_message(message)    
+    RAILS_DEFAULT_LOGGER.warn(message)
+    send_mail(message)
+  end
+  def self.send_email(message)
+    email = Email.new(:mail => message,          :to => 'exceptions_www@halomonitoring.com', 
+                        :from => 'no-reply@halomonitoring.com', :priority => 100)
+    ar_sendmail = ActionMailer::ARSendmail.new
+    ar_sendmail.deliver([email])
+  end
   def self.format_datetime_readable(datetime,user)
     format_datetime(datetime,user).to_time.strftime("%I:%M%p on %a %m/%d/%Y") if datetime != nil
   end
