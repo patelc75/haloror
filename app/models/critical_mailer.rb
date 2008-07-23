@@ -76,6 +76,7 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def recipients_setup(user, alert_option, mode, phone = :no_phone_call)
     @recipients = Array.new if @recipients.nil?
+    @caregiver_info = "" if @caregiver_info.nil?
     
     if (alert_option)  #check for null until we figure out a better way to get roles_users_options
       email_bool = alert_option.email_active
