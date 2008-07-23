@@ -7,7 +7,6 @@ class BundleController < RestfulAuthController
                       Fall, Panic]
   def create
     bundle = params[:bundle]
-    RAILS_DEFAULT_LOGGER.warn(bundle)
     begin
       @@bundled_models[0].transaction do
         @@bundled_models.each do |model|
