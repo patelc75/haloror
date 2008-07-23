@@ -1,12 +1,10 @@
 module ServerInstance
-  @@hosts = ["sdev", "idev", "ldev", "dev"]
+  @@prefixes = ["sdev", "idev", "ldev", "dev"]
   
   def self.current_host
     if Thread.current[:host].nil?
-      @prefix = "RUFUS "
       `hostname`.strip
     else
-      @prefix = ""
       Thread.current[:host]
     end
   end
@@ -16,17 +14,13 @@ module ServerInstance
   end
   
   def self.current_host_short_string()
-    @@hosts.each do |host|
-      if in_hostname? host
-        return @prefix + host.upcase
+    @@prefixes.each do |prefix|
+      if in_hostname? prefix
+        return prefix.upcase
       end
     end
     
-    if in_hostname? "com"
-      @prefix + "HALO"  
-    else
-      @prefix + current_host
-    end
+    in_hostname? "com" ? "HALO" : current_host
   end
   
   def self.in_hostname? string    
