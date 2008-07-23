@@ -77,7 +77,7 @@ SMTP_SETTINGS_LOCALHOST={
   :domain => "halomonitor.com"
 }
 SMTP_SETTINGS_SERVER2={
-  :address => "10.2.128.20" ,
+  :address => "localhost" ,
   :port => 25,
   :domain => "halomonitor.com"
 }
