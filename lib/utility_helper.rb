@@ -25,7 +25,6 @@ module UtilityHelper
   
   def self.log_message(message)    
     RAILS_DEFAULT_LOGGER.warn(message)
-    send_mail(message)
   end
   def self.send_email(message)
     email = Email.new(:mail => message,          :to => 'exceptions_www@halomonitoring.com', 
