@@ -46,7 +46,7 @@ OPERATOR='test_operator'
 USER='test_user'
 HALO_GATEWAY='Halo Gateway'
 HALO_CHEST_STRAP='Halo Chest Strap'
-SITE_URL = "localhost:3000"
+SITE_URL = "sdev.myhalomonitor.com"
 BEGIN_CURL='curl -v -H "Content-Type: text/xml" -d '
 CLAZZES = [BatteryChargeComplete, BatteryPlugged, BatteryUnplugged, BatteryCritical, StrapFastened, StrapRemoved, Vital]
 
