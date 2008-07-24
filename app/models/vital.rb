@@ -192,7 +192,7 @@ class Vital < ActiveRecord::Base
 
   # Creates alerts for users that have become unavailable
   def Vital.job_detect_unavailable_devices
-    ActiveRecord::Base.logger.debug("Vital.job_detect_unavailable_devices running at #{Time.now}")
+    ActiveRecord::Base.logger.warn("Vital.job_detect_unavailable_devices running at #{Time.now}")
 
     ## Find devices that were previously signaling errors but have
     ## come back Online.

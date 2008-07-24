@@ -2,7 +2,7 @@ class StrapOffAlert < DeviceAlert
   set_table_name "strap_off_alerts"
   DEVICE_CHEST_STRAP_TYPE = 'Halo Chest Strap'
   def self.job_detect_straps_off
-    ActiveRecord::Base.logger.debug("StrapOffAlert.job_detect_straps_off running at #{Time.now}")
+    ActiveRecord::Base.logger.warn("StrapOffAlert.job_detect_straps_off running at #{Time.now}")
     conds = []
     conds << "reconnected_at is null"
     conds << "device_id in (select d.id from devices d where d.device_type = '#{DEVICE_CHEST_STRAP_TYPE}')"
