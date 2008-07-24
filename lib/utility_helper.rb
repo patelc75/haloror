@@ -35,8 +35,7 @@ module UtilityHelper
       email = Email.new(:mail => "Messge => #{message}", 
                         :to => 'exceptions_www@halomonitoring.com', 
                         :from => 'no-reply@halomonitoring.com', 
-                        :priority => 100,
-                        :subject => "SAFE SEND EMAIL::")
+                        :priority => 100)
       ar_sendmail = ActionMailer::ARSendmail.new
       ar_sendmail.deliver([email])
     rescue Exception => e

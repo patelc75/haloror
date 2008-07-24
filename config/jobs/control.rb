@@ -104,8 +104,7 @@ if flag == "start" || flag == "restart"
     class << SCHEDULER
      def lwarn (&block)      
         email = Email.new(:mail => 'Error in Rufus::',            :to => 'exceptions_www@halomonitoring.com', 
-                          :from => 'no-reply@halomonitoring.com', :priority => 100,
-                          :subject     => "[" + ServerInstance.current_host_short_string + "] " + "Rufus error")
+                          :from => 'no-reply@halomonitoring.com', :priority => 100)
         ar_sendmail = ActionMailer::ARSendmail.new
         ar_sendmail.deliver([email])
         RAILS_DEFAULT_LOGGER.warn("Error in Rufus::")
