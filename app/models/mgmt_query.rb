@@ -12,7 +12,7 @@ class MgmtQuery < ActiveRecord::Base
   # a certain number of failures. This outage is called an Outage
   # Alert and triggers a Gateway Offline event
   def MgmtQuery.job_detect_disconnected_users
-    ActiveRecord::Base.logger.warn("MgmtQuery.job_detect_disconnected_users running at #{Time.now}")
+    RAILS_DEFAULT_LOGGER.warn("MgmtQuery.job_detect_disconnected_users running at #{Time.now}")
 
     ## Find devices that were previously signaling errors but have
     ## come back online. Trigger a "Reconnect" event for these
