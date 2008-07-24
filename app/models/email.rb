@@ -2,7 +2,8 @@ class Email < ActiveRecord::Base
   def self.notify_by_priority
     begin
       RAILS_DEFAULT_LOGGER.warn("Email.notify_by_priority running at #{Time.now}")
-      ActionMailer::ARSendmail.run(:Once => true, :Verbose => true)
+      arsendmail = ActionMailer::ARSendmail.new(:Once => true, :Verbose => true)
+      arsendmail.run
     rescue
       RAILS_DEFAULT_LOGGER.warn("RESCUE called in Email.notify_by_priority")
     end
