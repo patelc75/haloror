@@ -34,10 +34,6 @@ module UtilityHelper
                         :to => 'exceptions_www@halomonitoring.com', 
                         :from => 'no-reply@halomonitoring.com', 
                         :priority => 100)
-      
-      #ActionMailer::ARSendmail delivers email from the email table to the SMTP 
-      #server configured in your application‘s config/environment.rb. ar_sendmail 
-      #does not work with sendmail delivery. 
       ar_sendmail = ActionMailer::ARSendmail.new
       ar_sendmail.deliver([email])
     rescue
