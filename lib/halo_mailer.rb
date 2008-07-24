@@ -11,7 +11,6 @@ class ActionMailer::ARMailer < ActionMailer::Base
       if !mail.destinations.blank?
         if self.priority > Priority::THRESH_HOLD || ENV['RAILS_ENV'] == 'development'
           emails = []
-          ar_sendmail = ActionMailer::ARSendmail.new
           mail.destinations.each do |destination|
             emails << Email.new(:mail => mail.encoded,    :to => destination,
                                 :from => mail.from.first, :priority => self.priority)
@@ -27,7 +26,7 @@ class ActionMailer::ARMailer < ActionMailer::Base
       end
     rescue Exception => e
       ActionMailer::Base.smtp_settings = SMTP_SETTINGS_NARFONIX
-      UtilityHelper.safe_send_mail("Error sending mail: perform_delivery_activerecord\n  #{e}")
+      UtilityHelper.safe_send_email("Error sending mail: perform_delivery_activerecord\n  #{e}")
       ActionMailer::Base.smtp_settings = SMTP_SETTINGS_LOCALHOST
     end
   end
