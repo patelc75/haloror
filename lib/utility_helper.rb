@@ -39,8 +39,10 @@ module UtilityHelper
                         :subject => "SAFE SEND EMAIL::")
       ar_sendmail = ActionMailer::ARSendmail.new
       ar_sendmail.deliver([email])
+    rescue Exception => e
+      RAILS_DEFAULT_LOGGER.warn("Exception in UtilityHelper.self.safe_send_email:: #{e}")
     rescue
-      RAILS_DEFAULT_LOGGER.warn("Exception in UtilityHelper.self.safe_send_email")
+      RAILS_DEFAULT_LOGGER.warn("Exception in UtilityHelper.self.safe_send_email::")
     end
   end
 
