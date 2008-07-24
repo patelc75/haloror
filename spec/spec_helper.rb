@@ -1,6 +1,6 @@
 # This file is copied to ~/spec when you run 'ruby script/generate rspec'
 # from the project root directory.
-ENV["RAILS_ENV"] = "development"
+ENV["RAILS_ENV"] = "production"
 IS_RANDOM=true
 require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
 require 'spec'
@@ -46,7 +46,7 @@ OPERATOR='test_operator'
 USER='test_user'
 HALO_GATEWAY='Halo Gateway'
 HALO_CHEST_STRAP='Halo Chest Strap'
-SITE_URL = "localhost:3000"
+SITE_URL = "idev.myhalomonitor.com"
 BEGIN_CURL='curl -v -H "Content-Type: text/xml" -d '
 CLAZZES = [BatteryChargeComplete, BatteryPlugged, BatteryUnplugged, BatteryCritical, StrapFastened, StrapRemoved, Vital]
 
