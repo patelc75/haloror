@@ -9,7 +9,7 @@
 		
 			<% color = 'gray' unless cmd.mgmt_ack %>
 	
-			<%=render :partial => 'row', :locals => {:row => row, :color => color, :group => true}%>
+			<%=render :partial => 'row', :locals => {:row => row, :color => color, :group => true, :cmd_type => cmd.cmd_type}%>
 		
 			<div id="group_<%=row.id%>" style="margin-left:10px;display:none">
 

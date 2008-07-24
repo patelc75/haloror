@@ -20,7 +20,7 @@ module ServerInstance
       end
     end
     
-    in_hostname? "com" ? "HALO" : current_host
+    in_hostname?("com") ? "HALO" : current_host
   end
   
   def self.in_hostname? string    

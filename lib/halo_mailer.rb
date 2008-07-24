@@ -6,7 +6,7 @@ class ActionMailer::ARMailer < ActionMailer::Base
     begin
       RAILS_DEFAULT_LOGGER.warn("perform_delivery_activerecord")
       if self.priority.nil?
-        self.priority = Priority::LOW
+        self.priority = Priority::IMMEDIATE
       end
       if !mail.destinations.blank?
         if self.priority > Priority::THRESH_HOLD || ENV['RAILS_ENV'] == 'development'

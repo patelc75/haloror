@@ -1,9 +1,11 @@
 <!-- See http://corelib.rubyonrails.org/classes/CGI.html for more environment variables -->
+<b>Network</b><br>
 UNIX hostname: <code><%= `hostname` %></code><br>
 SERVER_ADDR: <code><%= request.env["SERVER_ADDR"].to_s %></code> <br>
 HOST_NAME : <code><%= request.host %></code> <br>
 REMOTE_ADDR: <code><%= request.env["REMOTE_ADDR"].to_s %></code> <br>
 <br>
+<b>Software</b><br>
 Database: <code><%= ActiveRecord::Base.connection.select_value("SELECT  VERSION()") %></code><br>
 Email delivery method: <code><%= ActionMailer::Base.delivery_method %></code><br>
 SMTP server: <code> <%= ActionMailer::Base.smtp_settings[:address] %></code><br>
@@ -39,7 +41,7 @@ MIN_ADL_RESTING_ACTIVITY=<%= MIN_ADL_RESTING_ACTIVITY %><br>
 <br>
 <b>Mgmt protocol-related Constants </b><br>
 <code>
-MGMT_CMD_NUM_RETRIES_WITHOUT_MGMT_ACK=<%= MGMT_CMD_RETRIES_WITHOUT_MGMT_ACK %><br>
+MGMT_CMD_ATTEMPTS_WITHOUT_ACK=<%= MGMT_CMD_ATTEMPTS_WITHOUT_ACK %><br>
 </code>
 <br>
 
