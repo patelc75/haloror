@@ -71,6 +71,7 @@ end
 ActionMailer::Base.delivery_method = :activerecord
 #ActionMailer::Base.delivery_method = :smtp
 ActionMailer::Base.raise_delivery_errors = true
+
 SMTP_SETTINGS_LOCALHOST={
   :address => "localhost" ,
   :port => 25,
@@ -81,7 +82,7 @@ SMTP_SETTINGS_SERVER2={
   :port => 25,
   :domain => "halomonitor.com"
 }
-SMTP_SETTINGS_DEVELOPMENT = {
+SMTP_SETTINGS_NARFONIX = {
   :address => "mail.haloresearch.net" ,
   :port => 25,
   :domain => "haloresearch.net" ,
@@ -89,10 +90,11 @@ SMTP_SETTINGS_DEVELOPMENT = {
   :user_name => "chirag@haloresearch.net" ,
   :password => "irdikt75" 
 }
+
 if (ENV['RAILS_ENV'] == 'production')
-  ActionMailer::Base.smtp_settings = SMTP_SETTINGS_SERVER2
+  ActionMailer::Base.smtp_settings = SMTP_SETTINGS_LOCALHOST
 else
-  ActionMailer::Base.smtp_settings = SMTP_SETTINGS_DEVELOPMENT
+  ActionMailer::Base.smtp_settings = SMTP_SETTINGS_NARFONIX
 end
 
 require 'rubygems'

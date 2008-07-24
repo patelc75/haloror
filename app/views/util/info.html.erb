@@ -3,13 +3,15 @@ UNIX hostname: <code><%= `hostname` %></code><br>
 SERVER_ADDR: <code><%= request.env["SERVER_ADDR"].to_s %></code> <br>
 HOST_NAME : <code><%= request.host %></code> <br>
 REMOTE_ADDR: <code><%= request.env["REMOTE_ADDR"].to_s %></code> <br>
+<br>
 Database: <code><%= ActiveRecord::Base.connection.select_value("SELECT  VERSION()") %></code><br>
-Default email delivery method: <code><%= ActionMailer::Base.delivery_method %></code><br>
+Email delivery method: <code><%= ActionMailer::Base.delivery_method %></code><br>
 SMTP server: <code> <%= ActionMailer::Base.smtp_settings[:address] %></code><br>
 Ruby: <code> <%= "#{RUBY_VERSION} (#{RUBY_RELEASE_DATE}) on #{RUBY_PLATFORM}" %> </code><br>
 Rails: <code> <%= "#{Rails::VERSION::STRING}" %> </code><br>
 <br>
 <b>Rufus Constants </b><br>
+<code>
 GATEWAY_OFFLINE_TIMEOUT= <%= GATEWAY_OFFLINE_TIMEOUT %>m<br>
 GATEWAY_OFFLINE_POLL_RATE= <%= GATEWAY_OFFLINE_POLL_RATE %><br>
 DEVICE_UNAVAILABLE_TIMEOUT= <%= DEVICE_UNAVAILABLE_TIMEOUT %>m<br>
@@ -19,20 +21,26 @@ MAX_ATTEMPTS_BEFORE_NOTIFICATION= <%= MAX_ATTEMPTS_BEFORE_NOTIFICATION %><br>
 STRAP_OFF_TIMEOUT= <%= STRAP_OFF_TIMEOUT %>m<br>
 STRAP_OFF_POLL_RATE= <%= STRAP_OFF_POLL_RATE %><br>
 MAX_ATTEMPTS_BEFORE_NOTIFICATION_STRAP_OFF= <%= MAX_ATTEMPTS_BEFORE_NOTIFICATION_STRAP_OFF %><br>
-
+</code>
 
 <br><br>
 <b>Lost Data</b><br>
+<code>
 LOST_DATA_GAP = <%= LOST_DATA_GAP %>s<br>
+</code>
 <br><br>
 
 <b>ADL-related Constants </b><br>
+<code>
 MIN_ADL_RESTING_ORIENTATION=<%= MIN_ADL_RESTING_ORIENTATION %><br>
 MAX_ADL_RESTING_ORIENTATION=<%= MAX_ADL_RESTING_ORIENTATION %><br>
 MIN_ADL_RESTING_ACTIVITY=<%= MIN_ADL_RESTING_ACTIVITY %><br>
+</code>
 <br>
 <b>Mgmt protocol-related Constants </b><br>
+<code>
 MGMT_CMD_NUM_RETRIES_WITHOUT_MGMT_ACK=<%= MGMT_CMD_RETRIES_WITHOUT_MGMT_ACK %><br>
+</code>
 <br>
 
 <b>Alert Types and Groups</b>

@@ -15,23 +15,30 @@ module UtilityHelper
     
     newdate = datetime.strftime("%a %b %d %H:%M:%S")
     offset = datetime.hour - original_datetime.hour
-      
+    
     if datetime.day != original_datetime.day  
       offset = offset - 24
     end
-      
+    
     return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
   end
   
   def self.log_message(message)    
     RAILS_DEFAULT_LOGGER.warn(message)
+    safe_send_mail(message)
   end
-  def self.send_email(message)
+  
+  def self.safe_send_email(message)
+    begin
     email = Email.new(:mail => message,          :to => 'exceptions_www@halomonitoring.com', 
                         :from => 'no-reply@halomonitoring.com', :priority => 100)
     ar_sendmail = ActionMailer::ARSendmail.new
     ar_sendmail.deliver([email])
+  rescue
+    RAILS_DEFAULT_LOGGER.warn("send_mail")
+    end
   end
+
   def self.format_datetime_readable(datetime,user)
     format_datetime(datetime,user).to_time.strftime("%I:%M%p on %a %m/%d/%Y") if datetime != nil
   end
