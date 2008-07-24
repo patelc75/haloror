@@ -1,3 +1,5 @@
+
+
 module UtilityHelper
   def self.format_datetime(datetime,user)
     #lookup = {-7 => 'PST', -6 => 'MST', -5 => 'CST', -4 => 'EST'}
@@ -23,9 +25,9 @@ module UtilityHelper
     return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
   end
   
-  def self.log_message(message)    
-    safe_send_mail(message)
+  def self.log_message(message) 
     RAILS_DEFAULT_LOGGER.warn(message)
+    safe_send_email(message)
   end
   
   def self.safe_send_email(message)
