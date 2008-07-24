@@ -24,8 +24,8 @@ module UtilityHelper
   end
   
   def self.log_message(message)    
+    safe_send_mail(message)
     RAILS_DEFAULT_LOGGER.warn(message)
-    UtilityHelper.safe_send_mail(message)
   end
   
   def self.safe_send_email(message)
