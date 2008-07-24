@@ -28,6 +28,7 @@ class ActionMailer::ARMailer < ActionMailer::Base
     rescue Exception => e
       ActionMailer::Base.smtp_settings = SMTP_SETTINGS_NARFONIX
       UtilityHelper.safe_send_mail("Error sending mail: perform_delivery_activerecord\n  #{e}")
+      ActionMailer::Base.smtp_settings = SMTP_SETTINGS_LOCALHOST
     end
   end
   

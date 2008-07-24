@@ -1,3 +1,5 @@
+include UtilityHelper
+
 ## This echoes a line to the log file every 10 seconds just to make
 ## sure things are running - eventually, we should remove it.
 ActiveRecord::Base.allow_concurrency = true
