@@ -30,12 +30,18 @@ module UtilityHelper
   
   def self.safe_send_email(message)
     begin
-    email = Email.new(:mail => message,          :to => 'exceptions_www@halomonitoring.com', 
-                        :from => 'no-reply@halomonitoring.com', :priority => 100)
-    ar_sendmail = ActionMailer::ARSendmail.new
-    ar_sendmail.deliver([email])
-  rescue
-    RAILS_DEFAULT_LOGGER.warn("send_mail")
+      email = Email.new(:mail => message, 
+                        :to => 'exceptions_www@halomonitoring.com', 
+                        :from => 'no-reply@halomonitoring.com', 
+                        :priority => 100)
+      
+      #ActionMailer::ARSendmail delivers email from the email table to the SMTP 
+      #server configured in your application‘s config/environment.rb. ar_sendmail 
+      #does not work with sendmail delivery. 
+      ar_sendmail = ActionMailer::ARSendmail.new
+      ar_sendmail.deliver([email])
+    rescue
+      RAILS_DEFAULT_LOGGER.warn("Exception in UtilityHelper.self.safe_send_email")
     end
   end
 
