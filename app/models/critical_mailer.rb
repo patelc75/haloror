@@ -39,6 +39,7 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def test_email(to, subject, body) 
     setup_message(subject, body)
+    @recipients = []
     @recipients  << to
     self.priority = Priority::IMMEDIATE
   end
