@@ -1,22 +1,50 @@
-<h2>Lost data for <%=@user.login%>:</h2>
-All times are in <%= @user.profile.time_zone %> timezone
-<p>&nbsp;</p>
+<h2>Lost data for <%=@user.login %>:</h2>
+All times are in <%= @user.profile.time_zone %>timezone
 <p>
-  <table>
-    <tr>
-      <td><b>Start</b></td>
-        <td>&nbsp;&nbsp;</td>
-        <td><b>End</b></td>
+    &nbsp;
+</p>
+<p>
+    <table>
+        <tr>
+            <td>
+                <b>Start</b>
+            </td>
+            <td>
+                &nbsp;&nbsp;
+            </td>
+            <td>
+                <b>End</b>
+            </td>
+            <td>
+                &nbsp;&nbsp;
+            </td>
+            <td>
+                <b>Duration</b>
+            </td>
         </tr>
         <% @lost_data.each do |reading| %>
-          <tr>
-            <td><%=reading.begin_time.to_s(:db)%></td>
-              <td></td>
-              <td><%=reading.end_time.to_s(:db)%></td>
-              </tr>
-            <% end %>
-          </table>	
-						<br>
-				    <br>
-				    <center><big><%= will_paginate @lost_data %></big></center>
-  </p>
+        <tr>
+            <td>
+                <%=reading.begin_time.to_s(:db) %>
+            </td>
+            <td>
+            </td>
+            <td>
+                <%=reading.end_time.to_s(:db) %>
+            </td>
+            <td>
+            </td>
+            <td>
+                <%=(reading.end_time - reading.begin_time).seconds %>s
+            </td>
+        </tr>
+        <% end %>
+    </table>
+    <br>
+    <br>
+    <center>
+        <big>
+            <%= will_paginate @lost_data %>
+        </big>
+    </center>
+</p>
