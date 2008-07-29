@@ -57,3 +57,17 @@ SCHEDULER.schedule_every(EMAIL_NOTIFICATION_RATE) {
     UtilityHelper.log_message("Email.notify_by_priority::UNKNOWN::Error")         
   end
 }
+
+
+SCHEDULER.schedule(DAILY_REPORT_TIME) { 
+  begin
+    CriticalMailer.deliver_lost_data_daily()
+    ActiveRecord::Base.verify_active_connections!()
+  rescue Exception => e
+    UtilityHelper.log_message("CriticalMailer.deliver_lost_data_daily()::Exception:: #{e}")
+  rescue Timeout::Error => e
+    UtilityHelper.log_message("CriticalMailer.deliver_lost_data_daily()::Timeout::Error:: #{e}")
+  rescue
+    UtilityHelper.log_message("CriticalMailer.deliver_lost_data_daily()::UNKNOWN::Error")         
+  end
+}

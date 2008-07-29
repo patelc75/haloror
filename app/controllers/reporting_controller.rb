@@ -85,42 +85,15 @@ class ReportingController < ApplicationController
   def lost_data
     if user_id = params[:id]
       @user = User.find(user_id)
-      prev_timestamp = nil
-      
-      if last = VitalScan.find(:first, :conditions => "user_id = #{user_id}", :order => "timestamp desc")
-        conds = " and timestamp > '#{last.timestamp.to_s(:db)}'"
-      else
-        conds = ""
-      end
-      end_time = Time.now
-      begin_time = nil
-      begin_time = last.timestamp if last
-      if begin_time
-        LostData.connection.select_all("select * from lost_data_function(#{user_id}, '#{begin_time.to_s(:db)}', '#{end_time.to_s(:db)})', '#{LOST_DATA_GAP} seconds')")
-      else
-        LostData.connection.select_all("select * from lost_data_function(#{user_id}, null, '#{end_time.to_s(:db)})', '#{LOST_DATA_GAP} seconds')")
-      end
-      lost_data = nil
-      if begin_time
-        lost_data = LostData.find(:first, :order => "end_time desc", :conditions => "user_id = #{user_id} AND end_time > '#{begin_time.to_s(:db)}'")
-      else
-        lost_data = LostData.find(:first, :order => "end_time desc", :conditions => "user_id = #{user_id}")
-      end
-      prev_timestamp = lost_data.end_time if lost_data
-            
-      if (!last or prev_timestamp != last.timestamp) and !prev_timestamp.nil?
-        last = VitalScan.new
-        last.user_id = user_id
-        last.timestamp = prev_timestamp
-        last.save
-      end
-      
+      DailyReports.lost_data_scan(user_id)      
       @lost_data = LostData.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id}", :order => "id desc")
     else
       redirect_to '/'
     end    
   end
-  
+  def lost_data_daily
+    
+  end
   def remove_user_mapping
     user_id = params[:id]
     device_id = params[:device_id]

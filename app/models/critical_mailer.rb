@@ -36,6 +36,12 @@ class CriticalMailer < ActionMailer::ARMailer
     self.priority  = event_action.priority
   end
   
+  def lost_data_daily()
+    setup_administrators()
+    @from        = "no-reply@halomonitoring.com"
+    @subject     = "[" + ServerInstance.current_host_short_string + "] Lost Data Daily Report"
+    @sent_on     = Time.now
+  end
   
   def test_email(to, subject, body) 
     setup_message(subject, body)
@@ -74,6 +80,15 @@ class CriticalMailer < ActionMailer::ARMailer
     end
   end
   
+  def setup_administrators()
+    @recipients = []
+    admins = User.administrators()
+    if !admins.blank?
+      admins.each do |admin|
+        @recipients << ["#{admin.email}"] 
+      end       
+    end
+  end
   
   def recipients_setup(user, alert_option, mode, phone = :no_phone_call)
     @recipients = Array.new if @recipients.nil?

@@ -1,0 +1,88 @@
+<% lost_data_hash = DailyReports.job_lost_data %>
+
+<html>
+<body>
+<h2>Lost data:</h2>
+All times are in UTC timezone
+<p>
+    &nbsp;
+</p>
+<p>
+<table>
+	<tr>
+		<td colspan="6">
+<%  
+	total_duration 	= 0
+	total_num 			= 0
+	users 					= User.find(:all, :order => "id asc")
+	users.each do |user|
+%>  
+    <tr>
+      <td colspan="2">
+          <b>Start</b>
+      </td>
+      <td colspan="2">
+          <b>End</b>
+      </td>
+      <td colspan="2">
+          <b>Duration</b>
+      </td>
+    </tr>
+<%
+			total_user_duration 	= 0
+			total_user_num 				= 0
+			lost_data 						= lost_data_hash[user.id] 
+			lost_data.each do |reading|
+				total_user_num 	 	 += 1
+				duration 				= (reading.end_time - reading.begin_time).seconds
+				total_user_duration += duration
+%>
+    <tr>
+        <td>
+            <%=reading.begin_time.to_s(:db) %>&nbsp;
+        </td>
+        <td>
+	&nbsp;&nbsp;
+        </td>
+        <td>
+            <%=reading.end_time.to_s(:db) %>&nbsp;
+        </td>
+        <td>
+	&nbsp;&nbsp;
+        </td>
+        <td>
+            <%= duration %>s&nbsp;
+        </td>	
+				<td>
+	&nbsp;&nbsp;
+				</td>
+    </tr>
+    <% end %>
+		<% 
+				total_duration += total_user_duration
+				total_num 		 += total_user_num  
+		%>
+		<tr>
+			<td colspan="2">Total Number(<%= user.name   %>):</td>
+			<td><%= total_user_num      %></td>&nbsp;
+			<td colspan="2">Total Duration(<%= user.name %>):</td> 
+			<td><%= total_user_duration %>s</td>&nbsp;
+		</tr>
+		<tr>
+			<td colspan="6">&nbsp;&nbsp;</td>
+		<tr>
+		<tr>
+			<td colspan="6">&nbsp;&nbsp;</td>
+		<tr>
+<% end %>
+  	</td>
+	</tr>
+	<tr>
+		<td colspan="2">Summary Total Number:</td>
+		<td><%= total_num      %></td>&nbsp;
+		<td colspan="2">Summary Total Duration:</td> 
+		<td><%= total_duration %>s</td>&nbsp;
+	</tr>
+</table>
+</body>
+</html>
