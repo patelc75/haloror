@@ -244,7 +244,7 @@ class User < ActiveRecord::Base
   end
   
   def self.administrators
-    admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
+    admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'administrator']
     return admins
   end
   def self.operators
