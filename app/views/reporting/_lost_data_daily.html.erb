@@ -10,13 +10,40 @@ All times are in UTC timezone
 <p>
 <table>
 	<tr>
+		<td colspan="2"><b>Summary Total Occurrences:</b></td>
+		<td><div id="total_occurrences"></div></td>&nbsp;
+		<td colspan="2"><b>Summary Total Duration:</b></td> 
+		<td><div id="total_duration"></div></td>&nbsp;
+	</tr>
+	<tr>
+		<td colspan="6">&nbsp;&nbsp;</td>
+	<tr>
+<% 	count = 0
+    users	= User.find(:all, :order => "id asc")
+	  users.each do |user| 
+%>
+	<tr>
+		<td colspan="2">Total Occurrences(<%= user.name   %>):</td>
+		<td><div id="total_user_occurrences_<%= count %>"></div></td>&nbsp;
+		<td colspan="2">Total Duration(<%= user.name %>):</td> 
+		<td><div id="total_user_duration_<%= count %>"></div></td>&nbsp;
+	</tr>
+<%  count += 1 %>
+<%  end %>
+	<tr>
 		<td colspan="6">
 <%  
 	total_duration 	= 0
 	total_num 			= 0
-	users 					= User.find(:all, :order => "id asc")
+	count = 0
 	users.each do |user|
-%>  
+%>
+<tr>
+	<td colspan="6">&nbsp;&nbsp;</td>
+<tr>
+<tr>
+	<td colspan="6">&nbsp;&nbsp;</td>
+<tr>
     <tr>
       <td colspan="2">
           <b>Start</b>
@@ -39,13 +66,13 @@ All times are in UTC timezone
 %>
     <tr>
         <td>
-            <%=reading.begin_time.to_s(:db) %>&nbsp;
+            <%=reading.begin_time.to_s() %>&nbsp;
         </td>
         <td>
 	&nbsp;&nbsp;
         </td>
         <td>
-            <%=reading.end_time.to_s(:db) %>&nbsp;
+            <%=reading.end_time.to_s() %>&nbsp;
         </td>
         <td>
 	&nbsp;&nbsp;
@@ -58,12 +85,18 @@ All times are in UTC timezone
 				</td>
     </tr>
     <% end %>
+		<script language="javascript">
+			c = <%= count %>;
+				$('total_user_occurrences_' + c).innerHTML = <%= total_user_num %>;
+				$('total_user_duration_' + c).innerHTML = <%= total_user_duration %>;
+		</script>
+		<% count += 1 %>
 		<% 
 				total_duration += total_user_duration
 				total_num 		 += total_user_num  
 		%>
 		<tr>
-			<td colspan="2">Total Number(<%= user.name   %>):</td>
+			<td colspan="2">Total Occurrences(<%= user.name   %>):</td>
 			<td><%= total_user_num      %></td>&nbsp;
 			<td colspan="2">Total Duration(<%= user.name %>):</td> 
 			<td><%= total_user_duration %>s</td>&nbsp;
@@ -78,11 +111,15 @@ All times are in UTC timezone
   	</td>
 	</tr>
 	<tr>
-		<td colspan="2">Summary Total Number:</td>
+		<td colspan="2">Summary Total Occurrences:</td>
 		<td><%= total_num      %></td>&nbsp;
 		<td colspan="2">Summary Total Duration:</td> 
 		<td><%= total_duration %>s</td>&nbsp;
 	</tr>
 </table>
+<script language="javascript">
+	$('total_occurrences').innerHTML = <%= total_num %>;
+	$('total_duration').innerHTML = <%= total_duration %>;
+</script>
 </body>
 </html>
