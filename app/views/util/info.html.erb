@@ -6,6 +6,7 @@ HOST_NAME : <code><%= request.host %></code> <br>
 REMOTE_ADDR: <code><%= request.env["REMOTE_ADDR"].to_s %></code> <br>
 <br>
 <b>Software</b><br>
+OS: <code><%= `cat /etc/redhat-release` %></code><br>
 Database: <code><%= ActiveRecord::Base.connection.select_value("SELECT  VERSION()") %></code><br>
 Email delivery method: <code><%= ActionMailer::Base.delivery_method %></code><br>
 SMTP server: <code> <%= ActionMailer::Base.smtp_settings[:address] %></code><br>
