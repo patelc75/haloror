@@ -68,9 +68,8 @@ function getConfig() {
     	 */
     	 
         if(config.dataServiceURL == "http:///flex/chart"){
-        	//config.dataServiceURL = "http://www.myhalomonitor.com/flex/chart";
-	    	config.dataServiceURL = "http://sdev.myhalomonitor.com/flex/chart";
-	    	//config.dataServiceURL = "http://www.myhalomonitor.com/flex/chart";
+	    	//config.dataServiceURL = "http://sdev.myhalomonitor.com/flex/chart";
+	    	config.dataServiceURL = "http://www.myhalomonitor.com/flex/chart";
 	        //config.dataServiceURL = "http://idev.myhalomonitor.com/flex/chart";
 	        //config.dataServiceURL = "http://sdev.halomonitor.com/flex/chart";
 	    }  
