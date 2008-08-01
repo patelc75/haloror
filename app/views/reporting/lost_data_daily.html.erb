@@ -1,1 +1,87 @@
-<%= render :partial => 'lost_data_daily' %>
+<% begin_time, end_time, lost_data_hash = DailyReports.job_lost_data; users = User.find(:all, :order => "id asc") -%>
+<% total_num = 0; total_duration = 0; -%>
+<% users.each do |user|  -%>
+<% 	total_user_duration 	= 0; total_user_num	= 0; lost_data = lost_data_hash[user.id]; user[:lost_data] = lost_data;
+		lost_data.each do |reading|	
+	 	  total_user_num += 1; duration = (reading.end_time - reading.begin_time).seconds; total_user_duration += duration; 
+			user[:total_user_num] = total_user_num; user[:total_user_duration] = total_user_duration;
+	  end 
+	  total_duration += total_user_duration; total_num += total_user_num;  
+	end  -%>
+<html>
+<body>
+<h2>Lost data:</h2>
+All times are in UTC timezone
+<p>
+    &nbsp;
+</p>
+<p>
+	Begin Time: <%= begin_time %>&nbsp;&nbsp;End Time:  <%= end_time %>
+</p>
+<p>
+<table>
+	<tr>
+		<td colspan="2"><b>Summary Total Occurrences:</b></td>
+		<td><%= total_num      %></td>&nbsp;
+		<td colspan="2"><b>Summary Total Duration:</b></td> 
+		<td><%= total_duration %>s</td>&nbsp;
+	</tr>
+	<tr>
+		<td colspan="6">&nbsp;&nbsp;</td>
+	<tr>
+<% users.each do |user| %> 
+  <% if !user[:total_user_num].nil? %>
+	<tr>
+		<td colspan="2">Total Occurrences(<%= user.name   %>):</td>
+		<td><%= user[:total_user_num]%></td>&nbsp;
+		<td colspan="2">Total Duration(<%= user.name %>):</td> 
+		<td><%= user[:total_user_duration]%>s</td>&nbsp;
+	</tr>
+	<tr>
+		<td colspan="6">
+<tr>
+	<td colspan="6">&nbsp;&nbsp;</td>
+<tr>
+<tr>
+	<td colspan="6">&nbsp;&nbsp;</td>
+<tr>
+    <tr>
+      <td colspan="2">
+          <b>Start</b>
+      </td>
+      <td colspan="2">
+          <b>End</b>
+      </td>
+      <td colspan="2">
+          <b>Duration</b>
+      </td>
+    </tr>
+	<%  user[:lost_data].each do |reading| %>	
+    <tr>
+        <td>
+            <%=reading.begin_time.to_s() %>&nbsp;
+        </td>
+        <td>
+	&nbsp;&nbsp;
+        </td>
+        <td>
+            <%=reading.end_time.to_s() %>&nbsp;
+        </td>
+        <td>
+	&nbsp;&nbsp;
+        </td>
+        <td>
+            <%= (reading.end_time - reading.begin_time).seconds %>s&nbsp;
+        </td>	
+				<td>
+	&nbsp;&nbsp;
+				</td>
+    </tr>
+    <% end %>
+<% end %>
+<% end %>
+  	</td>
+	</tr>
+</table>
+</body>
+</html>

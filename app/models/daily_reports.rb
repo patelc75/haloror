@@ -10,7 +10,7 @@ class DailyReports
       self.lost_data_scan(user_id)
       lost_data[user_id] = LostData.find(:all, :conditions => "user_id = #{user_id} AND end_time <= '#{end_time.to_s()}' AND begin_time >= '#{begin_time.to_s()}'", :order => "id desc")
     end
-    return lost_data
+    return begin_time, end_time, lost_data
   end
   def self.lost_data_scan(user_id)
     prev_timestamp = nil
