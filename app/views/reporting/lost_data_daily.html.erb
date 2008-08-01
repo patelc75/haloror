@@ -16,74 +16,56 @@ All times are in UTC timezone
     &nbsp;
 </p>
 <p>
-	Begin Time: <%= begin_time %>&nbsp;&nbsp;End Time:  <%= end_time %>
+	Starting Time: <%= begin_time %>
+	Ending   Time: <%= end_time %>
 </p>
 <p>
 <table>
 	<tr>
-		<td colspan="2"><b>Summary Total Occurrences:</b></td>
-		<td><%= total_num      %></td>&nbsp;
-		<td colspan="2"><b>Summary Total Duration:</b></td> 
-		<td><%= total_duration %>s</td>&nbsp;
+		<td>Name</td>
+		<td>Occurrences</td>
+		<td>Total Duration</td>
 	</tr>
 	<tr>
-		<td colspan="6">&nbsp;&nbsp;</td>
+		<td>All</td>
+		<td><%= total_num      %></td>
+		<td><%= total_duration %>s</td>
 	</tr>
-	<tr><td>
 <% users.each do |user| %> 
   <% if !user[:total_user_num].nil? %>
 	<tr>
-		<td colspan="2">Total Occurrences(<%= user.name   %>):</td>
-		<td><%= user[:total_user_num]%></td>&nbsp;
-		<td colspan="2">Total Duration(<%= user.name %>):</td> 
-		<td><%= user[:total_user_duration]%>s</td>&nbsp;
+		<td><%= user.name %></td>
+		<td><%= user[:total_user_num]%></td>
+		<td><%= user[:total_user_duration]%>s</td>
 	</tr>
+<% end %>
+<% end %>
+</table>
+<table>
 	<tr>
-		<td colspan="6">
+		<td>Name</td>
+		<td>Start</td>
+		<td>End</td>
+		<td>Duration</td>
 	</tr>
-<tr>
-	<td colspan="6">&nbsp;&nbsp;</td>
-<tr>
-<tr>
-	<td colspan="6">&nbsp;&nbsp;</td>
-<tr>
-    <tr>
-      <td colspan="2">
-          <b>Start</b>
-      </td>
-      <td colspan="2">
-          <b>End</b>
-      </td>
-      <td colspan="2">
-          <b>Duration</b>
-      </td>
-    </tr>
+<% users.each do |user| %> 
+<% if !user[:total_user_num].nil? %>
 	<%  user[:lost_data].each do |reading| %>	
     <tr>
+				<td><%= user.name %>
         <td>
             <%=reading.begin_time.to_s() %>&nbsp;
-        </td>
-        <td>
-	&nbsp;&nbsp;
         </td>
         <td>
             <%=reading.end_time.to_s() %>&nbsp;
         </td>
         <td>
-	&nbsp;&nbsp;
-        </td>
-        <td>
             <%= (reading.end_time - reading.begin_time).seconds %>s&nbsp;
         </td>	
-				<td>
-	&nbsp;&nbsp;
-				</td>
     </tr>
     <% end %>
 <% end %>
 <% end %>
-  	</td>
-	</tr>
 </table>
 </body>
 </html>
