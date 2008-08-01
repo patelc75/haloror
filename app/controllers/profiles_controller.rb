@@ -90,7 +90,6 @@ class ProfilesController < ApplicationController
   def update_caregiver_profile
     user = User.find(params[:user_id])
     user.email = params[:email]
-    
     user.save
 
     if(!params[:roles_user_id].blank?)
@@ -100,11 +99,41 @@ class ProfilesController < ApplicationController
     end
         
     Profile.update(params[:id], params[:profile])
-    RAILS_DEFAULT_LOGGER.warn("********operator=#{params[:operator]}")
     if(!params[:operator].blank?)
       refresh_operators()
     elsif(!params[:patient_id].blank?)
       refresh_caregivers(User.find(params[:patient_id]))
     end
+  end
+  
+  def change_password_init
+    @user = User.find(params[:user_id])
+    render :partial => 'change_password_init'
+  end
+  def change_password
+    user_hash = params[:user]
+    user = User.find(user_hash[:id])
+    if User.authenticate(user.login, user_hash[:current_password])
+      if user_hash[:password] == user_hash[:password_confirmation]
+        if user_hash[:password].length >= 4
+          user.password = user_hash[:password]
+          user.password_confirmation = user_hash[:password_confirmation]
+          user.save!
+        else
+          @message = "Password must be at least 4 characters"
+        end
+      else
+        @message = "New Password must equal Confirm Password"
+      end          
+    else  
+      @message = "Old Password must equal Current Password"
+    end
+    if @message.nil?
+      @success_message = true
+      #send email
+      CriticalMailer.deliver_password_confirmation(user)
+    end
+    @user = user
+    render :partial => 'change_password_init'
   end
 end

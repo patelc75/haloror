@@ -50,6 +50,20 @@ class CriticalMailer < ActionMailer::ARMailer
     self.priority = Priority::IMMEDIATE
   end
   
+  def password_confirmation(user)
+    @recipients = [user.email]
+    msg_body = <<-EOF
+  	Hello #{user.name},
+
+  	This message is to let you know that your password has been successfully changed.
+
+  	Thank You,
+
+  	Halo Staff
+  	EOF
+    subject     = "[" + ServerInstance.current_host_short_string + "] Password Changed"
+    setup_message(subject, msg_body)
+  end
   protected
   
   def setup_message(subject, msg_body)

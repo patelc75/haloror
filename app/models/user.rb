@@ -34,7 +34,7 @@ class User < ActiveRecord::Base
   # Virtual attribute for the unencrypted password
   cattr_accessor :current_user #stored in memory instead of table
   attr_accessor :password
-
+  attr_accessor :current_password
   validates_presence_of     :login, :email
   #validates_presence_of     :serial_number
   
