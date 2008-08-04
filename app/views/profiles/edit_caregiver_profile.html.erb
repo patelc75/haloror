@@ -125,9 +125,9 @@
         </div>
       <% end %>
       
-
+<% if @user == current_user || current_user.is_administrator? %>
 <%=link_to_remote('Change Password', :update => 'container', :url =>{ :controller => "profiles", :action => "change_password_init", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%>
-
+<% end %>
       <% if params[:frame] %>
       
       </div>

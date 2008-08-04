@@ -113,6 +113,7 @@ class ProfilesController < ApplicationController
   def change_password
     user_hash = params[:user]
     user = User.find(user_hash[:id])
+    if user == current_user || current_user.is_administrator?
     if User.authenticate(user.login, user_hash[:current_password])
       if user_hash[:password] == user_hash[:password_confirmation]
         if user_hash[:password].length >= 4
@@ -127,6 +128,7 @@ class ProfilesController < ApplicationController
       end          
     else  
       @message = "Old Password must equal Current Password"
+    end
     end
     if @message.nil?
       @success_message = true
