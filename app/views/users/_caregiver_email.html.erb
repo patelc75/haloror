@@ -1,6 +1,6 @@
 
 <div style="width:200px;margin-left:320px" id="container">
-<a href="#"><img src="/images/tooltip-close.gif" onClick="RedBox.close()" /></a>
+	<%=link_to_remote image_tag("/images/tooltip-close.gif", :id => "tooltip_close"), :update => 'call_list', :url => {:controller => 'users', :action => 'refresh', :user_id => params[:user_id]}, :complete => "RedBox.close();headerDisplay();"%> 
 </div>
 	<h2><b>Caregiver Email Sent</b></h2>
 	<p>Your caregiver has been emailed.</p>

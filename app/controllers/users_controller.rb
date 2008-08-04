@@ -199,7 +199,10 @@ class UsersController < ApplicationController
   render :partial => 'call_list/extra_info_lightbox', :locals => {:id => params[:id], :user_id => params[:user_id], :missing => missing_what} 
     
   end
-  
+  def refresh
+    @user = User.find(params[:user_id])
+    refresh_caregivers(@user)
+  end
   def create_caregiver
     @user = User.new(params[:user])
     if !@user.email.blank?
@@ -210,7 +213,6 @@ class UsersController < ApplicationController
       @user.is_new_caregiver = true
       @user[:is_caregiver] =  true
       @user.save!
-    
       profile = Profile.create(:user_id => @user.id)
     
       #patient = User.find(params[:user_id].to_i)
