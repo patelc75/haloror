@@ -18,8 +18,9 @@ class UserMailer < ActionMailer::ARMailer
   
   def caregiver_email(caregiver, user)
     setup_email(caregiver)
+    @subject += "#{user.name} wants you to be their caregiver"
     body <<-EOF
-      A Halo User (#{user.name}) wants you to be their caregiver.
+      #{user.name} wants you to be their caregiver.
       
       Please complete the signup process at:  http://#{ServerInstance.current_host}/signup/caregiver/#{caregiver.activation_code}
     EOF

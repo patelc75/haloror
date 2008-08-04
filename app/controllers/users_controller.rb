@@ -102,6 +102,10 @@ class UsersController < ApplicationController
         @user.password = user_hash[:password]
         @user.password_confirmation = user_hash[:password_confirmation]
         @user.save!
+        self.current_user = @user
+        if logged_in? && !current_user.activated?
+          current_user.activate
+        end
         redirect_to '/'
       else
         flash[:warning] = "Password must be at least 4 characters"
@@ -111,10 +115,7 @@ class UsersController < ApplicationController
         flash[:warning]= "New Password must equal Confirm Password"
         render :action => 'init_caregiver'
     end
-    self.current_user = @user
-    if logged_in? && !current_user.activated?
-      current_user.activate
-    end
+    
   rescue
     render :action => 'init_caregiver'    
   end
@@ -200,28 +201,32 @@ class UsersController < ApplicationController
   
   def create_caregiver
     @user = User.new(params[:user])
-    @user[:is_caregiver] =  true
-    @user.save!
+    if !@user.email.blank?
+      if existing_user = User.find_by_email(@user.email)
+        raise "Existing User"
+      end
+      
+      @user[:is_caregiver] =  true
+      @user.save!
     
-    profile = Profile.create(:user_id => @user.id)
+      profile = Profile.create(:user_id => @user.id)
     
-    #patient = User.find(params[:user_id].to_i)
-    patient = User.find(params[:user_id].to_i)
-    role = @user.has_role 'caregiver', patient
-    caregiver = @user
-    @roles_user = patient.roles_user_by_caregiver(caregiver)
+      #patient = User.find(params[:user_id].to_i)
+      patient = User.find(params[:user_id].to_i)
+      role = @user.has_role 'caregiver', patient
+      caregiver = @user
+      @roles_user = patient.roles_user_by_caregiver(caregiver)
     
-    update_from_position(params[:position], @roles_user.role_id, caregiver.id)
+      update_from_position(params[:position], @roles_user.role_id, caregiver.id)
     
-    RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => 1)
+      RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => 0)
     
    
-    #redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
-    UserMailer.deliver_caregiver_email(caregiver, patient)
-    render :partial => 'caregiver_email'
-    
-    #redirect_to :controller => 'profiles', :action => 'edit_caregiver_profile', :id => profile.id, :user_id => params[:user_id]
-  rescue ActiveRecord::RecordInvalid
+      #redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
+      UserMailer.deliver_caregiver_email(caregiver, patient)
+      render :partial => 'caregiver_email'
+    end
+  rescue 
     # check if email exists
     if existing_user = User.find_by_email(params[:user][:email])
       @existing_id = existing_user[:id]
