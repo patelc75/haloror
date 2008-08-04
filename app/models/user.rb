@@ -268,8 +268,10 @@ class User < ActiveRecord::Base
   def name()
     if(profile and !profile.last_name.blank? and !profile.first_name.blank?)
       profile.first_name + " " + profile.last_name 
-    else
+    elsif !login.blank?
       login
+    else 
+      email
     end
   end
   
