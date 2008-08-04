@@ -35,15 +35,16 @@ class User < ActiveRecord::Base
   cattr_accessor :current_user #stored in memory instead of table
   attr_accessor :password
   attr_accessor :current_password
-  validates_presence_of     :login, :email
+  validates_presence_of     :login, :if => :password_required?
+  validates_presence_of     :email
   #validates_presence_of     :serial_number
   
-  # validates_presence_of     :password,                   :if => :password_required?
-  #   validates_presence_of     :password_confirmation,      :if => :password_required?
-  #   validates_length_of       :password, :within => 4..40, :if => :password_required?
+  validates_presence_of     :password,                   :if => :password_required?
+  validates_presence_of     :password_confirmation,      :if => :password_required?
+  validates_length_of       :password, :within => 4..40, :if => :password_required?
   validates_confirmation_of :password,                   :if => :password_required?
   
-  validates_length_of       :login,    :within => 3..40
+  validates_length_of       :login,    :within => 3..40, :if => :password_required?
   validates_length_of       :email,    :within => 3..100
   #validates_length_of       :serial_number, :is => 10
   
@@ -291,7 +292,12 @@ class User < ActiveRecord::Base
       end
     end
   end
-  
+  def is_new_caregiver=(b=false)
+    @is_caregiver= b
+  end
+  def is_new_caregiver
+    return @is_caregiver
+  end
   
   protected
   # before filter 
@@ -302,7 +308,11 @@ class User < ActiveRecord::Base
   end
     
   def password_required?
-    crypted_password.blank? || !password.blank?
+    if(self.is_new_caregiver)
+      return false
+    else
+      crypted_password.blank? || !password.blank?
+    end
   end
     
   def make_activation_code

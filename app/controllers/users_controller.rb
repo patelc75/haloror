@@ -101,6 +101,7 @@ class UsersController < ApplicationController
       if user_hash[:password].length >= 4
         @user.password = user_hash[:password]
         @user.password_confirmation = user_hash[:password_confirmation]
+        @user.login = user_hash[:login]
         @user.save!
         self.current_user = @user
         if logged_in? && !current_user.activated?
@@ -206,6 +207,7 @@ class UsersController < ApplicationController
         raise "Existing User"
       end
       
+      @user.is_new_caregiver = true
       @user[:is_caregiver] =  true
       @user.save!
     
@@ -226,7 +228,8 @@ class UsersController < ApplicationController
       UserMailer.deliver_caregiver_email(caregiver, patient)
       render :partial => 'caregiver_email'
     end
-  rescue 
+  rescue Exception => e
+    RAILS_DEFAULT_LOGGER.warn "#{e}"
     # check if email exists
     if existing_user = User.find_by_email(params[:user][:email])
       @existing_id = existing_user[:id]

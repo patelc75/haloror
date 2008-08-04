@@ -10,16 +10,17 @@
     <div style="width:200px;margin-left:auto;margin-right:auto">
       <% form_tag :action => 'update_caregiver' do -%>
 				<%= hidden_field :user, :activation_code %>
+					<label for="email">Email</label>
+	        <br/>
+	        <%= @user.email %>
+	        <br />
+	        <br />
         <label for="login">Username</label>
         <br/>
-        <%= @user.login %>
+        <%= text_field :user, :login %>
         <br />
         <br />	
-				<label for="email">Email</label>
-        <br/>
-        <%= @user.email %>
-        <br />
-        <br />		
+					
         <label for="password">Password</label>
         <br/>
         <%= password_field :user, :password %>
