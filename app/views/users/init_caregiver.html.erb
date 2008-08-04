@@ -1,0 +1,40 @@
+<div id="secondary-col">
+  <div id="secondary-col-header"></div>
+  <div class="content">
+	
+    <%= error_messages_for :user %>
+		<div id="errors">
+			<%= flash[:warning]%>
+		<div>
+
+    <div style="width:200px;margin-left:auto;margin-right:auto">
+      <% form_tag :action => 'update_caregiver' do -%>
+				<%= hidden_field :user, :activation_code %>
+        <label for="login">Username</label>
+        <br/>
+        <%= @user.login %>
+        <br />
+        <br />	
+				<label for="email">Email</label>
+        <br/>
+        <%= @user.email %>
+        <br />
+        <br />		
+        <label for="password">Password</label>
+        <br/>
+        <%= password_field :user, :password %>
+        <br />
+        <br />
+        <label for="password_confirmation">Confirm Password</label>
+        <br/>
+        <%= password_field :user, :password_confirmation %>
+        <br />
+        <br />
+        <div align="center">
+          <input name="commit" type="image" src="/images/subscribe.gif" />
+        </div>
+      <% end -%>
+    </div>
+  </div>
+  <div id="secondary-col-footer"></div>
+</div>

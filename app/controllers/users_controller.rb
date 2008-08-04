@@ -89,6 +89,36 @@ class UsersController < ApplicationController
     #redirect_back_or_default('/')
   end
   
+  def init_caregiver
+    @user = User.find_by_activation_code(params[:activation_code])
+  end
+  
+  def update_caregiver
+    @user = User.find_by_activation_code(params[:user][:activation_code])
+    
+    user_hash = params[:user]
+    if user_hash[:password] == user_hash[:password_confirmation]
+      if user_hash[:password].length >= 4
+        @user.password = user_hash[:password]
+        @user.password_confirmation = user_hash[:password_confirmation]
+        @user.save!
+        redirect_to '/'
+      else
+        flash[:warning] = "Password must be at least 4 characters"
+        render :action => 'init_caregiver'
+      end
+    else
+        flash[:warning]= "New Password must equal Confirm Password"
+        render :action => 'init_caregiver'
+    end
+    self.current_user = @user
+    if logged_in? && !current_user.activated?
+      current_user.activate
+    end
+  rescue
+    render :action => 'init_caregiver'    
+  end
+  
   def update
     @user = User.find(params[:id])
     respond_to do |format|
@@ -170,6 +200,7 @@ class UsersController < ApplicationController
   
   def create_caregiver
     @user = User.new(params[:user])
+    @user[:is_caregiver] =  true
     @user.save!
     
     profile = Profile.create(:user_id => @user.id)
@@ -185,8 +216,9 @@ class UsersController < ApplicationController
     RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => 1)
     
    
-    redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
-   
+    #redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
+    UserMailer.deliver_caregiver_email(caregiver, patient)
+    render :partial => 'caregiver_email'
     
     #redirect_to :controller => 'profiles', :action => 'edit_caregiver_profile', :id => profile.id, :user_id => params[:user_id]
   rescue ActiveRecord::RecordInvalid

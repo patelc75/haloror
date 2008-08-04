@@ -19,17 +19,15 @@
 	
 	<%= error_messages_for :user %>
 	<%=hidden_field_tag :position, @max_position %>
-	<%= f.hidden_field :password, :value => @password %>
-	<%= f.hidden_field :password_confirmation, :value => @password %>
 	<%= f.hidden_field :serial_number, :value => '9999999999'%>
 	
 	<input type="hidden" name="user_id" value="<%=params[:user_id]%>" />
 	<label for="login">Desired Username</label>
 	<br/>
 	<%= f.text_field :login, :value => '' %>
-	<br />
-	<br />
-	<label for="email">Email</label><br/>
+	<br/>
+	<br/>
+	<label for="email">Email</label>
 	<%= f.text_field :email, :value => '' %>
 	<br />
 	<br />

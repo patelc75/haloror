@@ -16,6 +16,16 @@ class UserMailer < ActionMailer::ARMailer
     @body[:url]  = "http://#{ServerInstance.current_host}/login"
   end
   
+  def caregiver_email(caregiver, user)
+    setup_email(caregiver)
+    body <<-EOF
+      A Halo User (#{user.name}) wants you to be their caregiver.
+      
+      Please complete the signup process at:  http://#{ServerInstance.current_host}/signup/caregiver/#{caregiver.activation_code}
+    EOF
+        
+  end
+  
   protected
   def setup_email(user)
     @recipients  = "#{user.email}"
