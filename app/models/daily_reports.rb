@@ -8,14 +8,14 @@ class DailyReports
     users.each do |user|
       user_id = user.id
       self.lost_data_scan(user_id)
-      lost_data[user_id] = LostData.find(:all, :conditions => "user_id = #{user_id} AND end_time <= '#{end_time.to_s()}' AND begin_time >= '#{begin_time.to_s()}'", :order => "id desc")
+      lost_data[user_id] = LostData.find(:all, :conditions => "user_id = #{user_id} AND end_time <= '#{end_time.to_s(:db)}' AND begin_time >= '#{begin_time.to_s(:db)}'", :order => "id desc")
     end
     return begin_time, end_time, lost_data
   end
   def self.lost_data_scan(user_id)
     prev_timestamp = nil
     if last = VitalScan.find(:first, :conditions => "user_id = #{user_id}", :order => "timestamp desc")
-      conds = " and timestamp > '#{last.timestamp.to_s()}'"
+      conds = " and timestamp > '#{last.timestamp.to_s(:db)}'"
     else
       conds = ""
     end
@@ -23,13 +23,13 @@ class DailyReports
     begin_time = nil
     begin_time = last.timestamp if last
     if begin_time
-      LostData.connection.select_all("select * from lost_data_function(#{user_id}, '#{begin_time.to_s()}', '#{end_time.to_s()}', '#{LOST_DATA_GAP} seconds')")
+      LostData.connection.select_all("select * from lost_data_function(#{user_id}, '#{begin_time.to_s(:db)}', '#{end_time.to_s(:db)}', '#{LOST_DATA_GAP} seconds')")
     else
-      LostData.connection.select_all("select * from lost_data_function(#{user_id}, null, '#{end_time.to_s()}', '#{LOST_DATA_GAP} seconds')")
+      LostData.connection.select_all("select * from lost_data_function(#{user_id}, null, '#{end_time.to_s(:db)}', '#{LOST_DATA_GAP} seconds')")
     end
     lost_data = nil
     if begin_time
-      lost_data = LostData.find(:first, :order => "end_time desc", :conditions => "user_id = #{user_id} AND end_time > '#{begin_time.to_s()}'")
+      lost_data = LostData.find(:first, :order => "end_time desc", :conditions => "user_id = #{user_id} AND end_time > '#{begin_time.to_s(:db)}'")
     else
       lost_data = LostData.find(:first, :order => "end_time desc", :conditions => "user_id = #{user_id}")
     end
