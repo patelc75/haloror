@@ -14,11 +14,8 @@ class DailyReports
   end
   def self.lost_data_scan(user_id)
     prev_timestamp = nil
-    if last = VitalScan.find(:first, :conditions => "user_id = #{user_id}", :order => "timestamp desc")
-      conds = " and timestamp > '#{last.timestamp.to_s(:db)}'"
-    else
-      conds = ""
-    end
+    last = VitalScan.find(:first, :conditions => "user_id = #{user_id}", :order => "timestamp desc")
+    
     end_time = Time.now
     begin_time = nil
     begin_time = last.timestamp if last
