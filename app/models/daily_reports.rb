@@ -23,9 +23,9 @@ class DailyReports
     begin_time = nil
     begin_time = last.timestamp if last
     if begin_time
-      LostData.connection.select_all("select * from lost_data_function(#{user_id}, '#{begin_time.to_s()}', '#{end_time.to_s()})', '#{LOST_DATA_GAP} seconds')")
+      LostData.connection.select_all("select * from lost_data_function(#{user_id}, '#{begin_time.to_s()}', '#{end_time.to_s()}', '#{LOST_DATA_GAP} seconds')")
     else
-      LostData.connection.select_all("select * from lost_data_function(#{user_id}, null, '#{end_time.to_s()})', '#{LOST_DATA_GAP} seconds')")
+      LostData.connection.select_all("select * from lost_data_function(#{user_id}, null, '#{end_time.to_s()}', '#{LOST_DATA_GAP} seconds')")
     end
     lost_data = nil
     if begin_time
