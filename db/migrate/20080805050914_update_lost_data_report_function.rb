@@ -10,15 +10,17 @@ class UpdateLostDataReportFunction < ActiveRecord::Migration
       declare
         row record;
         prev_timestamp timestamp with time zone;
+        current_timestamp timestamp with time zone;
       begin
          if p_begin_time IS NULL then
            for row in (select timestamp from vitals where user_id = p_user_id AND timestamp <= p_end_time order by timestamp asc) loop
             if(prev_timestamp is NULL) then
               prev_timestamp := row.timestamp;
             else
-              if((row.timestamp - prev_timestamp)::interval > p_lost_data_gap::interval ) then
-                insert into lost_datas (user_id, begin_time, end_time) values (p_user_id, prev_timestamp, row.timestamp);
-                prev_timestamp := row.timestamp;
+              current_timestamp := row.timestamp;
+              if((current_timestamp - prev_timestamp)::interval > p_lost_data_gap::interval ) then
+                insert into lost_datas (user_id, begin_time, end_time) values (p_user_id, prev_timestamp, current_timestamp);
+                prev_timestamp := current_timestamp;
               end if;
             end if;
           end loop;
@@ -27,9 +29,10 @@ class UpdateLostDataReportFunction < ActiveRecord::Migration
             if(prev_timestamp is null) then
               prev_timestamp := row.timestamp;
             else
-              if((row.timestamp - prev_timestamp)::interval > p_lost_data_gap::interval ) then
-                insert into lost_datas (user_id, begin_time, end_time) values (p_user_id, prev_timestamp, row.timestamp);
-                prev_timestamp := row.timestamp;
+              current_timestamp := row.timestamp;
+              if((current_timestamp - prev_timestamp)::interval > p_lost_data_gap::interval ) then
+                insert into lost_datas (user_id, begin_time, end_time) values (p_user_id, prev_timestamp, current_timestamp);
+                prev_timestamp := current_timestamp;
               end if;
             end if;
           end loop;
