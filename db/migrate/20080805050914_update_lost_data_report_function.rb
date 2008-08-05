@@ -12,7 +12,7 @@ class UpdateLostDataReportFunction < ActiveRecord::Migration
         prev_timestamp timestamp with time zone;
       begin
          if p_begin_time IS NULL then
-           for row in (select timestamp from vitals where user_id = p_user_id AND timestamp <= p_end_time order by timestamp asc) loop
+           for row in (select timestamp from vitals where user_id = p_user_id AND timestamp <= p_end_time order by timestamp desc) loop
             if(prev_timestamp is null) then
               prev_timestamp = row.timestamp;
             else
@@ -23,7 +23,7 @@ class UpdateLostDataReportFunction < ActiveRecord::Migration
             end if;
           end loop;
         else
-          for row in (select timestamp from vitals where user_id = p_user_id AND timestamp <= p_end_time AND timestamp >= p_begin_time order by timestamp asc) loop
+          for row in (select timestamp from vitals where user_id = p_user_id AND timestamp <= p_end_time AND timestamp >= p_begin_time order by timestamp desc) loop
             if(prev_timestamp is null) then
               prev_timestamp = row.timestamp;
             else
