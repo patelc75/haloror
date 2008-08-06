@@ -20,8 +20,8 @@ class UpdateLostDataReportFunction < ActiveRecord::Migration
               current_timestamp := row.timestamp;
               if((current_timestamp - prev_timestamp)::interval > p_lost_data_gap::interval ) then
                 insert into lost_datas (user_id, begin_time, end_time) values (p_user_id, prev_timestamp, current_timestamp);
-                prev_timestamp := current_timestamp;
               end if;
+              prev_timestamp := current_timestamp;
             end if;
           end loop;
         else
@@ -32,8 +32,8 @@ class UpdateLostDataReportFunction < ActiveRecord::Migration
               current_timestamp := row.timestamp;
               if((current_timestamp - prev_timestamp)::interval > p_lost_data_gap::interval ) then
                 insert into lost_datas (user_id, begin_time, end_time) values (p_user_id, prev_timestamp, current_timestamp);
-                prev_timestamp := current_timestamp;
-              end if;
+              end if;  
+              prev_timestamp := current_timestamp;
             end if;
           end loop;
         end if;
