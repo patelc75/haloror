@@ -1,10 +1,19 @@
 class MgmtQuery < ActiveRecord::Base
-
+  
   #MINUTES_INTERVAL = 1
-
+  
   belongs_to :mgmt_cmd
   belongs_to :device
   
+  def self.new_initialize(random=false)
+    model = self.new
+    if random
+      model.poll_rate = 30 + rand(60)
+    else
+      model.poll_rate = 60
+    end
+    return model    
+  end
   
   # Each user's wireless gateway queries the server every
   # MINUTES_INTERVAL minutes. We need to detect the devices that have
@@ -13,7 +22,7 @@ class MgmtQuery < ActiveRecord::Base
   # Alert and triggers a Gateway Offline event
   def MgmtQuery.job_detect_disconnected_users
     RAILS_DEFAULT_LOGGER.warn("MgmtQuery.job_detect_disconnected_users running at #{Time.now}")
-
+    
     ## Find devices that were previously signaling errors but have
     ## come back online. Trigger a "Reconnect" event for these
     ## devices. In practice, there should be very few of these alerts
@@ -24,7 +33,7 @@ class MgmtQuery < ActiveRecord::Base
     reconnected.each do |device|
       Device.transaction do
         GatewayOnlineAlert.create(:device => device)
-
+        
         GatewayOfflineAlert.find(:all, 
                                  :conditions => ['device_id = ? and reconnected_at is null', device.id]).each do |alert|
           alert.reconnected_at = Time.now
@@ -32,7 +41,7 @@ class MgmtQuery < ActiveRecord::Base
         end
       end
     end
-
+    
     devices = Device.find(:all,
                           :conditions => "id in (select dlq.id from device_latest_queries dlq where dlq.updated_at < now() - interval '#{GATEWAY_OFFLINE_TIMEOUT} minutes')")
     devices.each do |device|
@@ -45,13 +54,13 @@ class MgmtQuery < ActiveRecord::Base
     end
   end
   
-
+  
   private
   def MgmtQuery.process_alert(device)
     alert = GatewayOfflineAlert.find(:first,
-                             :order => 'created_at desc',
-                             :conditions => ['reconnected_at is null and device_id = ?', device.id])
-
+                                     :order => 'created_at desc',
+    :conditions => ['reconnected_at is null and device_id = ?', device.id])
+    
     if alert
       alert.number_attempts += 1
       alert.save!
@@ -61,5 +70,5 @@ class MgmtQuery < ActiveRecord::Base
       alert.save!
     end
   end
-
+  
 end

@@ -14,7 +14,7 @@ Spec::Runner.configure do |config|
   config.use_transactional_fixtures = true
   config.use_instantiated_fixtures  = false
   config.fixture_path = RAILS_ROOT + '/spec/fixtures/'
-
+  
   # == Fixtures
   #
   # You can declare fixtures for each example_group like this:
@@ -120,7 +120,7 @@ end
 def generate_auth(timestamp, gateway_id)
   ts = timestamp.strftime("%a %b %d %H:%M:%S -0600 %Y")
   Hash::XML_FORMATTING['datetime'] = Proc.new { |datetime| 
-  datetime.strftime("%a %b %d %H:%M:%S -0600 %Y") }  
+    datetime.strftime("%a %b %d %H:%M:%S -0600 %Y") }  
   serial_number = Device.find_by_id(gateway_id).serial_number
   serial_number.strip!
   sn = "#{ts}#{serial_number}"
@@ -129,7 +129,9 @@ def generate_auth(timestamp, gateway_id)
 end
 
 def get_xml(user_id, device_id, timestamp, model)
-  model.user_id = user_id
+  if model.respond_to? :user_id
+    model.user_id = user_id
+  end
   if model.respond_to? :device_id
     model.device_id = device_id
   end
