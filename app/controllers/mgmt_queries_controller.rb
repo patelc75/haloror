@@ -1,6 +1,4 @@
 class MgmtQueriesController < RestfulAuthController
-  NUM_RETRIES = 5
-  
   # POST /mgmt_queries  
   def create
     # 1. Create mgmt_query
@@ -11,70 +9,83 @@ class MgmtQueriesController < RestfulAuthController
     query.timestamp_device = request[:timestamp]
     query.timestamp_server = Time.now
     query.poll_rate = request[:poll_rate]
+    query.cycle_num = request[:cycle_num]
     query.save
     
-    # 2. Look for mgmt_cmds where originator = server and pending = true
-    cmds = MgmtCmd.find(:all, :conditions => {:originator => 'server', :pending => true, :device_id => query.device_id})
-    
-    cmds.each do |cmd|
-      past_attempts = MgmtCmd.find(:all, :conditions => {:timestamp_initiated => cmd.timestamp_initiated})
-    
-      if past_attempts.length == NUM_RETRIES  #stops sending after same cmd sent 5 times previously
-        cmd.pending = false
-        cmd.save
-      else
-        #if it has an ack, then send. this means the cmd is still waiting on a management_response_device
-        if cmd.mgmt_ack || !cmd.timestamp_sent
-          send_command(cmd,query)
-          break
-        else #if it doesn't have an ack, create a new cloned cmd and send it (this is so it is sent again on the same query cycle)
-          cmd.pending = false
-          cmd.save                  
-
+    conds = []
+    if(query.cycle_num)
+      if(query.cycle_num == 1)
+        conds = []
+        conds << "originator = 'server'"
+        conds << "pending = true"  
+        conds << "attempts_no_ack > 0"
+        conds << "device_id = #{query.device_id}"
+        
+        pending_cmds_without_mgmt_response = MgmtCmd.find(:all, :conditions => conds.join(' and '))
+        
+        #close out pending commands from pervious query cycle and create new ones
+        pending_cmds_without_mgmt_response.each do |pending|        
+          pending.pending = false
+          pending.save
+          
           new_cmd = MgmtCmd.new
-          new_cmd.device_id = cmd.device_id
-          new_cmd.user_id = cmd.user_id
-          new_cmd.timestamp_initiated = cmd.timestamp_initiated
-          new_cmd.cmd_type = cmd.cmd_type
-          new_cmd.originator = cmd.originator
-          new_cmd.cmd_id = cmd.cmd_id
+          new_cmd.pending_on_ack = true
+          new_cmd.pending = true
+          new_cmd.attempts_no_ack = 0;
+          new_cmd.device_id = pending.device_id
+          new_cmd.user_id = pending.user_id
+          new_cmd.timestamp_initiated = pending.timestamp_initiated
+          new_cmd.cmd_type = pending.cmd_type
+          new_cmd.originator = pending.originator
+          new_cmd.cmd_id = pending.cmd_id        
           new_cmd.save
-      
-          send_command(new_cmd, query)
-          break
-        end
+        end        
       end
-    end
+      conds = []
+      conds << "pending_on_ack = true" #inside if statement for backward compatibility (if no query.cycle_num)
+    end  
     
-    if @cmd
-      #render :xml => @cmd.cmd.to_xml
-      if @cmd.cmd_type == "firmware_upgrade"
-        render :layout => false, :partial => "management/command_firmware_upgrade", :locals => {:cmd => @cmd, :more => @more}
-      else        
-        render :layout => false, :partial => "management/command", :locals => {:cmd => @cmd, :more => @more}
+    conds << "originator = 'server'"
+    conds << "pending = true"  #this is reset` to false in mgmt_acks_controller.rb    
+    conds << "device_id = #{query.device_id}"
+    
+    pending_on_ack_and_response = MgmtCmd.find(:first, :conditions => conds.join(' and '))
+    
+    if(!pending_on_ack_and_response.nil?)
+      if pending_on_ack_and_response.attempts_no_ack.nil?
+        pending_on_ack_and_response.attempts_no_ack = 0
+        pending_on_ack_and_response.save
+      end
+      if(pending_on_ack_and_response.attempts_no_ack < MGMT_CMD_ATTEMPTS_WITHOUT_ACK)
+        send_command(pending_on_ack_and_response, query)
+        pending_on_ack_and_response.attempts_no_ack += 1
+        pending_on_ack_and_response.save
+        
+        if pending_on_ack_and_response.cmd_type == "firmware_upgrade"
+          render :layout => false, :partial => "management/command_firmware_upgrade", :locals => {:cmd => pending_on_ack_and_response, :more => @more}
+        else        
+          render :layout => false, :partial => "management/command", :locals => {:cmd => pending_on_ack_and_response, :more => @more}
+        end
+      else
+        render :nothing => true #indicates query cycle is over    
       end
     else
-      render :nothing => true
+      render :nothing => true #indicates query cycle is over
     end
   end
   
   def send_command(cmd, query)
     if cmd
-      # 3. Get more info
       @more = nil
       if cmd.cmd_type == 'firmware_upgrade' && cmd.cmd_id
         @more = FirmwareUpgrade.find(cmd.cmd_id)        
       end
       
-      # 4. Link cmd to query
       query.mgmt_cmd_id = cmd.id
       query.save
-
-      # 5. Send cmd back to device
+      
       cmd.timestamp_sent = Time.now
       cmd.save
-      
-      @cmd = cmd
     end
   end
 end

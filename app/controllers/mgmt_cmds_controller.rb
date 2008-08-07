@@ -13,12 +13,18 @@ class MgmtCmdsController < RestfulAuthController
     cmd = MgmtCmd.new
     cmd.cmd_type = request[:cmd_type]    
     cmd.timestamp_initiated = request[:timestamp]
-    cmd.device_id = request[:device_id] 
+    cmd.device_id = request[:device_id]
+
     
     if !params[:originator]
       cmd.originator = "device"
     else
       cmd.originator = params[:originator]
+      
+      if params[:originator] == 'server'
+        cmd.pending = true
+        cmd.pending_on_ack = true
+      end
     end
     
     # for device_id, it is searched in the device table by serial num
@@ -77,6 +83,8 @@ class MgmtCmdsController < RestfulAuthController
         cmd[:cmd_id] = params[request[:cmd_type].to_sym]
         cmd[:timestamp_initiated] = Time.now
         cmd[:originator] = 'server'
+        cmd[:attempts_no_ack] = 0
+        cmd[:pending_on_ack] = true
       
         if /-/.match(request[:ids])     
           create_cmds_for_range_of_devices(request[:ids], cmd)

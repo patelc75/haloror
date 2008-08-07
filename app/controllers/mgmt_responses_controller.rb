@@ -13,29 +13,35 @@ class MgmtResponsesController < RestfulAuthController
   def create
     # 1. Create Response, link with Cmd
     request = params[:management_response_device]
-    conditions = conditions_from_hash(request[:cmd_type])    
-    cmds = MgmtCmd.find(:all, :conditions => "(#{conditions}) and device_id = #{request[:device_id]} and timestamp_sent is not null and pending = true", :order => "id asc")
-    if !cmds.blank?
-      response = MgmtResponse.new 
-      #response.mgmt_cmd_id = cmd.id
-      response.timestamp_device = request[:timestamp]
-      response.timestamp_server = Time.now
-      response.save
-           
-      if i = request[:info]
-        info = DeviceInfo.new
-        info.device_id = request[:device_id]
-        info.mgmt_response_id = response.id
-        info.user_id = i[:user_id]
-        info.serial_number = i[:serial_num]
-        info.mac_address = i[:mac_address]
-        info.vendor = i[:vendor]
-        info.model = i[:model]
-        info.hardware_version = i[:hardware_version]
-        info.software_version = i[:software_version]        
-        info.save
-      end
-      
+    
+    conds = []
+    conds << "(" + conditions_from_hash(request[:cmd_type]) + ")"
+    conds << "device_id = #{request[:device_id]}"
+    conds << "timestamp_sent is not null"
+    conds << "pending = true"
+    
+    cmds = MgmtCmd.find(:all, :conditions => conds.join(' and '), :order => "id asc")
+    
+    response = MgmtResponse.new 
+    response.timestamp_device = request[:timestamp]
+    response.timestamp_server = Time.now
+    response.save
+    
+    if i = request[:info]
+      info = DeviceInfo.new
+      info.device_id = request[:device_id]
+      info.mgmt_response_id = response.id
+      info.user_id = i[:user_id]
+      info.serial_number = i[:serial_num]
+      info.mac_address = i[:mac_address]
+      info.vendor = i[:vendor]
+      info.model = i[:model]
+      info.hardware_version = i[:hardware_version]
+      info.software_version = i[:software_version]        
+      info.save
+    end
+    
+    if !cmds.blank? 
       cmds.each do |cmd|
         if !request[:info].blank? && cmd.cmd_type == 'firmware_upgrade' && cmd.cmd_id
           firmware_upgrade = FirmwareUpgrade.find(cmd.cmd_id)
@@ -56,15 +62,12 @@ class MgmtResponsesController < RestfulAuthController
       cmd.cmd_type = request[:cmd_type]
       cmd.originator = "neither"
       cmd.pending = false
+      cmd.pending_on_ack = false
       cmd.timestamp_initiated = request[:timestamp]
       cmd.save
       
       # link null response to command
-      response = MgmtResponse.new
-      response.timestamp_device = request[:timestamp]
-      response.timestamp_server = Time.now
       response.mgmt_cmds << cmd
-      response.save
     end
     
     render :nothing => true
