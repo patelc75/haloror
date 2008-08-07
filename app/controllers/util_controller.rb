@@ -48,4 +48,16 @@ class UtilController < ApplicationController
     email = CriticalMailer.deliver_test_email(params[:to], params[:subject], params[:body])
   end
   
+  def signup_redirect
+    log = AccessLog.new
+    log.user_id = current_user.id
+    log.status = 'logout'
+    log.save
+    
+    self.current_user.forget_me if logged_in?
+    cookies.delete :auth_token
+    reset_session
+    redirect_to "http://#{ServerInstance.current_host}/signup/caregiver/#{params[:id]}"
+  end
+  
 end

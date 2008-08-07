@@ -9,6 +9,7 @@
     <td><b>Activated?&nbsp</b></td>
     <td><b>See Events&nbsp</b></td>
     <td><b>Delete User's Panics and Falls</b><br> (and associated accept/resolve actions<br> and notes)&nbsp</td>
+		<td><b>Caregiver Activation/Signup</b></td>
   </tr>
   <% @users.each do |user| %>
     <tr>
@@ -21,6 +22,14 @@
       <% end %>
       <td><%= link_to 'Events', :controller => 'events', :action => 'user', :id => user.id %></td>
       <td><%= link_to 'Delete Panics & Falls, etc', :action => 'delete_panics_and_falls', :id => user.id%></td>
+			<% caregivers = [] %>
+			<% caregivers = user.caregivers %>
+			<td><% caregivers.each do |caregiver| %>
+					<% if !caregiver.activated? %>
+						<%= link_to "Signup:  " + caregiver.email, :controller => 'util', :action => 'signup_redirect', :id => caregiver.activation_code %><br />
+					<% end %>
+					<% end %>&nbsp;
+			</td>
     </tr>
   <% end %>
 </table>
