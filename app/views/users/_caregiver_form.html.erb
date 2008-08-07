@@ -23,11 +23,15 @@
 	
 	<input type="hidden" name="user_id" value="<%=params[:user_id]%>" />
 	<br/>
+	<br />
+	<br />
 	<label for="email">Email</label>
 	<%= f.text_field :email, :value => '' %>
 	<br />
 	<br />
+	<br />
+	<br />
 	<div align="center">
-		<input name="commit" type="image" src="/images/next.gif" /> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
+		<input name="commit" type="image" src="/images/next.gif" /><a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
 	</div>
 <% end -%>
