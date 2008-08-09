@@ -1,4 +1,3 @@
 # just a test file for httperf vitals post
 # use by issuing the following command: httperf --server atl-web1.halomonitor.com --add-header="content-type: text/xml\n" --wsesslog 5000,2,httperf-vitalspost --rate 50
-/vitals?gateway_id=0&auth=9ad3cad0f0e130653ec377a47289eaf7f22f83edb81e406c7bd7919ea725e024 method=POST contents='<vital><activity>12131</activity><heartrate>78</heartrate><hrv>3</
-hrv><orientation>79</orientation><timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp><user_id>85</user_id></vital>'
+/vitals?gateway_id=0&auth=9ad3cad0f0e130653ec377a47289eaf7f22f83edb81e406c7bd7919ea725e024 method=POST contents='<vital><activity>12131</activity><heartrate>78</heartrate><hrv>3</hrv><orientation>79</orientation><timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp><user_id>85</user_id></vital>'
