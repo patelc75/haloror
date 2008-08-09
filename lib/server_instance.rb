@@ -1,5 +1,5 @@
 module ServerInstance
-  @@prefixes = ["sdev", "idev", "ldev", "dev"]
+  @@prefixes = ["sdev", "idev", "ldev", "dev", "atl-web1"]
   
   def self.current_host
     if Thread.current[:host].nil?
