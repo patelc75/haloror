@@ -12,6 +12,8 @@ class GoogleHealthClient
     client = HTTPClient.new
     resp = client.post(AUTH_URL, body)
     puts resp.content
+    auth = resp.content.split('Auth=')[1].strip
+    return auth
   end
   
   def profile_list(auth)
@@ -19,6 +21,9 @@ class GoogleHealthClient
     headers = {"Authorization" => "GoogleLogin auth=#{auth}"}
     resp = client.get(PROFILE_LIST, nil, headers)
     puts resp.content
+    doc = Hpricot(resp.content)
+    url = doc.search("//entry/id").innerHTML
+    id = url.split("/").last
   end
   
   def get_profile(auth, id)
