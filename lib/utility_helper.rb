@@ -32,7 +32,7 @@ module UtilityHelper
   
   def self.safe_send_email(message)
     begin
-      email = Email.new(:mail => "Messge => #{message}", 
+      email = Email.new(:mail => "#{ServerInstance.current_host()}::Message => #{message}", 
                         :to => 'exceptions_www@halomonitoring.com', 
                         :from => 'no-reply@halomonitoring.com', 
                         :priority => 100)
