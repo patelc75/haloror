@@ -1,0 +1,9 @@
+<h1>Update Google Health Page</h1>
+<br>
+  <%= form_tag :action => "deliver_google_health_notice" %>
+   Google Health Login: <%= text_field_tag 'login' %>
+<br /><br>
+Password: <input id="password" name="password" type="password" />
+<br><br>
+   <%= submit_tag "Send most recent vitals", :name => 'send_button' %>
+   </form>

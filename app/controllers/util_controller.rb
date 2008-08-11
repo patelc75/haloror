@@ -1,6 +1,6 @@
 class UtilController < ApplicationController
   #session :off
-
+  
   # Monitors that the application and database connection is alive
   
   def check
@@ -60,4 +60,17 @@ class UtilController < ApplicationController
     redirect_to "http://#{ServerInstance.current_host}/signup/caregiver/#{params[:id]}"
   end
   
+  def google_health
+    
+  end
+  
+  def deliver_google_health_notice
+    google = GoogleHealthClient.new
+    auth = google.authenticate(params[:login], params[:password])
+    id = google.profile_list(auth)
+    
+    vitals = Vital.find(:first, :conditions => "user_id = #{current_user.id}", :order => 'timestamp desc')
+    @vitals_string = "#{vitals.timestamp}   HR: #{vitals.heartrate}    Activity: #{vitals.activity}"
+    google.post_notice(auth, id, "Recent Vitals", @vitals_string)
+  end 
 end
