@@ -33,6 +33,7 @@ class GoogleHealthClient
       url = "#{PROFILE}#{id}"
       resp = client.get(url, nil, headers)
       puts resp.content
+      return resp.content
   end
   
   def post_notice(auth, id, title, notice)
@@ -47,6 +48,7 @@ class GoogleHealthClient
     EOF
     resp = client.post(url, body, headers)
     puts resp.content
+    return resp.content
   end
     
 end
