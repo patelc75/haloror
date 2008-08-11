@@ -2,14 +2,37 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe MgmtQuery do  
   before(:all) do
-    #@no_records = 0
-    #CLAZZES.each do |clazz|
-    #@no_records += clazz.count
+    mgmt_cmd = MgmtCmd.new_initialize()
+    mgmt_cmd.cmd_type = 'firmware_upgrade'
+    mgmt_cmd.originator = 'server'
+   #curl not needed, but does some setup work for us
+    get_curl_cmd(mgmt_cmd)
+    mgmt_cmd.save!
+    
     mgmt_query = MgmtQuery.new_initialize()
     curl_cmd = get_curl_cmd(mgmt_query)
-    puts curl_cmd
-    #the response from the server should be sent to server_response
     server_response = `#{curl_cmd}`
+    server_hash = Hash.from_xml(server_response)
+    if server_hash["management_cmd_server"]
+      if server_hash["management_cmd_server"]["cmd_type"] == 'firmware_upgrade'
+        curl_cmd = get_curl_cmd_for_ack(MgmtAck.new, 'firmware_upgrade')
+        server_response = `#{curl_cmd}`
+      end
+    end
+    
+    
+    mgmt_cmd = MgmtCmd.new_initialize()
+    mgmt_cmd.cmd_type = 'info'
+    mgmt_cmd.originator = 'server'
+   #curl not needed, but does some setup work for us
+    get_curl_cmd(mgmt_cmd)
+    mgmt_cmd.save!       
+    
+    mgmt_query = MgmtQuery.new_initialize()
+    curl_cmd = get_curl_cmd(mgmt_query)
+    server_response = `#{curl_cmd}`
+    puts server_response 
+    
   end
   
   it "should have one more of each model" do

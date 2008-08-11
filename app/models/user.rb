@@ -146,7 +146,11 @@ class User < ActiveRecord::Base
     if roles_user
       opt = roles_user.roles_users_option
       if opt && !opt.removed && opt.active
-        caregiver[:position] = opt.position
+        if opt.position
+          caregiver[:position] = opt.position
+        else
+          caregiver[:position] = 1
+        end
         return true
       end
     end
@@ -176,7 +180,7 @@ class User < ActiveRecord::Base
           cg_array << caregiver
         end
       end
-      cg_array.sort! do |a,b| a[:position] <=> b[:position] end
+        cg_array.sort! do |a,b| a[:position] <=> b[:position] end
       return cg_array
     else
       return []
