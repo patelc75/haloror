@@ -24,6 +24,7 @@ class GoogleHealthClient
     doc = Hpricot(resp.content)
     url = doc.search("//entry/id").innerHTML
     id = url.split("/").last
+    return id
   end
   
   def get_profile(auth, id)
