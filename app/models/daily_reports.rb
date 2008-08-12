@@ -39,4 +39,40 @@ class DailyReports
       last.save
     end
   end
+  
+  def self.device_not_worn(user_id, begin_time=nil, end_time=Time.now)
+    sql = "SELECT timestamp, heartrate FROM vitals WHERE user_id = #{user_id} AND timestamp <= '#{end_time.to_s}'"
+    if !begin_time.nil?
+      sql = sql + " AND timestamp >= '#{begin_time.to_s}'"
+    end
+    sql = sql + " ORDER BY timestamp ASC"
+    times = []
+    Vital.connection.select_all(sql).collect do |row|
+      data = {}
+      data[:timestamp] = row["timestamp"].to_time
+      data[:heartrate] = row["heartrate"].to_i
+      times << data
+    end
+    accumulated_time = nil
+    previous_time = nil
+    times.collect do |time|
+      if time[:heartrate] == -1
+        if previous_time == nil
+          previous_time = time[:timestamp]
+        else
+          if accumulated_time.nil?
+            accumulated_time = (time[:timestamp] - previous_time)
+          else
+            accumulated_time = accumulated_time + (time[:timestamp] - previous_time)
+          end
+            previous_time = time[:timestamp]
+        end
+      else
+        previous_time = nil
+      end
+    end
+    return accumulated_time
+  end
+  
+  
 end
