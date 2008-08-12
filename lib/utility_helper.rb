@@ -25,23 +25,33 @@ module UtilityHelper
     return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
   end
   
-  def self.log_message(message) 
+  def self.get_stacktrace(exception)
+    if !exception.backtrace.blank?
+      return exception.backtrace.join("\n")
+    end
+    return ""
+  end
+  
+  def self.log_message(message, exception=nil) 
+    if !exception.nil?
+      message  = "#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
+    end
     RAILS_DEFAULT_LOGGER.warn(message)
     safe_send_email(message)
   end
   
   def self.safe_send_email(message)
     begin
-      email = Email.new(:mail => "#{ServerInstance.current_host()}::Message => #{message}", 
+      email = Email.new(:mail => "#{ServerInstance.current_host()}.Message = #{message}", 
                         :to => 'exceptions_www@halomonitoring.com', 
                         :from => 'no-reply@halomonitoring.com', 
                         :priority => 100)
       ar_sendmail = ActionMailer::ARSendmail.new
       ar_sendmail.deliver([email])
     rescue Exception => e
-      RAILS_DEFAULT_LOGGER.warn("Exception in UtilityHelper.self.safe_send_email:: #{e}")
+      RAILS_DEFAULT_LOGGER.warn("Exception in UtilityHelper.self.safe_send_email #{e}")
     rescue
-      RAILS_DEFAULT_LOGGER.warn("Exception in UtilityHelper.self.safe_send_email::")
+      RAILS_DEFAULT_LOGGER.warn("Exception in UtilityHelper.self.safe_send_email")
     end
   end
 
