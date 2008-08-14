@@ -59,6 +59,11 @@ class MgmtQueriesController < RestfulAuthController
       if(pending_on_ack_and_response.attempts_no_ack < MGMT_CMD_ATTEMPTS_WITHOUT_ACK)
         send_command(pending_on_ack_and_response, query)
         pending_on_ack_and_response.attempts_no_ack += 1
+        
+        if pending_on_ack_and_response.attempts_no_ack >= MGMT_CMD_ATTEMPTS_WITHOUT_ACK
+          pending_on_ack_and_response.pending_on_ack = false
+        end
+        
         pending_on_ack_and_response.save
         
         if pending_on_ack_and_response.cmd_type == "firmware_upgrade"
