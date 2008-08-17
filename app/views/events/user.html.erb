@@ -1,38 +1,62 @@
 <big>Events for <%= @user.name %> (<%= @user.id %>)</big> - all times are in <%= @user.profile.time_zone if @user.profile %> timezone <br>
 <div class="table">
   <div class="row header">
-    <div class="col-125">
-      Timestamp<br>Device
-    </div>
-    <div class="col-125">
-      Timestamp<br>Server
-    </div>
+  	<div class="col-125">
+  	  Date/Time	
+	</div>
     <div class="col-150">
-      Event Type
+      Type
     </div>
     <div class="col-300">
-      Event Details
+      Description
+    </div>
+	<div class="col-100">
+      Heartrate
+    </div>
+	<div class="col-100">
+      Skin Temp.
+    </div>
+	<div class="col-100">
+      Body Position
     </div>
   </div>
   <% @events.each do |event| %>
-    <div class="row">
+  <% vital = Vital.find(:first, :conditions => "user_id = #{@user.id} AND timestamp > '#{event[:timestamp]}' AND timestamp <= '#{event[:timestamp] + 600}'", :order => "timestamp desc")%>
+  <% skintemp = SkinTemp.find(:first, :conditions => "user_id = #{@user.id} AND timestamp > '#{event[:timestamp]}' AND timestamp <= '#{event[:timestamp] + 600}'", :order => "timestamp desc") %>
+    <div id="event_event_<%= event.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px;cursor:pointer">
+	<div class="row">
       <div class="col-125">
         <%= UtilityHelper.format_datetime_readable(event[:timestamp],current_user) %>&nbsp
       </div>
-      <div class="col-125">
-        <% if(event[:timestamp_server] == nil) %>
-            No timestamp
-          <% else %>
-                   <%= UtilityHelper.format_datetime_readable(event[:timestamp_server],current_user) %>
-             <% end %>
-        </div>
         <div class="col-150">
           <%=UtilityHelper.camelcase_to_spaced(event[:event_type])%>
         </div>
         <div class="col-300">
           <%=event.event.to_s%>
         </div>
+		<div class="col-100">
+		<% if vital %>
+	      <%= vital.heartrate %>
+		<% else %>
+			Not Available
+		<% end  %>
+	    </div>
+		<div class="col-100">
+		<% if skintemp %>
+	      <%= skintemp.skin_temp %>
+		<% else %>
+		  Not Available
+		<% end  %>
+	    </div>
+		<div class="col-100">
+		<% if vital %>
+	      <%= Vital.get_adl(vital.orientation, vital.activity) %>
+		<% else %>
+			Not Available
+		<% end  %>
+	    </div>
       </div>
+	</div>
     <% end %>
     <br>
     <br>
