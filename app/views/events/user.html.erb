@@ -1,54 +1,60 @@
-<big>Events for <%= @user.name %> (<%= @user.id %>)</big> - all times are in <%= @user.profile.time_zone if @user.profile %> timezone <br>
-<div class="table">
-  <div class="row header">
-  	<div class="col-125">
+<div id="call_list-col">
+	<div id="call_list-col-header">
+		Events | <span style="color:#000;font-size:.75em">
+		<%= @user.name %> (<%= @user.id %>)</big> - all times are in <%= @user.profile.time_zone if @user.profile %> timezone <br>
+		</span>
+	</div>
+<div class="content">
+  <div id="call_list_header">
+  	<div style="float:left;width:150px">
   	  Date/Time	
 	</div>
-    <div class="col-150">
+  	<div style="float:left;width:150px">
       Type
     </div>
-    <div class="col-300">
+  	<div style="float:left;width:300px">
       Description
     </div>
-	<div class="col-100">
+  	<div style="float:left;width:100px">
       Heartrate
     </div>
-	<div class="col-100">
+  	<div style="float:left;width:100px">
       Skin Temp.
     </div>
-	<div class="col-100">
+  	<div style="float:left;width:100px">
       Body Position
     </div>
   </div>
+  <p>&nbsp;</p>
   <% @events.each do |event| %>
   <% vital = Vital.find(:first, :conditions => "user_id = #{@user.id} AND timestamp > '#{event[:timestamp]}' AND timestamp <= '#{event[:timestamp] + 600}'", :order => "timestamp desc")%>
   <% skintemp = SkinTemp.find(:first, :conditions => "user_id = #{@user.id} AND timestamp > '#{event[:timestamp]}' AND timestamp <= '#{event[:timestamp] + 600}'", :order => "timestamp desc") %>
     <div id="event_event_<%= event.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px;cursor:pointer">
 	<div class="row">
-      <div class="col-125">
+      <div style="float:left;padding-top:25px;width:150px">
         <%= UtilityHelper.format_datetime_readable(event[:timestamp],current_user) %>&nbsp
       </div>
-        <div class="col-150">
+        <div style="float:left;padding-top:25px;width:150px">
           <%=UtilityHelper.camelcase_to_spaced(event[:event_type])%>
         </div>
-        <div class="col-300">
+        <div style="float:left;padding-top:25px;width:300px">
           <%=event.event.to_s%>
         </div>
-		<div class="col-100">
+		<div style="float:left;padding-top:25px;width:100px">
 		<% if vital %>
 	      <%= vital.heartrate %>
 		<% else %>
 			Not Available
 		<% end  %>
 	    </div>
-		<div class="col-100">
+		<div style="float:left;padding-top:25px;width:100px">
 		<% if skintemp %>
 	      <%= skintemp.skin_temp %>
 		<% else %>
 		  Not Available
 		<% end  %>
 	    </div>
-		<div class="col-100">
+		<div style="float:left;padding-top:25px;width:100px">
 		<% if vital %>
 	      <%= Vital.get_adl(vital.orientation, vital.activity) %>
 		<% else %>
