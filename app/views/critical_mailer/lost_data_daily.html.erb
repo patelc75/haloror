@@ -11,21 +11,21 @@
 Lost data (All times are in UTC timezone)
 Starting Time: <%= begin_time %>  
 Ending Time :  <%= end_time %>
-<br>
+
 Name                Ocurrences                Total Duration
 All                 <%= total_num%>                <%= total_duration %>s
 <% users.each do |user| -%> 
 <% if !user[:total_user_num].nil? -%>
 <%= user.name   %>  <%= user[:total_user_num]%>    <%= user[:total_user_duration]%>s 
-<% end %>
-<% end %>
+<% end -%>
+<% end -%>
 
 <% users.each do |user| -%> 
 <% if !user[:total_user_num].nil? -%>
-	<%  user[:lost_data].each do |reading| %>	
+	<%  user[:lost_data].each do |reading| -%>	
 		Start:    <%= reading.begin_time.to_s() %>
 		End:      <%= reading.end_time.to_s() %>
 		Duration: <%= (reading.end_time - reading.begin_time).seconds %>s
-<% end %>
-<% end %>
-<% end %>
+<% end -%>
+<% end -%>
+<% end -%>
