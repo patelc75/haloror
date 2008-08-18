@@ -37,7 +37,8 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   def lost_data_daily()
-    setup_administrators()
+    #setup_administrators()
+    @recipients = ["reports@halomonitoring.com"]
     @from        = "no-reply@halomonitoring.com"
     @subject     = "[" + ServerInstance.current_host_short_string + "] Lost Data Daily Report"
     @sent_on     = Time.now
