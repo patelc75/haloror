@@ -79,9 +79,29 @@ class DailyReports
     halousers = User.halousers()
     if !halousers.blank?
       halousers.each do |halouser|
-        puts "#{halouser.id}) " + halouser.name + ": " + "#{DailyReports.device_not_worn(halouser.id, begin_time, end_time  )}"
+        lost_data = self.lost_data_by_user(user_id, begin_time, end_time)
+        sum_lost_data = self.lost_data_sum(lost_data)
+        puts "#{halouser.id}) " + halouser.name + ": \t" + "#{DailyReports.device_not_worn(halouser.id, begin_time, end_time  )}" + "\t" + "#{sum_lost_data}"
       end       
     end
     nil
+  end
+  
+  def self.lost_data_sum(lost_data)
+    accumulated_time = 0
+    lost_data.each do |ld|
+      accumulated_time = accumulated_time + (ld.end_time - ld.begin_time)
+    end
+    return accumulated_time
+  end
+  
+  
+  def self.lost_data_by_user(user_id, begin_time=nil, end_time=Time.now)
+    self.lost_data_scan(user_id)
+    conds = "user_id = #{user_id} AND end_time <= '#{end_time.to_s(:db)}' "
+    if(begin_time != nil)
+      conds = conds + "AND begin_time >= '#{begin_time.to_s(:db)}'"
+    end
+    return LostData.find(:all, :conditions => conds, :order => "id desc")
   end
 end
