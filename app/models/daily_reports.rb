@@ -79,10 +79,17 @@ class DailyReports
     halousers = User.halousers()
     if !halousers.blank?
       halousers.each do |halouser|
-        lost_data = self.lost_data_by_user(user_id, begin_time, end_time)
+        lost_data = self.lost_data_by_user(halo_user.id, begin_time, end_time)
         sum_lost_data = self.lost_data_sum(lost_data)
         sum_device_not_worn = DailyReports.device_not_worn(halouser.id, begin_time, end_time  )
-        puts "#{halouser.id}) " + halouser.name + ": \t" + "#{sum_device_not_worn}" + "\t" + "#{sum_lost_data}" + "\t" + "#{sum_device_not_worn + sum_lost_data}"
+        total = 0
+        if !sum_device_not_worn.nil?
+          total = total + sum_device_not_worn
+        end
+        if !sum_lost_data.nil?
+          total = total + sum_lost_data
+        end
+        puts "#{halouser.id}) " + "#{halouser.name}" + ": \t" + "#{sum_device_not_worn}" + "\t" + "#{sum_lost_data}" + "\t" + "#{total}"
       end       
     end
     nil
