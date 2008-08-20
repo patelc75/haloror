@@ -32,7 +32,7 @@ class DailyReports
     end
     prev_timestamp = lost_data.end_time if lost_data
     
-    if (!last or prev_timestamp != last.timestamp) and !prev_timestamp.nil?
+   if(!prev_timestamp.nil? and (!last or prev_timestamp > last.timestamp))
       last = VitalScan.new
       last.user_id = user_id
       last.timestamp = prev_timestamp
@@ -79,7 +79,7 @@ class DailyReports
     halousers = User.halousers()
     if !halousers.blank?
       halousers.each do |halouser|
-        lost_data = self.lost_data_by_user(halo_user.id, begin_time, end_time)
+        lost_data = self.lost_data_by_user(halouser.id, begin_time, end_time)
         sum_lost_data = self.lost_data_sum(lost_data)
         sum_device_not_worn = DailyReports.device_not_worn(halouser.id, begin_time, end_time  )
         total = 0
