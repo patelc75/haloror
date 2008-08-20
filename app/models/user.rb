@@ -252,6 +252,12 @@ class User < ActiveRecord::Base
     admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'administrator']
     return admins
   end
+  
+  def self.halousers
+    halousers = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'halouser']
+    return halousers
+  end
+  
   def self.operators
     os = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
     os2 = []

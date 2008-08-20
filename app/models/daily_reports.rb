@@ -31,7 +31,7 @@ class DailyReports
       lost_data = LostData.find(:first, :order => "end_time desc", :conditions => "user_id = #{user_id}")
     end
     prev_timestamp = lost_data.end_time if lost_data
-          
+    
     if (!last or prev_timestamp != last.timestamp) and !prev_timestamp.nil?
       last = VitalScan.new
       last.user_id = user_id
@@ -65,7 +65,7 @@ class DailyReports
           else
             accumulated_time = accumulated_time + (time[:timestamp] - previous_time)
           end
-            previous_time = time[:timestamp]
+          previous_time = time[:timestamp]
         end
       else
         previous_time = nil
@@ -74,5 +74,13 @@ class DailyReports
     return accumulated_time
   end
   
-  
+  def self.device_not_worn_halousers  
+    halousers = User.halousers()
+    if !halousers.blank?
+      halousers.each do |halouser|
+        puts halouser.name
+        puts DailyReports.device_not_worn(halouser.id, 7.days.ago)
+      end       
+    end
+  end
 end
