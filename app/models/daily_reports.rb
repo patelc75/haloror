@@ -75,10 +75,11 @@ class DailyReports
   end
   
   def self.device_not_worn_halousers(begin_time=nil, end_time=Time.now)  
+    puts begin_time.to_s + " to " + end_time.to_s
     halousers = User.halousers()
     if !halousers.blank?
       halousers.each do |halouser|
-        puts "#{halouser.id}) " + halouser.name + ": " + "#{DailyReports.device_not_worn(halouser.id, begin_time, end_time)}"
+        puts "#{halouser.id}) " + halouser.name + ": " + "#{DailyReports.device_not_worn(halouser.id, begin_time, end_time  )}"
       end       
     end
     nil
