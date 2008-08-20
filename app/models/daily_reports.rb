@@ -78,9 +78,9 @@ class DailyReports
     halousers = User.halousers()
     if !halousers.blank?
       halousers.each do |halouser|
-        puts halouser.name
-        puts DailyReports.device_not_worn(halouser.id, 7.days.ago)
+        puts halouser.name + ": " + "#{DailyReports.device_not_worn(halouser.id, 7.days.ago)}"
       end       
     end
+    nil
   end
 end
