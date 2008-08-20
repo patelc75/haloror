@@ -74,11 +74,11 @@ class DailyReports
     return accumulated_time
   end
   
-  def self.device_not_worn_halousers  
+  def self.device_not_worn_halousers(begin_time=nil, end_time=Time.now)  
     halousers = User.halousers()
     if !halousers.blank?
       halousers.each do |halouser|
-        puts halouser.name + ": " + "#{DailyReports.device_not_worn(halouser.id, 7.days.ago)}"
+        puts "#{halouser.id}) " + halouser.name + ": " + "#{DailyReports.device_not_worn(halouser.id, begin_time, end_time)}"
       end       
     end
     nil
