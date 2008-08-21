@@ -104,4 +104,16 @@ class ReportingController < ApplicationController
       redirect_to '/reporting/users'
     end
   end
+  
+  def device_not_worn
+    @end_time = Time.now
+    @begin_time = 1.day.ago(@end_time)
+    @users, @total_lost_data, @total_not_worn = DailyReports.device_not_worn_halousers(@begin_time, @end_time)
+  end
+  
+  def successful_user_logins
+    @end_time = Time.now
+    @begin_time = 1.day.ago(@end_time)
+    @halousers = DailyReports.successful_user_logins(@begin_time, @end_time)
+  end
 end

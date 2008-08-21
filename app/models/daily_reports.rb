@@ -77,6 +77,8 @@ class DailyReports
   def self.device_not_worn_halousers(begin_time=nil, end_time=Time.now)  
     puts begin_time.to_s + " to " + end_time.to_s
     halousers = User.halousers()
+    total_not_worn = 0
+    total_lost_data = 0
     if !halousers.blank?
       halousers.each do |halouser|
         lost_data = self.lost_data_by_user(halouser.id, begin_time, end_time)
@@ -85,14 +87,19 @@ class DailyReports
         total = 0
         if !sum_device_not_worn.nil?
           total = total + sum_device_not_worn
+          total_not_worn = total_not_worn + sum_device_not_worn
         end
         if !sum_lost_data.nil?
           total = total + sum_lost_data
+          total_lost_data = total_lost_data + sum_lost_data
         end
+        halouser[:seconds_not_worn] = sum_device_not_worn.nil? ? 0 : sum_device_not_worn
+        halouser[:seconds_lost_data] = sum_lost_data
+        halouser[:total] = total
         puts "#{halouser.id}) " + "#{halouser.name}" + ": \t" + "#{sum_device_not_worn}" + "\t" + "#{sum_lost_data}" + "\t" + "#{total}"
       end       
     end
-    nil
+    return halousers, total_lost_data, total_not_worn
   end
   
   def self.lost_data_sum(lost_data)
@@ -111,5 +118,30 @@ class DailyReports
       conds = conds + "AND begin_time >= '#{begin_time.to_s(:db)}'"
     end
     return LostData.find(:all, :conditions => conds, :order => "id desc")
+  end
+  
+  def self.successful_user_logins(begin_time=nil, end_time=Time.now)
+    halousers = User.halousers()
+    halousers.each do |halouser|
+      conds = "status = 'successful' AND user_id = #{halouser.id} AND created_at <= '#{end_time.to_s(:db)}' "
+      if !begin_time.nil?
+        conds = conds + " AND created_at >= '#{begin_time.to_s(:db)}'"
+      end
+      logins = AccessLog.count(:all, :conditions => conds)
+      halouser[:logins] = logins
+      logins = 0
+      caregivers = halouser.caregivers
+      halouser[:caregiver_for_logins] = caregivers
+      caregivers.each do |caregiver|
+        conds = "status = 'successful' AND user_id = #{caregiver.id} AND created_at <= '#{end_time.to_s(:db)}' "
+        if !begin_time.nil?
+          conds = conds + " AND created_at >= '#{begin_time.to_s(:db)}'"
+        end
+        logins = AccessLog.count(:all, :conditions => conds)
+        caregiver[:logins] = logins
+        logins = 0
+      end
+    end
+    return halousers
   end
 end

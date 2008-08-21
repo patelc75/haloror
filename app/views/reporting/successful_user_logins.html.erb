@@ -1,0 +1,32 @@
+<html>
+<body>
+<h2>Successful Logins:</h2>
+All times are in UTC timezone
+<p>
+    &nbsp;
+</p>
+<p>
+	Starting Time: <%= @begin_time %>
+	Ending   Time: <%= @end_time %>
+</p>
+<p>
+<table>
+	<tr>
+		<th>Name</th>
+		<th>Number of Logins</th>
+		<th>Caregiver</th>
+		<th>Number of Logins</th>
+	</tr>
+<% @halousers.each do |user| -%> 
+	<% user[:caregiver_for_logins].each do |caregiver| -%>
+	<tr>
+		<td><%= user.name %></td>
+		<td><%= user[:logins]%></td>
+		<td><%= caregiver.name %></td>
+		<td><%= caregiver[:logins]%></td>
+	</tr>
+	<% end -%>
+<% end -%>
+</table>
+</body>
+</html>
