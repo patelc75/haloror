@@ -1,0 +1,42 @@
+#!/bin/bash
+# 
+# Usage: checkrows $host $database
+# This script was created to check the number of rows in a table and warn if there are more than a certain number
+
+# Warn if two arguements are not provided when issuing the command
+ if [ "x$2" = "x" ] 
+  then 
+    echo 'usage: checkemailqueue $host $database_name'
+    exit -1 
+  fi
+
+# Variables
+message="WARNING: There are emails in queue on $HOSTNAME"
+date=`/bin/date`
+notify=rufus@halomonitoring.com
+logfile=/var/log/alertemails
+
+# Provide the number of lines and cut out the unecessary output to provide only the number of rows
+# Will also warn if there is some other problem with the output of psql_output
+psql_output=`/usr/bin/psql -h $1 -U postgres -d $2 -c "select count(*) from emails"`
+ if [ $? -ne 0 ]
+        then 
+                echo $date - There was a problem processing the number of rows for $2 on $HOSTNAME >> $logfile
+                echo "There was a problem processing the number of rows for $2 on $HOSTNAME" | mail -s "ERROR Running checkemailqueue" $notify
+                exit -1
+        else
+                num_rows=`echo "$psql_output"| head -n 3 | tail -n 1`
+ fi
+
+# num_rows=`/usr/bin/psql -h $1 -U postgres -d $2 -c "select count(*) from emails" | head -n 3 | tail -n 1`
+
+
+ if [ $num_rows = "" ]
+        then
+                echo $date - There was an error running checkemailqueue
+        elseif [ $num_rows -gt 10 ] 
+                echo $HOSTNAME has $num_rows email messages in the emails table of the $2 database. | mail -s "$message" $notify 
+                echo $date - WARNING: There are $num_rows emails in queue >> $logfile
+        else 
+                echo $date - There are $num_rows emails in queue in the $2 database on $HOSTNAME >> $logfile 
+ fi
