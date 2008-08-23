@@ -15,6 +15,7 @@ class User < ActiveRecord::Base
   has_many :steps
   has_many :vitals
   has_many :halo_debug_msgs
+  has_many :mgmt_cmds
   #belongs_to :role
   #has_one :roles_user
   #has_one :roles_users_option

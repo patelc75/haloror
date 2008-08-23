@@ -4,7 +4,7 @@ class MgmtCmd < ActiveRecord::Base
   has_one :mgmt_query
   
   belongs_to :device
-  
+  belongs_to :creator, :class_name => "User", :foreign_key => "created_by"
   belongs_to :cmd, :polymorphic => true
   
   def self.new_initialize(random=false)

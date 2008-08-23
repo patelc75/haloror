@@ -24,6 +24,7 @@ class MgmtCmdsController < RestfulAuthController
       if params[:originator] == 'server'
         cmd.pending = true
         cmd.pending_on_ack = true
+        cmd.creator = current_user
       end
     end
     
@@ -68,7 +69,7 @@ class MgmtCmdsController < RestfulAuthController
   
   def create_many
     @success = true
-    @message = 'Command created!'
+    @message = "Command created by #{current_user.id} #{current_user.name}"
     @pending_cmds = []
     
     request = params[:management_cmd_device] #from the issue commands form
@@ -85,6 +86,7 @@ class MgmtCmdsController < RestfulAuthController
         cmd[:originator] = 'server'
         cmd[:attempts_no_ack] = 0
         cmd[:pending_on_ack] = true
+        cmd[:created_by] = current_user.id if current_user
       
         if /-/.match(request[:ids])     
           create_cmds_for_range_of_devices(request[:ids], cmd)

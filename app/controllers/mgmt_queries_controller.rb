@@ -31,6 +31,7 @@ class MgmtQueriesController < RestfulAuthController
           new_cmd = MgmtCmd.new
           new_cmd.pending_on_ack = true
           new_cmd.pending = true
+          new_cmd.creator = pending.creator
           new_cmd.attempts_no_ack = 0;
           new_cmd.device_id = pending.device_id
           new_cmd.user_id = pending.user_id
