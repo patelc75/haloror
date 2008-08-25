@@ -74,7 +74,8 @@ class DailyReports
     return accumulated_time
   end
   
-  def self.device_not_worn_halousers(begin_time=nil, end_time=Time.now)  
+  def self.device_not_worn_halousers(begin_time=nil, end_time=Time.now) 
+    RAILS_DEFAULT_LOGGER.warn("DailyReports.device_not_worn_halousers running at #{Time.now}")
     puts begin_time.to_s + " to " + end_time.to_s
     halousers = User.halousers()
     total_not_worn = 0
@@ -111,7 +112,7 @@ class DailyReports
   end
   
   
-  def self.lost_data_by_user(user_id, begin_time=nil, end_time=Time.now)
+  def self.lost_data_by_user(user_id, begin_time=nil, end_time=Time.now)    
     self.lost_data_scan(user_id)
     conds = "user_id = #{user_id} AND end_time <= '#{end_time.to_s(:db)}' "
     if(begin_time != nil)
@@ -121,6 +122,7 @@ class DailyReports
   end
   
   def self.successful_user_logins(begin_time=nil, end_time=Time.now)
+    RAILS_DEFAULT_LOGGER.warn("DailyReports.successful_user_logins running at #{Time.now}")
     halousers = User.halousers()
     halousers.each do |halouser|
       conds = "status = 'successful' AND user_id = #{halouser.id} AND created_at <= '#{end_time.to_s(:db)}' "

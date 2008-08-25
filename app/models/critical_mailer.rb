@@ -1,6 +1,7 @@
 class CriticalMailer < ActionMailer::ARMailer
   include UtilityHelper
   include ServerInstance
+  NO_REPLY = "no-reply@halomonitoring.com"
   
   def background_task_notification(alert, user)
     body = "User #{user.name} (#{user.id})\n" +
@@ -37,11 +38,18 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   def lost_data_daily()
-    #setup_administrators()
-    @recipients = ["reports@halomonitoring.com"]
-    @from        = "no-reply@halomonitoring.com"
-    @subject     = "[" + ServerInstance.current_host_short_string + "] Lost Data Daily Report"
-    @sent_on     = Time.now
+    subject = 'Lost Data Daily Report'
+    setup_daily(subject)
+  end
+  
+  def device_not_worn_daily()
+    subject = 'Device Not Worn Daily Report'
+    setup_daily(subject)
+  end
+  
+  def successful_user_logins_daily()
+    subject = 'Logins Daily Report'
+    setup_daily(subject)
   end
   
   def test_email(to, subject, body) 
@@ -68,13 +76,18 @@ class CriticalMailer < ActionMailer::ARMailer
   protected
   
   def setup_message(subject, msg_body)
-    @from        = "no-reply@halomonitoring.com"
+    @from        = NO_REPLY
     @subject     = "[" + ServerInstance.current_host_short_string + "] "
     @subject     += subject unless subject.blank?
     @sent_on     = Time.now
     body msg_body
   end
-  
+  def setup_daily(subject)
+    @recipients = daily_recipients
+    @from        = NO_REPLY
+    @subject     = "[" + ServerInstance.current_host_short_string + "] #{subject}"
+    @sent_on     = Time.now
+  end
   def setup_caregivers(user, alert, mode)
     self_alert = user.alert_option(alert)
     recipients_setup(user, self_alert, mode)
@@ -104,7 +117,9 @@ class CriticalMailer < ActionMailer::ARMailer
       end       
     end
   end
-  
+  def daily_recipients
+    ["reports@halomonitoring.com"]  
+  end
   def recipients_setup(user, alert_option, mode, phone = :no_phone_call)
     @recipients = Array.new if @recipients.nil?
     @caregiver_info = "" if @caregiver_info.nil?

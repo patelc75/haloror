@@ -1,0 +1,17 @@
+<% end_time = Time.now
+   begin_time = 1.day.ago(end_time)
+   users, total_lost_data, total_not_worn = DailyReports.device_not_worn_halousers(begin_time, end_time) -%>
+Device Not Worn:
+All times are in UTC timezone
+	Starting Time: <%= begin_time %>
+	Ending   Time: <%= end_time %>
+
+Name    Not Worn    Lost Data    Total Duration
+-----------------------------------------------
+All     <%= total_not_worn %>    <%= total_lost_data %>    <%= total_lost_data + total_not_worn %>
+<% users.each do |user| -%> 
+  <% if user[:total] != 0 -%>
+<%= user.name %>    <%= user[:seconds_not_worn]%>    <%= user[:seconds_lost_data]%>    <%= user[:total]%>
+  <% end -%>
+<% end -%>
+-----------------------------------------------
