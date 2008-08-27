@@ -1,6 +1,6 @@
-
-
 module UtilityHelper
+  include ServerInstance
+  
   def self.format_datetime(datetime,user)
     #lookup = {-7 => 'PST', -6 => 'MST', -5 => 'CST', -4 => 'EST'}
     original_datetime = datetime
@@ -34,7 +34,7 @@ module UtilityHelper
   
   def self.log_message(message, exception=nil) 
     if !exception.nil?
-      message  = "#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
+      message  = "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
     end
     RAILS_DEFAULT_LOGGER.warn(message)
     safe_send_email(message)
