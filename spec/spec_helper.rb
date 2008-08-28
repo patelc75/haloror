@@ -74,11 +74,23 @@ def get_bundled_curl_cmd(models)
   puts curl_cmd
   return curl_cmd
 end
-def get_curl_cmd(model)  
+def setup_model(model)
   user = get_user
   device = get_device(user)
-  gateway = get_gateway(user)  
   ts = Time.now
+  if model.respond_to? :user_id
+    model.user_id = user.id
+  end
+  if model.respond_to? :device_id
+    model.device_id = device.id
+  end
+  set_timestamp(ts, model)
+  return user, device, ts
+end
+def get_curl_cmd(model)  
+  user, device, ts = setup_model(model)
+  puts user.inspect
+  gateway = get_gateway(user)  
   auth = generate_auth(ts, gateway.id)
   
   curl_cmd = BEGIN_CURL 
@@ -95,10 +107,8 @@ def get_curl_cmd(model)
 end
 
 def get_curl_cmd_for_ack(model, type)
-  user = get_user
-  device = get_device(user)
-  gateway = get_gateway(user)  
-  ts = Time.now
+  user, device, ts = setup_model(model)
+  gateway = get_gateway(user)
   auth = generate_auth(ts, gateway.id)
   
   curl_cmd = BEGIN_CURL 
@@ -167,6 +177,7 @@ def get_xml(user_id, device_id, timestamp, model)
   end
   xml.gsub!("\n", '')
   xml.gsub!("nil=\"true\"", '')
+  puts xml
   return xml
 end
 
