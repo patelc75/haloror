@@ -27,15 +27,19 @@
   </div>
   <p>&nbsp;</p>
   <% @events.each do |event| %>
-  <% vital = Vital.find(:first, :conditions => "user_id = #{@user.id} AND timestamp > '#{event[:timestamp_server]}' AND timestamp <= '#{event[:timestamp_server] + 600}'", :order => "timestamp desc")%>
-  <% skintemp = SkinTemp.find(:first, :conditions => "user_id = #{@user.id} AND timestamp > '#{event[:timestamp_server]}' AND timestamp <= '#{event[:timestamp_server] + 600}'", :order => "timestamp desc") %>
+  <% vital = nil
+     skintemp = nil %>
+  <% if !event.timestamp_server.nil? %>
+    <% vital = Vital.find(:first, :conditions => "user_id = #{@user.id} AND timestamp > '#{event[:timestamp_server]}' AND timestamp <= '#{event[:timestamp_server] + 600}'", :order => "timestamp desc")%>
+    <% skintemp = SkinTemp.find(:first, :conditions => "user_id = #{@user.id} AND timestamp > '#{event[:timestamp_server]}' AND timestamp <= '#{event[:timestamp_server] + 600}'", :order => "timestamp desc") %>
+  <% end %>
     <div id="event_event_<%= event.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px;cursor:pointer">
 	<div class="row">
       <div style="float:left;padding-top:25px;width:150px">
         <%= UtilityHelper.format_datetime_readable(event[:timestamp_server],current_user) %>&nbsp
       </div>
         <div style="float:left;padding-top:25px;width:150px">
-          <%=UtilityHelper.camelcase_to_spaced(event[:event_type])%>
+          <%= image_for_event(event)%>
         </div>
         <div style="float:left;padding-top:25px;width:300px">
           <%=event.event.to_s%>

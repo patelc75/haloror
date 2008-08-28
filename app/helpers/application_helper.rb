@@ -13,5 +13,16 @@ module ApplicationHelper
 #  
   def google_analytics_check    
    (request.host == 'myhalomonitor.com' or request.host == 'www.myhalomonitor.com') #and !@@google_analytics_filter.include? request.env["REMOTE_ADDR"].to_s
-  end
+ end
+ 
+ def image_for_event(event)
+   type = event[:event_type]
+   if ['Fall', 'Panic'].include? type
+     return image_tag '/images/severe_button_82_22.png'
+   elsif ['GatewayOfflineAlert', 'DeviceUnavailbleAlert', 'BatteryCritical'].include? type
+     return image_tag '/images/caution_button_82_22.png'
+   else 
+     return image_tag '/images/normal_button_82_22.png'
+   end
+ end
 end
