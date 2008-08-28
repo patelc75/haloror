@@ -14,18 +14,15 @@ All times are in UTC timezone
 	<tr>
 		<th>Name</th>
 		<th>Number of Logins</th>
-		<th>Caregiver</th>
-		<th>Number of Logins</th>
+		<th>Roles</th>
 	</tr>
-<% @halousers.each do |user| -%> 
-	<% user[:caregiver_for_logins].each do |caregiver| -%>
+<% @users.each do |user| -%> 	
 	<tr>
+		<td><%= user.id %></td>
 		<td><%= user.name %></td>
 		<td><%= user[:logins]%></td>
-		<td><%= caregiver.name %></td>
-		<td><%= caregiver[:logins]%></td>
+		<td><%=render :partial => 'reporting/table/user_roles', :locals => {:user => user}%></td>
 	</tr>
-	<% end -%>
 <% end -%>
 </table>
 </body>

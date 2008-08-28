@@ -1,9 +1,10 @@
 <%=render :partial => 'nav'%>
+
 <div id="date_range" class="date_range">
 	<% if !flash[:warning].blank? -%>
 	<b><%= flash[:warning] %></b>
 	<% end -%>
-	<form action="/reporting/lost_data_summary">
+	<form action="/reporting/successful_user_logins">
 	<table>
 		<tr><td>All times are in UTC timezone</td></tr>
 	  <tr><td>Begin Time</td>&nbsp;&nbsp;<td>End Time</td></tr>
@@ -15,10 +16,3 @@
 	</table>
 	</form>
 </div>
-
-<% if @users && @users.size > 0 %>
-<p>List of Users with lost vitals data from <%= @begin_time %> to <%= @end_time %></p>
-<div id="user-table" class="table">
-	<%=render :partial => 'user_table', :locals => {:users => @users, :sortby => 'id', :reverse => false}%>
-</div>
-<% end %>

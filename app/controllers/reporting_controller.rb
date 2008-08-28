@@ -72,14 +72,17 @@ class ReportingController < ApplicationController
   def lost_data_summary
     @user = current_user
     @users = []
-    if !params[:lost_data].blank?
-      @lost_data = LostData.new(params[:lost_data])
-      begin_time = @lost_data.begin_time
-      end_time = @lost_data.end_time
-      user_ids = LostData.user_ids_with_lost_data(begin_time, end_time)
+    @end_time = params[:end_time]
+    @begin_time = params[:begin_time]
+    if !@end_time.blank? && !@begin_time.blank?
+      @end_time = @end_time.to_time
+      @begin_time = @begin_time.to_time
+      user_ids = LostData.user_ids_with_lost_data(@begin_time, @end_time)
       if user_ids && user_ids.size > 0
         @users = User.find(:all, :conditions => "users.id IN (#{user_ids.join(',')})", :include => [:roles, :roles_users, :access_logs, :profile])
       end 
+    else
+      flash[:warning] = 'Begin Time and End Time are required.'
     end   
   end
   def lost_data
@@ -105,15 +108,35 @@ class ReportingController < ApplicationController
     end
   end
   
-  def device_not_worn
-    @end_time = Time.now
-    @begin_time = 1.day.ago(@end_time)
-    @users, @total_lost_data, @total_not_worn = DailyReports.device_not_worn_halousers(@begin_time, @end_time)
+  def init_strap_not_worn
+    render :partial => 'init_strap_not_worn', :layout => true
+  end
+  def strap_not_worn
+    @end_time = params[:end_time]
+    @begin_time = params[:begin_time]
+    if !@end_time.blank? && !@begin_time.blank?
+      @end_time = @end_time.to_time
+      @begin_time = @begin_time.to_time
+      @users, @total_lost_data, @total_not_worn = DailyReports.device_not_worn_halousers(@begin_time, @end_time)
+    else
+      flash[:warning] = 'Begin Time and End Time are required.'
+      render :partial => 'init_strap_not_worn', :layout => true
+    end    
   end
   
+  def init_successful_user_logins
+    render :partial => 'init_successful_user_logins', :layout => true
+  end
   def successful_user_logins
-    @end_time = Time.now
-    @begin_time = 1.day.ago(@end_time)
-    @halousers = DailyReports.successful_user_logins(@begin_time, @end_time)
+    @end_time = params[:end_time]
+    @begin_time = params[:begin_time]
+    if !@end_time.blank? && !@begin_time.blank?
+      @end_time = @end_time.to_time
+      @begin_time = @begin_time.to_time
+      @users = DailyReports.successful_user_logins(@begin_time, @end_time)
+    else
+      flash[:warning] = 'Begin Time and End Time are required.'
+      render :partial => 'init_successful_user_logins', :layout => true
+    end
   end
 end

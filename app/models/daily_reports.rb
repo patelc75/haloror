@@ -123,27 +123,15 @@ class DailyReports
   
   def self.successful_user_logins(begin_time=nil, end_time=Time.now)
     RAILS_DEFAULT_LOGGER.warn("DailyReports.successful_user_logins running at #{Time.now}")
-    halousers = User.halousers()
-    halousers.each do |halouser|
-      conds = "status = 'successful' AND user_id = #{halouser.id} AND created_at <= '#{end_time.to_s(:db)}' "
+    users = User.find(:all, :order => 'id')
+    users.each do |user|
+      conds = "status = 'successful' AND user_id = #{user.id} AND created_at <= '#{end_time.to_s(:db)}' "
       if !begin_time.nil?
         conds = conds + " AND created_at >= '#{begin_time.to_s(:db)}'"
       end
       logins = AccessLog.count(:all, :conditions => conds)
-      halouser[:logins] = logins
-      logins = 0
-      caregivers = halouser.caregivers
-      halouser[:caregiver_for_logins] = caregivers
-      caregivers.each do |caregiver|
-        conds = "status = 'successful' AND user_id = #{caregiver.id} AND created_at <= '#{end_time.to_s(:db)}' "
-        if !begin_time.nil?
-          conds = conds + " AND created_at >= '#{begin_time.to_s(:db)}'"
-        end
-        logins = AccessLog.count(:all, :conditions => conds)
-        caregiver[:logins] = logins
-        logins = 0
-      end
+      user[:logins] = logins
     end
-    return halousers
+    return users
   end
 end

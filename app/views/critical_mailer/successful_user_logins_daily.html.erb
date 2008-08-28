@@ -1,14 +1,13 @@
 <%  end_time = Time.now
     begin_time = 1.day.ago(end_time)
-    halousers = DailyReports.successful_user_logins(begin_time, end_time)  -%>
+    users = DailyReports.successful_user_logins(begin_time, end_time)  -%>
 Successful Logins:
 All times are in UTC timezone
 	Starting Time: <%= begin_time %>
 	Ending   Time: <%= end_time %>
-Name    Number of Logins    Caregiver    Number of Logins
+Name    Number of Logins    Roles
 ---------------------------------------------------------
-<% halousers.each do |user| -%> 
-	<% user[:caregiver_for_logins].each do |caregiver| -%>
-<%= user.name %>    <%= user[:logins]%>    <%= caregiver.name %>    <%= caregiver[:logins]%>
+<% users.each do |user| -%> 
+<%= user.name %>    <%= user[:logins]%>    <%=render :partial => 'reporting/table/user_roles', :locals => {:user => user} -%>
 	<% end -%>
 <% end -%>
