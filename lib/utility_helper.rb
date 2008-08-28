@@ -84,4 +84,31 @@ module UtilityHelper
     word.gsub!(/([A-Z])/, "_\\1")
     return word[1, word.size - 1]
   end
+  
+  def self.seconds_format(seconds)
+    days = nil
+    hours = nil
+    minutes = nil
+    one_minute = 60
+    one_hour = one_minute * 60
+    one_day = one_hour * 24    
+    if one_day < seconds
+      days = seconds / one_day
+      seconds = seconds - (days * one_day)
+    end
+    if one_hour < seconds
+      hours = seconds / one_hour
+      seconds = seconds - (hours * one_hour)
+    end
+    if one_minute < seconds
+      minutes = seconds / one_minute
+      seconds = seconds - (minutes * one_minute)
+    end
+    time_string = ""
+    time_string = time_string + "#{days} days " if days
+    time_string = time_string + "#{hours} hours " if hours
+    time_string = time_string + "#{minutes} minutes " if minutes
+    time_string = time_string + "#{seconds} seconds " if seconds > 0
+    return time_string
+  end
 end

@@ -20,17 +20,17 @@ All times are in UTC timezone
 	</tr>
 	<tr>
 		<td>All</td>
-		<td><%= @total_not_worn %> seconds</td>
-		<td><%= @total_lost_data %> seconds</td>
-		<td><%= @total_lost_data + @total_not_worn %> seconds</td>
+		<td><%= UtilityHelper.seconds_format(@total_not_worn) %></td>
+		<td><%= UtilityHelper.seconds_format(@total_lost_data) %></td>
+		<td><%= UtilityHelper.seconds_format(@total_lost_data + @total_not_worn) %></td>
 	</tr>
 <% @users.each do |user| %> 
   <% if user[:total] != 0 %>
 	<tr>
 		<td><%= user.name %></td>
-		<td><%= user[:seconds_not_worn]%> seconds</td>
-		<td><%= link_to "#{user[:seconds_lost_data]}", :controller => 'reporting', :action => 'lost_data', :id => user.id %> seconds</td>
-		<td><%= user[:total]%> seconds</td>
+		<td><%= UtilityHelper.seconds_format(user[:seconds_not_worn]) %></td>
+		<td><%= link_to "#{UtilityHelper.seconds_format(user[:seconds_lost_data])}", :controller => 'reporting', :action => 'lost_data', :id => user.id %></td>
+		<td><%= UtilityHelper.seconds_format(user[:total])%></td>
 	</tr>
   <% end -%>
 <% end -%>
