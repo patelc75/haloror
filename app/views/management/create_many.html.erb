@@ -1,0 +1,28 @@
+<% if @pending_cmds and @pending_cmds.length > 0 %>
+  <br/>
+  <p style="color:red"><b>Commands were not created for the following devices because a pending command already exists:</b></p>
+    <br>
+  <table style="color:red">	
+    <tr>
+     
+      <td> <b>Device&nbsp;&nbsp;</td>
+      <td> <b>Cmd Type&nbsp;&nbsp;</td>
+      <td> <b>Timestamp Initated&nbsp;&nbsp;</td>
+    </tr>
+  
+        <% @pending_cmds.each do |pending_cmd| %>
+      <tr>
+        <td><%=pending_cmd.device_id%></td>
+        <td><%=pending_cmd.cmd_type%>&nbsp;&nbsp;</td>
+        <td><%=pending_cmd.timestamp_initiated%></td>
+      </tr>
+    <% end %>
+  </table>
+<% else %>
+  <br/>  
+  <% if @success %>
+    <p style="color:green"><%=@message%></p>
+  <% else %>
+    <p style="color:red"><%=@message%></p>
+  <% end %>
+<% end %>

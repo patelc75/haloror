@@ -2,7 +2,7 @@
 
 <h1>Issue Commands</h1>
 <br>
-<% remote_form_for :management_cmd_device, :url => {:controller => 'mgmt_cmds',:action => 'create_many'}, :update => 'issue_cmd' do |f|%>
+<% remote_form_for :management_cmd_device, :url => {:action => 'create_many'}, :update => 'issue_cmd' do |f|%>
 	<p>
 		<%=f.radio_button :cmd_type, 'info'%> Info Request
 	</p>

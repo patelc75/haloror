@@ -18,11 +18,11 @@ module ApplicationHelper
  def image_for_event(event)
    type = event[:event_type]
    if ['Fall', 'Panic'].include? type
-     return image_tag '/images/severe_button_82_22.png'
+     return (image_tag '/images/severe_button_82_22.png')
    elsif ['GatewayOfflineAlert', 'DeviceUnavailbleAlert', 'BatteryCritical'].include? type
-     return image_tag '/images/caution_button_82_22.png'
+     return (image_tag '/images/caution_button_82_22.png')
    else 
-     return image_tag '/images/normal_button_82_22.png'
+     return (image_tag '/images/normal_button_82_22.png')
    end
  end
 end

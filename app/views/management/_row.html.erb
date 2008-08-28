@@ -12,6 +12,11 @@
 	<div style="width:250px;float:left">
 		<%=row[:timestamp]%> 
 	</div>
+	<% if row[:type] = 'cmd' and row[:created_by] %>
+	<div style="width:250px;float:left">
+		created by <%=User.find(row[:created_by]).name %> 
+	</div>
+	<% end %>
 	<% if row[:pending] %>
 		<div style="width:250px;float:left">
 			<a href="javascript:void(0)" onclick="if(confirm('Are you sure?')){new Ajax.Request('/mgmt_<%=row[:type]%>s/delete/?id=<%=row[:id]%>');$('<%=row[:type]%>_<%=row[:id]%>').style.display = 'none'}">Delete</a>
