@@ -45,7 +45,7 @@
           <%=event.event.to_s%>
         </div>
 		<div style="float:left;padding-top:25px;width:100px">
-		<% if vital %>
+		<% if vital && vital.heartrate != -1 %>
 	      <%= vital.heartrate %>
 		<% else %>
 			Not Available
@@ -59,7 +59,7 @@
 		<% end  %>
 	    </div>
 		<div style="float:left;padding-top:25px;width:100px">
-		<% if vital %>
+		<% if vital && vital.heartrate != -1  %>
 	      <%= Vital.get_adl(vital.orientation, vital.activity) %>
 		<% else %>
 			Not Available
