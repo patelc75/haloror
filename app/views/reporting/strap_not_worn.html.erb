@@ -29,7 +29,7 @@ All times are in UTC timezone
 	<tr>
 		<td><%= user.name %></td>
 		<td><%= user[:seconds_not_worn]%> seconds</td>
-		<td><%= user[:seconds_lost_data]%> seconds</td>
+		<td><%= link_to "#{user[:seconds_lost_data]}", :controller => 'reporting', :action => 'lost_data', :id => user.id %> seconds</td>
 		<td><%= user[:total]%> seconds</td>
 	</tr>
   <% end -%>
