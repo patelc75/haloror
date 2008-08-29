@@ -7,6 +7,4 @@ All times are in UTC timezone
 	Ending   Time: <%= end_time %>
 Name    Number of Logins    Roles
 ---------------------------------------------------------
-<% users.each do |user| -%> 
-<%= user.name %>    <%= user[:logins]%>    <%=render :partial => 'reporting/table/user_roles', :locals => {:user => user} -%>
-<% end -%>
+<% users.each do |user| -%> <%= user.name %>    <%= user[:logins]%>    <%=render :partial => 'reporting/table/user_roles', :locals => {:user => user} -%> <% end -%>
