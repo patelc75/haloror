@@ -9,5 +9,4 @@ Name    Number of Logins    Roles
 ---------------------------------------------------------
 <% users.each do |user| -%> 
 <%= user.name %>    <%= user[:logins]%>    <%=render :partial => 'reporting/table/user_roles', :locals => {:user => user} -%>
-	<% end -%>
 <% end -%>

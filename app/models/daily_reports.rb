@@ -69,7 +69,7 @@ class DailyReports
   
   def self.device_not_worn_halousers(begin_time=nil, end_time=Time.now) 
     RAILS_DEFAULT_LOGGER.warn("DailyReports.device_not_worn_halousers running at #{Time.now}")
-    puts begin_time.to_s + " to " + end_time.to_s
+    RAILS_DEFAULT_LOGGER.debug(begin_time.to_s + " to " + end_time.to_s)
     halousers = User.halousers()
     total_not_worn = 0
     total_lost_data = 0
@@ -91,7 +91,7 @@ class DailyReports
         halouser[:seconds_not_worn] = sum_device_not_worn.nil? ? 0 : sum_device_not_worn
         halouser[:seconds_lost_data] = sum_lost_data
         halouser[:total] = total
-        puts "#{halouser.id}) " + "#{halouser.name}" + ": \t" + "#{sum_device_not_worn}" + "\t" + "#{sum_lost_data}" + "\t" + "#{total}"
+        RAILS_DEFAULT_LOGGER.debug("#{halouser.id}) " + "#{halouser.name}" + ": \t" + "#{sum_device_not_worn}" + "\t" + "#{sum_lost_data}" + "\t" + "#{total}")
       end       
     end
     return halousers, total_lost_data, total_not_worn
