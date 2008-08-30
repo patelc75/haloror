@@ -2,17 +2,16 @@
 <% total_num = 0; total_duration = 0; -%>
 <% users.each do |user| -%>
 <% 	total_user_duration 	= 0; total_user_num	= 0; lost_data = lost_data_hash[user.id]; user[:lost_data] = lost_data;
-		lost_data.each do |reading|	
-	 	  total_user_num += 1; duration = (reading.end_time - reading.begin_time).seconds; total_user_duration += duration; 
-			user[:total_user_num] = total_user_num; user[:total_user_duration] = total_user_duration;
-	  end total_duration += total_user_duration; total_num += total_user_num;  	end -%>
+	lost_data.each do |reading|	total_user_num += 1; duration = (reading.end_time - reading.begin_time).seconds; total_user_duration += duration; user[:total_user_num] = total_user_num; user[:total_user_duration] = total_user_duration; end 
+   total_duration += total_user_duration; total_num += total_user_num;  	end -%>
 Lost data (All times are in UTC timezone)
 Starting Time: <%= begin_time %>  
 Ending Time :  <%= end_time %>
 
 Name                Ocurrences                Total Duration
-All                 <%= total_num%>                <%= total_duration %><% users.each do |user| -%> <% if !user[:total_user_num].nil? -%><%= user.name   %>  <%= user[:total_user_num]%>    <%= user[:total_user_duration]%>s <% end -%><% end -%>
+------------------------------------------------------------
+All                 <%= total_num%>                <%= UtilityHelper.seconds_format(total_duration) %><% users.each do |user| -%> <% if !user[:total_user_num].nil? -%><%= user.name   %>  <%= user[:total_user_num]%>    <%= user[:total_user_duration]%>s <% end -%><% end -%>
 <% users.each do |user| -%> <% if !user[:total_user_num].nil? -%><%  user[:lost_data].each do |reading| -%>	
 		Start:    <%= reading.begin_time.to_s() %>
 		End:      <%= reading.end_time.to_s() %>
-		Duration: <%= (reading.end_time - reading.begin_time).seconds %>s<% end -%><% end -%><% end -%>
+		Duration: <%= UtilityHelper.seconds_format((reading.end_time - reading.begin_time).seconds) %><% end -%><% end -%><% end -%>
