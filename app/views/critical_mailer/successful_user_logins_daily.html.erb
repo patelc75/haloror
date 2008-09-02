@@ -5,6 +5,6 @@ Successful Logins:
 All times are in UTC timezone
 	Starting Time: <%= begin_time %>
 	Ending   Time: <%= end_time %>
-Name    Number of Logins    Roles
----------------------------------------------------------
-<% users.each do |user| -%> <%= user.name %>    <%= user[:logins]%>    <%=render :partial => 'reporting/table/user_roles', :locals => {:user => user} -%> <% end -%>
+Name      Number of Logins      Logins Per Day        Roles
+-----------------------------------------------------------
+<% users.each do |user| -%> <%= user.name %>      <%= user[:logins]%>      <%= user[:logins] / ((end_time - begin_time) / (60 * 60 * 24)) %>      <%= user.main_role -%> <% end -%>
