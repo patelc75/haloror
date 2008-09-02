@@ -10,5 +10,5 @@ All times are in UTC timezone
 Name    Not Worn    Lost Data    Total Duration    Compliance Percentage
 ------------------------------------------------------------------------
 All     <%= total_not_worn %>    <%= total_lost_data %>    <%= total_lost_data + total_not_worn %>
-<% users.each do |user| -%><% if user[:total] != 0 -%><%= user.name %>    <%= user[:seconds_not_worn]%>    <%= user[:seconds_lost_data]%>    <%= user[:total]%>    <%= (total_time - user[:total]) / total_time %> <% end -%><% end -%>
+<% users.each do |user| -%><% if user[:total] != 0 -%><%= user.name %>    <%= UtilityHelper.seconds_format(user[:seconds_not_worn])%>    <%= UtilityHelper.seconds_format(user[:seconds_lost_data])%>    <%= UtilityHelper.seconds_format(user[:total])%>    <%= ((total_time - user[:total]) / total_time).round(2) %> <% end -%><% end -%>
 ------------------------------------------------------------------------

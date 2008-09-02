@@ -33,7 +33,7 @@ All times are in UTC timezone
 		<td><%= UtilityHelper.seconds_format(user[:seconds_not_worn]) %></td>
 		<td><%= link_to "#{UtilityHelper.seconds_format(user[:seconds_lost_data])}", :controller => 'reporting', :action => 'lost_data', :id => user.id %></td>
 		<td><%= UtilityHelper.seconds_format(user[:total])%></td>
-		<td><%= (total_time - user[:total]) / total_time %></td>
+		<td><%= ((total_time - user[:total]) / total_time).round(2) %></td>
 	</tr>
   <% end -%>
 <% end -%>
