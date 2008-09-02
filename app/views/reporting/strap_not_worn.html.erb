@@ -17,12 +17,14 @@ All times are in UTC timezone
 		<td>Not Worn</td>
 		<td>Lost Data</td>
 		<td>Total Duration</td>
-	</tr>
+		<td>Compliance Percentage</td>
+	</tr><% total_time = (@end_time - @begin_time) %>
 	<tr>
 		<td>All</td>
 		<td><%= UtilityHelper.seconds_format(@total_not_worn) %></td>
 		<td><%= UtilityHelper.seconds_format(@total_lost_data) %></td>
 		<td><%= UtilityHelper.seconds_format(@total_lost_data + @total_not_worn) %></td>
+		<td>&nbsp;</td>
 	</tr>
 <% @users.each do |user| %> 
   <% if user[:total] != 0 %>
@@ -31,6 +33,7 @@ All times are in UTC timezone
 		<td><%= UtilityHelper.seconds_format(user[:seconds_not_worn]) %></td>
 		<td><%= link_to "#{UtilityHelper.seconds_format(user[:seconds_lost_data])}", :controller => 'reporting', :action => 'lost_data', :id => user.id %></td>
 		<td><%= UtilityHelper.seconds_format(user[:total])%></td>
+		<td><%= (total_time - user[:total]) / total_time %></td>
 	</tr>
   <% end -%>
 <% end -%>
