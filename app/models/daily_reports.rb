@@ -49,16 +49,16 @@ class DailyReports
     accumulated_time = nil
     previous_time = nil
     Vital.connection.select_all(sql).collect do |row|
-      if row[:heartrate].to_i == -1
+      if row['heartrate'].to_i == -1
         if previous_time == nil
-          previous_time = row[:timestamp].to_time
+          previous_time = row['timestamp'].to_time
         else
           if accumulated_time.nil?
-            accumulated_time = (row[:timestamp].to_time - previous_time)
+            accumulated_time = (row['timestamp'].to_time - previous_time)
           else
-            accumulated_time = accumulated_time + (row[:timestamp].to_time - previous_time)
+            accumulated_time = accumulated_time + (row['timestamp'].to_time - previous_time)
           end
-          previous_time = row[:timestamp].to_time
+          previous_time = row['timestamp'].to_time
         end
       else
         previous_time = nil
