@@ -312,6 +312,17 @@ class User < ActiveRecord::Base
     return @is_caregiver
   end
   
+  def main_role
+    if self.is_administrator?
+      return 'administrator'
+    elsif self.is_operator?
+      return 'operator'
+    elsif self.is_caregiver?
+      return 'caregiver'
+    else
+      return 'halouser'
+    end
+  end
   protected
   # before filter 
   def encrypt_password
