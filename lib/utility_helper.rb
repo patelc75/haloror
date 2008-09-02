@@ -105,10 +105,10 @@ module UtilityHelper
       seconds = seconds - (minutes * one_minute)
     end
     time_string = ""
-    time_string = time_string + "#{days} days " if days
-    time_string = time_string + "#{hours} hours " if hours
-    time_string = time_string + "#{minutes} minutes " if minutes
-    time_string = time_string + "#{seconds} seconds " if seconds > 0
+    time_string = time_string + "#{days.round(2)} days " if days
+    time_string = time_string + "#{hours.round(2)} hours " if hours
+    time_string = time_string + "#{minutes.round(2)} minutes " if minutes
+    time_string = time_string + "#{seconds.round(2)} seconds " if seconds > 0
     return time_string
   end
 end
