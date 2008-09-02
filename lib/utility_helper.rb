@@ -37,13 +37,13 @@ module UtilityHelper
       message  = "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
     end
     RAILS_DEFAULT_LOGGER.warn(message)
-    safe_send_email(message)
+    safe_send_email(message, 'exceptions@halomonitoring.com')
   end
   
-  def self.safe_send_email(message)
+  def self.safe_send_email(message, to)
     begin
       email = Email.new(:mail => "#{ServerInstance.current_host()}.Message = #{message}", 
-                        :to => 'exceptions_www@halomonitoring.com', 
+                        :to => to, 
                         :from => 'no-reply@halomonitoring.com', 
                         :priority => 100)
       ar_sendmail = ActionMailer::ARSendmail.new
