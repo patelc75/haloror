@@ -317,11 +317,12 @@ class User < ActiveRecord::Base
       return 'administrator'
     elsif self.is_operator?
       return 'operator'
+    elsif self.is_halouser?
+      return 'halouser'
     elsif self.is_caregiver?
       return 'caregiver'
-    else
-      return 'halouser'
     end
+    return ''
   end
   protected
   # before filter 

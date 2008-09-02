@@ -24,7 +24,7 @@ All times are in UTC timezone
 		<td><%= user.id %></td>
 		<td><%= user.name %></td>
 		<td><%= user[:logins]%></td>
-		<td><%= user[:logins] / ((@end_time - @begin_time) / (60 * 60 * 24)) %>
+		<td><%= (user[:logins] / ((@end_time - @begin_time) / (60 * 60 * 24))).round(2) %>
 		<td><%= user.main_role %></td>
 	</tr>
 <% end -%>
