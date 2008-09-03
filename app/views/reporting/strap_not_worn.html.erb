@@ -10,6 +10,15 @@ All times are in UTC timezone
 	Starting Time: <%= @begin_time %>
 	Ending   Time: <%= @end_time %>
 </p>
+<% vital = Vital.find(:first, 
+						   :conditions => "timestamp <= '#{@end_time}' AND timestamp >= '#{@begin_time}'",
+						   :order => 'timestamp desc') 
+   valid_time = ''
+	if vital
+		valid_time = vital.timestamp.to_s
+	end
+-%>
+<p>Valid thru:  <%=  valid_time %></p>
 <p>
 <table>
 	<tr>

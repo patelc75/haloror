@@ -109,6 +109,9 @@ module UtilityHelper
     time_string = time_string + "#{hours.round(2)} hours " if hours
     time_string = time_string + "#{minutes.round(2)} minutes " if minutes
     time_string = time_string + "#{seconds.round(2)} seconds " if seconds > 0
+    if time_string.blank?
+      return '0 seconds'
+    end
     return time_string
   end
 end
