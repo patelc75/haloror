@@ -203,7 +203,7 @@ namespace :halo do
       #randhr = rand(100) + 500
       hr = randhr
       direction = "up" 
-    
+      count = 0
       until start_time > end_time     
         if(ENV['type'] == "live")
           start_time = Time.now.utc
@@ -230,19 +230,37 @@ namespace :halo do
 
        
         if ENV['curve'] == "sawtooth"
-          random_skin_temp = hr + 30
-          random_heartrate = hr
-          random_percentage = hr + 30
-          random_steps = hr - 50 
+          if(count % 15 == 0 || count % 16 == 0 || count % 17 == 0)
+            random_heartrate = -1
+            random_skin_temp = -1
+            random_percentage = -1
+            random_steps = -1
+            random_activity = -1
+          else
+            random_heartrate = hr
+            random_skin_temp = hr + 30
+            random_percentage = hr + 30
+            random_steps = hr - 50
+            random_activity = hr + 10000
+          end 
           #new
-          random_activity = hr + 10000
+          
         elsif ENV['curve'] == "random"
-          random_skin_temp = (rand() + rand(6) + 95.6).round(1)
-          random_heartrate = rand(7)+70
-          random_percentage = rand(100)
-          random_steps = rand(20)
-          #new
-          random_activity = rand(25000)+10000
+          if(count % 15 == 0 || count % 16 == 0 || count % 17 == 0)
+            random_heartrate = -1
+            random_skin_temp = -1
+            random_percentage = -1
+            random_steps = -1
+            random_activity = -1
+          else
+            random_skin_temp = (rand() + rand(6) + 95.6).round(1)
+            random_heartrate = rand(7)+70
+            random_percentage = rand(100)
+            random_steps = rand(20)
+            #new
+            random_activity = rand(25000)+10000
+          end
+          count = count + 1
         end           
      
         if ENV['vital'] == "skin_temp" || ENV['vital'] == "all"
