@@ -7,4 +7,6 @@ All times are in UTC timezone
 	Ending   Time: <%= end_time %>
 Name      Number of Logins      Logins Per Day        Roles
 -----------------------------------------------------------
-<% users.each do |user| -%> <%= user.name %>      <%= user[:logins]%>      <%= (user[:logins] / ((end_time - begin_time) / (60 * 60 * 24))).round(2) %>      <%= user.main_role -%> <% end -%>
+<% users.each do |user| -%> 
+<%= user.name %>      <%= user[:logins]%>      <%= (user[:logins] / ((end_time - begin_time) / (60 * 60 * 24))).round(2) %>      <%= user.main_role -%> 
+<% end -%>
