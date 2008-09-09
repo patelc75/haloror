@@ -1,6 +1,19 @@
 module UtilityHelper
   include ServerInstance
   
+  def self.format_datetime_flex(datetime,user)
+    return datetime if !datetime.respond_to?(:strftime)
+    
+    if user and user.profile and user.profile.time_zone
+      tz = user.profile.tz
+    else
+      tz = TZInfo::Timezone.get('America/Chicago')
+    end
+    datetime = tz.utc_to_local(datetime) 
+    
+    return datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
+  end
+  
   def self.format_datetime(datetime,user)
     #lookup = {-7 => 'PST', -6 => 'MST', -5 => 'CST', -4 => 'EST'}
     original_datetime = datetime
