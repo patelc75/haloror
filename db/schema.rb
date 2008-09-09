@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20080909124414) do
+ActiveRecord::Schema.define(:version => 20080909164540) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -334,6 +334,23 @@ ActiveRecord::Schema.define(:version => 20080909124414) do
   create_table "oscope_msgs", :force => true do |t|
     t.datetime "timestamp"
     t.integer  "channel_num"
+    t.integer  "user_id"
+    t.integer  "oscope_start_msg_id"
+    t.integer  "oscope_stop_msg_id"
+  end
+
+  create_table "oscope_start_msgs", :force => true do |t|
+    t.string   "capture_reason"
+    t.integer  "source_mote_id"
+    t.datetime "timestamp"
+    t.integer  "user_id"
+  end
+
+  create_table "oscope_stop_msgs", :force => true do |t|
+    t.string   "capture_reason"
+    t.integer  "source_mote_id"
+    t.datetime "timestamp"
+    t.integer  "user_id"
   end
 
   create_table "panics", :force => true do |t|

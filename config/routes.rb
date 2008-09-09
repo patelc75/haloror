@@ -1,7 +1,8 @@
 ActionController::Routing::Routes.draw do |map|
 
+  map.resources :oscope_start_msgs
+  map.resources :oscope_stop_msgs
   map.resources :oscope_msgs
-
 
   map.resources :bundle
   #device alert models derived from RestfulAuthController

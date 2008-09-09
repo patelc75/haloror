@@ -1,0 +1,2 @@
+class OscopeStartMsgsController < RestfulAuthController
+end

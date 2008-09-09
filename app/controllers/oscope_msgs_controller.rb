@@ -4,13 +4,15 @@ class OscopeMsgsController < RestfulAuthController
     msg = params[:oscope_msg]
     timestamp = msg[:timestamp].to_time if msg[:timestamp]
     channel_num = msg[:channel_num].to_i if msg[:channel_num]
-    o_msg = OscopeMsg.find_by_timestamp("'#{timestamp.to_s(:db)}'")
-    unless o_msg
-      o_msg = OscopeMsg.new
-      o_msg.timestamp = timestamp
-      o_msg.channel_num = channel_num
-      o_msg.save!
-    end
+    user_id = msg[:user_id].to_i if msg[:user_id]
+    o_start_msg = OscopeStartMsg.find_by_timestamp("'#{timestamp.to_s(:db)}'")
+    o_msg = OscopeMsg.new
+    o_msg.timestamp = timestamp
+    o_msg.channel_num = channel_num
+    o_msg.user_id = user_id
+    o_msg.oscope_start_msg = o_start_msg
+    o_msg.save!
+    
     points = msg[:point]
     if points.class == Array
       points.each do |point|
