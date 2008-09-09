@@ -1,5 +1,5 @@
 # This file is auto-generated from the current state of the database. Instead of editing this file, 
-# please use the migrations feature of ActiveRecord to incrementally modify your database, and
+# please use the migrations feature of Active Record to incrementally modify your database, and
 # then regenerate this schema definition.
 #
 # Note that this schema.rb definition is the authoritative source for your database schema. If you need
@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 148) do
+ActiveRecord::Schema.define(:version => 20080909124414) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -58,8 +58,9 @@ ActiveRecord::Schema.define(:version => 148) do
     t.integer  "device_id"
   end
 
-  add_index "batteries", ["user_id", "timestamp"], :name => "index_batteries_on_timestamp_and_user_id"
-  add_index "batteries", ["user_id", "timestamp", "percentage"], :name => "index_batteries_on_timestamp_and_user_id_and_percentage"
+  add_index "batteries", ["device_id", "timestamp"], :name => "index_batteries_on_timestamp_and_device_id"
+  add_index "batteries", ["timestamp", "user_id"], :name => "index_batteries_on_timestamp_and_user_id"
+  add_index "batteries", ["percentage", "timestamp", "user_id"], :name => "index_batteries_on_timestamp_and_user_id_and_percentage"
 
   create_table "battery_charge_completes", :force => true do |t|
     t.integer  "device_id"
@@ -285,6 +286,8 @@ ActiveRecord::Schema.define(:version => 148) do
     t.datetime "end_time"
   end
 
+  add_index "lost_datas", ["begin_time", "end_time", "user_id"], :name => "index_lost_datas_on_user_id_and_end_time_and_begin_time"
+
   create_table "mgmt_acks", :force => true do |t|
     t.integer  "mgmt_cmd_id"
     t.datetime "timestamp_device"
@@ -301,6 +304,9 @@ ActiveRecord::Schema.define(:version => 148) do
     t.boolean  "pending",             :default => true
     t.integer  "cmd_id"
     t.integer  "mgmt_response_id"
+    t.integer  "attempts_no_ack"
+    t.boolean  "pending_on_ack"
+    t.integer  "created_by"
   end
 
   create_table "mgmt_queries", :force => true do |t|
@@ -309,6 +315,7 @@ ActiveRecord::Schema.define(:version => 148) do
     t.datetime "timestamp_server"
     t.integer  "poll_rate"
     t.integer  "mgmt_cmd_id"
+    t.integer  "cycle_num"
   end
 
   create_table "mgmt_responses", :force => true do |t|
@@ -324,10 +331,21 @@ ActiveRecord::Schema.define(:version => 148) do
     t.integer  "created_by"
   end
 
+  create_table "oscope_msgs", :force => true do |t|
+    t.datetime "timestamp"
+    t.integer  "channel_num"
+  end
+
   create_table "panics", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
     t.integer  "device_id"
+  end
+
+  create_table "points", :force => true do |t|
+    t.integer "seq"
+    t.integer "data"
+    t.integer "oscope_msg_id"
   end
 
   create_table "profiles", :force => true do |t|
@@ -393,8 +411,8 @@ ActiveRecord::Schema.define(:version => 148) do
     t.float    "skin_temp", :null => false
   end
 
-  add_index "skin_temps", ["user_id", "timestamp"], :name => "index_skin_temps_on_timestamp_and_user_id"
-  add_index "skin_temps", ["user_id", "timestamp", "skin_temp"], :name => "index_skin_temps_on_timestamp_and_user_id_and_skin_temp"
+  add_index "skin_temps", ["timestamp", "user_id"], :name => "index_skin_temps_on_timestamp_and_user_id"
+  add_index "skin_temps", ["skin_temp", "timestamp", "user_id"], :name => "index_skin_temps_on_timestamp_and_user_id_and_skin_temp"
 
   create_table "steps", :force => true do |t|
     t.integer  "user_id"
@@ -403,8 +421,8 @@ ActiveRecord::Schema.define(:version => 148) do
     t.integer  "steps",           :null => false
   end
 
-  add_index "steps", ["user_id", "begin_timestamp"], :name => "index_steps_on_begin_timestamp_and_user_id"
-  add_index "steps", ["user_id", "begin_timestamp", "steps"], :name => "index_steps_on_begin_timestamp_and_user_id_and_steps"
+  add_index "steps", ["begin_timestamp", "user_id"], :name => "index_steps_on_begin_timestamp_and_user_id"
+  add_index "steps", ["begin_timestamp", "steps", "user_id"], :name => "index_steps_on_begin_timestamp_and_user_id_and_steps"
 
   create_table "strap_fasteneds", :force => true do |t|
     t.integer  "device_id"
@@ -456,6 +474,8 @@ ActiveRecord::Schema.define(:version => 148) do
     t.integer  "user_id"
     t.datetime "timestamp"
   end
+
+  add_index "vital_scans", ["timestamp", "user_id"], :name => "index_vital_scans_on_user_id_and_timestamp"
 
   create_table "vitals", :force => true do |t|
     t.integer  "heartrate"
