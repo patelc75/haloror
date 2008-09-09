@@ -1,5 +1,6 @@
 #/bin/bash
 # this will generate httperf test for the vitals post
+# update to reference ticket #406
 echo "Enter: Server FQDN [example: sdev.halomonitor.com]"
 read server_name
 echo "Enter: Number of sessions [example: 100]"
