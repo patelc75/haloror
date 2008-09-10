@@ -1,9 +1,9 @@
 function getConfig() {
     var config = new Object;
     
-    //config.Version = "";  *Depricated!*
+    //config.Version = "";  *Deprecated!*
 	
-    config.Debug = true;
+    config.Debug = false;
     
     //make request to check to check if current user is admin
     try{
@@ -31,12 +31,12 @@ function getConfig() {
 	
 	config.heartRateAxisMin = 0;
 	config.heartRateAxisMax = 150;
-	config.heartRateColor = "#FF0505";
-    config.heartRateVarColor = "#F3C7C7";
+	config.heartRateColor = "#E64F00";
+    config.heartRateVarColor = "#BE8A6D";
     
 	config.skinTempAxisMin = 70;
 	config.skinTempAxisMax = 110;
-	config.skinTempColor = "#FDD705";
+	config.skinTempColor = "#E0C852";
 	
 	config.breathingAxisMin = 0;
 	config.breathingAxisMax = 50;
@@ -68,9 +68,9 @@ function getConfig() {
     	 */
     	 
         if(config.dataServiceURL == "http:///flex/chart"){
-	    	//config.dataServiceURL = "http://sdev.myhalomonitor.com/flex/chart";
-	    	config.dataServiceURL = "http://www.myhalomonitor.com/flex/chart";
-	        //config.dataServiceURL = "http://idev.myhalomonitor.com/flex/chart";
+	    	//config.dataServiceURL = "https://sdev.myhalomonitor.com/flex/chart";
+	    	//config.dataServiceURL = "http://www.myhalomonitor.com/flex/chart";
+	        config.dataServiceURL = "https://idev.myhalomonitor.com/flex/chart";
 	        //config.dataServiceURL = "http://sdev.halomonitor.com/flex/chart";
 	    }  
 	      
