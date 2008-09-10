@@ -4,6 +4,7 @@ class OscopesController < ApplicationController
     
   end
   def csv
+   begin
     start_msg_id = params[:id]
     user_id = params[:user_id]
     reason = params[:reason]
@@ -61,7 +62,10 @@ class OscopesController < ApplicationController
     send_data csv_string_all, :type => "text/plain", 
      :filename=>"oscope.csv", 
      :disposition => 'attachment'
-
+   rescue Exception => e
+     flash[:warning] = 'Error retrieving information.'
+     render :action => 'index'
+   end
   end
   
   private
