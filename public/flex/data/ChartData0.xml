@@ -65,7 +65,7 @@
 				steps="15"
 				adl="Sitting"/>
 			<DataReading datetime="Thu Mar 20 08:05 -0700 2008" battery_percentage=".55"
-				heartrate="89" hr_min="89" hr_max="91"
+				heartrate="-1" hr_min="-1" hr_max="-1"
 				breathing="44"
 				activity="15000" 
 				skin_temp="98.7"
@@ -78,7 +78,7 @@
 				steps="10"
 				adl="Standing"/>
 			<DataReading datetime="Thu Mar 20 08:07 -0700 2008" battery_percentage=".53"
-				heartrate="89" hr_min="87" hr_max="90"
+				heartrate="88" hr_min="87" hr_max="90"
 				breathing="44"
 				skin_temp="98.7"
 				steps="10"
