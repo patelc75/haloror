@@ -1,27 +1,64 @@
 require 'fastercsv'
 class OscopesController < ApplicationController
-  
+  def index
+    
+  end
   def csv
     start_msg_id = params[:id]
-    o_start_msg = OscopeStartMsg.find(start_msg_id, :include => :oscope_msgs)
-    o_msgs = o_start_msg.oscope_msgs
-    csv_header = <<-EOF
-      SOURCE MOTEID:  #{o_start_msg.source_mote_id}
-      UID:  #{o_start_msg.user_id}
-      CAPTURE REASON:  #{o_start_msg.capture_reason}
-      TIMESTAMP:  #{o_start_msg.timestamp}
-      ===============================================================================
-      \n
-    EOF
-
-    csv_string = FasterCSV.generate do |csv|
-      grid = generate_grid(o_msgs)
-      grid.each do |row|
-        csv << row
+    user_id = params[:user_id]
+    reason = params[:reason]
+    begin_timestamp = params[:begin_timestamp]
+    end_timestamp =  params[:end_timestamp]
+    o_start_msgs = []
+    if(!start_msg_id.blank?)
+      o_start_msgs = [OscopeStartMsg.find(start_msg_id, :include => :oscope_msgs)]
+    else
+      conds = ''
+      if(!user_id.blank?)
+        conds << " user_id = #{user_id} "
       end
+      if(!reason.blank?)
+        if(!conds.blank?)
+          conds << " AND "
+        end
+        conds << " capture_reason like '%#{reason}%'"
+      end
+      if(!begin_timestamp.blank?)
+        if(!conds.blank?)
+          conds << " AND "
+        end
+        conds << " timestamp >= '#{timestamp.to_s(:db)}' "
+      end
+      if(!end_timestamp.blank?)
+        if(!conds.blank?)
+          conds << " AND "
+        end
+        conds << " timestamp <= '#{timestamp.to_s(:db)}' "
+      end
+      o_start_msgs = OscopeStartMsg.find(:all, :conditions => conds, :include => :oscope_msgs)
     end
-    csv_string = csv_header + csv_string
-    send_data csv_string, :type => "text/plain", 
+    csv_string_all = ''
+    o_start_msgs.each do |o_start_msg|
+      o_msgs = o_start_msg.oscope_msgs
+      csv_header = <<-EOF
+        \n
+        SOURCE MOTEID:  #{o_start_msg.source_mote_id}
+        UID:  #{o_start_msg.user_id}
+        CAPTURE REASON:  #{o_start_msg.capture_reason}
+        TIMESTAMP:  #{o_start_msg.timestamp}
+        ===============================================================================
+        \n
+      EOF
+  
+      csv_string = FasterCSV.generate do |csv|
+        grid = generate_grid(o_msgs)
+        grid.each do |row|
+          csv << row
+        end
+      end
+      csv_string_all = csv_header + csv_string
+    end
+    send_data csv_string_all, :type => "text/plain", 
      :filename=>"oscope.csv", 
      :disposition => 'attachment'
 

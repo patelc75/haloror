@@ -1,0 +1,27 @@
+<div id="date_range" class="date_range">
+	<% if !flash[:warning].blank? -%>
+	<b><%= flash[:warning] %></b>
+	<% end -%>
+	Enter Start Message ID or Query Below
+	<form action="/oscopes/csv">
+	  <table>
+	  	<tr><td>Start Message ID</td>
+			<td><%= text_field_tag 'id' %></td>
+			<td><%= submit_tag "Submit" %></td>
+		</tr>
+	  </table>
+	</form>
+	<form action="/oscopes/csv">
+	<table>
+		<tr><td>All times are in UTC timezone</td><td>&nbsp;&nbsp;</td></tr>
+	  <tr><td>Begin Timestamp</td>&nbsp;&nbsp;<td>End Timestamp</td></tr>
+	  <tr>
+	  	<td><%= calendar_date_select_tag "begin_time", "", :time => true, :popup => 'force' %></td>
+	  	<td><%= calendar_date_select_tag "end_time", "", :time => true, :popup => 'force' %></td>
+	  </tr>
+	  <tr><td>User ID</td><td>Capture Reason</td></tr>
+	  <tr><td><%= text_field_tag 'user_id' %></td><td><%= text_field_tag 'reason' %></td></tr>
+	  <tr><td>&nbsp;&nbsp;</td><td><%= submit_tag "Submit" %></td></tr>
+	</table>
+	</form>
+</div>
