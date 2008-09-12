@@ -50,9 +50,9 @@ class OscopesController < ApplicationController
         ===============================================================================
         \n
       EOF
-  
+      
+      grid = generate_grid(o_msgs)
       csv_string = FasterCSV.generate do |csv|
-        grid = generate_grid(o_msgs)
         grid.each do |row|
           csv << row
         end
@@ -87,8 +87,10 @@ class OscopesController < ApplicationController
       end      
     end
       
-    sequences.uniq.sort!
-    channel_nums.uniq.sort!
+    sequences = sequences.uniq
+    sequences.sort!
+    channel_nums = channel_nums.uniq
+    channel_nums.sort!
     header = ['SN']    
     channel_nums.each do |channel_num|
       header << "CH#{channel_num}"
