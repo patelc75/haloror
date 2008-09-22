@@ -23,7 +23,7 @@ class OscopesController < ApplicationController
         if(!conds.blank?)
           conds << " AND "
         end
-        conds << " capture_reason = '%#{reason}%'"
+        conds << " capture_reason = '#{reason}'"
       end
       if(!begin_timestamp.blank?)
         if(!conds.blank?)
