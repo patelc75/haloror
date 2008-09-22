@@ -2,7 +2,7 @@
    begin_time = 1.day.ago(end_time)
    total_time = (end_time - begin_time)
    users, total_lost_data, total_not_worn = DailyReports.device_not_worn_halousers(begin_time, end_time) 
-   vital = Vital.find(:first, :conditions => "timestamp <= '#{@end_time}' AND timestamp >= '#{@begin_time}'", :order => 'timestamp desc') 
+   vital = Vital.find(:first, :conditions => "timestamp <= '#{end_time}' AND timestamp >= '#{begin_time}'", :order => 'timestamp desc') 
    valid_time = ''
 	if vital
 		valid_time = vital.timestamp.to_s
