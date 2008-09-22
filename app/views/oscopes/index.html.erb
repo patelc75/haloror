@@ -19,8 +19,8 @@
 	  	<td><%= calendar_date_select_tag "begin_time", "", :time => true, :popup => 'force' %></td>
 	  	<td><%= calendar_date_select_tag "end_time", "", :time => true, :popup => 'force' %></td>
 	  </tr>
-	  <tr><td>User ID</td><td>Capture Reason</td></tr>
-	  <tr><td><%= text_field_tag 'user_id' %></td><td><%= text_field_tag 'reason' %></td></tr>
+	  <tr><td>User ID</td><td>Capture Reason</td></tr><% reasons = ['']; reasons << @capture_reasons %>
+	  <tr><td><%= text_field_tag 'user_id' %></td><td><%= select_tag 'reason', options_for_select(reasons) %></td></tr>
 	  <tr><td>&nbsp;&nbsp;</td><td><%= submit_tag "Submit" %></td></tr>
 	</table>
 	</form>

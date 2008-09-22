@@ -1,7 +1,8 @@
 require 'fastercsv'
 class OscopesController < ApplicationController
   def index
-    
+    @capture_reasons = OscopeStartMsg.capture_reasons
+    RAILS_DEFAULT_LOGGER.warn("CAPTURE_REASONS=>#{@capture_reasons}")
   end
   def csv
    begin
@@ -22,7 +23,7 @@ class OscopesController < ApplicationController
         if(!conds.blank?)
           conds << " AND "
         end
-        conds << " capture_reason like '%#{reason}%'"
+        conds << " capture_reason = '%#{reason}%'"
       end
       if(!begin_timestamp.blank?)
         if(!conds.blank?)
