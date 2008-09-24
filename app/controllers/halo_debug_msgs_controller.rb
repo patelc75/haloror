@@ -1,5 +1,5 @@
 class HaloDebugMsgsController < RestfulAuthController
   def index
-    @halo_debug_msgs = HaloDebugMsgs.find(:all)
+    @halo_debug_msgs = HaloDebugMsg.find(:all)
   end
 end
