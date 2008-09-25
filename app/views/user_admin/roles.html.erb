@@ -3,7 +3,7 @@
 <div id="assign_role">
 &nbsp;	
 </div>
-<% if currrent_user.is_super_admin?
+<% if currrent_user.is_super_admin? %>
 <h2>Assign Super Admin Role</h2>
 <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_super_role'}, :update => 'assign_role' do |f|%>
   <%=select_tag 'user_id', options_for_select(@users.collect {|u| [u.login, u.id]})%> is a Super Admin.
