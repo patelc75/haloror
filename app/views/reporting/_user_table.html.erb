@@ -34,5 +34,9 @@ end
   <%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
 
 	<div id="user_<%=user.id%>-hidden" style="display:none"></div>
-	<% end %>
+<% elsif current_user.is_moderator_of_any?(user.group_memberships) %>
+  <%=render :partial => 'reporting/table/user_moderator_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
+
+	<div id="user_<%=user.id%>-hidden" style="display:none"></div>
+<% end %>
 <% end %>

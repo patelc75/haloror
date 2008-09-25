@@ -9,7 +9,7 @@
 		</div>
 		
 		<% caregivers.each do |caregiver| %>
-			<%=render :partial => 'reporting/table/user_row', :locals => {:user => caregiver, :toggle => false, :caregiver => true}%>
+			<%=render :partial => 'reporting/table/user_moderator_row', :locals => {:user => caregiver, :toggle => false, :caregiver => true}%>
 		<% end %>
 		<br />
 		<br />
@@ -89,7 +89,11 @@
 		</div>
 		
 		<% patients.each do |patient| %>
+		<% if current_user.is_super_admin? || current_user.is_admin_of_any?(patient.group_memberships) %>
 			<%=render :partial => 'reporting/table/user_row', :locals => {:user => patient, :toggle => false, :caregiver => false}%>
+		<% elsif current_user.is_moderator_of_any?(patient.group_memberships) %>
+			<%=render :partial => 'reporting/table/user_moderator_row', :locals => {:user => patient, :toggle => false, :caregiver => false}%>
+		<% end %>
 		<% end %>
 		<br />
 		<br />

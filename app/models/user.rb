@@ -266,7 +266,14 @@ class User < ActiveRecord::Base
     groups.uniq!
     return groups
   end
-  
+  def is_moderator_of_any?(groups)
+    groups.each do |group|
+      if self.is_moderator_of? group
+        return true
+      end
+    end
+    return false
+  end
   def is_admin_of_any?(groups)
     groups.each do |group|
       if self.is_admin_of? group
@@ -291,7 +298,7 @@ class User < ActiveRecord::Base
     os.each do |operator|
       role = operator.roles_user_by_role_name('operator')
       opt = role.roles_users_option
-      if opt.blank? 
+      if opt.blank?
         opt = RolesUsersOption.new(:roles_user_id => role.id, :active => true, :removed => false)
         opt.save!
         os2 << operator

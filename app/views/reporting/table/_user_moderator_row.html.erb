@@ -49,14 +49,7 @@
 	<% device = nil unless device %>
 	<div class="col-200">
 		<% if user.profile %>
-			<%=link_to_remote_redbox('Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile[:id], :frame => true }, :html => {:method => :get})%> 
-					<% if user.is_halouser? %>
-							| <a href="/events/user/<%=user[:id]%>">Events</a> | <a href="/chart/flex/<%=user[:id]%>">Chart</a> 
-							| <a href="/reporting/lost_data/<%=user[:id]%>">Lost&nbsp;Data</a> 
-							| <a href="<%= url_for(:controller => 'call_center', :action => 'all_user_notes', :id => user[:id], :user_id => user[:id])%>">Notes</a>			
-			<% if device %> | <a href="/reporting/remove_user_mapping/<%=user.id%>?device_id=<%= device.id %>">Remove</a>
-				<% end %>
-					<% end %>
+			<%=link_to_remote_redbox('Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile[:id], :frame => true }, :html => {:method => :get})%>
 		<% else %>
 			&nbsp;
 		<% end %>
