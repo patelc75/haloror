@@ -19,7 +19,7 @@ class FlexController < ApplicationController
     # build query hash
     build_query_hash
     #current_user must be a caregiver for user with id userID or self
-    if current_user != :false && (@default_user.id == current_user.id || current_user.patients.include?(@default_user) || current_user.is_administrator?)
+    if current_user != :false && (@default_user.id == current_user.id || current_user.patients.include?(@default_user) || current_user.is_super_admin? || current_user.is_admin_of_any?(default_user.group_memberships))
       # gather data
       gather_data
     

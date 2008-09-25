@@ -34,39 +34,7 @@ class ManagementController < ApplicationController
     
     render :action => 'index'
   end
-  
-  def roles
-    @roles = ['administrator', 'operator', 'caregiver', 'halouser']
-    
-    @users = {''=>''}
-    
-    User.find(:all).each do |user|
-      if user
-        @users[user.login] = user.id
-      end
-    end
-  end
-  
-  def assign_role
-    role = params[:role]
-    
-    unless role[:user].empty?
-      unless role[:of].empty?
-        User.find(role[:user]).has_role role[:name], User.find(role[:of])
-      else
-        User.find(role[:user]).has_role role[:name]
-      end
-      
-      @success = true
-      @message = "Role Assigned"
-    else
-      @success = false
-      @message = "Choose a user"
-    end   
-    
-    render :layout => false 
-  end
-  
+
   def firmware_upgrade
     if params[:keyID].to_i != 0
       fw = FirmwareUpgrade.find(params[:keyID])

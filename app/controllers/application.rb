@@ -87,7 +87,7 @@ class ApplicationController < ActionController::Base
   end
   
   def authenticate_admin
-    unless logged_in? && current_user.is_administrator?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin?)
       return redirect_to('/login')
     end
     true

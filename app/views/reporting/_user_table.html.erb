@@ -21,8 +21,18 @@
 		
 	</div>
 </div>
+<% if @group
+  us = []
+  users.each do |user|
+    us << user if user.group_memberships.include? @group
+  end
+  users = us
+end
+%>
 <% users.each do |user| %>
-	<%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
+  <% if current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships) %>
+  <%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
 
 	<div id="user_<%=user.id%>-hidden" style="display:none"></div>
+	<% end %>
 <% end %>

@@ -1,6 +1,14 @@
 <%=render :partial => 'search'%>
 <%=render :partial => 'nav'%>
-
+<form id="group_form_id" action="/reporting/users" method="POST">
+<% gs = ['']
+   @groups.each do |group|
+     gs << group.name
+   end
+%>
+Select Group:  
+<%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]}, @group_name), {:onchange => "$('group_form_id').submit();"}%>
+</form>
 <div id="user-table" class="table">
 	<%=render :partial => 'user_table', :locals => {:users => @users, :sortby => 'id', :reverse => false}%>
 </div>

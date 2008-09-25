@@ -7,7 +7,7 @@
       
       <%= error_messages_for :profile %>
 	  
-	  <% if @user == current_user || current_user.is_administrator? %>
+	  <% if @user == current_user || current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %>
 	  <center><%=link_to_remote('Change Password', :update => 'container', :url =>{ :controller => "profiles", :action => "change_password_init", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%>
 	  <% end %></center>
       <br><br>
@@ -77,7 +77,7 @@
         <%= f.text_field :work_phone %>
         <br />
         <br />
-        <% if current_user.is_administrator? %>
+        <% if current_user.is_super_admin? %>
           <label for="phone_email">iPing Email (operators only)</label>
           <br />
           <%= f.text_field :phone_email %>

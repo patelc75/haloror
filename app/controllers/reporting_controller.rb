@@ -3,8 +3,17 @@ class ReportingController < ApplicationController
   
   def users
     @users = User.find(:all, :include => [:roles, :roles_users])
-    @roles = ['administrator', 'operator', 'caregiver', 'halouser']
-    
+    @roles = []
+    rows = Role.connection.select_all("Select Distinct name from roles order by name asc")
+    rows.collect do |row|
+      @roles << row['name']
+    end
+    @groups = current_user.group_memberships
+    @group_name = ''
+    if params[:group_name]
+      @group_name = params[:group_name]
+      @group = Group.find_by_name(@group_name)
+    end
     @user_names = {''=>''}
     
     User.find(:all).each do |user|

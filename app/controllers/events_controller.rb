@@ -2,7 +2,7 @@ class EventsController < ApplicationController
   include UtilityHelper
   def user
     @user = User.find(params[:id])
-    if(@user.id == current_user.id || @current_user.patients.include?(@user) || current_user.is_administrator?) 
+    if(@user.id == current_user.id || @current_user.patients.include?(@user) || @current_user.is_super_admin? || @current_user.is_admin_of_any?(@user.group_memberships)) 
       conditions = "user_id = #{@user.id}"
       total = Event.count(:conditions => conditions)
       @events = Event.paginate :page => params[:page], 

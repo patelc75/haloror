@@ -1,5 +1,5 @@
 <%
-	if current_user.is_administrator?
+	if current_user.is_super_admin? || current_user.is_admin?
 		admin = 'true'
 	else
 		admin = 'false'

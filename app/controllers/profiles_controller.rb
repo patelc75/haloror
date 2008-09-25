@@ -113,7 +113,7 @@ class ProfilesController < ApplicationController
   def change_password
     user_hash = params[:user]
     user = User.find(user_hash[:id])
-    if user == current_user || current_user.is_administrator?
+    if user == current_user || current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)
     if User.authenticate(user.login, user_hash[:current_password])
       if user_hash[:password] == user_hash[:password_confirmation]
         if user_hash[:password].length >= 4

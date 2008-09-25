@@ -248,7 +248,33 @@ class User < ActiveRecord::Base
       return nil
     end
   end
+  def group_roles
+    roles = self.roles.find(:all, :conditions => "authorizable_type = 'Group'")
+    return roles.uniq
+  end
+  def group_memberships
+    roles = group_roles
+    groups = []
+    if !roles.blank?
+      roles.each do |role|
+        groups << Group.find(role.authorizable_id)
+      end
+    end
+    groups.sort! do |a,b|
+      a.name <=> b.name
+    end
+    groups.uniq!
+    return groups
+  end
   
+  def is_admin_of_any?(groups)
+    groups.each do |group|
+      if self.is_admin_of? group
+        return true
+      end
+    end
+    return false
+  end
   def self.administrators
     admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'administrator']
     return admins
@@ -313,8 +339,10 @@ class User < ActiveRecord::Base
   end
   
   def main_role
-    if self.is_administrator?
-      return 'administrator'
+    if self.is_super_admin?
+      return 'super_admin'
+    elsif self.is_admin?
+      return 'admin'
     elsif self.is_operator?
       return 'operator'
     elsif self.is_halouser?

@@ -19,7 +19,7 @@
 				<li><%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
 			<% end %>
 			  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
-			<% if current_user.is_administrator? %>
+			<% if current_user.is_admin? || current_user.is_super_admin? %>
 				<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
 				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'index' %></li>
 				<li><%= link_to 'Operators', :controller => 'call_center', :action => 'show' %></li>
