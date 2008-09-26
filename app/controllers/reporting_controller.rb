@@ -2,7 +2,7 @@ class ReportingController < ApplicationController
   include UtilityHelper
   
   def users
-    @users = User.find(:all, :include => [:roles, :roles_users])
+    @users = User.find(:all, :include => [:roles, :roles_users], :order => 'users.id')
     @roles = []
     rows = Role.connection.select_all("Select Distinct name from roles order by name asc")
     rows.collect do |row|
@@ -10,8 +10,9 @@ class ReportingController < ApplicationController
     end
     @groups = current_user.group_memberships
     @group_name = ''
-    if params[:group_name]
+    if !params[:group_name].blank?
       @group_name = params[:group_name]
+      session[:group_name] = @group_name
       @group = Group.find_by_name(@group_name)
     end
     @user_names = {''=>''}
@@ -46,7 +47,11 @@ class ReportingController < ApplicationController
     else
       users = User.find(:all, :order => params[:col])
     end
-    
+    @group_name = ''
+    if !session[:group_name].blank?
+      @group_name = session[:group_name]
+      @group = Group.find_by_name(@group_name)
+    end
     sortby = 'id'
     
     render :partial => 'user_table', :locals => {:users => users, :sortby => params[:col], :reverse => false}
