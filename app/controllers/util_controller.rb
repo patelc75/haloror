@@ -57,7 +57,7 @@ class UtilController < ApplicationController
     self.current_user.forget_me if logged_in?
     cookies.delete :auth_token
     reset_session
-    redirect_to "http://#{ServerInstance.current_host}/signup/caregiver/#{params[:id]}"
+    redirect_to "http://#{ServerInstance.current_host}/activate/caregiver/#{params[:id]}"
   end
   
   def google_health

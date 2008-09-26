@@ -47,13 +47,13 @@ ActionController::Routing::Routes.draw do |map|
   
   map.connect '', :controller => 'chart', :action => 'flex'
   
-  map.signup '/signup', :controller => 'users', :action => 'new'
+  map.signup '/signup/:group', :controller => 'users', :action => 'new'
   map.login  '/login', :controller => 'sessions', :action => 'new'
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
   map.activate '/activate/:activation_code', :controller => 'users', :action => 'activate'
   map.connect '/reporting', :controller => 'reporting', :action => 'users'
   
-  map.signup_caregiver '/signup/caregiver/:activation_code', :controller => 'users', :action => 'init_caregiver'
+  map.signup_caregiver '/activate/caregiver/:activation_code', :controller => 'users', :action => 'init_caregiver'
 
 
   # The priority is based upon order of creation: first created -> highest priority.

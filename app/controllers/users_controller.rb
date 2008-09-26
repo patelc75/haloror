@@ -18,10 +18,12 @@ class UsersController < ApplicationController
     @user = User.new
     @gateway = Device.new
     @strap = Device.new
+    @group = params[:group]
   end
 
   def create
     @user = User.new(params[:user])
+    @group = params[:group]
     @gateway = nil
     @strap = nil
     #check if gateway exists
@@ -55,8 +57,8 @@ class UsersController < ApplicationController
         Profile.create(:user_id => @user.id)
       
       # create halouser role
-        @user.is_halouser
-      
+        @user.is_halouser_of Group.find_by_name(@group)
+        
         @gateway.set_type
         @strap.set_type
       
@@ -69,7 +71,8 @@ class UsersController < ApplicationController
     #redirect_back_or_default('/')
     #flash[:notice] = "Thanks for signing up!"
     #render :nothing => true
-  rescue
+  rescue Exception => e
+    RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
     render :action => 'new'
   end
   

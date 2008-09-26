@@ -22,7 +22,7 @@ class UserMailer < ActionMailer::ARMailer
     body <<-EOF
       #{user.name} wants you to be their caregiver.
       
-      Please complete the signup process at:  http://#{ServerInstance.current_host}/signup/caregiver/#{caregiver.activation_code}
+      Please complete the signup process at:  http://#{ServerInstance.current_host}/activate/caregiver/#{caregiver.activation_code}
     EOF
         
   end

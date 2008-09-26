@@ -11,6 +11,7 @@
 
     <div style="width:200px;margin-left:auto;margin-right:auto">
       <% form_tag :action => 'create' do -%>
+	  <input type="hidden" name="group" value="<%= @group %>" />
         <label for="login">Desired Username</label>
         <br/>
         <%= text_field :user, :login %>
