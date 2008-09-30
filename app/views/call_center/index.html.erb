@@ -27,8 +27,6 @@
     </div>
   </div>
   <% @events.each do |event| %>
-  <% groups = event.user.group_memberships %>
-  <% if (current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups) || current_user.is_super_admin?) %>
     <div class="row">
       <div class="col-75">
         <%=event.event_type%>&nbsp;
@@ -63,7 +61,6 @@
         </div>
         <div id="notes_<%=event.id %>">
         </div>
-	   <% end %>
       <% end %>
       <br>
       <br>

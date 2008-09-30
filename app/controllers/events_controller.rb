@@ -6,7 +6,6 @@ class EventsController < ApplicationController
     groups = @user.group_memberships
     if(@user.id == current_user.id || @current_user.patients.include?(@user) || @current_user.is_super_admin? || @current_user.is_admin_of_any?(groups) || @current_user.is_operator_of_any?(groups)) 
       conditions = "user_id = #{@user.id}"
-      total = Event.count(:conditions => conditions)
       @events = Event.paginate :page => params[:page], 
                                :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", 
                                :conditions => conditions, 

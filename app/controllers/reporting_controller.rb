@@ -31,7 +31,22 @@ class ReportingController < ApplicationController
   end
   
   def devices
-    @devices = Device.find(:all)
+    conditions = ''
+    if !current_user.is_super_admin?
+      groups = current_user.group_memberships
+      g_ids = []
+      groups.each do |group|
+        g_ids << group.id if(current_user.is_admin_of?(group))
+      end
+      group_ids = g_ids.join(', ')
+      RAILS_DEFAULT_LOGGER.warn(group_ids)
+      conditions = "devices.id IN (Select device_id from devices_users where devices_users.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids}))))"
+    end
+    if conditions.blank?
+      @devices = Device.find(:all)
+    else
+      @devices = Device.find(:all, :conditions => conditions)
+    end
   end
   
   def device_hidden
