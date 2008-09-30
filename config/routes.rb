@@ -45,9 +45,10 @@ ActionController::Routing::Routes.draw do |map|
   #deprecated models
   #map.resources :caregivers, :active_scaffold => true 
   
-  map.connect '', :controller => 'chart', :action => 'flex'
+  map.connect '', :controller => 'redirector', :action => 'index'
   
   map.signup '/signup/:group', :controller => 'users', :action => 'new'
+  map.admin_signup '/admin/signup', :controller => 'user_admin', :action => 'new_admin'
   map.login  '/login', :controller => 'sessions', :action => 'new'
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
   map.activate '/activate/:activation_code', :controller => 'users', :action => 'activate'

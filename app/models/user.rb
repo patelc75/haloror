@@ -274,6 +274,16 @@ class User < ActiveRecord::Base
     end
     return false
   end
+  
+  def is_operator_of_any?(groups)
+    groups.each do |group|
+      if self.is_operator_of? group
+        return true
+      end
+    end
+    return false
+  end
+  
   def is_admin_of_any?(groups)
     groups.each do |group|
       if self.is_admin_of? group

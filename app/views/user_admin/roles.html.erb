@@ -12,13 +12,6 @@
 <% end %>
 <% end %>
 
-<h2>Assign Caregiver Role</h2>
-<% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_caregiver_role'}, :update => 'assign_role' do |f|%>
-  <%=select_tag 'caregiver_id', options_for_select(@users.collect {|u| [u.login, u.id]})%> is a Caregiver for <%=select_tag 'user_id', options_for_select(@users.collect {|u| [u.login, u.id]})%>
-  <p>&nbsp;</p>
-  <%=submit_tag 'Assign Caregiver Role'%>
-<% end %>
-
 <h2>Assign Roles</h2>
 <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_role'}, :update => 'assign_role' do |f|%>
   <%=select_tag 'user_id', options_for_select(@users.collect {|u| [u.login, u.id]})%> is a(n) <%=select 'role', 'name', @roles%> of <%=select 'group', 'name', @groups%>

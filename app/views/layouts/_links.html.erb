@@ -18,12 +18,22 @@
 			<% if caregiver %>
 				<li><%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
 			<% end %>
+			<% if current_user.is_halouser? || current_user.is_caregiver? %>
 			  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
+			<% end %>
 			<% if current_user.is_admin? || current_user.is_super_admin? %>
 				<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
+			<% end %>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
 				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'index' %></li>
+			<% end %>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_moderator?%>
 				<li><%= link_to 'Operators', :controller => 'call_center', :action => 'show' %></li>
+			<% end %>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? %>
 				<li><%= link_to 'Call&nbsp;Center', url_for(:controller => 'call_center', :action => 'index') %></li>
+			<% end %>
+			<% if current_user.is_super_admin? %>
 				<li><%= link_to 'Info', url_for(:controller => 'util', :action => 'info', :my_links => 'Info') %></li>
 				<li><%= link_to 'Home&nbsp;Installs', url_for(:controller => 'util', :action => 'home_install') %></li>
 			<% end %>			

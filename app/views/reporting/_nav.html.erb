@@ -1,2 +1,20 @@
-<a href="/reporting/users">Users</a> | <a href="/reporting/devices">Devices</a> | <a href="/reporting/summary">Summary</a> | <a href="/reporting/lost_data_summary">Lost Data</a> | <a href="/reporting/init_strap_not_worn">Strap Not Worn</a> | <a href="/reporting/init_successful_user_logins">User Logins</a> | <a href="/user_admin/roles">Assign Roles</a> | <a href="/oscopes/index">Oscope CSV</a>
+<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
+<a href="/reporting/users">Users</a> 
+<% end %>
+<% if current_user.is_admin? || current_user.is_super_admin? %>
+| <a href="/reporting/devices">Devices</a> 
+| <a href="/reporting/summary">Summary</a> 
+| <a href="/reporting/lost_data_summary">Lost Data</a> 
+| <a href="/reporting/init_strap_not_worn">Strap Not Worn</a> 
+| <a href="/reporting/init_successful_user_logins">User Logins</a> 
+<% end %>
+<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
+| <a href="/user_admin/roles">Assign Roles</a> 
+<% end %>
+<% if current_user.is_admin? || current_user.is_super_admin? %>
+| <a href="/admin/signup">Create User</a> 
+<% end %>
+<% if current_user.is_super_admin? %>
+| <a href="/oscopes/index">Oscope CSV</a>
+<% end %>
 <p>&nbsp;</p>

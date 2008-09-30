@@ -1,0 +1,56 @@
+<% if @group %>
+  <% if @groups %>
+	<form id="group_form_id" action="/user_admin/new_admin" method="POST">
+Select Group:  
+<%= select_tag 'group', options_for_select(@groups.collect { |g| [g.name, g.name]}, @group), {:onchange => "$('group_form_id').submit();"}%>
+</form>
+<% end%>
+<div id="secondary-col">
+  <div id="secondary-col-header"></div>
+  <div class="content">
+    <%= error_messages_for :user %>
+		<div id="errors">
+			<%= flash[:warning]%>
+		<div>
+
+    <div style="width:200px;margin-left:auto;margin-right:auto">
+      <% form_tag :action => 'create_admin' do -%>
+	  <input type="hidden" name="group" value="<%= @group %>" />
+		<label for="role">Role</label>
+		<br />
+		<%= select_tag :role, options_for_select(@roles.collect {|r| [r.name, r.id]}) %>
+		<br />
+		<br />
+        <label for="login">Desired Username</label>
+        <br/>
+        <%= text_field :user, :login %>
+        <br />
+        <br />
+        <label for="email">Email</label><br/>
+        <%= text_field :user, :email %>
+        <br />
+        <br />			
+        <label for="password">Password</label>
+        <br/>
+        <%= password_field :user, :password %>
+        <br />
+        <br />
+        <label for="password_confirmation">Confirm Password</label>
+        <br/>
+        <%= password_field :user, :password_confirmation %>
+        <br />
+        <br />
+        <div align="center">
+          <input name="commit" type="image" src="/images/subscribe.gif" />
+        </div>
+      <% end -%>
+    </div>
+  </div>
+  <div id="secondary-col-footer"></div>
+</div>
+<% else %>
+	<form id="group_form_id" action="/user_admin/new_admin" method="POST">
+Select Group:  
+<%= select_tag 'group', options_for_select(@groups.collect { |g| [g.name, g.name]}, @group), {:onchange => "$('group_form_id').submit();"}%>
+</form>
+<% end  %>

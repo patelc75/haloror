@@ -1,7 +1,44 @@
 class UserAdminController < ApplicationController
   
-  before_filter :authenticate_admin
+  before_filter :authenticate_admin_moderator?, :except => ['new_admin', 'create_admin']
+  before_filter :authenticate_admin?, :only => ['new_admin', 'create_admin']
      
+  def new_admin
+    @groups = []
+    gs = current_user.group_memberships
+    gs.each do |g|
+      @groups << g if(current_user.is_admin_of?(g) || current_user.is_super_admin?)
+    end
+    @group = nil
+    if params[:group].blank?
+      if @groups.size == 1
+        @group = @groups[0].name
+      end
+    else
+      @group = params[:group]
+    end
+    if @group
+      @user = User.new
+      g = Group.find_by_name(@group)
+      @roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
+    end
+  end
+
+  def create_admin
+    @user = User.new(params[:user])
+    @group = params[:group]
+    role_id = params[:role]
+    role = Role.find(role_id)
+    User.transaction do
+        @user.save!
+        
+      # create profile
+        Profile.create(:user_id => @user.id)
+      # assign role
+        @user.roles << role
+    end
+  end
+  
   def roles
     @roles = []
     rows = Role.connection.select_all("Select Distinct name from roles where name <> 'caregiver' AND name <> 'super_admin' order by name asc")
