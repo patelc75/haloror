@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20080909164540) do
+ActiveRecord::Schema.define(:version => 20080930183940) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -259,6 +259,12 @@ ActiveRecord::Schema.define(:version => 20080909164540) do
     t.string  "model"
     t.string  "kind"
     t.integer "kind_id"
+  end
+
+  create_table "groups", :force => true do |t|
+    t.string   "name",       :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "halo_debug_msgs", :force => true do |t|
