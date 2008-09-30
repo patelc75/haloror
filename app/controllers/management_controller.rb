@@ -1,7 +1,6 @@
 class ManagementController < ApplicationController
   
-  #before_filter :authenticate_admin, :only => 'index'
-  before_filter :authenticate_admin
+  before_filter :authenticate_admin?
   
   def index
     unless @type = session[:type]

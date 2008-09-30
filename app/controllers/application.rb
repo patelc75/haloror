@@ -86,8 +86,63 @@ class ApplicationController < ActionController::Base
     true
   end
   
-  def authenticate_admin
+  def authenticate_super_admin?
+    unless logged_in? && (current_user.is_super_admin?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_halouser?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_caregiver?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  def authenticate_admin_caregiver?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_caregiver?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_halouser_caregiver?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_caregiver?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_halouser_caregiver_operator?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_caregiver? || current_user.is_operator?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_operator?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  
+  def authenticate_admin_operator_moderator?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_moderator?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_moderator?
     unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  def authenticate_admin?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin?)
       return redirect_to('/login')
     end
     true

@@ -3,13 +3,16 @@ require 'active_support'
 require "drb"
 
 class ChartController < ApplicationController
+  before_filter :authenticate_admin_halouser_caregiver_operator?
   include Ziya
-  
   layout "application"
   
   def flex
-    if !params[:id].blank? && (current_user.is_super_admin? || current_user.is_admin_of_any?(User.find(params[:id].group_memberships)))
-       session[:halo_user_id] = params[:id]
+    if !params[:id].blank? 
+      groups = User.find(params[:id]).group_memberships
+      if(current_user.is_super_admin? || current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups))
+        session[:halo_user_id] = params[:id]
+      end
     end
   end
 

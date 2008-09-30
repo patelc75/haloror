@@ -14,6 +14,7 @@ class UsersController < ApplicationController
     return nil   
   end
   
+  
   def new
     @user = User.new
     @gateway = Device.new

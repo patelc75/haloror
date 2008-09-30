@@ -1,4 +1,6 @@
 class CallCenterController < ApplicationController
+  before_filter :authenticate_admin_operator?, :except => 'show'
+  before_filter :authenticate_admin_operator_moderator?, :only => 'show'
   include UtilityHelper
   
   def index
@@ -41,7 +43,7 @@ class CallCenterController < ApplicationController
     @operators = User.operators
     number_ext
   end
-
+  
   def toggle_note
     if params[:new_note]
       @event_id = params[:event_id]

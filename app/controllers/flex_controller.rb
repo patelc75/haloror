@@ -1,4 +1,5 @@
 class FlexController < ApplicationController
+  before_filter :authenticate_admin_halouser_caregiver_operator?
   include UtilityHelper
   
   def chart
@@ -19,7 +20,8 @@ class FlexController < ApplicationController
     # build query hash
     build_query_hash
     #current_user must be a caregiver for user with id userID or self
-    if current_user != :false && (@default_user.id == current_user.id || current_user.patients.include?(@default_user) || current_user.is_super_admin? || current_user.is_admin_of_any?(default_user.group_memberships))
+    groups = @default_user.group_memberships
+    if current_user != :false && (@default_user.id == current_user.id || current_user.patients.include?(@default_user) || current_user.is_super_admin? || current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups))
       # gather data
       gather_data
     

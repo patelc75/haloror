@@ -1,4 +1,5 @@
 class ReportingController < ApplicationController
+  before_filter :authenticate_admin_moderator?
   include UtilityHelper
   
   def users

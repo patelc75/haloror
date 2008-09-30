@@ -1,5 +1,6 @@
 require 'fastercsv'
 class OscopesController < ApplicationController
+  before_filter :authenticate_admin?
   def index
     @capture_reasons = OscopeStartMsg.capture_reasons
     RAILS_DEFAULT_LOGGER.warn("CAPTURE_REASONS=>#{@capture_reasons}")
