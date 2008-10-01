@@ -77,7 +77,7 @@
         <%= f.text_field :work_phone %>
         <br />
         <br />
-        <% if current_user.is_super_admin? %>
+        <% if @user.is_operator? %>
           <label for="phone_email">iPing Email (operators only)</label>
           <br />
           <%= f.text_field :phone_email %>
