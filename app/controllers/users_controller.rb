@@ -111,6 +111,7 @@ class UsersController < ApplicationController
         if logged_in? && !current_user.activated?
           current_user.activate
         end
+        current_user.set_active()
         redirect_to '/'
       else
         flash[:warning] = "Password must be at least 4 characters"

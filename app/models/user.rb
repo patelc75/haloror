@@ -65,7 +65,14 @@ class User < ActiveRecord::Base
     self.activation_code = nil
     save(false)
   end
-
+  def set_active()
+    self.roles_users.each do |roles_user|
+      if roles_user.roles_users_option
+        roles_user.roles_users_option.active = true
+        roles_user.roles_users_option.save
+      end
+    end
+  end
   def activated?
     # the existence of an activation code means they have not activated yet
     activation_code.nil?
