@@ -18,7 +18,7 @@ class ReportingController < ApplicationController
     end
     @user_names = {''=>''}
     
-    User.find(:all).each do |user|
+    @users.each do |user|
       if user
         @user_names[user.login] = user.id
       end
