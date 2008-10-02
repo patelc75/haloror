@@ -1,0 +1,16 @@
+class CreateAdminRole < ActiveRecord::Migration
+  def self.up
+    now = Time.now
+    groups = Group.find(:all)
+    groups.each do |group|
+    r = Role.find(:first, :conditions => "name = 'admin' AND authorizable_type = 'Group' AND authorizable_id = #{group.id}")
+      unless r
+        Role.create(:name => 'admin', :authorizable_type => 'Group', :authorizable_id => group.id, :updated_at => now, :created_at => now)
+      end    
+    end
+  end
+
+  def self.down
+    
+  end
+end
