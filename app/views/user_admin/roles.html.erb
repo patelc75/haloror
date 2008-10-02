@@ -7,14 +7,13 @@
 <h2>Assign Super Admin Role</h2>
 <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_super_role'}, :update => 'assign_role' do |f|%>
   <%=select_tag 'user_id', options_for_select(@users.collect {|u| [u.login, u.id]})%> is a Super Admin.
-  <p>&nbsp;</p>
-  <%=submit_tag 'Assign Super Admin Role'%>
+  <br><%=submit_tag 'Assign Super Admin Role'%>
 <% end %>
 <% end %>
-
+<br><br>
 <h2>Assign Roles</h2>
 <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_role'}, :update => 'assign_role' do |f|%>
   <%=select_tag 'user_id', options_for_select(@users.collect {|u| [u.login, u.id]})%> is a(n) <%=select 'role', 'name', @roles%> of <%=select 'group', 'name', @groups%>
-  <p>&nbsp;</p>
+  <br>
   <%=submit_tag 'Assign Role and Group'%>
 <% end %>
