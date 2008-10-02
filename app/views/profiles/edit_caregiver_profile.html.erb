@@ -6,7 +6,6 @@
       <% end %>
       
       <%= error_messages_for :profile %>
-	  
 	  <% if @user == current_user || current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %>
 	  <center><%=link_to_remote('Change Password', :update => 'container', :url =>{ :controller => "profiles", :action => "change_password_init", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%>
 	  <% end %></center>

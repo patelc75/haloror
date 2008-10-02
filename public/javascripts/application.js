@@ -118,7 +118,12 @@ function SetCookie(cookieName,cookieValue,nDays) {
 //if pos is null assume an operator not a caregiver
 function toggleContact(pos, id, status, what, user_id)
 {
-
+	if(pos != null){
+		person = 'Caregiver';
+	}
+	else{
+		person = 'Operator';
+	}
 
 if (what )
 
@@ -130,9 +135,9 @@ if (what )
 	  //RedBox.loading();
 		//RedBox.addHiddenContent('hidden_content_extra_info-'+id);
 		if(pos != null){
-			new Ajax.Updater('hidden_content_extra_info', '/users/existing_info/'+id+'/?user_id='+user_id+'&what='+what, {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('hidden_content_extra_info'); }, onLoading:function(request){RedBox.loading(); }});
+			new Ajax.Updater('hidden_content_extra_info', '/users/existing_info/'+id+'?user_id='+user_id+'&what='+what, {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('hidden_content_extra_info'); }, onLoading:function(request){RedBox.loading(); }});
 		}else{
-			new Ajax.Updater('hidden_content_extra_info', '/users/existing_info/'+id+'/?user_id='+user_id+'&what='+what+'&operator=true', {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('hidden_content_extra_info'); }, onLoading:function(request){RedBox.loading(); }});
+			new Ajax.Updater('hidden_content_extra_info', '/users/existing_info/'+id+'?user_id='+user_id+'&what='+what+'&operator=true', {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('hidden_content_extra_info'); }, onLoading:function(request){RedBox.loading(); }});
 			
 		}
 		return false;
@@ -162,11 +167,27 @@ if (what )
 			active[id][what] = status;
 			
 			obj = document.getElementById('item_'+what+'_'+id);
-
-			if(status)
-				obj.src = '/images/call_list-'+what+'.png';
-			else
-				obj.src = '/images/call_list-'+what+'-inactive.png';
+			
+			if (status) {
+				obj.src = '/images/call_list-' + what + '.png';
+				if(what == 'text'){
+					obj.alt = 'Text will be sent to this '+person+' in the case of a fall or panic.  Click to disable.';
+				}else if(what == 'email'){
+					obj.alt = 'Email will be sent to this '+person+' in the case of a fall or panic.  Click to disable.';	
+				}else if (what == 'phone'){
+					obj.alt = 'This '+person+' will be called by live operator in case of emergency.  Click to disable.';
+				}
+			}
+			else {
+				obj.src = '/images/call_list-' + what + '-inactive.png';
+				if(what == 'text'){
+					obj.alt = 'Text will not be sent to this '+person+' in the case of a fall or panic.  Click to enable.';
+				}else if(what == 'email'){
+					obj.alt = 'Email will not be sent to this '+person+' in the case of a fall or panic.  Click to enable.';	
+				}else if (what == 'phone'){
+					obj.alt = 'This '+person+' will not be called by live operator in case of emergency.  Click to enable.';
+				}
+			}
 		}
 		
 		return true;
@@ -178,6 +199,12 @@ var caregiverActive = [];
 //if pos is null assume an operator not a caregiver
 function toggleCaregiver(action, pos, id, phone_active, email_active, text_active)
 {
+	if(pos != null){
+		person = 'Caregiver';
+	}
+	else{
+		person = 'Operator';
+	}
 	if(!active[id])
 		active[id] = [];
 		
@@ -201,15 +228,19 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 		document.getElementById('item_image_'+id).style.opacity = '.5';
 		document.getElementById('item_name_'+id).style.color = 'gray';
 		document.getElementById('item_active_'+id).src = '/images/call_list-active_disabled.gif';
+		document.getElementById('item_active_'+id).alt = 'Click to activate '+person+'.';
 		document.getElementById('item_away_'+id).src = '/images/call_list-away.gif';
+		document.getElementById('item_away_'+id).alt = person+' is disabled.';
 		document.getElementById('item_phone_'+id).src = '/images/call_list-phone-inactive.gif';
+		document.getElementById('item_phone_'+id).alt = '';
 		document.getElementById('item_email_'+id).src = '/images/call_list-email-inactive.gif';
+		document.getElementById('item_email_'+id).alt = '';
 		document.getElementById('item_text_'+id).src = '/images/call_list-text-inactive.gif';
+		document.getElementById('item_text_'+id).alt = '';
 		document.getElementById('item_trash_'+id).src = '/images/call_list-trash-inactive.gif';
+		document.getElementById('item_trash_'+id).alt = '';
 		document.getElementById('item_edit_'+id).getElementsByTagName('a')[0].style.color = 'gray';
 		
-		
-
 		callListImg[id] = '/images/call_list-item-away.gif';
 	   if(pos != null){
 			  document.getElementById('item_'+id+'_'+pos).className = 'inactive';
@@ -221,25 +252,39 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 	{
 		if(pos != null){
 			document.getElementById('item_up_'+id).src = '/images/call_list-up.gif';
+			document.getElementById('item_up_'+id).alt = 'Up';
 			document.getElementById('item_down_'+id).src = '/images/call_list-down.gif';
+			document.getElementById('item_down_'+id).alt = 'Down';
 		}
 		
 		document.getElementById('item_image_'+id).style.opacity = '1';
 		document.getElementById('item_name_'+id).style.color = '#4691b1';
 		document.getElementById('item_active_'+id).src = '/images/call_list-active.gif';
+		document.getElementById('item_active_'+id).alt = person+' is active.';
 		document.getElementById('item_away_'+id).src = '/images/call_list-away_disabled.gif';
+		document.getElementById('item_away_'+id).alt = 'Click to set '+person+' away.';
 		document.getElementById('item_trash_'+id).src = '/images/call_list-trash.gif';
+		document.getElementById('item_trash_'+id).alt = 'Remove '+person+' from list.';
 		document.getElementById('item_edit_'+id).getElementsByTagName('a')[0].style.color = '';
 	
-		if(active[id]['phone'])
-			document.getElementById('item_phone_'+id).src = '/images/call_list-phone.gif';
-		
-		if(active[id]['email'])
-			document.getElementById('item_email_'+id).src = '/images/call_list-email.gif';
-		
-		if(active[id]['text'])
-			document.getElementById('item_text_'+id).src = '/images/call_list-text.gif';
-		
+		if (active[id]['phone']) {
+			document.getElementById('item_phone_' + id).src = '/images/call_list-phone.gif';
+			document.getElementById('item_phone_' + id).alt = 'This '+person+' will be called by live operator in case of emergency.  Click to disable.';
+		}else{
+			document.getElementById('item_phone_' + id).alt = 'This '+person+' will not be called by live operator in case of emergency.  Click to enable.';
+		}
+		if (active[id]['email']) {
+			document.getElementById('item_email_' + id).src = '/images/call_list-email.gif';
+			document.getElementById('item_email_' + id).alt = 'Email will be sent to this '+person+' in the case of a fall or panic.  Click to disable.';
+		}else{
+			document.getElementById('item_email_' + id).alt = 'Email will not be sent to this '+person+' in the case of a fall or panic.  Click to enable.';
+		}
+		if (active[id]['text']) {
+			document.getElementById('item_text_' + id).src = '/images/call_list-text.gif';
+			document.getElementById('item_text_' + id).alt = 'Text will be sent to this '+person+' in the case of a fall or panic.  Click to disable.';
+		}else{
+			document.getElementById('item_text_' + id).alt = 'Text will not be sent to this '+person+' in the case of a fall or panic.  Click to enable.';
+		}
 
 		callListImg[id] = '/images/call_list-item.gif';
 	  if(pos != null){

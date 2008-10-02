@@ -1,7 +1,7 @@
 <% user = User.find(id) %>
 
 
-
+<div id="container1">
 <div id="lightbox-col">
 	<img src="/images/lightbox-col-header.gif" /><br />
 	<div class="lightbox-content">
@@ -19,10 +19,11 @@
 						roles_user_id = current_user.roles_user_by_caregiver(user).id
 					end
 			%>
-			<%=link_to_remote_redbox('Yes', :url =>{ :controller => "profiles", :action => 'edit_caregiver_profile', :id => user.profile.id, :operator => operator, :user_id => user_id, :frame => true,  :roles_user_id => roles_user_id }, :html => {:method => :get, :complete => ''})%>
+			<%=link_to_remote('Yes', :update => 'container1', :url =>{ :controller => "profiles", :action => 'edit_caregiver_profile', :id => user.profile.id, :operator => operator, :user_id => user_id, :frame => true,  :roles_user_id => roles_user_id }, :html => {:method => :get})%>
 			|
 			<a href="javascript:void(0)" onClick="RedBox.close()">No</a>
 		</div>
 	</div>
 	<img src="/images/lightbox-col-footer.gif" />
+</div>
 </div>

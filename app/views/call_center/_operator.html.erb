@@ -28,9 +28,9 @@
 	%>
 	<div style="float:left;background:url('/images/call_list-image_bg.gif') no-repeat;height:87px;width:125px;margin-top:5px;opacity:<%=opacity%>" id="item_image_<%=operator.id%>">
 		<% if operator.image != '' %>
-			<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
+			<img :alt ="<%= operator.name %>", src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
 		<% else %>
-			<img src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
+			<img :alt ="<%= operator.name %>", src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
 		<% end %>
 	</div>
 	
@@ -45,33 +45,38 @@
 			end
 		%>
 		
-		<span id="item_firstname_<%=operator.id.to_s%>" style="font-weight:bold;color:<%=color%>"><%=operator.profile.first_name%></span>
-		<span id="item_lastname_<%=operator.id.to_s%>" style="font-weight:bold;color:<%=color%>"><%=operator.profile.last_name%></span>
+		<span id="item_name_<%=operator.id.to_s%>" style="font-weight:bold;color:<%=color%>"><%=operator.name%></span>
 	</div>
 	
 	<!--ACTIVE/AWAY-->
 	
 	<div style="float:left;padding-top:25px;width:100px">
 		<% 
+			alt = ''
 			unless opts.active?
 				img = 'call_list-active_disabled.gif'
+				alt = "Click to activate operator."
 			else
 				img = 'call_list-active.gif'
+				alt = "Operator is active."
 			end
 		%>
 		
-		<%=link_to_remote(image_tag(img, :id => 'item_active_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "activate",:id => opts.id}, :before => 'toggleCaregiver(\'enable\', null, '+operator.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
+		<%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_active_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "activate",:id => opts.id}, :before => 'toggleCaregiver(\'enable\', null, '+operator.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
 		<br />
 		
 		<% 
+			alt = ''
 			if opts.active?
 				img = 'call_list-away_disabled.gif'
+				alt = "Click to set operator away."
 			else
 				img = 'call_list-away.gif'
+				alt = "Operator is away."
 			end
 		%>
 
-		<%=link_to_remote(image_tag(img, :id => 'item_away_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "deactivate",:id => opts.id}, :before => 'toggleCaregiver(\'disable\', null, '+operator.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
+		<%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_away_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "deactivate",:id => opts.id}, :before => 'toggleCaregiver(\'disable\', null, '+operator.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
 	</div>
 
 	<!--PHONE-->
@@ -79,29 +84,33 @@
 	<div style="float:left;padding-top:25px;width:75px">
 		<input type="hidden" id="user-<%=operator.id%>_phone" value="<%=operator.profile.home_phone%>" />
 		<input type="hidden" id="user-<%=operator.id%>_phone2" value="<%=operator.profile.cell_phone%>" />
-		<% 
+		<%  alt = ''
 			if !opts.phone_active? or !opts.active?
 				img = 'call_list-phone-inactive.gif'
+				alt = 'This operator will not be called by live operator in case of emergency.  Click to enable.'
 			else
 				img = 'call_list-phone.gif'
+				alt = 'This operator will be called by live operator in case of emergency.  Click to disable.'
 			end
 		%>
 		
-		<%=link_to_remote(image_tag(img, :id => 'item_phone_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "toggle_phone",:id => operator.roles_user_by_role_name('operator').id,:user_id => operator.id }, :before => 'toggleContact(null,'+operator.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')')%>
+		<%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_phone_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "toggle_phone",:id => operator.roles_user_by_role_name('operator').id,:user_id => operator.id }, :before => 'toggleContact(null,'+operator.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')')%>
 	</div>
 	
 	<!--EMAIL-->
 
 	<div style="float:left;padding-top:25px;width:75px">
-		<% 
+		<%  alt = ''
 			if !opts.email_active? or !opts.active?
 				img = 'call_list-email-inactive.gif'
+				alt = 'Email will not be sent to this operator in the case of a fall or panic.  Click to enable.'
 			else
 				img = 'call_list-email.gif'
+				alt = 'Email will be sent to this operator in the case of a fall or panic.  Click to disable.'
 			end
 		%>
 
-		<%=link_to_remote(image_tag(img, :id => 'item_email_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "toggle_email",:id => operator.roles_user_by_role_name('operator').id,:user_id => operator.id }, :before => 'toggleContact(null,'+operator.id.to_s+', '+opts.email_active.to_s+', \'email\', '+user_id+')')%>
+		<%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_email_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "toggle_email",:id => operator.roles_user_by_role_name('operator').id,:user_id => operator.id }, :before => 'toggleContact(null,'+operator.id.to_s+', '+opts.email_active.to_s+', \'email\', '+user_id+')')%>
 	</div>
 
 	<!--TEXT-->
@@ -110,11 +119,13 @@
 		<input type="hidden" id="user-<%=operator.id%>_text" value="<%=operator.profile.cell_phone%>" />
 		 <input type="hidden" id="user-<%=operator.id%>_text2" value="<%=operator.profile.carrier_id%>" /> 
 		
-		<% 
+		<%  alt = ''
 			if !opts.text_active? or !opts.active?
 				img = 'call_list-text-inactive.gif'
+				alt = 'Text will not be sent to this operator in the case of a fall or panic.  Click to enable.'
 			else
 				img = 'call_list-text.gif'
+				alt = 'Text will be sent to this operator in the case of a fall or panic.  Click to disable.'
 			end
 			
 			unless user
@@ -122,17 +133,17 @@
 			end
 		%>
 
-		<%=link_to_remote(image_tag(img, :id => 'item_text_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "toggle_text",:id => operator.roles_user_by_role_name('operator').id,:user_id => operator.id }, :before => 'toggleContact(null,'+operator.id.to_s+', '+opts.text_active.to_s+', \'text\', '+user_id+')')%>
+		<%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_text_'+operator.id.to_s), :url => { :controller => 'call_list', :action => "toggle_text",:id => operator.roles_user_by_role_name('operator').id,:user_id => operator.id }, :before => 'toggleContact(null,'+operator.id.to_s+', '+opts.text_active.to_s+', \'text\', '+user_id+')')%>
 	</div>
 	
 	<!--DELETE-->
 
 	<div style="float:left;padding-top:25px;width:50px">
-		<% 
+		<% alt = 'Remove operator from list.'
 			if !opts.active? 
-				img = image_tag("call_list-trash-inactive.gif",:id => 'item_trash_'+operator.id.to_s)
+				img = image_tag("call_list-trash-inactive.gif", :alt => alt, :id => 'item_trash_'+operator.id.to_s)
 			else
-				img = image_tag("call_list-trash.gif",:id => 'item_trash_'+operator.id.to_s)
+				img = image_tag("call_list-trash.gif",:alt => alt, :id => 'item_trash_'+operator.id.to_s)
 			end
 		%>
 		
@@ -145,8 +156,8 @@
 	
 	<div style="float:left;padding-top:35px;width:125px" id="item_edit_<%=operator.id%>">
 		<!--% puts edit_user_url(operator)%-->
-		
-		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => operator.profile.id, :frame => true, :roles_user_id => operator.roles_user_by_role_name('operator').id, :operator => true }, :html => {:method => :get})%>
+		<% alt = "Edit operator's profile." %>
+		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => operator.profile.id, :frame => true, :roles_user_id => operator.roles_user_by_role_name('operator').id, :operator => true }, :html => {:alt => alt, :method => :get})%>
 	</div>
 	
 	<!--TOOLTIP-->
