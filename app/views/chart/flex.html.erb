@@ -29,8 +29,8 @@ if ( hasProductInstall && !hasRequestedVersion ) {
 	AC_FL_RunContent(
 		"src", "playerProductInstall",
 		"FlashVars", "MMredirectURL="+MMredirectURL+'&MMplayerType='+MMPlayerType+'&MMdoctitle='+MMdoctitle+"",
-		"width", "100%",
-		"height", "100%",
+		"width", "1000px",
+		"height", "600px",
 		"align", "middle",
 		"id", "Prototype",
 		"quality", "high",
@@ -38,15 +38,16 @@ if ( hasProductInstall && !hasRequestedVersion ) {
 		"name", "Prototype",
 		"allowScriptAccess","sameDomain",
 		"type", "application/x-shockwave-flash",
-		"pluginspage", "http://www.adobe.com/go/getflashplayer"
+        "pluginspage", "http://www.adobe.com/go/getflashplayer", 
+		"wmode", "transparent" 	
 	);
 } else if (hasRequestedVersion) {
 	// if we've detected an acceptable version
 	// embed the Flash Content SWF when all tests are passed
 	AC_FL_RunContent(
-			"src", "Prototype",
-			"width", "100%",
-			"height", "100%",
+			"src", "/flex/Prototype",
+			"width", "1000px",
+			"height", "600px",
 			"align", "middle",
 			"id", "Prototype",
 			"quality", "high",
@@ -54,7 +55,8 @@ if ( hasProductInstall && !hasRequestedVersion ) {
 			"name", "Prototype",
 			"allowScriptAccess","sameDomain",
 			"type", "application/x-shockwave-flash",
-			"pluginspage", "http://www.adobe.com/go/getflashplayer"
+	        "pluginspage", "http://www.adobe.com/go/getflashplayer", 
+			"wmode", "transparent"
 	);
   } else {  // flash is too old or we can't detect the plugin
     var alternateContent = 'Alternate HTML content should be placed here. '
@@ -66,14 +68,15 @@ if ( hasProductInstall && !hasRequestedVersion ) {
 </script>
 <noscript>
   	<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
-			id="Prototype" width="100%" height="100%"
+			id="Prototype" width="1000px" height="600px"
 			codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
-			<param name="movie" value="Prototype.swf" />
+			<param name="movie" value="/flex/Prototype.swf" />
 			<param name="quality" value="high" />
 			<param name="bgcolor" value="#869ca7" />
 			<param name="allowScriptAccess" value="sameDomain" />
-			<embed src="Prototype.swf" quality="high" bgcolor="#869ca7"
-				width="100%" height="100%" name="Prototype" align="middle"
+			<param name="wmode" value="transparent" />
+			<embed src="/flex/Prototype.swf" quality="high" bgcolor="#869ca7"
+				width="1000px" height="600px" name="Prototype" align="middle"
 				play="true"
 				loop="false"
 				quality="high"
