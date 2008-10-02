@@ -10,7 +10,7 @@ class UserAdminController < ApplicationController
       @groups << g if(current_user.is_admin_of?(g) || current_user.is_super_admin?)
     end
     @group = nil
-    if params[:group].blank?
+    if params[:group].blank? || params[:group] == 'Choose a Group'
       if @groups.size == 1
         @group = @groups[0].name
       end
