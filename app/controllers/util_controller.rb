@@ -1,5 +1,5 @@
 class UtilController < ApplicationController
-  before_filter :authenticate_super_admin?, :except => 'check'
+  before_filter :authenticate_super_admin?, :except => ['check', 'hostname']
   #session :off
   
   # Monitors that the application and database connection is alive
