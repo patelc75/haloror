@@ -1,9 +1,9 @@
 function getConfig() {
     var config = new Object;
     
-    //config.Version = "";  *Deprecated!*
+    //config.Version = "";  *Depricated!*
 	
-    config.Debug = false;
+    config.Debug = true;
     
     //make request to check to check if current user is admin
     try{
@@ -46,19 +46,27 @@ function getConfig() {
     
     config.activityColor = "#FE8504";
     
+    var hostName;
+    
+	if (window.location.hostname == "localhost"){
+        hostName = "localhost:3000";
+    }else{
+        hostName = window.location.hostname;
+    }
+    
+    /* This is the main URL of the server environment.  This
+	was added more recently than config.dataServiceURL because
+	there are placed in the code where we want to append other
+	paths off of the root URL (e.g. the 'View All' link). -Neal 9/22/03
+	
+	Make sure there is a forward slash at the end of this URL. */
+    config.environmentUrl = "https://" + hostName + "/";
+    
     /* set the URL based on the file test mode */
     if (config.ChartFile == -1) {
     
-        var hostName;
-        
-    	if (window.location.hostname == "localhost"){
-            hostName = "localhost:3000";
-        }else{
-            hostName = window.location.hostname;
-        }
-
     	/* Get the URL from the current location: */
-    	config.dataServiceURL = "http://" + hostName + "/flex/chart";
+    	config.dataServiceURL = "https://" + hostName + "/flex/chart";
         
          /* NOTE:
     	 * The above line of code ONLY works in live server mode where the javascript file
@@ -68,10 +76,9 @@ function getConfig() {
     	 */
     	 
         if(config.dataServiceURL == "http:///flex/chart"){
-	    	//config.dataServiceURL = "https://sdev.myhalomonitor.com/flex/chart";
-	    	//config.dataServiceURL = "http://www.myhalomonitor.com/flex/chart";
+        	/* This only comes into play if hostName is a zero-length string. */
 	        config.dataServiceURL = "https://idev.myhalomonitor.com/flex/chart";
-	        //config.dataServiceURL = "http://sdev.halomonitor.com/flex/chart";
+		    config.environmentUrl = "https://idev.myhalomonitor.com/";
 	    }  
 	      
     }else{
@@ -82,7 +89,7 @@ function getConfig() {
         //config.dataServiceURL = "data/ChartData_CrossUTCDate";
         //config.dataServiceURL = "data/OneSec_results";
     }
-    
+            
     if (config.Debug == true && config.Admin == true){
     	//alert(config.dataServiceURL);
     }
