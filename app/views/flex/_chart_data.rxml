@@ -1,5 +1,5 @@
 xml.instruct! :xml, :version => "1.0"
-xml.DataRoot(:num_points => query[:num_points], :startdate => UtilityHelper.format_datetime_flex(query[:startdate]), :enddate => UtilityHelper.format_datetime_flex(query[:enddate]), :serverdate => UtilityHelper.format_datetime_flex(Time.now, nil)) do
+xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate], :enddate => query[:enddate], :serverdate => UtilityHelper.format_datetime_flex(Time.now, nil)) do
   users.each do |user|
     xml.User(:id => user[:id], :first_name => user.profile[:first_name], :last_name => user.profile[:last_name], :connectivity_status => user[:status][:connectivity], :time_remaining => user[:battery][:time_remaining], :timezone => get_timezone_offset(user)) do
       xml.LastReading(:datetime => UtilityHelper.format_datetime_flex(user[:last_reading][:timestamp], user)) do
