@@ -2,7 +2,7 @@ module UtilityHelper
   include ServerInstance
   
   def self.format_datetime_flex(datetime,user)
-    return datetime if !datetime.respond_to?(:strftime)
+    #return datetime if !datetime.respond_to?(:strftime)
     
     # Any interaction between the server and flex should
     # pass information back and forth as UTC.
