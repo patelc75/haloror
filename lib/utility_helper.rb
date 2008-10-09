@@ -14,7 +14,7 @@ module UtilityHelper
 #    end
 #    datetime = tz.utc_to_local(datetime) 
     
-    return datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
+    return datetime.getutc.strftime("%a %b %d %H:%M:%S %Z %Y")
   end
   
   def self.format_datetime(datetime,user)
