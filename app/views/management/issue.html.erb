@@ -13,11 +13,20 @@
 		<%=f.radio_button :cmd_type, 'firmware_upgrade'%> Firmware Upgrade <%=render :partial => 'firmware_upgrade'%>
 	</p>
 	<p>
-		<%=f.radio_button :cmd_type, 'device_registration'%> Device Registration
+		<%=f.radio_button :cmd_type, 'selftest'%> Self Test
 	</p>
 	<p>
-		<%=f.radio_button :cmd_type, 'user_registration'%> User Registration
+		<%=f.radio_button :cmd_type, 'selftest_phone'%> Self Test Phone
 	</p>
+	<p>
+		<%=f.radio_button :cmd_type, 'rangeteststart'%> Range Test Start
+	</p>
+	<p>
+		<%=f.radio_button :cmd_type, 'rangeteststop'%> Range Test Stop
+	</p>
+	<p>
+		<%=f.radio_button :cmd_type, 'mgmt_poll_rate'%> Slow Management Poll Rate
+	</p>	
 	<p>&nbsp;</p>
 	<p>Enter a range of device ids (min-max) -or- ids separated by commas:</p>
 	<%=f.text_field 'ids'%>
