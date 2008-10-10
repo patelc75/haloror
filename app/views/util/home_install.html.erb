@@ -14,7 +14,7 @@
   <% @users.each do |user| %>
     <tr>
       <td><%= user.id %> </td>
-      <td><%= user.login %> </td>
+      <td><%= user.name %> </td>
       <% if user.activation_code != nil %>
       <td><%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %></td>
       <% else %>
