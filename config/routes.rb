@@ -1,5 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
-
+  map.resources :self_test_results
+  
   map.resources :oscope_start_msgs
   map.resources :oscope_stop_msgs
   map.resources :oscope_msgs
