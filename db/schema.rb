@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20080930183940) do
+ActiveRecord::Schema.define(:version => 20081013202305) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -426,6 +426,33 @@ ActiveRecord::Schema.define(:version => 20080930183940) do
     t.boolean "text_active",   :default => false
     t.integer "position",      :default => 0
     t.string  "relationship"
+  end
+
+  create_table "self_test_item_results", :force => true do |t|
+    t.string   "description"
+    t.boolean  "result"
+    t.string   "result_value"
+    t.integer  "device_id"
+    t.integer  "operator_id"
+    t.datetime "timestamp",    :null => false
+  end
+
+  create_table "self_test_results", :force => true do |t|
+    t.boolean  "result",    :null => false
+    t.string   "cmd_type",  :null => false
+    t.integer  "device_id", :null => false
+    t.datetime "timestamp", :null => false
+  end
+
+  create_table "self_test_step_descriptions", :force => true do |t|
+    t.string "description"
+  end
+
+  create_table "self_test_steps", :force => true do |t|
+    t.datetime "timestamp"
+    t.integer  "user_id"
+    t.integer  "halo_user_id"
+    t.integer  "self_test_step_description_id"
   end
 
   create_table "skin_temps", :force => true do |t|

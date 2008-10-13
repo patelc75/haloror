@@ -48,6 +48,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '', :controller => 'redirector', :action => 'index'
   
   map.signup '/signup/:group', :controller => 'users', :action => 'new'
+  map.registration '/registration', :controller => 'users', :action => 'registration'
   map.admin_signup '/admin/signup', :controller => 'user_admin', :action => 'new_admin'
   map.login  '/login', :controller => 'sessions', :action => 'new'
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
