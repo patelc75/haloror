@@ -121,17 +121,17 @@ class InstallsController < ApplicationController
       page.replace_html 'install_wizard_status', text
       if(percentage == 100)
         page['registered_check'].src = checked
-        page['self_test_gateway_check'].src checked
-        page['self_test_chest_strap_check'].src checked
-        page['self_test_phone_check'].src checked
+        page['self_test_gateway_check'].src = checked
+        page['self_test_chest_strap_check'].src = checked
+        page['self_test_phone_check'].src = checked
       elsif(percentage == 60)
         page['registered_check'].src = checked
-        page['self_test_gateway_check'].src checked
-        page['self_test_chest_strap_check'].src checked
+        page['self_test_gateway_check'].src = checked
+        page['self_test_chest_strap_check'].src = checked
       
       elsif(percentage == 40)
         page['registered_check'].src = checked
-        page['self_test_gateway_check'].src checked
+        page['self_test_gateway_check'].src = checked
         
       elsif(percentage == 20)
         page['registered_check'].src = checked    
