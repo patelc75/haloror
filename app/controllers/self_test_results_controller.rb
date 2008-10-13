@@ -22,6 +22,9 @@ class SelfTestResultsController < RestfulAuthController
         self_test_result.self_test_item_results = items
       end
       self_test_result.save!
+      respond_to do |format|
+        format.xml { head :ok } 
+      end
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.warn("ERROR in SelfTestResultsController:  #{e}")
       respond_to do |format|
