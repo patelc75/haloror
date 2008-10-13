@@ -22,7 +22,7 @@ Select Group:
 	  <input type="hidden" name="group" value="<%= @group %>" />
 		<label for="role">Role</label>
 		<br />
-		<%= select_tag :role, options_for_select(@roles.collect {|r| [r.name, r.id]}) %>
+		<%= select_tag :role, options_for_select(@group_roles.collect {|r| [r.name, r.id]}) %>
 		<br />
 		<br />
         <label for="login">Desired Username</label>
@@ -30,10 +30,6 @@ Select Group:
         <%= text_field :user, :login %>
         <br />
         <br />
-        <label for="email">Email</label><br/>
-        <%= text_field :user, :email %>
-        <br />
-        <br />			
         <label for="password">Password</label>
         <br/>
         <%= password_field :user, :password %>
@@ -44,6 +40,7 @@ Select Group:
         <%= password_field :user, :password_confirmation %>
         <br />
         <br />
+		<%= render :partial => '/profiles/profile'%>
         <div align="center">
           <input name="commit" type="image" src="/images/subscribe.gif" />
         </div>

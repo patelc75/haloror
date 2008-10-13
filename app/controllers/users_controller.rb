@@ -14,66 +14,40 @@ class UsersController < ApplicationController
     return nil   
   end
   
-  
   def new
     @user = User.new
-    @gateway = Device.new
-    @strap = Device.new
-    @group = params[:group]
+    @profile = Profile.new
+    @groups = []
+    gs = current_user.group_memberships
+    gs.each do |g|
+      @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g) || current_user.is_super_admin?)
+    end
   end
 
   def create
-    @user = User.new(params[:user])
-    @group = params[:group]
-    @gateway = nil
-    @strap = nil
-    #check if gateway exists
-    if !params[:gateway][:serial_number].blank?
-      @gateway = Device.find_by_serial_number(params[:gateway][:serial_number])
-      if @gateway
-        @user.devices << @gateway
-      else
-        @gateway = @user.devices.build(params[:gateway])
-      end
-    end
-    
-    #check is strap exists and if it is assigned to a user or not
-    #could have been registered without assigning a user
-    if !params[:strap][:serial_number].blank?
-      @strap = Device.find_by_serial_number(params[:strap][:serial_number])
-      if @strap && !@strap.users.blank?
-        flash[:warning] = "Chest Strap with Serial Number #{params[:strap][:serial_number]} is already assigned to a user."
-        throw Exception.new
-      end
-      if @strap
-        @user.devices << @strap
-      else
-          @strap = @user.devices.build(params[:strap])          
-      end
-    end
-    User.transaction do
-        @user.save!
+    if !params[:group].blank? && params[:group] != 'Choose a Group'
+      @user = User.new(params[:user])
+      @user.email = params[:email]
+      @group = params[:group]
+      @profile = Profile.new(params[:profile])
+  
+      User.transaction do
+          @user.save!
+          
+        # create profile
+          @profile.user_id = @user.id
+          @profile.save!
+          
         
-      # create profile
-        Profile.create(:user_id => @user.id)
-      
-      # create halouser role
-        @user.is_halouser_of Group.find_by_name(@group)
-        
-        @gateway.set_type
-        @strap.set_type
-      
-      # register with strap/gateway
-      #register_user_with_device(@user,@strap)
-      #register_user_with_device(@user,@gateway)
+        # create halouser role
+          @user.is_halouser_of Group.find_by_name(@group)
+      end
+    else 
+      redirect_to :controller => 'users', :action => 'new'
     end
-    #end
-    #self.current_user = @user
-    #redirect_back_or_default('/')
-    #flash[:notice] = "Thanks for signing up!"
-    #render :nothing => true
   rescue Exception => e
     RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
+    
     render :action => 'new'
   end
   

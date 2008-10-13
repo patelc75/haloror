@@ -1,0 +1,16 @@
+<div id="user-table" class="table">
+	<div class="row header">
+		<div class="col-75">User Id</div>
+		<div class="col-200">Name</div>
+		<div class="col-100">Username</div>
+		<div class="col-100">Device Registration</div>
+	</div>	
+<% @users.each do |user| %>
+	<div class="row">
+		<div class="col-75"><%=  user.id     %></div>
+		<div class="col-200"><%= user.name  %></div>
+		<div class="col-100"><%= user.login %></div>
+		<div class="col-100"><%= link_to "Start Installation Wizard", :controller => 'installs', :action => 'registration', :group => @group.name, :id => user.id %></div>
+	</div>
+<% end %>
+</div>

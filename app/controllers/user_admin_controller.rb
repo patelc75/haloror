@@ -19,24 +19,33 @@ class UserAdminController < ApplicationController
     end
     if @group
       @user = User.new
+      @profile = Profile.new
       g = Group.find_by_name(@group)
-      @roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
+      @group_roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
     end
   end
 
   def create_admin
     @user = User.new(params[:user])
+    @user.email = params[:email]
     @group = params[:group]
+    @profile = Profile.new(params[:profile])
     role_id = params[:role]
     role = Role.find(role_id)
     User.transaction do
-        @user.save!
-        
+        @user.save!        
       # create profile
-        Profile.create(:user_id => @user.id)
+        @profile.user_id = @user.id
+        @profile.save!
       # assign role
         @user.roles << role
     end
+  
+  rescue Exception => e
+    RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
+    g = Group.find_by_name(@group)
+    @group_roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
+    render :action => 'new_admin'
   end
   
   def roles

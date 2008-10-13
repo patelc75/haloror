@@ -10,121 +10,16 @@
 	  <center><%=link_to_remote('Change Password', :update => 'container', :url =>{ :controller => "profiles", :action => "change_password_init", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%>
 	  <% end %></center>
       <br><br>
-      <% remote_form_for(:profile, :update => 'call_list', :url => {:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]}) do |f| %>
-        <label for="email">Email</label>
-        <br />
+	  <% form_remote_tag(:update => 'call_list', :url => {:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]}, :html => { :id => 'profile_form'}) do %>
         <input type="hidden" name="user_id" value="<%=@user.id%>" />
         <input type="hidden" name="patient_id" value="<%=params[:user_id]%>" />
         <input type="hidden" name="roles_user_id" value="<%=params[:roles_user_id]%>" />
-				<input type="hidden" name="operator" value="<%=params[:operator]%>"/>
-        <%= text_field_tag :email, @user.email %>
-        <br />	
-      
-      
-      
-        <br />
-      
-      
-        <label for="first_name">First Name</label>
-        <br />
-        <%= f.text_field :first_name %>
-        <br />
-        <br />
-        <label for="last_name">Last Name</label>
-        <br />
-        <%= f.text_field :last_name %>
-        <br />
-      
-        <br />
-        <% if @roles %>     
-           
-   
-     
-         
-          <label for="relationship"> Relationship </label>
-          <br />
-      
-                   <%= text_field_tag :relationship, @roles.relationship %>
-            
-          <br />
-          <br />
-        <% end %>
-       
-       
-        <label for="address">Address</label>
-        <br />
-        <%= f.text_field :address %>
-        <br />
-        <br />
-        <label for="city">City/State</label>
-        <br />
-        <%= f.text_field :city %> <%= f.text_field :state, :size => 15 %>
-				<br />
-				<br />
-				<label for="zipcode">Zipcode</label>
-        <br />
-        <%= f.text_field :zipcode %>
-				<br />
-        <br />
-        <label for="home_phone">Home Phone</label>
-        <br />
-        <%= f.text_field :home_phone %>
-        <br />
-        <br />
-        <label for="work_phone">Work Phone</label>
-        <br />
-        <%= f.text_field :work_phone %>
-        <br />
-        <br />
-        <% if @user.is_operator? %>
-          <label for="phone_email">iPing Email (operators only)</label>
-          <br />
-          <%= f.text_field :phone_email %>
-          <br />
-          <br />
-        <% end %>
-        <label for="cell_phone">Cell Phone</label>
-        <br />
-        <%= f.text_field :cell_phone %>
-        <br />
-        <br />
-      
-        <select id="profile_carrier_id" name="profile[carrier_id]">
-          <% if @profile.carrier_id == 0 or @profile.carrier_id == nil -%>
-            <option value="" selected="selected" >
-            Select a Service Provider </option>
-          <% end -%>
-          <% @carrier = Carrier.find(:all, :order => "id")
-               @carrier.each do |carrier| %>
-            <option value="<%= carrier.id %>"
-             <% if @profile.carrier_id == carrier.id -%> selected="selected"<% end -%>
-             >
-             <%= carrier.name %> 
-             </option>
-          <% end %>
-        </select>
-      
-        <br/>
-        <br />
-      
-      
-        <label for="time_zone">Time Zone</label>
-      
-                 <%= time_zone_select ('profile', 'time_zone', TZInfo::Timezone.us_zones, :model => TZInfo::Timezone, :default => "America/Chicago" )%> 
-               
-        <br/>
-        <br />
-      
-      
-      
-      
-      
-      
-      
+		<input type="hidden" name="operator" value="<%=params[:operator]%>"/>
+        <%= render :partial => 'profile' %>
         <br/>
         <br/>
         <div align="center">
-          <input name="commit" type="image" src="/images/update.gif" onClick="RedBox.close()" /> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
+          <input name="commit" type="image" src="/images/update.gif" onClick="RedBox.close();return true;" /> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close();" /></a>
         </div>
       <% end %>
       

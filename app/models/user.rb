@@ -282,6 +282,15 @@ class User < ActiveRecord::Base
     return false
   end
   
+  def is_installer_of_any?(groups)
+    groups.each do |group|
+      if self.is_installer_of? group
+        return true
+      end
+    end
+    return false
+  end
+  
   def is_operator_of_any?(groups)
     groups.each do |group|
       if self.is_operator_of? group
@@ -355,13 +364,19 @@ class User < ActiveRecord::Base
       end
     end
   end
+  
+  # sets the instance variable @is_caregiver to the value of b
   def is_new_caregiver=(b=false)
     @is_caregiver= b
   end
+  
+  # returns the instance variable @is_caregiver
   def is_new_caregiver
     return @is_caregiver
   end
   
+  # returns the users main role
+  # as determined by the role with the greatest permissions
   def main_role
     if self.is_super_admin?
       return 'super_admin'
@@ -376,14 +391,18 @@ class User < ActiveRecord::Base
     end
     return ''
   end
+  
   protected
-  # before filter 
+  
+  # before filter
+  # Sets the salt and encrypts the password 
   def encrypt_password
     return if password.blank?
     self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
     self.crypted_password = encrypt(password)
   end
     
+  # returns true if password is a required field
   def password_required?
     if(self.is_new_caregiver)
       return false
@@ -391,11 +410,13 @@ class User < ActiveRecord::Base
       crypted_password.blank? || !password.blank?
     end
   end
-    
+  
+  # generates activation code
   def make_activation_code
     self.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
   end 
   
+  # return true if the login is not blank
   def login_not_blank?
     return !self.login.blank?
   end

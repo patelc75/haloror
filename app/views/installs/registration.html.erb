@@ -1,0 +1,32 @@
+<div>Registering <%= @user.name %></div>
+<div id="secondary-col">
+  <div id="secondary-col-header"></div>
+  
+  <div class="content">
+	
+    <%= error_messages_for :user %>
+    <%= error_messages_for :gateway %>
+    <%= error_messages_for :strap %>
+		<div id="errors">
+			<%= flash[:warning]%>
+		</div>
+    <div style="width:200px;margin-left:auto;margin-right:auto">
+      <% form_tag :action => 'registration_create' do -%>
+	  <input type="hidden" name="user_id" value="<%= @user.id %>" />
+       <label for="serial_number">Gateway Serial Number</label><br/>
+        <%= text_field :gateway, :serial_number %>
+        <br />
+        <br />
+        <label for="serial_number">Chest Strap Serial Number</label><br/>
+        <%= text_field :strap, :serial_number %>
+        <br />
+        <br />
+		
+        <div align="center">
+          <input name="commit" type="image" src="/images/ok_button.gif" />
+        </div>
+      <% end -%>
+    </div>
+  </div>
+  <div id="secondary-col-footer"></div>
+</div>

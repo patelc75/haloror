@@ -1,0 +1,96 @@
+<script language="javascript">
+	var firstManualPB;
+	Event.observe(window, 'load', function() {
+       firstManualPB = new JS_BRAMUS.jsProgressBar($('installation_wizard_progress'), 0, {animate: true, width: 120, height: 12});
+    }, false);
+	function update_percentage(percentage){
+		firstManualPB.setPercentage(percentage);
+	}
+</script>
+<%= periodically_call_remote(:url => { :controller => 'installs', :action => 'install_wizard_progress', :user_id => @user.id, :gateway_id => @gateway.id, :strap_id => @strap.id }, :frequency => INSTALL_WIZARD_POLL_RATE)%>
+<div id="call_list-col">
+	<div align="center" id="call_list-col-header">
+		Installation Wizard
+	</div>
+	<div class="content">
+	  <div id="device-table" class="table">
+		<div class="row header">
+			<div align="center" class="col-400">
+				Installation Progress
+			</div>
+		</div>
+		<div class="row">
+			<div class="percentImage1" id="installation_wizard_progress">[ Loading Progress Bar ]</div>
+			<div id="install_wizard_status"></div>
+	    </div>
+		<div class="row">
+			<div class="col-150"><img id="registered_check" width="60" height="60" src="/images/checkbox_grey.png"></div>
+			<div class="col-150" style="vertical-align: middle;">Registered</div>
+		</div>
+		<div class="row">	
+			<div class="col-150"><img id="self_test_gateway_check" width="60" height="60"  src="/images/checkbox_grey.png"></div>
+			<div class="col-150" style="vertical-align: middle;">Self Test Gateway</div>
+		</div>
+		<div class="row">
+			<div class="col-150"><img id="self_test_chest_strap_check" width="60" height="60"  src="/images/checkbox_grey.png"></div>
+			<div class="col-150" style="vertical-align: middle;">Self Test Chest Strap</div>
+		</div>
+		<div class="row">
+			<div class="col-150"><img id="self_test_phone_check" width="60" height="60"  src="/images/checkbox_grey.png"></div>
+			<div class="col-150" style="vertical-align: middle;">Self Test Phone</div>
+		</div>
+	  </div>
+	</div>
+	<div style="clear:both"></div>
+	<div id="call_list-col-footer"></div>
+</div>
+<br />
+<br />
+<div id="call_list-col">
+	<div class="content">
+		<div id="device-table" class="table">
+		<div class="row header">
+		<div class="col-150">
+			User ID
+		</div>
+		<div class="col-250">
+			Name
+		</div>
+		<div class="col-75">
+			Chest Strap ID
+		</div>
+		<div class="col-150">
+			Chest Serial Number
+		</div>
+		<div class="col-75">
+			Gateway ID
+		</div>
+		<div class="col-150">
+			Gatewqy Serial Number
+		</div>
+		</div>
+	<div class="row">
+		<div class="col-150">
+			<%= @user.id %>
+		</div>
+		<div class="col-250">
+			<%= @user.name %>
+		</div>
+		<div class="col-75">
+			<%= @strap.id %>
+		</div>		
+		<div class="col-150">
+			<%= @strap.serial_number%>
+		</div>
+		<div class="col-75">
+			<%= @gateway.id %>
+		</div>
+		<div class="col-150">
+			<%= @gateway.serial_number%>
+		</div>
+	  </div>
+	</div>	
+	</div>
+	<div style="clear:both"></div>
+	<div id="call_list-col-footer"></div>
+</div>

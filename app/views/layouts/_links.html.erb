@@ -33,6 +33,12 @@
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? %>
 				<li><%= link_to 'Call&nbsp;Center', url_for(:controller => 'call_center', :action => 'index') %></li>
 			<% end %>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
+				<li><%= link_to 'User&nbsp;Signup', url_for(:controller => 'users', :action => 'new') %></li>
+			<% end %>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_installer? %>
+				<li><%= link_to 'User&nbsp;Registration', url_for(:controller => 'installs', :action => 'index') %></li>
+			<% end %>
 			<% if current_user.is_super_admin? %>
 				<li><%= link_to 'Info', url_for(:controller => 'util', :action => 'info', :my_links => 'Info') %></li>
 				<li><%= link_to 'Home&nbsp;Installs', url_for(:controller => 'util', :action => 'home_install') %></li>

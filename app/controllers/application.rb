@@ -68,7 +68,7 @@ class ApplicationController < ActionController::Base
   
   protected
   def authenticated?
-    unless (controller_name == 'users' && (action_name == 'init_caregiver' || action_name == 'update_caregiver' || action_name == 'new' || action_name == 'create' || action_name == 'activate') || 
+    unless (controller_name == 'users' && (action_name == 'init_caregiver' || action_name == 'update_caregiver' || action_name == 'activate') || 
       controller_name == 'sessions' || 
       controller_name == 'flex' && action_name == 'chart' || 
       controller_name == 'util' && action_name == 'check' ||

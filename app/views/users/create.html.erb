@@ -4,9 +4,24 @@
 	</div>
 	
 	<div class="content">
-		<p>
-			Please check your email.
-		</p>	
+		<p>Email sent to user.</p>	
+		<div id="device-table" class="table">
+		<div class="row header">
+		<div class="col-150">
+			User ID
+		</div><div class="col-250">
+			Name
+		</div>
+		</div>
+	<div class="row">
+		<div class="col-150">
+			<%= @user.id %>
+		</div>
+		<div class="col-250">
+			<%= @user.name %>
+		</div>
+	  </div>
+	</div>
 	</div>
 
 	<div style="clear:both"></div>

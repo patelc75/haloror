@@ -1,0 +1,48 @@
+		<label for="home_phone">Home Phone</label>
+	    <br />
+	    <%= text_field :profile, :home_phone %>
+	    <br />
+	    <br />
+	    <label for="work_phone">Work Phone</label>
+	    <br />
+	    <%= text_field :profile, :work_phone %>
+	    <br />
+	    <br />
+	    <% if @user.is_operator? %>
+	      <label for="phone_email">iPing Email (operators only)</label>
+	      <br />
+	      <%= text_field :profile, :phone_email %>
+	      <br />
+	      <br />
+	    <% end %>
+	    <label for="cell_phone">Cell Phone</label>
+	    <br />
+	    <%= text_field :profile, :cell_phone %>
+	    <br />
+	    <br />
+	  
+	    <select id="profile_carrier_id" name="profile[carrier_id]">
+	      <% if @profile.carrier_id == 0 or @profile.carrier_id == nil -%>
+	        <option value="" selected="selected" >
+	        Select a Service Provider </option>
+	      <% end -%>
+	      <% @carrier = Carrier.find(:all, :order => "id")
+	           @carrier.each do |carrier| %>
+	        <option value="<%= carrier.id %>"
+	         <% if @profile.carrier_id == carrier.id -%> selected="selected"<% end -%>
+	         >
+	         <%= carrier.name %> 
+	         </option>
+	      <% end %>
+	    </select>
+	  
+	    <br/>
+	    <br />
+	  
+	  
+	    <label for="time_zone">Time Zone</label>
+	  	<br />
+	             <%= time_zone_select ('profile', 'time_zone', TZInfo::Timezone.us_zones, :model => TZInfo::Timezone, :default => "America/Chicago" )%> 
+	           
+	    <br/>
+	    <br />

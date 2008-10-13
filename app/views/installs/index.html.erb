@@ -1,0 +1,10 @@
+<% if @groups %>
+	<form id="group_form_id" action="/installs/users" method="POST">
+		<% gs = ['Choose a Group']
+		   @groups.each do |g|
+			 gs << g.name
+		   end %>
+Select Group:  
+<%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group), {:onchange => "$('group_form_id').submit();"}%>
+</form>
+<% end %>
