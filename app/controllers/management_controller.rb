@@ -94,12 +94,18 @@ class ManagementController < ApplicationController
       if !request[:ids].empty?
         cmd = {}
         cmd[:cmd_type] = request[:cmd_type]
-        cmd[:cmd_id] = params[request[:cmd_type].to_sym]
+
+        #this is here if there's more to cmd than just the basics (i.e. firmware_upgrate, mgmt_poll_rate)
+        cmd[:cmd_id] = params[request[:cmd_type].to_sym]  
+        
         cmd[:timestamp_initiated] = Time.now
         cmd[:originator] = 'server'
         cmd[:attempts_no_ack] = 0
         cmd[:pending_on_ack] = true
         cmd[:created_by] = current_user.id if current_user
+        
+        #command specific parameter (such as <poll_rate> for the mgmt_poll_rate cmd)
+        cmd[:param1] = request[:param1] if request[:param1]
         
         if /-/.match(request[:ids])     
           create_cmds_for_range_of_devices(request[:ids], cmd)

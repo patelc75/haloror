@@ -3,6 +3,13 @@ xml.management_cmd_server do
   xml.cmd_type cmd.cmd_type
   xml.timestamp cmd.timestamp_sent
   
+  if more
+    more.each_key do |k| 
+      xml.tag!(k.to_sym, more[k])
+    end
+  end
+  
+  
   # if cmd.cmd
   #     for column in cmd.cmd.class.column_names
   #       obj = cmd.cmd.send(column)
