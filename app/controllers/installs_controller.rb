@@ -13,7 +13,8 @@ class InstallsController < ApplicationController
       @role = Role.find(:first, :conditions => "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{@group.id}")
       @users = User.paginate(:page    => params[:page],
                          :include     => [:roles_users], 
-                         :conditions  => "users.id NOT IN (SELECT devices_users.user_id from devices_users) AND roles_users.role_id = #{@role.id}",
+#                         :conditions  => "users.id NOT IN (SELECT devices_users.user_id from devices_users) AND roles_users.role_id = #{@role.id}",
+                         :conditions  => "roles_users.role_id = #{@role.id}",
                          :order       => "users.id asc",
                          :per_page    => 25)
     else 
@@ -46,8 +47,12 @@ class InstallsController < ApplicationController
       unless @gateway
         @gateway = @user.devices.build(params[:gateway])
       end
-      @user.devices << @gateway
-      @gateway.set_type
+      begin
+        @gateway.set_gateway_type
+      rescue Exception => e
+        flash[:warning] = "#{e}"
+        throw e
+      end
     else
       flash[:warning] = "Gateway Serial Number cannot be blank."
       throw "Gateway Serial Number cannot be blank."
@@ -57,18 +62,28 @@ class InstallsController < ApplicationController
     #could have been registered without assigning a user
     if !params[:strap][:serial_number].blank?
       @strap = Device.find_by_serial_number(params[:strap][:serial_number])
-      if @strap && !@strap.users.blank?
+      if @strap && !@strap.users.blank? && !@strap.users.include?(@user)
         flash[:warning] = "Chest Strap with Serial Number #{params[:strap][:serial_number]} is already assigned to a user."
         throw Exception.new
       end
       unless @strap
           @strap = @user.devices.build(params[:strap]) 
       end
-      @user.devices << @strap
-      @strap.set_type
+      begin
+        @strap.set_chest_strap_type
+      rescue Exception => e
+        flash[:warning] = "#{e}"
+        throw e
+      end
     else
       flash[:warning] = "Chest Strap Serial Number cannot be blank."
       throw "Chest Strap Serial Number cannot be blank."
+    end
+    if(@gateway.users.blank? || (!@gateway.users.blank? && !@gateway.users.include?(@user)))
+      @user.devices << @gateway
+    end
+    if(@strap.users.blank?)
+      @user.devices << @strap
     end
     @user.save!
     now = Time.now
@@ -89,10 +104,16 @@ class InstallsController < ApplicationController
                      :pending             => true,
                      :pending_on_ack      => true,                     
                      :timestamp_initiated => now)
-                     
+  redirect_to :action => 'install_wizard', :controller => 'installs', :gateway_id => @gateway.id, :strap_id => @strap.id, :user_id => @user.id
   rescue Exception => e
     RAILS_DEFAULT_LOGGER.warn("ERROR registering devices, #{e}")
     render :action => 'registration'
+  end
+  
+  def install_wizard
+    @user = User.find(params[:user_id])
+    @gateway = Device.find(params[:gateway_id])
+    @strap = Device.find(params[:strap_id])
   end
   
   def install_wizard_progress
