@@ -1,5 +1,5 @@
 <% if @groups %>
-	<form id="group_form_id" action="/installs/users" method="POST">
+	<form id="group_form_id" action="/installs/index_users" method="POST">
 		<% gs = ['Choose a Group']
 		   @groups.each do |g|
 			 gs << g.name

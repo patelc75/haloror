@@ -7,6 +7,14 @@ class InstallsController < ApplicationController
     end
   end
   
+  def index_users
+    if !params[:group].blank? && params[:group] != 'Choose a Group'
+      redirect_to :action => 'users', :controller => 'installs', :group => params[:group]
+    else
+      redirect_to :controller => 'installs', :action => 'index'
+    end
+  end
+  
   def users
     if !params[:group].blank? && params[:group] != 'Choose a Group'
       @group = Group.find_by_name(params[:group])
