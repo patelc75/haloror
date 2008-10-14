@@ -137,44 +137,49 @@ class InstallsController < ApplicationController
     percentage = 0
     self_test_step = nil
     if(self_test_step = check_phone_self_test(user, gateway_id))
-      percentage = 100
+      percentage = 70
       text = self_test_step.self_test_step_description.description
-      message = launch_remote_redbox(:url =>{ :controller => "installs", :action => 'self_test_complete'}, :html => {:method => :get, :complete => ''})
 #      "Installation Successful!<br />  Press 'Finish' to Complete.<br /><br /><form action=\"/installs/finish\" method=\"POST\"><input type=\"submit\" name=\"Finish\" value=\"Finish\" /></form>"
     elsif(self_test_step = check_chest_strap_self_test(user, strap_id))
-      percentage = 60
+      percentage = 45
       text = self_test_step.self_test_step_description.description
     elsif(self_test_step = check_gateway_self_test(user, gateway_id))
-      percentage = 40
+      percentage = 30
       text = self_test_step.self_test_step_description.description
     elsif(self_test_step = check_registered(user, gateway_id, strap_id))
-      percentage = 20
+      percentage = 15
       text = self_test_step.self_test_step_description.description
     end
     checked = "/images/checkbox.png"
+    #
+    #
+    #
+    #
+#    percentage = 70
     render(:update) do |page| 
       page.call('update_percentage', percentage)
       page.replace_html 'install_wizard_status', text
-      if(percentage == 100)
+      if(percentage == 70)
+        page.call('update_self_test', false)
         page['registered_check'].src = checked
         page['self_test_gateway_check'].src = checked
         page['self_test_chest_strap_check'].src = checked
         page['self_test_phone_check'].src = checked
-        message = launch_remote_redbox(:url =>{ :controller => "installs", :action => 'self_test_complete'}, :html => {:method => :get, :complete => ''})
-      elsif(percentage == 60)
+        message = launch_remote_redbox(:url =>{ :gateway_id => gateway_id, :strap_id => strap_id, :user_id => user.id, :controller => "installs", :action => 'self_test_complete'}, :html => {:method => :get, :complete => ''})
+      elsif(percentage == 45)
         page['registered_check'].src = checked
         page['self_test_gateway_check'].src = checked
         page['self_test_chest_strap_check'].src = checked
         if @self_test && !@self_test.result
           message = "Phone self test failed."
         end
-      elsif(percentage == 40)
+      elsif(percentage == 30)
         page['registered_check'].src = checked
         page['self_test_gateway_check'].src = checked
         if @self_test && !@self_test.result
           message = "Self test failed on Halo Chest Strap."
         end        
-      elsif(percentage == 20)
+      elsif(percentage == 15)
         page['registered_check'].src = checked 
         if @self_test && !@self_test.result
           message = "Self test failed on Halo Gateway."
@@ -185,8 +190,40 @@ class InstallsController < ApplicationController
   end
   
   def self_test_complete
-    
+    @gateway_id = params[:gateway_id]
+    @strap_id = params[:strap_id]
+    @user = User.find(params[:user_id])
+    @gateway = Device.find(@gateway_id)
+    @strap = Device.find(@strap_id)
   end
+  
+  def install_wizard_vitals
+    @gateway_id = params[:gateway_id]
+    @strap_id = params[:strap_id]
+    @user = User.find(params[:user_id])
+    @gateway = Device.find(@gateway_id)
+    @strap = Device.find(@strap_id)
+    yesterday = 1.day.ago
+    checked = "/images/checkbox.png"
+    @strap_fastened = StrapFastened.find(:first, :conditions => "user_id = #{@user.id} AND device_id = #{@strap_id} AND timestamp > '#{yesterday.to_s}'")
+    percentage = 70
+    render(:update) do |page|
+      if @strap_fastened
+        page[:strap_check].src = checked
+        percentage = 85
+        @vital = Vital.find(:first, :conditions => "user_id = #{@user.id} AND heartrate != -1 AND timestamp > '#{yesterday.to_s}'")
+        if @vital
+          page[:heartrate_check].src = checked
+          page[:heartrate_detected].replace_html "Heartrate Detected:  #{@vital.heartrate}"
+          percentage = 100
+        end
+      end
+      page.call("update_percentage", percentage)
+    end
+  end
+  
+  
+  
   
   private
   def check_phone_self_test(user, gateway_id)

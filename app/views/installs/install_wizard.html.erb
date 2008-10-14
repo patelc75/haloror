@@ -1,6 +1,8 @@
 <script language="javascript">
 	var firstManualPB;
-	var install_wizard_percentage;
+	var install_wizard_percentage = 0;
+	var checkVitals = false;
+	var checkSelfTest = true;
 	Event.observe(window, 'load', function() {
        firstManualPB = new JS_BRAMUS.jsProgressBar($('installation_wizard_progress'), 0, {animate: true, width: 120, height: 12});
     }, false);
@@ -8,8 +10,18 @@
 		firstManualPB.setPercentage(percentage);
 		install_wizard_percentage = percentage;	
 	}
+	function update_self_test(b){
+		checkSelfTest = b;
+	}
+	function check_vitals(){
+		checkVitals = true;
+	}
+	function update_vitals(b){
+		checkVitals = b;
+	}
 </script>
-<%= periodically_call_remote(:url => { :controller => 'installs', :action => 'install_wizard_progress', :user_id => @user.id, :gateway_id => @gateway.id, :strap_id => @strap.id }, :condition => "install_wizard_percentage != 100", :frequency => INSTALL_WIZARD_POLL_RATE)%>
+<%= periodically_call_remote(:url => { :controller => 'installs', :action => 'install_wizard_progress', :user_id => @user.id, :gateway_id => @gateway.id, :strap_id => @strap.id }, :condition => "checkSelfTest && install_wizard_percentage < 70", :frequency => INSTALL_WIZARD_POLL_RATE)%>
+		<%= periodically_call_remote(:url => { :controller => 'installs', :action => 'install_wizard_vitals', :user_id => @user.id, :gateway_id => @gateway.id, :strap_id => @strap.id }, :condition => "install_wizard_percentage >= 70 && install_wizard_percentage < 100 && checkVitals", :frequency => INSTALL_WIZARD_POLL_RATE)%>
 <div id="call_list-col">
 	<div align="center" id="call_list-col-header">
 		Installation Wizard
@@ -45,6 +57,14 @@
 		<div class="row">
 			<div class="col-150"><img id="self_test_phone_check" width="60" height="60"  src="/images/checkbox_grey.png"></div>
 			<div class="col-150" style="vertical-align: middle;">Self Test Phone</div>
+		</div>
+		<div class="row">
+			<div class="col-150"><img id="strap_check" width="60" height="60" src="/images/checkbox_grey.png"></div>
+			<div class="col-150" style="vertical-align: middle;">Strap Worn Detected</div>
+		</div>
+		<div class="row">	
+			<div class="col-150"><img id="heartrate_check" width="60" height="60"  src="/images/checkbox_grey.png"></div>
+			<div class="col-150" style="vertical-align: middle;" id="heartrate_detected">Heartrate Detected</div>
 		</div>
 	  </div>
 	</div>
