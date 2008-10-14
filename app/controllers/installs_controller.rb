@@ -16,7 +16,7 @@ class InstallsController < ApplicationController
 #                         :conditions  => "users.id NOT IN (SELECT devices_users.user_id from devices_users) AND roles_users.role_id = #{@role.id}",
                          :conditions  => "roles_users.role_id = #{@role.id}",
                          :order       => "users.id asc",
-                         :per_page    => 25)
+                         :per_page    => 10)
     else 
       redirect_to :controller => 'installs', :action => 'index'
     end
