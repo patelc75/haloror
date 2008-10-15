@@ -99,14 +99,14 @@ class InstallsController < ApplicationController
     end
     @user.save!
     now = Time.now
-    MgmtCmd.create(:cmd_type            => 'self_test', 
-                     :device_id           => @strap.id, 
-                     :user_id             => @user.id,
-                     :creator             => current_user,
-                     :originator          => 'server',
-                     :pending             => true,
-                     :pending_on_ack      => true,                     
-                     :timestamp_initiated => now)
+#    MgmtCmd.create(:cmd_type            => 'self_test', 
+#                     :device_id           => @strap.id, 
+#                     :user_id             => @user.id,
+#                     :creator             => current_user,
+#                     :originator          => 'server',
+#                     :pending             => true,
+#                     :pending_on_ack      => true,                     
+#                     :timestamp_initiated => now)
     
     MgmtCmd.create(:cmd_type            => 'self_test_phone', 
                      :device_id           => @gateway.id, 
@@ -123,31 +123,29 @@ class InstallsController < ApplicationController
   end
   
   def install_wizard
-    @user = User.find(params[:user_id])
-    @gateway = Device.find(params[:gateway_id])
-    @strap = Device.find(params[:strap_id])
+    init_devices_user
+    session[:halo_install_wizard_timeout] = INSTALL_WIZARD_TIMEOUT.seconds.from_now
+    session[:halo_install_wizard_start_timestamp_delay] = INSTALL_WIZARD_START_TIMESTAMP_DELAY.seconds.ago
   end
   
   def install_wizard_progress
-    gateway_id = params[:gateway_id]
-    strap_id = params[:strap_id]
-    user = User.find(params[:user_id])
+    failure = false
+    init_devices_user
     text = 'Registering...'
     message = ''
     percentage = 0
     self_test_step = nil
-    if(self_test_step = check_phone_self_test(user, gateway_id))
-      percentage = 70
+    if(self_test_step = check_phone_self_test(@user, @gateway_id))
+      percentage = PHONE_SELF_TEST_PERCENTAGE
       text = self_test_step.self_test_step_description.description
-#      "Installation Successful!<br />  Press 'Finish' to Complete.<br /><br /><form action=\"/installs/finish\" method=\"POST\"><input type=\"submit\" name=\"Finish\" value=\"Finish\" /></form>"
-    elsif(self_test_step = check_chest_strap_self_test(user, strap_id))
-      percentage = 45
+    elsif(self_test_step = check_chest_strap_self_test(@user, @strap_id))
+      percentage = CHEST_STRAP_SELF_TEST_PERCENTAGE
       text = self_test_step.self_test_step_description.description
-    elsif(self_test_step = check_gateway_self_test(user, gateway_id))
-      percentage = 30
+    elsif(self_test_step = check_gateway_self_test(@user, @gateway_id))
+      percentage = GATEWAY_SELF_TEST_PERCENTAGE
       text = self_test_step.self_test_step_description.description
-    elsif(self_test_step = check_registered(user, gateway_id, strap_id))
-      percentage = 15
+    elsif(self_test_step = check_registered(@user, @gateway_id, @strap_id))
+      percentage = REGISTRATION_PERCENTAGE
       text = self_test_step.self_test_step_description.description
     end
     checked = "/images/checkbox.png"
@@ -156,90 +154,179 @@ class InstallsController < ApplicationController
     #
     #
 #    percentage = 70
+    message = text
     render(:update) do |page| 
       page.call('update_percentage', percentage)
-      page.replace_html 'install_wizard_status', text
-      if(percentage == 70)
+      if(percentage == PHONE_SELF_TEST_PERCENTAGE)
         page.call('update_self_test', false)
         page['registered_check'].src = checked
         page['self_test_gateway_check'].src = checked
         page['self_test_chest_strap_check'].src = checked
         page['self_test_phone_check'].src = checked
-        message = launch_remote_redbox(:url =>{ :gateway_id => gateway_id, :strap_id => strap_id, :user_id => user.id, :controller => "installs", :action => 'self_test_complete'}, :html => {:method => :get, :complete => ''})
-      elsif(percentage == 45)
+        launcher = launch_remote_redbox(:url =>{ :gateway_id => @gateway_id, :strap_id => @strap_id, :user_id => @user.id, :controller => "installs", :action => 'self_test_complete'}, :html => {:method => :get, :complete => ''})
+      elsif(percentage == CHEST_STRAP_SELF_TEST_PERCENTAGE)
         page['registered_check'].src = checked
         page['self_test_gateway_check'].src = checked
         page['self_test_chest_strap_check'].src = checked
-        if @self_test && !@self_test.result
+        if session[:halo_check_phone_self_test_result] && !session[:halo_check_phone_self_test_result].result
           message = "Phone self test failed."
+          failure = true
         end
-      elsif(percentage == 30)
+      elsif(percentage == GATEWAY_SELF_TEST_PERCENTAGE)
         page['registered_check'].src = checked
         page['self_test_gateway_check'].src = checked
-        if @self_test && !@self_test.result
+        if session[:halo_check_chest_strap_self_test_result] && !session[:halo_check_chest_strap_self_test_result].result
           message = "Self test failed on Halo Chest Strap."
+          failure = true
         end        
-      elsif(percentage == 15)
+      elsif(percentage == REGISTRATION_PERCENTAGE)
         page['registered_check'].src = checked 
-        if @self_test && !@self_test.result
+        if session[:halo_check_gateway_self_test_result] && !session[:halo_check_gateway_self_test_result].result
           message = "Self test failed on Halo Gateway."
-        end   
+          failure = true
+        end 
       end
       page.replace_html 'install_wizard_result', message
+      page.replace_html 'install_wizard_launch', launcher
+      if failure
+        message = "<b>Installation Failed:</b>  #{message}"
+        page.replace_html 'install_wizard_result', message
+        page.replace_html 'install_wizard_launch', launch_remote_redbox(:url =>{ :message => message, :gateway_id => @gateway_id, :strap_id => @strap_id, :user_id => @user.id, :controller => "installs", :action => 'failure_notice'}, :html => {:method => :get, :complete => ''})
+        page.call('update_self_test', false)
+      end
     end
   end
-  
+  def failure_notice
+    @failure_notice = params[:message]
+    init_devices_user
+  end
   def self_test_complete
-    @gateway_id = params[:gateway_id]
-    @strap_id = params[:strap_id]
-    @user = User.find(params[:user_id])
-    @gateway = Device.find(@gateway_id)
-    @strap = Device.find(@strap_id)
+    init_devices_user
+    MgmtCmd.create(:cmd_type            => 'range_test_start', 
+                     :device_id           => @strap.id, 
+                     :user_id             => @user.id,
+                     :creator             => current_user,
+                     :originator          => 'server',
+                     :pending             => true,
+                     :pending_on_ack      => true,                     
+                     :timestamp_initiated => Time.now)
   end
   
   def install_wizard_vitals
+    init_devices_user
+    launcher=''
+    message=''
+    delay = session[:halo_install_wizard_start_timestamp_delay]
+    checked = "/images/checkbox.png"
+    @strap_fastened = StrapFastened.find(:first, :conditions => "user_id = #{@user.id} AND device_id = #{@strap_id} AND timestamp > '#{delay.to_s}'")
+    percentage = nil
+    render(:update) do |page|
+      if @strap_fastened
+        page[:strap_check].src = checked
+        percentage = CHEST_STRAP_DETECTED_PERCENTAGE
+        self_test_step_description = SelfTestStepDescription.find(CHEST_STRAP_TEST_STEP_DESCRIPTION_ID)    
+        self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
+                          :timestamp => Time.now,
+                          :user_id => current_user.id, 
+                          :halo_user_id => @user.id)
+        message = self_test_step_description.description
+        @vital = Vital.find(:first, :conditions => "user_id = #{@user.id} AND heartrate != -1 AND timestamp > '#{delay.to_s}'")
+        if @vital
+          page[:heartrate_check].src = checked
+          page[:heartrate_detected].replace_html "Heartrate Detected:  #{@vital.heartrate}"
+          percentage = HEARTRATE_DETECTED_PERCENTAGE
+          self_test_step_description = SelfTestStepDescription.find(HEARTRATE_TEST_STEP_DESCRIPTION_ID)    
+          self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
+                          :timestamp => Time.now,
+                          :user_id => current_user.id, 
+                          :halo_user_id => @user.id)
+          message = self_test_step_description.description                
+          launcher = launch_remote_redbox(:url =>{ :gateway_id => @gateway_id, 
+                                                  :strap_id => @strap_id, 
+                                                  :user_id => @user.id, 
+                                                  :controller => "installs", 
+                                                  :action => 'vitals_complete'}, 
+                                         :html => {:method => :get, :complete => ''})
+        end
+      end
+      page.call("update_percentage", percentage) if percentage
+      page.replace_html 'install_wizard_result', message
+      page.replace_html 'vitals_complete_div', launcher
+    end
+  end
+  
+  def vitals_complete
+    init_devices_user
+  end
+  
+  def start_range_test
+    init_devices_user
+    render(:update) do |page|
+      launcher = launch_remote_redbox(:url =>{ :gateway_id => @gateway_id, 
+                                                  :strap_id => @strap_id, 
+                                                  :user_id => @user.id, 
+                                                  :controller => "installs", 
+                                                  :action => 'range_test'}, 
+                                         :html => {:method => :get, :complete => ''})
+      page.replace_html 'range_test_start_div', launcher
+      page.replace_html 'install_wizard_result', 'Range Test Started'
+    end
+  end
+  
+  def range_test
+    init_devices_user
+  end
+  
+  def stop_range_test
+    init_devices_user
+    MgmtCmd.create(:cmd_type            => 'range_test_stop', 
+                     :device_id           => @strap.id, 
+                     :user_id             => @user.id,
+                     :creator             => current_user,
+                     :originator          => 'server',
+                     :pending             => true,
+                     :pending_on_ack      => true,                     
+                     :timestamp_initiated => Time.now)
+    message = "Range Test Complete"
+    MgmtCmd.create(:cmd_type              => 'mgmt_poll_rate', 
+                     :device_id           => @strap.id, 
+                     :user_id             => @user.id,
+                     :creator             => current_user,
+                     :originator          => 'server',
+                     :pending             => true,
+                     :pending_on_ack      => true,                     
+                     :timestamp_initiated => Time.now,
+                     :param1              => MGMT_POLL_RATE)
+    render(:update) do |page|
+      page.replace_html 'install_wizard_result', message
+    end
+  end
+  private
+  
+  def init_devices_user
     @gateway_id = params[:gateway_id]
     @strap_id = params[:strap_id]
     @user = User.find(params[:user_id])
     @gateway = Device.find(@gateway_id)
     @strap = Device.find(@strap_id)
-    yesterday = 1.day.ago
-    checked = "/images/checkbox.png"
-    @strap_fastened = StrapFastened.find(:first, :conditions => "user_id = #{@user.id} AND device_id = #{@strap_id} AND timestamp > '#{yesterday.to_s}'")
-    percentage = 70
-    render(:update) do |page|
-      if @strap_fastened
-        page[:strap_check].src = checked
-        percentage = 85
-        @vital = Vital.find(:first, :conditions => "user_id = #{@user.id} AND heartrate != -1 AND timestamp > '#{yesterday.to_s}'")
-        if @vital
-          page[:heartrate_check].src = checked
-          page[:heartrate_detected].replace_html "Heartrate Detected:  #{@vital.heartrate}"
-          percentage = 100
-        end
-      end
-      page.call("update_percentage", percentage)
-    end
   end
   
-  
-  
-  
-  private
   def check_phone_self_test(user, gateway_id)
-    yesterday = 1.day.ago
+    delay = session[:halo_install_wizard_start_timestamp_delay]
     if(!session[:halo_check_phone_self_test])
-      @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{gateway_id} AND cmd_type = 'self_test_phone' AND result = true AND timestamp > '#{yesterday.to_s}'")
+      @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{gateway_id} AND cmd_type = 'self_test_phone' AND result = true AND timestamp > '#{delay.to_s}'")
       if @self_test
-        self_test_step_description = SelfTestStepDescription.find(4)    
+        self_test_step_description = SelfTestStepDescription.find(PHONE_SELF_TEST_STEP_DESCRIPTION_ID)    
         self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
                           :timestamp => Time.now,
                           :user_id => current_user.id, 
                           :halo_user_id => user.id)
         session[:halo_check_phone_self_test] = self_test_step
+        session[:halo_check_phone_self_test_result] = @self_test
         return self_test_step
       else
-        @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{gateway_id} AND cmd_type = 'self_test_phone' AND result = false AND timestamp > '#{yesterday.to_s}'")        
+        @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{gateway_id} AND cmd_type = 'self_test_phone' AND result = false AND timestamp > '#{delay.to_s}'")        
+        session[:halo_check_phone_self_test_result] = @self_test
         return false
       end
     else
@@ -248,40 +335,52 @@ class InstallsController < ApplicationController
   end
   
   def check_chest_strap_self_test(user, strap_id)
-    yesterday = 1.day.ago
-    if(!session[:halo_check_chest_strap_self_test])
-      @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{strap_id} AND cmd_type = 'self_test' AND result = true AND timestamp > '#{yesterday.to_s}'")
-      if @self_test
-        self_test_step_description = SelfTestStepDescription.find(3)    
-        self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
-                          :timestamp => Time.now,
-                          :user_id => current_user.id, 
-                          :halo_user_id => user.id)
-        session[:halo_check_chest_strap_self_test] = self_test_step
-        return self_test_step
-      else
-        @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{strap_id} AND cmd_type = 'self_test' AND result = false AND timestamp > '#{yesterday.to_s}'")
-        return false
-      end
-    else
-      return session[:halo_check_chest_strap_self_test]
-    end
+#    delay = session[:halo_install_wizard_start_timestamp_delay]
+#    if(!session[:halo_check_chest_strap_self_test])
+#      @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{strap_id} AND cmd_type = 'self_test' AND result = true AND timestamp > '#{delay.to_s}'")
+#      if @self_test
+#        self_test_step_description = SelfTestStepDescription.find(CHEST_STRAP_SELF_TEST_STEP_DESCRIPTION_ID)    
+#        self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
+#                          :timestamp => Time.now,
+#                          :user_id => current_user.id, 
+#                          :halo_user_id => user.id)
+#        session[:halo_check_chest_strap_self_test] = self_test_step
+#        return self_test_step
+#      else
+#        @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{strap_id} AND cmd_type = 'self_test' AND result = false AND timestamp > '#{delay.to_s}'")
+#        return false
+#      end
+#    else
+#      return session[:halo_check_chest_strap_self_test]
+#    end
+    @self_test = SelfTestResult.new(:result => true, :cmd_type => 'self_test', :device_id => @strap_id, :timestamp => Time.now)
+    self_test_step_description = SelfTestStepDescription.find(CHEST_STRAP_SELF_TEST_STEP_DESCRIPTION_ID)    
+    self_test_step = SelfTestStep.new(:self_test_step_description_id => self_test_step_description.id,
+                      :timestamp => Time.now,
+                      :user_id => current_user.id, 
+                      :halo_user_id => user.id)
+    self_test_step.self_test_step_description = self_test_step_description
+    session[:halo_check_chest_strap_self_test] = self_test_step
+    session[:halo_check_chest_strap_self_test_result] = @self_test
+    return self_test_step
   end
   
   def check_gateway_self_test(user, gateway_id)
-    yesterday = 1.day.ago
+    delay = session[:halo_install_wizard_start_timestamp_delay] - GATEWAY_SELF_TEST_DELAY.seconds
     if(!session[:halo_check_gateway_self_test])
-      @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{gateway_id} AND cmd_type = 'self_test' AND result = true AND timestamp > '#{yesterday.to_s}'")
+      @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{gateway_id} AND cmd_type = 'self_test' AND result = true AND timestamp > '#{delay.to_s}'")
       if @self_test
-        self_test_step_description = SelfTestStepDescription.find(2)    
+        self_test_step_description = SelfTestStepDescription.find(GATEWAY_SELF_TEST_STEP_DESCRIPTION_ID)    
         self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
                           :timestamp => Time.now,
                           :user_id => current_user.id, 
                           :halo_user_id => user.id)
         session[:halo_check_gateway_self_test] = self_test_step
+        session[:halo_check_gateway_self_test_result] = @self_test
         return self_test_step
       else
-        @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{gateway_id} AND cmd_type = 'self_test' AND result = false AND timestamp > '#{yesterday.to_s}'")
+        @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{gateway_id} AND cmd_type = 'self_test' AND result = false AND timestamp > '#{delay.to_s}'")
+        session[:halo_check_gateway_self_test_result] = @self_test
         return false
       end
     else
@@ -294,7 +393,7 @@ class InstallsController < ApplicationController
       user_registration_mgmt_cmd_strap   =  MgmtCmd.find(:first, :conditions => "device_id = #{strap_id} AND user_id = #{user.id} AND cmd_type = 'user_registration'")
       
       if(user_registration_mgmt_cmd_strap && user.devices.find(gateway_id) && user.devices.find(strap_id))
-        self_test_step_description = SelfTestStepDescription.find(1)    
+        self_test_step_description = SelfTestStepDescription.find(REGISTRATION_SELF_TEST_STEP_DESCRIPTION_ID)    
         self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
                           :timestamp => Time.now,
                           :user_id => current_user.id, 

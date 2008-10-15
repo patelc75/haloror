@@ -19,6 +19,16 @@
 	function update_vitals(b){
 		checkVitals = b;
 	}
+	function start_range_test(){
+		url = "/installs/start_range_test/?gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
+		new Ajax.Request(url, {
+  			method: 'get'});
+	}
+	function stop_range_test(){
+		url = "/installs/stop_range_test/?gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
+		new Ajax.Request(url, {
+  			method: 'get'});
+	}
 </script>
 <%= periodically_call_remote(:url => { :controller => 'installs', :action => 'install_wizard_progress', :user_id => @user.id, :gateway_id => @gateway.id, :strap_id => @strap.id }, :condition => "checkSelfTest && install_wizard_percentage < 70", :frequency => INSTALL_WIZARD_POLL_RATE)%>
 		<%= periodically_call_remote(:url => { :controller => 'installs', :action => 'install_wizard_vitals', :user_id => @user.id, :gateway_id => @gateway.id, :strap_id => @strap.id }, :condition => "install_wizard_percentage >= 70 && install_wizard_percentage < 100 && checkVitals", :frequency => INSTALL_WIZARD_POLL_RATE)%>
@@ -35,6 +45,10 @@
 		</div>
 		<div class="row">
 			<div id="install_wizard_result"></div>
+			<div id="vitals_complete_div"></div>
+			<div id="range_test_start_div"></div>
+			<div id="range_test_stop_div"></div>
+			<div id="install_wizard_launch"></div>
 		</div>
 		<div class="row">
 			<div class="percentImage1" id="installation_wizard_progress">[ Loading Progress Bar ]</div>
