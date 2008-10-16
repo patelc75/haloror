@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081013202305) do
+ActiveRecord::Schema.define(:version => 20081016061514) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -313,6 +313,7 @@ ActiveRecord::Schema.define(:version => 20081013202305) do
     t.integer  "attempts_no_ack"
     t.boolean  "pending_on_ack"
     t.integer  "created_by"
+    t.integer  "param1"
   end
 
   create_table "mgmt_queries", :force => true do |t|
