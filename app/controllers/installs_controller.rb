@@ -224,7 +224,7 @@ class InstallsController < ApplicationController
       if @strap_fastened
         page[:strap_check].src = checked
         percentage = CHEST_STRAP_DETECTED_PERCENTAGE
-        self_test_step_description = SelfTestStepDescription.find(CHEST_STRAP_TEST_STEP_DESCRIPTION_ID)    
+        self_test_step_description = SelfTestStepDescription.find(CHEST_STRAP_FASTENED_DETECTED_ID)    
         self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
                           :timestamp => Time.now,
                           :user_id => current_user.id, 
@@ -235,7 +235,7 @@ class InstallsController < ApplicationController
           page[:heartrate_check].src = checked
           page[:heartrate_detected].replace_html "Heartrate Detected:  #{@vital.heartrate}"
           percentage = HEARTRATE_DETECTED_PERCENTAGE
-          self_test_step_description = SelfTestStepDescription.find(HEARTRATE_TEST_STEP_DESCRIPTION_ID)    
+          self_test_step_description = SelfTestStepDescription.find(HEARTRATE_DETECTED_ID)    
           self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
                           :timestamp => Time.now,
                           :user_id => current_user.id, 
@@ -316,7 +316,7 @@ class InstallsController < ApplicationController
     if(!session[:halo_check_phone_self_test])
       @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{gateway_id} AND cmd_type = 'self_test_phone' AND result = true AND timestamp > '#{delay.to_s}'")
       if @self_test
-        self_test_step_description = SelfTestStepDescription.find(PHONE_SELF_TEST_STEP_DESCRIPTION_ID)    
+        self_test_step_description = SelfTestStepDescription.find(SELF_TEST_PHONE_COMPLETE_ID)    
         self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
                           :timestamp => Time.now,
                           :user_id => current_user.id, 
@@ -339,7 +339,7 @@ class InstallsController < ApplicationController
 #    if(!session[:halo_check_chest_strap_self_test])
 #      @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{strap_id} AND cmd_type = 'self_test' AND result = true AND timestamp > '#{delay.to_s}'")
 #      if @self_test
-#        self_test_step_description = SelfTestStepDescription.find(CHEST_STRAP_SELF_TEST_STEP_DESCRIPTION_ID)    
+#        self_test_step_description = SelfTestStepDescription.find(SELF_TEST_CHEST_STRAP_COMPLETE_ID)    
 #        self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
 #                          :timestamp => Time.now,
 #                          :user_id => current_user.id, 
@@ -354,7 +354,7 @@ class InstallsController < ApplicationController
 #      return session[:halo_check_chest_strap_self_test]
 #    end
     @self_test = SelfTestResult.new(:result => true, :cmd_type => 'self_test', :device_id => @strap_id, :timestamp => Time.now)
-    self_test_step_description = SelfTestStepDescription.find(CHEST_STRAP_SELF_TEST_STEP_DESCRIPTION_ID)    
+    self_test_step_description = SelfTestStepDescription.find(SELF_TEST_CHEST_STRAP_COMPLETE_ID)    
     self_test_step = SelfTestStep.new(:self_test_step_description_id => self_test_step_description.id,
                       :timestamp => Time.now,
                       :user_id => current_user.id, 
@@ -370,7 +370,7 @@ class InstallsController < ApplicationController
     if(!session[:halo_check_gateway_self_test])
       @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{gateway_id} AND cmd_type = 'self_test' AND result = true AND timestamp > '#{delay.to_s}'")
       if @self_test
-        self_test_step_description = SelfTestStepDescription.find(GATEWAY_SELF_TEST_STEP_DESCRIPTION_ID)    
+        self_test_step_description = SelfTestStepDescription.find(SELF_TEST_GATEWAY_COMPLETE_ID)    
         self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
                           :timestamp => Time.now,
                           :user_id => current_user.id, 
@@ -393,7 +393,7 @@ class InstallsController < ApplicationController
       user_registration_mgmt_cmd_strap   =  MgmtCmd.find(:first, :conditions => "device_id = #{strap_id} AND user_id = #{user.id} AND cmd_type = 'user_registration'")
       
       if(user_registration_mgmt_cmd_strap && user.devices.find(gateway_id) && user.devices.find(strap_id))
-        self_test_step_description = SelfTestStepDescription.find(REGISTRATION_SELF_TEST_STEP_DESCRIPTION_ID)    
+        self_test_step_description = SelfTestStepDescription.find(REGISTRATION_COMPLETE_ID)    
         self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
                           :timestamp => Time.now,
                           :user_id => current_user.id, 
