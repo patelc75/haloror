@@ -27,7 +27,7 @@ function getConfig() {
     
     config.TimerInterval = 10000; //milliseconds
 	config.Timeout = 60; // seconds
-	config.MinutesLive = 10; //minutes
+	config.MinutesLive = 30; //minutes
 	
 	config.heartRateAxisMin = 0;
 	config.heartRateAxisMax = 150;
