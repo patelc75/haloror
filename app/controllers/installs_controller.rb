@@ -110,6 +110,14 @@ class InstallsController < ApplicationController
       @user.devices << @strap
     end
     @user.save!
+    MgmtCmd.create(:cmd_type            => 'self_test', 
+                   :device_id           => @gateway.id, 
+                   :user_id             => @user.id,
+                   :creator             => current_user,
+                   :originator          => 'server',
+                   :pending             => true,
+                   :pending_on_ack      => true,                     
+                   :timestamp_initiated => now)
     create_self_test_step(INSTALLATION_SERIAL_NUMBERS_ENTERED_ID) 
     now = Time.now
     #   create_self_test_step(SELF_TEST_CHEST_STRAP_MGMT_COMMAND_CREATED_ID)
