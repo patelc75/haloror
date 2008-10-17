@@ -110,7 +110,6 @@ class InstallsController < ApplicationController
       @user.devices << @strap
     end
     @user.save!
-    now = Time.now
     MgmtCmd.create(:cmd_type            => 'self_test', 
                    :device_id           => @gateway.id, 
                    :user_id             => @user.id,
@@ -118,7 +117,7 @@ class InstallsController < ApplicationController
                    :originator          => 'server',
                    :pending             => true,
                    :pending_on_ack      => true,                     
-                   :timestamp_initiated => now)
+                   :timestamp_initiated => Time.now)
     create_self_test_step(INSTALLATION_SERIAL_NUMBERS_ENTERED_ID) 
     #   create_self_test_step(SELF_TEST_CHEST_STRAP_MGMT_COMMAND_CREATED_ID)
     #    MgmtCmd.create(:cmd_type            => 'self_test', 
@@ -128,7 +127,7 @@ class InstallsController < ApplicationController
     #                     :originator          => 'server',
     #                     :pending             => true,
     #                     :pending_on_ack      => true,                     
-    #                     :timestamp_initiated => now)
+    #                     :timestamp_initiated => Time.now)
     
     create_self_test_step(SELF_TEST_PHONE_MGMT_COMMAND_CREATED_ID)
     MgmtCmd.create(:cmd_type            => 'self_test_phone', 
@@ -138,7 +137,7 @@ class InstallsController < ApplicationController
     :originator          => 'server',
     :pending             => true,
     :pending_on_ack      => true,                     
-    :timestamp_initiated => now)
+    :timestamp_initiated => Time.now)
     redirect_to :action => 'install_wizard', :controller => 'installs', :self_test_session_id => @self_test_session_id,
     :gateway_id => @gateway.id, :strap_id => @strap.id, :user_id => @user.id
   rescue Exception => e
