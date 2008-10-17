@@ -59,6 +59,8 @@ class InstallsController < ApplicationController
     @user = User.find(params[:user_id])
     @gateway = nil
     @strap = nil
+    @self_test_session_id = params[:self_test_session_id]
+    @self_test_session = SelfTestSession.find(@self_test_session_id)
     gateway_serial_number = params[:gateway][:serial_number]
     #check if gateway exists
     if !gateway_serial_number.blank?
