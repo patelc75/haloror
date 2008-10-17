@@ -3,7 +3,7 @@ class InstallsController < ApplicationController
   include ActionView::Helpers::PrototypeHelper
   include ActionView::Helpers::TagHelper
   include RedboxHelper
-
+  
   
   def index
     @groups = []
@@ -27,24 +27,24 @@ class InstallsController < ApplicationController
       conds = "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{@group.id}"
       @role = Role.find(:first, :conditions => conds)
       @users = User.paginate(:page    => params[:page],
-                         :include     => [:roles_users], 
-#                         :conditions  => "users.id NOT IN (SELECT devices_users.user_id from devices_users) AND roles_users.role_id = #{@role.id}",
-                         :conditions  => "roles_users.role_id = #{@role.id}",
-                         :order       => "users.id asc",
-                         :per_page    => 10)
+                             :include     => [:roles_users], 
+                             #                         :conditions  => "users.id NOT IN (SELECT devices_users.user_id from devices_users) AND roles_users.role_id = #{@role.id}",
+                             :conditions  => "roles_users.role_id = #{@role.id}",
+      :order       => "users.id asc",
+      :per_page    => 10)
     else 
       redirect_to :controller => 'installs', :action => 'index'
     end
   end
-   def registration
+  def registration
     if check_params_for_group
-        @group = Group.find_by_name(params[:group])
+      @group = Group.find_by_name(params[:group])
       if !params[:id].blank?
         @id = params[:id]
         @user = User.find(@id)
         @gateway = Device.new
         @strap = Device.new
-        @self_test_session = SelfTestSession.create(:created_at => Time.now, :user_id => @user.id, :created_by => current_user.id)
+        
       else
         redirect_to :controller => 'installs', :action => 'users'
       end
@@ -57,8 +57,8 @@ class InstallsController < ApplicationController
     @user = User.find(params[:user_id])
     @gateway = nil
     @strap = nil
-    @self_test_session_id = params[:self_test_session_id]
-    @self_test_session = SelfTestSession.find(@self_test_session_id)
+    @self_test_session = SelfTestSession.create(:created_at => Time.now, :user_id => @user.id, :created_by => current_user.id)
+    @self_test_session_id = @self_test_session_id
     gateway_serial_number = params[:gateway][:serial_number]
     #check if gateway exists
     if !gateway_serial_number.blank?
@@ -88,7 +88,7 @@ class InstallsController < ApplicationController
         throw Exception.new
       end
       unless @strap
-          @strap = @user.devices.build(params[:strap]) 
+        @strap = @user.devices.build(params[:strap]) 
       end
       begin
         @strap.set_chest_strap_type
@@ -110,28 +110,28 @@ class InstallsController < ApplicationController
     @user.save!
     create_self_test_step(INSTALLATION_SERIAL_NUMBERS_ENTERED_ID) 
     now = Time.now
-#   create_self_test_step(SELF_TEST_CHEST_STRAP_MGMT_COMMAND_CREATED_ID)
-#    MgmtCmd.create(:cmd_type            => 'self_test', 
-#                     :device_id           => @strap.id, 
-#                     :user_id             => @user.id,
-#                     :creator             => current_user,
-#                     :originator          => 'server',
-#                     :pending             => true,
-#                     :pending_on_ack      => true,                     
-#                     :timestamp_initiated => now)
-
-  create_self_test_step(SELF_TEST_PHONE_MGMT_COMMAND_CREATED_ID)
-  MgmtCmd.create(:cmd_type            => 'self_test_phone', 
-                     :device_id           => @gateway.id, 
-                     :user_id             => @user.id,
-                     :creator             => current_user,
-                     :originator          => 'server',
-                     :pending             => true,
-                     :pending_on_ack      => true,                     
-                     :timestamp_initiated => now)
-  redirect_to :action => 'install_wizard', :controller => 'installs',
-              :self_test_session_id => @self_test_session_id,
-              :gateway_id => @gateway.id, :strap_id => @strap.id, :user_id => @user.id
+    #   create_self_test_step(SELF_TEST_CHEST_STRAP_MGMT_COMMAND_CREATED_ID)
+    #    MgmtCmd.create(:cmd_type            => 'self_test', 
+    #                     :device_id           => @strap.id, 
+    #                     :user_id             => @user.id,
+    #                     :creator             => current_user,
+    #                     :originator          => 'server',
+    #                     :pending             => true,
+    #                     :pending_on_ack      => true,                     
+    #                     :timestamp_initiated => now)
+    
+    create_self_test_step(SELF_TEST_PHONE_MGMT_COMMAND_CREATED_ID)
+    MgmtCmd.create(:cmd_type            => 'self_test_phone', 
+    :device_id           => @gateway.id, 
+    :user_id             => @user.id,
+    :creator             => current_user,
+    :originator          => 'server',
+    :pending             => true,
+    :pending_on_ack      => true,                     
+    :timestamp_initiated => now)
+    redirect_to :action => 'install_wizard', :controller => 'installs',
+    :self_test_session_id => @self_test_session_id,
+    :gateway_id => @gateway.id, :strap_id => @strap.id, :user_id => @user.id
   rescue Exception => e
     RAILS_DEFAULT_LOGGER.warn("ERROR registering devices, #{e}")
     create_self_test_step(INSTALLATION_SERIAL_NUMBERS_ENTERED_FAILED_ID)
@@ -167,10 +167,12 @@ class InstallsController < ApplicationController
       render_update_success('gateway_div_id', message, 'updateCheckSelfTestGateway', 'updateCheckSelfTestChestStrap', 'self_test_gateway_check', 'update_percentage', GATEWAY_SELF_TEST_PERCENTAGE)
     elsif check_gateway_timeout?
       session[:progress_count][:gateway] = nil
-      message = "<b>Installation Failed (Timeout):</b>  #{message}"
+      step = create_self_test_step(SELF_TEST_GATEWAY_TIMEOUT_ID)
+      message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
       render_update_timeout('gateway_div_id', message, 'updateCheckSelfTestGateway', 'install_wizard_launch')
     elsif session[:halo_check_gateway_self_test_result] && !session[:halo_check_gateway_self_test_result].result
-      message = "Self test failed on Halo Gateway."
+      step = create_self_test_step(SELF_TEST_GATEWAY_FAILED_ID)
+      message = step.self_test_step_description.description
       render_update_failure('gateway_div_id', message, 'updateCheckSelfTestGateway', 'install_wizard_launch')
     else
       render_update_message('gateway_div_id', message, :gateway)
@@ -187,10 +189,12 @@ class InstallsController < ApplicationController
       render_update_success('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'updateCheckSelfTestPhone', 'self_test_chest_strap_check', 'update_percentage', CHEST_STRAP_SELF_TEST_PERCENTAGE)
     elsif check_chest_strap_timeout?
       session[:progress_count][:chest_strap] = nil
-      message = "<b>Installation Failed (Timeout):</b>  #{message}"
+      step = create_self_test_step(SELF_TEST_CHEST_STRAP_TIMEOUT_ID)
+      message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
       render_update_timeout('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'install_wizard_launch')
     elsif session[:halo_check_chest_strap_self_test_result] && !session[:halo_check_chest_strap_self_test_result].result
-      message = "Self test failed on Halo Chest Strap."
+      step = create_self_test_step(SELF_TEST_CHEST_STRAP_FAILED_ID)
+      message = step.self_test_step_description.description
       render_update_failure('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'install_wizard_launch')
     else
       render_update_message('chest_strap_div_id', message, :chest_strap)
@@ -207,16 +211,18 @@ class InstallsController < ApplicationController
       render_update_success('phone_div_id', message, 'updateCheckSelfTestPhone', 'updateCheckStrapFastened', 'self_test_phone_check', 'update_percentage', PHONE_SELF_TEST_PERCENTAGE)
     elsif check_chest_strap_timeout?
       session[:progress_count][:phone] = nil
-      message = "<b>Installation Failed (Timeout):</b>  #{message}"
+      step = create_self_test_step(SELF_TEST_PHONE_TIMEOUT_ID)
+      message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
       render_update_timeout('phone_div_id', message, 'updateCheckPhone', 'install_wizard_launch')
     elsif session[:halo_check_phone_self_test_result] && !session[:halo_check_phone_self_test_result].result
-      message = "Self test Phone failed."
+      step = create_self_test_step(SELF_TEST_PHONE_FAILED_ID)
+      message = step.self_test_step_description.description
       render_update_failure('phone_div_id', message, 'updateCheckPhone', 'install_wizard_launch')
     else
       render_update_message('phone_div_id', message, :phone)
     end
   end
-
+  
   def failure_notice
     @failure_notice = params[:message]
     init_devices_user
@@ -224,13 +230,13 @@ class InstallsController < ApplicationController
   def self_test_complete
     init_devices_user
     MgmtCmd.create(  :cmd_type            => 'range_test_start', 
-                     :device_id           => @strap.id, 
-                     :user_id             => @user.id,
-                     :creator             => current_user,
-                     :originator          => 'server',
-                     :pending             => true,
-                     :pending_on_ack      => true,                     
-                     :timestamp_initiated => Time.now)
+    :device_id           => @strap.id, 
+    :user_id             => @user.id,
+    :creator             => current_user,
+    :originator          => 'server',
+    :pending             => true,
+    :pending_on_ack      => true,                     
+    :timestamp_initiated => Time.now)
   end
   
   def install_wizard_strap_fastened_progress
@@ -243,7 +249,8 @@ class InstallsController < ApplicationController
       render_update_success('strap_fastened_div_id', message, 'updateCheckStrapFastened', 'updateCheckHeartrate', 'strap_fastened_check', 'update_percentage', CHEST_STRAP_DETECTED_PERCENTAGE)
     elsif check_strap_fastened_timeout?
       session[:progress_count][:strap_fastened] = nil
-      message = "<b>Installation Failed (Timeout):</b>  #{message}"
+      step = create_self_test_step(CHEST_STRAP_FASTENED_TIMEOUT_ID)
+      message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
       render_update_timeout('strap_fastened_div_id', message, 'updateCheckStrapFastened', 'install_wizard_launch')
     else
       render_update_message('strap_fastened_div_id', message, :strap_fastened)
@@ -261,7 +268,8 @@ class InstallsController < ApplicationController
       
     elsif check_heartrate_timeout?
       session[:progress_count][:heartrate] = nil
-      message = "<b>Installation Failed (Timeout):</b>  #{message}"
+      step = create_self_test_step(HEARTRATE_TIMEOUT_ID)
+      message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
       render_update_timeout('heartrate_div_id', message, 'updateCheckHeartrate', 'install_wizard_launch')
     else
       render_update_message('heartrate_div_id', message, :heartrate)
@@ -274,14 +282,15 @@ class InstallsController < ApplicationController
   
   def start_range_test
     init_devices_user
+    create_self_test_step(START_RANGE_TEST_PROMPT_ID)
     render(:update) do |page|
       launcher = launch_remote_redbox(:url =>   { :gateway_id => @gateway_id, 
-                                                  :strap_id => @strap_id, 
-                                                  :user_id => @user.id,
-                                                  :self_test_session_id => @self_test_session_id, 
-                                                  :controller => "installs", 
-                                                  :action => 'range_test'}, 
-                                      :html =>  { :method => :get, :complete => ''})
+        :strap_id => @strap_id, 
+        :user_id => @user.id,
+        :self_test_session_id => @self_test_session_id, 
+        :controller => "installs", 
+        :action => 'range_test'}, 
+      :html =>  { :method => :get, :complete => ''})
       page.replace_html 'range_test_start_div', launcher
       page.replace_html 'install_wizard_result', 'Range Test Started'
     end
@@ -294,27 +303,38 @@ class InstallsController < ApplicationController
   def stop_range_test
     init_devices_user
     MgmtCmd.create(:cmd_type            => 'range_test_stop', 
-                     :device_id           => @strap.id, 
-                     :user_id             => @user.id,
-                     :creator             => current_user,
-                     :originator          => 'server',
-                     :pending             => true,
-                     :pending_on_ack      => true,                     
-                     :timestamp_initiated => Time.now)
-    message = "Range Test Complete"
+    :device_id           => @strap.id, 
+    :user_id             => @user.id,
+    :creator             => current_user,
+    :originator          => 'server',
+    :pending             => true,
+    :pending_on_ack      => true,                     
+    :timestamp_initiated => Time.now)
+    message = create_self_test_step(STOP_RANGE_TEST_PROMPT_ID).self_test_step_description.description
     MgmtCmd.create(:cmd_type              => 'mgmt_poll_rate', 
-                     :device_id           => @strap.id, 
-                     :user_id             => @user.id,
-                     :creator             => current_user,
-                     :originator          => 'server',
-                     :pending             => true,
-                     :pending_on_ack      => true,                     
-                     :timestamp_initiated => Time.now,
-                     :param1              => MGMT_POLL_RATE)
+    :device_id           => @strap.id, 
+    :user_id             => @user.id,
+    :creator             => current_user,
+    :originator          => 'server',
+    :pending             => true,
+    :pending_on_ack      => true,                     
+    :timestamp_initiated => Time.now,
+    :param1              => MGMT_POLL_RATE)
+    create_self_test_step(SLOW_POLLING_MGMT_COMMAND_CREATED_ID)
     render(:update) do |page|
       page.replace_html 'install_wizard_result', message
+      page.replace_html launch_id,
+      launch_remote_redbox(:url =>  {  :self_test_session_id => @self_test_session_id,
+        :message => "Installation Complete", :gateway_id => @gateway_id, :strap_id => @strap_id, :user_id => @user.id, 
+        :controller => "installs", :action => 'install_wizard_complete' }, 
+      :html => { :method => :get, :complete => '' } )
     end
   end
+  
+  def install_wizard_complete
+    init_devices_user
+  end
+  
   private
   
   def init_devices_user
@@ -329,44 +349,44 @@ class InstallsController < ApplicationController
   
   def check_phone_self_test()
     delay = @self_test_session.created_at
-#    if(!session[:halo_check_phone_self_test])
-      conds = "device_id = #{@gateway_id} AND cmd_type = 'self_test_phone' AND result = true AND timestamp > '#{delay.to_s}'"
-      @self_test = SelfTestResult.find(:first, :conditions => conds)
-      if @self_test    
-        self_test_step = create_self_test_step(SELF_TEST_PHONE_COMPLETE_ID)
-        session[:halo_check_phone_self_test] = self_test_step
-        session[:halo_check_phone_self_test_result] = @self_test
-        return self_test_step
-      else
-        conds = "device_id = #{@gateway_id} AND cmd_type = 'self_test_phone' AND result = false AND timestamp > '#{delay.to_s}'"
-        @self_test = SelfTestResult.find(:first, :conditions => conds)        
-        session[:halo_check_phone_self_test_result] = @self_test
-        return false
-      end
-#    else
-#      return session[:halo_check_phone_self_test]
-#    end
+    #    if(!session[:halo_check_phone_self_test])
+    conds = "device_id = #{@gateway_id} AND cmd_type = 'self_test_phone' AND result = true AND timestamp > '#{delay.to_s}'"
+    @self_test = SelfTestResult.find(:first, :conditions => conds)
+    if @self_test    
+      self_test_step = create_self_test_step(SELF_TEST_PHONE_COMPLETE_ID)
+      session[:halo_check_phone_self_test] = self_test_step
+      session[:halo_check_phone_self_test_result] = @self_test
+      return self_test_step
+    else
+      conds = "device_id = #{@gateway_id} AND cmd_type = 'self_test_phone' AND result = false AND timestamp > '#{delay.to_s}'"
+      @self_test = SelfTestResult.find(:first, :conditions => conds)        
+      session[:halo_check_phone_self_test_result] = @self_test
+      return false
+    end
+    #    else
+    #      return session[:halo_check_phone_self_test]
+    #    end
   end
   
   def check_chest_strap_self_test()
-#    delay = @self_test_session.created_at
-#    if(!session[:halo_check_chest_strap_self_test])
-#      @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{strap_id} AND cmd_type = 'self_test' AND result = true AND timestamp > '#{delay.to_s}'")
-#      if @self_test  
-#        self_test_step = create_self_test_step(SELF_TEST_CHEST_STRAP_COMPLETE_ID)
-#        session[:halo_check_chest_strap_self_test] = self_test_step
-#        return self_test_step
-#      else
-#        @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{strap_id} AND cmd_type = 'self_test' AND result = false AND timestamp > '#{delay.to_s}'")
-#        return false
-#      end
-#    else
-#      return session[:halo_check_chest_strap_self_test]
-#    end
+    #    delay = @self_test_session.created_at
+    #    if(!session[:halo_check_chest_strap_self_test])
+    #      @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{strap_id} AND cmd_type = 'self_test' AND result = true AND timestamp > '#{delay.to_s}'")
+    #      if @self_test  
+    #        self_test_step = create_self_test_step(SELF_TEST_CHEST_STRAP_COMPLETE_ID)
+    #        session[:halo_check_chest_strap_self_test] = self_test_step
+    #        return self_test_step
+    #      else
+    #        @self_test = SelfTestResult.find(:first, :conditions => "device_id = #{strap_id} AND cmd_type = 'self_test' AND result = false AND timestamp > '#{delay.to_s}'")
+    #        return false
+    #      end
+    #    else
+    #      return session[:halo_check_chest_strap_self_test]
+    #    end
     @self_test = SelfTestResult.new(:result => true, 
                                     :cmd_type => 'self_test', 
-                                    :device_id => @strap_id, 
-                                    :timestamp => Time.now)   
+    :device_id => @strap_id, 
+    :timestamp => Time.now)   
     self_test_step = create_self_test_step(SELF_TEST_CHEST_STRAP_COMPLETE_ID)
     session[:halo_check_chest_strap_self_test] = self_test_step
     session[:halo_check_chest_strap_self_test_result] = @self_test
@@ -429,11 +449,11 @@ class InstallsController < ApplicationController
     conds = "user_id = #{@user.id} AND device_id = #{@strap_id} AND timestamp > '#{delay.to_s}'"
     @strap_fastened = StrapFastened.find(:first, :conditions => conds)
     if @strap_fastened
-       return create_self_test_step(CHEST_STRAP_FASTENED_DETECTED_ID)
+      return create_self_test_step(CHEST_STRAP_FASTENED_DETECTED_ID)
     else
       return false
     end
-        
+    
   end
   
   def check_heartrate
@@ -495,10 +515,10 @@ class InstallsController < ApplicationController
       end
       if action && launch_id
         page.replace_html launch_id, 
-             launch_remote_redbox(:url =>  { :self_test_session_id => @self_test_session_id,
-                                             :message => message, :gateway_id => @gateway_id, :strap_id => @strap_id, :user_id => @user.id, 
-                                             :controller => "installs", :action => action }, 
-                                  :html => { :method => :get, :complete => '' } )
+        launch_remote_redbox(:url =>  { :self_test_session_id => @self_test_session_id,
+          :message => message, :gateway_id => @gateway_id, :strap_id => @strap_id, :user_id => @user.id, 
+          :controller => "installs", :action => action }, 
+        :html => { :method => :get, :complete => '' } )
       end
     end
   end
@@ -506,13 +526,13 @@ class InstallsController < ApplicationController
   def render_update_timeout(message_id, message, false_id, launch_id)
     render(:update) do |page|
       page.call(false_id, false)
-        page.replace_html message_id, message
-        page.replace_html launch_id, 
-             launch_remote_redbox(:url =>  { :self_test_session_id => @self_test_session_id,
-                                             :message => message, :gateway_id => @gateway_id, :strap_id => @strap_id, :user_id => @user.id, 
-                                             :controller => "installs", :action => 'failure_notice' }, 
-                                  :html => { :method => :get, :complete => '' } )
-      end
+      page.replace_html message_id, message
+      page.replace_html launch_id, 
+      launch_remote_redbox(:url =>  { :self_test_session_id => @self_test_session_id,
+        :message => message, :gateway_id => @gateway_id, :strap_id => @strap_id, :user_id => @user.id, 
+        :controller => "installs", :action => 'failure_notice' }, 
+      :html => { :method => :get, :complete => '' } )
+    end
   end
   
   def render_update_failure(message_id, message, false_id, launch_id)
@@ -520,20 +540,20 @@ class InstallsController < ApplicationController
       page.call(false_id, false)
       page.replace_html message_id, message
       page.replace_html launch_id,
-            launch_remote_redbox(:url =>  {  :self_test_session_id => @self_test_session_id,
-                                             :message => message, :gateway_id => @gateway_id, :strap_id => @strap_id, :user_id => @user.id, 
-                                             :controller => "installs", :action => 'failure_notice' }, 
-                                  :html => { :method => :get, :complete => '' } )
+      launch_remote_redbox(:url =>  {  :self_test_session_id => @self_test_session_id,
+        :message => message, :gateway_id => @gateway_id, :strap_id => @strap_id, :user_id => @user.id, 
+        :controller => "installs", :action => 'failure_notice' }, 
+      :html => { :method => :get, :complete => '' } )
     end
   end
   
   def render_update_message(message_id, message, sym)
     count = progress_count(sym)
-      render(:update) do |page|
-        (0..count).each do |i|
-          message += '.'
-        end
-        page.replace_html message_id, message
+    render(:update) do |page|
+     (0..count).each do |i|
+        message += '.'
       end
+      page.replace_html message_id, message
+    end
   end
 end
