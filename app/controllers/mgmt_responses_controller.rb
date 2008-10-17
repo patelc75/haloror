@@ -6,12 +6,13 @@ class MgmtResponsesController < RestfulAuthController
     @@responses_cmds["#{response}"].each do |cmd|
       conds << "cmd_type = '#{cmd}'"
     end
-    
-    conds.join(' or ')
-    
     if conds.empty?
       conds << "cmd_type = '#{response}'"
+    else
+      conds.join(' or ')
     end
+    
+
   end
   
   def create
