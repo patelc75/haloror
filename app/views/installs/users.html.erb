@@ -10,7 +10,11 @@
 		<div class="col-75"><%=  user.id     %></div>
 		<div class="col-250"><%= user.name  %></div>
 		<div class="col-250"><%= user.login %></div>
-		<div class="col-150"><%= link_to "Start Installation Wizard", :controller => 'installs', :action => 'registration', :group => @group.name, :id => user.id %></div>
+		<div class="col-150"><%= link_to "Start Installation Wizard", 
+											:controller => 'installs', 
+											:action => 'registration', 
+											:group => @group.name, 
+											:id => user.id %></div>
 	</div>
 <% end %>
 </div>

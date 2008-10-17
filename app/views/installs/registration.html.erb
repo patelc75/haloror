@@ -13,6 +13,7 @@
     <div style="width:200px;margin-left:auto;margin-right:auto">
       <% form_tag :action => 'registration_create' do -%>
 	  <input type="hidden" name="user_id" value="<%= @user.id %>" />
+	  <input type="hidden" name="self_test_session_id" value="<%= @self_test_session.id %>" />
        <label for="serial_number">Gateway Serial Number</label><br/>
         <%= text_field :gateway, :serial_number %>
         <br />
