@@ -226,11 +226,11 @@ class InstallsController < ApplicationController
       session[:progress_count][:phone] = nil
       step = create_self_test_step(SELF_TEST_PHONE_TIMEOUT_ID)
       message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
-      render_update_timeout('phone_div_id', message, 'updateCheckPhone', 'install_wizard_launch')
+      render_update_timeout('phone_div_id', message, 'updateCheckSelfTestPhone', 'install_wizard_launch')
     elsif session[:halo_check_phone_self_test_result] && !session[:halo_check_phone_self_test_result].result
       step = create_self_test_step(SELF_TEST_PHONE_FAILED_ID)
       message = step.self_test_step_description.description
-      render_update_failure('phone_div_id', message, 'updateCheckPhone', 'install_wizard_launch')
+      render_update_failure('phone_div_id', message, 'updateCheckSelfTestPhone', 'install_wizard_launch')
     else
       render_update_message('phone_div_id', message, :phone)
     end
