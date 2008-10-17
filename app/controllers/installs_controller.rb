@@ -194,7 +194,7 @@ class InstallsController < ApplicationController
     self_test_step = check_chest_strap_self_test()
     if self_test_step
       session[:progress_count][:chest_strap] = nil
-      message = self_test_step.self_test_step_description.description                        updateCheckStrapFastened
+      message = self_test_step.self_test_step_description.description                        
       render_update_success('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'updateCheckStrapFastened', 'self_test_chest_strap_check', 'update_percentage', CHEST_STRAP_SELF_TEST_PERCENTAGE)
     elsif check_chest_strap_timeout?
       session[:progress_count][:chest_strap] = nil
