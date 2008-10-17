@@ -194,7 +194,7 @@ class InstallsController < ApplicationController
     if self_test_step
       session[:progress_count][:chest_strap] = nil
       message = self_test_step.self_test_step_description.description
-      render_update_success('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'updateCheckSelfTestPhone', 'self_test_chest_strap_check', 'update_percentage', CHEST_STRAP_SELF_TEST_PERCENTAGE)
+      render_update_success('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'updateCheckStrapFastened', 'self_test_chest_strap_check', 'update_percentage', CHEST_STRAP_SELF_TEST_PERCENTAGE)
     elsif check_chest_strap_timeout?
       session[:progress_count][:chest_strap] = nil
       step = create_self_test_step(SELF_TEST_CHEST_STRAP_TIMEOUT_ID)
@@ -220,7 +220,7 @@ class InstallsController < ApplicationController
     if self_test_step
       session[:progress_count][:phone] = nil
       message = self_test_step.self_test_step_description.description
-      render_update_success('phone_div_id', message, 'updateCheckSelfTestPhone', 'updateCheckStrapFastened', 'self_test_phone_check', 'update_percentage', PHONE_SELF_TEST_PERCENTAGE)
+      render_update_success('phone_div_id', message, 'updateCheckSelfTestPhone', 'updateCheckStrapFastened', 'self_test_phone_check', 'update_percentage', PHONE_SELF_TEST_PERCENTAGE, 'phone_test_complete', 'install_wizard_launch')
     elsif check_phone_timeout?
       session[:progress_count][:phone] = nil
       step = create_self_test_step(SELF_TEST_PHONE_TIMEOUT_ID)
@@ -276,7 +276,7 @@ class InstallsController < ApplicationController
     if self_test_step
       session[:progress_count][:heartrate] = nil
       message = self_test_step.self_test_step_description.description
-      render_update_success('heartrate_div_id', message, 'updateCheckHeartrate', nil, 'heartrate_check', 'update_percentage', HEARTRATE_DETECTED_PERCENTAGE, 'vitals_complete', 'install_wizard_launch')
+      render_update_success('heartrate_div_id', message, 'updateCheckHeartrate', 'updateCheckSelfTestPhone', 'heartrate_check', 'update_percentage', HEARTRATE_DETECTED_PERCENTAGE)
       
     elsif check_heartrate_timeout?
       session[:progress_count][:heartrate] = nil
@@ -288,7 +288,7 @@ class InstallsController < ApplicationController
     end
   end
   
-  def vitals_complete
+  def phone_test_complete
     init_devices_user
   end
   
@@ -333,7 +333,10 @@ class InstallsController < ApplicationController
     :timestamp_initiated => Time.now,
     :param1              => MGMT_POLL_RATE)
     create_self_test_step(SLOW_POLLING_MGMT_COMMAND_CREATED_ID)
+    @self_test_session.completed_on = Time.now
+    @self_test_session.save!
     render(:update) do |page|
+      render_update_success('range_test_div_id', message, nil, nil, 'range_test_check', 'update_percentage', RANGE_TEST_PERCENTAGE)
       page.replace_html 'install_wizard_result', message
       page.replace_html launch_id,
       launch_remote_redbox(:url =>  {  :self_test_session_id => @self_test_session_id,
@@ -499,7 +502,7 @@ class InstallsController < ApplicationController
   end
   
   def check_phone_timeout?
-    timeout?(SELF_TEST_PHONE_COMPLETE_ID, 3)
+    timeout?(SELF_TEST_PHONE_COMPLETE_ID, 4)
   end
   def check_chest_strap_timeout?
     timeout?(SELF_TEST_GATEWAY_COMPLETE_ID, 3)
@@ -521,7 +524,9 @@ class InstallsController < ApplicationController
   end
   def render_update_success(message_id, message, false_id, true_id, image_id, update_percentage_id, percentage, action=nil, launch_id=nil )
     render(:update) do |page|
-      page.call(false_id, false)
+      if false_id
+        page.call(false_id, false)
+      end
       page[image_id].src = "/images/checkbox.png"
       page.call(update_percentage_id, percentage)
       page.replace_html message_id, message
