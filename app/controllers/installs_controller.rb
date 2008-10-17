@@ -131,8 +131,7 @@ class InstallsController < ApplicationController
     :pending             => true,
     :pending_on_ack      => true,                     
     :timestamp_initiated => now)
-    redirect_to :action => 'install_wizard', :controller => 'installs',
-    :self_test_session_id => @self_test_session_id,
+    redirect_to :action => 'install_wizard', :controller => 'installs', :self_test_session_id => @self_test_session_id,
     :gateway_id => @gateway.id, :strap_id => @strap.id, :user_id => @user.id
   rescue Exception => e
     RAILS_DEFAULT_LOGGER.warn("ERROR registering devices, #{e}")
@@ -211,7 +210,7 @@ class InstallsController < ApplicationController
       session[:progress_count][:phone] = nil
       message = self_test_step.self_test_step_description.description
       render_update_success('phone_div_id', message, 'updateCheckSelfTestPhone', 'updateCheckStrapFastened', 'self_test_phone_check', 'update_percentage', PHONE_SELF_TEST_PERCENTAGE)
-    elsif check_chest_strap_timeout?
+    elsif check_phone_timeout?
       session[:progress_count][:phone] = nil
       step = create_self_test_step(SELF_TEST_PHONE_TIMEOUT_ID)
       message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
@@ -488,6 +487,9 @@ class InstallsController < ApplicationController
     end
   end
   
+  def check_phone_timeout?
+    timeout?(SELF_TEST_PHONE_COMPLETE_ID, 3)
+  end
   def check_chest_strap_timeout?
     timeout?(SELF_TEST_GATEWAY_COMPLETE_ID, 3)
   end
