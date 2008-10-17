@@ -34,12 +34,12 @@
 	}
 	
 	function start_range_test(){
-		url = "/installs/start_range_test/?gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
+		url = "/installs/start_range_test/?self_test_session_id=<%= @self_test_session_id%>&gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
 		new Ajax.Request(url, {
   			method: 'get'});
 	}
 	function stop_range_test(){
-		url = "/installs/stop_range_test/?gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
+		url = "/installs/stop_range_test/?self_test_session_id=<%= @self_test_session_id%>&gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
 		new Ajax.Request(url, {
   			method: 'get'});
 	}
@@ -48,42 +48,48 @@
 										:action => 'install_wizard_registration_progress', 
 							 		   	:user_id => @user.id, 
 										:gateway_id => @gateway.id, 
-										:strap_id => @strap.id }, 
+										:strap_id => @strap.id,
+										:self_test_session_id => @self_test_session_id }, 
 							 :condition => "checkRegistration", 
 							 :frequency => INSTALL_WIZARD_POLL_RATE) %>
 <%= periodically_call_remote(:url => { 	:controller => 'installs', 
 										:action => 'install_wizard_chest_strap_progress', 
 							 		   	:user_id => @user.id, 
 										:gateway_id => @gateway.id, 
-										:strap_id => @strap.id }, 
+										:strap_id => @strap.id,
+										:self_test_session_id => @self_test_session_id  }, 
 							 :condition => "checkSelfTestChestStrap", 
 							 :frequency => INSTALL_WIZARD_POLL_RATE) %>
 <%= periodically_call_remote(:url => { 	:controller => 'installs', 
 										:action => 'install_wizard_gateway_progress', 
 							 		   	:user_id => @user.id, 
 										:gateway_id => @gateway.id, 
-										:strap_id => @strap.id }, 
+										:strap_id => @strap.id,
+										:self_test_session_id => @self_test_session_id  }, 
 							 :condition => "checkSelfTestGateway", 
 							 :frequency => INSTALL_WIZARD_POLL_RATE) %>							 
 <%= periodically_call_remote(:url => { 	:controller => 'installs', 
 										:action => 'install_wizard_phone_progress', 
 							 		   	:user_id => @user.id, 
 										:gateway_id => @gateway.id, 
-										:strap_id => @strap.id }, 
+										:strap_id => @strap.id,
+										:self_test_session_id => @self_test_session_id  }, 
 							 :condition => "checkSelfTestPhone", 
 							 :frequency => INSTALL_WIZARD_POLL_RATE) %>	
 <%= periodically_call_remote(:url => { 	:controller => 'installs', 
 										:action => 'install_wizard_strap_fastened_progress', 
 										:user_id => @user.id, 
 										:gateway_id => @gateway.id, 
-										:strap_id => @strap.id }, 
+										:strap_id => @strap.id,
+										:self_test_session_id => @self_test_session_id  }, 
 							 :condition => "checkStrapFastened", 
 							 :frequency => INSTALL_WIZARD_POLL_RATE)%>
 <%= periodically_call_remote(:url => { 	:controller => 'installs', 
 										:action => 'install_wizard_heartrate_progress', 
 										:user_id => @user.id, 
 										:gateway_id => @gateway.id, 
-										:strap_id => @strap.id }, 
+										:strap_id => @strap.id,
+										:self_test_session_id => @self_test_session_id  }, 
 							 :condition => "checkHeartrate", 
 							 :frequency => INSTALL_WIZARD_POLL_RATE)%>
 <div id="call_list-col">
