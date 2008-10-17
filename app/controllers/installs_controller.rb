@@ -503,7 +503,7 @@ class InstallsController < ApplicationController
   end
   
   def check_phone_timeout?
-    timeout?(RANGE_TEST_COMPLETE_ID, 4)
+    timeout?(HEARTRATE_DETECTED_ID, 4)
   end
   def check_chest_strap_timeout?
     timeout?(SELF_TEST_GATEWAY_COMPLETE_ID, 3)
