@@ -8,6 +8,10 @@ class MgmtResponsesController < RestfulAuthController
     end
     
     conds.join(' or ')
+    
+    if conds.empty?
+      conds << "cmd_type = '#{response}'"
+    end
   end
   
   def create
