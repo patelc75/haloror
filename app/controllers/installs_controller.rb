@@ -194,7 +194,7 @@ class InstallsController < ApplicationController
     self_test_step = check_chest_strap_self_test()
     if self_test_step
       session[:progress_count][:chest_strap] = nil
-      message = self_test_step.self_test_step_description.description
+      message = self_test_step.self_test_step_description.description                        updateCheckStrapFastened
       render_update_success('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'updateCheckStrapFastened', 'self_test_chest_strap_check', 'update_percentage', CHEST_STRAP_SELF_TEST_PERCENTAGE)
     elsif check_chest_strap_timeout?
       session[:progress_count][:chest_strap] = nil
@@ -221,7 +221,7 @@ class InstallsController < ApplicationController
     if self_test_step
       session[:progress_count][:phone] = nil
       message = self_test_step.self_test_step_description.description
-      render_update_success('phone_div_id', message, 'updateCheckSelfTestPhone', 'updateCheckStrapFastened', 'self_test_phone_check', 'update_percentage', PHONE_SELF_TEST_PERCENTAGE, 'phone_test_complete', 'install_wizard_launch')
+      render_update_success('phone_div_id', message, 'updateCheckSelfTestPhone', nil, 'self_test_phone_check', 'update_percentage', PHONE_SELF_TEST_PERCENTAGE, 'phone_test_complete', 'install_wizard_launch')
     elsif check_phone_timeout?
       session[:progress_count][:phone] = nil
       step = create_self_test_step(SELF_TEST_PHONE_TIMEOUT_ID)
@@ -510,7 +510,7 @@ class InstallsController < ApplicationController
   end
   
   def check_strap_fastened_timeout?
-    timeout?(CHEST_STRAP_PROMPT_ID, 2)
+    timeout?(SELF_TEST_CHEST_STRAP_COMPLETE_ID, 2)
   end
   def progress_count(sym)
     if session[:progress_count][sym]
