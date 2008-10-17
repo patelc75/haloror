@@ -313,7 +313,7 @@ class InstallsController < ApplicationController
     :timestamp_initiated => Time.now)
     message = create_self_test_step(STOP_RANGE_TEST_PROMPT_ID).self_test_step_description.description
     MgmtCmd.create(:cmd_type              => 'mgmt_poll_rate', 
-    :device_id           => @strap.id, 
+    :device_id           => @gateway.id, 
     :user_id             => @user.id,
     :creator             => current_user,
     :originator          => 'server',
