@@ -210,6 +210,10 @@ class InstallsController < ApplicationController
     end
   end
   
+  def flash_install_upgrade
+    
+  end
+  
   def install_wizard_phone_progress
     init_devices_user
     message = 'Phone Self Test'
