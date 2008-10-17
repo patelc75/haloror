@@ -110,6 +110,7 @@ class InstallsController < ApplicationController
       @user.devices << @strap
     end
     @user.save!
+    session[:self_test_time_created] = Time.now
     MgmtCmd.create(:cmd_type            => 'self_test', 
                    :device_id           => @gateway.id, 
                    :user_id             => @user.id,
@@ -494,7 +495,7 @@ class InstallsController < ApplicationController
   end
   
   def check_gateway_timeout?
-    if Time.now > (@self_test_session.created_at + 2.minutes)
+    if Time.now > (session[:self_test_time_created] + 2.minutes)
       return true
     else
       return false
@@ -502,7 +503,7 @@ class InstallsController < ApplicationController
   end
   
   def check_phone_timeout?
-    timeout?(SELF_TEST_PHONE_COMPLETE_ID, 4)
+    timeout?(RANGE_TEST_COMPLETE_ID, 4)
   end
   def check_chest_strap_timeout?
     timeout?(SELF_TEST_GATEWAY_COMPLETE_ID, 3)
