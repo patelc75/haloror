@@ -45,6 +45,8 @@ class InstallsController < ApplicationController
         @gateway = Device.new
         @strap = Device.new
         
+    @self_test_session = SelfTestSession.create(:created_at => Time.now, :user_id => @user.id, :created_by => current_user.id)
+    @self_test_session_id = @self_test_session_id
       else
         redirect_to :controller => 'installs', :action => 'users'
       end
@@ -57,8 +59,6 @@ class InstallsController < ApplicationController
     @user = User.find(params[:user_id])
     @gateway = nil
     @strap = nil
-    @self_test_session = SelfTestSession.create(:created_at => Time.now, :user_id => @user.id, :created_by => current_user.id)
-    @self_test_session_id = @self_test_session_id
     gateway_serial_number = params[:gateway][:serial_number]
     #check if gateway exists
     if !gateway_serial_number.blank?
