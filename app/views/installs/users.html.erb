@@ -1,12 +1,3 @@
-<%= if session[:flash_prompt] != 1
-		launch_remote_redbox(:url =>  {  :action => 'flash_prompt_start', :controller => 'installs' }, 
-                         :html => { :method => :get, :complete => '' } ) 
-	end %>
-<script>
-	function launchFlashCheck(){
-       window.open("/installs/flash_install_upgrade","flash_install_upgrade");
-	}
-</script>
 <div id="user-table" class="table">
 	<div class="row header">
 		<div class="col-75">User Id</div>

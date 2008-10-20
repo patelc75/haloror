@@ -22,11 +22,6 @@ class InstallsController < ApplicationController
   end
   
   def users
-    if session[:flash_prompt] == 0
-      session[:flash_prompt] = 1
-    else
-      session[:flash_prompt] = 0
-    end
     if check_params_for_group
       @group = Group.find_by_name(params[:group])
       conds = "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{@group.id}"
@@ -42,10 +37,11 @@ class InstallsController < ApplicationController
     end
   end
   def registration
-    if session[:phone_prompt] == 0
-      session[:phone_prompt] = 1
-    else
-      session[:phone_prompt] = 0
+    
+    if session[:flash_prompt] == 0
+      session[:flash_prompt] = 1
+    elsif session[:flash_prompt] != 1
+      session[:flash_prompt] = 0
     end
     if check_params_for_group
       @group = Group.find_by_name(params[:group])
@@ -143,9 +139,18 @@ class InstallsController < ApplicationController
   def flash_prompt_start
     
   end
-  def phone_prompt_start
+  def phone_prompt_init
     @user = User.find(params[:user_id])
-    #second time around...
+    render(:update) do |page|
+      phone_launch = launch_remote_redbox(:url =>  {  :action => 'phone_prompt_start', :controller => 'installs', 
+                                     :user_id => @user.id }, 
+                         :html => { :method => :get, :complete => '' } ) 
+      page['phone_launcher'].replace_html phone_launch
+    end
+  end
+  
+  def phone_prompt_start
+    
   end
   
   def install_wizard_registration_progress
