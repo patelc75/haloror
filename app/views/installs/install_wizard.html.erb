@@ -45,6 +45,11 @@
   			method: 'get'});
 	}
 </script>
+<%= launch_remote_redbox(:url =>  {  :action => 'phone_prompt_start', :controller => 'installs', 
+                                     :self_test_session_id => @self_test_session_id, :user_id => @user.id,
+                                     :gateway_id => @gateway_id, :strap_id => @strap_id
+                                  }, 
+                         :html => { :method => :get, :complete => '' } ) %>
 <%= periodically_call_remote(:url => { 	:controller => 'installs', 
 										:action => 'install_wizard_registration_progress', 
 							 		   	:user_id => @user.id, 

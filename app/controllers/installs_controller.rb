@@ -110,35 +110,14 @@ class InstallsController < ApplicationController
       @user.devices << @strap
     end
     @user.save!
-    session[:self_test_time_created] = Time.now
-    MgmtCmd.create(:cmd_type            => 'self_test', 
-                   :device_id           => @gateway.id, 
-                   :user_id             => @user.id,
-                   :creator             => current_user,
-                   :originator          => 'server',
-                   :pending             => true,
-                   :pending_on_ack      => true,                     
-                   :timestamp_initiated => Time.now)
     create_self_test_step(INSTALLATION_SERIAL_NUMBERS_ENTERED_ID) 
+    session[:self_test_time_created] = Time.now
+    create_mgmt_cmd('self_test', @gateway.id)
     #   create_self_test_step(SELF_TEST_CHEST_STRAP_MGMT_COMMAND_CREATED_ID)
-    #    MgmtCmd.create(:cmd_type            => 'self_test', 
-    #                     :device_id           => @strap.id, 
-    #                     :user_id             => @user.id,
-    #                     :creator             => current_user,
-    #                     :originator          => 'server',
-    #                     :pending             => true,
-    #                     :pending_on_ack      => true,                     
-    #                     :timestamp_initiated => Time.now)
+    #    create_mgmt_cmd('self_test', @strap.id)
     
     create_self_test_step(SELF_TEST_PHONE_MGMT_COMMAND_CREATED_ID)
-    MgmtCmd.create(:cmd_type            => 'self_test_phone', 
-    :device_id           => @gateway.id, 
-    :user_id             => @user.id,
-    :creator             => current_user,
-    :originator          => 'server',
-    :pending             => true,
-    :pending_on_ack      => true,                     
-    :timestamp_initiated => Time.now)
+    create_mgmt_cmd('self_test_phone', @gateway.id)
     redirect_to :action => 'install_wizard', :controller => 'installs', :self_test_session_id => @self_test_session_id,
     :gateway_id => @gateway.id, :strap_id => @strap.id, :user_id => @user.id
   rescue Exception => e
@@ -150,6 +129,10 @@ class InstallsController < ApplicationController
   def install_wizard
     init_devices_user
     session[:progress_count]= {}
+  end
+  
+  def phone_prompt_start
+    init_devices_user
   end
   
   def install_wizard_registration_progress
@@ -165,6 +148,7 @@ class InstallsController < ApplicationController
       render_update_message('registered_div_id', message, :register)
     end
   end
+  
   
   def install_wizard_gateway_progress
     init_devices_user
@@ -242,14 +226,7 @@ class InstallsController < ApplicationController
   end
   def self_test_complete
     init_devices_user
-    MgmtCmd.create(  :cmd_type            => 'range_test_start', 
-    :device_id           => @strap.id, 
-    :user_id             => @user.id,
-    :creator             => current_user,
-    :originator          => 'server',
-    :pending             => true,
-    :pending_on_ack      => true,                     
-    :timestamp_initiated => Time.now)
+    create_mgmt_cmd('range_test_start', @strap.id)
   end
   
   def install_wizard_strap_fastened_progress
@@ -297,13 +274,7 @@ class InstallsController < ApplicationController
     init_devices_user
     create_self_test_step(START_RANGE_TEST_PROMPT_ID)
     render(:update) do |page|
-      launcher = launch_remote_redbox(:url =>   { :gateway_id => @gateway_id, 
-        :strap_id => @strap_id, 
-        :user_id => @user.id,
-        :self_test_session_id => @self_test_session_id, 
-        :controller => "installs", 
-        :action => 'range_test'}, 
-      :html =>  { :method => :get, :complete => ''})
+      launcher = new_remote_redbox('range_test')
       page.replace_html 'range_test_start_div', launcher
       page.replace_html 'install_wizard_result', 'Range Test Started'
     end
@@ -315,35 +286,16 @@ class InstallsController < ApplicationController
   
   def stop_range_test
     init_devices_user
-    MgmtCmd.create(:cmd_type            => 'range_test_stop', 
-    :device_id           => @strap.id, 
-    :user_id             => @user.id,
-    :creator             => current_user,
-    :originator          => 'server',
-    :pending             => true,
-    :pending_on_ack      => true,                     
-    :timestamp_initiated => Time.now)
+    create_mgmt_cmd('range_test_stop', @strap.id)
     message = create_self_test_step(STOP_RANGE_TEST_PROMPT_ID).self_test_step_description.description
-    MgmtCmd.create(:cmd_type              => 'mgmt_poll_rate', 
-    :device_id           => @gateway.id, 
-    :user_id             => @user.id,
-    :creator             => current_user,
-    :originator          => 'server',
-    :pending             => true,
-    :pending_on_ack      => true,                     
-    :timestamp_initiated => Time.now,
-    :param1              => MGMT_POLL_RATE)
+    create_mgmt_cmd('mgmt_poll_rate', @gateway.id, MGMT_POLL_RATE)
     create_self_test_step(SLOW_POLLING_MGMT_COMMAND_CREATED_ID)
     @self_test_session.completed_on = Time.now
     @self_test_session.save!
     render(:update) do |page|
       render_update_success('range_test_div_id', message, nil, nil, 'range_test_check', 'update_percentage', RANGE_TEST_PERCENTAGE)
       page.replace_html 'install_wizard_result', message
-      page.replace_html launch_id,
-      launch_remote_redbox(:url =>  {  :self_test_session_id => @self_test_session_id,
-        :message => "Installation Complete", :gateway_id => @gateway_id, :strap_id => @strap_id, :user_id => @user.id, 
-        :controller => "installs", :action => 'install_wizard_complete' }, 
-      :html => { :method => :get, :complete => '' } )
+      page.replace_html launch_id, new_remote_redbox('install_wizard_complete', 'installs', message)
     end
   end
   
@@ -447,6 +399,18 @@ class InstallsController < ApplicationController
     end
   end
   
+  def create_mgmt_cmd(type, device_id, param1=nil)
+    MgmtCmd.create(:cmd_type            => type, 
+                   :device_id           => device_id, 
+                   :user_id             => @user.id,
+                   :creator             => current_user,
+                   :originator          => 'server',
+                   :pending             => true,
+                   :pending_on_ack      => true,                     
+                   :timestamp_initiated => Time.now,
+                   :param1              => param1)
+  end
+  
   def create_self_test_step(description_id)
     self_test_step_description = SelfTestStepDescription.find(description_id)    
     self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
@@ -535,11 +499,7 @@ class InstallsController < ApplicationController
         page.call(true_id, true)
       end
       if action && launch_id
-        page.replace_html launch_id, 
-        launch_remote_redbox(:url =>  { :self_test_session_id => @self_test_session_id,
-          :message => message, :gateway_id => @gateway_id, :strap_id => @strap_id, :user_id => @user.id, 
-          :controller => "installs", :action => action }, 
-        :html => { :method => :get, :complete => '' } )
+        page.replace_html launch_id, new_remote_redbox(action, 'installs', message)
       end
     end
   end
@@ -548,11 +508,7 @@ class InstallsController < ApplicationController
     render(:update) do |page|
       page.call(false_id, false)
       page.replace_html message_id, message
-      page.replace_html launch_id, 
-      launch_remote_redbox(:url =>  { :self_test_session_id => @self_test_session_id,
-        :message => message, :gateway_id => @gateway_id, :strap_id => @strap_id, :user_id => @user.id, 
-        :controller => "installs", :action => 'failure_notice' }, 
-      :html => { :method => :get, :complete => '' } )
+      page.replace_html launch_id, new_remote_redbox('failure_notice', 'installs', message)
     end
   end
   
@@ -560,11 +516,7 @@ class InstallsController < ApplicationController
     render(:update) do |page|
       page.call(false_id, false)
       page.replace_html message_id, message
-      page.replace_html launch_id,
-      launch_remote_redbox(:url =>  {  :self_test_session_id => @self_test_session_id,
-        :message => message, :gateway_id => @gateway_id, :strap_id => @strap_id, :user_id => @user.id, 
-        :controller => "installs", :action => 'failure_notice' }, 
-      :html => { :method => :get, :complete => '' } )
+      page.replace_html launch_id, new_remote_redbox('failure_notice', 'installs', message)     
     end
   end
   
@@ -576,5 +528,13 @@ class InstallsController < ApplicationController
       end
       page.replace_html message_id, message
     end
+  end
+  
+  def new_remote_redbox(action, controller='installs', message=nil)
+    launch_remote_redbox(:url =>  {  :action => action, :controller => controller, :message => message, 
+                                     :self_test_session_id => @self_test_session_id, :user_id => @user.id,
+                                     :gateway_id => @gateway_id, :strap_id => @strap_id
+                                  }, 
+                         :html => { :method => :get, :complete => '' } )
   end
 end
