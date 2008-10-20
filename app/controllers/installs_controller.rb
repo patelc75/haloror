@@ -132,7 +132,7 @@ class InstallsController < ApplicationController
   end
   
   def phone_prompt_start
-    init_devices_user
+    @user = User.find(params[:user_id])
   end
   
   def install_wizard_registration_progress
