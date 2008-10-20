@@ -22,6 +22,11 @@ class InstallsController < ApplicationController
   end
   
   def users
+    if session[:flash_prompt] == 0
+      session[:flash_prompt] = 1
+    else
+      session[:flash_prompt] = 0
+    end
     if check_params_for_group
       @group = Group.find_by_name(params[:group])
       conds = "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{@group.id}"
@@ -37,6 +42,11 @@ class InstallsController < ApplicationController
     end
   end
   def registration
+    if session[:phone_prompt] == 0
+      session[:phone_prompt] = 1
+    else
+      session[:phone_prompt] = 0
+    end
     if check_params_for_group
       @group = Group.find_by_name(params[:group])
       if !params[:id].blank?
@@ -130,9 +140,12 @@ class InstallsController < ApplicationController
     init_devices_user
     session[:progress_count]= {}
   end
-  
+  def flash_prompt_start
+    
+  end
   def phone_prompt_start
     @user = User.find(params[:user_id])
+    #second time around...
   end
   
   def install_wizard_registration_progress
