@@ -299,9 +299,9 @@ class InstallsController < ApplicationController
   
   def start_range_test
     init_devices_user
+      launcher = new_remote_redbox('range_test')
     create_self_test_step(START_RANGE_TEST_PROMPT_ID)
     render(:update) do |page|
-      launcher = new_remote_redbox('range_test')
       page.replace_html 'range_test_start_div', launcher
       page.replace_html 'install_wizard_result', 'Range Test Started'
     end
@@ -320,10 +320,11 @@ class InstallsController < ApplicationController
     create_self_test_step(SLOW_POLLING_MGMT_COMMAND_CREATED_ID)
     @self_test_session.completed_on = Time.now
     @self_test_session.save!
+    launcher = new_remote_redbox('install_wizard_complete', 'installs', message)
     render(:update) do |page|
       render_update_success('range_test_div_id', message, nil, nil, 'range_test_check', 'update_percentage', RANGE_TEST_PERCENTAGE)
       page.replace_html 'install_wizard_result', message
-      page.replace_html launch_id, new_remote_redbox('install_wizard_complete', 'installs', message)
+      page.replace_html launch_id, launcher
     end
   end
   
@@ -516,6 +517,7 @@ class InstallsController < ApplicationController
     return session[:progress_count][sym]
   end
   def render_update_success(message_id, message, false_id, true_id, image_id, update_percentage_id, percentage, action=nil, launch_id=nil )
+    launcher = new_remote_redbox(action, 'installs', message)
     render(:update) do |page|
       if false_id
         page.call(false_id, false)
@@ -527,24 +529,26 @@ class InstallsController < ApplicationController
         page.call(true_id, true)
       end
       if action && launch_id
-        page.replace_html launch_id, new_remote_redbox(action, 'installs', message)
+        page.replace_html launch_id, launcher
       end
     end
   end
   
   def render_update_timeout(message_id, message, false_id, launch_id)
+    redbox = new_remote_redbox('failure_notice', 'installs', message)
     render(:update) do |page|
       page.call(false_id, false)
       page.replace_html message_id, message
-      page.replace_html launch_id, new_remote_redbox('failure_notice', 'installs', message)
+      page.replace_html launch_id, redbox
     end
   end
   
   def render_update_failure(message_id, message, false_id, launch_id)
+    redbox = new_remote_redbox('failure_notice', 'installs', message)
     render(:update) do |page|
       page.call(false_id, false)
       page.replace_html message_id, message
-      page.replace_html launch_id, new_remote_redbox('failure_notice', 'installs', message)     
+      page.replace_html launch_id, redbox     
     end
   end
   
