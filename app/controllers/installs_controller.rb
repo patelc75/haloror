@@ -160,7 +160,7 @@ class InstallsController < ApplicationController
     #self_test_step = false
     if self_test_step
       session[:progress_count][:register] = nil
-      message = self_test_step.self_test_step_description.description
+      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - session[:self_test_create_time]}"
       render_update_success('registered_div_id', message, 'updateCheckRegistration', 'updateCheckSelfTestGateway', 'registered_check', 'update_percentage', REGISTRATION_PERCENTAGE)
     else
       render_update_message('registered_div_id', message, :register)
@@ -174,7 +174,8 @@ class InstallsController < ApplicationController
     self_test_step = check_gateway_self_test()
     if self_test_step
       session[:progress_count][:gateway] = nil
-      message = self_test_step.self_test_step_description.description
+      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "description_id = #{REGISTRATION_COMPLETE_ID}")
+      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - previous_step.timestamp}"
       render_update_success('gateway_div_id', message, 'updateCheckSelfTestGateway', 'updateCheckSelfTestChestStrap', 'self_test_gateway_check', 'update_percentage', GATEWAY_SELF_TEST_PERCENTAGE)
     elsif check_gateway_timeout?
       session[:progress_count][:gateway] = nil
@@ -196,7 +197,8 @@ class InstallsController < ApplicationController
     self_test_step = check_chest_strap_self_test()
     if self_test_step
       session[:progress_count][:chest_strap] = nil
-      message = self_test_step.self_test_step_description.description                        
+      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "description_id = #{SELF_TEST_GATEWAY_COMPLETE_ID}")
+      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - previous_step.timestamp}"                        
       render_update_success('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'updateCheckStrapFastened', 'self_test_chest_strap_check', 'update_percentage', CHEST_STRAP_SELF_TEST_PERCENTAGE)
     elsif check_chest_strap_timeout?
       session[:progress_count][:chest_strap] = nil
@@ -222,7 +224,12 @@ class InstallsController < ApplicationController
     self_test_step = check_phone_self_test()
     if self_test_step
       session[:progress_count][:phone] = nil
-      message = self_test_step.self_test_step_description.description
+      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "description_id = #{HEARTRATE_DETECTED_ID}")
+      duration = 0
+      if((self_test_step.timestamp - previous_step.timestamp) > 0)
+        duration = self_test_step.timestamp - previous_step.timestamp
+      end
+      message = self_test_step.self_test_step_description.description + "  --  #{duration}"
       render_update_success('phone_div_id', message, 'updateCheckSelfTestPhone', nil, 'self_test_phone_check', 'update_percentage', PHONE_SELF_TEST_PERCENTAGE, 'phone_test_complete', 'install_wizard_launch')
     elsif check_phone_timeout?
       session[:progress_count][:phone] = nil
@@ -253,7 +260,8 @@ class InstallsController < ApplicationController
     self_test_step = check_strap_fastened()
     if self_test_step
       session[:progress_count][:strap_fastened] = nil
-      message = self_test_step.self_test_step_description.description
+      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "description_id = #{SELF_TEST_CHEST_STRAP_COMPLETE_ID}")
+      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - previous_step.timestamp}"
       render_update_success('strap_fastened_div_id', message, 'updateCheckStrapFastened', 'updateCheckHeartrate', 'strap_fastened_check', 'update_percentage', CHEST_STRAP_DETECTED_PERCENTAGE)
     elsif check_strap_fastened_timeout?
       session[:progress_count][:strap_fastened] = nil
@@ -271,7 +279,8 @@ class InstallsController < ApplicationController
     self_test_step = check_heartrate()
     if self_test_step
       session[:progress_count][:heartrate] = nil
-      message = self_test_step.self_test_step_description.description
+      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "description_id = #{SELF_TEST_CHEST_STRAP_COMPLETE_ID}")
+      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - previous_step.timestamp}"
       render_update_success('heartrate_div_id', message, 'updateCheckHeartrate', 'updateCheckSelfTestPhone', 'heartrate_check', 'update_percentage', HEARTRATE_DETECTED_PERCENTAGE)
       
     elsif check_heartrate_timeout?
@@ -305,7 +314,8 @@ class InstallsController < ApplicationController
   def stop_range_test
     init_devices_user
     create_mgmt_cmd('range_test_stop', @strap.id)
-    message = create_self_test_step(STOP_RANGE_TEST_PROMPT_ID).self_test_step_description.description
+      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "description_id = #{HEARTRATE_DETECTED_ID}")
+      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - previous_step.timestamp}"                        
     create_mgmt_cmd('mgmt_poll_rate', @gateway.id, MGMT_POLL_RATE)
     create_self_test_step(SLOW_POLLING_MGMT_COMMAND_CREATED_ID)
     @self_test_session.completed_on = Time.now

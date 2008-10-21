@@ -4,10 +4,12 @@
 	end %>
 <script>
 	function launchFlashCheck(){
-       url = "/installs/phone_prompt_init/?user_id=<%= @user.id %>"
+		window.open("/installs/flash_install_upgrade","flash_install_upgrade");
+	}
+	function showPhone(){
+		url = "/installs/phone_prompt_init/?user_id=<%= @user.id %>"
 		new Ajax.Request(url, {
   			method: 'get'});
-		window.open("/installs/flash_install_upgrade","flash_install_upgrade");
 	}
 </script>
 <div id="phone_launcher" ></div>
