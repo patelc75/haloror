@@ -251,7 +251,6 @@ class InstallsController < ApplicationController
   end
   def self_test_complete
     init_devices_user
-    create_mgmt_cmd('range_test_start', @strap.id)
   end
   
   def install_wizard_strap_fastened_progress
@@ -309,6 +308,7 @@ class InstallsController < ApplicationController
   
   def range_test
     init_devices_user
+    create_mgmt_cmd('range_test_start', @strap.id)
   end
   
   def stop_range_test
