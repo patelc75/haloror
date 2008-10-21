@@ -13,7 +13,7 @@ class MgmtQueriesController < RestfulAuthController
     query.save
     
     conds = []
-    if(query.cycle_num)
+    if(!query.cycle_num.blank?)
       if(query.cycle_num == 1)
         conds = []
         conds << "originator = 'server'"
