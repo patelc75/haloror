@@ -38,11 +38,11 @@ class InstallsController < ApplicationController
   end
   def registration
     
-    if session[:flash_prompt] == 0
-      session[:flash_prompt] = 1
-    elsif session[:flash_prompt] != 1
-      session[:flash_prompt] = 0
-    end
+#    if session[:flash_prompt] == 0
+#      session[:flash_prompt] = 1
+#    elsif session[:flash_prompt] != 1
+#      session[:flash_prompt] = 0
+#    end
     if check_params_for_group
       @group = Group.find_by_name(params[:group])
       if !params[:id].blank?
