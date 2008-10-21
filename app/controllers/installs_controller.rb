@@ -314,7 +314,7 @@ class InstallsController < ApplicationController
   def stop_range_test
     init_devices_user
     create_mgmt_cmd('range_test_stop', @strap.id)
-    create_self_test_step(RANGE_TEST_COMPLETE_ID)
+    self_test_step = create_self_test_step(RANGE_TEST_COMPLETE_ID)
       previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_PHONE_COMPLETE_ID}")
       message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - previous_step.timestamp}"                        
     create_mgmt_cmd('mgmt_poll_rate', @gateway.id, MGMT_POLL_RATE)
