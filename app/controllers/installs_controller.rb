@@ -160,7 +160,7 @@ class InstallsController < ApplicationController
     #self_test_step = false
     if self_test_step
       session[:progress_count][:register] = nil
-      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - session[:self_test_create_time]}"
+      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - session[:self_test_time_created]}"
       render_update_success('registered_div_id', message, 'updateCheckRegistration', 'updateCheckSelfTestGateway', 'registered_check', 'update_percentage', REGISTRATION_PERCENTAGE)
     else
       render_update_message('registered_div_id', message, :register)
