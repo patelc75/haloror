@@ -323,7 +323,7 @@ class InstallsController < ApplicationController
     @self_test_session.save!
     launcher = new_remote_redbox('install_wizard_complete', 'installs', message)
     render(:update) do |page|
-      render_update_success('range_test_stop_div', message, nil, nil, 'range_test_check', 'update_percentage', RANGE_TEST_PERCENTAGE)
+      render_update_success('install_wizard_launch', message, nil, nil, 'range_test_check', 'update_percentage', RANGE_TEST_PERCENTAGE)
       page.replace_html 'install_wizard_result', message
       page.replace_html launch_id, launcher
     end
