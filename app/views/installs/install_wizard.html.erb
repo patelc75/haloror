@@ -1,4 +1,5 @@
 <script language="javascript">
+	var isLoaded = false;
 	var firstManualPB;
 	var install_wizard_percentage = 0;
 	var checkRegistration = true;
@@ -9,6 +10,7 @@
 	var checkHeartrate = false;
 	Event.observe(window, 'load', function() {
 	   firstManualPB = new JS_BRAMUS.jsProgressBar($('installation_wizard_progress'), 0, {animate: true, width: 120, height: 12});
+	    isLoaded = true;
     }, false);
 	function update_percentage(percentage){
 		firstManualPB.setPercentage(percentage);
@@ -50,7 +52,7 @@
 										:gateway_id => @gateway.id, 
 										:strap_id => @strap.id,
 										:self_test_session_id => @self_test_session_id }, 
-							 :condition => "checkRegistration", 
+							 :condition => "checkRegistration && isLoaded", 
 							 :frequency => INSTALL_WIZARD_POLL_RATE) %>
 <%= periodically_call_remote(:url => { 	:controller => 'installs', 
 										:action => 'install_wizard_chest_strap_progress', 
@@ -58,7 +60,7 @@
 										:gateway_id => @gateway.id, 
 										:strap_id => @strap.id,
 										:self_test_session_id => @self_test_session_id  }, 
-							 :condition => "checkSelfTestChestStrap", 
+							 :condition => "checkSelfTestChestStrap && isLoaded", 
 							 :frequency => INSTALL_WIZARD_POLL_RATE) %>
 <%= periodically_call_remote(:url => { 	:controller => 'installs', 
 										:action => 'install_wizard_gateway_progress', 
@@ -66,7 +68,7 @@
 										:gateway_id => @gateway.id, 
 										:strap_id => @strap.id,
 										:self_test_session_id => @self_test_session_id  }, 
-							 :condition => "checkSelfTestGateway", 
+							 :condition => "checkSelfTestGateway && isLoaded", 
 							 :frequency => INSTALL_WIZARD_POLL_RATE) %>							 
 <%= periodically_call_remote(:url => { 	:controller => 'installs', 
 										:action => 'install_wizard_phone_progress', 
@@ -74,7 +76,7 @@
 										:gateway_id => @gateway.id, 
 										:strap_id => @strap.id,
 										:self_test_session_id => @self_test_session_id  }, 
-							 :condition => "checkSelfTestPhone", 
+							 :condition => "checkSelfTestPhone && isLoaded", 
 							 :frequency => INSTALL_WIZARD_POLL_RATE) %>	
 <%= periodically_call_remote(:url => { 	:controller => 'installs', 
 										:action => 'install_wizard_strap_fastened_progress', 
@@ -82,7 +84,7 @@
 										:gateway_id => @gateway.id, 
 										:strap_id => @strap.id,
 										:self_test_session_id => @self_test_session_id  }, 
-							 :condition => "checkStrapFastened", 
+							 :condition => "checkStrapFastened && isLoaded", 
 							 :frequency => INSTALL_WIZARD_POLL_RATE)%>
 <%= periodically_call_remote(:url => { 	:controller => 'installs', 
 										:action => 'install_wizard_heartrate_progress', 
@@ -90,7 +92,7 @@
 										:gateway_id => @gateway.id, 
 										:strap_id => @strap.id,
 										:self_test_session_id => @self_test_session_id  }, 
-							 :condition => "checkHeartrate", 
+							 :condition => "checkHeartrate && isLoaded", 
 							 :frequency => INSTALL_WIZARD_POLL_RATE)%>
 <div id="call_list-col">
 	<div align="center" id="call_list-col-header">
