@@ -300,6 +300,7 @@ class InstallsController < ApplicationController
     init_devices_user
       launcher = new_remote_redbox('range_test')
     create_self_test_step(START_RANGE_TEST_PROMPT_ID)
+    create_mgmt_cmd('range_test_start', @strap.id)
     render(:update) do |page|
       page.replace_html 'range_test_start_div', launcher
       page.replace_html 'install_wizard_result', 'Range Test Started'
@@ -308,7 +309,6 @@ class InstallsController < ApplicationController
   
   def range_test
     init_devices_user
-    create_mgmt_cmd('range_test_start', @strap.id)
   end
   
   def stop_range_test
