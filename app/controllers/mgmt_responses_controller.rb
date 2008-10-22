@@ -1,5 +1,5 @@
 class MgmtResponsesController < RestfulAuthController
-  @@responses_cmds = {"info" => ["firmware_upgrade", "info"], "reset" => ["reset"]}
+  @@responses_cmds = {"info" => ["firmware_upgrade", "info"]}
   
   def conditions_from_hash(response)
     conds = []
