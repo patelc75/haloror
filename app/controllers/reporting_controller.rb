@@ -43,14 +43,10 @@ class ReportingController < ApplicationController
       conditions = "devices.id IN (Select device_id from devices_users where devices_users.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids}))))"
     end
     if conditions.blank?
-      @devices = Device.paginate(:page => params[:page],  
-                                 :order => "id asc",
-                                 :per_page => 12)
+      @devices = Device.find(:all, :order => "id asc")
     else
-      @devices = Device.paginate( :page => params[:page], 
-                                  :order => "id asc",
-                                  :conditions => conditions, 
-                                  :per_page => 12)
+      @devices = Device.find(:all, :order => "id asc",
+                                  :conditions => conditions)
     end
   end
   

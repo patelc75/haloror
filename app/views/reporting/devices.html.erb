@@ -1,11 +1,5 @@
 <%=render :partial => 'nav'%>
 
 <div id="device-table" class="table">
-	<center><big><%= will_paginate @devices %></big></center>
-	<br />
-	<br />
 	<%=render :partial => 'device_table', :locals => {:user => @user, :devices => @devices}%>
-	<br />
-	<br />
-	<center><big><%= will_paginate @devices %></big></center>
 </div>
