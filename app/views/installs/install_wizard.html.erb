@@ -94,8 +94,8 @@
 										:self_test_session_id => @self_test_session_id  }, 
 							 :condition => "checkHeartrate && isLoaded", 
 							 :frequency => INSTALL_WIZARD_POLL_RATE)%>
-<div id="call_list-col">
-	<div align="center" id="call_list-col-header">
+<div style="width: 700px;" id="call_list-col">
+	<div align="center" style="font-size: 200%;" id="call_list-col-header">
 		Installation Wizard
 	</div>
 	<div class="content">
@@ -120,31 +120,38 @@
 	    </div>
 		<div class="row">
 			<div class="col-150"><img id="registered_check" width="60" height="60" src="/images/checkbox_grey.png"></div>
-			<div class="col-150" id="registered_div_id" style="vertical-align: middle;">Registered</div>
+			<div class="col-300" id="registered_div_id" style="font-size: 200%;vertical-align: middle;">Registered</div>
+			<div class="col-150" id="registered_div_id_duration" style="vertical-align: middle;"></div>
 		</div>
 		<div class="row">	
 			<div class="col-150"><img id="self_test_gateway_check" width="60" height="60"  src="/images/checkbox_grey.png"></div>
-			<div class="col-150" id="gateway_div_id" style="vertical-align: middle;">Self Test Gateway</div>
+			<div class="col-300" id="gateway_div_id" style="font-size: 200%;vertical-align: middle;">Self Test Gateway</div>
+			<div class="col-150" id="gateway_div_id_duration" style="vertical-align: middle;"></div>
 		</div>
 		<div class="row">
 			<div class="col-150"><img id="self_test_chest_strap_check" width="60" height="60"  src="/images/checkbox_grey.png"></div>
-			<div class="col-150" id="chest_strap_div_id" style="vertical-align: middle;">Self Test Chest Strap</div>
+			<div class="col-300" id="chest_strap_div_id" style="font-size: 200%;vertical-align: middle;">Self Test Chest Strap</div>
+			<div class="col-150" id="chest_strap_div_id_duration" style="vertical-align: middle;"></div>
 		</div>
 		<div class="row">
 			<div class="col-150"><img id="strap_fastened_check" width="60" height="60" src="/images/checkbox_grey.png"></div>
-			<div class="col-150" id="strap_fastened_div_id" style="vertical-align: middle;">Strap Worn Detection</div>
+			<div class="col-300" id="strap_fastened_div_id" style="font-size: 200%;vertical-align: middle;">Strap Worn Detection</div>
+			<div class="col-150" id="strap_fastened_div_id_duration" style="vertical-align: middle;"></div>
 		</div>
 		<div class="row">	
 			<div class="col-150"><img id="heartrate_check" width="60" height="60"  src="/images/checkbox_grey.png"></div>
-			<div class="col-150" id="heartrate_div_id" style="vertical-align: middle;">Heartrate Detection</div>
+			<div class="col-300" id="heartrate_div_id" style="font-size: 200%;vertical-align: middle;">Heartrate Detection</div>
+			<div class="col-150" id="heartrate_div_id_duration" style="vertical-align: middle;"></div>
 		</div>
 		<div class="row">
 			<div class="col-150"><img id="self_test_phone_check" width="60" height="60"  src="/images/checkbox_grey.png"></div>
-			<div class="col-150" id="phone_div_id" style="vertical-align: middle;">Self Test Phone</div>
+			<div class="col-300" id="phone_div_id" style="font-size: 200%;vertical-align: middle;">Self Test Phone</div>
+			<div class="col-150" id="phone_div_id_duration" style="vertical-align: middle;"></div>
 		</div>
 		<div class="row">
 			<div class="col-150"><img id="range_test_check" width="60" height="60"  src="/images/checkbox_grey.png"></div>
-			<div class="col-150" id="range_test_div_id" style="vertical-align: middle;">Range Test</div>
+			<div class="col-300" id="range_test_div_id" style="font-size: 200%;vertical-align: middle;">Range Test</div>
+			<div class="col-150" id="range_test_div_id_duration" style="vertical-align: middle;"></div>
 		</div>
 	  </div>
 	</div>
@@ -153,50 +160,20 @@
 </div>
 <br />
 <br />
-<div id="call_list-col">
+<div id="call_list-col" style="width: 700px;">
 	<div class="content">
-		<div id="device-table" class="table">
-		<div class="row header">
-		<div class="col-150">
-			User ID
-		</div>
-		<div class="col-250">
-			Name
-		</div>
-		<div class="col-75">
-			Chest Strap ID
-		</div>
-		<div class="col-150">
-			Chest Serial Number
-		</div>
-		<div class="col-75">
-			Gateway ID
-		</div>
-		<div class="col-150">
-			Gatewqy Serial Number
-		</div>
-		</div>
-	<div class="row">
-		<div class="col-150">
-			<%= @user.id %>
-		</div>
-		<div class="col-250">
-			<%= @user.name %>
-		</div>
-		<div class="col-75">
-			<%= @strap.id %>
-		</div>		
-		<div class="col-150">
-			<%= @strap.serial_number%>
-		</div>
-		<div class="col-75">
-			<%= @gateway.id %>
-		</div>
-		<div class="col-150">
-			<%= @gateway.serial_number%>
-		</div>
-	  </div>
-	</div>	
+		<table width="700px">
+			<tr>
+				<td align="left">CS ID:  <%= @strap.id %></td>
+				<td align="center">UID:  <%= @user.id %></td>
+				<td align="right">GW ID:  <%= @gateway.id %></td>
+			</tr>
+			<tr>
+				<td align="left">CS SN:  <%= @strap.serial_number %></td>
+				<td align="center"><%= @user.name %></td>
+				<td align="right">GW SN:  <%= @gateway.serial_number %></td>
+			</tr>
+		</table>
 	</div>
 	<div style="clear:both"></div>
 	<div id="call_list-col-footer"></div>
