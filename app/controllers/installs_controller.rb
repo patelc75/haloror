@@ -37,7 +37,7 @@ class InstallsController < ApplicationController
     end
   end
   def registration
-    
+    clear_session_data
 #    if session[:flash_prompt] == 0
 #      session[:flash_prompt] = 1
 #    elsif session[:flash_prompt] != 1
@@ -160,7 +160,7 @@ class InstallsController < ApplicationController
     #self_test_step = false
     if self_test_step
       session[:progress_count][:register] = nil
-      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - session[:self_test_time_created]}"
+      message = self_test_step.self_test_step_description.description + "  --  #{UtilityHelper.seconds_format(self_test_step.timestamp - session[:self_test_time_created])}"
       render_update_success('registered_div_id', message, 'updateCheckRegistration', 'updateCheckSelfTestGateway', 'registered_check', 'update_percentage', REGISTRATION_PERCENTAGE)
     else
       render_update_message('registered_div_id', message, :register)
@@ -175,12 +175,13 @@ class InstallsController < ApplicationController
     if self_test_step
       session[:progress_count][:gateway] = nil
       previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{REGISTRATION_COMPLETE_ID}")
-      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - previous_step.timestamp}"
+      message = self_test_step.self_test_step_description.description + "  --  #{UtilityHelper.seconds_format(self_test_step.timestamp - previous_step.timestamp)}"
       render_update_success('gateway_div_id', message, 'updateCheckSelfTestGateway', 'updateCheckSelfTestChestStrap', 'self_test_gateway_check', 'update_percentage', GATEWAY_SELF_TEST_PERCENTAGE)
     elsif check_gateway_timeout?
       session[:progress_count][:gateway] = nil
       step = create_self_test_step(SELF_TEST_GATEWAY_TIMEOUT_ID)
       message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
+      clear_session_data
       render_update_timeout('gateway_div_id', message, 'updateCheckSelfTestGateway', 'install_wizard_launch')
     elsif session[:halo_check_gateway_self_test_result] && !session[:halo_check_gateway_self_test_result].result
       step = create_self_test_step(SELF_TEST_GATEWAY_FAILED_ID)
@@ -198,12 +199,13 @@ class InstallsController < ApplicationController
     if self_test_step
       session[:progress_count][:chest_strap] = nil
       previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_GATEWAY_COMPLETE_ID}")
-      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - previous_step.timestamp}"                        
+      message = self_test_step.self_test_step_description.description + "  --  #{UtilityHelper.seconds_format(self_test_step.timestamp - previous_step.timestamp)}"                        
       render_update_success('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', false, 'self_test_chest_strap_check', 'update_percentage', CHEST_STRAP_SELF_TEST_PERCENTAGE, 'chest_strap_prompt', 'install_wizard_launch')
     elsif check_chest_strap_timeout?
       session[:progress_count][:chest_strap] = nil
       step = create_self_test_step(SELF_TEST_CHEST_STRAP_TIMEOUT_ID)
       message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
+      clear_session_data
       render_update_timeout('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'install_wizard_launch')
     elsif session[:halo_check_chest_strap_self_test_result] && !session[:halo_check_chest_strap_self_test_result].result
       step = create_self_test_step(SELF_TEST_CHEST_STRAP_FAILED_ID)
@@ -229,12 +231,13 @@ class InstallsController < ApplicationController
       if((self_test_step.timestamp - previous_step.timestamp) > 0)
         duration = self_test_step.timestamp - previous_step.timestamp
       end
-      message = self_test_step.self_test_step_description.description + "  --  #{duration}"
+      message = self_test_step.self_test_step_description.description + "  --  #{UtilityHelper.seconds_format(duration)}"
       render_update_success('phone_div_id', message, 'updateCheckSelfTestPhone', nil, 'self_test_phone_check', 'update_percentage', PHONE_SELF_TEST_PERCENTAGE, 'phone_test_complete', 'install_wizard_launch')
     elsif check_phone_timeout?
       session[:progress_count][:phone] = nil
       step = create_self_test_step(SELF_TEST_PHONE_TIMEOUT_ID)
       message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
+      clear_session_data
       render_update_timeout('phone_div_id', message, 'updateCheckSelfTestPhone', 'install_wizard_launch')
     elsif session[:halo_check_phone_self_test_result] && !session[:halo_check_phone_self_test_result].result
       step = create_self_test_step(SELF_TEST_PHONE_FAILED_ID)
@@ -246,8 +249,9 @@ class InstallsController < ApplicationController
   end
   
   def failure_notice
-    @failure_notice = params[:message]
     init_devices_user
+    @failure_notice = params[:message]
+    clear_session_data
   end
   def chest_strap_prompt
     init_devices_user
@@ -260,12 +264,13 @@ class InstallsController < ApplicationController
     if self_test_step
       session[:progress_count][:strap_fastened] = nil
       previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_CHEST_STRAP_COMPLETE_ID}")
-      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - previous_step.timestamp}"
+      message = self_test_step.self_test_step_description.description + "  --  #{UtilityHelper.seconds_format(self_test_step.timestamp - previous_step.timestamp)}"
       render_update_success('strap_fastened_div_id', message, 'updateCheckStrapFastened', 'updateCheckHeartrate', 'strap_fastened_check', 'update_percentage', CHEST_STRAP_DETECTED_PERCENTAGE)
     elsif check_strap_fastened_timeout?
       session[:progress_count][:strap_fastened] = nil
       step = create_self_test_step(CHEST_STRAP_FASTENED_TIMEOUT_ID)
       message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
+      clear_session_data
       render_update_timeout('strap_fastened_div_id', message, 'updateCheckStrapFastened', 'install_wizard_launch')
     else
       render_update_message('strap_fastened_div_id', message, :strap_fastened)
@@ -278,14 +283,15 @@ class InstallsController < ApplicationController
     self_test_step = check_heartrate()
     if self_test_step
       session[:progress_count][:heartrate] = nil
-      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_CHEST_STRAP_COMPLETE_ID}")
-      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - previous_step.timestamp}"
+      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{CHEST_STRAP_FASTENED_DETECTED_ID}")
+      message = self_test_step.self_test_step_description.description + "  --  #{UtilityHelper.seconds_format(self_test_step.timestamp - previous_step.timestamp)}"
       render_update_success('heartrate_div_id', message, 'updateCheckHeartrate', 'updateCheckSelfTestPhone', 'heartrate_check', 'update_percentage', HEARTRATE_DETECTED_PERCENTAGE)
       
     elsif check_heartrate_timeout?
       session[:progress_count][:heartrate] = nil
       step = create_self_test_step(HEARTRATE_TIMEOUT_ID)
       message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
+      clear_session_data
       render_update_timeout('heartrate_div_id', message, 'updateCheckHeartrate', 'install_wizard_launch')
     else
       render_update_message('heartrate_div_id', message, :heartrate)
@@ -316,17 +322,32 @@ class InstallsController < ApplicationController
     create_mgmt_cmd('range_test_stop', @strap.id)
     self_test_step = create_self_test_step(RANGE_TEST_COMPLETE_ID)
       previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_PHONE_COMPLETE_ID}")
-      message = self_test_step.self_test_step_description.description + "  --  #{self_test_step.timestamp - previous_step.timestamp}"                        
+      message = self_test_step.self_test_step_description.description + "  --  #{UtilityHelper.seconds_format(self_test_step.timestamp - previous_step.timestamp)}"                        
     create_mgmt_cmd('mgmt_poll_rate', @gateway.id, MGMT_POLL_RATE)
     create_self_test_step(SLOW_POLLING_MGMT_COMMAND_CREATED_ID)
-    @self_test_session.completed_on = Time.now
-    @self_test_session.save!
-    render_update_success('range_test_div_id', message, nil, nil, 'range_test_check', 'update_percentage', RANGE_TEST_PERCENTAGE, 'install_wizard_complete', 'install_wizard_launch')
-      
+    render_update_success('range_test_div_id', message, nil, nil, 'range_test_check', 'update_percentage', RANGE_TEST_PERCENTAGE, 'notes', 'install_wizard_launch')
+  end
+
+  def notes
+    init_devices_user
   end
   
+  def submit_range_test_notes
+    init_devices_user
+    self_test_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{RANGE_TEST_COMPLETE_ID}")
+    self_test_step.notes = params[:notes]
+    self_test_step.save!
+    launcher = new_remote_redbox('install_wizard_complete')
+    render(:update) do |page|
+      page.replace_html 'install_wizard_launch', launcher
+    end
+    
+  end
   def install_wizard_complete
     init_devices_user
+    @self_test_session.completed_on = Time.now
+    @self_test_session.save!
+    clear_session_data
   end
   
   private
@@ -565,5 +586,16 @@ class InstallsController < ApplicationController
                                      :gateway_id => @gateway_id, :strap_id => @strap_id
                                   }, 
                          :html => { :method => :get, :complete => '' } )
+  end
+  def clear_session_data
+    session[:self_test_time_created] = nil
+    session[:progress_count] = nil
+    session[:halo_check_phone_self_test] = nil
+    session[:halo_check_phone_self_test_result] = nil
+    session[:halo_check_chest_strap_self_test] = nil
+    session[:halo_check_chest_strap_self_test_result] = nil
+    session[:halo_check_gateway_self_test] = nil
+    session[:halo_check_gateway_self_test_result] = nil
+    session[:halo_check_registered] = nil
   end
 end
