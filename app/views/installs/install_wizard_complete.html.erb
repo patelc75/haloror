@@ -8,6 +8,11 @@
 			Installation Complete.  Total time:  <%= UtilityHelper.seconds_format(@self_test_session.completed_on - @self_test_session.created_at) %>
 			<br />
 			<br />
+			<% if @user.activation_code != nil %>
+      		Please activate the user.  <%= link_to 'Activate', :controller => 'activate', :action => @user.activation_code %>
+			<% end %>
+			<br />
+			<br />
 			Please check that the flash player upgrade is finished and restart your browser.
 		</div>
 	</div>
