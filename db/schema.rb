@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081016162212) do
+ActiveRecord::Schema.define(:version => 20081023163017) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -136,6 +136,8 @@ ActiveRecord::Schema.define(:version => 20081016162212) do
     t.string  "software_version"
     t.integer "mgmt_response_id"
   end
+
+  add_index "device_infos", ["device_id"], :name => "index_device_infos_on_device_id"
 
   create_table "device_latest_queries", :force => true do |t|
     t.datetime "updated_at", :null => false
@@ -330,6 +332,8 @@ ActiveRecord::Schema.define(:version => 20081016162212) do
     t.datetime "timestamp_server"
   end
 
+  add_index "mgmt_responses", ["timestamp_server"], :name => "index_mgmt_responses_on_timestamp_server"
+
   create_table "notes", :force => true do |t|
     t.integer  "user_id"
     t.integer  "event_id"
@@ -435,7 +439,8 @@ ActiveRecord::Schema.define(:version => 20081016162212) do
     t.string   "result_value"
     t.integer  "device_id"
     t.integer  "operator_id"
-    t.datetime "timestamp",    :null => false
+    t.datetime "timestamp",           :null => false
+    t.integer  "self_test_result_id"
   end
 
   create_table "self_test_results", :force => true do |t|
@@ -443,6 +448,13 @@ ActiveRecord::Schema.define(:version => 20081016162212) do
     t.string   "cmd_type",  :null => false
     t.integer  "device_id", :null => false
     t.datetime "timestamp", :null => false
+  end
+
+  create_table "self_test_sessions", :force => true do |t|
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.integer  "user_id"
+    t.datetime "completed_on"
   end
 
   create_table "self_test_step_descriptions", :force => true do |t|
@@ -454,6 +466,8 @@ ActiveRecord::Schema.define(:version => 20081016162212) do
     t.integer  "user_id"
     t.integer  "halo_user_id"
     t.integer  "self_test_step_description_id"
+    t.integer  "self_test_session_id"
+    t.string   "notes"
   end
 
   create_table "skin_temps", :force => true do |t|
