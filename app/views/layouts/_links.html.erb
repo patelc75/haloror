@@ -37,7 +37,7 @@
 				<li><%= link_to 'User&nbsp;Signup', url_for(:controller => 'users', :action => 'new') %></li>
 			<% end %>
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_installer? %>
-				<li><%= link_to 'User&nbsp;Registration', url_for(:controller => 'installs', :action => 'index') %></li>
+				<li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li>
 			<% end %>
 			<% if current_user.is_super_admin? %>
 				<li><%= link_to 'Info', url_for(:controller => 'util', :action => 'info', :my_links => 'Info') %></li>

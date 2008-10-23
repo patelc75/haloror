@@ -8,6 +8,34 @@
 			<%= @failure_notice %>
 			<br />
 			<br />
+			<table>
+			<% if @self_test_result && !@self_test_result.self_test_item_results.blank?
+				@self_test_result.self_test_item_results.each do |item| %>
+				<tr>
+					<td><%= item.description %></td>
+					<td><%= item.result ? 'Pass' : 'Fail' %></td>
+				</tr>
+			 <% end 
+			end %>
+			</table>
+			<br />
+			<br />
+			Please enter notes about the failure.
+			<br/>
+			<%= form_remote_tag :url => url_for(:controller => 'installs', :action => 'submit_notes') %>
+				<input type="hidden" name="user_id" value="<%= @user.id %>" />
+				<input type="hidden" name="gateway_id" value="<%= @gateway_id %>" />
+				<input type="hidden" name="strap_id" value="<%= @strap_id %>" />
+				<input type="hidden" name="self_test_session_id" value="<%= @self_test_session_id %>" />
+				<input type="hidden" name="self_test_step_id" value="<%= @self_test_step_id %>" />
+				
+				<textarea id="notes_id" name="notes" rows="5" cols="32"></textarea>
+				<br />
+				<br />
+				<input type="submit" onclick="RedBox.close();" name="Submit" value="Submit" />
+			</form>
+			<br />
+			<br />
 			<%= link_to 'Restart Installation Wizard', 
 						:controller => 'installs', :action => 'restart_install_wizard', 
 						:self_test_session_id => @self_test_session_id, :user_id => @user.id,

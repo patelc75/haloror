@@ -193,12 +193,14 @@ class InstallsController < ApplicationController
       elsif check_gateway_timeout?
         session[:progress_count][:gateway] = nil
         step = create_self_test_step(SELF_TEST_GATEWAY_TIMEOUT_ID)
-        message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
+        @self_test_step_id = step.id
+        message = "Please check your power and ethernet connection on your gateway."
         clear_session_data
         render_update_timeout('gateway_div_id', message, 'updateCheckSelfTestGateway', 'install_wizard_launch')
       elsif session[:halo_check_gateway_self_test_result] && !session[:halo_check_gateway_self_test_result].result
         step = create_self_test_step(SELF_TEST_GATEWAY_FAILED_ID)
-        message = step.self_test_step_description.description
+        @self_test_step_id = step.id
+        message = "Gateway Self Test failed"
         render_update_failure('gateway_div_id', message, 'updateCheckSelfTestGateway', 'install_wizard_launch')
       else
         render_update_message('gateway_div_id', message, :gateway)
@@ -223,12 +225,14 @@ class InstallsController < ApplicationController
       elsif check_chest_strap_timeout?
         session[:progress_count][:chest_strap] = nil
         step = create_self_test_step(SELF_TEST_CHEST_STRAP_TIMEOUT_ID)
-        message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
+        @self_test_step_id = step.id
+        message = "Self Test Chest Strap timed out."
         clear_session_data
         render_update_timeout('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'install_wizard_launch')
       elsif session[:halo_check_chest_strap_self_test_result] && !session[:halo_check_chest_strap_self_test_result].result
         step = create_self_test_step(SELF_TEST_CHEST_STRAP_FAILED_ID)
-        message = step.self_test_step_description.description
+        @self_test_step_id = step.id
+        message = "Self Test Chest Strap failed.  To reset your chest strap please plug it in and hold panic button for 7 seconds."
         render_update_failure('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'install_wizard_launch')
       else
         render_update_message('chest_strap_div_id', message, :chest_strap)
@@ -261,12 +265,14 @@ class InstallsController < ApplicationController
       elsif check_phone_timeout?
         session[:progress_count][:phone] = nil
         step = create_self_test_step(SELF_TEST_PHONE_TIMEOUT_ID)
-        message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
+        @self_test_step_id = step.id
+        message = "Self Test Phone timeout.  Please use phone to check for dial tone and plug phone line in to gateway."
         clear_session_data
         render_update_timeout('phone_div_id', message, 'updateCheckSelfTestPhone', 'install_wizard_launch')
       elsif session[:halo_check_phone_self_test_result] && !session[:halo_check_phone_self_test_result].result
         step = create_self_test_step(SELF_TEST_PHONE_FAILED_ID)
-        message = step.self_test_step_description.description
+        @self_test_step_id = step.id
+        message = "Self Test Phone failed."
         render_update_failure('phone_div_id', message, 'updateCheckSelfTestPhone', 'install_wizard_launch')
       else
         render_update_message('phone_div_id', message, :phone)
@@ -279,6 +285,9 @@ class InstallsController < ApplicationController
   def failure_notice
     init_devices_user
     @failure_notice = params[:message]
+    @self_test_step_id = params[:self_test_step_id]
+    @self_test_result_id = params[:self_test_result_id]
+    @self_test_result = SelfTestResult.find(@self_test_result_id)
     clear_session_data
   end
   
@@ -297,7 +306,8 @@ class InstallsController < ApplicationController
       elsif check_strap_fastened_timeout?
         session[:progress_count][:strap_fastened] = nil
         step = create_self_test_step(CHEST_STRAP_FASTENED_TIMEOUT_ID)
-        message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
+        @self_test_step_id = step.id
+        message = "Strap Fastened Detection timed out.  To reset your chest strap please plug it in and hold panic button for 7 seconds.  Please put on the chest strap and rerun the Installation Wizard."
         clear_session_data
         render_update_timeout('strap_fastened_div_id', message, 'updateCheckStrapFastened', 'install_wizard_launch')
       else
@@ -324,7 +334,8 @@ class InstallsController < ApplicationController
       elsif check_heartrate_timeout?
         session[:progress_count][:heartrate] = nil
         step = create_self_test_step(HEARTRATE_TIMEOUT_ID)
-        message = "<b>Installation Failed (Timeout):</b>  #{step.self_test_step_description.description}"
+        @self_test_step_id = step.id
+        message = "Heartrate Detection timed out. To reset your chest strap please plug it in and hold panic button for 7 seconds.  Please put on the chest strap and rerun the Installation Wizard."
         clear_session_data
         render_update_timeout('heartrate_div_id', message, 'updateCheckHeartrate', 'install_wizard_launch')
       else
@@ -373,14 +384,18 @@ class InstallsController < ApplicationController
   
   def submit_range_test_notes
     init_devices_user
-    self_test_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{RANGE_TEST_COMPLETE_ID}")
-    self_test_step.notes = params[:notes]
-    self_test_step.save!
+    save_notes(RANGE_TEST_COMPLETE_ID)
     launcher = new_remote_redbox('install_wizard_complete')
     render(:update) do |page|
       page.replace_html 'install_wizard_launch', launcher
     end
     
+  end
+  
+  def submit_notes
+    init_devices_user
+    save_notes(params[:self_test_step_id])
+    render :nothing => true
   end
   
   def battery_critical
@@ -546,11 +561,11 @@ class InstallsController < ApplicationController
     end
   end
   def check_heartrate_timeout?
-    timeout?(CHEST_STRAP_FASTENED_DETECTED_ID, 2)
+    timeout?(CHEST_STRAP_FASTENED_DETECTED_ID, 4)
   end
   
   def check_gateway_timeout?
-    if Time.now > (session[:self_test_time_created] + 2.minutes)
+    if Time.now > (session[:self_test_time_created] + 4.minutes)
       return true
     else
       return false
@@ -558,14 +573,14 @@ class InstallsController < ApplicationController
   end
   
   def check_phone_timeout?
-    timeout?(HEARTRATE_DETECTED_ID, 4)
+    timeout?(HEARTRATE_DETECTED_ID, 5)
   end
   def check_chest_strap_timeout?
-    timeout?(SELF_TEST_GATEWAY_COMPLETE_ID, 3)
+    timeout?(SELF_TEST_GATEWAY_COMPLETE_ID, 5)
   end
   
   def check_strap_fastened_timeout?
-    timeout?(SELF_TEST_CHEST_STRAP_COMPLETE_ID, 2)
+    timeout?(SELF_TEST_CHEST_STRAP_COMPLETE_ID, 4)
   end
   def progress_count(sym)
     if session[:progress_count][sym]
@@ -619,7 +634,7 @@ class InstallsController < ApplicationController
   end
   
   def render_update_timeout(message_id, message, false_id, launch_id)
-    redbox = new_remote_redbox('failure_notice', 'installs', message)
+    redbox = new_remote_redbox('failure_notice', 'installs', message, @self_test_step_id, @self_test.id)
     render(:update) do |page|
       page.call(false_id, false)
       page.replace_html message_id, message
@@ -628,7 +643,7 @@ class InstallsController < ApplicationController
   end
   
   def render_update_failure(message_id, message, false_id, launch_id)
-    redbox = new_remote_redbox('failure_notice', 'installs', message)
+    redbox = new_remote_redbox('failure_notice', 'installs', message, @self_test_step_id, @self_test.id)
     render(:update) do |page|
       page.call(false_id, false)
       page.replace_html message_id, message
@@ -648,10 +663,11 @@ class InstallsController < ApplicationController
     end
   end
   
-  def new_remote_redbox(action, controller='installs', message=nil)
+  def new_remote_redbox(action, controller='installs', message=nil, self_test_step_id=nil, self_test_result_id=nil)
     launch_remote_redbox(:url =>  {  :action => action, :controller => controller, :message => message, 
                                      :self_test_session_id => @self_test_session_id, :user_id => @user.id,
-                                     :gateway_id => @gateway_id, :strap_id => @strap_id
+                                     :gateway_id => @gateway_id, :strap_id => @strap_id, 
+                                     :self_test_step_id => self_test_step_id, :self_test_result_id => self_test_result_id
                                   }, 
                          :html => { :method => :get, :complete => '' } )
   end
@@ -665,5 +681,11 @@ class InstallsController < ApplicationController
     session[:halo_check_gateway_self_test] = nil
     session[:halo_check_gateway_self_test_result] = nil
     session[:halo_check_registered] = nil
+  end
+  
+  def save_notes(step_id)
+    self_test_step = SelfTestStep.find(step_id)
+    self_test_step.notes = params[:notes]
+    self_test_step.save!
   end
 end
