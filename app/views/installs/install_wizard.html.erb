@@ -34,14 +34,18 @@
 	function updateCheckHeartrate(b){
 		checkHeartrate = b;
 	}
-	
+	function continueWithoutPhone(id){
+		url = "/installs/no_phone_test/?self_test_step_id=" + id + "&self_test_session_id=<%= @self_test_session_id%>&gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
+		new Ajax.Request(url, {
+  			method: 'get'});
+	}
 	function start_range_test(){
 		url = "/installs/start_range_test/?self_test_session_id=<%= @self_test_session_id%>&gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
 		new Ajax.Request(url, {
   			method: 'get'});
 	}
-	function stop_range_test(){
-		url = "/installs/stop_range_test/?self_test_session_id=<%= @self_test_session_id%>&gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
+	function stop_range_test(self_test_step_id){
+		url = "/installs/stop_range_test/?self_test_step_id=" + self_test_step_id + "&self_test_session_id=<%= @self_test_session_id%>&gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
 		new Ajax.Request(url, {
   			method: 'get'});
 	}

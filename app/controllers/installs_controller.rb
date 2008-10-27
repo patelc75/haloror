@@ -272,7 +272,7 @@ class InstallsController < ApplicationController
       elsif session[:halo_check_phone_self_test_result] && !session[:halo_check_phone_self_test_result].result
         step = create_self_test_step(SELF_TEST_PHONE_FAILED_ID)
         @self_test_step_id = step.id
-        message = "Self Test Phone failed."
+        message = "Self Test Phone failed. Either restart the wizard or you can agree to disable the dial backup feature and continue by clicking <a href=\"javascript:continueWithoutPhone(" + @self_test_step_id.to_s + ");\" >here</a>."
         render_update_failure('phone_div_id', message, 'updateCheckSelfTestPhone', 'install_wizard_launch')
       else
         render_update_message('phone_div_id', message, :phone)
@@ -350,7 +350,14 @@ class InstallsController < ApplicationController
     init_devices_user
     @battery = Battery.find(:first, :conditions => "device_id = #{@strap.id} AND timestamp >= '#{@self_test_session.created_at.to_s}'", :order => 'timestamp desc')  
   end
-  
+  def no_phone_test
+    init_devices_user
+ #   @battery = Battery.find(:first, :conditions => "device_id = #{@strap.id} AND timestamp >= '#{@self_test_session.created_at.to_s}'", :order => 'timestamp desc')  
+    launcher = new_remote_redbox('phone_test_complete')
+    render(:update) do |page|
+      page.replace_html 'install_wizard_launch', launcher
+    end
+  end
   def start_range_test
     init_devices_user
       launcher = new_remote_redbox('range_test')
@@ -371,11 +378,17 @@ class InstallsController < ApplicationController
     self_test_step = create_self_test_step(RANGE_TEST_COMPLETE_ID)
       previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_PHONE_COMPLETE_ID}")
       message = self_test_step.self_test_step_description.description                       
+    duration = nil
+    unless previous_step
+      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{HEARTRATE_DETECTED_ID}")
+    end
+    duration = self_test_step.timestamp - previous_step.timestamp
     create_mgmt_cmd('mgmt_poll_rate', @gateway.id, MGMT_POLL_RATE)
     create_self_test_step(SLOW_POLLING_MGMT_COMMAND_CREATED_ID)
+    
     render_update_success('range_test_div_id', message, nil, nil, 
                           'range_test_check', 'update_percentage', RANGE_TEST_PERCENTAGE, 
-                          self_test_step.timestamp - previous_step.timestamp, 'notes', 'install_wizard_launch')
+                          duration, 'notes', 'install_wizard_launch')
   end
 
   def notes
@@ -384,7 +397,8 @@ class InstallsController < ApplicationController
   
   def submit_range_test_notes
     init_devices_user
-    save_notes(RANGE_TEST_COMPLETE_ID)
+    
+    save_notes(@self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{RANGE_TEST_COMPLETE_ID}").id)
     launcher = new_remote_redbox('install_wizard_complete')
     render(:update) do |page|
       page.replace_html 'install_wizard_launch', launcher
