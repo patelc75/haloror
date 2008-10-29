@@ -4,7 +4,11 @@ class InstallsController < ApplicationController
   include ActionView::Helpers::TagHelper
   include RedboxHelper
   
-  
+  def activate_user
+    @user = User.find(params[:user_id])
+    @user.activate
+    redirect_to :controller => 'sessions', :action => 'destroy'
+  end
   def index
     @groups = []
     gs = current_user.group_memberships
@@ -67,7 +71,10 @@ class InstallsController < ApplicationController
     @strap = nil
     @self_test_session_id = params[:self_test_session_id]
     @self_test_session = SelfTestSession.find(@self_test_session_id)
-    gateway_serial_number = params[:gateway][:serial_number]
+    gateway_serial_number = params[:gateway_serial_number]
+    unless gateway_serial_number
+      gateway_serial_number = params[:gateway][:serial_number]      
+    end
     #check if gateway exists
     if !gateway_serial_number.blank?
       @gateway = Device.find_by_serial_number(gateway_serial_number)
@@ -88,11 +95,15 @@ class InstallsController < ApplicationController
     
     #check is strap exists and if it is assigned to a user or not
     #could have been registered without assigning a user
-    strap_serial_number = params[:strap][:serial_number]
+    strap_serial_number = params[:strap_serial_number]
+    unless strap_serial_number
+      strap_serial_number = params[:strap][:serial_number]
+    end
     if !strap_serial_number.blank?
       @strap = Device.find_by_serial_number(strap_serial_number)
       if @strap && !@strap.users.blank? && !@strap.users.include?(@user)
         flash[:warning] = "Chest Strap with Serial Number #{strap_serial_number} is already assigned to a user."
+        @remove_link = true
         throw Exception.new
       end
       unless @strap
@@ -124,6 +135,15 @@ class InstallsController < ApplicationController
     RAILS_DEFAULT_LOGGER.warn("ERROR registering devices, #{e}")
     create_self_test_step(INSTALLATION_SERIAL_NUMBERS_ENTERED_FAILED_ID)
     render :action => 'registration'
+  end
+  
+  def remove_user_mapping
+    user_id = params[:user_id]
+    device_id = params[:device_id]
+    Device.connection.delete "delete from devices_users where device_id = #{device_id}"
+    redirect_to :action => 'registration_create', :controller => 'installs', 
+                  :user_id => user_id,  :self_test_session_id => params[:self_test_session_id],
+                  :gateway_serial_number => params[:gateway_serial_number], :strap_serial_number => params[:strap_serial_number]
   end
   
   def install_wizard
@@ -172,6 +192,13 @@ class InstallsController < ApplicationController
       session[:progress_count][:register] = nil
       message = self_test_step.self_test_step_description.description
       render_update_success('registered_div_id', message, 'updateCheckRegistration', 'updateCheckSelfTestGateway', 'registered_check', 'update_percentage', REGISTRATION_PERCENTAGE, self_test_step.timestamp - session[:self_test_time_created])
+    elsif check_registration_timeout?
+      session[:progress_count][:register] = nil
+      step = create_self_test_step(REGISTRATION_TIMEOUT_ID)
+      @self_test_step = step
+      @self_test_step_id = step.id
+      message = 'Registration timed out.'
+      render_update_timeout('registered_div_id', message, 'updateCheckRegistration', 'install_wizard_launch')
     else
       render_update_message('registered_div_id', message, :register)
     end
@@ -566,35 +593,39 @@ class InstallsController < ApplicationController
       return false
     end
   end
-  def timeout?(self_test_step_description_id, num)
+  def timeout?(self_test_step_description_id, seconds)
     step = @self_test_session.self_test_steps.find(:first,:conditions => "self_test_step_description_id = #{self_test_step_description_id}")
-    if Time.now > (step.timestamp + num.minutes)
+    if Time.now > (step.timestamp + seconds)
       return true
     else
       return false
     end
   end
   def check_heartrate_timeout?
-    timeout?(CHEST_STRAP_FASTENED_DETECTED_ID, 4)
+    timeout?(CHEST_STRAP_FASTENED_DETECTED_ID, 240.seconds)
   end
   
-  def check_gateway_timeout?
-    if Time.now > (session[:self_test_time_created] + 4.minutes)
+  def check_registration_timeout?
+    if Time.now > (session[:self_test_time_created] + 30.seconds)
       return true
-    else
+    else 
       return false
     end
   end
   
+  def check_gateway_timeout?
+    timeout?(REGISTRATION_COMPLETE_ID, 166.seconds)
+  end
+  
   def check_phone_timeout?
-    timeout?(HEARTRATE_DETECTED_ID, 5)
+    timeout?(HEARTRATE_DETECTED_ID, 145.seconds)
   end
   def check_chest_strap_timeout?
-    timeout?(SELF_TEST_GATEWAY_COMPLETE_ID, 5)
+    timeout?(SELF_TEST_GATEWAY_COMPLETE_ID, 240.seconds)
   end
   
   def check_strap_fastened_timeout?
-    timeout?(SELF_TEST_CHEST_STRAP_COMPLETE_ID, 4)
+    timeout?(SELF_TEST_CHEST_STRAP_COMPLETE_ID, 240.seconds)
   end
   def progress_count(sym)
     if session[:progress_count][sym]
