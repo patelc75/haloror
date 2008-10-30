@@ -247,7 +247,7 @@ class InstallsController < ApplicationController
         session[:progress_count][:chest_strap] = nil
         previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_GATEWAY_COMPLETE_ID}")
         message = self_test_step.self_test_step_description.description
-        render_update_success('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'updateCheckStrapFastened', 
+        render_update_success('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'updateCheckHeartrate', 
                               'self_test_chest_strap_check', 'update_percentage', CHEST_STRAP_SELF_TEST_PERCENTAGE, self_test_step.timestamp - previous_step.timestamp)
       elsif check_chest_strap_timeout?
         session[:progress_count][:chest_strap] = nil
@@ -353,7 +353,7 @@ class InstallsController < ApplicationController
       self_test_step = check_heartrate()
       if self_test_step
         session[:progress_count][:heartrate] = nil
-        previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{CHEST_STRAP_FASTENED_DETECTED_ID}")
+        previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_CHEST_STRAP_COMPLETE_ID}")
         message = self_test_step.self_test_step_description.description
         render_update_success('heartrate_div_id', message, 'updateCheckHeartrate', 'updateCheckSelfTestPhone', 
                               'heartrate_check', 'update_percentage', HEARTRATE_DETECTED_PERCENTAGE, self_test_step.timestamp - previous_step.timestamp)
@@ -584,7 +584,8 @@ class InstallsController < ApplicationController
   end
   
   def check_heartrate
-    delay = @self_test_session.created_at
+    step = @self_test_session.self_test_steps.find(:first,:conditions => "self_test_step_description_id = #{SELF_TEST_CHEST_STRAP_COMPLETE_ID}")
+    delay = step.timestamp
     conds = "user_id = #{@user.id} AND heartrate != -1 AND timestamp > '#{delay.to_s}'"
     @vital = Vital.find(:first, :conditions => conds)
     if @vital    
@@ -602,7 +603,7 @@ class InstallsController < ApplicationController
     end
   end
   def check_heartrate_timeout?
-    timeout?(CHEST_STRAP_FASTENED_DETECTED_ID, 240.seconds)
+    timeout?(SELF_TEST_CHEST_STRAP_COMPLETE_ID, 240.seconds)
   end
   
   def check_registration_timeout?
