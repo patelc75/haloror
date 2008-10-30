@@ -197,7 +197,7 @@ class InstallsController < ApplicationController
       step = create_self_test_step(REGISTRATION_TIMEOUT_ID)
       @self_test_step = step
       @self_test_step_id = step.id
-      message = 'Registration timed out.'
+      message = 'Registration timed out.  Please ensure that the LED labeled "WAN" on the Gateway is green and then restart the wizard.'
       render_update_timeout('registered_div_id', message, 'updateCheckRegistration', 'install_wizard_launch')
     else
       render_update_message('registered_div_id', message, :register)
@@ -607,7 +607,7 @@ class InstallsController < ApplicationController
   end
   
   def check_registration_timeout?
-    if Time.now > (session[:self_test_time_created] + 30.seconds)
+    if Time.now > (session[:self_test_time_created] + 180.seconds)
       return true
     else 
       return false
