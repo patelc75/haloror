@@ -8,11 +8,7 @@ class DeviceAvailableAlert < ActiveRecord::Base
   def after_save
     transaction do 
       device.users.each do |user|
-        Event.create(:user_id => user.id, 
-                     :event_type => DeviceAvailableAlert.class_name, 
-                     :event_id => id, 
-                     :timestamp => created_at || Time.now)
-        
+        Event.create_event(user.id, DeviceAvailableAlert.class_name, id, created_at)        
         CriticalMailer.deliver_background_task_notification(self, user)
       end
     end

@@ -4,10 +4,7 @@ class StrapOnAlert < DeviceAlert
   include Priority
   def after_save
     device.users.each do |user|
-      Event.create(:user_id => user.id, 
-        :event_type => StrapOnAlert.class_name, 
-        :event_id => id, 
-        :timestamp => created_at || Time.now)
+      Event.create_event(user.id, StrapOnAlert.class_name, id, created_at)
       CriticalMailer.deliver_background_task_notification(self, user)
     end
   end

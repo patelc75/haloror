@@ -7,9 +7,6 @@ class EventActionObserver < ActiveRecord::Observer
   end
   
   def after_save(event_action)
-    Event.create(:user_id => event_action.event.user_id, 
-      :event_type => EventAction.class_name, 
-      :event_id => event_action.id, 
-      :timestamp => event_action.created_at)
+    Event.create_event(event_action.event.user_id, EventAction.class_name, event_action.id,event_action.created_at)
   end
 end

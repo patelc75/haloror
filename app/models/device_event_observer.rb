@@ -18,11 +18,6 @@ class DeviceEventObserver < ActiveRecord::Observer
   end
   
   def after_save(alert)
-    Event.create(:user_id => alert.user_id, 
-                 :event_type => alert.class.to_s, 
-                 :event_id => alert.id, 
-                 :timestamp => alert.timestamp,
-                 :timestamp_server => Time.now
-    )
+    Event.create_event(alert.user_id, alert.class.to_s, alert.id, alert.timestamp)
   end
 end

@@ -9,6 +9,15 @@ class Event < ActiveRecord::Base
   
   has_many :event_actions
   
+  def create_event(user_id, event_type, event_id, ts)
+    now = Time.now
+    Event.create(:user_id => user_id, 
+          :event_type => event_type, 
+          :event_id => event_id, 
+          :timestamp => ts || now,
+          :timestamp_server => now)
+  end
+  
   def string(user)
     strings = {'Fall' => 'Fell'}
     

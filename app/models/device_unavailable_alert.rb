@@ -21,11 +21,7 @@ class DeviceUnavailableAlert < ActiveRecord::Base
       logger.debug("[DeviceUnavailableAlert] Detected an outage for device #{device_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
 
       device.users.each do |user|
-        Event.create(:user_id => user.id, 
-          :event_type => DeviceUnavailableAlert.class_name, 
-          :event_id => id, 
-          :timestamp => created_at || Time.now)
-        
+        Event.create_event(user.id, DeviceUnavailableAlert.class_name, id, created_at)        
         CriticalMailer.deliver_background_task_notification(self, user)
       end
     end

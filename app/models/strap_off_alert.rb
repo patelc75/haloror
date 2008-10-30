@@ -34,10 +34,7 @@ class StrapOffAlert < DeviceAlert
   def after_save
     if number_attempts == MAX_ATTEMPTS_BEFORE_NOTIFICATION_STRAP_OFF
       device.users.each do |user|
-        Event.create(:user_id => user.id, 
-          :event_type => StrapOffAlert.class_name, 
-          :event_id => id, 
-          :timestamp => created_at || Time.now)
+        Event.create_event(user.id, StrapOffAlert.class_name, id, created_at)
         CriticalMailer.deliver_background_task_notification(self, user)
       end
     end
