@@ -2,6 +2,16 @@ class ManagementController < ApplicationController
   
   before_filter :authenticate_admin?
   
+    
+  def delete_cmd
+    MgmtCmd.delete(params[:id])
+    render :nothing => true
+  end
+  def delete_ack
+    MgmtAck.delete(params[:id])
+    render :nothing => true
+  end
+  
   def index
     unless @type = session[:type]
       @type = 'stream'
@@ -275,8 +285,7 @@ class ManagementController < ApplicationController
     MgmtCmd.delete(params[:id])
     render :nothing => true
   end
-  
-  
+
   private
  
   def create_cmds_for_range_of_devices(ids, cmd)
