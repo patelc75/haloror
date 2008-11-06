@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081023163017) do
+ActiveRecord::Schema.define(:version => 20081106154948) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -50,6 +50,76 @@ ActiveRecord::Schema.define(:version => 20081023163017) do
     t.datetime "updated_at"
   end
 
+  create_table "atp_item_results", :force => true do |t|
+    t.integer  "atp_item_id"
+    t.boolean  "result"
+    t.integer  "device_id"
+    t.datetime "timestamp"
+    t.boolean  "result_value"
+    t.integer  "operator_id"
+    t.datetime "update_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
+
+  create_table "atp_item_results_atp_test_results", :id => false, :force => true do |t|
+    t.integer  "atp_item_result_id"
+    t.integer  "atp_test_result_id"
+    t.datetime "update_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
+
+  create_table "atp_items", :force => true do |t|
+    t.integer  "range_low"
+    t.integer  "range_high"
+    t.string   "description"
+    t.datetime "update_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
+
+  create_table "atp_items_device_types", :id => false, :force => true do |t|
+    t.integer  "atp_item_id"
+    t.integer  "device_type_id"
+    t.datetime "update_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
+
+  create_table "atp_test_results", :force => true do |t|
+    t.boolean  "result"
+    t.integer  "device_id"
+    t.integer  "operator_id"
+    t.datetime "timestamp"
+    t.datetime "update_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
+
+  create_table "atp_test_results_rmas", :id => false, :force => true do |t|
+    t.integer  "atp_test_result_id"
+    t.integer  "rma_id"
+    t.datetime "update_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
+
+  create_table "atp_test_results_work_orders", :id => false, :force => true do |t|
+    t.integer  "atp_test_result_id"
+    t.integer  "work_order_id"
+    t.datetime "update_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
+
   create_table "batteries", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
@@ -58,6 +128,7 @@ ActiveRecord::Schema.define(:version => 20081023163017) do
     t.integer  "device_id"
   end
 
+  add_index "batteries", ["device_id"], :name => "index_batteries_on_device_id"
   add_index "batteries", ["device_id", "timestamp"], :name => "index_batteries_on_timestamp_and_device_id"
   add_index "batteries", ["timestamp", "user_id"], :name => "index_batteries_on_timestamp_and_user_id"
   add_index "batteries", ["percentage", "timestamp", "user_id"], :name => "index_batteries_on_timestamp_and_user_id_and_percentage"
@@ -150,6 +221,32 @@ ActiveRecord::Schema.define(:version => 20081023163017) do
     t.datetime "updated_at",  :null => false
   end
 
+  create_table "device_types", :force => true do |t|
+    t.string   "type"
+    t.string   "model"
+    t.string   "part_number"
+    t.datetime "update_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
+
+  create_table "device_types_work_orders", :force => true do |t|
+    t.integer  "work_order_id"
+    t.integer  "device_type_id"
+    t.integer  "num"
+    t.string   "starting_mac_address"
+    t.integer  "total_mac_addresses"
+    t.string   "current_mac_address"
+    t.string   "starting_serial_num"
+    t.integer  "total_serial_nums"
+    t.string   "current_serial_num"
+    t.datetime "update_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
+
   create_table "device_unavailable_alerts", :force => true do |t|
     t.integer  "device_id",                      :null => false
     t.integer  "number_attempts", :default => 1, :null => false
@@ -163,8 +260,11 @@ ActiveRecord::Schema.define(:version => 20081023163017) do
   add_index "device_unavailable_alerts", ["device_id"], :name => "device_unavailable_alerts_device_unavailable_idx"
 
   create_table "devices", :force => true do |t|
-    t.string "serial_number"
-    t.string "device_type"
+    t.string  "serial_number"
+    t.string  "device_type"
+    t.integer "device_type_id"
+    t.boolean "active"
+    t.string  "mac_address"
   end
 
   create_table "devices_user", :force => true do |t|
@@ -402,6 +502,14 @@ ActiveRecord::Schema.define(:version => 20081023163017) do
     t.datetime "created_at"
   end
 
+  create_table "rmas", :force => true do |t|
+    t.datetime "completed_on"
+    t.datetime "update_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
+
   create_table "roles", :force => true do |t|
     t.string   "name",              :limit => 40
     t.string   "authorizable_type", :limit => 30
@@ -553,5 +661,14 @@ ActiveRecord::Schema.define(:version => 20081023163017) do
 
   add_index "vitals", ["timestamp", "user_id"], :name => "index_vitals_on_timestamp_and_user_id"
   add_index "vitals", ["heartrate", "timestamp", "user_id"], :name => "index_vitals_on_timestamp_and_user_id_and_heartrate"
+
+  create_table "work_orders", :force => true do |t|
+    t.datetime "completed_on"
+    t.string   "work_order_num"
+    t.datetime "update_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
 
 end

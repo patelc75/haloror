@@ -1,4 +1,5 @@
 class Device < ActiveRecord::Base
+  belongs_to :device_type
   has_one :device_info
   has_many :mgmt_cmds
   has_many :mgmt_queries
