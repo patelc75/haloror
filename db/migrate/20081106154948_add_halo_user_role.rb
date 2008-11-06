@@ -3,7 +3,7 @@ class AddHaloUserRole < ActiveRecord::Migration
     halouser_role = Role.find_by_name('halouser')
     unless halouser_role
       now = Time.now
-      groups = Groups.find(:all)
+      groups = Group.find(:all)
       groups.each do |group|
         Role.create(:name => 'halouser', 
                     :authorizable_type => 'Group', 
