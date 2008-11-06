@@ -9,7 +9,7 @@ class AddHaloUserRole < ActiveRecord::Migration
                     :authorizable_type => 'Group', 
                     :authorizable_id => group.id,
                     :created_at => now,
-                    :update_at => now)
+                    :updated_at => now)
       end
     end
   end
