@@ -9,7 +9,7 @@ class Event < ActiveRecord::Base
   
   has_many :event_actions
   
-  def create_event(user_id, event_type, event_id, ts)
+  def self.create_event(user_id, event_type, event_id, ts)
     now = Time.now
     Event.create(:user_id => user_id, 
           :event_type => event_type, 
