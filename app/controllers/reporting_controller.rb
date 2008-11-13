@@ -3,7 +3,9 @@ class ReportingController < ApplicationController
   include UtilityHelper
   
   def avg_skin_temps
-    user_id = params[:user_id]
+    @users = User.find(:all)
+    @users.each do |user|
+      user_id = user.id
     sql_strap_fasteneds = "select timestamp from strap_fasteneds where user_id = #{user_id} Order By timestamp desc"
     sql_strap_removeds  = "select timestamp from strap_fasteneds where user_id = #{user_id} Order By timestamp desc"
     timestamps_sf = []
@@ -29,15 +31,18 @@ class ReportingController < ApplicationController
       end_time = 5.minutes.from_now(timestamp)      
       conditions << "(NOT (timestamp > '#{begin_time.to_s}' AND timestamp < '#{timestamp.to_s}')) "
     end
-    
-    sql = "select avg(skin_temp) as average from skin_temps where skin_temp >= 87 AND skin_temp <= 95 AND skin_temp <> -1 AND user_id = #{user_id} AND #{conditions.join(' AND ')}"
-    
-    rows = SkinTemp.connection.select_all(sql)
-    average = nil
-    rows.collect do |row|
-      average = row['average']
+    if !conditions.blank?
+      sql = "select avg(skin_temp) as average from skin_temps where skin_temp >= 87 AND skin_temp <= 95 AND skin_temp <> -1 AND user_id = #{user_id} AND #{conditions.join(' AND ')}"
+      rows = SkinTemp.connection.select_all(sql)
+      average = nil
+      rows.collect do |row|
+        average = row['average']
+      end
+      user[:average_skin_temp] = average
+    else
+      user[:average_skin_temp] =  nil
     end
-    @avg_skin_temp = average
+    end
   end
   
   def users

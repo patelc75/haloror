@@ -1,1 +1,8 @@
-<b><%= @avg_skin_temp %></b>
+<table>
+	<tr><th>User ID</th><th>Name</th><th>Average Skin Temp</th>
+<% @users.each do |user| %>
+	<tr><td><%= user.id%></td>
+		<td><%= user.name %></td>
+		<td><%= user[:average_skin_temp] %></td>
+	</tr>
+<% end %>
