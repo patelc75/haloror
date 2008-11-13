@@ -21,13 +21,13 @@ class ReportingController < ApplicationController
       timestamp = timestamp.to_date
       begin_time = 120.minutes.ago(timestamp)
       end_time = 120.minutes.from_now(timestamp)      
-      conditions << "(NOT( timestamp > '#{begin_time.to_s}' AND timestamp < '#{end_time.to_s}')) "
+      conditions << "(NOT( timestamp > '#{timestamp.to_s}' AND timestamp < '#{end_time.to_s}')) "
     end
     timestamps_sr.each do |timestamp|
       timestamp = timestamp.to_date
       begin_time = 5.minutes.ago(timestamp)
       end_time = 5.minutes.from_now(timestamp)      
-      conditions << "(NOT (timestamp > '#{begin_time.to_s}' AND timestamp < '#{end_time.to_s}')) "
+      conditions << "(NOT (timestamp > '#{begin_time.to_s}' AND timestamp < '#{timestamp.to_s}')) "
     end
     
     sql = "select avg(skin_temp) as average from skin_temps where skin_temp <> -1 AND user_id = #{user_id} AND #{conditions.join(' AND ')}"
