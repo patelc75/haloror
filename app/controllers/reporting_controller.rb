@@ -30,7 +30,7 @@ class ReportingController < ApplicationController
       conditions << "(NOT (timestamp > '#{begin_time.to_s}' AND timestamp < '#{timestamp.to_s}')) "
     end
     
-    sql = "select avg(skin_temp) as average from skin_temps where skin_temp <> -1 AND user_id = #{user_id} AND #{conditions.join(' AND ')}"
+    sql = "select avg(skin_temp) as average from skin_temps where skin_temp >= 87 AND skin_temp <= 95 AND skin_temp <> -1 AND user_id = #{user_id} AND #{conditions.join(' AND ')}"
     
     rows = SkinTemp.connection.select_all(sql)
     average = nil
