@@ -2,6 +2,43 @@ class ReportingController < ApplicationController
   before_filter :authenticate_admin_moderator?
   include UtilityHelper
   
+  def avg_skin_temps
+    sql_strap_fasteneds = "select timestamp from strap_fasteneds Order By timestamp desc"
+    sql_strap_removeds  = "select timestamp from strap_fasteneds Order By timestamp desc"
+    timestamps_sf = []
+    rows_strap_fasteneds = SkinTemp.connection.select_all(sql_strap_fasteneds)
+    rows_strap_fasteneds.collect do |row|
+      timestamps_sf << row['timestamp']
+    end
+    timestamps_sr = []
+    rows_strap_removeds = SkinTemp.connection.select_all(sql_strap_removeds)
+    rows_strap_removeds.collect do |row|
+      timestamps_sr << row['timestamp']
+    end
+    conditions = []
+    timestamps_sf.each do |timestamp|
+      timestamp = timestamp.to_date
+      begin_time = 120.minutes.ago(timestamp)
+      end_time = 120.minutes.from_now(timestamp)      
+      conditions << "(NOT( timestamp > '#{begin_time.to_s}' AND timestamp < '#{end_time.to_s}')) "
+    end
+    timestamps_sr.each do |timestamp|
+      timestamp = timestamp.to_date
+      begin_time = 5.minutes.ago(timestamp)
+      end_time = 5.minutes.from_now(timestamp)      
+      conditions << "(NOT (timestamp > '#{begin_time.to_s}' AND timestamp < '#{end_time.to_s}')) "
+    end
+    
+    sql = "select avg(skin_temp) as average from skin_temps where #{conditions.join(' AND ')}"
+    
+    rows = SkinTemp.connection.select_all(sql)
+    average = nil
+    rows.collect do |row|
+      average = row['average']
+    end
+    @avg_skin_temp = average
+  end
+  
   def users
     @users = User.find(:all, :include => [:roles, :roles_users], :order => 'users.id')
     @roles = []
