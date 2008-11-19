@@ -1,5 +1,4 @@
 class Vital < ActiveRecord::Base
-  DEVICE_CHEST_STRAP_TYPE = 'Halo Chest Strap'
   belongs_to :user
   
   def self.new_initialize(random=false)
@@ -199,7 +198,7 @@ class Vital < ActiveRecord::Base
     conds = []
     conds << "reconnected_at is null"
     conds << "device_id in (select v.id from latest_vitals v where v.updated_at >= now() - interval '#{DEVICE_UNAVAILABLE_TIMEOUT} minutes')"
-    conds << "device_id in (select d.id from devices d where d.device_type = '#{DEVICE_CHEST_STRAP_TYPE}')"
+    conds << "device_id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
     conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"
     
     alerts = DeviceUnavailableAlert.find(:all,
@@ -218,7 +217,7 @@ class Vital < ActiveRecord::Base
     # b) the chest strap is “fastened”
     conds = []
     conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{DEVICE_UNAVAILABLE_TIMEOUT} minutes')"
-    conds << "id in (select d.id from devices d where d.device_type = '#{DEVICE_CHEST_STRAP_TYPE}')"
+    conds << "id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
     conds << "id in (select status.id from device_strap_status status where is_fastened > 0)"
 
     devices = Device.find(:all,

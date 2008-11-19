@@ -5,7 +5,7 @@ class StrapOffAlert < DeviceAlert
     RAILS_DEFAULT_LOGGER.warn("StrapOffAlert.job_detect_straps_off running at #{Time.now}")
     conds = []
     conds << "reconnected_at is null"
-    conds << "device_id in (select d.id from devices d where d.device_type = '#{DEVICE_CHEST_STRAP_TYPE}')"
+    conds << "device_id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
     conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"
     
     alerts = StrapOffAlert.find(:all,
@@ -19,7 +19,7 @@ class StrapOffAlert < DeviceAlert
 
     conds = []
     conds << "id in (select ss.id from device_strap_status ss where is_fastened = 0 AND ss.updated_at < now() - interval '#{STRAP_OFF_TIMEOUT} minutes')"
-    conds << "id in (select d.id from devices d where d.device_type = '#{DEVICE_CHEST_STRAP_TYPE}')"
+    conds << "id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
 
     devices = Device.find(:all,
       :conditions => conds.join(' and '))

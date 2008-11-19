@@ -1,0 +1,12 @@
+<table> 
+  <tr><th>Work Orders (<%= link_to 'Add Work Order', :controller => 'atp', :action => 'work_order_init' %>)</th></tr>
+  
+  <% if !@work_orders.blank? %>
+  <% @work_orders.each do |work_order| %>
+  <tr>
+  	<td><%= link_to(work_order.work_order_num, :id => work_order.id, :controller => 'atp', :action => 'work_order_view') %></td>
+  </tr> 
+  <% end %>
+ <% end %>
+</table>
+</form>

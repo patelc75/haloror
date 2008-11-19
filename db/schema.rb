@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081106154948) do
+ActiveRecord::Schema.define(:version => 20081119153001) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -57,7 +57,7 @@ ActiveRecord::Schema.define(:version => 20081106154948) do
     t.datetime "timestamp"
     t.boolean  "result_value"
     t.integer  "operator_id"
-    t.datetime "update_at"
+    t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
@@ -66,7 +66,7 @@ ActiveRecord::Schema.define(:version => 20081106154948) do
   create_table "atp_item_results_atp_test_results", :id => false, :force => true do |t|
     t.integer  "atp_item_result_id"
     t.integer  "atp_test_result_id"
-    t.datetime "update_at"
+    t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
@@ -76,7 +76,7 @@ ActiveRecord::Schema.define(:version => 20081106154948) do
     t.integer  "range_low"
     t.integer  "range_high"
     t.string   "description"
-    t.datetime "update_at"
+    t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
@@ -85,7 +85,7 @@ ActiveRecord::Schema.define(:version => 20081106154948) do
   create_table "atp_items_device_types", :id => false, :force => true do |t|
     t.integer  "atp_item_id"
     t.integer  "device_type_id"
-    t.datetime "update_at"
+    t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
@@ -96,7 +96,7 @@ ActiveRecord::Schema.define(:version => 20081106154948) do
     t.integer  "device_id"
     t.integer  "operator_id"
     t.datetime "timestamp"
-    t.datetime "update_at"
+    t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
@@ -105,7 +105,7 @@ ActiveRecord::Schema.define(:version => 20081106154948) do
   create_table "atp_test_results_rmas", :id => false, :force => true do |t|
     t.integer  "atp_test_result_id"
     t.integer  "rma_id"
-    t.datetime "update_at"
+    t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
@@ -114,7 +114,7 @@ ActiveRecord::Schema.define(:version => 20081106154948) do
   create_table "atp_test_results_work_orders", :id => false, :force => true do |t|
     t.integer  "atp_test_result_id"
     t.integer  "work_order_id"
-    t.datetime "update_at"
+    t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
@@ -216,16 +216,33 @@ ActiveRecord::Schema.define(:version => 20081106154948) do
 
   add_index "device_latest_queries", ["updated_at"], :name => "device_latest_queries_updated_at_idx"
 
+  create_table "device_models", :force => true do |t|
+    t.integer  "device_type_id"
+    t.string   "part_number"
+    t.string   "model"
+    t.datetime "updated_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
+
+  create_table "device_revisions", :force => true do |t|
+    t.integer  "device_model_id"
+    t.string   "revision"
+    t.datetime "updated_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
+
   create_table "device_strap_status", :force => true do |t|
     t.integer  "is_fastened", :null => false
     t.datetime "updated_at",  :null => false
   end
 
   create_table "device_types", :force => true do |t|
-    t.string   "type"
-    t.string   "model"
-    t.string   "part_number"
-    t.datetime "update_at"
+    t.string   "device_type"
+    t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
@@ -241,7 +258,7 @@ ActiveRecord::Schema.define(:version => 20081106154948) do
     t.string   "starting_serial_num"
     t.integer  "total_serial_nums"
     t.string   "current_serial_num"
-    t.datetime "update_at"
+    t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
@@ -261,10 +278,10 @@ ActiveRecord::Schema.define(:version => 20081106154948) do
 
   create_table "devices", :force => true do |t|
     t.string  "serial_number"
-    t.string  "device_type"
-    t.integer "device_type_id"
     t.boolean "active"
     t.string  "mac_address"
+    t.integer "device_revision_id"
+    t.integer "work_order_id"
   end
 
   create_table "devices_user", :force => true do |t|
@@ -504,7 +521,7 @@ ActiveRecord::Schema.define(:version => 20081106154948) do
 
   create_table "rmas", :force => true do |t|
     t.datetime "completed_on"
-    t.datetime "update_at"
+    t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
@@ -665,7 +682,7 @@ ActiveRecord::Schema.define(:version => 20081106154948) do
   create_table "work_orders", :force => true do |t|
     t.datetime "completed_on"
     t.string   "work_order_num"
-    t.datetime "update_at"
+    t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"

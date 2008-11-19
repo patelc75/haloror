@@ -1,0 +1,27 @@
+<table>
+  <tr><th>Work Order Num</th><th>Completed On</th></tr>
+  <tr>
+  	<td><%= @work_order.work_order_num%></td>
+	<td><%= @work_order.completed_on  %></td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+  </tr>
+  <tr>
+  	<td>&nbsp;&nbsp;</td>
+  	<td colspan="3">
+  	<table>
+  		<tr><th>Device Type</th><th>Number of Devices</th><th></th></tr>
+		<% device_types_work_orders = @work_order.device_types_work_orders 
+			if device_types_work_orders
+			device_types_work_orders.each do |dtwo|
+		%>
+		<tr>
+			<td><%= dtwo.device_type.device_type %></td>
+			<td><%= dtwo.num %></td>
+		</tr>
+		<%  end  
+		    end %>
+  	</table>
+	</td>
+  </tr>
+</table>

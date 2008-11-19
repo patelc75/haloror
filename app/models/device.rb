@@ -1,5 +1,7 @@
 class Device < ActiveRecord::Base
-  belongs_to :device_type
+  belongs_to :device_revision
+  belongs_to :work_order
+  
   has_one :device_info
   has_many :mgmt_cmds
   has_many :mgmt_queries
@@ -36,7 +38,7 @@ class Device < ActiveRecord::Base
   def set_chest_strap_type
     self.check_serial_number
     if(self.serial_number[0].chr == 'H' and self.serial_number[1].chr == '1')
-      self.device_type = "Halo Chest Strap"
+      self.device_type = DeviceType.find(2)
     else
       raise "Invalid serial number for Halo Chest Strap"
     end
@@ -44,7 +46,7 @@ class Device < ActiveRecord::Base
   def set_gateway_type
     self.check_serial_number
     if(self.serial_number[0].chr == 'H' and self.serial_number[1].chr == '2')
-      self.device_type = "Halo Gateway"
+      self.device_type = DeviceType.find(1)
     else
       raise "Invalid serial number for Halo Gateway"
     end

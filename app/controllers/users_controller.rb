@@ -299,21 +299,21 @@ class UsersController < ApplicationController
   end
   
   private
-  def get_device_type(device)
-    if(device.serial_number == nil)
-      device_type = "Invalid serial num"
-    elsif(device.serial_number.length != 10)
-      device_type = "Invalid serial num"
-    elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
-      device_type = "Halo Chest Strap"
-    elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
-      device_type = "Halo Gateway"
-    else
-      device_type = "Unknown Device"
-    end
-    
-    device_type
-  end
+#  def get_device_type(device)
+#    if(device.serial_number == nil)
+#      device_type = "Invalid serial num"
+#    elsif(device.serial_number.length != 10)
+#      device_type = "Invalid serial num"
+#    elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
+#      device_type = "Halo Chest Strap"
+#    elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
+#      device_type = "Halo Gateway"
+#    else
+#      device_type = "Unknown Device"
+#    end
+#    
+#    device_type
+#  end
   
   def register_user_with_serial_num(user, serial_number)
     unless device = Device.find_by_serial_number(serial_number)

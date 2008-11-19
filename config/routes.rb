@@ -1,5 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :work_orders
+  map.resources :atp_device
   map.resources :atp_next_device
   map.resources :self_test_results
   
