@@ -100,7 +100,12 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   def setup_operators(event, mode, phone = :no_phone_call)
-    operators = User.operators
+    ops = User.operators
+    groups = event.user.group_memberships
+    operators = []
+    ops.each do |op|
+      operators << op if(op.is_operator_of_any?(groups))
+    end
     if operators
       operators.each do |operator|
         recipients_setup(operator, operator.alert_option_by_type_operator(operator,event), mode, phone)
