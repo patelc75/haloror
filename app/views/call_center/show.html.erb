@@ -4,6 +4,11 @@
 <div id="call_list-col">
 
 	<div class="content">
+		<select onchange="if(this.value != ''){document.location = '/call_center/show/' + this.value}"/>
+		<% @groups.each do |group| %>
+		<option value="<%=group.id%>" <%='selected' if params[:id].to_i == group.id %>><%=group.name%></option>
+		<% end %>
+</select>
 		<p>&nbsp;</p>
 		<div id="call_list_header" style="display:block">
 			<div style="float:left;width:125px">
