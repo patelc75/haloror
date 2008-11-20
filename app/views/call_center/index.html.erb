@@ -22,9 +22,6 @@
     <div class="col-150">
       Accept
     </div>
-    <div class="col-150">
-      Resolve
-    </div>
   </div>
   <% @events.each do |event| %>
     <div class="row">
@@ -53,11 +50,8 @@
         <%= link_to_remote '-', :update => "notes_#{event.id}", :url => {:action => 'toggle_note' }%>
       </div>
       <div class="col-150" id="<%=event.id%>_accept">
-        <%=render :partial => 'accept', :locals => {:event => event}%>
+        <%= link_to "Accept",:action => "accept", :id => event.id %>
         </div>
-        <div class="col-150" id="<%=event.id%>_resolve">
-          <%=render :partial => 'resolve', :locals => {:event => event}%>
-          </div>
         </div>
         <div id="notes_<%=event.id %>">
         </div>

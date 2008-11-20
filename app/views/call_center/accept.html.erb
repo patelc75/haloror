@@ -1,0 +1,15 @@
+<% if action = @event.accepted? %>
+	Accepted by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at,current_user)%>
+	
+	<% if current_user.id == action.user_id %>
+	<ol>
+		<%	user = @event.user
+			caregivers = user.active_caregivers
+			caregivers.each do |caregiver|  %>
+		<li>Call Caregiver #<%= caregiver.position %><%=caregiver.name%>  <%= caregiver.profile.home_phone %>  <%= caregiver.profile.work_phone %>  <%= caregiver.profile.cell_phone %></li>
+	<% end %>
+	  <li>Call User <%= user.name %>  <%= user.profile.home_phone %>  <%= user.profile.work_phone %> <%= user.profile.cell_phone %></li>
+	  <li>Please click here to resolve the event on the Halo website.</li>
+	</ol>
+	<% end %>
+<% end %>

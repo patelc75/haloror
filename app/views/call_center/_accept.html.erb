@@ -1,5 +1,0 @@
-<% if action = event.accepted? %>
-	Accepted by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at,current_user)%>
-<% else %>
-	<%=link_to_remote "Accept", :update => "#{event.id}_accept", :url => { :action => "accept", :id => event.id }%>
-<% end %>

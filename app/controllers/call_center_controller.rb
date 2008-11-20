@@ -22,18 +22,16 @@ class CallCenterController < ApplicationController
   end 
   
   def accept
-    # event = Event.find(params[:id])
-    #    event.accepted_by = current_user.id
-    #    event.accepted_at = Time.now
-    #    event.save
-    
-    action = EventAction.new
-    action.user_id = current_user.id
-    action.event_id = params[:id]
-    action.description = 'accepted'
-    action.save
-    
-    render :partial => 'accept', :locals => {:event => Event.find(params[:id])}
+    @event = Event.find(params[:id])
+    ea = @event.accepted?
+    if !ea
+      action = EventAction.new
+      action.user_id = current_user.id
+      action.event_id = params[:id]
+      action.description = 'accepted'
+      action.save!
+      ea = action
+    end
   end
   
   def resolve
