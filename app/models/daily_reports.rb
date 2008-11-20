@@ -54,9 +54,9 @@ class DailyReports
           previous_time = row['timestamp'].to_time
         else
           if accumulated_time.nil?
-            accumulated_time = (row['timestamp'].to_time - previous_time)
+            accumulated_time = (row['timestamp'].to_time - previous_time) if((row['timestamp'].to_time - previous_time) < LOST_DATA_GAP)
           else
-            accumulated_time = accumulated_time + (row['timestamp'].to_time - previous_time)
+            accumulated_time = accumulated_time + (row['timestamp'].to_time - previous_time) if((row['timestamp'].to_time - previous_time) < LOST_DATA_GAP)
           end
           previous_time = row['timestamp'].to_time
         end
