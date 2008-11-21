@@ -1,7 +1,8 @@
-<% if action = @event.accepted? 
+<span style="font-size: large">
+	<% if action = @event.accepted? 
 	count = 1
 %>
-	Accepted by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at,current_user)%>
+	<%= @event.user.name %> (<a target="_blank" href="/chart/flex/<%= @event.user.id %>">Chart</a>) <b><%= @event.event_type %></b> Accepted by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at,current_user)%>
 	
 	<% if current_user.id == action.user_id %>
 	<ol>
@@ -29,7 +30,7 @@
 																			}%></li>
 	  <div id="text_<%= count %>"></div>
 	  <% count += 1%>
-	  <li>Please click here to resolve the event on the Halo website.  -- <%= link_to_remote 'Enter Text', 
+	  <li>Please click <%=link_to "here to Resolve", :action => "resolved", :id => @event.id %> the event on the Halo website.  -- <%= link_to_remote 'Enter Text', 
 																							:update => "text_#{count}", 
 																							:url => {
 																									:action => 'init_script_note',
@@ -42,3 +43,4 @@
 	</ol>
 	<% end %>
 <% end %>
+</span>

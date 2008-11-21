@@ -47,11 +47,20 @@ class CallCenterController < ApplicationController
     @event = Event.find(params[:event_id])
     step = params[:step]
     @call_center_step = CallCenterStep.find(:first, :conditions => "event_id = #{@event.id} and step_num = #{step}")
-    @call_center_step.text = params[:script_note]
+    @call_center_step.answer = params[:script_note]
+#    @call_center_step.text = 
     @call_center_step.save!
     render(:update) do |page|
       page['note_' + @call_center_step.step_num.to_s].replace_html '<b>Note Saved!</b>'
     end
+  end
+  def resolved
+    action = EventAction.new
+    action.user_id = current_user.id
+    action.event_id = params[:id]
+    action.description = 'resolved'
+    action.save!
+    redirect_to :controller => 'call_center', :action => 'index'
   end
   
   def resolve

@@ -50,7 +50,9 @@
         <%= link_to_remote '-', :update => "notes_#{event.id}", :url => {:action => 'toggle_note' }%>
       </div>
       <div class="col-150" id="<%=event.id%>_accept">
-        <% if action = event.accepted? %>
+      	<% if action = event.resolved? %>
+		Resolved by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>
+        <% elsif action = event.accepted? %>
 		<%= link_to "Accepted by #{action.user.name} at #{UtilityHelper.format_datetime_readable(action.created_at,current_user)}",:action => "accept", :id => event.id %>
 		<% else %>
 		<%= link_to "Accept",:action => "accept", :id => event.id %>
