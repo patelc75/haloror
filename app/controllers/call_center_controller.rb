@@ -33,7 +33,9 @@ class CallCenterController < ApplicationController
       ea = action
     end
   end
-  
+  def init_script_note
+    render :partial => 'script_note', :layout => false
+  end
   def resolve
     # event = Event.find(params[:id])
     #     event.resolved_by = current_user.id

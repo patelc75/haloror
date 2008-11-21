@@ -1,4 +1,6 @@
-<% if action = @event.accepted? %>
+<% if action = @event.accepted? 
+	count = 1
+%>
 	Accepted by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at,current_user)%>
 	
 	<% if current_user.id == action.user_id %>
@@ -6,10 +8,31 @@
 		<%	user = @event.user
 			caregivers = user.active_caregivers
 			caregivers.each do |caregiver|  %>
-		<li>Call Caregiver #<%= caregiver.position %><%=caregiver.contact_info%></li>
+		<li>Call Caregiver #<%= caregiver.position %><%=caregiver.contact_info%> -- <%= link_to_remote 'Enter Text', 
+																										:update => "text_#{count}", 
+																										:url => {
+																												:action => 'init_script_note',
+																												:controller => 'call_center'
+																												}%></li>
+		<div id="text_<%= count %>"></div>
+		<% count += 1%>
 	<% end %>
-	  <li>Call User <%= user.contact_info %>
-	  <li>Please click here to resolve the event on the Halo website.</li>
+	  <li>Call User <%= user.contact_info %>-- <%= link_to_remote 'Enter Text', 
+																	:update => "text_#{count}", 
+																	:url => {
+																			:action => 'init_script_note',
+																			:controller => 'call_center'
+																			}%></li>
+	  <div id="text_<%= count %>"></div>
+	  <% count += 1%>
+	  <li>Please click here to resolve the event on the Halo website.  -- <%= link_to_remote 'Enter Text', 
+																							:update => "text_#{count}", 
+																							:url => {
+																									:action => 'init_script_note',
+																									:controller => 'call_center'
+																									}%></li>
+	  <div id="text_<%= count %>"></div>
+	  <% count += 1 %>
 	</ol>
 	<% end %>
 <% end %>
