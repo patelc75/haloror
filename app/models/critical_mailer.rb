@@ -34,7 +34,7 @@ class CriticalMailer < ActionMailer::ARMailer
   def call_center_operator(event_action)    
     setup_message(event_action.to_s, event_action.email_body + event_action.event.notes_string)
     setup_operators(event_action.event.event, :recepients)
-    setup_ems_group(event_action.event.event, :recepients)
+    setup_emergency_group(event_action.event.event, :recepients)
     self.priority  = event_action.priority
   end
   
