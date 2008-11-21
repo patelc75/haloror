@@ -2,7 +2,7 @@
 	<% if action = @event.accepted? 
 	count = 1
 %>
-	<%= @event.user.name %> (<a target="_blank" href="/chart/flex/<%= @event.user.id %>">Chart</a>) <b><%= @event.event_type %></b> Accepted by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at,current_user)%>
+	<%= @event.user.name %> (<a target="_blank" href="/chart/flex/<%= @event.user.id %>">Chart</a>) <b><font color="red"><%= @event.event_type %></font></b> Accepted by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at,current_user)%>
 	
 	<% if current_user.id == action.user_id %>
 	<ol>
