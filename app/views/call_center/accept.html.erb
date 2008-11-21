@@ -6,9 +6,9 @@
 		<%	user = @event.user
 			caregivers = user.active_caregivers
 			caregivers.each do |caregiver|  %>
-		<li>Call Caregiver #<%= caregiver.position %><%=caregiver.name%>  <%= caregiver.profile.home_phone %>  <%= caregiver.profile.work_phone %>  <%= caregiver.profile.cell_phone %></li>
+		<li>Call Caregiver #<%= caregiver.position %><%=caregiver.contact_info%></li>
 	<% end %>
-	  <li>Call User <%= user.name %>  <%= user.profile.home_phone %>  <%= user.profile.work_phone %> <%= user.profile.cell_phone %></li>
+	  <li>Call User <%= user.contact_info %>
 	  <li>Please click here to resolve the event on the Halo website.</li>
 	</ol>
 	<% end %>

@@ -34,6 +34,7 @@ class CriticalMailer < ActionMailer::ARMailer
   def call_center_operator(event_action)    
     setup_message(event_action.to_s, event_action.email_body + event_action.event.notes_string)
     setup_operators(event_action.event.event, :recepients)
+    setup_ems_group(event_action.event.event, :recepients)
     self.priority  = event_action.priority
   end
   
@@ -113,6 +114,21 @@ class CriticalMailer < ActionMailer::ARMailer
     end
   end
   
+  def setup_emergency_group(event, mode, phone = :no_phone_call)
+    users = []
+    EMERGENCY_GROUPS.each do |group_name|
+      group = Group.find_by_name(group_name)
+      roles = Roles.find(:all, :conditions => "authorizable_type = 'Group' and authorizable_id = #{group.id}")
+      roles.each do |role|
+        users << role.users
+      end
+    end
+    if users
+      users.each do |user|
+        @recipients << ["#{user.email}"]
+      end
+    end
+  end
   def setup_administrators()
     @recipients = []
     admins = User.administrators()
