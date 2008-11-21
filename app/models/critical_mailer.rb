@@ -118,7 +118,7 @@ class CriticalMailer < ActionMailer::ARMailer
     users = []
     EMERGENCY_GROUPS.each do |group_name|
       group = Group.find_by_name(group_name)
-      roles = Roles.find(:all, :conditions => "authorizable_type = 'Group' and authorizable_id = #{group.id}")
+      roles = Role.find(:all, :conditions => "authorizable_type = 'Group' and authorizable_id = #{group.id}")
       roles.each do |role|
         users << role.users
       end
