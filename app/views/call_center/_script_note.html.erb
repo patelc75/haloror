@@ -1,1 +1,7 @@
-<%= text_area_tag :script_note, '', :cols => 100, :rows => 5 %>
+<div id="note_<%= @call_center_step.step_num %>"></div>
+<%= form_remote_tag :url => url_for(:controller => 'call_center', :action => 'script_note_save')  %>
+	<input type="hidden" name="event_id" value="<%= @event.id %>" />
+	<input type="hidden" name="step" value="<%=@call_center_step.step_num %>" />
+<%= text_area_tag :script_note, @call_center_step.text, :cols => 100, :rows => 5 %>
+<input type="submit" name="Save Note" value="Save Note" />
+</form>

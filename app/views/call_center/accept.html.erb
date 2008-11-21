@@ -12,7 +12,9 @@
 																										:update => "text_#{count}", 
 																										:url => {
 																												:action => 'init_script_note',
-																												:controller => 'call_center'
+																												:controller => 'call_center',
+																												:step => count,
+																												:id => @event.id
 																												}%></li>
 		<div id="text_<%= count %>"></div>
 		<% count += 1%>
@@ -21,7 +23,9 @@
 																	:update => "text_#{count}", 
 																	:url => {
 																			:action => 'init_script_note',
-																			:controller => 'call_center'
+																			:controller => 'call_center',
+																			:step => count,
+																			:id => @event.id
 																			}%></li>
 	  <div id="text_<%= count %>"></div>
 	  <% count += 1%>
@@ -29,7 +33,9 @@
 																							:update => "text_#{count}", 
 																							:url => {
 																									:action => 'init_script_note',
-																									:controller => 'call_center'
+																									:controller => 'call_center',
+																									:step => count,
+																									:id => @event.id
 																									}%></li>
 	  <div id="text_<%= count %>"></div>
 	  <% count += 1 %>

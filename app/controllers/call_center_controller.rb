@@ -34,8 +34,26 @@ class CallCenterController < ApplicationController
     end
   end
   def init_script_note
+    @event = Event.find(params[:id])
+    step = params[:step]
+    @call_center_step = CallCenterStep.find(:first, :conditions => "event_id = #{@event.id} and step_num = #{step}")
+    unless @call_center_step
+      @call_center_step = CallCenterStep.create(:event_id => @event.id, :step_num => step)
+    end
     render :partial => 'script_note', :layout => false
   end
+  
+  def script_note_save
+    @event = Event.find(params[:event_id])
+    step = params[:step]
+    @call_center_step = CallCenterStep.find(:first, :conditions => "event_id = #{@event.id} and step_num = #{step}")
+    @call_center_step.text = params[:script_note]
+    @call_center_step.save!
+    render(:update) do |page|
+      page['note_' + @call_center_step.step_num.to_s].replace_html '<b>Note Saved!</b>'
+    end
+  end
+  
   def resolve
     # event = Event.find(params[:id])
     #     event.resolved_by = current_user.id
