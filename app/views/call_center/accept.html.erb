@@ -9,37 +9,69 @@
 		<%	user = @event.user
 			caregivers = user.active_caregivers
 			caregivers.each do |caregiver|  %>
-		<li>Call Caregiver #<%= caregiver.position %><%=caregiver.contact_info%> -- <%= link_to_remote 'Enter Text', 
+		<li>Call Caregiver #<%= caregiver.position %> <%=caregiver.contact_info%> -- Notes <%= link_to_remote '+', 
 																										:update => "text_#{count}", 
 																										:url => {
 																												:action => 'init_script_note',
 																												:controller => 'call_center',
 																												:step => count,
 																												:id => @event.id
-																												}%></li>
+																												}%>
+																							<%= link_to_remote '-', 
+																										:update => "text_#{count}", 
+																										:url => {
+																												:action => 'close_script_note',
+																												:controller => 'call_center',
+																												:step => count,
+																												:id => @event.id
+																												}%>
+																												</li>
+		
 		<div id="text_<%= count %>"></div>
 		<% count += 1%>
+		<br /><br />
 	<% end %>
-	  <li>Call User <%= user.contact_info %>-- <%= link_to_remote 'Enter Text', 
+	  <li>Call User <%= user.contact_info %>  -- Notes  <%= link_to_remote '+', 
 																	:update => "text_#{count}", 
 																	:url => {
 																			:action => 'init_script_note',
 																			:controller => 'call_center',
 																			:step => count,
 																			:id => @event.id
-																			}%></li>
+																			}%>
+														<%= link_to_remote '-', 
+																	:update => "text_#{count}", 
+																	:url => {
+																			:action => 'close_script_note',
+																			:controller => 'call_center',
+																			:step => count,
+																			:id => @event.id
+																			}%>
+																			</li>
+																			
 	  <div id="text_<%= count %>"></div>
 	  <% count += 1%>
-	  <li>Please click <%=link_to "here to Resolve", :action => "resolved", :id => @event.id %> the event on the Halo website.  -- <%= link_to_remote 'Enter Text', 
+	  <br /><br />
+	  <li>Please click <%=link_to "here to Resolve", :action => "resolved", :id => @event.id %> the event on the Halo website.  --  Notes  <%= link_to_remote '+', 
 																							:update => "text_#{count}", 
 																							:url => {
 																									:action => 'init_script_note',
 																									:controller => 'call_center',
 																									:step => count,
 																									:id => @event.id
-																									}%></li>
+																									}%>
+																									<%= link_to_remote '-', 
+																							:update => "text_#{count}", 
+																							:url => {
+																									:action => 'close_script_note',
+																									:controller => 'call_center',
+																									:step => count,
+																									:id => @event.id
+																									}%>
+																									</li>
 	  <div id="text_<%= count %>"></div>
 	  <% count += 1 %>
+	  <br /><br />
 	</ol>
 	<% end %>
 <% end %>

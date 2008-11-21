@@ -354,7 +354,7 @@ class User < ActiveRecord::Base
   end
   
   def contact_info()
-    name + ": Home #{format_phone(profile.home_phone)} | Cell #{format_phone(profile.cell_phone)} | Work #{format_phone(profile.work_phone)}"  
+    name + "\t  : Home #{format_phone(profile.home_phone)} | Cell #{format_phone(profile.cell_phone)} | Work #{format_phone(profile.work_phone)}"  
   end
   
   def contact_info_by_alert_option(alert_option)

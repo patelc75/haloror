@@ -33,6 +33,11 @@ class CallCenterController < ApplicationController
       ea = action
     end
   end
+  def close_script_note
+    @event = Event.find(params[:id])
+    step = params[:step]
+    render :text => ''
+  end
   def init_script_note
     @event = Event.find(params[:id])
     step = params[:step]
