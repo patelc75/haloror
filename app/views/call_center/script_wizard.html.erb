@@ -67,18 +67,17 @@ div.accordion-content{
 <%= javascript_include_tag "accordion" %>
 <% if action = @event.accepted? %>
 <div style="font-size: x-large;"><%= @event.user.name %> (<a target="_blank" href="/chart/flex/<%= @event.user.id %>">Chart</a>) <b><font color="red"><%= @event.event_type %></font></b> Accepted by <%=action.user.name%> at<br /> <%=UtilityHelper.format_datetime_readable(action.created_at,current_user)%></div>
+
+<% if current_user.id == action.user_id %>
 <div id="call_center">
 <div id="call_center-accordion" class="accordion">
 	
-	<% if current_user.id == action.user_id %>
     <% @call_center_steps.each do |step|  %>
       <div class="accordion-toggle"><%= step.header %></div>
       <div class="accordion-content">Notes
         <div id="note_<%= step.id %>"><%= step.answer %></div>
       </div>
     <% end %>
-  <% end %>
-<% end %>
 </div>
 <div align="center" id="call_center-wizard">
   <button style="font-size: xx-large;" onclick="start_wizard(); new Ajax.Updater('call_center-wizard', '/call_center/script_wizard_next/?call_center_steps_group_id=<%=@call_center_steps_group.id %>')">Start Call</button>
@@ -109,3 +108,6 @@ function previous_step(group_id, step_id){
   accordion.step(step_id);
 }
 </script>
+
+<% end %>
+<% end %>
