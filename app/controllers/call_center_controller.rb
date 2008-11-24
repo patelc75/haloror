@@ -237,7 +237,7 @@ class CallCenterController < ApplicationController
 	  end
 	  step = CallCenterStep.new(:call_center_steps_group_id => group.id)
 	  step.header = "Call User #{user.name}"
-	  step.instruction = "Call User #{user.phone_numbers}"
+	  step.instruction = "#{user.phone_numbers}"
 	  step.script = "Call User #{user.contact_info_table}"
 	  step.save!
 	  step = CallCenterStep.new(:call_center_steps_group_id => group.id)

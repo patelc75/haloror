@@ -74,7 +74,10 @@ div.accordion-content{
 	
     <% @call_center_steps.each do |step|  %>
       <div class="accordion-toggle"><%= step.header %></div>
-      <div class="accordion-content">Notes
+      <div class="accordion-content"><%= step.instruction %>
+      </ br>
+      </ br>
+        Notes
         <div id="note_<%= step.id %>"><%= step.answer %></div>
       </div>
     <% end %>
