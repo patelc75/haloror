@@ -2,6 +2,12 @@
 <br />
 <br />
 <br />
+<%= form_remote_tag :url => url_for(:controller => 'call_center', :action => 'script_note_save')  %>
+	<input type="hidden" name="event_id" value="<%= @event.id %>" />
+	<input type="hidden" name="step_id" value="<%= @call_center_step.id %>" />
+<%= text_area_tag :script_note,  @call_center_step.answer, :cols => 25, :rows => 7 %>
+<input type="submit" name="Save Note" value="Save Note" />
+</form>
 <br />
 <br />
 <br />

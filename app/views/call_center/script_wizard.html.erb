@@ -15,7 +15,6 @@ div#call_center-wizard{
 	height:200px;
 	position: relative;
 	float: left;
-	top:15%;
 }
 imagesbody {
 	background-color:#252422;
@@ -51,7 +50,7 @@ div.accordion-toggle{
 	padding:9px 14px 6px 14px;
 	border-top:1px solid #5d5852;	
 }
-div.accordion-toggle:hover, div.accordion-toggle-active{
+div.accordion-toggle-active{
 	background-color:#6d493a;
 	border-top:1px solid #a06b55;
 }
@@ -72,39 +71,41 @@ div.accordion-content{
 <div id="call_center-accordion" class="accordion">
 	
 	<% if current_user.id == action.user_id %>
-    <% @call_center_steps_group.call_center_steps.each do |step|  %>
+    <% @call_center_steps.each do |step|  %>
       <div class="accordion-toggle"><%= step.instruction %></div>
       <div class="accordion-content">Notes
-        <div id="note_<%= step.id %>"></div>
-        <%= form_remote_tag :url => url_for(:controller => 'call_center', :action => 'script_note_save')  %>
-        	<input type="hidden" name="event_id" value="<%= @event.id %>" />
-        	<input type="hidden" name="step_id" value="<%= step.id %>" />
-        <%= text_area_tag :script_note, step.answer, :cols => 25, :rows => 7 %>
-        <input type="submit" name="Save Note" value="Save Note" />
-        </form>
+        <div id="note_<%= step.id %>"><%= step.answer %></div>
       </div>
     <% end %>
   <% end %>
 <% end %>
 </div>
 <div align="center" id="call_center-wizard">
-  <button style="font-size: xx-large;" onclick="new Ajax.Updater('call_center-wizard', '/call_center/script_wizard_next/?call_center_steps_group_id=<%=@call_center_steps_group.id %>')">Start Call</button>
+  <button style="font-size: xx-large;" onclick="start_wizard(); new Ajax.Updater('call_center-wizard', '/call_center/script_wizard_next/?call_center_steps_group_id=<%=@call_center_steps_group.id %>')">Start Call</button>
 </div>
 </div>
+<%
+step_ids = [] 
+@call_center_steps.each do |step|
+  step_ids << step.id
+end  %>
 <script language="javascript">
 var accordion;
 document.observe("dom:loaded", function(){
-    accordion = new Accordion("call_center-accordion");
+    accordion = new Accordion("call_center-accordion", [<%= step_ids.join(', ') %>]);
 });
+function start_wizard(){
+  accordion.start();
+}
 function script_for(group_id, step_id){
   new Ajax.Updater('call_center-wizard', '/call_center/script_wizard_next/?call_center_steps_group_id=' + group_id + '&call_center_step_id=' + step_id);
 }
 function next_step(group_id, step_id){
   script_for(group_id, step_id);
-  accordion.expand_next();
+  accordion.step(step_id);
 }
 function previous_step(group_id, step_id){
   script_for(group_id, step_id);
-  accordion.expand_previous();
+  accordion.step(step_id);
 }
 </script>

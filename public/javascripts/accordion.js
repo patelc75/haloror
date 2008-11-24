@@ -11,7 +11,7 @@ if (typeof Effect == 'undefined')
 
 var Accordion = Class.create({
 
-    initialize: function(id, defaultExpandedCount) {
+    initialize: function(id, steps) {
         if(!$(id)) throw("Attempted to initalize accordion with id: "+ id + " which was not found.");
         this.accordion = $(id);
         this.options = {
@@ -19,19 +19,36 @@ var Accordion = Class.create({
             toggleActive: "accordion-toggle-active",
             contentClass: "accordion-content"
         }
+				this.step_ids = steps;
+				this.index = 0;
         this.contents = this.accordion.select('div.'+this.options.contentClass);
         this.isAnimating = false;
         this.maxHeight = 0;
-        this.current = defaultExpandedCount ? this.contents[defaultExpandedCount-1] : this.contents[0];
+        this.current = this.contents[this.index];
         this.toExpand = null;
 
         this.checkMaxHeight();
         this.initialHide();
         this.attachInitialMaxHeight();
 
-        // var clickHandler =  this.clickHandler.bindAsEventListener(this);
-        // this.accordion.observe('click', clickHandler);
+        var clickHandler =  this.clickHandler.bindAsEventListener(this);
+        this.accordion.observe('click', clickHandler);
     },
+		start: function(){
+			this.index = 0;
+			this.contents[this.index].previous('div.'+this.options.toggleClass).addClassName(this.options.toggleActive);
+		},
+		step: function(step_id){
+			for(var i = 0; i < this.step_ids.length; i++){
+				if(this.step_ids[i] == step_id)
+				{
+					this.contents[this.index].previous('div.'+this.options.toggleClass).removeClassName(this.options.toggleActive);
+					this.index = i;
+					this.contents[this.index].previous('div.'+this.options.toggleClass).addClassName(this.options.toggleActive);
+				}
+			}
+		},
+		
 		expand_next:function(){
 			for(var i=0; i<this.contents.length; i++){
 		    if(this.contents[i] == this.current){
@@ -59,10 +76,10 @@ var Accordion = Class.create({
 		},
     expand: function(el) {
         this.toExpand = el.next('div.'+this.options.contentClass);
-        if(this.current != this.toExpand){
+        // if(this.current != this.toExpand){
 						this.toExpand.show();
             this.animate();
-        }
+        // }
     },
 
     checkMaxHeight: function() {
@@ -74,23 +91,23 @@ var Accordion = Class.create({
     },
 
     attachInitialMaxHeight: function() {
-		this.current.previous('div.'+this.options.toggleClass).addClassName(this.options.toggleActive);
+		// this.current.previous('div.'+this.options.toggleClass).addClassName(this.options.toggleActive);
         if(this.current.getHeight() != this.maxHeight) this.current.setStyle({height: this.maxHeight+"px"});
     },
 
-    // clickHandler: function(e) {
-    //     var el = e.element();
-    //     if(el.hasClassName(this.options.toggleClass) && !this.isAnimating) {
-    //         this.expand(el);
-    //     }
-    // },
+    clickHandler: function(e) {
+            var el = e.element();
+            if(el.hasClassName(this.options.toggleClass) && !this.isAnimating) {
+                this.expand(el);
+            }
+        },
 
     initialHide: function(){
         for(var i=0; i<this.contents.length; i++){
-            if(this.contents[i] != this.current) {
+            // if(this.contents[i] != this.current) {
                 this.contents[i].hide();
                 this.contents[i].setStyle({height: 0});
-            }
+            // }
         }
     },
 
@@ -118,8 +135,10 @@ var Accordion = Class.create({
             scaleX: false,
             scaleY: true
         };
-
-        effects.push(new Effect.Scale(this.current, 0, options));
+				if(this.current != this.toExpand){
+					effects.push(new Effect.Scale(this.current, 0, options));
+				}
+        
 
         var myDuration = 0.75;
 
@@ -132,11 +151,16 @@ var Accordion = Class.create({
             },
             beforeStart: function() {
                 this.isAnimating = true;
-                this.current.previous('div.'+this.options.toggleClass).removeClassName(this.options.toggleActive);
-                this.toExpand.previous('div.'+this.options.toggleClass).addClassName(this.options.toggleActive);
+								// if(this.current != this.toExpand){
+								// 									this.current.previous('div.'+this.options.toggleClass).removeClassName(this.options.toggleActive);
+								// 									// this.toExpand.previous('div.'+this.options.toggleClass).addClassName(this.options.toggleActive);
+								// 								}                
+                
             }.bind(this),
             afterFinish: function() {
-                this.current.hide();
+								if(this.current != this.toExpand){
+	                this.current.hide();
+								}
                 this.toExpand.setStyle({ height: this.maxHeight+"px" });
                 this.current = this.toExpand;
                 this.isAnimating = false;

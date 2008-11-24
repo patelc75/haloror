@@ -43,10 +43,15 @@ class CallCenterController < ApplicationController
   def script_wizard
     @event = Event.find(params[:event_id])
     @call_center_steps_group = CallCenterStepsGroup.find(params[:call_center_steps_group_id])
+    @call_center_steps = @call_center_steps_group.call_center_steps
+    @call_center_steps.sort! do |a, b|
+      a.created_at <=> b.created_at
+    end
   end
   
   def script_wizard_next
     @call_center_steps_group = CallCenterStepsGroup.find(params[:call_center_steps_group_id])
+    @event = @call_center_steps_group.event
     @call_center_steps = @call_center_steps_group.call_center_steps
     @call_center_steps.sort! do |a, b|
       a.created_at <=> b.created_at
@@ -90,7 +95,7 @@ class CallCenterController < ApplicationController
     @call_center_step.answer = params[:script_note]
     @call_center_step.save!
     render(:update) do |page|
-      page['note_' + @call_center_step.id.to_s].replace_html '<b>Note Saved!</b>'
+      page['note_' + @call_center_step.id.to_s].replace_html @call_center_step.answer
     end
   end
   def resolved
