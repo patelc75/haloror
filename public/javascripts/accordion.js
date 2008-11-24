@@ -25,6 +25,7 @@ var Accordion = Class.create({
         this.isAnimating = false;
         this.maxHeight = 0;
         this.current = this.contents[this.index];
+				this.currentAllowClicks = true;
         this.toExpand = null;
 
         this.checkMaxHeight();
@@ -76,12 +77,10 @@ var Accordion = Class.create({
 		},
     expand: function(el) {
         this.toExpand = el.next('div.'+this.options.contentClass);
-        if(this.current != this.toExpand){
+        // if(this.current != this.toExpand){
 						this.toExpand.show();
             this.animate();
-        }else{
-						this.toExpand.hide();
-				}
+        // }
     },
 
     checkMaxHeight: function() {
@@ -100,7 +99,13 @@ var Accordion = Class.create({
     clickHandler: function(e) {
             var el = e.element();
             if(el.hasClassName(this.options.toggleClass) && !this.isAnimating) {
+							if(el.next('div.'+this.options.contentClass) == this.current && !this.currentAllowClicks){
+								this.currentAllowClicks = true;
+								el.next('div.'+this.options.contentClass).hide();
+							}else{
+								this.currentAllowClicks = false;
                 this.expand(el);
+							}
             }
         },
 
