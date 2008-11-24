@@ -365,7 +365,16 @@ class User < ActiveRecord::Base
   def contact_info()
     name + "\t  : Home #{format_phone(profile.home_phone)} | Cell #{format_phone(profile.cell_phone)} | Work #{format_phone(profile.work_phone)}"  
   end
-  
+  def phone_numbers()
+    info = <<-eos
+      <table>
+             <tr><td>Home</td><td>#{format_phone(profile.home_phone)}</td></tr>
+             <tr><td>Cell</td><td>#{format_phone(profile.cell_phone)}</td></tr>
+            <tr><td>Work</td><td>#{format_phone(profile.work_phone)}</td></tr>
+      </table>
+    eos
+    return info
+  end
   def contact_info_by_alert_option(alert_option)
     if opts = alert_option.roles_user.roles_users_option
       unless opts.removed

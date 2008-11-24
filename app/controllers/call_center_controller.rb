@@ -230,16 +230,19 @@ class CallCenterController < ApplicationController
     caregivers = user.active_caregivers
 		caregivers.each do |caregiver|
 		  step = CallCenterStep.new(:call_center_steps_group_id => group.id)
-		  step.instruction = "Call Caregiver ##{caregiver.position} #{caregiver.contact_info}"
+		  step.header = "Call Caregiver ##{caregiver.position} #{caregiver.name}"
+		  step.instruction = "#{caregiver.phone_numbers}"
 		  step.script = "Call Caregiver ##{caregiver.position} #{caregiver.contact_info_table}"
 		  step.save!
 	  end
 	  step = CallCenterStep.new(:call_center_steps_group_id => group.id)
-	  step.instruction = "Call User #{user.contact_info}"
+	  step.header = "Call User #{user.name}"
+	  step.instruction = "Call User #{user.phone_numbers}"
 	  step.script = "Call User #{user.contact_info_table}"
 	  step.save!
 	  step = CallCenterStep.new(:call_center_steps_group_id => group.id)
-	  step.instruction = "Please click <a href=\"/call_center/resolved/#{@event.id}\">here to Resolve</a> the event."
+	  step.header = "Resolve the Event"
+	  step.instruction = "Resolve the Event"
 	  step.script = "Please click <a href=\"/call_center/resolved/#{@event.id}\">here to Resolve</a> the event."
 	  step.save!
 	  group.reload

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081121150204) do
+ActiveRecord::Schema.define(:version => 20081124204105) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -176,6 +176,13 @@ ActiveRecord::Schema.define(:version => 20081121150204) do
     t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "call_center_steps_group_id"
+    t.text     "header"
+  end
+
+  create_table "call_center_steps_groups", :force => true do |t|
+    t.integer  "event_id"
+    t.datetime "updated_at"
+    t.datetime "created_at"
   end
 
   create_table "carriers", :force => true do |t|

@@ -76,10 +76,12 @@ var Accordion = Class.create({
 		},
     expand: function(el) {
         this.toExpand = el.next('div.'+this.options.contentClass);
-        // if(this.current != this.toExpand){
+        if(this.current != this.toExpand){
 						this.toExpand.show();
             this.animate();
-        // }
+        }else{
+						this.toExpand.hide();
+				}
     },
 
     checkMaxHeight: function() {

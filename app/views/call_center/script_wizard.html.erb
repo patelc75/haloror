@@ -72,7 +72,7 @@ div.accordion-content{
 	
 	<% if current_user.id == action.user_id %>
     <% @call_center_steps.each do |step|  %>
-      <div class="accordion-toggle"><%= step.instruction %></div>
+      <div class="accordion-toggle"><%= step.header %></div>
       <div class="accordion-content">Notes
         <div id="note_<%= step.id %>"><%= step.answer %></div>
       </div>
