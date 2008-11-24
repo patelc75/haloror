@@ -1,0 +1,14 @@
+<div style="font-size: xx-large"><b><font color="white"><%= @call_center_step.script %></font></b></div>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<% if @previous_call_center_step  %>
+  <a href="#" onclick="previous_step(<%=@call_center_steps_group.id %>,<%=@previous_call_center_step.id %>);">Previous</a>
+<% end %>
+&nbsp;&nbsp;--&nbsp;&nbsp;
+<% if @next_call_center_step  %>
+  <a href="#" onclick="next_step(<%=@call_center_steps_group.id %>,<%=@next_call_center_step.id %>);">Next</a>
+<% end %>

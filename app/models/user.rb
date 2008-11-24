@@ -352,7 +352,16 @@ class User < ActiveRecord::Base
   def format_phone(number)
     number.blank? ? "N/A" : number.strip 
   end
-  
+  def contact_info_table()
+    info = <<-eos
+      <table><tr><td colspan="2">#{name}</td></tr>
+             <tr><td>Home</td><td>#{format_phone(profile.home_phone)}</td></tr>
+             <tr><td>Cell</td><td>#{format_phone(profile.cell_phone)}</td></tr>
+            <tr><td>Work</td><td>#{format_phone(profile.work_phone)}</td></tr>
+      </table>
+    eos
+    return info
+  end
   def contact_info()
     name + "\t  : Home #{format_phone(profile.home_phone)} | Cell #{format_phone(profile.cell_phone)} | Work #{format_phone(profile.work_phone)}"  
   end

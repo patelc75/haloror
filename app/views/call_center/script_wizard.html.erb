@@ -1,0 +1,110 @@
+<style>
+div#call_center{
+    border: 2px solid #343230;
+	background-color:#21201f;
+	padding:10px;
+	width:800px;
+	height:800px;
+	position: relative;
+	float: left;
+}
+div#call_center-wizard{
+	background-color:#21201f;
+	padding:10px;
+	width:400px;
+	height:200px;
+	position: relative;
+	float: left;
+	top:15%;
+}
+imagesbody {
+	background-color:#252422;
+	padding:50px;
+	padding-top:130px;
+	background-repeat:no-repeat;
+	background-position:60px 40px;
+	font-family:"Lucida Grande", "Lucida Sans Unicode", Arial, Sans-serif;
+	font-size:11px;
+	line-height:18px;
+}
+
+div#call_center-accordion{
+	background-color:#21201f;
+	padding:10px;
+	float: left;
+}
+
+div.accordion {
+	position: relative; /* required for bounding */
+	width:300px;
+}
+
+div.accordion-toggle{
+    position: relative; /* required for effect */
+    z-index: 10;		/* required for effect */
+	background: #3f3c38;
+	background-repeat:repeat-x;
+	background-position:bottom;
+	color:#ffffff;   
+    cursor: pointer;
+	margin-bottom:1px;
+	padding:9px 14px 6px 14px;
+	border-top:1px solid #5d5852;	
+}
+div.accordion-toggle:hover, div.accordion-toggle-active{
+	background-color:#6d493a;
+	border-top:1px solid #a06b55;
+}
+
+div.accordion-content{
+    overflow: hidden;	/* required for effect */
+    height: 250px;
+    background: #302e2c;
+	padding:9px 24px 6px 24px;
+	color:#c4bab1;
+	border-bottom:1px solid #000000;
+}
+</style>
+<%= javascript_include_tag "accordion" %>
+<% if action = @event.accepted? %>
+<div style="font-size: x-large;"><%= @event.user.name %> (<a target="_blank" href="/chart/flex/<%= @event.user.id %>">Chart</a>) <b><font color="red"><%= @event.event_type %></font></b> Accepted by <%=action.user.name%> at<br /> <%=UtilityHelper.format_datetime_readable(action.created_at,current_user)%></div>
+<div id="call_center">
+<div id="call_center-accordion" class="accordion">
+	
+	<% if current_user.id == action.user_id %>
+    <% @call_center_steps_group.call_center_steps.each do |step|  %>
+      <div class="accordion-toggle"><%= step.instruction %></div>
+      <div class="accordion-content">Notes
+        <div id="note_<%= step.id %>"></div>
+        <%= form_remote_tag :url => url_for(:controller => 'call_center', :action => 'script_note_save')  %>
+        	<input type="hidden" name="event_id" value="<%= @event.id %>" />
+        	<input type="hidden" name="step_id" value="<%= step.id %>" />
+        <%= text_area_tag :script_note, step.answer, :cols => 25, :rows => 7 %>
+        <input type="submit" name="Save Note" value="Save Note" />
+        </form>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>
+</div>
+<div align="center" id="call_center-wizard">
+  <button style="font-size: xx-large;" onclick="new Ajax.Updater('call_center-wizard', '/call_center/script_wizard_next/?call_center_steps_group_id=<%=@call_center_steps_group.id %>')">Start Call</button>
+</div>
+</div>
+<script language="javascript">
+var accordion;
+document.observe("dom:loaded", function(){
+    accordion = new Accordion("call_center-accordion");
+});
+function script_for(group_id, step_id){
+  new Ajax.Updater('call_center-wizard', '/call_center/script_wizard_next/?call_center_steps_group_id=' + group_id + '&call_center_step_id=' + step_id);
+}
+function next_step(group_id, step_id){
+  script_for(group_id, step_id);
+  accordion.expand_next();
+}
+function previous_step(group_id, step_id){
+  script_for(group_id, step_id);
+  accordion.expand_previous();
+}
+</script>

@@ -30,33 +30,67 @@ class CallCenterController < ApplicationController
       action.event_id = params[:id]
       action.description = 'accepted'
       action.save!
-      ea = action
+      ea = action      
     end
-  end
-  def close_script_note
-    @event = Event.find(params[:id])
-    step = params[:step]
-    render :text => ''
-  end
-  def init_script_note
-    @event = Event.find(params[:id])
-    step = params[:step]
-    @call_center_step = CallCenterStep.find(:first, :conditions => "event_id = #{@event.id} and step_num = #{step}")
-    unless @call_center_step
-      @call_center_step = CallCenterStep.create(:event_id => @event.id, :step_num => step)
+    unless @call_center_steps_group = CallCenterStepsGroup.find_by_event_id(params[:id])
+      @call_center_steps_group = create_call_center_steps_group()    
     end
-    render :partial => 'script_note', :layout => false
+    redirect_to :controller => 'call_center', 
+                :action => 'script_wizard', 
+                :event_id => @event.id,        
+                :call_center_steps_group_id => @call_center_steps_group.id
   end
+  def script_wizard
+    @event = Event.find(params[:event_id])
+    @call_center_steps_group = CallCenterStepsGroup.find(params[:call_center_steps_group_id])
+  end
+  
+  def script_wizard_next
+    @call_center_steps_group = CallCenterStepsGroup.find(params[:call_center_steps_group_id])
+    @call_center_steps = @call_center_steps_group.call_center_steps
+    @call_center_steps.sort! do |a, b|
+      a.created_at <=> b.created_at
+    end
+    @next_call_center_step = nil
+    @previous_call_center_step = nil
+    if(!params[:call_center_step_id].blank?)
+      (0..@call_center_steps.size - 1).each do |i|
+        if @call_center_steps[i].id.to_s == params[:call_center_step_id]
+          @call_center_step = @call_center_steps[i]
+          @previous_call_center_step = @call_center_steps[i - 1]  if i > 0
+          @next_call_center_step = @call_center_steps[i + 1] if i < @call_center_steps.size
+        end
+      end
+    else
+      @call_center_step = @call_center_steps[0]
+      if @call_center_steps.size > 1
+        @next_call_center_step = @call_center_steps[1]
+      end
+    end
+    render :partial => 'script', :layout => false
+  end
+  # def close_script_note
+  #   @event = Event.find(params[:id])
+  #   step = params[:step]
+  #   render :text => ''
+  # end
+  # def init_script_note
+  #   @event = Event.find(params[:id])
+  #   step = params[:step]
+  #   @call_center_step = CallCenterStep.find(:first, :conditions => "event_id = #{@event.id} and step_num = #{step}")
+  #   unless @call_center_step
+  #     @call_center_step = CallCenterStep.create(:event_id => @event.id, :step_num => step)
+  #   end
+  #   render :partial => 'script_note', :layout => false
+  # end
   
   def script_note_save
     @event = Event.find(params[:event_id])
-    step = params[:step]
-    @call_center_step = CallCenterStep.find(:first, :conditions => "event_id = #{@event.id} and step_num = #{step}")
+    @call_center_step = CallCenterStep.find(params[:step_id])
     @call_center_step.answer = params[:script_note]
-#    @call_center_step.text = 
     @call_center_step.save!
     render(:update) do |page|
-      page['note_' + @call_center_step.step_num.to_s].replace_html '<b>Note Saved!</b>'
+      page['note_' + @call_center_step.id.to_s].replace_html '<b>Note Saved!</b>'
     end
   end
   def resolved
@@ -181,5 +215,29 @@ class CallCenterController < ApplicationController
     @user_id = event.user_id
     @notes = Note.find(:all, :conditions => "event_id = #{@event_id}", :order => "created_at desc")
     render :template => 'call_center/all_notes'
+  end
+  
+  private 
+  
+  def create_call_center_steps_group()
+    group = CallCenterStepsGroup.create(:event_id => @event.id)
+    user = @event.user
+    caregivers = user.active_caregivers
+		caregivers.each do |caregiver|
+		  step = CallCenterStep.new(:call_center_steps_group_id => group.id)
+		  step.instruction = "Call Caregiver ##{caregiver.position} #{caregiver.contact_info}"
+		  step.script = "Call Caregiver ##{caregiver.position} #{caregiver.contact_info_table}"
+		  step.save!
+	  end
+	  step = CallCenterStep.new(:call_center_steps_group_id => group.id)
+	  step.instruction = "Call User #{user.contact_info}"
+	  step.script = "Call User #{user.contact_info_table}"
+	  step.save!
+	  step = CallCenterStep.new(:call_center_steps_group_id => group.id)
+	  step.instruction = "Please click <a href=\"/call_center/resolved/#{@event.id}\">here to Resolve</a> the event."
+	  step.script = "Please click <a href=\"/call_center/resolved/#{@event.id}\">here to Resolve</a> the event."
+	  step.save!
+	  group.reload
+	  return group
   end
 end

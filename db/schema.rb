@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081119153001) do
+ActiveRecord::Schema.define(:version => 20081121150204) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -170,12 +170,12 @@ ActiveRecord::Schema.define(:version => 20081119153001) do
   end
 
   create_table "call_center_steps", :force => true do |t|
-    t.string   "type"
-    t.text     "text"
+    t.text     "instruction"
+    t.text     "script"
     t.text     "answer"
-    t.integer  "next_step_id"
-    t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "created_at"
+    t.integer  "call_center_steps_group_id"
   end
 
   create_table "carriers", :force => true do |t|
