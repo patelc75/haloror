@@ -103,7 +103,11 @@ class OscopesController < ApplicationController
     sequences.each do |seq|
       row = [seq]
       channel_nums.each do |channel_num|
-        row << data[seq][channel_num]
+        if data[seq][channel_num]
+          row << data[seq][channel_num]
+        else
+          row << 0 
+        end
       end     
       grid << row 
     end 
