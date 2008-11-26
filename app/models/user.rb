@@ -368,11 +368,11 @@ class User < ActiveRecord::Base
   
   def get_script(key, operator, caregiver, event)
     scripts = {
-      CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script(phone, "HaloUser", self.name),
-      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script(phone, "HaloUser", self.name),
-      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script(phone, "Caregiver", caregiver.name),
-      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script(phone, "Caregiver", caregiver.name),
-      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script(phone, "Caregiver", caregiver.name),
+      CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script(self.profile.home_phone, "HaloUser", self.name),
+      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script(self.profile.cell_phone, "HaloUser", self.name),
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script(caregiver.profile.cell_phone, "Caregiver", caregiver.name),
+      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script(caregiver.profile.home_phone, "Caregiver", caregiver.name),
+      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script(caregiver.profile.work_phone, "Caregiver", caregiver.name),
       CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
       CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event, caregiver.profile.cell_phone),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
@@ -385,9 +385,12 @@ class User < ActiveRecord::Base
   end 
   
   def get_able_to_reach_script(phone, role, name)
-	<div style="font-size: xx-large"><font color="white">Call #{caregiver.role} <b>#{caregiver.name}</b> at <b>#{format_phone(phone)</b>}</font></div>
-	<br><br>
-	Were you able to reach #{name}?
+    info = <<-eos
+	  <div style="font-size: xx-large"><font color="white">Call #{role} <b>#{name}</b> at <b>#{format_phone(phone)}</b></font></div>
+	  <br><br>
+	  Were you able to reach #{name}?
+	  eos
+    return info
   end
   
   def get_user_script(operator, event, phone)
