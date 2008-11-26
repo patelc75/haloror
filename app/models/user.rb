@@ -368,11 +368,11 @@ class User < ActiveRecord::Base
   
   def get_script(key, operator, caregiver, event)
     scripts = {
-      CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script(self.profile.home_phone, "HaloUser", self.name),
-      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script(self.profile.cell_phone, "HaloUser", self.name),
-      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script(caregiver.profile.cell_phone, "Caregiver", caregiver.name),
-      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script(caregiver.profile.home_phone, "Caregiver", caregiver.name),
-      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script(caregiver.profile.work_phone, "Caregiver", caregiver.name),
+      CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script(phone, "HaloUser", self.name, "Home"),
+      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script(phone, "HaloUser", self.name, "Cell"),
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script(phone, "Caregiver", caregiver.name, "Mobile"),
+      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script(phone, "Caregiver", caregiver.name, "Home"),
+      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script(phone, "Caregiver", caregiver.name, "Work"),
       CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
       CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event, caregiver.profile.cell_phone),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
@@ -384,13 +384,13 @@ class User < ActiveRecord::Base
     return script
   end 
   
-  def get_able_to_reach_script(phone, role, name)
-    info = <<-eos
-	  <div style="font-size: xx-large"><font color="white">Call #{role} <b>#{name}</b> at <b>#{format_phone(phone)}</b></font></div>
-	  <br><br>
-	  Were you able to reach #{name}?
-	  eos
-    return info
+  def get_able_to_reach_script(phone, role, name, place)
+    info = <<-eos	
+	<div style="font-size: xx-large"><font color="white">Call #{caregiver.role} <b>#{caregiver.name}</b> at #{place} <b>#{format_phone(phone)</b>}</font></div>
+	<br><br>
+	Were you able to reach #{name} at #{place}?
+		eos
+	return info
   end
   
   def get_user_script(operator, event, phone)
@@ -405,7 +405,7 @@ class User < ActiveRecord::Base
   def get_caregiver_script(caregiver, operator, event, phone)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i>"Hello #{caregiver.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} by  #{self.name}. Could you call 911 on behalf of #{self.name}?"
+		<i>"Hello #{caregiver.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} by  #{self.name}. Can you determine if an ambulance is needed for #{self.name}?"
 		</i>
 		eos
 	return info
