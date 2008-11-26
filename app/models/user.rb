@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
                 
   acts_as_authorized_user
   acts_as_authorizable
-  
+  has_one :cal_center_wizard
   has_many :notes
   has_many :panics
   has_many :batteries
@@ -350,38 +350,36 @@ class User < ActiveRecord::Base
   end
   
   
-  def get_instruction(key, caregiver)
-    instructions = {
-      "Home Phone Answered?"        => format_phone(self.profile.home_phone),
-      "Mobile Phone Answered?"      => format_phone(self.profile.cell_phone),
-      "Ambulance Needed?"           => "Is Ambulance Needed?",
-      "Ask if they will call 911 on behalf of halouser?" => "Will you call 911 on behalf of #{self.name}?",
-      "Ambulance Dispatched"        => "",
-      "Agent Call 911"              => "",
-      "Call Next Caregiver"         => "",
-      "Caregiver Home Phone Answered?" => "",
-      "Caregiver Work Phone Answered?"  => "",
-      "Another Caregiver?"          => ""
+  def get_instruction(key, operator, caregiver)
+    instructions = { 
+      CallCenterWizard::USER_HOME_PHONE        => format_phone(self.profile.home_phone),
+      CallCenterWizard::USER_MOBILE_PHONE      => format_phone(self.profile.cell_phone),
+      CallCenterWizard::CAREGIVER_HOME_PHONE   => format_phone(caregiver.profile.home_phone),
+      CallCenterWizard::CAREGIVER_WORK_PHONE   => format_phone(caregiver.profile.work_phone),
+      CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
+      CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
+      CallCenterWizard::AGENT_CALL_911         => "",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => "",
+      CallCenterWizard::THE_END                => "Resolve the Event"
       }
     instruction = instructions[key]
-    return "instruction test instruction for #{self.name}"
+    return instruction
   end
   
-  def get_script(key, caregiver)
+  def get_script(key, operator, caregiver, event)
     scripts = {
-      "Home Phone Answered?"        => format_phone(self.profile.home_phone),
-      "Mobile Phone Answered?"      => format_phone(self.profile.cell_phone),
-      "Ambulance Needed?"           => "Is Ambulance Needed?",
-      "Ask if they will call 911 on behalf of halouser?" => "Will you call 911 on behalf of #{self.name}?",
-      "Ambulance Dispatched"        => "",
-      "Agent Call 911"              => "",
-      "Call Next Caregiver"         => "",
-      "Caregiver Home Phone Answered?" => "",
-      "Caregiver Work Phone Answered?"  => "",
-      "Another Caregiver?"          => ""
+      CallCenterWizard::USER_HOME_PHONE        => format_phone(self.profile.home_phone),
+      CallCenterWizard::USER_MOBILE_PHONE      => format_phone(self.profile.cell_phone),
+      CallCenterWizard::CAREGIVER_HOME_PHONE   => "caregiver home phone",
+      CallCenterWizard::CAREGIVER_WORK_PHONE   => "caregiver work phone",
+      CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
+      CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
+      CallCenterWizard::AGENT_CALL_911         => "agent call 911?",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => "ambulance dispatched?",
+      CallCenterWizard::THE_END                => "Please click <a href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
     script = scripts[key]
-    return "script test script for #{self.name}"
+    return script
   end 
   
   def format_phone(number)

@@ -3,18 +3,13 @@
 <br />
 <br />
 <%= form_remote_tag :url => url_for(:controller => 'call_center', :action => 'script_note_save')  %>
-	<input type="hidden" name="event_id" value="<%= @event.id %>" />
 	<input type="hidden" name="step_id" value="<%= @call_center_step.id %>" />
-<%= text_area_tag :script_note,  @call_center_step.answer, :cols => 25, :rows => 7 %>
+<%= text_area_tag :script_note,  @call_center_step.notes, :cols => 25, :rows => 7 %>
 <input type="submit" name="Save Note" value="Save Note" />
 </form>
 <br />
 <br />
 <br />
-<% if @previous_call_center_step  %>
-  <a href="#" onclick="previous_step(<%=@call_center_steps_group.id %>,<%=@previous_call_center_step.id %>);">Previous</a>
-<% end %>
+  <a href="#" onclick="step('Yes',<%=@call_center_step.id %>);">Yes</a>
 &nbsp;&nbsp;--&nbsp;&nbsp;
-<% if @next_call_center_step  %>
-  <a href="#" onclick="next_step(<%=@call_center_steps_group.id %>,<%=@next_call_center_step.id %>);">Next</a>
-<% end %>
+  <a href="#" onclick="step('No',<%=@call_center_step.id %>);">No</a>

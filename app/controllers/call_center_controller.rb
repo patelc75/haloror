@@ -1,8 +1,9 @@
+require 'ruleby'
 class CallCenterController < ApplicationController
   before_filter :authenticate_admin_operator?, :except => 'show'
   before_filter :authenticate_admin_operator_moderator?, :only => 'show'
   include UtilityHelper
-  
+  include Ruleby
   def index
     events_per_page = 25
     conditions = ''
@@ -32,70 +33,58 @@ class CallCenterController < ApplicationController
       action.save!
       ea = action      
     end
-    unless @call_center_steps_group = CallCenterStepsGroup.find_by_event_id(params[:id])
-      @call_center_steps_group = create_call_center_steps_group()    
+    unless @call_center_wizard = CallCenterWizard.find_by_event_id(params[:id])
+      @call_center_wizard = CallCenterWizard.create(:event_id => @event.id, 
+                                                    :user_id => @event.user_id, 
+                                                    :operator_id => current_user.id,
+                                                    :call_center_session_id => CallCenterSession.create(:event_id => @event.id).id)
+      @call_center_wizard.save!
     end
     redirect_to :controller => 'call_center', 
                 :action => 'script_wizard', 
                 :event_id => @event.id,        
-                :call_center_steps_group_id => @call_center_steps_group.id
+                :call_center_wizard_id => @call_center_wizard.id
   end
   def script_wizard
-    @event = Event.find(params[:event_id])
-    @call_center_steps_group = CallCenterStepsGroup.find(params[:call_center_steps_group_id])
-    @call_center_steps = @call_center_steps_group.call_center_steps
-    @call_center_steps.sort! do |a, b|
-      a.created_at <=> b.created_at
-    end
+    @call_center_wizard = CallCenterWizard.find(params[:call_center_wizard_id])
+    @event =  @call_center_wizard.event
+    @user = @event.user
+    @call_center_session =  @call_center_wizard.call_center_session
   end
   
-  def script_wizard_next
-    @call_center_steps_group = CallCenterStepsGroup.find(params[:call_center_steps_group_id])
-    @event = @call_center_steps_group.event
-    @call_center_steps = @call_center_steps_group.call_center_steps
-    @call_center_steps.sort! do |a, b|
-      a.created_at <=> b.created_at
-    end
-    @next_call_center_step = nil
-    @previous_call_center_step = nil
-    if(!params[:call_center_step_id].blank?)
-      (0..@call_center_steps.size - 1).each do |i|
-        if @call_center_steps[i].id.to_s == params[:call_center_step_id]
-          @call_center_step = @call_center_steps[i]
-          @previous_call_center_step = @call_center_steps[i - 1]  if i > 0
-          @next_call_center_step = @call_center_steps[i + 1] if i < @call_center_steps.size
-        end
-      end
-    else
-      @call_center_step = @call_center_steps[0]
-      if @call_center_steps.size > 1
-        @next_call_center_step = @call_center_steps[1]
-      end
-    end
+  def script_wizard_start
+    @call_center_wizard = CallCenterWizard.find(params[:call_center_wizard_id])
+    @event =  @call_center_wizard.event
+    @user = @event.user
+    @call_center_session =  @call_center_wizard.call_center_session
+    @call_center_step = @call_center_wizard.first_step()
     render :partial => 'script', :layout => false
   end
-  # def close_script_note
-  #   @event = Event.find(params[:id])
-  #   step = params[:step]
-  #   render :text => ''
-  # end
-  # def init_script_note
-  #   @event = Event.find(params[:id])
-  #   step = params[:step]
-  #   @call_center_step = CallCenterStep.find(:first, :conditions => "event_id = #{@event.id} and step_num = #{step}")
-  #   unless @call_center_step
-  #     @call_center_step = CallCenterStep.create(:event_id => @event.id, :step_num => step)
-  #   end
-  #   render :partial => 'script_note', :layout => false
-  # end
+  
+  def script_next
+    @call_center_wizard = CallCenterWizard.find(params[:call_center_wizard_id])
+    @event =  @call_center_wizard.event
+    @user = @event.user
+    @call_center_session =  @call_center_wizard.call_center_session
+    @call_center_step = @call_center_wizard.get_next_step(params[:call_center_step_id], params[:answer])
+    if @call_center_step.nil?
+      @call_center_step = CallCenterStep.new(:header => 'THE END',
+                                              :script => 'THE END',
+                                              :instruction => 'THE END')
+    end
+    render(:update) do |page|
+      page << "accordion.step(#{@call_center_step.id});"
+      page['call_center-wizard'].replace_html render(:partial => 'script', :layout => false)
+    end
+    
+  end
   
   def script_note_save
-    @event = Event.find(params[:event_id])
     @call_center_step = CallCenterStep.find(params[:step_id])
-    @call_center_step.answer = params[:script_note]
+    @call_center_step.notes = params[:script_note]
     @call_center_step.save!
     render(:update) do |page|
-      page['note_' + @call_center_step.id.to_s].replace_html @call_center_step.answer
+      page['note_' + @call_center_step.id.to_s].replace_html @call_center_step.notes
     end
   end
   def resolved
@@ -220,32 +209,5 @@ class CallCenterController < ApplicationController
     @user_id = event.user_id
     @notes = Note.find(:all, :conditions => "event_id = #{@event_id}", :order => "created_at desc")
     render :template => 'call_center/all_notes'
-  end
-  
-  private 
-  
-  def create_call_center_steps_group()
-    group = CallCenterStepsGroup.create(:event_id => @event.id)
-    user = @event.user
-    caregivers = user.active_caregivers
-		caregivers.each do |caregiver|
-		  step = CallCenterStep.new(:call_center_steps_group_id => group.id)
-		  step.header = "Call Caregiver ##{caregiver.position} #{caregiver.name}"
-		  step.instruction = "#{caregiver.phone_numbers}"
-		  step.script = "Call Caregiver ##{caregiver.position} #{caregiver.contact_info_table}"
-		  step.save!
-	  end
-	  step = CallCenterStep.new(:call_center_steps_group_id => group.id)
-	  step.header = "Call User #{user.name}"
-	  step.instruction = "#{user.phone_numbers}"
-	  step.script = "Call User #{user.contact_info_table}"
-	  step.save!
-	  step = CallCenterStep.new(:call_center_steps_group_id => group.id)
-	  step.header = "Resolve the Event"
-	  step.instruction = "Resolve the Event"
-	  step.script = "Please click <a href=\"/call_center/resolved/#{@event.id}\">here to Resolve</a> the event."
-	  step.save!
-	  group.reload
-	  return group
   end
 end

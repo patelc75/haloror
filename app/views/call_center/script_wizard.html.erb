@@ -72,24 +72,25 @@ div.accordion-content{
 <div id="call_center">
 <div id="call_center-accordion" class="accordion">
 	
-    <% @call_center_steps.each do |step|  %>
-      <div class="accordion-toggle"><%= step.header %></div>
-      <div class="accordion-content"><%= step.instruction %>
-      </ br>
-      </ br>
-        Notes
-        <div id="note_<%= step.id %>"><%= step.answer %></div>
-      </div>
+    <% @call_center_wizard.call_center_steps_sorted.each do |step|
+        if(step.is_header?)
+    %>
+        <div class="accordion-toggle"><%= step.header %></div>
+        <div class="accordion-content">
+          Notes:  <div id="notes_<%= step.id %>"><%= step.notes %></div>
+          Instructions:  <div id="instructions_<%= step.id %>"><%=step.instruction %></div>
+        </div>
+    <% end %>
     <% end %>
 </div>
 <div align="center" id="call_center-wizard">
-  <button style="font-size: xx-large;" onclick="start_wizard(); new Ajax.Updater('call_center-wizard', '/call_center/script_wizard_next/?call_center_steps_group_id=<%=@call_center_steps_group.id %>')">Start Call</button>
+  <button style="font-size: xx-large;" onclick="start_wizard(); new Ajax.Updater('call_center-wizard', '/call_center/script_wizard_start/?call_center_wizard_id=<%=@call_center_wizard.id %>')">Start Call</button>
 </div>
 </div>
 <%
 step_ids = [] 
-@call_center_steps.each do |step|
-  step_ids << step.id
+@call_center_session.call_center_steps.each do |step|
+  step_ids << step.id if step.is_header?
 end  %>
 <script language="javascript">
 var accordion;
@@ -99,16 +100,11 @@ document.observe("dom:loaded", function(){
 function start_wizard(){
   accordion.start();
 }
-function script_for(group_id, step_id){
-  new Ajax.Updater('call_center-wizard', '/call_center/script_wizard_next/?call_center_steps_group_id=' + group_id + '&call_center_step_id=' + step_id);
+function script_for(answer, step_id){
+  new Ajax.Request('/call_center/script_next/?call_center_wizard_id=<%=@call_center_wizard.id %>&call_center_step_id=' + step_id + '&answer=' + answer);
 }
-function next_step(group_id, step_id){
-  script_for(group_id, step_id);
-  accordion.step(step_id);
-}
-function previous_step(group_id, step_id){
-  script_for(group_id, step_id);
-  accordion.step(step_id);
+function step(answer, step_id){
+  script_for(answer, step_id);
 }
 </script>
 

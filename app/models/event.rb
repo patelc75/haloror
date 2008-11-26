@@ -1,7 +1,8 @@
 class Event < ActiveRecord::Base
   include UtilityHelper
   
-  has_one :call_center_steps_group
+  has_one :call_center_session
+  has_one :call_center_wizard
   has_many :notes
   belongs_to :user
   #belongs_to :alert_type
