@@ -368,14 +368,14 @@ class User < ActiveRecord::Base
   
   def get_script(key, operator, caregiver, event)
     scripts = {
-      CallCenterWizard::USER_HOME_PHONE        => get_user_script(operator, event, self.profile.home_phone),
-      CallCenterWizard::USER_MOBILE_PHONE      => get_user_script(operator, event, self.profile.cell_phone),
-      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_caregiver_script(caregiver, operator, event, caregiver.profile.cell_phone),
-      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_caregiver_script(caregiver, operator, event, caregiver.profile.home_phone),
-      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_caregiver_script(caregiver, operator, event, caregiver.profile.work_phone),
-      CallCenterWizard::USER_AMBULANCE         => "Would you like us to dispatch an ambulance for you.",
-      CallCenterWizard::AMBULANCE              => "Can you determine if an ambulance is needed for #{self.name}?",
-      CallCenterWizard::ON_BEHALF              => "Can you call 911 on behalf of #{self.name}?",
+      CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script(phone, "HaloUser", self.name),
+      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script(phone, "HaloUser", self.name),
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script(phone, "Caregiver", caregiver.name),
+      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script(phone, "Caregiver", caregiver.name),
+      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script(phone, "Caregiver", caregiver.name),
+      CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
+      CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event, caregiver.profile.cell_phone),
+      CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event, caregiver.profile.work_phone),      
 	  CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
       CallCenterWizard::THE_END                => "Please click <a href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
@@ -384,36 +384,48 @@ class User < ActiveRecord::Base
     return script
   end 
   
+  def get_able_to_reach_script(phone, role, name)
+	<div style="font-size: xx-large"><font color="white">Call #{caregiver.role} <b>#{caregiver.name}</b> at <b>#{format_phone(phone)</b>}</font></div>
+	<br><br>
+	Were you able to reach #{name}?
+  end
+  
   def get_user_script(operator, event, phone)
     info = <<-eos
-		<div style="font-size: xx-large"><b><font color="white">Call HaloUser #{self.name} at #{format_phone(phone)}</font></b></div>
-		<br><br>
 		<font color="white">Recite this script:</font><br>
 		<i>"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type}. Would you like us to dispatch an ambulance?"
 		</i>
 		eos
-		return info
+	return info
   end
   
   def get_caregiver_script(caregiver, operator, event, phone)
     info = <<-eos
-		<div style="font-size: xx-large"><b><font color="white">Call Caregiver #{caregiver.name} at #{format_phone(phone)}</font></b></div>
-		<br><br>
 		<font color="white">Recite this script:</font><br>
 		<i>"Hello #{caregiver.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} by  #{self.name}. Could you call 911 on behalf of #{self.name}?"
 		</i>
 		eos
-		return info
+	return info
+  end
+  
+  def get_on_behalf_script(name)
+      info = <<-eos
+		<font color="white">Recite this script:</font><br>
+		<i>"Can you call 911 on behalf of #{name}?"
+		</i>
+		eos
+	return info
   end
   
   def get_ambulance_script(operator, event, phone)
     info = <<-eos
 		<div style="font-size: xx-large"><b><font color="white">Call Monmouth County Emergency Medical Services at 732-555-1212</font></b></div>
 		<br><br>
-		<font color="white">Recite this script:</font><br>
-		<i>"My name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} for #{self.name}. We have the approval to disptach an ambulance. Can you dispatch an amublance to #{self.profile.address}<br>
+		<font color="white">Recite this script:</font><br><br>
+		<i>"My name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} for #{self.name} and have the approval to disptach an ambulance. Can you dispatch an amublance to<br>
+		<br>
 		#{self.profile.address}<br>
-		#{self.profile.city}<br>, #{self.profile.state} #{self.profile.zipcode}<br>"
+		#{self.profile.city}, #{self.profile.state} #{self.profile.zipcode}<br>"
 		</i>
 		<br><br>
 		Was the ambulance dispatched properly?
