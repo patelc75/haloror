@@ -349,6 +349,41 @@ class User < ActiveRecord::Base
     name
   end
   
+  
+  def get_instruction(key, caregiver)
+    instructions = {
+      "Home Phone Answered?"        => format_phone(self.profile.home_phone),
+      "Mobile Phone Answered?"      => format_phone(self.profile.cell_phone),
+      "Ambulance Needed?"           => "Is Ambulance Needed?",
+      "Ask if they will call 911 on behalf of halouser?" => "Will you call 911 on behalf of #{self.name}?",
+      "Ambulance Dispatched"        => "",
+      "Agent Call 911"              => "",
+      "Call Next Caregiver"         => "",
+      "Caregiver Home Phone Answered?" => "",
+      "Caregiver Work Phone Answered?"  => "",
+      "Another Caregiver?"          => ""
+      }
+    instruction = instructions[key]
+    return "instruction test instruction for #{self.name}"
+  end
+  
+  def get_script(key, caregiver)
+    scripts = {
+      "Home Phone Answered?"        => format_phone(self.profile.home_phone),
+      "Mobile Phone Answered?"      => format_phone(self.profile.cell_phone),
+      "Ambulance Needed?"           => "Is Ambulance Needed?",
+      "Ask if they will call 911 on behalf of halouser?" => "Will you call 911 on behalf of #{self.name}?",
+      "Ambulance Dispatched"        => "",
+      "Agent Call 911"              => "",
+      "Call Next Caregiver"         => "",
+      "Caregiver Home Phone Answered?" => "",
+      "Caregiver Work Phone Answered?"  => "",
+      "Another Caregiver?"          => ""
+    }
+    script = scripts[key]
+    return "script test script for #{self.name}"
+  end 
+  
   def format_phone(number)
     number.blank? ? "N/A" : number.strip 
   end
@@ -438,5 +473,7 @@ class User < ActiveRecord::Base
   def login_not_blank?
     return !self.login.blank?
   end
+  
+  
 end
 
