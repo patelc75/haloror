@@ -4,7 +4,6 @@ class User < ActiveRecord::Base
                 
   acts_as_authorized_user
   acts_as_authorizable
-  has_one :cal_center_wizard
   has_many :notes
   has_many :panics
   has_many :batteries
@@ -368,7 +367,13 @@ class User < ActiveRecord::Base
   
   def get_script(key, operator, caregiver, event)
     scripts = {
-      CallCenterWizard::USER_HOME_PHONE        => format_phone(self.profile.home_phone),
+      CallCenterWizard::USER_HOME_PHONE        =>  info = <<-eos
+												      <div style="font-size: xx-large"><b><font color="white">Call HaloUser #{self.name} at #{format_phone(self.profile.home_phone)}</font></b></div>
+													  <br><br>
+												      <font color="white">Recite this script:</font><br>
+													  <i>"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} by  #{self.name}. Would you like us to dispatch an ambulance?"
+													  </i>												  
+													  eos,
       CallCenterWizard::USER_MOBILE_PHONE      => format_phone(self.profile.cell_phone),
       CallCenterWizard::CAREGIVER_HOME_PHONE   => "caregiver home phone",
       CallCenterWizard::CAREGIVER_WORK_PHONE   => "caregiver work phone",
