@@ -414,7 +414,7 @@ class User < ActiveRecord::Base
   def get_on_behalf_script(name)
       info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i>"Can you call 911 on behalf of #{name}?"
+		<i>"When you arrive at the home, can you please call 911 on behalf of #{name}? After that, can you please press the reset button on #{name}'s gateway device. It will be beeping loudly."
 		</i>
 		eos
 	return info
