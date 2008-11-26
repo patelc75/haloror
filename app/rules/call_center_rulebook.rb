@@ -5,13 +5,9 @@ class CallCenterRulebook < Ruleby::Rulebook
     @wizard = wizard
   end
   def rules
-    create_call_center_step_rule(CallCenterWizard::USER_HOME_PHONE,      true,   CallCenterWizard::AMBULANCE)
+    create_call_center_step_rule(CallCenterWizard::USER_HOME_PHONE,      true,   CallCenterWizard::USER_AMBULANCE)
     create_call_center_step_rule(CallCenterWizard::USER_HOME_PHONE,      false,  CallCenterWizard::USER_MOBILE_PHONE)
-    create_call_center_step_rule(CallCenterWizard::AMBULANCE,            true,   CallCenterWizard::ON_BEHALF)
-    create_call_center_step_rule(CallCenterWizard::AMBULANCE,            false,  CallCenterWizard::THE_END)
-    create_call_center_step_rule(CallCenterWizard::ON_BEHALF,            true,   CallCenterWizard::AMBULANCE_DISPATCHED)
-    create_call_center_step_rule(CallCenterWizard::ON_BEHALF,            false,  CallCenterWizard::AGENT_CALL_911)
-    create_call_center_step_rule(CallCenterWizard::USER_MOBILE_PHONE,    true,   CallCenterWizard::AMBULANCE)
+    create_call_center_step_rule(CallCenterWizard::USER_MOBILE_PHONE,    true,   CallCenterWizard::USER_AMBULANCE)
     create_call_center_step_rule(CallCenterWizard::USER_MOBILE_PHONE,    false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE)
     create_call_center_step_rule(CallCenterWizard::CAREGIVER_MOBILE_PHONE, true,   CallCenterWizard::AMBULANCE)
     create_call_center_step_rule(CallCenterWizard::CAREGIVER_MOBILE_PHONE, false,  CallCenterWizard::CAREGIVER_HOME_PHONE)
@@ -19,6 +15,12 @@ class CallCenterRulebook < Ruleby::Rulebook
     create_call_center_step_rule(CallCenterWizard::CAREGIVER_HOME_PHONE, false,  CallCenterWizard::CAREGIVER_WORK_PHONE)
     create_call_center_step_rule(CallCenterWizard::CAREGIVER_WORK_PHONE, true,   CallCenterWizard::AMBULANCE)
     create_call_center_step_rule(CallCenterWizard::CAREGIVER_WORK_PHONE, false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE)
+    create_call_center_step_rule(CallCenterWizard::AMBULANCE,            true,   CallCenterWizard::ON_BEHALF)
+    create_call_center_step_rule(CallCenterWizard::AMBULANCE,            false,  CallCenterWizard::THE_END)
+    create_call_center_step_rule(CallCenterWizard::USER_AMBULANCE,            true,   CallCenterWizard::AGENT_CALL_911)
+    create_call_center_step_rule(CallCenterWizard::USER_AMBULANCE,            false,  CallCenterWizard::THE_END)
+    create_call_center_step_rule(CallCenterWizard::ON_BEHALF,            true,   CallCenterWizard::AMBULANCE_DISPATCHED)
+    create_call_center_step_rule(CallCenterWizard::ON_BEHALF,            false,  CallCenterWizard::AGENT_CALL_911)
     create_call_center_step_rule(CallCenterWizard::AGENT_CALL_911,       true,   CallCenterWizard::THE_END)
     create_call_center_step_rule(CallCenterWizard::AMBULANCE_DISPATCHED, true,   CallCenterWizard::THE_END)
     create_call_center_step_rule(CallCenterWizard::THE_END, true, CallCenterWizard::THE_END)

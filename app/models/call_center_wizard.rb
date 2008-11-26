@@ -11,7 +11,8 @@ class CallCenterWizard < ActiveRecord::Base
   CAREGIVER_HOME_PHONE  = "Caregiver Home Phone Answered?" 
   CAREGIVER_WORK_PHONE  = "Caregiver Work Phone Answered?"
   CAREGIVER_MOBILE_PHONE = "Caregiver MOBILE Phone Answered?"
-  AMBULANCE             = "Ambulance Needed?"           
+  USER_AMBULANCE             = "Ambulance Needed?"
+  AMBULANCE             = "NON-Ambulance Needed?"           
   ON_BEHALF             = "Ask if they will call 911 on behalf of halouser?"
   AGENT_CALL_911        = "Agent Call 911" 
   AMBULANCE_DISPATCHED  = "Ambulance Dispatched"
@@ -82,6 +83,7 @@ class CallCenterWizard < ActiveRecord::Base
 		  create_call_center_step(CAREGIVER_WORK_PHONE, user, operator, caregiver)
 	  end
 	
+	  create_call_center_step(USER_AMBULANCE, user, operator)
 	  create_call_center_step(AMBULANCE, user, operator)
 	  create_call_center_step(ON_BEHALF, user, operator)    
 	  create_call_center_step(AGENT_CALL_911, user, operator)
