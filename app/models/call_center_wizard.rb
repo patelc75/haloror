@@ -10,10 +10,11 @@ class CallCenterWizard < ActiveRecord::Base
   USER_MOBILE_PHONE     = "Mobile Phone Answered?"     
   CAREGIVER_HOME_PHONE  = "Caregiver Home Phone Answered?" 
   CAREGIVER_WORK_PHONE  = "Caregiver Work Phone Answered?"
+  CAREGIVER_MOBILE_PHONE = "Caregiver MOBILE Phone Answered?"
   AMBULANCE             = "Ambulance Needed?"           
   ON_BEHALF             = "Ask if they will call 911 on behalf of halouser?"
   AGENT_CALL_911        = "Agent Call 911" 
-  AMBULANCE_DISPATCHED  = "Ambulance Dispatched" 
+  AMBULANCE_DISPATCHED  = "Ambulance Dispatched"
   THE_END               = "Resolve the Event"
   
   
@@ -76,7 +77,8 @@ class CallCenterWizard < ActiveRecord::Base
 	  #create caregiver steps
     caregivers = self.user.active_caregivers
 		caregivers.each do |caregiver|
-		  create_call_center_step(CAREGIVER_HOME_PHONE, user, operator, caregiver, "Call Caregiver ##{caregiver.position} #{caregiver.name}")
+		  create_call_center_step(CAREGIVER_MOBILE_PHONE, user, operator, caregiver, "Call Caregiver ##{caregiver.position} #{caregiver.name}")
+		  create_call_center_step(CAREGIVER_HOME_PHONE, user, operator, caregiver)
 		  create_call_center_step(CAREGIVER_WORK_PHONE, user, operator, caregiver)
 	  end
 	

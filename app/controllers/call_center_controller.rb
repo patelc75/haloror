@@ -60,7 +60,19 @@ class CallCenterController < ApplicationController
     @call_center_step = @call_center_wizard.first_step()
     render :partial => 'script', :layout => false
   end
-  
+  def script_previous
+    @call_center_wizard = CallCenterWizard.find(params[:call_center_wizard_id])
+    @event =  @call_center_wizard.event
+    @user = @event.user
+    @call_center_session =  @call_center_wizard.call_center_session
+    @call_center_step = CallCenterStep.find(params[:call_center_step_id])
+    @call_center_step.answer = nil
+    @call_center_step.save!
+    render(:update) do |page|
+      page << "accordion.step(#{@call_center_step.id});"
+      page['call_center-wizard'].replace_html render(:partial => 'script', :layout => false)
+    end
+  end
   def script_next
     @call_center_wizard = CallCenterWizard.find(params[:call_center_wizard_id])
     @event =  @call_center_wizard.event

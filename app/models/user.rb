@@ -369,9 +369,9 @@ class User < ActiveRecord::Base
     scripts = {
       CallCenterWizard::USER_HOME_PHONE        => get_user_script(operator, event, self.profile.home_phone),
       CallCenterWizard::USER_MOBILE_PHONE      => get_user_script(operator, event, self.profile.cell_phone),
-      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_caregiver_script(operator, event, caregiver.profile.cell_phone),
-      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_caregiver_script(operator, event, caregiver.profile.home_phone),
-      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_caregiver_script(operator, event, caregiver.profile.work_phone),
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_caregiver_script(caregiver, operator, event, caregiver.profile.cell_phone),
+      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_caregiver_script(caregiver, operator, event, caregiver.profile.home_phone),
+      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_caregiver_script(caregiver, operator, event, caregiver.profile.work_phone),
       CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
       CallCenterWizard::AGENT_CALL_911         => "agent call 911?",
@@ -393,7 +393,7 @@ class User < ActiveRecord::Base
 		return info
   end
   
-  def get_caregiver_script(operator, event, phone)
+  def get_caregiver_script(caregiver, operator, event, phone)
     info = <<-eos
 		<div style="font-size: xx-large"><b><font color="white">Call Caregiver #{caregiver.name} at #{format_phone(phone)}</font></b></div>
 		<br><br>

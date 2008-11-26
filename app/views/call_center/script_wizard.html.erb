@@ -106,6 +106,9 @@ function script_for(answer, step_id){
 function step(answer, step_id){
   script_for(answer, step_id);
 }
+function previous_step(step_id){
+  new Ajax.Request('/call_center/script_previous/?call_center_wizard_id=<%=@call_center_wizard.id %>&call_center_step_id=' + step_id);
+}
 </script>
 
 <% end %>
