@@ -386,7 +386,7 @@ class User < ActiveRecord::Base
   
   def get_able_to_reach_script(phone, role, name, place)
     info = <<-eos	
-	<div style="font-size: xx-large"><font color="white">Call #{caregiver.role} <b>#{caregiver.name}</b> at #{place} <b>#{format_phone(phone)</b>}</font></div>
+	<div style="font-size: xx-large"><font color="white">Call #{role} <b>#{name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
 	<br><br>
 	Were you able to reach #{name} at #{place}?
 		eos
