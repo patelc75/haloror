@@ -368,11 +368,11 @@ class User < ActiveRecord::Base
   
   def get_script(key, operator, caregiver, event)
     scripts = {
-      CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script(self.home_phone, "HaloUser", self.name, "Home"),
-      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script(self.mobile_phone, "HaloUser", self.name, "Cell"),
-      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script(caregiver.mobile_phone, "Caregiver", caregiver.name, "Mobile"),
-      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script(caregiver.home_phone, "Caregiver", caregiver.name, "Home"),
-      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script(caregiver.work_phone, "Caregiver", caregiver.name, "Work"),
+      CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script(self.profile.home_phone, "HaloUser", self.name, "Home"),
+      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script(self.profile.cell_phone, "HaloUser", self.name, "Cell"),
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script(caregiver.profile.cell_phone, "Caregiver", caregiver.name, "Mobile"),
+      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script(caregiver.profile.home_phone, "Caregiver", caregiver.name, "Home"),
+      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script(caregiver.profile.work_phone, "Caregiver", caregiver.name, "Work"),
       CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
       CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event, caregiver.profile.cell_phone),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
