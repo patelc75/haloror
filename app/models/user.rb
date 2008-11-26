@@ -380,7 +380,7 @@ class User < ActiveRecord::Base
     script = scripts[key]
     return script
   end 
-  def get_user_phone()
+  def get_user_phone(operator, event)
     info = <<-eos
 											      <div style="font-size: xx-large"><b><font color="white">Call HaloUser #{self.name} at #{format_phone(self.profile.home_phone)}</font></b></div>
 												  <br><br>
