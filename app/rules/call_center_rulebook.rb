@@ -19,7 +19,7 @@ class CallCenterRulebook < Ruleby::Rulebook
     create_call_center_step_rule(CallCenterWizard::CAREGIVER_HOME_PHONE, false,  CallCenterWizard::CAREGIVER_WORK_PHONE)
     create_call_center_step_rule(CallCenterWizard::CAREGIVER_WORK_PHONE, true,   CallCenterWizard::AMBULANCE)
     create_call_center_step_rule(CallCenterWizard::CAREGIVER_WORK_PHONE, false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE)
-    create_call_center_step_rule(CallCenterWizard::AGENT_CALL_911,       true,   CallCenterWizard::AMBULANCE_DISPATCHED)
+    create_call_center_step_rule(CallCenterWizard::AGENT_CALL_911,       true,   CallCenterWizard::THE_END)
     create_call_center_step_rule(CallCenterWizard::AMBULANCE_DISPATCHED, true,   CallCenterWizard::THE_END)
     create_call_center_step_rule(CallCenterWizard::THE_END, true, CallCenterWizard::THE_END)
     create_call_center_step_rule(CallCenterWizard::THE_END, false, CallCenterWizard::THE_END)

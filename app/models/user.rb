@@ -372,10 +372,10 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_caregiver_script(caregiver, operator, event, caregiver.profile.cell_phone),
       CallCenterWizard::CAREGIVER_HOME_PHONE   => get_caregiver_script(caregiver, operator, event, caregiver.profile.home_phone),
       CallCenterWizard::CAREGIVER_WORK_PHONE   => get_caregiver_script(caregiver, operator, event, caregiver.profile.work_phone),
-      CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
-      CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
-      CallCenterWizard::AGENT_CALL_911         => "agent call 911?",
-      CallCenterWizard::AMBULANCE_DISPATCHED   => "ambulance dispatched?",
+      CallCenterWizard::AMBULANCE              => "Can you determine if an ambulance is needed for #{self.name}?",
+      CallCenterWizard::ON_BEHALF              => "Can you call 911 on behalf of #{self.name}?",
+      CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event, caregiver.profile.work_phone),      
+	  CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
       CallCenterWizard::THE_END                => "Please click <a href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
     script = scripts[key]
@@ -398,8 +398,23 @@ class User < ActiveRecord::Base
 		<div style="font-size: xx-large"><b><font color="white">Call Caregiver #{caregiver.name} at #{format_phone(phone)}</font></b></div>
 		<br><br>
 		<font color="white">Recite this script:</font><br>
-		<i>"Hello #{caregiver.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} by  #{self.name}. Would you like us to dispatch an ambulance?"
+		<i>"Hello #{caregiver.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} by  #{self.name}. Could you call 911 on behalf of #{self.name}?"
 		</i>
+		eos
+		return info
+  end
+  
+  def get_ambulance_script(operator, event, phone)
+    info = <<-eos
+		<div style="font-size: xx-large"><b><font color="white">Call Monmouth County Emergency Medical Services at 732-555-1212</font></b></div>
+		<br><br>
+		<font color="white">Recite this script:</font><br>
+		<i>"My name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} for #{self.name}. We have the approval to disptach an ambulance. Can you dispatch an amublance to #{self.profile.address}<br>
+		#{self.profile.address}<br>
+		#{self.profile.city}<br>, #{self.profile.state} #{self.profile.zipcode}<br>"
+		</i>
+		<br><br>
+		Was the ambulance dispatched properly?
 		eos
 		return info
   end
