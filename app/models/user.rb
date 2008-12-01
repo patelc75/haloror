@@ -348,6 +348,13 @@ class User < ActiveRecord::Base
     name
   end
   
+  def has_phone?
+    if(self.profile && (!self.profile.home_phone.blank? || !self.profile.work_phone.blank? || !self.profile.cell_phone.blank?))
+      return true
+    else
+      return false
+    end
+  end
   
   def get_instruction(key, operator, caregiver)
     instructions = { 
