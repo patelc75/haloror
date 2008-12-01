@@ -63,7 +63,7 @@ class CallCenterWizard < ActiveRecord::Base
       next_steps.each do |step|
         if step.answer.nil?
           if step.script.nil?
-            return get_next_step(step.id, false)
+            return find_next_step(step.id, false)
           else
             return step
           end

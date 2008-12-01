@@ -386,7 +386,7 @@ class User < ActiveRecord::Base
   
   def get_able_to_reach_script_work(user, role)
     if user && user.profile && !user.profile.work_phone.blank?
-      return get_able_to_reach_script(user.profile.home_phone, role, user.name, "Work")
+      return get_able_to_reach_script(user.profile.work_phone, role, user.name, "Work")
     else
       return nil
     end
