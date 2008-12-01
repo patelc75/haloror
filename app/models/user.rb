@@ -368,22 +368,46 @@ class User < ActiveRecord::Base
   
   def get_script(key, operator, caregiver, event)
     scripts = {
-      CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script(self.profile.home_phone, "HaloUser", self.name, "Home"),
-      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script(self.profile.cell_phone, "HaloUser", self.name, "Cell"),
-      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script(caregiver.profile.cell_phone, "Caregiver", caregiver.name, "Mobile"),
-      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script(caregiver.profile.home_phone, "Caregiver", caregiver.name, "Home"),
-      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script(caregiver.profile.work_phone, "Caregiver", caregiver.name, "Work"),
+      CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script_home(self, "HaloUser"),
+      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script_work(self, "HaloUser"),
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script_cell(caregiver, "Caregiver"),
+      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script_home(caregiver, "Caregiver"),
+      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script_work(caregiver, "Caregiver"),
       CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
       CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event, caregiver.profile.cell_phone),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event, caregiver.profile.work_phone),      
-	  CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
+	    CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
       CallCenterWizard::THE_END                => "Please click <a href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
     script = scripts[key]
     return script
   end 
   
+  def get_able_to_reach_script_work(user, role)
+    if user && user.profile && !user.profile.work_phone.blank?
+      return get_able_to_reach_script(user.profile.home_phone, role, user.name, "Work")
+    else
+      return nil
+    end
+  end
+  
+  def get_able_to_reach_script_cell(user, role)
+    if user && user.profile && !user.profile.cell_phone.blank?
+      return get_able_to_reach_script(user.profile.cell_phone, role, user.name, "Mobile")
+    else
+      return nil
+    end
+  end
+  
+  def get_able_to_reach_script_home(user, role)
+    if user && user.profile && !user.profile.home_phone.blank?
+      return get_able_to_reach_script(user.profile.home_phone, role, user.name, "Home")
+    else
+      return nil
+    end
+  end
+    
   def get_able_to_reach_script(phone, role, name, place)
     info = <<-eos	
 	<div style="font-size: xx-large"><font color="white">Call #{role} <b>#{name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>

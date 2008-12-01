@@ -58,11 +58,15 @@ class CallCenterWizard < ActiveRecord::Base
         next_steps << step
       end
     end
-    RAILS_DEFAULT_LOGGER.warn(next_steps.inspect)
+    
     if !next_steps.blank?
       next_steps.each do |step|
         if step.answer.nil?
-          return step
+          if step.script.nil?
+            return get_next_step(step.id, false)
+          else
+            return step
+          end
         end
       end
     end
