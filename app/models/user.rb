@@ -473,7 +473,7 @@ class User < ActiveRecord::Base
     skintemp = SkinTemp.find(:first, :conditions => "user_id = #{self.id}", :order => 'timestamp desc')
     if vital && skintemp &&
       vital.timestamp && skintemp.timestamp && 
-      (abs(vital.timestamp - skintemp.timestamp) > 1)
+      ((vital.timestamp - skintemp.timestamp).abs > 1)
       return "\"#{self.name}'s vitals are:  heartrate: #{vital.heartrate} (as of #{vital.timestamp.to_s})  current temp:  #{skintemp} (as of #{skintemp.timestamp})\""
     end
     return "\"#{self.name}'s vitals are:  heartrate: #{vital.heartrate}  current temp:  #{skintemp} (as of #{vital.timestamp})\""
