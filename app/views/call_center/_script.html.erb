@@ -1,4 +1,4 @@
-<div><b><font color="white"><%= @call_center_step.script %></font></b></div>
+<font color="white"><div><b><%= @call_center_step.script %></b></div>
 <br />
 <br />
 <br />
@@ -13,6 +13,13 @@
 <br />
 <br />
 <br />
+(Notes are optional)
+<div id="notes_text">
+<%= @call_center_step.notes %>
+<br />
+<a href="#" onclick="$('notes_text').hide();$('notes').show();">Edit Notes</a>
+</div>
+<div style="display: none;" id="notes">
 <%= form_remote_tag :url => url_for(:controller => 'call_center', :action => 'script_note_save')  %>
 	<input type="hidden" name="step_id" value="<%= @call_center_step.id %>" />
 <%= text_area_tag :script_note,  @call_center_step.notes, :cols => 30, :rows => 7 %>
@@ -20,4 +27,5 @@
 <br />
 <input type="submit" name="Save Note" value="Save Note" />
 </form>
-
+</div>
+</font>

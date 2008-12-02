@@ -462,11 +462,23 @@ class User < ActiveRecord::Base
 		#{self.profile.city}, #{self.profile.state} #{self.profile.zipcode}<br>"
 		</i>
 		<br><br>
+		<i>#{self.vitals_text}</i>
+		<br><br>
 		Was the ambulance dispatched properly?
 		eos
 		return info
   end
-  
+  def vitals_text
+    vital = Vital.find(:first, :conditions => "user_id = #{self.id}", :order => 'timestamp desc')
+    skintemp = SkinTemp.find(:first, :conditions => "user_id = #{self.id}", :order => 'timestamp desc')
+    if vital && skintemp &&
+      vital.timestamp && skintemp.timestamp && 
+      (abs(vital.timestamp - skintemp.timestamp) > 1)
+      return "\"#{self.name}'s vitals are:  heartrate: #{vital.heartrate} (as of #{vital.timestamp.to_s})  current temp:  #{skintemp} (as of #{skintemp.timestamp})\""
+    end
+    return "\"#{self.name}'s vitals are:  heartrate: #{vital.heartrate}  current temp:  #{skintemp} (as of #{vital.timestamp})\""
+    
+  end
   def format_phone(number)
     number.blank? ? "N/A" : number.strip 
   end
