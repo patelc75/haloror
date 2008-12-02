@@ -63,7 +63,7 @@ class CallCenterWizard < ActiveRecord::Base
       next_steps.each do |step|
         if step.answer.nil?
           if step.script.nil?
-            return find_next_step(step.id, false)
+            return get_next_step(step.id, false)
           else
             return step
           end
@@ -77,13 +77,13 @@ class CallCenterWizard < ActiveRecord::Base
     user = self.user
     operator = User.find(operator_id)
     #create first step
-	  create_call_center_step(USER_HOME_PHONE, user, operator, current_caregiver, "Call User #{self.user.name}")
+	  create_call_center_step(USER_HOME_PHONE, user, operator, current_caregiver, "Notes for User #{self.user.name}")
 	  create_call_center_step(USER_MOBILE_PHONE, user, operator)
 	  #create caregiver steps
     caregivers = self.user.active_caregivers
 		caregivers.each do |caregiver|
 		  if(caregiver.has_phone?)
-		    create_call_center_step(CAREGIVER_MOBILE_PHONE, user, operator, caregiver, "Call Caregiver ##{caregiver.position} #{caregiver.name}")
+		    create_call_center_step(CAREGIVER_MOBILE_PHONE, user, operator, caregiver, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
 		    create_call_center_step(CAREGIVER_HOME_PHONE, user, operator, caregiver)
 		    create_call_center_step(CAREGIVER_WORK_PHONE, user, operator, caregiver)
 	    end
@@ -104,7 +104,7 @@ class CallCenterWizard < ActiveRecord::Base
     step = CallCenterStep.new(:call_center_session_id => self.call_center_session.id)
     step.header       = header
 	  step.question_key = key
-	  step.instruction  = self.user.get_instruction(key, operator, caregiver)
+    step.instruction  = self.user.get_instruction(key, operator, caregiver)
 	  step.script       = self.user.get_script(key, operator, caregiver, self.event)
 	  step.save!
 	  step = nil

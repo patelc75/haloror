@@ -74,16 +74,13 @@ div.accordion-content{
 <% if current_user.id == action.user_id %>
 <div id="call_center">
 <div id="call_center-accordion" class="accordion">
-	
-    <% @call_center_wizard.call_center_steps_sorted.each do |step|
-        if(step.is_header?)
-    %>
-        <div class="accordion-toggle"><%= step.header %></div>
-        <div class="accordion-content">
+    <% @call_center_wizard.call_center_steps_sorted.each do |step|  %>
+      <% if step.is_header?  %>
+          <div class="accordion-toggle"><%= step.header %></div>
+          <div class="accordion-content">
           Notes:  <div id="notes_<%= step.id %>"><%= step.notes %></div>
-          Instructions:  <div id="instructions_<%= step.id %>"><%=step.instruction %></div>
-        </div>
-    <% end %>
+          </div>
+      <% end %>
     <% end %>
 </div>
 <div align="center" id="call_center-wizard">

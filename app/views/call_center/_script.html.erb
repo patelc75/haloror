@@ -13,12 +13,27 @@
 <br />
 <br />
 <br />
-(Notes are optional)
-<div id="notes_text">
-<%= @call_center_step.notes %>
-<br />
-<a href="#" onclick="$('notes_text').hide();$('notes').show();">Edit Notes</a>
-</div>
+<% if @call_center_step.notes.blank? %>
+  
+  <div id="notes">
+  <%= form_remote_tag :url => url_for(:controller => 'call_center', :action => 'script_note_save')  %>
+  	<input type="hidden" name="step_id" value="<%= @call_center_step.id %>" />
+  <%= text_area_tag :script_note,  @call_center_step.notes, :cols => 30, :rows => 7 %>
+  <br />
+  <br />
+  <input type="submit" name="Save Note" value="Save Note" />
+  </form>
+  </div>
+  
+  <div style="display: none;" id="notes_text">
+  <%= @call_center_step.notes %>
+  <br />
+  <a href="#" onclick="$('notes_text').hide();$('notes').show();">Edit Notes</a>
+  </div>
+  (Notes are optional)
+  
+<% else %>
+
 <div style="display: none;" id="notes">
 <%= form_remote_tag :url => url_for(:controller => 'call_center', :action => 'script_note_save')  %>
 	<input type="hidden" name="step_id" value="<%= @call_center_step.id %>" />
@@ -28,4 +43,12 @@
 <input type="submit" name="Save Note" value="Save Note" />
 </form>
 </div>
+
+<div id="notes_text">
+<%= @call_center_step.notes %>
+<br />
+<a href="#" onclick="$('notes_text').hide();$('notes').show();">Edit Notes</a>
+</div>
+(Notes are optional)
+<% end %>
 </font>

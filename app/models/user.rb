@@ -360,6 +360,7 @@ class User < ActiveRecord::Base
     instructions = { 
       CallCenterWizard::USER_HOME_PHONE        => format_phone(self.profile.home_phone),
       CallCenterWizard::USER_MOBILE_PHONE      => format_phone(self.profile.cell_phone),
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE => format_phone(caregiver.profile.cell_phone),
       CallCenterWizard::CAREGIVER_HOME_PHONE   => format_phone(caregiver.profile.home_phone),
       CallCenterWizard::CAREGIVER_WORK_PHONE   => format_phone(caregiver.profile.work_phone),
       CallCenterWizard::USER_AMBULANCE         => "Is Ambulance Needed?",
