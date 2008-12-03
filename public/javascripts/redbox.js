@@ -5,7 +5,6 @@ var RedBox = {
   {
     this.showOverlay();
     new Effect.Appear('RB_window', {duration: 0.4, queue: 'end'});        
-    Element.scrollTo('RB_window');
     this.cloneWindowContents(id);
   },
 
@@ -22,7 +21,6 @@ var RedBox = {
     this.moveChildren($(id), $('RB_window'));
     Element.hide('RB_loading');
     new Effect.Appear('RB_window', {duration: 0.4, queue: 'end'});  
-    Element.scrollTo('RB_window');
     this.setWindowPosition();
   },
 
@@ -30,6 +28,7 @@ var RedBox = {
   {
     new Effect.Fade('RB_window', {duration: 0.4});
     new Effect.Fade('RB_overlay', {duration: 0.4});
+    this.showSelectBoxes();
   },
 
   showOverlay: function()
@@ -41,11 +40,12 @@ var RedBox = {
     }
     else
     {
-      new Insertion.Bottom(document.body, '<div id="RB_redbox" align="center"><div id="RB_window" style="display: none;"></div><div id="RB_overlay" style="display: none;"></div></div>');      
+      new Insertion.Top(document.body, '<div id="RB_redbox" align="center"><div id="RB_window" style="display: none;"></div><div id="RB_overlay" style="display: none;"></div></div>');      
     }
-    new Insertion.Top('RB_overlay', '<div id="RB_loading" style="display: none"></div>');  
+    new Insertion.Bottom('RB_redbox', '<div id="RB_loading" style="display: none"></div>');  
 
     this.setOverlaySize();
+    this.hideSelectBoxes();
     new Effect.Appear('RB_overlay', {duration: 0.4, to: 0.6, queue: 'end'});
   },
 
@@ -76,7 +76,7 @@ var RedBox = {
     var dimensions = Element.getDimensions($("RB_window"));
     var width = dimensions.width;
     var height = dimensions.height;        
-	
+    
     $("RB_window").style['left'] = ((pagesize[0] - width)/2) + "px";
     $("RB_window").style['top'] = ((pagesize[1] - height)/2) + "px";
   },
@@ -114,6 +114,24 @@ var RedBox = {
     $('RB_window').appendChild(content);  
 
     this.setWindowPosition();
+  },
+  
+  hideSelectBoxes: function()
+  {
+  	selects = document.getElementsByTagName("select");
+  	for (i = 0; i != selects.length; i++) {
+  		selects[i].style.visibility = "hidden";
+  	}
+  },
+
+  showSelectBoxes: function()
+  {
+  	selects = document.getElementsByTagName("select");
+  	for (i = 0; i != selects.length; i++) {
+  		selects[i].style.visibility = "visible";
+  	}
   }
+
+
 
 }
