@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081126162606) do
+ActiveRecord::Schema.define(:version => 20081203043445) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -187,6 +187,7 @@ ActiveRecord::Schema.define(:version => 20081126162606) do
     t.integer  "call_center_session_id"
     t.integer  "call_center_group_id"
     t.integer  "previous_call_center_step_id"
+    t.integer  "user_id"
   end
 
   create_table "call_center_wizards", :force => true do |t|

@@ -50,18 +50,19 @@ class CallCenterWizard < ActiveRecord::Base
     return call_center_step
   end
   
-  def find_next_step(key)
+  def find_next_step(key, user_id)
     next_step = nil
     next_steps = []
     self.call_center_steps_sorted.each do |step|
-      if step.question_key == key
+      RAILS_DEFAULT_LOGGER.warn("#{step.question_key} #{step.user_id} #{key} #{user_id}")
+      if step.question_key == key && step.user_id == user_id
         next_steps << step
       end
     end
     
     if !next_steps.blank?
       next_steps.each do |step|
-        if step.answer.nil?
+        if step.answer.nil? 
           if step.script.nil?
             return get_next_step(step.id, false)
           else
@@ -77,35 +78,48 @@ class CallCenterWizard < ActiveRecord::Base
     user = self.user
     operator = User.find(operator_id)
     #create first step
-	  create_call_center_step(USER_HOME_PHONE, user, operator, current_caregiver, "Notes for User #{self.user.name}")
+	  create_call_center_step(USER_HOME_PHONE, user, operator, "Notes for User #{self.user.name}")
 	  create_call_center_step(USER_MOBILE_PHONE, user, operator)
+	  create_call_center_step(USER_AMBULANCE, user, operator)
+	  create_call_center_step(ON_BEHALF, user, operator)    
+	  create_call_center_step(AGENT_CALL_911, user, operator)
+	  create_call_center_step(AMBULANCE_DISPATCHED, user, operator)
 	  #create caregiver steps
     caregivers = self.user.active_caregivers
 		caregivers.each do |caregiver|
 		  if(caregiver.has_phone?)
-		    create_call_center_step(CAREGIVER_MOBILE_PHONE, user, operator, caregiver, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
-		    create_call_center_step(CAREGIVER_HOME_PHONE, user, operator, caregiver)
-		    create_call_center_step(CAREGIVER_WORK_PHONE, user, operator, caregiver)
+		    create_caregiver_call_center_step(caregiver, CAREGIVER_MOBILE_PHONE, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
+		    create_caregiver_call_center_step(caregiver, CAREGIVER_HOME_PHONE, user, operator)
+		    create_caregiver_call_center_step(caregiver, CAREGIVER_WORK_PHONE, user, operator)
+    	  create_caregiver_call_center_step(caregiver, AMBULANCE, user, operator)
+    	  create_caregiver_call_center_step(caregiver, ON_BEHALF, user, operator)
+    	  create_caregiver_call_center_step(caregiver, AGENT_CALL_911, user, operator)
+    	  create_caregiver_call_center_step(caregiver, AMBULANCE_DISPATCHED, user, operator)
+    	  create_caregiver_call_center_step(caregiver, THE_END, user, operator)
 	    end
 	  end
 	
-	  create_call_center_step(USER_AMBULANCE, user, operator)
-	  create_call_center_step(AMBULANCE, user, operator)
-	  create_call_center_step(ON_BEHALF, user, operator)    
-	  create_call_center_step(AGENT_CALL_911, user, operator)
-	  create_call_center_step(AMBULANCE_DISPATCHED, user, operator)
 	  
-	  create_call_center_step(THE_END, user, operator, current_caregiver, THE_END)
+	  create_call_center_step(THE_END, user, operator, THE_END)
+	  
   end
-  def current_caregiver
-    return self.user.active_caregivers[0]
-  end
-  def create_call_center_step(key, user, operator, caregiver=current_caregiver, header=nil)
+  def create_caregiver_call_center_step(caregiver, key, user, operator, header=nil)
     step = CallCenterStep.new(:call_center_session_id => self.call_center_session.id)
+    step.user_id      = caregiver.id
     step.header       = header
 	  step.question_key = key
-    step.instruction  = self.user.get_instruction(key, operator, caregiver)
-	  step.script       = self.user.get_script(key, operator, caregiver, self.event)
+    step.instruction  = self.user.get_cg_instruction(key, operator, caregiver)
+	  step.script       = self.user.get_cg_script(key, operator, caregiver, self.event)
+	  step.save!
+	  step = nil
+  end
+  def create_call_center_step(key, user, operator, header=nil)
+    step = CallCenterStep.new(:call_center_session_id => self.call_center_session.id)
+    step.user_id      = user.id
+    step.header       = header
+	  step.question_key = key
+    step.instruction  = self.user.get_instruction(key, operator)
+	  step.script       = self.user.get_script(key, operator, self.event)
 	  step.save!
 	  step = nil
   end

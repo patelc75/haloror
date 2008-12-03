@@ -355,15 +355,11 @@ class User < ActiveRecord::Base
       return false
     end
   end
-  
-  def get_instruction(key, operator, caregiver)
+  def get_cg_instruction(key, operator, caregiver)
     instructions = { 
-      CallCenterWizard::USER_HOME_PHONE        => format_phone(self.profile.home_phone),
-      CallCenterWizard::USER_MOBILE_PHONE      => format_phone(self.profile.cell_phone),
       CallCenterWizard::CAREGIVER_MOBILE_PHONE => format_phone(caregiver.profile.cell_phone),
       CallCenterWizard::CAREGIVER_HOME_PHONE   => format_phone(caregiver.profile.home_phone),
       CallCenterWizard::CAREGIVER_WORK_PHONE   => format_phone(caregiver.profile.work_phone),
-      CallCenterWizard::USER_AMBULANCE         => "Is Ambulance Needed?",
       CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
       CallCenterWizard::AGENT_CALL_911         => "",
@@ -373,18 +369,40 @@ class User < ActiveRecord::Base
     instruction = instructions[key]
     return instruction
   end
-  
-  def get_script(key, operator, caregiver, event)
+  def get_instruction(key, operator)
+    instructions = { 
+      CallCenterWizard::USER_HOME_PHONE        => format_phone(self.profile.home_phone),
+      CallCenterWizard::USER_MOBILE_PHONE      => format_phone(self.profile.cell_phone),
+      CallCenterWizard::USER_AMBULANCE         => "Is Ambulance Needed?",
+      CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
+      CallCenterWizard::AGENT_CALL_911         => "",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => "",
+      CallCenterWizard::THE_END                => "Resolve the Event"
+      }
+    instruction = instructions[key]
+    return instruction
+  end
+  def get_cg_script(key, operator, caregiver, event)
+    scripts = {
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script_cell(caregiver, "Caregiver"),      # 
+      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script_home(caregiver, "Caregiver"),
+      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script_work(caregiver, "Caregiver"),
+      CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event),
+      CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
+      CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
+	    CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
+      CallCenterWizard::THE_END                => "Please click <a href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
+    }
+    script = scripts[key]
+    return script
+  end
+  def get_script(key, operator, event)
     scripts = {
       CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script_home(self, "HaloUser"),
       CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script_work(self, "HaloUser"),
-      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script_cell(caregiver, "Caregiver"),
-      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script_home(caregiver, "Caregiver"),
-      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script_work(caregiver, "Caregiver"),
       CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
-      CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event, caregiver.profile.cell_phone),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
-      CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event, caregiver.profile.work_phone),      
+      CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
 	    CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
       CallCenterWizard::THE_END                => "Please click <a href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
@@ -434,7 +452,7 @@ class User < ActiveRecord::Base
 	return info
   end
   
-  def get_caregiver_script(caregiver, operator, event, phone)
+  def get_caregiver_script(caregiver, operator, event)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
 		<i>"Hello #{caregiver.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} by  #{self.name}. Can you determine if an ambulance is needed for #{self.name}?"
@@ -452,7 +470,7 @@ class User < ActiveRecord::Base
 	return info
   end
   
-  def get_ambulance_script(operator, event, phone)
+  def get_ambulance_script(operator, event)
     info = <<-eos
 		<div style="font-size: xx-large"><b><font color="white">Call Monmouth County Emergency Medical Services at 732-555-1212</font></b></div>
 		<br><br>
