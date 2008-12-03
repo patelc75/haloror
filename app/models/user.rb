@@ -399,7 +399,7 @@ class User < ActiveRecord::Base
   def get_script(key, operator, event)
     scripts = {
       CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script_home(self, "HaloUser"),
-      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script_work(self, "HaloUser"),
+      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script_cell(self, "HaloUser"),
       CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
