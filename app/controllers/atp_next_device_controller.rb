@@ -1,9 +1,9 @@
 class AtpNextDeviceController < ApplicationController
   def index
     work_order_id = params[:work_order_id]
-    device_type_id = params[:device_type_id]
-    if !work_order_id.blank? && !device_type_id.blank?
-      xml = get_xml(work_order_id, device_type_id)
+    revision_id = params[:device_revision_id]
+    if !work_order_id.blank? && !revision_id.blank?
+      xml = get_xml(work_order_id, revision_id)
       respond_to do |format|
         format.xml do
           if xml
@@ -22,16 +22,17 @@ class AtpNextDeviceController < ApplicationController
   
   private
   
-  def get_xml(work_order_id, device_type_id)
-    return nil if work_order_id.blank? || device_type_id.blank?
+  def get_xml(work_order_id, revision_id)
+    
+    return nil if work_order_id.blank? || revision_id.blank?
     xml = nil
-    dt_wo = DeviceTypesWorkOrder.find(:first, :conditions => "work_order_id = #{work_order_id} AND device_type_id = #{device_type_id}")
+    dt_wo = DeviceRevisionsWorkOrder.find(:first, :conditions => "work_order_id = #{work_order_id} AND device_revision_id = #{revision_id}")
     if dt_wo && (dt_wo.total_serial_nums < dt_wo.num)
       serial_number = get_next_serial_number(dt_wo)
       mac_address = get_next_mac_address(serial_number, dt_wo)
-      device = Device.new(:device_type_id => dt_wo.device_type_id, :serial_number => serial_number, :mac_address => mac_address)
+      device = Device.new(:serial_number => serial_number, :mac_address => mac_address, :device_revision_id => revision_id, :work_order_id => work_order_id)
       device.save!
-      xml = device.to_xml(:dasherize => false, :skip_types => true, :except => :device_type, :include => {:device_type => {:include => :atp_items}})
+      xml = device.to_xml(:dasherize => false, :skip_types => true, :except => :device_type, :include => {:device_revision => {:include => {:device_model => {:include => {:device_type => {:include => :atp_items}}}}}})
     end
     return xml
   end

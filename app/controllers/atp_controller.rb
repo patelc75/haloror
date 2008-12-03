@@ -1,7 +1,7 @@
 class AtpController < ApplicationController
   
   def work_orders
-    @work_orders = WorkOrder.find(:all, :order => 'work_order_num asc', :include => [:device_types_work_orders, :device_types])
+    @work_orders = WorkOrder.find(:all, :order => 'work_order_num asc', :include => [:device_revisions_work_orders, :device_revisions])
   end
   
   def work_order_view

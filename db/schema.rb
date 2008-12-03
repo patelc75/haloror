@@ -269,22 +269,6 @@ ActiveRecord::Schema.define(:version => 20081203043445) do
     t.string   "comments"
   end
 
-  create_table "device_types_work_orders", :force => true do |t|
-    t.integer  "work_order_id"
-    t.integer  "device_type_id"
-    t.integer  "num"
-    t.string   "starting_mac_address"
-    t.integer  "total_mac_addresses"
-    t.string   "current_mac_address"
-    t.string   "starting_serial_num"
-    t.integer  "total_serial_nums"
-    t.string   "current_serial_num"
-    t.datetime "updated_at"
-    t.datetime "created_at"
-    t.integer  "created_by"
-    t.string   "comments"
-  end
-
   create_table "device_unavailable_alerts", :force => true do |t|
     t.integer  "device_id",                      :null => false
     t.integer  "number_attempts", :default => 1, :null => false
