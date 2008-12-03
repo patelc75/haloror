@@ -80,9 +80,9 @@ class CallCenterController < ApplicationController
     @call_center_session =  @call_center_wizard.call_center_session
     @call_center_step = @call_center_wizard.get_next_step(params[:call_center_step_id], params[:answer])
     if @call_center_step.nil?
-      @call_center_step = CallCenterStep.new(:header => 'THE END',
-                                              :script => 'THE END',
-                                              :instruction => 'THE END')
+      @call_center_step = CallCenterStep.new(:header => CallCenterWizard::THE_END,
+                                              :script => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{@event.id}\">here to Resolve</a> the event.",
+                                              :instruction => CallCenterWizard::THE_END)
     end
     render(:update) do |page|
       page << "accordion.step(#{@call_center_step.id});"

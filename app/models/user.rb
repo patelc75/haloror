@@ -391,7 +391,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
 	    CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
-      CallCenterWizard::THE_END                => "Please click <a href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
+      CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
     script = scripts[key]
     return script
@@ -404,7 +404,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
 	    CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
-      CallCenterWizard::THE_END                => "Please click <a href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
+      CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
     script = scripts[key]
     return script
