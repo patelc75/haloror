@@ -360,10 +360,14 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_MOBILE_PHONE => format_phone(caregiver.profile.cell_phone),
       CallCenterWizard::CAREGIVER_HOME_PHONE   => format_phone(caregiver.profile.home_phone),
       CallCenterWizard::CAREGIVER_WORK_PHONE   => format_phone(caregiver.profile.work_phone),
+      CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => "Is User OK?",
+      CallCenterWizard::CAREGIVER_AT_HOUSE     => "At House?",
+      CallCenterWizard::CAREGIVER_GO_TO_HOUSE  => "Can you go to house?",
+      CallCenterWizard::CAREGIVER_THANK_YOU    => "Thank You!",
       CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
-      CallCenterWizard::AGENT_CALL_911         => "",
-      CallCenterWizard::AMBULANCE_DISPATCHED   => "",
+      CallCenterWizard::AGENT_CALL_911         => "call 911",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => "dispatch ambulance",
       CallCenterWizard::THE_END                => "Resolve the Event"
       }
     instruction = instructions[key]
@@ -373,10 +377,11 @@ class User < ActiveRecord::Base
     instructions = { 
       CallCenterWizard::USER_HOME_PHONE        => format_phone(self.profile.home_phone),
       CallCenterWizard::USER_MOBILE_PHONE      => format_phone(self.profile.cell_phone),
+      CallCenterWizard::USER_OK                => "Is User OK?",
       CallCenterWizard::USER_AMBULANCE         => "Is Ambulance Needed?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
-      CallCenterWizard::AGENT_CALL_911         => "",
-      CallCenterWizard::AMBULANCE_DISPATCHED   => "",
+      CallCenterWizard::AGENT_CALL_911         => "call 911",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => "dispatch ambulance",
       CallCenterWizard::THE_END                => "Resolve the Event"
       }
     instruction = instructions[key]
@@ -387,6 +392,10 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script_cell(caregiver, "Caregiver"),      # 
       CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script_home(caregiver, "Caregiver"),
       CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script_work(caregiver, "Caregiver"),
+      CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => get_caregiver_responisibility_script(caregiver),
+      CallCenterWizard::CAREGIVER_AT_HOUSE     => get_caregiver_are_you_at_house_script(caregiver),
+      CallCenterWizard::CAREGIVER_GO_TO_HOUSE  => get_caregiver_go_to_house_script(caregiver),
+      CallCenterWizard::CAREGIVER_THANK_YOU    => get_caregiver_thank_you_script(caregiver),
       CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
@@ -401,6 +410,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script_home(self, "HaloUser"),
       CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script_cell(self, "HaloUser"),
       CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
+      CallCenterWizard::USER_OK                => get_user_ok_script(),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
 	    CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
@@ -409,7 +419,44 @@ class User < ActiveRecord::Base
     script = scripts[key]
     return script
   end 
-  
+  def get_caregiver_thank_you_script(caregiver)
+    info = <<-eos	
+  	<font color="white">Recite this script:</font><br>
+  	<i>Thank You!  We will be contacting the next caregiver.</i>
+  	<br>
+  	<br>
+  	Click yes or no to move onto the next step.
+  	eos
+  	return info
+  end
+  def get_user_ok_script()
+     info = <<-eos	
+  	<font color="white">Recite this script:</font><br>
+  	<i>Are you OK?</i>
+  	eos
+  	return info
+  end
+  def get_caregiver_responisibility_script(caregiver)
+     info = <<-eos	
+  	<font color="white">Recite this script:</font><br>
+  	<i>Do you accept responsibility for #{self.name}?</i>
+  	eos
+  	return info
+  end
+  def get_caregiver_are_you_at_house_script(caregiver)
+    info = <<-eos	
+  	<font color="white">Recite this script:</font><br>
+  	<i>Are you at #{self.name}'s house?</i>
+  	eos
+  	return info
+  end
+  def get_caregiver_go_to_house_script(caregiver)
+     info = <<-eos	
+  	<font color="white">Recite this script:</font><br>
+  	<i>Can you go to #{self.name}'s house to determine if #{self.name} is OK?</i>
+  	eos
+  	return info
+  end
   def get_able_to_reach_script_work(user, role)
     if user && user.profile && !user.profile.work_phone.blank?
       return get_able_to_reach_script(user.profile.work_phone, role, user.name, "Work")
@@ -437,6 +484,9 @@ class User < ActiveRecord::Base
   def get_able_to_reach_script(phone, role, name, place)
     info = <<-eos	
 	<div style="font-size: xx-large"><font color="white">Call #{role} <b>#{name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
+	<br><br>
+	<font color="white">Recite this script:</font><br>
+	<i>Can I speak to #{name}?</i>
 	<br><br>
 	Were you able to reach #{name} at #{place}?
 		eos

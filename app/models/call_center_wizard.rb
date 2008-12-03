@@ -12,7 +12,12 @@ class CallCenterWizard < ActiveRecord::Base
   CAREGIVER_WORK_PHONE  = "Caregiver Work Phone Answered?"
   CAREGIVER_MOBILE_PHONE = "Caregiver MOBILE Phone Answered?"
   USER_AMBULANCE             = "Ambulance Needed?"
-  AMBULANCE             = "NON-Ambulance Needed?"           
+  USER_OK               = "IS USER OK?"
+  AMBULANCE             = "NON-Ambulance Needed?" 
+  CAREGIVER_ACCEPT_RESPONSIBILITY     = "Caregiver, IS USER OK?" 
+  CAREGIVER_THANK_YOU   = "THANK YOU"
+  CAREGIVER_AT_HOUSE    = "At House?"
+  CAREGIVER_GO_TO_HOUSE = "Caregiver, go to user house?"         
   ON_BEHALF             = "Ask if they will call 911 on behalf of halouser?"
   AGENT_CALL_911        = "Agent Call 911" 
   AMBULANCE_DISPATCHED  = "Ambulance Dispatched"
@@ -54,12 +59,12 @@ class CallCenterWizard < ActiveRecord::Base
     next_step = nil
     next_steps = []
     self.call_center_steps_sorted.each do |step|
-      RAILS_DEFAULT_LOGGER.warn("#{step.question_key} #{step.user_id} #{key} #{user_id}")
+      # RAILS_DEFAULT_LOGGER.warn("#{step.question_key} #{step.user_id} #{key} #{user_id}")
       if step.question_key == key && step.user_id == user_id
         next_steps << step
       end
     end
-    
+    # RAILS_DEFAULT_LOGGER.warn("next_steps:  #{next_steps.inspect}")
     if !next_steps.blank?
       next_steps.each do |step|
         if step.answer.nil? 
@@ -80,6 +85,7 @@ class CallCenterWizard < ActiveRecord::Base
     #create first step
 	  create_call_center_step(USER_HOME_PHONE, user, operator, "Notes for User #{self.user.name}")
 	  create_call_center_step(USER_MOBILE_PHONE, user, operator)
+	  create_call_center_step(USER_OK, user, operator)
 	  create_call_center_step(USER_AMBULANCE, user, operator)
 	  create_call_center_step(ON_BEHALF, user, operator)    
 	  create_call_center_step(AGENT_CALL_911, user, operator)
@@ -91,6 +97,10 @@ class CallCenterWizard < ActiveRecord::Base
 		    create_caregiver_call_center_step(caregiver, CAREGIVER_MOBILE_PHONE, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
 		    create_caregiver_call_center_step(caregiver, CAREGIVER_HOME_PHONE, user, operator)
 		    create_caregiver_call_center_step(caregiver, CAREGIVER_WORK_PHONE, user, operator)
+    	  create_caregiver_call_center_step(caregiver, CAREGIVER_ACCEPT_RESPONSIBILITY, user, operator)
+    	  create_caregiver_call_center_step(caregiver, CAREGIVER_THANK_YOU, user, operator)
+    	  create_caregiver_call_center_step(caregiver, CAREGIVER_AT_HOUSE, user, operator)
+    	  create_caregiver_call_center_step(caregiver, CAREGIVER_GO_TO_HOUSE, user, operator)
     	  create_caregiver_call_center_step(caregiver, AMBULANCE, user, operator)
     	  create_caregiver_call_center_step(caregiver, ON_BEHALF, user, operator)
     	  create_caregiver_call_center_step(caregiver, AGENT_CALL_911, user, operator)
