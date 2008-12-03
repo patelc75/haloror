@@ -26,7 +26,13 @@ class Device < ActiveRecord::Base
   validates_length_of       :serial_number, :is => 10
   
   validates_uniqueness_of   :serial_number, :case_sensitive => false
-  
+  def device_type
+    if device_revision && device_revision.device_model && device_revision.device_model.device_type
+      return device_revision.device_model.device_type.device_type 
+    else
+      return ''
+    end
+  end
   def register_user
     if user = User.find_by_serial_number(self.serial_number)    
       self.user_id = user.id

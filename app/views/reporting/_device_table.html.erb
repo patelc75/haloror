@@ -34,7 +34,7 @@
 			<%=device[:serial_number]%>
 		</div>
 		<div class="col-150">
-			<%=device.device_revision.device_model.device_type.device_type if device.device_revision && device.device_revision.device_model && device.device_revision.device_model.device_type %>
+			<%=device.device_type %>
 		</div>
 		<div class="col-200">
 			<%=render :partial => 'battery_reading', :locals => {:device => device}%>
