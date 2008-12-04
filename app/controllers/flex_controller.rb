@@ -101,13 +101,15 @@ class FlexController < ApplicationController
       user_data[:status][:battery_level] = @default_battery_level_status
     end
     
+    now = Time.now
+
     # get last battery reading
-    unless user_data[:battery] = Battery.find(:first, :order => 'id desc', :conditions => "user_id = '#{user.id}'")
+    unless user_data[:battery] = Battery.find(:first, :order => 'timestamp desc', :conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'")
       user_data[:battery] = {}
     end
     
     # get events
-    user_data[:events] = Event.find(:all, :conditions => "user_id = '#{user.id}'", :order => 'timestamp desc', :limit => 10)
+    user_data[:events] = Event.find(:all, :conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'", :order => 'timestamp desc', :limit => 10)
     
     return user_data
   end
@@ -188,8 +190,9 @@ class FlexController < ApplicationController
   
   def get_last_reading_for_user(user)
     reading = {}
+    now = Time.now
     
-    if vitals = Vital.find(:first, :conditions => "user_id = #{user.id}", :order => 'timestamp desc')
+    if vitals = Vital.find(:first, :conditions => "user_id = #{user.id} AND timestamp <= '#{now.to_s}'", :order => 'timestamp desc')
       reading[:heartrate] = vitals[:heartrate]
       reading[:timestamp] = vitals[:timestamp]
       if vitals.hrv
@@ -204,15 +207,15 @@ class FlexController < ApplicationController
       reading[:adl] = vitals.adl
     end
     
-    if battery = Battery.find(:first, :conditions => "user_id = #{user.id}", :order => 'timestamp desc')
+    if battery = Battery.find(:first, :conditions => "user_id = #{user.id} AND timestamp <= '#{now.to_s}'", :order => 'timestamp desc')
       reading[:battery] = battery.percentage
     end
     
-    if skin_temp = SkinTemp.find(:first, :conditions => "user_id = #{user.id}", :order => 'timestamp desc')
+    if skin_temp = SkinTemp.find(:first, :conditions => "user_id = #{user.id} AND timestamp <= '#{now.to_s}'", :order => 'timestamp desc')
       reading[:skin_temp] = skin_temp.skin_temp
     end
     
-    if steps = Step.find(:first, :conditions => "user_id = #{user.id}", :order => 'begin_timestamp desc')
+    if steps = Step.find(:first, :conditions => "user_id = #{user.id} AND begin_timestamp <= '#{now.to_s}'", :order => 'begin_timestamp desc')
       reading[:steps] = steps.steps
     end
     
@@ -221,7 +224,7 @@ class FlexController < ApplicationController
   
   def get_status(kind, user)
     event = nil
-    event_id_array = Event.connection.select_all("select max(events.id) as id from events inner join alert_types on events.event_type = alert_types.alert_type where  events.user_id = #{user.id} AND alert_types.id in (select alert_type_id from alert_groups_alert_types where alert_group_id = (select alert_groups.id from alert_groups where group_type = '#{kind}'))")
+    event_id_array = Event.connection.select_all("select max(events.id) as id from events inner join alert_types on events.event_type = alert_types.alert_type where events.timestamp <= '#{Time.now.to_s}' AND events.user_id = #{user.id} AND alert_types.id in (select alert_type_id from alert_groups_alert_types where alert_group_id = (select alert_groups.id from alert_groups where group_type = '#{kind}'))")
     if event_id_array.size > 0
       id_hash = event_id_array[0] 
       event_id = id_hash["id"]
