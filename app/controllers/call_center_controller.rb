@@ -100,6 +100,7 @@ class CallCenterController < ApplicationController
       page['notes_text'].replace_html "#{@call_center_step.notes}<br /><a href=\"#\" onclick=\"$('notes_text').hide();$('notes').show();\">Edit Notes</a>"
       page['notes'].hide();
       page['notes_text'].show();
+      page['notes_' + @call_center_step.id.to_s].replace_html "<div>" + @call_center_step.notes + "</div>"
     end
   end
   def resolved

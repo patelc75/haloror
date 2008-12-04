@@ -74,14 +74,22 @@ div.accordion-content{
 <% if current_user.id == action.user_id %>
 <div id="call_center">
 <div id="call_center-accordion" class="accordion">
-    <% @call_center_wizard.call_center_steps_sorted.each do |step|  %>
-      <% if step.is_header?  %>
-          <div class="accordion-toggle"><%= step.header %></div>
+    <%  prev_header = nil
+        prev_header2 = nil
+        @call_center_wizard.call_center_steps_sorted.each do |step|  %>
+      <% header = step.header
+         if prev_header.nil? || prev_header != header
+           prev_header = header %>
+          <div class="accordion-toggle"><%= header %></div>
           <div class="accordion-content">
-          Notes:  <div id="notes_<%= step.id %>"><%= step.notes %></div>
-          </div>
-      <% end %>
-    <% end %>
+       <% @call_center_wizard.call_center_steps_sorted.each do |step2| 
+            if step2.header == header %>
+              <div id="notes_<%= step2.id %>"><div><%= step2.notes %></div></div>
+            <% end %>
+          <% end %> 
+         </div>     
+         <% end %>
+        <% end %>
 </div>
 <div align="center" id="call_center-wizard">
   <button style="font-size: xx-large;" onclick="start_wizard(); new Ajax.Updater('call_center-wizard', '/call_center/script_wizard_start/?call_center_wizard_id=<%=@call_center_wizard.id %>')">Start Call</button>
@@ -89,8 +97,13 @@ div.accordion-content{
 </div>
 <%
 step_ids = [] 
-@call_center_session.call_center_steps.each do |step|
-  step_ids << step.id if step.is_header?
+prev_header = nil
+@call_center_wizard.call_center_steps_sorted.each do |step|  
+  header = step.header
+  if prev_header.nil? || prev_header != header
+     prev_header = header 
+     step_ids << step.id
+  end
 end  %>
 <script language="javascript">
 var accordion;
