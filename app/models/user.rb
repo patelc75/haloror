@@ -289,7 +289,14 @@ class User < ActiveRecord::Base
     end
     return false
   end
-  
+  def is_sales_of_any?(groups)
+    groups.each do |group|
+      if self.is_sales_of? group
+        return true
+      end
+    end
+    return false
+  end
   def is_operator_of_any?(groups)
     groups.each do |group|
       if self.is_operator_of? group

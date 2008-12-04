@@ -177,9 +177,20 @@ class InstallsController < ApplicationController
                          :html => { :method => :get, :complete => '' } ) 
       page['phone_launcher'].replace_html phone_launch
     end
-  end
-  
+  end  
   def phone_prompt_start
+
+  end
+  def led_prompt_init
+    @user = User.find(params[:user_id])
+    render(:update) do |page|
+      phone_launch = launch_remote_redbox(:url =>  {  :action => 'led_prompt_start', :controller => 'installs', 
+                                     :user_id => @user.id }, 
+                         :html => { :method => :get, :complete => '' } ) 
+      page['phone_launcher'].replace_html phone_launch
+    end
+  end
+  def led_prompt_start
     
   end
   
@@ -197,7 +208,7 @@ class InstallsController < ApplicationController
       step = create_self_test_step(REGISTRATION_TIMEOUT_ID)
       @self_test_step = step
       @self_test_step_id = step.id
-      message = 'Registration timed out.  Please ensure that the LED labeled "WAN" on the Gateway is green and then restart the wizard.'
+      message = 'Registration timed out.  <br><br>Press the panic button to take strap out of low power mode.  <br><br>Please ensure that the LED labeled "WAN" on the Gateway is green and then restart the wizard.'
       render_update_timeout('registered_div_id', message, 'updateCheckRegistration', 'install_wizard_launch')
     else
       render_update_message('registered_div_id', message, :register)
@@ -314,7 +325,7 @@ class InstallsController < ApplicationController
     @failure_notice = params[:message]
     @self_test_step_id = params[:self_test_step_id]
     @self_test_result_id = params[:self_test_result_id]
-    @self_test_result = SelfTestResult.find(@self_test_result_id)
+    @self_test_result = SelfTestResult.find(@self_test_result_id) if !@self_test_result_id.blank?
     clear_session_data
   end
   
@@ -680,7 +691,11 @@ class InstallsController < ApplicationController
   end
   
   def render_update_timeout(message_id, message, false_id, launch_id)
-    redbox = new_remote_redbox('failure_notice', 'installs', message, @self_test_step_id, @self_test.id)
+    if @self_test
+      redbox = new_remote_redbox('failure_notice', 'installs', message, @self_test_step_id, @self_test.id)
+    else
+      redbox = new_remote_redbox('failure_notice', 'installs', message, @self_test_step_id)
+    end
     render(:update) do |page|
       page.call(false_id, false)
       page.replace_html message_id, message
@@ -689,7 +704,11 @@ class InstallsController < ApplicationController
   end
   
   def render_update_failure(message_id, message, false_id, launch_id)
-    redbox = new_remote_redbox('failure_notice', 'installs', message, @self_test_step_id, @self_test.id)
+    if @self_test
+      redbox = new_remote_redbox('failure_notice', 'installs', message, @self_test_step_id, @self_test.id)
+    else
+      redbox = new_remote_redbox('failure_notice', 'installs', message, @self_test_step_id)
+    end
     render(:update) do |page|
       page.call(false_id, false)
       page.replace_html message_id, message

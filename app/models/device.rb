@@ -44,7 +44,7 @@ class Device < ActiveRecord::Base
   def set_chest_strap_type
     self.check_serial_number
     if(self.serial_number[0].chr == 'H' and self.serial_number[1].chr == '1')
-      self.device_type = DeviceType.find(2)
+      self.device_revision = find_device_revision(self)
     else
       raise "Invalid serial number for Halo Chest Strap"
     end
@@ -52,7 +52,7 @@ class Device < ActiveRecord::Base
   def set_gateway_type
     self.check_serial_number
     if(self.serial_number[0].chr == 'H' and self.serial_number[1].chr == '2')
-      self.device_type = DeviceType.find(1)
+      self.device_revision = find_device_revision(self)
     else
       raise "Invalid serial number for Halo Gateway"
     end
@@ -60,6 +60,18 @@ class Device < ActiveRecord::Base
   def check_serial_number
      if(self.serial_number == nil || self.serial_number.length != 10)
       raise "Invalid serial number"
+    end
+  end
+  
+  def find_device_revision(device)
+    if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
+      #chest strap
+      return DeviceRevision.find(:first, :order => "device_types.id desc", :include => [{:device_model => :device_type}], :conditions => "device_types.device_type = 'Chest Strap'")
+    elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
+      #gateway
+      return DeviceRevision.find(:first, :order => "device_types.id desc", :include => [{:device_model => :device_type}], :conditions => "device_types.device_type = 'Gateway'")
+    else
+      return nil
     end
   end
   def set_type
