@@ -67,8 +67,12 @@ class CallCenterController < ApplicationController
     @call_center_session =  @call_center_wizard.call_center_session
     @call_center_step = CallCenterStep.find(params[:call_center_step_id])
     @call_center_step.answer = nil
+    @call_center_step.notes = nil
     @call_center_step.save!
     render(:update) do |page|
+      page['instruction_' + @call_center_step.id.to_s].replace_html ''
+      page['answer_' + @call_center_step.id.to_s].replace_html ''
+      page['notes_' + @call_center_step.id.to_s].replace_html ''
       page << "accordion.step(#{@call_center_step.id});"
       page['call_center-wizard'].replace_html render(:partial => 'script', :layout => false)
     end
@@ -84,7 +88,11 @@ class CallCenterController < ApplicationController
                                               :script => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{@event.id}\">here to Resolve</a> the event.",
                                               :instruction => CallCenterWizard::THE_END)
     end
+    previous_step = CallCenterStep.find(params[:call_center_step_id])
+    ans = previous_step.answer ? 'Yes' : 'No'
     render(:update) do |page|
+      page['instruction_' + previous_step.id.to_s].replace_html previous_step.instruction
+      page['answer_' + previous_step.id.to_s].replace_html ans
       page << "accordion.step(#{@call_center_step.id});"
       page['call_center-wizard'].replace_html render(:partial => 'script', :layout => false)
     end
