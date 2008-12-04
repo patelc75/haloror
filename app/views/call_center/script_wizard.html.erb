@@ -82,6 +82,10 @@ div.accordion-content{
            prev_header = header %>
           <div class="accordion-toggle"><%= header %></div>
           <div class="accordion-content">
+          <% user = User.find(step.user_id) 
+             if !user.has_phone? %>
+               No Phone Number in Profile
+          <% else  %>
        <% @call_center_wizard.call_center_steps_sorted.each do |step2| 
             if step2.header == header %>
               <div id="instruction_<%= step2.id %>"><%= step2.instruction if !step2.answer.blank? %></div>
@@ -96,6 +100,7 @@ div.accordion-content{
             
             <% end %>
           <% end %> 
+          <% end %>
          </div>     
          <% end %>
         <% end %>

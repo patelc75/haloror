@@ -31,22 +31,34 @@ var Accordion = Class.create({
         this.checkMaxHeight();
         this.initialHide();
         this.attachInitialMaxHeight();
-
+				this.current_step_id = this.step_ids[0];
         var clickHandler =  this.clickHandler.bindAsEventListener(this);
         this.accordion.observe('click', clickHandler);
     },
 		start: function(){
-			this.index = 0;
-			this.contents[this.index].previous('div.'+this.options.toggleClass).addClassName(this.options.toggleActive);
+			// this.index = 0;
+			// 			this.contents[this.index].previous('div.'+this.options.toggleClass).addClassName(this.options.toggleActive);
+			// 			this.expand_t(this.contents[this.index]);
+			this.step(this.step_ids[0]);
+		},
+		get_current_step_id: function(){
+			return this.current_step_id;
 		},
 		step: function(step_id){
+			var found = false;
 			for(var i = 0; i < this.step_ids.length; i++){
 				if(this.step_ids[i] == step_id)
 				{
+					found = true;
+					this.current_step_id = step_id;
 					this.contents[this.index].previous('div.'+this.options.toggleClass).removeClassName(this.options.toggleActive);
 					this.index = i;
 					this.contents[this.index].previous('div.'+this.options.toggleClass).addClassName(this.options.toggleActive);
+					this.expand_t(this.contents[this.index]);
 				}
+			}
+			if(!found){
+				this.step(this.current_step_id);
 			}
 		},
 		
@@ -70,10 +82,10 @@ var Accordion = Class.create({
 		},
 		expand_t: function(to_expand){
 			this.toExpand = to_expand;
-      if(this.current != this.toExpand){
+      // if(this.current != this.toExpand){
 				  this.toExpand.show();
           this.animate();
-      }
+      // }
 		},
     expand: function(el) {
         this.toExpand = el.next('div.'+this.options.contentClass);

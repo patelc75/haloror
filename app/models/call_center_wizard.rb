@@ -93,7 +93,6 @@ class CallCenterWizard < ActiveRecord::Base
 	  #create caregiver steps
     caregivers = self.user.active_caregivers
 		caregivers.each do |caregiver|
-		  if(caregiver.has_phone?)
 		    create_caregiver_call_center_step(caregiver, CAREGIVER_MOBILE_PHONE, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
 		    create_caregiver_call_center_step(caregiver, CAREGIVER_HOME_PHONE, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
 		    create_caregiver_call_center_step(caregiver, CAREGIVER_WORK_PHONE, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
@@ -106,11 +105,10 @@ class CallCenterWizard < ActiveRecord::Base
     	  create_caregiver_call_center_step(caregiver, AGENT_CALL_911, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
     	  create_caregiver_call_center_step(caregiver, AMBULANCE_DISPATCHED, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
     	  create_caregiver_call_center_step(caregiver, THE_END, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
-	    end
 	  end
 	
 	  
-	  create_call_center_step(THE_END, user, operator, THE_END)
+	  create_call_center_step(THE_END, user, operator)
 	  
   end
   def create_caregiver_call_center_step(caregiver, key, user, operator, header=nil)
