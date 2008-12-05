@@ -13,7 +13,7 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   def device_event_caregiver(event)
-    setup_message(event.to_s, event.email_body + "\n\nYou received this email because you’re a caregiver of #{event.user.name}")
+    setup_message(event.to_s, event.email_body + "\n\nYou received this email because you’re a Halo User or caregiver of #{event.user.name}")
     setup_caregivers(event.user, event, :recepients)
     self.priority  = event.priority
   end
@@ -27,7 +27,7 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   def call_center_caregiver(event_action)
-    setup_message(event_action.to_s, event_action.email_body + "\n\nYou received this email because you’re a caregiver of #{event_action.event.user.name}")
+    setup_message(event_action.to_s, event_action.email_body + "\n\nYou received this email because you’re a Halo User or caregiver of #{event_action.event.user.name}")
     setup_caregivers(event_action.event.user, event_action.event.event, :recepients)
     self.priority  = event_action.priority
   end
