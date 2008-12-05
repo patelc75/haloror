@@ -1,7 +1,7 @@
 require 'digest/sha1'
 class User < ActiveRecord::Base
   #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
-                
+  
   acts_as_authorized_user
   acts_as_authorizable
   has_many :notes
@@ -30,7 +30,7 @@ class User < ActiveRecord::Base
   
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
-
+  
   # Virtual attribute for the unencrypted password
   cattr_accessor :current_user #stored in memory instead of table
   attr_accessor :password
@@ -76,51 +76,51 @@ class User < ActiveRecord::Base
     # the existence of an activation code means they have not activated yet
     activation_code.nil?
   end
-
+  
   # Returns true if the user has just been activated.
   def recently_activated?
     @activated
   end
-
+  
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
   def self.authenticate(login, password)
     u = find :first, :conditions => ['login = ? and activated_at IS NOT NULL', login] # need to get the salt
     u && u.authenticated?(password) ? u : nil
   end
-
+  
   # Encrypts some data with the salt.
   def self.encrypt(password, salt)
     Digest::SHA1.hexdigest("--#{salt}--#{password}--")
   end
-
+  
   # Encrypts the password with the user salt
   def encrypt(password)
     self.class.encrypt(password, salt)
   end
-
+  
   def authenticated?(password)
     crypted_password == encrypt(password)
   end
-
+  
   def remember_token?
     remember_token_expires_at && Time.now.utc < remember_token_expires_at 
   end
-
+  
   # These create and unset the fields required for remembering users between browser closes
   def remember_me
     remember_me_for 2.weeks
   end
-
+  
   def remember_me_for(time)
     remember_me_until time.from_now.utc
   end
-
+  
   def remember_me_until(time)
     self.remember_token_expires_at = time
     self.remember_token            = encrypt("#{email}--#{remember_token_expires_at}")
     save(false)
   end
-
+  
   def forget_me
     self.remember_token_expires_at = nil
     self.remember_token            = nil
@@ -187,7 +187,7 @@ class User < ActiveRecord::Base
           cg_array << caregiver
         end
       end
-        cg_array.sort! do |a,b| a[:position] <=> b[:position] end
+      cg_array.sort! do |a,b| a[:position] <=> b[:position] end
       return cg_array
     else
       return []
@@ -376,7 +376,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::AGENT_CALL_911         => "call 911",
       CallCenterWizard::AMBULANCE_DISPATCHED   => "dispatch ambulance",
       CallCenterWizard::THE_END                => "Resolve the Event"
-      }
+    }
     instruction = instructions[key]
     return instruction
   end
@@ -390,7 +390,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::AGENT_CALL_911         => "call 911",
       CallCenterWizard::AMBULANCE_DISPATCHED   => "dispatch ambulance",
       CallCenterWizard::THE_END                => "Resolve the Event"
-      }
+    }
     instruction = instructions[key]
     return instruction
   end
@@ -406,7 +406,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
-	    CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
     script = scripts[key]
@@ -417,10 +417,10 @@ class User < ActiveRecord::Base
       CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script_home(self, "HaloUser"),
       CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script_cell(self, "HaloUser"),
       CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
-      CallCenterWizard::USER_OK                => get_user_ok_script(),
+      CallCenterWizard::USER_OK                => get_user_ok_script(operator, event),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
-	    CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
     script = scripts[key]
@@ -434,35 +434,35 @@ class User < ActiveRecord::Base
   	<br>
   	Click yes or no to move onto the next step.
   	eos
-  	return info
+    return info
   end
-  def get_user_ok_script()
-     info = <<-eos	
+  def get_user_ok_script(operator,event)
+    info = <<-eos	
   	<font color="white">Recite this script:</font><br>
   	<i>"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type}. Would you like us to call your caregivers to help you?"
   	eos
-  	return info
+    return info
   end
   def get_caregiver_responisibility_script(caregiver, event)
-     info = <<-eos	
+    info = <<-eos	
   	<font color="white">Recite this script:</font><br>
   	<i>Do you accept responsibility for #{self.name}'s #{event.event_type}?</i>
   	eos
-  	return info
+    return info
   end
   def get_caregiver_are_you_at_house_script(caregiver)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
   	<i>Are you at #{self.name}'s house?</i>
   	eos
-  	return info
+    return info
   end
   def get_caregiver_go_to_house_script(caregiver)
-     info = <<-eos	
+    info = <<-eos	
   	<font color="white">Recite this script:</font><br>
   	<i>Can you go to #{self.name}'s house to determine if #{self.name} is OK?</i>
   	eos
-  	return info
+    return info
   end
   def get_able_to_reach_script_work(user, role)
     if user && user.profile && !user.profile.work_phone.blank?
@@ -487,7 +487,7 @@ class User < ActiveRecord::Base
       return nil
     end
   end
-    
+  
   def get_able_to_reach_script(phone, role, name, place)
     info = <<-eos	
 	<div style="font-size: xx-large"><font color="white">Call #{role} <b>#{name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
@@ -497,7 +497,7 @@ class User < ActiveRecord::Base
 	<br><br>
 	Were you able to reach #{name} at #{place}?
 		eos
-	return info
+    return info
   end
   
   def get_user_script(operator, event, phone)
@@ -506,7 +506,7 @@ class User < ActiveRecord::Base
 		<i>"Would you like us to dispatch an ambulance for you?"
 		</i>
 		eos
-	return info
+    return info
   end
   
   def get_caregiver_script(caregiver, operator, event)
@@ -515,16 +515,16 @@ class User < ActiveRecord::Base
 		<i>"Hello #{caregiver.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} by  #{self.name}. Can you determine if an ambulance is needed for #{self.name}?"
 		</i>
 		eos
-	return info
+    return info
   end
   
   def get_on_behalf_script(name)
-      info = <<-eos
+    info = <<-eos
 		<font color="white">Recite this script:</font><br>
 		<i>"When you arrive at the home, can you please call 911 on behalf of #{name}? After that, can you please press the reset button on #{name}'s gateway device. It will be beeping loudly."
 		</i>
 		eos
-	return info
+    return info
   end
   
   def get_ambulance_script(operator, event)
@@ -542,18 +542,17 @@ class User < ActiveRecord::Base
 		<br><br>
 		Was the ambulance dispatched properly?
 		eos
-		return info
+    return info
   end
   def vitals_text
     vital = Vital.find(:first, :conditions => "user_id = #{self.id}", :order => 'timestamp desc')
     skintemp = SkinTemp.find(:first, :conditions => "user_id = #{self.id}", :order => 'timestamp desc')
-    if vital && skintemp &&
-      vital.timestamp && skintemp.timestamp && 
-      ((vital.timestamp - skintemp.timestamp).abs > 1)
-      return "\"#{self.name}'s vitals are:  heartrate: #{vital.heartrate} (as of #{vital.timestamp.to_s})  current temp:  #{skintemp} (as of #{skintemp.timestamp})\""
+    if vital && skintemp &&  vital.timestamp && skintemp.timestamp
+      if  ((vital.timestamp - skintemp.timestamp).abs > 1)
+        return "\"#{self.name}'s vitals are:  heartrate: #{vital.heartrate} (as of #{vital.timestamp.to_s})  current temp:  #{skintemp} (as of #{skintemp.timestamp})\""
+      end
+      return "\"#{self.name}'s vitals are:  heartrate: #{vital.heartrate}  current temp:  #{skintemp} (as of #{vital.timestamp})\""
     end
-    return "\"#{self.name}'s vitals are:  heartrate: #{vital.heartrate}  current temp:  #{skintemp} (as of #{vital.timestamp})\""
-    
   end
   def format_phone(number)
     number.blank? ? "N/A" : number.strip 
@@ -625,7 +624,7 @@ class User < ActiveRecord::Base
     self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
     self.crypted_password = encrypt(password)
   end
-    
+  
   # returns true if password is a required field
   def password_required?
     if(self.is_new_caregiver)
@@ -647,4 +646,3 @@ class User < ActiveRecord::Base
   
   
 end
-
