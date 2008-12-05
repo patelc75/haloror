@@ -20,7 +20,7 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def device_event_operator(event)
     setup_caregivers(event.user, event, :caregiver_info)
-    setup_message(event.to_s, @caregiver_info + "\n\nhttps://#{ServerInstance.current_host}/call_center/accept/#{event_action.event.id}" +)
+    setup_message(event.to_s, @caregiver_info + "\n\nhttps://#{ServerInstance.current_host}/call_center/accept/#{event_action.event.id}")
     setup_operators(event, :recepients, :include_phone_call) 
     setup_emergency_group(event_action.event.event, :recepients)
     self.priority  = event.priority
