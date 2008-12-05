@@ -17,7 +17,8 @@ class CallCenterWizard < ActiveRecord::Base
   CAREGIVER_ACCEPT_RESPONSIBILITY     = "Caregiver, IS USER OK?" 
   CAREGIVER_THANK_YOU   = "THANK YOU"
   CAREGIVER_AT_HOUSE    = "At House?"
-  CAREGIVER_GO_TO_HOUSE = "Caregiver, go to user house?"         
+  CAREGIVER_GO_TO_HOUSE = "Caregiver, go to user house?" 
+  ON_BEHALF_GO_TO_HOUSE = "Ask if they will call 911 from user's house on behalf of halouser?"        
   ON_BEHALF             = "Ask if they will call 911 on behalf of halouser?"
   AGENT_CALL_911        = "Agent Call 911" 
   AMBULANCE_DISPATCHED  = "Ambulance Dispatched"
@@ -100,6 +101,7 @@ class CallCenterWizard < ActiveRecord::Base
     	  create_caregiver_call_center_step(caregiver, CAREGIVER_THANK_YOU, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
     	  create_caregiver_call_center_step(caregiver, CAREGIVER_AT_HOUSE, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
     	  create_caregiver_call_center_step(caregiver, CAREGIVER_GO_TO_HOUSE, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
+    	  create_caregiver_call_center_step(caregiver, ON_BEHALF_GO_TO_HOUSE, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
     	  create_caregiver_call_center_step(caregiver, AMBULANCE, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
     	  create_caregiver_call_center_step(caregiver, ON_BEHALF, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
     	  create_caregiver_call_center_step(caregiver, AGENT_CALL_911, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")

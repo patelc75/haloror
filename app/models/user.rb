@@ -370,6 +370,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => "Is User OK?",
       CallCenterWizard::CAREGIVER_AT_HOUSE     => "At House?",
       CallCenterWizard::CAREGIVER_GO_TO_HOUSE  => "Can you go to house?",
+      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE  => "At house",
       CallCenterWizard::CAREGIVER_THANK_YOU    => "Thank You!",
       CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
@@ -402,6 +403,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => get_caregiver_responisibility_script(caregiver, event),
       CallCenterWizard::CAREGIVER_AT_HOUSE     => get_caregiver_are_you_at_house_script(caregiver),
       CallCenterWizard::CAREGIVER_GO_TO_HOUSE  => get_caregiver_go_to_house_script(caregiver),
+      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE  => get_on_behalf_script_orig(self.name),
       CallCenterWizard::CAREGIVER_THANK_YOU    => get_caregiver_thank_you_script(caregiver),
       CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
@@ -533,7 +535,7 @@ class User < ActiveRecord::Base
   
   def get_ambulance_script(operator, event)
     info = <<-eos
-		<div style="font-size: xx-large"><b><font color="white">Call Monmouth County Emergency Medical Services at 732-555-1212</font></b></div>
+		<div style="font-size: xx-large"><b><font color="white">Call 911 or local emergency service</font></b></div>
 		<br><br>
 		<font color="white">Recite this script:</font><br><br>
 		<i>"My name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} for #{self.name} and have the approval to disptach an ambulance. Can you dispatch an amublance to<br>
