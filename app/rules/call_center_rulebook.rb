@@ -15,7 +15,7 @@ class CallCenterRulebook < Ruleby::Rulebook
     create_call_center_step_rule(user_id, CallCenterWizard::USER_HOME_PHONE,      false,  CallCenterWizard::USER_MOBILE_PHONE,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::USER_MOBILE_PHONE,    true,   CallCenterWizard::USER_OK,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::USER_MOBILE_PHONE,    false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver_id)
-    create_call_center_step_rule(user_id, CallCenterWizard::USER_OK,              true,   CallCenterWizard::THE_END, user_id)
+    create_call_center_step_rule(user_id, CallCenterWizard::USER_OK,              true,   CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver_id)
     create_call_center_step_rule(user_id, CallCenterWizard::USER_OK,              false,  CallCenterWizard::USER_AMBULANCE, user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::USER_AMBULANCE,       true,   CallCenterWizard::AGENT_CALL_911,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::USER_AMBULANCE,       false,  CallCenterWizard::THE_END,user_id)
