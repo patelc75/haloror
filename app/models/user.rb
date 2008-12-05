@@ -399,7 +399,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script_cell(caregiver, "Caregiver"),      # 
       CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script_home(caregiver, "Caregiver"),
       CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script_work(caregiver, "Caregiver"),
-      CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => get_caregiver_responisibility_script(caregiver),
+      CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => get_caregiver_responisibility_script(caregiver, event),
       CallCenterWizard::CAREGIVER_AT_HOUSE     => get_caregiver_are_you_at_house_script(caregiver),
       CallCenterWizard::CAREGIVER_GO_TO_HOUSE  => get_caregiver_go_to_house_script(caregiver),
       CallCenterWizard::CAREGIVER_THANK_YOU    => get_caregiver_thank_you_script(caregiver),
@@ -429,7 +429,7 @@ class User < ActiveRecord::Base
   def get_caregiver_thank_you_script(caregiver)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i>Thank You!  We will be contacting the next caregiver.</i>
+  	<i>"Thank You!  We will be contacting the next caregiver."</i>
   	<br>
   	<br>
   	Click yes or no to move onto the next step.
@@ -439,14 +439,14 @@ class User < ActiveRecord::Base
   def get_user_ok_script()
      info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i>Are you OK?</i>
+  	<i>"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type}. Would you like us to call your caregivers to help you?"
   	eos
   	return info
   end
-  def get_caregiver_responisibility_script(caregiver)
+  def get_caregiver_responisibility_script(caregiver, event)
      info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i>Do you accept responsibility for #{self.name}?</i>
+  	<i>Do you accept responsibility for #{self.name}'s #{event.event_type}?</i>
   	eos
   	return info
   end
@@ -493,7 +493,7 @@ class User < ActiveRecord::Base
 	<div style="font-size: xx-large"><font color="white">Call #{role} <b>#{name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
 	<br><br>
 	<font color="white">Recite this script:</font><br>
-	<i>Can I speak to #{name}?</i>
+	<i>"Can I speak to #{name}?"</i>
 	<br><br>
 	Were you able to reach #{name} at #{place}?
 		eos
@@ -503,7 +503,7 @@ class User < ActiveRecord::Base
   def get_user_script(operator, event, phone)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i>"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type}. Would you like us to dispatch an ambulance?"
+		<i>"Would you like us to dispatch an ambulance for you?"
 		</i>
 		eos
 	return info
