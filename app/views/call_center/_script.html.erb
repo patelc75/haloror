@@ -3,9 +3,13 @@
 <br />
 <br />
 <% unless /Resolve/ =~ @call_center_step.script  %>
+  <% if @call_center_step.question_key != 'THANK YOU' %>
   <button style="font-size: x-large;" onclick="step('Yes',<%=@call_center_step.id %>);">Yes</button>
 &nbsp;&nbsp;--&nbsp;&nbsp;
   <button style="font-size: x-large;" onclick="step('No',<%=@call_center_step.id %>);">No</button>
+  <% else %>
+  <button style="font-size: x-large;" onclick="step('Yes',<%=@call_center_step.id %>);">Continue</button>
+  <% end %>
 <br />
 <br />
 <% end %>

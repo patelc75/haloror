@@ -73,6 +73,7 @@ class CallCenterController < ApplicationController
       page['instruction_' + @call_center_step.id.to_s].replace_html ''
       page['answer_' + @call_center_step.id.to_s].replace_html ''
       page['notes_' + @call_center_step.id.to_s].replace_html ''
+      page['breaker_' + @call_center_step.id.to_s].replace_html ''
       page << "accordion.step(#{@call_center_step.id});"
       page['call_center-wizard'].replace_html render(:partial => 'script', :layout => false)
     end
@@ -93,6 +94,7 @@ class CallCenterController < ApplicationController
     render(:update) do |page|
       page['instruction_' + previous_step.id.to_s].replace_html previous_step.instruction
       page['answer_' + previous_step.id.to_s].replace_html ans
+      page['breaker_' + @call_center_step.id.to_s].replace_html "<hr />"
       page << "accordion.step(#{@call_center_step.id});"
       page['call_center-wizard'].replace_html render(:partial => 'script', :layout => false)
     end
@@ -109,6 +111,7 @@ class CallCenterController < ApplicationController
       page['notes'].hide();
       page['notes_text'].show();
       page['notes_' + @call_center_step.id.to_s].replace_html "<div>" + @call_center_step.notes + "</div>"
+      page['breaker_' + @call_center_step.id.to_s].replace_html "<hr />"
     end
   end
   def resolved

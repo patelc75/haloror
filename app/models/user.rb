@@ -429,10 +429,7 @@ class User < ActiveRecord::Base
   def get_caregiver_thank_you_script(caregiver)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i>"Thank You!  We will be contacting the next caregiver."</i>
-  	<br>
-  	<br>
-  	Click yes or no to move onto the next step.
+  	<i>"Thank You.  We will be contacting the next caregiver.  Good Bye."</i>
   	eos
     return info
   end
@@ -512,13 +509,20 @@ class User < ActiveRecord::Base
   def get_caregiver_script(caregiver, operator, event)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i>"Hello #{caregiver.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} by  #{self.name}. Can you determine if an ambulance is needed for #{self.name}?"
+		<i>"Is an ambulance is needed for #{self.name}?"
 		</i>
 		eos
     return info
   end
-  
   def get_on_behalf_script(name)
+    info = <<-eos
+		<font color="white">Recite this script:</font><br>
+		<i>"Can you call 911 on behalf of #{name}?
+		</i>
+		eos
+    return info
+  end
+  def get_on_behalf_script_orig(name)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
 		<i>"When you arrive at the home, can you please call 911 on behalf of #{name}? After that, can you please press the reset button on #{name}'s gateway device. It will be beeping loudly."
