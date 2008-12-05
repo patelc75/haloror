@@ -81,6 +81,7 @@ class ApplicationController < ActionController::Base
   end
   def authenticate
     unless logged_in?
+      store_location
       return redirect_to('/login')
     end
     true
