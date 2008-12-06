@@ -27,6 +27,10 @@
 	<p>
 		<%=f.radio_button :cmd_type, 'mgmt_poll_rate'%> Slow Management Poll Rate <%= f.text_field :param1 %>
 	</p>
+	<p>
+		<%=f.radio_button :cmd_type, 'unregister'%> Unregister
+	</p>
+
 	<p>&nbsp;</p>
 	<p>Enter a range of device ids (min-max) -or- ids separated by commas:</p>
 	<%=f.text_field 'ids'%>
