@@ -1,9 +1,9 @@
 <!-- See http://corelib.rubyonrails.org/classes/CGI.html for more environment variables -->
-Date: <code><%= `date` %></code><br>
-<br>
-
-<b>Network</b><br>
 UNIX hostname: <code><%= `hostname` %></code><br>
+Date: <code><%= `date` %></code><br>
+SVN Revision: <code><%= `cd haloror; svn info` %></code><br>
+<br>
+<b>Network</b><br>
 SERVER_ADDR: <code><%= request.env["SERVER_ADDR"].to_s %></code> <br>
 HOST_NAME : <code><%= request.host %></code> <br>
 REMOTE_ADDR: <code><%= request.env["REMOTE_ADDR"].to_s %></code> <br>
