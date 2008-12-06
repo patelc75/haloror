@@ -1,4 +1,6 @@
 <!-- See http://corelib.rubyonrails.org/classes/CGI.html for more environment variables -->
+Date: <code><%= `date` %></code><br>
+
 <b>Network</b><br>
 UNIX hostname: <code><%= `hostname` %></code><br>
 SERVER_ADDR: <code><%= request.env["SERVER_ADDR"].to_s %></code> <br>
