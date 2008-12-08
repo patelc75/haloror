@@ -304,7 +304,7 @@ class InstallsController < ApplicationController
         session[:progress_count][:phone] = nil
         step = create_self_test_step(SELF_TEST_PHONE_TIMEOUT_ID)
         @self_test_step_id = step.id
-        message = "Self Test Phone timeout.  Please use phone to check for dial tone and plug phone line in to gateway."
+        message = "Self Test Phone timeout.  Please use phone to check for dial tone and plug phone line in to gateway.  Either restart the wizard or you can agree to disable the dial backup feature and continue by clicking <a href=\"javascript:continueWithoutPhone(" + @self_test_step_id.to_s + ");\" >here</a>."
         clear_session_data
         render_update_timeout('phone_div_id', message, 'updateCheckSelfTestPhone', 'install_wizard_launch')
       elsif session[:halo_check_phone_self_test_result] && !session[:halo_check_phone_self_test_result].result
