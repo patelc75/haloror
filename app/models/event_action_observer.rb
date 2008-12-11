@@ -1,10 +1,10 @@
-require 'resourceful'
+# require 'resourceful'
 class EventActionObserver < ActiveRecord::Observer
   def before_save(event_action)
     if event_action[:send_email] != false
       email = CriticalMailer.deliver_call_center_operator(event_action)
       if event_action.description == "accepted"
-        send_to_backup(event_action)
+        # send_to_backup(event_action)
       end
       if event_action.description == "resolved"
         email = CriticalMailer.deliver_call_center_caregiver(event_action)   
