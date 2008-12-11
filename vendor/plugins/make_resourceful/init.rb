@@ -1,3 +1,3 @@
-require 'make_resourceful/maker'
+require 'resourceful/maker'
 
 ActionController::Base.extend Resourceful::Maker

@@ -1,4 +1,4 @@
-require 'make_resourceful/builder'
+require 'resourceful/builder'
 
 module Resourceful
   # This module contains mixin modules

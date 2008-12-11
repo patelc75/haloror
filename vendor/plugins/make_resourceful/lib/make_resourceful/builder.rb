@@ -1,6 +1,6 @@
-require 'make_resourceful/response'
-require 'make_resourceful/serialize'
-require 'make_resourceful/default/actions'
+require 'resourceful/response'
+require 'resourceful/serialize'
+require 'resourceful/default/actions'
 
 module Resourceful
   # The Maker#make_resourceful block is evaluated in the context
@@ -27,6 +27,8 @@ module Resourceful
       @responses        = {}
       @publish          = {}
       @parents          = []
+      @custom_member_actions = []
+      @custom_collection_actions = []
     end
 
     # This method is only meant to be called internally.
@@ -55,7 +57,9 @@ module Resourceful
       kontroller.write_inheritable_attribute(:made_resourceful, true)
 
       kontroller.write_inheritable_attribute(:parents, @parents)
-      kontroller.before_filter :load_parent_object, :only => @ok_actions
+      kontroller.before_filter :load_object, :only => (@ok_actions & SINGULAR_PRELOADED_ACTIONS) + @custom_member_actions
+      kontroller.before_filter :load_objects, :only => (@ok_actions & PLURAL_ACTIONS) + @custom_collection_actions
+      kontroller.before_filter :load_parent_object, :only => @ok_actions + @custom_member_actions + @custom_collection_actions
     end
 
     # :call-seq:
@@ -82,12 +86,34 @@ module Resourceful
     # The available actions are defined in Default::Actions.
     def actions(*available_actions)
       if available_actions.first == :all
-        available_actions = controller.new.plural? ? ACTIONS : SINGULAR_ACTIONS
+        if controller.respond_to?(:new_without_capture)
+          available_actions = controller.new_without_capture.plural? ? ACTIONS : SINGULAR_ACTIONS
+        else
+          available_actions = controller.new.plural? ? ACTIONS : SINGULAR_ACTIONS
+        end
       end
 
       available_actions.each { |action| @ok_actions << action.to_sym }
     end
     alias build actions
+    
+    # :call-seq:
+    #   member_actions(*available_actions)
+    # 
+    # Registers custom member actions which will use the load_object before_filter.
+    # These actions are not created, but merely registered for filtering.
+    def member_actions(*available_actions)
+      available_actions.each { |action| @custom_member_actions << action.to_sym }
+    end
+    
+    # :call-seq:
+    #   collection_actions(*available_actions)
+    # 
+    # Registers custom collection actions which will use the load_objects before_filter.
+    # These actions are not created, but merely registered for filtering.
+    def collection_actions(*available_actions)
+      available_actions.each { |action| @custom_collection_actions << action.to_sym }
+    end
 
     # :call-seq:
     #   before(*events) { ... }
@@ -109,10 +135,24 @@ module Resourceful
     # This will set the <tt>@page_title</tt> variable
     # to the current object's title
     # for the show and edit actions.
+    #
+    # Successive before blocks for the same action will be chained and executed 
+    # in order when the event occurs.
+    #
+    # For example:
+    #    
+    #   before :show, :edit do
+    #     @page_title = current_object.title
+    #   end
+    #
+    #   before :show do
+    #     @side_bar = true
+    #   end
+    #
+    # These before blocks will both be executed for the show action and in the 
+    # same order as they were defined.
     def before(*events, &block)
-      events.each do |event|
-        @callbacks[:before][event.to_sym] = block
-      end
+      add_callback :before, *events, &block
     end
 
     # :call-seq:
@@ -140,9 +180,7 @@ module Resourceful
     # This will nillify the password of the current object
     # if the object creation/modification failed.
     def after(*events, &block)
-      events.each do |event|
-        @callbacks[:after][event.to_sym] = block
-      end
+      add_callback :after, *events, &block
     end
 
     # :call-seq:
@@ -329,6 +367,13 @@ module Resourceful
       @publish.each do |action, types|
         @responses[action.to_sym] ||= []
         @responses[action.to_sym] += types
+      end
+    end
+
+    def add_callback(type, *events, &block)    
+      events.each do |event|
+        @callbacks[type][event.to_sym] ||= []
+        @callbacks[type][event.to_sym] << block        
       end
     end
   end

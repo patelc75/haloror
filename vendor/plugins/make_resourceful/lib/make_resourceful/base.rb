@@ -21,12 +21,15 @@ module Resourceful
 
   # The actions that act on just one record.
   SINGULAR_ACTIONS = ACTIONS - PLURAL_ACTIONS
+
+  # The actions that act on just one record.
+  SINGULAR_PRELOADED_ACTIONS = SINGULAR_ACTIONS - [:new, :create]
 end
 
-require 'make_resourceful/default/accessors'
-require 'make_resourceful/default/responses'
-require 'make_resourceful/default/callbacks'
-require 'make_resourceful/default/urls'
+require 'resourceful/default/accessors'
+require 'resourceful/default/responses'
+require 'resourceful/default/callbacks'
+require 'resourceful/default/urls'
 
 # All modules included by this module
 # are made available to the controller as accessors.
