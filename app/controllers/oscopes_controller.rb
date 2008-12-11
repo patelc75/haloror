@@ -62,7 +62,7 @@ class OscopesController < ApplicationController
       csv_string_all = csv_header + csv_string
     end
     send_data csv_string_all, :type => "text/plain", 
-     :filename=>"oscope.csv", 
+     :filename=> get_file_name(o_start_msgs), 
      :disposition => 'attachment'
    rescue Exception => e
      flash[:warning] = 'Error retrieving information.'
@@ -71,7 +71,13 @@ class OscopesController < ApplicationController
   end
   
   private
-  
+  def get_file_name(start_msgs)
+    prefix = "Dataset"
+    start_msgs.each do |start_msg|
+      prefix << "_#{start_msg.id}"
+    end
+    return prefix + ".csv"
+  end
   def generate_grid(o_msgs)
     grid = []
     channel_nums = []

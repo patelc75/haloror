@@ -106,6 +106,8 @@ div.accordion-content{
         <% end %>
 </div>
 <div align="center" id="call_center-wizard">
+Please do not use the "Back" and "Forward" browser buttons once you click the "Start Call" button.
+Please use the "previous" link from within each step to go back.
   <button style="font-size: xx-large;" onclick="start_wizard(); new Ajax.Updater('call_center-wizard', '/call_center/script_wizard_start/?call_center_wizard_id=<%=@call_center_wizard.id %>')">Start Call</button>
 </div>
 </div>

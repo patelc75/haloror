@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081203043445) do
+ActiveRecord::Schema.define(:version => 20081211203423) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -256,6 +256,22 @@ ActiveRecord::Schema.define(:version => 20081203043445) do
     t.string   "comments"
   end
 
+  create_table "device_revisions_work_orders", :force => true do |t|
+    t.integer  "work_order_id"
+    t.integer  "device_revision_id"
+    t.integer  "num"
+    t.string   "starting_mac_address"
+    t.integer  "total_mac_addresses"
+    t.string   "current_mac_address"
+    t.string   "starting_serial_num"
+    t.integer  "total_serial_nums"
+    t.string   "current_serial_num"
+    t.datetime "updated_at"
+    t.datetime "created_at"
+    t.integer  "created_by"
+    t.string   "comments"
+  end
+
   create_table "device_strap_status", :force => true do |t|
     t.integer  "is_fastened", :null => false
     t.datetime "updated_at",  :null => false
@@ -472,6 +488,8 @@ ActiveRecord::Schema.define(:version => 20081203043445) do
     t.integer  "oscope_stop_msg_id"
   end
 
+  add_index "oscope_msgs", ["oscope_start_msg_id"], :name => "index_oscope_msgs_on_oscope_start_msg_id"
+
   create_table "oscope_start_msgs", :force => true do |t|
     t.string   "capture_reason"
     t.integer  "source_mote_id"
@@ -497,6 +515,8 @@ ActiveRecord::Schema.define(:version => 20081203043445) do
     t.integer "data"
     t.integer "oscope_msg_id"
   end
+
+  add_index "points", ["oscope_msg_id"], :name => "index_points_on_oscope_msg_id"
 
   create_table "profiles", :force => true do |t|
     t.integer "user_id"

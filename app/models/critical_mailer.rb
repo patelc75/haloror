@@ -20,12 +20,22 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def device_event_operator(event)
     setup_caregivers(event.user, event, :caregiver_info)
-    setup_message(event.to_s, @caregiver_info + "\n\nYou received this email because you’re an operator.\n\nhttps://#{ServerInstance.current_host}/call_center")
+    link = get_link_to_call_center()
+    setup_message(event.to_s, @caregiver_info + "\n\nYou received this email because you’re an operator.\n\n#{link}")
     setup_operators(event, :recepients, :include_phone_call) 
     setup_emergency_group(event, :recepients)
     self.priority  = event.priority
   end
-  
+  def get_link_to_call_center()
+    host = ServerInstance.current_host_short_string()
+    if host == "crit2"
+      return "Please use try following link to get to the call center overview page.  \n\nhttps://www.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center"
+    end
+    if host == "sdev-crit2"
+      return "Please use try following link to get to the call center overview page.  \n\nhttps://sdev.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center"
+    end
+    return "Please use the following link to get to the call center overview page. \n\n https://#{ServerInstance.current_host}/call_center"
+  end
   def call_center_caregiver(event_action)
     setup_message(event_action.to_s, event_action.email_body + "\n\nYou received this email because you’re a Halo User or caregiver of #{event_action.event.user.name}")
     setup_caregivers(event_action.event.user, event_action.event.event, :recepients)
