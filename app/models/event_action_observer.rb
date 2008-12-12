@@ -1,10 +1,10 @@
-# require 'resourceful'
+require 'simplehttp'
 class EventActionObserver < ActiveRecord::Observer
   def before_save(event_action)
     if event_action[:send_email] != false
       email = CriticalMailer.deliver_call_center_operator(event_action)
       if event_action.description == "accepted"
-        # send_to_backup(event_action)
+        send_to_backup(event_action)
       end
       if event_action.description == "resolved"
         email = CriticalMailer.deliver_call_center_caregiver(event_action)   
@@ -27,11 +27,8 @@ class EventActionObserver < ActiveRecord::Observer
   
   def send_it(host, event_action)
     event = event_action.event
-    auth = Resourceful::BasicAuthenticator.new('Web Password', SYSTEM_USERNAME, SYSTEM_PASSWORD)
-    http = Resourceful::HttpAccessor.new
-    resp = http.resource("https://#{host}/call_center_accept/accept").
-                post("timestamp=#{event.timestamp.to_s}&user_id=#{event.user_id}&operator_id=#{event_action.user_id}", 
-                      :content_type => 'application/x-www-form-urlencoded',
-                      :Authentication => auth.credentials)
+    http = SimpleHttp.new "https://#{host}/call_center_accept/accept"
+    http.basic_authentication SYSTEM_USERNAME, SYSTEM_PASSWORD
+    http.post "timestamp=#{event.timestamp.to_s}&user_id=#{event.user_id}&operator_id=#{event_action.user_id}"
   end
 end
