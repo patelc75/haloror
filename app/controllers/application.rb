@@ -46,8 +46,27 @@ class ApplicationController < ActionController::Base
   end
   
   private
-  def refresh_operators()
-    @operators = User.operators
+  def refresh_operators(group_id=nil)
+    @user = current_user
+    @groups = []
+      if !@user.is_super_admin?
+        @groups = Group.find(:all)
+      else
+        Group.find(:all).each do |g|
+          @groups << g if(@user.is_operator_of?(g) || @user.is_moderator_of?(g) || @user.is_admin_of?(g))
+        end
+      end 
+    if group_id.blank?
+      @group = @groups[0]
+    else
+      g = Group.find(group_id)
+      @group = g if @groups.include? g
+    end
+    @operators = []
+    ops = User.operators
+    ops.each do |op|
+      @operators << op if(op.is_operator_of?(@group))
+    end
     number_ext
     render :partial => 'call_center/operators', :layout => false
   end

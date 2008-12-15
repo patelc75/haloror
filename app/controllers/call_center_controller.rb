@@ -148,10 +148,10 @@ class CallCenterController < ApplicationController
           @groups << g if(@user.is_operator_of?(g) || @user.is_moderator_of?(g) || @user.is_admin_of?(g))
         end
       end 
-    if params[:id].blank?
+    if params[:group_id].blank?
       @group = @groups[0]
     else
-      g = Group.find(params[:id])
+      g = Group.find(params[:group_id])
       @group = g if @groups.include? g
     end
     @operators = []

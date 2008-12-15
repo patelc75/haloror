@@ -81,6 +81,7 @@ class ProfilesController < ApplicationController
 
   def edit_caregiver_profile
     @profile = Profile.find(params[:id], :include => :user)
+    @group_id = params[:group_id]
     @user = @profile.user
     if(!params[:roles_user_id].blank?)
       @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
@@ -100,7 +101,7 @@ class ProfilesController < ApplicationController
         
     Profile.update(params[:id], params[:profile])
     if(!params[:operator].blank?)
-      refresh_operators()
+      refresh_operators(params[:group_id])
     elsif(!params[:patient_id].blank?)
       refresh_caregivers(User.find(params[:patient_id]))
     end
