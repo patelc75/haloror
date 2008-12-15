@@ -94,7 +94,7 @@ class CallCenterController < ApplicationController
     render(:update) do |page|
       page['instruction_' + previous_step.id.to_s].replace_html previous_step.instruction
       page['answer_' + previous_step.id.to_s].replace_html ans
-      page['breaker_' + @call_center_step.id.to_s].replace_html "<hr />"
+      page['breaker_' + previous_step.id.to_s].replace_html "<hr />"
       page << "accordion.step(#{@call_center_step.id});"
       page['call_center-wizard'].replace_html render(:partial => 'script', :layout => false)
     end
