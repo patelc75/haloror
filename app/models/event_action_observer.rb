@@ -4,10 +4,11 @@ class EventActionObserver < ActiveRecord::Observer
     if event_action[:send_email] != false
       email = CriticalMailer.deliver_call_center_operator(event_action)
       if event_action.description == "accepted"
-        send_to_backup(event_action)
+        send_to_backup('accepted', event_action)
       end
       if event_action.description == "resolved"
-        email = CriticalMailer.deliver_call_center_caregiver(event_action)   
+        email = CriticalMailer.deliver_call_center_caregiver(event_action)  
+        send_to_backup('resolved', event_action) 
       end
     end
   end
@@ -16,19 +17,19 @@ class EventActionObserver < ActiveRecord::Observer
     Event.create_event(event_action.event.user_id, EventAction.class_name, event_action.id,event_action.created_at)
   end
   
-  def send_to_backup(event_action)
+  def send_to_backup(description, event_action)
     host = ServerInstance.current_host_short_string()
     if host == 'HALO'
-      send_it('crit2.myhalomonitor.com', event_action)
+      send_it(description, 'crit2.data.myhalomonitor.com', event_action)
     elsif host == 'sdev'
-      send_it('sdev-crit2.myhalomonitor.com', event_action)
+      send_it(description, 'sdev.crit2.data.myhalomonitor.com', event_action)
     end
   end
   
-  def send_it(host, event_action)
+  def send_it(description, host, event_action)
     event = event_action.event
     http = SimpleHttp.new "https://#{host}/call_center_accept/accept"
     http.basic_authentication SYSTEM_USERNAME, SYSTEM_PASSWORD
-    http.post "timestamp=#{event.timestamp.to_s}&user_id=#{event.user_id}&operator_id=#{event_action.user_id}"
+    http.post "description=#{description}&timestamp=#{event.timestamp.to_s}&user_id=#{event.user_id}&operator_id=#{event_action.user_id}"
   end
 end
