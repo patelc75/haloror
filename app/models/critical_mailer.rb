@@ -148,7 +148,7 @@ class CriticalMailer < ActionMailer::ARMailer
       roles = Role.find(:all, :conditions => "authorizable_type = 'Group' and authorizable_id = #{group.id}")
       roles.each do |role|
         role.roles_users do |ru|
-          users << ru.user
+          users << ru.user if ru.user.is_operator_of? group
         end
       end
     end
