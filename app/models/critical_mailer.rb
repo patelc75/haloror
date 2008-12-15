@@ -26,22 +26,38 @@ class CriticalMailer < ActionMailer::ARMailer
     setup_emergency_group(event, :recepients)
     self.priority  = event.priority
   end
+  
+  def deliver_device_event_operator_text(event)
+    setup_caregivers(event.user, event, :caregiver_info)
+    link = get_link_to_call_center_text()
+    setup_message(event.to_s, "Please accept the call by clicking at the following link:" + link + "If the site is not available then follow the paper scripts and use the following contact info:" + @caregiver_info)
+    setup_operators(event, :recepients, :include_phone_call) 
+    setup_emergency_group(event, :recepients)
+    @recipients = @text_recipients
+    self.priority  = event.priority    
+  end
+  
+  def get_link_to_call_center_text()
+    host = ServerInstance.current_host_short_string()
+    return "https://#{ServerInstance.current_host}/call_center"
+  end
+  
   def get_link_to_call_center()
     host = ServerInstance.current_host_short_string()
-    if host == "ATL-WEB1"
-      return "Please try following link to get to the call center overview page.  \n\nhttps://www.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center"
+    if host == "crit2"
+      return "Please use try following link to get to the call center overview page.  \n\nhttps://www.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center"
     end
-    if host == "IDEV"
-      return "Please try following link to get to the call center overview page.  \n\nhttps://sdev.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center"
+    if host == "sdev-crit2"
+      return "Please use try following link to get to the call center overview page.  \n\nhttps://sdev.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center"
     end
-    return "Please accept the call by clicking at the following link: \n\n https://#{ServerInstance.current_host}/call_center"
+    return "Please use the following link to get to the call center overview page. \n\n https://#{ServerInstance.current_host}/call_center"
   end
   def call_center_caregiver(event_action)
     setup_message(event_action.to_s, event_action.email_body + "\n\nYou received this email because you’re a Halo User or caregiver of #{event_action.event.user.name}")
     setup_caregivers(event_action.event.user, event_action.event.event, :recepients)
     self.priority  = event_action.priority
   end
-  
+
   def call_center_operator(event_action)    
     setup_message(event_action.to_s, event_action.email_body + event_action.event.notes_string + "\n\nYou received this email because you’re an operator.")
     setup_operators(event_action.event.event, :recepients)
@@ -108,6 +124,7 @@ class CriticalMailer < ActionMailer::ARMailer
     user.active_caregivers.each do |caregiver|
       recipients_setup(caregiver, user.alert_option_by_type(caregiver, alert), mode)  
     end
+    @recipients = @recipients + @text_recipients
   end
   
   def setup_operators(event, mode, phone = :no_phone_call)
@@ -155,6 +172,7 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   def recipients_setup(user, alert_option, mode, phone = :no_phone_call)
     @recipients = Array.new if @recipients.nil?
+    @text_recipients = Array.new if @text_recipients.nil?
     @caregiver_info = "" if @caregiver_info.nil?
     
     if (alert_option)  #check for null until we figure out a better way to get roles_users_options
@@ -164,7 +182,7 @@ class CriticalMailer < ActionMailer::ARMailer
       
       if text_msg_bool == true and mode == :recepients
         if !user.profile.cell_phone.blank? and mode == :recepients
-          @recipients  << ["#{user.profile.cell_phone}" + "#{user.profile.carrier.domain}"]
+          @text_recipients  << ["#{user.profile.cell_phone}" + "#{user.profile.carrier.domain}"]
         end
       end
       

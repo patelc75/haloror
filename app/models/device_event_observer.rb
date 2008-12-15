@@ -5,7 +5,8 @@ class DeviceEventObserver < ActiveRecord::Observer
   def before_save(event)
     if event.user_id < 1 or event.user == nil
       raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
-    elsif event.class == Fall or event.class == Panic #temporary until GW starts sending device_id with falls and panics
+    elsif event.class == Fall or event.class == Panic #temporary until GW starts sending device_id with falls and panics  
+      CriticalMailer.deliver_device_event_operator_text(event)
       CriticalMailer.deliver_device_event_operator(event)
       if(ServerInstance.current_host_short_string() != "ATL-WEB1")
         CriticalMailer.deliver_device_event_caregiver(event)
