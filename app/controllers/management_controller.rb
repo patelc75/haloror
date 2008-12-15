@@ -273,11 +273,11 @@ class ManagementController < ApplicationController
     @query = LostData.new(params[:query])
     @begin_time = Time.now
     @end_time = @begin_time
-    if !@query.begin_time.blank?
-      @begin_time = @query.begin_time
+    if !params[:begin_time].blank?
+      @begin_time = params[:begin_time]
     end
-    if !@query.end_time.blank?
-      @end_time = @query.end_time
+    if !params[:end_time].blank?
+      @end_time = params[:end_time]
     end
   end
   

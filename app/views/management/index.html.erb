@@ -3,8 +3,9 @@
 	<form action="<%= "/management/#{@type}/" %>">
 	<table>
 		<tr><td>All times are in UTC timezone</td></tr>
-	  <tr><td>Begin Time</td>&nbsp;&nbsp;<td>End Time</td></tr>
-	  <tr><td><%= datetime_select :query, "begin_time"%></td>&nbsp;&nbsp;<td><%= datetime_select :query, "end_time" %></td>&nbsp;&nbsp;<td></tr>
+	  <tr><td>Begin Time</td>&nbsp;&nbsp;<td>End Time</td><td>Show Queries</td></tr>
+	  <tr><td><%= calendar_date_select_tag "begin_time", "", :time => true, :popup => 'force' %></td>
+  	<td><%= calendar_date_select_tag "end_time", "", :time => true, :popup => 'force' %></td></tr>
 	
 <tr><td>
 	Select a Device: <%=select(:device, :id, current_user.devices.collect {|d| [ d.id, d.id ]})%>
@@ -15,10 +16,6 @@
 </table>
 </form>
 </div>
-<div>
-	<a href="/management/stream<%="/?device_id=#{params[:device_id]}" unless params[:device_id] == nil%>">Mgmt Activity Stream</a> | <a href="/management/group<%="/?device_id=#{params[:device_id]}" unless params[:device_id] == nil%>">Mgmt Activity Groups</a>
-</div>
-
 <p style="color:gray;font-weight:bold">
 	Pending commands are grayed out.
 </p>
