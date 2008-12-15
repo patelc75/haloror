@@ -28,13 +28,13 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   def get_link_to_call_center()
     host = ServerInstance.current_host_short_string()
-    if host == "crit2"
-      return "Please use try following link to get to the call center overview page.  \n\nhttps://www.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center"
+    if host == "ATL-WEB1"
+      return "Please try following link to get to the call center overview page.  \n\nhttps://www.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center"
     end
-    if host == "sdev-crit2"
-      return "Please use try following link to get to the call center overview page.  \n\nhttps://sdev.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center"
+    if host == "IDEV"
+      return "Please try following link to get to the call center overview page.  \n\nhttps://sdev.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center"
     end
-    return "Please use the following link to get to the call center overview page. \n\n https://#{ServerInstance.current_host}/call_center"
+    return "Please accept the call by clicking at the following link: \n\n https://#{ServerInstance.current_host}/call_center"
   end
   def call_center_caregiver(event_action)
     setup_message(event_action.to_s, event_action.email_body + "\n\nYou received this email because you’re a Halo User or caregiver of #{event_action.event.user.name}")
