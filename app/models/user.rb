@@ -574,7 +574,7 @@ class User < ActiveRecord::Base
     return info
   end
   def contact_info()
-    name + "\t  : Home #{format_phone(profile.home_phone)} | Cell #{format_phone(profile.cell_phone)} | Work #{format_phone(profile.work_phone)}"  
+    name + ": Home #{format_phone(profile.home_phone)} | Cell #{format_phone(profile.cell_phone)} | Work #{format_phone(profile.work_phone)}"  
   end
   def phone_numbers()
     info = <<-eos
