@@ -32,7 +32,12 @@ class CallCenterWizard < ActiveRecord::Base
     self.call_center_session.call_center_steps.sort! do |a, b|
       a.created_at <=> b.created_at
     end
-	  return self.call_center_session.call_center_steps[0]
+	  step = self.call_center_session.call_center_steps[0]
+	  if step.script.nil?
+	    return get_next_step(step.id, false)
+	  else
+	    return step
+	  end
   end
   def call_center_steps_sorted
     steps = self.call_center_session.call_center_steps
