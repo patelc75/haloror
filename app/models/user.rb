@@ -364,18 +364,18 @@ class User < ActiveRecord::Base
   end
   def get_cg_instruction(key, operator, caregiver)
     instructions = { 
-      CallCenterWizard::CAREGIVER_MOBILE_PHONE => format_phone(caregiver.profile.cell_phone),
-      CallCenterWizard::CAREGIVER_HOME_PHONE   => format_phone(caregiver.profile.home_phone),
-      CallCenterWizard::CAREGIVER_WORK_PHONE   => format_phone(caregiver.profile.work_phone),
-      CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => "Is User OK?",
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE => "Mobile" + format_phone(caregiver.profile.cell_phone) + "?",
+      CallCenterWizard::CAREGIVER_HOME_PHONE   => "Home" + format_phone(caregiver.profile.home_phone) + "?",
+      CallCenterWizard::CAREGIVER_WORK_PHONE   => "Work" + format_phone(caregiver.profile.work_phone) + "?",
+      CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => "Accept responsibility?",
       CallCenterWizard::CAREGIVER_AT_HOUSE     => "At House?",
       CallCenterWizard::CAREGIVER_GO_TO_HOUSE  => "Can you go to house?",
-      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE  => "At house",
+      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE  => "Arrive at house, call 911?",
       CallCenterWizard::CAREGIVER_THANK_YOU    => "Thank You!",
       CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
-      CallCenterWizard::AGENT_CALL_911         => "call 911",
-      CallCenterWizard::AMBULANCE_DISPATCHED   => "dispatch ambulance",
+      CallCenterWizard::AGENT_CALL_911         => "Call 911",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => "Dispatch ambulance",
       CallCenterWizard::THE_END                => "Resolve the Event"
     }
     instruction = instructions[key]
@@ -383,8 +383,8 @@ class User < ActiveRecord::Base
   end
   def get_instruction(key, operator)
     instructions = { 
-      CallCenterWizard::USER_HOME_PHONE        => format_phone(self.profile.home_phone),
-      CallCenterWizard::USER_MOBILE_PHONE      => format_phone(self.profile.cell_phone),
+      CallCenterWizard::USER_HOME_PHONE        => "Home" + format_phone(self.profile.home_phone) + "?",
+      CallCenterWizard::USER_MOBILE_PHONE      => "Mobile" + format_phone(self.profile.cell_phone)+ "?",
       CallCenterWizard::USER_OK                => "Is User OK?",
       CallCenterWizard::USER_AMBULANCE         => "Is Ambulance Needed?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
