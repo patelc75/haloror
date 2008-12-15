@@ -27,7 +27,7 @@ class CriticalMailer < ActionMailer::ARMailer
     self.priority  = event.priority
   end
   
-  def deliver_device_event_operator_text(event)
+  def device_event_operator_text(event)
     setup_caregivers(event.user, event, :caregiver_info)
     link = get_link_to_call_center_text()
     setup_message(event.to_s, "Please accept the call by clicking at the following link:" + link + "If the site is not available then follow the paper scripts and use the following contact info:" + @caregiver_info)
