@@ -534,8 +534,12 @@ class User < ActiveRecord::Base
   end
   
   def get_ambulance_script(operator, event)
+    service_name = '911 or local emergency service'
+    service_name = self.profile.emergency_number.name if self.profile.emergency_number
+    number = '911'
+    number = self.profile.emergency_number.number if self.profile.emergency_number
     info = <<-eos
-		<div style="font-size: xx-large"><b><font color="white">Call 911 or local emergency service at #{self.profile.emergency_number.number}</font></b></div>
+		<div style="font-size: xx-large"><b><font color="white">Call #{service_name} at #{number}</font></b></div>
 		<br><br>
 		<font color="white">Recite this script:</font><br><br>
 		<i>"My name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} for #{self.name} and have the approval to disptach an ambulance. Can you dispatch an amublance to<br>
