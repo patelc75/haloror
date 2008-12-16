@@ -617,7 +617,13 @@ class InstallsController < ApplicationController
     end
   end
   def check_heartrate_timeout?
-    timeout?(SELF_TEST_PHONE_COMPLETE_ID, 240.seconds)
+   if previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_PHONE_COMPLETE_ID}")
+      timeout?(SELF_TEST_PHONE_COMPLETE_ID, 240.seconds)
+    elsif previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_PHONE_FAILED_ID}")
+      timeout?(SELF_TEST_PHONE_FAILED_ID, 240.seconds)
+    else
+      timeout?(SELF_TEST_PHONE_TIMEOUT_ID, 240.seconds)
+    end
   end
   HEARTRATE_DETECTED_ID
   def check_registration_timeout?
