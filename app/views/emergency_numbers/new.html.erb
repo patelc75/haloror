@@ -1,0 +1,11 @@
+<form method='post' action='/emergency_numbers/create'>
+<input type="hidden" name="group" value="<%= params[:group] %>" />
+<table>
+<tr><th>Name</th><th>Number</th><th>Group</th></tr>
+<tr><td><%= text_field :emergency_number, :name %></td>
+<td><%= text_field :emergency_number, :number %></td>
+<td><%= params[:group] %></td>
+</tr>
+<tr><td colspan="2"><input type="submit" name="Submit" value="Submit">
+</table>
+</form>

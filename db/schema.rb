@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081211203423) do
+ActiveRecord::Schema.define(:version => 20081216141913) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -336,6 +336,12 @@ ActiveRecord::Schema.define(:version => 20081211203423) do
     t.integer  "priority"
   end
 
+  create_table "emergency_numbers", :force => true do |t|
+    t.string  "name"
+    t.string  "number"
+    t.integer "group_id"
+  end
+
   create_table "event_actions", :force => true do |t|
     t.integer  "user_id"
     t.integer  "event_id"
@@ -532,6 +538,7 @@ ActiveRecord::Schema.define(:version => 20081211203423) do
     t.integer "carrier_id"
     t.string  "time_zone"
     t.string  "zipcode"
+    t.integer "emergency_number_id"
   end
 
   add_index "profiles", ["user_id"], :name => "index_profiles_on_user_id"

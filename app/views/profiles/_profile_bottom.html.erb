@@ -36,13 +36,24 @@
 	      <% end %>
 	    </select>
 	  
-	    <br/>
-	    <br />
-	  
+	    
 	  
 	    <label for="time_zone">Time Zone</label>
 	  	<br />
 	             <%= time_zone_select ('profile', 'time_zone', TZInfo::Timezone.us_zones, :model => TZInfo::Timezone, :default => "America/Chicago" )%> 
 	           
+	             <br/>
+         	    <br />
+         	    <% groups = @user.group_memberships
+         	       emergency_numbers = []
+         	       groups.each do |group|
+         	         emergency_numbers = emergency_numbers + EmergencyNumber.find_all_by_group_id(group.id)
+         	       end %>
+         	    <select id="profile_emergency_number_id" name="profile[emergency_number_id]">
+         	           <option value="">Choose Emergency Number</option>
+         	      <% emergency_numbers.each do |en|  %>
+         	           <option value="<%= en.id %>" <%= 'selected' if @profile.emergency_number_id == en.id %>> <%= en.name + '--' + en.number %></option>
+         	      <% end %>
+         	    </select>
 	    <br/>
 	    <br />

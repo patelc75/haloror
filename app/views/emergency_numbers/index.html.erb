@@ -1,0 +1,17 @@
+<div>
+<%= render :partial => 'groups' %>
+</div>
+<% group_name = 'Choose a Group'
+   group_name = @group.name if @group  %>
+<div>
+<%= link_to 'Add New Emergency Number', :controller => 'emergency_numbers', :action => 'new', :group => group_name %>
+</div>
+<br><br>
+<div>
+<table>
+<tr><th>Name</th><th>Number</th><th>Group</th></tr>
+<% @emergency_numbers.each do |en|  %>
+  <tr><td><%= en.name %></td><td><%=en.number %></td><td><%=en.group.name%></td></tr>
+<% end %>
+</table>
+</div>

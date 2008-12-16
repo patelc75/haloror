@@ -1,0 +1,13 @@
+<% if @groups %>
+	<form id="group_form_id" action="/emergency_numbers/index" method="POST">
+		<%  group_name = 'Choose a Group' 		
+	      gs = [group_name]
+        group_name = @group.name if @group  
+		  
+		   @groups.each do |g|
+			 gs << g.name
+		   end %>
+Select Group:  
+<%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, group_name),  {:onchange => "$('group_form_id').submit();"}%>
+</form>
+<% end %>
