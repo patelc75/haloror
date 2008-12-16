@@ -305,7 +305,7 @@ class InstallsController < ApplicationController
         step = create_self_test_step(SELF_TEST_PHONE_TIMEOUT_ID)
         @self_test_step_id = step.id
         message = "Self Test Phone timeout.  Please use phone to check for dial tone and plug phone line in to gateway.  Either restart the wizard or you can agree to disable the dial backup feature and continue by clicking <a href=\"javascript:continueWithoutPhone(" + @self_test_step_id.to_s + ");\" >here</a>."
-        clear_session_data
+        # clear_session_data
         render_update_timeout('phone_div_id', message, 'updateCheckSelfTestPhone', 'install_wizard_launch')
       elsif session[:halo_check_phone_self_test_result] && !session[:halo_check_phone_self_test_result].result
         step = create_self_test_step(SELF_TEST_PHONE_FAILED_ID)
@@ -326,7 +326,7 @@ class InstallsController < ApplicationController
     @self_test_step_id = params[:self_test_step_id]
     @self_test_result_id = params[:self_test_result_id]
     @self_test_result = SelfTestResult.find(@self_test_result_id) if !@self_test_result_id.blank?
-    clear_session_data
+    #clear_session_data
   end
   
   def install_wizard_strap_fastened_progress
@@ -365,6 +365,9 @@ class InstallsController < ApplicationController
       if self_test_step
         session[:progress_count][:heartrate] = nil
         previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_PHONE_COMPLETE_ID}")
+         unless previous_step
+            previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_CHEST_STRAP_COMPLETE_ID}")
+          end
         message = self_test_step.self_test_step_description.description
         render_update_success('heartrate_div_id', message, 'updateCheckHeartrate', nil, 
                               'heartrate_check', 'update_percentage', HEARTRATE_DETECTED_PERCENTAGE, self_test_step.timestamp - previous_step.timestamp, 'phone_test_complete', 'install_wizard_launch')
@@ -391,7 +394,7 @@ class InstallsController < ApplicationController
   def no_phone_test
     init_devices_user
  #   @battery = Battery.find(:first, :conditions => "device_id = #{@strap.id} AND timestamp >= '#{@self_test_session.created_at.to_s}'", :order => 'timestamp desc')  
-    launcher = new_remote_redbox('phone_test_complete')
+  launcher = new_remote_redbox('phone_test_complete')
     render(:update) do |page|
       page.replace_html 'install_wizard_launch', launcher
     end
@@ -614,9 +617,9 @@ class InstallsController < ApplicationController
     end
   end
   def check_heartrate_timeout?
-    timeout?(SELF_TEST_CHEST_STRAP_COMPLETE_ID, 240.seconds)
+    timeout?(SELF_TEST_PHONE_COMPLETE_ID, 240.seconds)
   end
-  
+  HEARTRATE_DETECTED_ID
   def check_registration_timeout?
     if Time.now > (session[:self_test_time_created] + 180.seconds)
       return true
@@ -630,7 +633,7 @@ class InstallsController < ApplicationController
   end
   
   def check_phone_timeout?
-    timeout?(HEARTRATE_DETECTED_ID, 145.seconds)
+    timeout?(SELF_TEST_CHEST_STRAP_COMPLETE_ID, 145.seconds)
   end
   def check_chest_strap_timeout?
     timeout?(SELF_TEST_GATEWAY_COMPLETE_ID, 240.seconds)
