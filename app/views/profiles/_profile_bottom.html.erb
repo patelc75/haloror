@@ -45,6 +45,7 @@
 	           
 	             <br/>
          	    <br />
+      <% if @user.is_halouser? %>
       <label for="emergency_number">Emergency Number</label>
       <br />
          	    <% groups = @user.group_memberships
@@ -58,5 +59,6 @@
          	           <option value="<%= en.id %>" <%= 'selected' if @profile.emergency_number_id == en.id %>> <%= en.name + '--' + en.number %></option>
          	      <% end %>
          	    </select>
+      <% end %>
 	    <br/>
 	    <br />
