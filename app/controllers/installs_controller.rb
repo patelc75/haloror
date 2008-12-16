@@ -258,7 +258,7 @@ class InstallsController < ApplicationController
         session[:progress_count][:chest_strap] = nil
         previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_GATEWAY_COMPLETE_ID}")
         message = self_test_step.self_test_step_description.description
-        render_update_success('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'updateCheckHeartrate', 
+        render_update_success('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'updateCheckSelfTestPhone', 
                               'self_test_chest_strap_check', 'update_percentage', CHEST_STRAP_SELF_TEST_PERCENTAGE, self_test_step.timestamp - previous_step.timestamp)
       elsif check_chest_strap_timeout?
         session[:progress_count][:chest_strap] = nil
@@ -292,14 +292,14 @@ class InstallsController < ApplicationController
       self_test_step = check_phone_self_test()
       if self_test_step
         session[:progress_count][:phone] = nil
-        previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{HEARTRATE_DETECTED_ID}")
+        previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_CHEST_STRAP_COMPLETE_ID}")
         duration = 0
         if((self_test_step.timestamp - previous_step.timestamp) > 0)
           duration = self_test_step.timestamp - previous_step.timestamp
         end
         message = self_test_step.self_test_step_description.description
-        render_update_success('phone_div_id', message, 'updateCheckSelfTestPhone', nil, 
-                              'self_test_phone_check', 'update_percentage', PHONE_SELF_TEST_PERCENTAGE, duration, 'phone_test_complete', 'install_wizard_launch')
+        render_update_success('phone_div_id', message, 'updateCheckSelfTestPhone', 'updateCheckHeartrate', 
+                              'self_test_phone_check', 'update_percentage', PHONE_SELF_TEST_PERCENTAGE, duration)
       elsif check_phone_timeout?
         session[:progress_count][:phone] = nil
         step = create_self_test_step(SELF_TEST_PHONE_TIMEOUT_ID)
@@ -364,10 +364,10 @@ class InstallsController < ApplicationController
       self_test_step = check_heartrate()
       if self_test_step
         session[:progress_count][:heartrate] = nil
-        previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_CHEST_STRAP_COMPLETE_ID}")
+        previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_PHONE_COMPLETE_ID}")
         message = self_test_step.self_test_step_description.description
-        render_update_success('heartrate_div_id', message, 'updateCheckHeartrate', 'updateCheckSelfTestPhone', 
-                              'heartrate_check', 'update_percentage', HEARTRATE_DETECTED_PERCENTAGE, self_test_step.timestamp - previous_step.timestamp)
+        render_update_success('heartrate_div_id', message, 'updateCheckHeartrate', nil, 
+                              'heartrate_check', 'update_percentage', HEARTRATE_DETECTED_PERCENTAGE, self_test_step.timestamp - previous_step.timestamp, 'phone_test_complete', 'install_wizard_launch')
         
       elsif check_heartrate_timeout?
         session[:progress_count][:heartrate] = nil
@@ -414,7 +414,7 @@ class InstallsController < ApplicationController
     init_devices_user
     create_mgmt_cmd('range_test_stop', @strap.id)
     self_test_step = create_self_test_step(RANGE_TEST_COMPLETE_ID)
-      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_PHONE_COMPLETE_ID}")
+      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{HEARTRATE_DETECTED_ID}")
       message = self_test_step.self_test_step_description.description                       
     duration = nil
     unless previous_step
