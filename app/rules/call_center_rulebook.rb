@@ -16,6 +16,7 @@ class CallCenterRulebook < Ruleby::Rulebook
     create_call_center_step_rule(user_id, CallCenterWizard::USER_MOBILE_PHONE,    true,   CallCenterWizard::USER_OK,user_id)
     if caregiver_id.nil?
       create_call_center_step_rule(user_id, CallCenterWizard::USER_MOBILE_PHONE,    false,  CallCenterWizard::AGENT_CALL_911,user_id)
+      create_call_center_step_rule(user_id, CallCenterWizard::USER_OK,              true,   CallCenterWizard::AGENT_CALL_911, user_id)
     else
       create_call_center_step_rule(user_id, CallCenterWizard::USER_MOBILE_PHONE,    false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver_id)
       create_call_center_step_rule(user_id, CallCenterWizard::USER_OK,              true,   CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver_id)

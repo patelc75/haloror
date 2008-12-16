@@ -436,10 +436,18 @@ class User < ActiveRecord::Base
     return info
   end
   def get_user_ok_script(operator,event)
-    info = <<-eos	
-  	<font color="white">Recite this script:</font><br>
-  	<i>"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type}. Would you like us to call your caregivers to help you?"
-  	eos
+    info = ''
+    if !self.active_caregivers.blank?
+      info = <<-eos	
+  	  <font color="white">Recite this script:</font><br>
+  	  <i>"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type}. Would you like us to call your caregivers to help you?"
+  	  eos
+	  else
+	    info = <<-eos	
+  	  <font color="white">Recite this script:</font><br>
+  	  <i>"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type}. Would you like us to dispatch an ambulance for you?"
+  	  eos
+    end
     return info
   end
   def get_caregiver_responisibility_script(caregiver, event)
