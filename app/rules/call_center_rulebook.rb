@@ -26,7 +26,7 @@ class CallCenterRulebook < Ruleby::Rulebook
     create_call_center_step_rule(user_id, CallCenterWizard::THE_END,              true,   CallCenterWizard::THE_END,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::THE_END,              false,  CallCenterWizard::THE_END,user_id)
     
-    if caregivers
+    if !caregivers.blank?
       caregivers = caregivers[1, caregivers.size - 1]
       caregivers.each do |caregiver|
         create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, true,   CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
