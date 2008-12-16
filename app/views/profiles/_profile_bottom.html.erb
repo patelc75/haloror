@@ -36,7 +36,8 @@
 	      <% end %>
 	    </select>
 	  
-	    
+	    <br />
+	    <br />
 	  
 	    <label for="time_zone">Time Zone</label>
 	  	<br />
@@ -44,6 +45,8 @@
 	           
 	             <br/>
          	    <br />
+      <label for="emergency_number">Emergency Number</label>
+      <br />
          	    <% groups = @user.group_memberships
          	       emergency_numbers = []
          	       groups.each do |group|
