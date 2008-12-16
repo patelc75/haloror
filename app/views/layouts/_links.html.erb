@@ -40,11 +40,10 @@
 				<li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li>
 			<% end %>
 			<% halo_group = Group.find_by_name('halo') %>
-			<% if current_user.is_super_admin? || current_user.is_admin_of? halo_group %>
+			<% if current_user.is_super_admin? || current_user.is_admin_of?(halo_group) %>
 			<li><%= link_to 'Info', url_for(:controller => 'util', :action => 'info', :my_links => 'Info') %></li>
 			<% end %>		
-			<% if current_user.is_super_admin? %>
-				
+			<% if current_user.is_super_admin? %>				
 				<li><%= link_to 'Home&nbsp;Installs', url_for(:controller => 'util', :action => 'home_install') %></li>
 			<% end %>			
 		</ul>
