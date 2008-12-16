@@ -7,15 +7,19 @@ class CallCenterRulebook < Ruleby::Rulebook
   def rules
     caregiver_id = nil
     caregivers = @wizard.user.active_caregivers
-    if caregivers
+    if !caregivers.blank?
       caregiver_id = caregivers[0].id
     end
     user_id = @wizard.user.id
     create_call_center_step_rule(user_id, CallCenterWizard::USER_HOME_PHONE,      true,   CallCenterWizard::USER_OK,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::USER_HOME_PHONE,      false,  CallCenterWizard::USER_MOBILE_PHONE,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::USER_MOBILE_PHONE,    true,   CallCenterWizard::USER_OK,user_id)
-    create_call_center_step_rule(user_id, CallCenterWizard::USER_MOBILE_PHONE,    false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver_id)
-    create_call_center_step_rule(user_id, CallCenterWizard::USER_OK,              true,   CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver_id)
+    if caregiver_id.nil?
+      create_call_center_step_rule(user_id, CallCenterWizard::USER_MOBILE_PHONE,    false,  CallCenterWizard::AGENT_CALL_911,user_id)
+    else
+      create_call_center_step_rule(user_id, CallCenterWizard::USER_MOBILE_PHONE,    false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver_id)
+      create_call_center_step_rule(user_id, CallCenterWizard::USER_OK,              true,   CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver_id)
+    end
     create_call_center_step_rule(user_id, CallCenterWizard::USER_OK,              false,  CallCenterWizard::USER_AMBULANCE, user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::USER_AMBULANCE,       true,   CallCenterWizard::AGENT_CALL_911,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::USER_AMBULANCE,       false,  CallCenterWizard::THE_END,user_id)
