@@ -384,14 +384,14 @@ class User < ActiveRecord::Base
   end
   def get_instruction(key, operator)
     instructions = { 
-      CallCenterWizard::USER_HOME_PHONE        => "Home" + format_phone(self.profile.home_phone) + "?",
-      CallCenterWizard::USER_MOBILE_PHONE      => "Mobile" + format_phone(self.profile.cell_phone)+ "?",
+      CallCenterWizard::USER_HOME_PHONE        => "Home " + format_phone(self.profile.home_phone) + "?",
+      CallCenterWizard::USER_MOBILE_PHONE      => "Mobile " + format_phone(self.profile.cell_phone)+ "?",
       CallCenterWizard::USER_OK                => "Is User OK?",
-      CallCenterWizard::USER_AMBULANCE         => "Is Ambulance Needed?",
+      CallCenterWizard::USER_AMBULANCE         => "Does user need ambulance?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
-      CallCenterWizard::PRE_AGENT_CALL_911     => "Can you call an ambulance?",
-      CallCenterWizard::AGENT_CALL_911         => "call 911",
-      CallCenterWizard::AMBULANCE_DISPATCHED   => "dispatch ambulance",
+      CallCenterWizard::PRE_AGENT_CALL_911     => "Can dispatcher dispatch an ambulance?",
+      CallCenterWizard::AGENT_CALL_911         => "Ambulance dispatched properly?",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => "Ambulance dispatched.",
       CallCenterWizard::THE_END                => "Resolve the Event"
     }
     instruction = instructions[key]
