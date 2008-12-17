@@ -15,9 +15,9 @@
 <% end %>
 <% if /Resolve/ =~ @call_center_step.script  %>
 <%   now = Time.now
-  accepted_time = UtilityHelper::seconds_format((@event.accepted?.created_at - @event.timestamp)/1000)
-  resolved_time = UtilityHelper::seconds_format((now - @event.accepted?.created_at)/1000)
-  total_time = UtilityHelper::seconds_format((now - @event.timestamp)/1000)
+  accepted_time = UtilityHelper::seconds_format((@event.accepted?.created_at - @event.timestamp).seconds)
+  resolved_time = UtilityHelper::seconds_format((now - @event.accepted?.created_at).seconds)
+  total_time = UtilityHelper::seconds_format((now - @event.timestamp).seconds)
   %>
   <%= accepted_time %> from event to accepted<br>
   <%= resolved_time %> from accepted to resolved<br>
