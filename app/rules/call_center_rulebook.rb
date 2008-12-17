@@ -35,6 +35,7 @@ class CallCenterRulebook < Ruleby::Rulebook
     end
     create_call_center_step_rule(user_id, CallCenterWizard::AGENT_CALL_911,       true,   CallCenterWizard::THE_END,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::AMBULANCE_DISPATCHED, true,   CallCenterWizard::THE_END,user_id)
+    create_call_center_step_rule(user_id, CallCenterWizard::AMBULANCE_DISPATCHED, false,   CallCenterWizard::THE_END,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::THE_END,              true,   CallCenterWizard::THE_END,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::THE_END,              false,  CallCenterWizard::THE_END,user_id)
     
