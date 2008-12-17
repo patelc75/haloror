@@ -23,7 +23,7 @@ class CriticalMailer < ActionMailer::ARMailer
     link = get_link_to_call_center()
     setup_message(event.to_s, @caregiver_info + "\n\nYou received this email because you’re an operator.\n\n#{link}")
     setup_operators(event, :recepients, :include_phone_call) 
-    setup_emergency_group(event, :recepients)
+    #setup_emergency_group(event, :recepients)
     self.priority  = event.priority
   end
   
@@ -32,7 +32,7 @@ class CriticalMailer < ActionMailer::ARMailer
     link = get_link_to_call_center_text()
     setup_message(event.to_s, "Go here: " + link + " If site down, use paper scripts with this info:" + @caregiver_info)
     setup_operators(event, :recepients, :include_phone_call) 
-    setup_emergency_group(event, :recepients)
+    # setup_emergency_group(event, :recepients)
     @recipients = @text_recipients
     self.priority  = event.priority    
   end
