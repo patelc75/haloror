@@ -20,6 +20,7 @@ class CallCenterWizard < ActiveRecord::Base
   CAREGIVER_GO_TO_HOUSE = "Caregiver, go to user house?" 
   ON_BEHALF_GO_TO_HOUSE = "Ask if they will call 911 from user's house on behalf of halouser?"        
   ON_BEHALF             = "Ask if they will call 911 on behalf of halouser?"
+  PRE_AGENT_CALL_911    = "PRE Agent Call 911"
   AGENT_CALL_911        = "Agent Call 911" 
   AMBULANCE_DISPATCHED  = "Ambulance Dispatched"
   THE_END               = "Resolve the Event"
@@ -94,6 +95,7 @@ class CallCenterWizard < ActiveRecord::Base
 	  create_call_center_step(USER_OK, user, operator, "Notes for User #{self.user.name}")
 	  create_call_center_step(USER_AMBULANCE, user, operator, "Notes for User #{self.user.name}")
 	  create_call_center_step(ON_BEHALF, user, operator, "Notes for User #{self.user.name}")    
+	  create_call_center_step(PRE_AGENT_CALL_911, user, operator, "Notes for User #{self.user.name}")
 	  create_call_center_step(AGENT_CALL_911, user, operator, "Notes for User #{self.user.name}")
 	  create_call_center_step(AMBULANCE_DISPATCHED, user, operator, "Notes for User #{self.user.name}")
 	  #create caregiver steps
@@ -109,7 +111,8 @@ class CallCenterWizard < ActiveRecord::Base
     	  create_caregiver_call_center_step(caregiver, ON_BEHALF_GO_TO_HOUSE, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
     	  create_caregiver_call_center_step(caregiver, AMBULANCE, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
     	  create_caregiver_call_center_step(caregiver, ON_BEHALF, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
-    	  create_caregiver_call_center_step(caregiver, AGENT_CALL_911, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
+    	  create_caregiver_call_center_step(caregiver, PRE_AGENT_CALL_911, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
+        create_caregiver_call_center_step(caregiver, AGENT_CALL_911, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
     	  create_caregiver_call_center_step(caregiver, AMBULANCE_DISPATCHED, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
     	  create_caregiver_call_center_step(caregiver, THE_END, user, operator, "Notes for Caregiver ##{caregiver.position} #{caregiver.name}")
 	  end

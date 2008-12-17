@@ -374,6 +374,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_THANK_YOU    => "Thank You!",
       CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
+      CallCenterWizard::PRE_AGENT_CALL_911     => "Can you call an ambulance?",
       CallCenterWizard::AGENT_CALL_911         => "Call 911",
       CallCenterWizard::AMBULANCE_DISPATCHED   => "Dispatch ambulance",
       CallCenterWizard::THE_END                => "Resolve the Event"
@@ -388,6 +389,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::USER_OK                => "Is User OK?",
       CallCenterWizard::USER_AMBULANCE         => "Is Ambulance Needed?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
+      CallCenterWizard::PRE_AGENT_CALL_911     => "Can you call an ambulance?",
       CallCenterWizard::AGENT_CALL_911         => "call 911",
       CallCenterWizard::AMBULANCE_DISPATCHED   => "dispatch ambulance",
       CallCenterWizard::THE_END                => "Resolve the Event"
@@ -407,6 +409,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_THANK_YOU    => get_caregiver_thank_you_script(caregiver),
       CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
+      CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
       CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
@@ -421,6 +424,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
       CallCenterWizard::USER_OK                => get_user_ok_script(operator, event),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
+      CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
       CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
@@ -540,7 +544,22 @@ class User < ActiveRecord::Base
 		eos
     return info
   end
-  
+  def get_ambulance_start_script(operator, event)
+    service_name = '911 or local emergency service'
+    service_name = self.profile.emergency_number.name if self.profile.emergency_number
+    number = '911'
+    number = self.profile.emergency_number.number if self.profile.emergency_number
+    info = <<-eos
+		<div style="font-size: xx-large"><b><font color="white">Call #{service_name} at #{number}</font></b></div>
+		<br><br>
+		<font color="white">Recite this script:</font><br><br>
+		<i>"My name is #{operator.name} representing Halo Monitoring, Inc. We have  
+    detected a #{event.event_type} for #{self.name} and have the approval to dispatch an  
+    ambulance. Can you dispatch an ambulance?”</i>
+    <br><br>
+    eos
+    return info
+  end
   def get_ambulance_script(operator, event)
     service_name = '911 or local emergency service'
     service_name = self.profile.emergency_number.name if self.profile.emergency_number
@@ -550,7 +569,7 @@ class User < ActiveRecord::Base
 		<div style="font-size: xx-large"><b><font color="white">Call #{service_name} at #{number}</font></b></div>
 		<br><br>
 		<font color="white">Recite this script:</font><br><br>
-		<i>"My name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} for #{self.name} and have the approval to disptach an ambulance. Can you dispatch an amublance to<br>
+		<i>"Please send amublance to<br>
 		<br>
 		#{self.profile.address}<br>
 		#{self.profile.city}, #{self.profile.state} #{self.profile.zipcode}<br>"
