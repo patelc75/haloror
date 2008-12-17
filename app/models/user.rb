@@ -582,10 +582,10 @@ class User < ActiveRecord::Base
     return info
   end
   def vitals_text
-    vital = Vital.find(:first, :conditions => "user_id = #{self.id}", :order => 'timestamp desc')
-    skintemp = SkinTemp.find(:first, :conditions => "user_id = #{self.id}", :order => 'timestamp desc')
+    vital = Vital.find(:first, :conditions => "user_id = #{self.id} AND heartrate <> -1", :order => 'timestamp desc')
+    skintemp = SkinTemp.find(:first, :conditions => "user_id = #{self.id} AND skin_temp <> -1", :order => 'timestamp desc')
     if vital && skintemp &&  vital.timestamp && skintemp.timestamp
-        return "\"#{self.name}'s vitals are:  <br>heartrate: #{vital.heartrate} bpm (as of #{vital.timestamp.to_s})  <br>current temp:  #{skintemp} F (as of #{skintemp.timestamp})\""
+        return "\"#{self.name}'s vitals are:  <br>heartrate: #{vital.heartrate} bpm (as of #{vital.timestamp.to_s})  <br>current temp:  #{skintemp.skin_temp} F (as of #{skintemp.timestamp})\""
     end
   end
   def format_phone(number)
