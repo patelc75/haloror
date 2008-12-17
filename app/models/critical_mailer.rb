@@ -46,10 +46,9 @@ class CriticalMailer < ActionMailer::ARMailer
     suffix = "The  following contact info is only used for disaster recovery."
     host = ServerInstance.current_host
     if ServerInstance.in_hostname?('sdev')
-      return "Please use try following link to accept and handle the event on the the call center overview page.  \n\nhttps://sdev.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center \n\n " + suffix 
-    end
+      return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://sdev.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center \n\n " + suffix 
     elsif ServerInstance.in_hostname?('crit2')
-      return "Please use try following link to accept and handle the event on the the call center overview page.  \n\nhttps://www.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center \n\n " + suffix 
+      return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://www.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center \n\n " + suffix 
     end
     
     return "Please use the following link to accept and handle the event on the the call center overview page. \n\n https://#{ServerInstance.current_host}/call_center \n\n " + suffix 
