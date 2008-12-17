@@ -2,6 +2,7 @@ require 'ruleby'
 class CallCenterController < ApplicationController
   before_filter :authenticate_admin_operator?, :except => 'show'
   before_filter :authenticate_admin_operator_moderator?, :only => 'show'
+  helper :utility
   include UtilityHelper
   include Ruleby
   def index

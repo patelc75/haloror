@@ -13,6 +13,18 @@
 <br />
 <br />
 <% end %>
+<% if /Resolve/ =~ @call_center_step.script  %>
+<%   now = Time.now
+  accepted_time = UtilityHelper::seconds_format((@event.accepted?.created_at - @event.timestamp)/1000)
+  resolved_time = UtilityHelper::seconds_format((now - @event.accepted?.created_at)/1000)
+  total_time = UtilityHelper::seconds_format((now - @event.timestamp)/1000)
+  %>
+  <%= accepted_time %> from event to accepted<br>
+  <%= resolved_time %> from accepted to resolved<br>
+  <%= total_time %> TOTAL
+  <br>
+  <br>
+<% end %>
 <% if !@call_center_step.previous_call_center_step_id.blank? %>
   <a href="#" style="color: white;" onclick="previous_step(<%=@call_center_step.previous_call_center_step_id %>)">Previous</a>
 <% end %>

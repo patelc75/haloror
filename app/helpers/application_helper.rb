@@ -1,6 +1,6 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
-    
+    include UtilityHelper
   #these are taken from cd /var/lib/pgsql/data/pg_hba.conf on dfw-web1
   #don't need this because we're filter on Google Analytics site (Edit Settings)
 #  @@google_analytics_filter = ["74.138.221.245", 
