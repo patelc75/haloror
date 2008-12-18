@@ -21,7 +21,7 @@ class EventActionObserver < ActiveRecord::Observer
     host = ServerInstance.current_host_short_string()
     if host == 'HALO'
       send_it(description, 'crit2.data.myhalomonitor.com', event_action)
-    elsif host == 'sdev'
+    elsif host == 'SDEV'
       send_it(description, 'sdev.crit2.data.myhalomonitor.com', event_action)
     end
   end

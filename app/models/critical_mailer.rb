@@ -43,16 +43,20 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   def get_link_to_call_center()
-    suffix = "The  following contact info is only used for disaster recovery."
+    suffix = "The following contact info is only used for disaster recovery."
     host = ServerInstance.current_host
-    if ServerInstance.in_hostname?('sdev')
-      return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://sdev.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center \n\n " + suffix 
-    elsif ServerInstance.in_hostname?('crit2')
-      return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://www.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{ServerInstance.current_host}/call_center \n\n " + suffix 
+    if ServerInstance.in_hostname?('crit1')
+      host.gsub!('crit1', 'crit2')
+    else
+      host.gsub!('crit2', 'crit1')
     end
-    
-    return "Please use the following link to accept and handle the event on the the call center overview page. \n\n https://#{ServerInstance.current_host}/call_center \n\n " + suffix 
+    if ServerInstance.in_hostname?('sdev')        
+        return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://sdev.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{host}/call_center \n\n " + suffix
+    else
+      return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://www.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{host}/call_center \n\n " + suffix 
+    end
   end
+  
   def call_center_caregiver(event_action)
     setup_message(event_action.to_s, event_action.email_body + "\n\nYou received this email because you’re a Halo User or caregiver of #{event_action.event.user.name}")
     setup_caregivers(event_action.event.user, event_action.event.event, :recepients)
@@ -129,7 +133,7 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   def setup_operators(event, mode, phone = :no_phone_call)
-    ops = User.operators
+    ops = User.active_operators
     groups = event.user.group_memberships
     operators = []
     ops.each do |op|

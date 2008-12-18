@@ -323,7 +323,22 @@ class User < ActiveRecord::Base
     halousers = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'halouser']
     return halousers
   end
-  
+  def self.active_operators
+    os = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
+    os2 = []
+    os.each do |operator|
+      role = operator.roles_user_by_role_name('operator')
+      opt = role.roles_users_option
+      if opt.blank?
+        opt = RolesUsersOption.new(:roles_user_id => role.id, :active => true, :removed => false)
+        opt.save!
+        os2 << operator
+      elsif !opt.removed && opt.active
+        os2 << operator
+      end
+    end
+    return os2
+  end
   def self.operators
     os = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
     os2 = []
