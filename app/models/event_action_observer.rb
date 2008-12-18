@@ -4,11 +4,11 @@ class EventActionObserver < ActiveRecord::Observer
     if event_action[:send_email] != false
       email = CriticalMailer.deliver_call_center_operator(event_action)
       if event_action.description == "accepted"
-        send_to_backup('accepted', event_action)
+       # send_to_backup('accepted', event_action)
       end
       if event_action.description == "resolved"
         email = CriticalMailer.deliver_call_center_caregiver(event_action)  
-        send_to_backup('resolved', event_action) 
+      #  send_to_backup('resolved', event_action) 
       end
     end
   end
