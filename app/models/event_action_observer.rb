@@ -31,6 +31,6 @@ class EventActionObserver < ActiveRecord::Observer
     event = event_action.event
     http = SimpleHttp.new URI.parse("https://#{host}/call_center_accept/accept")
     http.basic_authentication SYSTEM_USERNAME, SYSTEM_PASSWORD
-    http.post "description=#{description}&timestamp=#{event.timestamp.to_s}&user_id=#{event.user_id}&operator_id=#{event_action.user_id}"
+    http.post "description=#{description}&timestamp=\"#{event.timestamp.to_s}\"&user_id=#{event.user_id}&operator_id=#{event_action.user_id}"
   end
 end
