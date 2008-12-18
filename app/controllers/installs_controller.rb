@@ -635,7 +635,7 @@ class InstallsController < ApplicationController
   end
   
   def check_gateway_timeout?
-    timeout?(REGISTRATION_COMPLETE_ID, 166.seconds)
+    timeout?(REGISTRATION_COMPLETE_ID, 220.seconds)
   end
   
   def check_phone_timeout?
