@@ -32,7 +32,7 @@ class AtpNextDeviceController < ApplicationController
       mac_address = get_next_mac_address(serial_number, dt_wo)
       device = Device.new(:serial_number => serial_number, :mac_address => mac_address, :device_revision_id => revision_id, :work_order_id => work_order_id)
       device.save!
-      xml = device.to_xml(:dasherize => false, :skip_types => true, :except => :device_type, :include => {:device_revision => {:include => {:device_model => {:include => {:device_type => {:include => :atp_items}}}}}})
+      xml = device.to_xml(:dasherize => false, :skip_types => true, :include => {:device_revision => {:include => {:device_model => {:include => {:device_type => {:include => :atp_items}}}}}})
     end
     return xml
   end
