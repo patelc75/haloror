@@ -98,6 +98,7 @@ class CallCenterController < ApplicationController
       action.event_id = @event.id
       action.description = 'resolved'
       action.save!
+      send_admin_call_log_email()
        @call_center_step = CallCenterStep.new(:header => CallCenterWizard::THE_END,
                                                 :script => "The event is now resolved. Click <a style=\"color: white;\" href=\"/call_center/index\">here</a> to go to the Call Center Overview.",
                                                 :instruction => CallCenterWizard::THE_END)
@@ -247,5 +248,32 @@ class CallCenterController < ApplicationController
     @user_id = event.user_id
     @notes = Note.find(:all, :conditions => "event_id = #{@event_id}", :order => "created_at desc")
     render :template => 'call_center/all_notes'
+  end
+  private
+  def send_admin_call_log_email()
+    body = ""
+    steps = @call_center_wizard.call_center_session.call_center_steps.sort do |a, b|
+      a.updated_at <=> b.updated_at
+    end
+    steps.each do |step|
+      if !step.answer.blank?
+        body << "\n\n#{step.instruction}  \n#{step.answer}  \n#{step.notes}"
+      end
+    end
+      accepted_time = UtilityHelper::seconds_format((@event.accepted?.created_at - @event.timestamp).seconds)
+      resolved_time = UtilityHelper::seconds_format((@event.resolved?.created_at - @event.accepted?.created_at).seconds)
+      total_time = UtilityHelper::seconds_format((@event.resolved?.created_at - @event.timestamp).seconds)
+      body << "\n\n #{accepted_time} from event to accepted"
+      body << "\n #{resolved_time} from accepted to resolved"
+      body << "\n #{total_time} from event to resolved"
+      recipients = User.super_admins()
+      groups = @user.group_memberships
+      admins = User.administrators()
+      admins.each do |admin|
+        if admin.is_admin_of_any?(groups)
+          recipients << admin
+        end
+      end
+      CriticalMailer.deliver_admin_call_log(@event, body, recipients)
   end
 end

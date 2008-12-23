@@ -314,6 +314,10 @@ class User < ActiveRecord::Base
     end
     return false
   end
+  def self.super_admins
+    admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'super_admin']
+    return admins
+  end
   def self.administrators
     admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'administrator']
     return admins

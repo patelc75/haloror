@@ -12,6 +12,15 @@ class CriticalMailer < ActionMailer::ARMailer
     self.priority = alert.priority
   end
   
+  def admin_call_log(event, body, recipients)
+    @recipients = []
+    setup_message('Call Log', body)
+    recipients.each do |admin|
+      @recipients << ["#{admin.email}"] 
+    end
+    self.priority = Priority::IMMEDIATE
+  end
+  
   def device_event_caregiver(event)
     setup_message(event.to_s, event.email_body + "\n\nYou received this email because you’re a Halo User or caregiver of #{event.user.name}")
     setup_caregivers(event.user, event, :recepients)
