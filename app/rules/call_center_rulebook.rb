@@ -69,7 +69,7 @@ class CallCenterRulebook < Ruleby::Rulebook
         create_call_center_step_rule(caregiver_id, CallCenterWizard::AGENT_CALL_911,         false,   CallCenterWizard::THE_END,caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE_DISPATCHED,   true,   CallCenterWizard::THE_END,caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE_DISPATCHED,   false,   CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver.id)
-        create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE,              false,  CallCenterWizard::THE_END, caregiver_id)
+        create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE,              false,  CallCenterWizard::CAREGIVER_THANK_YOU, caregiver_id)
         create_call_center_step_rule(user_id,      CallCenterWizard::THE_END,                true,   CallCenterWizard::THE_END,caregiver_id)
         create_call_center_step_rule(user_id,      CallCenterWizard::THE_END,                false,  CallCenterWizard::THE_END,caregiver_id)
         caregiver_id = caregiver.id
@@ -98,7 +98,7 @@ class CallCenterRulebook < Ruleby::Rulebook
           create_call_center_step_rule(caregiver_id, CallCenterWizard::AGENT_CALL_911,         false,   CallCenterWizard::THE_END,caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE_DISPATCHED,   true,   CallCenterWizard::THE_END,caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE_DISPATCHED,   false,   CallCenterWizard::CAREGIVER_MOBILE_PHONE,nil)
-          create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE,              false,  CallCenterWizard::THE_END, caregiver_id)
+          create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE,              false,  CallCenterWizard::CAREGIVER_THANK_YOU, caregiver_id)
           create_call_center_step_rule(user_id,      CallCenterWizard::THE_END,                true,   CallCenterWizard::THE_END,caregiver_id)
           create_call_center_step_rule(user_id,      CallCenterWizard::THE_END,                false,  CallCenterWizard::THE_END,caregiver_id)
     end

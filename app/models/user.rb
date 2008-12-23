@@ -426,7 +426,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
-      CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => "Was Halo Emergency Services able to dispatch an ambulance properly?",
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
     script = scripts[key]
@@ -441,7 +441,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
-      CallCenterWizard::AMBULANCE_DISPATCHED   => "Was the ambulance dispatched properly?",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => "Was Halo Emergency Services able to dispatch an ambulance properly?",
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
     script = scripts[key]
@@ -538,7 +538,7 @@ class User < ActiveRecord::Base
   def get_caregiver_script(caregiver, operator, event)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i>"Is an ambulance is needed for #{self.name}?"
+		<i>"Would you like for an ambulance to be dispatched for #{self.name}?  If not, we will call the next caregiver."
 		</i>
 		eos
     return info
@@ -598,7 +598,7 @@ class User < ActiveRecord::Base
   end
   def vitals_text
     vital = Vital.find(:first, :conditions => "user_id = #{self.id} AND heartrate <> -1", :order => 'timestamp desc')
-    skintemp = SkinTemp.find(:first, :conditions => "user_id = #{self.id} AND skin_temp <> -1", :order => 'timestamp desc')
+    skintemp = SkinTemp.find(:first, :conditions => "user_id = #{self.id} AND skin_temp <> -1 AND skin_temp <> 0", :order => 'timestamp desc')
     if vital && skintemp &&  vital.timestamp && skintemp.timestamp
         return "\"#{self.name}'s vitals are:  <br>heartrate: #{vital.heartrate} bpm (as of #{vital.timestamp.to_s})  <br>current temp:  #{skintemp.skin_temp} F (as of #{skintemp.timestamp})\""
     end

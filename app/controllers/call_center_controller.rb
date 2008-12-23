@@ -92,13 +92,23 @@ class CallCenterController < ApplicationController
     end
     previous_step = CallCenterStep.find(params[:call_center_step_id])
     ans = previous_step.answer ? 'Yes' : 'No'
-    render(:update) do |page|
-      page['instruction_' + previous_step.id.to_s].replace_html previous_step.instruction
-      page['answer_' + previous_step.id.to_s].replace_html ans
-      page['breaker_' + previous_step.id.to_s].replace_html "<hr />"
-      page << "accordion.step(#{@call_center_step.id});"
-      page['call_center-wizard'].replace_html render(:partial => 'script', :layout => false)
+    if /Resolve/ =~ @call_center_step.script
+      action = EventAction.new
+      action.user_id = current_user.id
+      action.event_id = @event.id
+      action.description = 'resolved'
+      action.save!
+       @call_center_step = CallCenterStep.new(:header => CallCenterWizard::THE_END,
+                                                :script => "The event is now resolved. Click <a style=\"color: white;\" href=\"/call_center/index\">here</a> to go to the Call Center Overview.",
+                                                :instruction => CallCenterWizard::THE_END)
     end
+      render(:update) do |page|
+        page['instruction_' + previous_step.id.to_s].replace_html previous_step.instruction
+        page['answer_' + previous_step.id.to_s].replace_html ans
+        page['breaker_' + previous_step.id.to_s].replace_html "<hr />"
+        page << "accordion.step(#{@call_center_step.id});"
+        page['call_center-wizard'].replace_html render(:partial => 'script', :layout => false)
+      end
     
   end
   
