@@ -452,9 +452,22 @@ class User < ActiveRecord::Base
     return script
   end 
   def get_caregiver_thank_you_script(caregiver)
+    caregivers = self.active_caregivers
+    next_caregiver = false
+    ncg = nil
+    caregivers.each do |cg|
+      if next_caregiver == true
+        ncg = cg
+      end
+      if cg == caregiver
+        next_caregiver = true
+      end      
+    end
+    caregiver_name = ''
+    caregiver_name = ncg.name if ncg
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i>"Thank You.  We will be contacting the next caregiver.  Good Bye."</i>
+  	<i>"Thank You.  We will be contacting #{caregiver_name}, the next caregiver.  Good Bye."</i>
   	eos
     return info
   end
@@ -540,9 +553,22 @@ class User < ActiveRecord::Base
   end
   
   def get_caregiver_script(caregiver, operator, event)
+    caregivers = self.active_caregivers
+    next_caregiver = false
+    ncg = nil
+    caregivers.each do |cg|
+      if next_caregiver == true
+        ncg = cg
+      end
+      if cg == caregiver
+        next_caregiver = true
+      end      
+    end
+    caregiver_name = ''
+    caregiver_name = ncg.name if ncg
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i>"Would you like for an ambulance to be dispatched for #{self.name}?  If not, we will call the next caregiver."
+		<i>"Would you like for an ambulance to be dispatched for #{self.name}?  If not, we will call #{caregiver_name}, the next caregiver."
 		</i>
 		eos
     return info
