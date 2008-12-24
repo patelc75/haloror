@@ -458,6 +458,7 @@ class User < ActiveRecord::Base
     caregivers.each do |cg|
       if next_caregiver == true
         ncg = cg
+        next_caregiver = false
       end
       if cg == caregiver
         next_caregiver = true
@@ -568,6 +569,7 @@ class User < ActiveRecord::Base
     caregivers.each do |cg|
       if next_caregiver == true
         ncg = cg
+        next_caregiver = false
       end
       if cg == caregiver
         next_caregiver = true
