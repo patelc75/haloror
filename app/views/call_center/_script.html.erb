@@ -17,6 +17,17 @@
   <% end %>
 <br />
 <br />
+<% else %>
+<%
+accepted_time = UtilityHelper::seconds_format((@event.accepted?.created_at - @event.timestamp).seconds)
+resolved_time = UtilityHelper::seconds_format((@event.resolved?.created_at - @event.accepted?.created_at).seconds)
+total_time = UtilityHelper::seconds_format((@event.resolved?.created_at - @event.timestamp).seconds)
+%>
+<font color="white"><div>
+<%="#{accepted_time} from event to accepted"%><br>
+<%="#{resolved_time} from accepted to resolved"%><br>
+<%="#{total_time} from event to resolved"%><br>
+</div></font>
 <% end %>
 <% end %>
 
