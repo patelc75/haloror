@@ -432,7 +432,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911 => get_thank_you_pre_agent(),
       CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
-      CallCenterWizard::AMBULANCE_DISPATCHED   => "Was Halo Emergency Services able to dispatch an ambulance properly?",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulanc_dispatched(),
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
     script = scripts[key]
@@ -447,7 +447,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
-      CallCenterWizard::AMBULANCE_DISPATCHED   => "Was Halo Emergency Services able to dispatch an ambulance properly?",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulance_dispatched(),
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
     script = scripts[key]
