@@ -465,11 +465,20 @@ class User < ActiveRecord::Base
     end
     caregiver_name = ''
     caregiver_name = ncg.name if ncg
-    info = <<-eos	
-  	<font color="white">Recite this script:</font><br>
-  	<i>"Thank You.  We will be contacting #{caregiver_name}, the next caregiver.  Good Bye."</i>
-  	eos
-    return info
+    if !caregiver_name.blank?
+      info = <<-eos	
+  	  <font color="white">Recite this script:</font><br>
+  	  <i>"Thank You.  We will be contacting #{caregiver_name}, the next caregiver.  Good Bye."</i>
+  	  eos
+      return info
+    else
+        info = <<-eos	
+    	  <font color="white">Recite this script:</font><br>
+    	  <i>"Thank You.  Halo Emergency Services will try to dispatch an ambulance.  Good Bye."</i>
+    	  eos
+        return info
+    
+    end
   end
   def get_user_ok_script(operator,event)
     info = ''
@@ -566,12 +575,21 @@ class User < ActiveRecord::Base
     end
     caregiver_name = ''
     caregiver_name = ncg.name if ncg
-    info = <<-eos
-		<font color="white">Recite this script:</font><br>
-		<i>"Would you like for an ambulance to be dispatched for #{self.name}?  If not, we will call #{caregiver_name}, the next caregiver."
-		</i>
-		eos
-    return info
+    if !caregiver_name.blank?
+      info = <<-eos
+		  <font color="white">Recite this script:</font><br>
+		  <i>"Would you like for an ambulance to be dispatched for #{self.name}?  If not, we will call #{caregiver_name}, the next caregiver."
+		  </i>
+		  eos
+      return info
+    else
+        info = <<-eos
+  		  <font color="white">Recite this script:</font><br>
+  		  <i>"Would you like for an ambulance to be dispatched for #{self.name}?"
+  		  </i>
+  		  eos
+        return info      
+    end
   end
   def get_on_behalf_script(name)
     info = <<-eos
