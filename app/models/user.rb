@@ -474,19 +474,22 @@ class User < ActiveRecord::Base
   	  <i>"Thank You.  We will be contacting #{caregiver_name}, the next caregiver.  Good Bye."</i>
   	  eos
       return info
-    else
-        info = <<-eos	
-    	  <font color="white">Recite this script:</font><br>
-    	  <i>"We will now be calling Halo Emergency Service to dispatch an amublance. Goodbye"</i>
-    	  eos
-        return info
+    else  service_name = '911 or local emergency service'
+      service_name = self.profile.emergency_number.name if self.profile.emergency_number
+      info = <<-eos	
+  	  <font color="white">Recite this script:</font><br>
+  	  <i>"We will now be calling #{service_name} to dispatch an amublance. Goodbye"</i>
+  	  eos
+      return info
     
     end
   end
   def get_thank_you_pre_agent
+    service_name = '911 or local emergency service'
+    service_name = self.profile.emergency_number.name if self.profile.emergency_number
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i>"We will now be calling Halo Emergency Service to dispatch an amublance. Goodbye"</i>
+	  <i>"We will now be calling #{service_name} to dispatch an amublance. Goodbye"</i>
 	  eos
     return info
   end
