@@ -127,7 +127,7 @@ class CriticalMailer < ActionMailer::ARMailer
   protected
   
   def setup_message(subject, msg_body)
-    @from        = NO_REPLY
+    @from        = "no-reply@#{ServerInstance.current_host}"
     @subject     = "[" + ServerInstance.current_host_short_string + "] "
     @subject     += subject unless subject.blank?
     @sent_on     = Time.now
