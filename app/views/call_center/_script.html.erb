@@ -4,7 +4,7 @@
 <br />
 <% unless /Call Center Overview/ =~ @call_center_step.script %>
 <% unless /Resolve/ =~ @call_center_step.script  %>
-  <% if @call_center_step.question_key != 'THANK YOU' %>
+  <% if @call_center_step.question_key != 'THANK YOU' || /Goodbye/ =~ @call_center_step.script %>
   <button style="font-size: x-large;" onclick="$('note_save').click();step('Yes',<%=@call_center_step.id %>);">Yes</button>
 &nbsp;&nbsp;--&nbsp;&nbsp;
   <button style="font-size: x-large;" onclick="$('note_save').click();step('No',<%=@call_center_step.id %>);">No</button>
