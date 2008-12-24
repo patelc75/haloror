@@ -15,9 +15,10 @@ class CriticalMailer < ActionMailer::ARMailer
   def admin_call_log(event, body, recipients)
     @recipients = []
     setup_message('Call Log', body)
-    recipients.each do |admin|
-      @recipients << ["#{admin.email}"] 
-    end
+    #recipients.each do |admin|
+     # @recipients << ["#{admin.email}"] 
+    #end
+    @recipients = ["reports@halomonitoring.com"] 
     self.priority = Priority::IMMEDIATE
   end
   
