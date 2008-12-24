@@ -393,6 +393,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_THANK_YOU    => "Thank You!",
       CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
+      CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911 => "Thank You, Agent will call."
       CallCenterWizard::PRE_AGENT_CALL_911     => "Can you call an ambulance?",
       CallCenterWizard::AGENT_CALL_911         => "Call 911",
       CallCenterWizard::AMBULANCE_DISPATCHED   => "Dispatch ambulance",
@@ -428,6 +429,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_THANK_YOU    => get_caregiver_thank_you_script(caregiver),
       CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
+      CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911 => get_thank_you_pre_agent(),
       CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
       CallCenterWizard::AMBULANCE_DISPATCHED   => "Was Halo Emergency Services able to dispatch an ambulance properly?",
@@ -475,11 +477,18 @@ class User < ActiveRecord::Base
     else
         info = <<-eos	
     	  <font color="white">Recite this script:</font><br>
-    	  <i>"Thank You.  Halo Emergency Services will try to dispatch an ambulance.  Good Bye."</i>
+    	  <i>"We will now be calling Halo Emergency Service to dispatch an amublance. Goodbye"</i>
     	  eos
         return info
     
     end
+  end
+  def get_thank_you_pre_agent
+    info = <<-eos	
+	  <font color="white">Recite this script:</font><br>
+	  <i>"We will now be calling Halo Emergency Service to dispatch an amublance. Goodbye"</i>
+	  eos
+    return info
   end
   def get_user_ok_script(operator,event)
     info = ''
