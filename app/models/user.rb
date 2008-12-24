@@ -393,7 +393,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_THANK_YOU    => "Thank You!",
       CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
-      CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911 => "Thank You, Agent will call."
+      CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911 => "Thank You, Agent will call.",
       CallCenterWizard::PRE_AGENT_CALL_911     => "Can you call an ambulance?",
       CallCenterWizard::AGENT_CALL_911         => "Call 911",
       CallCenterWizard::AMBULANCE_DISPATCHED   => "Dispatch ambulance",
