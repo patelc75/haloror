@@ -453,6 +453,17 @@ class User < ActiveRecord::Base
     script = scripts[key]
     return script
   end 
+  def get_ambulance_dispatched
+    info = <<-eos	
+    We have the following address on file:<br>
+		<br>
+		#{self.profile.address}<br>
+		#{self.profile.city}, #{self.profile.state} #{self.profile.zipcode}<br>
+    <font color="white">Recite this script:</font><br>
+		<i>"Please use the correct address when calling 911. Thank you. Goodbye."</i>
+		<br>
+		eos
+  end
   def get_caregiver_thank_you_script(caregiver)
     caregivers = self.active_caregivers
     next_caregiver = false
