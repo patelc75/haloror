@@ -383,9 +383,9 @@ class User < ActiveRecord::Base
   end
   def get_cg_instruction(key, operator, caregiver)
     instructions = { 
-      CallCenterWizard::CAREGIVER_MOBILE_PHONE => "Mobile" + format_phone(caregiver.profile.cell_phone) + "?",
-      CallCenterWizard::CAREGIVER_HOME_PHONE   => "Home" + format_phone(caregiver.profile.home_phone) + "?",
-      CallCenterWizard::CAREGIVER_WORK_PHONE   => "Work" + format_phone(caregiver.profile.work_phone) + "?",
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE => "Mobile " + format_phone(caregiver.profile.cell_phone) + "?",
+      CallCenterWizard::CAREGIVER_HOME_PHONE   => "Home " + format_phone(caregiver.profile.home_phone) + "?",
+      CallCenterWizard::CAREGIVER_WORK_PHONE   => "Work " + format_phone(caregiver.profile.work_phone) + "?",
       CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => "Accept responsibility?",
       CallCenterWizard::CAREGIVER_AT_HOUSE     => "At House?",
       CallCenterWizard::CAREGIVER_GO_TO_HOUSE  => "Can you go to house?",
@@ -395,9 +395,9 @@ class User < ActiveRecord::Base
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
       CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911 => "Thank You, Agent will call.",
       CallCenterWizard::PRE_AGENT_CALL_911     => "Can you call an ambulance?",
-      CallCenterWizard::AGENT_CALL_911         => "Call 911",
-      CallCenterWizard::AMBULANCE_DISPATCHED   => "Dispatch ambulance",
-      CallCenterWizard::THE_END                => "Resolve the Event"
+      CallCenterWizard::AGENT_CALL_911         => "Ambulance dispatched properly?",
+      CallCenterWizard::AMBULANCE_DISPATCHED   => "Ambulance dispatched.",
+      CallCenterWizard::THE_END                => "Resolved the Event"
     }
     instruction = instructions[key]
     return instruction
@@ -406,13 +406,13 @@ class User < ActiveRecord::Base
     instructions = { 
       CallCenterWizard::USER_HOME_PHONE        => "Home " + format_phone(self.profile.home_phone) + "?",
       CallCenterWizard::USER_MOBILE_PHONE      => "Mobile " + format_phone(self.profile.cell_phone)+ "?",
-      CallCenterWizard::USER_OK                => "Does user need ambulance?",
-      CallCenterWizard::USER_AMBULANCE         => "Does user need ambulance?",
+      CallCenterWizard::USER_OK                => "Dispatch ambulance?",
+      CallCenterWizard::USER_AMBULANCE         => "Can dispatcher send ambulance?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
       CallCenterWizard::PRE_AGENT_CALL_911     => "Can dispatcher dispatch an ambulance?",
       CallCenterWizard::AGENT_CALL_911         => "Ambulance dispatched properly?",
       CallCenterWizard::AMBULANCE_DISPATCHED   => "Ambulance dispatched.",
-      CallCenterWizard::THE_END                => "Resolve the Event"
+      CallCenterWizard::THE_END                => "Resolved the Event"
     }
     instruction = instructions[key]
     return instruction
