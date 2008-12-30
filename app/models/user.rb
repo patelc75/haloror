@@ -380,11 +380,9 @@ class User < ActiveRecord::Base
       opt = true
     elsif type == 'Caregiver'
       option = self.alert_option_by_type(user, Panic.new)
-      RAILS_DEFAULT_LOGGER.warn "CAREGIVER#{option.inspect}"
       opt = option.phone_active if option
     elsif type == 'Operator'
       option = self.alert_option_by_type_operator(user, Panic.new)
-      RAILS_DEFAULT_LOGGER.warn option.inspect
       opt = option.phone_active if option
     end
     if(opt && user.profile && (!user.profile.home_phone.blank? || !user.profile.work_phone.blank? || !user.profile.cell_phone.blank?))
@@ -696,8 +694,6 @@ class User < ActiveRecord::Base
     number = '911'
     number = self.profile.emergency_number.number if self.profile.emergency_number
     info = <<-eos
-		<div style="font-size: xx-large"><b><font color="white">Call #{service_name} at #{number}</font></b></div>
-		<br><br>
 		<font color="white">Recite this script:</font><br><br>
 		<i>"Please send amublance to<br>
 		<br>
