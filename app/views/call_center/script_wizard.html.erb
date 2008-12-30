@@ -83,8 +83,14 @@ div.accordion-content{
           <div class="accordion-toggle"><%= header %></div>
           <div class="accordion-content">
           <% user = User.find(step.user_id)
-             if !user.has_phone?() %>
-               No Phone Number in Profile
+             type = 'Operator'
+             if user == @user
+               type = 'HaloUser'
+             elsif user.is_caregiver_for? @user
+               type = 'Caregiver'
+             end
+             if !@user.has_phone?(user,type) %>
+               No Phone Number in Profile or Call Option Disabled
           <% else  %>
        <% @call_center_wizard.call_center_steps_sorted.each do |step2| 
             if step2.header == header %>
