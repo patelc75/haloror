@@ -380,9 +380,11 @@ class User < ActiveRecord::Base
       opt = true
     elsif type == 'Caregiver'
       option = self.alert_option_by_type(user, Panic)
+      RAILS_DEFAULT_LOGGER.warn option.inspect
       opt = option.phone_active if option
     elsif type == 'Operator'
       option = self.alert_option_by_type_operator(user, Panic)
+      RAILS_DEFAULT_LOGGER.warn option.inspect
       opt = option.phone_active if option
     end
     if(opt && user.profile && (!user.profile.home_phone.blank? || !user.profile.work_phone.blank? || !user.profile.cell_phone.blank?))
