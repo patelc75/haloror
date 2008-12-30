@@ -379,11 +379,11 @@ class User < ActiveRecord::Base
     if type == 'HaloUser'
       opt = true
     elsif type == 'Caregiver'
-      option = self.alert_option_by_type(user, Panic)
+      option = self.alert_option_by_type(user, Panic.new)
       RAILS_DEFAULT_LOGGER.warn option.inspect
       opt = option.phone_active if option
     elsif type == 'Operator'
-      option = self.alert_option_by_type_operator(user, Panic)
+      option = self.alert_option_by_type_operator(user, Panic.new)
       RAILS_DEFAULT_LOGGER.warn option.inspect
       opt = option.phone_active if option
     end
@@ -557,10 +557,10 @@ class User < ActiveRecord::Base
     if role == 'HaloUser'
       opt = true
     elsif role == 'Caregiver'
-      option = self.alert_option_by_type(user, Panic)
+      option = self.alert_option_by_type(user, Panic.new)
       opt = option.phone_active if option
     elsif role == 'Operator'
-      option = self.alert_option_by_type_operator(user, Panic)
+      option = self.alert_option_by_type_operator(user, Panic.new)
       opt = option.phone_active if option
     end
     if user && user.profile && !user.profile.work_phone.blank? && opt
@@ -575,10 +575,10 @@ class User < ActiveRecord::Base
     if role == 'HaloUser'
       opt = true
     elsif role == 'Caregiver'
-      option = self.alert_option_by_type(user, Panic)
+      option = self.alert_option_by_type(user, Panic.new)
       opt = option.phone_active if option
     elsif role == 'Operator'
-      option = self.alert_option_by_type_operator(user, Panic)
+      option = self.alert_option_by_type_operator(user, Panic.new)
       opt = option.phone_active if option
     end
     if user && user.profile && !user.profile.cell_phone.blank? && opt
@@ -593,10 +593,10 @@ class User < ActiveRecord::Base
     if role == 'HaloUser'
       opt = true
     elsif role == 'Caregiver'
-      option = self.alert_option_by_type(user, Panic)
+      option = self.alert_option_by_type(user, Panic.new)
       opt = option.phone_active if option
     elsif role == 'Operator'
-      option = self.alert_option_by_type_operator(user, Panic)
+      option = self.alert_option_by_type_operator(user, Panic.new)
       opt = option.phone_active if option
     end
     if user && user.profile && !user.profile.home_phone.blank? && opt
