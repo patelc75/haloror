@@ -83,7 +83,7 @@ div.accordion-content{
           <div class="accordion-toggle"><%= header %></div>
           <div class="accordion-content">
           <% user = User.find(step.user_id)
-             type = 'Operator'
+             type = ''
              if user == @user
                type = 'HaloUser'
              elsif user.is_caregiver?
