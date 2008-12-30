@@ -380,7 +380,7 @@ class User < ActiveRecord::Base
       opt = true
     elsif type == 'Caregiver'
       option = self.alert_option_by_type(user, Panic.new)
-      RAILS_DEFAULT_LOGGER.warn option.inspect
+      RAILS_DEFAULT_LOGGER.warn "CAREGIVER#{option.inspect}"
       opt = option.phone_active if option
     elsif type == 'Operator'
       option = self.alert_option_by_type_operator(user, Panic.new)
