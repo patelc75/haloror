@@ -86,7 +86,7 @@ div.accordion-content{
              type = 'Operator'
              if user == @user
                type = 'HaloUser'
-             elsif user.is_caregiver_for? @user
+             elsif user.is_caregiver?
                type = 'Caregiver'
              end
              if !@user.has_phone?(user,type) %>
