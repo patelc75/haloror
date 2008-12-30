@@ -385,7 +385,7 @@ class User < ActiveRecord::Base
       option = self.alert_option_by_type_operator(user, Panic)
       opt = option.phone_active if option
     end
-    if(opt && self.profile && (!self.profile.home_phone.blank? || !self.profile.work_phone.blank? || !self.profile.cell_phone.blank?))
+    if(opt && user.profile && (!user.profile.home_phone.blank? || !user.profile.work_phone.blank? || !user.profile.cell_phone.blank?))
       return true
     else
       return false
