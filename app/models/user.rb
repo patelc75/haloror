@@ -374,18 +374,8 @@ class User < ActiveRecord::Base
     name
   end
   
-  def has_phone?(user, type)
-    opt = false
-    if type == 'HaloUser'
-      opt = true
-    elsif type == 'Caregiver'
-      option = self.alert_option_by_type(user, Panic)
-      opt = option.phone_active if option
-    elsif type == 'Operator'
-      option = self.alert_option_by_type_operator(user, Panic)
-      opt = option.phone_active if option
-    end
-    if(opt && user.profile && (!user.profile.home_phone.blank? || !user.profile.work_phone.blank? || !user.profile.cell_phone.blank?))
+  def has_phone?()
+    if(self.profile && (!self.profile.home_phone.blank? || !self.profile.work_phone.blank? || !self.profile.cell_phone.blank?))
       return true
     else
       return false
