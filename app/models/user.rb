@@ -643,7 +643,7 @@ class User < ActiveRecord::Base
     if !caregiver_name.blank?
       info = <<-eos
 		  <font color="white">Recite this script:</font><br>
-		  <i>"Would you like for an ambulance to be dispatched for #{self.name}?  If not, we will call #{caregiver_name}, the next caregiver."
+		  <i>"Would you like for an ambulance to be dispatched for #{self.name}?"
 		  </i>
 		  eos
       return info
