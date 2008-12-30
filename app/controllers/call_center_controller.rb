@@ -59,6 +59,11 @@ class CallCenterController < ApplicationController
     @user = @event.user
     @call_center_session =  @call_center_wizard.call_center_session
     @call_center_step = @call_center_wizard.first_step()
+    if @call_center_step.nil?
+      @call_center_step = CallCenterStep.new(:header => CallCenterWizard::THE_END,
+                                              :script => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{@event.id}\">here to Resolve</a> the event.",
+                                              :instruction => CallCenterWizard::THE_END)
+    end
     render :partial => 'script', :layout => false
   end
   def script_previous

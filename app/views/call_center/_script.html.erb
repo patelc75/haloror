@@ -38,7 +38,7 @@ total_time = UtilityHelper::seconds_format((@event.resolved?.created_at - @event
 <% if @call_center_step.notes.blank? %>
   
   <div id="notes">
-  <%= form_remote_tag :url => url_for(:controller => 'call_center', :action => 'script_note_save')  %>
+  <%= form_remote_tag :asynchronous => false, :url => url_for(:controller => 'call_center', :action => 'script_note_save')  %>
   	<input type="hidden" name="step_id" value="<%= @call_center_step.id %>" />
   <%= text_area_tag :script_note,  @call_center_step.notes, :cols => 30, :rows => 7 %>
   <br />

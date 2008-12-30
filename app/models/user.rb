@@ -374,8 +374,18 @@ class User < ActiveRecord::Base
     name
   end
   
-  def has_phone?
-    if(self.profile && (!self.profile.home_phone.blank? || !self.profile.work_phone.blank? || !self.profile.cell_phone.blank?))
+  def has_phone?(user, type)
+    opt = false
+    if type == 'HaloUser'
+      opt = true
+    elsif type == 'Caregiver'
+      option = self.alert_option_by_type(user, Panic)
+      opt = option.phone_active if option
+    elsif type == 'Operator'
+      option = self.alert_option_by_type_operator(user, Panic)
+      opt = option.phone_active if option
+    end
+    if(opt && self.profile && (!self.profile.home_phone.blank? || !self.profile.work_phone.blank? || !self.profile.cell_phone.blank?))
       return true
     else
       return false
@@ -541,7 +551,17 @@ class User < ActiveRecord::Base
     return info
   end
   def get_able_to_reach_script_work(user, role)
-    if user && user.profile && !user.profile.work_phone.blank?
+    opt = false
+    if role == 'HaloUser'
+      opt = true
+    elsif role == 'Caregiver'
+      option = self.alert_option_by_type(user, Panic)
+      opt = option.phone_active if option
+    elsif role == 'Operator'
+      option = self.alert_option_by_type_operator(user, Panic)
+      opt = option.phone_active if option
+    end
+    if user && user.profile && !user.profile.work_phone.blank? && opt
       return get_able_to_reach_script(user.profile.work_phone, role, user.name, "Work")
     else
       return nil
@@ -549,7 +569,17 @@ class User < ActiveRecord::Base
   end
   
   def get_able_to_reach_script_cell(user, role)
-    if user && user.profile && !user.profile.cell_phone.blank?
+    opt = false
+    if role == 'HaloUser'
+      opt = true
+    elsif role == 'Caregiver'
+      option = self.alert_option_by_type(user, Panic)
+      opt = option.phone_active if option
+    elsif role == 'Operator'
+      option = self.alert_option_by_type_operator(user, Panic)
+      opt = option.phone_active if option
+    end
+    if user && user.profile && !user.profile.cell_phone.blank? && opt
       return get_able_to_reach_script(user.profile.cell_phone, role, user.name, "Mobile")
     else
       return nil
@@ -557,7 +587,17 @@ class User < ActiveRecord::Base
   end
   
   def get_able_to_reach_script_home(user, role)
-    if user && user.profile && !user.profile.home_phone.blank?
+    opt = false
+    if role == 'HaloUser'
+      opt = true
+    elsif role == 'Caregiver'
+      option = self.alert_option_by_type(user, Panic)
+      opt = option.phone_active if option
+    elsif role == 'Operator'
+      option = self.alert_option_by_type_operator(user, Panic)
+      opt = option.phone_active if option
+    end
+    if user && user.profile && !user.profile.home_phone.blank? && opt
       return get_able_to_reach_script(user.profile.home_phone, role, user.name, "Home")
     else
       return nil
