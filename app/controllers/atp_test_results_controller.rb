@@ -6,6 +6,8 @@ class AtpTestResultsController < ApplicationController
       atp_test_result = AtpTestResult.new
       atp_test_result.result = request[:result]
       atp_test_result.operator_id = request[:operator_id]
+      atp_test_result.created_by = request[:operator_id]
+      atp_test_result.comments = request[:comments]
       atp_test_result.device_id = request[:device_id]
       atp_test_result.timestamp = request[:timestamp]
       atp_item_results = request[:atp_item_result]
