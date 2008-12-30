@@ -1,6 +1,6 @@
 class AtpTestResultsController < ApplicationController
   
-  def create
+  def index
     begin
       request = params[:atp_test_result]
       atp_test_result = AtpTestResult.new
