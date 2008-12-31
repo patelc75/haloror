@@ -429,7 +429,7 @@ class User < ActiveRecord::Base
   end
   def get_cg_script(key, operator, caregiver, event)
     scripts = {
-      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script_cell(caregiver, "Caregiver"),      # 
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script_cell(caregiver, "Caregiver"),      
       CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script_home(caregiver, "Caregiver"),
       CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script_work(caregiver, "Caregiver"),
       CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => get_caregiver_responisibility_script(caregiver, event),
@@ -470,7 +470,7 @@ class User < ActiveRecord::Base
 		#{self.profile.address}<br>
 		#{self.profile.city}, #{self.profile.state} #{self.profile.zipcode}<br>
     <font color="white">Recite this script:</font><br>
-		<i>"Please use the correct address when calling 911. Thank you. Goodbye."</i>
+		<i><font color="yellow">"Please use the correct address when calling 911. Thank you. Goodbye."</font></i>
 		<br>
 		eos
   end
@@ -492,14 +492,14 @@ class User < ActiveRecord::Base
     if !caregiver_name.blank?
       info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i>"Thank You.  We will be contacting #{caregiver_name}, the next caregiver.  Good Bye."</i>
+  	  <i><font color="yellow">"Thank You.  We will be contacting #{caregiver_name}, the next caregiver.  Good Bye."</font></i>
   	  eos
       return info
     else  service_name = '911 or local emergency service'
       service_name = self.profile.emergency_number.name if self.profile.emergency_number
       info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i>"We will now be calling #{service_name} to dispatch an amublance. Goodbye"</i>
+  	  <i><font color="yellow">"We will now be calling #{service_name} to dispatch an amublance. Goodbye"</font></font></i>
   	  eos
       return info
     
@@ -510,7 +510,7 @@ class User < ActiveRecord::Base
     service_name = self.profile.emergency_number.name if self.profile.emergency_number
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i>"We will now be calling #{service_name} to dispatch an amublance. Goodbye"</i>
+	  <i><font color="yellow">"We will now be calling #{service_name} to dispatch an amublance. Goodbye"</font></font></i>
 	  eos
     return info
   end
@@ -519,12 +519,12 @@ class User < ActiveRecord::Base
     if !self.active_caregivers.blank?
       info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i>"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type}. Would you like us to call your caregivers to help you?"
+  	  <i><font color="yellow">"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type}. Would you like us to call your caregivers to help you?"
   	  eos
 	  else
 	    info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i>"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type}. Would you like us to dispatch an ambulance for you?"
+  	  <i><font color="yellow">"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type}. Would you like us to dispatch an ambulance for you?"
   	  eos
     end
     return info
@@ -532,21 +532,21 @@ class User < ActiveRecord::Base
   def get_caregiver_responisibility_script(caregiver, event)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i>Do you accept responsibility for #{self.name}'s #{event.event_type}?</i>
+  	<i><font color="yellow">Do you accept responsibility for #{self.name}'s #{event.event_type}?</font></i>
   	eos
     return info
   end
   def get_caregiver_are_you_at_house_script(caregiver)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i>Are you at #{self.name}'s house?</i>
+  	<i><font color="yellow">Are you at #{self.name}'s house?</font></i>
   	eos
     return info
   end
   def get_caregiver_go_to_house_script(caregiver)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i>Can you go to #{self.name}'s house to determine if #{self.name} is OK?</i>
+  	<i><font color="yellow">Can you go to #{self.name}'s house to determine if #{self.name} is OK?</font></i>
   	eos
     return info
   end
@@ -606,10 +606,10 @@ class User < ActiveRecord::Base
   
   def get_able_to_reach_script(phone, role, name, place)
     info = <<-eos	
-	<div style="font-size: xx-large"><font color="white">Call #{role} <b>#{name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
+	<div style="font-size: x-large"><font color="white">Call #{role} <b>#{name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
 	<br><br>
 	<font color="white">Recite this script:</font><br>
-	<i>"Can I speak to #{name}?"</i>
+	<i><font color="yellow">"Can I speak to #{name}?"</font></i>
 	<br><br>
 	Were you able to reach #{name} at #{place}?
 		eos
@@ -619,8 +619,8 @@ class User < ActiveRecord::Base
   def get_user_script(operator, event, phone)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i>"Would you like us to dispatch an ambulance for you?"
-		</i>
+		<i><font color="yellow">"Would you like us to dispatch an ambulance for you?"
+		</font></i>
 		eos
     return info
   end
@@ -643,15 +643,15 @@ class User < ActiveRecord::Base
     if !caregiver_name.blank?
       info = <<-eos
 		  <font color="white">Recite this script:</font><br>
-		  <i>"Would you like for an ambulance to be dispatched for #{self.name}?"
-		  </i>
+		  <i><font color="yellow">"Would you like for an ambulance to be dispatched for #{self.name}?"
+		  </font></i>
 		  eos
       return info
     else
         info = <<-eos
   		  <font color="white">Recite this script:</font><br>
-  		  <i>"Would you like for an ambulance to be dispatched for #{self.name}?"
-  		  </i>
+  		  <i><font color="yellow">"Would you like for an ambulance to be dispatched for #{self.name}?"
+  		  </font></i>
   		  eos
         return info      
     end
@@ -659,16 +659,16 @@ class User < ActiveRecord::Base
   def get_on_behalf_script(name)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i>"Can you call 911 on behalf of #{name}?
-		</i>
+		<i><font color="yellow">"Can you call 911 on behalf of #{name}?
+		</font></i>
 		eos
     return info
   end
   def get_on_behalf_script_orig(name)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i>"When you arrive at the home, can you please call 911 on behalf of #{name}? After that, can you please press the reset button on #{name}'s gateway device. It will be beeping loudly."
-		</i>
+		<i><font color="yellow">"When you arrive at the home, can you please call 911 on behalf of #{name}? After that, can you please press the reset button on #{name}'s gateway device. It will be beeping loudly."
+		</font></i>
 		eos
     return info
   end
@@ -678,12 +678,12 @@ class User < ActiveRecord::Base
     number = '911'
     number = self.profile.emergency_number.number if self.profile.emergency_number
     info = <<-eos
-		<div style="font-size: xx-large"><b><font color="white">Call #{service_name} at #{number}</font></b></div>
+		<div style="font-size: x-large"><b><font color="white">Call #{service_name} at #{number}</font></b></div>
 		<br><br>
 		<font color="white">Recite this script:</font><br><br>
-		<i>"My name is #{operator.name} representing Halo Monitoring, Inc. We have  
+		<i><font color="yellow">"My name is #{operator.name} representing Halo Monitoring, Inc. We have  
     detected a #{event.event_type} for #{self.name} and have the approval to dispatch an  
-    ambulance. Can you dispatch an ambulance?”</i>
+    ambulance. Can you dispatch an ambulance?”</font></i>
     <br><br>
     eos
     return info
@@ -695,13 +695,13 @@ class User < ActiveRecord::Base
     number = self.profile.emergency_number.number if self.profile.emergency_number
     info = <<-eos
 		<font color="white">Recite this script:</font><br><br>
-		<i>"Please send amublance to<br>
+		<i><font color="yellow">"Please send amublance to<br>
 		<br>
 		#{self.profile.address}<br>
 		#{self.profile.city}, #{self.profile.state} #{self.profile.zipcode}<br>"
-		</i>
+		</font></i>
 		<br><br>
-		<i>#{self.vitals_text}</i>
+		<i><font color="yellow">#{self.vitals_text}</font></i>
 		<br><br>
 		Was the ambulance dispatched properly?
 		eos
