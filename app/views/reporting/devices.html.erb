@@ -3,3 +3,18 @@
 <div id="device-table" class="table">
 	<%=render :partial => 'device_table', :locals => {:user => @user, :devices => @devices}%>
 </div>
+
+
+<div id="range_test_launcher"></div>
+<script language="javascript">
+function start_range_test(user_id){
+	url = "/installs/start_range_test_only/?user_id=" + user_id
+	new Ajax.Request(url, {
+			method: 'get'});
+}
+function stop_range_test(user_id){
+	url = "/installs/stop_range_test_only/?user_id=" + user_id
+	new Ajax.Request(url, {
+			method: 'get'});
+}
+</script>

@@ -399,6 +399,38 @@ class InstallsController < ApplicationController
       page.replace_html 'install_wizard_launch', launcher
     end
   end
+  def start_range_test_only_init
+    @user = User.find(params[:id])
+    render(:update) do |page|
+      page.replace_html 'range_test_launcher', launch_remote_redbox(:url =>  {  :action => 'range_test_only', 
+                                  :controller => 'installs',  :user_id => @user.id,
+                                  }, :html => { :method => :get, :complete => '' } )
+    end
+  end
+  def range_test_only
+    @user = User.find(params[:user_id])
+    strap = @user.get_strap
+    @battery = Battery.find(:first, :conditions => "device_id = #{strap.id}", :order => 'timestamp desc')  
+  end
+  def start_range_test_only
+    @user = User.find(params[:user_id])
+    strap = @user.get_strap
+    create_mgmt_cmd('range_test_start', strap.id)
+    render(:update) do |page|
+      page.replace_html 'range_test_launcher', launch_remote_redbox(:url =>  {  :action => 'stop_range_test_only_init', 
+                                  :controller => 'installs',  :user_id => @user.id,
+                                  }, :html => { :method => :get, :complete => '' } )
+    end
+  end
+  def stop_range_test_only_init
+    @user = User.find(params[:user_id])
+  end
+  def stop_range_test_only
+    @user = User.find(params[:user_id])
+    strap = @user.get_strap
+    create_mgmt_cmd('range_test_stop', strap.id)
+    render :text => ''
+  end
   def start_range_test
     init_devices_user
       launcher = new_remote_redbox('range_test')
