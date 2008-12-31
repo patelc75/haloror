@@ -71,11 +71,7 @@ class CriticalMailer < ActionMailer::ARMailer
       else
         host.gsub!('crit2', 'crit1')
       end
-      if ServerInstance.in_hostname?('sdev')        
-        return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://sdev.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{host}/call_center \n\n " + suffix
-      else
-        return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://www.myhalomonitor.com/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{host}/call_center \n\n " + suffix 
-      end
+      return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://#{ServerInstance.current_host}/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{host}/call_center \n\n " + suffix 
     else
       return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://#{host}/call_center \n\n" + suffix 
     end
