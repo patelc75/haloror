@@ -107,7 +107,7 @@ class CallCenterWizard < ActiveRecord::Base
 		    strike = true
 		  end
 		  str = nil
-		  if strke
+		  if strike
 		    str = "<del>Notes for Caregiver ##{caregiver.position} #{caregiver.name}</del>"
 	    else
 	      str = "Notes for Caregiver ##{caregiver.position} #{caregiver.name}"
