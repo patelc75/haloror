@@ -33,7 +33,7 @@ class EventActionObserver < ActiveRecord::Observer
   
   def send_it(description, host, event_action)
     event = event_action.event
-    url = URI.parse('https://#{host}:443//call_center_accept/accept')
+    url = URI.parse("https://#{host}:443//call_center_accept/accept")
     req = Net::HTTP::Post.new(url.path)
     req.basic_auth SYSTEM_USERNAME, SYSTEM_PASSWORD
     req.set_form_data({"description" => description, 'timestamp' => event.timestamp.to_s, "user_id" => event.user_id, "operator_id" => event_action.user_id}, ';')
