@@ -21,10 +21,13 @@ class EventActionObserver < ActiveRecord::Observer
   def send_to_backup(description, event_action)
     host_short = ServerInstance.current_host_short_string()
     host = ServerInstance.current_host
-    if host_short == 'HALO' && !ServerInstance.in_hostname?('crit2')
-      send_it(description, 'crit2.data.halomonitor.com', event_action)
-    elsif host_short == 'SDEV' && !ServerInstance.in_hostname?('crit2')
-      send_it(description, 'sdev.crit2.data.halomonitor.com', event_action)
+    unless host == 'localhost'
+      if ServerInstance.in_hostname?('crit1')
+        host.gsub!('crit1', 'crit2')
+      else
+        host.gsub!('crit2', 'crit1')
+      end
+      send_it(description, host, event_action)
     end
   end
   
