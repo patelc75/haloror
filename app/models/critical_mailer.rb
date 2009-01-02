@@ -16,7 +16,7 @@ class CriticalMailer < ActionMailer::ARMailer
     @recipients = []
     setup_message("Call Log for #{event.user.name} #{event.event_type} at #{UtilityHelper.format_datetime_readable(event.timestamp, event.user)}", body)
     #recipients.each do |admin|
-     # @recipients << ["#{admin.email}"] 
+    # @recipients << ["#{admin.email}"] 
     #end
     @recipients = ["reports@halomonitoring.com"] 
     self.priority = Priority::IMMEDIATE
@@ -51,10 +51,11 @@ class CriticalMailer < ActionMailer::ARMailer
   def get_link_to_call_center_text()
     primary_host = ServerInstance.current_host
     if ServerInstance.in_hostname?('crit2')
-      primary_host.gsub!('crit2', 'crit1')
-      secondary_host.gsub!('crit1', 'crit2')
+      primary_host = primary_host.gsub('crit2', 'crit1')
     end
-      return "https://#{primary_host}/call_center If the site is not available then try the backup link https://#{secondary_host}/call_center "
+    secondary_host = primary_host.gsub('crit1', 'crit2')
+    
+    return "https://#{primary_host}/call_center If the site is not available then try the backup link https://#{secondary_host}/call_center "
   end
   
   def get_link_to_call_center()
@@ -77,7 +78,7 @@ class CriticalMailer < ActionMailer::ARMailer
     setup_caregivers(event_action.event.user, event_action.event.event, :recepients)
     self.priority  = event_action.priority
   end
-
+  
   def call_center_operator(event_action)    
     setup_message(event_action.to_s, event_action.email_body + event_action.event.notes_string + "\n\nYou received this email because you’re an operator.")
     setup_operators(event_action.event.event, :recepients)
