@@ -49,13 +49,12 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   def get_link_to_call_center_text()
-    host = ServerInstance.current_host
-    if ServerInstance.in_hostname?('crit1')
-      host.gsub!('crit1', 'crit2')
-    else
-      host.gsub!('crit2', 'crit1')
+    primary_host = ServerInstance.current_host
+    if ServerInstance.in_hostname?('crit2')
+      primary_host.gsub!('crit2', 'crit1')
+      secondary_host.gsub!('crit1', 'crit2')
     end
-      return "https://#{ServerInstance.current_host()}/call_center If the site is not available then try the backup link https://#{host}/call_center "
+      return "https://#{primary_host}/call_center If the site is not available then try the backup link https://#{secondary_host}/call_center "
   end
   
   def get_link_to_call_center()
