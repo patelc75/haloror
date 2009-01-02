@@ -10,7 +10,8 @@ class Fall < DeviceAlert
   
   def email_body
     "Hello,\nWe detected that #{to_s}\n\n" +
-    "The Halo server received the event #{UtilityHelper.format_datetime_readable(Time.now, user)} \n\n"
+      "\n\nA Halo operator will be handling the event immediately.\n\n" +
+      "Sincerely, Halo Staff"
   end
   
   def self.new_initialize(random=false)
