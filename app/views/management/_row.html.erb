@@ -5,16 +5,16 @@
 	<% if group %>
 		<a href="javascript:void(0)" onClick="show_group(<%=row.id%>)" id="control_<%=row.id%>" style="float:left;text-decoration:none;margin-left:-30px">[+]</a>
 	<% end %>
-	<div style="width:50px;float:left">
+	<div style="width:60px;float:left">
 	  <%=row[:id]%>
 	</div>
 	<div style="width:150px;float:left">
 		<%=row[:type]%> <i><%=row[:cmd_type]%></i>
 	</div>
-	<div style="width:250px;float:left">
+	<div style="width:220px;float:left">
 		<%=row[:timestamp]%> 
 	</div>
-	<div style="width:250px;float:left">
+	<div style="width:220px;float:left">
 	  <%= row[:timestamp_device] %>&nbsp;
 	</div>
 	<% if row[:type] = 'cmd' and row[:created_by] %>

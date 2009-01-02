@@ -1,3 +1,19 @@
+<br>
+<div style="width:60px;float:left">
+<b>DB id</b>
+</div>
+<div style="width:150px;float:left">
+<b>Cmd type</b>
+</div>
+<div style="width:220px;float:left">
+<b>Timestamp Server</b>
+</div>
+<div style="width:220px;float:left">
+<b>Timestamp device</b>
+</div>
+<div style="width:250px;float:left">
+<b>Created by</b>
+</div>
 <% if chatter and chatter.length > 0 %>
 	<% chatter.sort_by { |row| row[:timestamp] }.reverse.each do |row| %>
 		<% color = 'gray' if !row[:query_group] && row[:type] == 'cmd' %>
