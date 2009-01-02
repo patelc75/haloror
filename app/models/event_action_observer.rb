@@ -36,7 +36,7 @@ class EventActionObserver < ActiveRecord::Observer
     url = URI.parse("https://#{host}:443/call_center_accept/accept")
     req = Net::HTTP::Post.new(url.path)
     req.basic_auth SYSTEM_USERNAME, SYSTEM_PASSWORD
-    req.set_form_data({"description" => description, 'timestamp' => event.timestamp.to_s, "user_id" => event.user_id, "operator_id" => event_action.user_id}, ';')
+    req.set_form_data({"description" => description, 'timestamp' => event.timestamp.to_s, "user_id" => event.user_id, "operator_id" => event_action.user_id})
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
     resp = http.start {|h| h.request(req) }
