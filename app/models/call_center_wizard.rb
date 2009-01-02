@@ -67,12 +67,12 @@ class CallCenterWizard < ActiveRecord::Base
     next_step = nil
     next_steps = []
     self.call_center_steps_sorted.each do |step|
-      # RAILS_DEFAULT_LOGGER.warn("#{step.question_key} #{step.user_id} #{key} #{user_id}")
+       RAILS_DEFAULT_LOGGER.warn("#{step.question_key} #{step.user_id} #{key} #{user_id}")
       if step.question_key == key && step.user_id == user_id
         next_steps << step
       end
     end
-    # RAILS_DEFAULT_LOGGER.warn("next_steps:  #{next_steps.inspect}")
+     RAILS_DEFAULT_LOGGER.warn("next_steps:  #{next_steps.inspect}")
     if !next_steps.blank?
       next_steps.each do |step|
         if step.answer.nil? 

@@ -39,21 +39,21 @@ class CallCenterRulebook < Ruleby::Rulebook
     create_call_center_step_rule(user_id, CallCenterWizard::AMBULANCE_DISPATCHED, false,   CallCenterWizard::THE_END,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::THE_END,              true,   CallCenterWizard::THE_END,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::THE_END,              false,  CallCenterWizard::THE_END,user_id)
-    
+    create_call_center_step_rule(nil, CallCenterWizard::CAREGIVER_MOBILE_PHONE, false,  CallCenterWizard::PRE_AGENT_CALL_911, user_id)
     if !caregivers.blank?
+      
+      
       caregivers = caregivers[1, caregivers.size - 1]
       count = 0
       caregivers.each do |caregiver|
+        
         create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, true,   CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, false,  CallCenterWizard::CAREGIVER_HOME_PHONE, caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_HOME_PHONE,   true,   CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_HOME_PHONE,   false,  CallCenterWizard::CAREGIVER_WORK_PHONE, caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   true,   CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
-        if count != (caregivers.size -1)
-          create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE, caregiver.id)
-        else
-          create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   false,  CallCenterWizard::AGENT_CALL_911, caregiver.id)
-        end
+        create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE, caregiver.id)
+        
         create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY,      true,   CallCenterWizard::CAREGIVER_AT_HOUSE, caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY,      false,  CallCenterWizard::CAREGIVER_THANK_YOU, caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_AT_HOUSE,      true,  CallCenterWizard::AMBULANCE, caregiver_id)
@@ -81,17 +81,18 @@ class CallCenterRulebook < Ruleby::Rulebook
         caregiver_id = caregiver.id
         count += 1
       end
-        
+        if !@wizard.user.has_phone?(User.find(caregiver_id), 'Caregiver')            
+          create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, false,  CallCenterWizard::PRE_AGENT_CALL_911, user_id)
+        else
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, true,   CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, false,  CallCenterWizard::CAREGIVER_HOME_PHONE, caregiver_id)
+        end
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_HOME_PHONE,   true,   CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_HOME_PHONE,   false,  CallCenterWizard::CAREGIVER_WORK_PHONE, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   true,   CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
-          if caregivers.size != 1
-            create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE, nil)
-          else
-            create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   false,  CallCenterWizard::AGENT_CALL_911, nil)
-          end
+      
+            create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE, caregiver_id)
+          
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY,      true,   CallCenterWizard::CAREGIVER_AT_HOUSE, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY,      false,  CallCenterWizard::CAREGIVER_THANK_YOU, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_AT_HOUSE,      true,  CallCenterWizard::AMBULANCE, caregiver_id)
@@ -113,6 +114,8 @@ class CallCenterRulebook < Ruleby::Rulebook
           create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE,              false,  CallCenterWizard::THE_END, caregiver_id)
           create_call_center_step_rule(user_id,      CallCenterWizard::THE_END,                true,   CallCenterWizard::THE_END,caregiver_id)
           create_call_center_step_rule(user_id,      CallCenterWizard::THE_END,                false,  CallCenterWizard::THE_END,caregiver_id)
+          
+          
     end
   end
   
