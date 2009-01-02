@@ -145,6 +145,23 @@ function step(answer, step_id){
 function previous_step(step_id){
   new Ajax.Request('/call_center/script_previous/?call_center_wizard_id=<%=@call_center_wizard.id %>&call_center_step_id=' + step_id);
 }
+function update_accordian(id, instruction, ans){
+  if($('instruction_' + id) != null){
+  $('instruction_' + id).innerHTML = instruction;
+  $('answer_' + id).innerHTML = ans;
+ }
+  if($('breaker_' + id) != null){
+  $('breaker_' + id).innerHTML = "<hr />";
+ }
+}
+function update_notes(id, notes, breaker){
+  if($('notes_' + id) != null){
+    $('notes_' + id).innerHTML= notes;
+  }
+  if($('breaker_' + id) != null){
+    $('breaker_' + id).innerHTML = breaker;
+  }
+}
 </script>
 
 <% end %>

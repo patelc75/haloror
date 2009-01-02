@@ -76,10 +76,8 @@ class CallCenterController < ApplicationController
     @call_center_step.notes = nil
     @call_center_step.save!
     render(:update) do |page|
-      page['instruction_' + @call_center_step.id.to_s].replace_html ''
-      page['answer_' + @call_center_step.id.to_s].replace_html ''
-      page['notes_' + @call_center_step.id.to_s].replace_html ''
-      page['breaker_' + @call_center_step.id.to_s].replace_html ''
+      page.call 'update_accordian', "#{@call_center_step.id}","", ""
+      page.call 'update_notes', "#{@call_center_step.id}", "", ""
       page << "accordion.step(#{@call_center_step.id});"
       page['call_center-wizard'].replace_html render(:partial => 'script', :layout => false)
     end
@@ -109,11 +107,7 @@ class CallCenterController < ApplicationController
                                                 :instruction => CallCenterWizard::THE_END)
     end
       render(:update) do |page|
-      page << "if($(instruction_#{previous_step.id.to_s}') != null){"
-          page['instruction_' + previous_step.id.to_s].replace_html previous_step.instruction
-          page['answer_' + previous_step.id.to_s].replace_html ans
-          page['breaker_' + previous_step.id.to_s].replace_html "<hr />"
-      page << "}"
+        page.call 'update_accordian', "#{previous_step.id}","#{previous_step.instruction}", "#{ans}"
         page << "accordion.step(#{@call_center_step.id});"
         page['call_center-wizard'].replace_html render(:partial => 'script', :layout => false)
       end
@@ -125,14 +119,11 @@ class CallCenterController < ApplicationController
     @call_center_step.notes = params[:script_note]
     @call_center_step.save!
     render(:update) do |page|
-      page << "if($('notes_#{@call_center_step.id.to_s}') != null){"
-        #page['note_' + @call_center_step.id.to_s].replace_html @call_center_step.notes
-        page['notes_text'].replace_html "#{@call_center_step.notes}<br /><a href=\"#\" onclick=\"$('notes_text').hide();$('notes').show();\">Edit Notes</a>"
-        page['notes'].hide();
-        page['notes_text'].show();
-        page['notes_' + @call_center_step.id.to_s].replace_html "<div>" + @call_center_step.notes + "</div>"
-        page['breaker_' + @call_center_step.id.to_s].replace_html "<hr />"
-      page << "}"
+      
+      page.call 'update_notes', "#{@call_center_step.id}", "<div>" + "#{@call_center_step.notes}" + "</div>", "<hr />"
+                    page['notes_text'].replace_html "#{@call_center_step.notes}<br /><a href=\"#\" onclick=\"$('notes_text').hide();$('notes').show();\">Edit Notes</a>"
+                    page['notes'].hide();
+                    page['notes_text'].show();
       
     end
   end
