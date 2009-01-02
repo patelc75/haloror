@@ -1,11 +1,12 @@
 <div id="hidden_content_extra_info">
 </div>
-<div><%= link_to "Emergency Numbers", :action => 'index', :controller => 'emergency_numbers' %>
+<div><%= link_to "Configure Emergency Dispatch Phone Numbers", :action => 'index', :controller => 'emergency_numbers' %>
 </div>
+<br>
 <div id="call_list-col">
 
 	<div class="content">
-		<select onchange="if(this.value != ''){document.location = '/call_center/show/?group_id=' + this.value}"/>
+		<br>Group <select onchange="if(this.value != ''){document.location = '/call_center/show/?group_id=' + this.value}"/>
 		<% @groups.each do |group| %>
 		<option value="<%=group.id%>" <%='selected' if params[:group_id].to_i == group.id %>><%=group.name%></option>
 		<% end %>
