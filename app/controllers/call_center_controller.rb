@@ -109,11 +109,11 @@ class CallCenterController < ApplicationController
                                                 :instruction => CallCenterWizard::THE_END)
     end
       render(:update) do |page|
-        if(page['instruction_' + previous_step.id.to_s] != null)
+      page << "if($(instruction_#{previous_step.id.to_s}') != null){"
           page['instruction_' + previous_step.id.to_s].replace_html previous_step.instruction
           page['answer_' + previous_step.id.to_s].replace_html ans
           page['breaker_' + previous_step.id.to_s].replace_html "<hr />"
-        end
+      page << "}"
         page << "accordion.step(#{@call_center_step.id});"
         page['call_center-wizard'].replace_html render(:partial => 'script', :layout => false)
       end
@@ -125,13 +125,14 @@ class CallCenterController < ApplicationController
     @call_center_step.notes = params[:script_note]
     @call_center_step.save!
     render(:update) do |page|
-      if(page['notes_' + @call_center_step.id.to_s] != null)
+      page << "if($('notes_#{@call_center_step.id.to_s}') != null){"
         #page['note_' + @call_center_step.id.to_s].replace_html @call_center_step.notes
         page['notes_text'].replace_html "#{@call_center_step.notes}<br /><a href=\"#\" onclick=\"$('notes_text').hide();$('notes').show();\">Edit Notes</a>"
         page['notes'].hide();
         page['notes_text'].show();
         page['notes_' + @call_center_step.id.to_s].replace_html "<div>" + @call_center_step.notes + "</div>"
         page['breaker_' + @call_center_step.id.to_s].replace_html "<hr />"
+      page << "}"
       end
     end
   end
