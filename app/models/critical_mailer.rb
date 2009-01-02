@@ -57,7 +57,7 @@ class CriticalMailer < ActionMailer::ARMailer
     suffix = "The following contact info is only used for disaster recovery."
 	set_hostnames
     if ServerInstance.in_hostname?('crit1') || ServerInstance.in_hostname?('crit2')	  
-      return "Please use the following link to accept and handle the event on the the call center overview page.  \nhttps://#{@primary_host}/call_center  \n\n  If the site is not available then try the backup link \nhttps://#{@secondary_host}/call_center \n\n " + suffix 
+      return "Please use the following link to accept and handle the event on the the call center overview page.  \nhttps://#{@primary_host}/call_center  \n\nIf the site is not available then try the backup link \nhttps://#{@secondary_host}/call_center \n\n" + suffix 
     else
       return "Please use the following link to accept and handle the event on the the call center overview page.  \nhttps://#{@primary_host}/call_center \n\n" + suffix 
     end
