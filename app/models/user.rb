@@ -425,8 +425,8 @@ class User < ActiveRecord::Base
     instructions = { 
       CallCenterWizard::USER_HOME_PHONE        => "Home " + format_phone(self.profile.home_phone) + "?",
       CallCenterWizard::USER_MOBILE_PHONE      => "Mobile " + format_phone(self.profile.cell_phone)+ "?",
-      CallCenterWizard::USER_OK                => "Dispatch ambulance?",
-      CallCenterWizard::USER_AMBULANCE         => "Can dispatcher send ambulance?",
+      CallCenterWizard::USER_OK                => "Call caregivers?",
+      CallCenterWizard::USER_AMBULANCE         => "Agent to dispatch ambulance?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
       CallCenterWizard::PRE_AGENT_CALL_911     => "Can dispatcher dispatch an ambulance?",
       CallCenterWizard::AGENT_CALL_911         => "Ambulance dispatched properly?",
