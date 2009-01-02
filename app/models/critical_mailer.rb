@@ -216,8 +216,8 @@ class CriticalMailer < ActionMailer::ARMailer
   def set_hostnames
     @primary_host = ServerInstance.current_host
     if ServerInstance.in_hostname?('crit2')
-      @primary_host = primary_host.gsub('crit2', 'crit1')
+      @primary_host = @primary_host.gsub('crit2', 'crit1')
     end
-    @secondary_host = primary_host.gsub('crit1', 'crit2')
+    @secondary_host = @primary_host.gsub('crit1', 'crit2')
   end
  end
