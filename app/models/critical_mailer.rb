@@ -31,7 +31,7 @@ class CriticalMailer < ActionMailer::ARMailer
   def device_event_operator(event)
     setup_caregivers(event.user, event, :caregiver_info)
     link = get_link_to_call_center()
-    setup_message(event.to_s, "You received this email because you’re an operator.\n\n#{link}\n\n" + @caregiver_info)
+    setup_message(event.to_s, "You received this email because you’re an operator.\n\n#{link}\n" + @caregiver_info)
     setup_operators(event, :recepients, :include_phone_call) 
     #setup_emergency_group(event, :recepients)
     self.priority  = event.priority
@@ -57,9 +57,9 @@ class CriticalMailer < ActionMailer::ARMailer
     suffix = "The following contact info is only used for disaster recovery."
 	set_hostnames
     if ServerInstance.in_hostname?('crit1') || ServerInstance.in_hostname?('crit2')	  
-      return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://#{@primary_host}/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{@secondary_host}/call_center \n\n " + suffix 
+      return "Please use the following link to accept and handle the event on the the call center overview page.  \nhttps://#{@primary_host}/call_center  \n\n  If the site is not available then try the backup link \nhttps://#{@secondary_host}/call_center \n\n " + suffix 
     else
-      return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://#{@primary_host}/call_center \n\n" + suffix 
+      return "Please use the following link to accept and handle the event on the the call center overview page.  \nhttps://#{@primary_host}/call_center \n\n" + suffix 
     end
   end
   
