@@ -109,9 +109,11 @@ class CallCenterController < ApplicationController
                                                 :instruction => CallCenterWizard::THE_END)
     end
       render(:update) do |page|
-        page['instruction_' + previous_step.id.to_s].replace_html previous_step.instruction
-        page['answer_' + previous_step.id.to_s].replace_html ans
-        page['breaker_' + previous_step.id.to_s].replace_html "<hr />"
+        if page['instruction_' + previous_step.id.to_s]
+          page['instruction_' + previous_step.id.to_s].replace_html previous_step.instruction
+          page['answer_' + previous_step.id.to_s].replace_html ans
+          page['breaker_' + previous_step.id.to_s].replace_html "<hr />"
+        end
         page << "accordion.step(#{@call_center_step.id});"
         page['call_center-wizard'].replace_html render(:partial => 'script', :layout => false)
       end
