@@ -24,10 +24,10 @@ class EventActionObserver < ActiveRecord::Observer
     host = 'crit2.data.halomonitor.com'
     unless temp == 'localhost'
       if ServerInstance.in_hostname?('sdev')
-        host = 'sdev.' + temp
+        host = 'sdev.' + host
       end
       if ServerInstance.in_hostname?('idev')
-        host = 'idev.' + temp
+        host = 'idev.' + host
       end
       
       send_it(description, host, event_action)
