@@ -22,7 +22,7 @@ class EventActionObserver < ActiveRecord::Observer
     host_short = ServerInstance.current_host_short_string()
     temp = ServerInstance.current_host
     host = 'crit2.data.halomonitor.com'
-    unless host == 'localhost'
+    unless temp == 'localhost'
       if ServerInstance.in_hostname?('sdev')
         host = 'sdev.' + temp
       end
