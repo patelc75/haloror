@@ -55,11 +55,7 @@ class CriticalMailer < ActionMailer::ARMailer
     else
       host.gsub!('crit2', 'crit1')
     end
-    if ServerInstance.in_hostname?('sdev')        
-        return "https://sdev.myhalomonitor.com/call_center If the site is not available then try the backup link https://#{host}/call_center "
-    else
-      return "https://www.myhalomonitor.com/call_center If the site is not available then try the backup link https://#{host}/call_center " 
-    end
+      return "https://#{ServerInstance.current_host()}/call_center If the site is not available then try the backup link https://#{host}/call_center "
   end
   
   def get_link_to_call_center()
