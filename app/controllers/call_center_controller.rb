@@ -133,7 +133,7 @@ class CallCenterController < ApplicationController
         page['notes_' + @call_center_step.id.to_s].replace_html "<div>" + @call_center_step.notes + "</div>"
         page['breaker_' + @call_center_step.id.to_s].replace_html "<hr />"
       page << "}"
-      end
+      
     end
   end
   def resolved
