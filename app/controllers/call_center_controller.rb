@@ -109,7 +109,7 @@ class CallCenterController < ApplicationController
                                                 :instruction => CallCenterWizard::THE_END)
     end
       render(:update) do |page|
-        if page['instruction_' + previous_step.id.to_s]
+        if(page['instruction_' + previous_step.id.to_s] != null)
           page['instruction_' + previous_step.id.to_s].replace_html previous_step.instruction
           page['answer_' + previous_step.id.to_s].replace_html ans
           page['breaker_' + previous_step.id.to_s].replace_html "<hr />"
