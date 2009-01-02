@@ -49,27 +49,17 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   def get_link_to_call_center_text()
-    primary_host = ServerInstance.current_host
-    if ServerInstance.in_hostname?('crit2')
-      primary_host = primary_host.gsub('crit2', 'crit1')
-    end
-    secondary_host = primary_host.gsub('crit1', 'crit2')
-    
-    return "https://#{primary_host}/call_center If the site is not available then try the backup link https://#{secondary_host}/call_center "
+    set_hostnames
+	return "https://#{@primary_host}/call_center If the site is not available then try the backup link https://#{@secondary_host}/call_center "
   end
   
   def get_link_to_call_center()
     suffix = "The following contact info is only used for disaster recovery."
-    host = ServerInstance.current_host
-    if ServerInstance.in_hostname?('crit1') || ServerInstance.in_hostname?('crit2')
-      if ServerInstance.in_hostname?('crit1')
-        host.gsub!('crit1', 'crit2')
-      else
-        host.gsub!('crit2', 'crit1')
-      end
-      return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://#{ServerInstance.current_host}/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{host}/call_center \n\n " + suffix 
+	set_hostnames
+    if ServerInstance.in_hostname?('crit1') || ServerInstance.in_hostname?('crit2')	  
+      return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://#{@primary_host}/call_center  \n\n  If the site is not available then try the backup link \n\n https://#{@secondary_host}/call_center \n\n " + suffix 
     else
-      return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://#{host}/call_center \n\n" + suffix 
+      return "Please use the following link to accept and handle the event on the the call center overview page.  \n\nhttps://#{@primary_host}/call_center \n\n" + suffix 
     end
   end
   
@@ -222,4 +212,12 @@ class CriticalMailer < ActionMailer::ARMailer
       end
     end  
   end
-end
+  
+  def set_hostnames
+    @primary_host = ServerInstance.current_host
+    if ServerInstance.in_hostname?('crit2')
+      @primary_host = primary_host.gsub('crit2', 'crit1')
+    end
+    @secondary_host = primary_host.gsub('crit1', 'crit2')
+  end
+ end
