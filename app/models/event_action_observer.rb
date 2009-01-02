@@ -39,7 +39,7 @@ class EventActionObserver < ActiveRecord::Observer
     req.set_form_data({"description" => description, 'timestamp' => event.timestamp.to_s, "user_id" => event.user_id, "operator_id" => event_action.user_id}, ';')
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
-    resp = http.start do {|h| h.request(req) }
+    resp = http.start {|h| h.request(req) }
     RAILS_DEFAULT_LOGGER.warn resp.to_s
   end
 end
