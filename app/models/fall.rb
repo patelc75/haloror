@@ -9,7 +9,7 @@ class Fall < DeviceAlert
   end
   
   def email_body
-    "Hello,\nWe detected that #{to_s}\n\n" +
+    "Hello,\nWe detected that #{to_s}" +
       "\n\nA Halo operator will be handling the event immediately.\n\n" +
       "Sincerely, Halo Staff"
   end
