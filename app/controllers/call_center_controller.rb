@@ -125,12 +125,14 @@ class CallCenterController < ApplicationController
     @call_center_step.notes = params[:script_note]
     @call_center_step.save!
     render(:update) do |page|
-      #page['note_' + @call_center_step.id.to_s].replace_html @call_center_step.notes
-      page['notes_text'].replace_html "#{@call_center_step.notes}<br /><a href=\"#\" onclick=\"$('notes_text').hide();$('notes').show();\">Edit Notes</a>"
-      page['notes'].hide();
-      page['notes_text'].show();
-      page['notes_' + @call_center_step.id.to_s].replace_html "<div>" + @call_center_step.notes + "</div>"
-      page['breaker_' + @call_center_step.id.to_s].replace_html "<hr />"
+      if(page['notes_' + @call_center_step.id.to_s] != null)
+        #page['note_' + @call_center_step.id.to_s].replace_html @call_center_step.notes
+        page['notes_text'].replace_html "#{@call_center_step.notes}<br /><a href=\"#\" onclick=\"$('notes_text').hide();$('notes').show();\">Edit Notes</a>"
+        page['notes'].hide();
+        page['notes_text'].show();
+        page['notes_' + @call_center_step.id.to_s].replace_html "<div>" + @call_center_step.notes + "</div>"
+        page['breaker_' + @call_center_step.id.to_s].replace_html "<hr />"
+      end
     end
   end
   def resolved
