@@ -205,6 +205,8 @@ class FlexController < ApplicationController
       
       reading[:activity] = vitals.activity
       reading[:adl] = vitals.adl
+      
+      reading[:orientation] = vitals.orientation
     end
     
     if battery = Battery.find(:first, :conditions => "user_id = #{user.id} AND timestamp <= '#{now.to_s}'", :order => 'timestamp desc')

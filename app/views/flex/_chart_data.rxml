@@ -9,6 +9,7 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
         #xml.battery(last_reading[:battery])
         xml.activity(user[:last_reading][:activity])
         xml.skin_temp(user[:last_reading][:skin_temp])
+        xml.orientation(user[:last_reading][:orientation])
         xml.steps(user[:last_reading][:steps])
         xml.adl(user[:last_reading][:adl])
         xml.battery_outlet_status(user[:status][:battery_outlet])
@@ -36,7 +37,7 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
                   if reading[:activity]
                     xml.activity(reading[:activity])
                     if reading[:orientation]
-                      #xml.orientation(reading[:orientation])
+                      xml.orientation(reading[:orientation])
                       xml.adl(Vital.get_adl(reading[:orientation], reading[:activity]))
                     end
                   end
