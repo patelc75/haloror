@@ -46,6 +46,11 @@ function getConfig() {
     
     config.activityColor = "#FE8504";
     
+    /* Battery Meter Levels */
+    // Share red is battery level is below amberThreshold
+    config.amberThreshold = .20; // Show amber if battery level is at least this
+    config.greenThreshold = .40; // Show green if battery level is at least this
+    
     var hostName;
     
 	if (window.location.hostname == "localhost"){
