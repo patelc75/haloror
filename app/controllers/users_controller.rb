@@ -327,7 +327,7 @@ class UsersController < ApplicationController
       device.save!
     end
 
-    unless device.device_type
+    unless device.device_type.blank?
       if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
         device.set_chest_strap_type
       elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
