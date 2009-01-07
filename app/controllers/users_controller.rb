@@ -319,12 +319,20 @@ class UsersController < ApplicationController
     unless device = Device.find_by_serial_number(serial_number)
       device = Device.new
       device.serial_number = serial_number
-      device.device_type = get_device_type(device)
+      if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
+        device.set_chest_strap_type
+      elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
+        device.set_gateway_type
+      end
       device.save!
     end
 
     unless device.device_type
-      device.device_type = get_device_type(device)      
+      if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
+        device.set_chest_strap_type
+      elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
+        device.set_gateway_type
+      end   
     end
     device.users << user
     device.save!
