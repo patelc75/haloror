@@ -154,7 +154,7 @@ class CallCenterController < ApplicationController
   def show
     @user = current_user
     @groups = []
-      if !@user.is_super_admin?
+      if @user.is_super_admin?
         @groups = Group.find(:all)
       else
         Group.find(:all).each do |g|
