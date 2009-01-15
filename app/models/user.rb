@@ -614,6 +614,7 @@ class User < ActiveRecord::Base
   end
   
   def get_able_to_reach_script(phone, role, name, place, operator)
+    info = ''
     if role == 'Caregiver'
       info = <<-eos	
 	    <div style="font-size: x-large"><font color="white">Call #{role} <b>#{name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
