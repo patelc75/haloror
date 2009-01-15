@@ -551,7 +551,7 @@ class User < ActiveRecord::Base
   def get_caregiver_responisibility_script(caregiver, event, operator)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i><font color="yellow">Hello #{name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} for #{self.name}. Do you accept responsibility for #{self.name}'s #{event.event_type}?</font></i>
+  	<i><font color="yellow">Hello #{caregiver}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} for #{self.name}. Do you accept responsibility for #{self.name}'s #{event.event_type}?</font></i>
   	eos
     return info
   end
