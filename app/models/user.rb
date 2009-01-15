@@ -475,7 +475,7 @@ class User < ActiveRecord::Base
   def get_ambulance_dispatched
     info = <<-eos
       <font color="white">Recite this script:</font><br>
-      <i><font color="yellow">"I would like to verify the street address we have on filef or #{self.name}. Are you ready?"</font></i>
+      <i><font color="yellow">"I would like to verify the street address we have on file for #{self.name}. Are you ready?"</font></i>
       <br>
       <br>
       (wait for caregiver)
