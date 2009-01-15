@@ -14,12 +14,14 @@
     <div class="col-150">
       Name
     </div>
+    <% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
     <div class="col-75">
       Chart
     </div>
     <div class="col-75">
       Notes
     </div>
+    <% end %>
     <div class="col-150">
       Accept
     </div>
@@ -40,8 +42,13 @@
            <% end %>
       </div>
       <div class="col-150">
+      <% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
         <a href="/call_list/show/<%=event.user[:id]%>"><%=event.user.name%></a> (<%=event.user.id%>)
+      <% else %>
+        <%= event.user.name %> (<%= event.user.id %>)
+      <% end %>
       </div>
+      <% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
       <div class="col-75">
         <a target="_blank" href="/chart/flex/<%= event.user.id %>">Chart</a>
       </div>
@@ -50,6 +57,7 @@
         &nbsp;
         <%= link_to_remote '-', :update => "notes_#{event.id}", :url => {:action => 'toggle_note' }%>
       </div>
+      <% end %>
       <div class="col-150" id="<%=event.id%>_accept">
       	<% if action = event.resolved? %>
 		Resolved by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>
