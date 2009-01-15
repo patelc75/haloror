@@ -571,7 +571,7 @@ class User < ActiveRecord::Base
       opt = option.phone_active if option
     end
     if user && user.profile && !user.profile.work_phone.blank? && opt
-      return get_able_to_reach_script(user.profile.work_phone, role, user.name, "Work", operator)
+      return get_able_to_reach_script(user.profile.work_phone, role, user.name, "Work", operator, event)
     else
       return nil
     end
@@ -589,7 +589,7 @@ class User < ActiveRecord::Base
       opt = option.phone_active if option
     end
     if user && user.profile && !user.profile.cell_phone.blank? && opt
-      return get_able_to_reach_script(user.profile.cell_phone, role, user.name, "Mobile", operator)
+      return get_able_to_reach_script(user.profile.cell_phone, role, user.name, "Mobile", operator, event)
     else
       return nil
     end
@@ -607,7 +607,7 @@ class User < ActiveRecord::Base
       opt = option.phone_active if option
     end
     if user && user.profile && !user.profile.home_phone.blank? && opt
-      return get_able_to_reach_script(user.profile.home_phone, role, user.name, "Home", operator)
+      return get_able_to_reach_script(user.profile.home_phone, role, user.name, "Home", operator, event)
     else
       return nil
     end
