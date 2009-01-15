@@ -479,7 +479,7 @@ class User < ActiveRecord::Base
 		#{self.profile.address}<br>
 		#{self.profile.city}, #{self.profile.state} #{self.profile.zipcode}<br>
     <font color="white">Recite this script:</font><br>
-		<i><font color="yellow">"Please use the correct address when calling 911. Thank you. Goodbye."</font></i>
+		<i><font color="yellow">"Thank you.  Please use the correct address when calling 911. Good Bye."</font></i>
 		<br>
 		eos
   end
@@ -508,7 +508,7 @@ class User < ActiveRecord::Base
       service_name = self.profile.emergency_number.name if self.profile.emergency_number
       info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i><font color="yellow">"We will now be calling #{service_name} to dispatch an amublance. Goodbye"</font></font></i>
+  	  <i><font color="yellow">"Thank You.  We will now be calling #{service_name} to dispatch an amublance. Good Bye."</font></font></i>
   	  eos
       return info
     
@@ -519,7 +519,7 @@ class User < ActiveRecord::Base
     service_name = self.profile.emergency_number.name if self.profile.emergency_number
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><font color="yellow">"We will now be calling #{service_name} to dispatch an amublance. Goodbye"</font></font></i>
+	  <i><font color="yellow">"Thank You.  We will now be calling #{service_name} to dispatch an amublance. Good Bye."</font></font></i>
 	  eos
     return info
   end
