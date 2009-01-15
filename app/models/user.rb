@@ -559,7 +559,7 @@ class User < ActiveRecord::Base
   	eos
     return info
   end
-  def get_able_to_reach_script_work(user, role, operator)
+  def get_able_to_reach_script_work(user, role, operator, event)
     opt = false
     if role == 'HaloUser'
       opt = true
@@ -577,7 +577,7 @@ class User < ActiveRecord::Base
     end
   end
   
-  def get_able_to_reach_script_cell(user, role, operator)
+  def get_able_to_reach_script_cell(user, role, operator, event)
     opt = false
     if role == 'HaloUser'
       opt = true
@@ -595,7 +595,7 @@ class User < ActiveRecord::Base
     end
   end
   
-  def get_able_to_reach_script_home(user, role, operator)
+  def get_able_to_reach_script_home(user, role, operator, event)
     opt = false
     if role == 'HaloUser'
       opt = true
