@@ -1,6 +1,6 @@
 <% if !@call_center_step.previous_call_center_step_id.blank? %>
 <div align="left">
-  <a href="#" style="color: white;" onclick="previous_step(<%=@call_center_step.previous_call_center_step_id %>)">Back<br><img width="16px" height="16px" src="/images/back.png"></a>
+  <a href="#" style="color: white;" onclick="previous_step(<%=@call_center_step.previous_call_center_step_id %>)"><img width="16px" height="16px" src="/images/back.png"></a>
   </div>
 <% end %>
 <font color="white"><div><b><%= @call_center_step.script %></b></div>
