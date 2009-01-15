@@ -473,15 +473,21 @@ class User < ActiveRecord::Base
     return script
   end 
   def get_ambulance_dispatched
-    info = <<-eos	
-    We have the following address on file:<br>
-		<br>
-		#{self.profile.address}<br>
-		#{self.profile.city}, #{self.profile.state} #{self.profile.zipcode}<br>
-    <font color="white">Recite this script:</font><br>
-		<i><font color="yellow">"Thank you.  Please use the correct address when calling 911. Good Bye."</font></i>
-		<br>
-		eos
+    info = <<-eos
+      <font color="white">Recite this script:</font><br>
+      <i><font color="yellow">"I would like to verify the street address we have on filef or Brandon Hydrick. Are you ready?"</font></i>
+
+      (wait for caregiver)
+
+      <i><font color="yellow">"The street address is<br>
+                               515 Sparkman Dr.<br>
+                               Huntsville, AL 35816"</font></i>
+
+      (wait for caregiver to finish)
+
+      <i><font color="yellow">"Thank you for your assistance. Goodbye"</font></i>
+    eos
+    return info
   end
   def get_caregiver_thank_you_script(caregiver)
     caregivers = self.active_caregivers
