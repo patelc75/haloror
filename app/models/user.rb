@@ -461,7 +461,7 @@ class User < ActiveRecord::Base
     scripts = {
       CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script_home(self, "HaloUser", operator, event),
       CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script_cell(self, "HaloUser", operator, event),
-      CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone, event),
+      CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
       CallCenterWizard::USER_OK                => get_user_ok_script(operator, event),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
