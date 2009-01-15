@@ -620,7 +620,7 @@ class User < ActiveRecord::Base
 	    <div style="font-size: x-large"><font color="white">Call #{role} <b>#{name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
 	    <br><br>
 	    <font color="white">Recite this script:</font><br>
-	    <i><font color="yellow">"Hello #{name}, my name is #{opertor.name} representing Halo Monitoring, Inc. We have detected a Fall for #{self.name}. Do you accept responsibility for #{self.name}'s Panic?"</font></i>
+	    <i><font color="yellow">"Hello #{name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a Fall for #{self.name}. Do you accept responsibility for #{self.name}'s Panic?"</font></i>
 	    <br><br>
 	    Were you able to reach #{name} at #{place}?
 		  eos
