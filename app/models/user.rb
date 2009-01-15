@@ -475,16 +475,20 @@ class User < ActiveRecord::Base
   def get_ambulance_dispatched
     info = <<-eos
       <font color="white">Recite this script:</font><br>
-      <i><font color="yellow">"I would like to verify the street address we have on filef or Brandon Hydrick. Are you ready?"</font></i>
-
+      <i><font color="yellow">"I would like to verify the street address we have on filef or #{self.name}. Are you ready?"</font></i>
+      <br>
+      <br>
       (wait for caregiver)
-
+      <br>
+      <br>
       <i><font color="yellow">"The street address is<br>
-                               515 Sparkman Dr.<br>
-                               Huntsville, AL 35816"</font></i>
-
+                               #{self.profile.address}<br>
+                               #{self.profile.city}, #{self.profile.state} #{self.profile.zipcode}"</font></i><br>
+      <br>
+      <br>
       (wait for caregiver to finish)
-
+      <br>
+      <br>
       <i><font color="yellow">"Thank you for your assistance. Goodbye"</font></i>
     eos
     return info
