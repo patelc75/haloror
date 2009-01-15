@@ -601,7 +601,7 @@ class User < ActiveRecord::Base
     end
   end
   
-  def get_able_to_reach_script_home(user, role, operator, event)
+  def get_able_to_reach_script_home(user, role)
     opt = false
     if role == 'HaloUser'
       opt = true
