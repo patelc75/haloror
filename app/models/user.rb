@@ -438,9 +438,9 @@ class User < ActiveRecord::Base
   end
   def get_cg_script(key, operator, caregiver, event)
     scripts = {
-      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script_cell(caregiver, "Caregiver", operator),      
-      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script_home(caregiver, "Caregiver", operator),
-      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script_work(caregiver, "Caregiver", operator),
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script_cell(caregiver, "Caregiver", operator, event),      
+      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script_home(caregiver, "Caregiver", operator, event),
+      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script_work(caregiver, "Caregiver", operator, event),
       CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => get_caregiver_responisibility_script(caregiver, event),
       CallCenterWizard::CAREGIVER_AT_HOUSE     => get_caregiver_are_you_at_house_script(caregiver),
       CallCenterWizard::CAREGIVER_GO_TO_HOUSE  => get_caregiver_go_to_house_script(caregiver),
@@ -459,9 +459,9 @@ class User < ActiveRecord::Base
   end
   def get_script(key, operator, event)
     scripts = {
-      CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script_home(self, "HaloUser", operator),
-      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script_cell(self, "HaloUser", operator),
-      CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
+      CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script_home(self, "HaloUser", operator, event),
+      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script_cell(self, "HaloUser", operator, event),
+      CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone, event),
       CallCenterWizard::USER_OK                => get_user_ok_script(operator, event),
       CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
       CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
@@ -613,14 +613,14 @@ class User < ActiveRecord::Base
     end
   end
   
-  def get_able_to_reach_script(phone, role, name, place, operator)
+  def get_able_to_reach_script(phone, role, name, place, operator, event)
     info = ''
     if role == 'Caregiver'
       info = <<-eos	
 	    <div style="font-size: x-large"><font color="white">Call #{role} <b>#{name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
 	    <br><br>
 	    <font color="white">Recite this script:</font><br>
-	    <i><font color="yellow">"Hello #{name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a Fall for #{self.name}. Do you accept responsibility for #{self.name}'s Panic?"</font></i>
+	    <i><font color="yellow">"Hello #{name}, my name is #{operator.name} representing Halo Monitoring, Inc. We have detected a #{event.event_type} for #{self.name}. Do you accept responsibility for #{self.name}'s #{event.event_type}?"</font></i>
 	    <br><br>
 	    Were you able to reach #{name} at #{place}?
 		  eos
