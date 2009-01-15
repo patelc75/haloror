@@ -40,7 +40,7 @@
 			<%=render :partial => 'battery_reading', :locals => {:device => device}%>
 		</div>
 		<div class="col-150">&nbsp;
-			<% info = DeviceInfo.find(:first, :include => :mgmt_response, :conditions => "device_id = #{device.id}", :order => "mgmt_responses.timestamp_server desc")%>
+			<% info = nil #DeviceInfo.find(:first, :include => :mgmt_response, :conditions => "device_id = #{device.id}", :order => "mgmt_responses.timestamp_server desc")%>
 			<% if info %>
 			<%= info.software_version %>
 			<% end %>
