@@ -2,19 +2,21 @@ xml.instruct! :xml, :version => "1.0"
 xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate], :enddate => query[:enddate], :serverdate => UtilityHelper.format_datetime_flex(Time.now, nil)) do
   users.each do |user|
     xml.User(:id => user[:id], :first_name => user.profile[:first_name], :last_name => user.profile[:last_name], :connectivity_status => user[:status][:connectivity], :time_remaining => user[:battery][:time_remaining], :timezone => get_timezone_offset(user)) do
-      xml.LastReading(:datetime => UtilityHelper.format_datetime_flex(user[:last_reading][:timestamp], user)) do
-        xml.heartrate(user[:last_reading][:heartrate])
-        xml.hr_min(user[:last_reading][:hr_min])
-        xml.hr_max(user[:last_reading][:hr_max])
-        #xml.battery(last_reading[:battery])
-        xml.activity(user[:last_reading][:activity])
-        xml.skin_temp(user[:last_reading][:skin_temp])
-        xml.orientation(user[:last_reading][:orientation])
-        xml.steps(user[:last_reading][:steps])
-        xml.adl(user[:last_reading][:adl])
-        xml.battery_outlet_status(user[:status][:battery_outlet])
-        xml.battery_level_status(user[:status][:battery_level])
-        xml.battery_percentage(user[:battery][:percentage].to_f/100)
+      if !user[:last_reading][:timestamp].blank?
+        xml.LastReading(:datetime => UtilityHelper.format_datetime_flex(user[:last_reading][:timestamp], user)) do
+          xml.heartrate(user[:last_reading][:heartrate])
+          xml.hr_min(user[:last_reading][:hr_min])
+          xml.hr_max(user[:last_reading][:hr_max])
+          #xml.battery(last_reading[:battery])
+          xml.activity(user[:last_reading][:activity])
+          xml.skin_temp(user[:last_reading][:skin_temp])
+          xml.orientation(user[:last_reading][:orientation])
+          xml.steps(user[:last_reading][:steps])
+          xml.adl(user[:last_reading][:adl])
+          xml.battery_outlet_status(user[:status][:battery_outlet])
+          xml.battery_level_status(user[:status][:battery_level])
+          xml.battery_percentage(user[:battery][:percentage].to_f/100)
+        end
       end
             
       xml.DataReadings do
