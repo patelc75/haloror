@@ -17,6 +17,20 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
           xml.battery_level_status(user[:status][:battery_level])
           xml.battery_percentage(user[:battery][:percentage].to_f/100)
         end
+      else
+        xml.LastReading(:datetime => UtilityHelper.format_datetime_flex(Time.now, user)) do
+          xml.heartrate(0)
+          xml.hr_min(0)
+          xml.hr_max(0)
+          #xml.battery(last_reading[:battery])
+          xml.activity(0)
+          xml.skin_temp(0)
+          xml.orientation(0)
+          xml.steps(0)
+          xml.adl(0)
+          xml.battery_outlet_status("No Data")
+          xml.battery_level_status(0)
+          xml.battery_percentage(0)
       end
             
       xml.DataReadings do
