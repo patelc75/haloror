@@ -28,8 +28,8 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
           xml.orientation(0)
           xml.steps(0)
           xml.adl(0)
-          xml.battery_outlet_status("Unplugged")
-          xml.battery_level_status(0)
+          xml.battery_outlet_status("No Data")
+          xml.battery_level_status("No Data")
           xml.battery_percentage(0)
       end
             
