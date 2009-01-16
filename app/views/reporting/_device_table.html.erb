@@ -11,9 +11,6 @@
 	<div class="col-150">
 		Device Type
 	</div>
-	<div class="col-200">
-		Recent Battery Reading
-	</div>
 	<div class="col-150">
 		Software Version
 	</div>
@@ -35,9 +32,6 @@
 		</div>
 		<div class="col-150">
 			<%=device.device_type %>
-		</div>
-		<div class="col-200">
-			<%=render :partial => 'battery_reading', :locals => {:device => device}%>
 		</div>
 		<div class="col-150">&nbsp;
 			<% info = DeviceInfo.find(:first, :include => :mgmt_response, :conditions => "device_id = #{device.id}", :order => "mgmt_responses.timestamp_server desc")%>
