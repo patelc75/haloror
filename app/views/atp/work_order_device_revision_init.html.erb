@@ -1,0 +1,20 @@
+<table> 
+  <tr><th>Work Order Number</th></tr>
+	<tr>
+	  <td><%= @work_order.work_order_num %></td>
+	</tr>
+</table>
+<form action="/atp/work_order_device_revision_save" method="post">
+	<input type="hidden" name="work_order_id" value="<%= @work_order.id %>" />
+	<table> 
+	  <tr><th>Device Revision</th><th>Number of Devices</th><th>Starting Serial Number <br>(Optional)</th></tr>
+	  <tr>
+	  	<td><%= select(:device_revision, :id, @device_revisions.collect{|d| [d.revision_model_type, d.id]}, :include_blank => true)%></td>
+		<td><%= text_field_tag(:num) %></td>
+		<td><%= text_field_tag(:starting_serial_num) %></td>
+	  </tr> 
+	  <tr>
+	  	<td colspan="2"><input type="submit" name="Add" value="Add" /></td>
+	  </tr>
+	</table>
+</form>
