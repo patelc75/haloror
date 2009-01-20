@@ -9,7 +9,7 @@ class AtpDeviceController < ApplicationController
                                               :include => [:work_order, {:device_revision => {:device_model => :device_type}}])
       if(!work_order_id.blank?)
         device.work_order_id = work_order_id
-        device_revision_id = get_device_revision_id(device_revision_id)
+        device_revision_id = get_device_revision_id(device_revision_id, work_order_id, serial_number)
         device.device_revision_id = device_revision_id
         device.save!
       end
@@ -25,6 +25,16 @@ class AtpDeviceController < ApplicationController
       respond_to do |format|
         format.xml {head :internal_server_error}
       end
+    end
+  end
+  
+  private
+  def get_device_revision_id(id, work_order_id, serial_number)
+    if !id.blank?
+      return id
+    else
+      drwo = DeviceRevisionsWorkOrder.find(:first, :conditions => "work_order_id = #{work_order_id}", :order => "created_at desc")
+      return drwo.device_revision_id      
     end
   end
 end
