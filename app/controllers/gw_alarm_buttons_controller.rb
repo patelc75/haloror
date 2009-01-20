@@ -1,0 +1,2 @@
+class GwAlarmButtonsController < RestfulAuthController
+end
