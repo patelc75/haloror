@@ -360,7 +360,7 @@ class ManagementController < ApplicationController
     bad_cmds = device.mgmt_cmds.find(:all, 
                                       :order => 'timestamp_initiated desc', 
                                       :include => :mgmt_response, 
-                                      :conditions => "timestamp_initiated > '#{Time.now.to_s}' AND timestamp_initiated < '#{2.years.ago.to_s}'")
+                                      :conditions => "timestamp_initiated > '#{Time.now.to_s}' OR timestamp_initiated < '#{2.years.ago.to_s}'")
     return bad_cmds
   end
 end
