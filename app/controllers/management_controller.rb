@@ -2,6 +2,18 @@ class ManagementController < ApplicationController
   
   before_filter :authenticate_admin?
   
+  def mgmt_cmds
+    @type = 'mgmt_cmds'
+    @bad_cmds = []
+    @cmds = []
+    set_times
+    if device = get_device
+      @cmds = get_mgmt_cmds_stream(device)
+      @bad_cmds = get_bad_mgmt_cmds_stream(device)
+    end
+    
+    render :action => 'index'
+  end
     
   def delete_cmd
     MgmtCmd.delete(params[:id])
@@ -332,5 +344,23 @@ class ManagementController < ApplicationController
     if @pending_cmds.length == 0
       MgmtCmd.create(cmd)
     end
+  end
+  
+  def get_mgmt_cmds_stream(device)
+    cmds = device.mgmt_cmds.find(:all, 
+                          :order => 'timestamp_initiated desc',
+                          :include => :mgmt_response, 
+                          :conditions => "timestamp_initiated > '#{@begin_time}' AND timestamp_initiated < '#{@end_time}'")
+    return cmds
+  end
+  
+  def get_bad_mgmt_cmds_stream(device)
+    #Bad timestaamps*
+    #> Time.now and < 2.years
+    bad_cmds = device.mgmt_cmds.find(:all, 
+                                      :order => 'timestamp_initiated desc', 
+                                      :include => :mgmt_response, 
+                                      :conditions => "timestamp_initiated > '#{Time.now.to_s}' AND timestamp_initiated < '#{2.years.ago.to_s}'")
+    return bad_cmds
   end
 end

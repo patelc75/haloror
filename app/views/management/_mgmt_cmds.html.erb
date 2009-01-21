@@ -1,0 +1,30 @@
+<br>
+<table>
+<tr><th><b>Device ID</b></th>
+<th><b>User ID</b></th>
+<th><b>Timestamp Initiated</b></th>
+<th><b>Timestamp Sent</b></th>
+<th><b>Originator</b></th>
+<th><b>Created by</b></th>
+<th><b>Response ID</b></th>
+<th><b>Timestamp Server</b></th>
+<th><b>Timestamp device</b></th>
+</tr>
+<tr>
+<% if cmds && cmds.length > 0 %>	
+  <% cmds.each do |cmd| %>
+		<%=render :partial => 'mgmt_cmd_row', :locals => {:cmd => cmd }%>
+	<% end %>
+<% else %>
+	<tr>
+	<td colspan="2">No commands found.</td>
+	<td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+	<td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+	<td>&nbsp;</td>
+	</tr>
+<% end %>
+</table>

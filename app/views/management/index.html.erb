@@ -19,7 +19,17 @@
 <p style="color:gray;font-weight:bold">
 	Pending commands are grayed out.
 </p>
-
+<% unless @type == 'mgmt_cmds' %>
 <div id="chatter">
 	<%=render :partial => 'chatter_' + @type, :locals => {:chatter => @chatter}%>
 </div>
+<% else %>
+<div>
+<p>Bad Timestamps
+  <%=render :partial => 'mgmt_cmds', :locals => {:cmds => @bad_cmds, :type => 'bad' } %>
+  </p>
+<p>Mangement Commands
+  <%=render :partial => 'mgmt_cmds', :locals => {:cmds => @cmds, :type => 'good' } %>
+  </p>
+</div>
+<% end %>

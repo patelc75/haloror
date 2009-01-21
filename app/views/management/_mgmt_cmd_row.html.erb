@@ -1,0 +1,17 @@
+<tr <%= "style=\"color:gray;\"" if cmd.pending %>>
+ 	  <td><%=cmd.device_id %>&nbsp;</td>
+		<td><%= cmd.user_id %>&nbsp;</td>
+		<td><%= cmd.timestamp_initiated %>&nbsp;</td>
+	  <td><%= cmd.timestamp_sent %>&nbsp;</td>
+    <td><%= cmd.originator %>&nbsp;</td>
+    <td><%= cmd.created_by %>&nbsp;</td>
+    <% if response = cmd.mgmt_response %>
+      <td><%= response.id  %>&nbsp;</td>
+      <td><%= response.timestamp_server %>&nbsp;</td>
+      <td><%= response.timestamp_device %>&nbsp;</td>
+    <% else %>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    <% end %>
+</tr>
