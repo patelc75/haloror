@@ -114,22 +114,34 @@ class ProfilesController < ApplicationController
   def change_password
     user_hash = params[:user]
     user = User.find(user_hash[:id])
-    if user == current_user || current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)
-    if User.authenticate(user.login, user_hash[:current_password])
+    unless current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)
+      if user == current_user || current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)
+        if User.authenticate(user.login, user_hash[:current_password])
+          if user_hash[:password] == user_hash[:password_confirmation]
+            if user_hash[:password].length >= 4
+              user.password = user_hash[:password]
+              user.password_confirmation = user_hash[:password_confirmation]
+              user.save!
+            else
+              @message = "Password must be at least 4 characters"
+            end
+          else
+            @message = "New Password must equal Confirm Password"
+          end          
+        else  
+          @message = "Old Password must equal Current Password"
+        end
+      end
+    else
       if user_hash[:password] == user_hash[:password_confirmation]
         if user_hash[:password].length >= 4
-          user.password = user_hash[:password]
-          user.password_confirmation = user_hash[:password_confirmation]
-          user.save!
+          UtilityHelper.change_password_by_user_id(user.id, user_hash[:password])
         else
           @message = "Password must be at least 4 characters"
         end
       else
         @message = "New Password must equal Confirm Password"
-      end          
-    else  
-      @message = "Old Password must equal Current Password"
-    end
+      end
     end
     if @message.nil?
       @success_message = true
