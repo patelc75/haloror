@@ -1,5 +1,26 @@
 module UtilityHelper
   include ServerInstance
+  def self.change_password_by_user_id(user_id, password)
+	salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{User.find(user_id).login}--")
+
+	crypted_password = Digest::SHA1.hexdigest("--#{salt}--#{password}--")
+  
+	u = User.find(user_id)
+	u.crypted_password = crypted_password
+	u.salt = salt
+	u.save
+  end
+
+  def self.change_password_by_login(login, password)
+	salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--")
+
+	crypted_password = Digest::SHA1.hexdigest("--#{salt}--#{password}--")
+  
+	u = User.find_by_login(login)
+	u.crypted_password = crypted_password
+	u.salt = salt
+	u.save
+  end
   
   def self.format_datetime_flex(datetime,user)
     #return datetime if !datetime.respond_to?(:strftime)
