@@ -1,6 +1,7 @@
 <tr <%= "style=\"color:gray;\"" if cmd.pending %>>
  	  <td><%=cmd.device_id %>&nbsp;</td>
 		<td><%= cmd.user_id %>&nbsp;</td>
+		<td><%= cmd.cmd_type %>&nbsp;</td>
 		<td><%= cmd.timestamp_initiated %>&nbsp;</td>
 	  <td><%= cmd.timestamp_sent %>&nbsp;</td>
     <td><%= cmd.originator %>&nbsp;</td>
