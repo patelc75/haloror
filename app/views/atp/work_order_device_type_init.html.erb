@@ -10,8 +10,6 @@
 	  <tr><th>Device Type</th><th>Number of Devices</th><th>Starting Serial Number <br>(Optional)</th></tr>
 	  <tr>
 	  	<td><%= select(:device_type, :id, @device_types.collect{|d| [d.device_type, d.id]}, :include_blank => true)%></td>
-		<td><%= text_field_tag(:num) %></td>
-		<td><%= text_field_tag(:starting_serial_num) %></td>
 	  </tr> 
 	  <tr>
 	  	<td colspan="2"><input type="submit" name="Add" value="Add" /></td>

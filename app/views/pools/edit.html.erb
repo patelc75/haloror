@@ -1,0 +1,22 @@
+<h1>Editing pool</h1>
+
+<% form_for(@pool) do |f| %>
+  <%= f.error_messages %>
+  
+<table>
+  <tr>
+    <td>Size</td><td>Serial Number Prefix</td><td>Mac Address Prefix</td>
+  </tr>
+  <tr>
+    <td><%= f.text_field :size %></td>
+    <td><%= f.text_field :starting_serial_number, :maxlength => 5, :size => 5 %></td>
+    <td><%= f.text_field :starting_mac_address,   :maxlength => 6, :size => 6 %></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td><td>&nbsp;</td><td><%= f.submit "Create" %></td>
+  </tr>
+</table>
+<% end %>
+
+<%= link_to 'Show', @pool %> |
+<%= link_to 'Back', pools_path %>

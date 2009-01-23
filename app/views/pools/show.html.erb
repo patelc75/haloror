@@ -1,0 +1,17 @@
+<table>
+<tr>
+  <th>ID</th>
+  <th>Size</th>
+  <th>Serial Number Prefix</th>
+  <th>Mac Address Prefix
+  <th>Actions</th>
+</tr>
+<tr>
+  <td><%= @pool.id %></td>
+  <td><%= @pool.size %></td>
+  <td><%= @pool.starting_serial_number %></td>
+  <td><%= @pool.starting_mac_address %></td>
+  <td><%= link_to 'Back', pools_path %></td>
+</tr>
+</table>
+

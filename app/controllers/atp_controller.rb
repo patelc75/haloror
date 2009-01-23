@@ -40,13 +40,9 @@ class AtpController < ApplicationController
   
   def work_order_device_revision_save
     @work_order = WorkOrder.find(params[:work_order_id])
-    if !params[:device_revision][:id].blank? || !params[:num].blank?
+    if !params[:device_revision][:id].blank?
       @device_revision = DeviceRevision.find(params[:device_revision][:id])
       @work_order.device_revisions << @device_revision
-      @device_revisions_work_order = @work_order.device_revisions_work_orders.find(:first, :conditions => "device_revision_id = #{@device_revision.id}")
-      @device_revisions_work_order.num = params[:num]
-      @device_revisions_work_order.starting_serial_num = params[:starting_serial_num] if params[:starting_serial_number]
-      @device_revisions_work_order.save!
       redirect_to :controller => 'atp', :action => 'work_orders'
     else
       flash[:warning] = 'Device Revision and Number Of Devices are Required.'
