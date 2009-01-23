@@ -1,6 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :pools
   map.resources :gw_alarm_buttons
-
   map.resources :work_orders
   map.resources :atp_device
   map.resources :atp_next_device
