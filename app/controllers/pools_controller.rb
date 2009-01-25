@@ -78,7 +78,7 @@ class PoolsController < ApplicationController
     start_mac_address   = pool.starting_mac_address
     
     #Serial Number Generation
-    total = 100
+    total = 99
     @pools = Pool.find(:all, :conditions => "starting_serial_number LIKE '#{start_serial_number}%'")
     @pools.each do |p|
       total += p.size
