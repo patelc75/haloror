@@ -90,7 +90,7 @@ class PoolsController < ApplicationController
     end
     
     #Mac Adrress Generation
-    total = 100
+    total = 99
     @pools = Pool.find(:all, :conditions => "starting_mac_address LIKE '#{start_mac_address}%'")
     @pools.each do |p|
       total += p.size
