@@ -3,7 +3,7 @@ class WorkOrdersController < ApplicationController
     work_orders = find_work_orders
     if work_orders
       xml = work_orders.to_xml(:skip_types => true, :dasherize => false, :include => 
-            {:device_revisions => {:include => {:atp_items => {}, :device_model => {:device_type => {}}}}})
+            {:device_revisions => {:include => {:atp_items => {}, :device_model => {:include => {:device_type => {}}}}}})
       respond_to do |format|
         format.xml { render :xml => xml }
       end
@@ -17,6 +17,6 @@ class WorkOrdersController < ApplicationController
   private
   
   def find_work_orders
-    return WorkOrder.find(:all, :include => [:device_revisions])
+    return WorkOrder.find(:all, :include => [{:device_revisions => :atp_items}])
   end
 end
