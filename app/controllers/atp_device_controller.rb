@@ -33,7 +33,14 @@ class AtpDeviceController < ApplicationController
     if !id.blank?
       return id
     else
-      drwo = DeviceRevisionsWorkOrder.find(:first, :conditions => "work_order_id = #{work_order_id}", :order => "created_at desc")
+      t = ''
+      sn = serial_number[0,2]
+      t = DEVICE_TYPES[sn.to_sym]
+      
+      drwo = DeviceRevisionsWorkOrder.find(:first, 
+                                            :include => {:device_revision => {:device_model => :device_type}},
+                                            :conditions => "work_order_id = #{work_order_id} AND device_revisions_work_orders.device_revision_id IN (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = '#{t}')",
+                                            :order => "device_revisions_work_orders.created_at desc")
       return drwo.device_revision_id      
     end
   end

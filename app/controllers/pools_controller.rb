@@ -103,7 +103,7 @@ class PoolsController < ApplicationController
     count = 0
     Device.transaction do
       (0..pool.size - 1).each do |i|
-        device = Device.new(:active => false, :serial_number => serial_numbers[i], :mac_address => mac_addresses[i])
+        device = Device.new(:active => false, :pool_id => pool.id, :serial_number => serial_numbers[i], :mac_address => mac_addresses[i])
         device.save!
       end
     end
@@ -122,6 +122,7 @@ class PoolsController < ApplicationController
     mac_address = pool.starting_mac_address
     mac_address = mac_address.ljust(10, "0")
     mac_address[mac_address.size - end_num.size, mac_address.size]= end_num
+    mac_address = mac_address[0,2] + ':' + mac_address[2, 2] + ':' + mac_address[4,2] + ':' + mac_address[6,2] + ':' + mac_address[8,2]
     return mac_address
   end
 end
