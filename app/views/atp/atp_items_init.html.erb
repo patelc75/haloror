@@ -1,0 +1,25 @@
+<table> 
+  <tr><th>ID</th>
+  <th>Range Low</th>
+  <th>Range High</th>
+  <th>ATP Key</th>
+  <th>Description</th>
+  <th>Comments</th>
+  <th>ATP Items (<%= link_to 'Add ATP Item', :controller => 'atp', :action => 'atp_item_new' %>)</th></tr>
+  
+  <% if !@atp_items.blank? %>
+  <% @atp_items.each do |atp_item| %>
+  <tr>
+    <td><%= atp_item.id %></td>
+    <td><%= atp_item.range_low %></td>
+    <td><%= atp_item.range_high %></td>
+    <td><%= atp_item.atp_key %></td>
+    <td><%= atp_item.description %></td>
+    <td><%= atp_item.comments %></td>
+  	<td><%= link_to('Edit', :id => atp_item.id, :controller => 'atp', :action => 'atp_item_edit') %> | 
+  	    <%= link_to('Edit Revisions', :id => atp_item.id, :controller => 'atp', :action => 'atp_item_device_revision_init') %></td>
+  </tr> 
+  <% end %>
+ <% end %>
+</table>
+</form>

@@ -15,11 +15,8 @@ class AtpDeviceController < ApplicationController
       end
       respond_to do |format|
         format.xml {render :xml => device.to_xml(:dasherize => false, :skip_types => true, 
-          :include => {:work_order => {},
-                       :device_revision => {:include => 
-                        {:device_model => {:include => 
-                          {:device_type => {:include => 
-                            :atp_items}}}}}})}
+          :include => 
+              {:device_revision => {:atp_items => {}, :include => {:device_model => {:device_type => {}}}}})}
       end
     else
       respond_to do |format|

@@ -1,0 +1,21 @@
+<form action="/atp/atp_item_save" method="post">
+	<table> 
+	  <tr>
+      <th>Range Low</th>
+      <th>Range High</th>
+      <th>ATP Key</th>
+        <th>Description</th>
+        <th>Comments</th>
+	  </tr>
+	  <tr>
+	  	<td><%= text_field :atp_item, :range_low %></td>
+  	  <td><%= text_field :atp_item, :range_high %></td>
+      <td><%= text_field :atp_item, :atp_key %></td>
+    	<td><%= text_field :atp_item, :description %></td>
+      <td><%= text_field :atp_item, :comments %></td>
+    </tr>
+	  <tr>
+	  	<td colspan="6"><input type="submit" name="Submit" value="Submit" /></td>
+	  </tr>
+	</table>
+</form>
