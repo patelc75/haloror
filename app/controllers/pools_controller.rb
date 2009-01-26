@@ -120,9 +120,9 @@ class PoolsController < ApplicationController
   def get_mac_address(pool, num)
     end_num = num.to_s
     mac_address = pool.starting_mac_address
-    mac_address = mac_address.ljust(10, "0")
+    mac_address = mac_address.ljust(12, "0")
     mac_address[mac_address.size - end_num.size, mac_address.size]= end_num
-    mac_address = mac_address[0,2] + ':' + mac_address[2, 2] + ':' + mac_address[4,2] + ':' + mac_address[6,2] + ':' + mac_address[8,2]
+    mac_address = mac_address[0,2] + ':' + mac_address[2, 2] + ':' + mac_address[4,2] + ':' + mac_address[6,2] + ':' + mac_address[8,2] + ':' + mac_address[10,2]
     return mac_address
   end
 end
