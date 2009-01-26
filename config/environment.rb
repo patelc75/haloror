@@ -192,3 +192,5 @@ EMERGENCY_GROUPS=['EMS']
 #so the agent doesn't accidentally accept/resolve the call on crit2
 SYSTEM_USERNAME="HALO_SYSTEM_USER"
 SYSTEM_PASSWORD="Halo_p455w0rd"
+
+DEVICE_TYPES = {:H1 => 'Chest Strap', :H2 => 'Gateway'}
