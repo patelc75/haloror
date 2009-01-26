@@ -3,7 +3,7 @@ class WorkOrdersController < ApplicationController
     work_orders = find_work_orders
     if work_orders
       xml = work_orders.to_xml(:skip_types => true, :dasherize => false, :include => 
-            {:device_revisions => {:atp_items => {}, :include => {:device_model => {:device_type => {}}}}})
+            {:device_revisions => {:include => {:atp_items => {}, :device_model => {:device_type => {}}}}})
       respond_to do |format|
         format.xml { render :xml => xml }
       end
