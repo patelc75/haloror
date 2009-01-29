@@ -538,12 +538,12 @@ class User < ActiveRecord::Base
     if !self.active_caregivers.blank?
       info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to call your caregivers to help you?"
+  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to call your caregivers to help you?"</div></i>
   	  eos
 	  else
 	    info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to dispatch an ambulance for you?"
+  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to dispatch an ambulance for you?"</div></i>
   	  eos
     end
     return info
