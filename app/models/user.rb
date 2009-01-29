@@ -744,6 +744,8 @@ class User < ActiveRecord::Base
     else
       return number
     end
+  end
+  
   def contact_info_table()
     info = <<-eos
       <table><tr><td colspan="2">#{name}</td></tr>
