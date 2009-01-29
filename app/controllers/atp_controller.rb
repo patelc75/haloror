@@ -1,4 +1,12 @@
 class AtpController < ApplicationController
+  before_filter :authenticate_super_admin?
+  def index
+    
+  end
+  
+  def report
+    @atp_test_results = AtpTestResult.find(:all)
+  end
   
   def atp_items_init
     @atp_items = AtpItem.find(:all, :order => "id asc")
@@ -70,6 +78,7 @@ class AtpController < ApplicationController
     work_order_num = params[:work_order][:work_order_num]
     if !work_order_num.blank?
       @work_order = WorkOrder.create(:work_order_num => work_order_num)
+      @work_order.save!
     else
       @work_order = WorkOrder.create
       @work_order.work_order_num = @work_order.id

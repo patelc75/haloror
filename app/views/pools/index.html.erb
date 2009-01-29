@@ -6,6 +6,8 @@
   <th>Size</th>
   <th>Serial Number Prefix</th>
   <th>Mac Address Prefix</th>
+  <th>Ending Serial Number</th>
+  <th>Ending Mac Address</th>
   <th>Actions</th>
 </tr>
 <% for pool in @pools %>
@@ -15,6 +17,8 @@
     <td><%= pool.size %></td>
     <td><%= pool.starting_serial_number %></td>
     <td><%= pool.starting_mac_address %></td>
+    <td><%= pool.ending_serial_number %></td>
+    <td><%= pool.ending_mac_address %></td>
     <td><%= link_to 'Show', pool %></td>
   </tr>
 <% end %>

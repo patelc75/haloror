@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20081216141913) do
+ActiveRecord::Schema.define(:version => 20090129194836) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -55,21 +55,13 @@ ActiveRecord::Schema.define(:version => 20081216141913) do
     t.boolean  "result"
     t.integer  "device_id"
     t.datetime "timestamp"
-    t.boolean  "result_value"
     t.integer  "operator_id"
     t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
-  end
-
-  create_table "atp_item_results_atp_test_results", :id => false, :force => true do |t|
-    t.integer  "atp_item_result_id"
+    t.string   "result_value",       :limit => 1024
     t.integer  "atp_test_result_id"
-    t.datetime "updated_at"
-    t.datetime "created_at"
-    t.integer  "created_by"
-    t.string   "comments"
   end
 
   create_table "atp_items", :force => true do |t|
@@ -80,15 +72,12 @@ ActiveRecord::Schema.define(:version => 20081216141913) do
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
+    t.string   "atp_key"
   end
 
-  create_table "atp_items_device_types", :id => false, :force => true do |t|
-    t.integer  "atp_item_id"
-    t.integer  "device_type_id"
-    t.datetime "updated_at"
-    t.datetime "created_at"
-    t.integer  "created_by"
-    t.string   "comments"
+  create_table "atp_items_device_revisions", :force => true do |t|
+    t.integer "atp_item_id",        :null => false
+    t.integer "device_revision_id", :null => false
   end
 
   create_table "atp_test_results", :force => true do |t|
@@ -128,10 +117,9 @@ ActiveRecord::Schema.define(:version => 20081216141913) do
     t.integer  "device_id"
   end
 
-  add_index "batteries", ["device_id"], :name => "index_batteries_on_device_id"
-  add_index "batteries", ["device_id", "timestamp"], :name => "index_batteries_on_timestamp_and_device_id"
-  add_index "batteries", ["timestamp", "user_id"], :name => "index_batteries_on_timestamp_and_user_id"
+  add_index "batteries", ["device_id", "timestamp"], :name => "index_batteries_on_device_id_and_timestamp"
   add_index "batteries", ["percentage", "timestamp", "user_id"], :name => "index_batteries_on_timestamp_and_user_id_and_percentage"
+  add_index "batteries", ["timestamp", "user_id"], :name => "index_batteries_on_user_id_and_timestamp"
 
   create_table "battery_charge_completes", :force => true do |t|
     t.integer  "device_id"
@@ -259,13 +247,6 @@ ActiveRecord::Schema.define(:version => 20081216141913) do
   create_table "device_revisions_work_orders", :force => true do |t|
     t.integer  "work_order_id"
     t.integer  "device_revision_id"
-    t.integer  "num"
-    t.string   "starting_mac_address"
-    t.integer  "total_mac_addresses"
-    t.string   "current_mac_address"
-    t.string   "starting_serial_num"
-    t.integer  "total_serial_nums"
-    t.string   "current_serial_num"
     t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
@@ -283,6 +264,8 @@ ActiveRecord::Schema.define(:version => 20081216141913) do
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
+    t.string   "serial_number_prefix"
+    t.boolean  "is_zigby_device"
   end
 
   create_table "device_unavailable_alerts", :force => true do |t|
@@ -303,6 +286,7 @@ ActiveRecord::Schema.define(:version => 20081216141913) do
     t.string  "mac_address"
     t.integer "device_revision_id"
     t.integer "work_order_id"
+    t.integer "pool_id"
   end
 
   create_table "devices_user", :force => true do |t|
@@ -409,6 +393,14 @@ ActiveRecord::Schema.define(:version => 20081216141913) do
 
   create_table "groups", :force => true do |t|
     t.string   "name",       :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "gw_alarm_buttons", :force => true do |t|
+    t.integer  "device_id"
+    t.integer  "user_id"
+    t.datetime "timestamp"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -523,6 +515,25 @@ ActiveRecord::Schema.define(:version => 20081216141913) do
   end
 
   add_index "points", ["oscope_msg_id"], :name => "index_points_on_oscope_msg_id"
+
+  create_table "pool_mappings", :force => true do |t|
+    t.string   "serail_number", :null => false
+    t.string   "mac_address",   :null => false
+    t.integer  "pool_id",       :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "pools", :force => true do |t|
+    t.integer  "size",                   :null => false
+    t.integer  "created_by"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "starting_serial_number"
+    t.string   "ending_serial_number"
+    t.string   "starting_mac_address"
+    t.string   "ending_mac_address"
+  end
 
   create_table "profiles", :force => true do |t|
     t.integer "user_id"
