@@ -475,13 +475,13 @@ class User < ActiveRecord::Base
   def get_ambulance_dispatched
     info = <<-eos
       <font color="white">Recite this script:</font><br>
-      <i><div style="font-size:150% color:yellow">"I would like to verify the street address we have on file for #{self.name}. Are you ready?"</div></i>
+      <i><div style="font-size: 150%; color: yellow;">"I would like to verify the street address we have on file for #{self.name}. Are you ready?"</div></i>
       <br>
       <br>
       (wait for caregiver)
       <br>
       <br>
-      <i><div style="font-size:150% color:yellow">"The street address is<br>
+      <i><div style="font-size: 150%; color: yellow;">"The street address is<br>
                                #{self.profile.address}<br>
                                #{self.profile.city}, #{self.profile.state} #{self.profile.zipcode}"</div></i><br>
       <br>
@@ -489,7 +489,7 @@ class User < ActiveRecord::Base
       (wait for caregiver to finish)
       <br>
       <br>
-      <i><div style="font-size:150% color:yellow">"Thank you for your assistance. Goodbye"</div></i>
+      <i><div style="font-size: 150%; color: yellow;">"Thank you for your assistance. Goodbye"</div></i>
     eos
     return info
   end
@@ -511,14 +511,14 @@ class User < ActiveRecord::Base
     if !caregiver_name.blank?
       info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size:150% color:yellow">"Thank You.  We will be contacting #{caregiver_name}, the next caregiver.  Good Bye."</div></i>
+  	  <i><div style="font-size: 150%; color: yellow;">"Thank You.  We will be contacting #{caregiver_name}, the next caregiver.  Good Bye."</div></i>
   	  eos
       return info
     else  service_name = '911 or local emergency service'
       service_name = self.profile.emergency_number.name if self.profile.emergency_number
       info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size:150% color:yellow">"Thank You.  We will now be calling #{service_name} to dispatch an amublance. Good Bye."</div></i>
+  	  <i><div style="font-size: 150%; color: yellow;">"Thank You.  We will now be calling #{service_name} to dispatch an amublance. Good Bye."</div></i>
   	  eos
       return info
     
@@ -529,7 +529,7 @@ class User < ActiveRecord::Base
     service_name = self.profile.emergency_number.name if self.profile.emergency_number
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size:150% color:yellow">"Thank You.  We will now be calling #{service_name} to dispatch an amublance. Good Bye."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"Thank You.  We will now be calling #{service_name} to dispatch an amublance. Good Bye."</div></i>
 	  eos
     return info
   end
@@ -538,12 +538,12 @@ class User < ActiveRecord::Base
     if !self.active_caregivers.blank?
       info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size:150% color:yellow">"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to call your caregivers to help you?"
+  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to call your caregivers to help you?"
   	  eos
 	  else
 	    info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size:150% color:yellow">"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to dispatch an ambulance for you?"
+  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to dispatch an ambulance for you?"
   	  eos
     end
     return info
@@ -551,21 +551,21 @@ class User < ActiveRecord::Base
   def get_caregiver_responisibility_script(caregiver, event, operator)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i><div style="font-size:150% color:yellow">Hello #{caregiver}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type} for #{self.name}. Do you accept responsibility for #{self.name}'s #{event.event_type}?</div></i>
+  	<i><div style="font-size: 150%; color: yellow;">Hello #{caregiver}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type} for #{self.name}. Do you accept responsibility for #{self.name}'s #{event.event_type}?</div></i>
   	eos
     return info
   end
   def get_caregiver_are_you_at_house_script(caregiver)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i><div style="font-size:150% color:yellow">Are you at #{self.name}'s house?</div></i>
+  	<i><div style="font-size: 150%; color: yellow;">Are you at #{self.name}'s house?</div></i>
   	eos
     return info
   end
   def get_caregiver_go_to_house_script(caregiver)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i><div style="font-size:150% color:yellow">Can you go to #{self.name}'s house to determine if #{self.name} is OK?</div></i>
+  	<i><div style="font-size: 150%; color: yellow;">Can you go to #{self.name}'s house to determine if #{self.name} is OK?</div></i>
   	eos
     return info
   end
@@ -628,7 +628,7 @@ class User < ActiveRecord::Base
 	    <div style="font-size: x-large"><font color="white">Call #{role} <b>#{name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
 	    <br><br>
 	    <font color="white">Recite this script:</font><br>
-	    <i><div style="font-size:150% color:yellow">"Can I speak to #{name}?"</div></i>
+	    <i><div style="font-size: 150%; color: yellow;">"Can I speak to #{name}?"</div></i>
 	    <br><br>
 	    Were you able to reach #{name} at #{place}?
 		  eos
@@ -638,7 +638,7 @@ class User < ActiveRecord::Base
   def get_user_script(operator, event, phone)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i><div style="font-size:150% color:yellow">"Would you like us to dispatch an ambulance for you?"
+		<i><div style="font-size: 150%; color: yellow;">"Would you like us to dispatch an ambulance for you?"
 		</div></i>
 		eos
     return info
@@ -662,14 +662,14 @@ class User < ActiveRecord::Base
     if !caregiver_name.blank?
       info = <<-eos
 		  <font color="white">Recite this script:</font><br>
-		  <i><div style="font-size:150% color:yellow">"Would you like for an ambulance to be dispatched for #{self.name}?"
+		  <i><div style="font-size: 150%; color: yellow;">"Would you like for an ambulance to be dispatched for #{self.name}?"
 		  </div></i>
 		  eos
       return info
     else
         info = <<-eos
   		  <font color="white">Recite this script:</font><br>
-  		  <i><div style="font-size:150% color:yellow">"Would you like for an ambulance to be dispatched for #{self.name}?"
+  		  <i><div style="font-size: 150%; color: yellow;">"Would you like for an ambulance to be dispatched for #{self.name}?"
   		  </div></i>
   		  eos
         return info      
@@ -678,7 +678,7 @@ class User < ActiveRecord::Base
   def get_on_behalf_script(name)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i><div style="font-size:150% color:yellow">"Can you call 911 on behalf of #{name}?
+		<i><div style="font-size: 150%; color: yellow;">"Can you call 911 on behalf of #{name}?
 		</div></i>
 		eos
     return info
@@ -686,7 +686,7 @@ class User < ActiveRecord::Base
   def get_on_behalf_script_orig(name)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i><div style="font-size:150% color:yellow">"When you arrive at the home, can you please call 911 on behalf of #{name}? After that, can you please press the reset button on #{name}'s gateway device. It will be beeping loudly."
+		<i><div style="font-size: 150%; color: yellow;">"When you arrive at the home, can you please call 911 on behalf of #{name}? After that, can you please press the reset button on #{name}'s gateway device. It will be beeping loudly."
 		</div></i>
 		eos
     return info
@@ -700,7 +700,7 @@ class User < ActiveRecord::Base
 		<div style="font-size: x-large"><b><font color="white">Call #{service_name} at #{number}</font></b></div>
 		<br><br>
 		<font color="white">Recite this script:</font><br><br>
-		<i><div style="font-size:150% color:yellow">"My name is #{operator.name} representing Halo Monitoring, Inc. We have  
+		<i><div style="font-size: 150%; color: yellow;">"My name is #{operator.name} representing Halo Monitoring, Inc. We have  
     detected a #{event.event_type} for #{self.name} and have the approval to dispatch an  
     ambulance. Can you dispatch an ambulance?”</div></i>
     <br><br>
@@ -714,13 +714,13 @@ class User < ActiveRecord::Base
     number = self.profile.emergency_number.number if self.profile.emergency_number
     info = <<-eos
 		<font color="white">Recite this script:</font><br><br>
-		<i><div style="font-size:150% color:yellow">"Please send amublance to<br>
+		<i><div style="font-size: 150%; color: yellow;">"Please send amublance to<br>
 		<br>
 		#{self.profile.address}<br>
 		#{self.profile.city}, #{self.profile.state} #{self.profile.zipcode}<br>"
 		</div></i>
 		<br><br>
-		<i><div style="font-size:150% color:yellow">#{self.vitals_text}</div></i>
+		<i><div style="font-size: 150%; color: yellow;">#{self.vitals_text}</div></i>
 		<br><br>
 		Was the ambulance dispatched properly?
 		eos
