@@ -23,6 +23,35 @@ class CallCenterController < ApplicationController
     @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => conditions, :per_page => events_per_page
   end 
   
+  def faq
+    @faq = CallCenterFaq.find(:first, :order => 'updated_at desc')
+  end
+  
+  def faq_edit
+    if(current_user.is_super_admin?)
+      @faq = CallCenterFaq.find(:first, :order => 'updated_at desc')
+      unless @faq
+        @faq = CallCenterFaq.new
+      end
+    else
+      redirect_to :action => 'faq'
+    end
+  end
+  
+  def faq_save
+    if(current_user.is_super_admin?)
+      if !params[:call_center_faq_id].blank?
+        @faq = CallCenterFaq.find(params[:call_center_faq_id])
+        @faq.faq_text = params[:faq][:faq_text]
+      else
+        @faq = CallCenterFaq.new(:faq_text => params[:faq][:faq_text])
+      end
+      @faq.updated_by = current_user.id
+      @faq.save!
+    end
+    redirect_to :action => 'faq'
+  end
+  
   def accept
     @event = Event.find(params[:id])
     ea = @event.accepted?

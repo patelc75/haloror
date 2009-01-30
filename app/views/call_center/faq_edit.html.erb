@@ -1,0 +1,12 @@
+<form action="/call_center/faq_save" method="POST">
+<% if !@faq.id.blank?  %>
+  <%= hidden_field(:call_center_faq_id, @faq.id) %>
+<% end %>
+<p>FAQ Text</p>
+<p>
+  <%= text_area :faq, :faq_text, :cols => 80, :rows => 25 %>
+</p>
+<p>
+  <input type="submit" name="Submit" value="submit" />
+</p>
+</form>
