@@ -15,10 +15,10 @@ class CriticalMailer < ActionMailer::ARMailer
   def admin_call_log(event, body, recipients)
     @recipients = []
     setup_message("Call Log for #{event.user.name} #{event.event_type} at #{UtilityHelper.format_datetime_readable(event.timestamp, event.user)}", body)
-    #recipients.each do |admin|
-    # @recipients << ["#{admin.email}"] 
-    #end
-    @recipients = ["reports@halomonitoring.com"] 
+    recipients.each do |admin|
+     @recipients << ["#{admin.email}"] 
+    end
+    @recipients << ["reports@halomonitoring.com"] 
     self.priority = Priority::IMMEDIATE
   end
   
@@ -31,7 +31,7 @@ class CriticalMailer < ActionMailer::ARMailer
   def device_event_operator(event)
     setup_caregivers(event.user, event, :caregiver_info)
     link = get_link_to_call_center()
-    setup_message(event.to_s, "You received this email because you’re an operator.\n\n#{link}\n" + @caregiver_info)
+    setup_message('URGENT:  ' + event.to_s, "You received this email because you’re an operator.\n\n#{link}\n" + @caregiver_info)
     setup_operators(event, :recepients, :include_phone_call) 
     #setup_emergency_group(event, :recepients)
     self.priority  = event.priority

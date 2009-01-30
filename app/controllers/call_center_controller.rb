@@ -298,14 +298,14 @@ class CallCenterController < ApplicationController
       body << "\n\n #{accepted_time} from event to accepted"
       body << "\n #{resolved_time} from accepted to resolved"
       body << "\n #{total_time} from event to resolved"
-      recipients = User.super_admins()
-      groups = @user.group_memberships
-      admins = User.administrators()
-      admins.each do |admin|
-        if admin.is_admin_of_any?(groups)
-          recipients << admin
-        end
-      end
-      CriticalMailer.deliver_admin_call_log(@event, body, recipients)
+      # recipients = User.super_admins()
+      #       groups = @user.group_memberships
+      #       admins = User.administrators()
+      #       admins.each do |admin|
+      #         if admin.is_admin_of_any?(groups)
+      #           recipients << admin
+      #         end
+      #       end
+      CriticalMailer.deliver_admin_call_log(@event, body, [current_user])
   end
 end
