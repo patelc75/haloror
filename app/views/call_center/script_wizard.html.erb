@@ -114,13 +114,13 @@ div.accordion-content{
 <div align="center" id="call_center-wizard"><font style="font-size: x-large;" color="red">
 Please do NOT use the Back/Forward buttons in your web browser.  Please use the Back Arrow in this box!
 <br>
-Also, speak SLOWLY when calling users and caregivers.</font>
+Also, speak SLOWLY when calling users and caregivers.
+<br><br>
+Please hold the control key and click <a style="color: white;" href="/call_center/faq">here</a> to launch the FAQ in a separate tab.</font>
 <br><br>
   <button style="font-size: xx-large;" onclick="start_wizard(); new Ajax.Updater('call_center-wizard', '/call_center/script_wizard_start/?call_center_wizard_id=<%=@call_center_wizard.id %>')">Start Call</button>
 <br><br>
-<div style="font-size: x-large; color: red">
-Please hold the control key and click <a href="/call_center/faq">here</a> to launch the FAQ in a separate tab
-</div>
+
 </div>
 </div>
 <%
