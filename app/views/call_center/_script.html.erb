@@ -29,7 +29,7 @@ resolved_time = UtilityHelper::seconds_format((@event.resolved?.created_at - @ev
 total_time = UtilityHelper::seconds_format((@event.resolved?.created_at - @event.timestamp).seconds)
 %>
 <font color="white">
-<div><button style="font-size: x-large;" onclick="window.location.href = '/call_center/index';">Stop Call</button>
+<div><button style="font-size: x-large;" onclick="window.location.href = '/call_center/index';">Back to Overview</button>
 </div>
 <div>
 <%="#{accepted_time} from event to accepted"%><br>

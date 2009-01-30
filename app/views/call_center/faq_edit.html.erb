@@ -1,6 +1,6 @@
 <form action="/call_center/faq_save" method="POST">
-<% if !@faq.id.blank?  %>
-  <%= hidden_field(:call_center_faq_id, @faq.id) %>
+<% if !@id.blank?  %>
+  <input type="hidden" name="call_center_faq_id" value="<%= @id %>">
 <% end %>
 <p>FAQ Text</p>
 <p>

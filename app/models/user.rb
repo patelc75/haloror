@@ -721,7 +721,7 @@ class User < ActiveRecord::Base
 		<div style="font-size: x-large"><b><font color="white">Call #{service_name} at #{number}</font></b></div>
 		<br><br>
 		<font color="white">Recite this script:</font><br><br>
-		<i><div style="font-size: 150%; color: yellow;">"My name is #{operator.name} representing Halo Monitoring, Inc. We have  
+		<i><div style="font-size: 150%; color: yellow;">"My name is #{operator.name} representing Halo Monitoring. We have  
     detected a #{event.event_type} for #{self.name} and have the approval to dispatch an  
     ambulance. Can you dispatch an ambulance?”</div></i>
     <br><br>

@@ -32,6 +32,8 @@ class CallCenterController < ApplicationController
       @faq = CallCenterFaq.find(:first, :order => 'updated_at desc')
       unless @faq
         @faq = CallCenterFaq.new
+      else
+        @id = @faq.id
       end
     else
       redirect_to :action => 'faq'
@@ -44,7 +46,7 @@ class CallCenterController < ApplicationController
         @faq = CallCenterFaq.find(params[:call_center_faq_id])
         @faq.faq_text = params[:faq][:faq_text]
       else
-        @faq = CallCenterFaq.new(:faq_text => params[:faq][:faq_text])
+        @faq = CallCenterFaq.new(:faq_text => params[:text])
       end
       @faq.updated_by = current_user.id
       @faq.save!
@@ -132,7 +134,7 @@ class CallCenterController < ApplicationController
       action.save!
       send_admin_call_log_email()
        @call_center_step = CallCenterStep.new(:header => CallCenterWizard::THE_END,
-                                                :script => "The event is now resolved. Click <a style=\"color: white;\" href=\"/call_center/index\">here</a> to go to the Call Center Overview.",
+                                                :script => "<div style=\"font-size: 150%; color: white;\">The event is now resolved.</div>",
                                                 :instruction => CallCenterWizard::THE_END)
     end
       render(:update) do |page|
