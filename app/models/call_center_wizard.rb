@@ -25,7 +25,8 @@ class CallCenterWizard < ActiveRecord::Base
   AGENT_CALL_911        = "Agent Call 911" 
   AMBULANCE_DISPATCHED  = "Ambulance Dispatched"
   THE_END               = "Resolve the Event"
-  
+  CAREGIVER_GOOD_BYE    = "Caregiver Good Bye."
+  USER_GOOD_BYE         = "User Good Bye."
   
   
   
@@ -99,6 +100,7 @@ class CallCenterWizard < ActiveRecord::Base
 	  create_call_center_step(PRE_AGENT_CALL_911, user, operator, "Notes for User #{self.user.name}")
 	  create_call_center_step(AGENT_CALL_911, user, operator, "Notes for User #{self.user.name}")
 	  create_call_center_step(AMBULANCE_DISPATCHED, user, operator, "Notes for User #{self.user.name}")
+	  create_call_center_step(USER_GOOD_BYE, user, operator, "Notes for User #{self.user.name}")
 	  #create caregiver steps
     caregivers = self.user.active_caregivers
 		caregivers.each do |caregiver|
@@ -126,10 +128,10 @@ class CallCenterWizard < ActiveRecord::Base
     	  create_caregiver_call_center_step(caregiver, PRE_AGENT_CALL_911, user, operator, str)
         create_caregiver_call_center_step(caregiver, AGENT_CALL_911, user, operator, str)
     	  create_caregiver_call_center_step(caregiver, AMBULANCE_DISPATCHED, user, operator, str)
+    	  create_caregiver_call_center_step(caregiver, CAREGIVER_GOOD_BYE, user, operator, str)
     	  create_caregiver_call_center_step(caregiver, THE_END, user, operator, str)
 	  end
 	
-	  
 	  create_call_center_step(THE_END, user, operator)
 	  
   end

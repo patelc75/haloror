@@ -416,6 +416,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::PRE_AGENT_CALL_911     => "Can you call an ambulance?",
       CallCenterWizard::AGENT_CALL_911         => "Ambulance dispatched properly?",
       CallCenterWizard::AMBULANCE_DISPATCHED   => "Ambulance dispatched.",
+      CallCenterWizard::CAREGIVER_GOOD_BYE     => "Thank You.  Good Bye.",
       CallCenterWizard::THE_END                => "Resolved the Event"
     }
     instruction = instructions[key]
@@ -431,6 +432,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::PRE_AGENT_CALL_911     => "Can dispatcher dispatch an ambulance?",
       CallCenterWizard::AGENT_CALL_911         => "Ambulance dispatched properly?",
       CallCenterWizard::AMBULANCE_DISPATCHED   => "Ambulance dispatched.",
+      CallCenterWizard::USER_GOOD_BYE          => "Thank You.  Good Bye.",
       CallCenterWizard::THE_END                => "Resolved the Event"
     }
     instruction = instructions[key]
@@ -452,6 +454,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
       CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulance_dispatched(),
+      CallCenterWizard::CAREGIVER_GOOD_BYE     => get_caregiver_good_bye_script(),
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
     script = scripts[key]
@@ -467,11 +470,29 @@ class User < ActiveRecord::Base
       CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
       CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulance_dispatched(),
+      CallCenterWizard::USER_GOOD_BYE          => get_user_good_bye_script,
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
     }
     script = scripts[key]
     return script
   end 
+  
+  def get_user_good_bye_script()
+    info = <<-eos	
+	  <font color="white">Recite this script:</font><br>
+	  <i><div style="font-size: 150%; color: yellow;">"Thank You.  Good Bye."</div></i>
+	  eos
+    return info
+  end
+  
+  def get_caregiver_good_bye_script()
+    info = <<-eos	
+	  <font color="white">Recite this script:</font><br>
+	  <i><div style="font-size: 150%; color: yellow;">"Thank You.  Good Bye."</div></i>
+	  eos
+    return info
+  end
+  
   def get_ambulance_dispatched
     info = <<-eos
       <font color="white">Recite this script:</font><br>
