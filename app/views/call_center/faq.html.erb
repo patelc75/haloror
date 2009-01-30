@@ -1,1 +1,5 @@
-<%= @faq.faq_text if(!@faq.blank?)%>
+<% if current_user.is_super_admin? %>
+  <a href="/call_center/faq_edit">Edit FAQ</a>
+<% end %>
+  
+  <%= @faq.faq_text if(!@faq.blank?)%>
