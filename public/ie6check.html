@@ -8,7 +8,7 @@
 			var el = $("browserName");
 			var BO = detectBrowser();
 			if(BO.ie6){
-		  	window.location = "http://www.microsoft.com/windows/downloads/ie/getitnow.mspx";
+				el.innerHTML = "<b>Halo does not support IE6. Please click <a href=\"http://www.microsoft.com/windows/downloads/ie/getitnow.mspx\">here</a> to upgrade.</b>";
 			}else{
 				el.innerHTML = "<b>Thank You for not running IE6.</b>";
 			}
