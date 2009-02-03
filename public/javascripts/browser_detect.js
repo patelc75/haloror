@@ -3,7 +3,7 @@ function detectBrowser() {
     BO["ie"]        = false /*@cc_on || true @*/; 
     BO["ie4"]       = BO["ie"] && (document.getElementById == null); 
     BO["ie5"]       = BO["ie"] && (document.namespaces == null) && (!BO["ie4"]); 
-    BO["ie6"]       = BO["ie"] && (document.implementation != null) && (document.implementation.hasFeature != null); 
+    BO["ie6"]       = BO["ie"] && (document.implementation != null) && (window.XMLHttpRequest == null) && (document.implementation.hasFeature != null); 
     BO["ie55"]      = BO["ie"] && (document.namespaces != null) && (!BO["ie6"]); 
     /*@cc_on
     BO["ie7"]       = @_jscript_version == '5.7';
