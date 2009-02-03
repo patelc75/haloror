@@ -7,6 +7,9 @@ class AtpController < ApplicationController
   def report
     @atp_test_results = AtpTestResult.find(:all)
   end
+  def atp_test_result_view
+    @atp_test_result = AtpTestResult.find(params[:id], :include => :atp_item_results)
+  end
   
   def device_types_init
     @device_types = DeviceType.find(:all, :order => 'id asc')

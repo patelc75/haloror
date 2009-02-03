@@ -1,0 +1,18 @@
+<form action="/atp/device_model_update" method="post">
+<%= hidden_field :device_model, :id %>
+	<table> 
+	  <tr>
+      <th>Part Number</th>
+      <th>Device Type</th>
+        <th>Comments</th>
+	  </tr>
+	  <tr>
+	  	<td><%= text_field :device_model, :part_number %></td>
+  	  <td><%= select(:device_model, :device_type_id, @device_types.collect{|d| [d.device_type, d.id]}, :include_blank => true)%></td>
+      <td><%= text_field :device_model, :comments %></td>
+    </tr>
+	  <tr>
+	  	<td colspan="3"><input type="submit" name="Submit" value="Submit" /></td>
+	  </tr>
+	</table>
+</form>

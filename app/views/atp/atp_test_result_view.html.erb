@@ -1,0 +1,29 @@
+<table> 
+  <tr><th>ID</th>
+  <th>Result</th>
+  <th>Result Value</th>
+  <th>Device ID</th>
+  <th>Operator ID</th>
+  <th>TimeStamp</th>
+  <th>Updated At</th>
+  <th>Created At</th>
+  <th>Created By</th>
+  <th>Comments</th>
+  
+  <% if !@atp_test_result.blank? && !@atp_test_result.atp_item_results.blank? %>
+  <% @atp_test_result.atp_item_results.each do |result| %>
+  <tr>
+    <td><%= result.id %></td>
+    <td><%= result.result %></td>
+    <td><%= result.result_value %></td>
+    <td><%= result.device_id %></td>
+    <td><%= result.operator_id %></td>
+    <td><%= result.timestamp %></td>
+    <td><%= result.updated_at %></td>
+    <td><%= result.created_at %></td>
+    <td><%= result.created_by %></td>
+    <td><%= result.comments %></td>
+  </tr> 
+  <% end %>
+ <% end %>
+</table>
