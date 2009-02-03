@@ -5,7 +5,7 @@
   <% @work_orders.each do |work_order| %>
   <tr>
     <td><%= work_order.id %></td>
-  	<td><%= link_to(work_order.work_order_num, :id => work_order.id, :controller => 'atp', :action => 'work_order_view') %></td>
+  	<td><%= link_to(work_order.work_order_num, :work_order_id => work_order.id, :controller => 'atp', :action => 'work_order_device_revision_init') %></td>
   </tr> 
   <% end %>
  <% end %>

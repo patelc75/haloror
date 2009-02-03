@@ -1,8 +1,28 @@
-<table> 
-  <tr><th>Work Order Number</th></tr>
-	<tr>
-	  <td><%= @work_order.work_order_num %></td>
-	</tr>
+<table>
+  <tr><th>Work Order Num</th><th>Completed On</th></tr>
+  <tr>
+  	<td><%= @work_order.work_order_num%></td>
+	<td><%= @work_order.completed_on  %></td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+  </tr>
+  <tr>
+  	<td>&nbsp;&nbsp;</td>
+  	<td colspan="3">
+  	<table>
+  		<tr><th>Device Revision</th></tr>
+		<% device_revisions_work_orders = @work_order.device_revisions_work_orders 
+			if device_revisions_work_orders
+			device_revisions_work_orders.each do |drwo|
+		%>
+		<tr>
+			<td><%= drwo.device_revision.revision_model_type %></td>
+		</tr>
+		<%  end  
+		    end %>
+  	</table>
+	</td>
+  </tr>
 </table>
 <form action="/atp/work_order_device_revision_save" method="post">
 	<input type="hidden" name="work_order_id" value="<%= @work_order.id %>" />
