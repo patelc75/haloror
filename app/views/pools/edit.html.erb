@@ -5,12 +5,11 @@
   
 <table>
   <tr>
-    <td>Size</td><td>Serial Number Prefix</td><td>Mac Address Prefix</td>
+    <td>Size</td><td>Serial Number Prefix</td>
   </tr>
   <tr>
     <td><%= f.text_field :size %></td>
     <td><%= f.text_field :starting_serial_number, :maxlength => 5, :size => 5 %></td>
-    <td><%= f.text_field :starting_mac_address,   :maxlength => 6, :size => 6 %></td>
   </tr>
   <tr>
     <td>&nbsp;</td><td>&nbsp;</td><td><%= f.submit "Create" %></td>

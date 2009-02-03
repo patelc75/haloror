@@ -7,8 +7,8 @@ class DeviceRevision < ActiveRecord::Base
   has_many :atp_items_device_revisions
   
   def revision_model_type
-    return "#{self.revision} -- #{self.device_model.model} -- #{self.device_model.device_type.device_type}" if(self.device_model && self.device_model.device_type)
-    return "#{self.revision} -- #{self.device_model.model}" if(self.device_model)
+    return "#{self.revision} -- #{self.device_model.part_number} -- #{self.device_model.device_type.device_type}" if(self.device_model && self.device_model.device_type)
+    return "#{self.revision} -- #{self.device_model.part_number}" if(self.device_model)
     return "#{self.revision}"
   end
 end

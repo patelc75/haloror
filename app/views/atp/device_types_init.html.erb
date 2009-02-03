@@ -1,0 +1,19 @@
+<table> 
+  <tr><th>ID</th>
+  <th>Device Type</th>
+  <th>Mac Address Type</th>
+  <th>Comments</th>
+  <th>Actions (<%= link_to 'Add Device Type', :controller => 'atp', :action => 'device_type_new' %>)</th></tr>
+  
+  <% if !@device_types.blank? %>
+  <% @device_types.each do |device_type| %>
+  <tr>
+    <td><%= device_type.id %></td>
+    <td><%= device_type.device_type %></td>
+    <td><%= device_type.mac_address_type %></td>
+    <td><%= device_type.comments %></td>
+  	<td><%= link_to('Edit', :id => device_type.id, :controller => 'atp', :action => 'device_type_edit') %></td>
+  </tr> 
+  <% end %>
+ <% end %>
+</table>

@@ -1,0 +1,19 @@
+<table> 
+  <tr><th>ID</th>
+  <th>Device Model</th>
+  <th>Revision</th>
+  <th>Comments</th>
+  <th>Actions (<%= link_to 'Add Device Revision', :controller => 'atp', :action => 'device_revision_new' %>)</th></tr>
+  
+  <% if !@device_revisions.blank? %>
+  <% @device_revisions.each do |device_revision| %>
+  <tr>
+    <td><%= device_revision.id %></td>
+    <td><%= device_revision.device_model.model_type %></td>
+    <td><%= device_revision.revision %></td>
+    <td><%= device_revision.comments %></td>
+  	<td><%= link_to('Edit', :id => device_revision.id, :controller => 'atp', :action => 'device_revision_edit') %></td>
+  </tr> 
+  <% end %>
+ <% end %>
+</table>

@@ -8,6 +8,85 @@ class AtpController < ApplicationController
     @atp_test_results = AtpTestResult.find(:all)
   end
   
+  def device_types_init
+    @device_types = DeviceType.find(:all, :order => 'id asc')
+  end
+  
+  def device_type_new
+    @device_type = DeviceType.new
+  end
+  
+  def device_type_edit
+    @device_type = DeviceType.find(params[:id])
+  end
+  
+  def device_type_save
+    @device_type = DeviceType.new(params[:device_type])
+    @device_type.save!
+    redirect_to :action => 'device_types_init'
+  end
+  
+  def device_type_update
+    @device_type = DeviceType.find(params[:device_type][:id])
+    @device_type.update_attributes(params[:device_type])
+    @device_type.save!
+    redirect_to :action => 'device_types_init'
+  end
+  
+  def device_models_init
+    @device_models = DeviceModel.find(:all, :order => "id asc", :include => :device_type)
+  end
+  
+  def device_model_new
+    @device_model = DeviceModel.new
+    @device_types = DeviceType.find(:all, :order => "id asc")
+  end
+  
+  def device_model_edit
+    @device_model = DeviceModel.find(params[:id])
+    @device_types = DeviceType.find(:all, :order => "id asc")
+  end
+  
+  def device_model_save
+    @device_model = DeviceModel.new(params[:device_model])
+    @device_model.save!
+    redirect_to :action => 'device_models_init'
+  end
+  
+  def device_model_update
+    @device_model = DeviceModel.find(params[:device_model][:id])
+    @device_model.update_attributes(params[:device_model])
+    @device_model.save!
+    redirect_to :action => 'device_models_init'
+  end
+  
+  def device_revisions_init
+    @device_revisions = DeviceRevision.find(:all, :order => "id asc", :include => {:device_model => :device_type})
+  end
+  
+  def device_revision_new
+    @device_revision = DeviceRevision.new
+    @device_models = DeviceModel.find(:all, :order => "id asc", :include => :device_type)
+  end
+  
+  def device_revision_edit
+    @device_revision = DeviceRevision.find(params[:id])
+    @device_models = DeviceModel.find(:all, :order => "id asc", :include => :device_type)
+  end
+  
+  def device_revision_save
+    @device_revision = DeviceRevision.new(params[:device_revision])
+    @device_revision.save!
+    redirect_to :action => 'device_revisions_init'
+  end
+  
+  def device_revision_update
+    @device_revision = DeviceRevision.find(params[:device_revision][:id])
+    @device_revision.update_attributes(params[:device_revision])
+    @device_revision.save!
+    redirect_to :action => 'device_revisions_init'
+  end
+  
   def atp_items_init
     @atp_items = AtpItem.find(:all, :order => "id asc")
   end

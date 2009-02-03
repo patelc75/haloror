@@ -41,6 +41,7 @@ class PoolsController < ApplicationController
   # POST /pools.xml
   def create
     @pool = Pool.new(params[:pool])
+    @pool.starting_mac_address = '002440'
     @pool.created_by = current_user.id
     respond_to do |format|
       if @pool.save
@@ -84,22 +85,27 @@ class PoolsController < ApplicationController
       num = i + last_serial_number
       serial_numbers << get_serial_number(pool, num)
     end
-    #Mac Adrress Generation
-    mac_addresses = []
-    last_mac_address = get_last_mac_address(pool) + 1
-    (0..pool.size-1).each do |i|
-      num = i + last_mac_address
-      mac_addresses << get_mac_address(pool, num)
-    end
-    Device.transaction do
+    
+      #Mac Adrress Generation
+      mac_addresses = []
+      last_mac_address = get_last_mac_address(pool) + 1
       (0..pool.size-1).each do |i|
-        device = Device.new(:active => false, :pool_id => pool.id, :serial_number => serial_numbers[i], :mac_address => mac_addresses[i])
-        device.save!
+        num = i + last_mac_address
+        if is_zigby?(pool) || is_gateway?(pool)
+          mac_addresses << get_mac_address(pool, num)
+        else
+          mac_addresses << ''
+        end
       end
-      pool.ending_serial_number = serial_numbers[pool.size - 1]
-      pool.ending_mac_address = mac_addresses[pool.size - 1]
-      pool.save!
-    end
+      Device.transaction do
+        (0..pool.size-1).each do |i|
+          device = Device.new(:active => false, :pool_id => pool.id, :serial_number => serial_numbers[i], :mac_address => mac_addresses[i])
+          device.save!
+        end
+        pool.ending_serial_number = serial_numbers[pool.size - 1]
+        pool.ending_mac_address = mac_addresses[pool.size - 1]
+        pool.save!
+      end
   end
   def get_serial_number(pool, num)
     end_num = num.to_s
@@ -112,7 +118,8 @@ class PoolsController < ApplicationController
   
   def get_mac_address(pool, num)
     end_num = num.to_s(16)
-    mac_address = pool.starting_mac_address
+    # mac_address = pool.starting_mac_address
+    mac_address = '002440'
     mac_address = mac_address.ljust(12, "0")
     mac_address[mac_address.size - end_num.size, mac_address.size]= end_num
     mac_address = mac_address[0,2] + ':' + mac_address[2, 2] + ':' + mac_address[4,2] + ':' + mac_address[6,2] + ':' + mac_address[8,2] + ':' + mac_address[10,2]
@@ -120,24 +127,53 @@ class PoolsController < ApplicationController
   end
   
   def is_zigby?(pool)
-    dt = DeviceType.find(:first, :conditions => "serial_number_prefix = '#{pool.starting_serial_number[0,2]}'")
-    return dt.is_zigby_device
+    dt = DeviceType.find(:first, :include => :serial_number_prefixes, 
+                        :conditions => "serial_number_prefixes.prefix = '#{pool.starting_serial_number[0,3]}'")
+    return dt.mac_address_type == 0
+  end
+  def is_gateway?(pool)
+    dt = DeviceType.find(:first, :include => :serial_number_prefixes, 
+                        :conditions => "serial_number_prefixes.prefix = '#{pool.starting_serial_number[0,3]}'")
+    return dt.mac_address_type == 1    
   end
   def get_last_mac_address(pool)
     pools = []
     num = -1
     if(is_zigby?(pool))
       #num needs to start at hex 80:01:00
-      num = '800000'.hex
-      dts = DeviceType.find(:all, :conditions => "is_zigby_device = true")
+      num = '800000'.hex - 1
+      dts = DeviceType.find(:all, :conditions => "mac_address_type = 0")
       conds = []
       dts.each do |dt|
-        conds << "starting_serial_number like '#{dt.serial_number_prefix}%'"
+        prefixes = dt.serial_number_prefixes
+        prefixes.each do |prefix|
+          conds << "starting_serial_number like '#{prefix.prefix}%'"
+        end
+      end
+      conds = conds.join(' OR ')
+      pools = Pool.find(:all, :conditions => conds)
+    elsif(is_gateway?(pool))
+      dts = DeviceType.find(:all, :conditions => "mac_address_type = 1")
+      conds = []
+      dts.each do |dt|
+        prefixes = dt.serial_number_prefixes
+        prefixes.each do |prefix|
+          conds << "starting_serial_number like '#{prefix.prefix}%'"
+        end
       end
       conds = conds.join(' OR ')
       pools = Pool.find(:all, :conditions => conds)
     else
-      pools = Pool.find(:all, :conditions => "starting_serial_number like '#{pool.starting_serial_number[0,2]}%'")
+        dts = DeviceType.find(:all, :conditions => "mac_address_type = 2")
+        conds = []
+        dts.each do |dt|
+          prefixes = dt.serial_number_prefixes
+          prefixes.each do |prefix|
+            conds << "starting_serial_number like '#{prefix.prefix}%'"
+          end
+        end
+        conds = conds.join(' OR ')
+        pools = Pool.find(:all, :conditions => conds)      
     end
     
     if pools && pools.size > 1
@@ -159,8 +195,8 @@ class PoolsController < ApplicationController
   end
   
   def get_last_serial_number(pool)
-    pools = Pool.find(:all, :conditions => "starting_serial_number like '#{pool.starting_serial_number[0,2]}%'")
-    num = -1
+    pools = Pool.find(:all, :conditions => "starting_serial_number like '#{pool.starting_serial_number}%'")
+    num = 99
     if pools && pools.size > 1
       pools.each do |p|
         if p.ending_serial_number
