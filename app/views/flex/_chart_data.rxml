@@ -1,7 +1,7 @@
 xml.instruct! :xml, :version => "1.0"
 xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate], :enddate => query[:enddate], :serverdate => UtilityHelper.format_datetime_flex(Time.now, nil)) do
   users.each do |user|
-    xml.User(:id => user[:id], :first_name => user.profile[:first_name], :last_name => user.profile[:last_name], :connectivity_status => user[:status][:connectivity], :time_remaining => user[:battery][:time_remaining], :timezone => get_timezone_offset(user)) do
+    xml.User(:id => user[:id], :is_admin => user.is_super_admin?, :first_name => user.profile[:first_name], :last_name => user.profile[:last_name], :connectivity_status => user[:status][:connectivity], :time_remaining => user[:battery][:time_remaining], :timezone => get_timezone_offset(user)) do
       if !user[:last_reading][:timestamp].blank?
         xml.LastReading(:datetime => UtilityHelper.format_datetime_flex(user[:last_reading][:timestamp], user)) do
           xml.heartrate(user[:last_reading][:heartrate])
