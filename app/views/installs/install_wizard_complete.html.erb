@@ -8,14 +8,14 @@
 			Installation Complete.  Total time:  <%= UtilityHelper.seconds_format(@self_test_session.completed_on - @self_test_session.created_at) %>
 			<br />
 			<br />
+			Please check that the flash player upgrade is finished and restart your browser.
+			<br />
+			<br />
 			<% if @user.activation_code != nil %>
       		Please activate the user and have the user login.  <%= link_to 'Activate', :controller => 'installs', :action => 'activate_user', :user_id => @user.id %>
 			<% else %>
 			Please have the user login.  <a href="/logout">User Logon</a>
 			<% end %>
-			<br />
-			<br />
-			Please check that the flash player upgrade is finished and restart your browser.
 		</div>
 	</div>
 	<img src="/images/lightbox-col-footer.gif" />

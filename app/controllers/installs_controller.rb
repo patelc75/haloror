@@ -310,7 +310,7 @@ class InstallsController < ApplicationController
       elsif session[:halo_check_phone_self_test_result] && !session[:halo_check_phone_self_test_result].result
         step = create_self_test_step(SELF_TEST_PHONE_FAILED_ID)
         @self_test_step_id = step.id
-        message = "Self Test Phone failed. Either restart the wizard or you can agree to disable the dial backup feature and continue by clicking <a href=\"javascript:continueWithoutPhone(" + @self_test_step_id.to_s + ");\" >here</a>."
+        message = "Self Test Phone failed. Either restart the wizard or you can agree to disable the dial backup feature and continue by clicking <a href=\"javascript:continueWithoutPhone(" + @self_test_step_id.to_s + ");\" >Continue</a>."
         render_update_failure('phone_div_id', message, 'updateCheckSelfTestPhone', 'install_wizard_launch')
       else
         render_update_message('phone_div_id', message, :phone)
