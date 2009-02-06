@@ -67,11 +67,11 @@ class UsersController < ApplicationController
     #redirect_back_or_default('/')
   end
   
-  def init_caregiver
+  def init_user
     @user = User.find_by_activation_code(params[:activation_code])
   end
   
-  def update_caregiver
+  def update_user
     @user = User.find_by_activation_code(params[:user][:activation_code])
     
     user_hash = params[:user]
@@ -89,15 +89,15 @@ class UsersController < ApplicationController
         redirect_to '/'
       else
         flash[:warning] = "Password must be at least 4 characters"
-        render :action => 'init_caregiver'
+        render :action => 'init_user'
       end
     else
         flash[:warning]= "New Password must equal Confirm Password"
-        render :action => 'init_caregiver'
+        render :action => 'init_user'
     end
     
   rescue
-    render :action => 'init_caregiver'    
+    render :action => 'init_user'    
   end
   
   def update

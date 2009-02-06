@@ -10,7 +10,7 @@ class RedirectorController < ApplicationController
     elsif(current_user.is_installer?)
       redirect_to :controller => 'installs', :action => 'index'
     elsif(current_user.is_sales?)
-      redirect_to :controller => 'users', :action => 'new'
+      redirect_to :controller => 'user_admin', :action => 'new_admin'
     else
       redirect_to :controller => 'chart', :action => 'flex'
     end

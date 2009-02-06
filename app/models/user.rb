@@ -837,7 +837,7 @@ class User < ActiveRecord::Base
   
   # returns true if password is a required field
   def password_required?
-    if(self.is_new_caregiver)
+    if(self.is_new_caregiver || self.is_new_user)
       return false
     else
       crypted_password.blank? || !password.blank?

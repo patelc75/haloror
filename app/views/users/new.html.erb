@@ -24,21 +24,6 @@
 			<%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group)%>
         	<br />
 			<br />
-			<label for="login">Desired Username</label>
-	        <br/>
-	        <%= text_field :user, :login %>
-	        <br />
-	        <br />
-	        <label for="password">Password</label>
-	        <br/>
-	        <%= password_field :user, :password %>
-	        <br />
-	        <br />
-	        <label for="password_confirmation">Confirm Password</label>
-	        <br/>
-	        <%= password_field :user, :password_confirmation %>
-	        <br />
-	        <br />
 		  </div>
 		  <div class="col-250">
 		  	<%= render :partial => '/profiles/profile_top' %>

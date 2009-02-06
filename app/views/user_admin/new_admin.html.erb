@@ -9,45 +9,53 @@ Select Group:
 <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group), {:onchange => "$('group_form_id').submit();"}%>
 </form>
 <% end%>
-<div id="secondary-col">
-  <div id="secondary-col-header"></div>
+<div id="call_list-col">
+	<div id="call_list-col-header">
+		User Signup
+	</div>
   <div class="content">
+	
     <%= error_messages_for :user %>
 		<div id="errors">
 			<%= flash[:warning]%>
 		</div>
 
-    <div style="width:200px;margin-left:auto;margin-right:auto">
-      <% form_tag :action => 'create_admin' do -%>
-	  <input type="hidden" name="group" value="<%= @group %>" />
-		<label for="role">Role</label>
-		<br />
-		<%= select_tag :role, options_for_select(@group_roles.collect {|r| [r.name, r.id]}) %>
-		<br />
-		<br />
-        <label for="login">Desired Username</label>
-        <br/>
-        <%= text_field :user, :login %>
-        <br />
-        <br />
-        <label for="password">Password</label>
-        <br/>
-        <%= password_field :user, :password %>
-        <br />
-        <br />
-        <label for="password_confirmation">Confirm Password</label>
-        <br/>
-        <%= password_field :user, :password_confirmation %>
-        <br />
-        <br />
-		<%= render :partial => '/profiles/profile'%>
-        <div align="center">
-          <input name="commit" type="image" src="/images/subscribe.gif" />
-        </div>
+      <% form_tag :action => 'create' do -%>
+		<% gs = ['Choose a Group']
+		   @groups.each do |g|
+			 gs << g.name
+		   end %>
+	 <div id="device-table" class="table">
+	 	<div class="row">
+	 	  <div class="col-250">
+	 		<label for="role">Role</label>
+  		<br />
+  		<% gr = ['Choose a Role']
+  		   @group_roles.each do |r|
+  			 gr << r.name
+  		   end %>
+  		<%= select_tag :role, options_for_select(gr.collect {|r| [r,r]}) %>
+  		<br />
+  		<br />
+		  </div>
+		  <div class="col-250">
+		  	<%= render :partial => '/profiles/profile_top' %>
+		  </div>
+		  
+		  <div class="col-250">
+		  	<%= render :partial => '/profiles/profile_bottom' %>
+			<br />
+			<br />
+			<input name="commit" type="image" src="/images/subscribe.gif" />
+		  </div>
+		</div>
+	 </div>	
+        
       <% end -%>
     </div>
   </div>
-  <div id="secondary-col-footer"></div>
+	<div style="clear:both"></div>
+	<div id="call_list-col-footer"></div>
 </div>
 <% else %>
 	<form id="group_form_id" action="/user_admin/new_admin" method="POST">
