@@ -4,6 +4,10 @@ class InstallsController < ApplicationController
   include ActionView::Helpers::TagHelper
   include RedboxHelper
   
+  def ie6
+    
+  end
+  
   def activate_user
     @user = User.find(params[:user_id])
     @user.activate

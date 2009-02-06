@@ -1,3 +1,5 @@
+
+<script src="/javascripts/browser_detect.js" type="text/javascript"></script>
 <div id="user-table" class="table">
 	<div class="row header">
 		<div class="col-75">User Id</div>
@@ -11,11 +13,7 @@
 		<div class="col-75"><%=  user.id     %></div>
 		<div class="col-200"><%= user.name  %></div>
 		<div class="col-200"><%= user.login %></div>
-		<div class="col-150"><%= link_to "Start Installation Wizard", 
-											:controller => 'installs', 
-											:action => 'registration', 
-											:group => @group.name, 
-											:id => user.id %></div>
+		<div class="col-150"><%= link_to_function("Start Installation Wizard", "browserCheckStartRegistration('#{user.id}', '#{@group.name}')") %></div>
 	</div>
 	<div class="col-100"><%= link_to_remote "Start Range Test Only", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :group => @group.name, :id => user.id} %></div>
 	
@@ -38,5 +36,13 @@ function stop_range_test(user_id){
 	url = "/installs/stop_range_test_only/?user_id=" + user_id
 	new Ajax.Request(url, {
 			method: 'get'});
+}
+function browserCheckStartRegistration(id, group){
+  var BO = detectBrowser();
+  if(BO.ie6){
+    window.location = '/installs/ie6';
+  }else{
+    window.location = '/installs/registration/' + id + '?group=' + group;
+  }
 }
 </script>
