@@ -12,6 +12,7 @@ class CriticalDeviceEventObserver
           CriticalMailer.deliver_device_event_caregiver(event)
         end
       end
+    end
 
     def after_save(alert)
       Event.create_event(alert.user_id, alert.class.to_s, alert.id, alert.timestamp)
