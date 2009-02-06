@@ -181,6 +181,20 @@ class InstallsController < ApplicationController
   def phone_prompt_start
 
   end
+  
+  def ethernet_prompt_init
+    @user = User.find(params[:user_id])
+    render(:update) do |page|
+      phone_launch = launch_remote_redbox(:url =>  {  :action => 'ethernet_prompt_start', :controller => 'installs', 
+                                     :user_id => @user.id }, 
+                         :html => { :method => :get, :complete => '' } ) 
+      page['phone_launcher'].replace_html phone_launch
+    end
+  end  
+  def ethernet_prompt_start
+
+  end
+  
   def led_prompt_init
     @user = User.find(params[:user_id])
     render(:update) do |page|

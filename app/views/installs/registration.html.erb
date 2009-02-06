@@ -16,6 +16,11 @@
 	  new Ajax.Request(url, {
 	    method: 'get'});
 	}
+	function showEthernet(){
+	  url = "/installs/ethernet_prompt_init/?user_id=<%= @user.id %>"
+		new Ajax.Request(url, {
+  			method: 'get'});
+	}
 </script>
 <div id="phone_launcher" ></div>
 <div>Registering <%= @user.name %></div>
