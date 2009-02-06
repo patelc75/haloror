@@ -58,11 +58,11 @@ ActionController::Routing::Routes.draw do |map|
   map.admin_signup '/admin/signup', :controller => 'user_admin', :action => 'new_admin'
   map.login  '/login', :controller => 'sessions', :action => 'new'
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
-  map.activate '/activate/:activation_code', :controller => 'users', :action => 'activate'
+  map.activate '/activate/:activation_code', :controller => 'users', :action => 'init_user'
   map.connect '/reporting', :controller => 'reporting', :action => 'users'
+    # 
+    # map.signup_caregiver '/activate/caregiver/:activation_code', :controller => 'users', :action => 'init_caregiver'
   
-  map.signup_caregiver '/activate/caregiver/:activation_code', :controller => 'users', :action => 'init_caregiver'
-
 
   # The priority is based upon order of creation: first created -> highest priority.
   
