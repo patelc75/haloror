@@ -7,15 +7,18 @@ class CallCenterAcceptController < ApplicationController
     
     event = Event.find(:first, :conditions => "timestamp = '#{timestamp.to_s(:db)}' AND user_id = #{user_id}")
     if event
+      action = nil
       event_action = event.accepted?
       if !event_action
         action = EventAction.new
-        action.user_id = operator_id
-        action.event_id = event.id
-        action.description = description
-        action[:send_email] = false
-        action.save!   
-      end
+      else
+        action = event_action
+      end      
+      action.user_id = operator_id
+      action.event_id = event.id
+      action.description = description
+      action[:send_email] = false
+      action.save!
     end
     render :text => ''
   end
