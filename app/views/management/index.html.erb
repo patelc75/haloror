@@ -5,7 +5,7 @@
 		<tr><td>All times are in UTC timezone</td></tr>
 	  <tr><td>Begin Time</td>&nbsp;&nbsp;<td>End Time</td></tr>
 	  <tr><td><%= calendar_date_select_tag "begin_time", Time.now, :time => true, :popup => 'force' %></td>
-  	<td><%= calendar_date_select_tag "end_time", "", :time => true, :popup => 'force' %></td></tr>
+  	<td><%= calendar_date_select_tag "end_time", Time.now, :time => true, :popup => 'force' %></td></tr>
 	
 <tr><td>
 	Select a Device: <%=select(:device, :id, current_user.devices.collect {|d| [ d.id, d.id ]})%>

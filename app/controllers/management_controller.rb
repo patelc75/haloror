@@ -144,7 +144,58 @@ class ManagementController < ApplicationController
     render :layout => false
   end
   
+  def issue
+    @firmware_upgrades = FirmwareUpgrade.find(:all, :order => 'id desc')
+    @ftps = Ftp.find(:all, :order => 'id desc')
+  end
   
+  def new_firmware_upgrade
+    @firmware_upgrade = FirmwareUpgrade.new
+    @ftps = Ftp.find(:all)
+  end
+  
+  def edit_firmware_upgrade
+    @firmware_upgrade = FirmwareUpgrade.find(params[:id])
+    @ftps = Ftp.find(:all)
+  end
+  
+  def save_firmware_upgrade
+    @firmware_upgrade = FirmwareUpgrade.new(params[:firmware_upgrade])
+    @ftp = Ftp.find(params[:ftp_id])
+    @firmware_upgrade.ftp = @ftp
+    @firmware_upgrade.save!
+    redirect_to :action => 'issue'
+  end
+  
+  def update_firmware_upgrade
+    @firmware_upgrade = FirmwareUpgrade.find(params[:firmware_upgrade][:id])
+    @firmware_upgrade.update_attributes(params[:firmware_upgrade])
+    @ftp = Ftp.find(params[:ftp_id])
+    @firmware_upgrade.ftp = @ftp
+    @firmware_upgrade.save!
+    redirect_to :action => 'issue'
+  end
+  
+  def new_ftp
+    @ftp = Ftp.new
+  end
+  
+  def edit_ftp
+    @ftp = Ftp.find(params[:id])
+  end
+  
+  def save_ftp
+    @ftp = Ftp.new(params[:ftp])
+    @ftp.save!
+    redirect_to :action => 'issue'
+  end
+  
+  def update_ftp
+    @ftp = Ftp.find(params[:ftp][:id])
+    @ftp.update_attributes(params[:ftp])
+    @ftp.save!
+    redirect_to :action => 'issue'
+  end
   protected
   
   def get_device

@@ -1,0 +1,25 @@
+<div>
+<p>Firmware Upgrades (<%= link_to 'Add Firmware Upgrade', :action => 'new_firmware_upgrade', :controller => 'management' %>)</p>
+<table>
+  <tr>
+    <th>Version</th>
+    <th>Path</th>
+    <th>File Name</th>
+    <th>Description</th>
+    <th>Date Added</th>
+    <th>FTP</th>
+    <th>Actions</th>
+  </tr>
+  <% @firmware_upgrades.each do |fu| %>
+    <tr>
+      <td><%= fu.version %></td>
+      <td><%= fu.path %></td>
+      <td><%= fu.filename%></td>
+      <td><%= fu.description %></td>
+      <td><%= fu.date_added %></td>
+      <td><%= "#{fu.ftp.server_name}" if fu.ftp %></td>
+      <td><%= link_to 'Edit', :id => fu.id, :action => 'edit_firmware_upgrade', :controller => 'management' %></td>
+    </tr>
+  <% end %>
+  
+</table>
