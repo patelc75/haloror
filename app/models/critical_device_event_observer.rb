@@ -1,4 +1,4 @@
-class CriticalDeviceEventObserver 
+class CriticalDeviceEventObserver  < ActiveRecord::Observer
     include ServerInstance
     observe Fall, Panic, GwAlarmButton
 

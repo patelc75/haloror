@@ -47,7 +47,7 @@ Rails::Initializer.run do |config|
   config.action_controller.session = { :session_key => "_myapp_session", :secret => "some secret phrase of at least 30 characters" }
   
   # See Rails::Configuration for more options
-  config.active_record.observers = :user_observer, :device_event_observer, :event_action_observer
+  config.active_record.observers = :user_observer, :device_event_observer, :event_action_observer, :critical_device_event_observer
   
 end
 
