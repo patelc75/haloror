@@ -510,7 +510,7 @@ class User < ActiveRecord::Base
       (wait for caregiver to finish)
       <br>
       <br>
-      <i><div style="font-size: 150%; color: yellow;">"Thank you for your assistance. Goodbye"</div></i>
+      <i><div style="font-size: 150%; color: yellow;"></div></i>
     eos
     return info
   end
@@ -572,7 +572,7 @@ class User < ActiveRecord::Base
   def get_caregiver_responisibility_script(caregiver, event, operator)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i><div style="font-size: 150%; color: yellow;">Hello #{caregiver}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type} for #{self.name}. Do you accept responsibility for #{self.name}'s #{event.event_type}?</div></i>
+  	<i><div style="font-size: 150%; color: yellow;">Hello #{caregiver}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type} for #{self.name}. Do you accept responsibility for handling #{self.name}'s #{event.event_type}?</div></i>
   	eos
     return info
   end
