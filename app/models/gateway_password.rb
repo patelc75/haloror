@@ -6,9 +6,10 @@ class GatewayPassword < ActiveRecord::Base
       pass = self.random_password
       gp = GatewayPassword.find_by_device_id(gateway.id)
       if gp
-        gp.update_attributes(:password => pass)
+        gp.update_attributes(:password => User.encrypt(pass, gp.salt))
       else
-        gp = GatewayPassword.new(:password => pass, :device_id => gateway.id)
+        salt = generate_salt(serial_number)
+        gp = GatewayPassword.new(:salt => salt, :password =>  User.encrypt(pass, salt), :device_id => gateway.id)
       end
       gp.save!
       return pass
@@ -20,5 +21,9 @@ class GatewayPassword < ActiveRecord::Base
   private
   def self.random_password
     Digest::SHA1.hexdigest("--#{Time.now.to_s}--")[0,6]
+  end
+  def self.generate_salt(serial_number)
+    salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{serial_number}--")
+    return salt
   end
 end
