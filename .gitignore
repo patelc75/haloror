@@ -1,5 +1,4 @@
 log/*.log
-log
 tmp/**/*
 .DS_Store
 .eprj
