@@ -88,8 +88,11 @@ class PoolsController < ApplicationController
     
       #Mac Adrress Generation
       mac_addresses = []
-      last_mac_address = get_last_mac_address(pool) + 1
-      (0..pool.size-1).each do |i|
+      last_mac_address = 0
+      if is_zigby?(pool) || is_gateway?(pool)
+        last_mac_address = get_last_mac_address(pool) + 1
+      end
+        (0..pool.size-1).each do |i|
         num = i + last_mac_address
         if is_zigby?(pool) || is_gateway?(pool)
           mac_addresses << get_mac_address(pool, num)
