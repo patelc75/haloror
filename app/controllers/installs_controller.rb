@@ -428,12 +428,16 @@ class InstallsController < ApplicationController
   def range_test_only
     @user = User.find(params[:user_id])
     strap = @user.get_strap
-    @battery = Battery.find(:first, :conditions => "device_id = #{strap.id}", :order => 'timestamp desc')  
+    if strap
+      @battery = Battery.find(:first, :conditions => "device_id = #{strap.id}", :order => 'timestamp desc')  
+    end
   end
   def start_range_test_only
     @user = User.find(params[:user_id])
     strap = @user.get_strap
-    create_mgmt_cmd('range_test_start', strap.id)
+    if strap
+      create_mgmt_cmd('range_test_start', strap.id)
+    end
     render(:update) do |page|
       page.replace_html 'range_test_launcher', launch_remote_redbox(:url =>  {  :action => 'stop_range_test_only_init', 
                                   :controller => 'installs',  :user_id => @user.id,
@@ -446,7 +450,24 @@ class InstallsController < ApplicationController
   def stop_range_test_only
     @user = User.find(params[:user_id])
     strap = @user.get_strap
-    create_mgmt_cmd('range_test_stop', strap.id)
+    if strap
+      create_mgmt_cmd('range_test_stop', strap.id)
+    end
+    render(:update) do |page|
+      page.replace_html 'range_test_launcher', launch_remote_redbox(:url =>  {  :action => 'installation_notes', 
+                                  :controller => 'installs',  :user_id => @user.id,
+                                  }, :html => { :method => :get, :complete => '' } )
+    end
+  end
+  
+  def installation_notes
+    @user = User.find(params[:user_id])
+    @notes = InstallationNote.new(:user_id => @user.id)
+  end
+  def submit_installation_notes
+    @user = User.find(params[:user_id])
+    @note = InstallationNote.new(:user_id => @user.id, :notes => params[:notes])
+    @note.save!
     render :text => ''
   end
   def start_range_test
