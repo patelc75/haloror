@@ -17,12 +17,15 @@ class AtpKitsController < ApplicationController
           device = Device.find_by_serial_number(sn)
           if device
             @kit.devices << device
+            RAILS_DEFAULT_LOGGER.warn @kit.devices
           else
             bad_serials << sn
           end
         end
         if bad_serials.size > 0
           raise "Serial Number(s) not found."
+        else
+          @kit.save!
         end
       end
     rescue RuntimeError => e
