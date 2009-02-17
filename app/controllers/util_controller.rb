@@ -19,6 +19,9 @@ class UtilController < ApplicationController
     #render :text => request.env["HTTP_HOST"].to_s
   end
   
+  def version
+  end
+  
   def hostname
     render :layout => false
   end
