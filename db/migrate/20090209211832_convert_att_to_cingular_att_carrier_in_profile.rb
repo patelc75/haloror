@@ -3,7 +3,7 @@ class ConvertAttToCingularAttCarrierInProfile < ActiveRecord::Migration
     cingular = Carrier.find_by_domain("@cingularme.com")
     att = Carrier.find_by_domain("@mmode.com")
     
-    profiles = Profile.find_all_by_carrier_id(att.id)
+    profiles = Profile.find_all_by_carrier_id(att.id) if !att.nil?
     if profiles
       profiles.each do |profile|
         profile.carrier_id = cingular.id
