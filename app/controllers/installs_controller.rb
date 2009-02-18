@@ -87,6 +87,7 @@ class InstallsController < ApplicationController
       end
       begin
         @gateway.set_gateway_type
+        @gateway.save!
       rescue Exception => e
         flash[:warning] = "#{e}"
         throw e
@@ -115,6 +116,7 @@ class InstallsController < ApplicationController
       end
       begin
         @strap.set_chest_strap_type
+        @strap.save!
       rescue Exception => e
         flash[:warning] = "#{e}"
         throw e
