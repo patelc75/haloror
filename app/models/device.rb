@@ -2,6 +2,8 @@ class Device < ActiveRecord::Base
   belongs_to :device_revision
   belongs_to :work_order
   
+  has_and_belongs_to_many :kits
+  
   has_one :device_info
   has_many :mgmt_cmds
   has_many :mgmt_queries
