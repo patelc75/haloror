@@ -20,6 +20,7 @@ class UtilController < ApplicationController
   end
   
   def version
+  	render :layout =>false
   end
   
   def hostname
