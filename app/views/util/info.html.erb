@@ -1,7 +1,7 @@
 <!-- See http://corelib.rubyonrails.org/classes/CGI.html for more environment variables -->
 UNIX hostname: <code><%= `hostname` %></code><br>
 System Datetime: <code><%= `date` %></code><br>
-Git Revision: <code><%= `cd ~/haloror; /usr/local/bin/git describe` %></code><br>
+Git Revision: <code><%= `cd ~/haloror; /usr/bin/git describe` %></code><br>
 <br>
 <b>Network</b><br>
 SERVER_ADDR: <code><%= request.env["SERVER_ADDR"].to_s %></code> <br>
