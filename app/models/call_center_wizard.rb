@@ -5,6 +5,7 @@ class CallCenterWizard < ActiveRecord::Base
   belongs_to :user
   
   after_create :generate_call_center_steps
+  attr_reader :previous_wizard
   
   USER_HOME_PHONE       = "Home Phone Answered?"        
   USER_MOBILE_PHONE     = "Mobile Phone Answered?"     
@@ -27,7 +28,13 @@ class CallCenterWizard < ActiveRecord::Base
   THE_END               = "Resolve the Event"
   CAREGIVER_GOOD_BYE    = "Caregiver Good Bye."
   USER_GOOD_BYE         = "User Good Bye."
-  
+  RECONTACT_USER_HOME_PHONE       = "Recontact Home Phone Answered?"        
+  RECONTACT_USER_MOBILE_PHONE     = "Recontact Mobile Phone Answered?"     
+  RECONTACT_CAREGIVER_HOME_PHONE  = "Recontact Caregiver Home Phone Answered?" 
+  RECONTACT_CAREGIVER_WORK_PHONE  = "Recontact Caregiver Work Phone Answered?"
+  RECONTACT_CAREGIVER_MOBILE_PHONE = "Recontact Caregiver MOBILE Phone Answered?"
+  RECONTACT_USER_OK = "Recontact User OK."
+  RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY = "Recontact Accept Responsibility"
   
   
   include Ruleby
@@ -49,7 +56,11 @@ class CallCenterWizard < ActiveRecord::Base
     end
     return steps
   end
-  def get_next_step(step_id, answer)    
+  def get_next_step(step_id, answer) 
+    if event.event_type == CallCenterFollowUp.class_name 
+      ccf = CallCenterFollowUp.find(event.event_id)
+      @previous_wizard = CallCenterWizard.find_by_event_id(ccf.event.id)  
+    end
     step = CallCenterStep.find(step_id)
     step.answer = (answer == 'Yes')
     step.save!
@@ -65,6 +76,10 @@ class CallCenterWizard < ActiveRecord::Base
   end
   
   def find_next_step(key, user_id)
+    if event.event_type == CallCenterFollowUp.class_name 
+      ccf = CallCenterFollowUp.find(event.event_id)
+      @previous_wizard = CallCenterWizard.find_by_event_id(ccf.event.id)  
+    end
     next_step = nil
     next_steps = []
     self.call_center_steps_sorted.each do |step|
@@ -87,50 +102,95 @@ class CallCenterWizard < ActiveRecord::Base
     end
     return nil
   end
+  
+  def was_user_contacted?
+    self.call_center_steps_sorted.each do |step|
+      if step.question_key == USER_HOME_PHONE && step.answer == true
+        return true
+      elsif step.question_key == USER_MOBILE_PHONE && step.answer == true
+        return true
+      end
+    end
+    return false
+  end
+  
+  def last_caregiver_contacted
+    self.call_center_steps_sorted.each do |step|
+      if step.question_key == CAREGIVER_ACCEPT_RESPONSIBILITY && step.answer == true
+        return User.find(step.user_id)
+      end
+    end
+    return nil
+  end
   private
   def generate_call_center_steps
     user = self.user
     operator = User.find(operator_id)
-    #create first step
-	  create_call_center_step(USER_HOME_PHONE, user, operator, "Notes for User #{self.user.name}")
-	  create_call_center_step(USER_MOBILE_PHONE, user, operator, "Notes for User #{self.user.name}")
-	  create_call_center_step(USER_OK, user, operator, "Notes for User #{self.user.name}")
-	  create_call_center_step(USER_AMBULANCE, user, operator, "Notes for User #{self.user.name}")
-	  create_call_center_step(ON_BEHALF, user, operator, "Notes for User #{self.user.name}")    
-	  create_call_center_step(PRE_AGENT_CALL_911, user, operator, "Notes for User #{self.user.name}")
-	  create_call_center_step(AGENT_CALL_911, user, operator, "Notes for User #{self.user.name}")
-	  create_call_center_step(AMBULANCE_DISPATCHED, user, operator, "Notes for User #{self.user.name}")
-	  create_call_center_step(USER_GOOD_BYE, user, operator, "Notes for User #{self.user.name}")
-	  #create caregiver steps
-    caregivers = self.user.active_caregivers
-		caregivers.each do |caregiver|
-		  strike = false
-		  if !user.has_phone? caregiver, 'Caregiver'
-		    strike = true
-		  end
-		  str = nil
-		  if strike
-		    str = "<del>Notes for Caregiver ##{caregiver.position} #{caregiver.name}</del>"
-	    else
-	      str = "Notes for Caregiver ##{caregiver.position} #{caregiver.name}"
+    user_contacted = false
+    last_caregiver_contacted = nil
+    if event.event_type == CallCenterFollowUp.class_name
+      ccf = CallCenterFollowUp.find(event.event_id)
+      @previous_wizard = CallCenterWizard.find_by_event_id(ccf.event.id)
+      user_contacted = @previous_wizard.was_user_contacted?
+      last_caregiver_contacted = @previous_wizard.last_caregiver_contacted
+      
+      if user_contacted
+        #create call center step to recontact the user
+        create_call_center_step(RECONTACT_USER_HOME_PHONE, user, operator, "Notes for User #{self.user.name}")
+    	  create_call_center_step(RECONTACT_USER_MOBILE_PHONE, user, operator, "Notes for User #{self.user.name}")
+      elsif last_caregiver_contacted
+        #create call center step to recontact the caregiver
+        str = "Notes for Caregiver #1 #{last_caregiver_contacted.name}"
+        create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_MOBILE_PHONE, user, operator, str)
+	      create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_HOME_PHONE, user, operator, str)
+	      create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_WORK_PHONE, user, operator, str)
       end
-		    create_caregiver_call_center_step(caregiver, CAREGIVER_MOBILE_PHONE, user, operator, str)
-		    create_caregiver_call_center_step(caregiver, CAREGIVER_HOME_PHONE, user, operator, str)
-		    create_caregiver_call_center_step(caregiver, CAREGIVER_WORK_PHONE, user, operator, str)
-    	  create_caregiver_call_center_step(caregiver, CAREGIVER_ACCEPT_RESPONSIBILITY, user, operator, str)
-    	  create_caregiver_call_center_step(caregiver, CAREGIVER_THANK_YOU, user, operator, str)
-    	  create_caregiver_call_center_step(caregiver, CAREGIVER_AT_HOUSE, user, operator, str)
-    	  create_caregiver_call_center_step(caregiver, CAREGIVER_GO_TO_HOUSE, user, operator, str)
-    	  create_caregiver_call_center_step(caregiver, ON_BEHALF_GO_TO_HOUSE, user, operator, str)
-    	  create_caregiver_call_center_step(caregiver, AMBULANCE, user, operator, str)
-    	  create_caregiver_call_center_step(caregiver, ON_BEHALF, user, operator, str)
-    	  create_caregiver_call_center_step(caregiver, THANK_YOU_PRE_AGENT_CALL_911, user, operator, str)
-    	  create_caregiver_call_center_step(caregiver, PRE_AGENT_CALL_911, user, operator, str)
-        create_caregiver_call_center_step(caregiver, AGENT_CALL_911, user, operator, str)
-    	  create_caregiver_call_center_step(caregiver, AMBULANCE_DISPATCHED, user, operator, str)
-    	  create_caregiver_call_center_step(caregiver, CAREGIVER_GOOD_BYE, user, operator, str)
-    	  create_caregiver_call_center_step(caregiver, THE_END, user, operator, str)
-	  end
+    else
+    #create first step
+   
+	    create_call_center_step(USER_HOME_PHONE, user, operator, "Notes for User #{self.user.name}")
+	    create_call_center_step(USER_MOBILE_PHONE, user, operator, "Notes for User #{self.user.name}")
+    
+	    create_call_center_step(USER_OK, user, operator, "Notes for User #{self.user.name}")
+	    create_call_center_step(USER_AMBULANCE, user, operator, "Notes for User #{self.user.name}")
+	    create_call_center_step(ON_BEHALF, user, operator, "Notes for User #{self.user.name}")    
+	    create_call_center_step(PRE_AGENT_CALL_911, user, operator, "Notes for User #{self.user.name}")
+	    create_call_center_step(AGENT_CALL_911, user, operator, "Notes for User #{self.user.name}")
+	    create_call_center_step(AMBULANCE_DISPATCHED, user, operator, "Notes for User #{self.user.name}")
+	    create_call_center_step(USER_GOOD_BYE, user, operator, "Notes for User #{self.user.name}")
+	 
+	  #create caregiver steps
+	 
+      caregivers = self.user.active_caregivers
+		  caregivers.each do |caregiver|
+		    strike = false
+		    if !user.has_phone? caregiver, 'Caregiver'
+		      strike = true
+		    end
+		    str = nil
+		    if strike
+		      str = "<del>Notes for Caregiver ##{caregiver.position} #{caregiver.name}</del>"
+	      else
+	        str = "Notes for Caregiver ##{caregiver.position} #{caregiver.name}"
+        end
+		      create_caregiver_call_center_step(caregiver, CAREGIVER_MOBILE_PHONE, user, operator, str)
+		      create_caregiver_call_center_step(caregiver, CAREGIVER_HOME_PHONE, user, operator, str)
+		      create_caregiver_call_center_step(caregiver, CAREGIVER_WORK_PHONE, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, CAREGIVER_ACCEPT_RESPONSIBILITY, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, CAREGIVER_THANK_YOU, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, CAREGIVER_AT_HOUSE, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, CAREGIVER_GO_TO_HOUSE, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, ON_BEHALF_GO_TO_HOUSE, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, AMBULANCE, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, ON_BEHALF, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, THANK_YOU_PRE_AGENT_CALL_911, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, PRE_AGENT_CALL_911, user, operator, str)
+          create_caregiver_call_center_step(caregiver, AGENT_CALL_911, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, AMBULANCE_DISPATCHED, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, CAREGIVER_GOOD_BYE, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, THE_END, user, operator, str)
+  	  end
+	 end
 	
 	  create_call_center_step(THE_END, user, operator)
 	  

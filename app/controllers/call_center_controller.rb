@@ -16,9 +16,9 @@ class CallCenterController < ApplicationController
       end
       group_ids = g_ids.join(', ')
       RAILS_DEFAULT_LOGGER.warn(group_ids)
-      conditions = "(event_type = 'Fall' or event_type = 'Panic') AND events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids})))"
+      conditions = "(event_type = 'CallCenterFollowUp' or event_type = 'Fall' or event_type = 'Panic') AND events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids})))"
     else
-      conditions = "event_type = 'Fall' or event_type = 'Panic'"
+      conditions = "event_type = 'CallCenterFollowUp' or event_type = 'Fall' or event_type = 'Panic'"
     end
     @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => conditions, :per_page => events_per_page
   end 
@@ -65,6 +65,7 @@ class CallCenterController < ApplicationController
       action.save!
       ea = action      
     end
+    
     unless @call_center_wizard = CallCenterWizard.find_by_event_id(params[:id])
       @call_center_wizard = CallCenterWizard.create(:event_id => @event.id, 
                                                     :user_id => @event.user_id, 
@@ -72,10 +73,12 @@ class CallCenterController < ApplicationController
                                                     :call_center_session_id => CallCenterSession.create(:event_id => @event.id).id)
       @call_center_wizard.save!
     end
-    redirect_to :controller => 'call_center', 
-                :action => 'script_wizard', 
-                :event_id => @event.id,        
-                :call_center_wizard_id => @call_center_wizard.id
+    
+    
+      redirect_to :controller => 'call_center', 
+                  :action => 'script_wizard', 
+                  :event_id => @event.id,        
+                  :call_center_wizard_id => @call_center_wizard.id
   end
   def script_wizard
     @call_center_wizard = CallCenterWizard.find(params[:call_center_wizard_id])
@@ -124,6 +127,7 @@ class CallCenterController < ApplicationController
                                               :script => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{@event.id}\">here to Resolve</a> the event.",
                                               :instruction => CallCenterWizard::THE_END)
     end
+
     previous_step = CallCenterStep.find(params[:call_center_step_id])
     ans = previous_step.answer ? 'Yes' : 'No'
     if /Resolve/ =~ @call_center_step.script
@@ -136,6 +140,34 @@ class CallCenterController < ApplicationController
        @call_center_step = CallCenterStep.new(:header => CallCenterWizard::THE_END,
                                                 :script => "<div style=\"font-size: 150%; color: white;\">The event is now resolved.</div>",
                                                 :instruction => CallCenterWizard::THE_END)
+        GwAlarmButton.find(:first, :conditions => "timestamp < '#{Time.now.to_s}' AND timestamp > '#{@event.timestamp.to_s}'", 
+                            :order => 'timestamp desc')
+        
+        #spawn deferred
+        device_id = nil
+        @user.devices.each do |d|
+          if d.device_type == 'Gateway'
+            device_id = d.id
+          end
+        end
+        deferred = CallCenterDeferred.create(:pending => true, 
+                                              :device_id => device_id, 
+                                              :user_id => @user.id,
+                                              :event_id => @event.id,
+                                              :timestamp => Time.now,
+                                              :call_center_session_id => @call_center_session.id)
+        spawn do
+          sleep(60)
+          RAILS_DEFAULT_LOGGER.warn("spawn Checking CallCenterDeferred: #{deferred.id}")
+          deferred = CallCenterDeferred.find(deferred.id)
+          if deferred && deferred.pending
+            CallCenterFollowUp.create(:device_id => deferred.device_id,
+            :user_id => deferred.user_id,
+            :event_id => deferred.event_id,
+            :timestamp => Time.now,
+            :call_center_session_id => deferred.call_center_session_id)
+          end
+        end
     end
       render(:update) do |page|
         page.call 'update_accordian', "#{previous_step.id}","#{previous_step.instruction}", "#{ans}"

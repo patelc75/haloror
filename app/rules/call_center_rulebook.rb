@@ -5,6 +5,27 @@ class CallCenterRulebook < Ruleby::Rulebook
     @wizard = wizard
   end
   def rules
+    
+   if @wizard.event.event_type == CallCenterFollowUp.class_name
+      user_id = @wizard.user.id
+      if @wizard.previous_wizard.was_user_contacted?
+        create_call_center_step_rule(user_id, CallCenterWizard::RECONTACT_USER_HOME_PHONE,      true,   CallCenterWizard::RECONTACT_USER_OK,user_id)
+        create_call_center_step_rule(user_id, CallCenterWizard::RECONTACT_USER_HOME_PHONE,      false,  CallCenterWizard::RECONTACT_USER_MOBILE_PHONE,user_id)
+        create_call_center_step_rule(user_id, CallCenterWizard::RECONTACT_USER_MOBILE_PHONE,    true,   CallCenterWizard::RECONTACT_USER_OK,user_id)
+        create_call_center_step_rule(user_id, CallCenterWizard::RECONTACT_USER_MOBILE_PHONE,    false,   CallCenterWizard::THE_END,user_id)
+        create_call_center_step_rule(user_id, CallCenterWizard::RECONTACT_USER_OK,    true,   CallCenterWizard::THE_END,user_id)
+      else
+        caregiver_id  = @wizard.previous_wizard.last_caregiver_contacted.id
+        create_call_center_step_rule(caregiver_id, CallCenterWizard::RECONTACT_CAREGIVER_MOBILE_PHONE, true,   CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
+        create_call_center_step_rule(caregiver_id, CallCenterWizard::RECONTACT_CAREGIVER_MOBILE_PHONE, false,  CallCenterWizard::RECONTACT_CAREGIVER_HOME_PHONE, caregiver_id)
+        create_call_center_step_rule(caregiver_id, CallCenterWizard::RECONTACT_CAREGIVER_HOME_PHONE,   true,   CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
+        create_call_center_step_rule(caregiver_id, CallCenterWizard::RECONTACT_CAREGIVER_HOME_PHONE,   false,  CallCenterWizard::RECONTACT_CAREGIVER_WORK_PHONE, caregiver_id)
+        create_call_center_step_rule(caregiver_id, CallCenterWizard::RECONTACT_CAREGIVER_WORK_PHONE,   true,   CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
+        create_call_center_step_rule(caregiver_id, CallCenterWizard::RECONTACT_CAREGIVER_WORK_PHONE,   false,  CallCenterWizard::THE_END, caregiver_id)
+        create_call_center_step_rule(caregiver_id, CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY,   true,  CallCenterWizard::THE_END, caregiver_id)
+      end
+   else
+          
     caregiver_id = nil
     caregivers = @wizard.user.active_caregivers
     if !caregivers.blank?
@@ -119,6 +140,7 @@ class CallCenterRulebook < Ruleby::Rulebook
                   create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_GOOD_BYE, true, CallCenterWizard::THE_END,caregiver_id)
           
     end
+   end
   end
   
   def create_call_center_step_rule(user_id, question_key, answer, next_question_key, next_user_id)
