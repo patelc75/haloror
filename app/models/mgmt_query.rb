@@ -41,6 +41,16 @@ class MgmtQuery < ActiveRecord::Base
         end
       end
     end
+    devices = Device.find(:all, 
+                          :conditions => "id in (select dlq.id from device_latest_queries dlq where dlq.id not in (select device_id from gateway_offline_alerts group by device_id))")
+    devices.each do |device|
+      begin
+        MgmtQuery.process_alert(device)
+      rescue Exception => e
+        logger.fatal("Error processing outage alert for device #{device.inspect}: #{e}")
+        raise e if ENV['RAILS_ENV'] == "development" || ENV['RAILS_ENV'] == "test"
+      end
+    end
     
     devices = Device.find(:all,
                           :conditions => "id in (select dlq.id from device_latest_queries dlq where dlq.updated_at < now() - interval '#{GATEWAY_OFFLINE_TIMEOUT} minutes')")

@@ -92,6 +92,7 @@ class ApplicationController < ActionController::Base
       controller_name == 'flex' && action_name == 'chart' || 
       controller_name == 'util' && action_name == 'check' ||
       controller_name == 'util' && action_name == 'hostname' ||
+      controller_name == 'util' && action_name == 'version' ||
       controller_name == 'security')
       return authenticate
     else
@@ -155,6 +156,13 @@ class ApplicationController < ActionController::Base
   
   def authenticate_admin_operator_moderator?
     unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_moderator?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_sales?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales?)
       return redirect_to('/login')
     end
     true

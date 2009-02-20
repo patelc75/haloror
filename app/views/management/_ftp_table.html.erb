@@ -1,0 +1,18 @@
+<div>
+<p>FTP Sites (<%= link_to 'Add FTP site', :action => 'new_ftp', :controller => 'management' %>)</p>
+<table>
+  <tr>
+    <th>Server Name</th>
+    <th>Login</th>
+    <th>Actions</th>
+  </tr>
+  <% if !@ftps.blank? %>
+  <% @ftps.each do |ftp| %>
+    <tr>
+      <td><%= ftp.server_name %></td>
+      <td><%= ftp.login %></td>
+      <td><%= link_to 'Edit', :id => ftp.id, :action => 'edit_ftp', :controller => 'management' %></td>
+    </tr>
+  <% end %>
+<% end %>  
+</table>

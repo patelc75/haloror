@@ -1,13 +1,13 @@
 class UserAdminController < ApplicationController
   
-  before_filter :authenticate_admin_moderator?, :except => ['new_admin', 'create_admin']
-  before_filter :authenticate_admin?, :only => ['new_admin', 'create_admin']
+  before_filter :authenticate_admin_moderator?, :except => ['new_admin', 'create']
+  before_filter :authenticate_admin_sales?, :only => ['new_admin', 'create']
      
   def new_admin
     @groups = []
     gs = current_user.group_memberships
     gs.each do |g|
-      @groups << g if(current_user.is_admin_of?(g) || current_user.is_super_admin?)
+      @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g) || current_user.is_super_admin?)
     end
     @group = nil
     if params[:group].blank? || params[:group] == 'Choose a Group'
@@ -25,22 +25,33 @@ class UserAdminController < ApplicationController
     end
   end
 
-  def create_admin
+  def create
     @user = User.new(params[:user])
     @user.email = params[:email]
     @group = params[:group]
     @profile = Profile.new(params[:profile])
-    role_id = params[:role]
-    role = Role.find(role_id)
-    User.transaction do
+    if !params[:role].blank? && params[:role] != 'Choose a Role'
+      role_name = params[:role]
+      role = Role.find_by_name(role_name)
+      User.transaction do
+        @user[:is_new_user] = true
         @user.save!        
       # create profile
         @profile.user_id = @user.id
         @profile.save!
       # assign role
         @user.roles << role
+      end
+    else
+      @groups = []
+      gs = current_user.group_memberships
+      gs.each do |g|
+        @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g) || current_user.is_super_admin?)
+      end
+      g = Group.find_by_name(@group)
+      @group_roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
+      render :action => 'new_admin'
     end
-  
   rescue Exception => e
     RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
     g = Group.find_by_name(@group)

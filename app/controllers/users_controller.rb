@@ -67,11 +67,11 @@ class UsersController < ApplicationController
     #redirect_back_or_default('/')
   end
   
-  def init_caregiver
+  def init_user
     @user = User.find_by_activation_code(params[:activation_code])
   end
   
-  def update_caregiver
+  def update_user
     @user = User.find_by_activation_code(params[:user][:activation_code])
     
     user_hash = params[:user]
@@ -89,15 +89,15 @@ class UsersController < ApplicationController
         redirect_to '/'
       else
         flash[:warning] = "Password must be at least 4 characters"
-        render :action => 'init_caregiver'
+        render :action => 'init_user'
       end
     else
         flash[:warning]= "New Password must equal Confirm Password"
-        render :action => 'init_caregiver'
+        render :action => 'init_user'
     end
     
   rescue
-    render :action => 'init_caregiver'    
+    render :action => 'init_user'    
   end
   
   def update
@@ -319,15 +319,15 @@ class UsersController < ApplicationController
     unless device = Device.find_by_serial_number(serial_number)
       device = Device.new
       device.serial_number = serial_number
-      if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
-        device.set_chest_strap_type
-      elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
-        device.set_gateway_type
-      end
+      # if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
+      #         device.set_chest_strap_type
+      #       elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
+      #         device.set_gateway_type
+      #       end
       device.save!
     end
 
-    unless device.device_type.blank?
+    if device.device_type.blank?
       if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
         device.set_chest_strap_type
       elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')

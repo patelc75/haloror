@@ -1,0 +1,20 @@
+<div>
+<p>FTP Site</p>
+<% form_for :ftp, :url => {:controller => 'management', :action => 'update_ftp'} do |f| %>
+  <%= f.hidden_field :id %>
+<table>
+  <tr>
+    <th>Server Name</th>
+    <th>Login</th>
+    <th>Password</th>
+  </tr>
+      <tr>
+        <td><%= f.text_field :server_name %></td>
+        <td><%= f.text_field :login %></td>
+        <td><%= f.password_field :password%></td>
+      </tr>
+  <tr>
+      <td colspan="3"><%= f.submit 'Submit' %></td>      
+    </tr>
+</table>
+<% end %>

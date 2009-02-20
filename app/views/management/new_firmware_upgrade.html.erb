@@ -1,0 +1,32 @@
+<div>
+<p>Firmware Upgrade</p>
+<% form_for :firmware_upgrade, :url => {:controller => 'management', :action => 'save_firmware_upgrade'} do |f| %>
+<table>
+  <tr>
+    <th>Version</th>
+    <th>Path</th>
+    <th>File Name</th>
+  </tr>
+      <tr>
+        <td><%= f.text_field :version %></td>
+        <td><%= f.text_field :path %></td>
+        <td><%= f.text_field :filename%></td>
+      </tr>
+  <tr>
+    <th>Description</th>
+    <th>FTP Site (<%= link_to 'Add FTP site', :action => 'new_ftp', :controller => 'management'%>)</th>
+  </tr>
+    <tr>
+      <td><%= f.text_field :description %></td>
+      <td>
+        <select name="ftp_id">
+        <option>Select FTP site </option>
+          <% @ftps.each do |ftp| %>
+            <option <%= "selected" if(@firmware_upgrade.ftp && @firmware_upgrade.ftp.id == ftp.id) %> value="<%=ftp.id%>"><%=ftp[:server_name]%></option>
+          <% end %>
+        </select>
+      </td>
+      <td><%= f.submit 'Submit' %></td>      
+    </tr>
+</table>
+<% end %>

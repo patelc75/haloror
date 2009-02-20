@@ -446,10 +446,10 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => get_caregiver_responisibility_script(caregiver, event, operator),
       CallCenterWizard::CAREGIVER_AT_HOUSE     => get_caregiver_are_you_at_house_script(caregiver),
       CallCenterWizard::CAREGIVER_GO_TO_HOUSE  => get_caregiver_go_to_house_script(caregiver),
-      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE  => get_on_behalf_script_orig(self.name),
+      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE  => get_on_behalf_script_orig(self.profile.first_name),
       CallCenterWizard::CAREGIVER_THANK_YOU    => get_caregiver_thank_you_script(caregiver),
       CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event),
-      CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
+      CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.profile.first_name),
       CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911 => get_thank_you_pre_agent(),
       CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
@@ -466,7 +466,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script_cell(self, "HaloUser"),
       CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
       CallCenterWizard::USER_OK                => get_user_ok_script(operator, event),
-      CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.name),
+      CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.profile.first_name),
       CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
       CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulance_dispatched(),
@@ -510,7 +510,7 @@ class User < ActiveRecord::Base
       (wait for caregiver to finish)
       <br>
       <br>
-      <i><div style="font-size: 150%; color: yellow;">"Thank you for your assistance. Goodbye"</div></i>
+      <i><div style="font-size: 150%; color: yellow;"></div></i>
     eos
     return info
   end
@@ -559,12 +559,12 @@ class User < ActiveRecord::Base
     if !self.active_caregivers.blank?
       info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to call your caregivers to help you?"</div></i>
+  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to call your caregivers to help you?"</div></i>
   	  eos
 	  else
 	    info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to dispatch an ambulance for you?"</div></i>
+  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to dispatch an ambulance for you?"</div></i>
   	  eos
     end
     return info
@@ -572,21 +572,21 @@ class User < ActiveRecord::Base
   def get_caregiver_responisibility_script(caregiver, event, operator)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i><div style="font-size: 150%; color: yellow;">Hello #{caregiver}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type} for #{self.name}. Do you accept responsibility for #{self.name}'s #{event.event_type}?</div></i>
+  	<i><div style="font-size: 150%; color: yellow;">Hello #{caregiver.profile.first_name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type} for #{self.name}. Do you accept responsibility for handling #{self.name}'s #{event.event_type}?</div></i>
   	eos
     return info
   end
   def get_caregiver_are_you_at_house_script(caregiver)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i><div style="font-size: 150%; color: yellow;">Are you at #{self.name}'s house?</div></i>
+  	<i><div style="font-size: 150%; color: yellow;">Are you at #{self.profile.first_name}'s house?</div></i>
   	eos
     return info
   end
   def get_caregiver_go_to_house_script(caregiver)
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i><div style="font-size: 150%; color: yellow;">Can you go to #{self.name}'s house to determine if #{self.name} is OK?</div></i>
+  	<i><div style="font-size: 150%; color: yellow;">Can you go to #{self.profile.first_name}'s house to determine if #{self.name} is OK?</div></i>
   	eos
     return info
   end
@@ -837,7 +837,7 @@ class User < ActiveRecord::Base
   
   # returns true if password is a required field
   def password_required?
-    if(self.is_new_caregiver)
+    if(self.is_new_caregiver || self.is_new_user)
       return false
     else
       crypted_password.blank? || !password.blank?

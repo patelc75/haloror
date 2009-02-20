@@ -4,6 +4,10 @@ class InstallsController < ApplicationController
   include ActionView::Helpers::TagHelper
   include RedboxHelper
   
+  def ie6
+    
+  end
+  
   def activate_user
     @user = User.find(params[:user_id])
     @user.activate
@@ -83,6 +87,7 @@ class InstallsController < ApplicationController
       end
       begin
         @gateway.set_gateway_type
+        @gateway.save!
       rescue Exception => e
         flash[:warning] = "#{e}"
         throw e
@@ -111,6 +116,7 @@ class InstallsController < ApplicationController
       end
       begin
         @strap.set_chest_strap_type
+        @strap.save!
       rescue Exception => e
         flash[:warning] = "#{e}"
         throw e
@@ -181,6 +187,20 @@ class InstallsController < ApplicationController
   def phone_prompt_start
 
   end
+  
+  def ethernet_prompt_init
+    @user = User.find(params[:user_id])
+    render(:update) do |page|
+      phone_launch = launch_remote_redbox(:url =>  {  :action => 'ethernet_prompt_start', :controller => 'installs', 
+                                     :user_id => @user.id }, 
+                         :html => { :method => :get, :complete => '' } ) 
+      page['phone_launcher'].replace_html phone_launch
+    end
+  end  
+  def ethernet_prompt_start
+
+  end
+  
   def led_prompt_init
     @user = User.find(params[:user_id])
     render(:update) do |page|
@@ -410,12 +430,16 @@ class InstallsController < ApplicationController
   def range_test_only
     @user = User.find(params[:user_id])
     strap = @user.get_strap
-    @battery = Battery.find(:first, :conditions => "device_id = #{strap.id}", :order => 'timestamp desc')  
+    if strap
+      @battery = Battery.find(:first, :conditions => "device_id = #{strap.id}", :order => 'timestamp desc')  
+    end
   end
   def start_range_test_only
     @user = User.find(params[:user_id])
     strap = @user.get_strap
-    create_mgmt_cmd('range_test_start', strap.id)
+    if strap
+      create_mgmt_cmd('range_test_start', strap.id)
+    end
     render(:update) do |page|
       page.replace_html 'range_test_launcher', launch_remote_redbox(:url =>  {  :action => 'stop_range_test_only_init', 
                                   :controller => 'installs',  :user_id => @user.id,
@@ -428,7 +452,24 @@ class InstallsController < ApplicationController
   def stop_range_test_only
     @user = User.find(params[:user_id])
     strap = @user.get_strap
-    create_mgmt_cmd('range_test_stop', strap.id)
+    if strap
+      create_mgmt_cmd('range_test_stop', strap.id)
+    end
+    render(:update) do |page|
+      page.replace_html 'range_test_launcher', launch_remote_redbox(:url =>  {  :action => 'installation_notes', 
+                                  :controller => 'installs',  :user_id => @user.id,
+                                  }, :html => { :method => :get, :complete => '' } )
+    end
+  end
+  
+  def installation_notes
+    @user = User.find(params[:user_id])
+    @notes = InstallationNote.new(:user_id => @user.id)
+  end
+  def submit_installation_notes
+    @user = User.find(params[:user_id])
+    @note = InstallationNote.new(:user_id => @user.id, :notes => params[:notes])
+    @note.save!
     render :text => ''
   end
   def start_range_test

@@ -1,5 +1,5 @@
 class UtilController < ApplicationController
-  before_filter :authenticate_super_admin?, :except => ['check', 'hostname']
+  before_filter :authenticate_super_admin?, :except => ['check', 'hostname', 'version']
   #session :off
   
   # Monitors that the application and database connection is alive
@@ -17,6 +17,10 @@ class UtilController < ApplicationController
     @alert_types = AlertType.find(:all)
     #render :text => request.host
     #render :text => request.env["HTTP_HOST"].to_s
+  end
+  
+  def version
+  	render :layout =>false
   end
   
   def hostname
