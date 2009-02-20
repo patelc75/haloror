@@ -1,7 +1,7 @@
 <!-- See http://corelib.rubyonrails.org/classes/CGI.html for more environment variables -->
 UNIX hostname: <code><%= `hostname` %></code><br>
 System Datetime: <code><%= `date` %></code><br>
-Git Revision: <code><%= `cd ~/haloror; /usr/local/bin/git describe` %></code><br>
+Git Revision: <code><%= `cd ~/haloror; /usr/bin/git describe` %></code><br>
 <br>
 <b>Network</b><br>
 SERVER_ADDR: <code><%= request.env["SERVER_ADDR"].to_s %></code> <br>
@@ -15,7 +15,7 @@ Email delivery method: <code><%= ActionMailer::Base.delivery_method %></code><br
 SMTP server: <code> <%= ActionMailer::Base.smtp_settings[:address] %></code><br>
 Ruby: <code> <%= "#{RUBY_VERSION} (#{RUBY_RELEASE_DATE}) on #{RUBY_PLATFORM}" %> </code><br>
 Rails: <code> <%= "#{Rails::VERSION::STRING}" %> </code><br>
-Git: <code><%= `/usr/local/bin/git --version` %></code><br>
+Git: <code><%= `/usr/bin/git --version` %></code><br>
 <br>
 <b>Rufus Constants </b><br>
 <code>
@@ -35,7 +35,6 @@ MAX_ATTEMPTS_BEFORE_NOTIFICATION_STRAP_OFF= <%= MAX_ATTEMPTS_BEFORE_NOTIFICATION
 <code>
 LOST_DATA_GAP = <%= LOST_DATA_GAP %>s<br>
 </code>
-<br><br>
 
 <br><br>
 <b>Events</b><br>
