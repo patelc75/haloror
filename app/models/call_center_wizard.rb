@@ -28,12 +28,9 @@ class CallCenterWizard < ActiveRecord::Base
   THE_END               = "Resolve the Event"
   CAREGIVER_GOOD_BYE    = "Caregiver Good Bye."
   USER_GOOD_BYE         = "User Good Bye."
-  RECONTACT_USER_HOME_PHONE       = "Recontact Home Phone Answered?"        
-  RECONTACT_USER_MOBILE_PHONE     = "Recontact Mobile Phone Answered?"     
-  RECONTACT_CAREGIVER_HOME_PHONE  = "Recontact Caregiver Home Phone Answered?" 
-  RECONTACT_CAREGIVER_WORK_PHONE  = "Recontact Caregiver Work Phone Answered?"
-  RECONTACT_CAREGIVER_MOBILE_PHONE = "Recontact Caregiver MOBILE Phone Answered?"
+  RECONTACT_USER       = "Recontact User?"      
   RECONTACT_USER_OK = "Recontact User OK."
+  RECONTACT_CAREGIVER  = "Recontact Caregiver?"
   RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY = "Recontact Accept Responsibility"
   
   
@@ -136,15 +133,17 @@ class CallCenterWizard < ActiveRecord::Base
       
       if user_contacted
         #create call center step to recontact the user
-        create_call_center_step(RECONTACT_USER_HOME_PHONE, user, operator, "Notes for User #{self.user.name}")
-    	  create_call_center_step(RECONTACT_USER_MOBILE_PHONE, user, operator, "Notes for User #{self.user.name}")
+      	    create_call_center_step(USER_HOME_PHONE, user, operator, "Notes for User #{self.user.name}")
+      	    create_call_center_step(USER_MOBILE_PHONE, user, operator, "Notes for User #{self.user.name}")
+        create_call_center_step(RECONTACT_USER, user, operator, "Notes for User #{self.user.name}")
     	  create_call_center_step(RECONTACT_USER_OK, user, operator, "Notes for User #{self.user.name}")
       elsif last_caregiver_contacted
         #create call center step to recontact the caregiver
         str = "Notes for Caregiver #1 #{last_caregiver_contacted.name}"
-        create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_MOBILE_PHONE, user, operator, str)
-	      create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_HOME_PHONE, user, operator, str)
-	      create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_WORK_PHONE, user, operator, str)
+		      create_caregiver_call_center_step(last_caregiver_contacted, CAREGIVER_MOBILE_PHONE, user, operator, str)
+		      create_caregiver_call_center_step(last_caregiver_contacted, CAREGIVER_HOME_PHONE, user, operator, str)
+		      create_caregiver_call_center_step(last_caregiver_contacted, CAREGIVER_WORK_PHONE, user, operator, str)
+        create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER, user, operator, str)
 	      create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY, user, operator, str)
       end
     else

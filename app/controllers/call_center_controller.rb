@@ -142,7 +142,7 @@ class CallCenterController < ApplicationController
                                                 :instruction => CallCenterWizard::THE_END)
         GwAlarmButton.find(:first, :conditions => "timestamp < '#{Time.now.to_s}' AND timestamp > '#{@event.timestamp.to_s}'", 
                             :order => 'timestamp desc')
-        
+      if @event.class.class_name != CallCenterFollowUp.class_name
         #spawn deferred
         device_id = nil
         @user.devices.each do |d|
@@ -168,6 +168,7 @@ class CallCenterController < ApplicationController
             :call_center_session_id => deferred.call_center_session_id)
           end
         end
+      end
     end
       render(:update) do |page|
         page.call 'update_accordian', "#{previous_step.id}","#{previous_step.instruction}", "#{ans}"
