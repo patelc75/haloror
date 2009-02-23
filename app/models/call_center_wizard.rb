@@ -138,12 +138,14 @@ class CallCenterWizard < ActiveRecord::Base
         #create call center step to recontact the user
         create_call_center_step(RECONTACT_USER_HOME_PHONE, user, operator, "Notes for User #{self.user.name}")
     	  create_call_center_step(RECONTACT_USER_MOBILE_PHONE, user, operator, "Notes for User #{self.user.name}")
+    	  create_call_center_step(RECONTACT_USER_OK, user, operator, "Notes for User #{self.user.name}")
       elsif last_caregiver_contacted
         #create call center step to recontact the caregiver
         str = "Notes for Caregiver #1 #{last_caregiver_contacted.name}"
         create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_MOBILE_PHONE, user, operator, str)
 	      create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_HOME_PHONE, user, operator, str)
 	      create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_WORK_PHONE, user, operator, str)
+	      create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY, user, operator, str)
       end
     else
     #create first step
