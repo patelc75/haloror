@@ -418,9 +418,9 @@ class User < ActiveRecord::Base
       CallCenterWizard::AMBULANCE_DISPATCHED   => "Ambulance dispatched.",
       CallCenterWizard::CAREGIVER_GOOD_BYE     => "Thank You.  Good Bye.",
       CallCenterWizard::THE_END                => "Resolved the Event",
-      CallCenterWizard::RECONTACT_CAREGIVER_HOME_PHONE => 'Recontact Caregiver Home.',
-      CallCenterWizard::RECONTACT_CAREGIVER_MOBILE_PHONE => 'Recontact Caregiver Mobile',
-      CallCenterWizard::RECONTACT_CAREGIVER_WORK_PHONE => 'Recontact Caregiver Work',
+      CallCenterWizard::RECONTACT_CAREGIVER_HOME_PHONE => "Recontact Caregiver Home" + format_phone(caregiver.profile.home_phone) + "?",
+      CallCenterWizard::RECONTACT_CAREGIVER_MOBILE_PHONE => "Recontact Caregiver Mobile" + format_phone(caregiver.profile.cell_phone) + "?",
+      CallCenterWizard::RECONTACT_CAREGIVER_WORK_PHONE => "Recontact Caregiver Work" + format_phone(caregiver.profile.work_phone) + "?",
       CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY => 'Recontact Caregiver Accept Responsibility'
     }
     instruction = instructions[key]
@@ -438,8 +438,8 @@ class User < ActiveRecord::Base
       CallCenterWizard::AMBULANCE_DISPATCHED   => "Ambulance dispatched.",
       CallCenterWizard::USER_GOOD_BYE          => "Thank You.  Good Bye.",
       CallCenterWizard::THE_END                => "Resolved the Event",
-      CallCenterWizard::RECONTACT_USER_HOME_PHONE => 'Recontact Home.',
-      CallCenterWizard::RECONTACT_USER_MOBILE_PHONE => 'Recontact Mobile.',
+      CallCenterWizard::RECONTACT_USER_HOME_PHONE => "Recontact Home " + format_phone(self.profile.home_phone) + "?",
+      CallCenterWizard::RECONTACT_USER_MOBILE_PHONE => "Recontact Mobile" + format_phone(self.profile.cell_phone) + "?",
       CallCenterWizard::RECONTACT_USER_OK => 'Recontact OK.'
     }
     instruction = instructions[key]
@@ -463,9 +463,9 @@ class User < ActiveRecord::Base
       CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulance_dispatched(),
       CallCenterWizard::CAREGIVER_GOOD_BYE     => get_caregiver_good_bye_script(),
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event.",
-      CallCenterWizard::RECONTACT_CAREGIVER_HOME_PHONE => get_caregiver_recontact,
-      CallCenterWizard::RECONTACT_CAREGIVER_MOBILE_PHONE => get_caregiver_recontact,
-      CallCenterWizard::RECONTACT_CAREGIVER_WORK_PHONE => get_caregiver_recontact,
+      CallCenterWizard::RECONTACT_CAREGIVER_HOME_PHONE => get_caregiver_recontact(caregiver, 'Home', format_phone(caregiver.profile.home_phone)),
+      CallCenterWizard::RECONTACT_CAREGIVER_MOBILE_PHONE => get_caregiver_recontact(caregiver, 'Mobile', format_phone(caregiver.profile.cell_phone)),
+      CallCenterWizard::RECONTACT_CAREGIVER_WORK_PHONE => get_caregiver_recontact(caregiver, 'Work', format_phone(caregiver.profile.work_phone)),
       CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY => get_caregiver_recontact_responsibilty()
     }
     script = scripts[key]
@@ -483,8 +483,8 @@ class User < ActiveRecord::Base
       CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulance_dispatched(),
       CallCenterWizard::USER_GOOD_BYE          => get_user_good_bye_script,
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event.",
-      CallCenterWizard::RECONTACT_USER_HOME_PHONE => get_user_recontact,
-      CallCenterWizard::RECONTACT_USER_MOBILE_PHONE => get_user_recontact,
+      CallCenterWizard::RECONTACT_USER_HOME_PHONE => get_user_recontact('Home', format_phone(self.profile.home_phone)),
+      CallCenterWizard::RECONTACT_USER_MOBILE_PHONE => get_user_recontact('Mobile', format_phone(self.profile.cell_phone)),
       CallCenterWizard::RECONTACT_USER_OK => get_user_recontact_ok()
     }
     script = scripts[key]
@@ -507,15 +507,19 @@ class User < ActiveRecord::Base
     return info
   end
   
-  def get_user_recontact()
+  def get_user_recontact(place, phone)
     info = <<-eos	
+	    <div style="font-size: x-large"><font color="white">Call Caregiver <b>#{self.name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
+	    <br><br>	
 	  <font color="white">Recite this script:</font><br>
 	  <i><div style="font-size: 150%; color: yellow;">"We have detected that no one has pushed the alarm on button on #{self.name}’s Halo Gateway."</div></i>
 	  eos
     return info
   end
-  def get_caregiver_recontact()
+  def get_caregiver_recontact(caregiver, place, phone)
     info = <<-eos	
+	    <div style="font-size: x-large"><font color="white">Call Caregiver <b>#{caregiver.name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
+	    <br><br>	
 	  <font color="white">Recite this script:</font><br>
 	  <i><div style="font-size: 150%; color: yellow;">"We have detected that no one has pushed the alarm on button on #{self.name}’s Halo Gateway"</div></i>
 	  eos
