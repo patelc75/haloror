@@ -504,21 +504,21 @@ class User < ActiveRecord::Base
   def get_user_recontact()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"We have detected that no one has pushed the alarm on button on #{self.name}’s Halo Gateway."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">We called you X minutes ago about your fall. We have detected that no one has pushed the alarm reset button on your Halo Gateway</div></i>
 	  eos
     return info
   end
   def get_caregiver_recontact()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"We have detected that no one has pushed the alarm on button on #{self.name}’s Halo Gateway"</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"We called you X minutes ago about #{self.name}’s fall. We have detected that no one has pushed the alarm reset button on #{self.name}’s Halo Gateway."</div></i>
 	  eos
     return info
   end
   def get_user_good_bye_script()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Thank You.  Good Bye."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the reset button on the gateway device is pressed.  Thank You.  Good Bye."</div></i>
 	  eos
     return info
   end
@@ -526,7 +526,7 @@ class User < ActiveRecord::Base
   def get_caregiver_good_bye_script()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Thank You.  Good Bye."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the reset button on the gateway device is pressed.  Thank You.  Good Bye."</div></i>
 	  eos
     return info
   end
