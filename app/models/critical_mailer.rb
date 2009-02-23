@@ -211,7 +211,9 @@ class CriticalMailer < ActionMailer::ARMailer
         end
       end
     end  
-  end
+  
+    @recipients = @recipients.uniq
+end
   
   def set_hostnames
     @primary_host = ServerInstance.current_host
