@@ -142,7 +142,6 @@ class CallCenterController < ApplicationController
                                                 :instruction => CallCenterWizard::THE_END)
         GwAlarmButton.find(:first, :conditions => "timestamp < '#{Time.now.to_s}' AND timestamp > '#{@event.timestamp.to_s}'", 
                             :order => 'timestamp desc')
-        
         #spawn deferred
         device_id = nil
         @user.devices.each do |d|
@@ -150,10 +149,14 @@ class CallCenterController < ApplicationController
             device_id = d.id
           end
         end
+        event = @event
+        if @event.class.class_name == CallCenterFollowUp.class_name
+          event = get_original_event(@event)
+        end
         deferred = CallCenterDeferred.create(:pending => true, 
                                               :device_id => device_id, 
                                               :user_id => @user.id,
-                                              :event_id => @event.id,
+                                              :event_id => event.id,
                                               :timestamp => Time.now,
                                               :call_center_session_id => @call_center_session.id)
         spawn do
@@ -339,5 +342,14 @@ class CallCenterController < ApplicationController
       #         end
       #       end
       CriticalMailer.deliver_admin_call_log(@event, body, [current_user])
+  end
+  
+  def get_original_event(event)
+    if event.event.class.class_name != CallCenterFollowUp.class_name
+      event = event.event
+    else
+      event = get_original_event(event.event)
+    end
+    return event
   end
 end
