@@ -443,6 +443,8 @@ class User < ActiveRecord::Base
     return instruction
   end
   def get_cg_script(key, operator, caregiver, event)
+    now = Time.now
+    minutes = ((now - event.timestamp_server) / (60)).round
     scripts = {
       CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script_cell(caregiver, "Caregiver"),      
       CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script_home(caregiver, "Caregiver"),
@@ -460,13 +462,15 @@ class User < ActiveRecord::Base
       CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulance_dispatched(),
       CallCenterWizard::CAREGIVER_GOOD_BYE     => get_caregiver_good_bye_script(),
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event.",
-      CallCenterWizard::RECONTACT_CAREGIVER => get_caregiver_recontact(),
+      CallCenterWizard::RECONTACT_CAREGIVER => get_caregiver_recontact(minutes),
       CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY => get_caregiver_recontact_responsibilty()
     }
     script = scripts[key]
     return script
   end
   def get_script(key, operator, event)
+    now = Time.now
+    minutes = ((now - event.timestamp_server) / (60)).round
     scripts = {
       CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script_home(self, "HaloUser"),
       CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script_cell(self, "HaloUser"),
@@ -478,7 +482,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulance_dispatched(),
       CallCenterWizard::USER_GOOD_BYE          => get_user_good_bye_script,
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event.",
-      CallCenterWizard::RECONTACT_USER => get_user_recontact(),
+      CallCenterWizard::RECONTACT_USER => get_user_recontact(minutes),
       CallCenterWizard::RECONTACT_USER_OK => get_user_recontact_ok()
     }
     script = scripts[key]
@@ -501,17 +505,17 @@ class User < ActiveRecord::Base
     return info
   end
   
-  def get_user_recontact()
+  def get_user_recontact(minutes)
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">We called you X minutes ago about your fall. We have detected that no one has pushed the alarm reset button on your Halo Gateway</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">We called you #{minutes} minutes ago about your fall. We have detected that no one has pushed the alarm reset button on your Halo Gateway</div></i>
 	  eos
     return info
   end
-  def get_caregiver_recontact()
+  def get_caregiver_recontact(minutes)
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"We called you X minutes ago about #{self.name}’s fall. We have detected that no one has pushed the alarm reset button on #{self.name}’s Halo Gateway."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"We called you #{minutes} minutes ago about #{self.name}’s fall. We have detected that no one has pushed the alarm reset button on #{self.name}’s Halo Gateway."</div></i>
 	  eos
     return info
   end
