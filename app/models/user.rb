@@ -417,7 +417,9 @@ class User < ActiveRecord::Base
       CallCenterWizard::AGENT_CALL_911         => "Ambulance dispatched properly?",
       CallCenterWizard::AMBULANCE_DISPATCHED   => "Ambulance dispatched.",
       CallCenterWizard::CAREGIVER_GOOD_BYE     => "Thank You.  Good Bye.",
-      CallCenterWizard::THE_END                => "Resolved the Event"
+      CallCenterWizard::THE_END                => "Resolved the Event",
+      CallCenterWizard::RECONTACT_CAREGIVER => "Recontact Caregiver Home" + format_phone(caregiver.profile.home_phone) + "?",
+      CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY => 'Recontact Caregiver Accept Responsibility'
     }
     instruction = instructions[key]
     return instruction
@@ -433,12 +435,16 @@ class User < ActiveRecord::Base
       CallCenterWizard::AGENT_CALL_911         => "Ambulance dispatched properly?",
       CallCenterWizard::AMBULANCE_DISPATCHED   => "Ambulance dispatched.",
       CallCenterWizard::USER_GOOD_BYE          => "Thank You.  Good Bye.",
-      CallCenterWizard::THE_END                => "Resolved the Event"
+      CallCenterWizard::THE_END                => "Resolved the Event",
+      CallCenterWizard::RECONTACT_USER => "Recontact User?",
+      CallCenterWizard::RECONTACT_USER_OK => 'Recontact OK.'
     }
     instruction = instructions[key]
     return instruction
   end
   def get_cg_script(key, operator, caregiver, event)
+    now = Time.now
+    minutes = ((now - event.timestamp_server) / (60)).round
     scripts = {
       CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script_cell(caregiver, "Caregiver"),      
       CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script_home(caregiver, "Caregiver"),
@@ -455,12 +461,16 @@ class User < ActiveRecord::Base
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
       CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulance_dispatched(),
       CallCenterWizard::CAREGIVER_GOOD_BYE     => get_caregiver_good_bye_script(),
-      CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
+      CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event.",
+      CallCenterWizard::RECONTACT_CAREGIVER => get_caregiver_recontact(minutes),
+      CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY => get_caregiver_recontact_responsibilty()
     }
     script = scripts[key]
     return script
   end
   def get_script(key, operator, event)
+    now = Time.now
+    minutes = ((now - event.timestamp_server) / (60)).round
     scripts = {
       CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script_home(self, "HaloUser"),
       CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script_cell(self, "HaloUser"),
@@ -471,16 +481,48 @@ class User < ActiveRecord::Base
       CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
       CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulance_dispatched(),
       CallCenterWizard::USER_GOOD_BYE          => get_user_good_bye_script,
-      CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event."
+      CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event.",
+      CallCenterWizard::RECONTACT_USER => get_user_recontact(minutes),
+      CallCenterWizard::RECONTACT_USER_OK => get_user_recontact_ok()
     }
     script = scripts[key]
     return script
   end 
   
+  def get_user_recontact_ok()
+    info = <<-eos	
+	  <font color="white">Recite this script:</font><br>
+	  <i><div style="font-size: 150%; color: yellow;">"Can you please press the reset button on your gateway device. It will be beeping loudly.  Thank You Good Bye."</div></i>
+	  eos
+    return info
+  end
+  
+  def get_caregiver_recontact_responsibilty()
+    info = <<-eos	
+	  <font color="white">Recite this script:</font><br>
+	  <i><div style="font-size: 150%; color: yellow;">"Can you please press the reset button on #{name}'s gateway device. It will be beeping loudly. Thank You Good Bye."</div></i>
+	  eos
+    return info
+  end
+  
+  def get_user_recontact(minutes)
+    info = <<-eos	
+	  <font color="white">Recite this script:</font><br>
+	  <i><div style="font-size: 150%; color: yellow;">We called you #{minutes} minutes ago about your fall. We have detected that no one has pushed the alarm reset button on your Halo Gateway</div></i>
+	  eos
+    return info
+  end
+  def get_caregiver_recontact(minutes)
+    info = <<-eos	
+	  <font color="white">Recite this script:</font><br>
+	  <i><div style="font-size: 150%; color: yellow;">"We called you #{minutes} minutes ago about #{self.name}’s fall. We have detected that no one has pushed the alarm reset button on #{self.name}’s Halo Gateway."</div></i>
+	  eos
+    return info
+  end
   def get_user_good_bye_script()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Thank You.  Good Bye."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the reset button on the gateway device is pressed.  Thank You.  Good Bye."</div></i>
 	  eos
     return info
   end
@@ -488,7 +530,7 @@ class User < ActiveRecord::Base
   def get_caregiver_good_bye_script()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Thank You.  Good Bye."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the reset button on the gateway device is pressed.  Thank You.  Good Bye."</div></i>
 	  eos
     return info
   end
