@@ -186,4 +186,18 @@ class AtpController < ApplicationController
       render :action => 'work_order_device_revision_init'
     end
   end
+  
+  def gateway_password_init
+    
+  end
+  
+  def gateway_password
+    begin
+      @serial_number = params[:serial_number]
+      @password = GatewayPassword.retrieve_password(@serial_number)
+    rescue RuntimeError => e
+      flash[:warning] = "Error Retrieving Gateway Password:  #{e.to_s}"
+      redirect_to :action => 'gateway_password_init'
+    end 
+  end
 end
