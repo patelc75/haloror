@@ -1,5 +1,5 @@
 require 'openssl'
-
+require 'base64'
 module AESCrypt
   # Decrypts a block of data (encrypted_data) given an encryption key
   # and an initialization vector (iv).  Keys, iv's, and the data 
@@ -13,6 +13,7 @@ module AESCrypt
   #:arg: iv => String
   #:arg: cipher_type => String
   def AESCrypt.decrypt(encrypted_data, key, iv, cipher_type)
+    encrypted_data = Base64.decode64(encrypted_data)
     aes = OpenSSL::Cipher::Cipher.new(cipher_type)
     aes.decrypt
     aes.key = key
@@ -36,6 +37,6 @@ module AESCrypt
     aes.encrypt
     aes.key = key
     aes.iv = iv if iv != nil
-    aes.update(data) + aes.final      
+    Base64.encode64(aes.update(data) + aes.final)
   end
 end
