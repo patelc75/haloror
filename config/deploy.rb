@@ -1,7 +1,3 @@
-############################
-# Based on the original DreamHost deploy.rb recipe
-#
-#
 # GitHub settings #######################################################################################
 default_run_options[:pty] = true
 set :repository,  "git@github.com:patelc75/haloror.git" #GitHub clone URL
@@ -10,13 +6,15 @@ set :scm_passphrase, "irdikt75" #This is the passphrase for the ssh key on the s
 set :branch, "master"
 set :scm_verbose, true
 #########################################################################################################
+
+#need to make some of these env specific in the if statement below
 set :user, 'web' 
-set :domain, 'server.dreamhost.com'  # Dreamhost servername where your account is located 
+set :domain, 'server.domain.com'  
 set :project, 'projectname'  # Your application as its called in the repository
 set :application, 'haloror'  # Your app's location (domain or sub-domain name as setup in panel)
 set :applicationdir, "/home/#{user}/#{application}"  # The standard Dreamhost setup
 set :lsws_cmd, "/opt/lsws/bin/lswsctrl"
-set :deploy_to, "/home/web/integration"
+set :deploy_to, "/home/web/haloror"
 
 
 if ENV.has_key?('SERVER') && !ENV['SERVER'].nil?
