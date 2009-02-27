@@ -98,7 +98,7 @@ div.accordion-content{
               <div id="answer_<%= step2.id %>"><% if !step2.answer.blank? %>
                                                <%= step2.answer ? 'Yes' : 'No' %>
                                                <% end %></div>
-              <div id="notes_<%= step2.id %>"><%= step2.notes %></div>
+              <div id="notes_<%= step2.id %>"><%= h step2.notes %></div>
               <div id="breaker_<%= step2.id %>"><% if(!step2.answer.blank? || !step2.notes.blank?) %>
                                                     <hr />
                                                 <% end %>

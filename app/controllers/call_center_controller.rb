@@ -186,8 +186,8 @@ class CallCenterController < ApplicationController
     @call_center_step.save!
     render(:update) do |page|
       
-      page.call 'update_notes', "#{@call_center_step.id}", "<div>" + "#{@call_center_step.notes}" + "</div>", "<hr />"
-                    page['notes_text'].replace_html "#{@call_center_step.notes}<br /><a href=\"#\" onclick=\"$('notes_text').hide();$('notes').show();\">Edit Notes</a>"
+      page.call 'update_notes', "#{@call_center_step.id}", "<div>" + "#{ h @call_center_step.notes}" + "</div>", "<hr />"
+                    page['notes_text'].replace_html "#{h @call_center_step.notes}<br /><a href=\"#\" onclick=\"$('notes_text').hide();$('notes').show();\">Edit Notes</a>"
                     page['notes'].hide();
                     page['notes_text'].show();
       
