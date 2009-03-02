@@ -10,7 +10,7 @@ class GwAlarmButton < DeviceAlert
   end
   
   def after_save
-    deferred = CallCenterDeferred.find(:all, :conditions => "user_id = #{user_id} AND device_id = #{device_id} AND pending = true")
+    deferred = CallCenterDeferred.find(:all, :conditions => "user_id = #{user_id} AND pending = true")
     if deferred && deferred.size > 0
       deferred.each do |d|
         d.pending = false
@@ -21,14 +21,19 @@ class GwAlarmButton < DeviceAlert
   end
   
   def resolve_event(evt)
-      events = Event.find(:all, :conditions => "event_id = #{evt.id} AND event_type = 'CallCenterFollowUp'")
-      events.each do |e|
-        unless e.resolved?
-          action = EventAction.new
-          action.user_id = user_id
-          action.event_id = e.id
-          action.description = 'resolved'
-          action.save!
+      follows = CallCenterFollowUp.find(:all, :conditions => "event_id = #{evt.id}")
+      if follows
+        follows.each do |f|
+          e = Event.find(:first, :conditions => "event_id = #{f.id} AND event_type = 'CallCenterFollowUp'")
+          if e
+            unless e.resolved?
+              action = EventAction.new
+              action.user_id = user_id
+              action.event_id = e.id
+              action.description = 'resolved'
+              action.save!
+            end
+          end
         end
       end
   end
