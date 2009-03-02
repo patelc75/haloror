@@ -492,7 +492,7 @@ class User < ActiveRecord::Base
   def get_user_recontact_ok()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Can you please press the reset button on your gateway device. It will be beeping loudly.  Thank You Good Bye."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"Can you please press the red reset button on your gateway device. It will be beeping loudly.  Thank You Good Bye."</div></i>
 	  eos
     return info
   end
@@ -500,7 +500,7 @@ class User < ActiveRecord::Base
   def get_caregiver_recontact_responsibilty()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Can you please press the reset button on #{name}'s gateway device. It will be beeping loudly. Thank You Good Bye."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"Can you please press the red reset button on #{name}'s gateway device. It will be beeping loudly. Thank You Good Bye."</div></i>
 	  eos
     return info
   end
@@ -749,7 +749,7 @@ class User < ActiveRecord::Base
   def get_on_behalf_script_orig(name)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i><div style="font-size: 150%; color: yellow;">"When you arrive at the home, can you please call 911 on behalf of #{name}? After that, can you please press the reset button on #{name}'s gateway device. It will be beeping loudly."
+		<i><div style="font-size: 150%; color: yellow;">"When you arrive at the home, can you please call 911 on behalf of #{name}? After that, can you please press the red reset button on #{name}'s gateway device. It will be beeping loudly."
 		</div></i>
 		eos
     return info

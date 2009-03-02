@@ -32,9 +32,15 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
   </div>
   <% @events.each do |event| %>
     <div class="row">
+      <% if event.event_type == 'CallCenterFollowUp' %>
+        <div class="col-75">
+          Follow Up
+        </div>
+      <% else %>
       <div class="col-75">
         <%=event.event_type%>&nbsp;
       </div>
+      <% end %>
       <div class="col-125">
         <%=UtilityHelper.format_datetime_readable(event.timestamp, current_user) %>
       </div>
