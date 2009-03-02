@@ -15,8 +15,22 @@ class GwAlarmButton < DeviceAlert
       deferred.each do |d|
         d.pending = false
         d.save!
+        resolve_event(d.event)
       end
     end
+  end
+  
+  def resolve_event(evt)
+      events = Event.find(:all, :conditions => "event_id = #{evt.id} AND event_type = 'CallCenterFollowUp'")
+      events.each do |e|
+        unless e.resolved?
+          action = EventAction.new
+          action.user_id = user_id
+          action.event_id = e.id
+          action.description = 'resolved'
+          action.save!
+        end
+      end
   end
   
   #for rspec
