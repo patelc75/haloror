@@ -25,9 +25,10 @@ class EventActionObserver < ActiveRecord::Observer
     unless temp == 'localhost'
       if ServerInstance.in_hostname?('sdev')
         host = 'sdev.' + host
-      end
-      if ServerInstance.in_hostname?('idev')
+      elsif ServerInstance.in_hostname?('idev')
         host = 'idev.' + host
+      elsif ServerInstance.in_hostname?('dev')
+        host = 'dev.' + host
       end
       
       send_it(description, host, event_action)
