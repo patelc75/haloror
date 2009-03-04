@@ -532,7 +532,7 @@ class User < ActiveRecord::Base
   def get_user_recontact(minutes)
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">We called you #{minutes} minutes ago about #{name}'s fall. We have detected that no one has pushed the alarm reset button on your Halo Gateway"</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"We called you #{minutes} minutes ago about #{name}'s fall. We have detected that no one has pushed the alarm reset button on your Halo Gateway"</div></i>
 	  eos
     return info
   end
