@@ -419,7 +419,10 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_GOOD_BYE     => "Thank You.  Good Bye.",
       CallCenterWizard::THE_END                => "Resolved the Event",
       CallCenterWizard::RECONTACT_CAREGIVER => "Recontact Caregiver Home" + format_phone(caregiver.profile.home_phone) + "?",
-      CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY => 'Recontact Caregiver Accept Responsibility'
+      CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY => 'Recontact Caregiver Accept Responsibility',
+      CallCenterWizard::RECONTACT_CAREGIVER_ABLE_TO_RESET => "Caregiver Able to Reset Gateway.",
+      CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET => "Caregiver is not Able to Reset Gateway.",
+      CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET_CONTINUE => "Caregiver Able to Reset Gateway."
     }
     instruction = instructions[key]
     return instruction
@@ -437,7 +440,10 @@ class User < ActiveRecord::Base
       CallCenterWizard::USER_GOOD_BYE          => "Thank You.  Good Bye.",
       CallCenterWizard::THE_END                => "Resolved the Event",
       CallCenterWizard::RECONTACT_USER => "Recontact User?",
-      CallCenterWizard::RECONTACT_USER_OK => 'Recontact OK.'
+      CallCenterWizard::RECONTACT_USER_OK => 'Recontact OK.',
+      CallCenterWizard::RECONTACT_USER_ABLE_TO_RESET => "User Able to Reset Gateway.",
+      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET =>  "User is Not Able to Reset Gateway.",
+      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE =>  "User Able to Reset Gateway."
     }
     instruction = instructions[key]
     return instruction
@@ -463,7 +469,10 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_GOOD_BYE     => get_caregiver_good_bye_script(),
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event.",
       CallCenterWizard::RECONTACT_CAREGIVER => get_caregiver_recontact(minutes),
-      CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY => get_caregiver_recontact_responsibilty()
+      CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY => get_caregiver_recontact_responsibilty(),
+      CallCenterWizard::RECONTACT_CAREGIVER_ABLE_TO_RESET => get_caregiver_able_to_reset(),
+      CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET => get_caregiver_not_able_to_reset(),
+      CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET_CONTINUE => get_caregiver_not_able_to_reset_continue()
     }
     script = scripts[key]
     return script
@@ -483,24 +492,39 @@ class User < ActiveRecord::Base
       CallCenterWizard::USER_GOOD_BYE          => get_user_good_bye_script,
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event.",
       CallCenterWizard::RECONTACT_USER => get_user_recontact(minutes),
-      CallCenterWizard::RECONTACT_USER_OK => get_user_recontact_ok()
+      CallCenterWizard::RECONTACT_USER_OK => get_user_recontact_ok(),
+      CallCenterWizard::RECONTACT_USER_ABLE_TO_RESET => get_user_able_to_reset(),
+      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET => get_user_not_able_to_reset(),
+      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE => get_user_not_able_to_reset_continue()
     }
     script = scripts[key]
     return script
   end 
-  
-  def get_user_recontact_ok()
+  def get_user_able_to_reset()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Can you please press the red reset button on your gateway device. It will be beeping loudly.  Thank You Good Bye."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"If you’re not able to press the Gateway reset button, we will be calling you back at this number. Thank you. Goodbye"</div></i>
 	  eos
     return info
   end
-  
-  def get_caregiver_recontact_responsibilty()
+  def get_user_not_able_to_reset_continue()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Can you please press the red reset button on #{name}'s gateway device. It will be beeping loudly. Thank You Good Bye."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"If you’re not able to press the Gateway reset button, we will be calling you back at this number. Thank you. Goodbye"</div></i>
+	  eos
+    return info
+  end
+  def get_user_not_able_to_reset()
+    info = <<-eos	
+	  <font color="white">Recite this script:</font><br>
+	  <i><div style="font-size: 150%; color: yellow;">"The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it."</div></i>
+	  eos
+    return info
+  end
+  def get_user_recontact_ok()
+    info = <<-eos	
+	  <font color="white">Recite this script:</font><br>
+	  <i><div style="font-size: 150%; color: yellow;">"Will you be able to locate and press the red alarm reset button on the Halo gateway for #{name}? It will be beeping loudly."</div></i>
 	  eos
     return info
   end
@@ -508,7 +532,36 @@ class User < ActiveRecord::Base
   def get_user_recontact(minutes)
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">We called you #{minutes} minutes ago about your fall. We have detected that no one has pushed the alarm reset button on your Halo Gateway</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">We called you #{minutes} minutes ago about #{name}'s fall. We have detected that no one has pushed the alarm reset button on your Halo Gateway</div></i>
+	  eos
+    return info
+  end
+  def get_caregiver_recontact_responsibilty()
+    info = <<-eos	
+	  <font color="white">Recite this script:</font><br>
+	  <i><div style="font-size: 150%; color: yellow;">"Will you be able to locate and press the red alarm reset button on the Halo gateway for #{name}?. It will be beeping loudly."</div></i>
+	  eos
+    return info
+  end
+  
+  def get_caregiver_able_to_reset()
+    info = <<-eos	
+	  <font color="white">Recite this script:</font><br>
+	  <i><div style="font-size: 150%; color: yellow;">"If you’re not able to press the Gateway reset button, we will be calling you back at this number. Thank you. Goodbye"</div></i>
+	  eos
+    return info
+  end
+  def get_caregiver_not_able_to_reset_continue()
+    info = <<-eos	
+	  <font color="white">Recite this script:</font><br>
+	  <i><div style="font-size: 150%; color: yellow;">"If you’re not able to press the Gateway reset button, we will be calling you back at this number. Thank you. Goodbye"</div></i>
+	  eos
+    return info
+  end
+  def get_caregiver_not_able_to_reset()
+    info = <<-eos	
+	  <font color="white">Recite this script:</font><br>
+	  <i><div style="font-size: 150%; color: yellow;">"The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it."</div></i>
 	  eos
     return info
   end
@@ -522,7 +575,7 @@ class User < ActiveRecord::Base
   def get_user_good_bye_script()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the reset button on the gateway device is pressed.  Thank You.  Good Bye."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  Thank You.  Good Bye."</div></i>
 	  eos
     return info
   end
@@ -530,7 +583,7 @@ class User < ActiveRecord::Base
   def get_caregiver_good_bye_script()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the reset button on the gateway device is pressed.  Thank You.  Good Bye."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  Thank You.  Good Bye."</div></i>
 	  eos
     return info
   end

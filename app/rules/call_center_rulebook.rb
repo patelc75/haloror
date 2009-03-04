@@ -14,7 +14,11 @@ class CallCenterRulebook < Ruleby::Rulebook
       create_call_center_step_rule(user_id, CallCenterWizard::USER_MOBILE_PHONE,    true,   CallCenterWizard::RECONTACT_USER,user_id)
       create_call_center_step_rule(user_id, CallCenterWizard::USER_MOBILE_PHONE,    false,  CallCenterWizard::THE_END,user_id)
         create_call_center_step_rule(user_id, CallCenterWizard::RECONTACT_USER,      true,   CallCenterWizard::RECONTACT_USER_OK,user_id)
-        create_call_center_step_rule(user_id, CallCenterWizard::RECONTACT_USER_OK,    true,   CallCenterWizard::THE_END,user_id)
+        create_call_center_step_rule(user_id, CallCenterWizard::RECONTACT_USER_OK,    true,   CallCenterWizard::RECONTACT_USER_ABLE_TO_RESET,user_id)
+        create_call_center_step_rule(user_id, CallCenterWizard::RECONTACT_USER_OK,    false,   CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET,user_id)
+        create_call_center_step_rule(user_id, CallCenterWizard::RECONTACT_USER_ABLE_TO_RESET,    true,   CallCenterWizard::THE_END,user_id)
+        create_call_center_step_rule(user_id, CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET,    true,   CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE,user_id)
+        create_call_center_step_rule(user_id, CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE,    true,   CallCenterWizard::THE_END,user_id)
       else
         caregiver_id  = @wizard.previous_wizard.last_caregiver_contacted.id
         create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, true,   CallCenterWizard::RECONTACT_CAREGIVER, caregiver_id)
