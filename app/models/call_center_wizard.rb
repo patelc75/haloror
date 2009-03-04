@@ -30,8 +30,14 @@ class CallCenterWizard < ActiveRecord::Base
   USER_GOOD_BYE         = "User Good Bye."
   RECONTACT_USER       = "Recontact User?"      
   RECONTACT_USER_OK = "Recontact User OK."
+  RECONTACT_USER_ABLE_TO_RESET = "User Able to Reset."
+  RECONTACT_USER_NOT_ABLE_TO_RESET = "User Not Able to Reset."
+  RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE = "User Not Able to Reset Continue"
   RECONTACT_CAREGIVER  = "Recontact Caregiver?"
   RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY = "Recontact Accept Responsibility"
+  RECONTACT_CAREGIVER_ABLE_TO_RESET = "Caregiver Able to Reset Gateway."
+  RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET = "Caregiver Not Able to Reset Gateway."
+  RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET_CONTINUE = "Caregiver Not Able to Reset Gateway, Continue."
   
   
   include Ruleby
@@ -131,13 +137,15 @@ class CallCenterWizard < ActiveRecord::Base
       user_contacted = @previous_wizard.was_user_contacted?
       last_caregiver_contacted = @previous_wizard.last_caregiver_contacted
       
-      if user_contacted
         #create call center step to recontact the user
       	    create_call_center_step(USER_HOME_PHONE, user, operator, "Notes for User #{self.user.name}")
       	    create_call_center_step(USER_MOBILE_PHONE, user, operator, "Notes for User #{self.user.name}")
         create_call_center_step(RECONTACT_USER, user, operator, "Notes for User #{self.user.name}")
     	  create_call_center_step(RECONTACT_USER_OK, user, operator, "Notes for User #{self.user.name}")
-      elsif last_caregiver_contacted
+    	  create_call_center_step(RECONTACT_USER_ABLE_TO_RESET, user, operator, "Notes for User #{self.user.name}")
+    	  create_call_center_step(RECONTACT_USER_NOT_ABLE_TO_RESET, user, operator, "Notes for User #{self.user.name}")
+    	  create_call_center_step(RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE, user, operator, "Notes for User #{self.user.name}")
+      if last_caregiver_contacted
         #create call center step to recontact the caregiver
         str = "Notes for Caregiver #1 #{last_caregiver_contacted.name}"
 		      create_caregiver_call_center_step(last_caregiver_contacted, CAREGIVER_MOBILE_PHONE, user, operator, str)
@@ -145,9 +153,47 @@ class CallCenterWizard < ActiveRecord::Base
 		      create_caregiver_call_center_step(last_caregiver_contacted, CAREGIVER_WORK_PHONE, user, operator, str)
         create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER, user, operator, str)
 	      create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY, user, operator, str)
+    	  create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_ABLE_TO_RESET, user, operator, str)
+    	  create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET, user, operator, str)
+    	  create_caregiver_call_center_step(last_caregiver_contacted, RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET_CONTINUE, user, operator, str)
       end
+      caregivers = self.user.active_caregivers
+      cgs = []
+      caregivers.each do |caregiver|
+        unless last_caregiver_contacted && last_caregiver_contacted.id == caregiver.id
+          cgs << caregiver
+        end
+      end
+      caregivers = cgs
+		  caregivers.each do |caregiver|
+		    strike = false
+		    if !user.has_phone? caregiver, 'Caregiver'
+		      strike = true
+		    end
+		    str = nil
+		    if strike
+		      str = "<del>Notes for Caregiver ##{caregiver.position} #{caregiver.name}</del>"
+	      else
+	        str = "Notes for Caregiver ##{caregiver.position} #{caregiver.name}"
+        end
+		      create_caregiver_call_center_step(caregiver, CAREGIVER_MOBILE_PHONE, user, operator, str)
+		      create_caregiver_call_center_step(caregiver, CAREGIVER_HOME_PHONE, user, operator, str)
+		      create_caregiver_call_center_step(caregiver, CAREGIVER_WORK_PHONE, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, CAREGIVER_ACCEPT_RESPONSIBILITY, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, CAREGIVER_THANK_YOU, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, CAREGIVER_AT_HOUSE, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, CAREGIVER_GO_TO_HOUSE, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, ON_BEHALF_GO_TO_HOUSE, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, AMBULANCE, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, ON_BEHALF, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, THANK_YOU_PRE_AGENT_CALL_911, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, PRE_AGENT_CALL_911, user, operator, str)
+          create_caregiver_call_center_step(caregiver, AGENT_CALL_911, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, AMBULANCE_DISPATCHED, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, CAREGIVER_GOOD_BYE, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, THE_END, user, operator, str)
+  	  end
     else
-    #create first step
    
 	    create_call_center_step(USER_HOME_PHONE, user, operator, "Notes for User #{self.user.name}")
 	    create_call_center_step(USER_MOBILE_PHONE, user, operator, "Notes for User #{self.user.name}")

@@ -1,4 +1,5 @@
 <meta http-equiv="refresh" content="30">
+<% is_admin = current_user.is_super_admin? %>
 <h2>Call Center Overview</h2>
 Please hold the control key and click <a href="/call_center/faq">here</a> to launch the <b>FAQ</b> in a separate tab.
 <br>
@@ -9,6 +10,11 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
     <div class="col-75">
       Event <br>Type
     </div>
+    <% if is_admin %>
+      <div class="col-125">
+        Oscope Start Msg ID
+      </div>
+    <% end %>
     <div class="col-125">
       Timestamp<br>Device
     </div>
@@ -40,6 +46,24 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       <div class="col-75">
         <%=event.event_type%>&nbsp;
       </div>
+      <% end %>
+      <% if is_admin %>
+        <% if event.event_type == 'Fall' %>
+          <% oscope_start = OscopeStartMsg.find_by_timestamp_and_user_id(event.timestamp, event.user_id) %>
+          <% if oscope_start %>
+            <div class="col-125">
+            <%= link_to ("#{oscope_start.id}", :controller => 'oscopes', :action => 'csv', :id => oscope_start.id) %>
+            </div>
+          <% else %>
+            <div class="col-125">
+            &nbsp;
+            </div>
+          <% end %>
+        <% else %>
+          <div class="col-125">
+          &nbsp;
+          </div>
+        <% end %>
       <% end %>
       <div class="col-125">
         <%=UtilityHelper.format_datetime_readable(event.timestamp, current_user) %>

@@ -15,8 +15,21 @@
   <tr>
     <td><%= result.id %></td>
     <td><%= result.result %></td>
-    <td><%= result.device_id %></td>
-    <td><%= result.operator_id %></td>
+    <% if result.device_id %>
+      <% begin %>
+      <% device = Device.find(result.device_id) %>
+      <% rescue %>
+      <% end %>
+      <td><%= "#{device.serial_number}" if device && device.serial_number %> (<%= result.device_id %>)</td>
+    <% else %>
+      <td>&nbsp;</td>
+    <% end %>
+    <% if result.operator_id %>
+      <% operator = User.find(result.operator_id) %>
+      <td><%= "#{operator.name} (#{operator.id})" if operator %> &nbsp;</td>
+    <% else %>
+      <td>&nbsp;</td>
+    <% end %>
     <td><%= result.timestamp %></td>
     <td><%= result.updated_at %></td>
     <td><%= result.created_at %></td>
