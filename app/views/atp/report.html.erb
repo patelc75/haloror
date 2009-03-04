@@ -20,7 +20,7 @@
       <% device = Device.find(result.device_id) %>
       <% rescue %>
       <% end %>
-      <td><%= "#{device.serial_number}" if device && device.serial_Number %> (<%= result.device_id %>)</td>
+      <td><%= "#{device.serial_number}" if device && device.serial_number %> (<%= result.device_id %>)</td>
     <% else %>
       <td>&nbsp;</td>
     <% end %>
