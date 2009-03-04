@@ -491,7 +491,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulance_dispatched(),
       CallCenterWizard::USER_GOOD_BYE          => get_user_good_bye_script,
       CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event.",
-      CallCenterWizard::RECONTACT_USER => get_user_recontact(minutes),
+      CallCenterWizard::RECONTACT_USER => get_user_recontact(minutes, operator),
       CallCenterWizard::RECONTACT_USER_OK => get_user_recontact_ok(),
       CallCenterWizard::RECONTACT_USER_ABLE_TO_RESET => get_user_able_to_reset(),
       CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET => get_user_not_able_to_reset(),
@@ -529,10 +529,12 @@ class User < ActiveRecord::Base
     return info
   end
   
-  def get_user_recontact(minutes)
+  def get_user_recontact(minutes, operator)
+    first_name = ''
+    first_name = self.profile.first_name if self.profile && self.profile.first_name
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"We called you #{minutes} minutes ago about #{name}'s fall. We have detected that no one has pushed the alarm reset button on your Halo Gateway"</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"My name is #{operator.name} calling on behalf of Halo Monitoring. We are calling to follow up #{name}’s fall. We have detected that no one has pushed the alarm reset button on #{first_name}'s Halo Gateway. Can you please verify that #{first_name}'s Fall has been successfully resolved?"</div></i>
 	  eos
     return info
   end
@@ -568,7 +570,7 @@ class User < ActiveRecord::Base
   def get_caregiver_recontact(minutes)
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"We called you #{minutes} minutes ago about #{self.name}’s fall. We have detected that no one has pushed the alarm reset button on #{self.name}’s Halo Gateway."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"We called you #{minutes} minutes ago about #{name}’s fall. We have detected that no one has pushed the alarm reset button on your Halo Gateway. Can you please verify that #{name} is safe and been attended to?"</div></i>
 	  eos
     return info
   end
@@ -651,23 +653,31 @@ class User < ActiveRecord::Base
   end
   def get_user_ok_script(operator,event)
     info = ''
+    event_type = event.event_type
+    if event_type == CallCenterFollowUp.class_name
+      event_type = get_event_type(event)
+    end
     if !self.active_caregivers.blank?
       info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to call your caregivers to help you?"</div></i>
+  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event_type}. Would you like us to call your caregivers to help you?"</div></i>
   	  eos
 	  else
 	    info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type}. Would you like us to dispatch an ambulance for you?"</div></i>
+  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event_type}. Would you like us to dispatch an ambulance for you?"</div></i>
   	  eos
     end
     return info
   end
   def get_caregiver_responisibility_script(caregiver, event, operator)
+    event_type = event.event_type
+    if event_type == CallCenterFollowUp.class_name
+      event_type = get_event_type(event)
+    end
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i><div style="font-size: 150%; color: yellow;">Hello #{caregiver.profile.first_name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event.event_type} for #{self.name}. Do you accept responsibility for handling #{self.name}'s #{event.event_type}?</div></i>
+  	<i><div style="font-size: 150%; color: yellow;">Hello #{caregiver.profile.first_name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event_type} for #{self.name}. Do you accept responsibility for handling #{self.name}'s #{event_type}?</div></i>
   	eos
     return info
   end
@@ -808,6 +818,10 @@ class User < ActiveRecord::Base
     return info
   end
   def get_ambulance_start_script(operator, event)
+    event_type = event.event_type
+    if event_type == CallCenterFollowUp.class_name
+      event_type = get_event_type(event)
+    end
     service_name = '911 or local emergency service'
     service_name = self.profile.emergency_number.name if self.profile.emergency_number
     number = '911'
@@ -817,11 +831,20 @@ class User < ActiveRecord::Base
 		<br><br>
 		<font color="white">Recite this script:</font><br><br>
 		<i><div style="font-size: 150%; color: yellow;">"My name is #{operator.name} representing Halo Monitoring. We have  
-    detected a #{event.event_type} for #{self.name} and have the approval to dispatch an  
+    detected a #{event_type} for #{self.name} and have the approval to dispatch an  
     ambulance. Can you dispatch an ambulance?”</div></i>
     <br><br>
     eos
     return info
+  end
+  def get_event_type(event)
+    follow_up = CallCenterFollowUp.find(event.event_id)
+    event_type = follow_up.event.event_type
+    if event_type == CallCenterFollowUp.class_name
+      event_type = get_event_type(follow_up.event)
+    else
+      return event_type
+    end
   end
   def get_ambulance_script(operator, event)
     service_name = '911 or local emergency service'
