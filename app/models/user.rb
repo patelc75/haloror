@@ -839,7 +839,7 @@ class User < ActiveRecord::Base
   def get_on_behalf_script_orig(name)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i><div style="font-size: 150%; color: yellow;">"When you arrive at the home, can you please call 911 on behalf of #{name}? After that, can you please press the red reset button on #{name}'s gateway device. It will be beeping loudly."
+		<i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it.  Thank You.  Good Bye."
 		</div></i>
 		eos
     return info
