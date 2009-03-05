@@ -323,6 +323,33 @@ class User < ActiveRecord::Base
     end
     return false
   end
+  
+  def self.halo_operators
+    operators = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
+    halo_group = Group.find_by_name('halo')
+    ops = []
+    operators.each do |operator|
+      if operator.is_operator_of? halo_group
+        ops << operator
+      end
+    end
+    operators = adms
+    return operators
+  end
+  
+  def self.halo_administrators
+    admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'administrator']
+    halo_group = Group.find_by_name('halo')
+    adms = []
+    admins.each do |admin|
+      if admin.is_admin_of? halo_group
+        adms << admin
+      end
+    end
+    admins = adms
+    return admins
+  end
+  
   def self.super_admins
     admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'super_admin']
     return admins
@@ -577,7 +604,7 @@ class User < ActiveRecord::Base
   def get_user_good_bye_script()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  Thank You.  Good Bye."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it.  Thank You.  Good Bye."</div></i>
 	  eos
     return info
   end
@@ -585,7 +612,7 @@ class User < ActiveRecord::Base
   def get_caregiver_good_bye_script()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  Thank You.  Good Bye."</div></i>
+	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it.  Thank You.  Good Bye."</div></i>
 	  eos
     return info
   end
@@ -812,7 +839,7 @@ class User < ActiveRecord::Base
   def get_on_behalf_script_orig(name)
     info = <<-eos
 		<font color="white">Recite this script:</font><br>
-		<i><div style="font-size: 150%; color: yellow;">"When you arrive at the home, can you please call 911 on behalf of #{name}? After that, can you please press the red reset button on #{name}'s gateway device. It will be beeping loudly."
+		<i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it.  Thank You.  Good Bye."
 		</div></i>
 		eos
     return info

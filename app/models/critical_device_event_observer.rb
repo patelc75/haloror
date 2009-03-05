@@ -1,10 +1,14 @@
 class CriticalDeviceEventObserver  < ActiveRecord::Observer
     include ServerInstance
-    observe Fall, Panic, GwAlarmButton
+    observe Fall, Panic, GwAlarmButton, CallCenterFollowUp
 
     def before_save(event)
       if event.user_id < 1 or event.user == nil
         raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
+      elsif event.class == CallCenterFollowUp
+        CriticalMailer.deliver_device_event_admin(event)
+      elsif event.class == GwAlarmButton
+        CriticalMailer.deliver_gw_alarm(event)
       else 
         CriticalMailer.deliver_device_event_operator_text(event)
         CriticalMailer.deliver_device_event_operator(event)

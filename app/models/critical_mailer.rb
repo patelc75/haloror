@@ -21,6 +21,17 @@ class CriticalMailer < ActionMailer::ARMailer
     @recipients << ["reports@halomonitoring.com"] 
     self.priority = Priority::IMMEDIATE
   end
+  def gw_alarm(event)
+      setup_caregivers(event.user, event, :recepients)
+      setup_message(event.to_s, "We have detected the Gateway alarm button has been press on #{event.timestamp} for #{event.user.name}")
+      self.priority = Priority::IMMEDIATE
+  end
+  def device_event_admin(event)
+    setup_caregivers(event.user, event, :recepients)
+    setup_halo_operators()
+    setup_message(event.to_s, "It has been #{FOLLOW_UP_TIMEOUT / 60} minutes and we have detected that the GW Alarm button has not been pushed for #{event.user.name} #{event.event.event_type} on #{event.timestamp}")
+    self.priority = Priority::IMMEDIATE
+  end
   
   def device_event_caregiver(event)
     setup_message(event.to_s, event.email_body + "\n\nYou received this email because you’re a Halo User or caregiver of #{event.user.name}")
@@ -31,6 +42,7 @@ class CriticalMailer < ActionMailer::ARMailer
   def device_event_operator(event)
     setup_caregivers(event.user, event, :caregiver_info)
     link = get_link_to_call_center()
+    @caregiver_info << '\n\n(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
     setup_message('URGENT:  ' + event.to_s, "You received this email because you’re an operator.\n\n#{link}\n" + @caregiver_info)
     setup_operators(event, :recepients, :include_phone_call) 
     #setup_emergency_group(event, :recepients)
@@ -169,6 +181,27 @@ class CriticalMailer < ActionMailer::ARMailer
       end
     end
   end
+  
+  def setup_halo_operators()
+    @recipients = []
+    operators = User.halo_operators()
+    if !operators.blank?
+      operators.each do |operator|
+        @recipients << ["#{operator.email}"] 
+      end       
+    end
+  end
+  
+  def setup_halo_administrators()
+    @recipients = []
+    admins = User.halo_administrators()
+    if !admins.blank?
+      admins.each do |admin|
+        @recipients << ["#{admin.email}"] 
+      end       
+    end
+  end
+  
   def setup_administrators()
     @recipients = []
     admins = User.administrators()
