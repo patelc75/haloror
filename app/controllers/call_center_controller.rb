@@ -130,7 +130,7 @@ class CallCenterController < ApplicationController
 
     previous_step = CallCenterStep.find(params[:call_center_step_id])
     ans = previous_step.answer ? 'Yes' : 'No'
-    if /Resolve/ =~ @call_center_step.script
+    if CallCenterWizard::THE_END == @call_center_step.question_key || CallCenterWizard::THE_END == @call_center_step.header
       action = EventAction.new
       action.user_id = current_user.id
       action.event_id = @event.id
@@ -150,7 +150,7 @@ class CallCenterController < ApplicationController
           end
         end
         event = @event
-        if @event.class.class_name == CallCenterFollowUp.class_name
+        if @event.event_type == CallCenterFollowUp.class_name
           event = get_original_event(@event)
         end
         deferred = CallCenterDeferred.create(:pending => true, 
@@ -345,11 +345,12 @@ class CallCenterController < ApplicationController
   end
   
   def get_original_event(event)
-    if event.event.class.class_name != CallCenterFollowUp.class_name
-      event = event.event
+    follow_up = CallCenterFollowUp.find(event.event_id)
+    event_type = follow_up.event.event_type
+    if event_type == CallCenterFollowUp.class_name
+      event_type = get_event_type(follow_up.event)
     else
-      event = get_original_event(event.event)
+      return event_type
     end
-    return event
   end
 end
