@@ -7,6 +7,8 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
         raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
       elsif event.class == CallCenterFollowUp
         CriticalMailer.deliver_device_event_admin(event)
+      elsif event.class == GwAlarmButton
+        CriticalMailer.deliver_gw_alarm(event)
       else 
         CriticalMailer.deliver_device_event_operator_text(event)
         CriticalMailer.deliver_device_event_operator(event)

@@ -323,6 +323,33 @@ class User < ActiveRecord::Base
     end
     return false
   end
+  
+  def self.halo_operators
+    operators = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
+    halo_group = Group.find_by_name('halo')
+    ops = []
+    operators.each do |operator|
+      if operator.is_operator_of? halo_group
+        ops << operator
+      end
+    end
+    operators = adms
+    return operators
+  end
+  
+  def self.halo_administrators
+    admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'administrator']
+    halo_group = Group.find_by_name('halo')
+    adms = []
+    admins.each do |admin|
+      if admin.is_admin_of? halo_group
+        adms << admin
+      end
+    end
+    admins = adms
+    return admins
+  end
+  
   def self.super_admins
     admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'super_admin']
     return admins
