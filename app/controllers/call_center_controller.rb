@@ -16,9 +16,9 @@ class CallCenterController < ApplicationController
       end
       group_ids = g_ids.join(', ')
       RAILS_DEFAULT_LOGGER.warn(group_ids)
-      conditions = "(event_type = 'CallCenterFollowUp' or event_type = 'Fall' or event_type = 'Panic') AND events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids})))"
+      conditions = "(event_type = 'Fall' or event_type = 'Panic') AND events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids})))"
     else
-      conditions = "event_type = 'CallCenterFollowUp' or event_type = 'Fall' or event_type = 'Panic'"
+      conditions = "event_type = 'Fall' or event_type = 'Panic'"
     end
     @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => conditions, :per_page => events_per_page
   end 
@@ -160,7 +160,7 @@ class CallCenterController < ApplicationController
                                               :timestamp => Time.now,
                                               :call_center_session_id => @call_center_session.id)
         spawn do
-          sleep(60) #60 seconds
+          sleep(FOLLOW_UP_TIMEOUT) #60 seconds
           RAILS_DEFAULT_LOGGER.warn("spawn Checking CallCenterDeferred: #{deferred.id}")
           deferred = CallCenterDeferred.find(deferred.id)
           if deferred && deferred.pending
