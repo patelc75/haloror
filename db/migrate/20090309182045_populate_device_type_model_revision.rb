@@ -13,7 +13,7 @@ class PopulateDeviceTypeModelRevision < ActiveRecord::Migration
     end
     
     nc_type = DeviceType.find_by_device_type('Network Coordinator')
-    unless chest_strap_type
+    unless nc_type
       nc_type = DeviceType.new(:device_type => 'Network Coordinator', :mac_address_type => 0)
       nc_type.save!
     end
@@ -37,7 +37,7 @@ class PopulateDeviceTypeModelRevision < ActiveRecord::Migration
     end
     
     gateway_model = DeviceModel.find_by_device_type_id(gateway_type.id)
-    unless chest_strap_model
+    unless gateway_model
       gateway_model = DeviceModel.new(:device_type_id => gateway_type.id, :part_number => '22001005')
       gateway_model.save!
     end
@@ -49,7 +49,7 @@ class PopulateDeviceTypeModelRevision < ActiveRecord::Migration
     end
     
     gateway_revision = DeviceRevision.find_by_device_model_id(gateway_model.id)
-    unless chest_strap_revision
+    unless gateway_revision
       gateway_revision = DeviceRevision.new(:device_model_id => gateway_model.id, :revision => 'C')
       gateway_revision.save!
     end
