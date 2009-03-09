@@ -20,7 +20,7 @@ class PopulateDeviceTypeModelRevision < ActiveRecord::Migration
     
     pkg_type = DeviceType.find_by_device_type('MyHalo Top Assembly')
     unless pkg_type
-      pkg_type = DeviceType.new(:device_type => 'MyHalo Top Assembly', :mac_address_type => 0)
+      pkg_type = DeviceType.new(:device_type => 'MyHalo Top Assembly', :mac_address_type => 2)
       pkg_type.save!
     end
     
