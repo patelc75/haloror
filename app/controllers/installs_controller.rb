@@ -81,6 +81,9 @@ class InstallsController < ApplicationController
     end
     #check if gateway exists
     if !gateway_serial_number.blank?
+      if gateway_serial_number.size == 7
+        gateway_serial_number = gateway_serial_number[0,2] + "000" + gateway_serial_number[2, 5] 
+      end
       @gateway = Device.find_by_serial_number(gateway_serial_number)
       unless @gateway
         @gateway = @user.devices.build(params[:gateway])
@@ -105,6 +108,9 @@ class InstallsController < ApplicationController
       strap_serial_number = params[:strap][:serial_number]
     end
     if !strap_serial_number.blank?
+      if strap_serial_number.size == 7
+        strap_serial_number = strap_serial_number[0,2] + "000" + strap_serial_number[2, 5] 
+      end
       @strap = Device.find_by_serial_number(strap_serial_number)
       if @strap && !@strap.users.blank? && !@strap.users.include?(@user)
         flash[:warning] = "Chest Strap with Serial Number #{strap_serial_number} is already assigned to a user."
