@@ -127,12 +127,14 @@ class InstallsController < ApplicationController
       throw msg
     end
     if(@gateway.users.blank? || (!@gateway.users.blank? && !@gateway.users.include?(@user)))
-      @user.devices << @gateway
+       @gateway.users << @user
+       @gateway.save!
     end
     if(@strap.users.blank?)
-      @user.devices << @strap
+       @strap.users << @user
+       @strap.save!
     end
-    @user.save!
+    # @user.save!
     create_self_test_step(INSTALLATION_SERIAL_NUMBERS_ENTERED_ID) 
     session[:self_test_time_created] = Time.now
     redirect_to :action => 'install_wizard', :controller => 'installs', :self_test_session_id => @self_test_session_id,
