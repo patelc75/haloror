@@ -22,8 +22,9 @@
 							end
 							
 						%>
-						
+						<% if roles_user && roles_user.roles_users_option %>
 						<li onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag-small.gif\')'" onMouseOut="this.style.backgroundImage = 'url(\'/images/call_list-item-small.gif\')'"><%=link_to_remote name, :update => 'call_list', :url => {:controller => 'users', :action => 'restore_caregiver_role', :id => roles_user.roles_users_option.id, :user_id => params[:user_id]}, :complete => "RedBox.close();headerDisplay()"%></li>
+						<% end %>
 					<% end %>
 					</ul>
 					
