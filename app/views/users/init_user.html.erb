@@ -1,3 +1,4 @@
+<% if @user %>
 <div id="secondary-col">
   <div id="secondary-col-header"></div>
   <div class="content">
@@ -39,3 +40,8 @@
   </div>
   <div id="secondary-col-footer"></div>
 </div>
+<% else %>
+  <script>
+    window.location = "/login"
+  </script>
+<% end %>

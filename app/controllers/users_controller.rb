@@ -1,4 +1,5 @@
 class UsersController < ApplicationController  
+  before_filter :authenticated?, :except => [:init_user, :update_user]
   def save_timezone
     user = User.find(current_user.id)
     user.profile.tz = tzinfo_from_timezone(TimeZone.new(params[:user][:timezone_name]))
@@ -32,6 +33,7 @@ class UsersController < ApplicationController
       @profile = Profile.new(params[:profile])
   
       User.transaction do
+          @user[:is_new_user] = true
           @user.save!
           
         # create profile
@@ -72,8 +74,8 @@ class UsersController < ApplicationController
   end
   
   def update_user
-    @user = User.find_by_activation_code(params[:user][:activation_code])
-    
+   @user = User.find_by_activation_code(params[:user][:activation_code])
+   
     user_hash = params[:user]
     if user_hash[:password] == user_hash[:password_confirmation]
       if user_hash[:password].length >= 4
