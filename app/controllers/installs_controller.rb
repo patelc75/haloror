@@ -10,8 +10,16 @@ class InstallsController < ApplicationController
   
   def activate_user
     @user = User.find(params[:user_id])
-    @user.activate
-    redirect_to :controller => 'sessions', :action => 'destroy'
+    
+      log = AccessLog.new
+      log.user_id = current_user.id
+      log.status = 'logout'
+      log.save
+
+      self.current_user.forget_me if logged_in?
+      cookies.delete :auth_token
+      reset_session
+    redirect_to :controller => 'activate', :action => @user.activation_code
   end
   def index
     @groups = []

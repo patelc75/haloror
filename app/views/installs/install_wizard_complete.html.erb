@@ -12,7 +12,7 @@
 			<br />
 			<br />
 			<% if @user.activation_code != nil %>
-      		Please activate the user and have the user login.  <%= link_to 'Activate', :controller => 'activate', :action => @user.activation_code %>
+      		Please activate the user and have the user login.  <%= link_to 'Activate', :controller => 'installs', :action => 'activate_user', :user_id => @user.id %>
 			<% else %>
 			Please have the user login.  <a href="/logout">User Logon</a>
 			<% end %>
