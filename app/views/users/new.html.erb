@@ -1,14 +1,26 @@
 <div><a href="/admin/signup">Sign up users with other roles</a></div>
 <br>
-<div id="call_list-col">
-	<div id="call_list-col-header">
-		User Signup
+<div id="user_signup-col">
+	<div id="user_signup-col-header">
+		Sign up the Senior
 	</div>
   <div class="content">
 	
-    <%= error_messages_for :user %>
 		<div id="errors">
-			<%= flash[:warning]%>
+			<% if flash[:warning] %>
+			  <span style="font-size: 150%;">
+			  The following error occurred:
+			  <ul>
+			  <li><%= flash[:warning]%></li>
+			  </ul>
+			<% end %>
+			<% if @user.errors %>
+			  <%= error_messages_for :user %>
+			  <br>
+			<% end %>
+			<% if @profile.errors %>
+			<%= error_messages_for :profile %>
+			<% end %>
 		</div>
 
       <% form_tag :action => 'create' do -%>
@@ -18,14 +30,13 @@
 		   end %>
 	 <div id="device-table" class="table">
 	 	<div class="row">
-	 	  <div class="col-250">
-	 		<label for="group">Select Group</label>
-			<br />
-			<%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group)%>
-        	<br />
-			<br />
-		  </div>
 		  <div class="col-250">
+	 		  <label for="group">Select Group</label>
+			  <br />
+		    <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group)%>
+		    <br />
+        <br />
+        <br>
 		  	<%= render :partial => '/profiles/profile_top' %>
 		  </div>
 		  
@@ -42,5 +53,5 @@
     </div>
   </div>
 	<div style="clear:both"></div>
-	<div id="call_list-col-footer"></div>
+	<div id="user_signup-col-footer"></div>
 </div>

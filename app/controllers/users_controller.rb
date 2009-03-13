@@ -26,30 +26,40 @@ class UsersController < ApplicationController
   end
 
   def create
-    if !params[:group].blank? && params[:group] != 'Choose a Group'
+    
       @user = User.new(params[:user])
       @user.email = params[:email]
       @group = params[:group]
       @profile = Profile.new(params[:profile])
+    if !@group.blank? && @group != 'Choose a Group'
   
       User.transaction do
           @user[:is_new_user] = true
-          @user.save!
+          if @user.save
+            # create profile
+            @profile.user_id = @user.id
+            if @profile.save
           
-        # create profile
-          @profile.user_id = @user.id
-          @profile.save!
-          
-        
-        # create halouser role
-          @user.is_halouser_of Group.find_by_name(@group)
+            else
+              raise "Invalid Profile"  
+            end
+            # create halouser role
+            @user.is_halouser_of Group.find_by_name(@group)
+          else
+            raise "Invalid User"
+          end
       end
     else 
+      flash[:warning] = "Group is Required"
       redirect_to :controller => 'users', :action => 'new'
     end
   rescue Exception => e
     RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
-    
+     @groups = []
+      gs = current_user.group_memberships
+      gs.each do |g|
+        @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g) || current_user.is_super_admin?)
+      end
     render :action => 'new'
   end
   

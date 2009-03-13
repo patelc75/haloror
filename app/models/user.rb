@@ -46,6 +46,9 @@ class User < ActiveRecord::Base
   
   validates_length_of       :login,    :within => 3..40, :if => :password_required?
   validates_length_of       :email,    :within => 3..100
+  validates_format_of       :email,    
+                            :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i,
+                            :message => 'must be valid'
   #validates_length_of       :serial_number, :is => 10
   
   validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?

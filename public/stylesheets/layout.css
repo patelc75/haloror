@@ -135,7 +135,6 @@ h3 a {
 
 
 
-
 #lightbox-col
 {
 	width:418px;
@@ -164,7 +163,31 @@ h3 a {
 }
 
 
+#user_signup-col
+{
+	width:950px;
+	background:url('/images/call_list-col-bg.gif') repeat-y;
+	float:left;
+}
 
+#user_signup-col-header
+{
+	background:url('/images/call_list-col-header.gif') no-repeat;
+	
+	height:45px;
+	
+	font-size:1.6em;
+	color:#fff;
+	
+	padding-left:20px;
+	padding-top:10px;
+}
+
+#user_signup-col-footer
+{
+	background:url('/images/call_list-col-footer.gif') no-repeat;
+	height:12px;
+}
 
 
 #call_list-col
