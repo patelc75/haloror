@@ -55,6 +55,33 @@
 
 
 <body>
+  <div align="center" id="exception_id" style="display:none">
+    <div id="lightbox-col">
+    	<img src="/images/lightbox-col-header.gif" /><br />
+    	<div class="lightbox-content">
+    		<div style="width:200px;margin-left:320px" id="container">
+    	</div>
+    		<div style="width:200px;margin-left:auto;margin-right:auto" id="container">
+    <p><b>No response from server. Please refresh this page to try again.</b></p>
+    		</div>
+    	</div>
+    	<img src="/images/lightbox-col-footer.gif" />
+    </div>
+  </div>
+  </div>
+  <div align="center" id="install_exception_id" style="display:none">
+  <div id="lightbox-col">
+  	<img src="/images/lightbox-col-header.gif" /><br />
+  	<div class="lightbox-content">
+  		<div style="width:200px;margin-left:320px" id="container">
+  	</div>
+  		<div style="width:200px;margin-left:auto;margin-right:auto" id="container">
+   <p><b>No response from server. Please click this <a href="/installs/">link to restart installation.</a></b></p>
+  		</div>
+  	</div>
+  	<img src="/images/lightbox-col-footer.gif" />
+  </div>
+  </div>
 	<% if 'reporting' == controller.controller_name %>
 	<div align="center" id="inProgress" style="display:none">
 			<img src="/images/processing.gif"/>
@@ -91,7 +118,7 @@
 			</p>
 		</div>
 	</div>
-    
+  
 	<% if google_analytics_check() %>
 		<script type="text/javascript">
 		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

@@ -1,5 +1,16 @@
 // Place your application-specific JavaScript functions and classes here
 // This file is automatically included by javascript_include_tag :defaults
+
+
+function ajaxInstallException(){
+	RedBox.showInline('install_exception_id');
+}
+
+function ajaxException(){
+	RedBox.showInline('exception_id');
+}
+
+
 Ajax.Responders.register({
   onCreate: function() {
     Ajax.activeRequestCount++;
@@ -9,12 +20,19 @@ Ajax.Responders.register({
 			  }
 		}
   },
-  onComplete: function() {
+  onComplete: function(request, transport) {
     Ajax.activeRequestCount--;
 		if(Ajax.activeRequestCount <= 0){
 		  if($('inProgress')){
 		    $('inProgress').hide();
 		  }
+		}
+		if(transport.status > 299 || transport.status < 200){
+			if(request.url.match("installs")){
+				ajaxInstallException();
+			}else{
+				ajaxException();
+			}
 		}
   }
 });
