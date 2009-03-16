@@ -12,7 +12,11 @@
 	<div class="row">
 		<div class="col-75"><%=  user.id     %></div>
 		<div class="col-200"><%= user.name  %></div>
-		<div class="col-200"><%= user.login %></div>
+		<div class="col-200"><% if user.login %>
+		                          <%= user.login %>
+		                      <% else %>
+		                          <%= user.email %>
+		                      <% end  %>&nbsp;</div>
 		<div class="col-150"><%= link_to_function("Start Installation Wizard", "browserCheckStartRegistration('#{user.id}', '#{@group.name}')") %></div>
 	</div>
 	<div class="col-100"><%= link_to_remote "Start Range Test Only", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :group => @group.name, :id => user.id} %></div>
