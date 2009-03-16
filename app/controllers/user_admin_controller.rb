@@ -108,6 +108,24 @@ class UserAdminController < ApplicationController
     render :layout => false 
   end
   
+  def add_group
+    group_name = params[:group_name]
+    if(!group_name.blank?)
+      if(Group.find_by_name(group_name).blank?)
+        Group.create(:name => group_name)
+        @success = true
+        @message = "Group(#{group_name}) Added"
+      else
+        @success = false
+        @message = "Group(#{group_name}) Already exists"
+      end
+    else
+       @success = false
+       @message = "Choose a user"
+    end
+    render :action => 'assign_role', :layout => false
+  end
+  
   def assign_caregiver_role
     caregiver_id = params[:caregiver_id]
     user_id = params[:user_id]
