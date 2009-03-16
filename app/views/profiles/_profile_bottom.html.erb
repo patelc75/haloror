@@ -67,7 +67,8 @@
          	    </select>
       <% end %>
       <% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %>
-	    
+	      <div><%= link_to "Configure Emergency Dispatch Phone Numbers", :action => 'index', :controller => 'emergency_numbers' %>
+        </div>
 	    <input type="checkbox" name="opt_out_ems" <%= 'checked' if(!(@user.is_halouser_of? Group.find_by_name('EMS'))) %> />
 	    <label for"opt_out_ems">Opt out of EMS Group</label>
 	    
