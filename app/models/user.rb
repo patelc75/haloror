@@ -972,7 +972,21 @@ class User < ActiveRecord::Base
     end
     return ''
   end
-  
+  def self.create_operator(user_params, profile_params)
+    ems_group = Group.find_by_name('EMS')
+    login = user_params[:login]
+    user = User.find_by_login(login)
+    unless user
+      user = User.new(user_params)
+      user.save!
+      profile = Profile.new(profile_params)
+      profile.user_id = user.id
+      profile.save!
+      user.activate
+      user.is_operator_of ems_group
+      user.save!    
+    end
+  end
   protected
   
   # before filter
