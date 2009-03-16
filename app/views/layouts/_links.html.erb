@@ -34,7 +34,7 @@
 				<li><%= link_to 'Call&nbsp;Center', url_for(:controller => 'call_center', :action => 'index') %></li>
 			<% end %>
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
-				<li><%= link_to 'User&nbsp;Signup', url_for(:controller => 'users', :action => 'new') %></li>
+				<li><%= link_to 'Senior&nbsp;Signup', url_for(:controller => 'users', :action => 'new') %></li>
 			<% end %>
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_installer? %>
 				<li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li>
