@@ -100,6 +100,16 @@ class ProfilesController < ApplicationController
     end
         
     Profile.update(params[:id], params[:profile])
+    if(current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships))
+      group = Group.find_by_name('EMS')
+      if(params[:opt_out_ems].blank?)
+        user.is_halouser_of group
+      elsif(user.is_halouser_of? group)
+        role = Role.find(:first, :conditions => "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{group.id}")
+        ru = RolesUser.find(:first, :conditions => "user_id = #{user.id} AND role_id = #{role.id}")
+        RolesUser.delete(ru)
+      end
+    end
     if(!params[:operator].blank?)
       refresh_operators(params[:group_id])
     elsif(!params[:patient_id].blank?)

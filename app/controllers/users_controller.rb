@@ -45,6 +45,11 @@ class UsersController < ApplicationController
             end
             # create halouser role
             @user.is_halouser_of Group.find_by_name(@group)
+            if(current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships))
+              if(params[:opt_out_ems].blank?)
+                @user.is_halouser_of Group.find_by_name('EMS')
+              end
+            end
           else
             raise "Invalid User"
           end
