@@ -1,8 +1,22 @@
 <% rs = []
 	 user.roles.each do |role| 
-	  rs << role.name
+	  rs << role
    end 
+   rs.sort! do |a,b|
+     a.name <=> b.name
+   end
+   names = []
+   rs.each do |role|
+     if role.authorizable_type == 'Group'
+       group = Group.find(role.authorizable_id)
+       names << "#{role.name} / #{group.name}"
+     else
+       names << role.name
+     end
+   end
 -%>
-<%  rs.uniq.sort.each do |name| -%>
-			<%= name %>
+<div>&nbsp;
+<%  names.uniq.sort.each do |name| -%>
+			<%= name %><br />
 <%  end -%>
+</div>
