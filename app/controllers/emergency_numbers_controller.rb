@@ -1,7 +1,12 @@
 class EmergencyNumbersController < ApplicationController
   
   def index
-    @groups = current_user.group_memberships
+    @groups = []
+    if current_user.is_super_admin?
+      @groups = Group.find(:all)
+    else
+      @groups = current_user.group_memberships
+    end
     if check_params_for_group      
       group_name = params[:group]
       @group = Group.find_by_name(group_name)
