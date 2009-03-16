@@ -1,12 +1,11 @@
-Halo User:	
+Senior:	
 <select onchange="if(this.value != ''){document.location = '/<%=params[:controller]%>/<%=params[:action]%>/'+this.value}">
 	<% if current_user.is_halouser? %>
-		<option value="<%=current_user.id%>"><%=current_user.login%></option>
+		<option value="<%=current_user.id%>"><%=current_user.name%></option>
 	<% end %>
 	<option value="">---</option>
 	
 	<% current_user.patients.each do |patient| %>
-		<%=debug params%>
-		<option value="<%=patient.id%>" <%='selected' if params[:id].to_i == patient.id %>><%=patient.login%></option>
+		<option value="<%=patient.id%>" <%='selected' if params[:id].to_i == patient.id %>><%=patient.name%></option>
 	<% end %>
 </select>
