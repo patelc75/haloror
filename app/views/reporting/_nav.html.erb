@@ -15,6 +15,9 @@
 | <a href="/admin/signup">Create User</a> 
 <% end %>
 <% if current_user.is_super_admin? %>
+| <a href="/carriers/">Carriers</a>
+<% end %>
+<% if current_user.is_super_admin? %>
 | <a href="/oscopes/index">Oscope CSV</a>
 <% end %>
 <% if current_user.is_super_admin? %>

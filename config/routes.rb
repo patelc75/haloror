@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :carriers
+
   map.resources :pools
   map.resources :gw_alarm_buttons
   map.resources :work_orders

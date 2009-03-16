@@ -1,0 +1,23 @@
+<h1>Editing carrier</h1>
+
+<% form_for :carrier, :url => { :controller => 'carriers', :action => "update", :id => @carrier.id }, :html => { :method => :put } do |f| %>
+  <%= f.error_messages %>
+  <%= f.hidden_field :id %>
+  <table>
+    <tr>
+      <th>ID</th><th>Name</th><th>Domain</th>
+    </tr>
+    <tr>
+      <td><%= h @carrier.id %></td>
+      <td><%= f.text_field :name %></td>
+      <td><%= f.text_field :domain %></td>
+    </tr>
+  </table>
+  <br>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @carrier %> |
+<%= link_to 'Back', carriers_path %>

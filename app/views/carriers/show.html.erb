@@ -1,0 +1,11 @@
+<table>
+  <tr>
+    <th>ID</th><th>Name</th><th>Domain</th>
+  </tr>
+  <tr>
+    <td><%= h @carrier.id %></td>
+    <td><%= h @carrier.name %></td>
+    <td><%= h @carrier.domain %></td>
+  </tr>
+<%= link_to 'Edit', edit_carrier_path(@carrier) %> |
+<%= link_to 'Back', carriers_path %>

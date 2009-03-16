@@ -1,0 +1,21 @@
+<h1>New carrier</h1>
+
+<% form_for :carrier, :url => { :controller => 'carriers', :action => "create", :id => @carrier.id } do |f| %>
+  <%= f.error_messages %>
+  <%= f.hidden_field :id %>
+  <table>
+    <tr>
+      <th>Name</th><th>Domain</th>
+    </tr>
+    <tr>
+      <td><%= f.text_field :name %></td>
+      <td><%= f.text_field :domain %></td>
+    </tr>
+  </table>
+  <br>
+  <p>
+    <%= f.submit "Create" %>
+  </p>
+<% end %>
+
+<%= link_to 'Back', carriers_path %>
