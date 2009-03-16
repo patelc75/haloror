@@ -662,7 +662,7 @@ class User < ActiveRecord::Base
   	  <i><div style="font-size: 150%; color: yellow;">"Thank You.  We will be contacting #{caregiver_name}, the next caregiver.  Good Bye."</div></i>
   	  eos
       return info
-    else  service_name = '911 or local emergency service'
+    else  service_name = 'local emergency service'
       service_name = self.profile.emergency_number.name if self.profile.emergency_number
       info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
@@ -673,7 +673,7 @@ class User < ActiveRecord::Base
     end
   end
   def get_thank_you_pre_agent
-    service_name = '911 or local emergency service'
+    service_name = 'local emergency service'
     service_name = self.profile.emergency_number.name if self.profile.emergency_number
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
@@ -852,9 +852,9 @@ class User < ActiveRecord::Base
     if event_type == CallCenterFollowUp.class_name
       event_type = get_event_type(event)
     end
-    service_name = '911 or local emergency service'
+    service_name = 'local emergency service'
     service_name = self.profile.emergency_number.name if self.profile.emergency_number
-    number = '911'
+    number = ''
     number = self.profile.emergency_number.number if self.profile.emergency_number
     info = <<-eos
 		<div style="font-size: x-large"><b><font color="white">Call #{service_name} at #{number}</font></b></div>
@@ -877,9 +877,9 @@ class User < ActiveRecord::Base
     end
   end
   def get_ambulance_script(operator, event)
-    service_name = '911 or local emergency service'
+    service_name = 'local emergency service'
     service_name = self.profile.emergency_number.name if self.profile.emergency_number
-    number = '911'
+    number = ''
     number = self.profile.emergency_number.number if self.profile.emergency_number
     info = <<-eos
 		<font color="white">Recite this script:</font><br><br>
