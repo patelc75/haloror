@@ -209,7 +209,7 @@
 		<% alt = "Edit caregiver's profile." %>
 		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true, :user_id => user_id, :roles_user_id => user.roles_user_by_caregiver(caregiver).id }, :html => {:alt => alt, :method => :get, :complete => 'updatePositions()'})%>
 		| <% alt = 'View / Edit Alerts.' %>
-		<%=link_to('More Alerts', :controller => "alerts", :action => "index", :alt => alt, :id => user.roles_user_by_caregiver(caregiver).id)%>
+		<%=link_to('Non-critical Alerts', :controller => "alerts", :action => "index", :alt => alt, :id => user.roles_user_by_caregiver(caregiver).id)%>
 	</div>
 	
 	<!--TOOLTIP-->
