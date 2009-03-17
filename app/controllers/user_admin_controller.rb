@@ -108,6 +108,41 @@ class UserAdminController < ApplicationController
     render :layout => false 
   end
   
+  def remove_role
+    group = params[:group]
+    role = params[:role]
+    user_id = params[:user_id]
+    
+    unless user_id.empty?
+      unless group[:name].empty?
+        g = Group.find_by_name(group[:name])
+        r = Role.find(:first, :conditions => "name = '#{role[:name]}' AND authorizable_type = 'Group' AND authorizable_id = #{g.id}")
+        roles_users = RolesUser.find(:all, :conditions => "user_id = #{user_id} AND role_id = #{r.id}")
+        RolesUser.delete(roles_users)
+        @success = true
+        @message = "Role/Group Removed"
+      else
+        user = User.find(user_id)
+        roles = user.roles.find(:all, :conditions => "name = '#{role[:name]}'")
+        if roles
+          roles.each do |r|
+            roles_users = RolesUser.find(:all, :conditions => "user_id = #{user_id} AND role_id = #{r.id}")
+            RolesUser.delete(roles_users)
+          end
+        end        
+        @success = true
+        @message = "Role Removed"
+      end
+      
+      
+    else
+      @success = false
+      @message = "Choose a user"
+    end   
+    
+    render :action => 'assign_role', :layout => false 
+  end
+  
   def add_group
     group_name = params[:group_name]
     if(!group_name.blank?)

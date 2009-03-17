@@ -18,6 +18,13 @@
   <%=submit_tag 'Assign Role and Group'%>
 <% end %>
 <br><br>
+<h2>Remove Role</h2>
+<% form_remote_tag :url => {:controller => 'user_admin',:action => 'remove_role'}, :update => 'assign_role' do |f|%>
+  Remove <%=select_tag 'user_id', options_for_select(@users.collect {|u| [u.login, u.id]})%> from <%=select 'role', 'name', @roles%> of <%=select 'group', 'name', @groups%>
+  <br>
+  <%=submit_tag 'Remove Role and Group'%>
+<% end %>
+<br><br>
 <h2>Add Group</h2>
 <% form_remote_tag :url => {:controller => 'user_admin',:action => 'add_group'}, :update => 'assign_role' do |f|%>
   <label for="group_name">Group Name</label>
