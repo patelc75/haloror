@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   include ServerInstance
   include AuthenticatedSystem
   include ExceptionNotifiable
-  
+  rescue_from RuntimeError, :with => 'error'
   local_addresses.clear # always send email notifications instead of displaying the error  
   
   # Pick a unique cookie name to distinguish our session data from others'
@@ -26,6 +26,9 @@ class ApplicationController < ActionController::Base
   
   before_filter :authenticated?
   before_filter:set_host
+  def error(exception)
+    render :controller => 'errors', :action => 'error'
+  end
   
   def set_host
     ServerInstance.current_host = request.host
@@ -88,7 +91,8 @@ class ApplicationController < ActionController::Base
   protected
   def authenticated?
     unless (controller_name == 'users' && (action_name == 'init_caregiver' || action_name == 'update_caregiver' || action_name == 'activate') || 
-      controller_name == 'sessions' || 
+      controller_name == 'sessions' ||
+      controller_name == 'errors'  || 
       controller_name == 'flex' && action_name == 'chart' || 
       controller_name == 'util' && action_name == 'check' ||
       controller_name == 'util' && action_name == 'hostname' ||
