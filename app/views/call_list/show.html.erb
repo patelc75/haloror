@@ -1,3 +1,10 @@
+<% if current_user.recently_activated? || params[:recently_activated] == 'true' %>
+  <%= launch_remote_redbox(:url =>  { :action => 'recently_activated', 
+                                      :controller => 'call_list', 
+                                      :user_id => current_user.id }, 
+                                      :html => { :method => :get} ) %>
+<% end %>
+
 <div id="hidden_content_extra_info">
 </div>
 

@@ -2,7 +2,11 @@ class CallListController < ApplicationController
 
   #before_filter :authenticate_admin_operator?, :except => 'show'
   before_filter :authenticate_admin_halouser_caregiver_operator_sales?, :only => 'show'
-
+  
+  def recently_activated
+    
+  end
+  
   def show
     number_ext
     if(!params[:id].blank?)

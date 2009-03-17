@@ -103,7 +103,11 @@ class UsersController < ApplicationController
           current_user.activate
         end
         current_user.set_active()
-        redirect_to '/'
+        if current_user.is_caregiver?
+          redirect_to :controller => 'call_list', :action => 'show', :recently_activated => 'true'
+        else
+          redirect_to '/'
+        end
       else
         flash[:warning] = "Password must be at least 4 characters"
         render :action => 'init_user'
