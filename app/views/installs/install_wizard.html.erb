@@ -49,6 +49,11 @@
 		new Ajax.Request(url, {
   			method: 'get'});
 	}
+	function stop_wizard(self_test_step_id){
+	  url = "/installs/stop_wizard/?self_test_step_id=" + self_test_step_id + "&self_test_session_id=<%= @self_test_session_id%>&gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
+	  new Ajax.Request(url, {
+  			method: 'get'});
+	}
 </script>
 <%= periodically_call_remote(:url => { 	:controller => 'installs', 
 										:action => 'install_wizard_registration_progress', 

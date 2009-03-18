@@ -4,6 +4,49 @@ class InstallsController < ApplicationController
   include ActionView::Helpers::TagHelper
   include RedboxHelper
   
+  def add_caregiver
+    init_devices_user
+    if(!params[:caregiver_email].blank?)
+      @caregiver = User.new
+      @caregiver.email = params[:caregiver_email]
+      @caregiver.is_new_caregiver = true
+      @caregiver[:is_caregiver] =  true
+      @caregiver.save!
+      profile = Profile.create(:user_id => @caregiver.id)
+    
+      role = @caregiver.has_role 'caregiver', @user
+      @roles_user = @user.roles_user_by_caregiver(@caregiver)
+    
+      RolesUsersOption.create(:roles_user_id => @roles_user.id, 
+                              :position => get_max_caregiver_position(@user), 
+                              :active => 0)
+      #redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
+      UserMailer.deliver_caregiver_email(@caregiver, @user)
+      @caregiver_added = @caregiver
+    else
+      flash[:warning] = "Email Required"
+    end
+    if @caregiver_added
+      launcher = launch_remote_redbox(:url =>  {  :action => 'add_caregiver', :controller => 'installs', 
+                                       :email => @caregiver.email,
+                                       :self_test_session_id => @self_test_session_id, :user_id => @user.id,
+                                       :gateway_id => @gateway_id, :strap_id => @strap_id
+                                    }, 
+                           :html => { :method => :get, :complete => '' } )
+      render(:update) do |page|
+        page.replace_html 'install_wizard_launch', launcher
+      end
+    end
+  end
+  
+  def stop_wizard
+    init_devices_user
+    launcher = new_remote_redbox('install_wizard_complete')
+    render(:update) do |page|
+      page.replace_html 'install_wizard_launch', launcher
+    end
+  end
+  
   def ie6
     
   end
@@ -529,7 +572,8 @@ class InstallsController < ApplicationController
     init_devices_user
     
     save_notes(@self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{RANGE_TEST_COMPLETE_ID}").id)
-    launcher = new_remote_redbox('install_wizard_complete')
+    #launcher = new_remote_redbox('install_wizard_complete')
+    launcher = new_remote_redbox('add_caregiver')
     render(:update) do |page|
       page.replace_html 'install_wizard_launch', launcher
     end
@@ -850,5 +894,10 @@ class InstallsController < ApplicationController
     self_test_step = SelfTestStep.find(step_id)
     self_test_step.notes = params[:notes]
     self_test_step.save!
+  end
+  
+  def get_max_caregiver_position(user)
+    get_caregivers(user)
+    @caregivers.size + 1
   end
 end
