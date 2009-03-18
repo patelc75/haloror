@@ -26,7 +26,7 @@ class ActionMailer::ARMailer < ActionMailer::Base
       end
     rescue Exception => e
       ActionMailer::Base.smtp_settings = SMTP_SETTINGS_NARFONIX
-      UtilityHelper.safe_send_email("Error sending mail: perform_delivery_activerecord\n  #{e}")
+      UtilityHelper.safe_send_email("Error sending mail: perform_delivery_activerecord\n  #{e}", 'exceptions@halomonitoring.com')
       ActionMailer::Base.smtp_settings = SMTP_SETTINGS_LOCALHOST
     end
   end
