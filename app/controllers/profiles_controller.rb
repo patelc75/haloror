@@ -89,31 +89,39 @@ class ProfilesController < ApplicationController
   end
   
   def update_caregiver_profile
+    sent = false
     user = User.find(params[:user_id])
     user.email = params[:email]
-    user.save
+    @profile = Profile.find(params[:id])
+    @user = user
+    @group_id = params[:group_id]
+    begin
+    User.transaction do
+      user.save!
 
-    if(!params[:roles_user_id].blank?)
-      @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
-      @roles_users_option.relationship = params[:relationship]
-      @roles_users_option.save
-    end
-        
-    Profile.update(params[:id], params[:profile])
-    if(current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships))
-      group = Group.find_by_name('EMS')
-      if(params[:opt_out_ems].blank?)
-        user.is_halouser_of group
-      elsif(user.is_halouser_of? group)
-        role = Role.find(:first, :conditions => "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{group.id}")
-        ru = RolesUser.find(:first, :conditions => "user_id = #{user.id} AND role_id = #{role.id}")
-        RolesUser.delete(ru)
+      if(!params[:roles_user_id].blank?)
+        @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
+        @roles_users_option.relationship = params[:relationship]
+        @roles_users_option.save!
       end
-    end
-    if(!params[:operator].blank?)
-      refresh_operators(params[:group_id])
-    elsif(!params[:patient_id].blank?)
-      refresh_caregivers(User.find(params[:patient_id]))
+    
+      @profile.update_attributes!(params[:profile])
+      if(current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships))
+        group = Group.find_by_name('EMS')
+        if(params[:opt_out_ems].blank?)
+          user.is_halouser_of group
+        elsif(user.is_halouser_of? group)
+          role = Role.find(:first, :conditions => "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{group.id}")
+          ru = RolesUser.find(:first, :conditions => "user_id = #{user.id} AND role_id = #{role.id}")
+          RolesUser.delete(ru)
+        end
+      end
+        render(:update) do |page|
+          page << "RedBox.close();"
+        end
+    end   
+    rescue 
+      render :action => 'edit_caregiver_profile'
     end
   end
   

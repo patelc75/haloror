@@ -3,4 +3,31 @@ class Profile < ActiveRecord::Base
   belongs_to :user
   belongs_to :carrier
   belongs_to :emergency_number
+  
+  
+  validates_presence_of     :first_name
+  validates_presence_of     :last_name
+  validates_presence_of     :address
+  validates_presence_of     :city
+  validates_presence_of     :state
+  validates_presence_of     :zipcode
+  validates_presence_of     :time_zone  
+  
+  validates_presence_of     :home_phone, :if => :phone_required?, :message => 'or Cell Phone is required'
+  validates_presence_of     :cell_phone, :if => :phone_required?, :message => 'or Home Phone is required'
+  validates_presence_of     :carrier_id, :if => :cell_phone_exists?
+  
+  def cell_phone_exists?
+    if self.cell_phone.blank?
+      return true
+    end
+    return false
+  end
+  
+  def phone_required?
+    if self.home_phone.blank? && self.cell_phone.blank?
+      return true
+    end
+    return false
+  end
 end
