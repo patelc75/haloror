@@ -1,6 +1,16 @@
 class UserMailer < ActionMailer::ARMailer
   include ServerInstance
   
+  def signup_notification_halouser(user)
+    setup_email(user)
+    @subject    += 'Please read before your installation'
+  
+    #@body[:url]  = "http://67-207-146-58.slicehost.net/activate/#{user.activation_code}"
+    #@body[:url]  = "http://localhost:3000/activate/#{user.activation_code}"
+    @body[:host] = "http://#{ServerInstance.current_host}"
+    @body[:url]  = "http://#{ServerInstance.current_host}/activate/#{user.activation_code}"
+  end
+  
   def signup_notification(user)
     setup_email(user)
     @subject    += 'Please activate your new account'
@@ -20,11 +30,10 @@ class UserMailer < ActionMailer::ARMailer
     setup_email(caregiver)
     @subject += "#{user.name} wants you to be their caregiver"
     body <<-EOF
-      #{user.name} wants you to be their caregiver.
+      You have been invited to be a caregiver for #{user.name}.
       
-      Please complete the signup process at:  http://#{ServerInstance.current_host}/activate/#{caregiver.activation_code}
+       Please click here to activate the account and configure your alerts:  http://#{ServerInstance.current_host}/activate/#{caregiver.activation_code}
     EOF
-        
   end
   
   protected

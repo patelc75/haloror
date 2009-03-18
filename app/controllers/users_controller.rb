@@ -206,9 +206,9 @@ class UsersController < ApplicationController
   def create_caregiver
     @user = User.new(params[:user])
     if !@user.email.blank?
-      if existing_user = User.find_by_email(@user.email)
-        raise "Existing User"
-      end
+      # if existing_user = User.find_by_email(@user.email)
+      #         raise "Existing User"
+      #       end
       
       @user.is_new_caregiver = true
       @user[:is_caregiver] =  true

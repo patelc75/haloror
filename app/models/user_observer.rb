@@ -1,6 +1,10 @@
 class UserObserver < ActiveRecord::Observer
   def after_create(user)
-    UserMailer.deliver_signup_notification(user) unless user[:is_caregiver]
+    if user.is_halouser?
+      UserMailer.deliver_signup_notification_halouser(user)
+    else
+      UserMailer.deliver_signup_notification(user) unless user[:is_caregiver]
+    end
   end
 
   def after_save(user)
