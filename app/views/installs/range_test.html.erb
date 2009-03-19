@@ -22,8 +22,20 @@
 			One long beep   -- Out of Range
 			<br />
 			<br />
-			<button onclick="javascript:stop_range_test(<%= @self_test_step_id %>);RedBox.close();">Stop Range Test</button>
-		</div>
+			Please enter out of range spots in home.
+			<br/>
+			<%= form_remote_tag :url => url_for(:controller => 'installs', :action => 'stop_range_test') %>
+				<input type="hidden" name="user_id" value="<%= @user.id %>" />
+				<input type="hidden" name="gateway_id" value="<%= @gateway_id %>" />
+				<input type="hidden" name="strap_id" value="<%= @strap_id %>" />
+				<input type="hidden" name="self_test_session_id" value="<%= @self_test_session_id %>" />
+				
+				<textarea id="notes_id" name="notes" rows="5" cols="32"></textarea>
+				<br />
+				<br />
+				<input type="submit" name="Stop Range Test" value="Stop Range Test" />
+			</form>
+			</div>
 	</div>
 	<img src="/images/lightbox-col-footer.gif" />
 </div>

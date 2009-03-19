@@ -363,6 +363,7 @@ class InstallsController < ApplicationController
     
   end
   
+  
   def install_wizard_phone_progress
     init_devices_user
     message = 'Phone Self Test'
@@ -383,13 +384,13 @@ class InstallsController < ApplicationController
         session[:progress_count][:phone] = nil
         step = create_self_test_step(SELF_TEST_PHONE_TIMEOUT_ID)
         @self_test_step_id = step.id
-        message = "Self Test Phone timeout.  Please use phone to check for dial tone and plug phone line in to gateway.  Either restart the wizard or you can agree to disable the dial backup feature and continue by clicking <a href=\"javascript:continueWithoutPhone(" + @self_test_step_id.to_s + ");\" >here</a>."
+        message = "Self Test Phone timeout.  Please use phone to check for dial tone and plug phone line in to gateway.  Either restart the wizard or you can agree to disable the dial backup feature and continue by clicking <br><br> <button onclick=\"javascript:continueWithoutPhone(" + @self_test_step_id.to_s + ");\" >Continue Without the Dial Backup</button>"
         # clear_session_data
         render_update_timeout('phone_div_id', message, 'updateCheckSelfTestPhone', 'install_wizard_launch')
       elsif session[:halo_check_phone_self_test_result] && !session[:halo_check_phone_self_test_result].result
         step = create_self_test_step(SELF_TEST_PHONE_FAILED_ID)
         @self_test_step_id = step.id
-        message = "Self Test Phone failed. Either restart the wizard or you can agree to disable the dial backup feature and continue by clicking <a href=\"javascript:continueWithoutPhone(" + @self_test_step_id.to_s + ");\" >Continue</a>."
+        message = "Self Test Phone failed. Either restart the wizard or you can agree to disable the dial backup feature and continue by clicking<br><br> <button onclick=\"javascript:continueWithoutPhone(" + @self_test_step_id.to_s + ");\" >Continue Without the Dial Backup</button>"
         render_update_failure('phone_div_id', message, 'updateCheckSelfTestPhone', 'install_wizard_launch')
       else
         render_update_message('phone_div_id', message, :phone)
@@ -559,9 +560,16 @@ class InstallsController < ApplicationController
     create_mgmt_cmd('mgmt_poll_rate', @gateway.id, MGMT_POLL_RATE)
     create_self_test_step(SLOW_POLLING_MGMT_COMMAND_CREATED_ID)
     
-    render_update_success('range_test_div_id', message, nil, nil, 
-                          'range_test_check', 'update_percentage', RANGE_TEST_PERCENTAGE, 
-                          duration, 'notes', 'install_wizard_launch')
+    # render_update_success('range_test_div_id', message, nil, nil, 
+    #                           'range_test_check', 'update_percentage', RANGE_TEST_PERCENTAGE, 
+    #                           duration, 'notes', 'install_wizard_launch')
+                          
+    save_notes(@self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{RANGE_TEST_COMPLETE_ID}").id)
+    launcher = new_remote_redbox('add_caregiver')
+    render(:update) do |page|
+      page.call('update_percentage', RANGE_TEST_PERCENTAGE)
+      page.replace_html 'install_wizard_launch', launcher
+    end
   end
 
   def notes
@@ -595,6 +603,7 @@ class InstallsController < ApplicationController
     @self_test_session.completed_on = Time.now
     @self_test_session.save!
     clear_session_data
+    session[:self_test_time_created] = Time.now
   end
   
   private
