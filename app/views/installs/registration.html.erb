@@ -23,7 +23,6 @@
 	}
 </script>
 <div id="phone_launcher" ></div>
-<div>Registering <%= @user.name %></div>
 <div id="secondary-col">
   <div id="secondary-col-header"></div>
   
@@ -44,6 +43,8 @@
 			<% end %>
 		</div>
     <div style="width:200px;margin-left:auto;margin-right:auto">
+    	<div>Registering <%= @user.name %> (<%= @user.id %></div>
+    	
       <% form_tag :action => 'registration_create' do -%>
 	  <input type="hidden" name="user_id" value="<%= @user.id %>" />
 	  <input type="hidden" name="self_test_session_id" value="<%= @self_test_session.id %>" />
