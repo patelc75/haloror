@@ -19,22 +19,6 @@
 			</table>
 			<br />
 			<br />
-			Please enter notes about the failure.
-			<br/>
-			<%= form_remote_tag :url => url_for(:controller => 'installs', :action => 'submit_notes') %>
-				<input type="hidden" name="user_id" value="<%= @user.id %>" />
-				<input type="hidden" name="gateway_id" value="<%= @gateway_id %>" />
-				<input type="hidden" name="strap_id" value="<%= @strap_id %>" />
-				<input type="hidden" name="self_test_session_id" value="<%= @self_test_session_id %>" />
-				<input type="hidden" name="self_test_step_id" value="<%= @self_test_step_id %>" />
-				
-				<textarea id="notes_id" name="notes" rows="5" cols="32"></textarea>
-				<br />
-				<br />
-				<input type="submit" onclick="RedBox.close();" name="Submit" value="Submit" />
-			</form>
-			<br />
-			<br />
 			<form action="/installs/restart_install_wizard" method="post">
 			  <input type="hidden" name="user_id" value="<%= @user.id %>" />
 				<input type="hidden" name="gateway_id" value="<%= @gateway_id %>" />
