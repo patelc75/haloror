@@ -287,7 +287,7 @@ class InstallsController < ApplicationController
       step = create_self_test_step(REGISTRATION_TIMEOUT_ID)
       @self_test_step = step
       @self_test_step_id = step.id
-      message = 'Registration timed out.  <br><br>Press the panic button to take strap out of low power mode.  <br><br>Please ensure that the LED labeled "WAN" on the Gateway is green and then restart the wizard.'
+      message = 'Registration timed out.<br><br>The chest strap wearer is either out of range of the gateway OR in low power mode. <br><br>If the chest strap has been unplugged for more than 15 miutes, then press the panic button. <br><br> OR <br><br>If the chest strap wearer is out of range of the gateway, please try to lay the antennae flat or try to move the gateway to another position.  <br><br> Once the strap is out of low power mode or back in range, the PAN LED on the gateway will turn green in approximately 1 minute. Please ensure that the WAN and PAN LEDs are green on the gateway and then restart the wizard.'
       render_update_timeout('registered_div_id', message, 'updateCheckRegistration', 'install_wizard_launch')
     else
       render_update_message('registered_div_id', message, :register)
