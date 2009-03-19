@@ -23,7 +23,7 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   def gw_alarm(event)
       setup_caregivers(event.user, event, :recepients)
-      setup_message(event.to_s, "We have detected the Gateway alarm button has been press on #{event.timestamp} for #{event.user.name}")
+      setup_message(event.to_s, "We have detected the Gateway Alarm Reset button has been pressed on #{event.timestamp} for #{event.user.name}")
       self.priority = Priority::IMMEDIATE
   end
   def device_event_admin(event)

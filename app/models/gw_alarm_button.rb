@@ -6,7 +6,7 @@ class GwAlarmButton < DeviceAlert
   end
   
   def to_s
-    "Gateway Alarm button pressed on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
+    "Gateway Alarm Reset button pressed on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
   end
   
   def after_save
