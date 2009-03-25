@@ -16,9 +16,6 @@
    end
 -%>
 <div>
-<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
-<a href="/user_admin/roles">Configure</a> | &nbsp;
-<% end %>
 <%  names.uniq.sort.each do |name| -%>
 			<%= name %><br />
 <%  end -%>
