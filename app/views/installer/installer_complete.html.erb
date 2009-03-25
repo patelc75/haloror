@@ -1,0 +1,19 @@
+<div id="lightbox-col-700">
+	<img src="/images/lightbox-col-header-700.gif" /><br />
+	<div class="lightbox-content-700">
+		<div style="width:700px;margin-left:auto;margin-right:auto" id="container">
+			Installation Complete.  Total time:  <%= UtilityHelper.seconds_format(@self_test_session.completed_on - @self_test_session.created_at) %>
+			<br />
+			<br />
+			Please check that the flash player upgrade is finished and restart your browser.
+			<br />
+			<br />
+			<% if @user.activation_code != nil %>
+      		Please activate the user and have the user login.  <%= link_to 'Activate', :controller => 'installs', :action => 'activate_user', :user_id => @user.id %>
+			<% else %>
+			Please have the user login.  <a href="/logout">User Logon</a>
+			<% end %>
+		</div>
+	</div>
+	<img src="/images/lightbox-col-footer-700.gif" />
+</div>

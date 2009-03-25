@@ -1,0 +1,124 @@
+<script language="javascript">
+var isLoaded = false;
+var checkRegistration = true;
+var firstManualPB;
+var install_wizard_percentage = 0;
+var checkSelfTestGateway = false;
+var checkSelfTestChestStrap = false;
+var checkSelfTestPhone = false;
+var checkHeartrate = false;
+Event.observe(window, 'load', function() {
+   firstManualPB = new JS_BRAMUS.jsProgressBar($('installation_wizard_progress'), 0, {animate: true, width: 120, height: 12});
+    isLoaded = true;
+  }, false);
+  
+  
+function update_percentage(percentage){
+	firstManualPB.setPercentage(percentage);
+	install_wizard_percentage = percentage;	
+}
+function updateCheckRegistration(b){
+	checkRegistration = b;
+}
+
+function updateCheckSelfTestGateway(b){
+	checkSelfTestGateway = b;
+}
+
+function updateCheckSelfTestChestStrap(b){
+	checkSelfTestChestStrap = b;
+}
+
+function updateCheckSelfTestPhone(b){
+	checkSelfTestPhone = b;
+}
+
+function updateCheckHeartrate(b){
+	checkHeartrate = b;
+	if(!b){
+	  range_test();
+	}
+}
+function continueWithoutPhone(id){
+	updateCheckHeartrate(true);	
+}  
+
+
+function range_test(){
+		url = "/installer/range_test/?self_test_session_id=<%= @self_test_session_id%>&gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
+		new Ajax.Request(url, {
+  			method: 'get'});
+	}
+	
+	
+	function start_range_test(){
+		url = "/installer/start_range_test/?self_test_session_id=<%= @self_test_session_id%>&gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
+		new Ajax.Request(url, {
+  			method: 'get'});
+	}
+</script>
+<div id="installer_div_id">
+<center>
+ <div id="lightbox-col">
+	<img src="/images/lightbox-col-header.gif" /><br />
+	<div class="lightbox-content" style="font-size:20px">
+		<div style="width:300px;margin-left:auto;margin-right:auto" id="container">
+  			<div class="percentImage1" id="installation_wizard_progress">[ Loading Progress Bar ]</div>
+			<br />
+			<br />
+			<div id="installer_id">
+  			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">Registering</div>
+  			<div id="duration_div_id" style="vertical-align: middle;"></div>
+			</div>
+		</div>
+	</div>
+	<img src="/images/lightbox-col-footer.gif" />
+</div>
+</center>
+</div>
+<%= periodically_call_remote(:url => { 	:controller => 'installer', 
+										:action => 'registration_progress', 
+						 		   	:user_id => @user.id, 
+										:gateway_id => @gateway.id, 
+										:strap_id => @strap.id,
+										:self_test_session_id => @self_test_session_id }, 
+							 :condition => "checkRegistration && isLoaded", 
+							 :frequency => INSTALL_WIZARD_POLL_RATE) %>
+
+
+ <%= periodically_call_remote(:url => { 	:controller => 'installer', 
+ 										:action => 'gateway_progress', 
+ 							 		   	:user_id => @user.id, 
+ 										:gateway_id => @gateway.id, 
+ 										:strap_id => @strap.id,
+ 										:self_test_session_id => @self_test_session_id  }, 
+ 							 :condition => "checkSelfTestGateway && isLoaded", 
+ 							 :frequency => INSTALL_WIZARD_POLL_RATE) %>
+
+ <%= periodically_call_remote(:url => { 	:controller => 'installer', 
+ 										:action => 'chest_strap_progress', 
+ 							 		   	:user_id => @user.id, 
+ 										:gateway_id => @gateway.id, 
+ 										:strap_id => @strap.id,
+ 										:self_test_session_id => @self_test_session_id  }, 
+ 							 :condition => "checkSelfTestChestStrap && isLoaded", 
+ 							 :frequency => INSTALL_WIZARD_POLL_RATE) %>
+
+               <%= periodically_call_remote(:url => { 	:controller => 'installer', 
+               										:action => 'phone_progress', 
+               							 		   	:user_id => @user.id, 
+               										:gateway_id => @gateway.id, 
+               										:strap_id => @strap.id,
+               										:self_test_session_id => @self_test_session_id  }, 
+               							 :condition => "checkSelfTestPhone && isLoaded", 
+               							 :frequency => INSTALL_WIZARD_POLL_RATE) %>
+               							 
+
+               <%= periodically_call_remote(:url => { 	:controller => 'installer', 
+               										:action => 'heartrate_progress', 
+               										:user_id => @user.id, 
+               										:gateway_id => @gateway.id, 
+               										:strap_id => @strap.id,
+               										:self_test_session_id => @self_test_session_id  }, 
+               							 :condition => "checkHeartrate && isLoaded", 
+               							 :frequency => INSTALL_WIZARD_POLL_RATE)%>

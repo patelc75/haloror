@@ -41,12 +41,12 @@ function stop_range_test(user_id){
 	new Ajax.Request(url, {
 			method: 'get'});
 }
-function browserCheckStartRegistration(id, group){
+function browserCheckStartRegistration(id, group_name){
   var BO = detectBrowser();
   if(BO.ie6){
     window.location = '/installs/ie6';
   }else{
-    window.location = '/installs/registration/' + id + '?group=' + group;
+    window.location = '/installer/flash_check_step/?user_id=' + id + '&group_name=' + group_name;
   }
 }
 </script>

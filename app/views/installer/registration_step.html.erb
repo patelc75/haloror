@@ -1,0 +1,44 @@
+<center>
+<div id="installer_div">
+ <div id="lightbox-col">
+	<img src="/images/lightbox-col-header.gif" /><br />
+	<div class="lightbox-content" style="font-size:20px">
+		<div style="width:400px;margin-left:auto;margin-right:auto" id="container">
+    <%= error_messages_for :user %>
+    <%= error_messages_for :gateway %>
+    <%= error_messages_for :strap %>
+    <div id="errors">
+      <% if flash[:warning] %>
+			<%= flash[:warning]%>
+			<br />
+			<br />
+			<% end %>
+		<% if @remove_link %>
+				<%= link_to 'Remove User Mapping', :controller => 'installs', :action => 'remove_user_mapping', 
+							:user_id => @user.id, :device_id => @strap.id, :self_test_session_id => @self_test_session.id,
+							:gateway_serial_number => @gateway.serial_number, :strap_serial_number => @strap.serial_number %>
+				&nbsp; or enter another Chest Strap Serial Number
+			<% end %>
+		</div>
+    	<div>Registering <%= @user.name %> (<%= @user.id %>)</div>
+    	<br />
+      <% form_tag :action => 'registration_create_step' do -%>
+	  <input type="hidden" name="user_id" value="<%= @user.id %>" />
+	  <input type="hidden" name="self_test_session_id" value="<%= @self_test_session.id %>" />
+       <label for="serial_number">Gateway Serial Number</label><br/>
+        <%= text_field :gateway, :serial_number %>
+        <br />
+        <br />
+        <label for="serial_number">Chest Strap Serial Number</label><br/>
+        <%= text_field :strap, :serial_number %>
+        <br />
+        <br />
+		
+          <input name="commit" type="image" src="/images/next.gif" />
+      <% end %>
+          </div>
+      	</div>
+      	<img src="/images/lightbox-col-footer.gif" />
+      </div>
+      </div>
+      </center>

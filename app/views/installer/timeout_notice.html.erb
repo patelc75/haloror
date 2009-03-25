@@ -1,0 +1,33 @@
+<div id="lightbox-col">
+	<img src="/images/lightbox-col-header.gif" /><br />
+	<div class="lightbox-content">
+		<div style="width:200px;margin-left:320px" id="container">
+	</div>
+		<div style="width:200px;margin-left:auto;margin-right:auto" id="container">
+			<%= @message %>
+			<br />
+			<br />
+			<table>
+			<% if @self_test_result && !@self_test_result.self_test_item_results.blank?
+				@self_test_result.self_test_item_results.each do |item| %>
+				<tr>
+					<td><%= item.description %></td>
+					<td><%= item.result ? 'Pass' : 'Fail' %></td>
+				</tr>
+			 <% end 
+			end %>
+			</table>
+			<br />
+			<br />
+			<form action="/installs/restart_install_wizard" method="post">
+			  <input type="hidden" name="user_id" value="<%= @user.id %>" />
+				<input type="hidden" name="gateway_id" value="<%= @gateway_id %>" />
+				<input type="hidden" name="strap_id" value="<%= @strap_id %>" />
+				<input type="hidden" name="self_test_session_id" value="<%= @self_test_session_id %>" />
+				<input type="hidden" name="self_test_step_id" value="<%= @self_test_step_id %>" />
+			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
+			</form>
+		</div>
+	</div>
+	<img src="/images/lightbox-col-footer.gif" />
+</div>
