@@ -50,6 +50,7 @@ class UserAdminController < ApplicationController
       end
       g = Group.find_by_name(@group)
       @group_roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
+      flash[:warning] = 'Role Required.'
       render :action => 'new_admin'
     end
   rescue Exception => e

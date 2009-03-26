@@ -15,16 +15,26 @@ Select Group:
 	</div>
   <div class="content">
 	
-    <%= error_messages_for :user %>
-		<div id="errors">
-			<%= flash[:warning]%>
-		</div>
+    	<div id="errors">
+  			<% if flash[:warning] %>
+  			  <span style="font-size: 150%;">
+  			  The following error occurred:
+  			  <ul>
+  			  <li><%= flash[:warning]%></li>
+  			  </ul>
+  			<% end %>
+  			<% if @user.errors %>
+  			  <%= error_messages_for :user %>
+  			  <br>
+  			<% end %>
+  			<% if @profile.errors %>
+  			<%= error_messages_for :profile %>
+  			<% end %>
+  		</div>
 
       <% form_tag :action => 'create' do -%>
-		<% gs = ['Choose a Group']
-		   @groups.each do |g|
-			 gs << g.name
-		   end %>
+        <input type="hidden" name="group" value="<%= @group %>">
+
 	 <div id="device-table" class="table">
 	 	<div class="row">
 	 	  <div class="col-250">
