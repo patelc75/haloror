@@ -4,6 +4,41 @@ class InstallerController < ApplicationController
     
   end
   
+  
+  def add_caregiver
+    init_user_group
+    init_devices_self_test_session
+    if(!params[:caregiver_email].blank?)
+     User.transaction do
+      @caregiver = User.new
+      @caregiver.email = params[:caregiver_email]
+      @caregiver.is_new_caregiver = true
+      @caregiver[:is_caregiver] =  true
+      @caregiver.save!
+      profile = Profile.new(:user_id => @caregiver.id)
+      profile[:is_new_caregiver] = true
+      profile.save!
+      role = @caregiver.has_role 'caregiver', @user
+      @roles_user = @user.roles_user_by_caregiver(@caregiver)
+    
+      RolesUsersOption.create(:roles_user_id => @roles_user.id, 
+                              :position => get_max_caregiver_position(@user), 
+                              :active => 0)
+      #redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
+      UserMailer.deliver_caregiver_email(@caregiver, @user)
+      @caregiver_added = @caregiver
+      params[:email] = params[:caregiver_email]
+     end
+    else
+      flash[:warning] = "Email Required"
+    end
+  end
+  
+  
+  def ie6
+    
+  end
+  
   def activate_user
     @user = User.find(params[:user_id])
     
@@ -780,7 +815,7 @@ class InstallerController < ApplicationController
                           
     save_notes(@self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{RANGE_TEST_COMPLETE_ID}").id)
     
-		redirect_to :action => 'installer_complete', :user_id => @user_id, :group_name => @group_name,
+		redirect_to :action => 'add_caregiver', :user_id => @user_id, :group_name => @group_name,
 		            :gateway_id => @gateway_id, :strap_id => @strap_id, :self_test_session_id => @self_test_session_id
   end
   
@@ -1022,5 +1057,10 @@ class InstallerController < ApplicationController
     self_test_step = SelfTestStep.find(step_id)
     self_test_step.notes = params[:notes]
     self_test_step.save!
+  end
+  
+  def get_max_caregiver_position(user)
+    get_caregivers(user)
+    @caregivers.size + 1
   end
 end

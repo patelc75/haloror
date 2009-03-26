@@ -1,0 +1,39 @@
+<script>
+function stop_wizard(self_test_step_id){
+  url = "/installer/installer_complete/?self_test_step_id=" + self_test_step_id + "&self_test_session_id=<%= @self_test_session_id%>&gateway_id=<%= @gateway.id %>&strap_id=<%= @strap.id %>&user_id=<%= @user.id %>"
+  window.location = url;
+}
+</script>
+<center>
+<div id="lightbox-col">
+	<img src="/images/lightbox-col-header.gif" /><br />
+	<div class="lightbox-content">
+		<div style="width:200px;margin-left:320px" id="container">
+	</div>
+		<div style="width:200px;margin-left:auto;margin-right:auto" id="container">
+		<% if params[:email] %>
+		  <p>
+		  Email sent to <%= params[:email] %>
+		  </p>
+		<% end %>
+		<% if params[:email] %>
+			<p>Do you want to add another caregiver?</p>
+		<% else %>
+		  <p>Do you want to add a caregiver?</p>
+		<% end  %>
+		  <%= form_tag :url => url_for(:controller => 'installer', :action => 'add_caregiver') %>
+				<input type="hidden" name="user_id" value="<%= @user.id %>" />
+				<input type="hidden" name="gateway_id" value="<%= @gateway_id %>" />
+				<input type="hidden" name="strap_id" value="<%= @strap_id %>" />
+				<input type="hidden" name="self_test_session_id" value="<%= @self_test_session_id %>" />				
+				<label for="email">Caregiver Email</label>
+      	<%= text_field_tag :caregiver_email%>
+				<br />
+				<br />
+				<input type="submit" name="Submit" value="Yes" " />&nbsp;&nbsp;<button onclick="stop_wizard(<%= @self_test_step_id %>);return false;">No</button>
+			</form>
+    	</div>
+	</div>
+	<img src="/images/lightbox-col-footer.gif" />
+</div>
+</center>
