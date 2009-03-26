@@ -142,13 +142,13 @@ h3 a {
 
 #lightbox-col-header-700
 {
-	background:url('/images/login-col-header-700.png') no-repeat;
+	background:url('/images/ightbox-col-header-700.gif') no-repeat;
 	height:11px;
 }
 
 #lightbox-col-footer-700
 {
-	background:url('/images/login-col-footer-700.gif') no-repeat;
+	background:url('/images/lightbox-col-footer-700.gif') no-repeat;
 	height:11px;
 }
 
@@ -157,7 +157,7 @@ h3 a {
 	padding:10px;
 	padding-left:15px;
 	padding-right:15px;
-	background:url('/images/lightbox-col-bg.gif') center repeat-y;
+	background:url('/images/lightbox-col-bg-700.gif') center repeat-y;
 	font-size:14px;
 }
 
