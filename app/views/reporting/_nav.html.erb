@@ -11,9 +11,6 @@
 <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
 | <a href="/user_admin/roles">Assign Roles</a> 
 <% end %>
-<% if current_user.is_admin? || current_user.is_super_admin? %>
-| <a href="/admin/signup">Create User</a> 
-<% end %>
 <% if current_user.is_super_admin? %>
 | <a href="/carriers/">Carriers</a>
 <% end %>
