@@ -14,7 +14,7 @@
 			<br />
 			<% end %>
 		<% if @remove_link %>
-				<%= link_to 'Remove User Mapping', :controller => 'installs', :action => 'remove_user_mapping', 
+				<%= link_to 'Remove User Mapping', :controller => 'installer', :action => 'remove_user_mapping', 
 							:user_id => @user.id, :device_id => @strap.id, :self_test_session_id => @self_test_session.id,
 							:gateway_serial_number => @gateway.serial_number, :strap_serial_number => @strap.serial_number %>
 				&nbsp; or enter another Chest Strap Serial Number

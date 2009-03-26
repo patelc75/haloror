@@ -4,6 +4,29 @@ class InstallerController < ApplicationController
     
   end
   
+  def activate_user
+    @user = User.find(params[:user_id])
+    
+      log = AccessLog.new
+      log.user_id = current_user.id
+      log.status = 'logout'
+      log.save
+
+      self.current_user.forget_me if logged_in?
+      cookies.delete :auth_token
+      reset_session
+    redirect_to :controller => 'activate', :action => @user.activation_code
+  end
+  
+  def remove_user_mapping
+    user_id = params[:user_id]
+    device_id = params[:device_id]
+    Device.connection.delete "delete from devices_users where device_id = #{device_id}"
+    redirect_to :action => 'registration_create_step', :controller => 'installer', 
+                  :user_id => user_id,  :self_test_session_id => params[:self_test_session_id],
+                  :gateway_serial_number => params[:gateway_serial_number], :strap_serial_number => params[:strap_serial_number]
+  end
+  
   def flash_check_step
     init_user_group
   end
