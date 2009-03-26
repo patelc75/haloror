@@ -178,7 +178,7 @@ class InstallerController < ApplicationController
           <div id="lightbox-col-700">
          	<img src="/images/lightbox-col-header-700.gif" /><br />
          	<div class="lightbox-content-700">
-          		<div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+          		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
           			<div id="installer_div_id">
             			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{message}</div>
             			<div id="duration_div_id" style="vertical-align: middle;"></div>
@@ -239,7 +239,7 @@ class InstallerController < ApplicationController
         <div id="lightbox-col-700">
        	<img src="/images/lightbox-col-header-700.gif" /><br />
        	<div class="lightbox-content-700">
-            		<div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+            		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
             			<div id="installer_div_id">
               			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{message}</div>
               			<div id="duration_div_id" style="vertical-align: middle;"></div>
@@ -270,7 +270,7 @@ class InstallerController < ApplicationController
         <div id="lightbox-col-700">
        	<img src="/images/lightbox-col-header-700.gif" /><br />
        	<div class="lightbox-content-700">
-            		<div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+            		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
             			<div id="installer_div_id">
               			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{message}</div>
               			<div id="duration_div_id" style="vertical-align: middle;"></div>
@@ -307,7 +307,7 @@ class InstallerController < ApplicationController
       <div id="lightbox-col-700">
      	<img src="/images/lightbox-col-header-700.gif" /><br />
      	<div class="lightbox-content-700">
-          		<div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+          		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
           			<div id="installer_div_id">
             			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{battery_msg}</div>
             			<div id="duration_div_id" style="vertical-align: middle;"></div>
@@ -360,7 +360,7 @@ class InstallerController < ApplicationController
         <div id="lightbox-col-700">
        	<img src="/images/lightbox-col-header-700.gif" /><br />
        	<div class="lightbox-content-700">
-            		<div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+            		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
             			<div id="installer_div_id">
               			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{message}</div>
               			<div id="duration_div_id" style="vertical-align: middle;"></div>
@@ -391,7 +391,7 @@ class InstallerController < ApplicationController
         <div id="lightbox-col-700">
        	<img src="/images/lightbox-col-header-700.gif" /><br />
        	<div class="lightbox-content-700">
-            		<div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+            		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
             			<div id="installer_div_id">
               			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{message}</div>
               			<div id="duration_div_id" style="vertical-align: middle;"></div>
@@ -427,7 +427,7 @@ class InstallerController < ApplicationController
       <div id="lightbox-col-700">
      	<img src="/images/lightbox-col-header-700.gif" /><br />
      	<div class="lightbox-content-700">
-          		<div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+          		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
           			<div id="installer_div_id">
             			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{battery_msg}</div>
             			<div id="duration_div_id" style="vertical-align: middle;"></div>
@@ -484,7 +484,7 @@ class InstallerController < ApplicationController
         <div id="lightbox-col-700">
        	<img src="/images/lightbox-col-header-700.gif" /><br />
        	<div class="lightbox-content-700">
-            		<div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+            		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
             			<div id="installer_div_id">
               			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{message}</div>
               			<div id="duration_div_id" style="vertical-align: middle;"></div>
@@ -515,7 +515,7 @@ class InstallerController < ApplicationController
         <div id="lightbox-col-700">
        	<img src="/images/lightbox-col-header-700.gif" /><br />
        	<div class="lightbox-content-700">
-            		<div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+            		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
             			<div id="installer_div_id">
               			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{message}</div>
               			<div id="duration_div_id" style="vertical-align: middle;"></div>
@@ -551,7 +551,7 @@ class InstallerController < ApplicationController
       <div id="lightbox-col-700">
      	<img src="/images/lightbox-col-header-700.gif" /><br />
      	<div class="lightbox-content-700">
-          		<div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+          		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
           			<div id="installer_div_id">
             			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{battery_msg}</div>
             			<div id="duration_div_id" style="vertical-align: middle;"></div>
@@ -606,7 +606,7 @@ class InstallerController < ApplicationController
         <div id="lightbox-col-700">
        	<img src="/images/lightbox-col-header-700.gif" /><br />
        	<div class="lightbox-content-700">
-            		<div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+            		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
             			<div id="installer_div_id">
               			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{message}</div>
               			<div id="duration_div_id" style="vertical-align: middle;"></div>
@@ -642,7 +642,7 @@ class InstallerController < ApplicationController
       <div id="lightbox-col-700">
      	<img src="/images/lightbox-col-header-700.gif" /><br />
      	<div class="lightbox-content-700">
-          		<div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+          		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
           			<div id="installer_div_id">
             			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{battery_msg}</div>
             			<div id="duration_div_id" style="vertical-align: middle;"></div>
@@ -674,7 +674,7 @@ class InstallerController < ApplicationController
     <div id="lightbox-col-700">
    	<img src="/images/lightbox-col-header-700.gif" /><br />
    	<div class="lightbox-content-700">
-    <div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+    <div style="width:600px;margin-left:auto;margin-right:auto" id="container">
 		Please check the range in the following rooms and write down areas with one long beep (OUT of range). Consider using a cell phone with the senior as he or she walks around the home with the chest strap on.
 			<br />
 			<br />
@@ -714,7 +714,7 @@ class InstallerController < ApplicationController
     <div id="lightbox-col-700">
    	<img src="/images/lightbox-col-header-700.gif" /><br />
    	<div class="lightbox-content-700">
-      <div style="width:650px;margin-left:auto;margin-right:auto" id="container">
+      <div style="width:600px;margin-left:auto;margin-right:auto" id="container">
   		Please check the range in the following rooms and write down areas with one long beep (OUT of range). Consider using a cell phone with the senior as he or she walks around the home with the chest strap on.
   			<br />
   			<br />
