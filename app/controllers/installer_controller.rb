@@ -194,7 +194,7 @@ class InstallerController < ApplicationController
         				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
         			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
         			</form>
-            	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+            	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
         eos
         render(:update) do |page|
           page.call('updateCheckRegistration', false)
@@ -255,7 +255,7 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
               			</form>
-                  	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+                  	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
         render(:update) do |page|
           page.call('updateCheckSelfTestGateway', false)
@@ -286,7 +286,7 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
               			</form>
-                  	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+                  	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
         render(:update) do |page|
           page.call('updateCheckSelfTestGateway', false)
@@ -323,7 +323,7 @@ class InstallerController < ApplicationController
             				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
             			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
             			</form>
-                	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+                	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
         eos
       render(:update) do |page|
         page.call('updateCheckSelfTestGateway', false)
@@ -376,7 +376,7 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
               			</form>
-                  	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+                  	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
         render(:update) do |page|
           page.call('updateCheckSelfTestChestStrap', false)
@@ -407,7 +407,7 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
               			</form>
-                  	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+                  	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
         render(:update) do |page|
           page.call('updateCheckSelfTestChestStrap', false)
@@ -443,7 +443,7 @@ class InstallerController < ApplicationController
             				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
             			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
             			</form>
-                	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+                	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
         eos
       render(:update) do |page|
         page.call('updateCheckSelfTestChestStrap', false)
@@ -500,7 +500,7 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
               			</form>
-                  	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+                  	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
         render(:update) do |page|
           page.call('updateCheckSelfTestPhone', false)
@@ -531,7 +531,7 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
               			</form>
-                  	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+                  	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
         render(:update) do |page|
           page.call('updateCheckSelfTestPhone', false)
@@ -567,7 +567,7 @@ class InstallerController < ApplicationController
             				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
             			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
             			</form>
-                	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+                	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
         eos
       render(:update) do |page|
         page.call('updateCheckSelfTestPhone', false)
@@ -622,7 +622,7 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
               			</form>
-                  	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+                  	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
         render(:update) do |page|
           page.call('updateCheckHeartrate', false)
@@ -658,7 +658,7 @@ class InstallerController < ApplicationController
             				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
             			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
             			</form>
-                	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+                	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
         eos
       render(:update) do |page|
         page.call('updateCheckHeartrate', false)
@@ -698,7 +698,7 @@ class InstallerController < ApplicationController
 			<br />
 			<button onclick="javascript:start_range_test();">Start Range Test</button>
 			
-        	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+        	</div></div><img src="/images/lightbox-col-footer-700.gif" />
 		</div>
     eos
     
@@ -748,7 +748,7 @@ class InstallerController < ApplicationController
   			</form>
   			</div>
   			
-          	<img src="/images/lightbox-col-footer-700.gif" /></div></div>
+          </div><img src="/images/lightbox-col-footer-700.gif" />
   	</div>
     eos
     create_self_test_step(START_RANGE_TEST_PROMPT_ID)
