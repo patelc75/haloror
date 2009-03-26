@@ -30,7 +30,7 @@
 		   end %>
 	 <div id="device-table" class="table">
 	 	<div class="row">
-		  <div class="col-250">
+		  <div class="col-250" style="padding-left: 200px;">
 	 		  <label for="group">Select Group</label>
 			  <br />
 		    <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group)%>
