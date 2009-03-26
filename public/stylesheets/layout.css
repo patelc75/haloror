@@ -133,6 +133,33 @@ h3 a {
 }
 
 
+#lightbox-col-700
+{
+	width:700px;
+	
+
+}
+
+#lightbox-col-header-700
+{
+	background:url('/images/login-col-header-700.png') no-repeat;
+	height:11px;
+}
+
+#lightbox-col-footer-700
+{
+	background:url('/images/login-col-footer-700.gif') no-repeat;
+	height:11px;
+}
+
+.lightbox-content-700
+{
+	padding:10px;
+	padding-left:15px;
+	padding-right:15px;
+	background:url('/images/lightbox-col-bg.gif') center repeat-y;
+	font-size:14px;
+}
 
 
 #lightbox-col
