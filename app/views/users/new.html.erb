@@ -1,4 +1,7 @@
-<div><a href="/admin/signup">Sign up users with other roles</a></div>
+<div><% if(current_user.is_admin? || current_user.is_super_admin?) %>
+  <a href="/admin/signup">Sign up users with other roles</a>
+      <% end %>
+</div>
 <br>
 <div id="user_signup-col">
 	<div id="user_signup-col-header">
