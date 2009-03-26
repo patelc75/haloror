@@ -138,6 +138,8 @@ class InstallerController < ApplicationController
     init_devices_self_test_session    
     session[:progress_count]= {}
     create_mgmt_cmd('self_test', @gateway.id)
+    create_self_test_step(SELF_TEST_PHONE_MGMT_COMMAND_CREATED_ID)
+    create_mgmt_cmd('self_test_phone', @gateway.id)
   end
   
   def restart_installer
