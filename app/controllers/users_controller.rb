@@ -209,11 +209,13 @@ class UsersController < ApplicationController
       # if existing_user = User.find_by_email(@user.email)
       #         raise "Existing User"
       #       end
-      
+     User.transaction do  
       @user.is_new_caregiver = true
       @user[:is_caregiver] =  true
       @user.save!
-      profile = Profile.create(:user_id => @user.id)
+      profile = Profile.new(:user_id => @user.id)
+      profile[:is_new_caregiver] = true
+      profile.save!
     
       #patient = User.find(params[:user_id].to_i)
       patient = User.find(params[:user_id].to_i)
@@ -229,6 +231,7 @@ class UsersController < ApplicationController
       #redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
       UserMailer.deliver_caregiver_email(caregiver, patient)
       render :partial => 'caregiver_email'
+     end
     end
   rescue Exception => e
     RAILS_DEFAULT_LOGGER.warn "#{e}"
