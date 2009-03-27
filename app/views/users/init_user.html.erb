@@ -6,16 +6,14 @@
     <%= error_messages_for :user %>
 		<div id="errors">
 			<%= flash[:warning]%>
-		<div>
+		</div>
 
     <div style="width:200px;margin-left:auto;margin-right:auto">
       <% form_tag :action => 'update_user' do -%>
 				<%= hidden_field :user, :activation_code %>
-					<label for="email">Email</label>
-	        <br/>
-	        <%= @user.email %>
+	        Please enter a username and password to create a new account for <%= @user.email %>:
 	        <br />
-	        <br />
+	        <br />	        
         <label for="login">Username</label>
         <br/>
         <%= text_field :user, :login %>
