@@ -59,7 +59,6 @@ function toggleHTabs(current) {
     current.className = 'selectedTab';
 }
 function updateOperators(){
-	alert("aha");
 	window.location="/call_center/operators";
 }
 function updatePositions(li_id) {
