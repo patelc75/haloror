@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>process_files (bundle_job.rb)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File bundle_job.rb, line 25</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">process_files</span>(<span class="ruby-identifier">file_names</span>)
+    
+    <span class="ruby-comment cmt">#select oldest file</span>
+    <span class="ruby-identifier">file_name</span> = <span class="ruby-identifier">select_oldest_file_for_processing</span>(<span class="ruby-identifier">file_names</span>)
+    <span class="ruby-identifier">file_path_and_name</span> = <span class="ruby-node">&quot;#{BUNDLE_PATH}/#{file_name}&quot;</span>
+    <span class="ruby-comment cmt">#create dir with file_name - extension</span>
+    <span class="ruby-identifier">base_name</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">file_path_and_name</span>, <span class="ruby-constant">EXT_NAME</span>)
+    <span class="ruby-identifier">dir_path</span> = <span class="ruby-node">&quot;#{BUNDLE_PATH}/#{base_name}&quot;</span>
+ 
+    <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">mkdir</span>(<span class="ruby-identifier">dir_path</span>)
+    <span class="ruby-comment cmt">#extract file into dir</span>
+    <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">extract</span>(<span class="ruby-identifier">file_path_and_name</span>,  <span class="ruby-identifier">dir_path</span>)
+    <span class="ruby-comment cmt">#retrieve file names</span>
+    <span class="ruby-identifier">xml_file_names</span> = []
+    <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">foreach</span>(<span class="ruby-identifier">dir_path</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">xml_file_name</span><span class="ruby-operator">|</span>
+      <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">xml_file_name</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'.'</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">xml_file_name</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'..'</span>
+        <span class="ruby-identifier">xml_file_names</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">xml_file_name</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt">#select oldest file, but first in sequence</span>
+    <span class="ruby-identifier">xml_file_name</span> = <span class="ruby-identifier">select_oldest_xml_file_for_processing</span>(<span class="ruby-identifier">xml_file_names</span>)
+    <span class="ruby-identifier">xml_file_path_and_name</span> = <span class="ruby-node">&quot;#{dir_path}/#{xml_file_name}&quot;</span>
+    <span class="ruby-comment cmt">#read file into string</span>
+    <span class="ruby-identifier">xml_string</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">xml_file_path_and_name</span>)
+    <span class="ruby-identifier">puts</span> <span class="ruby-identifier">xml_string</span>
+    <span class="ruby-comment cmt">#convert to hash</span>
+    <span class="ruby-identifier">bundle_hash</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">from_xml</span>(<span class="ruby-identifier">xml_string</span>)
+    <span class="ruby-comment cmt">#call bundle processor on hash (aka bundle)</span>
+    <span class="ruby-constant">BundleProcessor</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">bundle_hash</span>[<span class="ruby-identifier">:bundle</span>])
+    <span class="ruby-comment cmt">#delete xml file</span>
+    <span class="ruby-constant">File</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">xml_file_path_and_name</span>)
+    <span class="ruby-identifier">file_names</span>.<span class="ruby-identifier">delete_if</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">name</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">file_name</span>
+    <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">file_names</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>
