@@ -806,7 +806,7 @@ class InstallerController < ApplicationController
       message = self_test_step.self_test_step_description.description                       
     duration = nil
     unless previous_step
-      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{HEARTRATE_DETECTED_ID}")
+      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{START_RANGE_TEST_PROMPT_ID}")
     end
     duration = self_test_step.timestamp - previous_step.timestamp
     create_mgmt_cmd('mgmt_poll_rate', @gateway.id, MGMT_POLL_RATE)
