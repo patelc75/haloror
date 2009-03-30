@@ -705,6 +705,7 @@ class InstallerController < ApplicationController
   def range_test
     init_user_group
     init_devices_self_test_session
+    @battery = Battery.find(:first, :conditions => "device_id = #{@strap.id} AND timestamp >= '#{@self_test_session.created_at.to_s}'", :order => 'timestamp desc')  
     str = <<-eos
     <div id="lightbox-col-700">
    	<img src="/images/lightbox-col-header-700.gif" /><br />
@@ -912,8 +913,8 @@ class InstallerController < ApplicationController
   end
   
   def check_battery_critical?
-    battery = Battery.find(:first, :conditions => "device_id = #{@strap.id} AND timestamp >= '#{@self_test_session.created_at.to_s}'", :order => 'timestamp desc')  
-    if battery && battery.percentage <= 1
+    @battery = Battery.find(:first, :conditions => "device_id = #{@strap.id} AND timestamp >= '#{@self_test_session.created_at.to_s}'", :order => 'timestamp desc')  
+    if @battery && @battery.percentage <= 1
       return "Battery is at or less than 1% please recharge the battery."
     else
       return false
