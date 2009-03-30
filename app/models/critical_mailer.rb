@@ -29,7 +29,7 @@ class CriticalMailer < ActionMailer::ARMailer
   def device_event_admin(event)
     setup_caregivers(event.user, event, :recepients)
     setup_halo_operators()
-    setup_message(event.to_s, "It has been #{FOLLOW_UP_TIMEOUT / 60} minutes and we have detected that the GW Alarm button has not been pushed for #{event.user.name} #{event.event.event_type} on #{event.timestamp}")
+    setup_message(event.to_s, "It has been #{GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT / 60} minutes and we have detected that the GW Alarm button has not been pushed for #{event.user.name} #{event.event.event_type} on #{event.timestamp}")
     self.priority = Priority::IMMEDIATE
   end
   
