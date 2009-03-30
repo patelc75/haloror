@@ -53,6 +53,17 @@ class UtilController < ApplicationController
     email = CriticalMailer.deliver_test_email(params[:to], params[:subject], params[:body])
   end
   
+  def deliver_test_spawn_email
+    to = params[:to]
+    subject = params[:subject]
+    body = params[:body]
+    spawn do
+      RAILS_DEFAULT_LOGGER.warn("spawning email")
+      sleep(30)
+      email = CriticalMailer.deliver_test_email(to, subject, body)
+      RAILS_DEFAULT_LOGGER.warn("spawning email sent")
+    end
+  end
   def signup_redirect
     log = AccessLog.new
     log.user_id = current_user.id
