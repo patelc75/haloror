@@ -723,9 +723,11 @@ class InstallerController < ApplicationController
 			</ul>
 			<br />
 			<br />
+			<% if @battery %>
 			Your battery is at #{@battery.percentage if @battery }%. Please recharge if necessary before begining the Range Test.
 			<br />
 			<br />
+			<% end %>
 			Two short beeps -- In Range
 			<br />
 			<br />
