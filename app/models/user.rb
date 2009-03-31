@@ -336,7 +336,7 @@ class User < ActiveRecord::Base
         ops << operator
       end
     end
-    operators = adms
+    operators = ops
     return operators
   end
   
