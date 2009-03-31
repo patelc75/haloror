@@ -1,0 +1,15 @@
+<b>Spawned to the following SMTP server:</b><br>
+Server address: <code> <%= ActionMailer::Base.smtp_settings[:address] %></code><br>
+Port: <code> <%= ActionMailer::Base.smtp_settings[:port] %></code><br>
+Domain: <code> <%= ActionMailer::Base.smtp_settings[:domain] %></code><br>
+Authentication method: <code> <%= ActionMailer::Base.smtp_settings[:authentication] %></code><br>
+User name: <code> <%= ActionMailer::Base.smtp_settings[:user_name] %></code><br>
+<br>
+<b>Email message:</b><br>
+<code>
+From: no-reply@halomonitoring.com    <br>
+To: <%= params[:to] %> <br>
+Subject: [HALO] <%= params[:subject] %> <br>
+Body: <br>
+<%= params[:body] %>
+</code>
