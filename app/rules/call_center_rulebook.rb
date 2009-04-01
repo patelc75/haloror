@@ -159,7 +159,7 @@ class CallCenterRulebook < Ruleby::Rulebook
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_HOME_PHONE,   false,  CallCenterWizard::CAREGIVER_WORK_PHONE, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   true,   CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
       
-            create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE, caregiver_id)
+            create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   false,  CallCenterWizard::PRE_AGENT_CALL_911, user_id)
           
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY,      true,   CallCenterWizard::CAREGIVER_AT_HOUSE, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY,      false,  CallCenterWizard::CAREGIVER_THANK_YOU, caregiver_id)
