@@ -438,7 +438,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => "Accept responsibility?",
       CallCenterWizard::CAREGIVER_AT_HOUSE     => "At House?",
       CallCenterWizard::CAREGIVER_GO_TO_HOUSE  => "Can you go to house?",
-      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE  => "Arrive at house, call 911?",
+      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE  => "Go to house and press GW button",
       CallCenterWizard::CAREGIVER_THANK_YOU    => "Thank You!",
       CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
