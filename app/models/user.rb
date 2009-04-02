@@ -712,12 +712,12 @@ class User < ActiveRecord::Base
     if !self.active_caregivers.blank?
       info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event_type}. Would you like us to call your caregivers to help you?"</div></i>
+  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring. We have detected a #{event_type}. Would you like us to call your caregivers to help you?"</div></i>
   	  eos
 	  else
 	    info = <<-eos	
   	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event_type}. Would you like us to dispatch an ambulance for you?"</div></i>
+  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring. We have detected a #{event_type}. Would you like us to dispatch an ambulance for you?"</div></i>
   	  eos
     end
     return info
@@ -729,7 +729,7 @@ class User < ActiveRecord::Base
     end
     info = <<-eos	
   	<font color="white">Recite this script:</font><br>
-  	<i><div style="font-size: 150%; color: yellow;">Hello #{caregiver.profile.first_name}, my name is #{operator.name} representing Halo Monitoring We have detected a #{event_type} for #{self.name}. Do you accept responsibility for handling #{self.name}'s #{event_type}?</div></i>
+  	<i><div style="font-size: 150%; color: yellow;">Hello #{caregiver.profile.first_name}, my name is #{operator.name} representing Halo Monitoring. We have detected a #{event_type} for #{self.name}. Do you accept responsibility for handling #{self.name}'s #{event_type}?</div></i>
   	eos
     return info
   end
