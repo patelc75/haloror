@@ -172,7 +172,7 @@ class CallCenterRulebook < Ruleby::Rulebook
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_GO_TO_HOUSE,      true,  CallCenterWizard::ON_BEHALF_GO_TO_HOUSE, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_GO_TO_HOUSE,      false,  CallCenterWizard::AMBULANCE, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::ON_BEHALF_GO_TO_HOUSE,      true,  CallCenterWizard::THE_END,caregiver_id)
-          create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_THANK_YOU,      true,  CallCenterWizard::CAREGIVER_MOBILE_PHONE, nil)
+          create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_THANK_YOU,      true,  CallCenterWizard::PRE_AGENT_CALL_911, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_THANK_YOU,      false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE, nil)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE,              true,   CallCenterWizard::ON_BEHALF, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::ON_BEHALF,              true,   CallCenterWizard::AMBULANCE_DISPATCHED,caregiver_id)
