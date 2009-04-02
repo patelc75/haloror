@@ -97,3 +97,17 @@ SCHEDULER.schedule(DAILY_REPORT_TIME) {
     UtilityHelper.log_message("CriticalMailer.deliver_successful_user_logins_daily()::UNKNOWN::Error")         
   end
 }
+
+
+SCHEDULER.schedule_every(BUNDLE_JOB_DIAL_UP_TIME) { 
+  begin
+    BundleJob.job_process_bundles() 
+    ActiveRecord::Base.verify_active_connections!()
+  rescue Exception => e
+    UtilityHelper.log_message("BundleJob.job_process_bundles::Exception:: #{e}", e)
+  rescue Timeout::Error => e
+    UtilityHelper.log_message("BundleJob.job_process_bundles::Timeout::Error:: #{e}", e)
+  rescue
+    UtilityHelper.log_message("BundleJob.job_process_bundles::UNKNOWN::Error")         
+  end
+}

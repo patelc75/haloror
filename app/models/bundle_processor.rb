@@ -7,7 +7,7 @@ class BundleProcessor
     begin
       @@bundled_models[0].transaction do
         @@bundled_models.each do |model|
-          value = bundle[model.to_s.underscore.to_sym]
+          value = bundle[model.to_s.underscore]
           if !value.blank?
             if value.class == Array
               value.each do |v|
