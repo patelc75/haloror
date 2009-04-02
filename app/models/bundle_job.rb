@@ -6,8 +6,8 @@ class BundleJob
     RAILS_DEFAULT_LOGGER.warn("BundleJob.job_process_bundle running at #{Time.now}")
    
     begin 
-      mkdir(BUNDLE_PATH) unless File.exists?(BUNDLE_PATH)
-      mkdir(ARCHIVE_PATH) unless File.exists?(ARCHIVE_PATH)
+      Dir.mkdir(BUNDLE_PATH) unless File.exists?(BUNDLE_PATH)
+      Dir.mkdir(ARCHIVE_PATH) unless File.exists?(ARCHIVE_PATH)
       #retrieve file names
       file_names = []
       Dir.foreach(BUNDLE_PATH) do |file_name|
