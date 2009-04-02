@@ -548,7 +548,7 @@ class User < ActiveRecord::Base
   def get_help_coming_soon()
       info = <<-eos	
         <font color="white">Recite this script:</font><br>
-        <i><div style="font-size: 150%; color: yellow;">"There will be somebody there to help you soon. Goodbye."</div></i>
+        <i><div style="font-size: 150%; color: yellow;">"There will be somebody there to help you soon. If we can't reach your caregivers, we will dispatch an ambulance. Goodbye."</div></i>
         eos
       return info
   end
