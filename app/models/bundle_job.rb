@@ -70,6 +70,7 @@ class BundleJob
         xml_file_name = name
       end
     end
+    
     return file_names
   end
   
