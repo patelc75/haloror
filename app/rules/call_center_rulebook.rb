@@ -84,10 +84,11 @@ class CallCenterRulebook < Ruleby::Rulebook
       create_call_center_step_rule(user_id, CallCenterWizard::USER_OK,              true,   CallCenterWizard::PRE_AGENT_CALL_911, user_id)
     else
       create_call_center_step_rule(user_id, CallCenterWizard::USER_MOBILE_PHONE,    false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver_id)
-      create_call_center_step_rule(user_id, CallCenterWizard::USER_OK,              true,   CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver_id)
+      create_call_center_step_rule(user_id, CallCenterWizard::USER_OK,              true,   CallCenterWizard::HELP_COMING_SOON,user_id)
     end
   end
     create_call_center_step_rule(user_id, CallCenterWizard::USER_OK,              false,  CallCenterWizard::USER_AMBULANCE, user_id)
+    create_call_center_step_rule(user_id, CallCenterWizard::HELP_COMING_SOON,     true,  CallCenterWizard::CAREGIVER_MOBILE_PHONE, caregiver_id)
     create_call_center_step_rule(user_id, CallCenterWizard::USER_AMBULANCE,       true,   CallCenterWizard::PRE_AGENT_CALL_911,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::USER_AMBULANCE,       false,  CallCenterWizard::USER_GOOD_BYE,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::ON_BEHALF,            true,   CallCenterWizard::AMBULANCE_DISPATCHED,user_id)

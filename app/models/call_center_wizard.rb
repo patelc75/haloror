@@ -25,6 +25,7 @@ class CallCenterWizard < ActiveRecord::Base
   PRE_AGENT_CALL_911    = "PRE Agent Call 911"
   AGENT_CALL_911        = "Agent Call 911" 
   AMBULANCE_DISPATCHED  = "Ambulance Dispatched"
+  HELP_COMING_SOON      = "Help coming soon."
   THE_END               = "Resolve the Event"
   CAREGIVER_GOOD_BYE    = "Caregiver Good Bye."
   USER_GOOD_BYE         = "User Good Bye."
@@ -200,6 +201,7 @@ class CallCenterWizard < ActiveRecord::Base
 	    create_call_center_step(USER_MOBILE_PHONE, user, operator, "Notes for User #{self.user.name}")
     
 	    create_call_center_step(USER_OK, user, operator, "Notes for User #{self.user.name}")
+	    create_call_center_step(HELP_COMING_SOON, user, operator, "Notes for User #{self.user.name}")
 	    create_call_center_step(USER_AMBULANCE, user, operator, "Notes for User #{self.user.name}")
 	    create_call_center_step(ON_BEHALF, user, operator, "Notes for User #{self.user.name}")    
 	    create_call_center_step(PRE_AGENT_CALL_911, user, operator, "Notes for User #{self.user.name}")

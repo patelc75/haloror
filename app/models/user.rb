@@ -473,7 +473,8 @@ class User < ActiveRecord::Base
       CallCenterWizard::RECONTACT_USER_OK => 'Recontact OK.',
       CallCenterWizard::RECONTACT_USER_ABLE_TO_RESET => "User Able to Reset Gateway.",
       CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET =>  "User is Not Able to Reset Gateway.",
-      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE =>  "User Able to Reset Gateway."
+      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE =>  "User Able to Reset Gateway.",
+      CallCenterWizard::HELP_COMING_SOON =>  "Help Coming Soon."
     }
     instruction = instructions[key]
     return instruction
@@ -525,11 +526,19 @@ class User < ActiveRecord::Base
       CallCenterWizard::RECONTACT_USER_OK => get_user_recontact_ok(),
       CallCenterWizard::RECONTACT_USER_ABLE_TO_RESET => get_user_able_to_reset(),
       CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET => get_user_not_able_to_reset(),
-      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE => get_user_not_able_to_reset_continue()
-    }
-    script = scripts[key]
-    return script
+      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE => get_user_not_able_to_reset_continue(),
+      CallCenterWizard::HELP_COMING_SOON => get_help_coming_soon()
+        }
+        script = scripts[key]
+        return script
   end 
+  def get_help_coming_soon()
+        info = <<-eos	
+        <font color="white">Recite this script:</font><br>
+        <i><div style="font-size: 150%; color: yellow;">"There will be somebody there to help you soon. Goodbye."</div></i>
+        eos
+        return info
+      end
   def get_user_able_to_reset()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>
