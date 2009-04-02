@@ -160,7 +160,7 @@ class CallCenterController < ApplicationController
                                               :timestamp => Time.now,
                                               :call_center_session_id => @call_center_session.id)
         spawn do
-          sleep(FOLLOW_UP_TIMEOUT) #60 seconds
+          sleep(GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT) 
           RAILS_DEFAULT_LOGGER.warn("spawn Checking CallCenterDeferred: #{deferred.id}")
           deferred = CallCenterDeferred.find(deferred.id)
           if deferred && deferred.pending

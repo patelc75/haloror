@@ -25,6 +25,8 @@ class CallCenterWizard < ActiveRecord::Base
   PRE_AGENT_CALL_911    = "PRE Agent Call 911"
   AGENT_CALL_911        = "Agent Call 911" 
   AMBULANCE_DISPATCHED  = "Ambulance Dispatched"
+  HELP_COMING_SOON      = "Help coming soon."
+  AMBULANCE_COMING_SOON = "Ambulance coming soon."
   THE_END               = "Resolve the Event"
   CAREGIVER_GOOD_BYE    = "Caregiver Good Bye."
   USER_GOOD_BYE         = "User Good Bye."
@@ -38,7 +40,7 @@ class CallCenterWizard < ActiveRecord::Base
   RECONTACT_CAREGIVER_ABLE_TO_RESET = "Caregiver Able to Reset Gateway."
   RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET = "Caregiver Not Able to Reset Gateway."
   RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET_CONTINUE = "Caregiver Not Able to Reset Gateway, Continue."
-  
+  CALL_HALO_ADMIN = "Call Halo Admin."
   
   include Ruleby
   def first_step()
@@ -191,6 +193,7 @@ class CallCenterWizard < ActiveRecord::Base
     	    create_caregiver_call_center_step(caregiver, PRE_AGENT_CALL_911, user, operator, str)
           create_caregiver_call_center_step(caregiver, AGENT_CALL_911, user, operator, str)
     	    create_caregiver_call_center_step(caregiver, AMBULANCE_DISPATCHED, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, CALL_HALO_ADMIN, user, operator, str)
     	    create_caregiver_call_center_step(caregiver, CAREGIVER_GOOD_BYE, user, operator, str)
     	    create_caregiver_call_center_step(caregiver, THE_END, user, operator, str)
   	  end
@@ -200,11 +203,14 @@ class CallCenterWizard < ActiveRecord::Base
 	    create_call_center_step(USER_MOBILE_PHONE, user, operator, "Notes for User #{self.user.name}")
     
 	    create_call_center_step(USER_OK, user, operator, "Notes for User #{self.user.name}")
+	    create_call_center_step(HELP_COMING_SOON, user, operator, "Notes for User #{self.user.name}")
 	    create_call_center_step(USER_AMBULANCE, user, operator, "Notes for User #{self.user.name}")
+	    create_call_center_step(AMBULANCE_COMING_SOON, user, operator, "Notes for User #{self.user.name}")
 	    create_call_center_step(ON_BEHALF, user, operator, "Notes for User #{self.user.name}")    
 	    create_call_center_step(PRE_AGENT_CALL_911, user, operator, "Notes for User #{self.user.name}")
 	    create_call_center_step(AGENT_CALL_911, user, operator, "Notes for User #{self.user.name}")
 	    create_call_center_step(AMBULANCE_DISPATCHED, user, operator, "Notes for User #{self.user.name}")
+	    create_call_center_step(CALL_HALO_ADMIN, user, operator, "Notes for User #{self.user.name}")
 	    create_call_center_step(USER_GOOD_BYE, user, operator, "Notes for User #{self.user.name}")
 	 
 	  #create caregiver steps
@@ -235,6 +241,7 @@ class CallCenterWizard < ActiveRecord::Base
     	    create_caregiver_call_center_step(caregiver, PRE_AGENT_CALL_911, user, operator, str)
           create_caregiver_call_center_step(caregiver, AGENT_CALL_911, user, operator, str)
     	    create_caregiver_call_center_step(caregiver, AMBULANCE_DISPATCHED, user, operator, str)
+    	    create_caregiver_call_center_step(caregiver, CALL_HALO_ADMIN, user, operator, str)
     	    create_caregiver_call_center_step(caregiver, CAREGIVER_GOOD_BYE, user, operator, str)
     	    create_caregiver_call_center_step(caregiver, THE_END, user, operator, str)
   	  end

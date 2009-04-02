@@ -106,7 +106,8 @@ class CallListController < ApplicationController
   end
   
   def toggle_phone
-    toggle_critical('phone', params[:id]) unless User.find(params[:user_id]).profile.home_phone.empty?
+    user = User.find(params[:user_id])
+    toggle_critical('phone', params[:id]) unless user.profile.home_phone.blank? && user.profile.cell_phone.blank?
     render :text => '', :layout => false
   end
   
@@ -116,7 +117,7 @@ class CallListController < ApplicationController
   end
   
   def toggle_text
-    toggle_critical('text', params[:id]) unless User.find(params[:user_id]).profile.cell_phone.empty?
+    toggle_critical('text', params[:id]) unless User.find(params[:user_id]).profile.cell_phone.blank?
     render :text => '', :layout => false
   end
   

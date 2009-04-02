@@ -59,7 +59,6 @@ function toggleHTabs(current) {
     current.className = 'selectedTab';
 }
 function updateOperators(){
-	alert("aha");
 	window.location="/call_center/operators";
 }
 function updatePositions(li_id) {
@@ -534,7 +533,17 @@ function toggleAlert(id,active,type)
 	if(!alerts[type])
 		alerts[type] = Array();
 		
-	if(active || alerts[type][id])
+	if(alerts[type][id] == true)
+	{
+		alerts[type][id] = false;
+		$('alert_'+type+'_'+id).src = '/images/call_list-'+type+'-inactive.gif';
+	}
+	else if(alerts[type][id] == false)
+	{
+		alerts[type][id] = true;
+		$('alert_'+type+'_'+id).src = '/images/call_list-'+type+'.gif';
+	}
+	else if(active)
 	{
 		alerts[type][id] = false;
 		$('alert_'+type+'_'+id).src = '/images/call_list-'+type+'-inactive.gif';

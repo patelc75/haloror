@@ -336,7 +336,7 @@ class User < ActiveRecord::Base
         ops << operator
       end
     end
-    operators = adms
+    operators = ops
     return operators
   end
   
@@ -438,7 +438,7 @@ class User < ActiveRecord::Base
       CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => "Accept responsibility?",
       CallCenterWizard::CAREGIVER_AT_HOUSE     => "At House?",
       CallCenterWizard::CAREGIVER_GO_TO_HOUSE  => "Can you go to house?",
-      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE  => "Arrive at house, call 911?",
+      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE  => "Go to house and press GW button",
       CallCenterWizard::CAREGIVER_THANK_YOU    => "Thank You!",
       CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
       CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
@@ -452,7 +452,8 @@ class User < ActiveRecord::Base
       CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY => 'Recontact Caregiver Accept Responsibility',
       CallCenterWizard::RECONTACT_CAREGIVER_ABLE_TO_RESET => "Caregiver Able to Reset Gateway.",
       CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET => "Caregiver is not Able to Reset Gateway.",
-      CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET_CONTINUE => "Caregiver Able to Reset Gateway."
+      CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET_CONTINUE => "Caregiver Able to Reset Gateway.",
+      CallCenterWizard::CALL_HALO_ADMIN => "Call Halo Admin."
     }
     instruction = instructions[key]
     return instruction
@@ -473,7 +474,10 @@ class User < ActiveRecord::Base
       CallCenterWizard::RECONTACT_USER_OK => 'Recontact OK.',
       CallCenterWizard::RECONTACT_USER_ABLE_TO_RESET => "User Able to Reset Gateway.",
       CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET =>  "User is Not Able to Reset Gateway.",
-      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE =>  "User Able to Reset Gateway."
+      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE =>  "User Able to Reset Gateway.",
+      CallCenterWizard::HELP_COMING_SOON =>  "Help Coming Soon.",
+      CallCenterWizard::AMBULANCE_COMING_SOON =>  "Help coming soon.",
+      CallCenterWizard::CALL_HALO_ADMIN => "Call Halo Admin."
     }
     instruction = instructions[key]
     return instruction
@@ -502,7 +506,8 @@ class User < ActiveRecord::Base
       CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY => get_caregiver_recontact_responsibilty(),
       CallCenterWizard::RECONTACT_CAREGIVER_ABLE_TO_RESET => get_caregiver_able_to_reset(),
       CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET => get_caregiver_not_able_to_reset(),
-      CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET_CONTINUE => get_caregiver_not_able_to_reset_continue()
+      CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET_CONTINUE => get_caregiver_not_able_to_reset_continue(),
+      CallCenterWizard::CALL_HALO_ADMIN => get_call_halo_admin()
     }
     script = scripts[key]
     return script
@@ -525,11 +530,28 @@ class User < ActiveRecord::Base
       CallCenterWizard::RECONTACT_USER_OK => get_user_recontact_ok(),
       CallCenterWizard::RECONTACT_USER_ABLE_TO_RESET => get_user_able_to_reset(),
       CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET => get_user_not_able_to_reset(),
-      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE => get_user_not_able_to_reset_continue()
-    }
-    script = scripts[key]
-    return script
+      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE => get_user_not_able_to_reset_continue(),
+      CallCenterWizard::HELP_COMING_SOON => get_help_coming_soon(),
+      CallCenterWizard::AMBULANCE_COMING_SOON => get_help_coming_soon(),
+      CallCenterWizard::CALL_HALO_ADMIN => get_call_halo_admin()
+        }
+        script = scripts[key]
+        return script
   end 
+  def get_call_halo_admin()
+      info = <<-eos	
+        <div style="font-size: x-large"><font color="white">"Call Halo Admin in <a href="/call_center/faq">FAQ</a>."</div>
+        eos
+      return info
+    
+  end
+  def get_help_coming_soon()
+      info = <<-eos	
+        <font color="white">Recite this script:</font><br>
+        <i><div style="font-size: 150%; color: yellow;">"There will be somebody there to help you soon. If we can't reach your caregivers, we will dispatch an ambulance. Goodbye."</div></i>
+        eos
+      return info
+  end
   def get_user_able_to_reset()
     info = <<-eos	
 	  <font color="white">Recite this script:</font><br>

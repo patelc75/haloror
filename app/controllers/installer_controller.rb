@@ -705,6 +705,7 @@ class InstallerController < ApplicationController
   def range_test
     init_user_group
     init_devices_self_test_session
+    @battery = Battery.find(:first, :conditions => "device_id = #{@strap.id} AND timestamp >= '#{@self_test_session.created_at.to_s}'", :order => 'timestamp desc')  
     str = <<-eos
     <div id="lightbox-col-700">
    	<img src="/images/lightbox-col-header-700.gif" /><br />
@@ -722,9 +723,11 @@ class InstallerController < ApplicationController
 			</ul>
 			<br />
 			<br />
+			<% if @battery %>
 			Your battery is at #{@battery.percentage if @battery }%. Please recharge if necessary before begining the Range Test.
 			<br />
 			<br />
+			<% end %>
 			Two short beeps -- In Range
 			<br />
 			<br />
@@ -803,7 +806,7 @@ class InstallerController < ApplicationController
       message = self_test_step.self_test_step_description.description                       
     duration = nil
     unless previous_step
-      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{HEARTRATE_DETECTED_ID}")
+      previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{START_RANGE_TEST_PROMPT_ID}")
     end
     duration = self_test_step.timestamp - previous_step.timestamp
     create_mgmt_cmd('mgmt_poll_rate', @gateway.id, MGMT_POLL_RATE)
@@ -912,8 +915,8 @@ class InstallerController < ApplicationController
   end
   
   def check_battery_critical?
-    battery = Battery.find(:first, :conditions => "device_id = #{@strap.id} AND timestamp >= '#{@self_test_session.created_at.to_s}'", :order => 'timestamp desc')  
-    if battery && battery.percentage <= 1
+    @battery = Battery.find(:first, :conditions => "device_id = #{@strap.id} AND timestamp >= '#{@self_test_session.created_at.to_s}'", :order => 'timestamp desc')  
+    if @battery && @battery.percentage <= 1
       return "Battery is at or less than 1% please recharge the battery."
     else
       return false
