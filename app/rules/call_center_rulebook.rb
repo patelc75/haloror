@@ -140,7 +140,7 @@ class CallCenterRulebook < Ruleby::Rulebook
         create_call_center_step_rule(caregiver_id, CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911,       true,   CallCenterWizard::PRE_AGENT_CALL_911,caregiver_id)
         
         create_call_center_step_rule(caregiver_id, CallCenterWizard::PRE_AGENT_CALL_911,       true,   CallCenterWizard::AGENT_CALL_911,caregiver_id)
-        create_call_center_step_rule(caregiver_id, CallCenterWizard::PRE_AGENT_CALL_911,       false,   CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver_id)
+        create_call_center_step_rule(caregiver_id, CallCenterWizard::PRE_AGENT_CALL_911,       false,   CallCenterWizard::CALL_HALO_ADMIN,caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::AGENT_CALL_911,         true,   CallCenterWizard::CAREGIVER_GOOD_BYE,caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::AGENT_CALL_911,         false,   CallCenterWizard::CALL_HALO_ADMIN,caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::CALL_HALO_ADMIN,         true,   CallCenterWizard::THE_END,caregiver_id)
