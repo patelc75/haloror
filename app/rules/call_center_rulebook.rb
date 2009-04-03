@@ -154,7 +154,7 @@ class CallCenterRulebook < Ruleby::Rulebook
         count += 1
       end
         if !@wizard.user.has_phone?(User.find(caregiver_id), 'Caregiver')            
-          create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, false,  CallCenterWizard::PRE_AGENT_CALL_911, user_id)
+          create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, false,  CallCenterWizard::PRE_AGENT_CALL_911, caregiver_id)
         else
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, true,   CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, false,  CallCenterWizard::CAREGIVER_HOME_PHONE, caregiver_id)
