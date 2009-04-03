@@ -59,7 +59,6 @@ class BundleJob
       xml_file_path_and_name = "#{dir_path}/#{xml_file_name}"
       #read file into string
       xml_string = File.read(xml_file_path_and_name)
-      puts xml_string
       #convert to hash
       bundle_hash = Hash.from_xml(xml_string)
       #call bundle processor on hash (aka bundle)
@@ -119,15 +118,11 @@ class BundleJob
   end
   def self.get_time_in_seconds_xml(file_name)
     base_name = File.basename(file_name, '.xml')
-    puts "base_name:  #{base_name}"
     i = base_name.index('_')
     str = base_name[i + 1, base_name.size - i - 1]
-    puts "str:  #{str}"
     i = str.index('_')
     sequence_num = str[i + 1, str.size - i - 1]
-    puts "sequence_num:  #{sequence_num}"
     seconds_string = base_name[11, base_name.size - 11 - sequence_num.size - 1]
-    puts seconds_string
     return seconds_string.to_i, sequence_num.to_i
   end
   def self.archive(file_path_and_name, directory)
