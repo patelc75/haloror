@@ -68,9 +68,9 @@ class BundleJob
       xml_file_names.delete_if do |name|
         xml_file_name = name
       end
-      Dir.delete(dir_path)
     end
     
+    Dir.delete(dir_path)
     return file_names
   end
   
