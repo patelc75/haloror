@@ -1,0 +1,2 @@
+class AccessModesController < RestfulAuthController  
+end
