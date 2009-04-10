@@ -82,9 +82,9 @@ class BundleJob
       atime = get_time_in_seconds(afile)
       btime = get_time_in_seconds(bfile)
       if atime <= btime
-        return afile
+        -1
       else
-        return bfile
+        1
       end
     end
     return file_names[0]
@@ -105,14 +105,14 @@ class BundleJob
       btime, bseq = get_time_in_seconds_xml(bfile)
       if atime == btime
         if aseq <= bseq
-          return afile
+            -1
         else
-          return bfile
+          1
         end
       elsif atime < btime
-        return afile
+        -1
       else
-        return bfile
+        1
       end
     end
     return xml_file_names[0]
