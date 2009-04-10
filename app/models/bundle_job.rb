@@ -66,7 +66,7 @@ class BundleJob
       #delete xml file
       File.delete(xml_file_path_and_name)
       xml_file_names.delete_if do |name|
-        xml_file_name = name
+        xml_file_name == name
       end
     end
     
