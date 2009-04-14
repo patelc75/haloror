@@ -141,8 +141,8 @@
 				alt = 'This caregiver will be called by live operator in case of emergency.  Click to disable.'
 			end
 		%>
-		<% if opts.active %>
-		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_phone_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_phone",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')', :complete => 'updatePositions()')%>
+		<% if opts.active? %>
+		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_phone_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_phone",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')')%>
 		<% else %>
 		  <%= image_tag(img, :alt => alt, :id => 'item_phone_'+caregiver.id.to_s) %>
 		<% end %>
@@ -160,7 +160,7 @@
 				alt = 'Email will be sent to this caregiver in the case of a fall or panic.  Click to disable.'
 			end
 		%>
-  	<% if opts.active %>
+  	<% if opts.active? %>
 		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_email_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_email",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.email_active.to_s+', \'email\', '+user_id+')', :complete => 'updatePositions()')%>
 		<% else %>
 		  <%= image_tag(img, :alt => alt, :id => 'item_email_'+caregiver.id.to_s) %>
@@ -186,7 +186,7 @@
 				user = current_user
 			end
 		%>
-    <% if opts.active %>
+    <% if opts.active? %>
 		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_text_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_text",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\', '+user_id+')', :complete => 'updatePositions()')%>
 		<% else %>
 		  <%= image_tag(img, :alt => alt, :id => 'item_text_'+caregiver.id.to_s) %>

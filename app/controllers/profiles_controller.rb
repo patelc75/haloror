@@ -117,7 +117,7 @@ class ProfilesController < ApplicationController
         end
       end
         render(:update) do |page|
-          page << "RedBox.close();"
+          page << "RedBox.close(); window.location = window.location;"
         end
     end   
     rescue 

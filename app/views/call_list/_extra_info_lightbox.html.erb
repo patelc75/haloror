@@ -24,9 +24,9 @@
 					end
 					roles_user_id = roles_user.id if roles_user
 			%>
-			<%=link_to_remote('Yes', :update => 'container1', :url =>{ :controller => "profiles", :action => 'edit_caregiver_profile', :id => user.profile.id, :operator => operator, :user_id => user_id, :frame => true,  :roles_user_id => roles_user_id }, :html => {:method => :get})%>
+			<%=link_to_remote('Yes', :update => 'container1', :url =>{ :refresh => 'true', :controller => "profiles", :action => 'edit_caregiver_profile', :id => user.profile.id, :operator => operator, :user_id => user_id, :frame => true,  :roles_user_id => roles_user_id }, :html => {:method => :get})%>
 			|
-			<a href="javascript:void(0)" onClick="RedBox.close()">No</a>
+			<a href="javascript:void(0)" onClick="RedBox.close();">No</a>
 		</div>
 	</div>
 	<img src="/images/lightbox-col-footer.gif" />
