@@ -192,12 +192,32 @@ class Vital < ActiveRecord::Base
   # Creates alerts for users that have become unavailable
   def Vital.job_detect_unavailable_devices
     RAILS_DEFAULT_LOGGER.warn("Vital.job_detect_unavailable_devices running at #{Time.now}")
-
+    ethernet_system_timeout = SystemTimeout.find_by_mode('ethernet')
+    dialup_system_timeout   = SystemTimeout.find_by_mode('dialup')
     ## Find devices that were previously signaling errors but have
     ## come back Online.
     conds = []
     conds << "reconnected_at is null"
-    conds << "device_id in (select v.id from latest_vitals v where v.updated_at >= now() - interval '#{DEVICE_UNAVAILABLE_TIMEOUT} minutes')"
+    conds << "(device_id in (select device_id from access_mode_status where mode = 'ethernet') OR device_id not in (select device_id from access_mode_status))"
+    conds << "device_id in (select v.id from latest_vitals v where v.updated_at >= now() - interval '#{ethernet_system_timeout.device_unavailable_timeout_min} minutes')"
+    conds << "device_id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
+    conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"
+    
+    alerts = DeviceUnavailableAlert.find(:all,
+      :conditions => conds.join(' and '))
+    alerts.each do |alert|
+      DeviceUnavailableAlert.transaction do
+        DeviceAvailableAlert.create(:device => alert.device)
+        alert.reconnected_at = Time.now
+        alert.save!
+      end
+    end
+
+    # Do the same thing for dialup
+    conds = []
+    conds << "reconnected_at is null"
+    conds << "device_id in (select device_id from access_mode_status where mode = 'dialup') "
+    conds << "device_id in (select v.id from latest_vitals v where v.updated_at >= now() - interval '#{dialup_system_timeout.device_unavailable_timeout_min} minutes')"
     conds << "device_id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
     conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"
     
@@ -216,7 +236,27 @@ class Vital < ActiveRecord::Base
     # AND 
     # b) the chest strap is “fastened”
     conds = []
-    conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{DEVICE_UNAVAILABLE_TIMEOUT} minutes')"
+    conds << "(id in (select device_id from access_mode_status where mode = 'ethernet') OR id not in (select device_id from access_mode_status))"
+    conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{ethernet_system_timeout.device_unavailable_timeout_min} minutes')"
+    conds << "id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
+    conds << "id in (select status.id from device_strap_status status where is_fastened > 0)"
+
+    devices = Device.find(:all,
+      :conditions => conds.join(' and '))
+
+    devices.each do |device|
+      begin
+        Vital.process_device_unavailable(device)
+      rescue Exception => e
+        logger.fatal("Error processing unavailable device alert for device #{device.inspect}: #{e}")
+        raise e if ENV['RAILS_ENV'] == "development" || ENV['RAILS_ENV'] == "test"
+      end
+    end
+    
+    # Do same thing for dialup
+    conds = []
+    conds << "id in (select device_id from access_mode_status where mode = 'dialup')"
+    conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{dialup_system_timeout.device_unavailable_timeout_min} minutes')"
     conds << "id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
     conds << "id in (select status.id from device_strap_status status where is_fastened > 0)"
 

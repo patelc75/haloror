@@ -22,14 +22,17 @@ class MgmtQuery < ActiveRecord::Base
   # Alert and triggers a Gateway Offline event
   def MgmtQuery.job_detect_disconnected_users
     RAILS_DEFAULT_LOGGER.warn("MgmtQuery.job_detect_disconnected_users running at #{Time.now}")
+    ethernet_system_timeout = SystemTimeout.find_by_mode('ethernet')
+    dialup_system_timeout   = SystemTimeout.find_by_mode('dialup')
     
     ## Find devices that were previously signaling errors but have
     ## come back online. Trigger a "Reconnect" event for these
     ## devices. In practice, there should be very few of these alerts
     ## so we process them one by one as the devices come back online.
     reconnected = Device.find(:all,
-                              :conditions => 'id in (select device_id from gateway_offline_alerts where reconnected_at is null and device_id in ' <<
-                              " (select id from device_latest_queries where updated_at > now() - interval '#{GATEWAY_OFFLINE_TIMEOUT} minutes'))")
+                              :conditions => "(id in (select device_id from access_mode_status where mode = 'ethernet') OR id not in (select device_id from access_mode_status))" <<
+                              ' AND id in (select device_id from gateway_offline_alerts where reconnected_at is null and device_id in ' <<
+                              " (select id from device_latest_queries where updated_at > now() - interval '#{ethernet_system_timeout.gateway_offline_timeout_min} minutes'))")
     reconnected.each do |device|
       Device.transaction do
         GatewayOnlineAlert.create(:device => device)
@@ -41,6 +44,25 @@ class MgmtQuery < ActiveRecord::Base
         end
       end
     end
+    
+    # Do same thing for dialup
+    reconnected = Device.find(:all,
+                              :conditions => "id in (select device_id from access_mode_status where mode = 'dialup') " <<
+                              ' AND id in (select device_id from gateway_offline_alerts where reconnected_at is null and device_id in ' <<
+                              " (select id from device_latest_queries where updated_at > now() - interval '#{dialup_system_timeout.gateway_offline_timeout_min} minutes'))")
+    reconnected.each do |device|
+      Device.transaction do
+        GatewayOnlineAlert.create(:device => device)
+        
+        GatewayOfflineAlert.find(:all, 
+                                 :conditions => ['device_id = ? and reconnected_at is null', device.id]).each do |alert|
+          alert.reconnected_at = Time.now
+          alert.save!
+        end
+      end
+    end
+    
+    
     devices = Device.find(:all, 
                           :conditions => "id in (select dlq.id from device_latest_queries dlq where dlq.id not in (select device_id from gateway_offline_alerts group by device_id))")
     devices.each do |device|
@@ -53,7 +75,22 @@ class MgmtQuery < ActiveRecord::Base
     end
     
     devices = Device.find(:all,
-                          :conditions => "id in (select dlq.id from device_latest_queries dlq where dlq.updated_at < now() - interval '#{GATEWAY_OFFLINE_TIMEOUT} minutes')")
+                          :conditions => "(id in (select device_id from access_mode_status where mode = 'ethernet') OR id not in (select device_id from access_mode_status))" <<
+                          " AND id in (select dlq.id from device_latest_queries dlq where dlq.updated_at < now() - interval '#{ethernet_system_timeout.gateway_offline_timeout_min} minutes')")
+    devices.each do |device|
+      begin
+        MgmtQuery.process_alert(device)
+      rescue Exception => e
+        logger.fatal("Error processing outage alert for device #{device.inspect}: #{e}")
+        raise e if ENV['RAILS_ENV'] == "development" || ENV['RAILS_ENV'] == "test"
+      end
+    end
+    
+    # Do same thing for dialup
+    
+    devices = Device.find(:all,
+                          :conditions => "id in (select device_id from access_mode_status where mode = 'dialup') " <<
+                          " AND id in (select dlq.id from device_latest_queries dlq where dlq.updated_at < now() - interval '#{dialup_system_timeout.gateway_offline_timeout_min} minutes')")
     devices.each do |device|
       begin
         MgmtQuery.process_alert(device)
