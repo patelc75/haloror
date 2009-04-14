@@ -1,4 +1,5 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :access_modes
   map.resources :carriers
 
   map.resources :pools

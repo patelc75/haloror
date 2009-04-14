@@ -20,4 +20,7 @@
 <% if current_user.is_super_admin? %>
 | <a href="/atp/index">ATP</a>
 <% end %>
+<% if current_user.is_super_admin? %>
+| <a href="/system_timeouts/index">System Timeouts</a>
+<% end %>
 <p>&nbsp;</p>
