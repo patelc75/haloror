@@ -1,4 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
+  
+  map.resources :time_zones
   map.resources :access_modes
   map.resources :carriers
 

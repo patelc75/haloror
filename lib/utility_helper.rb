@@ -22,6 +22,16 @@ module UtilityHelper
 	u.save
   end
   
+  #return the offset for this time zone as a string
+  def self.offset_for_time_zone(user)
+    tz = TZInfo::Timezone.get('America/Chicago')
+    if user and user.profile and user.profile.time_zone
+      tz = user.profile.tz
+    end
+    period = tz.current_period
+    return period.utc_total_offset() / 60 / 60
+  end
+  
   def self.format_datetime_flex(datetime,user)
     #return datetime if !datetime.respond_to?(:strftime)
     
