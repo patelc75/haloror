@@ -19,7 +19,53 @@ namespace :halo do
     Step.delete_all(["begin_timestamp > ? AND user_id = ?" , Time.now.utc, ENV['user_id']])
   end
   
-  
+  desc "post random vitals data with either activerecord or curl"  
+  task :install_wizard => :environment  do
+  	if ENV['user_id'] == nil
+      puts ""
+      puts "You forgot user_id"
+      puts ""
+      print_usage = true
+    else
+      puts "User ID: #{ENV['user_id']}"
+    end
+    if ENV['device_id'] == nil
+      puts ""
+      puts "You forgot device_id"
+      puts ""
+      print_usage = true
+    else
+      puts "Device ID: #{ENV['device_id']}"
+    end
+    
+    if ENV['gateway_id'] == nil
+      puts ""
+      puts "You forgot gateway_id"
+      puts ""
+      print_usage = true
+    else
+      puts "Gateway ID: #{ENV['gateway_id']}"
+    end
+    
+    start_time = Time.now.utc
+    
+    if ENV['method'] == "activerecord"
+            skin_temp = MgmtCmd.new(:user_id => ENV['user_id'],:device_id => ENV['device_id'],:cmd_type => 'user_registration', :timestamp_initiated => start_time)
+            skin_temp.save
+            set_test = SelfTestResult.new(:device_id => ENV['gateway_id'],:cmd_type => 'self_test',:result => 't', :timestamp => start_time)
+            set_test.save
+            set_test_phone = SelfTestResult.new(:device_id => ENV['gateway_id'],:cmd_type => 'self_test_phone', :result => 'f', :timestamp => start_time)
+            set_test_phone.save
+            future_vital = Vital.new(:user_id => ENV['user_id'], :timestamp => start_time)
+            future_vital.save
+	elsif ENV['method'] == "curl"
+        #    skin_temp_xml = "<skin_temp><skin_temp>#{random_skin_temp}</skin_temp><timestamp>#{start_time}</timestamp><user_id>#{ENV['user_id']}</user_id></skin_temp>"       
+        #   curl_cmd ='curl -v -H "Content-Type: text/xml" -d "' + skin_temp_xml + '" ' +'"' + ENV['url'] + '/skin_temps?gateway_id=' + "#{ENV['gateway_id']}" '&auth=' + "#{calculathash}"+'" ' 
+        #    puts curl_cmd
+        #    system(curl_cmd)    				         
+    end
+    
+  end
   desc "post random vitals data with either activerecord or curl"  
   task :post => :environment  do
     #end_time = Time.parse('2007-08-30 18:44:37-04') #hardcoded for demo 
