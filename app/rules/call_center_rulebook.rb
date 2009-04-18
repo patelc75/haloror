@@ -103,7 +103,7 @@ class CallCenterRulebook < Ruleby::Rulebook
     end
     create_call_center_step_rule(user_id, CallCenterWizard::AGENT_CALL_911,       true,   CallCenterWizard::USER_GOOD_BYE,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::AGENT_CALL_911,       false,   CallCenterWizard::CALL_HALO_ADMIN,user_id)
-    create_call_center_step_rule(user_id, CallCenterWizard::CALL_HALO_ADMIN,       true,   CallCenterWizard::USER_GOOD_BYE,user_id)
+    create_call_center_step_rule(user_id, CallCenterWizard::CALL_HALO_ADMIN,       true,   CallCenterWizard::THE_END,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::AMBULANCE_DISPATCHED, true,   CallCenterWizard::USER_GOOD_BYE,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::AMBULANCE_DISPATCHED, false,   CallCenterWizard::USER_GOOD_BYE,user_id)
     create_call_center_step_rule(user_id, CallCenterWizard::THE_END,              true,   CallCenterWizard::USER_GOOD_BYE,user_id)
@@ -140,10 +140,10 @@ class CallCenterRulebook < Ruleby::Rulebook
         create_call_center_step_rule(caregiver_id, CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911,       true,   CallCenterWizard::PRE_AGENT_CALL_911,caregiver_id)
         
         create_call_center_step_rule(caregiver_id, CallCenterWizard::PRE_AGENT_CALL_911,       true,   CallCenterWizard::AGENT_CALL_911,caregiver_id)
-        create_call_center_step_rule(caregiver_id, CallCenterWizard::PRE_AGENT_CALL_911,       false,   CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver_id)
+        create_call_center_step_rule(caregiver_id, CallCenterWizard::PRE_AGENT_CALL_911,       false,   CallCenterWizard::CALL_HALO_ADMIN,caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::AGENT_CALL_911,         true,   CallCenterWizard::CAREGIVER_GOOD_BYE,caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::AGENT_CALL_911,         false,   CallCenterWizard::CALL_HALO_ADMIN,caregiver_id)
-        create_call_center_step_rule(caregiver_id, CallCenterWizard::CALL_HALO_ADMIN,         true,   CallCenterWizard::CAREGIVER_GOOD_BYE,caregiver_id)
+        create_call_center_step_rule(caregiver_id, CallCenterWizard::CALL_HALO_ADMIN,         true,   CallCenterWizard::THE_END,caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE_DISPATCHED,   true,   CallCenterWizard::CAREGIVER_GOOD_BYE,caregiver_id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE_DISPATCHED,   false,   CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver.id)
         create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE,              false,  CallCenterWizard::CAREGIVER_THANK_YOU, caregiver_id)
@@ -154,7 +154,7 @@ class CallCenterRulebook < Ruleby::Rulebook
         count += 1
       end
         if !@wizard.user.has_phone?(User.find(caregiver_id), 'Caregiver')            
-          create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, false,  CallCenterWizard::PRE_AGENT_CALL_911, user_id)
+          create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, false,  CallCenterWizard::PRE_AGENT_CALL_911, caregiver_id)
         else
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, true,   CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_MOBILE_PHONE, false,  CallCenterWizard::CAREGIVER_HOME_PHONE, caregiver_id)
@@ -163,7 +163,7 @@ class CallCenterRulebook < Ruleby::Rulebook
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_HOME_PHONE,   false,  CallCenterWizard::CAREGIVER_WORK_PHONE, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   true,   CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY, caregiver_id)
       
-            create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   false,  CallCenterWizard::PRE_AGENT_CALL_911, user_id)
+            create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_WORK_PHONE,   false,  CallCenterWizard::PRE_AGENT_CALL_911, caregiver_id)
           
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY,      true,   CallCenterWizard::CAREGIVER_AT_HOUSE, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY,      false,  CallCenterWizard::CAREGIVER_THANK_YOU, caregiver_id)
@@ -172,17 +172,17 @@ class CallCenterRulebook < Ruleby::Rulebook
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_GO_TO_HOUSE,      true,  CallCenterWizard::ON_BEHALF_GO_TO_HOUSE, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_GO_TO_HOUSE,      false,  CallCenterWizard::AMBULANCE, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::ON_BEHALF_GO_TO_HOUSE,      true,  CallCenterWizard::THE_END,caregiver_id)
-          create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_THANK_YOU,      true,  CallCenterWizard::CAREGIVER_MOBILE_PHONE, nil)
+          create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_THANK_YOU,      true,  CallCenterWizard::PRE_AGENT_CALL_911, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::CAREGIVER_THANK_YOU,      false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE, nil)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE,              true,   CallCenterWizard::ON_BEHALF, caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::ON_BEHALF,              true,   CallCenterWizard::AMBULANCE_DISPATCHED,caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::ON_BEHALF,              false,  CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911,caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911,       true,   CallCenterWizard::PRE_AGENT_CALL_911,caregiver_id) 
           create_call_center_step_rule(caregiver_id, CallCenterWizard::PRE_AGENT_CALL_911,       true,   CallCenterWizard::AGENT_CALL_911,caregiver_id)
-          create_call_center_step_rule(caregiver_id, CallCenterWizard::PRE_AGENT_CALL_911,       false,   CallCenterWizard::CAREGIVER_MOBILE_PHONE,caregiver_id)
+          create_call_center_step_rule(caregiver_id, CallCenterWizard::PRE_AGENT_CALL_911,       false,   CallCenterWizard::CALL_HALO_ADMIN,caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::AGENT_CALL_911,         true,   CallCenterWizard::CAREGIVER_GOOD_BYE,caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::AGENT_CALL_911,         false,   CallCenterWizard::CALL_HALO_ADMIN,caregiver_id)
-          create_call_center_step_rule(caregiver_id, CallCenterWizard::CALL_HALO_ADMIN,         true,   CallCenterWizard::CAREGIVER_GOOD_BYE,caregiver_id)
+          create_call_center_step_rule(caregiver_id, CallCenterWizard::CALL_HALO_ADMIN,         true,   CallCenterWizard::THE_END,caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE_DISPATCHED,   true,   CallCenterWizard::CAREGIVER_GOOD_BYE,caregiver_id)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE_DISPATCHED,   false,   CallCenterWizard::CAREGIVER_MOBILE_PHONE,nil)
           create_call_center_step_rule(caregiver_id, CallCenterWizard::AMBULANCE,              false,  CallCenterWizard::CAREGIVER_MOBILE_PHONE, nil)
