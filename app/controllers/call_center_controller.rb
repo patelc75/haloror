@@ -316,7 +316,15 @@ class CallCenterController < ApplicationController
     @notes = Note.find(:all, :conditions => "event_id = #{@event_id}", :order => "created_at desc")
     render :template => 'call_center/all_notes'
   end
+  
+  def report
+    @event = Event.find(params[:id])
+    @session = @event.call_center_session
+  end
+  ###############################################
   private
+  ###############################################
+  
   def send_admin_call_log_email()
     body = ""
     steps = @call_center_wizard.call_center_session.call_center_steps.sort do |a, b|
