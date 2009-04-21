@@ -25,7 +25,10 @@
 		<%=f.radio_button :cmd_type, 'range_test_stop'%> Range Test Stop
 	</p>
 	<p>
-		<%=f.radio_button :cmd_type, 'mgmt_poll_rate'%> Slow Management Poll Rate <%= f.text_field :param1 %>
+		<%=f.radio_button :cmd_type, 'mgmt_poll_rate'%> Adjust Mgmt Poll Rate in seconds (eg. 60) <%= f.text_field :param1 %>
+	</p>
+	<p>
+		<%=f.radio_button :cmd_type, 'dial_up_num'%> Change Dial up Number (eg. 8005551212) <%= f.text_field :param2 %>
 	</p>
 	<p>
 		<%=f.radio_button :cmd_type, 'unregister'%> Unregister
