@@ -1,18 +1,18 @@
 <table>
   <tr>
     <th>ID</th><th>Mode</th>
-    <th>Gateway Offline Timeout (minutes)</th>
-    <th>Device Unavailable Timeout (minutes)</th>
-    <th>Strap Off Timeout (minutes)</th>
+    <th>Gateway Offline <br> Timeout (seconds)</th>
+    <th>Device Unavailable<br> Timeout (seconds)</th>
+    <th>Strap Off<br> Timeout (seconds)</th>
     <th>&nbsp;</th>
   </tr>
   <% @system_timeouts.each do |system_timeout|  %>
   <tr>
     <td><%= system_timeout.id %></td>
     <td><%= h system_timeout.mode %></td>
-    <td><%= h system_timeout.gateway_offline_timeout_min %></td>
-    <td><%= h system_timeout.device_unavailable_timeout_min %></td>
-    <td><%= h system_timeout.strap_off_timeout_min %></td>
+    <td><%= h system_timeout.gateway_offline_timeout_sec %></td>
+    <td><%= h system_timeout.device_unavailable_timeout_sec %></td>
+    <td><%= h system_timeout.strap_off_timeout_sec %></td>
     <td><%= link_to '[edit]', :controller => 'system_timeouts', :action => 'edit', :id => system_timeout.id %>
   </tr>
   <% end %>
