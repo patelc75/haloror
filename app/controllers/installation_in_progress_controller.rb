@@ -8,7 +8,7 @@ class InstallationInProgressController < RestfulAuthController
                                             :conditions => "user_id = #{user_id} AND created_at > '#{range_timestamp}'", #AND completed_on IS NULL",  
                                             :order => 'created_at desc')
 
-    debugger
+    #debugger
 	xml = nil
     if self_test_session
       	if self_test_session.completed_on == nil

@@ -1,0 +1,153 @@
+<meta http-equiv="refresh" content="30">
+<% is_admin = current_user.is_super_admin? %>
+<h2>Event Report</h2>
+Please hold the control key and click <a href="/call_center/faq">here</a> to launch the <b>FAQ</b> in a separate tab.
+<br/>
+<br/>
+<%= link_to "Return to call center overview", :action => "index" %>
+<hr/>
+<div class="table">
+	
+  <div class="row header">
+    <div class="col-75">
+      Event <br>Type
+    </div>
+    <% if is_admin %>
+      <div class="col-125">
+        Oscope Start Msg ID
+      </div>
+    <% end %>
+    <div class="col-125">
+      Timestamp<br>Device
+    </div>
+    <div class="col-125">
+      Timestamp<br>Server
+    </div>
+    <div class="col-150">
+      Name
+    </div>
+    <% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
+    <div class="col-75">
+      Chart
+    </div>
+    <% end %>
+  </div>
+	
+	<div class="row">
+
+		<div class="col-75">
+			Event Type: 
+			<% if @event.event_type == 'CallCenterFollowUp' %>
+			Follow Up
+			<% else %>
+			<%= @event.event_type %>&nbsp;
+			<% end %>
+		</div>
+
+		<% if is_admin %>
+			<% if @event.event_type == 'Fall' %>
+				<% oscope_start = OscopeStartMsg.find_by_timestamp_and_user_id(@event.timestamp, @event.user_id) %>
+				<% if oscope_start %>
+				<div class="col-125">
+					<%= link_to ("#{oscope_start.id}", :controller => 'oscopes', :action => 'csv', :id => oscope_start.id) %>
+				</div>
+				<% else %>
+					<div class="col-125">
+						&nbsp;
+					</div>
+				<% end %>
+			<% else %>
+				<div class="col-125">
+					&nbsp;
+				</div>
+			<% end %>
+		<% end %>
+		
+		<div class="col-125">
+			<%=UtilityHelper.format_datetime_readable(@event.timestamp, current_user) %>
+		</div>
+		
+		<div class="col-125">
+			<% if(@event[:timestamp_server] == nil) %>
+			No timestamp
+			<% else %>
+			<%= UtilityHelper.format_datetime_readable(@event[:timestamp_server],current_user) %>
+			<% end %>
+		</div>
+		
+		<div class="col-150">
+			<% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
+			<a href="/call_list/show/<%=@event.user[:id]%>"><%=@event.user.name%></a> (<%=@event.user.id%>)
+			<% else %>
+			<%= @event.user.name %> (<%= @event.user.id %>)
+			<% end %>
+		</div>
+		
+		<% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
+
+			<div class="col-75">
+				<a target="_blank" href="/chart/flex/<%= @event.user.id %>">Chart</a>
+			</div>
+
+
+
+		<% end %>
+
+
+	</div>
+
+	<% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
+	<div style='clear: both'/>
+	<br/>
+		<div id="notes_<%=@event.id %>">
+			<b>Notes</b><br/>
+			<%= @event.notes.empty? ? "(none)" : "" %>
+			<% @event.notes.each do |note| %>
+				<%=UtilityHelper.format_datetime_readable(note.created_at, current_user)%>: <%= note.notes %> (Created by <%= User.find(note.created_by).name rescue "(unknown)" %>)
+			<% end %>
+		</div>
+	
+	<% end %>
+
+
+</div>
+
+<div style='clear: both'/>
+<hr/>
+
+<% if action = @event.resolved? %>
+	Resolved by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>
+<% elsif action = @event.accepted? %>
+	Accepted by <%= action.user.name %> at <%= UtilityHelper.format_datetime_readable(action.created_at,current_user) %>
+<% end %>
+
+
+<hr/>
+<% if @session.nil? %>
+	No call center session recorded.
+<% elsif @session.call_center_steps.count == 0 %>
+  No call center steps recorded.
+<% else %>
+	<% start_time = nil %>
+	<% prev_step_time = nil %>
+	<% current_step_user = nil %>
+	<% last_step_time = nil %>
+	<% @session.call_center_steps.find(:all, :order => 'created_at ASC').each do |step| %>
+		<% 
+		last_step_time = step.created_at
+		prev_step_time ||= step.created_at
+		start_time ||= step.created_at
+		%>
+		<% if step.user_id != current_step_user %>
+			<% current_step_user = step.user_id %>
+			<b><%= User.find(step.user_id).name rescue "(unknown)" %></b><br/>
+		<% end %>
+		<i><%=UtilityHelper.format_datetime_readable(step.created_at, current_user)%></i> - 
+		<%= distance_of_time_in_words(prev_step_time, step.created_at, true) %>: 
+		<%= step.question_key %>: <b><%= step.answer.nil? ? "(empty)" : step.answer %></b><br/>
+		<% prev_step_time = step.created_at %>
+	<% end %>
+	<br/>Total time elapsed: <%= distance_of_time_in_words(start_time, last_step_time, true) %><br/>
+<% end %>
+
+<%= link_to "Return to call center overview", :action => "index" %>

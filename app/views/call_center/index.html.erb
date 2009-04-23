@@ -100,7 +100,10 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
 		<% else %>
 		<%= link_to "Accept",:action => "accept", :id => event.id %>
 		<% end %>
-        </div>
+		<% if event.resolved? || event.accepted? %>
+			<%= link_to "(report)", :action => "report", :id => event.id %>
+		<% end %>
+      </div>
         </div>
         <div id="notes_<%=event.id %>">
         </div>

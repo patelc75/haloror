@@ -10,59 +10,59 @@ class BundleJob
       Dir.mkdir(ARCHIVE_PATH) unless File.exists?(ARCHIVE_PATH)
       #retrieve file names
       file_names = []
-      Dir.foreach(BUNDLE_PATH) do |file_name|
+      Dir.foreach(BUNDLE_PATH) do |file_name|  #create list of filenames that need to be processed
         unless file_name == '.' || file_name == '..' || file_name.include?('.part')
           file_names << file_name
         end
       end
-      if file_names.size == 0
+      if file_names.size == 0  #if not files, return nil
         return nil
       end
-      while file_names.size > 0
-        file_names = process_files(file_names)
+      while file_names.size > 0 
+        file_names = process_files(file_names) #after file is process, the name is removed from the array
       end
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.warn "BUNDLE_JOB_EXCEPTION:  #{e}"
     end
   end
   
-  def self.process_files(file_names)
+  def self.process_files(file_names) #array of filenames passed in
     
     #select oldest file
     file_name = select_oldest_file_for_processing(file_names)
-    file_names.delete_if do |name|
+    file_names.delete_if do |name| #delete the filename 
       name == file_name
     end
-    file_path_and_name = "#{BUNDLE_PATH}/#{file_name}"
+    file_path_and_name = "#{BUNDLE_PATH}/#{file_name}"  #append filename to path to create a new dir
     #create dir with file_name - extension
-    base_name = File.basename(file_path_and_name, EXT_NAME)
+    base_name = File.basename(file_path_and_name, EXT_NAME) #remove extension from filename
     dir_path = "#{BUNDLE_PATH}/#{base_name}"
     begin
-      Dir.mkdir(dir_path)
+      Dir.mkdir(dir_path) #try to make the directory
     rescue
       #dir already exists so file already being processed, returning file_names early
       return file_names
     end
     #extract file into dir
-    self.extract(file_path_and_name,  dir_path)
-    self.archive(file_path_and_name,  ARCHIVE_PATH)
+    self.extract(file_path_and_name,  dir_path) 
+    self.archive(file_path_and_name,  ARCHIVE_PATH) #archive the file to the /archive directory
     #retrieve file names
-    xml_file_names = []
-    Dir.foreach(dir_path) do |xml_file_name|
+    xml_file_names = []  
+    Dir.foreach(dir_path) do |xml_file_name|  #crate an array of the xml file names
       unless xml_file_name == '.' || xml_file_name == '..'
         xml_file_names << xml_file_name
       end
     end
     while xml_file_names.size > 0
       #select oldest file, but first in sequence
-      xml_file_name = select_oldest_xml_file_for_processing(xml_file_names)
+      xml_file_name = select_oldest_xml_file_for_processing(xml_file_names) #xml files have a timestamp
       xml_file_path_and_name = "#{dir_path}/#{xml_file_name}"
       #read file into string
       xml_string = File.read(xml_file_path_and_name)
       #convert to hash
       bundle_hash = Hash.from_xml(xml_string)
       #call bundle processor on hash (aka bundle)
-      BundleProcessor.process(bundle_hash['bundle'])
+      BundleProcessor.process(bundle_hash['bundle']) #processes bundle hash, can't use a symbol, have to pass in 'bundle'
       #delete xml file
       File.delete(xml_file_path_and_name)
       xml_file_names.delete_if do |name|
