@@ -7,6 +7,7 @@
 		<div class="col-200">Username</div>
 		<div class="col-150">Device Registration</div>
 		<div class="col-100">Range Test</div>
+		<div class="col-100">Wizard Report</div>
 	</div>	
 <% @users.each do |user| %>
 	<div class="row">
@@ -19,6 +20,7 @@
 		                      <% end  %>&nbsp;</div>
 		<div class="col-150"><%= link_to_function("Start Installation Wizard", "browserCheckStartRegistration('#{user.id}', '#{@group.name}')") %></div>
 	<div class="col-100"><%= link_to_remote "Start Range Test Only", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :group => @group.name, :id => user.id} %></div>
+	<div class="col-100"><%= link_to 'Report',"/installs/session_report/#{user.id.to_s}"%></div>
 	</div>
 <% end %>
 <br>

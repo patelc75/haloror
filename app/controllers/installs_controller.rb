@@ -47,6 +47,10 @@ class InstallsController < ApplicationController
     end
   end
   
+  def session_report
+  	@user = User.find(params[:id])
+  end
+  
   def ie6
     
   end
