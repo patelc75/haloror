@@ -32,7 +32,7 @@ class MgmtQuery < ActiveRecord::Base
     reconnected = Device.find(:all,
                               :conditions => "(id in (select device_id from access_mode_status where mode = 'ethernet') OR id not in (select device_id from access_mode_status))" <<
                               ' AND id in (select device_id from gateway_offline_alerts where reconnected_at is null and device_id in ' <<
-                              " (select id from device_latest_queries where updated_at > now() - interval '#{ethernet_system_timeout.gateway_offline_timeout_sec*60} minutes'))")
+                              " (select id from device_latest_queries where updated_at > now() - interval '#{ethernet_system_timeout.gateway_offline_timeout_sec*60*(1+GATEWAY_OFFLINE_TIMEOUT_MARGIN)} minutes'))")
     reconnected.each do |device|
       Device.transaction do
         GatewayOnlineAlert.create(:device => device)
@@ -49,7 +49,7 @@ class MgmtQuery < ActiveRecord::Base
     reconnected = Device.find(:all,
                               :conditions => "id in (select device_id from access_mode_status where mode = 'dialup') " <<
                               ' AND id in (select device_id from gateway_offline_alerts where reconnected_at is null and device_id in ' <<
-                              " (select id from device_latest_queries where updated_at > now() - interval '#{dialup_system_timeout.gateway_offline_timeout_sec*60} minutes'))")
+                              " (select id from device_latest_queries where updated_at > now() - interval '#{dialup_system_timeout.gateway_offline_timeout_sec*60*(1+GATEWAY_OFFLINE_TIMEOUT_MARGIN)} minutes'))")
     reconnected.each do |device|
       Device.transaction do
         GatewayOnlineAlert.create(:device => device)
@@ -76,7 +76,7 @@ class MgmtQuery < ActiveRecord::Base
     
     devices = Device.find(:all,
                           :conditions => "(id in (select device_id from access_mode_status where mode = 'ethernet') OR id not in (select device_id from access_mode_status))" <<
-                          " AND id in (select dlq.id from device_latest_queries dlq where dlq.updated_at < now() - interval '#{ethernet_system_timeout.gateway_offline_timeout_sec} minutes')")
+                          " AND id in (select dlq.id from device_latest_queries dlq where dlq.updated_at < now() - interval '#{ethernet_system_timeout.gateway_offline_timeout_sec*60*(1+GATEWAY_OFFLINE_TIMEOUT_MARGIN)} minutes')")
     devices.each do |device|
       begin
         MgmtQuery.process_alert(device)
@@ -90,7 +90,7 @@ class MgmtQuery < ActiveRecord::Base
     
     devices = Device.find(:all,
                           :conditions => "id in (select device_id from access_mode_status where mode = 'dialup') " <<
-                          " AND id in (select dlq.id from device_latest_queries dlq where dlq.updated_at < now() - interval '#{dialup_system_timeout.gateway_offline_timeout_sec*60} minutes')")
+                          " AND id in (select dlq.id from device_latest_queries dlq where dlq.updated_at < now() - interval '#{dialup_system_timeout.gateway_offline_timeout_sec*60*(1+GATEWAY_OFFLINE_TIMEOUT_MARGIN)} minutes')")
     devices.each do |device|
       begin
         MgmtQuery.process_alert(device)

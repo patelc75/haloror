@@ -20,6 +20,7 @@ Git: <code><%= `/usr/bin/git --version` %></code><br>
 <b>Rufus Constants </b><br>
 <code>
 GATEWAY_OFFLINE_TIMEOUT= <%= GATEWAY_OFFLINE_TIMEOUT %>m (deprecated)<br>
+GATEWAY_OFFLINE_TIMEOUT= <%= GATEWAY_OFFLINE_TIMEOUT_MARGIN %>m (deprecated)<br>
 Gateway offline timeout: <%= link_to 'Now configurable', "/system_timeouts" %><br>
 GATEWAY_OFFLINE_POLL_RATE= <%= GATEWAY_OFFLINE_POLL_RATE %><br>
 DEVICE_UNAVAILABLE_TIMEOUT= <%= DEVICE_UNAVAILABLE_TIMEOUT %>m (deprecated)<br> 
