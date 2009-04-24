@@ -19,8 +19,8 @@ Git: <code><%= `/usr/bin/git --version` %></code><br>
 <br>
 <b>Rufus Constants </b><br>
 <code>
-GATEWAY_OFFLINE_TIMEOUT= <%= GATEWAY_OFFLINE_TIMEOUT %>m<br> (depricated)
-Gateway offline timeouts: <%= link_to 'Now configurable', system_timeouts_path %>
+GATEWAY_OFFLINE_TIMEOUT= <%= GATEWAY_OFFLINE_TIMEOUT %>m (depricated)<br>
+Gateway offline timeouts: <%= link_to 'Now configurable', "/system_timeouts" %><br>
 GATEWAY_OFFLINE_POLL_RATE= <%= GATEWAY_OFFLINE_POLL_RATE %><br>
 DEVICE_UNAVAILABLE_TIMEOUT= <%= DEVICE_UNAVAILABLE_TIMEOUT %>m<br>
 DEVICE_UNAVAILABLE_POLL_RATE= <%= DEVICE_UNAVAILABLE_POLL_RATE %><br>
