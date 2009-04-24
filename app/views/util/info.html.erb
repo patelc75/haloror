@@ -19,14 +19,16 @@ Git: <code><%= `/usr/bin/git --version` %></code><br>
 <br>
 <b>Rufus Constants </b><br>
 <code>
-GATEWAY_OFFLINE_TIMEOUT= <%= GATEWAY_OFFLINE_TIMEOUT %>m (depricated)<br>
-Gateway offline timeouts: <%= link_to 'Now configurable', "/system_timeouts" %><br>
+GATEWAY_OFFLINE_TIMEOUT= <%= GATEWAY_OFFLINE_TIMEOUT %>m (deprecated)<br>
+Gateway offline timeout: <%= link_to 'Now configurable', "/system_timeouts" %><br>
 GATEWAY_OFFLINE_POLL_RATE= <%= GATEWAY_OFFLINE_POLL_RATE %><br>
-DEVICE_UNAVAILABLE_TIMEOUT= <%= DEVICE_UNAVAILABLE_TIMEOUT %>m<br>
+DEVICE_UNAVAILABLE_TIMEOUT= <%= DEVICE_UNAVAILABLE_TIMEOUT %>m (deprecated)<br> 
+Device unavailable timeout: <%= link_to 'Now configurable', "/system_timeouts" %><br>
 DEVICE_UNAVAILABLE_POLL_RATE= <%= DEVICE_UNAVAILABLE_POLL_RATE %><br>
 EMAIL_NOTIFICATION_RATE= <%= EMAIL_NOTIFICATION_RATE %><br>
 MAX_ATTEMPTS_BEFORE_NOTIFICATION= <%= MAX_ATTEMPTS_BEFORE_NOTIFICATION %><br>
-STRAP_OFF_TIMEOUT= <%= STRAP_OFF_TIMEOUT %>m<br>
+STRAP_OFF_TIMEOUT= <%= STRAP_OFF_TIMEOUT %>m (deprecated) <br>
+Strap Off timeout: <%= link_to 'Now configurable', "/system_timeouts" %><br>
 STRAP_OFF_POLL_RATE= <%= STRAP_OFF_POLL_RATE %><br>
 MAX_ATTEMPTS_BEFORE_NOTIFICATION_STRAP_OFF= <%= MAX_ATTEMPTS_BEFORE_NOTIFICATION_STRAP_OFF %><br>
 </code>
