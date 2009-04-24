@@ -83,6 +83,13 @@ class Event < ActiveRecord::Base
           if(strap_removed.timestamp > connected_state.timestamp)
             connected_state = strap_removed
           end
+          
+          if (connected_state == gateway_online)
+          	access_mode = Event.get_latest_event_by_type_and_user('AccessMode', user.id)
+          	if (access_mode.mode == 'dialup')
+          		connected_state = access_mode
+      		end
+          end
             
           UtilityHelper.camelcase_to_spaced(connected_state.event_type.to_s)
         end
