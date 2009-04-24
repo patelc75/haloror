@@ -20,7 +20,7 @@ Git: <code><%= `/usr/bin/git --version` %></code><br>
 <b>Rufus Constants </b><br>
 <code>
 GATEWAY_OFFLINE_TIMEOUT= <%= GATEWAY_OFFLINE_TIMEOUT %>m (deprecated)<br>
-GATEWAY_OFFLINE_TIMEOUT= <%= GATEWAY_OFFLINE_TIMEOUT_MARGIN %>m (deprecated)<br>
+GATEWAY_OFFLINE_TIMEOUT_MARGIN= <%= GATEWAY_OFFLINE_TIMEOUT_MARGIN %>%<br>
 Gateway offline timeout: <%= link_to 'Now configurable', "/system_timeouts" %><br>
 GATEWAY_OFFLINE_POLL_RATE= <%= GATEWAY_OFFLINE_POLL_RATE %><br>
 DEVICE_UNAVAILABLE_TIMEOUT= <%= DEVICE_UNAVAILABLE_TIMEOUT %>m (deprecated)<br> 
@@ -33,8 +33,13 @@ Strap Off timeout: <%= link_to 'Now configurable', "/system_timeouts" %><br>
 STRAP_OFF_POLL_RATE= <%= STRAP_OFF_POLL_RATE %><br>
 MAX_ATTEMPTS_BEFORE_NOTIFICATION_STRAP_OFF= <%= MAX_ATTEMPTS_BEFORE_NOTIFICATION_STRAP_OFF %><br>
 </code>
+<br>
+<code>
+<b>Call Center</b><br>
+GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT=<%= GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT %><br>
+</code>
 
-<br><br>
+<br>
 <b>Lost Data</b><br>
 <code>
 LOST_DATA_GAP = <%= LOST_DATA_GAP %>s<br>
@@ -79,6 +84,3 @@ MGMT_CMD_ATTEMPTS_WITHOUT_ACK=<%= MGMT_CMD_ATTEMPTS_WITHOUT_ACK %><br>
 
 <br>
 <br>
-<code>
-GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT=<%= GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT %><br>
-</code>
