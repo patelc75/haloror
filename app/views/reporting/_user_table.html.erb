@@ -11,7 +11,7 @@
 	<div class="col-100">
 		<%=link_to_remote "Username", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'login'}%>
 	</div>
-	<div class="col-150">
+	<div class="col-200">
 		Role(s) - <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
 		<a href="/user_admin/roles">Configure</a>&nbsp;
 		<% end %>
@@ -19,7 +19,7 @@
 	<div class="col-150">
 		Last Login
 	</div>
-	<div class="col-200">
+	<div class="col-50">
 		Links
 	</div>
 </div>

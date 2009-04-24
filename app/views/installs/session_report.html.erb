@@ -1,0 +1,39 @@
+<table border="1">
+	<th>Session</th>
+	<th>Steps</th>
+	<th></th>
+	
+<% for session in @user.self_test_sessions %>
+	<tr><td><%= session.id %></td>
+		<td>
+			<table border='0.5'>
+				<% @nextstep = 0 %>
+				<% @sum = 0.0 %>
+				<% for step in session.self_test_steps.find(:all,:order => 'timestamp') %>		
+				<tr>
+					<td><%= UtilityHelper.format_datetime_readable(step.timestamp, @user) %></td>
+					<td><%= step.self_test_step_description.description %></td>
+					<td>
+						<%#= @nextstep%>
+						<%= UtilityHelper::seconds_format((step.timestamp - @nextstep).seconds) if @nextstep != 0 %>
+						<% @sum += ((step.timestamp - @nextstep).seconds).to_f if @nextstep != 0 %>
+				<% @nextstep = step.timestamp %>		
+					</td>
+					
+				</tr>
+				
+				<% end %>
+				<tr>
+					<td>Total Time</td>
+					<td></td>
+				<td><%= UtilityHelper::seconds_format(@sum.to_f) %></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+<% end %>
+<tr>
+	<td>Total</td>
+	
+</tr>
+</table>		
