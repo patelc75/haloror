@@ -1,4 +1,5 @@
-#!/bin/bash 
+#!/bin/bash
+# testing log
 
 # pull for each git repo for devredmine and redmine
 cd /home/web/devredmine/git_repos/haloror && git pull >> /dev/null 
