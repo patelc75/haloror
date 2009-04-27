@@ -3,8 +3,6 @@ require 'rubygems'
 require 'fileutils' 
 require 'active_record'
 
-ActiveRecord::Base.logger = Logger.new(STDOUT)
-
 time_zone = 'CDT'
 
 ROOT = '/home/web/redmine'
