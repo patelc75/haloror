@@ -102,6 +102,7 @@ class ManagementController < ApplicationController
   end
   
   def create_many
+  	
     @success = true
     #@message = "Command created"
     @message = "Command created by #{current_user.id} #{current_user.name}"
@@ -129,6 +130,8 @@ class ManagementController < ApplicationController
         #command specific parameter (such as <poll_rate> for the mgmt_poll_rate cmd)
         cmd[:param1] = request[:param1] if !request[:param1].blank? and request[:cmd_type] == 'mgmt_poll_rate'
         cmd[:param1] = request[:param2] if !request[:param2].blank? and request[:cmd_type] == 'dial_up_num'
+        cmd[:param2] = request[:param3] if !request[:param3].blank? and request[:cmd_type] == 'dial_up_num'
+        cmd[:param3] = request[:param4] if !request[:param4].blank? and request[:cmd_type] == 'dial_up_num'
         
         if /-/.match(request[:ids])     
           create_cmds_for_range_of_devices(request[:ids], cmd)

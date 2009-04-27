@@ -1,5 +1,5 @@
 class RestfulAuthController < ApplicationController
-   
+ require "digest/sha2"
   make_resourceful do 
     actions :all
     

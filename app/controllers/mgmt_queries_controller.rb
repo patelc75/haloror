@@ -87,8 +87,9 @@ class MgmtQueriesController < RestfulAuthController
         @more = FirmwareUpgrade.find(cmd.cmd_id)
       elsif cmd.cmd_type == 'mgmt_poll_rate' && cmd.param1
         @more = {'poll_rate' => cmd.param1 }
-      elsif cmd.cmd_type == 'dial_up_num' && cmd.param1
-        @more = {'number' => cmd.param1 }
+      elsif cmd.cmd_type == 'dial_up_num' && cmd.param1 && cmd.param2 && cmd.param3
+        @more = {'number' => cmd.param1,'username' => cmd.param2,'password' => cmd.param3 }
+        
       end
       
       query.mgmt_cmd_id = cmd.id
