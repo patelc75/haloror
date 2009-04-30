@@ -69,26 +69,25 @@ class Event < ActiveRecord::Base
       UtilityHelper.camelcase_to_spaced('GatewayOfflineAlert')
     else
       connected_state = gateway_online
-      device_unavailable = Event.get_latest_event_by_type_and_user('DeviceAvailableAlert', user.id)
-      if Event.get_latest_event_by_type_and_user('DeviceUnavailableAlert', user.id).timestamp > device_unavailable.timestamp
+      device_available = Event.get_latest_event_by_type_and_user('DeviceAvailableAlert', user.id)
+      if Event.get_latest_event_by_type_and_user('DeviceUnavailableAlert', user.id).timestamp > device_available.timestamp
         UtilityHelper.camelcase_to_spaced('DeviceUnavailableAlert')
       else
-        if(device_unavailable.timestamp > connected_state.timestamp)
-          connected_state = device_unavailable
+        if(device_available.timestamp > connected_state.timestamp)
+          connected_state = device_available
         end
-        strap_removed = Event.get_latest_event_by_type_and_user('StrapFastened', user.id)
-        if Event.get_latest_event_by_type_and_user('StrapRemoved', user.id).timestamp > strap_removed.timestamp
+        strap_fastened = Event.get_latest_event_by_type_and_user('StrapFastened', user.id)
+        if Event.get_latest_event_by_type_and_user('StrapRemoved', user.id).timestamp > strap_fastened.timestamp
           UtilityHelper.camelcase_to_spaced('StrapRemoved')
         else
-          if(strap_removed.timestamp > connected_state.timestamp)
-            connected_state = strap_removed
+          if(strap_fastened.timestamp > connected_state.timestamp)
+            connected_state = strap_fastened
           end
           
-          if (connected_state == gateway_online)
-          	access_mode = Event.get_latest_event_by_type_and_user('AccessMode', user.id)
-          	if (access_mode.mode == 'dialup')
-          		connected_state = access_mode
-      		end
+          access_mode = Event.get_latest_event_by_type_and_user('AccessMode', user.id)
+          if (access_mode.event.mode == 'dialup')
+            access_mode.event_type = 'DialUp'
+            connected_state = access_mode
           end
             
           UtilityHelper.camelcase_to_spaced(connected_state.event_type.to_s)
