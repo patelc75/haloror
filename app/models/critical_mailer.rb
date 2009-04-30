@@ -165,7 +165,7 @@ class CriticalMailer < ActionMailer::ARMailer
       if (list_caregivers)
         roles_user = user.roles_user_by_caregiver(caregiver)
         if (opts = roles_user.roles_users_option rescue false)
-          @caregiver_info << "(#{opts.position}) #{user.contact_info()} | %s\n" % [opts.is_keyholder? ? "Key holder" : "Non-key holder"]
+          @caregiver_info << "(#{opts.position}) #{caregiver.contact_info()} | %s\n" % [opts.is_keyholder? ? "Key holder" : "Non-key holder"]
         else
           @caregiver_info << "(X) #{user.contact_info()} | (no key information)"
         end
