@@ -25,7 +25,13 @@
         <input type="hidden" name="group_id" value="<%=params[:group_id]%>" />
         <input type="hidden" name="roles_user_id" value="<%=params[:roles_user_id]%>" />
 		<input type="hidden" name="operator" value="<%=params[:operator]%>"/>
+			<% if params[:frame] %>
+			<div style="height:600px;overflow:auto;" id="subcontainer">
+			<% end %>
         <%= render :partial => 'profile' %>
+			<% if params[:frame] %>
+			</div>
+			<% end %>
         <br/>
         <br/>
         <div align="center">

@@ -78,7 +78,12 @@ var RedBox = {
     var height = dimensions.height;        
     
     $("RB_window").style['left'] = ((pagesize[0] - width)/2) + "px";
-    $("RB_window").style['top'] = ((pagesize[1] - height)/2) + "px";
+    if ((pagesize[1] - height) < 10)
+    {
+        $("RB_window").style['top'] = "10px";
+    } else {
+        $("RB_window").style['top'] = ((pagesize[1] - height)/2) + "px";        
+    }
   },
 
 

@@ -65,6 +65,11 @@
          	           <option value="<%= en.id %>" <%= 'selected' if @profile.emergency_number_id == en.id %>> <%= en.name + '--' + en.number %></option>
          	      <% end %>
          	    </select>
+
+			<br/>
+			
+			<%= render :partial => '/profiles/profile_textfields' %>
+			
       <% end %>
       <% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %>
 	      <div><%= link_to "Configure Emergency Dispatch Phone Numbers", :action => 'index', :controller => 'emergency_numbers' %>
