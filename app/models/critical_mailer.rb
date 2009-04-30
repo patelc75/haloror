@@ -40,6 +40,23 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   def device_event_operator(event)
+    # refs #864, New non-wizard email for call center agents
+    setup_caregivers(event.user, event, :caregiver_info, true)
+    @caregiver_info << '\n\n(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
+    message_text = "You received this email because you’re a Halo call center agent.\n\n#{@caregiver_info}\n\n"
+    
+    user = event.user
+    
+    message_text << "ADDRESS + LOCK\n%s\n%s\n%s, %s %s\n%s\n\n" % [user.name, user.profile.address, user.profile.city, user.profile.state, user.profile.zipcode, user.profile.access_information.empty? ? "(No access information)" : user.profile.access_information]
+    message_text << "MEDICAL\n%s\n\n" % [user.profile.allergies.empty? ? "(No medical / allergy information)" : user.profile.allergies]
+    message_text << "PET\n%s\n\n" % [user.profile.pet_information.empty? ? "(No pet information)" : user.profile.pet_information]
+    setup_message('URGENT:  ' + event.to_s, message_text)
+    setup_operators(event, :recepients, :include_phone_call) 
+    #setup_emergency_group(event, :recepients)
+    self.priority  = event.priority
+  end
+
+  def device_event_operator_wizard(event)
     setup_caregivers(event.user, event, :caregiver_info)
     link = get_link_to_call_center()
     @caregiver_info << '\n\n(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
@@ -138,13 +155,21 @@ class CriticalMailer < ActionMailer::ARMailer
     @subject     = "[" + ServerInstance.current_host_short_string + "] #{subject}"
     @sent_on     = Time.now
   end
-  def setup_caregivers(user, alert, mode)
+  def setup_caregivers(user, alert, mode, list_caregivers = false)
     self_alert = user.alert_option(alert)
     recipients_setup(user, self_alert, mode)
     if mode == :caregiver_info and self_alert == nil
       @caregiver_info = "(U) " + user.contact_info() + "\n"
     end
     user.active_caregivers.each do |caregiver|
+      if (list_caregivers)
+        roles_user = user.roles_user_by_caregiver(caregiver)
+        if (opts = roles_user.roles_users_option rescue false)
+          @caregiver_info << "(#{opts.position}) #{user.contact_info()} | %s\n" % [opts.is_keyholder? ? "Key holder" : "Non-key holder"]
+        else
+          @caregiver_info << "(X) #{user.contact_info()} | (no key information)"
+        end
+      end
       recipients_setup(caregiver, user.alert_option_by_type(caregiver, alert), mode)  
     end
     @recipients = @recipients + @text_recipients
