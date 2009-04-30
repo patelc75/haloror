@@ -3,8 +3,7 @@ class AddNewCallCenterFields < ActiveRecord::Migration
     add_column :profiles, :allergies, :text
     add_column :profiles, :pet_information, :text
     
-    add_column :alert_options, :is_keyholder, :boolean
-    add_column :roles_users_options, :is_keyholder, :boolean
+    add_column :roles_users_options, :is_keyholder, :boolean, :default => false
     
     add_column :profiles, :access_information, :text
   end
@@ -13,7 +12,6 @@ class AddNewCallCenterFields < ActiveRecord::Migration
     remove_column :profiles, :access_information
     
     remove_column :roles_users_options, :is_keyholder
-    remove_column :alert_options, :is_keyholder
     
     remove_column :profiles, :pet_information
     remove_column :profiles, :allergies

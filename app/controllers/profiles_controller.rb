@@ -91,16 +91,16 @@ class ProfilesController < ApplicationController
   def update_caregiver_profile
     sent = false
     user = User.find(params[:user_id])
-    user.email = params[:email]
     @profile = Profile.find(params[:id])
     @user = user
     @group_id = params[:group_id]
+#    raise params.inspect
     begin
     User.transaction do
-      user.save!
-
+      user.update_attribute('email', params[:email])
       if(!params[:roles_user_id].blank?)
         @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
+        @roles_users_option.update_attributes!(params[:roles_users_option])
         @roles_users_option.relationship = params[:relationship]
         @roles_users_option.save!
       end

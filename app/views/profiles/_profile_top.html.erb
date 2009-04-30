@@ -13,14 +13,19 @@
 	    <%= text_field :profile,  :last_name %>
 	    <br />      
 	    <br />
-	    <% if @roles %>     
+	    <% if @roles_users_option %>     
 	      <label for="relationship"> Relationship </label>
 	      <br />
 	  
-	               <%= text_field_tag :relationship, @roles.relationship %>
-	        
+	               <%= text_field_tag :relationship, @roles_users_option.relationship %>
 	      <br />
 	      <br />
+				<% if @roles_users_option.roles_user.role.name == "caregiver" %>
+				<br />
+				<%= check_box(:roles_users_option, :is_keyholder) %> <label for"is_keyholder">Caregiver is keyholder?</label>
+				<br/>
+				<br/>
+				<% end %>
 	    <% end %>
 	   
 	   
