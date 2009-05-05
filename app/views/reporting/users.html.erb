@@ -6,6 +6,7 @@
      gs << group.name
    end
 %>
+<%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
 Select Group:  
 <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]}, @group_name), {:onchange => "$('group_form_id').submit();"}%>
 </form>
