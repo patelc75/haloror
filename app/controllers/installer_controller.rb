@@ -83,7 +83,7 @@ class InstallerController < ApplicationController
     init_user_group
     @gateway = Device.new
     @strap = Device.new
-    @self_test_session = SelfTestSession.create(:created_at => Time.now, :user_id => @user.id, :created_by => current_user.id)
+    @self_test_session = SelfTestSession.create(:created_at => Time.now.utc, :user_id => @user.id, :created_by => current_user.id)
     @self_test_session_id = @self_test_session.id
   end
   
@@ -94,6 +94,7 @@ class InstallerController < ApplicationController
     @self_test_session_id = params[:self_test_session_id]
     @self_test_session = SelfTestSession.find(@self_test_session_id)
     gateway_serial_number = params[:gateway_serial_number]
+    
     unless gateway_serial_number
       gateway_serial_number = params[:gateway][:serial_number]      
     end
@@ -181,9 +182,9 @@ class InstallerController < ApplicationController
     init_user_group
     init_devices_self_test_session
     clear_session_data
-    @self_test_session = SelfTestSession.create(:created_at => Time.now, :user_id => @user.id, :created_by => current_user.id)
+    @self_test_session = SelfTestSession.create(:created_at => Time.now.utc, :user_id => @user.id, :created_by => current_user.id)
     @self_test_session_id = @self_test_session.id
-    session[:self_test_time_created] = Time.now
+    session[:self_test_time_created] = Time.now.utc
     redirect_to :action => 'installer', :controller => 'installer', :self_test_session_id => @self_test_session_id,
     :gateway_id => @gateway.id, :strap_id => @strap.id, :user_id => @user.id
   end
@@ -893,7 +894,7 @@ class InstallerController < ApplicationController
   def create_self_test_step(description_id)
     self_test_step_description = SelfTestStepDescription.find(description_id)    
     self_test_step = SelfTestStep.create(:self_test_step_description_id => self_test_step_description.id,
-                                         :timestamp => Time.now,
+                                         :timestamp => Time.now.utc,
                                          :user_id => current_user.id, 
                                          :halo_user_id => @user.id,
                                          :self_test_session_id => @self_test_session_id)
@@ -913,7 +914,8 @@ class InstallerController < ApplicationController
   end
   
   def check_battery_critical?
-    @battery = Battery.find(:first, :conditions => "device_id = #{@strap.id} AND timestamp >= '#{@self_test_session.created_at.to_s}'", :order => 'timestamp desc')  
+  	@battery = Battery.find(:first, :conditions => "device_id = #{@strap.id} AND timestamp >= '#{@self_test_session.created_at.to_s}'", :order => 'timestamp desc')  
+  
     if @battery && @battery.percentage <= 1
       return "Battery is at or less than 1% please recharge the battery."
     else
@@ -968,7 +970,7 @@ class InstallerController < ApplicationController
     @self_test = SelfTestResult.new(:result => true, 
                                     :cmd_type => 'self_test', 
     :device_id => @strap_id, 
-    :timestamp => Time.now)   
+    :timestamp => Time.now.utc)   
     self_test_step = create_self_test_step(SELF_TEST_CHEST_STRAP_COMPLETE_ID)
     session[:halo_check_chest_strap_self_test] = self_test_step
     session[:halo_check_chest_strap_self_test_result] = @self_test
