@@ -85,7 +85,7 @@ class Event < ActiveRecord::Base
           end
           
           access_mode = Event.get_latest_event_by_type_and_user('AccessMode', user.id)
-          if (access_mode.event.mode == 'dialup')
+	  if (access_mode.event_type != 'Not found' and access_mode.event.mode == 'dialup')
             access_mode.event_type = 'DialUp'
             connected_state = access_mode
           end
