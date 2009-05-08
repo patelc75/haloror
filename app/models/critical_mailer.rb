@@ -47,9 +47,9 @@ class CriticalMailer < ActionMailer::ARMailer
     
     user = event.user
     
-    message_text << "ADDRESS + LOCK\n%s\n%s\n%s, %s %s\n%s\n\n" % [user.name, user.profile.address, user.profile.city, user.profile.state, user.profile.zipcode, user.profile.access_information.empty? ? "(No access information)" : user.profile.access_information]
-    message_text << "MEDICAL\n%s\n\n" % [user.profile.allergies.empty? ? "(No medical / allergy information)" : user.profile.allergies]
-    message_text << "PET\n%s\n\n" % [user.profile.pet_information.empty? ? "(No pet information)" : user.profile.pet_information]
+    message_text << "ADDRESS + LOCK\n%s\n%s\n%s, %s %s\n%s\n\n" % [user.name, user.profile.address, user.profile.city, user.profile.state, user.profile.zipcode, user.profile.access_information.blank? ? "(No access information)" : user.profile.access_information]
+    message_text << "MEDICAL\n%s\n\n" % [user.profile.allergies.blank? ? "(No medical / allergy information)" : user.profile.allergies]
+    message_text << "PET\n%s\n\n" % [user.profile.pet_information.blank? ? "(No pet information)" : user.profile.pet_information]
     setup_message('URGENT:  ' + event.to_s, message_text)
     setup_operators(event, :recepients, :include_phone_call) 
     #setup_emergency_group(event, :recepients)
