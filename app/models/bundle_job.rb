@@ -1,6 +1,6 @@
 class BundleJob
   BUNDLE_PATH = "#{RAILS_ROOT}/dialup"
-  ARCHIVE_PATH = "#{RAILS_ROOT}/archive"
+  ARCHIVE_PATH = "#{RAILS_ROOT}/dialup/archive"
   EXT_NAME = '.tar.bz2'
   def self.job_process_bundles
     RAILS_DEFAULT_LOGGER.warn("BundleJob.job_process_bundle running at #{Time.now}")
