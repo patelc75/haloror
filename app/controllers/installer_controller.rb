@@ -924,7 +924,7 @@ class InstallerController < ApplicationController
   end
   
   def check_registration_timeout?
-    if Time.now > (session[:self_test_time_created] + 180.seconds)
+    if Time.now > (session[:self_test_time_created] + INSTALL_WIZ_TIMEOUT_REGISTRATION)
       return true
     else 
       return false
@@ -1033,25 +1033,25 @@ class InstallerController < ApplicationController
   end
   
   def check_gateway_timeout?
-    timeout?(REGISTRATION_COMPLETE_ID, 220.seconds)
+    timeout?(REGISTRATION_COMPLETE_ID, INSTALL_WIZ_TIMEOUT_GATEWAY)
   end
   
   def check_chest_strap_timeout?
-    timeout?(SELF_TEST_GATEWAY_COMPLETE_ID, 240.seconds)
+    timeout?(SELF_TEST_GATEWAY_COMPLETE_ID, INSTALL_WIZ_TIMEOUT_CS)
   end
   
   def check_phone_timeout?
-    timeout?(SELF_TEST_CHEST_STRAP_COMPLETE_ID, 145.seconds)
+    timeout?(SELF_TEST_CHEST_STRAP_COMPLETE_ID, INSTALL_WIZ_TIMEOUT_PHONE)
   end
   
   
   def check_heartrate_timeout?
    if previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_PHONE_COMPLETE_ID}")
-      timeout?(SELF_TEST_PHONE_COMPLETE_ID, 240.seconds)
+      timeout?(SELF_TEST_PHONE_COMPLETE_ID, INSTALL_WIZ_TIMEOUT_HEARTRATE)
     elsif previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_PHONE_FAILED_ID}")
-      timeout?(SELF_TEST_PHONE_FAILED_ID, 240.seconds)
+      timeout?(SELF_TEST_PHONE_FAILED_ID, INSTALL_WIZ_TIMEOUT_HEARTRATE)
     else
-      timeout?(SELF_TEST_PHONE_TIMEOUT_ID, 240.seconds)
+      timeout?(SELF_TEST_PHONE_TIMEOUT_ID, INSTALL_WIZ_TIMEOUT_HEARTRATE)
     end
   end
   
