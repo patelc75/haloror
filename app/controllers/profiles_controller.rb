@@ -107,8 +107,8 @@ class ProfilesController < ApplicationController
     
       @profile.update_attributes!(params[:profile])
       if(current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships))
-        group = Group.find_by_name('EMS')
-        if(params[:opt_out_ems].blank?)
+        group = Group.find_by_name('SafetyCare')
+        if(params[:opt_out_call_center].blank?)
           user.is_halouser_of group
         elsif(user.is_halouser_of? group)
           role = Role.find(:first, :conditions => "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{group.id}")

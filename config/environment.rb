@@ -189,7 +189,7 @@ INSTALLATION_SERIAL_NUMBERS_ENTERED_ID=27
 INSTALLATION_SERIAL_NUMBERS_ENTERED_FAILED_ID=28
 REGISTRATION_TIMEOUT_ID=29
 DIAL_UP_ARCHIVE_FILES_TO_KEEP_MIN=2
-EMERGENCY_GROUPS=['EMS']
+EMERGENCY_GROUPS=['EMS', 'SafetyCare']
 
 #used when call is accepted/resolved on crit1 and needs to be updated on crit2 
 #so the agent doesn't accidentally accept/resolve the call on crit2
