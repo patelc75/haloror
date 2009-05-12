@@ -66,7 +66,7 @@ class InstallerController < ApplicationController
     init_user_group
   end
   
-  def phone_check_step
+  def charge_check_step
     init_user_group
   end
   
