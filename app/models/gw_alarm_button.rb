@@ -6,7 +6,12 @@ class GwAlarmButton < DeviceAlert
   end
   
   def to_s
-  	"We have detected that the Gateway Alarm button has been pushed for #{user.name}'s on #{timestamp}"
+  	"Gateway Alarm button has been pushed for #{user.name} on #{timestamp}"
+  end
+  
+  def email_body
+    "We have detected that the Gateway Alarm button has been pushed for #{user.name} on #{timestamp}\n\n" +
+      "Sincerely, Halo Staff"
   end
   
   def after_save
