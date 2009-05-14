@@ -23,13 +23,14 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   def gw_alarm(event)
       setup_caregivers(event.user, event, :recepients)
-      setup_halo_operators()
+      #setup_halo_operators()
+	  setup_operators(event, :recepients, :include_phone_call, :halo_only) 
       setup_message(event.to_s, event.email_body)
       self.priority = Priority::IMMEDIATE
   end
   def device_event_admin(event)
     setup_caregivers(event.user, event, :recepients)
-    setup_halo_operators()
+    setup_operators(event, :recepients, :include_phone_call, :halo_only) 
     setup_message(event.to_s, "It has been #{GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT / 60} minutes and we have detected that the GW Alarm button has not been pushed for #{event.user.name} #{event.event.event_type} on #{event.timestamp}")
     self.priority = Priority::IMMEDIATE
   end
@@ -178,13 +179,19 @@ class CriticalMailer < ActionMailer::ARMailer
     @recipients = @recipients + @text_recipients
   end
   
-  def setup_operators(event, mode, phone = :no_phone_call)
+  def setup_operators(event, mode, phone = :no_phone_call, group = :all)
     ops = User.active_operators
     groups = event.user.group_memberships
+    halo_group = Group.find_by_name('halo') if group == :halo_only
     operators = []
     ops.each do |op|
-      operators << op if(op.is_operator_of_any?(groups))
+      if (group == :halo_only)
+  	    operators << op if operator.is_operator_of? halo_group
+  	  else
+      	operators << op if(op.is_operator_of_any?(groups))
+  	  end
     end
+    
     if operators
       operators.each do |operator|
         recipients_setup(operator, operator.alert_option_by_type_operator(operator,event), mode, phone)
