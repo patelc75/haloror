@@ -1,4 +1,4 @@
-class CallCenterDeferred < ActiveRecord::Base
+class CallCenterDeferred < DeviceAlert
   belongs_to :device
   belongs_to :user
   belongs_to :event

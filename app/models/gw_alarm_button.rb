@@ -6,7 +6,7 @@ class GwAlarmButton < DeviceAlert
   end
   
   def to_s
-    "Gateway Alarm Reset button pressed on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
+  	"We have detected that the Gateway Alarm button has been pushed for #{user.name}'s #{event.event_type} on #{event.timestamp}"
   end
   
   def after_save
@@ -18,6 +18,14 @@ class GwAlarmButton < DeviceAlert
         resolve_event(d.event)
       end
     end
+
+    gw_timeout = GwAlarmButtonTimeout.find(:all, :conditions => "user_id = #{user_id} AND pending = true")
+    if gw_timeout && gw_timeout.size > 0
+      gw_timeout.each do |g|
+        g.pending = false
+        g.save!
+      end
+    end    
   end
   
   def resolve_event(evt)

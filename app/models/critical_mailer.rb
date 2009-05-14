@@ -23,7 +23,8 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   def gw_alarm(event)
       setup_caregivers(event.user, event, :recepients)
-      setup_message(event.to_s, "We have detected the Gateway Alarm Reset button has been pressed on #{event.timestamp} for #{event.user.name}")
+      setup_halo_operators()
+      setup_message(event.to_s, event.email_body)
       self.priority = Priority::IMMEDIATE
   end
   def device_event_admin(event)
@@ -56,6 +57,8 @@ class CriticalMailer < ActionMailer::ARMailer
     self.priority  = event.priority
   end
 
+#this method is deperecated, use this for from event observer when the call center wizard is being used
+#CP 05/13/09
   def device_event_operator_wizard(event)
     setup_caregivers(event.user, event, :caregiver_info)
     link = get_link_to_call_center()
