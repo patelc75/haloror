@@ -7,7 +7,7 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
         raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
       elsif event.class == CallCenterFollowUp
         CriticalMailer.deliver_device_event_admin(event)
-      elsif event.class == GwAlarmButton or GwAlarmButtonTimeOut
+      elsif event.class == GwAlarmButton or GwAlarmButtonTimeout
         CriticalMailer.deliver_gw_alarm(event)
       else 
         CriticalMailer.deliver_device_event_operator_text(event)
@@ -20,7 +20,7 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
 
     def after_save(alert)
       Event.create_event(alert.user_id, alert.class.to_s, alert.id, alert.timestamp)
-      if event.class == Fall or Panic
+      if alert.class == Fall or Panic
     	gw_timeout = GwAlarmButtonTimeout.create(:pending => true, 
                                               :device_id => alert.device_id, 
                                               :user_id => alert.user_id,
