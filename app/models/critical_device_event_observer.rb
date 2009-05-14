@@ -20,7 +20,7 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
 
     def after_save(alert)
       Event.create_event(alert.user_id, alert.class.to_s, alert.id, alert.timestamp)
-      if alert.class == Fall or Panic
+      if alert.class == Fall or alert.class == Panic
     	gw_timeout = GwAlarmButtonTimeout.create(:pending => true, 
                                               :device_id => alert.device_id, 
                                               :user_id => alert.user_id,
