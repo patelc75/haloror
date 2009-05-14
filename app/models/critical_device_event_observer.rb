@@ -7,7 +7,7 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
         raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
       elsif event.class == CallCenterFollowUp
         CriticalMailer.deliver_device_event_admin(event)
-      elsif event.class == GwAlarmButton or GwAlarmButtonTimeout
+      elsif event.class == GwAlarmButton
         CriticalMailer.deliver_gw_alarm(event)
       else 
         CriticalMailer.deliver_device_event_operator_text(event)
@@ -32,6 +32,7 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
           #RAILS_DEFAULT_LOGGER.warn("spawn Checking CallCenterDeferred: #{deferred.id}")
           gw_timeout = GwAlarmButtonTimeout.find(gw_timeout.id)
           if gw_timeout && gw_timeout.pending
+          	CriticalMailer.deliver_gw_alarm(gw_timeout)
     		Event.create_event(gw_timeout.user_id, GwAlarmButtonTimeout.class_name, gw_timeout.id, gw_timeout.timestamp)
           end
         end
