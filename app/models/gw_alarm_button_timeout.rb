@@ -1,6 +1,8 @@
 class GwAlarmButtonTimeout < DeviceAlert
   set_table_name "gw_alarm_button_timeouts"
 
+  belongs_to :event, :polymorphic => true
+  
   def priority
     return IMMEDIATE
   end
