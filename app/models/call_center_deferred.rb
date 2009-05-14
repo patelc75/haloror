@@ -1,4 +1,6 @@
 class CallCenterDeferred < DeviceAlert
+  set_table_name "call_center_deferreds"
+
   belongs_to :device
   belongs_to :user
   belongs_to :event

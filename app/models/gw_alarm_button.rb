@@ -6,18 +6,19 @@ class GwAlarmButton < DeviceAlert
   end
   
   def to_s
-  	"We have detected that the Gateway Alarm button has been pushed for #{user.name}'s #{event.event_type} on #{event.timestamp}"
+  	"We have detected that the Gateway Alarm button has been pushed for #{user.name}'s on #{timestamp}"
   end
   
   def after_save
-    deferred = CallCenterDeferred.find(:all, :conditions => "user_id = #{user_id} AND pending = true")
-    if deferred && deferred.size > 0
-      deferred.each do |d|
-        d.pending = false
-        d.save!
-        resolve_event(d.event)
-      end
-    end
+    #removed since we're not using the call center wizard
+    #deferred = CallCenterDeferred.find(:all, :conditions => "user_id = #{user_id} AND pending = true")
+    #if deferred && deferred.size > 0
+    #  deferred.each do |d|
+    #    d.pending = false
+    #    d.save!
+    #   resolve_event(d.event)
+    #  end
+    #end
 
     gw_timeout = GwAlarmButtonTimeout.find(:all, :conditions => "user_id = #{user_id} AND pending = true")
     if gw_timeout && gw_timeout.size > 0
