@@ -25,6 +25,7 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
                                               :device_id => alert.device_id, 
                                               :user_id => alert.user_id,
                                               :event_id => alert.id,
+                                              :event_type => alert.class_name,
                                               :timestamp => Time.now)
         spawn do
           sleep(GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT) 
