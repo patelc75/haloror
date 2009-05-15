@@ -1,6 +1,6 @@
 class CriticalDeviceEventObserver  < ActiveRecord::Observer
     include ServerInstance
-    observe Fall, Panic, GwAlarmButton, GwAlarmButtonTimeout, CallCenterFollowUp
+    observe Fall, Panic, GwAlarmButton, CallCenterFollowUp
 
     def before_save(event)
       if event.user_id < 1 or event.user == nil
