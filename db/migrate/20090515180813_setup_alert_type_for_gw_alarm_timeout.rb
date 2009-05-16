@@ -4,7 +4,7 @@ class SetupAlertTypeForGwAlarmTimeout < ActiveRecord::Migration
     alert_type.save!
     alert_group = AlertGroup.find_by_group_type('critical')
     alert_type.alert_groups << alert_group if alert_group
-    ale  	
+    alert_type.save!	
   end
 
   def self.down
