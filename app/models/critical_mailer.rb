@@ -261,7 +261,7 @@ class CriticalMailer < ActionMailer::ARMailer
       
       if text_msg_bool == true and mode == :recepients
         if !user.profile.cell_phone.blank? and mode == :recepients
-          @text_recipients  << ["#{user.profile.cell_phone}" + "#{user.profile.carrier.domain}"]
+          @text_recipients  << ["#{user.profile.phone_strip(user.profile.cell_phone)}" + "#{user.profile.carrier.domain}"]
         end
       end
       
