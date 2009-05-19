@@ -22,6 +22,7 @@ class Device < ActiveRecord::Base
   has_many :gateway_online_alerts
   has_many :batteries
   has_many :access_modes
+  has_one :access_mode_status
   
   has_and_belongs_to_many :users
   
