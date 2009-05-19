@@ -222,8 +222,7 @@ class Vital < ActiveRecord::Base
     conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"
     
     alerts = DeviceUnavailableAlert.find(:all,
-      :conditions => conds
-      .join(' and '))
+      :conditions => conds.join(' and '))
     alerts.each do |alert|
       DeviceUnavailableAlert.transaction do
         DeviceAvailableAlert.create(:device => alert.device)
