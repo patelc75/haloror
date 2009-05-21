@@ -77,4 +77,11 @@
 	    <input type="checkbox" name="opt_out_call_center" <%= 'checked' if(!(@user.is_halouser_of? Group.find_by_name('SafetyCare'))) %> />
 	    <label for"opt_out_call_center">Opt out of live call center</label>
 	    
+	    <br />
+	    <label for="account_number">Account Number (for SafetyCare)</label>
+	    <br />
+	    <%= text_field :profile, :account_number %>
+	    <br />
+	    
+	    
 	    <% end %>

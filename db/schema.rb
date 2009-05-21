@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090430172736) do
+ActiveRecord::Schema.define(:version => 20090521032149) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -445,6 +445,15 @@ ActiveRecord::Schema.define(:version => 20090430172736) do
     t.datetime "updated_at"
   end
 
+  create_table "gw_alarm_button_timeouts", :force => true do |t|
+    t.integer  "device_id"
+    t.integer  "user_id"
+    t.integer  "event_id"
+    t.datetime "timestamp"
+    t.boolean  "pending"
+    t.string   "event_type"
+  end
+
   create_table "gw_alarm_buttons", :force => true do |t|
     t.integer  "device_id"
     t.integer  "user_id"
@@ -629,6 +638,7 @@ ActiveRecord::Schema.define(:version => 20090430172736) do
     t.text    "allergies"
     t.text    "pet_information"
     t.text    "access_information"
+    t.string  "account_number",      :limit => 4
   end
 
   add_index "profiles", ["user_id"], :name => "index_profiles_on_user_id"

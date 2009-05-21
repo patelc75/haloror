@@ -17,6 +17,7 @@ class Profile < ActiveRecord::Base
   validates_presence_of     :cell_phone, :if => :phone_required?, :message => 'or Home Phone is required'
   validates_presence_of     :carrier_id, :if => :cell_phone_exists?
 
+  validates_length_of       :account_number, :maximum => 4
   
   #validates_length_of       :home_phone, :is => 10
   #validates_length_of       :work_phone, :is => 10, :if => :work_phone_exists?
