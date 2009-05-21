@@ -1,5 +1,6 @@
 class CriticalDeviceEventObserver  < ActiveRecord::Observer
     include ServerInstance
+    include UtilityHelper
     observe Fall, Panic, GwAlarmButton, CallCenterFollowUp
 
     def before_save(event)
@@ -10,6 +11,19 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
       elsif event.class == GwAlarmButton
         CriticalMailer.deliver_gw_alarm(event)
       else 
+        # refs 1523:
+        begin
+          if !event.user.profile.empty? && !event.user.profile.account_number.empty?
+              SafetyCareClient.alert(event.user.profile.account_number, event.event_type_numeric)
+          end
+        rescue Exception => e
+          UtilityHelper.log_message("SafetyCareClient.alert::Exception:: #{e} : #{event.to_s}", e)
+        rescue Timeout::Error => e
+          UtilityHelper.log_message("SafetyCareClient.alert::Timeout::Error:: #{e} : #{event.to_s}", e)
+        rescue
+          UtilityHelper.log_message("SafetyCareClient.alert::UNKNOWN::Error: #{event.to_s}")         
+        end
+
         CriticalMailer.deliver_device_event_operator_text(event)
         CriticalMailer.deliver_device_event_operator(event)
         if(ServerInstance.current_host_short_string() != "ATL-WEB1")

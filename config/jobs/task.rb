@@ -111,3 +111,15 @@ SCHEDULER.schedule_every(BUNDLE_JOB_DIAL_UP_TIME) {
     UtilityHelper.log_message("BundleJob.job_process_bundles::UNKNOWN::Error")         
   end
 }
+
+SCHEDULER.schedule_every(SAFETYCARE_HEARTBEAT_TIME) {
+  begin
+    SafetyCareCleint.heartbeat()
+  rescue Exception => e
+    UtilityHelper.log_message("SafetyCareClient.heartbeat::Exception:: #{e}", e)
+  rescue Timeout::Error => e
+    UtilityHelper.log_message("SafetyCareClient.heartbeat::Timeout::Error:: #{e}", e)
+  rescue
+    UtilityHelper.log_message("SafetyCareClient.heartbeat::UNKNOWN::Error")         
+  end
+}

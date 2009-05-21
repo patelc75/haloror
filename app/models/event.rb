@@ -63,6 +63,16 @@ class Event < ActiveRecord::Base
     event
   end
   
+  def event_type_numeric
+    # FIXME: TODO: fill out these event types properly
+    case event_type
+    when "Fall" then "001"
+    when "Panic" then "002"
+    when "GwAlarmButton" then "003"
+    when "CallCenterFollowUp" then "0004"
+    else "000"
+  end
+  
   def self.get_connectivity_state_by_user(user)
     gateway_online = Event.get_latest_event_by_type_and_user('GatewayOnlineAlert', user.id)
     if Event.get_latest_event_by_type_and_user('GatewayOfflineAlert', user.id).timestamp > gateway_online.timestamp
