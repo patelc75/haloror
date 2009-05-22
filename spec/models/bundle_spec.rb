@@ -21,5 +21,4 @@ describe Models do
       end
       num_records.should be(@no_records + CLAZZES.size)
   end
-
 end
