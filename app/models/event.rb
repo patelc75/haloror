@@ -71,6 +71,7 @@ class Event < ActiveRecord::Base
     when "GwAlarmButton" then "003"
     when "CallCenterFollowUp" then "0004"
     else "000"
+	end
   end
   
   def self.get_connectivity_state_by_user(user)
