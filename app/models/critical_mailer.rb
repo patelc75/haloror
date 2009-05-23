@@ -27,6 +27,7 @@ class CriticalMailer < ActionMailer::ARMailer
 	  setup_operators(event, :recepients, :include_phone_call, :halo_only) 
       setup_message(event.to_s, event.email_body)
       self.priority = Priority::IMMEDIATE
+      @recipients = @recipients + @text_recipients
   end
   def device_event_admin(event)
     setup_caregivers(event.user, event, :recepients)
@@ -186,7 +187,7 @@ class CriticalMailer < ActionMailer::ARMailer
     operators = []
     ops.each do |op|
       if (group == :halo_only)
-  	    operators << op if operator.is_operator_of? halo_group
+  	    operators << op if op.is_operator_of? halo_group
   	  else
       	operators << op if(op.is_operator_of_any?(groups))
   	  end
