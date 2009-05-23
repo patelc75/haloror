@@ -1,4 +1,17 @@
 class AccessModesController < RestfulAuthController  
+  def create
+    @access_mode = AccessMode.new(params[:access_mode])
+
+    if @access_mode.save
+      check
+    else
+      respond_to do |format|         
+        format.html { render :action => "new" }
+        format.xml  { render :xml => @access_mode.errors.to_xml }
+      end
+    end
+  end
+
   def authenticated?
     if action_name == 'create' or action_name == 'check' 
       return authorize
