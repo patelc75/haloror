@@ -757,7 +757,11 @@ ul.removed_caregivers li a
 {
 	font-size:3em;
 }
-
+.signup_detail_fields{
+	float:left;
+	width:250px;
+	font:bold;
+}
 #my_links {padding: 0; margin: 0; float:right; }
 #my_links li {list-style-type: none;position: relative; margin: 0; padding: 0;}
 #my_links ul {display: none;background:black;padding:5px;text-align:left;}
