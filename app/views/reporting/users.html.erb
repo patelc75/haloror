@@ -12,6 +12,10 @@ Select Group:
 </form>
 <div id="user-table" class="table">
 	<%=render :partial => 'user_table', :locals => {:users => @users, :sortby => 'id', :reverse => false}%>
+	<br>
+    <br>
+    <center><big><%= will_paginate @users %></big></center>
+
 </div>
 
 <div id="range_test_launcher"></div>
