@@ -85,6 +85,22 @@ class User < ActiveRecord::Base
       end
     end
   end
+  def full_name
+  	self.profile.first_name && self.profile.last_name ? self.profile.first_name + " " + self.profile.last_name : nil
+  end
+  def address
+  	address = self.profile.address
+  	pcity = self.profile.city
+  	pstate = self.profile.state
+  	zipcode = self.profile.zipcode
+  	address && pcity && pstate && zipcode ? address + ', ' + pcity + ', ' + pstate + ' - ' + zipcode : nil
+  end
+  def carrier
+  	self.profile.cell_phone && self.profile.carrier_id ? self.profile.carrier.name : nil
+  end
+  def emergency_number_with_name
+  	self.profile.emergency_number_id ? self.profile.emergency_number.name + ' - ' + self.profile.emergency_number.number : nil
+  end
   def activated?
     # the existence of an activation code means they have not activated yet
     activation_code.nil?
