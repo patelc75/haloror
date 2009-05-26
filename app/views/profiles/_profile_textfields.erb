@@ -1,12 +1,30 @@
 <label for="access">Premises Access (Combination, Lockbox Code, Key Location)</label>
 <br />
 	<%= text_field :profile, :access_information %>
-
-<br/><label for="pets">Pet Information</label>
+<br/><br/><label for="door">Door to break into if no key</label>
+<br />
+	<%= text_field :profile, :door %>
+<br/><br/><label for="pets">Pet Information</label>
 <br />
 	<%= text_field :profile, :pet_information %>
 
-<br/><label for="allergies">Allergies and Medical Information</label>
+<br/><br/><label for="allergies">Allergies and Medical Information</label>
 <br />
 	<%= text_area :profile, :allergies, :cols => 30, :rows => 10%>
 
+<br/><br/><label for="hospital_preference">Hospital Preference</label>
+<br />
+	<%= text_field :profile, :hospital_preference %>
+	
+<br/><br/><label for="hospital_number">Hospital Number</label>
+<br />
+	<%= text_field :profile, :hospital_number %>
+	
+<br/><br/><label for="doctor_name">Doctor Name</label>
+<br />
+	<%= text_field :profile, :doctor_name %>
+	
+<br/><br/><label for="doctor_phone">Doctor Phone</label>
+<br />
+	<%= text_field :profile, :doctor_phone %>
+	

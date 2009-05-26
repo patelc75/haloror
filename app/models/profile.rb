@@ -15,9 +15,13 @@ class Profile < ActiveRecord::Base
   
   validates_presence_of     :home_phone, :if => :phone_required?, :message => 'or Cell Phone is required'
   validates_presence_of     :cell_phone, :if => :phone_required?, :message => 'or Home Phone is required'
-  validates_presence_of     :carrier_id, :if => :cell_phone_exists?
+  validates_presence_of     :carrier_id, :if => :cell_phone_exists?, :message => "for Cell Phone can't be blank"
 
-  validates_length_of       :account_number, :maximum => 4
+  validates_presence_of     :emergency_number_id,:if => :unless_new_halouser
+  
+  validates_length_of       :account_number, :maximum => 4,:if => :unless_new_halouser
+  validates_length_of       :hospital_number, :maximum => 10,:if => :unless_new_halouser
+  validates_length_of       :doctor_phone, :maximum => 10,:if => :unless_new_halouser
   
   #validates_length_of       :home_phone, :is => 10
   #validates_length_of       :work_phone, :is => 10, :if => :work_phone_exists?
@@ -50,13 +54,21 @@ class Profile < ActiveRecord::Base
       return true
     end
   end
+  def unless_new_halouser
+    if self[:is_halouser]
+      return true
+    else
+      return false
+    end
+  end
+  
   def cell_phone_exists?
     if unless_new_caregiver
       if self.cell_phone.blank?
-        return true
+        return false
       end
     end
-      return false
+      return true
   end
   
   def work_phone_exists?
