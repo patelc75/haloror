@@ -46,7 +46,11 @@ class ReportingController < ApplicationController
   end
   
   def users
-    @users = User.find(:all, :include => [:roles, :roles_users], :order => 'users.id')
+    #@users = User.find(:all, :include => [:roles, :roles_users], :order => 'users.id')
+    @users = User.paginate :page    => params[:page],
+                           :include => [:roles, :roles_users],
+                           :order   => 'users.id',
+                           :per_page => REPORTING_USERS_PER_PAGE
     @roles = []
     rows = Role.connection.select_all("Select Distinct name from roles order by name asc")
     rows.collect do |row|
@@ -85,12 +89,16 @@ class ReportingController < ApplicationController
       RAILS_DEFAULT_LOGGER.warn(group_ids)
       conditions = "devices.id IN (Select device_id from devices_users where devices_users.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids}))))"
     end
-    if conditions.blank?
-      @devices = Device.find(:all, :order => "id asc")
-    else
-      @devices = Device.find(:all, :order => "id asc",
-                                  :conditions => conditions)
-    end
+   # if conditions.blank?
+   #   @devices = Device.find(:all, :order => "id asc")
+    #else
+    #  @devices = Device.find(:all, :order => "id asc",:conditions => conditions)
+    #end
+    @devices = Device.paginate :page       => params[:page],
+                               :order      => "id asc",
+                               :conditions => conditions,
+                               :per_page   => REORTING_DEVICES_PER_PAGE
+    
   end
   
   def device_hidden
@@ -118,8 +126,9 @@ class ReportingController < ApplicationController
   end
   
   def search_user_table
-    users = User.find(:all, :conditions => "login like '%#{params[:query]}%' or first_name like '%#{params[:query]}%' or last_name like '%#{params[:query]}%'",:include => [ :profile ])
-        
+
+    users = User.find(:all, :conditions => "login like '%#{params[:query]}%' or profiles.first_name like '%#{params[:query]}%' or profiles.last_name like '%#{params[:query]}%'",:include => [ :profile ])
+
     render :partial => 'user_table', :locals => {:users => users, :sortby => 'id', :reverse => false}
   end
   
