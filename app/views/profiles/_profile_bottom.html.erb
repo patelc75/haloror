@@ -51,15 +51,15 @@
 	           
 	             <br/>
          	    <br />
-      <% if @user.is_halouser? %>
+     <% if @user.is_halouser? %>	
       <label for="emergency_number">Emergency Number</label>
       <br />
-         	    <% groups = @user.group_memberships
+         	    <% groups = current_user.group_memberships
          	       emergency_numbers = []
          	       groups.each do |group|
          	         emergency_numbers = emergency_numbers + EmergencyNumber.find_all_by_group_id(group.id)
          	       end %>
-         	    <select id="profile_emergency_number_id" name="profile[emergency_number_id]">
+         	    <select id="profile_emergency_number_id" name="profile[emergency_number_id]" style="width:200px;">
          	           <option value="">Choose Emergency Number</option>
          	      <% emergency_numbers.each do |en|  %>
          	           <option value="<%= en.id %>" <%= 'selected' if @profile.emergency_number_id == en.id %>> <%= en.name + '--' + en.number %></option>
@@ -67,17 +67,14 @@
          	    </select>
 
 			<br/>
-			
-			<%= render :partial => '/profiles/profile_textfields' %>
-			
-      <% end %>
+
       <% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %>
 	      <div><%= link_to "Configure Emergency Dispatch Phone Numbers", :action => 'index', :controller => 'emergency_numbers' %>
         </div>
 	    <input type="checkbox" name="opt_out_call_center" <%= 'checked' if(!(@user.is_halouser_of? Group.find_by_name('SafetyCare'))) %> />
 	    <label for"opt_out_call_center">Opt out of live call center</label>
 	    
-	    <br />
+	    <br /><br />
 	    <label for="account_number">Account Number (for SafetyCare)</label>
 	    <br />
 	    <%= text_field :profile, :account_number %>
@@ -85,3 +82,8 @@
 	    
 	    
 	    <% end %>
+	    
+	   	
+			<%= render :partial => '/profiles/profile_textfields' %>
+			
+      <% end %>
