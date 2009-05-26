@@ -4,33 +4,23 @@
 	</div>
 	
 	<div class="content">
-		<p>An activation email AND an email with the following instructions have been sent. Please walk through these instructions with the senior or caregiver on the phone: </p> 
-		<p>Ask to make sure all computers visiting myhalomonitor.com are not running IE6 by referring them to <a href="/ie6check.html">http://www.myhalomonitor.com/ie6check</a>.  </p>	
-		<p>Ask if caregivers need to be added now. If so, <a href="/call_list/show/<%=@user.id %>">click here to add caregivers</a> for user <%= @user.name %>.</p>
-		<p>Ask if they can let the computer/network administrator at the installation site that the following will be needed:
+		<p>An activation email AND an email with the following instructions have been sent to <%= @user.name %> (<%= @user.id %>). Please walk through these instructions with the senior or caregiver on the phone: </p>
+		<ul> 
+		<li><p>Ask to make sure all computers visiting myhalomonitor.com are not running IE6 by referring them to <a href="/ie6check.html">http://www.myhalomonitor.com/ie6check</a>.  </p></li>	
+		<li><p>Ask if caregivers need to be added now. If so, <a href="/call_list/show/<%=@user.id %>">click here to add caregivers</a> for user <%= @user.name %>.</p></li>
+		<li><p>Ask if they can let the computer/network administrator at the installation site that the following will be needed:
 			<ul><li>An open Ethernet port on the DSL or cable modem
 				<li>Enough table space for the Halo gateway (L x W x H = approx 6" x  9"  x  2")
 				<li>An open 2-prong power outlet 
 				<li>If a firewall is setup, please make sure ports 123, 443, and 37215 are unblocked
 			</ul>
 		</p>
-		<div id="device-table" class="table">
-		<div class="row header">
-		<div class="col-150">
-			User ID
-		</div><div class="col-250">
-			Name
-		</div>
-		</div>
-	<div class="row">
-		<div class="col-150">
-			<%= @user.id %>
-		</div>
-		<div class="col-250">
-			<%= @user.name %>
-		</div>
-	  </div>
-	</div>
+		</li>
+		</ul>
+		
+		<p>Please <%= link_to "print the senior's profile", :controller => 'users',:action => 'signup_details',:id => @user.id %> for the senior to sign at the time of install
+		</p>
+
 	</div>
 
 	<div style="clear:both"></div>

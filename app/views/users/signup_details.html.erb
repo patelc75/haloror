@@ -1,0 +1,27 @@
+<div id="user_signup-col">
+	<div id="user_signup-col-header">
+		Sign up details for the Senior
+	</div>
+	
+	<div class="content">
+		<%#=debug @user.roles%>
+		<div class="signup_detail_fields">Email:</div><div> <%= @user.email%><br><br></div>
+		<div class="signup_detail_fields">Name:</div><div> <%= @user.full_name %><br><br></div>
+		<div class="signup_detail_fields">Address:</div><div> <%= @user.address%><br><br></div>
+		<div class="signup_detail_fields">Home Phone:</div><div> <%= @user.profile.home_phone%><br><br></div>
+		<div class="signup_detail_fields">Work Phone:</div><div> <%= @user.profile.work_phone%><br><br></div>
+		<div class="signup_detail_fields">Cell Phone:</div><div> <%= @user.profile.cell_phone%><br><br></div>
+		<div class="signup_detail_fields">Carrier:</div><div> <%= @user.carrier %><br><br></div>
+		<div class="signup_detail_fields">Timezone:</div><div> <%= @user.profile.time_zone%><br><br></div>
+		<% if @user.is_halouser? %>
+		  <div class="signup_detail_fields">Emergency Number:</div><div> <%= @user.emergency_number_with_name %><br><br></div>
+		  <div class="signup_detail_fields">Premises Access Information:</div><div> <%= @user.profile.access_information%><br><br></div>
+		  <div class="signup_detail_fields">Door to break into if no key:</div><div> <%= @user.profile.door%><br><br></div>
+		  <div class="signup_detail_fields">Pet Information:</div><div> <%=@user.profile.pet_information%><br><br></div>
+		  <div class="signup_detail_fields">Allergies and Medical Information:</div><div> <%= @user.profile.allergies%><br><br></div>
+		  <div class="signup_detail_fields">Hospital Preference:</div><div> <%= @user.profile.hospital_preference%><br><br></div>
+		  <div class="signup_detail_fields">Hospital Phone:</div><div> <%=@user.profile.hospital_number%><br><br></div>
+		  <div class="signup_detail_fields">Doctor Name:</div><div> <%=@user.profile.doctor_name%><br><br></div>
+		  <div class="signup_detail_fields">Doctor Phone:</div><div> <%= @user.profile.doctor_phone%><br><br></div>
+		<%end%>
+	</div>
