@@ -27,7 +27,7 @@
 	    <br />
 	    <br />
 	  
-	    <select id="profile_carrier_id" name="profile[carrier_id]">
+	    <select id="profile_carrier_id" name="profile[carrier_id]" style="width:200px;">
 	      <% if @profile.carrier_id == 0 or @profile.carrier_id == nil -%>
 	        <option value="" selected="selected" >
 	        Select a Service Provider </option>
@@ -47,7 +47,7 @@
 	  
 	    <label for="time_zone">Time Zone</label>
 	  	<br />
-	             <%= time_zone_select ('profile', 'time_zone', TZInfo::Timezone.us_zones, :model => TZInfo::Timezone, :default => "America/Chicago" )%> 
+	             <%= time_zone_select ('profile', 'time_zone', TZInfo::Timezone.us_zones, :model => TZInfo::Timezone, :default => "America/Chicago")%> 
 	           
 	             <br/>
          	    <br />
@@ -82,8 +82,13 @@
 	    
 	    
 	    <% end %>
-	    
-	   	
-			<%= render :partial => '/profiles/profile_textfields' %>
+	    <br>
+	    <label for="sex">Sex(M/F)</label><br />
+	    <%= radio_button_tag "profile[sex]",'M',true %>Male<br>
+	   	<%= radio_button_tag "profile[sex]",'F',false %>Female<br><br>
+	   	<label for="birth_date">Birth Date</label><br />
+	   	<%= date_select("profile", "birth_date", :start_year => 1950,:prompt => { :day => 'Day', :month => 'Month', :year => 'Year' }, :order => [:day, :month, :year])%>
+
+			<%#= render :partial => '/profiles/profile_textfields' %>
 			
       <% end %>
