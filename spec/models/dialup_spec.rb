@@ -2,7 +2,8 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe BundleJob do
 	before(:all) do
-		
+	  BUNDLE_PATH = "#{RAILS_ROOT}/dialup"
+		Dir.mkdir(BUNDLE_PATH) unless File.exists?(BUNDLE_PATH)
 		FileUtils.cp "#{RAILS_ROOT}/spec/H200000023_1240876150.tar.bz2","#{RAILS_ROOT}/dialup"
 		BundleJob.job_process_bundles
 		@battery = Battery.count(:conditions => ["user_id = ?",44])
