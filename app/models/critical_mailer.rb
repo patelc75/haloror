@@ -3,6 +3,11 @@ class CriticalMailer < ActionMailer::ARMailer
   include ServerInstance
   NO_REPLY = "no-reply@halomonitoring.com"
   
+  def monitoring_failure(message, event)
+    setup_message("SafetyCare monitoring failure: #{message}", "The following event triggered, but an error was encountered.\n\nError: #{message}\n\nEvent: #{event.to_s}\n\n#{event.to_yaml}\n\n")
+    @recipients = ["nagios@halomonitoring.com"]
+  end
+  
   def background_task_notification(alert, user)
     body = "User #{user.name} (#{user.id})\n" +
       "Detected at #{UtilityHelper.format_datetime_readable(alert.created_at, user)}\n" +

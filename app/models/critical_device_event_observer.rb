@@ -14,13 +14,18 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
         # refs 1523:
         begin
           if !event.user.profile.empty? && !event.user.profile.account_number.empty?
-              SafetyCareClient.alert(event.user.profile.account_number, event.event_type_numeric)
+            SafetyCareClient.alert(event.user.profile.account_number, event.event_type_numeric)
+          else
+            CriticalMailer.deliver_monitoring_failure("No profile!", event)
           end
         rescue Exception => e
+          CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
           UtilityHelper.log_message("SafetyCareClient.alert::Exception:: #{e} : #{event.to_s}", e)
         rescue Timeout::Error => e
+          CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
           UtilityHelper.log_message("SafetyCareClient.alert::Timeout::Error:: #{e} : #{event.to_s}", e)
         rescue
+          CriticalMailer.deliver_monitoring_failure("UNKNOWN error: #{e}", event)
           UtilityHelper.log_message("SafetyCareClient.alert::UNKNOWN::Error: #{event.to_s}")         
         end
 
