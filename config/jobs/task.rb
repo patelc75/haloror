@@ -116,10 +116,13 @@ SCHEDULER.schedule_every(SAFETYCARE_HEARTBEAT_TIME) {
   begin
     SafetyCareCleint.heartbeat()
   rescue Exception => e
+    CriticalMailer.deliver_monitoring_hertbeat_failure("Exception!", e)
     UtilityHelper.log_message("SafetyCareClient.heartbeat::Exception:: #{e}", e)
   rescue Timeout::Error => e
+    CriticalMailer.deliver_monitoring_hertbeat_failure("Timeout!", e)
     UtilityHelper.log_message("SafetyCareClient.heartbeat::Timeout::Error:: #{e}", e)
   rescue
+    CriticalMailer.deliver_monitoring_hertbeat_failure("UNKNOWN ERROR!", e)
     UtilityHelper.log_message("SafetyCareClient.heartbeat::UNKNOWN::Error")         
   end
 }
