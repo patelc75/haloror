@@ -28,7 +28,11 @@
 		
 		<% if caregiver and user.profile %>
 			</a>
-			(<%=user.profile[:relationship]%>)
+			<!-- (<%#=user.profile[:relationship]%>) -->
+			<% @roleuser_opt = RolesUsersOption.find_by_roles_user_id(user.roles_users.first.id)%>
+			<%= '(Removed)' if @roleuser_opt and @roleuser_opt.removed == true%>
+			
+			
 		<% end %>
 	</div>
 	<div class="col-100">
