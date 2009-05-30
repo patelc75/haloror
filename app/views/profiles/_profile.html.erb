@@ -1,3 +1,8 @@
-<a href="#">Print Profile Page</a><br><br>
+<%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id %>
+<br><br>
 <%= render :partial => '/profiles/profile_top' %>
 <%= render :partial => '/profiles/profile_bottom' %>
+<%if @user.is_halouser? %>
+<%= render :partial => '/profiles/profile_halousers_only' %>
+<%= render :partial => '/profiles/profile_textfields' %>
+<%end%>
