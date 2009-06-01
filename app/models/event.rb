@@ -66,12 +66,12 @@ class Event < ActiveRecord::Base
   def event_type_numeric
     # FIXME: TODO: fill out these event types properly
     case event_type
-    when "Fall" then "001"
-    when "Panic" then "002"
-    when "GwAlarmButton" then "003"
-    when "CallCenterFollowUp" then "0004"
-    else "000"
-	end
+      when "Fall" then "001"
+      when "Panic" then "002"
+      when "GwAlarmButton" then "003"
+      when "CallCenterFollowUp" then "004"
+      else "000"
+  	end
   end
   
   def self.get_connectivity_state_by_user(user)

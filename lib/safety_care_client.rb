@@ -4,12 +4,12 @@ require 'timeout'
 class SafetyCareClient
   # SafetyCare addresses
   # TODO: FIXME: change this when finished testing?
-  #SAFETYCARE_ADDRESS = "74.43.4.37"
-  #SAFETYCARE_PORT = 19925
+  SAFETYCARE_ADDRESS = "74.43.4.37"
+  SAFETYCARE_PORT = 19925
 
   # For use with the bin/safetycare_test_listener.rb tester
-  SAFETYCARE_ADDRESS = "localhost"
-  SAFETYCARE_PORT = 2000
+  #SAFETYCARE_ADDRESS = "localhost"
+  #SAFETYCARE_PORT = 2000
   
   # Test manually with:
   # ruby bin/safetycare_test_listener.rb &
@@ -30,7 +30,6 @@ class SafetyCareClient
       sock = TCPSocket.open(SAFETYCARE_ADDRESS, SAFETYCARE_PORT)
       sock.write("%s%s\r\n" % [account_number, alarm_code])
       response = sock.readline
-      puts response.inspect      
     }
     sock.close
   end
