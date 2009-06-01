@@ -38,9 +38,13 @@ class Profile < ActiveRecord::Base
  #end
 
   def validate
+  	if self[:is_new_caregiver]
+      return false
+    else
   	errors.add(:home_phone," is the wrong length (should be 10 digits)") if self.home_phone != '' and phone_strip(self.home_phone).length != 10
   	errors.add(:work_phone," is the wrong length (should be 10 digits)") if self.work_phone != '' and phone_strip(self.work_phone).length != 10
   	errors.add(:cell_phone," is the wrong length (should be 10 digits)") if self.cell_phone != '' and phone_strip(self.cell_phone).length != 10
+  	end
   end
   
   def phone_strip(phone)
@@ -63,12 +67,16 @@ class Profile < ActiveRecord::Base
   end
   
   def cell_phone_exists?
-    if unless_new_caregiver
+    if self[:is_new_caregiver]
+    	return false
+    else
       if self.cell_phone.blank?
         return false
+      else
+      	return true
       end
     end
-      return true
+      
   end
   
   def work_phone_exists?

@@ -70,6 +70,10 @@ class UsersController < ApplicationController
   
   def signup_details
   	@user = User.find params[:id]
+  	@alert_types = []
+  	AlertType.find(:all).each do |type|    
+      @alert_types << type        
+    end
   end
   
   def add_device_to_user    
@@ -219,10 +223,12 @@ class UsersController < ApplicationController
   end
   def create_caregiver
     @user = User.new(params[:user])
+    
     if !@user.email.blank?
       # if existing_user = User.find_by_email(@user.email)
       #         raise "Existing User"
       #       end
+      
      User.transaction do  
       @user.is_new_caregiver = true
       @user[:is_caregiver] =  true
@@ -247,6 +253,7 @@ class UsersController < ApplicationController
       render :partial => 'caregiver_email'
      end
     end
+
   rescue Exception => e
     RAILS_DEFAULT_LOGGER.warn "#{e}"
     # check if email exists
@@ -265,8 +272,7 @@ class UsersController < ApplicationController
          else
          render :partial => 'caregiver_form'
     end
-  end
-  
+end  
   def destroy_operator
     RolesUsersOption.update(params[:id], {:removed => 1, :position => 0})
     @operators = User.operators
