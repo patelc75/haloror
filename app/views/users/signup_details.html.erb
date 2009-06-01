@@ -25,3 +25,55 @@
 		  <div class="signup_detail_fields">Doctor Phone:</div><div> <%= @user.profile.doctor_phone%><br><br></div>
 		<%end%>
 	</div>
+	
+	<%if @user.is_halouser?%>
+	<%i=0%>
+	<%#=debug @user.roles.find_by_authorizable_type_and_authorizable_id('User',params[:id]) %>
+	<%# @role = Role.find_by_authorizable_id_and_name(params[:id],'caregiver')%>
+	<%#=debug @user.caregivers.find(:all,:conditions => "roles.authorizable_id = #{@user.id}", :include => :role) %>
+	<%@caregivers = @user.caregivers_sorted_by_position%>
+	<%@i = 0 %>
+	<%@caregivers.each do |position, caregiver|
+      @roles_user = @user.roles_user_by_caregiver(caregiver)		
+      @opts = @roles_user.roles_users_option
+      @i += 1
+     %>
+    
+	<hr>
+	<%#= debug caregiver %> 
+	<%= 'Caregiver ' + @i.to_s %><br><br>
+     <div class="signup_detail_fields">Name:</div><div><%= caregiver.name%><br><br></div>
+	<div class="signup_detail_fields">Home Address:</div><div><%= caregiver.address%><br><br></div>
+	<div class="signup_detail_fields">Email Address:</div><div><%= caregiver.email%><br><br></div>
+	<div class="signup_detail_fields">Home Phone:</div><div><%= caregiver.profile.home_phone%><br><br></div>
+	<div class="signup_detail_fields">Work Phone:</div><div><%= caregiver.profile.work_phone%><br><br></div>
+	<div class="signup_detail_fields">Cell Phone:</div><div><%= caregiver.profile.cell_phone%><br><br></div>
+	<div class="signup_detail_fields">Cell Phone Carrier:</div><div><%= caregiver.carrier%><br><br></div>
+	<div class="signup_detail_fields">Key to Senior's Home:</div><div><br><br></div>	
+	<div class="signup_detail_fields">Active/Away:</div><div><%= caregiver.is_active_caregiver?(caregiver)%><br><br></div>
+	<% @alert_types.each do |alert| %>
+	<div class="signup_detail_fields"><%=UtilityHelper.camelcase_to_spaced(alert.alert_type)%>:</div>
+	<%#=debug caregiver.roles %>
+	<div>
+		<% 
+					if alert_opt = AlertOption.find(:first,:conditions => "roles_user_id = #{@roles_user.id} and alert_type_id = #{alert.id}")
+						alert[:phone_active] = alert_opt.phone_active
+						alert[:email_active] = alert_opt.email_active
+						alert[:text_active] = alert_opt.text_active
+					else
+						alert[:phone_active] = alert.phone_active
+						alert[:email_active] = alert.email_active
+						alert[:text_active] = alert.text_active
+					end
+		%>
+		<%if alert.phone_active == false and alert.email_active == false and alert.text_active == false %>
+			<%= 'Off' %>
+		<%end%>
+		<%= 'Phone ' if alert[:phone_active] %>
+		<%= 'Email ' if alert[:email_active] %>
+		<%= 'Text ' if alert[:text_active] %>
+						
+		<br><br></div>
+	<%end%>
+ <%end%>
+<%end%>
