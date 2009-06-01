@@ -182,7 +182,7 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def setup_operators(event, mode, phone = :no_phone_call, group = :all)
     ops = User.active_operators
-    groups = event.user.group_memberships
+    groups = event.user.is_halouser_for_what
     halo_group = Group.find_by_name('halo') if group == :halo_only
     operators = []
     ops.each do |op|
