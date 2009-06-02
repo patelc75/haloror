@@ -246,14 +246,15 @@ class UsersController < ApplicationController
       update_from_position(params[:position], @roles_user.role_id, caregiver.id)
     
       RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => 0)
-    
-   
+      
+      enable_by_default(@roles_user)
+      
       #redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
       UserMailer.deliver_caregiver_email(caregiver, patient)
       render :partial => 'caregiver_email'
      end
     end
-
+=begin
   rescue Exception => e
     RAILS_DEFAULT_LOGGER.warn "#{e}"
     # check if email exists
@@ -272,6 +273,7 @@ class UsersController < ApplicationController
          else
          render :partial => 'caregiver_form'
     end
+=end
 end  
   def destroy_operator
     RolesUsersOption.update(params[:id], {:removed => 1, :position => 0})
@@ -381,4 +383,22 @@ end
     device.users << user
     device.save!
   end
+  
+  private
+  
+  def enable_by_default(roles_user)
+  	
+  	  ALERTS_ENABLED_BY_DEFAULT.each do |type|
+  	    alert_type = AlertType.find_by_alert_type(type)
+      
+        alert_opt = AlertOption.new
+        alert_opt.roles_user_id = roles_user.id
+        alert_opt.alert_type_id = alert_type.id
+        alert_opt.phone_active = true
+        alert_opt.email_active = true
+        alert_opt.text_active = true
+        alert_opt.save
+  	  end
+  end
+  
 end
