@@ -1,6 +1,6 @@
 class DeviceEventObserver < ActiveRecord::Observer
   include ServerInstance
-  observe BatteryPlugged, BatteryUnplugged, BatteryCritical, BatteryChargeComplete, StrapFastened, StrapRemoved
+  observe BatteryPlugged, BatteryUnplugged, BatteryChargeComplete, StrapFastened, StrapRemoved
   
   def before_save(event)
     if event.user_id < 1 or event.user == nil
