@@ -68,8 +68,12 @@ class Event < ActiveRecord::Base
     case event_type
       when "Fall" then "001"
       when "Panic" then "002"
-      when "GwAlarmButton" then "003"
-      when "CallCenterFollowUp" then "004"
+      #when "GwAlarmButton" then "003"
+      #when "CallCenterFollowUp" then "004"
+      when "BatteryReminder" then "100"
+  	  when "StrapOff" then "101"
+  	  when "GatewayOfflineAlert" then "102"
+  	  when "DeviceUnavailableAlert" then "103"	
       else "000"
   	end
   end
