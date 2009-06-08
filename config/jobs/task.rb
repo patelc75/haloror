@@ -50,11 +50,11 @@ SCHEDULER.schedule_every(BATTERY_REMINDER_POLL_RATE) {
     BatteryReminder.send_reminders()
     ActiveRecord::Base.verify_active_connections!()
   rescue Exception => e
-    UtilityHelper.log_message("StrapOffAlert.job_detect_straps_off::Exception:: #{e}", e)
+    UtilityHelper.log_message("BatteryReminder.send_reminders::Exception:: #{e}", e)
   rescue Timeout::Error => e
-    UtilityHelper.log_message("StrapOffAlert.job_detect_straps_off::Timeout::Error:: #{e}", e)
+    UtilityHelper.log_message("BatteryReminder.send_reminders::Timeout::Error:: #{e}", e)
   rescue
-    UtilityHelper.log_message("StrapOffAlert.job_detect_straps_off::UNKNOWN::Error")         
+    UtilityHelper.log_message("BatteryReminder.send_remindersf::UNKNOWN::Error")         
   end
 }
 
