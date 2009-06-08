@@ -1,4 +1,12 @@
 class BatteryReminder < ActiveRecord::Base
+    def to_s
+   	  "Battery has approx. #{get_hours_remaining} hours left for #{{user.name}} at #{UtilityHelper.format_datetime_readable(timestamp, user)}"
+    end
+   
+    def email_body
+   	  "#{{user.name}}'s battery has approximately #{get_hours_remaining} hours left for as of #{UtilityHelper.format_datetime_readable(timestamp, user)}. Please charge the battery immediately"
+    end
+    
 	def before_save(event)
 		if self.reminder_num == 3
 			CriticalDeviceEventObserver.before_save(event)
