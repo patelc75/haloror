@@ -199,6 +199,7 @@ REGISTRATION_TIMEOUT_ID=29
 DIAL_UP_ARCHIVE_FILES_TO_KEEP_MIN=2
 EMERGENCY_GROUPS=['EMS', 'SafetyCare']
 ALERTS_ENABLED_BY_DEFAULT=['BatteryCritical']
+BATTERY_REMINDER_POLL_RATE='15m'
 
 #used when call is accepted/resolved on crit1 and needs to be updated on crit2 
 #so the agent doesn't accidentally accept/resolve the call on crit2

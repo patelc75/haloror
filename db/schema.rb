@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090521032149) do
+ActiveRecord::Schema.define(:version => 20090606121643) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -128,6 +128,18 @@ ActiveRecord::Schema.define(:version => 20090521032149) do
     t.string   "comments"
   end
 
+  create_table "batteries", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "timestamp"
+    t.integer  "percentage",     :null => false
+    t.integer  "time_remaining", :null => false
+    t.integer  "device_id"
+  end
+
+  add_index "batteries", ["device_id", "timestamp"], :name => "index_batteries_on_device_id_and_timestamp"
+  add_index "batteries", ["timestamp", "user_id"], :name => "index_batteries_on_user_id_and_timestamp"
+  add_index "batteries", ["percentage", "timestamp", "user_id"], :name => "index_batteries_on_user_id_and_timestamp_and_percentage"
+
   create_table "battery_charge_completes", :force => true do |t|
     t.integer  "device_id"
     t.datetime "timestamp"
@@ -144,6 +156,7 @@ ActiveRecord::Schema.define(:version => 20090521032149) do
     t.integer  "percentage",     :null => false
     t.integer  "time_remaining", :null => false
     t.integer  "user_id"
+    t.string   "mode"
   end
 
   add_index "battery_criticals", ["device_id"], :name => "index_battery_criticals_on_device_id"
@@ -154,6 +167,15 @@ ActiveRecord::Schema.define(:version => 20090521032149) do
     t.integer  "percentage",     :null => false
     t.integer  "time_remaining", :null => false
     t.integer  "user_id"
+  end
+
+  create_table "battery_reminders", :force => true do |t|
+    t.integer  "reminder_num"
+    t.integer  "user_id"
+    t.integer  "device_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "stopped_at"
   end
 
   create_table "battery_unpluggeds", :force => true do |t|
@@ -239,6 +261,13 @@ ActiveRecord::Schema.define(:version => 20090521032149) do
   end
 
   add_index "device_available_alerts", ["device_id"], :name => "device_available_alerts_device_id_idx"
+
+  create_table "device_battery_reminders", :force => true do |t|
+    t.integer  "reminder_num"
+    t.datetime "stopped_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "device_infos", :force => true do |t|
     t.integer "device_id"
@@ -634,11 +663,17 @@ ActiveRecord::Schema.define(:version => 20090521032149) do
     t.string  "time_zone"
     t.string  "zipcode"
     t.integer "emergency_number_id"
-    t.boolean "is_keyholder"
     t.text    "allergies"
     t.text    "pet_information"
     t.text    "access_information"
     t.string  "account_number",      :limit => 4
+    t.string  "door"
+    t.string  "hospital_preference"
+    t.string  "hospital_number"
+    t.string  "doctor_name"
+    t.string  "doctor_phone"
+    t.string  "sex",                 :limit => 1
+    t.date    "birth_date"
   end
 
   add_index "profiles", ["user_id"], :name => "index_profiles_on_user_id"
@@ -735,6 +770,25 @@ ActiveRecord::Schema.define(:version => 20090521032149) do
     t.datetime "updated_at"
   end
 
+  create_table "skin_temps", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "timestamp"
+    t.float    "skin_temp", :null => false
+  end
+
+  add_index "skin_temps", ["timestamp", "user_id"], :name => "index_skin_temps_on_user_id_and_timestamp"
+  add_index "skin_temps", ["skin_temp", "timestamp", "user_id"], :name => "index_skin_temps_on_user_id_and_timestamp_and_skin_temp"
+
+  create_table "steps", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "begin_timestamp"
+    t.datetime "end_timestamp"
+    t.integer  "steps",           :null => false
+  end
+
+  add_index "steps", ["begin_timestamp", "user_id"], :name => "index_steps_on_user_id_and_begin_timestamp"
+  add_index "steps", ["begin_timestamp", "steps", "user_id"], :name => "index_steps_on_user_id_and_begin_timestamp_and_steps"
+
   create_table "strap_fasteneds", :force => true do |t|
     t.integer  "device_id"
     t.datetime "timestamp"
@@ -803,6 +857,18 @@ ActiveRecord::Schema.define(:version => 20090521032149) do
   end
 
   add_index "vital_scans", ["timestamp", "user_id"], :name => "index_vital_scans_on_user_id_and_timestamp"
+
+  create_table "vitals", :force => true do |t|
+    t.integer  "heartrate"
+    t.integer  "hrv"
+    t.integer  "activity"
+    t.integer  "orientation"
+    t.datetime "timestamp"
+    t.integer  "user_id"
+  end
+
+  add_index "vitals", ["timestamp", "user_id"], :name => "index_vitals_on_user_id_and_timestamp"
+  add_index "vitals", ["heartrate", "timestamp", "user_id"], :name => "index_vitals_on_user_id_and_timestamp_and_heartrate"
 
   create_table "work_orders", :force => true do |t|
     t.datetime "completed_on"
