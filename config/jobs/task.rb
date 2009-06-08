@@ -54,7 +54,7 @@ SCHEDULER.schedule_every(BATTERY_REMINDER_POLL_RATE) {
   rescue Timeout::Error => e
     UtilityHelper.log_message("BatteryReminder.send_reminders::Timeout::Error:: #{e}", e)
   rescue
-    UtilityHelper.log_message("BatteryReminder.send_remindersf::UNKNOWN::Error")         
+    UtilityHelper.log_message("BatteryReminder.send_reminders::UNKNOWN::Error")         
   end
 }
 

@@ -31,9 +31,9 @@ class BatteryReminder < ActiveRecord::Base
 		@devices.each do |device|
 			#@most_recent = BatteryReminder.most_recent_reminder(device.id)
 			if (device.stopped_at == nil) 
-				if device.reminder_num == 1 and (device.updated_at > (device.created_at + 7200) or device.updated_at < (device.created_at + 10200))
+				if device.reminder_num == 1 and (device.updated_at > (device.created_at + BATTERY_REMINDER_TWO) or device.updated_at < (device.created_at + BATTERY_REMINDER_THREE))
 					BatteryReminder.create(:device_id => device.id, :reminder_num => 2)
-				elsif device.reminder_num == 2 and device.updated_at < (device.created_at + 10200)
+				elsif device.reminder_num == 2 and device.updated_at < (device.created_at + BATTERY_REMINDER_THREE)
 					BatteryReminder.create(:device_id => device.id, :reminder_num => 3)
 				end
 			end
