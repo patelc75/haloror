@@ -5,14 +5,37 @@ class HealthvaultController < ApplicationController
   before_filter :authenticate_admin_halouser_caregiver_operator?
   layout "application"
   
-  before_filter :setup_healthvault, :except => [:error]
-  before_filter :setup_hv_user, :except => [:error, :shellreturn]
+  before_filter :setup_healthvault, :except => [:index, :error, :logout]
+  before_filter :setup_hv_user, :except => [:index, :error, :shellreturn, :logout]
+  
   def index
-    
+    if !session[:healthvault_app].blank? && !session[:healthvault_conn].blank?
+      @connected = true
+      @hv_app = session[:healthvault_app]
+      @hv_conn = session[:healthvault_conn]
+      @hv_record_id = session[:healthvault_record_id]
+      @hv_name = session[:healthvault_name]
+    else
+      @connected = false
+    end
+  end
+  
+  def logout
+    session[:healthvault_app] = nil
+    session[:healthvault_conn] = nil
+    session[:healthvault_record_id] = nil
+    session[:healthvault_name] = nil
+    flash[:message] = "logged out"
+    redirect_to :action => "index" and return
+  end
+  
+  def login
+    flash[:message] = "logged in"
+    redirect_to :action => "index" and return
   end
   
   def get_vitals
-    request = Request.create("GetThings", connection)
+    request = Request.create("GetThings", @hv_conn)
     request.header.record_id = session[:healthvault_record_id]
     request.info.add_group(WCData::Methods::GetThings::ThingRequestGroup.new)
     request.info.group[0].format = WCData::Methods::GetThings::ThingFormatSpec.new
@@ -21,11 +44,16 @@ class HealthvaultController < ApplicationController
     request.info.group[0].add_filter(WCData::Methods::GetThings::ThingFilterSpec.new)
     request.info.group[0].filter[0].add_type_id("b81eb4a6-6eac-4292-ae93-3872d6870994") # Heart rate
     # request.info.group[0].filter[0].add_type_id("40750a6a-89b2-455c-bd8d-b420a4cb500b") # Height 
+    
+    @request_out = request
     result = request.send
     
+    @result_out = result
     @results = []
     result.info.group[0].thing.each do |thing|
-      @results.push([thing.data_xml[0].when.to_s, thing.data_xml[0].value.to_s]) rescue [nil, "missing heart rate"]
+      datething = thing.data_xml[0].when
+      datestr = "%s-%s-%s %s:%s:%s" % [datething.date.y, datething.date.m, datething.date.d, datething.time.h, datething.time.m, datething.time.s]
+      @results.push([datestr, thing.data_xml[0].value.to_s]) rescue [nil, "missing heart rate"]
     end
   end
   
@@ -33,15 +61,16 @@ class HealthvaultController < ApplicationController
     request = Request.create("PutThings", @hv_conn)
     request.header.record_id = session[:healthvault_record_id]
 
-    hours = params[:hours].to_i
-    if hours < 1
-      hours = 1
-    elsif hours > 24
-      hours = 24
+    @hours = params[:hours].to_i
+    if @hours < 1
+      @hours = 1
+    elsif @hours > 24
+      @hours = 24
     end
     
-    end_time = Chronic.parse(params[:end_time])
-    
+    @start_time = Chronic.parse(params[:start_time])
+  
+    @end_time = @start_time + @hours.hour
     
     # Vital.find(:first, :conditions => "user_id = 2")
     # ts = Vital.find(:first, :conditions => "user_id = 2").timestamp
@@ -49,32 +78,38 @@ class HealthvaultController < ApplicationController
     # pairs = vitals[0].zip(vitals[1])
     
     
-    vitals = Vital.average_data(hours, end_time - hours.hour, end_time, @user[:id], :heartrate, nil) # zip this up
+    vitals = Vital.average_data(@hours, @start_time, @end_time, @user[:id], :heartrate, nil) # zip this up
     
-    pairs = vitals[0].zip(vitals[1])
-    
-    pairs.each do |pair|
-      vit = pair[0]
+    @pairs = vitals[0].zip(vitals[1])
+
+    @pairs.each do |pair|
+      vit = pair[0] < 0 ? 0 : pair[0]
       ts = pair[1]
       heart_thing = WCData::Thing::Thing.guid_to_class("b81eb4a6-6eac-4292-ae93-3872d6870994").new
+      
       heart_thing.when.date.y = ts.year
       heart_thing.when.date.m = ts.month
       heart_thing.when.date.d = ts.day
+      
+      heart_thing.when.time = HealthVault::WCData::Dates::Time.new
       heart_thing.when.time.h = ts.hour
       heart_thing.when.time.m = ts.min
       heart_thing.when.time.s = ts.sec
-      heart_thing.value = vit
+      heart_thing.value = vit.round
 
       thething = WCData::Thing::Thing.new
 
       thething.type_id = "b81eb4a6-6eac-4292-ae93-3872d6870994"
       thething.add_data_xml(HealthVault::WCData::Thing::DataXml.new)
-      thething.data_xml[0].anything = height_thing
+      thething.data_xml[0].anything = heart_thing
       request.info.add_thing(thething)
     end
     
     @request = request
-    @result = request.send
+    
+    if params[:confirm]
+      @result = request.send
+    end
   end
   
   def error
@@ -86,11 +121,16 @@ class HealthvaultController < ApplicationController
     if (request.query_parameters["target"].downcase == "appauthsuccess")
       session[:wctoken] = request.query_parameters["wctoken"]
       session[:actionqs] = request.query_parameters["actionqs"]
-      if @user[:id].to_i != session[:actionqs].to_i
-        flash[:error] = "bad user id: #{@user[:id]} versus actionqs #{session[:actionqs]}"
+      pair = session[:actionqs].split('^')
+      session[:hv_user_id] = pair[1]
+      return_action = pair[0]
+      if @user[:id].to_i != session[:hv_user_id].to_i
+        flash[:error] = "bad user id: #{@user[:id]} versus returned #{session[:hv_user_id]} (actionqs #{session[:actionqs]})"
       else
         @hv_conn.user_auth_token = session[:wctoken]
-        flash[:error] = "things worked!"
+        setup_hv_user
+        flash[:message] = "Got a good shell return, now we're logged in"
+        redirect_to :action => return_action and return
       end
       redirect_to :controller => 'healthvault', :action => 'error'
     else
@@ -133,7 +173,7 @@ class HealthvaultController < ApplicationController
     # If the user isn't authenticated...
     if (!@hv_conn.authenticated?(:user))
       config = Configuration.instance
-      auth_url = "#{config.shell_url}/redirect.aspx?target=AUTH&targetqs=?actionqs=#{@user[:id]}%26appid=#{config.app_id}%26redirect=#{url_for :controller => 'healthvault', :action => 'shellreturn'}"
+      auth_url = "#{config.shell_url}/redirect.aspx?target=AUTH&targetqs=?actionqs=#{params[:action]}^#{@user[:id]}%26appid=#{config.app_id}%26redirect=#{url_for :controller => 'healthvault', :action => 'shellreturn'}"
       redirect_to(auth_url, :status => 302) and return
     end
     

@@ -1,0 +1,27 @@
+<%= render :partial => "header" %>
+<% if params[:confirm] %>
+<h3>Sending vitals data for <%= @hours%> hours</h3>
+<% else %>
+<h3>Previewing vitals data for <%= @hours%> hours</h3>
+<% end %>
+<b><%= @start_time %> to <%= @end_time %>)</b>
+<table>
+	<tr><th>Time</th><th align="center">Average Heart Rate (BPM)</th></tr>
+	<% @pairs.each do |pair| %>
+	<tr><td><%= pair[1] %></td><td align="center"><%= pair[0] %></td></tr>
+	<% end %>
+</table>
+
+<% if !params[:confirm] %>
+<%= form_tag(:action => "send_vitals", :method => :post) %>
+<fieldset>
+	<label for="hours">Hours to calculate:</label> <%= text_field_tag "hours", params[:hours] || 1%><br/>
+	<label for="start_time">Start time (for instance, "2008-07-29 12:50:02" or "last tuesday")</label>
+	<%= text_field_tag "start_time", params[:start_time] || "1 hour ago"%><br/>
+	Confirm sending: <%= check_box_tag "confirm" %><br/>
+	<%= submit_tag "submit vitals" %>
+</fieldset>
+</form>
+<% end %>
+<%= link_to "get vitals", :action => "get_vitals" %>
+<%= link_to "return to index", :action => "index" %> <br />
