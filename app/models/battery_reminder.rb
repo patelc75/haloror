@@ -1,10 +1,10 @@
 class BatteryReminder < ActiveRecord::Base
     def to_s
-   	  "Battery has approx. #{get_hours_remaining} hours left for #{{user.name}} at #{UtilityHelper.format_datetime_readable(timestamp, user)}"
+   	  "Battery has approx. #{get_hours_remaining} hours left for #{user.name} at #{UtilityHelper.format_datetime_readable(timestamp, user)}"
     end
    
     def email_body
-   	  "#{{user.name}}'s battery has approximately #{get_hours_remaining} hours left for as of #{UtilityHelper.format_datetime_readable(timestamp, user)}. Please charge the battery immediately"
+   	  "#{user.name}'s battery has approximately #{get_hours_remaining} hours left for as of #{UtilityHelper.format_datetime_readable(timestamp, user)}. Please charge the battery immediately"
     end
     
 	def self.most_recent_reminder(device_id)
