@@ -24,7 +24,7 @@ class BatteryReminder < ActiveRecord::Base
     	Event.create_event(self.user_id, self.class.to_s, self.id, self.created_at)
     	@device = DeviceBatteryReminder.find_by_id(self.device_id)
 		if @device
-			DeviceBatteryReminder.update_attributes(:reminder_num => self.reminder_num,:stopped_at => self.stopped_at)
+			@device.update_attributes(:reminder_num => self.reminder_num,:stopped_at => self.stopped_at)
 		else
 			DeviceBatteryReminder.create(:id => self.device_id,:reminder_num => self.reminder_num,:stopped_at => self.stopped_at)
 		end
