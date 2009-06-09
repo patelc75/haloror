@@ -94,8 +94,9 @@ request.info.thing[0].type_id = "40750a6a-89b2-455c-bd8d-b420a4cb500b"
 request.info.thing[0].add_data_xml(HealthVault::WCData::Thing::DataXml.new)
 request.info.thing[0].data_xml[0].anything = height_thing
 
-puts request.to_s
+puts "request:" + request.to_s
 result = request.send
+puts "result:"
 puts result.xml
 
 request = Request.create("GetThings", connection)
@@ -111,5 +112,6 @@ request.info.group[0].filter[0].add_type_id("40750a6a-89b2-455c-bd8d-b420a4cb500
 #
 result = request.send
 #puts result.info.inspect
-puts result.info.group[0].thing[0].data_xml[0].value.m.to_s
-#puts result.xml
+puts "blah: " + result.info.group[0].thing[0].data_xml[0].value.m.to_s
+puts "result: "
+puts result.xml

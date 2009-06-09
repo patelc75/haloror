@@ -53,11 +53,6 @@ module HealthVault
           me = container
         end
         
-        if (my_name == "height") 
-          puts container.inspect
-          puts container.to_s
-        end
-        
         elements = @children.values.sort{|a,b| a[:order] <=> b[:order]}
         elements.each do |el|
           val = el[:value]
