@@ -22,7 +22,7 @@ class DeviceAlert < ActiveRecord::Base
   
   def event_type_numeric
     # FIXME: TODO: fill out these event types properly
-    case event_type
+    case self.class.name
       when "Fall" then "001"
       when "Panic" then "002"
       when "GwAlarmButton" then "003"
