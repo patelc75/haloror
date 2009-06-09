@@ -1,4 +1,4 @@
-class BatteryCritical < DeviceAlert
+class BatteryCritical < ActiveRecord::Base
   set_table_name "battery_criticals"
   
   def after_save

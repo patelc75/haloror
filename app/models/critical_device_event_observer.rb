@@ -4,37 +4,7 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
     observe Fall, Panic, GwAlarmButton, CallCenterFollowUp
 
     def before_save(event)
-      if event.user_id < 1 or event.user == nil
-        raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
-      elsif event.class == CallCenterFollowUp
-        CriticalMailer.deliver_device_event_admin(event)
-      elsif event.class == GwAlarmButton
-        CriticalMailer.deliver_gw_alarm(event)
-      else 
-        # refs 1523:
-        begin
-          if event.user.profile && !event.user.profile.account_number.blank?
-            SafetyCareClient.alert(event.user.profile.account_number, event.event_type_numeric)
-          else
-            CriticalMailer.deliver_monitoring_failure("No profile or missing account number!", event)
-          end
-        rescue Exception => e
-          CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
-          UtilityHelper.log_message("SafetyCareClient.alert::Exception:: #{e} : #{event.to_s}", e)
-        rescue Timeout::Error => e
-          CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
-          UtilityHelper.log_message("SafetyCareClient.alert::Timeout::Error:: #{e} : #{event.to_s}", e)
-        rescue
-          CriticalMailer.deliver_monitoring_failure("UNKNOWN error", event)
-          UtilityHelper.log_message("SafetyCareClient.alert::UNKNOWN::Error: #{event.to_s}")         
-        end
-
-        CriticalMailer.deliver_device_event_operator_text(event)
-        CriticalMailer.deliver_device_event_operator(event)
-        if(ServerInstance.current_host_short_string() != "ATL-WEB1")
-          CriticalMailer.deliver_device_event_caregiver(event)
-        end
-      end
+      DeviceAlert.notify_operators_and_caregivers(event)
     end
 
     def after_save(alert)
