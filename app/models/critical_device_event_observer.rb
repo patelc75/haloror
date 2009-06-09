@@ -13,7 +13,7 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
       else 
         # refs 1523:
         begin
-          if !event.user.profile.empty? && !event.user.profile.account_number.empty?
+          if event.user.profile && !event.user.profile.account_number.blank?
             SafetyCareClient.alert(event.user.profile.account_number, event.event_type_numeric)
           else
             CriticalMailer.deliver_monitoring_failure("No profile or missing account number!", event)

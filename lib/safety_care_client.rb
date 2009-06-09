@@ -30,8 +30,8 @@ class SafetyCareClient
       sock = TCPSocket.open(SAFETYCARE_ADDRESS, SAFETYCARE_PORT)
       sock.write("%s%s\r\n" % [account_number, alarm_code])
       response = sock.readline
+      sock.close
     }
-    sock.close
   end
      
 end
