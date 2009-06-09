@@ -19,4 +19,15 @@ class DeviceAlert < ActiveRecord::Base
     alert_name = UtilityHelper.camelcase_to_spaced(self.class.to_s)
     "We have detected a #{alert_name} event for #{user.name} (#{user_id}) at #{UtilityHelper.format_datetime_readable(timestamp,user)} "
   end
+  
+  def event_type_numeric
+    # FIXME: TODO: fill out these event types properly
+    case event_type
+      when "Fall" then "001"
+      when "Panic" then "002"
+      when "GwAlarmButton" then "003"
+      when "CallCenterFollowUp" then "004"
+      else "000"
+  	end
+  end
 end
