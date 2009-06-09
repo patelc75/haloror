@@ -7,28 +7,6 @@ class BatteryReminder < ActiveRecord::Base
    	  "#{{user.name}}'s battery has approximately #{get_hours_remaining} hours left for as of #{UtilityHelper.format_datetime_readable(timestamp, user)}. Please charge the battery immediately"
     end
     
-	def before_save(event)
-		if self.reminder_num == 3
-			CriticalDeviceEventObserver.before_save(event)
-		else
-			DeviceEventObserver.before_save(event)
-		end
-	end
-	
-	def after_save(event)
-		if self.reminder_num == 3
-			CriticalDeviceEventObserver.after_save(event)
-		else
-			DeviceEventObserver.after_save(event)
-		end
-		@device = DeviceBatteryReminder.find(self.device_id)
-		if @device
-			DeviceBatteryReminder.update_attributes(:reminder_num => self.reminder_num,:stopped_at => self.stopped_at)
-		else
-			DeviceBatteryReminder.create(:id => self.device_id,:reminder_num => self.reminder_num,:stopped_at => self.stopped_at)
-		end
-	end
-	
 	def self.most_recent_reminder(device_id)
 		BatteryReminder.find_by_device_id(device_id,:order => 'created_at DESC')
 	end
