@@ -8,7 +8,7 @@
 		<label for="hours">Hours to calculate:</label> <%= text_field_tag "hours", 1%><br/>
 		<label for="start_time">Start time (for instance, "2008-07-29 12:50:02" or "last tuesday")</label>
 		<%= text_field_tag "start_time", "1 hour ago"%><br/>
-		<%= submit_tag "submit vitals" %>
+		<%= submit_tag "preview vitals to be sent" %>
 	</fieldset>
 	</form>
 	<%= link_to "Log out", :action => "logout"%>
