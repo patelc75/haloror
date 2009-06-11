@@ -22,11 +22,11 @@ class BatteryReminder < ActiveRecord::Base
     
     def after_save
     	Event.create_event(self.user_id, self.class.to_s, self.id, self.created_at)
-    	@device = DeviceBatteryReminder.find_by_id(self.device_id)
+    	@device = DeviceBatteryReminder.find_by_device_id(self.device_id)
 		if @device
 			@device.update_attributes(:reminder_num => self.reminder_num,:stopped_at => self.stopped_at)
 		else
-			DeviceBatteryReminder.create(:id => self.device_id,:reminder_num => self.reminder_num,:stopped_at => self.stopped_at)
+			DeviceBatteryReminder.create(:device_id => self.device_id,:reminder_num => self.reminder_num,:stopped_at => self.stopped_at)
 		end
     end
     
@@ -45,9 +45,9 @@ class BatteryReminder < ActiveRecord::Base
 			#@most_recent = BatteryReminder.most_recent_reminder(device.id)
 			if (device.stopped_at == nil) 
 				if device.reminder_num == 1 and (device.updated_at > (device.created_at + BATTERY_REMINDER_TWO) or device.updated_at < (device.created_at + BATTERY_REMINDER_THREE))
-					BatteryReminder.create(:device_id => device.id, :reminder_num => 2)
+					BatteryReminder.create(:device_id => device.device_id, :reminder_num => 2)
 				elsif device.reminder_num == 2 and device.updated_at < (device.created_at + BATTERY_REMINDER_THREE)
-					BatteryReminder.create(:device_id => device.id, :reminder_num => 3)
+					BatteryReminder.create(:device_id => device.device_id, :reminder_num => 3)
 				end
 			end
 		end
