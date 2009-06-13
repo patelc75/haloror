@@ -7,6 +7,8 @@ class BatteryCritical < ActiveRecord::Base
 		@most_recent.update_attributes(:stopped_at => Time.now)	if @most_recent
 	elsif self.mode == 'start'
 		BatteryReminder.create(:reminder_num => 1,:user_id =>self.user_id ,:device_id => self.device_id)
+	elsif self.mode == nil
+		DeviceAlert.notify_carigivers(self)
   	end
   end
   
