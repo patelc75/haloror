@@ -43,12 +43,18 @@ class BatteryReminder < ActiveRecord::Base
 		@devices = DeviceBatteryReminder.find(:all)		
 		@devices.each do |device|
 			#@most_recent = BatteryReminder.most_recent_reminder(device.id)
-			if (device.stopped_at == nil) 
-				if device.reminder_num == 1 and (Time.now > (device.created_at + BATTERY_REMINDER_TWO) and device.updated_at < (device.created_at + BATTERY_REMINDER_THREE))
-					BatteryReminder.create(:device_id => device.device_id, :reminder_num => 2,:user_id => device.user_id)
-				elsif device.reminder_num == 2 and Time.now < (device.created_at + BATTERY_REMINDER_THREE)
-					BatteryReminder.create(:device_id => device.device_id, :reminder_num => 3,:user_id => device.user_id)
+			if (device.stopped_at == nil and Time.now.hour < 21 and Time.now.hour > 8) 
+				if (Time.now.hour == 20 and Time.now.strftime("%M").to_i > 15 and Time.now.strftime("%M").to_i < 31 and device.reminder_num < 3)
+					#DeviceAlert.notify_operators_and_caregivers(self)
+				elsif (Time.now.hour == 20 and Time.now.strftime("%M").to_i > 30)
+				else
+					if device.reminder_num == 1 and (Time.now > (device.created_at + BATTERY_REMINDER_TWO) and device.updated_at < (device.created_at + BATTERY_REMINDER_THREE))
+						BatteryReminder.create(:device_id => device.device_id, :reminder_num => 2,:user_id => device.user_id)
+					elsif device.reminder_num == 2 and Time.now < (device.created_at + BATTERY_REMINDER_THREE)
+						BatteryReminder.create(:device_id => device.device_id, :reminder_num => 3,:user_id => device.user_id)
+					end
 				end
+				#if condition for BATTERY_REMINDER_CALL_CENTER_CUT_OFF - BATTERY_REMINDER_POLL_RATE  (call center(operator) mail condition between 8:15 and 8:30) and reminder_num < 3
 			end
 		end
 	end
