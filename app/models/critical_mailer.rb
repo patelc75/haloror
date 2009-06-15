@@ -60,6 +60,7 @@ class CriticalMailer < ActionMailer::ARMailer
     
     user = event.user
     
+    message_text << "ACCOUNT NUM\n%s\n\n" % [user.profile.account_number? ? "(No account number)" : user.profile.account_number]
     message_text << "ADDRESS + LOCK\n%s\n%s\n%s, %s %s\n%s\n\n" % [user.name, user.profile.address, user.profile.city, user.profile.state, user.profile.zipcode, user.profile.access_information.blank? ? "(No access information)" : user.profile.access_information]
     message_text << "MEDICAL\n%s\n\n" % [user.profile.allergies.blank? ? "(No medical / allergy information)" : user.profile.allergies]
     message_text << "PET\n%s\n\n" % [user.profile.pet_information.blank? ? "(No pet information)" : user.profile.pet_information]
@@ -85,7 +86,8 @@ class CriticalMailer < ActionMailer::ARMailer
     setup_caregivers(event.user, event, :caregiver_info)
     @caregiver_info << '(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
     link = get_link_to_call_center_text()
-    setup_message(event.to_s, "Go here: " + link + " If site down, use paper scripts with this info:" + @caregiver_info)
+    #setup_message(event.to_s, "Go here: " + link + " If site down, use paper scripts with this info:" + @caregiver_info)
+    setup_message(event.to_s, @caregiver_info + "\n" + (event.user.profile.address if !event.user.profile.address.blank?))
     setup_operators(event, :recepients, :include_phone_call) 
     # setup_emergency_group(event, :recepients)
     @recipients = @text_recipients
