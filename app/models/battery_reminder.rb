@@ -39,18 +39,22 @@ class BatteryReminder < ActiveRecord::Base
 	end
 	
 	def self.send_reminders
+		 
+		include UtilityHelper
+    
 		RAILS_DEFAULT_LOGGER.warn("BatteryReminder.send_reminders running at #{Time.now}")
 		@devices = DeviceBatteryReminder.find(:all)		
 		@devices.each do |device|
 			#@most_recent = BatteryReminder.most_recent_reminder(device.id)
-			if (device.stopped_at == nil and Time.now.hour < 21 and Time.now.hour > 8) 
-				if (Time.now.hour == 20 and Time.now.strftime("%M").to_i > 15 and Time.now.strftime("%M").to_i < 31 and device.reminder_num < 3)
-					#DeviceAlert.notify_operators_and_caregivers(self)
-				elsif (Time.now.hour == 20 and Time.now.strftime("%M").to_i > 30)
+			user = User.find(device.user_id)
+			if (device.stopped_at == nil and Time.now.utc.hour + get_timezone_offset(user).to_i < 21 and Time.now.utc.hour + get_timezone_offset(user).to_i > 8) 
+				if ((Time.now.utc.hour + get_timezone_offset(user).to_i) == 20 and (Time.now.utc.strftime("%M").to_i + get_timezone_offset(user).to_i) > 15 and (Time.now.strftime("%M").to_i + get_timezone_offset(user).to_i) < 31 and device.reminder_num < 3)
+					BatteryReminder.create(:device_id => device.device_id, :reminder_num => 3,:user_id => device.user_id)
+				elsif ((Time.now.utc.hour + get_timezone_offset(user).to_i) == 20 and (Time.now.utc.strftime("%M").to_i + get_timezone_offset(user).to_i) > 30)
 				else
-					if device.reminder_num == 1 and (Time.now > (device.created_at + BATTERY_REMINDER_TWO) and device.updated_at < (device.created_at + BATTERY_REMINDER_THREE))
+					if device.reminder_num == 1 and ((Time.now.utc + get_timezone_offset(user).to_i) > (device.created_at + BATTERY_REMINDER_TWO) and device.updated_at < (device.created_at + BATTERY_REMINDER_THREE))
 						BatteryReminder.create(:device_id => device.device_id, :reminder_num => 2,:user_id => device.user_id)
-					elsif device.reminder_num == 2 and Time.now < (device.created_at + BATTERY_REMINDER_THREE)
+					elsif device.reminder_num == 2 and (Time.now.utc + get_timezone_offset(user).to_i) < (device.created_at + BATTERY_REMINDER_THREE)
 						BatteryReminder.create(:device_id => device.device_id, :reminder_num => 3,:user_id => device.user_id)
 					end
 				end
