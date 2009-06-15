@@ -1,0 +1,10 @@
+<img src="/images/healthvault.jpg" />
+<!--h2><%= link_to "HealthVault", :action => "index" %>::<%= params[:action] %></h2-->
+
+<% if !flash[:message].blank? %>
+	<p>Message: <%= flash[:message] %></p>
+<% end %>
+<% if !flash[:error].blank? %>
+	<p>Message: <%= flash[:error] %></p>
+<% end %>
+

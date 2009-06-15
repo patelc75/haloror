@@ -1,0 +1,14 @@
+<%= render :partial => "header" %>
+
+<h3>Results fetched from HealthVault</h3>
+
+<table>
+	<tr><th>Time</th><th align="center">Average BPM (integer)</th></tr>
+	
+<% @results.each do |res| %>
+	<tr><td><%= res[0] %></td><td align="center"><%= res[1]%></td></tr>
+<% end %>
+
+</table>
+
+<%= link_to "return to index", :action => "index" %>

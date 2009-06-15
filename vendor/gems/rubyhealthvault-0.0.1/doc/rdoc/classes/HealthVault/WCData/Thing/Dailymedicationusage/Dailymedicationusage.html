@@ -1,0 +1,733 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: HealthVault::WCData::Thing::Dailymedicationusage::Dailymedicationusage</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../../../../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">HealthVault::WCData::Thing::Dailymedicationusage::Dailymedicationusage</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../../../../files/lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage_rb.html">
+                lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                ComplexType
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M001913">drug_form</a>&nbsp;&nbsp;
+      <a href="#M001912">drug_form=</a>&nbsp;&nbsp;
+      <a href="#M001903">drug_name</a>&nbsp;&nbsp;
+      <a href="#M001902">drug_name=</a>&nbsp;&nbsp;
+      <a href="#M001911">medication_usage_schedule</a>&nbsp;&nbsp;
+      <a href="#M001910">medication_usage_schedule=</a>&nbsp;&nbsp;
+      <a href="#M001918">new</a>&nbsp;&nbsp;
+      <a href="#M001905">number_doses_consumed_in_day</a>&nbsp;&nbsp;
+      <a href="#M001904">number_doses_consumed_in_day=</a>&nbsp;&nbsp;
+      <a href="#M001909">number_doses_intended_in_day</a>&nbsp;&nbsp;
+      <a href="#M001908">number_doses_intended_in_day=</a>&nbsp;&nbsp;
+      <a href="#M001915">prescription_type</a>&nbsp;&nbsp;
+      <a href="#M001914">prescription_type=</a>&nbsp;&nbsp;
+      <a href="#M001907">purpose_of_use</a>&nbsp;&nbsp;
+      <a href="#M001906">purpose_of_use=</a>&nbsp;&nbsp;
+      <a href="#M001917">single_dose_description</a>&nbsp;&nbsp;
+      <a href="#M001916">single_dose_description=</a>&nbsp;&nbsp;
+      <a href="#M001901">when</a>&nbsp;&nbsp;
+      <a href="#M001900">when</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Class methods</h3>
+
+      <div id="method-M001918" class="method-detail">
+        <a name="M001918"></a>
+
+        <div class="method-heading">
+          <a href="#M001918" class="method-signature">
+          <span class="method-name">new</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001918-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001918-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 175</span>
+175:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>
+176:           <span class="ruby-keyword kw">super</span>
+177:           <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">tag_name</span> = <span class="ruby-value str">'daily-medication-usage'</span>
+178:         
+179:           
+180:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'when'</span>] = {<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'when'</span>, <span class="ruby-identifier">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">HealthVault</span><span class="ruby-operator">::</span><span class="ruby-constant">WCData</span><span class="ruby-operator">::</span><span class="ruby-constant">Dates</span><span class="ruby-operator">::</span><span class="ruby-constant">Date</span>, <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">:min</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:max</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:place</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:element</span>, <span class="ruby-identifier">:choice</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span> }
+181:             
+182:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'when'</span>][<span class="ruby-identifier">:value</span>] = <span class="ruby-constant">HealthVault</span><span class="ruby-operator">::</span><span class="ruby-constant">WCData</span><span class="ruby-operator">::</span><span class="ruby-constant">Dates</span><span class="ruby-operator">::</span><span class="ruby-constant">Date</span>.<span class="ruby-identifier">new</span>
+183:             
+184:           
+185:         
+186:           
+187:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'drug-name'</span>] = {<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'drug-name'</span>, <span class="ruby-identifier">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">HealthVault</span><span class="ruby-operator">::</span><span class="ruby-constant">WCData</span><span class="ruby-operator">::</span><span class="ruby-constant">Thing</span><span class="ruby-operator">::</span><span class="ruby-constant">Types</span><span class="ruby-operator">::</span><span class="ruby-constant">Codablevalue</span>, <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">:min</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:max</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">2</span>, <span class="ruby-identifier">:place</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:element</span>, <span class="ruby-identifier">:choice</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span> }
+188:             
+189:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'drug-name'</span>][<span class="ruby-identifier">:value</span>] = <span class="ruby-constant">HealthVault</span><span class="ruby-operator">::</span><span class="ruby-constant">WCData</span><span class="ruby-operator">::</span><span class="ruby-constant">Thing</span><span class="ruby-operator">::</span><span class="ruby-constant">Types</span><span class="ruby-operator">::</span><span class="ruby-constant">Codablevalue</span>.<span class="ruby-identifier">new</span>
+190:             
+191:           
+192:         
+193:           
+194:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'number-doses-consumed-in-day'</span>] = {<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'number-doses-consumed-in-day'</span>, <span class="ruby-identifier">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">String</span>, <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">:min</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:max</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">3</span>, <span class="ruby-identifier">:place</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:element</span>, <span class="ruby-identifier">:choice</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span> }
+195:             
+196:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'number-doses-consumed-in-day'</span>][<span class="ruby-identifier">:value</span>] = <span class="ruby-constant">String</span>.<span class="ruby-identifier">new</span>
+197:             
+198:           
+199:         
+200:           
+201:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'purpose-of-use'</span>] = {<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'purpose-of-use'</span>, <span class="ruby-identifier">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">HealthVault</span><span class="ruby-operator">::</span><span class="ruby-constant">WCData</span><span class="ruby-operator">::</span><span class="ruby-constant">Thing</span><span class="ruby-operator">::</span><span class="ruby-constant">Types</span><span class="ruby-operator">::</span><span class="ruby-constant">Codablevalue</span>, <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">:min</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>, <span class="ruby-identifier">:max</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">4</span>, <span class="ruby-identifier">:place</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:element</span>, <span class="ruby-identifier">:choice</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span> }
+202:             
+203:           
+204:         
+205:           
+206:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'number-doses-intended-in-day'</span>] = {<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'number-doses-intended-in-day'</span>, <span class="ruby-identifier">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">String</span>, <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">:min</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>, <span class="ruby-identifier">:max</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">5</span>, <span class="ruby-identifier">:place</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:element</span>, <span class="ruby-identifier">:choice</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span> }
+207:             
+208:           
+209:         
+210:           
+211:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'medication-usage-schedule'</span>] = {<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'medication-usage-schedule'</span>, <span class="ruby-identifier">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">HealthVault</span><span class="ruby-operator">::</span><span class="ruby-constant">WCData</span><span class="ruby-operator">::</span><span class="ruby-constant">Thing</span><span class="ruby-operator">::</span><span class="ruby-constant">Types</span><span class="ruby-operator">::</span><span class="ruby-constant">Codablevalue</span>, <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">:min</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>, <span class="ruby-identifier">:max</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">6</span>, <span class="ruby-identifier">:place</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:element</span>, <span class="ruby-identifier">:choice</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span> }
+212:             
+213:           
+214:         
+215:           
+216:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'drug-form'</span>] = {<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'drug-form'</span>, <span class="ruby-identifier">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">HealthVault</span><span class="ruby-operator">::</span><span class="ruby-constant">WCData</span><span class="ruby-operator">::</span><span class="ruby-constant">Thing</span><span class="ruby-operator">::</span><span class="ruby-constant">Types</span><span class="ruby-operator">::</span><span class="ruby-constant">Codablevalue</span>, <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">:min</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>, <span class="ruby-identifier">:max</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">7</span>, <span class="ruby-identifier">:place</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:element</span>, <span class="ruby-identifier">:choice</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span> }
+217:             
+218:           
+219:         
+220:           
+221:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'prescription-type'</span>] = {<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'prescription-type'</span>, <span class="ruby-identifier">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">HealthVault</span><span class="ruby-operator">::</span><span class="ruby-constant">WCData</span><span class="ruby-operator">::</span><span class="ruby-constant">Thing</span><span class="ruby-operator">::</span><span class="ruby-constant">Types</span><span class="ruby-operator">::</span><span class="ruby-constant">Codablevalue</span>, <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">:min</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>, <span class="ruby-identifier">:max</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">8</span>, <span class="ruby-identifier">:place</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:element</span>, <span class="ruby-identifier">:choice</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span> }
+222:             
+223:           
+224:         
+225:           
+226:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'single-dose-description'</span>] = {<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'single-dose-description'</span>, <span class="ruby-identifier">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">HealthVault</span><span class="ruby-operator">::</span><span class="ruby-constant">WCData</span><span class="ruby-operator">::</span><span class="ruby-constant">Thing</span><span class="ruby-operator">::</span><span class="ruby-constant">Types</span><span class="ruby-operator">::</span><span class="ruby-constant">Codablevalue</span>, <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">:min</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>, <span class="ruby-identifier">:max</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:order</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">9</span>, <span class="ruby-identifier">:place</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:element</span>, <span class="ruby-identifier">:choice</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span> }
+227:             
+228:           
+229:         
+230:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M001913" class="method-detail">
+        <a name="M001913"></a>
+
+        <div class="method-heading">
+          <a href="#M001913" class="method-signature">
+          <span class="method-name">drug_form</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>returns</b>: a <a
+href="../Types/Codablevalue.html">HealthVault::WCData::Thing::Types::Codablevalue</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001913-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001913-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 133</span>
+133:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">drug_form</span>
+134:           <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'drug-form'</span>][<span class="ruby-identifier">:value</span>]
+135:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001912" class="method-detail">
+        <a name="M001912"></a>
+
+        <div class="method-heading">
+          <a href="#M001912" class="method-signature">
+          <span class="method-name">drug_form=</span><span class="method-args">(value)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>summary</b>: Form in which the drug is administered.
+<b>preferred-vocabulary</b>: x12-de-1330 <b>remarks</b>: For example, pill,
+powder, capsule, etc. User may select from the existing values or use their
+own. <em>value</em> is a <a
+href="../Types/Codablevalue.html">HealthVault::WCData::Thing::Types::Codablevalue</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001912-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001912-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 128</span>
+128:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">drug_form=</span>(<span class="ruby-identifier">value</span>)
+129:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'drug-form'</span>][<span class="ruby-identifier">:value</span>] = <span class="ruby-identifier">value</span>
+130:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001903" class="method-detail">
+        <a name="M001903"></a>
+
+        <div class="method-heading">
+          <a href="#M001903" class="method-signature">
+          <span class="method-name">drug_name</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>returns</b>: a <a
+href="../Types/Codablevalue.html">HealthVault::WCData::Thing::Types::Codablevalue</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001903-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001903-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 45</span>
+45:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">drug_name</span>
+46:           <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'drug-name'</span>][<span class="ruby-identifier">:value</span>]
+47:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001902" class="method-detail">
+        <a name="M001902"></a>
+
+        <div class="method-heading">
+          <a href="#M001902" class="method-signature">
+          <span class="method-name">drug_name=</span><span class="method-args">(value)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>REQUIRED</b> <b>summary</b>: Name of the medication, drug or supplement
+taken. <b>remarks</b>: For example, &#8216;ventolin&#8217; or
+&#8216;albuterol.&#8217; This element allows for completely free-text input
+of names. <em>value</em> is a <a
+href="../Types/Codablevalue.html">HealthVault::WCData::Thing::Types::Codablevalue</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001902-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001902-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 40</span>
+40:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">drug_name=</span>(<span class="ruby-identifier">value</span>)
+41:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'drug-name'</span>][<span class="ruby-identifier">:value</span>] = <span class="ruby-identifier">value</span>
+42:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001911" class="method-detail">
+        <a name="M001911"></a>
+
+        <div class="method-heading">
+          <a href="#M001911" class="method-signature">
+          <span class="method-name">medication_usage_schedule</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>returns</b>: a <a
+href="../Types/Codablevalue.html">HealthVault::WCData::Thing::Types::Codablevalue</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001911-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001911-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 115</span>
+115:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">medication_usage_schedule</span>
+116:           <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'medication-usage-schedule'</span>][<span class="ruby-identifier">:value</span>]
+117:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001910" class="method-detail">
+        <a name="M001910"></a>
+
+        <div class="method-heading">
+          <a href="#M001910" class="method-signature">
+          <span class="method-name">medication_usage_schedule=</span><span class="method-args">(value)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>summary</b>: General schedule for the usage of the medication in
+quesiton. <b>preferred-vocabulary</b>: usage-schedule <b>remarks</b>: This
+will be used to distinguish between drugs that are taken daily vs. those
+that are taken &#8216;as needed.&#8217; User may select from the existing
+values or use their own. <em>value</em> is a <a
+href="../Types/Codablevalue.html">HealthVault::WCData::Thing::Types::Codablevalue</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001910-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001910-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 110</span>
+110:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">medication_usage_schedule=</span>(<span class="ruby-identifier">value</span>)
+111:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'medication-usage-schedule'</span>][<span class="ruby-identifier">:value</span>] = <span class="ruby-identifier">value</span>
+112:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001905" class="method-detail">
+        <a name="M001905"></a>
+
+        <div class="method-heading">
+          <a href="#M001905" class="method-signature">
+          <span class="method-name">number_doses_consumed_in_day</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>returns</b>: a String
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001905-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001905-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 62</span>
+62:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">number_doses_consumed_in_day</span>
+63:           <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'number-doses-consumed-in-day'</span>][<span class="ruby-identifier">:value</span>]
+64:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001904" class="method-detail">
+        <a name="M001904"></a>
+
+        <div class="method-heading">
+          <a href="#M001904" class="method-signature">
+          <span class="method-name">number_doses_consumed_in_day=</span><span class="method-args">(value)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>REQUIRED</b> <b>summary</b>: Number of units of the medication taken.
+<b>remarks</b>: Ties to the &#8216;single-dose-description&#8217; element
+to determine actual dosage taken. <em>value</em> is a String
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001904-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001904-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 57</span>
+57:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">number_doses_consumed_in_day=</span>(<span class="ruby-identifier">value</span>)
+58:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'number-doses-consumed-in-day'</span>][<span class="ruby-identifier">:value</span>] = <span class="ruby-identifier">value</span>
+59:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001909" class="method-detail">
+        <a name="M001909"></a>
+
+        <div class="method-heading">
+          <a href="#M001909" class="method-signature">
+          <span class="method-name">number_doses_intended_in_day</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>returns</b>: a String
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001909-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001909-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 97</span>
+97:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">number_doses_intended_in_day</span>
+98:           <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'number-doses-intended-in-day'</span>][<span class="ruby-identifier">:value</span>]
+99:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001908" class="method-detail">
+        <a name="M001908"></a>
+
+        <div class="method-heading">
+          <a href="#M001908" class="method-signature">
+          <span class="method-name">number_doses_intended_in_day=</span><span class="method-args">(value)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>summary</b>: Number of units called for by prescription or intent for
+the drug. <b>remarks</b>: Intend for this to be used to ensure that patient
+is keeping track of their usage in comparison to the prescribed usage. Will
+enable an application to easily alert the user in instances where the
+patient has come short or is taking too much. <em>value</em> is a String
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001908-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001908-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 92</span>
+92:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">number_doses_intended_in_day=</span>(<span class="ruby-identifier">value</span>)
+93:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'number-doses-intended-in-day'</span>][<span class="ruby-identifier">:value</span>] = <span class="ruby-identifier">value</span>
+94:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001915" class="method-detail">
+        <a name="M001915"></a>
+
+        <div class="method-heading">
+          <a href="#M001915" class="method-signature">
+          <span class="method-name">prescription_type</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>returns</b>: a <a
+href="../Types/Codablevalue.html">HealthVault::WCData::Thing::Types::Codablevalue</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001915-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001915-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 151</span>
+151:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">prescription_type</span>
+152:           <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'prescription-type'</span>][<span class="ruby-identifier">:value</span>]
+153:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001914" class="method-detail">
+        <a name="M001914"></a>
+
+        <div class="method-heading">
+          <a href="#M001914" class="method-signature">
+          <span class="method-name">prescription_type=</span><span class="method-args">(value)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>summary</b>: Means through which the drug was determined to be needed.
+<b>preferred-vocabulary</b>: prescription-type <b>remarks</b>: For example,
+Unknown, MedicallyPrescribed, or SelfChosen. <em>value</em> is a <a
+href="../Types/Codablevalue.html">HealthVault::WCData::Thing::Types::Codablevalue</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001914-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001914-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 146</span>
+146:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">prescription_type=</span>(<span class="ruby-identifier">value</span>)
+147:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'prescription-type'</span>][<span class="ruby-identifier">:value</span>] = <span class="ruby-identifier">value</span>
+148:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001907" class="method-detail">
+        <a name="M001907"></a>
+
+        <div class="method-heading">
+          <a href="#M001907" class="method-signature">
+          <span class="method-name">purpose_of_use</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>returns</b>: a <a
+href="../Types/Codablevalue.html">HealthVault::WCData::Thing::Types::Codablevalue</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001907-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001907-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 80</span>
+80:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">purpose_of_use</span>
+81:           <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'purpose-of-use'</span>][<span class="ruby-identifier">:value</span>]
+82:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001906" class="method-detail">
+        <a name="M001906"></a>
+
+        <div class="method-heading">
+          <a href="#M001906" class="method-signature">
+          <span class="method-name">purpose_of_use=</span><span class="method-args">(value)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>summary</b>: Textual description of the purpose of use for this drug.
+<b>preferred-vocabulary</b>: dose-purpose <b>remarks</b>: Examples include
+&#8216;high blood pressure&#8217; or &#8216;diabetes.&#8217; Users may
+select from the existing vocabulary or use their own descriptions.
+<em>value</em> is a <a
+href="../Types/Codablevalue.html">HealthVault::WCData::Thing::Types::Codablevalue</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001906-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001906-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 75</span>
+75:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">purpose_of_use=</span>(<span class="ruby-identifier">value</span>)
+76:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'purpose-of-use'</span>][<span class="ruby-identifier">:value</span>] = <span class="ruby-identifier">value</span>
+77:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001917" class="method-detail">
+        <a name="M001917"></a>
+
+        <div class="method-heading">
+          <a href="#M001917" class="method-signature">
+          <span class="method-name">single_dose_description</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>returns</b>: a <a
+href="../Types/Codablevalue.html">HealthVault::WCData::Thing::Types::Codablevalue</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001917-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001917-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 169</span>
+169:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">single_dose_description</span>
+170:           <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'single-dose-description'</span>][<span class="ruby-identifier">:value</span>]
+171:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001916" class="method-detail">
+        <a name="M001916"></a>
+
+        <div class="method-heading">
+          <a href="#M001916" class="method-signature">
+          <span class="method-name">single_dose_description=</span><span class="method-args">(value)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>summary</b>: Description that defines what a &#8216;single dose&#8217;
+of the medication constitutes. <b>preferred-vocabulary</b>: x12-d3-355
+<b>remarks</b>: This element qualifies the
+&#8216;number-units-consumed&#8217; element. It allows control over the
+definition of a dosage. The intent is to allow for free-form text to enable
+the user or provider to have complete control over the definition of a
+&#8216;unit&#8217; for a specific drug. Examples include &#8216;3 200mg
+tablets,&#8217; &#8216;1 Tablespoon full&#8217; or &#8216;2.5
+tablets.&#8217; User may select from the existing values or use their own.
+<em>value</em> is a <a
+href="../Types/Codablevalue.html">HealthVault::WCData::Thing::Types::Codablevalue</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001916-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001916-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 164</span>
+164:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">single_dose_description=</span>(<span class="ruby-identifier">value</span>)
+165:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'single-dose-description'</span>][<span class="ruby-identifier">:value</span>] = <span class="ruby-identifier">value</span>
+166:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001901" class="method-detail">
+        <a name="M001901"></a>
+
+        <div class="method-heading">
+          <a href="#M001901" class="method-signature">
+          <span class="method-name">when</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>returns</b>: a <a
+href="../../Dates/Date.html">HealthVault::WCData::Dates::Date</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001901-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001901-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 28</span>
+28:         <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">when</span>
+29:           <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'when'</span>][<span class="ruby-identifier">:value</span>]
+30:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M001900" class="method-detail">
+        <a name="M001900"></a>
+
+        <div class="method-heading">
+          <a href="#M001900" class="method-signature">
+          <span class="method-name">when</span><span class="method-args">(=(value))</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<b>REQUIRED</b> <b>summary</b>: Date on which the medication was taken.
+<em>value</em> is a <a
+href="../../Dates/Date.html">HealthVault::WCData::Dates::Date</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M001900-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M001900-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb, line 23</span>
+23:         <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">when</span>=(<span class="ruby-identifier">value</span>)
+24:           <span class="ruby-ivar">@children</span>[<span class="ruby-value str">'when'</span>][<span class="ruby-identifier">:value</span>] = <span class="ruby-identifier">value</span>
+25:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>
