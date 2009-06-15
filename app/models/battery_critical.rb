@@ -20,15 +20,15 @@ class BatteryCritical < ActiveRecord::Base
   end
   
   def to_s
-    "Battery critically low on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
+    if mode == 'stop'
+      "Battery critical state resolved on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
+  	else  	
+      "Battery critically low on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
+    end
   end
   
   def email_body
-  	if self.mode == 'stop'
-  		"Battery critical state resolved on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
-  	else
-   	   "Battery critically low on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
-    end
+    to_s
   end
   
   def self.new_initialize(random=false)
