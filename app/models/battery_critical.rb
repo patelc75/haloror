@@ -1,6 +1,12 @@
 class BatteryCritical < ActiveRecord::Base
   set_table_name "battery_criticals"
   belongs_to :user
+  belongs_to :device
+	include Priority
+	def priority
+      return IMMEDIATE
+    end
+    
   def after_save
   	if self.mode == 'stop'
   		@most_recent = BatteryReminder.most_recent_reminder(self.device_id)
