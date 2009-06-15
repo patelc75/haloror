@@ -16,16 +16,17 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
           if event.user.profile && !event.user.profile.account_number.blank?
             SafetyCareClient.alert(event.user.profile.account_number, event.event_type_numeric)
           else
-            CriticalMailer.deliver_monitoring_failure("No profile or missing account number!", event)
+            #CriticalMailer.deliver_monitoring_failure("No profile or missing account number!", event)
+            UtilityHelper.log_message("#{event.to_s}: No profile or missing account number!")
           end
         rescue Exception => e
-          CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
+          #CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
           UtilityHelper.log_message("SafetyCareClient.alert::Exception:: #{e} : #{event.to_s}", e)
         rescue Timeout::Error => e
-          CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
+          #CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
           UtilityHelper.log_message("SafetyCareClient.alert::Timeout::Error:: #{e} : #{event.to_s}", e)
         rescue
-          CriticalMailer.deliver_monitoring_failure("UNKNOWN error", event)
+          #CriticalMailer.deliver_monitoring_failure("UNKNOWN error", event)
           UtilityHelper.log_message("SafetyCareClient.alert::UNKNOWN::Error: #{event.to_s}")         
         end
 
