@@ -24,7 +24,7 @@ class BatteryCritical < ActiveRecord::Base
   end
   
   def email_body
-  	if mode == 'stop'
+  	if self.mode == 'stop'
   		"Battery critical state resolved on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
   	else
    	   "Battery critically low on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
