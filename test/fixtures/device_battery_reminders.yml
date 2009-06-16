@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+
+one:
+
+  reminder_num: 1
+
+  stopped_at: 2009-06-06 17:46:43
+
+
+two:
+
+  reminder_num: 1
+
+  stopped_at: 2009-06-06 17:46:43
+
+

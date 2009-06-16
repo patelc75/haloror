@@ -7,6 +7,7 @@
 	<div class="content">
 		<ul id="call_list">
 			<% @alert_types.each do |alert| %>
+			<% if alert.deprecated != true %>
 				<%
 					critical = false
 					alert.alert_groups.each do |group|
@@ -96,6 +97,7 @@
 						</div>
 					</div>
 				</li>
+				<%end%>
 			<% end %>			
 		</ul>
 		<p>&nbsp;</p>		

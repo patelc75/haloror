@@ -45,6 +45,19 @@ SCHEDULER.schedule_every(STRAP_OFF_POLL_RATE) {
   end
 }
 
+SCHEDULER.schedule_every(BATTERY_REMINDER_POLL_RATE) { 
+  begin
+    BatteryReminder.send_reminders()
+    ActiveRecord::Base.verify_active_connections!()
+  rescue Exception => e
+    UtilityHelper.log_message("BatteryReminder.send_reminders::Exception:: #{e}", e)
+  rescue Timeout::Error => e
+    UtilityHelper.log_message("BatteryReminder.send_reminders::Timeout::Error:: #{e}", e)
+  rescue
+    UtilityHelper.log_message("BatteryReminder.send_reminders::UNKNOWN::Error")         
+  end
+}
+
 SCHEDULER.schedule_every(EMAIL_NOTIFICATION_RATE) { 
   begin
     Email.notify_by_priority 
