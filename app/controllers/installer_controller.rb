@@ -103,8 +103,10 @@ class InstallerController < ApplicationController
       if gateway_serial_number.size == 7
         gateway_serial_number = gateway_serial_number[0,2] + "000" + gateway_serial_number[2, 5] 
       end
+
       @gateway = Device.find_by_serial_number(gateway_serial_number)
       unless @gateway
+      	params[:gateway][:serial_number] = gateway_serial_number
         @gateway = @user.devices.build(params[:gateway])
       end
       begin
@@ -137,6 +139,7 @@ class InstallerController < ApplicationController
         throw Exception.new
       end
       unless @strap
+      	params[:strap][:serial_number] = strap_serial_number
         @strap = @user.devices.build(params[:strap]) 
       end
       begin
