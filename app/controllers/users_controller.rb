@@ -318,7 +318,7 @@ end
     end
     
     opt.active = true
-    opt.position = get_max_caregiver_position(@patient)-1
+    opt.position = get_max_caregiver_position(@patient)
     #opt.position = 1
     opt.removed = false
     opt.save
