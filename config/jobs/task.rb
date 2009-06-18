@@ -125,17 +125,19 @@ SCHEDULER.schedule_every(BUNDLE_JOB_DIAL_UP_TIME) {
   end
 }
 
-SCHEDULER.schedule_every(SAFETYCARE_HEARTBEAT_TIME) {
-  begin
-    SafetyCareClient.heartbeat()
-  rescue Exception => e
-    #CriticalMailer.deliver_monitoring_hertbeat_failure("Exception!", e)
-    UtilityHelper.log_message("SafetyCareClient.heartbeat::Exception:: #{e}", e)
-  rescue Timeout::Error => e
-    #CriticalMailer.deliver_monitoring_hertbeat_failure("Timeout!", e)
-    UtilityHelper.log_message("SafetyCareClient.heartbeat::Timeout::Error:: #{e}", e)
-  rescue
-    #CriticalMailer.deliver_monitoring_hertbeat_failure("UNKNOWN ERROR!")
-    UtilityHelper.log_message("SafetyCareClient.heartbeat::UNKNOWN::Error")         
-  end
-}
+if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2')
+	SCHEDULER.schedule_every(SAFETYCARE_HEARTBEAT_TIME) {
+	  begin
+	    SafetyCareClient.heartbeat()
+	  rescue Exception => e
+	    #CriticalMailer.deliver_monitoring_hertbeat_failure("Exception!", e)
+	    UtilityHelper.log_message("SafetyCareClient.heartbeat::Exception:: #{e}", e)
+	  rescue Timeout::Error => e
+	    #CriticalMailer.deliver_monitoring_hertbeat_failure("Timeout!", e)
+	    UtilityHelper.log_message("SafetyCareClient.heartbeat::Timeout::Error:: #{e}", e)
+	  rescue
+	    #CriticalMailer.deliver_monitoring_hertbeat_failure("UNKNOWN ERROR!")
+	    UtilityHelper.log_message("SafetyCareClient.heartbeat::UNKNOWN::Error")         
+	  end
+	}
+end
