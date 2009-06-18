@@ -51,10 +51,16 @@ class DeviceAlert < ActiveRecord::Base
       else 
         # refs 1523:
         begin
-          if event.user.profile && !event.user.profile.account_number.blank?
-            SafetyCareClient.alert(event.user.profile.account_number, event.event_type_numeric)
-          else
-            CriticalMailer.deliver_monitoring_failure("No profile or missing account number!", event)
+          if event.user.is_halouser_of? Group.find_by_name('SafetyCare')
+            if event.user.profile
+              if !event.user.profile.account_number.blank? 
+                SafetyCareClient.alert(event.user.profile.account_number, event.event_type_numeric)
+              else
+                CriticalMailer.deliver_monitoring_failure("Missing account number!", event)
+              end
+            else
+              CriticalMailer.deliver_monitoring_failure("Missing user profile!", event)
+            end
           end
         rescue Exception => e
           CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
