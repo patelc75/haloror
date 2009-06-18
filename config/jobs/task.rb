@@ -125,7 +125,8 @@ SCHEDULER.schedule_every(BUNDLE_JOB_DIAL_UP_TIME) {
   end
 }
 
-if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2')
+#safetycare cannot distinguish between a live heartbeat and a test heartbeat so the test heartbeat is commented out
+if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') #or ServerInstance.in_hostname?('corp')
 	SCHEDULER.schedule_every(SAFETYCARE_HEARTBEAT_TIME) {
 	  begin
 	    SafetyCareClient.heartbeat()

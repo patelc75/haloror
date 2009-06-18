@@ -54,9 +54,10 @@ class DeviceAlert < ActiveRecord::Base
           if event.user.is_halouser_of? Group.find_by_name('SafetyCare')
             if event.user.profile
               if !event.user.profile.account_number.blank?
-              	if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
+              	#don't need to filter because safetycare filters by IP
+                #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
                   SafetyCareClient.alert(event.user.profile.account_number, event.event_type_numeric)
-                end
+                #end
               else
                 CriticalMailer.deliver_monitoring_failure("Missing account number!", event)
               end
