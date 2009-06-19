@@ -57,7 +57,7 @@ class BatteryReminder < DeviceAlert
 						time_remaining = device.time_remaining - (BATTERY_REMINDER_TWO / 60) 
 						BatteryReminder.create(:device_id => device.device_id, :reminder_num => 2,:user_id => device.user_id,:time_remaining => time_remaining)
 					elsif device.reminder_num == 2 and (Time.now.utc + get_timezone_offset(user).to_i) < (device.created_at + BATTERY_REMINDER_THREE)
-						time_remaining = device.time_remaining - (BATTERY_REMINDER_THREE / 60) + 120
+						time_remaining = device.time_remaining - (BATTERY_REMINDER_THREE / 60) + (BATTERY_REMINDER_TWO / 60)
 						BatteryReminder.create(:device_id => device.device_id, :reminder_num => 3,:user_id => device.user_id,:time_remaining => time_remaining)
 					end
 				end
