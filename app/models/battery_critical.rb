@@ -8,14 +8,16 @@ class BatteryCritical < ActiveRecord::Base
     end
     
   def after_save
-  	if self.mode == 'stop'
-  		@most_recent = BatteryReminder.most_recent_reminder(self.device_id)
-		@most_recent.update_attributes(:stopped_at => Time.now)	if @most_recent
-		DeviceAlert.notify_carigivers(self)
-	elsif self.mode == 'start'
+  	if self.mode.nil?  #backward compatibility for GWs with old code
+  	  DeviceAlert.notify_carigivers(self)
+  	elsif
+  	  if self.mode == 'stop'
+  		  @most_recent = BatteryReminder.most_recent_reminder(self.device_id)
+		 @most_recent.update_attributes(:stopped_at => Time.now)	if @most_recent
+		  DeviceAlert.notify_carigivers(self)
+	  elsif self.mode == 'start'
 		BatteryReminder.create(:reminder_num => 1,:user_id =>self.user_id ,:device_id => self.device_id,:time_remaining => self.time_remaining)
-	elsif self.mode == nil
-		DeviceAlert.notify_carigivers(self)
+	  end
   	end
   end
   
