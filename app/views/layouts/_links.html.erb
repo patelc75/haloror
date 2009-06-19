@@ -24,7 +24,7 @@
 			<% if current_user.is_admin? || current_user.is_super_admin? %>
 				<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
 			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_sales? %>
 				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'index' %></li>
 			<% end %>
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_moderator?%>

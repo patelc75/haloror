@@ -1,5 +1,5 @@
 class ReportingController < ApplicationController
-  before_filter :authenticate_admin_moderator?
+  before_filter :authenticate_admin_moderator_sales?
   include UtilityHelper
   
   def avg_skin_temps
@@ -53,6 +53,7 @@ class ReportingController < ApplicationController
                            :per_page => REPORTING_USERS_PER_PAGE
     @roles = []
     rows = Role.connection.select_all("Select Distinct name from roles order by name asc")
+    
     rows.collect do |row|
       @roles << row['name']
     end
