@@ -1,4 +1,4 @@
-class BatteryReminder < ActiveRecord::Base
+class BatteryReminder < DeviceAlert
 	set_table_name "battery_reminders"
 	belongs_to :user
 	belongs_to :device
