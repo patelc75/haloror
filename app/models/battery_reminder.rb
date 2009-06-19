@@ -8,7 +8,7 @@ class BatteryReminder < DeviceAlert
     end
 	
     def to_s
-   	  "Battery has approx. #{time_remaining} hours left for #{user.name} at #{UtilityHelper.format_datetime_readable(created_at, user)}"   	  
+   	  "Battery has approx. #{time_remaining} minutes left for #{user.name} at #{UtilityHelper.format_datetime_readable(created_at, user)}"   	  
     end
   
   
@@ -31,7 +31,7 @@ class BatteryReminder < DeviceAlert
     end
     
     def email_body
-   	  "#{user.name}'s battery has approximately #{time_remaining} hours left for as of #{UtilityHelper.format_datetime_readable(created_at, user)}. Please charge the battery immediately"
+   	  "#{user.name}'s battery has approximately #{time_remaining} minutes left for as of #{UtilityHelper.format_datetime_readable(created_at, user)}. Please charge the battery immediately"
     end
     
 	def self.most_recent_reminder(device_id)
