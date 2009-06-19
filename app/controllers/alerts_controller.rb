@@ -1,5 +1,5 @@
 class AlertsController < ApplicationController
-  before_filter :authenticate_admin_halouser_caregiver?
+  before_filter :authenticate_admin_halouser_caregiver_sales?
   def index
     @alert_types = []
     #AlertGroup.find(:all, :conditions => "group_type != 'critical'").each do |group|
