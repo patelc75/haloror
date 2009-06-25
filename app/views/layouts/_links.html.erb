@@ -33,6 +33,9 @@
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? %>
 				<li><%= link_to 'Call&nbsp;Center', url_for(:controller => 'call_center', :action => 'index') %></li>
 			<% end %>
+			<% if current_user.is_super_admin? || current_user.is_admin_of?(halo_group) || current_user.is_sales? || current_user.is_installer? %>
+				<li<%= link_to "Emergency_#s", :action => 'index', :controller => 'emergency_numbers' %></li>
+			<% end %>
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
 				<li><%= link_to 'Senior&nbsp;Signup', url_for(:controller => 'users', :action => 'new') %></li>
 			<% end %>
