@@ -36,9 +36,9 @@ class DeviceAlert < ActiveRecord::Base
   end
   
   def self.notify_carigivers(event)
-  	if event.user_id < 1 or event.user_id == nil
+  	if event.user_id < 1 or event.user_id == nil or event.user == nil 
       raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
-    elsif event.device_id < 1 or event.device_id == nil
+    elsif event.device_id < 1 or event.device_id == nil or event.device == nil
       raise "#{event.class.to_s}: device_id = #{event.device_id} does not exist"
     else
       CriticalMailer.deliver_device_event_caregiver(event)
@@ -46,7 +46,7 @@ class DeviceAlert < ActiveRecord::Base
   end
   
   def self.notify_operators_and_caregivers(event)
-  	if event.user_id < 1 or event.user == nil
+  	if event.user_id < 1 or event.user_id == nil or event.user == nil
         raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
       elsif event.class == CallCenterFollowUp
         CriticalMailer.deliver_device_event_admin(event)

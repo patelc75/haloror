@@ -8,19 +8,16 @@ class BatteryReminder < DeviceAlert
     end
 	
     def to_s
-   	  "Battery has approx. #{time_remaining} minutes left for #{user.name} at #{UtilityHelper.format_datetime_readable(created_at, user)}"   	  
+   	  "Battery has approx. #{time_remaining < 0 ? 0:time_remaining} minutes left for #{user.name} at #{UtilityHelper.format_datetime_readable(created_at, user)}"   	  
     end
   
-  
-    def before_save
+    def after_save
     	if self.reminder_num == 3
 			DeviceAlert.notify_operators_and_caregivers(self)
 		else
 			DeviceAlert.notify_carigivers(self)
 		end
-    end
-    
-    def after_save
+		
     	Event.create_event(self.user_id, self.class.to_s, self.id, self.created_at)
     	@device = DeviceBatteryReminder.find_by_device_id(self.device_id)
 		if @device
@@ -31,7 +28,7 @@ class BatteryReminder < DeviceAlert
     end
     
     def email_body
-   	  "#{user.name}'s battery has approximately #{time_remaining} minutes left for as of #{UtilityHelper.format_datetime_readable(created_at, user)}. Please charge the battery immediately"
+   	  "#{user.name}'s battery has approximately #{time_remaining < 0 ? 0:time_remaining} minutes left for as of #{UtilityHelper.format_datetime_readable(created_at, user)}. Please charge the battery immediately"
     end
     
 	def self.most_recent_reminder(device_id)
