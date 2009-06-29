@@ -1,0 +1,620 @@
+--- !ruby/object:Gem::Specification 
+name: rubyhealthvault
+version: !ruby/object:Gem::Version 
+  version: 0.0.1
+platform: ruby
+authors: 
+- Danny Coates
+autorequire: 
+bindir: bin
+cert_chain: []
+
+date: 2009-06-27 00:00:00 -06:00
+default_executable: 
+dependencies: []
+
+description: Connect your Ruby code to the Microsoft HealthVault
+email: dcoates@podfitness.com
+executables: []
+
+extensions: []
+
+extra_rdoc_files: 
+- README
+- LICENSE
+files: 
+- GPL
+- LICENSE
+- README
+- Rakefile
+- bin/certs/HelloWorld-SDK_ID-05a059c9-c309-46af-9b86-b06d42510550.pfx
+- bin/certs/helloWorld.pem
+- bin/example.rb
+- lib/application.rb
+- lib/code_generation/xsd_parser.rb
+- lib/config.rb
+- lib/connection.rb
+- lib/healthvault.rb
+- lib/request.rb
+- lib/response.rb
+- lib/templates/complex_type_template.erb
+- lib/templates/simple_type_template.erb
+- lib/templates/thing_class_extension_template.erb
+- lib/utils/crypto_utils.rb
+- lib/utils/string_utils.rb
+- lib/wc_data/complex_type.rb
+- lib/wc_data/generated/application/app.rb
+- lib/wc_data/generated/application/app_id_and_incr_auth.rb
+- lib/wc_data/generated/application/app_large_logo.rb
+- lib/wc_data/generated/application/app_large_logo_info.rb
+- lib/wc_data/generated/application/app_persistent_tokens.rb
+- lib/wc_data/generated/application/app_small_logo.rb
+- lib/wc_data/generated/application/app_small_logo_info.rb
+- lib/wc_data/generated/application/app_with_logos.rb
+- lib/wc_data/generated/application/application_attributes.rb
+- lib/wc_data/generated/application/culture_specific_app_large_logo.rb
+- lib/wc_data/generated/application/culture_specific_app_small_logo.rb
+- lib/wc_data/generated/application/culture_specific_statement.rb
+- lib/wc_data/generated/application/public_key.rb
+- lib/wc_data/generated/application/public_keys.rb
+- lib/wc_data/generated/application/statement.rb
+- lib/wc_data/generated/application/statement_info.rb
+- lib/wc_data/generated/auth/associated_cred_info.rb
+- lib/wc_data/generated/auth/auth.rb
+- lib/wc_data/generated/auth/auth_session_credential.rb
+- lib/wc_data/generated/auth/auth_session_sub_credential.rb
+- lib/wc_data/generated/auth/auth_xml.rb
+- lib/wc_data/generated/auth/federating_cred.rb
+- lib/wc_data/generated/auth/rule.rb
+- lib/wc_data/generated/auth/rules.rb
+- lib/wc_data/generated/auth/set.rb
+- lib/wc_data/generated/auth/simple_card_space_credential.rb
+- lib/wc_data/generated/auth/simple_open_id_credential.rb
+- lib/wc_data/generated/auth/simple_passport_credential.rb
+- lib/wc_data/generated/auth/simple_user_pass_credential.rb
+- lib/wc_data/generated/auth/textual_permissions.rb
+- lib/wc_data/generated/auth/textual_permissions_type.rb
+- lib/wc_data/generated/auth/textual_rule.rb
+- lib/wc_data/generated/auth/token.rb
+- lib/wc_data/generated/auth/user_pass_auth_session_cred.rb
+- lib/wc_data/generated/auth/user_pass_cred.rb
+- lib/wc_data/generated/dates/approx_date.rb
+- lib/wc_data/generated/dates/approx_date_time.rb
+- lib/wc_data/generated/dates/date.rb
+- lib/wc_data/generated/dates/date_time.rb
+- lib/wc_data/generated/dates/day.rb
+- lib/wc_data/generated/dates/hour.rb
+- lib/wc_data/generated/dates/millisecond.rb
+- lib/wc_data/generated/dates/minute.rb
+- lib/wc_data/generated/dates/month.rb
+- lib/wc_data/generated/dates/second.rb
+- lib/wc_data/generated/dates/structured_approx_date.rb
+- lib/wc_data/generated/dates/time.rb
+- lib/wc_data/generated/dates/year.rb
+- lib/wc_data/generated/methods/add_application/info.rb
+- lib/wc_data/generated/methods/create_authenticated_session_token/auth_token_info.rb
+- lib/wc_data/generated/methods/create_authenticated_session_token/credential.rb
+- lib/wc_data/generated/methods/create_authenticated_session_token/info.rb
+- lib/wc_data/generated/methods/create_connect_package/info.rb
+- lib/wc_data/generated/methods/create_connect_request/info.rb
+- lib/wc_data/generated/methods/delete_open_query/info.rb
+- lib/wc_data/generated/methods/delete_pending_connect_package/info.rb
+- lib/wc_data/generated/methods/delete_pending_connect_request/info.rb
+- lib/wc_data/generated/methods/get_application_info/info.rb
+- lib/wc_data/generated/methods/get_authorized_connect_requests/info.rb
+- lib/wc_data/generated/methods/get_authorized_people/get_authorized_people_parameters.rb
+- lib/wc_data/generated/methods/get_authorized_people/info.rb
+- lib/wc_data/generated/methods/get_authorized_records/info.rb
+- lib/wc_data/generated/methods/get_open_query_info/info.rb
+- lib/wc_data/generated/methods/get_person_info/info.rb
+- lib/wc_data/generated/methods/get_thing_type/info.rb
+- lib/wc_data/generated/methods/get_thing_type/thing_type_section_spec.rb
+- lib/wc_data/generated/methods/get_things/info.rb
+- lib/wc_data/generated/methods/get_things/thing_filter_spec.rb
+- lib/wc_data/generated/methods/get_things/thing_format_spec.rb
+- lib/wc_data/generated/methods/get_things/thing_request_group.rb
+- lib/wc_data/generated/methods/get_things/thing_section_spec.rb
+- lib/wc_data/generated/methods/get_updated_records_for_application/info.rb
+- lib/wc_data/generated/methods/get_valid_group_membership/info.rb
+- lib/wc_data/generated/methods/get_vocabulary/info.rb
+- lib/wc_data/generated/methods/get_vocabulary/vocabulary_parameters.rb
+- lib/wc_data/generated/methods/overwrite_things/info.rb
+- lib/wc_data/generated/methods/put_things/info.rb
+- lib/wc_data/generated/methods/query_permissions/info.rb
+- lib/wc_data/generated/methods/remove_things/info.rb
+- lib/wc_data/generated/methods/response/add_application/info.rb
+- lib/wc_data/generated/methods/response/any/info.rb
+- lib/wc_data/generated/methods/response/begin_put_blob/info.rb
+- lib/wc_data/generated/methods/response/create_authenticated_session_token/app_auth_token_absence_reason.rb
+- lib/wc_data/generated/methods/response/create_authenticated_session_token/auth_token_absence_reason.rb
+- lib/wc_data/generated/methods/response/create_authenticated_session_token/info.rb
+- lib/wc_data/generated/methods/response/create_connect_package/info.rb
+- lib/wc_data/generated/methods/response/create_connect_request/info.rb
+- lib/wc_data/generated/methods/response/delete_open_query/info.rb
+- lib/wc_data/generated/methods/response/get_application_info/info.rb
+- lib/wc_data/generated/methods/response/get_application_settings/app_settings.rb
+- lib/wc_data/generated/methods/response/get_application_settings/info.rb
+- lib/wc_data/generated/methods/response/get_authorized_connect_requests/connect_request.rb
+- lib/wc_data/generated/methods/response/get_authorized_connect_requests/info.rb
+- lib/wc_data/generated/methods/response/get_authorized_people/get_authorized_people_response.rb
+- lib/wc_data/generated/methods/response/get_authorized_people/info.rb
+- lib/wc_data/generated/methods/response/get_authorized_records/info.rb
+- lib/wc_data/generated/methods/response/get_people_for_record/info.rb
+- lib/wc_data/generated/methods/response/get_person_info/info.rb
+- lib/wc_data/generated/methods/response/get_service_definition/configuration_entry.rb
+- lib/wc_data/generated/methods/response/get_service_definition/info.rb
+- lib/wc_data/generated/methods/response/get_service_definition/platform.rb
+- lib/wc_data/generated/methods/response/get_service_definition/sdk_assembly.rb
+- lib/wc_data/generated/methods/response/get_service_definition/shell.rb
+- lib/wc_data/generated/methods/response/get_service_definition/shell_redirect_token.rb
+- lib/wc_data/generated/methods/response/get_service_definition/xml_method.rb
+- lib/wc_data/generated/methods/response/get_service_definition/xml_method_version.rb
+- lib/wc_data/generated/methods/response/get_thing_type/column.rb
+- lib/wc_data/generated/methods/response/get_thing_type/columns.rb
+- lib/wc_data/generated/methods/response/get_thing_type/image.rb
+- lib/wc_data/generated/methods/response/get_thing_type/info.rb
+- lib/wc_data/generated/methods/response/get_thing_type/thing_type_info.rb
+- lib/wc_data/generated/methods/response/get_thing_type/transform_source.rb
+- lib/wc_data/generated/methods/response/get_thing_type/transforms.rb
+- lib/wc_data/generated/methods/response/get_thing_type/version_info.rb
+- lib/wc_data/generated/methods/response/get_thing_type/versions.rb
+- lib/wc_data/generated/methods/response/get_things/info.rb
+- lib/wc_data/generated/methods/response/get_things/thing_response_group.rb
+- lib/wc_data/generated/methods/response/get_things/unprocessed_thing_key_info.rb
+- lib/wc_data/generated/methods/response/get_updated_records_for_application/info.rb
+- lib/wc_data/generated/methods/response/get_updated_records_for_application/record_id.rb
+- lib/wc_data/generated/methods/response/get_valid_group_membership/info.rb
+- lib/wc_data/generated/methods/response/get_vocabulary/info.rb
+- lib/wc_data/generated/methods/response/overwrite_things/info.rb
+- lib/wc_data/generated/methods/response/put_things/info.rb
+- lib/wc_data/generated/methods/response/query_permissions/info.rb
+- lib/wc_data/generated/methods/response/query_permissions/permissions.rb
+- lib/wc_data/generated/methods/response/query_permissions/thing_type_permission.rb
+- lib/wc_data/generated/methods/response/search_vocabulary/info.rb
+- lib/wc_data/generated/methods/save_open_query/info.rb
+- lib/wc_data/generated/methods/search_vocabulary/info.rb
+- lib/wc_data/generated/methods/search_vocabulary/vocabulary_search_params.rb
+- lib/wc_data/generated/methods/search_vocabulary/vocabulary_search_string.rb
+- lib/wc_data/generated/methods/send_insecure_message/info.rb
+- lib/wc_data/generated/methods/send_insecure_message_from_application/from_mailbox.rb
+- lib/wc_data/generated/methods/send_insecure_message_from_application/info.rb
+- lib/wc_data/generated/methods/set_application_settings/app_settings.rb
+- lib/wc_data/generated/methods/set_application_settings/info.rb
+- lib/wc_data/generated/methods/update_application/info.rb
+- lib/wc_data/generated/methods/update_external_id/info.rb
+- lib/wc_data/generated/record/active_app_authorization.rb
+- lib/wc_data/generated/record/active_person_authorization.rb
+- lib/wc_data/generated/record/active_person_authorization_no_ids.rb
+- lib/wc_data/generated/record/authorized_record_state.rb
+- lib/wc_data/generated/record/non_active_authorization.rb
+- lib/wc_data/generated/record/non_active_authorization_no_ids.rb
+- lib/wc_data/generated/request/authenticated_session_info.rb
+- lib/wc_data/generated/request/header.rb
+- lib/wc_data/generated/request/info.rb
+- lib/wc_data/generated/request/offline_person_info.rb
+- lib/wc_data/generated/request/request.rb
+- lib/wc_data/generated/request/xsl.rb
+- lib/wc_data/generated/thing/access_avenue.rb
+- lib/wc_data/generated/thing/aerobic/aerobic_session.rb
+- lib/wc_data/generated/thing/aerobic_profile/aerobic_profile.rb
+- lib/wc_data/generated/thing/aerobic_profile/heartrate_zone.rb
+- lib/wc_data/generated/thing/aerobic_profile/heartrate_zone_group.rb
+- lib/wc_data/generated/thing/aerobic_profile/max_vo2.rb
+- lib/wc_data/generated/thing/aerobic_profile/zone_boundary.rb
+- lib/wc_data/generated/thing/aerobic_weekly/aerobic_weekly.rb
+- lib/wc_data/generated/thing/allergic_episode/allergic_episode.rb
+- lib/wc_data/generated/thing/allergy/allergy.rb
+- lib/wc_data/generated/thing/annotation/annotation.rb
+- lib/wc_data/generated/thing/application/app_specific.rb
+- lib/wc_data/generated/thing/appointment/appointment.rb
+- lib/wc_data/generated/thing/audit.rb
+- lib/wc_data/generated/thing/audit_action.rb
+- lib/wc_data/generated/thing/basic/basic.rb
+- lib/wc_data/generated/thing/basic/birthyear.rb
+- lib/wc_data/generated/thing/basic/country.rb
+- lib/wc_data/generated/thing/basic/firstdow.rb
+- lib/wc_data/generated/thing/basic/gender.rb
+- lib/wc_data/generated/thing/blood_glucose/blood_glucose.rb
+- lib/wc_data/generated/thing/blood_oxygen_saturation/blood_oxygen_saturation.rb
+- lib/wc_data/generated/thing/blood_pressure/blood_pressure.rb
+- lib/wc_data/generated/thing/body_composition/body_composition.rb
+- lib/wc_data/generated/thing/body_composition/body_composition_value.rb
+- lib/wc_data/generated/thing/body_dimension/body_dimension.rb
+- lib/wc_data/generated/thing/calorie_guideline/calorie_guideline.rb
+- lib/wc_data/generated/thing/cardiac_profile/cardiac_profile.rb
+- lib/wc_data/generated/thing/cholesterol_profile/cholesterol_profile.rb
+- lib/wc_data/generated/thing/common.rb
+- lib/wc_data/generated/thing/concern/concern.rb
+- lib/wc_data/generated/thing/condition/condition.rb
+- lib/wc_data/generated/thing/contact/contact.rb
+- lib/wc_data/generated/thing/contraindication/contraindication.rb
+- lib/wc_data/generated/thing/daily_medication_usage/daily_medication_usage.rb
+- lib/wc_data/generated/thing/data_other.rb
+- lib/wc_data/generated/thing/data_other_stream.rb
+- lib/wc_data/generated/thing/data_xml.rb
+- lib/wc_data/generated/thing/diabetic_profile/diabetic_profile.rb
+- lib/wc_data/generated/thing/diabetic_profile/target_glucose_zone.rb
+- lib/wc_data/generated/thing/diabetic_profile/target_glucose_zone_group.rb
+- lib/wc_data/generated/thing/diabetic_profile/zone_boundary.rb
+- lib/wc_data/generated/thing/dietary_intake_daily/dietary_intake_daily.rb
+- lib/wc_data/generated/thing/directive/directive.rb
+- lib/wc_data/generated/thing/discharge_summary/discharge_summary.rb
+- lib/wc_data/generated/thing/effective_permissions.rb
+- lib/wc_data/generated/thing/emotion/emotion.rb
+- lib/wc_data/generated/thing/encounter/encounter.rb
+- lib/wc_data/generated/thing/equipment/device.rb
+- lib/wc_data/generated/thing/exercise/exercise.rb
+- lib/wc_data/generated/thing/exercise/exercise_segment.rb
+- lib/wc_data/generated/thing/exercise/structured_name_value.rb
+- lib/wc_data/generated/thing/exercise_samples/exercise_samples.rb
+- lib/wc_data/generated/thing/extension.rb
+- lib/wc_data/generated/thing/family_history/family_history.rb
+- lib/wc_data/generated/thing/family_history/family_history_relative.rb
+- lib/wc_data/generated/thing/family_history_condition/family_history_condition.rb
+- lib/wc_data/generated/thing/family_history_person/family_history_person.rb
+- lib/wc_data/generated/thing/file/file.rb
+- lib/wc_data/generated/thing/genetic_snp_result/genetic_snp_results.rb
+- lib/wc_data/generated/thing/group_membership/group_membership.rb
+- lib/wc_data/generated/thing/group_membership_activity/group_membership_activity.rb
+- lib/wc_data/generated/thing/guid_and_name.rb
+- lib/wc_data/generated/thing/hb_a1_c/hb_a1_c.rb
+- lib/wc_data/generated/thing/health_assessment/assessment.rb
+- lib/wc_data/generated/thing/health_assessment/health_assessment.rb
+- lib/wc_data/generated/thing/healthcare_proxy/healthcare_proxy.rb
+- lib/wc_data/generated/thing/heart_rate/heart_rate.rb
+- lib/wc_data/generated/thing/height/height.rb
+- lib/wc_data/generated/thing/immunization/immunization.rb
+- lib/wc_data/generated/thing/inhaler/alert.rb
+- lib/wc_data/generated/thing/inhaler/asthma_inhaler.rb
+- lib/wc_data/generated/thing/inhaler/dow.rb
+- lib/wc_data/generated/thing/inhaler/purpose.rb
+- lib/wc_data/generated/thing/inhaler_use/asthma_inhaler_use.rb
+- lib/wc_data/generated/thing/insulin/insulin_injection.rb
+- lib/wc_data/generated/thing/insulin_injection_use/diabetes_insulin_injection_use.rb
+- lib/wc_data/generated/thing/lab_test_results/lab_test_result_type.rb
+- lib/wc_data/generated/thing/lab_test_results/lab_test_result_value_type.rb
+- lib/wc_data/generated/thing/lab_test_results/lab_test_results.rb
+- lib/wc_data/generated/thing/lab_test_results/lab_test_results_group_type.rb
+- lib/wc_data/generated/thing/lab_test_results/test_result_range.rb
+- lib/wc_data/generated/thing/lab_test_results/test_result_range_value.rb
+- lib/wc_data/generated/thing/life_goal/life_goal.rb
+- lib/wc_data/generated/thing/link/link.rb
+- lib/wc_data/generated/thing/medication/medication.rb
+- lib/wc_data/generated/thing/medication/prescription.rb
+- lib/wc_data/generated/thing/medication_fill/medication_fill.rb
+- lib/wc_data/generated/thing/microbiology/microbiology_lab_results.rb
+- lib/wc_data/generated/thing/password/protected/package/algorithm_name.rb
+- lib/wc_data/generated/thing/password/protected/package/package_encryption_type.rb
+- lib/wc_data/generated/thing/password/protected/package/password_protected_package.rb
+- lib/wc_data/generated/thing/password/protected/package/pbe_parameters_type.rb
+- lib/wc_data/generated/thing/payer/payer.rb
+- lib/wc_data/generated/thing/peak_flow/peak_flow.rb
+- lib/wc_data/generated/thing/personal/personal.rb
+- lib/wc_data/generated/thing/personal_image/personal_image.rb
+- lib/wc_data/generated/thing/pregnancy/baby.rb
+- lib/wc_data/generated/thing/pregnancy/delivery.rb
+- lib/wc_data/generated/thing/pregnancy/pregnancy.rb
+- lib/wc_data/generated/thing/problem/importance.rb
+- lib/wc_data/generated/thing/problem/problem.rb
+- lib/wc_data/generated/thing/procedure/procedure.rb
+- lib/wc_data/generated/thing/question_answer/question_answer.rb
+- lib/wc_data/generated/thing/radiology_lab_results/radiology_lab_results.rb
+- lib/wc_data/generated/thing/related_thing.rb
+- lib/wc_data/generated/thing/respiratory_profile/respiratory_profile.rb
+- lib/wc_data/generated/thing/sjam/awakening.rb
+- lib/wc_data/generated/thing/sjam/sleep_am.rb
+- lib/wc_data/generated/thing/sjam/wake_state.rb
+- lib/wc_data/generated/thing/sjpm/activity.rb
+- lib/wc_data/generated/thing/sjpm/sleep_pm.rb
+- lib/wc_data/generated/thing/sjpm/sleepiness.rb
+- lib/wc_data/generated/thing/spirometer/spirometer.rb
+- lib/wc_data/generated/thing/spirometer/volume_value.rb
+- lib/wc_data/generated/thing/thing.rb
+- lib/wc_data/generated/thing/thing_key.rb
+- lib/wc_data/generated/thing/thing_state.rb
+- lib/wc_data/generated/thing/thing_type.rb
+- lib/wc_data/generated/thing/types/address.rb
+- lib/wc_data/generated/thing/types/aerobic_lap_session.rb
+- lib/wc_data/generated/thing/types/aerobic_session.rb
+- lib/wc_data/generated/thing/types/aerobic_session_samples.rb
+- lib/wc_data/generated/thing/types/altitude_value.rb
+- lib/wc_data/generated/thing/types/blood_glucose_value.rb
+- lib/wc_data/generated/thing/types/codable_value.rb
+- lib/wc_data/generated/thing/types/coded_value.rb
+- lib/wc_data/generated/thing/types/communication_type.rb
+- lib/wc_data/generated/thing/types/condition.rb
+- lib/wc_data/generated/thing/types/contact.rb
+- lib/wc_data/generated/thing/types/display_value.rb
+- lib/wc_data/generated/thing/types/document_reference_type.rb
+- lib/wc_data/generated/thing/types/double_range.rb
+- lib/wc_data/generated/thing/types/dow.rb
+- lib/wc_data/generated/thing/types/duration_value.rb
+- lib/wc_data/generated/thing/types/email.rb
+- lib/wc_data/generated/thing/types/flow_value.rb
+- lib/wc_data/generated/thing/types/general_measurement.rb
+- lib/wc_data/generated/thing/types/goal.rb
+- lib/wc_data/generated/thing/types/goal_status.rb
+- lib/wc_data/generated/thing/types/group_membership_type.rb
+- lib/wc_data/generated/thing/types/insulin_injection_value.rb
+- lib/wc_data/generated/thing/types/lab_result_type.rb
+- lib/wc_data/generated/thing/types/lab_test_type.rb
+- lib/wc_data/generated/thing/types/language.rb
+- lib/wc_data/generated/thing/types/length_value.rb
+- lib/wc_data/generated/thing/types/name.rb
+- lib/wc_data/generated/thing/types/non_negative_double.rb
+- lib/wc_data/generated/thing/types/one_to_five.rb
+- lib/wc_data/generated/thing/types/organization.rb
+- lib/wc_data/generated/thing/types/pace_value.rb
+- lib/wc_data/generated/thing/types/percentage.rb
+- lib/wc_data/generated/thing/types/person.rb
+- lib/wc_data/generated/thing/types/phone.rb
+- lib/wc_data/generated/thing/types/positive_double.rb
+- lib/wc_data/generated/thing/types/power_value.rb
+- lib/wc_data/generated/thing/types/sample.rb
+- lib/wc_data/generated/thing/types/sample_set.rb
+- lib/wc_data/generated/thing/types/speed_value.rb
+- lib/wc_data/generated/thing/types/stringnz.rb
+- lib/wc_data/generated/thing/types/structured_measurement.rb
+- lib/wc_data/generated/thing/types/temperature_value.rb
+- lib/wc_data/generated/thing/types/torque_value.rb
+- lib/wc_data/generated/thing/types/volume_value.rb
+- lib/wc_data/generated/thing/types/weight_value.rb
+- lib/wc_data/generated/thing/vital_signs/vital_sign_result_type.rb
+- lib/wc_data/generated/thing/vital_signs/vital_signs.rb
+- lib/wc_data/generated/thing/weight/weight.rb
+- lib/wc_data/generated/thing/weight_goal/weight_goal.rb
+- lib/wc_data/generated/types/address.rb
+- lib/wc_data/generated/types/app_info.rb
+- lib/wc_data/generated/types/app_record_auth_action.rb
+- lib/wc_data/generated/types/app_server_cred.rb
+- lib/wc_data/generated/types/app_server_cred_info.rb
+- lib/wc_data/generated/types/app_settings.rb
+- lib/wc_data/generated/types/base64_sha1.rb
+- lib/wc_data/generated/types/card_space_cred.rb
+- lib/wc_data/generated/types/char2.rb
+- lib/wc_data/generated/types/codable_value.rb
+- lib/wc_data/generated/types/coded_value.rb
+- lib/wc_data/generated/types/culture.rb
+- lib/wc_data/generated/types/culture_specific_string.rb
+- lib/wc_data/generated/types/culture_specific_string1024.rb
+- lib/wc_data/generated/types/culture_specific_string255.rb
+- lib/wc_data/generated/types/culture_specific_stringnz.rb
+- lib/wc_data/generated/types/date_range.rb
+- lib/wc_data/generated/types/email.rb
+- lib/wc_data/generated/types/email_address.rb
+- lib/wc_data/generated/types/gender.rb
+- lib/wc_data/generated/types/group.rb
+- lib/wc_data/generated/types/groups.rb
+- lib/wc_data/generated/types/guid.rb
+- lib/wc_data/generated/types/hash_finalized.rb
+- lib/wc_data/generated/types/hash_finalized_data.rb
+- lib/wc_data/generated/types/hmac_algorithm.rb
+- lib/wc_data/generated/types/hmac_algorithm_data.rb
+- lib/wc_data/generated/types/hmac_finalized.rb
+- lib/wc_data/generated/types/hmac_finalized_data.rb
+- lib/wc_data/generated/types/iso3166.rb
+- lib/wc_data/generated/types/iso4217.rb
+- lib/wc_data/generated/types/iso639_1.rb
+- lib/wc_data/generated/types/language_competency.rb
+- lib/wc_data/generated/types/localized_string.rb
+- lib/wc_data/generated/types/login_name.rb
+- lib/wc_data/generated/types/name_match_type.rb
+- lib/wc_data/generated/types/omb_ethnicity.rb
+- lib/wc_data/generated/types/open_query_info.rb
+- lib/wc_data/generated/types/permission.rb
+- lib/wc_data/generated/types/person_info.rb
+- lib/wc_data/generated/types/phone.rb
+- lib/wc_data/generated/types/positive_long.rb
+- lib/wc_data/generated/types/puid.rb
+- lib/wc_data/generated/types/rcpt_address.rb
+- lib/wc_data/generated/types/rcpt_person.rb
+- lib/wc_data/generated/types/rcpt_record.rb
+- lib/wc_data/generated/types/record.rb
+- lib/wc_data/generated/types/record_state.rb
+- lib/wc_data/generated/types/sig.rb
+- lib/wc_data/generated/types/string1024.rb
+- lib/wc_data/generated/types/string128.rb
+- lib/wc_data/generated/types/string16.rb
+- lib/wc_data/generated/types/string255.rb
+- lib/wc_data/generated/types/string32.rb
+- lib/wc_data/generated/types/string512.rb
+- lib/wc_data/generated/types/string64.rb
+- lib/wc_data/generated/types/stringnz.rb
+- lib/wc_data/generated/types/stringz1024.rb
+- lib/wc_data/generated/types/stringz128.rb
+- lib/wc_data/generated/types/stringz16.rb
+- lib/wc_data/generated/types/stringz255.rb
+- lib/wc_data/generated/types/stringz32.rb
+- lib/wc_data/generated/types/stringz512.rb
+- lib/wc_data/generated/types/stringz64.rb
+- lib/wc_data/generated/types/url.rb
+- lib/wc_data/generated/types/version.rb
+- lib/wc_data/generated/vocab/info_xml.rb
+- lib/wc_data/generated/vocab/vocabulary_code_item.rb
+- lib/wc_data/generated/vocab/vocabulary_code_set.rb
+- lib/wc_data/generated/vocab/vocabulary_key.rb
+- lib/wc_data/generated/vocab/vocabulary_key_info.rb
+- lib/wc_data/generated/vocab/vocabulary_mapping.rb
+- lib/wc_data/generated/vocab/vocabulary_mapping_item.rb
+- lib/wc_data/generated/vocab/vocabulary_synonym.rb
+- lib/wc_data/generated/vocab/vocabulary_synonyms.rb
+- lib/wc_data/init.rb
+- lib/wc_data/raw_info_xml.rb
+- lib/wc_data/simple_type.rb
+- lib/wc_data/thing.rb
+- lib/xsd/bootstrap/request.xsd
+- lib/xsd/bootstrap/response-getservicedefinition.xsd
+- lib/xsd/bootstrap/types.xsd
+- lib/xsd/common/application.xsd
+- lib/xsd/common/auth.xsd
+- lib/xsd/common/dates.xsd
+- lib/xsd/common/record.xsd
+- lib/xsd/common/request.xsd
+- lib/xsd/common/thing.xsd
+- lib/xsd/common/types.xsd
+- lib/xsd/common/vocab.xsd
+- lib/xsd/requests/method-addapplication.xsd
+- lib/xsd/requests/method-createauthenticatedsessiontoken.xsd
+- lib/xsd/requests/method-createconnectpackage.xsd
+- lib/xsd/requests/method-createconnectrequest.xsd
+- lib/xsd/requests/method-deleteopenquery.xsd
+- lib/xsd/requests/method-deletependingconnectpackage.xsd
+- lib/xsd/requests/method-deletependingconnectrequest.xsd
+- lib/xsd/requests/method-getapplicationinfo.xsd
+- lib/xsd/requests/method-getauthorizedconnectrequests.xsd
+- lib/xsd/requests/method-getauthorizedpeople.xsd
+- lib/xsd/requests/method-getauthorizedrecords.xsd
+- lib/xsd/requests/method-getopenqueryinfo.xsd
+- lib/xsd/requests/method-getpersoninfo.xsd
+- lib/xsd/requests/method-getthings.xsd
+- lib/xsd/requests/method-getthingtype.xsd
+- lib/xsd/requests/method-getupdatedrecordsforapplication.xsd
+- lib/xsd/requests/method-getvalidgroupmembership.xsd
+- lib/xsd/requests/method-getvocabulary.xsd
+- lib/xsd/requests/method-overwritethings.xsd
+- lib/xsd/requests/method-putthings.xsd
+- lib/xsd/requests/method-querypermissions.xsd
+- lib/xsd/requests/method-removethings.xsd
+- lib/xsd/requests/method-saveopenquery.xsd
+- lib/xsd/requests/method-searchvocabulary.xsd
+- lib/xsd/requests/method-sendinsecuremessage.xsd
+- lib/xsd/requests/method-sendinsecuremessagefromapplication.xsd
+- lib/xsd/requests/method-setapplicationsettings.xsd
+- lib/xsd/requests/method-updateapplication.xsd
+- lib/xsd/requests/method-updateexternalid.xsd
+- lib/xsd/responses/response-addapplication.xsd
+- lib/xsd/responses/response-any.xsd
+- lib/xsd/responses/response-beginputblob.xsd
+- lib/xsd/responses/response-createauthenticatedsessiontoken.xsd
+- lib/xsd/responses/response-createconnectpackage.xsd
+- lib/xsd/responses/response-createconnectrequest.xsd
+- lib/xsd/responses/response-deleteopenquery.xsd
+- lib/xsd/responses/response-getapplicationinfo.xsd
+- lib/xsd/responses/response-getapplicationsettings.xsd
+- lib/xsd/responses/response-getauthorizedconnectrequests.xsd
+- lib/xsd/responses/response-getauthorizedpeople.xsd
+- lib/xsd/responses/response-getauthorizedrecords.xsd
+- lib/xsd/responses/response-getopenqueryinfo.xsd
+- lib/xsd/responses/response-getpeopleforrecord.xsd
+- lib/xsd/responses/response-getpersoninfo.xsd
+- lib/xsd/responses/response-getservicedefinition.xsd
+- lib/xsd/responses/response-getthings.xsd
+- lib/xsd/responses/response-getthingtype.xsd
+- lib/xsd/responses/response-getupdatedrecordsforapplication.xsd
+- lib/xsd/responses/response-getvalidgroupmembership.xsd
+- lib/xsd/responses/response-getvocabulary.xsd
+- lib/xsd/responses/response-overwritethings.xsd
+- lib/xsd/responses/response-putthings.xsd
+- lib/xsd/responses/response-querypermissions.xsd
+- lib/xsd/responses/response-saveopenquery.xsd
+- lib/xsd/responses/response-searchvocabulary.xsd
+- lib/xsd/things/Advance Directive.xsd
+- lib/xsd/things/Aerobic Exercise Session.xsd
+- lib/xsd/things/Aerobic Profile.xsd
+- lib/xsd/things/Allergic Episode.xsd
+- lib/xsd/things/Allergy.xsd
+- lib/xsd/things/Application-Specific Information.xsd
+- lib/xsd/things/Appointment.xsd
+- lib/xsd/things/Asthma Inhaler Usage.xsd
+- lib/xsd/things/Asthma Inhaler.xsd
+- lib/xsd/things/Base Thing Type.xsd
+- lib/xsd/things/Basic Demographic Information.xsd
+- lib/xsd/things/Blood Glucose Measurement.xsd
+- lib/xsd/things/Blood Oxygen Saturation.xsd
+- lib/xsd/things/Blood Pressure Measurement.xsd
+- lib/xsd/things/Body Composition.xsd
+- lib/xsd/things/Body Dimension.xsd
+- lib/xsd/things/Calorie Guideline.xsd
+- lib/xsd/things/Cardiac Profile.xsd
+- lib/xsd/things/Cholesterol Profile (Lipid Profile).xsd
+- lib/xsd/things/Concern.xsd
+- lib/xsd/things/Condition.xsd
+- lib/xsd/things/Continuity of Care Document (CCD).xsd
+- lib/xsd/things/Continuity of Care Record (CCR).xsd
+- lib/xsd/things/Contraindication.xsd
+- lib/xsd/things/Daily Dietary Intake.xsd
+- lib/xsd/things/Daily Medication Usage.xsd
+- lib/xsd/things/Device.xsd
+- lib/xsd/things/Diabetes Insulin Injection Use.xsd
+- lib/xsd/things/Diabetic Profile.xsd
+- lib/xsd/things/Discharge Summary.xsd
+- lib/xsd/things/Emergency or Provider Contact.xsd
+- lib/xsd/things/Emotional State.xsd
+- lib/xsd/things/Encounter.xsd
+- lib/xsd/things/Exercise Samples.xsd
+- lib/xsd/things/Exercise.xsd
+- lib/xsd/things/Family History Condition.xsd
+- lib/xsd/things/Family History Person.xsd
+- lib/xsd/things/Family History.xsd
+- lib/xsd/things/File.xsd
+- lib/xsd/things/Genetic SNP Result.xsd
+- lib/xsd/things/Group Membership Activity.xsd
+- lib/xsd/things/Group Membership.xsd
+- lib/xsd/things/HbA1C Measurement.xsd
+- lib/xsd/things/Health Assessment.xsd
+- lib/xsd/things/Healthcare Proxy.xsd
+- lib/xsd/things/Heart Rate.xsd
+- lib/xsd/things/Height Measurement.xsd
+- lib/xsd/things/HL7 Clinical Document Architecture, Release 2.xsd
+- lib/xsd/things/Immunization.xsd
+- lib/xsd/things/Insulin Injection.xsd
+- lib/xsd/things/Insurance Plan.xsd
+- lib/xsd/things/Lab Test Results.xsd
+- lib/xsd/things/Life Goal.xsd
+- lib/xsd/things/Link.xsd
+- lib/xsd/things/Medical Annotation.xsd
+- lib/xsd/things/Medical Problem.xsd
+- lib/xsd/things/Medication Fill.xsd
+- lib/xsd/things/Medication.xsd
+- lib/xsd/things/Microbiology Lab Test Result.xsd
+- lib/xsd/things/Password Protected Package.xsd
+- lib/xsd/things/Peak Flow Measurement.xsd
+- lib/xsd/things/Personal Contact Information.xsd
+- lib/xsd/things/Personal Demographic Information.xsd
+- lib/xsd/things/Personal Image.xsd
+- lib/xsd/things/Pregnancy.xsd
+- lib/xsd/things/Procedure.xsd
+- lib/xsd/things/Question Answer.xsd
+- lib/xsd/things/Radiology Lab Result.xsd
+- lib/xsd/things/Respiratory Profile.xsd
+- lib/xsd/things/Sleep Related Activity.xsd
+- lib/xsd/things/Sleep Session.xsd
+- lib/xsd/things/Spirometer Measurement.xsd
+- lib/xsd/things/Vital Signs.xsd
+- lib/xsd/things/Weekly Aerobic Exercise Goal.xsd
+- lib/xsd/things/Weight Goal.xsd
+- lib/xsd/things/Weight Measurement.xsd
+- spec/connection_spec.rb
+- spec/request_spec.rb
+- spec/support/test_server.rb
+has_rdoc: true
+homepage: http://rubyhealthvault.rubyforge.org/
+licenses: []
+
+post_install_message: 
+rdoc_options: []
+
+require_paths: 
+- lib
+required_ruby_version: !ruby/object:Gem::Requirement 
+  requirements: 
+  - - ">="
+    - !ruby/object:Gem::Version 
+      version: "0"
+  version: 
+required_rubygems_version: !ruby/object:Gem::Requirement 
+  requirements: 
+  - - ">="
+    - !ruby/object:Gem::Version 
+      version: "0"
+  version: 
+requirements: []
+
+rubyforge_project: rubyhealthvault
+rubygems_version: 1.3.4
+signing_key: 
+specification_version: 3
+summary: Connect your Ruby code to the Microsoft HealthVault
+test_files: []
+
+

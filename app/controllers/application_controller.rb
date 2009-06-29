@@ -1,0 +1,202 @@
+# Filters added to this controller apply to all controllers in the application.
+# Likewise, all the methods added will be available for all controllers.
+
+class ApplicationController < ActionController::Base
+  include ServerInstance
+  include AuthenticatedSystem
+  include ExceptionNotifiable
+  rescue_from RuntimeError, :with => 'error'
+  local_addresses.clear # always send email notifications instead of displaying the error  
+  
+  # Pick a unique cookie name to distinguish our session data from others'
+  session :session_key => '_HaloRoR2_session_id'  
+  
+  #This method is needed because of the way attachment_fu stores the files 
+  #uploaded on the file system.  attachment_fu stores the files in a folder with 
+  #the same name as the model within the public folder.  This causes issues 
+  #since the url for the controller, as well as the directory for storing files 
+  #have the same URL. 
+  def default_url_options(options = nil)
+    { :trailing_slash => true }
+  end
+  
+  before_filter do |c|
+    User.current_user = User.find(c.session[:user]) unless c.session[:user].nil?
+  end
+  
+  before_filter :authenticated?
+  before_filter:set_host
+  def error(exception)
+    render :controller => 'errors', :action => 'error'
+  end
+  
+  def set_host
+    ServerInstance.current_host = request.host
+  end
+  
+  def number_ext
+    @num_ref = {}
+    @num_ref[0] = 'th'
+    @num_ref[1] = 'st'
+    @num_ref[2] = 'nd'
+    @num_ref[3] = 'rd'
+    @num_ref[4] = 'th'
+    @num_ref[5] = 'th'
+    @num_ref[6] = 'th'
+    @num_ref[7] = 'th'
+    @num_ref[8] = 'th'
+    @num_ref[9] = 'th'
+  end
+  
+  private
+  def refresh_operators(group_id=nil)
+    @user = current_user
+    @groups = []
+      if !@user.is_super_admin?
+        @groups = Group.find(:all)
+      else
+        Group.find(:all).each do |g|
+          @groups << g if(@user.is_operator_of?(g) || @user.is_moderator_of?(g) || @user.is_admin_of?(g))
+        end
+      end 
+    if group_id.blank?
+      @group = @groups[0]
+    else
+      g = Group.find(group_id)
+      @group = g if @groups.include? g
+    end
+    @operators = []
+    ops = User.operators
+    ops.each do |op|
+      @operators << op if(op.is_operator_of?(@group))
+    end
+    number_ext
+    render :partial => 'call_center/operators', :layout => false
+  end
+  def refresh_caregivers(user)
+    number_ext
+    
+    # loop through assigned roles, check for removed = 1
+    
+    get_caregivers(user)
+    
+    render :layout => false, :partial => 'call_list/load_caregivers', :locals => {:caregivers => @caregivers,:user => user}
+  end
+  
+  def get_caregivers(user)    
+    @user = user
+    @caregivers = user.caregivers_sorted_by_position
+  end
+  
+  protected
+  def authenticated?
+    unless (controller_name == 'users' && (action_name == 'init_caregiver' || action_name == 'update_caregiver' || action_name == 'activate') || 
+      controller_name == 'sessions' ||
+      controller_name == 'errors'  || 
+      controller_name == 'flex' && action_name == 'chart' || 
+      controller_name == 'util' && action_name == 'check' ||
+      controller_name == 'util' && action_name == 'hostname' ||
+      controller_name == 'util' && action_name == 'version' ||
+      controller_name == 'security')
+      return authenticate
+    else
+      return true
+    end
+  end
+  def authenticate
+    unless logged_in?
+      store_location
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_super_admin?
+    unless logged_in? && (current_user.is_super_admin?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_halouser?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_halouser?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  def authenticate_admin_caregiver?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_caregiver?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_halouser_caregiver?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_halouser? || current_user.is_caregiver?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_halouser_caregiver_operator?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_halouser? || current_user.is_caregiver? || current_user.is_operator?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  def authenticate_admin_halouser_caregiver_operator_sales?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_halouser? || current_user.is_caregiver? || current_user.is_operator? || current_user.is_sales?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  def authenticate_admin_operator?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  
+  def authenticate_admin_operator_moderator?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_moderator?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_sales?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_moderator?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  def authenticate_admin?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_moderator_sales?
+  	unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_sales?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_halouser_caregiver_sales?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_halouser? || current_user.is_caregiver? || current_user.is_sales?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+end
