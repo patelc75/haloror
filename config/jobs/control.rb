@@ -95,8 +95,6 @@ if flag == "stop" || flag == "restart"
   TaskStartup.stop(jobs_type)
 end
 
-puts Rufus::Scheduler::VERSION
-
 if flag == "start" || flag == "restart"
   puts "Starting jobs for server of type #{jobs_type}"
   TaskStartup.start(jobs_type) do
