@@ -1,6 +1,5 @@
-#
 #--
-# Copyright (c) 2005-2008, John Mettraux, jmettraux@gmail.com
+# Copyright (c) 2005-2009, John Mettraux, jmettraux@gmail.com
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,14 +18,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+#
+# Hecho en Costa Rica
 #++
-#
 
-#
-# "hecho en Costa Rica"
-#
-# john.mettraux@openwfe.org
-#
 
 require 'date'
 #require 'parsedate'
@@ -34,9 +29,6 @@ require 'date'
 
 module Rufus
 
-  #TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-
-  #
   # Returns the current time as an ISO date string
   #
   def Rufus.now
@@ -44,59 +36,50 @@ module Rufus
     to_iso8601_date(Time.new())
   end
 
-  #
   # As the name implies.
   #
   def Rufus.to_iso8601_date (date)
 
-    if date.kind_of? Float
-      date = to_datetime(Time.at(date))
-    elsif date.kind_of? Time
-      date = to_datetime(date)
-    elsif not date.kind_of? Date
-      date = DateTime.parse(date)
+    date = case date
+      when Date then date
+      when Float then to_datetime(Time.at(date))
+      when Time then to_datetime(date)
+      else DateTime.parse(date)
     end
 
     s = date.to_s # this is costly
-    s[10] = " "
+    s[10] = ' '
 
     s
   end
 
-  #
   # the old method we used to generate our ISO datetime strings
   #
   def Rufus.time_to_iso8601_date (time)
 
     s = time.getutc().strftime(TIME_FORMAT)
     o = time.utc_offset / 3600
-    o = o.to_s + "00"
-    o = "0" + o if o.length < 4
-    o = "+" + o unless o[0..1] == '-'
+    o = "#{o}00"
+    o = "0#{o}" if o.length < 4
+    o = "+#{o}" unless o[0..1] == '-'
 
-    s + " " + o.to_s
+    "#{s} #{o}"
   end
 
-  #
   # Returns a Ruby time
   #
-  def Rufus.to_ruby_time (iso_date)
+  def Rufus.to_ruby_time (sdate)
 
-    DateTime.parse(iso_date)
+    DateTime.parse(sdate)
   end
 
-  #def Rufus.parse_date (date)
-  #end
-
-  #
-  # equivalent to java.lang.System.currentTimeMillis()
+  # Equivalent to java.lang.System.currentTimeMillis()
   #
   def Rufus.current_time_millis
 
     (Time.new.to_f * 1000).to_i
   end
 
-  #
   # Turns a string like '1m10s' into a float like '70.0', more formally,
   # turns a time duration expressed as a string into a Float instance
   # (millisecond count).
@@ -125,7 +108,7 @@ module Rufus
     index = -1
     result = 0.0
 
-    number = ""
+    number = ''
 
     loop do
 
@@ -138,19 +121,17 @@ module Rufus
 
       c = string[index, 1]
 
-      #if is_digit?(c)
-      if (c >= "0" and c <= "9")
+      if (c >= '0' and c <= '9')
         number = number + c
         next
       end
 
       value = Integer(number)
-      number = ""
+      number = ''
 
       multiplier = DURATIONS[c]
 
-      raise "unknown time char '#{c}'" \
-        if not multiplier
+      raise "unknown time char '#{c}'" unless multiplier
 
       result = result + (value * multiplier)
     end
@@ -163,28 +144,15 @@ module Rufus
   end
 
   #
-  # Returns true if the character c is a digit
-  #
-  # (probably better served by a regex)
-  #
-  def Rufus.is_digit? (c)
-
-    return false if not c.kind_of?(String)
-    return false if c.length > 1
-    (c >= "0" and c <= "9")
-  end
-
-  #
   # conversion methods between Date[Time] and Time
 
-  #
+  #--
   # Ruby Cookbook 1st edition p.111
   # http://www.oreilly.com/catalog/rubyckbk/
   # a must
-  #
+  #++
 
-  #
-  # converts a Time instance to a DateTime one
+  # Converts a Time instance to a DateTime one
   #
   def Rufus.to_datetime (time)
 
@@ -231,7 +199,6 @@ module Rufus
     Time.send(method, d.year, d.month, d.day, d.hour, d.min, d.sec, usec)
   end
 
-  #
   # Turns a number of seconds into a a time string
   #
   #   Rufus.to_duration_string 0          # => '0s'
@@ -272,7 +239,7 @@ module Rufus
 
     h = to_duration_hash seconds, options
 
-    s = DU_KEYS.inject("") do |r, key|
+    s = DU_KEYS.inject('') do |r, key|
       count = h[key]
       count = nil if count == 0
       r << "#{count}#{key}" if count
@@ -289,7 +256,6 @@ module Rufus
     alias_method :to_time_string, :to_duration_string
   end
 
-  #
   # Turns a number of seconds (integer or Float) into a hash like in :
   #
   #   Rufus.to_duration_hash 0.051
@@ -336,7 +302,6 @@ module Rufus
     h
   end
 
-  #
   # Ensures that a duration is a expressed as a Float instance.
   #
   #   duration_to_f("10s")
@@ -350,26 +315,46 @@ module Rufus
     Float(s.to_s)
   end
 
+  #
+  # Ensures an 'at' value is translated to a float
+  # (to be compared with the float coming from time.to_f)
+  #
+  def Rufus.at_to_f (at)
+
+    # TODO : use chronic if present
+
+    at = Rufus::to_ruby_time(at) if at.is_a?(String)
+    at = Rufus::to_gm_time(at) if at.is_a?(DateTime)
+    #at = at.to_f if at.is_a?(Time)
+    at = at.to_f if at.respond_to?(:to_f)
+
+    raise ArgumentError.new(
+      "cannot determine 'at' time from : #{at.inspect}"
+    ) unless at.is_a?(Float)
+
+    at
+  end
+
   protected
 
-    DURATIONS2M = [
-      [ "y", 365 * 24 * 3600 ],
-      [ "M", 30 * 24 * 3600 ],
-      [ "w", 7 * 24 * 3600 ],
-      [ "d", 24 * 3600 ],
-      [ "h", 3600 ],
-      [ "m", 60 ],
-      [ "s", 1 ]
-    ]
-    DURATIONS2 = DURATIONS2M.dup
-    DURATIONS2.delete_at 1
+  DURATIONS2M = [
+    [ 'y', 365 * 24 * 3600 ],
+    [ 'M', 30 * 24 * 3600 ],
+    [ 'w', 7 * 24 * 3600 ],
+    [ 'd', 24 * 3600 ],
+    [ 'h', 3600 ],
+    [ 'm', 60 ],
+    [ 's', 1 ]
+  ]
+  DURATIONS2 = DURATIONS2M.dup
+  DURATIONS2.delete_at(1)
 
-    DURATIONS = DURATIONS2M.inject({}) do |r, (k, v)|
-      r[k] = v
-      r
-    end
+  DURATIONS = DURATIONS2M.inject({}) do |r, (k, v)|
+    r[k] = v
+    r
+  end
 
-    DU_KEYS = DURATIONS2M.collect { |k, v| k.to_sym }
+  DU_KEYS = DURATIONS2M.collect { |k, v| k.to_sym }
 
 end
 

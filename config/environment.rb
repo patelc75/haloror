@@ -49,6 +49,8 @@ Rails::Initializer.run do |config|
   # See Rails::Configuration for more options
   config.active_record.observers = :user_observer, :device_event_observer, :event_action_observer, :critical_device_event_observer, :gateway_event_observer
   
+  config.gem "rufus-scheduler", :version => ">= 2.0.1", :lib => false
+  
 end
 
 # Add new inflection rules using the following format 

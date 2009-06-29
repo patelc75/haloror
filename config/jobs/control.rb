@@ -10,6 +10,8 @@
 # Will load the file named task.rb and will run those jobs in the
 # background
 
+require 'rubygems'
+require 'rufus/scheduler'
 # Lightweight wrapper to setup logging and keep track of process ID to
 # make sure at most one task server is running at any given team
 class TaskStartup
@@ -100,7 +102,9 @@ if flag == "start" || flag == "restart"
     RAILS_DEFAULT_LOGGER = Logger.new(log_path)
     ActiveRecord::Base.logger = RAILS_DEFAULT_LOGGER
     
-    SCHEDULER = Rufus::Scheduler.new
+    SCHEDULER = Rufus::Scheduler.start_new(:thread_name => jobs_type)
+    SCHEDULER.stop()
+    
     class << SCHEDULER
      def lwarn (&block)      
         email = Email.new(:mail => 'Error in Rufus::',            :to => 'exceptions@halomonitoring.com', 
