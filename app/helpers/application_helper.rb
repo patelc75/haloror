@@ -21,6 +21,12 @@ module ApplicationHelper
      return image_tag('/images/severe_button_82_22.png')
    elsif ['GatewayOfflineAlert', 'DeviceUnavailbleAlert', 'BatteryCritical'].include? type
      return image_tag('/images/caution_button_82_22.png')
+   elsif ['BatteryReminder'].include? type
+   	if event.event.reminder_num < 3
+   		return image_tag('/images/caution_button_82_22.png')
+   	elsif event.event.reminder_num == 3
+   		return image_tag('/images/severe_button_82_22.png')
+   	end
    else 
      return image_tag('/images/normal_button_82_22.png')
    end
