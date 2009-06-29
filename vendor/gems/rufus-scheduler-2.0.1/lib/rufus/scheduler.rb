@@ -1,6 +1,5 @@
-#
 #--
-# Copyright (c) 2006-2008, John Mettraux, jmettraux@gmail.com
+# Copyright (c) 2006-2009, John Mettraux, jmettraux@gmail.com
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,23 +18,38 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+#
+# Made in Japan.
 #++
-#
-
-require 'rufus/scheduler'
 
 
-#
-# An 'alias' to Rufus::Scheduler to keep backward compatibility for
-# the users of the gem 'openwferu-scheduler'.
-#
-module OpenWFE
+require 'rufus/sc/scheduler'
 
-  class Scheduler < Rufus::Scheduler
+
+module Rufus::Scheduler
+
+  # A quick way to get a scheduler up an running
+  #
+  #   require 'rubygems'
+  #   s = Rufus::Scheduler.start_new
+  #
+  # If EventMachine is present and running will create an EmScheduler, else
+  # it will create a PlainScheduler instance.
+  #
+  def self.start_new (opts={})
+
+    if defined?(EM) and EM.reactor_running?
+      EmScheduler.start_new(opts)
+    else
+      PlainScheduler.start_new(opts)
+    end
   end
 
-  module Schedulable
-    include Rufus::Schedulable
+  # Returns true if the given string seems to be a cron string.
+  #
+  def self.is_cron_string (s)
+
+    s.match('.+ .+ .+ .+ .+') # well...
   end
 end
 
