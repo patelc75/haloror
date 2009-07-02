@@ -12,7 +12,7 @@
 		<%=link_to_remote "Username", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'login'}%>
 	</div>
 	<div class="col-200">
-		Role(s) - <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
+		Role(s) - <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_sales? %>
 		<a href="/user_admin/roles">Configure</a>&nbsp;
 		<% end %>
 	</div>
@@ -36,7 +36,7 @@ end
   <%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
 
 	<div id="user_<%=user.id%>-hidden" style="display:none"></div>
-<% elsif current_user.is_moderator_of_any?(user.group_memberships) %>
+<% elsif current_user.is_moderator_of_any?(user.group_memberships) || current_user.is_sales? %>
   <%=render :partial => 'reporting/table/user_moderator_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
 
 	<div id="user_<%=user.id%>-hidden" style="display:none"></div>

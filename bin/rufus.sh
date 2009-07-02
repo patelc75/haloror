@@ -2,6 +2,12 @@
 #copy this file to RAILS_ROOT and run it from there!
 #MODE should be start or stop
 MODE=$1
+shift
 
-export RAILS_ENV=production 
-./config/jobs/control.rb task $MODE &
+TASKS=${@:-task safetycare bundlejob reporting}
+
+RAILS_ENV=${RAILS_ENV:-production}
+export RAILS_ENV
+for task in $TASKS; do
+  ./config/jobs/control.rb $task $MODE &
+done

@@ -49,6 +49,8 @@ Rails::Initializer.run do |config|
   # See Rails::Configuration for more options
   config.active_record.observers = :user_observer, :device_event_observer, :event_action_observer, :critical_device_event_observer, :gateway_event_observer
   
+  config.gem "rufus-scheduler", :version => ">= 2.0.1", :lib => false
+  
 end
 
 # Add new inflection rules using the following format 
@@ -199,6 +201,9 @@ REGISTRATION_TIMEOUT_ID=29
 DIAL_UP_ARCHIVE_FILES_TO_KEEP_MIN=2
 EMERGENCY_GROUPS=['EMS', 'SafetyCare']
 ALERTS_ENABLED_BY_DEFAULT=['BatteryCritical']
+BATTERY_REMINDER_POLL_RATE='15m'
+BATTERY_REMINDER_TWO = 7200     #2 hours
+BATTERY_REMINDER_THREE = 14400  #4 hours 
 
 #used when call is accepted/resolved on crit1 and needs to be updated on crit2 
 #so the agent doesn't accidentally accept/resolve the call on crit2

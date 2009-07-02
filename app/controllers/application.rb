@@ -184,4 +184,19 @@ class ApplicationController < ActionController::Base
     end
     true
   end
+  
+  def authenticate_admin_moderator_sales?
+  	unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_sales?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_halouser_caregiver_sales?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_halouser? || current_user.is_caregiver? || current_user.is_sales?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
 end

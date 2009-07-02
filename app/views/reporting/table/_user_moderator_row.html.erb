@@ -57,5 +57,8 @@
 		<% else %>
 			&nbsp;
 		<% end %>
+		<% if current_user.is_sales? and not caregiver %>
+			| <%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => user.id %>
+		<% end %>
 	</div>
 </div>

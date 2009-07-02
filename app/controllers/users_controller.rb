@@ -247,7 +247,7 @@ class UsersController < ApplicationController
     
       RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => 0)
       
-      enable_by_default(@roles_user)
+      #enable_by_default(@roles_user)
       
       #redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
       UserMailer.deliver_caregiver_email(caregiver, patient)
@@ -318,7 +318,7 @@ end
     end
     
     opt.active = true
-    opt.position = get_max_caregiver_position(@patient)-1
+    opt.position = get_max_caregiver_position(@patient)
     #opt.position = 1
     opt.removed = false
     opt.save
@@ -385,7 +385,7 @@ end
   end
   
   private
-  
+=begin  
   def enable_by_default(roles_user)
   	
   	  ALERTS_ENABLED_BY_DEFAULT.each do |type|
@@ -400,5 +400,5 @@ end
         alert_opt.save
   	  end
   end
-  
+=end  
 end

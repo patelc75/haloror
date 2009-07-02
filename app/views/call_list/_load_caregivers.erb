@@ -5,7 +5,7 @@
 
 <% 
 	user = @user
-	caregivers.each do |position, caregiver|
+	caregivers.each do |pos, caregiver|
 		
 		roles_user = user.roles_user_by_caregiver(caregiver)		
 %>
@@ -20,5 +20,3 @@
 	%>
 	<% i = i+1 %>
 <% end %>
-
-

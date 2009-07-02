@@ -18,6 +18,7 @@ class SafetyCareClient
   # (ideally, the heartbeat should run from the task scheduler, of course)
   
   def self.heartbeat()
+  	RAILS_DEFAULT_LOGGER.warn("SafetyCareClient.heartbeat running at #{Time.now}")
     Timeout::timeout(5) {
       sock = TCPSocket.open(SAFETYCARE_ADDRESS, SAFETYCARE_PORT)
       sock.write(64.chr) # 64.chr => @
