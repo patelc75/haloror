@@ -64,7 +64,7 @@ class User < ActiveRecord::Base
   #attr_accessible :login, :email, :password, :password_confirmation
   
   def username
-    return self.login rescue ""
+    return self.name rescue ""
   end
   
   def get_strap
