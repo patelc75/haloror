@@ -7,6 +7,8 @@ class AddAuditsTable < ActiveRecord::Migration
       t.column :ip, :string, :limit => 40
       t.column :url, :string
       t.column :referer, :string
+      t.column :owner_id, :integer
+      t.column :owner_type, :string
       t.column :user_id, :integer
       t.column :user_type, :string
       t.column :username, :string

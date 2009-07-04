@@ -67,6 +67,12 @@ class User < ActiveRecord::Base
     return self.name rescue ""
   end
   
+  def owner_user # for auditing
+    self
+  rescue
+    nil
+  end
+  
   def get_strap
     self.devices.each do |device|
       if device.device_type == 'Chest Strap'

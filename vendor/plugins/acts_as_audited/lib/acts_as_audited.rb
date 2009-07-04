@@ -202,6 +202,10 @@ module CollectiveIdea #:nodoc:
             attrs[:username] = attrs[:user].username
           rescue
           end
+          begin
+            attrs[:owner] = self.owner_user rescue attrs[:user]
+          rescue
+          end
           
           self.audits.create attrs if auditing_enabled
         end

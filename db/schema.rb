@@ -128,6 +128,8 @@ ActiveRecord::Schema.define(:version => 20090704030340) do
     t.string   "ip",             :limit => 40
     t.string   "url"
     t.string   "referer"
+    t.integer  "owner_id"
+    t.string   "owner_type"
     t.integer  "user_id"
     t.string   "user_type"
     t.string   "username"

@@ -40,6 +40,12 @@ class Profile < ActiveRecord::Base
   	#check_valid_phone_numbers
  #end
 
+ def owner_user # for auditing
+   self.user
+ rescue
+   nil
+ end
+
   def validate
   	if self[:is_new_caregiver]
       return false
