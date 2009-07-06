@@ -29,9 +29,15 @@
 					</ul>
 					
 					<div align="center">
-						or
+						
 						<br />
-						<a href="#" onClick="$('removed_caregivers').style.display='none';$('caregiver_form').style.display='block'"><%=image_tag('add-caregiver.gif')%></a> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
+						<!--<a href="#" onClick="$('removed_caregivers').style.display='none';$('caregiver_form').style.display='block'"><%=image_tag('add-caregiver.gif')%></a> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>-->
+					<a href="#" onClick="$('removed_caregivers').style.display='none';$('caregiver_form').style.display='block'">+ Invite Caregiver by Email</a><br><br>
+					 OR <br><br>
+					 <%=link_to "+ Add new caregiver without Email" , new_caregiver_profile_path(current_user) %><br><br>
+				<!--	 <a href="#" onClick="$('removed_caregivers').style.display='none';">+ Add new caregiver without Email</a><br><br> -->
+					 OR<br><br>
+						<a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
 					</div>
 				</div>
 			<% end %>

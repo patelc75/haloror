@@ -66,6 +66,7 @@ ActionController::Routing::Routes.draw do |map|
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
   map.activate '/activate/:activation_code', :controller => 'users', :action => 'init_user'
   map.connect '/reporting', :controller => 'reporting', :action => 'users'
+  map.new_caregiver_profile '/profiles/new_caregiver_profile/:user_id', :controller => 'profiles', :action => 'new_caregiver_profile'
     # 
     # map.signup_caregiver '/activate/caregiver/:activation_code', :controller => 'users', :action => 'init_caregiver'
   
