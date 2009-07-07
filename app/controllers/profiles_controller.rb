@@ -88,6 +88,92 @@ class ProfilesController < ApplicationController
     end
   end
   
+  def new_caregiver_profile
+	@removed_caregivers = []   
+    current_user.caregivers.each do |caregiver|
+      if caregiver
+        caregiver.roles_users.each do |roles_user|
+          if roles_user.roles_users_option and roles_user.roles_users_option[:removed]
+            @removed_caregivers << caregiver
+          end
+        end 
+      end
+    end
+    get_caregivers(current_user)
+    @max_position = @caregivers.size + 1
+    @user = User.new 
+    @profile = Profile.new    	
+  end
+   
+  def create_caregiver_profile
+  	
+  	@user = User.new(params[:user])
+    @profile = Profile.new(params[:profile])
+   
+    	User.transaction do 
+    		@user.email = params[:email]
+    		@user.is_new_caregiver = true
+    		@user[:is_caregiver] =  true
+    		if @user.save
+    			@user.activate
+    			
+    			@profile.user_id = @user.id
+    			@profile[:is_new_caregiver] = true
+    			if @profile.save!
+    				patient = User.find(params[:patient_id].to_i)
+    				role = @user.has_role 'caregiver', patient
+    				caregiver = @user
+    				@roles_user = patient.roles_user_by_caregiver(caregiver)
+    				update_from_position(params[:position], @roles_user.role_id, caregiver.id)
+    				RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => 0,:relationship => params[:relationship],:is_keyholder => params[:key_holder][:is_keyholder])
+    			else
+    				#render :action => 'new_caregiver_profile',:user_id => current_user
+    				raise "Invalid Profile"
+    			end
+    		else
+    			#render :action => 'new_caregiver_profile',:user_id => current_user
+    			 raise "Invalid User"
+    		end
+    	redirect_to :controller => 'call_list',:action => 'show',:id => current_user
+    		
+		end
+		
+  rescue Exception => e
+    RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
+    render :action => 'new_caregiver_profile'
+  
+  
+    #rescue Exception => e
+    	#RAILS_DEFAULT_LOGGER.warn "#{e}"
+    	#render :action => 'new_caregiver_profile',:user_id => current_user
+=begin
+    	@removed_caregivers = []   
+    	current_user.caregivers.each do |caregiver|
+    	  if caregiver
+    	    caregiver.roles_users.each do |roles_user|
+    	      if roles_user.roles_users_option and roles_user.roles_users_option[:removed]
+    	        @removed_caregivers << caregiver
+    	      end
+    	    end 
+    	  end
+    	end
+    	get_caregivers(current_user)
+    	@max_position = @caregivers.size + 1
+     	@user = User.new 
+    	@profile = Profile.new  
+=end
+#		render :partial => '/profiles/new_caregiver_profile'
+
+
+  end
+  def update_from_position(position, roles_user_id, user_id)
+    caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and roles_user_id = #{roles_user_id}")
+    
+    caregivers.each do |caregiver|
+      caregiver.position+=1
+      caregiver.save
+    end
+  end
   def update_caregiver_profile
     sent = false
     user = User.find(params[:user_id])

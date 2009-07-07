@@ -223,4 +223,25 @@ class ReportingController < ApplicationController
       render :partial => 'init_successful_user_logins', :layout => true
     end
   end
+  
+  def audit
+    @stream = params[:stream].to_i > 0 ? true : false
+    @begin_time = params[:begin_time]
+    @end_time = params[:end_time]
+    if !@end_time.blank? && !@begin_time.blank?
+      @end_time = @end_time.to_time
+      @begin_time = @begin_time.to_time
+      @audits = Audit.paginate(
+        :page => params[:page],
+        :per_page => REPORTING_USERS_PER_PAGE,
+        :conditions => ["created_at >= ? AND created_at <= ?", @begin_time, @end_time], 
+        :order => "owner_id ASC, created_at ASC", 
+        :include => [:owner]
+        )
+    else
+      flash[:warning] = 'Begin Time and End Time are required.'
+      render :action => :audit and return
+    end
+  end
+  
 end

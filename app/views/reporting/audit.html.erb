@@ -1,0 +1,49 @@
+<% 
+require "digest" 
+%>
+  <%=render :partial => 'nav'%>
+
+<%= render :partial => 'audit_search_form' %>
+
+<% if @audits %>
+<% current_user = nil %>
+  <% if @stream %>
+  <table>
+    <th>User</th><th>Audited</th><th>Changes</th><th>Changed by</th><th>IP hash</th><th>URL / Referring URL</th><th>Timestamp</th>
+  <% end %>
+  <% @audits.each do |audit| %>
+    <% owner_user = audit.owner.owner_user rescue "unknown" %>
+    <% if owner_user != current_user && !@stream %>
+      <% if !current_user.nil? %>
+        </table>
+      <% end %>
+      <hr>
+      <h2><%= owner_user.name rescue "unknown" %></h2>
+      <table>
+        <th>Audited</th><th>Changes</th><th>Changed by</th><th>IP hash</th><th>URL / Referring URL</th><th>Timestamp</th>
+      <% current_user = owner_user %>
+    <% end %>
+    <tr>
+      <%= @stream ? "<td>#{owner_user.name rescue "unknown"}</td>" : "" %>
+      <td><%= audit.auditable_type.to_s.underscore.humanize %></td>
+      <td><%= audit.action %>:
+        <% audit.changes.each do |key, values| %>
+         <br/> <%=h key %>: <%=h values.join(" to ") %>
+        <% end %>
+      </td>
+      <td><%=h audit.username %> (<%=h audit.user_id %>)</td>
+      <td><% iphash = Digest::MD5.hexdigest(audit.ip) %><%= iphash[0..4] %>...<%= iphash[-5..-1] %></td>
+      <td>
+        <%= link_to "URL", audit.url %> / <%=link_to "Referer", audit.referer %>
+      </td>
+      <td><%=h audit.created_at %></td>
+    </tr>
+  <% end %>
+  </table>
+  <center>
+      <big>
+          <%= will_paginate @audits %>
+      </big>
+  </center>
+<% end %>
+  

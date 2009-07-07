@@ -1,4 +1,7 @@
 class Profile < ActiveRecord::Base
+  
+  acts_as_audited
+  
   composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
   belongs_to :user
   belongs_to :carrier
@@ -36,6 +39,12 @@ class Profile < ActiveRecord::Base
   	
   	#check_valid_phone_numbers
  #end
+
+ def owner_user # for auditing
+   self.user
+ rescue
+   nil
+ end
 
   def validate
   	if self[:is_new_caregiver]

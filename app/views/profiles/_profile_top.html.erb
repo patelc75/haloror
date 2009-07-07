@@ -1,6 +1,10 @@
 	<label for="email">Email</label>
 	    <br />
+	    <%if controller.action_name == 'new_caregiver_profile'%>
+	    <%= text_field_tag :email, 'no-email@halomonitoring.com' ,:size => '30'%>
+	    <%else%>
 	    <%= text_field_tag :email, @user.email %>
+	    <%end%>
 	    <br />	     
 	    <br />      
 	    <label for="first_name">First Name</label>

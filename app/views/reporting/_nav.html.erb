@@ -26,4 +26,7 @@
 <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? %>
 | <%= link_to 'Critical Event Log', url_for(:controller => 'call_center', :action => 'index') %>
 <% end %>
+<% if current_user.is_admin? || current_user.is_super_admin? %>
+| <%= link_to 'Audits', url_for(:controller => "reporting", :action => "audit")%>
+<% end %>
 <p>&nbsp;</p>
