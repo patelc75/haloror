@@ -76,19 +76,19 @@ class AuditSweeper < ActionController::Caching::Sweeper #:nodoc:
   def current_ip
     controller.request.remote_ip
   rescue
-    ""
+    "(unknown)"
   end
   
   def current_url
     controller.request.url
   rescue
-    ""
+    "(unknown)"
   end
   
   def current_referer
     controller.request.referer
   rescue
-    ""
+    "(unknown)"
   end
   
 end
