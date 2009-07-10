@@ -992,6 +992,7 @@ class User < ActiveRecord::Base
     if opts = alert_option.roles_user.roles_users_option
       unless opts.removed
         "(#{opts.position}) " + contact_info()
+         return info + (opts.is_keyholder? ? "Key holder" : "Non-key holder")
       end
     end
   end

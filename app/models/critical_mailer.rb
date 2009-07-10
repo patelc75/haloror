@@ -180,14 +180,6 @@ class CriticalMailer < ActionMailer::ARMailer
       @caregiver_info = "(U) " + user.contact_info() + "\n"
     end
     user.active_caregivers.each do |caregiver|
-      if (list_caregivers)
-        roles_user = user.roles_user_by_caregiver(caregiver)
-        if (opts = roles_user.roles_users_option rescue false)
-          @caregiver_info << "(#{opts.position}) #{caregiver.contact_info()} | %s\n" % [opts.is_keyholder? ? "Key holder" : "Non-key holder"]
-        else
-          @caregiver_info << "(X) #{user.contact_info()} | (no key information)"
-        end
-      end
       recipients_setup(caregiver, user.alert_option_by_type(caregiver, alert), mode)  
     end
     @recipients = @recipients + @text_recipients
