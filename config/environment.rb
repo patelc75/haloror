@@ -51,7 +51,8 @@ Rails::Initializer.run do |config|
   
   config.gem "tzinfo"
   config.gem "chronic"
-  config.gem "rufus-scheduler"
+  #commented out for Rails 2.3.2.1
+  #config.gem "rufus-scheduler"
 end
 
 # Add new inflection rules using the following format 
