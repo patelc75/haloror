@@ -9,7 +9,7 @@ require "digest"
 <% current_user = nil %>
   <% if @stream %>
   <table>
-    <th>User</th><th>Audited</th><th>Changes</th><th>Changed by</th><th>IP hash</th><th>URL / Referring URL</th><th>Timestamp</th>
+    <th>User</th><th>Audited</th><th>Changes</th><th>Changed by</th><th>IP</th><th>URL / Referring URL</th><th>Timestamp</th>
   <% end %>
   <% @audits.each do |audit| %>
     <% owner_user = audit.owner.owner_user rescue "unknown" %>
@@ -20,7 +20,7 @@ require "digest"
       <hr>
       <h2><%= owner_user.name rescue "unknown" %></h2>
       <table>
-        <th>Audited</th><th>Changes</th><th>Changed by</th><th>IP hash</th><th>URL / Referring URL</th><th>Timestamp</th>
+        <th>Audited</th><th>Changes</th><th>Changed by</th><th>IP</th><th>URL / Referring URL</th><th>Timestamp</th>
       <% current_user = owner_user %>
     <% end %>
     <tr>
@@ -28,11 +28,12 @@ require "digest"
       <td><%= audit.auditable_type.to_s.underscore.humanize %></td>
       <td><%= audit.action %>:
         <% audit.changes.each do |key, values| %>
-         <br/> <%=h key %>: <%=h values.join(" to ") %>
+          <% next if value[0] == value[1] rescue true %>
+         <br/> <%=h key %>: <%=h values.join(" to ") rescue values.inspect %>
         <% end %>
       </td>
       <td><%=h audit.username %> (<%=h audit.user_id %>)</td>
-      <td><% iphash = Digest::MD5.hexdigest(audit.ip) %><%= iphash[0..4] %>...<%= iphash[-5..-1] %></td>
+      <td><%= audit.ip %></td>
       <td>
         <%= link_to "URL", audit.url %> / <%=link_to "Referer", audit.referer %>
       </td>
