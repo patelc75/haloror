@@ -22,9 +22,9 @@ class StrapOffAlert < DeviceAlert
     end
 
     conds = []
-    conds << "(id in (select device_id from access_modes where mode = 'ethernet') OR id not in (select device_id from access_mode_statuses))"
-    conds << "id in (select ss.id from device_strap_status ss where is_fastened = 0 AND ss.updated_at < now() - interval '#{ethernet_system_timeout.strap_off_timeout_sec*60} minutes')"
-    conds << "id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
+    conds << "(id in (select device_id from access_mode_statuses where mode = 'ethernet') OR id not in (select device_id from access_mode_statuses))"
+    conds << "id in (select ss.id from device_strap_status ss where is_fastened = 0 AND ss.updated_at < now() - interval '#{ethernet_system_timeout.strap_off_timeout_sec/60} minutes')"
+    conds << "id in (select d.id from devices d where d.device_revision_id in (select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id where device_types.device_type = 'Chest Strap'))"
 
     devices = Device.find(:all,
       :conditions => conds.join(' and '))
@@ -36,9 +36,9 @@ class StrapOffAlert < DeviceAlert
     
     # Do same thing for dialup
     conds = []
-    conds << "id in (select device_id from access_modes where mode = 'dialup')"
-    conds << "id in (select ss.id from device_strap_status ss where is_fastened = 0 AND ss.updated_at < now() - interval '#{dialup_system_timeout.strap_off_timeout_sec*60} minutes')"
-    conds << "id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
+    conds << "id in (select device_id from access_mode_statuses where mode = 'dialup')"
+    conds << "id in (select ss.id from device_strap_status ss where is_fastened = 0 AND ss.updated_at < now() - interval '#{dialup_system_timeout.strap_off_timeout_sec/60} minutes')"
+    conds << "id in (select d.id from devices d where d.device_revision_id in (select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id where device_types.device_type = 'Chest Strap'))"
 
     devices = Device.find(:all,
       :conditions => conds.join(' and '))

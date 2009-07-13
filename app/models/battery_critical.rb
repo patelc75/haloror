@@ -2,6 +2,7 @@ class BatteryCritical < ActiveRecord::Base
   set_table_name "battery_criticals"
   belongs_to :user
   belongs_to :device
+  has_many :battery_reminders
 	include Priority
 	def priority
       return IMMEDIATE
@@ -16,7 +17,7 @@ class BatteryCritical < ActiveRecord::Base
 		 @most_recent.update_attributes(:stopped_at => Time.now)	if @most_recent
 		  DeviceAlert.notify_carigivers(self)
 	  elsif self.mode == 'start'
-		BatteryReminder.create(:reminder_num => 1,:user_id =>self.user_id ,:device_id => self.device_id,:time_remaining => self.time_remaining)
+		BatteryReminder.create(:reminder_num => 1,:user_id =>self.user_id ,:device_id => self.device_id,:time_remaining => self.time_remaining,:battery_critical_id => self.id)
 	  end
   	end
   end

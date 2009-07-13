@@ -4,6 +4,8 @@ class User < ActiveRecord::Base
   
   acts_as_authorized_user
   acts_as_authorizable
+  acts_as_audited
+  
   has_many :notes
   has_many :panics
   has_many :batteries
@@ -61,6 +63,15 @@ class User < ActiveRecord::Base
   # anything else you want your user to change should be added here.
   #attr_accessible :login, :email, :password, :password_confirmation
   
+  def username
+    return self.name rescue ""
+  end
+  
+  def owner_user # for auditing
+    self
+  rescue
+    nil
+  end
   
   def get_strap
     self.devices.each do |device|
@@ -980,7 +991,8 @@ class User < ActiveRecord::Base
   def contact_info_by_alert_option(alert_option)
     if opts = alert_option.roles_user.roles_users_option
       unless opts.removed
-        "(#{opts.position}) " + contact_info()
+         info = "(#{opts.position}) " + contact_info()
+         return info += (opts.is_keyholder? ? " | Key holder" : " | Non-key holder")
       end
     end
   end

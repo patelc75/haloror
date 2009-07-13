@@ -36,7 +36,7 @@
     <div id="event_event_<%= event.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px;cursor:pointer">
 	<div class="row">
       <div style="float:left;padding-top:25px;width:150px">
-        <%= UtilityHelper.format_datetime_readable(event[:timestamp_server],current_user) %>&nbsp
+        <%= UtilityHelper.format_datetime_readable(event[:timestamp_server],event.user) %>&nbsp
       </div>
         <div style="float:left;padding-top:25px;width:150px">
           <%= image_for_event(event)%>

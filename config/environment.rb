@@ -49,10 +49,7 @@ Rails::Initializer.run do |config|
   # See Rails::Configuration for more options
   config.active_record.observers = :user_observer, :device_event_observer, :event_action_observer, :critical_device_event_observer, :gateway_event_observer
   
-  config.gem "tzinfo"
-  config.gem "chronic"
-  #commented out for Rails 2.3.2.1
-  #config.gem "rufus-scheduler"
+  config.gem "rufus-scheduler", :version => ">= 2.0.1", :lib => false
 end
 
 # Add new inflection rules using the following format 
@@ -154,11 +151,11 @@ REORTING_DEVICES_PER_PAGE = 50
 
 MGMT_POLL_RATE=900
 INSTALL_WIZ_TIMEOUT_REGISTRATION=180.seconds
-INSTALL_WIZ_TIMEOUT_GATEWAY=220.seconds
+INSTALL_WIZ_TIMEOUT_GATEWAY=480.seconds
 INSTALL_WIZ_TIMEOUT_CS=240.seconds
-INSTALL_WIZ_TIMEOUT_PHONE=145.seconds
+INSTALL_WIZ_TIMEOUT_PHONE=290.seconds
 INSTALL_WIZ_TIMEOUT_HEARTRATE=240.seconds
-INSTALL_WIZARD_POLL_RATE = 1
+INSTALL_WIZARD_POLL_RATE = 10
 INSTALL_WIZARD_TIMEOUT=900
 INSTALL_WIZARD_START_TIMESTAMP_DELAY=3600 * 24
 RANGE_TEST_PERCENTAGE=100

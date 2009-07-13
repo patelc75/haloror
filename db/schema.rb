@@ -10,7 +10,6 @@
 # It's strongly recommended to check this file into your version control system.
 
 ActiveRecord::Schema.define(:version => 20090619171252) do
-
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
     t.string   "status"
@@ -122,6 +121,27 @@ ActiveRecord::Schema.define(:version => 20090619171252) do
     t.string   "comments"
   end
 
+  create_table "audits", :force => true do |t|
+    t.integer  "auditable_id"
+    t.string   "auditable_type"
+    t.string   "ip",             :limit => 40
+    t.string   "url"
+    t.string   "referer"
+    t.integer  "owner_id"
+    t.string   "owner_type"
+    t.integer  "user_id"
+    t.string   "user_type"
+    t.string   "username"
+    t.string   "action"
+    t.text     "changes"
+    t.integer  "version",                      :default => 0
+    t.datetime "created_at"
+  end
+
+  add_index "audits", ["auditable_id", "auditable_type"], :name => "auditable_index"
+  add_index "audits", ["created_at"], :name => "index_audits_on_created_at"
+  add_index "audits", ["user_id", "user_type"], :name => "user_index"
+
   create_table "batteries", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
@@ -171,6 +191,7 @@ ActiveRecord::Schema.define(:version => 20090619171252) do
     t.datetime "updated_at"
     t.datetime "stopped_at"
     t.integer  "time_remaining"
+    t.integer  "battery_critical_id"
   end
 
   create_table "battery_unpluggeds", :force => true do |t|
@@ -259,6 +280,10 @@ ActiveRecord::Schema.define(:version => 20090619171252) do
     t.integer  "device_id"
     t.integer  "user_id"
     t.integer  "time_remaining"
+<<<<<<< HEAD:db/schema.rb
+=======
+    t.integer  "battery_critical_id"
+>>>>>>> master:db/schema.rb
   end
 
   create_table "device_infos", :force => true do |t|
@@ -649,7 +674,7 @@ ActiveRecord::Schema.define(:version => 20090619171252) do
     t.text    "allergies"
     t.text    "pet_information"
     t.text    "access_information"
-    t.string  "account_number",      :limit => 4
+    t.string  "account_number"
     t.string  "door"
     t.string  "hospital_preference"
     t.string  "hospital_number"

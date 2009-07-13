@@ -2,6 +2,8 @@
 # Likewise, all the methods added will be available for all controllers.
 
 class ApplicationController < ActionController::Base
+  audit User, Profile, RolesUsersOption, AlertOption
+  
   include ServerInstance
   include AuthenticatedSystem
   include ExceptionNotifiable

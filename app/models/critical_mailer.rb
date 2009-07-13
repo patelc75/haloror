@@ -60,7 +60,7 @@ class CriticalMailer < ActionMailer::ARMailer
     
     user = event.user
     
-    message_text << "ACCOUNT NUM\n%s\n\n" % [user.profile.account_number? ? "(No account number)" : user.profile.account_number]
+    message_text << "ACCOUNT NUM\n%s\n\n" % [user.profile.account_number.blank? ? "(No account number)" : user.profile.account_number]
     message_text << "ADDRESS + LOCK\n%s\n%s\n%s, %s %s\n%s\n\n" % [user.name, user.profile.address, user.profile.city, user.profile.state, user.profile.zipcode, user.profile.access_information.blank? ? "(No access information)" : user.profile.access_information]
     message_text << "MEDICAL\n%s\n\n" % [user.profile.allergies.blank? ? "(No medical / allergy information)" : user.profile.allergies]
     message_text << "PET\n%s\n\n" % [user.profile.pet_information.blank? ? "(No pet information)" : user.profile.pet_information]
@@ -86,8 +86,9 @@ class CriticalMailer < ActionMailer::ARMailer
     setup_caregivers(event.user, event, :caregiver_info)
     @caregiver_info << '(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
     link = get_link_to_call_center_text()
+
     #setup_message(event.to_s, "Go here: " + link + " If site down, use paper scripts with this info:" + @caregiver_info)
-    setup_message(event.to_s, @caregiver_info + "\n" + event.user.profile.address)
+    setup_message(event.to_s, @caregiver_info + "\n" + (event.user.address.nil? ? "(No address)" : event.user.address))
     setup_operators(event, :recepients, :include_phone_call) 
     # setup_emergency_group(event, :recepients)
     @recipients = @text_recipients
@@ -179,14 +180,6 @@ class CriticalMailer < ActionMailer::ARMailer
       @caregiver_info = "(U) " + user.contact_info() + "\n"
     end
     user.active_caregivers.each do |caregiver|
-      if (list_caregivers)
-        roles_user = user.roles_user_by_caregiver(caregiver)
-        if (opts = roles_user.roles_users_option rescue false)
-          @caregiver_info << "(#{opts.position}) #{caregiver.contact_info()} | %s\n" % [opts.is_keyholder? ? "Key holder" : "Non-key holder"]
-        else
-          @caregiver_info << "(X) #{user.contact_info()} | (no key information)"
-        end
-      end
       recipients_setup(caregiver, user.alert_option_by_type(caregiver, alert), mode)  
     end
     @recipients = @recipients + @text_recipients
