@@ -51,6 +51,15 @@ class Event < ActiveRecord::Base
     
     return false
   end
+
+  def false_alarm?
+    EventAction.find(:all, :conditions => "event_id = '#{self.id}'").each do |action|
+      return action if action.description == 'false_alarm'
+    end
+    
+    return false
+  end
+
   
   def self.get_latest_event_by_type_and_user(type, user_id)
     event = Event.find(:first, :order => "timestamp DESC", :conditions => "event_type = '#{type}' and user_id='#{user_id}' AND timestamp <= '#{Time.now.to_s}'")

@@ -1,8 +1,6 @@
 <meta http-equiv="refresh" content="30">
 <% is_admin = current_user.is_super_admin? %>
-<h2>Call Center Overview</h2>
-Please hold the control key and click <a href="/call_center/faq">here</a> to launch the <b>FAQ</b> in a separate tab.
-<br>
+<h2>Crtical Event Log</h2>
 <br>
 All times are in <%= current_user.profile.time_zone if current_user.profile %> timezone <br>
 <div class="table">
@@ -10,11 +8,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
     <div class="col-75">
       Event <br>Type
     </div>
-    <% if is_admin %>
-      <div class="col-125">
-        Oscope Start Msg ID
-      </div>
-    <% end %>
+
     <div class="col-125">
       Timestamp<br>Device
     </div>
@@ -33,8 +27,13 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
     </div>
     <% end %>
     <div class="col-150">
-      Accept
+      False Alarm
     </div>
+    <% if is_admin %>
+      <div class="col-125">
+        Oscope Start Msg ID
+      </div>
+    <% end %>
   </div>
   <% @events.each do |event| %>
     <div class="row">
@@ -47,24 +46,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
         <%=event.event_type%>&nbsp;
       </div>
       <% end %>
-      <% if is_admin %>
-        <% if event.event_type == 'Fall' %>
-          <% oscope_start = OscopeStartMsg.find_by_timestamp_and_user_id(event.timestamp, event.user_id) %>
-          <% if oscope_start %>
-            <div class="col-125">
-            <%= link_to ("#{oscope_start.id}", :controller => 'oscopes', :action => 'csv', :id => oscope_start.id) %>
-            </div>
-          <% else %>
-            <div class="col-125">
-            &nbsp;
-            </div>
-          <% end %>
-        <% else %>
-          <div class="col-125">
-          &nbsp;
-          </div>
-        <% end %>
-      <% end %>
+
       <div class="col-125">
         <%=UtilityHelper.format_datetime_readable(event.timestamp, current_user) %>
       </div>
@@ -92,7 +74,10 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
         <%= link_to_remote '-', :update => "notes_#{event.id}", :url => {:action => 'toggle_note' }%>
       </div>
       <% end %>
-      <div class="col-150" id="<%=event.id%>_accept">
+      
+      <!-- "accept" link commented out -->
+      <% begin %>
+            <div class="col-150" id="<%=event.id%>_accept">
       	<% if action = event.resolved? %>
 		Resolved by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>
         <% elsif action = event.accepted? %>
@@ -104,6 +89,34 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
 			<%= link_to "(report)", :action => "report", :id => event.id %>
 		<% end %>
       </div>
+      <% end %>
+        
+      <div class="col-150" id="<%=event.id%>_false_alarm">
+      	<% if action = event.false_alarm? %>
+		  False Alarm by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>
+		<% else %>
+		  <%= link_to "Mark as False Alarm",:action => "false_alarm", :id => event.id %>
+		<% end %>
+      </div>
+      
+      <% if is_admin %>
+        <% if event.event_type == 'Fall' %>
+          <% oscope_start = OscopeStartMsg.find_by_timestamp_and_user_id(event.timestamp, event.user_id) %>
+          <% if oscope_start %>
+            <div class="col-125">
+            <%= link_to ("#{oscope_start.id}", :controller => 'oscopes', :action => 'csv', :id => oscope_start.id) %>
+            </div>
+          <% else %>
+            <div class="col-125">
+            &nbsp;
+            </div>
+          <% end %>
+        <% else %>
+          <div class="col-125">
+          &nbsp;
+          </div>
+        <% end %>
+      <% end %>
         </div>
         <div id="notes_<%=event.id %>">
         </div>
