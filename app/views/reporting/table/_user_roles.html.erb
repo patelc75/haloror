@@ -13,7 +13,13 @@
      else
        if (role.name == 'caregiver')
          halouser = User.find(role.authorizable_id) 
-         !halouser.nil? ? names << role.name + " / #{halouser.name}" : names << roles.name
+         
+         if !halouser.nil?
+           hname = role.name + " for (#{halouser.id})#{halouser.name}"   
+           names << link_to(hname, :controller => 'call_list', :action => 'show', :id => halouser.id)
+         else 
+           names << role.name
+         end          
        else
          names << role.name
        end
