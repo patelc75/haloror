@@ -50,7 +50,7 @@
 	<div class="signup_detail_fields">Cell Phone:</div><div><%= caregiver.profile.cell_phone%><br><br></div>
 	<div class="signup_detail_fields">Cell Phone Carrier:</div><div><%= caregiver.carrier%><br><br></div>
 	<div class="signup_detail_fields">Key to Senior's Home:</div><div><br><br></div>	
-	<div class="signup_detail_fields">Active/Away:</div><div><%= caregiver.is_active_caregiver?(caregiver)%><br><br></div>
+	<div class="signup_detail_fields">Active/Away:</div><div><%= @user.is_active_caregiver?(caregiver) ? "Active" : "Away" %><br><br></div>
 	<% @alert_types.each do |alert| %>
 	<div class="signup_detail_fields"><%=UtilityHelper.camelcase_to_spaced(alert.alert_type)%>:</div>
 	<%#=debug caregiver.roles %>
