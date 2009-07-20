@@ -55,7 +55,9 @@ class CriticalMailer < ActionMailer::ARMailer
   def device_event_operator(event)
     # refs #864, New non-wizard email for call center agents
     setup_caregivers(event.user, event, :caregiver_info, true)
-    @caregiver_info << '\n\n(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
+    #@caregiver_info << '\n\n(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
+    
+    @caregiver_info << 'EMERGENCY NUM ' + '<br>' + event.user.profile.emergency_number.name + '<br>' + event.user.profile.emergency_number.number if event.user.profile.emergency_number
     message_text = "You received this email because you’re a Halo call center agent.\n\n#{@caregiver_info}\n\n"
     
     user = event.user
