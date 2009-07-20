@@ -1,6 +1,6 @@
 <%=render :partial => 'search'%>
 <%=render :partial => 'nav'%>
-<form id="group_form_id" action="/reporting/users" method="POST">
+<form id="group_form_id" action="/reporting/users" method="GET">
 <% gs = ['']
    @groups.each do |group|
      gs << group.name
