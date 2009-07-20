@@ -80,6 +80,19 @@ class CallCenterController < ApplicationController
                   :event_id => @event.id,        
                   :call_center_wizard_id => @call_center_wizard.id
   end
+
+  def test_alarm
+  	@event = Event.find(params[:id])
+  	
+    action = EventAction.new
+    action.user_id = current_user.id
+    action.event_id = params[:id]
+    action.description = 'test_alarm'
+    action.save!
+    ea = action      
+  	
+    render :partial => 'test_alarm', :locals => {:event => Event.find(params[:id])}
+  end
   
   def false_alarm
   	@event = Event.find(params[:id])

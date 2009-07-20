@@ -68,7 +68,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       <div class="col-75">
         <a target="_blank" href="/chart/flex/<%= event.user.id %>">Chart</a>
       </div>
-      <div class="col-75">
+      <div class="col-75" id="false_test_<%=event.id %>">
         <%= link_to_remote '+', :update => "notes_#{event.id}", :url => {:action => 'toggle_note', :new_note => true, :event_id => event.id, :user_id => event.user.id }%>
         &nbsp;
         <%= link_to_remote '-', :update => "notes_#{event.id}", :url => {:action => 'toggle_note' }%>
@@ -76,7 +76,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       <% end %>
       
       <!-- "accept" link commented out -->
-      <% begin %>
+      <% if false %>
             <div class="col-150" id="<%=event.id%>_accept">
       	<% if action = event.resolved? %>
 		Resolved by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>
@@ -91,11 +91,14 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       </div>
       <% end %>
         
-      <div class="col-150" id="<%=event.id%>_false_alarm">
+      <div class="col-150" id="false_alarm_<%=event.id%>">
       	<% if action = event.false_alarm? %>
-		  False Alarm by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>
+		  <b>False Alarm</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>
+      	<% elsif action = event.test_alarm? %>
+		  Marked <b>Test</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>		  
 		<% else %>
-		  <%= link_to "Mark as False Alarm",:action => "false_alarm", :id => event.id %>
+		  <%= link_to_remote "Mark as False Alarm", :update => "false_alarm_#{event.id}", :url => {:action => "false_alarm", :id => event.id} %> or
+		  <%= link_to_remote "Mark as Test", :update => "false_alarm_#{event.id}", :url => {:action => "test_alarm", :id => event.id} %>
 		<% end %>
       </div>
       
