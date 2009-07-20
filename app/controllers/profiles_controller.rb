@@ -192,7 +192,7 @@ class ProfilesController < ApplicationController
       end
     
       @profile.update_attributes!(params[:profile])
-      if(current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships))
+      if((current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)) and user.is_halouser)
         group = Group.find_by_name('SafetyCare')
         if(params[:opt_out_call_center].blank?)
           user.is_halouser_of group
