@@ -5,12 +5,12 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def monitoring_failure(message, event)
     setup_message("SafetyCare monitoring failure: #{message}", "The following event triggered, but an error was encountered.\n\nTime: #{Time.now}\n\nError: #{message}\n\nEvent: #{event.to_s}\n\n#{event.inspect}\n\n")
-    @recipients = ["nagios@halomonitoring.com"]
+    @recipients = ["exceptions@halomonitoring.com"]
   end
 
   def monitoring_heartbeat_failure(message, exception)
     setup_message("SafetyCare HEARTBEAT failure", "There was a HEARTBEAT failure!\n\nTime: #{Time.now}\n\n  Exception: #{exception}\nError: #{message}\n\n")
-    @recipients = ["nagios@halomonitoring.com"]
+    @recipients = ["exceptions@halomonitoring.com"]
   end
   
   def background_task_notification(alert, user)
