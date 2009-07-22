@@ -26,7 +26,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    
+   
       @user = User.new(params[:user])
       @user.email = params[:email]
       @group = params[:group]
@@ -104,6 +104,7 @@ class UsersController < ApplicationController
   
   def init_user
     @user = User.find_by_activation_code(params[:activation_code])
+    session[:senior] = params[:senior]
   end
   
   def update_user
@@ -188,6 +189,8 @@ class UsersController < ApplicationController
     
     @password = random_password
     
+    @user = User.new 
+    @profile = Profile.new  
     render :layout => false
   end
   

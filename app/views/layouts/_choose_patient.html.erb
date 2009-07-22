@@ -6,6 +6,7 @@ Senior:
 	<option value="">---</option>
 	
 	<% @user.patients.each do |patient| %>
-		<option value="<%=patient.id%>" <%='selected' if params[:id].to_i == patient.id %>><%=patient.name%></option>
+		<option value="<%=patient.id%>" <%='selected' if params[:id].to_i == patient.id or session[:senior].to_i == patient.id%>><%=patient.name%></option>
 	<% end %>
 </select>
+<%#=debug @user.patients%>
