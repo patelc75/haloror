@@ -1,5 +1,5 @@
 require 'time'
-
+require "digest/sha2"
 namespace :halo do  
   desc "railroad command to generate schema"
   task :railroad => :environment  do

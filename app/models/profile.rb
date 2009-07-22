@@ -2,7 +2,8 @@ class Profile < ActiveRecord::Base
   
   acts_as_audited
   
-  composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
+  #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
+  composed_of :tz, :class_name => 'TimeZone', :mapping => %w(time_zone identifier)
   belongs_to :user
   belongs_to :carrier
   belongs_to :emergency_number
