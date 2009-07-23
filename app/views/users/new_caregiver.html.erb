@@ -4,7 +4,7 @@
 		<div style="width:380px;" id="container">
 			<% 
 				form_display = 'block'
-				if !@removed_caregivers.empty? 
+				#if !@removed_caregivers.empty? 
 					form_display = 'none' 
 			%>
 				<div id="removed_caregivers">
@@ -34,7 +34,7 @@
 						<a href="#"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
 					</div>
 				</div>
-			<% end %>
+			<%# end %>
 	
 			<div id="caregiver_form" style="display:<%=form_display%>">
 				<%=render :partial => 'caregiver_form'%>
