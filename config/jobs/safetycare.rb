@@ -11,6 +11,7 @@ if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-w
 	SCHEDULER.schedule_every(SAFETYCARE_HEARTBEAT_TIME) {
 	  begin
 	    SafetyCareClient.heartbeat()
+	    ActiveRecord::Base.verify_active_connections!()
 	  rescue Exception => e
 	    #CriticalMailer.deliver_monitoring_hertbeat_failure("Exception!", e)
 	    UtilityHelper.log_message("SafetyCareClient.heartbeat::Exception:: #{e}", e)
