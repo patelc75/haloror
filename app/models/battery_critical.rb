@@ -8,6 +8,10 @@ class BatteryCritical < ActiveRecord::Base
       return IMMEDIATE
     end
     
+  def before_create
+  	self.timestamp_server = Time.now.utc
+  end
+  
   def after_save
   	if self.mode.nil?  #backward compatibility for GWs with old code
   	  DeviceAlert.notify_carigivers(self)
