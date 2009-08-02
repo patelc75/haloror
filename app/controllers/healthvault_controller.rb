@@ -5,8 +5,8 @@ class HealthvaultController < ApplicationController
   before_filter :authenticate_admin_halouser_caregiver_operator?
   layout "application"
   
-  before_filter :setup_healthvault, :except => [:index, :error, :logout]
-  before_filter :setup_hv_user, :except => [:index, :error, :shellreturn, :logout]
+  before_filter :setup_healthvault, :except => [:index, :error, :logout, :privacy, :eula]
+  before_filter :setup_hv_user, :except => [:index, :error, :shellreturn, :logout, :privacy, :eula]
   
   def index
     if !session[:healthvault_app].blank? && !session[:healthvault_conn].blank?
@@ -21,17 +21,20 @@ class HealthvaultController < ApplicationController
   end
   
   def logout
-    session[:healthvault_app] = nil
-    session[:healthvault_conn] = nil
-    session[:healthvault_record_id] = nil
-    session[:healthvault_name] = nil
-    flash[:message] = "logged out"
-    redirect_to :action => "index" and return
+    config = Configuration.instance
+    auth_url = "#{config.shell_url}/redirect.aspx?target=APPSIGNOUT&targetqs=?actionqs=#{params[:action]}^#{@user[:id]}%26appid=#{config.app_id}%26redirect=#{url_for :controller => 'healthvault', :action => 'shellreturn'}"
+    redirect_to(auth_url, :status => 302) and return
   end
   
   def login
     flash[:message] = "logged in"
     redirect_to :action => "index" and return
+  end
+  
+  def privacy
+  end
+  
+  def eula
   end
   
   def get_vitals
@@ -118,7 +121,8 @@ class HealthvaultController < ApplicationController
   #http://haloror.local/healthvault/shellreturn/?target=AppAuthSuccess&actionqs=5&wctoken=ASAAAGqn95wyJApHq8YUaIVfeJMviBab%2bTeRDXp0fOG905Xy34q3ded0yqVqGXwQb%2f0WH%2b4%2bomWfyWBqkhJRVUQ7J%2fVbcPkoVCK2utvRefbEtPfN7UoVw3eDlzMRoOBogbtLViGwqfIkvPn8m3Xt4b2R9AKGbBRCnrMClSDGsr5knqTmZye8BA%3d%3d
   def shellreturn
     #raise request.query_parameters.inspect
-    if (request.query_parameters["target"].downcase == "appauthsuccess")
+    case request.query_parameters["target"].downcase
+    when "appauthsuccess"
       session[:wctoken] = request.query_parameters["wctoken"]
       session[:actionqs] = request.query_parameters["actionqs"]
       pair = session[:actionqs].split('^')
@@ -133,10 +137,52 @@ class HealthvaultController < ApplicationController
         redirect_to :action => return_action and return
       end
       redirect_to :controller => 'healthvault', :action => 'error'
-    else
-      flash[:error] = "Got a target shell return of #{request.query_parameters['target']}"
-      redirect_to 'error' and return
+    when "appauthinvalidrecord"
+      session[:healthvault_record_id] = nil
+      session[:healthvault_name] = nil
+      flash[:message] = "Your selected HealthVault record seems to have been invalid."
+      redirect_to 'index' and return
+    when "appauthreject"
+      flash[:error] = "You did not successfully log on to HealthVault."
+      redirect_to 'index' and return
+    when "help"
+      redirect_to 'help' and return
+    when "home"
+      redirect_to 'index' and return
+    when "privacy"
+      redirect_to 'privacy' and return
+    when "reconcilecanceled"
+      flash[:message] = "Your CCR/CCD request was cancelled."
+      redirect_to 'index' and return
+    when "reconcilecomplete"
+      flash[:message] = "Your CCR/CCD request completed successfully."
+      redirect_to 'index' and return
+    when "reconcilefailure"
+      flash[:error] = "Your CCR/CCD request could not be completed."
+      redirect_to 'index' and return
+    when "selectedrecordchanged"
+      session[:healthvault_record_id] = nil
+      session[:healthvault_name] = nil
+      flash[:message] = "Your selected HealthVault record has been changed."
+      redirect_to 'index' and return
+    when "serviceagreement"
+      redirect_to 'eula' and return
+    when "sharerecordfailed"
+      flash[:error] = "Your record-sharing invitation could not be sent."
+      redirect_to 'index' and return
+    when "sharerecordsuccess"
+      flash[:message] = "Your record-sharing invitation has been sent."
+      redirect_to 'index' and return
+    when "signout"
+      session[:healthvault_app] = nil
+      session[:healthvault_conn] = nil
+      session[:healthvault_record_id] = nil
+      session[:healthvault_name] = nil
+      flash[:message] = "logged out"
+      redirect_to :action => "index" and return
     end
+    flash[:error] = "Got an unrecognized response from the HealthVault servers (#{request.query_parameters['target']})"
+    redirect_to 'index' and return
   end
   
   private
@@ -148,6 +194,12 @@ class HealthvaultController < ApplicationController
     else
       @user = which_user?
     end
+    
+    Configuration.instance.app_id = HV_APP_ID
+    Configuration.instance.cert_file = HV_CERT_FILE
+    Configuration.instance.cert_pass = HV_CERT_PASS
+    Configuration.instance.shell_url = HV_SHELL_URL
+    Configuration.instance.hv_url = HV_HV_URL
     
     # Try to get the existing app and connection from the session
     if !session[:healthvault_app].blank? && !session[:healthvault_conn].blank?

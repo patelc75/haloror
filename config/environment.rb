@@ -215,3 +215,10 @@ GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT=1800  #30 minutes
 
 
 SAFETYCARE_HEARTBEAT_TIME = "55s"
+
+# Development settings
+HV_APP_ID = "6019e8f1-413f-4dfc-878e-62053cbb0dab"
+HV_CERT_FILE = "#{RAILS_ROOT}/config/healthvault/halo_monitor-6019e8f1-413f-4dfc-878e-62053cbb0dab.pfx"
+HV_CERT_PASS = ""
+HV_SHELL_URL = "https://account.healthvault-ppe.com"
+HV_HV_URL = "https://platform.healthvault-ppe.com/platform/wildcat.ashx"
