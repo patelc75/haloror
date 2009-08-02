@@ -55,7 +55,7 @@ class HealthvaultController < ApplicationController
     @results = []
     result.info.group[0].thing.each do |thing|
       datething = thing.data_xml[0].when
-      datestr = "%s-%s-%s %s:%s:%s" % [datething.date.y, datething.date.m, datething.date.d, datething.time.h, datething.time.m, datething.time.s]
+      datestr = "%s-%02s-%02s %02s:%02s:%02s" % [datething.date.y, datething.date.m, datething.date.d, datething.time.h, datething.time.m, datething.time.s]
       @results.push([datestr, thing.data_xml[0].value.to_s]) rescue [nil, "missing heart rate"]
     end
   end
@@ -71,8 +71,8 @@ class HealthvaultController < ApplicationController
       @hours = 24
     end
     
-    @start_time = Chronic.parse(params[:start_time])
-  
+    @start_time = Time.at((Chronic.parse(params[:start_time]).to_f / (1.hour)).floor * 1.hour)
+
     @end_time = @start_time + @hours.hour
     
     # Vital.find(:first, :conditions => "user_id = 2")
