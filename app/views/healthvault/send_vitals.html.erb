@@ -15,12 +15,14 @@
 
 <% if !params[:confirm] %>
 <%= form_tag(:action => "send_vitals", :method => :post) %>
+<h4>Halo Monitoring is going to copy data to your HealthVault account.</h4>
 <fieldset>
 	<label for="hours">Hours to calculate:</label> <%= text_field_tag "hours", params[:hours] || 1%><br/>
 	<label for="start_time">Start time (for instance, "2008-07-29 12:50:02" or "last tuesday")</label>
 	<%= calendar_date_select_tag "start_time", params[:start_time] || (Time.now - 1.hour).strftime("%Y/%m/%d %H:%M:%S"), :time => true %><br/>
 	Confirm sending: <%= check_box_tag "confirm" %><br/>
-	<%= submit_tag "submit vitals" %>
+	<%= image_submit_tag "copy_to_hv-H.png" %>
+	<%# = submit_tag "submit vitals" %>
 </fieldset>
 </form>
 <% end %>
