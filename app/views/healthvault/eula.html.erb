@@ -1,0 +1,12 @@
+<%= render :partial => "header" %>
+
+<p>
+  Halo Monitoring's service / license agreement goes here.
+</p>
+
+<p>
+<%= link_to "Return to index", :action => "index" %>
+<% if @connected %>
+ | <%= link_to "Log out", :action => "logout"%>
+<% end %>
+</p>
