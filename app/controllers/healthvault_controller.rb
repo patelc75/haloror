@@ -21,6 +21,12 @@ class HealthvaultController < ApplicationController
   end
   
   def logout
+    unless logged_in?
+      redirect_to '/login'
+    else
+      @user = which_user?
+    end
+
     config = Configuration.instance
     auth_url = "#{config.shell_url}/redirect.aspx?target=APPSIGNOUT&targetqs=?actionqs=#{params[:action]}^#{@user[:id]}%26appid=#{config.app_id}%26redirect=#{url_for :controller => 'healthvault', :action => 'shellreturn'}"
     redirect_to(auth_url, :status => 302) and return
