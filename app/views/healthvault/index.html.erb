@@ -1,7 +1,6 @@
 <%= render :partial => "header" %>
-
+<br>
 <% if @connected %>
-<h3>Authenticated to HealthVault</h3>
 <p>
 	Connected to HealthVault as <i><%= @hv_name %></i><!--, with a HealthVault record ID of <i><%= @hv_record_id %></i> --><br/>
 	<%= form_tag(:action => "send_vitals", :method => :post) %>
@@ -9,19 +8,18 @@
 		<label for="hours">Hours to calculate:</label> <%= text_field_tag "hours", 1%><br/>
 		<label for="start_time">Start time (for instance, "2008-07-29 12:50:02" or "last tuesday")</label>
 	<%= calendar_date_select_tag "start_time", params[:start_time] || (Time.now - 1.hour).strftime("%Y/%m/%d %H:%M:%S"), :time => true %><br/>
-		<%= submit_tag "Preview vitals to be sent to HealthVault" %>
+		<%= submit_tag "Preview vitals to be copied to HealthVault" %>
 	</fieldset>
 	</form>
 	<%= link_to "Log out", :action => "logout"%>
 </p>
 <% else %>  
-<p>
-
-  Halo Monitoring is going to copy data to your HealthVault account and needs you to sign in.<br/>
-	<%= link_to "Log in", :action => "login" %>
-</p>
+  Halo Monitoring is going to access your HealthVault account. Please choose one of the following<br/><br>
+	<%= link_to "Copy Vitals to Healthvault", :action => "login" %><br>
 <%end%>
 <br/>
-<%= link_to "Get Vitals", :action => "get_vitals" %><br/>
-<%= link_to "Healthvault Account", "https://account.healthvault-ppe.com/", :target => "_blank"%>
+<%= link_to "Display vitals from HealthVault", :action => "get_vitals" %><br>
+<br> 
+<%= link_to "Go directly to your Healthvault Account", "https://account.healthvault-ppe.com/", :target => "_blank"%>
+
 
