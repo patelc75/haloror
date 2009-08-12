@@ -21,6 +21,12 @@ class HealthvaultController < ApplicationController
   end
   
   def logout
+    unless logged_in?
+      redirect_to '/login'
+    else
+      @user = which_user?
+    end
+
     config = Configuration.instance
     auth_url = "#{config.shell_url}/redirect.aspx?target=APPSIGNOUT&targetqs=?actionqs=#{params[:action]}^#{@user[:id]}%26appid=#{config.app_id}%26redirect=#{url_for :controller => 'healthvault', :action => 'shellreturn'}"
     redirect_to(auth_url, :status => 302) and return
@@ -71,7 +77,19 @@ class HealthvaultController < ApplicationController
       @hours = 24
     end
     
-    @start_time = Time.at((Chronic.parse(params[:start_time]).to_f / (1.hour)).floor * 1.hour)
+    #The format (eg. August 12, 2009 4:31 AM) returned from the calendar control is not supported by Chronic
+    #See http://chronic.rubyforge.org/
+    #@start_time = Chronic.parse(params[:start_time])
+    #@start_time = Time.at((Chronic.parse(params[:start_time]).to_f / (1.hour)).floor * 1.hour)
+   
+    begin
+      DateTime.parse(params[:start_time])
+    rescue ArgumentError
+      flash[:error] = "Invalid date or time entered."
+      redirect_to :index and return
+    end
+
+    @start_time = params[:start_time].to_time if !params[:start_time].blank?    
 
     @end_time = @start_time + @hours.hour
     

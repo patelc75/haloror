@@ -1,13 +1,14 @@
 <%= render :partial => "header" %>
+<br>
 <% if params[:confirm] %>
 <h3>Sending vitals data for <%= @hours%> hours</h3>
 <% else %>
 <h3>Previewing vitals data for <%= @hours%> hours</h3>
-<h3><b><u>Data has not yet been sent!</u></b>  Check confirmation box and click submit.</h3>
+<u>Data has not yet been sent!</u> Check confirmation box and click submit<br><br>
 <% end %>
 <b><%= @start_time %> to <%= @end_time %>)</b>
-<table>
-	<tr><th>Time</th><th align="center">Average Heart Rate (BPM)</th></tr>
+<table border = 1>
+	<tr><th>Time</th><th align="center">Average<br> Heart Rate (BPM)</th></tr>
 	<% @pairs.each do |pair| %>
 	<tr><td><%= pair[1] %></td><td align="center"><%= pair[0] %></td></tr>
 	<% end %>
@@ -18,13 +19,14 @@
 <h4>Halo Monitoring is going to copy data to your HealthVault account.</h4>
 <fieldset>
 	<label for="hours">Hours to calculate:</label> <%= text_field_tag "hours", params[:hours] || 1%><br/>
-	<label for="start_time">Start time (for instance, "2008-07-29 12:50:02" or "last tuesday")</label>
-	<%= calendar_date_select_tag "start_time", params[:start_time] || (Time.now - 1.hour).strftime("%Y/%m/%d %H:%M:%S"), :time => true %><br/>
-	Confirm sending: <%= check_box_tag "confirm" %><br/>
+  <label for="start_time">Start time (one-hour increments)</label>
+  <%= calendar_date_select_tag "start_time", @start_time || (Time.now - 1.hour).strftime("%Y/%m/%d %H:00:00"), :time => true, :popup => 'force', :minute_interval => 60   %><br/>
+	Confirm sending: <%= check_box_tag "confirm" %><br/><br>
 	<%= image_submit_tag "copy_to_hv-H.png" %>
 	<%# = submit_tag "submit vitals" %>
 </fieldset>
 </form>
-<% end %>
-<%= link_to "get vitals", :action => "get_vitals" %>
-<%= link_to "return to index", :action => "index" %> <br />
+<% end %><br>
+<%= link_to "Display vitals from HealthVault", :action => "get_vitals" %><br>
+<br>
+<%= link_to "< Go back", :action => "index" %> <br />
