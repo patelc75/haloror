@@ -61,7 +61,7 @@ class BatteryReminder < DeviceAlert
 				Time.now.utc.hour + get_timezone_offset(user).to_i < 21 and 
 				Time.now.utc.hour + get_timezone_offset(user).to_i > 8) 
 				
-				RAILS_DEFAULT_LOGGER.warn("device.stopped_at= #{device.stopped_at} 
+				RAILS_DEFAULT_LOGGER.warn("BatteryReminder.send_reminders:: user.id = #{user.id} finddƒevice.stopped_at= #{device.stopped_at} 
 				Time.now.utc.hour=#{Time.now.utc.hour} get_timezone_offset(user)=#{get_timezone_offset(user)}")
 				
 				#if between 8:15PM and 8:30PM, send a reminder
