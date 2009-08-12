@@ -6,7 +6,7 @@
 	<%= form_tag(:action => "send_vitals", :method => :post) %>
 	<fieldset>
 		<label for="hours">Hours to calculate:</label> <%= text_field_tag "hours", 1%><br/>
-		<label for="start_time">Start time (for instance, "2008-07-29 12:50:02" or "last tuesday")</label>
+		<label for="start_time">Start time (for instance, "2008-07-29 12:50:02")</label>
 	<%= calendar_date_select_tag "start_time", params[:start_time] || (Time.now - 1.hour).strftime("%Y/%m/%d %H:%M:%S"), :time => true %><br/>
 		<%= submit_tag "Preview vitals to be copied to HealthVault" %>
 	</fieldset>

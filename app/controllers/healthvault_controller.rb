@@ -77,7 +77,12 @@ class HealthvaultController < ApplicationController
       @hours = 24
     end
     
-    @start_time = Time.at((Chronic.parse(params[:start_time]).to_f / (1.hour)).floor * 1.hour)
+    #The format (eg. August 12, 2009 4:31 AM) returned from the calendar control is not supported by Chronic
+    #See http://chronic.rubyforge.org/
+    #@start_time = Chronic.parse(params[:start_time])
+    #@start_time = Time.at((Chronic.parse(params[:start_time]).to_f / (1.hour)).floor * 1.hour)
+   
+    @start_time = params[:start_time] if !params[:start_time].blank?
 
     @end_time = @start_time + @hours.hour
     
