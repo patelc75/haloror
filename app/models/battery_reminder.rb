@@ -9,7 +9,7 @@ class BatteryReminder < DeviceAlert
     end
 	
     def to_s
-   	  "Battery has approx. #{time_remaining < 0 ? 0:time_remaining} minutes left for #{user.name} at #{UtilityHelper.format_datetime_readable(created_at, user)}"   	  
+   	  "Battery has approx. #{time_remaining < 0 ? 0:time_remaining} minutes left for #{user.name} at #{UtilityHelper.format_datetime_readable(created_at, user)}"   if time_remaining 	  
     end
   
     def after_save

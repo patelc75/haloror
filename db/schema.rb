@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090704030340) do
+ActiveRecord::Schema.define(:version => 20090728185827) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -30,6 +30,13 @@ ActiveRecord::Schema.define(:version => 20090704030340) do
     t.string   "mode"
     t.datetime "timestamp"
     t.string   "number"
+  end
+
+  create_table "accounts", :id => false, :force => true do |t|
+    t.integer "aid",                    :null => false
+    t.integer "bid"
+    t.integer "abalance"
+    t.string  "filler",   :limit => 84
   end
 
   create_table "alert_groups", :force => true do |t|
@@ -168,10 +175,11 @@ ActiveRecord::Schema.define(:version => 20090704030340) do
   create_table "battery_criticals", :force => true do |t|
     t.integer  "device_id"
     t.datetime "timestamp"
-    t.integer  "percentage",     :null => false
-    t.integer  "time_remaining", :null => false
+    t.integer  "percentage",       :null => false
+    t.integer  "time_remaining",   :null => false
     t.integer  "user_id"
     t.string   "mode"
+    t.datetime "timestamp_server"
   end
 
   add_index "battery_criticals", ["device_id"], :name => "index_battery_criticals_on_device_id"
@@ -201,6 +209,12 @@ ActiveRecord::Schema.define(:version => 20090704030340) do
     t.integer  "percentage",     :null => false
     t.integer  "time_remaining", :null => false
     t.integer  "user_id"
+  end
+
+  create_table "branches", :id => false, :force => true do |t|
+    t.integer "bid",                    :null => false
+    t.integer "bbalance"
+    t.string  "filler",   :limit => 88
   end
 
   create_table "call_center_deferreds", :force => true do |t|
@@ -525,6 +539,15 @@ ActiveRecord::Schema.define(:version => 20090704030340) do
     t.text     "description"
   end
 
+  create_table "history", :id => false, :force => true do |t|
+    t.integer  "tid"
+    t.integer  "bid"
+    t.integer  "aid"
+    t.integer  "delta"
+    t.datetime "mtime"
+    t.string   "filler", :limit => 22
+  end
+
   create_table "installation_notes", :force => true do |t|
     t.integer  "user_id",    :null => false
     t.text     "notes"
@@ -672,7 +695,7 @@ ActiveRecord::Schema.define(:version => 20090704030340) do
     t.text    "allergies"
     t.text    "pet_information"
     t.text    "access_information"
-    t.string  "account_number"
+    t.string  "account_number",      :limit => 10
     t.string  "door"
     t.string  "hospital_preference"
     t.string  "hospital_number"
@@ -831,6 +854,13 @@ ActiveRecord::Schema.define(:version => 20090704030340) do
     t.integer  "strap_off_timeout_sec"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "tellers", :id => false, :force => true do |t|
+    t.integer "tid",                    :null => false
+    t.integer "bid"
+    t.integer "tbalance"
+    t.string  "filler",   :limit => 84
   end
 
   create_table "users", :force => true do |t|

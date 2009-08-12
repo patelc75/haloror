@@ -47,8 +47,8 @@
 	  
 	    <label for="time_zone">Time Zone</label>
 	  	<br />
-	             <%= time_zone_select ('profile', 'time_zone', TZInfo::Timezone.us_zones, :model => TZInfo::Timezone, :default => "America/Chicago")%> 
-	           
+	             <%#= time_zone_select ('profile', 'time_zone', TZInfo::Timezone.us_zones, :model => TZInfo::Timezone, :default => "America/Chicago")%> 
+	           <%= time_zone_select :profile, :time_zone, TimeZone.us_zones,:default => "UTC" %>
 	             <br/>
          	    <br />
     

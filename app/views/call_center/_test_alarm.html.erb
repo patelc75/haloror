@@ -1,5 +1,6 @@
 <% if action = event.test_alarm? %>
 	Marked <b>Test</b>  by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>
 <% else %>
-	<%=link_to_remote "Mark as False Alarm", :update => "#{event.id}_false_alarm", :url => { :action => "resolve", :id => event.id }%>
+	<%=link_to_remote "Mark as False Alarm", :update => "#{event.id}_false_alarm", :url => { :action => "resolve", :id => event.id }%> or 
+	<%= link_to_remote "Non emergency Panic", :update => "false_alarm_#{event.id}", :url => {:action => "non_emerg_panic", :id => event.id} %>
 <% end %>

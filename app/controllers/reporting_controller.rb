@@ -244,4 +244,53 @@ class ReportingController < ApplicationController
     end
   end
   
+  def fall_panic_report
+  	@begin_time = params[:begin_time]
+    @end_time = params[:end_time]
+    if !@end_time.blank? && !@begin_time.blank?
+    	@end_time = @end_time.to_time
+    	@begin_time = @begin_time.to_time
+    	@falls = Event.find_all_by_event_type("Fall", :conditions => ["timestamp >= ? AND timestamp <= ?", @begin_time, @end_time])
+    	@panics = Event.find_all_by_event_type("Panic", :conditions => ["timestamp >= ? AND timestamp <= ?", @begin_time, @end_time])
+    	@real_falls = []
+    	for fall in @falls
+    		if !fall.false_alarm? and !fall.test_alarm?
+    			@real_falls << fall
+    		end	
+    	end
+    	@real_panics = []
+    	for panic in @panics
+    		if !panic.false_alarm? and !panic.test_alarm? and !panic.non_emerg_panic?
+    			@real_panics << panic
+    		end	
+    	end
+    	@false_positive_falls = []
+    	for fall in @falls
+    		if fall.false_alarm?
+    			@false_positive_falls << fall
+    		end	
+    	end
+    	@false_positive_panic = []
+    	for panic in @panics
+    		if panic.false_alarm?
+    			@false_positive_panic << panic
+    		end	
+    	end
+    	@non_emerg_panic = []
+    	for panic in @panics
+    		if panic.non_emerg_panic?
+    			@non_emerg_panic << panic
+    		end	
+    	end
+    	#@installs = SelfTestSession.find(:all,:conditions => ["created_at >= ? AND created_at <= ? and completed_on != ''", @begin_time.to_s(:db), @end_time.to_s(:db)])
+    	@installs = SelfTestSession.find(:all,
+    									 :select => "user_id,count(*)",
+    	                                 :conditions => ["completed_on >= ? AND completed_on <= ?", @begin_time.to_s(:db), @end_time.to_s(:db)],
+    	                                 :group => 'user_id'
+    	                                 )
+    	
+    end
+  	flash[:warning] = 'Begin Time and End Time are required.'
+  end
+  
 end
