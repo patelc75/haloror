@@ -81,9 +81,15 @@ class HealthvaultController < ApplicationController
     #See http://chronic.rubyforge.org/
     #@start_time = Chronic.parse(params[:start_time])
     #@start_time = Time.at((Chronic.parse(params[:start_time]).to_f / (1.hour)).floor * 1.hour)
-   
-    @start_time = params[:start_time] if !params[:start_time].blank?
+    begin
+      DateTime.parse(params[:start_time])
+    rescue ArgumentError
+      flash[:error] = "Invalid date or time entered."
+      redirect_to :index and return
+    end
 
+    @start_time = Time.at((DateTime.parse(params[:start_time]).to_f / (1.hour)).floor * 1.hour)
+    
     @end_time = @start_time + @hours.hour
     
     # Vital.find(:first, :conditions => "user_id = 2")
