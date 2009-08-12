@@ -82,7 +82,7 @@ class HealthvaultController < ApplicationController
     #@start_time = Chronic.parse(params[:start_time])
     #@start_time = Time.at((Chronic.parse(params[:start_time]).to_f / (1.hour)).floor * 1.hour)
    
-    @start_time = params[:start_time] if !params[:start_time].blank?
+    @start_time = params[:start_time].to_time if !params[:start_time].blank?
 
     @end_time = @start_time + @hours.hour
     
