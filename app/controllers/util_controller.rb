@@ -1,8 +1,14 @@
 class UtilController < ApplicationController
-  before_filter :authenticate_super_admin?, :except => ['check', 'hostname', 'version']
+  before_filter :authenticate_super_admin?, :except => ['check', 'hostname', 'version', 'terms', 'privacy']
   #session :off
   
   # Monitors that the application and database connection is alive
+  
+  def terms
+  end
+  
+  def privacy
+  end
   
   def check
     #if ServerInstance.is_task_server?

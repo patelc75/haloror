@@ -99,6 +99,8 @@ class ApplicationController < ActionController::Base
       controller_name == 'util' && action_name == 'check' ||
       controller_name == 'util' && action_name == 'hostname' ||
       controller_name == 'util' && action_name == 'version' ||
+      controller_name == 'util' && action_name == 'terms' ||
+      controller_name == 'util' && action_name == 'privacy' ||
       controller_name == 'security')
       return authenticate
     else
