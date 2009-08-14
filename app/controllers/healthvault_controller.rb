@@ -10,7 +10,6 @@ class HealthvaultController < ApplicationController
   
   
   def redirect
-    breakpoint
      if params[:target] == "Privacy"
        redirect_to :controller => "util", :action => "privacy"
      elsif params[:target] == "ServiceAgreement"
