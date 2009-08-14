@@ -2,11 +2,23 @@ require 'healthvault'
 require 'chronic'
 class HealthvaultController < ApplicationController
   include HealthVault
-  before_filter :authenticate_admin_halouser_caregiver_operator?
+  before_filter :authenticate_admin_halouser_caregiver_operator?, :except => ['redirect']
   layout "application"
   
-  before_filter :setup_healthvault, :except => [:index, :error, :logout, :privacy, :eula]
-  before_filter :setup_hv_user, :except => [:index, :error, :shellreturn, :logout, :privacy, :eula]
+  before_filter :setup_healthvault, :except => [:index, :error, :logout, :privacy, :eula, :redirect]
+  before_filter :setup_hv_user, :except => [:index, :error, :shellreturn, :logout, :privacy, :eula, :redirect]
+  
+  
+  def redirect
+    breakpoint
+     if params[:target] == "Privacy"
+       redirect_to :controller => "util", :action => "privacy"
+     elsif params[:target] == "ServiceAgreement"
+       redirect_to :controller => "util", :action => "terms"
+     else
+       redirect_to '/login'    
+     end
+  end
   
   def index
     if !session[:healthvault_app].blank? && !session[:healthvault_conn].blank?
