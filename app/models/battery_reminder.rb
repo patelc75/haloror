@@ -51,26 +51,26 @@ class BatteryReminder < DeviceAlert
 		include UtilityHelper
     
 		RAILS_DEFAULT_LOGGER.warn("BatteryReminder.send_reminders running at #{Time.now}")
-		@devices = DeviceBatteryReminder.find(:all)		
+		@devices = DeviceBatteryReminder.find(:all)	
 		@devices.each do |device|
 			#@most_recent = BatteryReminder.most_recent_reminder(device.id)
 			user = User.find(device.user_id)
+			local_time = user.profile.tz.utc_to_local(Time.now)
+			morning = Time.local(Time.now.year,Time.now.month,Time.now.day,8,0,0)
+			night = Time.local(Time.now.year,Time.now.month,Time.now.day,21,0,0)
 			
 			#make sure it's between 8AM and 9PM
-			if (device.stopped_at == nil and
-				Time.now.utc.hour + get_timezone_offset(user).to_i < 21 and 
-				Time.now.utc.hour + get_timezone_offset(user).to_i > 8) 
+			if (device.stopped_at == nil and local_time < night and local_time > morning) 
 				
-				RAILS_DEFAULT_LOGGER.warn("device.stopped_at= #{device.stopped_at} 
-				Time.now.utc.hour=#{Time.now.utc.hour} get_timezone_offset(user)=#{get_timezone_offset(user)}")
+				#RAILS_DEFAULT_LOGGER.warn("device.stopped_at= #{device.stopped_at} 
+				#Time.now.utc.hour=#{Time.now.utc.hour} get_timezone_offset(user)=#{get_timezone_offset(user)}")
 				
 				#if between 8:15PM and 8:30PM, send a reminder
-				if ((Time.now.utc.hour + get_timezone_offset(user).to_i) == 20 and 
-					(Time.now.utc.strftime("%M").to_i + get_timezone_offset(user).to_i) > 15 and 
-					(Time.now.strftime("%M").to_i + get_timezone_offset(user).to_i) < 31 and 
-					device.reminder_num < 3)
+				eight_fifteen = Time.local(Time.now.year,Time.now.month,Time.now.day,20,15,0)
+				eight_thirty = Time.local(Time.now.year,Time.now.month,Time.now.day,20,30,0)
+				if (local_time >= eight_fifteen and local_time <= eight_thirty)
 					
-					RAILS_DEFAULT_LOGGER.warn('Time.now.utc.strftime("%M").to_i= #{Time.now.utc.strftime("%M").to_i} device.reminder_num=#{device.reminder_num}')
+					#RAILS_DEFAULT_LOGGER.warn('Time.now.utc.strftime("%M").to_i= #{Time.now.utc.strftime("%M").to_i} device.reminder_num=#{device.reminder_num}')
 
 					time_remaining = device.time_remaining - (BATTERY_REMINDER_TWO / 60) 
 				
@@ -78,12 +78,11 @@ class BatteryReminder < DeviceAlert
 										   :time_remaining => time_remaining,:battery_critical_id => device.battery_critical_id)
 				
 				#if between 8:30PM and 9PM, do nothing
-				elsif ((Time.now.utc.hour + get_timezone_offset(user).to_i) == 20 and 
-					   (Time.now.utc.strftime("%M").to_i + get_timezone_offset(user).to_i) > 30)
+				elsif (local_time > eight_thirty and local_time < night)
 				
 				else
 					if  device.reminder_num == 1 and 
-						((Time.now.utc + get_timezone_offset(user).to_i) > (device.created_at + BATTERY_REMINDER_TWO) and 
+						( local_time > (device.created_at + BATTERY_REMINDER_TWO) and 
 						device.updated_at < (device.created_at + BATTERY_REMINDER_THREE))
 						
 						time_remaining = device.time_remaining - (BATTERY_REMINDER_TWO / 60) 
@@ -94,8 +93,7 @@ class BatteryReminder < DeviceAlert
 												:battery_critical_id => device.battery_critical_id)
 					
 												
-					elsif device.reminder_num == 2 and 
-						(Time.now.utc + get_timezone_offset(user).to_i) < (device.created_at + BATTERY_REMINDER_THREE)
+					elsif device.reminder_num == 2 and local_time < (device.created_at + BATTERY_REMINDER_THREE)
 						
 						time_remaining = device.time_remaining - (BATTERY_REMINDER_THREE / 60) + (BATTERY_REMINDER_TWO / 60)
 						BatteryReminder.create(:device_id => device.device_id, 
