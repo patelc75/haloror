@@ -64,8 +64,6 @@ class BatteryReminder < DeviceAlert
 				
 				#RAILS_DEFAULT_LOGGER.warn("device.stopped_at= #{device.stopped_at} 
 				#Time.now.utc.hour=#{Time.now.utc.hour} get_timezone_offset(user)=#{get_timezone_offset(user)}")
-
-				Time.now.utc.hour=#{Time.now.utc.hour} get_timezone_offset(user)=#{get_timezone_offset(user)}")
 				
 				#if between 8:15PM and 8:30PM, send a reminder
 				eight_fifteen = Time.local(Time.now.year,Time.now.month,Time.now.day,20,15,0)
@@ -81,7 +79,7 @@ class BatteryReminder < DeviceAlert
 				
 				else
 					if  device.reminder_num == 1 and 
-						( local_time > (device.created_at + BATTERY_REMINDER_TWO) and 
+						( Time.now > (device.created_at + BATTERY_REMINDER_TWO) and 
 						device.updated_at < (device.created_at + BATTERY_REMINDER_THREE))
 						
 						time_remaining = device.time_remaining - (BATTERY_REMINDER_TWO / 60) 
@@ -92,7 +90,7 @@ class BatteryReminder < DeviceAlert
 												:battery_critical_id => device.battery_critical_id)
 					
 												
-					elsif device.reminder_num == 2 and local_time < (device.created_at + BATTERY_REMINDER_THREE)
+					elsif device.reminder_num == 2 and Time.now < (device.created_at + BATTERY_REMINDER_THREE)
 						
 						time_remaining = device.time_remaining - (BATTERY_REMINDER_THREE / 60) + (BATTERY_REMINDER_TWO / 60)
 						BatteryReminder.create(:device_id => device.device_id, 
