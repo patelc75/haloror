@@ -1,4 +1,6 @@
 <%=render :partial => 'nav'%>
+<a href="/reporting/lost_data_summary">Click to view Lost Data only (Battery dead, buffer overflow, and missing POSTs)</a> 
+<br>
 <div id="date_range" class="date_range">
 	<% if !flash[:warning].blank? -%>
 	<b><%= flash[:warning] %></b>
