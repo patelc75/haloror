@@ -21,6 +21,7 @@ require "digest"
   <%if @falls%>
   	<table border="1">
   		<tr>
+  			<th>Group</th>
   			<th>Start</th>
   			<th>End</th>
   			<th>New Installs</th>
@@ -31,6 +32,33 @@ require "digest"
   			<th>Falls Positive Panics</th>
   			<th>Panic Specificity</th>
   		</tr>
+  		<%@group_stats.keys.sort.each {|key|%>
+  			<tr>
+  				<%@real_falls = @false_alarm_falls = @real_panics = @false_alarm_panic = @non_emerg_panic = 0.0%>
+  				<td><%= key%></td>
+  				<td><%= @begin_time%></td>
+  				<td><%= @end_time%></td>
+  				<td><%= @group_stats[key][:installs].length if @group_stats[key][:installs]%></td>
+  				<td><%= @real_falls = @group_stats[key][:real_falls].length if @group_stats[key][:real_falls]%></td>
+  				<td><%= @false_alarm_falls = @group_stats[key][:false_alarm_falls].length if @group_stats[key][:false_alarm_falls]%></td>
+  				<td><% falls_specify = (@real_falls.to_f / (@false_alarm_falls.to_f + @real_falls.to_f)) if @real_falls != 0%>
+  	    		<%= (falls_specify * 100).to_s + '%' if falls_specify%>
+  				</td>
+  				<td><%=@real_panics = @group_stats[key][:real_panics].length if @group_stats[key][:real_panics]%></td>
+  				<td><%= @false_alarm_panic = @group_stats[key][:false_alarm_panics].length if @group_stats[key][:false_alarm_panics]%></td>
+  				<td>
+  					<%= @non_emerg_panic = @group_stats[key][:non_emerg_panic].length if @group_stats[key][:non_emerg_panic]%>
+  					<% panic_specify = ((@real_panics.to_f + @non_emerg_panic.to_f) / ( @false_alarm_panic.to_f + @real_panics.to_f + @non_emerg_panic.to_f)) if @real_panics != 0%>
+  					<%= (panic_specify * 100).round(1).to_s + '%' if panic_specify%>
+  				</td>
+  			</tr>
+		<%}%>
+
+  		
+  		
+  		
+  		
+  		<%if false%>
   	    <tr>
   	    	<td><%= @begin_time%></td>
   	    	<td><%= @end_time%></td>
@@ -53,6 +81,7 @@ require "digest"
   	    		<%= (panic_specify * 100).round(1) if panic_specify%>%
    			</td>
   	    </tr>
+  	    <%end%>
   	</table>
   <%end%>
 </div>

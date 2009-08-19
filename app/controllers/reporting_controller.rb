@@ -257,7 +257,8 @@ class ReportingController < ApplicationController
     	
         user_groups = {}
         @group_stats = {}
-      	
+        #flash[:notice] = @falls[0].user.group_memberships.length            #is_halouser_for_what.length
+      	#exit
       	#gather the stats in a 2 dimensional hash/array fall by fall
       	for fall in @falls
       	  id = fall.user.id
@@ -266,28 +267,30 @@ class ReportingController < ApplicationController
     		  end
       		 if(groups)
         		 groups.each do |group|
-        		  if @group_stats[group.name].nil? 
-         			  @group_stats[group.name] = {} 
-         			end
-          		if fall.false_alarm?
-          			if @group_stats[group.name][:false_alarm_falls].nil? 
-          			  @group_stats[group.name][:false_alarm_falls] = [] 
-          			end
-          			@group_stats[group.name][:false_alarm_falls] << fall
-          		elsif fall.test_alarm?
-          		  if @group_stats[group.name][:test_alarm_falls].nil?
-          		    @group_stats[group.name][:test_alarm_falls] = []
-          		  end
-          		  @group_stats[group.name][:test_alarm_falls] << fall
-        		  elsif
-        		    if @group_stats[group.name][:real_falls].nil?
-        		      @group_stats[group.name][:real_falls] = [] 
-        		    end
-          			@group_stats[group.name][:real_falls] << fall
-          		end	
-      		   end
-  		     end
-      	end
+        		   if !group.nil?
+        		     if @group_stats[group.name].nil? 
+         			   @group_stats[group.name] = {} 
+         			 end
+          		     if fall.false_alarm?
+          			   if @group_stats[group.name][:false_alarm_falls].nil? 
+          			     @group_stats[group.name][:false_alarm_falls] = [] 
+          			   end
+          			   @group_stats[group.name][:false_alarm_falls] << fall
+          		     elsif fall.test_alarm?
+          		       if @group_stats[group.name][:test_alarm_falls].nil?
+          		         @group_stats[group.name][:test_alarm_falls] = []
+          		       end
+          		       @group_stats[group.name][:test_alarm_falls] << fall
+        		     elsif
+        		       if @group_stats[group.name][:real_falls].nil?
+        		         @group_stats[group.name][:real_falls] = [] 
+        		       end
+          			   @group_stats[group.name][:real_falls] << fall
+          		     end	
+      		       end
+  		         end
+  		      end
+      	  end
 
       	#gather the stats in a 2 dimensional hash/array fall by fall      	
       	for panic in @panics  	  
@@ -297,13 +300,14 @@ class ReportingController < ApplicationController
     		  end
         		if(groups)
           		groups.each do |group|
-        		  if @group_stats[group.name].nil? 
-         			  @group_stats[group.name] = {} 
+          		  if !group.nil?
+        		    if @group_stats[group.name].nil? 
+         			   @group_stats[group.name] = {} 
          			end
             		if panic.false_alarm?
             		  if @group_stats[group.name][:false_alarm_panics].nil? 
-            			  @group_stats[group.name][:false_alarm_panics] = [] 
-            			end
+            		    @group_stats[group.name][:false_alarm_panics] = [] 
+            		  end
             		  @group_stats[group.name][:false_alarm_panics]  << panic
             		elsif panic.test_alarm?
             		  if @group_stats[group.name][:test_alarm_panics].nil?
@@ -315,20 +319,35 @@ class ReportingController < ApplicationController
             		    @group_stats[group.name][:non_emerg_panics] = []
             		  end 
             		  @group_stats[group.name][:non_emerg_panics]  << panic
-          		  else
-          		    if @group_stats[group.name][:real_panics].nil?
+          		    else
+          		      if @group_stats[group.name][:real_panics].nil?
             		    @group_stats[group.name][:real_panics] = []
             		  end
-            			@group_stats[group.name][:real_panics]  << panic
+            		  @group_stats[group.name][:real_panics]  << panic
             		end
+            	  end
         		end
         	end	
       	end
       	
       	@installs = SelfTestSession.find(:all,
-      									                 :select => "user_id,count(*)",
+      								     :select => "user_id,count(*)",
       	                                 :conditions => ["completed_on >= ? AND completed_on <= ?", @begin_time.to_s(:db), @end_time.to_s(:db)],
       	                                 :group => 'user_id')
+      	 for install in @installs
+      	 	id = install.user.id
+      		if (groups = user_groups[id]) == nil
+    		    groups = user_groups[id] = install.user.is_halouser_for_what
+    		  end
+    		  if(groups)
+          		groups.each do |group|
+          			if !group.nil?
+          			  @group_stats[group.name][:installs]  << install
+      			    end
+      			end
+  			  end
+      	 end                                
+      
     end
   	flash[:warning] = 'Begin Time and End Time are required.'
   end
