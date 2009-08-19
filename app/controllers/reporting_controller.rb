@@ -245,50 +245,90 @@ class ReportingController < ApplicationController
   end
   
   def fall_panic_report
+  	
   	@begin_time = params[:begin_time]
     @end_time = params[:end_time]
+    
     if !@end_time.blank? && !@begin_time.blank?
     	@end_time = @end_time.to_time
     	@begin_time = @begin_time.to_time
     	@falls = Event.find_all_by_event_type("Fall", :conditions => ["timestamp >= ? AND timestamp <= ?", @begin_time, @end_time])
     	@panics = Event.find_all_by_event_type("Panic", :conditions => ["timestamp >= ? AND timestamp <= ?", @begin_time, @end_time])
-    	@real_falls = []
-    	for fall in @falls
-    		if !fall.false_alarm? and !fall.test_alarm?
-    			@real_falls << fall
-    		end	
-    	end
-    	@real_panics = []
-    	for panic in @panics
-    		if !panic.false_alarm? and !panic.test_alarm? and !panic.non_emerg_panic?
-    			@real_panics << panic
-    		end	
-    	end
-    	@false_positive_falls = []
-    	for fall in @falls
-    		if fall.false_alarm?
-    			@false_positive_falls << fall
-    		end	
-    	end
-    	@false_positive_panic = []
-    	for panic in @panics
-    		if panic.false_alarm?
-    			@false_positive_panic << panic
-    		end	
-    	end
-    	@non_emerg_panic = []
-    	for panic in @panics
-    		if panic.non_emerg_panic?
-    			@non_emerg_panic << panic
-    		end	
-    	end
-    	#@installs = SelfTestSession.find(:all,:conditions => ["created_at >= ? AND created_at <= ? and completed_on != ''", @begin_time.to_s(:db), @end_time.to_s(:db)])
-    	@installs = SelfTestSession.find(:all,
-    									 :select => "user_id,count(*)",
-    	                                 :conditions => ["completed_on >= ? AND completed_on <= ?", @begin_time.to_s(:db), @end_time.to_s(:db)],
-    	                                 :group => 'user_id'
-    	                                 )
     	
+        user_groups = {}
+        @group_stats = {}
+      	
+      	#gather the stats in a 2 dimensional hash/array fall by fall
+      	for fall in @falls
+      	  id = fall.user.id
+      		if (groups = user_groups[id]) == nil
+    		    groups = user_groups[id] = fall.user.is_halouser_for_what
+    		  end
+      		 if(groups)
+        		 groups.each do |group|
+        		  if @group_stats[group.name].nil? 
+         			  @group_stats[group.name] = {} 
+         			end
+          		if fall.false_alarm?
+          			if @group_stats[group.name][:false_alarm_falls].nil? 
+          			  @group_stats[group.name][:false_alarm_falls] = [] 
+          			end
+          			@group_stats[group.name][:false_alarm_falls] << fall
+          		elsif fall.test_alarm?
+          		  if @group_stats[group.name][:test_alarm_falls].nil?
+          		    @group_stats[group.name][:test_alarm_falls] = []
+          		  end
+          		  @group_stats[group.name][:test_alarm_falls] << fall
+        		  elsif
+        		    if @group_stats[group.name][:real_falls].nil?
+        		      @group_stats[group.name][:real_falls] = [] 
+        		    end
+          			@group_stats[group.name][:real_falls] << fall
+          		end	
+      		   end
+  		     end
+      	end
+
+      	#gather the stats in a 2 dimensional hash/array fall by fall      	
+      	for panic in @panics  	  
+      		id = panic.user.id
+      		if (groups = user_groups[id]) == nil
+    		    groups = user_groups[id] = panic.user.is_halouser_for_what
+    		  end
+        		if(groups)
+          		groups.each do |group|
+        		  if @group_stats[group.name].nil? 
+         			  @group_stats[group.name] = {} 
+         			end
+            		if panic.false_alarm?
+            		  if @group_stats[group.name][:false_alarm_panics].nil? 
+            			  @group_stats[group.name][:false_alarm_panics] = [] 
+            			end
+            		  @group_stats[group.name][:false_alarm_panics]  << panic
+            		elsif panic.test_alarm?
+            		  if @group_stats[group.name][:test_alarm_panics].nil?
+            		    @group_stats[group.name][:test_alarm_panics] = []
+            		  end
+            		  @group_stats[group.name][:test_alarm_panics]  << panic
+            		elsif panic.non_emerg_panic?
+            		  if @group_stats[group.name][:non_emerg_panics].nil?
+            		    @group_stats[group.name][:non_emerg_panics] = []
+            		  end 
+            		  @group_stats[group.name][:non_emerg_panics]  << panic
+          		  else
+          		    if @group_stats[group.name][:real_panics].nil?
+            		    @group_stats[group.name][:real_panics] = []
+            		  end
+            			@group_stats[group.name][:real_panics]  << panic
+            		end
+        		end
+        	end	
+      	end
+      	
+      	@installs = SelfTestSession.find(:all,
+      									                 :select => "user_id,count(*)",
+      	                                 :conditions => ["completed_on >= ? AND completed_on <= ?", @begin_time.to_s(:db), @end_time.to_s(:db)],
+      	                                 :group => 'user_id')
     end
   	flash[:warning] = 'Begin Time and End Time are required.'
   end
