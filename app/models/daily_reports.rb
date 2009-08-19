@@ -106,7 +106,7 @@ class DailyReports
   end
   
   def self.lost_data_by_user_boundaries(user_id, begin_time, end_time)
-    accumulated = 0
+    accumulated = 0.0
     if !begin_time.nil?
       conds = "user_id = #{user_id} AND end_time >= '#{begin_time.to_s(:db)}' AND begin_time <= '#{begin_time.to_s(:db)}'"
       boundary_lost_data = LostData.find(:first, :conditions => conds, :order => 'id desc')

@@ -1,0 +1,93 @@
+<% 
+require "digest" 
+%>
+  <%=render :partial => 'nav'%>
+
+<div id="date_range" class="date_range">
+  <% if !flash[:warning].blank? -%>
+  <b><%= flash[:warning] %></b>
+  <% end -%>
+  <form action="/reporting/compliance_report">
+
+  Select Group:  
+<%= select_tag 'group_name', options_for_select(@groups.collect { |g| [g.name, g.id]})%>
+  <table>
+    <tr><td>All times are in UTC timezone</td></tr>
+    <tr><td>Begin Time</td>&nbsp;&nbsp;<td>End Time</td></tr>
+    <tr>
+      <td><%= calendar_date_select_tag "begin_time", @begin_time, :time => true, :popup => 'force' %></td>
+      <td><%= calendar_date_select_tag "end_time", @end_time, :time => true, :popup => 'force' %></td>
+    </tr>
+  </table>
+  <%= submit_tag "Submit" %>
+  </form>
+  
+<% if @group
+  us = []
+  @users.each do |user|
+    us << user if user.group_memberships.include? @group
+  end
+  users = us
+end
+%>
+  
+  <%if @group%>
+  	<table border="1">
+  		<tr>
+  			<th>User</th>
+  			<th>Last Post</th>
+  			<th>Last connectivity Event</th>
+  			<th>Strap Not Worn</th>
+  			<th>Battery Dead</th>
+  			<th>Total Compliance Rate</th>
+  			<th>Senior Logins</th>
+  			<th>Caregiver Logins</th>
+  			<th>Total Logins</th>
+  		</tr>
+  		<% for user in users %>
+  	    <tr>
+  	    	<td><%= user.name %></td>
+  	    	<td><% @vital = Vital.find(:first,:conditions => ["user_id = ?",user.id],:order => 'timestamp DESC') %>
+  	    		<%if @vital%>
+  	    			<%if @vital.timestamp < (Time.now - 1.day)%>
+  	    				<font color="red"><%= @vital.timestamp.strftime("%Y, %b %d %H:%M") %></font>
+  	    			<%else%>
+  	    				<%= @vital.timestamp.strftime("%Y, %b %d %H:%M") %>
+  	    			<%end%>
+  	    		<%end%>
+  	    	</td>
+  	    	
+  	     	<td><%= Event.get_connectivity_state_by_user(user)%></td>
+  	    	<td><% @total = DailyReports.device_not_worn(user.id,@begin_time,@end_time) %>
+  	    		<%@total_per = 0%>
+  	    		<%= @total_per = ((@total / (@end_time.to_time.to_i - @begin_time.to_time.to_i) ) * 100).round(4) if @total%>
+  	    		<%= '%' if @total%>
+  				<%= [@total.round/3600, @total.round/60 % 60, @total.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @total %>	    		
+  	    	</td>
+  	    	<td>
+  	    	<% @lost_data = DailyReports.lost_data_by_user_boundaries(user.id,@begin_time.to_time,@end_time.to_time)  %>
+  	    	<%@lost_data_per = 0%>
+  	    	<% @lost_data_per = ((@lost_data / (@end_time.to_time.to_i - @begin_time.to_time.to_i)) * 100) if @lost_data%>
+  	    	<%= @lost_data_per.round(1).to_s + '%' if @lost_data %><br>
+  	    	<%= [@lost_data.round/3600, @lost_data.round/60 % 60, @lost_data.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @lost_data %>
+  	    	
+   	</td>
+  	    	<td><%= @total_compliance = (100.0 - @lost_data_per - @total_per).round(1).to_s + '%' %>
+  	    		
+  	    	</td>
+  	     	<td><%= @senior_logins = user.access_logs.find_all_by_status('successful',:conditions => ["created_at > ? and created_at < ?",@begin_time,@end_time]).length %></td>
+  	     	<td><%@caregiver_logins = 0%>
+  	     		<% user.caregivers.each do |caregiver| %>
+  	     		<% @caregiver_logins += caregiver.access_logs.find_all_by_status('successful',:conditions => ["created_at > ? and created_at < ?",@begin_time,@end_time]).length %>
+  	     		<%end%>
+  	     		<%= @caregiver_logins %>
+   		 	</td>
+   		 	<td>
+   		 		<%= @senior_logins + @caregiver_logins%>
+   				
+   		 	</td>
+   	    </tr>
+   	    <%end%>
+   	</table>
+  <%end%>
+</div>
