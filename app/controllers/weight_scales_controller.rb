@@ -1,0 +1,2 @@
+class WeightScalesController < RestfulAuthController
+end
