@@ -78,7 +78,7 @@ end
 				<% @lost_data_per = 0%>
 	  	    	<% @lost_data_per = ((@lost_data / (@end_time.to_time.to_f - @begin_time.to_time.to_f)) * 100) if @lost_data%>
 	  	    	<%= @lost_data_per.round(1).to_s + '%' if @lost_data %><br>
-				<a href="/reporting/lost_data/<%=user.id%>"><%= [@lost_data.round/3600, @lost_data.round/60 % 60, @lost_data.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @lost_data %></a>
+				<a href="/reporting/lost_data/<%=user.id%>?begin_time=<%= params[:begin_time]%>&end_time=<%=params[:end_time]%>"><%= [@lost_data.round/3600, @lost_data.round/60 % 60, @lost_data.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @lost_data %></a>
   	    	<td>
 			<% if(!params[:include_strap_not_worn].blank?) %>
 			<%= @total_compliance = (100.0 - @lost_data_per - @total_per).round(1).to_s + '%' %>

@@ -170,13 +170,20 @@ class ReportingController < ApplicationController
     end   
   end
   def lost_data
-    if user_id = params[:id]
-      @user = User.find(user_id)
-      DailyReports.lost_data_scan(user_id)      
-      @lost_data = LostData.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id}", :order => "id desc")
+  	if user_id = params[:id]
+    	@user = User.find(user_id)
+    	DailyReports.lost_data_scan(user_id)
+  		if params[:begin_time]
+  			@begin_time = params[:begin_time]
+  			@end_time = params[:end_time]
+			@lost_data = LostData.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id} and begin_time > '#{@begin_time}' and end_time < '#{@end_time}'", :order => "id desc")  		
+  		else
+    	    @lost_data = LostData.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id}", :order => "id desc")
+	 	end
     else
-      redirect_to '/'
-    end    
+    	redirect_to '/'
+    end 
+    
   end
   def lost_data_daily
     
