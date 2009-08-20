@@ -1,4 +1,4 @@
-class FlexController < ApplicationController
+cclass FlexController < ApplicationController
   before_filter :authenticate_admin_halouser_caregiver_operator?
   include UtilityHelper
   
@@ -88,8 +88,9 @@ class FlexController < ApplicationController
     # get connectivity status
     user_data[:status] = {}
     
-    unless user_data[:status][:connectivity] 
-      user_data[:status][:connectivity] = Event.get_connectivity_state_by_user(user)
+    unless user_data[:status][:connectivity]
+      event_string = UtilityHelper.camelcase_to_spaced(Event.get_connectivity_state_by_user(user).event_type.to_s) 
+      user_data[:status][:connectivity] = event_string
     end
     
     # get battery status

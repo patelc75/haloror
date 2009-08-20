@@ -83,40 +83,42 @@ class Event < ActiveRecord::Base
       event.timestamp = "Jan 1 1970 00:00:00 -0000"
       event.event_type = "Not found"
     end
-    
     event
   end
   
   def self.get_connectivity_state_by_user(user)
-    gateway_online = Event.get_latest_event_by_type_and_user('GatewayOnlineAlert', user.id)
-    if Event.get_latest_event_by_type_and_user('GatewayOfflineAlert', user.id).timestamp > gateway_online.timestamp
-      UtilityHelper.camelcase_to_spaced('GatewayOfflineAlert')
+    gateway_online  = Event.get_latest_event_by_type_and_user('GatewayOnlineAlert', user.id)
+    gateway_offline = Event.get_latest_event_by_type_and_user('GatewayOfflineAlert', user.id)
+    if gateway_offline.timestamp > gateway_online.timestamp
+      gateway_offline
     else
       connected_state = gateway_online
-      device_available = Event.get_latest_event_by_type_and_user('DeviceAvailableAlert', user.id)
-      if Event.get_latest_event_by_type_and_user('DeviceUnavailableAlert', user.id).timestamp > device_available.timestamp
-        UtilityHelper.camelcase_to_spaced('DeviceUnavailableAlert')
+      device_available  = Event.get_latest_event_by_type_and_user('DeviceAvailableAlert', user.id)
+      device_unavilable = Event.get_latest_event_by_type_and_user('DeviceUnavailableAlert', user.id)
+      if device_unavilable.timestamp > device_available.timestamp
+        device_unavilable
       else
         if(device_available.timestamp > connected_state.timestamp)
           connected_state = device_available
         end
         strap_fastened = Event.get_latest_event_by_type_and_user('StrapFastened', user.id)
-        if Event.get_latest_event_by_type_and_user('StrapRemoved', user.id).timestamp > strap_fastened.timestamp
-          UtilityHelper.camelcase_to_spaced('StrapRemoved')
+        strap_removed  = Event.get_latest_event_by_type_and_user('StrapRemoved', user.id)
+        if strap_removed.timestamp > strap_fastened.timestamp
+          strap_removed
         else
           if(strap_fastened.timestamp > connected_state.timestamp)
             connected_state = strap_fastened
           end
           
           access_mode = Event.get_latest_event_by_type_and_user('AccessMode', user.id)
-	  	  if (access_mode.event_type != 'Not found') 
-	  	  	if(access_mode.event.mode == 'dialup')
-              access_mode.event_type = 'DialUp'
-              connected_state = access_mode
-        	end
+	  	    if (access_mode.event_type != 'Not found') 
+	  	  	  if(access_mode.event.mode == 'dialup')
+                access_mode.event_type = 'DialUp'
+                connected_state = access_mode
+          	end
           end
             
-          UtilityHelper.camelcase_to_spaced(connected_state.event_type.to_s)
+          connected_state
         end
       end          
     end

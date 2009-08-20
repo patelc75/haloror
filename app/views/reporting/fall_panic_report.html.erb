@@ -9,79 +9,67 @@ require "digest"
   <% end -%>
   <form action="/reporting/fall_panic_report">
   <table>
-    <tr><td>All times are in UTC timezone</td></tr>
-    <tr><td>Begin Time</td>&nbsp;&nbsp;<td>End Time</td></tr>
+    <tr><td>Begin Time (UTC)</td>&nbsp;&nbsp;<td>End Time (UTC)</td></tr>
     <tr>
       <td><%= calendar_date_select_tag "begin_time", @begin_time, :time => true, :popup => 'force' %></td>
       <td><%= calendar_date_select_tag "end_time", @end_time, :time => true, :popup => 'force' %></td>
+	  <td>&nbsp;<%= submit_tag "Submit" %></td>
     </tr>
   </table>
-  <%= submit_tag "Submit" %>
   </form>
-  <%if @falls%>
+  <br>	
+
+  <%if @falls or @panics %>
+  <br>
+  <b><%= UtilityHelper.format_datetime_readable(@begin_time, current_user) %></b> to <b><%= UtilityHelper.format_datetime_readable(@end_time, current_user) %></b> in
+  <%= current_user.profile.time_zone if current_user.profile %> timezone<br>
+ <br>
   	<table border="1">
   		<tr>
-  			<th>Group</th>
-  			<th>Start</th>
-  			<th>End</th>
-  			<th>New Installs</th>
-  			<th>Real Falls</th>
-  			<th>False Positive Falls</th>
-  			<th>Falls Specificity</th>
-  			<th>Real Panics</th>
-  			<th>Falls Positive Panics</th>
-  			<th>Panic Specificity</th>
+  			<th bgcolor="#E1E1E1">Group</th>
+		<th bgcolor="#E1E1E1">New<br> Installs
+			<% if false %>
+			<%= link_to "New<br> Installs", :controller => "reporting", :action => "installs", :anchor => "?begin_date=#{@begin_date}&end_date=#{@end_date}" %>
+			<%= link_to "New<br> Installs", :controller => "reporting", :action => "installs", :begin_date => @begin_date, :end_date => @end_date %>
+			<% end %>
+			</th>
+  			<th bgcolor="#FFD0B4">Real<br> Falls</th>
+  			<th bgcolor="#FFD0B4">False<br> Alarm<br> Falls</th>
+  			<th bgcolor="#FFD0B4">Test<br> Falls</th>
+  			<th bgcolor="#FFD0B4">Falls<br> Specificity</th>
+  			<th bgcolor="#E1d1E1">Real<br> Panics</th>
+  			<th bgcolor="#E1d1E1">Falls<br> Alarm<br> Panics</th>
+  			<th bgcolor="#E1d1E1">Test<br> Panics</th>
+  			<th bgcolor="#E1d1E1">Non<br> Emerg<br> Panics</th>
+  			<th bgcolor="#E1d1E1">Panics<br> Specificity</th>
   		</tr>
   		<%@group_stats.keys.sort.each {|key|%>
-  			<tr>
-  				<%@real_falls = @false_alarm_falls = @real_panics = @false_alarm_panic = @non_emerg_panic = 0.0%>
-  				<td><%= key%></td>
-  				<td><%= @begin_time%></td>
-  				<td><%= @end_time%></td>
-  				<td><%= @group_stats[key][:installs].length if @group_stats[key][:installs]%></td>
-  				<td><%= @real_falls = @group_stats[key][:real_falls].length if @group_stats[key][:real_falls]%></td>
+  			<tr align="center">
+  				<%@real_falls = @false_alarm_falls = @test_falls = @real_panics = @false_alarm_panic = @test_panics = @non_emerg_panic = 0.0%>
+  				<td align="left"><%= key%></td>
+  				<td><b><% if installs = @group_stats[key][:installs] %>
+					<%= @group_stats[key][:installs].length %>
+					<% else %> 0 <% end%>
+				</td>
+				<td><%= @real_falls = @group_stats[key][:real_falls].length if @group_stats[key][:real_falls]%></td>
   				<td><%= @false_alarm_falls = @group_stats[key][:false_alarm_falls].length if @group_stats[key][:false_alarm_falls]%></td>
+  				<td><%= @test_falls = @group_stats[key][:test_alarm_falls].length if @group_stats[key][:test_alarm_falls]%></td>
   				<td><% falls_specify = (@real_falls.to_f / (@false_alarm_falls.to_f + @real_falls.to_f)) if @real_falls != 0%>
   	    		<%= (falls_specify * 100).to_s + '%' if falls_specify%>
   				</td>
-  				<td><%=@real_panics = @group_stats[key][:real_panics].length if @group_stats[key][:real_panics]%></td>
+  				
+				<td><%=@real_panics = @group_stats[key][:real_panics].length if @group_stats[key][:real_panics]%></td>
   				<td><%= @false_alarm_panic = @group_stats[key][:false_alarm_panics].length if @group_stats[key][:false_alarm_panics]%></td>
-  				<td>
-  					<%= @non_emerg_panic = @group_stats[key][:non_emerg_panic].length if @group_stats[key][:non_emerg_panic]%>
-  					<% panic_specify = ((@real_panics.to_f + @non_emerg_panic.to_f) / ( @false_alarm_panic.to_f + @real_panics.to_f + @non_emerg_panic.to_f)) if @real_panics != 0%>
-  					<%= (panic_specify * 100).round(1).to_s + '%' if panic_specify%>
+  				<td><%= @test_panics = @group_stats[key][:test_alarm_panics].length if @group_stats[key][:test_alarm_panics]%></td>
+  				<td><%= @non_emerg_panic = @group_stats[key][:non_emerg_panics].length if @group_stats[key][:non_emerg_panics]%></td>
+  				<td><% panic_specify = ((@real_panics.to_f + @non_emerg_panic.to_f) / ( @false_alarm_panic.to_f + @real_panics.to_f + @non_emerg_panic.to_f)) if @real_panics != 0%>
+  				<%= (panic_specify * 100).round(1).to_s + '%' if panic_specify%>
   				</td>
   			</tr>
 		<%}%>
-
-  		
-  		
-  		
-  		
-  		<%if false%>
-  	    <tr>
-  	    	<td><%= @begin_time%></td>
-  	    	<td><%= @end_time%></td>
-  	    	<td><%= @installs.length%>
-  	    		<% users = ""%>
-  	    		<%@installs.each do |install|%>
-  	    		<% users += install.user_id.to_s + "," %>
-  	    		<%end%>
-  	    		(<%= users.chop %>)
-  	    	</td>
-  	    	<td><%= @real_falls.length %></td>
-  	    	<td><%= @false_positive_falls.length %></td>
-  	    	<td><% falls_specify = (@real_falls.length.to_f / (@false_positive_falls.length.to_f + @real_falls.length.to_f)) if @real_falls.length != 0%>
-  	    		<%= (falls_specify * 100) if falls_specify %>%
-  	    	</td>
-  	    	<td><%= @real_panics.length%></td>
-  	    	<td><%= @false_positive_panic.length %></td>
-  	    	<td><% panic_specify = ((@real_panics.length.to_f + @non_emerg_panic.length.to_f) / ( @false_positive_panic.length.to_f + @real_panics.length.to_f + @non_emerg_panic.length.to_f)) if @real_panics.length != 0%>
-  	    		<%#= @non_emerg_panic.length%>
-  	    		<%= (panic_specify * 100).round(1) if panic_specify%>%
-   			</td>
-  	    </tr>
-  	    <%end%>
-  	</table>
+  	</table><br>
+	Formulas:<br> 
+	Falls Specificity = Real Falls / (Fall Alarm Falls + Real Falls)<br>
+	Panics Specificity = (Real Panics + Non Emerg Panics) / (Fall Alarm Panics + Real Panics + Non Emerg Panics)<br>
   <%end%>
 </div>
