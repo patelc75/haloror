@@ -7,9 +7,11 @@ require "digest"
   <% if !flash[:warning].blank? -%>
   <b><%= flash[:warning] %></b>
   <% end -%>
+  
   <form action="/reporting/compliance_report">
 
   <% if params[:id] %>
+  <input type="hidden" id="id" name="id" value="<%= params[:id]%>">
   <h3>Compliance report for <%= User.find(params[:id]).name %></h3>
   <% else %>
   <h3>Group Compliance Report</h3>
@@ -28,16 +30,20 @@ require "digest"
  <label for"include_strap_not_worn">Include Strap Not Worn (slow)</label>
   </form>
   <br>
-<% if @group
+<% if @group or params[:id]
   us = []
-  @users.each do |user|
-    us << user if user.group_memberships.include? @group
+  if params[:id]
+  	us = User.find(:all,:conditions => ["id = ?",params[:id]])
+  else
+  	@users.each do |user|
+  	  us << user if user.group_memberships.include? @group
+  	end
   end
   users = us
 end
 %>
   
-  <%if @group%>
+  <%if @group or params[:id] and @begin_time%>
   	<table border="1">
   		<tr>
   			<th bgcolor="#E1E1E1">User</th>

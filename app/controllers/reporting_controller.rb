@@ -380,9 +380,9 @@ class ReportingController < ApplicationController
   	@begin_time = params[:begin_time]
     @end_time = params[:end_time]
     @groups = current_user.group_memberships
-    if !@end_time.blank? && !@begin_time.blank?
-    	@group = Group.find(params[:group_name])
-    	@users = User.find(:all)
+    if !@end_time.blank? && !@begin_time.blank? && !params[:id]
+    		@group = Group.find(params[:group_name])
+    		@users = User.find(:all)
     end
     #flash[:warning] = 'Begin Time and End Time are required.'
   end

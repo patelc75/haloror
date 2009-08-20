@@ -34,6 +34,6 @@
 | <%= link_to 'Falls/Panics', url_for(:controller => "reporting", :action => "fall_panic_report")%>
 <% end %>
 <% if current_user.is_admin? || current_user.is_super_admin? %>
-| <%= link_to 'Compliance', url_for(:controller => "reporting", :action => "compliance_report")%>
+| <%= link_to 'Compliance', '/reporting/compliance_report'%>
 <% end %>
 <br><br>
