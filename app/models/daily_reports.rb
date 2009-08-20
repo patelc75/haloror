@@ -1,4 +1,6 @@
 class DailyReports 
+  
+  #create a hash of arrays (an array of lost_datas for each user)
   def self.job_lost_data
     RAILS_DEFAULT_LOGGER.warn("DailyReports.job_lost_data running at #{Time.now}")
     lost_data = {}
@@ -12,10 +14,13 @@ class DailyReports
     end
     return begin_time, end_time, lost_data
   end
+  
   def self.lost_data_scan(user_id)
+    #fetch the timestamp on when the lost_data_scan left off (from the vital_scans table)
     prev_timestamp = nil
     last = VitalScan.find(:first, :conditions => "user_id = #{user_id}", :order => "timestamp desc")
     
+    #populate more lost_data rows into the lost_data table, starting from the timestamp it left off
     end_time = Time.now
     begin_time = nil
     begin_time = last.timestamp if last
@@ -25,6 +30,8 @@ class DailyReports
       LostData.connection.select_all("select * from lost_data_function(#{user_id}, null, '#{end_time.to_s(:db)}', '#{LOST_DATA_GAP} seconds')")
     end
     lost_data = nil
+    
+    #find the timestamp of the most recent row in the lost_data table
     if begin_time
       lost_data = LostData.find(:first, :order => "end_time desc", :conditions => "user_id = #{user_id} AND end_time > '#{begin_time.to_s(:db)}'")
     else
@@ -32,7 +39,8 @@ class DailyReports
     end
     prev_timestamp = lost_data.end_time if lost_data
     
-   if(!prev_timestamp.nil? and (!last or prev_timestamp > last.timestamp))
+    #mark the spot where it last left off in the vital_scans table  
+    if(!prev_timestamp.nil? and (!last or prev_timestamp > last.timestamp))
       last = VitalScan.new
       last.user_id = user_id
       last.timestamp = prev_timestamp
@@ -97,16 +105,19 @@ class DailyReports
     return halousers, total_lost_data, total_not_worn
   end
   
+  #accumulate the total time for an array of lost_data
   def self.lost_data_sum(lost_data)
     accumulated_time = 0
     lost_data.each do |ld|
-      accumulated_time = accumulated_time + (ld.end_time - ld.begin_time)
+      accumulated_time = accumulated_time + (ld.end_time - ld.begin_time) #result is in seconds (eg. 34.0)
     end
     return accumulated_time
   end
   
+  #don't really understand this method, look at it again later
   def self.lost_data_by_user_boundaries(user_id, begin_time, end_time)
     accumulated = 0.0
+    
     if !begin_time.nil?
       conds = "user_id = #{user_id} AND end_time >= '#{begin_time.to_s(:db)}' AND begin_time <= '#{begin_time.to_s(:db)}'"
       boundary_lost_data = LostData.find(:first, :conditions => conds, :order => 'id desc')
@@ -122,6 +133,7 @@ class DailyReports
     return accumulated
   end
   
+  #find all lost_data for a user within a certain date range, performing a lost_data_scan_first
   def self.lost_data_by_user(user_id, begin_time=nil, end_time=Time.now)    
     self.lost_data_scan(user_id)
     conds = "user_id = #{user_id} AND end_time <= '#{end_time.to_s(:db)}' "

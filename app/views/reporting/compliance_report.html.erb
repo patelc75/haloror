@@ -8,9 +8,10 @@ require "digest"
   <b><%= flash[:warning] %></b>
   <% end -%>
   <form action="/reporting/compliance_report">
-<br><br>
+<br>
   Select Group:  
-<%= select_tag 'group_name', options_for_select(@groups.collect { |g| [g.name, g.id]})%>
+  <%= select_tag 'group_name', options_for_select(@groups.collect { |g| [g.name, g.id]})%>
+  <br>
   <table>
     <tr><td>Begin Time (UTC)</td>&nbsp;&nbsp;<td>End Time (UTC)</td></tr>
     <tr>
@@ -19,7 +20,8 @@ require "digest"
 	  <td>&nbsp;<%= submit_tag "Submit" %></td>
     </tr>
   </table>
-  
+ <input type="checkbox" name="include_strap_not_worn" />
+ <label for"include_strap_not_worn">Include Strap Not Worn (slow)</label>
   </form>
   <br>
 <% if @group
@@ -35,11 +37,11 @@ end
   	<table border="1">
   		<tr>
   			<th bgcolor="#E1E1E1">User</th>
-  			<th bgcolor="#E1E1E1">Last<br>Post</th>
+  			<th bgcolor="#E1E1E1">Last Post<br>(older than 1 day in <font color="red">red</font>)</th>
   			<th bgcolor="#E1E1E1">Last<br>Connectivity<br>Event</th>
   			<th bgcolor="#FFD0B4">Strap<br>Not<br>Worn</th>
-  			<th bgcolor="#FFD0B4">Battery<br>Dead</th>
-  			<th bgcolor="#FFD0B4">Total<br>Compliance<br>Rate</th>
+  			<th bgcolor="#FFD0B4">Lost<br>Data</th>
+  			<th bgcolor="#FFD0B4">Total<br>Compliance<br>%</th>
   			<th bgcolor="#E1d1E1">Senior<br>Logins</th>
   			<th bgcolor="#E1d1E1">Caregiver<br>Logins</th>
   			<th bgcolor="#E1d1E1">Total<br>Logins</th>
@@ -61,26 +63,24 @@ end
 			<% event_timestamp = UtilityHelper.format_datetime_readable(event.timestamp, current_user) %>
   	     	<td><%= "#{event_string} @ <br>#{event_timestamp}" %></td>
   	    	<td>
-				<% if true %>
+				<% if(!params[:include_strap_not_worn].blank?) %>
 					<% @total = DailyReports.device_not_worn(user.id,@begin_time,@end_time) %>
 	  	    		<%@total_per = 0%>
 	  	    		<%= @total_per = ((@total / (@end_time.to_time.to_i - @begin_time.to_time.to_i) ) * 100).round(4) if @total%>
 	  	    		<%= '%' if @total%>
-					<br>
-	  				<%= [@total.round/3600, @total.round/60 % 60, @total.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @total %>	    		
+				<br>
+				<%= [@total.round/3600, @total.round/60 % 60, @total.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @total %>	    		
 				<% end %>
   	    	</td>
   	    	<td>
-			<% if true %>
-	  	    	<% @lost_data = DailyReports.lost_data_by_user_boundaries(user.id,@begin_time.to_time,@end_time.to_time)  %>
-	  	    	<%@lost_data_per = 0%>
-	  	    	<% @lost_data_per = ((@lost_data / (@end_time.to_time.to_i - @begin_time.to_time.to_i)) * 100) if @lost_data%>
+	  	    	<% @lost_data_array = DailyReports.lost_data_by_user(user.id,@begin_time.to_time,@end_time.to_time)  %>
+	  	    	<% @lost_data = DailyReports.lost_data_sum(@lost_data_array) %>
+				<% @lost_data_per = 0%>
+	  	    	<% @lost_data_per = ((@lost_data / (@end_time.to_time.to_f - @begin_time.to_time.to_f)) * 100) if @lost_data%>
 	  	    	<%= @lost_data_per.round(1).to_s + '%' if @lost_data %><br>
-	  	    	<%= [@lost_data.round/3600, @lost_data.round/60 % 60, @lost_data.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @lost_data %>
-			<% end %>
-			</td>
+				<a href="/reporting/lost_data/<%=user.id%>"><%= [@lost_data.round/3600, @lost_data.round/60 % 60, @lost_data.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @lost_data %></a>
   	    	<td>
-			<% if true %>
+			<% if(!params[:include_strap_not_worn].blank?) %>
 			<%= @total_compliance = (100.0 - @lost_data_per - @total_per).round(1).to_s + '%' %>
   	    	<% end %>	
   	    	</td>
@@ -98,5 +98,10 @@ end
    	    </tr>
    	    <%end%>
    	</table>
+	<br>
+	Legend:<br> 
+	Strap Not Worn = data with -1s<br>
+	Lost Data = data with gaps (mainly battery dead and buffer overflow)<br>
+	Total Compliance Rate = 100% - Strap Not Worn% - Lost Data% <br>
   <%end%>
 </div>

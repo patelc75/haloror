@@ -2,27 +2,32 @@
 	<div class="col-25">
 		&nbsp;
 	</div>
-	<div class="col-75">
-		<%=link_to_remote "User Id", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'id'}%>
+
+	<div class="col-25">
+		<%=link_to_remote "ID", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'id'}%>
 	</div>
-	<div class="col-200">
+
+	<div class="col-125">
 		<%=link_to_remote "Name", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'name'}%>
 	</div>
-	<div class="col-100">
-		<%=link_to_remote "Username", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'login'}%>
-	</div>
-	<div class="col-200">
-		Role(s) - <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_sales? %>
-		<a href="/user_admin/roles">Configure</a>&nbsp;
+
+	<div class="col-300">
+		Role(s) 
+		<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_sales? %>
+		  <a href="/user_admin/roles">Configure</a>&nbsp;
 		<% end %>
 	</div>
+
 	<div class="col-150">
 		Last Login
 	</div>
-	<div class="col-50">
+
+	<div class="col-200">
 		Links
 	</div>
+
 </div>
+
 <% if @group
   us = []
   users.each do |user|

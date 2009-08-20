@@ -9,11 +9,12 @@
 			&nbsp;
 		<% end %>
 	</div>
-	<div class="col-75">
+	
+	<div class="col-25">
 		<%=user[:id]%>
 	</div>
-	<div class="col-200">
-		
+	
+	<div class="col-125">
 		<% if caregiver %>
 			<a href="#user_<%=user.id%>">
 		<% else %>
@@ -21,22 +22,21 @@
 		<% end %>
 		
 		<% if profile = user.profile %>
-			<%=profile[:first_name]%> <%=profile[:last_name]%>&nbsp;
+			<%=user.name%>
 		<% else %>	
 			&nbsp;
 		<% end %>
-		
 		<% if caregiver and user.profile %>
 			</a>
 			(<%=user.profile[:relationship]%>)
 		<% end %>
 	</div>
-	<div class="col-100">
-		<%=user[:login]%>&nbsp;
-	</div>
-	<div class="col-150">
+				
+	<div class="col-300">
 		<%=render :partial => 'reporting/table/user_roles', :locals => {:user => user}%>
+		&nbsp;
 	</div>
+	
 	<div class="col-150">
 		<% last_log = AccessLog.find(:first, :conditions => "user_id = #{user.id}", :order => 'created_at desc') %>
 		<% if !last_log.blank? %>
@@ -44,8 +44,8 @@
 		<% else %>
 			&nbsp;
 		<% end %>
-		
 	</div>
+	
 	<% device = nil unless device %>
 	<div class="col-200">
 		<% if user.profile %>
@@ -53,7 +53,7 @@
 					<% if user.is_halouser? %>
 							| <a href="/events/user/<%=user[:id]%>">Events</a> | <a href="/chart/flex/<%=user[:id]%>">Chart</a> 
 							| <a href="/reporting/lost_data/<%=user[:id]%>">Lost&nbsp;Data</a> 
-							| <%= link_to_remote "Start Range Test Only", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :id => user.id} %>
+							| <%= link_to_remote "Start Range Test", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :id => user.id} %>
 							| <a href="<%= url_for(:controller => 'call_center', :action => 'all_user_notes', :id => user[:id], :user_id => user[:id])%>">Notes</a>			
 			<% if device %> | <a href="/reporting/remove_user_mapping/<%=user.id%>?device_id=<%= device.id %>">Remove</a>
 				<% end %>
