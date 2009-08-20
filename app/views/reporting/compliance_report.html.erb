@@ -8,10 +8,14 @@ require "digest"
   <b><%= flash[:warning] %></b>
   <% end -%>
   <form action="/reporting/compliance_report">
-<br>
+
+  <% if params[:id] %>
+  <h3>Compliance report for <%= User.find(params[:id]).name %></h3>
+  <% else %>
+  <h3>Group Compliance Report</h3>
   Select Group:  
   <%= select_tag 'group_name', options_for_select(@groups.collect { |g| [g.name, g.id]})%>
-  <br>
+  <% end %>
   <table>
     <tr><td>Begin Time (UTC)</td>&nbsp;&nbsp;<td>End Time (UTC)</td></tr>
     <tr>
