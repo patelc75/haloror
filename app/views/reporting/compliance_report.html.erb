@@ -30,21 +30,28 @@ require "digest"
  <label for"include_strap_not_worn">Include Strap Not Worn (slow)</label>
   </form>
   <br>
+
 <% if @group or params[:id]
   us = []
   if params[:id]
   	us = User.find(:all,:conditions => ["id = ?",params[:id]])
   else
   	@users.each do |user|
-  	  us << user if user.group_memberships.include? @group
+	  us << user if user.has_role? "halouser", @group
   	end
   end
   users = us
-end
-%>
+end %>
   
   <%if @group or params[:id] and @begin_time%>
-  	<table border="1">
+  <br>
+  <b><%= UtilityHelper.format_datetime_readable(@begin_time, current_user) %></b> to <b><%= UtilityHelper.format_datetime_readable(@end_time, current_user) %></b> in
+  <%= current_user.profile.time_zone if current_user.profile %> timezone<br>
+  <br>
+  	<% if !params[:id] %>
+	<b>Group: <%= @group.name %></b><br><br>
+	<% end %>
+	<table border="1">
   		<tr>
   			<th bgcolor="#E1E1E1">User</th>
   			<th bgcolor="#E1E1E1">Last Post<br>(older than 1 day in <font color="red">red</font>)</th>
@@ -56,9 +63,16 @@ end
   			<th bgcolor="#E1d1E1">Caregiver<br>Logins</th>
   			<th bgcolor="#E1d1E1">Total<br>Logins</th>
   		</tr>
+		<% senior_logins_total = 0 %>
+		<% caregiver_logins_total = 0 %>
+		<% strap_not_worn_total = 0 %>		
+		<% lost_data_total = 0 %>
+				
   		<% for user in users %>
   	    <tr align="center">
-  	    	<td align="left"><%= user.name %></td>
+  	    	<td align="left"><a href="/reporting/compliance_report/<%=user.id%>"><%= user.name %></a></td>
+
+			<!-- Last Post (older than 1 day in red) -->
   	    	<td><% @vital = Vital.find(:first,:conditions => ["user_id = ?",user.id],:order => 'timestamp DESC') %>
   	    		<%if @vital%>
   	    			<%if @vital.timestamp < (Time.now - 1.day)%>
@@ -68,45 +82,75 @@ end
   	    			<%end%>
   	    		<%end%>
   	    	</td>
+
+  	    	<!-- Last Connectivity Event -->
 			<% event = Event.get_connectivity_state_by_user(user) %>
 			<% event_string = UtilityHelper.camelcase_to_spaced(event.event_type.to_s) %>
 			<% event_timestamp = UtilityHelper.format_datetime_readable(event.timestamp, current_user) %>
   	     	<td><%= "#{event_string} @ <br>#{event_timestamp}" %></td>
-  	    	<td>
+
+  	    	<!-- Strap Not Worn -->
+			<td>
 				<% if(!params[:include_strap_not_worn].blank?) %>
-					<% @total = DailyReports.device_not_worn(user.id,@begin_time,@end_time) %>
-	  	    		<%@total_per = 0%>
-	  	    		<%= @total_per = ((@total / (@end_time.to_time.to_i - @begin_time.to_time.to_i) ) * 100).round(4) if @total%>
-	  	    		<%= '%' if @total%>
-				<br>
-				<%= [@total.round/3600, @total.round/60 % 60, @total.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @total %>	    		
+					<% @strap_not_worn = DailyReports.device_not_worn(user.id,@begin_time,@end_time) %>
+					<% strap_not_worn_total += @strap_not_worn if @strap_not_worn%>
+	  	    		<% @total_per = 0%>
+  	    			<% @total_per = ((@strap_not_worn / (@end_time.to_time.to_f - @begin_time.to_time.to_f) ) * 100) if @strap_not_worn%>
+					<%= @total_per.round(1).to_s + '%' if @strap_not_worn%><br>
+					<%= [@strap_not_worn.round/3600, @strap_not_worn.round/60 % 60, @strap_not_worn.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @strap_not_worn %>	    		
 				<% end %>
   	    	</td>
+
+  	    	<!-- Lost Data -->
   	    	<td>
 	  	    	<% @lost_data_array = DailyReports.lost_data_by_user(user.id,@begin_time.to_time,@end_time.to_time)  %>
 	  	    	<% @lost_data = DailyReports.lost_data_sum(@lost_data_array) %>
+				<% lost_data_total += @lost_data if @lost_data %>
 				<% @lost_data_per = 0%>
 	  	    	<% @lost_data_per = ((@lost_data / (@end_time.to_time.to_f - @begin_time.to_time.to_f)) * 100) if @lost_data%>
 	  	    	<%= @lost_data_per.round(1).to_s + '%' if @lost_data %><br>
 				<a href="/reporting/lost_data/<%=user.id%>?begin_time=<%= params[:begin_time]%>&end_time=<%=params[:end_time]%>"><%= [@lost_data.round/3600, @lost_data.round/60 % 60, @lost_data.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @lost_data %></a>
-  	    	<td>
+			</td>
+				
+	  	    <!-- Total Compliance % -->  	    	
+			<td>
 			<% if(!params[:include_strap_not_worn].blank?) %>
 			<%= @total_compliance = (100.0 - @lost_data_per - @total_per).round(1).to_s + '%' %>
   	    	<% end %>	
   	    	</td>
-  	     	<td><%= @senior_logins = user.access_logs.find_all_by_status('successful',:conditions => ["created_at > ? and created_at < ?",@begin_time,@end_time]).length %></td>
-  	     	<td><%@caregiver_logins = 0%>
+  	     	
+	  	    <!-- Senior Logins -->  	    	
+			<td><%= @senior_logins = user.access_logs.find_all_by_status('successful',:conditions => ["created_at > ? and created_at < ?",@begin_time,@end_time]).length %></td>
+  	     	<% senior_logins_total += @senior_logins %>
+
+	  	    <!-- Caregiver Logins -->  	    	
+			<td><%@caregiver_logins = 0%>
   	     		<% user.caregivers.each do |caregiver| %>
   	     		<% @caregiver_logins += caregiver.access_logs.find_all_by_status('successful',:conditions => ["created_at > ? and created_at < ?",@begin_time,@end_time]).length %>
   	     		<%end%>
-  	     		<%= @caregiver_logins %>
+  	     		<% caregiver_logins_total += @caregiver_logins %>
+				<%= @caregiver_logins %>
    		 	</td>
-   		 	<td>
-   		 		<%= @senior_logins + @caregiver_logins%>
-   				
-   		 	</td>
+
+	  	    <!-- Total Logins -->
+   		 	<td><%= @senior_logins + @caregiver_logins%></td>
    	    </tr>
    	    <%end%>
+		<tr align = "center">
+			<td align ="left"><b>Total</b></td>
+			<td></td>
+			<td></td>
+			<td><% if(!params[:include_strap_not_worn].blank?) %>
+			<%= (strap_not_worn_total_perc = (strap_not_worn_total/((@end_time.to_time.to_f - @begin_time.to_time.to_f)*users.length.to_f))*100.0).round(1).to_s %>%<br>
+			<% end %></td>
+			<td><%= (lost_data_total_perc = (lost_data_total/((@end_time.to_time.to_f - @begin_time.to_time.to_f)*users.length.to_f))*100.0).round(1).to_s %>%<br></td> 
+			<td><% if(!params[:include_strap_not_worn].blank?) %>
+			<%= (100.0 - lost_data_total_perc - strap_not_worn_total_perc).round(1).to_s + '%' %>
+			<% end %></td>
+			<td><%= senior_logins_total %></td>
+			<td><%= caregiver_logins_total %></td>
+			<td><%= caregiver_logins_total + senior_logins_total %></td>			
+		</tr>
    	</table>
 	<br>
 	Legend:<br> 

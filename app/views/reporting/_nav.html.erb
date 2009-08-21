@@ -13,7 +13,7 @@
 | <a href="/user_admin/roles">Assign Roles</a> 
 <% end %>
 <% if current_user.is_super_admin? %>
-| <a href="/carriers/">Carriers</a>
+| <a href="/carriers/">Cell Carriers</a>
 <% end %>
 <% if current_user.is_super_admin? %>
 | <a href="/oscopes/index">Oscope CSV</a>
@@ -31,9 +31,9 @@
 | <%= link_to 'Audits', url_for(:controller => "reporting", :action => "audit")%>
 <% end %>
 <% if current_user.is_admin? || current_user.is_super_admin? %>
-| <%= link_to 'Falls/Panics', url_for(:controller => "reporting", :action => "fall_panic_report")%>
+| <%= link_to 'Group Falls/Panics', url_for(:controller => "reporting", :action => "fall_panic_report")%>
 <% end %>
 <% if current_user.is_admin? || current_user.is_super_admin? %>
-| <%= link_to 'Compliance', '/reporting/compliance_report'%>
+| <%= link_to 'User Compliance', '/reporting/compliance_report'%>
 <% end %>
 <br><br>

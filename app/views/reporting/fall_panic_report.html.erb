@@ -47,7 +47,7 @@ require "digest"
   			<tr align="center">
   				<%@real_falls = @false_alarm_falls = @test_falls = @real_panics = @false_alarm_panic = @test_panics = @non_emerg_panic = 0.0%>
   				<td align="left"><%= key%></td>
-  				<td><b><% if installs = @group_stats[key][:installs] %>
+  				<td><% if installs = @group_stats[key][:installs] %>
 					<%= @group_stats[key][:installs].length %>
 					<% else %> 0 <% end%>
 				</td>
@@ -67,7 +67,29 @@ require "digest"
   				</td>
   			</tr>
 		<%}%>
+		<tr align = "center">
+		<td align = "left" ><b>Total<sup>*</sup></b></td>
+		<td><%= @group_totals[:installs] %></td>
+		<td><%= @group_totals[:real_falls] %></td>
+		<td><%= @group_totals[:false_alarm_falls] %></td>
+		<td><%= @group_totals[:test_alarm_falls] %></td>
+		<td>
+			<% (total_percentage = @group_totals[:real_falls].to_f / (@group_totals[:false_alarm_falls].to_f + @group_totals[:real_falls].to_f)) if @group_totals[:real_falls] != 0 %>
+			<%= (total_percentage * 100).round(1).to_s + '%' if total_percentage%>
+		</td>		
+		<td><%= @group_totals[:real_panics] %></td>		
+		<td><%= @group_totals[:false_alarm_panics] %></td>
+		<td><%= @group_totals[:test_alarm_panics] %></td>
+		<td><%= @group_totals[:non_emerg_panics] %></td>
+		<td>
+			<% if @group_totals[:real_panics] != 0 %>	
+			<% total_percentage = ((@group_totals[:real_panics].to_f + @group_totals[:non_emerg_panics].to_f) / (@group_totals[:false_alarm_panics].to_f + @group_totals[:real_panics].to_f + @group_totals[:non_emerg_panics].to_f))%>
+			<%= (total_percentage * 100).round(1).to_s + '%' if total_percentage%>
+			<% end %>
+		</td>
+		</tr> 
   	</table><br>
+	<b><sup>*</sup></b>Total does not include SafetyCare and halo groups<br><br>
 	Formulas:<br> 
 	Falls Specificity = Real Falls / (Fall Alarm Falls + Real Falls)<br>
 	Panics Specificity = (Real Panics + Non Emerg Panics) / (Fall Alarm Panics + Real Panics + Non Emerg Panics)<br>
