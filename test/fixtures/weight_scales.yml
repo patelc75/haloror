@@ -1,0 +1,49 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+
+one:
+
+  user_id: 1
+
+  timestamp: 2009-08-21 00:36:31
+
+  weight: 1.5
+
+  weight_unit: MyString
+
+  bmi: 1.5
+
+  hydration: 1.5
+
+  battery: 1
+
+  serial_number: MyString
+
+  hw_rev: MyString
+
+  sw_rev: MyString
+
+
+two:
+
+  user_id: 1
+
+  timestamp: 2009-08-21 00:36:31
+
+  weight: 1.5
+
+  weight_unit: MyString
+
+  bmi: 1.5
+
+  hydration: 1.5
+
+  battery: 1
+
+  serial_number: MyString
+
+  hw_rev: MyString
+
+  sw_rev: MyString
+
+
