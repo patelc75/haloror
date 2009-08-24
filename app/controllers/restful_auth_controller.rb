@@ -11,7 +11,7 @@ class RestfulAuthController < ApplicationController
       format.xml {head :internal_server_error }
     end
   end
-  session :off
+  session :off, :except => :index
   layout nil
   
   DEFAULT_HASH_KEY="226f3834726d5531683d4f4b5a2d202729695853662543375c226c6447"

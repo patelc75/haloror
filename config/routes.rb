@@ -13,6 +13,8 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :atp_device
   map.resources :atp_next_device
   map.resources :self_test_results
+
+  map.resources :vitals
   
   map.resources :oscope_start_msgs
   map.resources :oscope_stop_msgs

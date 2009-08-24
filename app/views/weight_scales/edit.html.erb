@@ -1,0 +1,12 @@
+<h1>Editing skin_temp</h1>
+
+<%= error_messages_for :skin_temp %>
+
+<% form_for(:skin_temp, :url => skin_temp_path(@skin_temp), :html => { :method => :put }) do |f| %>
+  <p>
+    <%= submit_tag "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', skin_temp_path(@skin_temp) %> |
+<%= link_to 'Back', skin_temps_path %>

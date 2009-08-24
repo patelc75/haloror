@@ -20,7 +20,7 @@ class BatteryReminder < DeviceAlert
     	if self.reminder_num == 3
 			DeviceAlert.notify_operators_and_caregivers(self)
 		else
-			DeviceAlert.notify_carigivers(self)
+			DeviceAlert.notify_caregivers(self)
 		end
 		
     	Event.create_event(self.user_id, self.class.to_s, self.id, self.created_at)

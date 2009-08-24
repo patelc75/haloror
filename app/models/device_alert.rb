@@ -35,7 +35,7 @@ class DeviceAlert < ActiveRecord::Base
   	end
   end
   
-  def self.notify_carigivers(event)
+  def self.notify_caregivers(event)
   	if event.user_id < 1 or event.user_id == nil or event.user == nil 
       raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
     elsif event.device_id < 1 or event.device_id == nil or event.device == nil

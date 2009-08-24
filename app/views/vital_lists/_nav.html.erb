@@ -1,0 +1,7 @@
+<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
+<a href="/weight_scales">Weight Scales</a> 
+<% end %> |
+<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
+Blood Pressure
+<% end %>
+<br><br>

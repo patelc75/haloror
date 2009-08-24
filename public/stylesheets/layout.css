@@ -766,4 +766,5 @@ ul.removed_caregivers li a
 #my_links li {list-style-type: none;position: relative; margin: 0; padding: 0;}
 #my_links ul {display: none;background:black;padding:5px;text-align:left;}
 #my_links li:hover > ul {display: block; position: absolute; top: -1px; float:left; left:100%; margin-left:-55px;margin-top:15px;}
-#my_links li a {display: block;}
+#my_links li a {display: block;text-decoration:none}
+#my_links li a:hover{font-weight:bold}

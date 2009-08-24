@@ -3,7 +3,7 @@ class DeviceEventObserver < ActiveRecord::Observer
   observe BatteryPlugged, BatteryUnplugged, BatteryChargeComplete, StrapFastened, StrapRemoved
   
   def before_save(event)
- 	DeviceAlert.notify_carigivers(event)
+ 	DeviceAlert.notify_caregivers(event)
   end
   
   def after_save(alert)

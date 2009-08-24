@@ -17,6 +17,7 @@ class User < ActiveRecord::Base
   has_many :vitals
   has_many :halo_debug_msgs
   has_many :mgmt_cmds
+  has_many :weight_scales
   #belongs_to :role
   #has_one :roles_user
   #has_one :roles_users_option
