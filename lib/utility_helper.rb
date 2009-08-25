@@ -63,6 +63,9 @@ module UtilityHelper
       tz = Time.zone   #new without tzinfo
     end
     datetime = tz.utc_to_local(datetime) 
+    
+		#07:02PM on Tue 05/18/-0005
+
     #datetime.strftime("%m-%d-%Y %H:%M")
     #datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
     
@@ -72,8 +75,8 @@ module UtilityHelper
     if datetime.day != original_datetime.day  
       offset = offset - 24
     end
-    
-    return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
+    return "#{newdate} #{datetime.strftime("%Y")}"
+    #return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
   end
   
   def self.get_stacktrace(exception)
