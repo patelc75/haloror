@@ -32,7 +32,7 @@
         <%= UtilityHelper.format_datetime_readable(weight_scale.timestamp,weight_scale.user) %>&nbsp
       </div>
           <div style="float:left;padding-top:25px;width:150px">
-          <%=weight_scale.weight %>&nbsp <%= weight_scale.weight_unit%>
+          	<%= (weight_scale.weight.to_f/1000.0).round(1)%>&nbsp <%= weight_scale.weight_unit%>
         </div>
 		<div style="float:left;padding-top:25px;width:100px">
 		<%= weight_scale.bmi %>
@@ -41,7 +41,7 @@
 		<%=weight_scale.hydration%>
 	    </div>
 		<div style="float:left;padding-top:25px;width:100px">
-		<%= weight_scale.battery%>
+		<%= (weight_scale.battery.to_f/1000.0).round(1)%>
 	    </div>
       </div>
 	</div>

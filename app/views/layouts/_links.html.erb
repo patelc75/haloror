@@ -21,10 +21,10 @@
 			<% if current_user.is_halouser? || current_user.is_caregiver? %>
 			  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
 			<% end %>
-			<% if current_user.is_halouser? || current_user.is_caregiver? %>
-			  <li><%= link_to 'Vital List', :controller => 'vital_lists', :action => 'index' %></li>
+			<hr>
+			<% if current_user.is_admin? || current_user.is_super_admin? %>
+			  <li><%= link_to 'Vitals List', :controller => 'vital_lists', :action => 'index' %></li>
 			<% end %>
-			<hr>			
 			<% if current_user.is_admin? || current_user.is_super_admin? %>
 				<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
 			<% end %>
