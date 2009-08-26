@@ -21,10 +21,6 @@
 			<% if current_user.is_halouser? || current_user.is_caregiver? %>
 			  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
 			<% end %>
-			<% if current_user.is_halouser? || current_user.is_caregiver? %>
-			  <li><%= link_to 'Vital List', :controller => 'vital_lists', :action => 'index' %></li>
-			<% end %>
-			<hr>
 			<% if current_user.is_admin? || current_user.is_super_admin? %>
 				<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
 			<% end %>
@@ -44,7 +40,9 @@
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_installer? %>
 				<li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li>
 			<% end %>
-			
+			<% if (current_user.is_admin? || current_user.is_super_admin?) and ServerInstance.in_hostname?('idev') %>
+				<li><%= link_to 'Healthvault', :controller => 'healthvault', :action => 'index' %></li>
+			<% end %>
 			<% if current_user.is_super_admin? || current_user.is_admin_of?(halo_group) %>
 			<li><%= link_to 'Info', url_for(:controller => 'util', :action => 'info', :my_links => 'Info') %></li>
 			<% end %>
