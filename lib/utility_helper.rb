@@ -40,40 +40,43 @@ module UtilityHelper
     
     # Any interaction between the server and flex should
     # pass information back and forth as UTC.
-    # I disabled this TZ translation.  -Neal 9/30/08
-#    if user and user.profile and user.profile.time_zone
-#      tz = user.profile.tz
-#    else
-#      tz = TZInfo::Timezone.get('America/Chicago')
-#    end
-#    datetime = tz.utc_to_local(datetime) 
-    
+    # I disabled the tzinfo translation.  -Neal 9/30/08
     return datetime.getutc.strftime("%a %b %d %H:%M:%S %Z %Y")
   end
   
   def self.format_datetime(datetime,user)
-    #lookup = {-7 => 'PST', -6 => 'MST', -5 => 'CST', -4 => 'EST'}
-    original_datetime = datetime
-    return datetime if !datetime.respond_to?(:strftime)
+    
+    #this is causing problems in Rufus and don't really need it anyway
+    #return datetime if !datetime.respond_to?(:strftime)
     
     if user and user.profile and user.profile.time_zone
       tz = user.profile.tz
     else
-      #tz = TZInfo::Timezone.get('America/Chicago')    #older with tzinfo
-      tz = Time.zone   #new without tzinfo
+      #tz = TZInfo::Timezone.get('America/Chicago')    #deprecated tzinfo
+      tz = Time.zone
     end
+    
     datetime = tz.utc_to_local(datetime) 
     
+    newdate = datetime.strftime("%a %b %d %H:%M:%S")
+    
+    return "#{newdate} #{datetime.strftime("%Y")}"
+    
+    #other ways to format the date
     #datetime.strftime("%m-%d-%Y %H:%M")
     #datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
     
-    newdate = datetime.strftime("%a %b %d %H:%M:%S")
-    offset = datetime.hour - original_datetime.hour
+    #everything below here is for the timezone offset which we dropped 
+    #after deprecating tzinfo -Chirag 
+    #lookup = {-7 => 'PST', -6 => 'MST', -5 => 'CST', -4 => 'EST'}
     
-    if datetime.day != original_datetime.day  
-      offset = offset - 24
-    end
-    return "#{newdate} #{datetime.strftime("%Y")}"
+    #original_datetime = datetime
+    #offset = datetime.hour - original_datetime.hour
+    
+    #if datetime.day != original_datetime.day  
+      #offset = offset - 24
+    #end
+    
     #return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
   end
   
