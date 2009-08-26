@@ -21,6 +21,7 @@ class Fall < DeviceAlert
     else
       model.magnitude = rand(60)
     end
+
     return model
   end
 end

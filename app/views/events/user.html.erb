@@ -6,10 +6,10 @@
 	</div>
 <div class="content">
   <div id="call_list_header">
-  	<div style="float:left;width:150px">
+  	<div style="float:left;width:150px;padding-left:10px;">
   	  Date/Time	
 	</div>
-  	<div style="float:left;width:150px">
+  	<div style="float:left;width:125px;padding-left:25px;">
       Type
     </div>
   	<div style="float:left;width:300px">
@@ -29,14 +29,14 @@
   <% @events.each do |event| %>
   <% vital = nil
      skintemp = nil %>
-  <% if !event.timestamp_server.nil? %>
-    <% vital = Vital.find(:first, :conditions => "heartrate <> -1 AND user_id = #{@user.id} AND timestamp > '#{event[:timestamp_server]}' AND timestamp <= '#{event[:timestamp_server] + 600}'", :order => "timestamp desc")%>
-    <% skintemp = SkinTemp.find(:first, :conditions => "user_id = #{@user.id} AND timestamp > '#{event[:timestamp_server]}' AND timestamp <= '#{event[:timestamp_server] + 600}'", :order => "timestamp desc") %>
+  <% if !event.timestamp.nil? %>
+    <% vital = Vital.find(:first, :conditions => "heartrate <> -1 AND user_id = #{@user.id} AND timestamp > '#{event[:timestamp]}' AND timestamp <= '#{event[:timestamp] + 600}'", :order => "timestamp desc")%>
+    <% skintemp = SkinTemp.find(:first, :conditions => "user_id = #{@user.id} AND timestamp > '#{event[:timestamp]}' AND timestamp <= '#{event[:timestamp] + 600}'", :order => "timestamp desc") %>
   <% end %>
     <div id="event_event_<%= event.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px;cursor:pointer">
 	<div class="row">
       <div style="float:left;padding-top:25px;width:150px">
-        <%= UtilityHelper.format_datetime_readable(event[:timestamp_server],event.user) %>&nbsp
+        <%= UtilityHelper.format_datetime_readable(event[:timestamp],event.user) %>&nbsp
       </div>
         <div style="float:left;padding-top:25px;width:150px">
           <%= image_for_event(event)%>
@@ -48,21 +48,21 @@
 		<% if vital && vital.heartrate != -1 %>
 	      <%= vital.heartrate %>
 		<% else %>
-			Not Available
+			N/A
 		<% end  %>
 	    </div>
 		<div style="float:left;padding-top:25px;width:100px">
 		<% if skintemp %>
 	      <%= skintemp.skin_temp %>
 		<% else %>
-		  Not Available
+		  N/A
 		<% end  %>
 	    </div>
 		<div style="float:left;padding-top:25px;width:100px">
 		<% if vital && vital.heartrate != -1  %>
 	      <%= Vital.get_adl(vital.orientation, vital.activity) %>
 		<% else %>
-			Not Available
+			N/A
 		<% end  %>
 	    </div>
       </div>

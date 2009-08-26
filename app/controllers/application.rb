@@ -12,7 +12,8 @@ class ApplicationController < ActionController::Base
   
   # Pick a unique cookie name to distinguish our session data from others'
   session :session_key => '_HaloRoR2_session_id'  
-  
+  before_filter :set_user_time_zone
+
   #This method is needed because of the way attachment_fu stores the files 
   #uploaded on the file system.  attachment_fu stores the files in a folder with 
   #the same name as the model within the public folder.  This causes issues 
@@ -90,6 +91,12 @@ class ApplicationController < ActionController::Base
     @caregivers = user.caregivers_sorted_by_position
   end
   
+  private
+
+  def set_user_time_zone
+    Time.zone = current_user.time_zone if logged_in?
+  end
+
   protected
   def authenticated?
     unless (controller_name == 'users' && (action_name == 'init_caregiver' || action_name == 'update_caregiver' || action_name == 'activate') || 

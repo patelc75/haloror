@@ -25,6 +25,7 @@ Rails::Initializer.run do |config|
   # Add additional load paths for your own custom dirs
   # config.load_paths += %W( #{RAILS_ROOT}/extras )
   config.load_paths += %W( #{RAILS_ROOT}/app/rules )
+  config.time_zone = 'UTC'
   
   # Force all environments to use the same logger level 
   # (by default production uses :info, the others :debug)
@@ -115,8 +116,8 @@ ExceptionNotifier.sender_address = %("HaloRoR Error" <	no-reply@halomonitoring.c
 ExceptionNotifier.email_prefix = "[" + ServerInstance.current_host_short_string + "] "
 
 # Timezone Setup
-ActiveRecord::Base.default_timezone = :utc # Store all times in the db in UTC
-require 'tzinfo/lib/tzinfo' # Use tzinfo library to convert to and from the users timezone
+#ActiveRecord::Base.default_timezone = :utc # Store all times in the db in UTC
+#require 'tzinfo/lib/tzinfo' # Use tzinfo library to convert to and from the users timezone
 ENV['TZ'] = 'UTC' # This makes Time.now return time in UTC and assumes all data in DB is this timezone, seems to only work in production mode
 
 #Rufus-related constants

@@ -24,12 +24,15 @@ module UtilityHelper
   
   #return the offset for this time zone as a string
   def self.offset_for_time_zone(user)
-    tz = TZInfo::Timezone.get('America/Chicago')
+    #tz = TZInfo::Timezone.get('America/Chicago')
+    tz = Time.zone
     if user and user.profile and user.profile.time_zone
       tz = user.profile.tz
     end
     period = tz.current_period
     return period.utc_total_offset() / 60 / 60
+    rescue 
+	    "There is not any timezone for this user"
   end
   
   def self.format_datetime_flex(datetime,user)
@@ -56,9 +59,11 @@ module UtilityHelper
     if user and user.profile and user.profile.time_zone
       tz = user.profile.tz
     else
-      tz = TZInfo::Timezone.get('America/Chicago')
+      #tz = TZInfo::Timezone.get('America/Chicago')    #older with tzinfo
+      tz = Time.zone   #new without tzinfo
     end
     datetime = tz.utc_to_local(datetime) 
+    
     #datetime.strftime("%m-%d-%Y %H:%M")
     #datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
     
@@ -68,8 +73,8 @@ module UtilityHelper
     if datetime.day != original_datetime.day  
       offset = offset - 24
     end
-    
-    return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
+    return "#{newdate} #{datetime.strftime("%Y")}"
+    #return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
   end
   
   def self.get_stacktrace(exception)
@@ -112,7 +117,8 @@ module UtilityHelper
     if user and user.profile and user.profile.time_zone
       tz = user.profile.tz
     else
-      tz = TZInfo::Timezone.get('America/Chicago')
+      #tz = TZInfo::Timezone.get('America/Chicago')
+      tz = Time.zone
     end
     datetime = tz.utc_to_local(now)
     offset = datetime.hour - now.hour
