@@ -64,8 +64,6 @@ module UtilityHelper
     end
     datetime = tz.utc_to_local(datetime) 
     
-		#07:02PM on Tue 05/18/-0005
-
     #datetime.strftime("%m-%d-%Y %H:%M")
     #datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
     
