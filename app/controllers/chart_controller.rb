@@ -45,7 +45,8 @@ class ChartController < ApplicationController
       if(@user.profile.time_zone)
         @tzs = @user.profile.tz
       else
-        @tzs = TZInfo::Timezone.get('America/Chicago') 
+        @tzs = Time.zone
+        #@tzs = TZInfo::Timezone.get('America/Chicago') 
       end
       
       @temp = SkinTemp.find(:first,:conditions => "user_id = '#{@user.id}'",:order => "timestamp DESC")
