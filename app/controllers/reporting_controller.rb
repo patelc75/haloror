@@ -398,8 +398,13 @@ class ReportingController < ApplicationController
   def compliance_report
   	@begin_time = params[:begin_time]
     @end_time = params[:end_time]
+    
     @groups = current_user.group_memberships
     if !@end_time.blank? && !@begin_time.blank? && !params[:id]
+		
+    	@end_time = UtilityHelper.user_time_zone_to_utc(@end_time)
+    	@begin_time = UtilityHelper.user_time_zone_to_utc(@begin_time)
+ 
     		@group = Group.find(params[:group_name])
     		@users = User.find(:all)
     end
