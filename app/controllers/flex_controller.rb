@@ -1,4 +1,4 @@
-cclass FlexController < ApplicationController
+class FlexController < ApplicationController
   before_filter :authenticate_admin_halouser_caregiver_operator?
   include UtilityHelper
   
