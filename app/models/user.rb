@@ -18,6 +18,7 @@ class User < ActiveRecord::Base
   has_many :halo_debug_msgs
   has_many :mgmt_cmds
   has_many :weight_scales
+  has_many :blood_pressure
   #belongs_to :role
   #has_one :roles_user
   #has_one :roles_users_option

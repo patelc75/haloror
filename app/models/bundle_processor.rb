@@ -2,7 +2,7 @@ class BundleProcessor
   @@bundled_models = [Vital, StrapRemoved, StrapFastened, Step, 
                       SkinTemp, Battery, BatteryChargeComplete, 
                       BatteryCritical, BatteryPlugged, BatteryUnplugged, 
-                      Fall, Panic]
+                      Fall, Panic, WeightScale, BloodPressure]
   def self.process(bundle)
     begin
       @@bundled_models[0].transaction do
