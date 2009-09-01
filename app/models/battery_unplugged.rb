@@ -2,7 +2,7 @@ class BatteryUnplugged < DeviceAlert
   set_table_name "battery_unpluggeds"
   
   def to_s
-    "Battery unplugged on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
+    "Battery unplugged on #{UtilityHelper.format_datetime(timestamp, user)}"
   end
   
   def self.new_initialize(random=false)

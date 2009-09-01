@@ -74,9 +74,9 @@ end %>
   	    	<td><% @vital = Vital.find(:first,:conditions => ["user_id = ?",user.id],:order => 'timestamp DESC') %>
   	    		<%if @vital%>
   	    			<%if @vital.timestamp < (Time.now - 1.day)%>
-  	    				<font color="red"><%= UtilityHelper.format_datetime_readable(@vital.timestamp, current_user) %></font>
+  	    				<font color="red"><%= UtilityHelper.format_datetime(@vital.timestamp, current_user) %></font>
   	    			<%else%>
-  	    				<%= UtilityHelper.format_datetime_readable(@vital.timestamp, current_user) %>
+  	    				<%= UtilityHelper.format_datetime(@vital.timestamp, current_user) %>
   	    			<%end%>
   	    		<%end%>
   	    	</td>
@@ -84,7 +84,7 @@ end %>
   	    	<!-- Last Connectivity Event -->
 			<% event = Event.get_connectivity_state_by_user(user) %>
 			<% event_string = UtilityHelper.camelcase_to_spaced(event.event_type.to_s) %>
-			<% event_timestamp = UtilityHelper.format_datetime_readable(event.timestamp, current_user) %>
+			<% event_timestamp = UtilityHelper.format_datetime(event.timestamp, current_user) %>
   	     	<td><%= "#{event_string} @ <br>#{event_timestamp}" %></td>
 
   	    	<!-- Strap Not Worn -->

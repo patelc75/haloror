@@ -32,7 +32,7 @@
      <div id="event_event_<%= blood_pressure.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px;cursor:pointer">
 	<div class="row">
       <div style="float:left;padding-top:25px;width:350px">
-        <%#= UtilityHelper.format_datetime_readable(blood_pressure.timestamp,blood_pressure.user) %>&nbsp
+        <%#= UtilityHelper.format_datetime(blood_pressure.timestamp,blood_pressure.user) %>&nbsp
       </div>
           <div style="float:left;padding-top:25px;width:150px">
           	<%= blood_pressure.systolic%>

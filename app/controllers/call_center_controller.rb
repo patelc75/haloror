@@ -372,7 +372,7 @@ class CallCenterController < ApplicationController
     end
     steps.each do |step|
       if !step.answer.blank?
-        body << "\n\n#{UtilityHelper.format_datetime_readable(step.updated_at, @user)}\n#{step.instruction}  \n#{step.answer}  \n#{step.notes}"
+        body << "\n\n#{UtilityHelper.format_datetime(step.updated_at, @user)}\n#{step.instruction}  \n#{step.answer}  \n#{step.notes}"
       end
     end
       accepted_time = UtilityHelper::seconds_format((@event.accepted?.created_at - @event.timestamp).seconds)

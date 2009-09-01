@@ -57,10 +57,6 @@ module UtilityHelper
     return datetime.getutc.strftime("%a %b %d %H:%M:%S %Z %Y")
   end
 
-  #Time::DATE_FORMATS[:event_time] = "%a %b %d, %Y at %I:%M%p"
-  #Time::DATE_FORMATS[:event_time_reverse] = "%I:%M%p on %a %b %d, %Y"
-  #Time::DATE_FORMATS[:event_time_zone] = Time::DATE_FORMATS[:event_time] + " %Z"
-  #Time::DATE_FORMATS[:event_reverse_time_zone] = Time::DATE_FORMATS[:event_time_reverse] + " %Z"  
   def self.format_datetime(datetime,user,format = :time_date_timezone)
     #this line is causing problems in Rufus (without tzinfo) and don't really need it anyway
     #return datetime if !datetime.respond_to?(:strftime)
@@ -71,7 +67,6 @@ module UtilityHelper
       #tz = TZInfo::Timezone.get('America/Chicago')    #deprecated tzinfo
       tz = Time.zone
     end
-    debugger
     datetime.in_time_zone(tz).to_s(format) if datetime != nil  
     
     #datetime = tz.utc_to_local(datetime) 

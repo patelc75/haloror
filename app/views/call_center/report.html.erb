@@ -64,14 +64,14 @@ Please hold the control key and click <a href="/call_center/faq">here</a> to lau
 		<% end %>
 		
 		<div class="col-125">
-			<%=UtilityHelper.format_datetime_readable(@event.timestamp, current_user) %>
+			<%=UtilityHelper.format_datetime(@event.timestamp, current_user) %>
 		</div>
 		
 		<div class="col-125">
 			<% if(@event[:timestamp_server] == nil) %>
 			No timestamp
 			<% else %>
-			<%= UtilityHelper.format_datetime_readable(@event[:timestamp_server],current_user) %>
+			<%= UtilityHelper.format_datetime(@event[:timestamp_server],current_user) %>
 			<% end %>
 		</div>
 		
@@ -103,7 +103,7 @@ Please hold the control key and click <a href="/call_center/faq">here</a> to lau
 			<b>Notes</b><br/>
 			<%= @event.notes.empty? ? "(none)" : "" %>
 			<% @event.notes.each do |note| %>
-				<%=UtilityHelper.format_datetime_readable(note.created_at, current_user)%>: <%= note.notes %> (Created by <%= User.find(note.created_by).name rescue "(unknown)" %>)
+				<%=UtilityHelper.format_datetime(note.created_at, current_user)%>: <%= note.notes %> (Created by <%= User.find(note.created_by).name rescue "(unknown)" %>)
 			<% end %>
 		</div>
 	
@@ -116,9 +116,9 @@ Please hold the control key and click <a href="/call_center/faq">here</a> to lau
 <hr/>
 
 <% if action = @event.resolved? %>
-	Resolved by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>
+	Resolved by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
 <% elsif action = @event.accepted? %>
-	Accepted by <%= action.user.name %> at <%= UtilityHelper.format_datetime_readable(action.created_at,current_user) %>
+	Accepted by <%= action.user.name %> at <%= UtilityHelper.format_datetime(action.created_at,current_user) %>
 <% end %>
 
 
@@ -142,7 +142,7 @@ Please hold the control key and click <a href="/call_center/faq">here</a> to lau
 			<% current_step_user = step.user_id %>
 			<b><%= User.find(step.user_id).name rescue "(unknown)" %></b><br/>
 		<% end %>
-		<i><%=UtilityHelper.format_datetime_readable(step.created_at, current_user)%></i> - 
+		<i><%=UtilityHelper.format_datetime(step.created_at, current_user)%></i> - 
 		<%= distance_of_time_in_words(prev_step_time, step.created_at, true) %>: 
 		<%= step.question_key %>: <b><%= step.answer.nil? ? "(empty)" : step.answer %></b><br/>
 		<% prev_step_time = step.created_at %>

@@ -69,7 +69,7 @@ div.accordion-content{
 </div>
 <%= javascript_include_tag "accordion" %>
 <% if action = @event.accepted? %>
-<div style="font-size: x-large;"><%= @event.user.name %> (<a target="_blank" href="/chart/flex/<%= @event.user.id %>">Chart</a>) <b><font color="red"><%= @event.event_type %></font></b> Accepted by <%=action.user.name%> at<br /> <%=UtilityHelper.format_datetime_readable(action.created_at,current_user)%></div>
+<div style="font-size: x-large;"><%= @event.user.name %> (<a target="_blank" href="/chart/flex/<%= @event.user.id %>">Chart</a>) <b><font color="red"><%= @event.event_type %></font></b> Accepted by <%=action.user.name%> at<br /> <%=UtilityHelper.format_datetime(action.created_at,current_user)%></div>
 
 <% if current_user.id == action.user_id %>
 <div id="call_center">

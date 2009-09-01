@@ -15,7 +15,7 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def background_task_notification(alert, user)
     body = "User #{user.name} (#{user.id})\n" +
-      "Detected at #{UtilityHelper.format_datetime_readable(alert.created_at, user)}\n" +
+      "Detected at #{UtilityHelper.format_datetime(alert.created_at, user)}\n" +
       "Device ID: #{alert.device.id}  Alert ID: #{alert.id}\n"
     setup_message(alert.to_s, body)
     setup_caregivers(user, alert, :recepients)
@@ -24,7 +24,7 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def admin_call_log(event, body, recipients)
     @recipients = []
-    setup_message("Call Log for #{event.user.name} #{event.event_type} at #{UtilityHelper.format_datetime_readable(event.timestamp, event.user)}", body)
+    setup_message("Call Log for #{event.user.name} #{event.event_type} at #{UtilityHelper.format_datetime(event.timestamp, event.user)}", body)
     recipients.each do |admin|
      @recipients << ["#{admin.email}"] 
     end

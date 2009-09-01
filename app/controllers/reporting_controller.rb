@@ -398,7 +398,6 @@ class ReportingController < ApplicationController
   def compliance_report
     @user_begin_time = params[:begin_time]
     @user_end_time = params[:end_time]
-    debugger
   	
     @groups = current_user.group_memberships
     if !@user_end_time.blank? && !@user_begin_time.blank? && !params[:id]

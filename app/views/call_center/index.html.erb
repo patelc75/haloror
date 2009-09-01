@@ -48,13 +48,13 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       <% end %>
 
       <div class="col-125">
-        <%=UtilityHelper.format_datetime_readable(event.timestamp, current_user) %>
+        <%=UtilityHelper.format_datetime(event.timestamp, current_user) %>
       </div>
       <div class="col-125">
         <% if(event[:timestamp_server] == nil) %>
           No timestamp
         <% else %>
-                     <%= UtilityHelper.format_datetime_readable(event[:timestamp_server],current_user) %>
+                     <%= UtilityHelper.format_datetime(event[:timestamp_server],current_user) %>
            <% end %>
       </div>
       <div class="col-150">
@@ -79,9 +79,9 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       <% if false %>
             <div class="col-150" id="<%=event.id%>_accept">
       	<% if action = event.resolved? %>
-		Resolved by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>
+		Resolved by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
         <% elsif action = event.accepted? %>
-		<%= link_to "Accepted by #{action.user.name} at #{UtilityHelper.format_datetime_readable(action.created_at,current_user)}",:action => "accept", :id => event.id %>
+		<%= link_to "Accepted by #{action.user.name} at #{UtilityHelper.format_datetime(action.created_at,current_user)}",:action => "accept", :id => event.id %>
 		<% else %>
 		<%= link_to "Accept",:action => "accept", :id => event.id %>
 		<% end %>
@@ -93,11 +93,11 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
         
       <div class="col-150" id="false_alarm_<%=event.id%>">
       	<% if action = event.false_alarm? %>
-		  <b>False Alarm</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>
+		  <b>False Alarm</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
       	<% elsif action = event.test_alarm? %>
-		  Marked <b>Test</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>		  
+		  Marked <b>Test</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>		  
 		<% elsif action = event.non_emerg_panic? %>
-		  <b>Non Emergency Panic</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime_readable(action.created_at, current_user)%>
+		  <b>Non Emergency Panic</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
 		<% else %>
 		  Mark as <%= link_to_remote "False Alarm", :update => "false_alarm_#{event.id}", :url => {:action => "false_alarm", :id => event.id} %> or
 		  <%= link_to_remote "Test", :update => "false_alarm_#{event.id}", :url => {:action => "test_alarm", :id => event.id} %>

@@ -11,7 +11,7 @@
 				<% @sum = 0.0 %>
 				<% for step in session.self_test_steps.find(:all,:order => 'timestamp') %>		
 				<tr>
-					<td><%= UtilityHelper.format_datetime_readable(step.timestamp, @user) %></td>
+					<td><%= UtilityHelper.format_datetime(step.timestamp, @user) %></td>
 					<td><%= step.self_test_step_description.description %></td>
 					<td>
 						<%#= @nextstep%>

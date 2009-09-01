@@ -32,9 +32,9 @@ class BatteryCritical < ActiveRecord::Base
   
   def to_s
     if mode == 'stop'
-      "Battery critical state resolved on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
+      "Battery critical state resolved on #{UtilityHelper.format_datetime(timestamp, user)}"
   	else  	
-      "Battery critically low on #{UtilityHelper.format_datetime_readable(timestamp, user)}"
+      "Battery critically low on #{UtilityHelper.format_datetime(timestamp, user)}"
     end
   end
   

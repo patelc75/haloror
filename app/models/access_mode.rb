@@ -4,7 +4,7 @@ class AccessMode < DeviceAlert
   belongs_to :device
   
   def to_s
-    "Access mode set to #{mode} on #{UtilityHelper.format_datetime_readable(timestamp, nil)}"
+    "Access mode set to #{mode} on #{UtilityHelper.format_datetime(timestamp, nil)}"
   end
   
   def self.new_initialize(random=false)

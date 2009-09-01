@@ -30,7 +30,7 @@ class Event < ActiveRecord::Base
   def notes_string
     string = "Event Notes\n"
     notes.each do |note|
-      string += UtilityHelper.format_datetime_readable(note.created_at, user) + " by " + note.creator.name() + "\n" +
+      string += UtilityHelper.format_datetime(note.created_at, user) + " by " + note.creator.name() + "\n" +
         note.notes + "\n\n"
     end
     string

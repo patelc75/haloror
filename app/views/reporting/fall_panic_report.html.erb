@@ -21,7 +21,7 @@ require "digest"
 
   <%if @falls or @panics %>
   <br>
-  <b><%= UtilityHelper.format_datetime_readable(@begin_time, current_user) %></b> to <b><%= UtilityHelper.format_datetime_readable(@end_time, current_user) %></b> in
+  <b><%= UtilityHelper.format_datetime(@begin_time, current_user) %></b> to <b><%= UtilityHelper.format_datetime(@end_time, current_user) %></b> in
   <%= current_user.profile.time_zone if current_user.profile %> timezone<br>
  <br>
   	<table border="1">

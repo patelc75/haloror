@@ -5,7 +5,7 @@ class Fall < DeviceAlert
   end
 
   def to_s
-    "#{user.name}(#{user.id}) fell at #{UtilityHelper.format_datetime_readable(timestamp, user)}"
+    "#{user.name}(#{user.id}) fell at #{UtilityHelper.format_datetime(timestamp, user)}"
   end
 
   def email_body
