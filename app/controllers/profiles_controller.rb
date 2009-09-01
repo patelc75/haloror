@@ -125,7 +125,7 @@ class ProfilesController < ApplicationController
     				caregiver = @user
     				@roles_user = patient.roles_user_by_caregiver(caregiver)
     				update_from_position(params[:position], @roles_user.role_id, caregiver.id)
-    				RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => 0,:relationship => params[:relationship],:is_keyholder => params[:key_holder][:is_keyholder])
+    				RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => true,:relationship => params[:relationship],:is_keyholder => params[:key_holder][:is_keyholder])
     			else
     				#render :action => 'new_caregiver_profile',:user_id => current_user
     				raise "Invalid Profile"

@@ -1,0 +1,60 @@
+<%= render :partial => 'vital_lists/nav'%>
+<div id="call_list-col">
+	<div id="call_list-col-header">
+		Blood Pressure | <span style="color:#000;font-size:.75em">
+		<%= current_user.name %> (<%= current_user.id %>)</big> - all times are in <%= current_user.profile.time_zone if current_user.profile %> timezone <br>
+		</span>
+	</div>
+<div class="content">
+  <div id="call_list_header">
+  	<div style="float:left;width:350px;padding-left:10px">
+  	  Timestamp
+	</div>
+   	<div style="float:left;width:150px">
+      Systolic
+    </div>
+  	<div style="float:left;width:100px">
+      Diastolic
+    </div>
+  	<div style="float:left;width:100px">
+      Map
+    </div>
+  	<div style="float:left;width:100px">
+      Pulse
+    </div>
+    <div style="float:left;width:100px">
+      Battery
+    </div>
+  </div>
+  <p>&nbsp;</p>
+  <%if @blood_pressure%>
+  <% @blood_pressure.each do |blood_pressure| %>
+     <div id="event_event_<%= blood_pressure.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px;cursor:pointer">
+	<div class="row">
+      <div style="float:left;padding-top:25px;width:350px">
+        <%#= UtilityHelper.format_datetime_readable(blood_pressure.timestamp,blood_pressure.user) %>&nbsp
+      </div>
+          <div style="float:left;padding-top:25px;width:150px">
+          	<%= blood_pressure.systolic%>
+        </div>
+		<div style="float:left;padding-top:25px;width:100px">
+		<%= blood_pressure.diastolic %>
+	    </div>
+		<div style="float:left;padding-top:25px;width:100px">
+		<%=blood_pressure.map %>
+	    </div>
+		<div style="float:left;padding-top:25px;width:100px">
+		<%= blood_pressure.pulse %>
+	    </div>
+	    <div style="float:left;padding-top:25px;width:100px">
+		<%= blood_pressure.battery %>
+	    </div>
+      </div>
+	</div>
+    <% end %>
+    <br>
+    <br>
+    <center><big><%#= will_paginate @events %></big></center>
+    <%end%>
+  </div>
+  <div id="call_list-col-footer"></div>

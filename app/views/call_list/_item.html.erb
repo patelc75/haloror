@@ -152,7 +152,7 @@
 
 	<div style="float:left;padding-top:25px;width:75px">
 		<%  alt = ''
-			if !opts.email_active? or !opts.active?
+			if !opts.email_active? or !opts.active? 
 				img = 'call_list-email-inactive.gif'
 				alt = 'Email will not be sent to this caregiver in the case of a fall or panic.  Click to enable.'
 			else
@@ -160,7 +160,7 @@
 				alt = 'Email will be sent to this caregiver in the case of a fall or panic.  Click to disable.'
 			end
 		%>
-  	<% if opts.active? %>
+  	<% if opts.active? and caregiver.email != "no-email@halomonitoring.com" %>
 		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_email_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_email",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.email_active.to_s+', \'email\', '+user_id+')', :complete => 'updatePositions()')%>
 		<% else %>
 		  <%= image_tag(img, :alt => alt, :id => 'item_email_'+caregiver.id.to_s) %>
