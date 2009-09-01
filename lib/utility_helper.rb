@@ -48,6 +48,11 @@ module UtilityHelper
     #return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
   end
   
+  def self.user_time_zone_to_utc(user_time)
+  	user_time = Time.zone.parse(user_time)
+  	user_time = user_time.utc
+  end
+  
   def self.format_datetime_flex(datetime,user)
     #return datetime if !datetime.respond_to?(:strftime)
     
@@ -160,10 +165,4 @@ module UtilityHelper
     end
     return time_string
   end
-  
-  def self.user_time_zone_to_utc(user_time)
-  	user_time = Time.zone.parse(user_time)
-  	user_time = user_time.utc
-  end
-  
 end

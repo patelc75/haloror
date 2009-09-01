@@ -8,8 +8,9 @@ require "digest"
   <b><%= flash[:warning] %></b>
   <% end -%>
   <form action="/reporting/fall_panic_report">
+  <h3>Group Fall/Panics Report</h3>
   <table>
-    <tr><td>Begin Time (UTC)</td>&nbsp;&nbsp;<td>End Time (UTC)</td></tr>
+    <tr><td>Begin Time (<%= current_user.profile.time_zone.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= current_user.profile.time_zone.split(/\s+/).first %>)</td></tr>
     <tr>
       <td><%= calendar_date_select_tag "begin_time", @begin_time, :time => true, :popup => 'force' %></td>
       <td><%= calendar_date_select_tag "end_time", @end_time, :time => true, :popup => 'force' %></td>

@@ -1,4 +1,5 @@
 # Be sure to restart your web server when you modify this file.
+require "smtp_tls"
 
 AUTHORIZATION_MIXIN = 'object roles'
 DEFAULT_REDIRECTION_HASH = { :controller => 'sessions', :action => 'new' }
@@ -94,6 +95,13 @@ SMTP_SETTINGS_NARFONIX = {
   :user_name => "chirag@haloresearch.net" ,
   :password => "irdikt75" 
 }
+SMTP_SETTINGS_GMAIL = {
+  :address => "smtp.gmail.com" ,
+  :port => 587,
+  :authentication => :plain,
+  :user_name => "patelc75@gmail.com",
+  :password => "irdikt75" 
+}
 
 if (ENV['RAILS_ENV'] == 'production')
   ActionMailer::Base.smtp_settings = SMTP_SETTINGS_LOCALHOST
@@ -119,10 +127,11 @@ ExceptionNotifier.email_prefix = "[" + ServerInstance.current_host_short_string 
 #ActiveRecord::Base.default_timezone = :utc # Store all times in the db in UTC
 #require 'tzinfo/lib/tzinfo' # Use tzinfo library to convert to and from the users timezone
 ENV['TZ'] = 'UTC' # This makes Time.now return time in UTC and assumes all data in DB is this timezone, seems to only work in production mode
-Time::DATE_FORMATS[:date_time] = "%a %b %d,%Y at %I:%M%p" #Tue Dec 25,2007 at 03:52PM
-Time::DATE_FORMATS[:date_time_timezone] = Time::DATE_FORMATS[:date_time] + " %Z" #Tue Dec 25,2007 at 03:52PM CST
+Time::DATE_FORMATS[:date_time] = "%a %b %d, %Y at %I:%M%p" #Tue Dec 25,2007 at 03:52PM
+Time::DATE_FORMATS[:date_time_timezone] = Time::DATE_FORMATS[:date_time] + " %Z" #Tue Dec 25, 2007 at 03:52PM CST
 Time::DATE_FORMATS[:time_date] = "%I:%M%p on %a %b %d,%Y" #03:52PM on Tue Dec 25,2007
-Time::DATE_FORMATS[:time_date_timezone] = "%I:%M%p %Z on %a %b %d,%Y" #03:52PM CST on Tue Dec 25,2007
+Time::DATE_FORMATS[:time_date_timezone] = "%I:%M%p %Z on %a %b %d, %Y" #03:52PM CST on Tue Dec 25, 2007
+Time::DATE_FORMATS[:timezone] = "%Z" #CST
 
 #Rufus-related constants
 GATEWAY_OFFLINE_TIMEOUT=20

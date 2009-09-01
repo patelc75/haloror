@@ -14,12 +14,12 @@ require "digest"
   <input type="hidden" id="id" name="id" value="<%= params[:id]%>">
   <h3>Compliance report for <%= User.find(params[:id]).name %></h3>
   <% else %>
-  <h3>Group Compliance Report</h3>
+  <h3>User Compliance Report (by Group)</h3>
   Select Group:  
   <%= select_tag 'group_name', options_for_select(@groups.collect { |g| [g.name, g.id]})%>
-  <% end %>
+  <% end %><br>
   <table>
-    <tr><td>Begin Time</td>&nbsp;&nbsp;<td>End Time</td></tr>
+    <tr><td>Begin Time (<%= current_user.profile.time_zone.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= current_user.profile.time_zone.split(/\s+/).first %>)</td></tr>
     <tr>
       <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
       <td><%= calendar_date_select_tag "end_time", @user_end_time, :time => true, :popup => 'force' %></td>
@@ -44,10 +44,13 @@ require "digest"
 end %>
   
   <%if @group or params[:id] and @begin_time%>	
-	  <b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
-	  <%= current_user.profile.time_zone if current_user.profile %> timezone<br><br>	
+	  <hr>
+		<h2>Group: <%= @group.name %></h2>
+		<b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
+	  <%= current_user.profile.time_zone if current_user.profile %> timezone<br><br>
+	  <% debug Time.zone %>	
   	<% if !params[:id] %>
-	<b>Group: <%= @group.name %></b><br><br>
+
 	<% end %>
 	<table border="1">
   		<tr>
