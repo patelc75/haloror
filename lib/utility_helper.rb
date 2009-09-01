@@ -67,15 +67,11 @@ module UtilityHelper
       #tz = TZInfo::Timezone.get('America/Chicago')    #deprecated tzinfo
       tz = Time.zone
     end
+
+    #see environment.rb for examples of formats
     datetime.in_time_zone(tz).to_s(format) if datetime != nil  
     
     #datetime = tz.utc_to_local(datetime) 
-    #newdate = datetime.strftime("%a %b %d %H:%M:%S")    
-    #return "#{newdate} #{datetime.strftime("%Y")}"
-  end
-
-  def self.format_datetime_readable(datetime,user)
-    format_datetime(datetime,user).to_time.strftime("%I:%M%p on %a %m/%d/%Y")
   end
     
   def self.get_stacktrace(exception)

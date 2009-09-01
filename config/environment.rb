@@ -122,7 +122,7 @@ ENV['TZ'] = 'UTC' # This makes Time.now return time in UTC and assumes all data 
 Time::DATE_FORMATS[:date_time] = "%a %b %d,%Y at %I:%M%p"
 Time::DATE_FORMATS[:date_time_timezone] = Time::DATE_FORMATS[:date_time] + " %Z"
 Time::DATE_FORMATS[:time_date] = "%I:%M%p on %a %b %d,%Y"
-Time::DATE_FORMATS[:time_date_timezone] = "%I:%M%p %Z on %a %b %d, %Y"
+Time::DATE_FORMATS[:time_date_timezone] = "%I:%M%p %Z on %a %b %d,%Y"
 
 #Rufus-related constants
 GATEWAY_OFFLINE_TIMEOUT=20
