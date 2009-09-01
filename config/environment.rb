@@ -119,10 +119,10 @@ ExceptionNotifier.email_prefix = "[" + ServerInstance.current_host_short_string 
 #ActiveRecord::Base.default_timezone = :utc # Store all times in the db in UTC
 #require 'tzinfo/lib/tzinfo' # Use tzinfo library to convert to and from the users timezone
 ENV['TZ'] = 'UTC' # This makes Time.now return time in UTC and assumes all data in DB is this timezone, seems to only work in production mode
-Time::DATE_FORMATS[:date_time] = "%a %b %d,%Y at %I:%M%p"
-Time::DATE_FORMATS[:date_time_timezone] = Time::DATE_FORMATS[:date_time] + " %Z"
-Time::DATE_FORMATS[:time_date] = "%I:%M%p on %a %b %d,%Y"
-Time::DATE_FORMATS[:time_date_timezone] = "%I:%M%p %Z on %a %b %d,%Y"
+Time::DATE_FORMATS[:date_time] = "%a %b %d,%Y at %I:%M%p" #Tue Dec 25,2007 at 03:52PM
+Time::DATE_FORMATS[:date_time_timezone] = Time::DATE_FORMATS[:date_time] + " %Z" #Tue Dec 25,2007 at 03:52PM CST
+Time::DATE_FORMATS[:time_date] = "%I:%M%p on %a %b %d,%Y" #03:52PM on Tue Dec 25,2007
+Time::DATE_FORMATS[:time_date_timezone] = "%I:%M%p %Z on %a %b %d,%Y" #03:52PM CST on Tue Dec 25,2007
 
 #Rufus-related constants
 GATEWAY_OFFLINE_TIMEOUT=20
