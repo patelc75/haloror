@@ -19,10 +19,10 @@ require "digest"
   <%= select_tag 'group_name', options_for_select(@groups.collect { |g| [g.name, g.id]})%>
   <% end %>
   <table>
-    <tr><td>Begin Time (UTC)</td>&nbsp;&nbsp;<td>End Time (UTC)</td></tr>
+    <tr><td>Begin Time</td>&nbsp;&nbsp;<td>End Time</td></tr>
     <tr>
-      <td><%= calendar_date_select_tag "begin_time", @begin_time, :time => true, :popup => 'force' %></td>
-      <td><%= calendar_date_select_tag "end_time", @end_time, :time => true, :popup => 'force' %></td>
+      <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
+      <td><%= calendar_date_select_tag "end_time", @user_end_time, :time => true, :popup => 'force' %></td>
 	  <td>&nbsp;<%= submit_tag "Submit" %></td>
     </tr>
   </table>
@@ -43,11 +43,9 @@ require "digest"
   users = us
 end %>
   
-  <%if @group or params[:id] and @begin_time%>
-  <br>
-  <b><%= UtilityHelper.format_datetime_readable(@begin_time, current_user) %></b> to <b><%= UtilityHelper.format_datetime_readable(@end_time, current_user) %></b> in
-  <%= current_user.profile.time_zone if current_user.profile %> timezone<br>
-  <br>
+  <%if @group or params[:id] and @begin_time%>	
+	  <b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
+	  <%= current_user.profile.time_zone if current_user.profile %> timezone<br><br>	
   	<% if !params[:id] %>
 	<b>Group: <%= @group.name %></b><br><br>
 	<% end %>

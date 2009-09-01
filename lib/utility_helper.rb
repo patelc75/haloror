@@ -35,39 +35,7 @@ module UtilityHelper
 	    "There is not any timezone for this user"
   end
   
-  def self.format_datetime_flex(datetime,user)
-    #return datetime if !datetime.respond_to?(:strftime)
-    
-    # Any interaction between the server and flex should
-    # pass information back and forth as UTC.
-    # I disabled the tzinfo translation.  -Neal 9/30/08
-    return datetime.getutc.strftime("%a %b %d %H:%M:%S %Z %Y")
-  end
-  
-  def self.format_datetime(datetime,user)
-    
-    #this is causing problems in Rufus and don't really need it anyway
-    #return datetime if !datetime.respond_to?(:strftime)
-    
-    if user and user.profile and user.profile.time_zone
-      tz = user.profile.tz
-    else
-      #tz = TZInfo::Timezone.get('America/Chicago')    #deprecated tzinfo
-      tz = Time.zone
-    end
-    
-    datetime = tz.utc_to_local(datetime) 
-    
-    newdate = datetime.strftime("%a %b %d %H:%M:%S")
-    
-    return "#{newdate} #{datetime.strftime("%Y")}"
-    
-    #other ways to format the date
-    #datetime.strftime("%m-%d-%Y %H:%M")
-    #datetime.strftime("%a %b %d %H:%M:%S %Z %Y")
-    
-    #everything below here is for the timezone offset which we dropped 
-    #after deprecating tzinfo -Chirag 
+  def offset_in_hours(datetime)
     #lookup = {-7 => 'PST', -6 => 'MST', -5 => 'CST', -4 => 'EST'}
     
     #original_datetime = datetime
@@ -80,6 +48,41 @@ module UtilityHelper
     #return "#{newdate} #{offset} #{datetime.strftime("%Y")}"
   end
   
+  def self.format_datetime_flex(datetime,user)
+    #return datetime if !datetime.respond_to?(:strftime)
+    
+    # Any interaction between the server and flex should
+    # pass information back and forth as UTC.
+    # I disabled the tzinfo translation.  -Neal 9/30/08
+    return datetime.getutc.strftime("%a %b %d %H:%M:%S %Z %Y")
+  end
+
+  #Time::DATE_FORMATS[:event_time] = "%a %b %d, %Y at %I:%M%p"
+  #Time::DATE_FORMATS[:event_time_reverse] = "%I:%M%p on %a %b %d, %Y"
+  #Time::DATE_FORMATS[:event_time_zone] = Time::DATE_FORMATS[:event_time] + " %Z"
+  #Time::DATE_FORMATS[:event_reverse_time_zone] = Time::DATE_FORMATS[:event_time_reverse] + " %Z"  
+  def self.format_datetime(datetime,user,format = :time_date_timezone)
+    #this line is causing problems in Rufus (without tzinfo) and don't really need it anyway
+    #return datetime if !datetime.respond_to?(:strftime)
+    
+    if user and user.profile and user.profile.time_zone
+      tz = user.profile.tz
+    else
+      #tz = TZInfo::Timezone.get('America/Chicago')    #deprecated tzinfo
+      tz = Time.zone
+    end
+    debugger
+    datetime.in_time_zone(tz).to_s(format) if datetime != nil  
+    
+    #datetime = tz.utc_to_local(datetime) 
+    #newdate = datetime.strftime("%a %b %d %H:%M:%S")    
+    #return "#{newdate} #{datetime.strftime("%Y")}"
+  end
+
+  def self.format_datetime_readable(datetime,user)
+    format_datetime(datetime,user).to_time.strftime("%I:%M%p on %a %m/%d/%Y")
+  end
+    
   def self.get_stacktrace(exception)
     if !exception.backtrace.blank?
       return exception.backtrace.join("\n")
@@ -108,10 +111,6 @@ module UtilityHelper
     rescue
       RAILS_DEFAULT_LOGGER.warn("Exception in UtilityHelper.self.safe_send_email")
     end
-  end
-
-  def self.format_datetime_readable(datetime,user)
-    format_datetime(datetime,user).to_time.strftime("%I:%M%p on %a %m/%d/%Y") if datetime != nil
   end
   
   def get_timezone_offset(user)

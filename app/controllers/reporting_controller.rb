@@ -396,17 +396,18 @@ class ReportingController < ApplicationController
   end
   
   def compliance_report
-  	@begin_time = params[:begin_time]
-    @end_time = params[:end_time]
-    
+    @user_begin_time = params[:begin_time]
+    @user_end_time = params[:end_time]
+    debugger
+  	
     @groups = current_user.group_memberships
-    if !@end_time.blank? && !@begin_time.blank? && !params[:id]
+    if !@user_end_time.blank? && !@user_begin_time.blank? && !params[:id]
 		
-    	@end_time = UtilityHelper.user_time_zone_to_utc(@end_time)
-    	@begin_time = UtilityHelper.user_time_zone_to_utc(@begin_time)
+    	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+    	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
  
-    		@group = Group.find(params[:group_name])
-    		@users = User.find(:all)
+    	@group = Group.find(params[:group_name])
+    	@users = User.find(:all)
     end
     #flash[:warning] = 'Begin Time and End Time are required.'
   end
