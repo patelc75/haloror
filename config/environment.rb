@@ -1,5 +1,4 @@
 # Be sure to restart your web server when you modify this file.
-require "smtp_tls"
 
 AUTHORIZATION_MIXIN = 'object roles'
 DEFAULT_REDIRECTION_HASH = { :controller => 'sessions', :action => 'new' }
