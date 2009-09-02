@@ -16,8 +16,8 @@ require "digest"
   <% else %>
   <h3>User Compliance Report (by Group)</h3>
   Select Group:  
-  <%= select_tag 'group_name', options_for_select(@groups.collect { |g| [g.name, g.id]})%>
-  <% end %><br>
+  <%= select_tag 'group_name', options_for_select(@groups.collect { |g| [g.name, g.id]})%><br>
+  <% end %>
   <table>
     <tr><td>Begin Time (<%= current_user.profile.time_zone.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= current_user.profile.time_zone.split(/\s+/).first %>)</td></tr>
     <tr>
@@ -26,8 +26,12 @@ require "digest"
 	  <td>&nbsp;<%= submit_tag "Submit" %></td>
     </tr>
   </table>
- <input type="checkbox" name="include_strap_not_worn" />
- <label for"include_strap_not_worn">Include Strap Not Worn (slow)</label>
+  <% if params[:id] %>
+    <input type="checkbox" name="include_strap_not_worn" />
+  <% else %>
+    <input type="checkbox" name="include_strap_not_worn" disabled />
+  <% end %>
+ <label for"include_strap_not_worn">Include Strap Not Worn (slow, so only available for individual user)</label>
   </form>
   <br>
 
