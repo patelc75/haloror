@@ -10,19 +10,20 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
     def after_save(alert)
       Event.create_event(alert.user_id, alert.class.to_s, alert.id, alert.timestamp)
       if alert.class == Fall or alert.class == Panic
-    	gw_timeout = GwAlarmButtonTimeout.create(:pending => true, 
-                                              :device_id => alert.device_id, 
-                                              :user_id => alert.user_id,
-                                              :event_id => alert.id,
-                                              :event_type => alert.class.class_name,
-                                              :timestamp => Time.now)
+    	  gw_timeout = GwAlarmButtonTimeout.create(:pending => true, 
+                                                :device_id => alert.device_id, 
+                                                :user_id => alert.user_id,
+                                                :event_id => alert.id,
+                                                :event_type => alert.class.class_name,
+                                                :timestamp => Time.now)
         spawn do
           sleep(GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT) 
           #RAILS_DEFAULT_LOGGER.warn("spawn Checking CallCenterDeferred: #{deferred.id}")
           gw_timeout = GwAlarmButtonTimeout.find(gw_timeout.id)
           if gw_timeout && gw_timeout.pending
+            gw_timeout.update_attributes(:timestamp => Time.now)
           	CriticalMailer.deliver_gw_alarm(gw_timeout)
-    		Event.create_event(gw_timeout.user_id, GwAlarmButtonTimeout.class_name, gw_timeout.id, gw_timeout.timestamp)
+    		    Event.create_event(gw_timeout.user_id, GwAlarmButtonTimeout.class_name, gw_timeout.id, gw_timeout.timestamp)
           end
         end
       end
