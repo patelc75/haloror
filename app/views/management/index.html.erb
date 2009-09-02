@@ -2,10 +2,9 @@
 <div id="date_range" class="date_range">
 	<form action="<%= "/management/#{@type}/" %>">
 	<table>
-		<tr><td>All times are in UTC timezone</td></tr>
-	  <tr><td>Begin Time</td>&nbsp;&nbsp;<td>End Time</td></tr>
-	  <tr><td><%= calendar_date_select_tag "begin_time", Time.now, :time => true, :popup => 'force' %></td>
-  	<td><%= calendar_date_select_tag "end_time", Time.now, :time => true, :popup => 'force' %></td></tr>
+	  <tr><td>Begin Time (<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= Time.zone.name.split(/\s+/).first %>)</td></tr>
+	  <tr><td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
+  	<td><%= calendar_date_select_tag "end_time", @user_end_time, :time => true, :popup => 'force' %></td></tr>
 	
 <tr><td>
 	Select a Device: <%=select(:device, :id, current_user.devices.collect {|d| [ d.id, d.id ]})%>
@@ -20,10 +19,14 @@
 	Pending commands are grayed out.
 </p>
 <% unless @type == 'mgmt_cmds' %>
+	<b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
+	  <%= current_user.profile.time_zone if current_user.profile %> timezone<br><br>
 <div id="chatter">
 	<%=render :partial => 'chatter_' + @type, :locals => {:chatter => @chatter}%>
 </div>
 <% else %>
+<b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
+	  <%= current_user.profile.time_zone if current_user.profile %> timezone<br><br>
 <div>
 <p>Bad Timestamps
   <%=render :partial => 'mgmt_cmds', :locals => {:cmds => @bad_cmds, :type => 'bad' } %>

@@ -2,13 +2,12 @@
 <body>
 <%= render :partial => 'init_successful_user_logins' %>
 <h2>Successful Logins:</h2>
-All times are in UTC timezone
 <p>
     &nbsp;
 </p>
 <p>
-	Starting Time: <%= @begin_time %>
-	Ending   Time: <%= @end_time %>
+	<b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
+	  <%= current_user.profile.time_zone if current_user.profile %> timezone<br><br>
 </p>
 <p>
 <table>

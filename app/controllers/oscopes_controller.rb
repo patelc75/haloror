@@ -12,6 +12,14 @@ class OscopesController < ApplicationController
     reason = params[:reason]
     begin_timestamp = params[:begin_timestamp]
     end_timestamp =  params[:end_timestamp]
+    
+    @user_begin_time = params[:begin_time]
+    @user_end_time = params[:end_time]
+    if !@user_end_time.blank? && !@user_begin_time.blank?
+      begin_timestamp = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
+      end_timestamp =  UtilityHelper.user_time_zone_to_utc(@user_end_time)
+    end
+    
     o_start_msgs = []
     if(!start_msg_id.blank?)
       o_start_msgs = [OscopeStartMsg.find(start_msg_id, :include => :oscope_msgs)]

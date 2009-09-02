@@ -6,8 +6,7 @@
 	<% end -%>
 	<form action="/reporting/successful_user_logins">
 	<table>
-		<tr><td>All times are in UTC timezone</td></tr>
-	  <tr><td>Begin Time</td>&nbsp;&nbsp;<td>End Time</td></tr>
+	  <tr><td>Begin Time(<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time(<%= Time.zone.name.split(/\s+/).first %>)</td></tr>
 	  <tr>
 	  	<td><%= calendar_date_select_tag "begin_time", "", :time => true, :popup => 'force' %></td>
 	  	<td><%= calendar_date_select_tag "end_time", "", :time => true, :popup => 'force' %></td>

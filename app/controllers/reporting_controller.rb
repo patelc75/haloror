@@ -156,11 +156,11 @@ class ReportingController < ApplicationController
   def lost_data_summary
     @user = current_user
     @users = []
-    @end_time = params[:end_time]
-    @begin_time = params[:begin_time]
-    if !@end_time.blank? && !@begin_time.blank?
-      @end_time = @end_time.to_time
-      @begin_time = @begin_time.to_time
+    @user_begin_time = params[:begin_time]
+    @user_end_time = params[:end_time]
+    if !@user_end_time.blank? && !@user_begin_time.blank?
+      @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+      @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
       user_ids = LostData.user_ids_with_lost_data(@begin_time, @end_time)
       if user_ids && user_ids.size > 0
         @users = User.find(:all, :conditions => "users.id IN (#{user_ids.join(',')})", :include => [:roles, :roles_users, :access_logs, :profile])
@@ -174,8 +174,11 @@ class ReportingController < ApplicationController
     	@user = User.find(user_id)
     	DailyReports.lost_data_scan(user_id)
   		if params[:begin_time]
-  			@begin_time = params[:begin_time]
-  			@end_time = params[:end_time]
+  			@user_begin_time = params[:begin_time]
+    		@user_end_time = params[:end_time]
+    		@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+      		@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
+    		
 			@lost_data = LostData.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id} and begin_time > '#{@begin_time}' and end_time < '#{@end_time}'", :order => "id desc")  		
   		else
     	    @lost_data = LostData.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id}", :order => "id desc")
@@ -203,11 +206,14 @@ class ReportingController < ApplicationController
     render :partial => 'init_strap_not_worn', :layout => true
   end
   def strap_not_worn
-    @end_time = params[:end_time]
-    @begin_time = params[:begin_time]
-    if !@end_time.blank? && !@begin_time.blank?
-      @end_time = @end_time.to_time
-      @begin_time = @begin_time.to_time
+  
+    @user_begin_time = params[:begin_time]
+    @user_end_time = params[:end_time]
+    if !@user_end_time.blank? && !@user_begin_time.blank?
+      #@end_time = @end_time.to_time
+      #@begin_time = @begin_time.to_time
+      @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+      @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
       @users, @total_lost_data, @total_not_worn = DailyReports.device_not_worn_halousers(@begin_time, @end_time)
     else
       flash[:warning] = 'Begin Time and End Time are required.'
@@ -219,11 +225,14 @@ class ReportingController < ApplicationController
     render :partial => 'init_successful_user_logins', :layout => true
   end
   def successful_user_logins
-    @end_time = params[:end_time]
-    @begin_time = params[:begin_time]
-    if !@end_time.blank? && !@begin_time.blank?
-      @end_time = @end_time.to_time
-      @begin_time = @begin_time.to_time
+ 
+    @user_begin_time = params[:begin_time]
+    @user_end_time = params[:end_time]
+    if !@user_end_time.blank? && !@user_begin_time.blank?
+      #@end_time = @end_time.to_time
+      #@begin_time = @begin_time.to_time
+      @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+      @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
       @users = DailyReports.successful_user_logins(@begin_time, @end_time)
     else
       flash[:warning] = 'Begin Time and End Time are required.'
@@ -233,11 +242,11 @@ class ReportingController < ApplicationController
   
   def audit
     @stream = params[:stream].to_i > 0 ? true : false
-    @begin_time = params[:begin_time]
-    @end_time = params[:end_time]
-    if !@end_time.blank? && !@begin_time.blank?
-      @end_time = @end_time.to_time
-      @begin_time = @begin_time.to_time
+    @user_begin_time = params[:begin_time]
+    @user_end_time = params[:end_time]
+    if !@user_end_time.blank? && !@user_begin_time.blank?
+    	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+    	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
       @audits = Audit.paginate(
         :page => params[:page],
         :per_page => REPORTING_USERS_PER_PAGE,
@@ -253,12 +262,14 @@ class ReportingController < ApplicationController
   
   def fall_panic_report
   	
-  	@begin_time = params[:begin_time]
-    @end_time = params[:end_time]
+ 
+    @user_begin_time = params[:begin_time]
+    @user_end_time = params[:end_time]
     
-    if !@end_time.blank? && !@begin_time.blank?
-    	@end_time = @end_time.to_time
-    	@begin_time = @begin_time.to_time
+    if !@user_end_time.blank? && !@user_begin_time.blank?
+    	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+    	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
+    	
     	@falls = Event.find_all_by_event_type("Fall", :conditions => ["timestamp >= ? AND timestamp <= ?", @begin_time, @end_time])
     	@panics = Event.find_all_by_event_type("Panic", :conditions => ["timestamp >= ? AND timestamp <= ?", @begin_time, @end_time])
     	

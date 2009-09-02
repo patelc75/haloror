@@ -19,7 +19,7 @@ require "digest"
   <%= select_tag 'group_name', options_for_select(@groups.collect { |g| [g.name, g.id]})%>
   <% end %><br>
   <table>
-    <tr><td>Begin Time (<%= current_user.profile.time_zone.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= current_user.profile.time_zone.split(/\s+/).first %>)</td></tr>
+    <tr><td>Begin Time (<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= Time.zone.name.split(/\s+/).first %>)</td></tr>
     <tr>
       <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
       <td><%= calendar_date_select_tag "end_time", @user_end_time, :time => true, :popup => 'force' %></td>

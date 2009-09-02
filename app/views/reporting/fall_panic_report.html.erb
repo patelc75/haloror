@@ -10,10 +10,10 @@ require "digest"
   <form action="/reporting/fall_panic_report">
   <h3>Group Fall/Panics Report</h3>
   <table>
-    <tr><td>Begin Time (<%= current_user.profile.time_zone.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= current_user.profile.time_zone.split(/\s+/).first %>)</td></tr>
+    <tr><td>Begin Time (<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= Time.zone.name.split(/\s+/).first %>)</td></tr>
     <tr>
-      <td><%= calendar_date_select_tag "begin_time", @begin_time, :time => true, :popup => 'force' %></td>
-      <td><%= calendar_date_select_tag "end_time", @end_time, :time => true, :popup => 'force' %></td>
+      <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
+      <td><%= calendar_date_select_tag "end_time", @user_end_time, :time => true, :popup => 'force' %></td>
 	  <td>&nbsp;<%= submit_tag "Submit" %></td>
     </tr>
   </table>
@@ -22,7 +22,7 @@ require "digest"
 
   <%if @falls or @panics %>
   <br>
-  <b><%= UtilityHelper.format_datetime(@begin_time, current_user) %></b> to <b><%= UtilityHelper.format_datetime(@end_time, current_user) %></b> in
+  <b><%= UtilityHelper.format_datetime(@user_begin_time, current_user) %></b> to <b><%= UtilityHelper.format_datetime(@user_end_time, current_user) %></b> in
   <%= current_user.profile.time_zone if current_user.profile %> timezone<br>
  <br>
   	<table border="1">

@@ -3,15 +3,19 @@ All times are in <%= @user.profile.time_zone %> time zone
 <br>
 <form action="/reporting/lost_data/<%= params[:id]%>" method="post">
 <table>
-    <tr><td>Begin Time (UTC)</td>&nbsp;&nbsp;<td>End Time (UTC)</td></tr>
+    <tr><td>Begin Time (<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= Time.zone.name.split(/\s+/).first %>)</td></tr>
     <tr>
-      <td><%= calendar_date_select_tag "begin_time", @begin_time, :time => true, :popup => 'force' %></td>
-      <td><%= calendar_date_select_tag "end_time", @end_time, :time => true, :popup => 'force' %></td>
+      <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
+      <td><%= calendar_date_select_tag "end_time", @user_end_time, :time => true, :popup => 'force' %></td>
 	  <td>&nbsp;<%= submit_tag "Submit" %></td>
     </tr>
   </table>
  </form>
 <p>
+	<% if params[:begin_time] %>
+	<b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
+	  <%= current_user.profile.time_zone if current_user.profile %> timezone<br><br>
+	<% end %>
     <table>
         <tr>
             <td>

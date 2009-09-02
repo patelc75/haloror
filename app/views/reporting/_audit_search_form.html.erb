@@ -4,11 +4,10 @@
   <% end -%>
   <form action="/reporting/audit">
   <table>
-    <tr><td>All times are in UTC timezone</td></tr>
-    <tr><td>Begin Time</td>&nbsp;&nbsp;<td>End Time</td><td>Stream (do not sort by user)</td></tr>
+    <tr><td>Begin Time(<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time(<%= Time.zone.name.split(/\s+/).first %>)</td><td>Stream (do not sort by user)</td></tr>
     <tr>
-      <td><%= calendar_date_select_tag "begin_time", @begin_time, :time => true, :popup => 'force' %></td>
-      <td><%= calendar_date_select_tag "end_time", @end_time, :time => true, :popup => 'force' %></td>
+      <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
+      <td><%= calendar_date_select_tag "end_time", @user_end_time, :time => true, :popup => 'force' %></td>
       <td><%= select_tag "stream", options_for_select([["No", 0], ["Yes", 1]], params[:stream].to_i) %></td>
     </tr>
   </table>

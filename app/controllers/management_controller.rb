@@ -340,11 +340,14 @@ class ManagementController < ApplicationController
     @query = LostData.new(params[:query])
     @begin_time = Time.now
     @end_time = @begin_time
+    @user_begin_time = params[:begin_time]
+    @user_end_time = params[:end_time]
+    
     if !params[:begin_time].blank?
-      @begin_time = params[:begin_time]
+      @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
     end
     if !params[:end_time].blank?
-      @end_time = params[:end_time]
+      @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
     end
   end
   

@@ -13,8 +13,8 @@
 	</form>
 	<form action="/oscopes/csv">
 	<table>
-		<tr><td>All times are in UTC timezone</td><td>&nbsp;&nbsp;</td></tr>
-	  <tr><td>Begin Timestamp</td>&nbsp;&nbsp;<td>End Timestamp</td></tr>
+		
+	  <tr><td>Begin Timestamp(<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Timestamp(<%= Time.zone.name.split(/\s+/).first %>)</td></tr>
 	  <tr>
 	  	<td><%= calendar_date_select_tag "begin_time", "", :time => true, :popup => 'force' %></td>
 	  	<td><%= calendar_date_select_tag "end_time", "", :time => true, :popup => 'force' %></td>
