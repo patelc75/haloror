@@ -62,7 +62,7 @@ module UtilityHelper
     return datetime.getutc.strftime("%a %b %d %H:%M:%S %Z %Y")
   end
 
-  def self.format_datetime(datetime,user,format = :time_date_timezone)
+  def self.format_datetime(datetime,user,format = :date_time)
     #this line is causing problems in Rufus (without tzinfo) and don't really need it anyway
     #return datetime if !datetime.respond_to?(:strftime)
     
