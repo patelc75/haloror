@@ -15,8 +15,12 @@ require "digest"
   <h3>Compliance report for <%= User.find(params[:id]).name %></h3>
   <% else %>
   <h3>User Compliance Report (by Group)</h3>
+  <% gs = ['Choose a Group']
+		   @groups.each do |g|
+			 gs << g.name
+		   end %>
   Select Group:  
-  <%= select_tag 'group_name', options_for_select(@groups.collect { |g| [g.name, g.id]})%><br>
+  <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]},@group.name)%><br>
   <% end %>
   <table>
     <tr><td>Begin Time (<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= Time.zone.name.split(/\s+/).first %>)</td></tr>
@@ -91,8 +95,8 @@ end %>
   	    	<!-- Last Connectivity Event -->
 			<% event = Event.get_connectivity_state_by_user(user) %>
 			<% event_string = UtilityHelper.camelcase_to_spaced(event.event_type.to_s) %>
-			<% event_timestamp = UtilityHelper.format_datetime(event.timestamp, current_user) %>
-  	     	<td><%= "#{event_string} @ <br>#{event_timestamp}" %></td>
+			<%# event_timestamp = UtilityHelper.format_datetime(event.timestamp, current_user) %>
+  	     	<td><%#= "#{event_string} @ <br>#{event_timestamp}" %></td>
 
   	    	<!-- Strap Not Worn -->
 			<td>
