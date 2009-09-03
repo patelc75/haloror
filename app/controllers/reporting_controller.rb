@@ -251,8 +251,8 @@ class ReportingController < ApplicationController
         :page => params[:page],
         :per_page => REPORTING_USERS_PER_PAGE,
         :conditions => ["created_at >= ? AND created_at <= ?", @begin_time, @end_time], 
-        :order => "owner_id ASC, created_at ASC", 
-        :include => [:owner]
+        :order => "owner_id ASC, created_at ASC"
+      #  :include => [:owner]
         )
     else
       flash[:warning] = 'Begin Time and End Time are required.'
