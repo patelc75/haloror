@@ -20,7 +20,7 @@ require "digest"
 			 gs << g.name
 		   end %>
   Select Group:  
-  <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]},@group.name)%><br>
+  <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]},params[:group_name])%><br>
   <% end %>
   <table>
     <tr><td>Begin Time (<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= Time.zone.name.split(/\s+/).first %>)</td></tr>
