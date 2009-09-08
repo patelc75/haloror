@@ -12,7 +12,6 @@ class ApplicationController < ActionController::Base
   
   # Pick a unique cookie name to distinguish our session data from others'
   session :session_key => '_HaloRoR2_session_id'  
-  before_filter :set_user_time_zone
 
   #This method is needed because of the way attachment_fu stores the files 
   #uploaded on the file system.  attachment_fu stores the files in a folder with 
@@ -28,7 +27,9 @@ class ApplicationController < ActionController::Base
   end
   
   before_filter :authenticated?
-  before_filter:set_host
+  before_filter :set_host
+  before_filter :set_user_time_zone
+
   def error(exception)
     render :controller => 'errors', :action => 'error'
   end

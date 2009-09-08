@@ -2,8 +2,9 @@
 UNIX hostname: <code><%= `hostname` %></code><br>
 Unix time: <code><%= `date` %></code><br>
 Current user: <%= @current_user.name if @current_user %><br>
-Current time zone: <%= Time.zone.name %><br>
+<code>Time.zone.name: <%= Time.zone.name %></code><br>
 Current time: <%= Time.zone.now.inspect %><br>
+Current user's time zone: <%= current_user.profile.time_zone %><br>
 <code>git describe: <%= `cd ~/haloror; /usr/bin/git describe` %></code><br>
 <br>
 <b>Network</b><br>
