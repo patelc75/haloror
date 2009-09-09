@@ -244,16 +244,25 @@ class ReportingController < ApplicationController
     @stream = params[:stream].to_i > 0 ? true : false
     @user_begin_time = params[:begin_time]
     @user_end_time = params[:end_time]
+    @groups = current_user.group_memberships
     if !@user_end_time.blank? && !@user_begin_time.blank?
     	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
     	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
-      @audits = Audit.paginate(
-        :page => params[:page],
-        :per_page => REPORTING_USERS_PER_PAGE,
-        :conditions => ["created_at >= ? AND created_at <= ?", @begin_time, @end_time], 
-        :order => "owner_id ASC, created_at ASC"
-      #  :include => [:owner]
-        )
+		@group = Group.find_by_name(params[:group_name])
+        @users = User.find(:all)
+    	
+    	owners = "0"
+	  	@users.each do |user|
+		  owners += "," + user.id.to_s if user.has_role? "halouser", @group
+	  	end
+
+        @audits = Audit.paginate(
+          :page => params[:page],
+          :per_page => 10,
+          :conditions => ["created_at >= ? AND created_at <= ? and owner_id IN (#{owners})", @begin_time, @end_time], 
+          :order => "owner_id ASC, created_at ASC"
+         # :include => [:owner] :error => Can not eagerly load the polymorphic association :owner
+          )
     else
       flash[:warning] = 'Begin Time and End Time are required.'
       render :action => :audit and return
@@ -261,8 +270,6 @@ class ReportingController < ApplicationController
   end
   
   def fall_panic_report
-  	
- 
     @user_begin_time = params[:begin_time]
     @user_end_time = params[:end_time]
     
