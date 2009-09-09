@@ -118,7 +118,8 @@ module UtilityHelper
       #tz = TZInfo::Timezone.get('America/Chicago')
       tz = Time.zone
     end
-    datetime = tz.utc_to_local(now)
+    datetime.in_time_zone(tz) if datetime != nil 
+    #datetime = tz.utc_to_local(now)
     offset = datetime.hour - now.hour
       
     if datetime.day != now.day  
