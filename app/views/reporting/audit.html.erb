@@ -6,6 +6,7 @@ require "digest"
 <%= render :partial => 'audit_search_form' %>
 
 <% if @audits %>
+
 <% current_user = nil %>
   <% if @stream %>
   <table>
@@ -39,6 +40,7 @@ require "digest"
       </td>
       <td><%=h audit.created_at %></td>
     </tr>
+ 
   <% end %>
   </table>
   <center>
