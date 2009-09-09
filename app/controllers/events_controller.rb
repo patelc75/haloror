@@ -7,7 +7,8 @@ class EventsController < ApplicationController
     if(@user.id == current_user.id || @current_user.patients.include?(@user) || @current_user.is_super_admin? || @current_user.is_admin_of_any?(groups) || @current_user.is_operator_of_any?(groups)) 
       conditions = "user_id = #{@user.id}"
       @events = Event.paginate :page => params[:page], 
-                               :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", 
+				# :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", 
+			       :order => "timestamp DESC",
                                :conditions => conditions, 
                                :per_page => EVENTS_PER_PAGE
       render :layout => 'application'
