@@ -8,7 +8,7 @@
 		img = '/images/call_list-item-away.gif'
 		className = 'inactive'
 	else
-		img = '/images/call_list-item.gif'
+		img = '/images/call_list-item-caregiver.gif'
 		className = 'active'
 	end
 %>
@@ -169,7 +169,7 @@
 
 	<!--TEXT-->
 
-	<div style="float:left;padding-top:25px;width:100px">
+	<div style="float:left;padding-top:25px;width:75px">
 		<input type="hidden" id="user-<%=caregiver.id%>_text" value="<%=caregiver.profile.cell_phone%>" />
 		 <input type="hidden" id="user-<%=caregiver.id%>_text2" value="<%=caregiver.profile.carrier_id%>" /> 
 		
@@ -195,7 +195,7 @@
 
 	<!--DELETE-->
 
-	<div style="float:left;padding-top:25px;width:50px">
+	<div style="float:left;padding-top:25px;width:75px">
 		<% 
 			alt = 'Remove caregiver from list.'
 			if !opts.active? 

@@ -2,10 +2,18 @@
 	<div id="call_list-col-header">
 		Alerts
 	</div>
-
-
 	<div class="content">
-		<ul id="call_list">
+		  <div id="call_list_header" style="height:25px">
+        <div style="float:left;width:805px;padding-left:10px">
+          <b>Non Critical Alert Type</b> 
+        </div>
+        <div style="float:left;width:75px">
+      <b>Email</b> 
+    </div>
+        <div style="float:left;width:40px">
+      <b>Text</b> 
+    </div>
+  </div>
 			<% @alert_types.each do |alert| %>
 			<% if alert.deprecated != true %>
 				<%
@@ -31,14 +39,14 @@
 						alert[:text_active] = alert.text_active
 					end
 				%>
-				<li class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px">
-					<div style="float:left;padding-top:45px;width:150px">
+				<div class="active" style="padding-left:10px;background:url('/images/call_list-item-alerts.gif') no-repeat;height:50px">
+					<div style="float:left;padding-top:17px;width:250px">
 						<%=UtilityHelper.camelcase_to_spaced(alert.alert_type)%>
 					</div>
 					<div style="float:right">
 						<!--PHONE-->
 
-						<div style="float:left;padding-top:35px;width:75px">
+						<div style="float:left;padding-top:15px;width:75px">
 							<% 
 								if !alert[:phone_active]
 									img = 'call_list-phone-inactive.gif'
@@ -58,7 +66,7 @@
 
 						<!--EMAIL-->
 
-						<div style="float:left;padding-top:35px;width:75px">
+						<div style="float:left;padding-top:8px;width:75px">
 							<% 
 								if !alert[:email_active]
 									img = 'call_list-email-inactive.gif'
@@ -78,7 +86,7 @@
 
 						<!--TEXT-->
 
-						<div style="float:left;padding-top:35px;width:50px">
+						<div style="float:left;padding-top:8px;width:50px">
 							<% 
 								if !alert[:text_active]
 									img = 'call_list-text-inactive.gif'
@@ -96,10 +104,9 @@
 							<%=link_to_remote(image_tag(img, :id => 'alert_text_'+alert.id.to_s), :url => { :action => "toggle_text",:id => alert.id, :roles_user_id => @roles_user.id }, :before => 'toggleAlert('+alert.id.to_s+', '+text_active.to_s+', \'text\')')%>
 						</div>
 					</div>
-				</li>
+				</div>
 				<%end%>
 			<% end %>			
-		</ul>
 		<p>&nbsp;</p>		
 		<%= link_to '&laquo; Back to Account Settings', :controller => 'call_list', :action => 'show', :id => current_user.id %>
 	</div>

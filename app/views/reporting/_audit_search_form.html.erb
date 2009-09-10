@@ -3,6 +3,15 @@
   <b><%= flash[:warning] %></b>
   <% end -%>
   <form action="/reporting/audit">
+  <h3>Audit Report (by Group)</h3>
+  <% gs = ['Choose a Group']
+		   @groups.each do |g|
+			 gs << g.name
+		   end %>
+  Select Group:  
+  <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]},params[:group_name])%><br>
+  
+  
   <table>
     <tr><td>Begin Time(<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time(<%= Time.zone.name.split(/\s+/).first %>)</td><td>Stream (do not sort by user)</td></tr>
     <tr>

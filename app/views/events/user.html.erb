@@ -8,27 +8,26 @@
 		</span>
 	</div>
 <div class="content">
-  <div id="call_list_header">
+  <div id="call_list_header" style="height:25px">
   	<div style="float:left;width:150px;padding-left:10px;">
-  	  Date/Time	
+  	  <b>Date/Time</b>
 	</div>
   	<div style="float:left;width:100px;padding-left:25px;">
-      Type
+      <b>Type</b>
     </div>
   	<div style="float:left;width:300px;padding-right:25px">
-      Description
+      <b>Description</b>
     </div>
   	<div style="float:left;width:100px">
-      Heartrate
+      <b>Heartrate</b>
     </div>
   	<div style="float:left;width:100px">
-      Skin Temp.
+      <b>Skin Temp.</b>
     </div>
   	<div style="float:left;width:100px">
-      Body Position
+      <b>Body Position</b>
     </div>
   </div>
-  <p>&nbsp;</p>
   <% @events.each do |event| %>
   <% vital = nil
      skintemp = nil %>
@@ -36,7 +35,7 @@
     <% vital = Vital.find(:first, :conditions => "heartrate <> -1 AND user_id = #{@user.id} AND timestamp > '#{event[:timestamp]}' AND timestamp <= '#{event[:timestamp] + 600}'", :order => "timestamp desc")%>
     <% skintemp = SkinTemp.find(:first, :conditions => "user_id = #{@user.id} AND timestamp > '#{event[:timestamp]}' AND timestamp <= '#{event[:timestamp] + 600}'", :order => "timestamp desc") %>
   <% end %>
-    <div id="event_event_<%= event.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:80px;cursor:pointer">
+    <div id="event_event_<%= event.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:80px">
 	<div class="row">
       <div style="float:left;padding-top:5px;width:150px">
 	    <%= event[:timestamp].in_time_zone.to_s(:date_time_timezone) %> &nbsp;
@@ -47,7 +46,7 @@
         <div style="float:left;padding-top:5px;width:300px;padding-right:25px">
           <%=event.event.to_s%> 
 		  <% if current_user.is_admin? or current_user.is_super_admin? %>
-		    <span style="font-size: 80%;">(server:<%= event.timestamp_server.to_s(:date_time_timezone) if !event.timestamp_server.nil? and !event.timestamp_server.blank? %>)</span>
+		    <span style="font-size: 80%;"><b>(server:<%= event.timestamp_server.to_s(:date_time_timezone) if !event.timestamp_server.nil? and !event.timestamp_server.blank? %>)</b></span>
 		  <% end %>
         </div>
 		<div style="float:left;padding-top:5px;width:100px">
