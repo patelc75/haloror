@@ -109,7 +109,7 @@ module UtilityHelper
     end
   end
   
-  def get_timezone_offset(user)
+  def self.get_timezone_offset(user)
     now = Time.now()
     
     if user and user.profile and user.profile.time_zone
@@ -118,7 +118,7 @@ module UtilityHelper
       #tz = TZInfo::Timezone.get('America/Chicago')
       tz = Time.zone
     end
-    datetime.in_time_zone(tz) if datetime != nil 
+    datetime = now.in_time_zone(tz) if now != nil 
     #datetime = tz.utc_to_local(now)
     offset = datetime.hour - now.hour
       
