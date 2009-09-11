@@ -8,8 +8,8 @@ class AlertsController < ApplicationController
       @alert_types << type        
     end
     roles_user = RolesUser.find(params[:id])
-    user = User.find(roles_user.user_id)
-    if roles_user.user_id == current_user.id || current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships) || current_user.caregivers.include?(user)
+    @user = User.find(roles_user.user_id)
+    if roles_user.user_id == current_user.id || current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) || current_user.caregivers.include?(@user)
       @roles_user = roles_user
     else
       redirect_to :action => 'unauthorized', :controller => 'security'
