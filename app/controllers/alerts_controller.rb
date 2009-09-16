@@ -62,10 +62,14 @@ class AlertsController < ApplicationController
   end
   
   def toggle_email
-    toggle('email')
+      toggle('email')
   end
   
   def toggle_text
     toggle('text')
+  end
+  
+  def invalid
+  	
   end
 end

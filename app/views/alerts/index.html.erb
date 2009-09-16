@@ -80,11 +80,12 @@
 									email_active = 0
 								end
 							%>
-							<%if @user.email != "no-email@halomonitoring.com"%>
+							<% if @user.email != "no-email@halomonitoring.com" %>
 								<%=link_to_remote(image_tag(img, :id => 'alert_email_'+alert.id.to_s), :url => { :action => "toggle_email",:id => alert.id, :roles_user_id => @roles_user.id }, :before => 'toggleAlert('+alert.id.to_s+', '+email_active.to_s+', \'email\')')%>
-							<%else%>
-								<%= image_tag(img) %>
+							<% else %>
+								<%=link_to image_tag(img),'javascript:;',:onclick => 'run_redbox();'%>
 							<%end%>
+							
 						</div>
 
 						<!--TEXT-->
@@ -106,16 +107,37 @@
 							
 							
 							<%=link_to_remote(image_tag(img, :id => 'alert_text_'+alert.id.to_s), :url => { :action => "toggle_text",:id => alert.id, :roles_user_id => @roles_user.id }, :before => 'toggleAlert('+alert.id.to_s+', '+text_active.to_s+', \'text\')')%>
-
 						</div>
 					</div>
 				</div>
 				<%end%>
-			<% end %>			
+			<% end %>
+			<div id="lightbox-col" style="display:none">
+							<img src="/images/lightbox-col-header.gif" /><br />
+							<div class="lightbox-content">
+								<div style="width:200px;margin-left:320px" id="container">
+									<a href="#"><img src="/images/tooltip-close.gif" onClick="RedBox.close()" /></a>
+								</div>
+								<div style="width:200px;margin-left:auto;margin-right:auto" id="container">
+									The login information you entered does not match an account in our records. Remember, your login and password is case-sensitive, please check your Caps Lock key.
+								</div>
+							</div>
+							<img src="/images/lightbox-col-footer.gif" />
+						</div>			
 		<p>&nbsp;</p>		
 		<%= link_to '&laquo; Back to Account Settings', :controller => 'call_list', :action => 'show', :id => current_user.id %>
 	</div>
 	<div style="clear:both"></div>
 	<div id="call_list-col-footer"></div>
 </div>
+<div id="hidden_content_failure_sessions" style="display: none;"></div>
+<script type="text/javascript">
+function run_redbox()
+{
 
+//<![CDATA[
+new Ajax.Updater('hidden_content_failure_sessions', '/alerts/invalid/', {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('hidden_content_failure_sessions'); }, onLoading:function(request){RedBox.loading(); }})
+//]]>
+
+}
+</script>
