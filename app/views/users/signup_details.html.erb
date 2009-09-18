@@ -1,9 +1,9 @@
 <div id="user_signup-col">
 	<div id="user_signup-col-header">
-		Sign up details for the Senior
+		Profile for Senior and Caregivers
 	</div>
-	
-	<div class="content">
+	<span style="padding:25px;font-size:1.50em"><b>Senior</b></span>
+	<div class="content" style="padding:25px">
 		<%#=debug @user.roles%>
 		<div class="signup_detail_fields">Email:</div><div> <%= @user.email%><br><br></div>
 		<div class="signup_detail_fields">Name:</div><div> <%= @user.full_name %><br><br></div>
@@ -41,7 +41,8 @@
     
 	<hr>
 	<%#= debug caregiver %> 
-	<%= 'Caregiver ' + @i.to_s %><br><br>
+	<span style="font-size:1.50em"><b><%= 'Caregiver ' + @i.to_s %></b></span>
+	<br><br>
      <div class="signup_detail_fields">Name:</div><div><%= caregiver.name%><br><br></div>
 	<div class="signup_detail_fields">Home Address:</div><div><%= caregiver.address%><br><br></div>
 	<div class="signup_detail_fields">Email Address:</div><div><%= caregiver.email%><br><br></div>

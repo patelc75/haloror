@@ -1,4 +1,5 @@
-Senior:	
+<span style="margin-left: 15px;font-size:1.25em">
+	Senior:	
 <select onchange="if(this.value != ''){document.location = '/<%=params[:controller]%>/<%=params[:action]%>/'+this.value}">
 	<% if @user.is_halouser? %>
 		<option value="<%=@user.id%>"><%=@user.name%></option>
@@ -9,4 +10,5 @@ Senior:
 		<option value="<%=patient.id%>" <%='selected' if params[:id].to_i == patient.id or session[:senior].to_i == patient.id%>><%=patient.name%></option>
 	<% end %>
 </select>
+</span>
 <%#=debug @user.patients%>
