@@ -8,6 +8,7 @@
 Select Group:  
 <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group), {:onchange => "$('group_form_id').submit();"}%>
 </form>
+<br>
 <% end%>
 <div id="call_list-col">
 	<div id="call_list-col-header">
@@ -37,7 +38,7 @@ Select Group:
 
 	 <div id="device-table" class="table">
 	 	<div class="row">
-	 	  <div class="col-250">
+	 	  <div class="col-250" style="padding-left:20px">
 	 		<label for="role">Role</label>
   		<br />
   		<% gr = ['Choose a Role']

@@ -1,9 +1,4 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :blood_pressures
-
-  
-
-  
   map.resources :installation_in_progress
   map.resources :time_zones
   map.resources :access_modes
@@ -44,6 +39,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :batteries
   map.resources :skin_temps
   map.resources :weight_scales
+  map.resources :blood_pressures
   
   #critical device data models derived from RestfulAuthController
   map.resources :falls

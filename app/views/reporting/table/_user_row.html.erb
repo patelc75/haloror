@@ -49,8 +49,9 @@
 	<% device = nil unless device %>
 	<div class="col-200">
 		<% if user.profile %>
-			<%=link_to_remote_redbox('Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile[:id], :frame => true }, :html => {:method => :get})%> 
-					<% if user.is_halouser? %>
+			<%=link_to_remote_redbox('Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile[:id], :frame => true }, :html => {:method => :get})%>
+				| <%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => user.id %>  
+					<% if user.is_halouser? and !current_user.is_sales? %>
 							| <a href="/events/user/<%=user[:id]%>">Events</a> | <a href="/chart/flex/<%=user[:id]%>">Chart</a> 
 							| <a href="/reporting/compliance_report/<%=user[:id]%>">Compliance</a> 
 							| <%= link_to_remote "Start Range Test", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :id => user.id} %>

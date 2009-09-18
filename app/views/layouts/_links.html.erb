@@ -22,6 +22,12 @@
 			  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
 			<% end %>
 			<hr>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
+				<li><%= link_to 'Senior&nbsp;Signup', url_for(:controller => 'users', :action => 'new') %></li>
+			<% end %>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_installer? %>
+				<li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li>
+			<% end %>						
 			<% if current_user.is_admin? || current_user.is_super_admin? %>
 			  <li><%= link_to 'Vitals List', :controller => 'vital_lists', :action => 'index' %></li>
 			<% end %>
@@ -37,12 +43,6 @@
 			<% halo_group = Group.find_by_name('halo') %>
 			<% if current_user.is_super_admin? || current_user.is_admin_of?(halo_group) || current_user.is_sales? || current_user.is_installer? %>
 				<li><%= link_to "Emergency_#s", :action => 'index', :controller => 'emergency_numbers' %></li>
-			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
-				<li><%= link_to 'Senior&nbsp;Signup', url_for(:controller => 'users', :action => 'new') %></li>
-			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_installer? %>
-				<li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li>
 			<% end %>
 			<% if (current_user.is_admin? || current_user.is_super_admin?) and ServerInstance.in_hostname?('idev') %>
 				<li><%= link_to 'Healthvault', :controller => 'healthvault', :action => 'index' %></li>

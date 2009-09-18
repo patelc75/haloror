@@ -1,8 +1,10 @@
 <div id="user_signup-col">
 	<div id="user_signup-col-header">
-		Profile for Senior and Caregivers
+		Printable Profile <% if @user.is_halouser? %> for Senior and Caregivers<% end %>
 	</div>
+	<% if @user.is_halouser? %>
 	<span style="padding:25px;font-size:1.50em"><b>Senior</b></span>
+	<% end %>
 	<div class="content" style="padding:25px">
 		<%#=debug @user.roles%>
 		<div class="signup_detail_fields">Email:</div><div> <%= @user.email%><br><br></div>
