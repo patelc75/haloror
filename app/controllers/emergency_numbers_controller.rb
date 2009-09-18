@@ -13,7 +13,7 @@ class EmergencyNumbersController < ApplicationController
       @emergency_numbers = EmergencyNumber.find_all_by_group_id(@group.id)
     else
       @emergency_numbers = []
-      @group = @groups[0] if @groups && @groups.size > 0
+      #@group = @groups[0] if @groups && @groups.size > 0
     end    
   end
   def new

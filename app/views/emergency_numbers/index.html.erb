@@ -4,11 +4,12 @@
 <% group_name = 'Choose a Group'
    group_name = @group.name if @group  %>
 <div>
+<br><br>
 <%= link_to 'Add New Emergency Number', :controller => 'emergency_numbers', :action => 'new', :group => group_name %>
 </div>
 <br><br>
 <div>
-<table>
+<table border="1" style="text-align:left">
 <tr><th>Name</th><th>Number</th><th>Group</th><th>Action</th></tr>
 <% @emergency_numbers.each do |en|  %>
   <tr><td><%= en.name %></td><td><%=en.number %></td><td><%=en.group.name%></td><td><%= link_to '[edit]', :controller => 'emergency_numbers', :action => 'edit', :id => en.id, :group => group_name %></td></tr>
