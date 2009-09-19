@@ -43,7 +43,7 @@ end
 CAREGIVER1='test_caregiver1'
 CAREGIVER2='test_caregiver2'
 OPERATOR='test_operator'
-USER='test_user'
+USER='chirag'
 HALO_GATEWAY='Halo Gateway'
 HALO_CHEST_STRAP='Halo Chest Strap'
 SITE_URL = "localhost:3000"
@@ -130,11 +130,13 @@ def get_user
 end
 
 def get_device(user)
-  user.devices.find(:first, :conditions => "device_type = '#{HALO_CHEST_STRAP}'")
+  #user.devices.find(:first, :conditions => "device_types.device_type = '#{HALO_CHEST_STRAP}'")
+  user.devices[1].device_type
 end
 
 def get_gateway(user)
-  user.devices.find(:first, :conditions => "device_type = '#{HALO_GATEWAY}'")
+  #user.devices.find(:first, :conditions => "device_type = '#{HALO_GATEWAY}'")
+  user.devices[0].device_type
 end
 
 def set_timestamp(timestamp, model)
@@ -151,10 +153,11 @@ def set_timestamp(timestamp, model)
 end
 #.strftime("%a %b %d %H:%M:%S -0600 %Y")
 def generate_auth(timestamp, gateway_id)
+	require 'digest/sha2'
   ts = timestamp.strftime("%a %b %d %H:%M:%S -0600 %Y")
   Hash::XML_FORMATTING['datetime'] = Proc.new { |datetime| 
     datetime.strftime("%a %b %d %H:%M:%S -0600 %Y") }  
-  serial_number = Device.find_by_id(gateway_id).serial_number
+  serial_number = Device.find_by_device_revision_id(1).serial_number
   serial_number.strip!
   sn = "#{ts}#{serial_number}"
   puts sn
