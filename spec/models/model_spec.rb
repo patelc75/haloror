@@ -17,6 +17,7 @@ describe Models do
       CLAZZES.each do |clazz|
         num_records += clazz.count
       end
+
       num_records.should be(@no_records + CLAZZES.size)
   end
 

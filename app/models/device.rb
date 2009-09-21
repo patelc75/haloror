@@ -37,6 +37,19 @@ class Device < ActiveRecord::Base
       return ''
     end
   end
+  
+  def device_type_object(device_type)
+    if device_revision && device_revision.device_model && device_revision.device_model.device_type
+    	if device_revision.device_model.device_type.device_type == device_type
+      		return device_revision.device_model.device_type
+  		else
+  			return ''
+  		end
+    else
+      return ''
+    end
+  end
+  
   def register_user
     if user = User.find_by_serial_number(self.serial_number)    
       self.user_id = user.id

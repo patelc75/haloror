@@ -44,8 +44,8 @@ CAREGIVER1='test_caregiver1'
 CAREGIVER2='test_caregiver2'
 OPERATOR='test_operator'
 USER='chirag'
-HALO_GATEWAY='Halo Gateway'
-HALO_CHEST_STRAP='Halo Chest Strap'
+HALO_GATEWAY='Gateway'
+HALO_CHEST_STRAP='Chest Strap'
 SITE_URL = "localhost:3000"
 BEGIN_CURL='curl -v -H "Content-Type: text/xml" -d '
 CLAZZES = [BatteryChargeComplete, BatteryPlugged, BatteryUnplugged, BatteryCritical, StrapFastened, StrapRemoved, Vital]
@@ -100,7 +100,7 @@ def get_curl_cmd(model)
   curl_cmd += SITE_URL
   curl_cmd += '/'
   curl_cmd += get_model_url(model)
-  curl_cmd += '?gateway_id=' + gateway.id.to_s
+  curl_cmd += '?gateway_id=' + '0'
   curl_cmd += '&auth=' + auth
   curl_cmd += '"'
   return curl_cmd
@@ -122,7 +122,7 @@ def get_curl_cmd_for_ack(model, type)
   curl_cmd += SITE_URL
   curl_cmd += '/'
   curl_cmd += get_model_url(model)
-  curl_cmd += '?gateway_id=' + gateway.id.to_s + '&auth=' + auth + '"'
+  curl_cmd += '?gateway_id=' + '0' + '&auth=' + auth + '"'
   return curl_cmd
 end
 def get_user
@@ -131,12 +131,25 @@ end
 
 def get_device(user)
   #user.devices.find(:first, :conditions => "device_types.device_type = '#{HALO_CHEST_STRAP}'")
-  user.devices[1].device_type
+  user.devices.each do |device|
+  	if device.device_type_object('#{HALO_CHEST_STRAP}')
+  		device_type = device.device_type_object('#{HALO_CHEST_STRAP}')
+  		return device_type
+  	end
+  end
+  
 end
 
 def get_gateway(user)
   #user.devices.find(:first, :conditions => "device_type = '#{HALO_GATEWAY}'")
   user.devices[0].device_type
+	user.devices.each do |device|
+  	if device.device_type_object('#{HALO_GATEWAY}')
+  		device_type = device.device_type_object('#{HALO_GATEWAY}')
+   		return device_type
+  	end
+  end
+
 end
 
 def set_timestamp(timestamp, model)
@@ -156,8 +169,10 @@ def generate_auth(timestamp, gateway_id)
 	require 'digest/sha2'
   ts = timestamp.strftime("%a %b %d %H:%M:%S -0600 %Y")
   Hash::XML_FORMATTING['datetime'] = Proc.new { |datetime| 
-    datetime.strftime("%a %b %d %H:%M:%S -0600 %Y") }  
-  serial_number = Device.find_by_device_revision_id(1).serial_number
+    datetime.strftime("%a %b %d %H:%M:%S -0600 %Y") } 
+     #serial_number = Device.find_by_device_revision_id(gateway_id).serial_number
+    serial_number = Device.find_by_device_revision_id(2).serial_number
+  
   serial_number.strip!
   sn = "#{ts}#{serial_number}"
   puts sn
