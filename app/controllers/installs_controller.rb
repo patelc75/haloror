@@ -609,6 +609,13 @@ class InstallsController < ApplicationController
     clear_session_data
     session[:self_test_time_created] = Time.now
   end
+  def resend
+  	user = User.find params[:id]
+  	UserMailer.deliver_activation(user) if user.recently_activated?
+  	flash[:notice] = "Activation Email sent to #{user.email}"
+  	#redirect_to (request.env['HTTP_REFERER'])
+  end
+  
   
   private
   
@@ -913,4 +920,7 @@ class InstallsController < ApplicationController
     get_caregivers(user)
     @caregivers.size + 1
   end
+  
+
+  
 end
