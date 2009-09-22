@@ -85,6 +85,12 @@ class InstallsController < ApplicationController
   end
   
   def users
+  	 @groups = []
+    gs = current_user.group_memberships
+    gs.each do |g| 
+      @groups << g if(current_user.is_installer_of?(g) || current_user.is_admin_of?(g) || current_user.is_super_admin?)
+    end
+    
     if check_params_for_group
       @group = Group.find_by_name(params[:group])
       conds = "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{@group.id}"
