@@ -72,4 +72,7 @@ class AlertsController < ApplicationController
   def invalid
   	
   end
+  def message
+  	
+  end
 end
