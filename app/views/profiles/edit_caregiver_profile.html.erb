@@ -1,38 +1,57 @@
-<% if params[:frame] %>
-  <div id="lightbox-col">
-    <img src="/images/lightbox-col-header.gif" /><br />
-    <div class="lightbox-content">
-      <div style="width:380px;" id="container">
-      <% end %>
-      <%= error_messages_for :profile %>
-      <%= error_messages_for :user %>
-	  <% if @user == current_user || current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %><center>
-	 <%=link_to_remote('Change Password', :update => 'container', :url =>{ :controller => "profiles", :action => "change_password_init", :id => @user.profile.id, :frame => true,:user_id => @user.id }, :html => {:method => :get})%> | <%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id %>
-	  <% end %><br><br></center>
-	  <% form_remote_tag(:update => 'container', :url => {:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]}, :html => { :id => 'profile_form'}) do %>
-        <input type="hidden" name="user_id" value="<%=@user.id%>" />
-        <input type="hidden" name="patient_id" value="<%=params[:user_id]%>" />
+<div id="user_signup-col">
+	<div id="user_signup-col-header">
+		Edit Profile
+	</div>
+  <div class="content">
+	
+		<div id="errors">
+			<% if flash[:warning] %>
+			  <span style="font-size: 150%;">
+			  The following error occurred:
+			  <ul>
+			  <li><%= flash[:warning]%></li>
+			  </ul>
+			<% end %>
+			<% if @user.errors %>
+			  <%= error_messages_for :user %>
+			  <br>
+			<% end %>
+			<% if @profile.errors %>
+			<%= error_messages_for :profile %>
+			<% end %>
+		</div>
+	<div style="width:380px;" id="container"></div>
+      <%# form_tag :action => 'create' do -%>
+		<%# form_tag(:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]) do %>
+		<% form_remote_tag(:update => 'container', :url => {:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]}, :html => { :id => 'profile_form'}) do %>
+	 <div id="device-table" class="table">
+	 	<div class="row">
+		  <div class="col-250" style="padding-left: 30px;">
+ 			<input type="hidden" name="user_id" value="<%=@user.id%>" />
+ 			        <input type="hidden" name="patient_id" value="<%=params[:user_id]%>" />
         <input type="hidden" name="group_id" value="<%=params[:group_id]%>" />
         <input type="hidden" name="roles_user_id" value="<%=params[:roles_user_id]%>" />
 		<input type="hidden" name="operator" value="<%=params[:operator]%>"/>
-			<% if params[:frame] %>
-			<div style="height:600px;overflow:auto;" id="subcontainer">
-			<% end %>
-        <%= render :partial => 'profile' %>
-			<% if params[:frame] %>
+		  	<%= render :partial => '/profiles/profile_top' %>
+		  </div>
+		  
+		  <div class="col-250">
+		  	<%= render :partial => '/profiles/profile_bottom' %>
+		  	<%= render :partial => '/profiles/profile_halousers_only' %>
+			<br />
+			<br />
+			<input name="commit" type="image" src="/images/update.gif"  />
+		  </div>
+		
+			<div class="col-250">
+				<%= render :partial => '/profiles/profile_textfields' %>
 			</div>
-			<% end %>
-        <br/>
-        <br/>
-        <div align="center">
-          <input name="commit" type="image" src="/images/update.gif"  /> <a href="#"><img src="/images/cancel.gif" onClick="RedBox.close();" /></a>
-        </div>
-      <% end %>
-      
-      <% if params[:frame] %>
-      
-      </div>
+		</div>
+	 </div>	
+        
+      <% end -%>
     </div>
-    <img src="/images/lightbox-col-footer.gif" />
   </div>
-<% end %>
+	<div style="clear:both"></div>
+	<div id="user_signup-col-footer"></div>
+</div>

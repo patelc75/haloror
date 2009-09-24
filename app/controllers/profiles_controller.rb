@@ -202,9 +202,15 @@ class ProfilesController < ApplicationController
           RolesUser.delete(ru)
         end
       end
-        render(:update) do |page|
-          page << "RedBox.close(); window.location = window.location;"
-        end
+      
+      #render :text => 'chirag'
+      
+      
+        #render(:update) do |page|
+        #  page << "RedBox.close(); window.location = window.location;"
+        #end
+        #render :action => 'edit_caregiver_profile'
+        #redirect_to request.env['HTTP_REFERER']
     end   
     rescue 
       render :action => 'edit_caregiver_profile'
