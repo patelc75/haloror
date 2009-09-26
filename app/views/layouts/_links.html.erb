@@ -3,7 +3,10 @@
 	<li>
 		My&nbsp;Links&nbsp;
 		<ul>
-			<li><%=link_to_remote_redbox('My&nbsp;Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%></li>
+			<li><%#=link_to_remote_redbox('My&nbsp;Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%>
+		<%=link_to('My Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id )%>
+				
+			</li>
 
 			<% if current_user.is_halouser? %>
 				<li><%=link_to('Configure&nbsp;Alerts', :controller => "alerts", :action => "index", :id => current_user.roles_user_by_role_name('halouser').id)%></li>

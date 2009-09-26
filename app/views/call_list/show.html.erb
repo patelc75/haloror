@@ -95,3 +95,13 @@
 	<div style="clear:both"></div>
 	<div id="call_list-col-footer"></div>
 </div>
+<script type="text/javascript">
+function show_message()
+{
+
+//<![CDATA[
+new Ajax.Updater('show_message', '/alerts/message/', {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('show_message'); }, onLoading:function(request){RedBox.loading(); }})
+//]]>
+
+}
+</script>

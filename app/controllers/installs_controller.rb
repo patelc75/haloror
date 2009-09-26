@@ -95,12 +95,14 @@ class InstallsController < ApplicationController
       @group = Group.find_by_name(params[:group])
       conds = "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{@group.id}"
       @role = Role.find(:first, :conditions => conds)
-      @users = User.paginate(:page    => params[:page],
-                             :include     => [:roles_users], 
-                             #                         :conditions  => "users.id NOT IN (SELECT devices_users.user_id from devices_users) AND roles_users.role_id = #{@role.id}",
-                             :conditions  => "roles_users.role_id = #{@role.id}",
-      :order       => "users.id asc",
-      :per_page    => 10)
+      
+      				@users = User.paginate(:page    => params[:page],
+                                           :include     => [:roles_users,:self_test_sessions], 
+                 #                         :conditions  => "users.id NOT IN (SELECT devices_users.user_id from devices_users) AND roles_users.role_id = #{@role.id}",
+                                           :conditions  => "roles_users.role_id = #{@role.id}",
+                                           :order       => "self_test_sessions.completed_on desc",
+                                           :per_page    => 10)
+	  
     else 
       redirect_to :controller => 'installs', :action => 'index'
     end

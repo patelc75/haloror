@@ -141,8 +141,9 @@
 				alt = 'This caregiver will be called by live operator in case of emergency.  Click to disable.'
 			end
 		%>
+		<div id="show_message"></div>
 		<% if opts.active? %>
-		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_phone_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_phone",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')')%>
+		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_phone_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_phone",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')', :complete => 'show_message()')%>
 		<% else %>
 		  <%= image_tag(img, :alt => alt, :id => 'item_phone_'+caregiver.id.to_s) %>
 		<% end %>
@@ -216,7 +217,8 @@
 	<div style="float:left;padding-top:35px;width:125px" id="item_edit_<%=caregiver.id%>">
 		<!--% puts edit_user_url(caregiver)%-->
 		<% alt = "Edit caregiver's profile." %>
-		<%=link_to_remote_redbox('Edit Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true, :user_id => user_id, :roles_user_id => user.roles_user_by_caregiver(caregiver).id }, :html => {:alt => alt, :method => :get, :complete => 'updatePositions()'})%>
+		<%#=link_to_remote_redbox('Edit Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true, :user_id => user_id, :roles_user_id => user.roles_user_by_caregiver(caregiver).id }, :html => {:alt => alt, :method => :get, :complete => 'updatePositions()'})%>
+		<%=link_to('Edit Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true,:user_id => caregiver.id )%>
 		| <% alt = 'View / Edit Alerts.' %><br>
 		<%=link_to('Non-critical Alerts', :controller => "alerts", :action => "index", :alt => alt, :id => user.roles_user_by_caregiver(caregiver).id)%>
 	</div>

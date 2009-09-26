@@ -7,6 +7,7 @@
 Select Group:  
 <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, params[:group]), {:onchange => "$('group_form_id').submit();"}%>
 </form>
+<%#=link_to 'Not Completed',request.env['REQUEST_URI']+"&display=not_completed"%>
 <% end %>
 <script src="/javascripts/browser_detect.js" type="text/javascript"></script>
 
@@ -18,21 +19,18 @@ Select Group:
 		<div class="col-150">Device Registration</div>
 		<div class="col-100">Range Test</div>
 		<div class="col-200">Completed On</div>
-		<div class="col-100">Activate Now</div>
-		<div class="col-100">Resend Email</div>
+		<div class="col-100">Activation</div>
+		<div class="col-100"></div>
 	</div>	
 <% @users.each do |user| %>
 	<div class="row">
 		<div class="col-75"><%=  user.id     %></div>
 		<div class="col-200"><%= user.name  %>
-			<span style="font-size: 80%;"><br><% if user.login %><%=user.login%><% else %><%= user.email %><%end%></span>
+			<span style="font-size: 80%;"><br><% if user.login %><%=user.login%><% else %><%= user.email %><%end%>
+				(<%=link_to('Edit Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile.id, :frame => true,:user_id => user.id )%>)
+			</span>
 
 		</div>
-	<!--	<div class="col-200"><% if user.login %>
-		                          <%#= user.login %>
-		                      <% else %>
-		                          <%#= user.email %>
-		                      <% end  %>&nbsp;</div> -->
 		<div class="col-150"><%= link_to_function("Start Installation Wizard", "browserCheckStartRegistration('#{user.id}', '#{@group.name}')") %></div>
 		<div class="col-100"><%= link_to_remote "Start Range Test Only", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :group => @group.name, :id => user.id} %></div>
 		<div class="col-200">
@@ -41,17 +39,13 @@ Select Group:
 			(<%= link_to 'Report',"/installs/session_report/#{user.id.to_s}"%>)</div>
 		<div class="col-100">
 	  		<% if user.activation_code != nil %>
-      			<%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %>
+      			<%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %> | <%= link_to 'Resend Activation Email', resend_path(user.id) %>
       		<% else %>
       			Activated
       		<% end %>
     	</div>
     	<div class="col-100">
-	  		<% if user.activation_code != nil %>
-      			<%= link_to 'Resend Activation Mail', resend_path(user.id) %>
-      		<% else %>
-      			Activated
-      		<% end %>
+
     	</div>
 	</div>
 <% end %>

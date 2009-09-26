@@ -29,8 +29,4 @@
 	    
 	    <% end %>
 	    <br>
-	    <label for="sex">Sex(M/F)</label><br />
-	    <%= radio_button "profile","sex",'M' %>Male<br>
-	   	<%= radio_button "profile","sex",'F' %>Female<br><br>
-	   	<label for="birth_date">Birth Date</label><br />
-	   	<%= date_select("profile", "birth_date", :start_year => 1900,:prompt => { :day => 'Day', :month => 'Month', :year => 'Year' }, :order => [:day, :month, :year])%>
+	    
