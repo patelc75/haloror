@@ -21,7 +21,9 @@
 			<% if current_user.is_halouser? || current_user.is_caregiver? %>
 			  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
 			<% end %>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? || current_user.is_installer? || current_user.is_operator? || current_user.is_moderator? %>
 			<hr>
+			<% end %>
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
 				<li><%= link_to 'Senior&nbsp;Signup', url_for(:controller => 'users', :action => 'new') %></li>
 			<% end %>
@@ -37,7 +39,7 @@
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_sales? %>
 				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'index' %></li>
 			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_moderator?%>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_moderator? %>
 				<li><%= link_to 'Operators', :controller => 'call_center', :action => 'show' %></li>
 			<% end %>
 			<% halo_group = Group.find_by_name('halo') %>
