@@ -1,19 +1,17 @@
-<% end_time = Time.now
-   begin_time = 1.day.ago(end_time)
-   total_time = (end_time - begin_time)
-   users, total_lost_data, total_not_worn = DailyReports.device_not_worn_halousers(begin_time, end_time) 
-   vital = Vital.find(:first, :conditions => "timestamp <= '#{end_time}' AND timestamp >= '#{begin_time}'", :order => 'timestamp desc') 
-   valid_time = ''
-	if vital
-		valid_time = vital.timestamp.to_s
-	end -%>
-Device Not Worn:
-All times are in UTC timezone
-	Starting Time: <%= begin_time %>
-	Ending   Time: <%= end_time %>
-Valid thru:  <%=  valid_time %>
-Name    Not Worn    Lost Data    Total Duration    Compliance Percentage
-------------------------------------------------------------------------
-All     <%= total_not_worn %>    <%= total_lost_data %>    <%= total_lost_data + total_not_worn %>
-<% users.each do |user| -%><% if user[:total] != 0 -%><%= user.name %>    <%= UtilityHelper.seconds_format(user[:seconds_not_worn])%>    <%= UtilityHelper.seconds_format(user[:seconds_lost_data])%>    <%= UtilityHelper.seconds_format(user[:total])%>    <%= ((total_time - user[:total]) / total_time).round(2) %> <% end -%><% end -%>
-------------------------------------------------------------------------
+<% begin_time, end_time, strap_not_worn_hash = DailyReports.job_device_not_warn; users = User.find(:all, :order => "id asc") -%>
+<% total_num = 0; total_duration = 0; -%>
+<% users.each do |user| -%>
+<% 	total_user_duration 	= 0; total_user_num	= 0; strap_not_worn = strap_not_worn_hash[user.id]; user[:strap_not_worn] = strap_not_worn;
+	strap_not_worn.each do |reading|	total_user_num += 1; duration = (reading.end_time - reading.begin_time).seconds; total_user_duration += duration; user[:total_user_num] = total_user_num; user[:total_user_duration] = total_user_duration; end 
+   total_duration += total_user_duration; total_num += total_user_num;  	end -%>
+Device Not Worn (All times are in UTC timezone)
+Starting Time: <%= begin_time %>  
+Ending Time :  <%= end_time %>
+
+Name                Ocurrences                Total Duration
+------------------------------------------------------------
+All                 <%= total_num%>                <%= UtilityHelper.seconds_format(total_duration) %><% users.each do |user| -%> <% if !user[:total_user_num].nil? -%><%= user.name   %>  <%= user[:total_user_num]%>    <%= user[:total_user_duration]%>s <% end -%><% end -%>
+<% users.each do |user| -%> <% if !user[:total_user_num].nil? -%><%  user[:strap_not_worn].each do |reading| -%>	
+		Start:    <%= reading.begin_time.to_s() %>
+		End:      <%= reading.end_time.to_s() %>
+		Duration: <%= UtilityHelper.seconds_format((reading.end_time - reading.begin_time).seconds) %><% end -%><% end -%><% end -%>
