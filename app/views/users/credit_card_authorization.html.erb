@@ -1,0 +1,85 @@
+
+<br>
+<div id="user_signup-col">
+	<div id="user_signup-col-header">
+		Credit Card Authorization
+	</div>
+  <div class="content">
+	<div id="errors">
+ 	  <% if flash[:warning] %>
+	    <span style="font-size: 150%;">
+		  The following error occurred:
+		<ul>
+		  <li><%= flash[:warning]%></li>
+		</ul>
+		
+		</span>
+	  <% end %>
+	  <% if @user.errors %>
+			  <%= error_messages_for :user %>
+			  <br>
+			<% end %>
+			<% if @profile.errors %>
+			<%= error_messages_for :profile %>
+			<% end %>
+	</div>
+
+    <% form_tag :action => 'create_subscriber' do -%>
+	  <div id="device-table" class="table">
+	 	<div class="row">
+		  <div style="width:100%;padding-left: 30px;">
+		    <%= check_box 'users','same_as_senior',:onclick => 'fill_details()'%>Same as Senior
+	        <br/><br/>
+	      </div>
+	      <span id="subscriber_details">
+	        <div class="col-250" style="padding-left: 30px;">
+	          <%= check_box 'users','add_caregiver'%>Do not add this person as a caregiver
+	          <br /><br />   	
+	          <input type="hidden" name="user_id" value="<%= params[:user_id]%>">
+	          
+		      <br>
+		  	  
+ 	          <%= render :partial => '/profiles/profile_top' %>
+	        </div>
+	        <div class="col-250">
+	          <%= render :partial => '/profiles/profile_bottom' %> 
+	        </div>  
+	      </span>
+	      <div class="col-250" style="padding-left: 30px;">
+	        <label for="credit_card_type">Credit Card Type</label>
+	        <br />
+	        <%= text_field 'credit_card','type' %>
+	        <br /><br />
+	        <label for="credit_card_number">Credit Card Number</label>
+	        <br />
+	        <%= text_field 'credit_card','number' %>
+	        <br /><br />
+	        <label for="credit_card_expiration_month">Credit Card Expiration </label>
+	        <br /><br/>
+	        <%= date_select("credit_card", "expiration_time", :order => [:month, :year])%>
+	        <%#= text_field 'credit_card','expiration_month' %>
+<br/><br/><br/>
+	        <input name="commit" type="image" src="/images/subscribe.gif" />
+	      </div>
+        </div>
+      </div>
+    <% end -%>
+  </div>
+</div>
+	<div style="clear:both"></div>
+	<div id="user_signup-col-footer"></div>
+</div>
+
+<script type="text/javascript">
+function fill_details()
+{
+	if (document.getElementById('users_same_as_senior').checked == true)
+	{	
+		document.getElementById('subscriber_details').style.display = 'none'
+	}
+	else
+	{
+		document.getElementById('subscriber_details').style.display = 'block'
+	}
+}
+</script>

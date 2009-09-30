@@ -15,6 +15,76 @@ class UsersController < ApplicationController
     return nil   
   end
   
+  def show
+  	@user = User.new
+    @profile = Profile.new
+  render :action => 'credit_card_authorization'
+  end
+  
+  def credit_card_authorization
+  	if params[:user_id]
+  		@user = User.find(params[:user_id])
+  	else
+  		@user = User.new
+  	end
+    @profile = Profile.new
+  end
+  
+  def create_subscriber
+  	
+  	if params[:users][:same_as_senior] == "1"
+  		@user = User.find_by_id(params[:user_id])
+  		@max_position = get_max_caregiver_position(@user)
+  	else
+  		@user = User.new
+  		@user.email = params[:email]
+  		@profile = Profile.new(params[:profile])
+  		
+  		if params[:users][:add_caregiver] != "1"
+  			 @user.is_new_caregiver = true
+      		@user[:is_caregiver] =  true
+      		
+  		end
+  		
+  		User.transaction do
+  		@user[:is_new_user] = true
+        if @user.save!
+        # create profile
+        	
+        	@profile.user_id = @user.id
+        	@profile[:is_new_caregiver] = true if params[:users][:add_caregiver] != "1"
+            if @profile.save!
+            	if params[:users][:add_caregiver] != "1"
+            		@max_position = get_max_caregiver_position(@user)
+          			patient = User.find(params[:user_id].to_i)
+      				role = @user.has_role 'caregiver', patient
+     				caregiver = @user
+     				@roles_user = patient.roles_user_by_caregiver(caregiver)
+					update_from_position(@max_position, @roles_user.role_id, caregiver.id)
+					RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => @max_position, :active => 0)
+				end
+            else
+              raise "Invalid Profile"  
+            end
+        else
+        	raise "Invalid Subscriber"
+  		end
+  		end
+  	end
+  	
+  	  patient = User.find(params[:user_id].to_i)
+      role = @user.has_role 'subscriber', patient
+      subscriber = @user
+      @roles_user = patient.roles_user_by_subscriber(subscriber)
+      
+      update_from_position(@max_position, @roles_user.role_id, subscriber.id)
+    
+      RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => @max_position, :active => 0)
+  rescue Exception => e
+ # 	RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
+  	render :action => 'credit_card_authorization'
+  end
+  
   def new
     @user = User.new
     @profile = Profile.new
@@ -50,6 +120,7 @@ class UsersController < ApplicationController
                 @user.is_halouser_of Group.find_by_name('SafetyCare')
               end
             end
+            redirect_to :controller => 'users', :action => 'credit_card_authorization',:user_id => @user.id
           else
             raise "Invalid User"
           end
@@ -225,7 +296,12 @@ class UsersController < ApplicationController
     refresh_caregivers(@user)
   end
   def create_caregiver
-    @user = User.new(params[:user])
+  	if params[:user][:login] != ''
+  		@user = User.find_by_login(params[:user][:login])
+  	else
+  		@user = User.new(params[:user])	
+  	end
+    
     
     if !@user.email.blank?
       # if existing_user = User.find_by_email(@user.email)
