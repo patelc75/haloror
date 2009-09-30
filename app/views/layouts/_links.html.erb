@@ -55,6 +55,9 @@
 			<% if current_user.is_super_admin? || current_user.is_admin_of?(halo_group) %>
 			<li><%= link_to 'Info', url_for(:controller => 'util', :action => 'info', :my_links => 'Info') %></li>
 			<% end %>
+			<% if current_user.is_super_admin? || current_user.is_admin_of?(halo_group) %>
+			<li><%= link_to 'Support', url_for(:controller => 'util', :action => 'support') %></li>
+			<% end %>
 		</ul>
 	</li>
 </ul>
