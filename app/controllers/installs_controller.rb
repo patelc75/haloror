@@ -74,6 +74,9 @@ class InstallsController < ApplicationController
     gs.each do |g| 
       @groups << g if(current_user.is_installer_of?(g) || current_user.is_admin_of?(g) || current_user.is_super_admin?)
     end
+    if @groups and @groups.length == 1
+    	redirect_to :action => 'index_users',:group => @groups[0].name
+    end
   end
   
   def index_users
@@ -95,14 +98,18 @@ class InstallsController < ApplicationController
       @group = Group.find_by_name(params[:group])
       conds = "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{@group.id}"
       @role = Role.find(:first, :conditions => conds)
-      
+      if params[:display] == 'not_completed'
+      	@users = User.paginate(:page    => params[:page],:include => [:roles_users,:self_test_sessions],  :conditions  => "roles_users.role_id = #{@role.id} and self_test_sessions.completed_on is NULL",:order => "users.id asc",:per_page => 10)
+  	  elsif params[:display] == 'completed'
+  	  	@users = User.paginate(:page    => params[:page],:include  => [:roles_users,:self_test_sessions],  :conditions  => "roles_users.role_id = #{@role.id}",:order => "self_test_sessions.completed_on desc",:per_page => 10)
+  	  else
       				@users = User.paginate(:page    => params[:page],
                                            :include     => [:roles_users,:self_test_sessions], 
                  #                         :conditions  => "users.id NOT IN (SELECT devices_users.user_id from devices_users) AND roles_users.role_id = #{@role.id}",
                                            :conditions  => "roles_users.role_id = #{@role.id}",
-                                           :order       => "self_test_sessions.completed_on desc",
+                                           :order       => "users.id asc",
                                            :per_page    => 10)
-	  
+	  end
     else 
       redirect_to :controller => 'installs', :action => 'index'
     end
