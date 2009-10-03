@@ -64,7 +64,7 @@
 			opacity = '1'
 		end
 	%>
-	<div style="float:left;background:url('/images/call_list-image_bg.gif') no-repeat;height:87px;width:125px;margin-top:5px;opacity:<%=opacity%>" id="item_image_<%=caregiver.id%>">
+	<div style="float:left;background:url('/images/call_list-image_bg.gif') no-repeat;height:87px;width:95px;margin-top:5px;opacity:<%=opacity%>" id="item_image_<%=caregiver.id%>">
 		<% if caregiver.image != '' %>
 			<img alt="<%= caregiver.name %>" src="/images/call_list-nophoto.gif" style="margin-left:4px;margin-top:4px" />
 		<% else %>
@@ -74,7 +74,7 @@
 	
 	<!--NAME-->
 
-	<div style="float:left;padding-top:40px;width:155px">
+	<div style="float:left;padding-top:40px;width:185px">
 		<%
 			unless opts.active?
 				color = "gray"
