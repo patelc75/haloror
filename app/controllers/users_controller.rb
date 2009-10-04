@@ -80,9 +80,88 @@ class UsersController < ApplicationController
       update_from_position(@max_position, @roles_user.role_id, subscriber.id)
     
       RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => @max_position, :active => 0)
+      
+      ##======================================##
+      
+      @gateway = Device.new
+    @strap = Device.new
+      
+      
+      
+      ##=====================================##
+      
+      
   rescue Exception => e
  # 	RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
   	render :action => 'credit_card_authorization'
+  end
+  
+  def signup_info
+  	
+  	@user = User.find(params[:user_id])
+  	
+  	gateway_serial_number = params[:gateway_serial_number]
+    
+    unless gateway_serial_number
+      gateway_serial_number = params[:gateway][:serial_number]      
+    end
+    #check if gateway exists
+    if !gateway_serial_number.blank?
+      if gateway_serial_number.size == 7
+        gateway_serial_number = gateway_serial_number[0,2] + "000" + gateway_serial_number[2, 5] 
+      end
+
+      @gateway = Device.find_by_serial_number(gateway_serial_number)
+      unless @gateway
+      	params[:gateway][:serial_number] = gateway_serial_number
+        @gateway = @user.devices.build(params[:gateway])
+      end
+      begin
+        @gateway.set_gateway_type
+        @gateway.save!
+      rescue Exception => e
+        flash[:warning] = "#{e}"
+        throw e
+      end
+    else
+      msg = "Gateway Serial Number cannot be blank."
+      flash[:warning] = msg
+      throw msg
+    end
+    
+     strap_serial_number = params[:strap_serial_number]
+    unless strap_serial_number
+      strap_serial_number = params[:strap][:serial_number]
+    end
+    if !strap_serial_number.blank?
+      if strap_serial_number.size == 7
+        strap_serial_number = strap_serial_number[0,2] + "000" + strap_serial_number[2, 5] 
+      end
+      @strap = Device.find_by_serial_number(strap_serial_number)
+      if @strap && !@strap.users.blank? && !@strap.users.include?(@user)
+        flash[:warning] = "Chest Strap with Serial Number #{strap_serial_number} is already assigned to a user."
+        @remove_link = true
+        throw Exception.new
+      end
+      unless @strap
+      	params[:strap][:serial_number] = strap_serial_number
+        @strap = @user.devices.build(params[:strap]) 
+      end
+      begin
+        @strap.set_chest_strap_type
+        @strap.save!
+      rescue Exception => e
+        flash[:warning] = "#{e}"
+        throw e
+      end
+    else
+      msg = "Chest Strap Serial Number cannot be blank."
+      flash[:warning] = msg
+      throw msg
+    end
+  	rescue Exception => e
+    RAILS_DEFAULT_LOGGER.warn("ERROR registering devices, #{e}")
+  	render :action => 'create_subscriber'
   end
   
   def new
