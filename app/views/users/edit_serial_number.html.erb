@@ -20,11 +20,10 @@
 				&nbsp; or enter another Chest Strap Serial Number
 			<% end %>
 		</div>
-    	<div>Registering <%= @user.name %> (<%= @user.id %>)</div>
     	<br />
-      <% form_tag :action => 'registration_create_step' do -%>
+      <% form_tag :action => 'create_serial_number' do -%>
 	  <input type="hidden" name="user_id" value="<%= @user.id %>" />
-	  <input type="hidden" name="self_test_session_id" value="<%= @self_test_session.id %>" />
+	  
        <label for="serial_number">Gateway Serial Number</label><br/>
         <%= text_field :gateway, :serial_number %>
         <br />
@@ -33,15 +32,8 @@
         <%= text_field :strap, :serial_number %>
         <br />
         <br />
-        <%#= @user.devices[0].id%>
-        <font size="2">
-        <%if @user.get_gateway and @user.get_strap %>
-		<a href="/installer/installer/?gateway_id=<%= @user.get_gateway.id %>&self_test_session_id=<%= @self_test_session.id%>&strap_id=<%= @user.get_strap.id %>&user_id=<%= @user.id %>">Skip this step (phone install only)</a>
-		<%else%>
-		Gateway and Chest Strap Serial Numbers are not registered.
-		<%end%>
-		<br><br></font>
-          <input name="commit" type="image" src="/images/next.gif" />
+        
+          <input name="commit" type="image" src="/images/add.gif" />
       <% end %>
           </div>
       	</div>

@@ -18,12 +18,17 @@
 		<% form_tag :action => 'signup_info' do -%>
 	  <input type="hidden" name="user_id" value="<%= @user.id %>" />
 	  <input type="hidden" name="self_test_session_id" value="<%#= @self_test_session.id %>" />
+	  <label for="serial_number">Serial Number</label><br/>
+	  <%= text_field :kit, :serial_number %>
+	  
+	  <!--
        <label for="serial_number">Gateway Serial Number</label><br/>
-        <%= text_field :gateway, :serial_number %>
+        <%#= text_field :gateway, :serial_number %>
         <br />
         <br />
         <label for="serial_number">Chest Strap Serial Number</label><br/>
-        <%= text_field :strap, :serial_number %>
+        <%#= text_field :strap, :serial_number %>
+    -->
         <br />
         <br />
           <input name="commit" type="image" src="/images/next.gif" />
