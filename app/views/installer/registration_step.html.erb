@@ -33,7 +33,8 @@
         <%= text_field :strap, :serial_number %>
         <br />
         <br />
-		
+        <%#= @user.devices[0].id%>
+		<font size="2"><a href="/installer/installer/?gateway_id=<%= @user.get_gateway.id %>&self_test_session_id=<%= @self_test_session.id%>&strap_id=<%= @user.get_strap.id%>&user_id=<%= @user.id %>">Skip this step (phone install only)</a><br><br></font>
           <input name="commit" type="image" src="/images/next.gif" />
       <% end %>
           </div>

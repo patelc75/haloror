@@ -75,6 +75,17 @@ class User < ActiveRecord::Base
     nil
   end
   
+  def get_gateway
+  	gateway = nil
+  	self.devices.each do |device|
+  		if device.device_type == "Gateway"
+  			gateway = device
+  			break
+  		end
+  	end
+  	gateway
+  end
+  
   def get_strap
     self.devices.each do |device|
       if device.device_type == 'Chest Strap'
