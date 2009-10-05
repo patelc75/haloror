@@ -36,6 +36,15 @@ class UserMailer < ActionMailer::ARMailer
     EOF
   end
   
+  def kit_serial_number_register(user,kit)
+  	@recipients  = "senior_signup@halomonitoring.com"
+  	@from = "no-reply@halomonitoring.com"
+  	@subject = "New Kit Serial Number Registered"
+  	@sent_on = Time.now
+  	@body[:user] = user
+  	@body[:kit] = kit
+  end
+  
   protected
   def setup_email(user)
     @recipients  = "#{user.email}"

@@ -1,3 +1,5 @@
+require "ArbApiLib"
+
 class UsersController < ApplicationController  
   before_filter :authenticated?, :except => [:init_user, :update_user]
   def save_timezone
@@ -15,7 +17,314 @@ class UsersController < ApplicationController
     return nil   
   end
   
+  def show
+  	RAILS_DEFAULT_LOGGER.debug("****START show")
+  	@user = User.new
+    @profile = Profile.new
+  render :action => 'credit_card_authorization'
+  end
+  
+  def credit_card_authorization
+  	RAILS_DEFAULT_LOGGER.debug("****START credit_card_authorization")
+  	if params[:user_id]
+  		@user = User.find(params[:user_id])
+  	else
+  		@user = User.new
+  	end
+    @profile = Profile.new
+  end
+  
+  def create_subscriber
+  	
+  	RAILS_DEFAULT_LOGGER.debug("****START create_subscriber")
+  	
+	senior_user_id = params[:user_id]
+  	if params[:users][:same_as_senior] == "1"
+  		@user = User.find_by_id(params[:user_id])
+  		@max_position = get_max_caregiver_position(@user)
+  		subscriber_user_id = senior_user_id
+		RAILS_DEFAULT_LOGGER.debug("**same as senior == 1 ; subscriber_user_id = #{@senior_user_id}")
+		bill_to_fn = @user.profile.first_name
+		bill_to_ln = @user.profile.last_name
+
+  	else
+  		@user = User.new
+  		@user.email = params[:email]
+  		@profile = Profile.new(params[:profile])
+  		
+  		if params[:users][:add_caregiver] != "1"
+  			@user.is_new_caregiver = true
+      		@user[:is_caregiver] =  true
+      		
+  		end
+  		
+  		User.transaction do
+	  		@user[:is_new_user] = true
+	        if @user.save!
+	        # create profile
+	        	
+	        	@profile.user_id = @user.id
+	        	@profile[:is_new_caregiver] = true if params[:users][:add_caregiver] != "1"
+	            if @profile.save!
+	            	if params[:users][:add_caregiver] != "1"
+	            		@max_position = get_max_caregiver_position(@user)
+	          			patient = User.find(params[:user_id].to_i)
+	      				role = @user.has_role 'caregiver', patient
+	     				caregiver = @user
+	     				@roles_user = patient.roles_user_by_caregiver(caregiver)
+						update_from_position(@max_position, @roles_user.role_id, caregiver.id)
+						RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => @max_position, :active => 0)
+					end
+	            else
+	              raise "Invalid Profile"  
+	            end
+	        else
+	        	raise "Invalid Subscriber"
+	  		end
+  		end
+  		
+  		subscriber_user_id = @user.id
+		RAILS_DEFAULT_LOGGER.debug("**subscriber_user_id= #{@user.id}")
+		bill_to_fn = @user.profile.first_name
+		bill_to_ln = @user.profile.last_name
+
+  	end
+  	
+	patient = User.find(params[:user_id].to_i)
+	role = @user.has_role 'subscriber', patient
+
+	subscriber = @user
+
+	@roles_user = patient.roles_user_by_subscriber(subscriber)
+
+	update_from_position(@max_position, @roles_user.role_id, subscriber.id)
+
+	RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => @max_position, :active => 0)
+  
+  @gateway = Device.new
+  @strap = Device.new    
+
+    # Start authorize.net create subscription code
+  	auth = MerchantAuthenticationType.new(AUTH_NET_LOGIN, AUTH_NET_TXN_KEY)
+  	# subscription name - use subscriber user id
+	subname = "sen_uid-#{senior_user_id}-sub_uid-#{subscriber_user_id}"
+
+	RAILS_DEFAULT_LOGGER.info("Attempting to create Authorize.Net subscription.  Subscription name = #{subname}")
+	RAILS_DEFAULT_LOGGER.debug("Authorize.Net AUTH_NET_LOGIN= #{AUTH_NET_LOGIN}, AUTH_NET_TXN_KEY= #{AUTH_NET_TXN_KEY}")
+
+  	# 1 month interval
+	interval = IntervalType.new(AUTH_NET_SUBSCRIPTION_INTERVAL, AUTH_NET_SUBSCRIPTION_INTERVAL_UNITS)
+
+	sub_start_date = Time.now
+	schedule = PaymentScheduleType.new(interval, sub_start_date.strftime("%Y-%m-%d"), AUTH_NET_SUBSCRIPTION_TOTAL_OCCURANCES, 0)
+	
+	RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription startdate = #{sub_start_date.strftime("%Y-%m-%d")} num_occurances = #{AUTH_NET_SUBSCRIPTION_TOTAL_OCCURANCES} interval = #{AUTH_NET_SUBSCRIPTION_INTERVAL} interval_units = #{AUTH_NET_SUBSCRIPTION_INTERVAL_UNITS}")
+	
+	cc_exp = "#{params[:credit_card][:"expiration_time(1i)"]}-#{params[:credit_card][:"expiration_time(2i)"]}"
+
+	cinfo = CreditCardType.new(params[:credit_card][:number], cc_exp)
+		
+	binfo = NameAndAddressType.new(bill_to_fn, bill_to_ln)
+	RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription cc fn = #{binfo.firstName} cc ln = #{binfo.lastName}")
+	
+	aReq = ArbApi.new
+	xmlout = aReq.CreateSubscription(auth,subname,schedule,AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL,0, cinfo,binfo)
+	
+	RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription amount = #{AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL}")
+	
+	RAILS_DEFAULT_LOGGER.info("Authorize.Net Submitting to URL = #{AUTH_NET_URL}")
+	xmlresp = HttpTransport.TransmitRequest(xmlout, AUTH_NET_URL)
+
+	apiresp = aReq.ProcessResponse(xmlresp)
+	
+	RAILS_DEFAULT_LOGGER.info("\nXML Dump:" + xmlresp)
+
+	if apiresp.success 
+	   RAILS_DEFAULT_LOGGER.info("Subscription Created successfully")
+	   RAILS_DEFAULT_LOGGER.info("Subscription id : " + apiresp.subscriptionid)
+	else
+		RAILS_DEFAULT_LOGGER.info("Subscription Creation Failed")
+		apiresp.messages.each { |message| 
+			RAILS_DEFAULT_LOGGER.info("Error Code=" + message.code)
+			RAILS_DEFAULT_LOGGER.info("Error Message = " + message.text)
+			flash[:warning] = "Unable to create subscription.  Check credit card information. Error Code=" + message.code + ", Error Message = " + message.text
+		}   
+		raise "Unable to create subscription."
+
+	end
+		
+	@subscription = Subscription.new
+	@subscription[:arb_subscriptionId] = apiresp.subscriptionid
+	@subscription[:senior_user_id] = senior_user_id
+	@subscription[:subscriber_user_id] = subscriber_user_id
+	@subscription[:cc_last_four] = (params[:credit_card][:number]).last(4)
+	@subscription[:special_notes] = params[:credit_card][:special_notes]
+	@subscription[:bill_amount] = AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL
+	@subscription[:bill_to_first_name] = bill_to_fn
+	@subscription[:bill_to_last_name] = bill_to_ln
+	@subscription[:bill_start_date] = sub_start_date
+	@subscription.save!
+		
+  	# End authorize.net create subscription code
+
+  rescue Exception => e
+  	RAILS_DEFAULT_LOGGER.warn("ERROR in create_subscriber, #{e}")
+  	RAILS_DEFAULT_LOGGER.debug(e.backtrace.join("\n"))
+  	render :action => 'credit_card_authorization'
+  end
+  
+  def signup_info
+  	
+  	@user = User.find(params[:user_id])
+  	
+  	kit_serial_number = params[:kit][:serial_number] 
+    @kit = KitSerialNumber.create(:serial_number => kit_serial_number,:user_id => @user.id)
+    UserMailer.deliver_kit_serial_number_register(@user,@kit)
+=begin  	
+  	gateway_serial_number = params[:gateway_serial_number]
+    
+    unless gateway_serial_number
+      gateway_serial_number = params[:gateway][:serial_number]      
+    end
+    #check if gateway exists
+    if !gateway_serial_number.blank?
+      if gateway_serial_number.size == 7
+        gateway_serial_number = gateway_serial_number[0,2] + "000" + gateway_serial_number[2, 5] 
+      end
+
+      @gateway = Device.find_by_serial_number(gateway_serial_number)
+      unless @gateway
+      	params[:gateway][:serial_number] = gateway_serial_number
+        @gateway = @user.devices.build(params[:gateway])
+      end
+      begin
+        @gateway.set_gateway_type
+        @gateway.save!
+      rescue Exception => e
+        flash[:warning] = "#{e}"
+        throw e
+      end
+    else
+      msg = "Gateway Serial Number cannot be blank."
+      flash[:warning] = msg
+      throw msg
+    end
+    
+     strap_serial_number = params[:strap_serial_number]
+    unless strap_serial_number
+      strap_serial_number = params[:strap][:serial_number]
+    end
+    if !strap_serial_number.blank?
+      if strap_serial_number.size == 7
+        strap_serial_number = strap_serial_number[0,2] + "000" + strap_serial_number[2, 5] 
+      end
+      @strap = Device.find_by_serial_number(strap_serial_number)
+      if @strap && !@strap.users.blank? && !@strap.users.include?(@user)
+        flash[:warning] = "Chest Strap with Serial Number #{strap_serial_number} is already assigned to a user."
+        @remove_link = true
+        throw Exception.new
+      end
+      unless @strap
+      	params[:strap][:serial_number] = strap_serial_number
+        @strap = @user.devices.build(params[:strap]) 
+      end
+      begin
+        @strap.set_chest_strap_type
+        @strap.save!
+      rescue Exception => e
+        flash[:warning] = "#{e}"
+        throw e
+      end
+    else
+      msg = "Chest Strap Serial Number cannot be blank."
+      flash[:warning] = msg
+      throw msg
+    end
+=end
+ # 	rescue Exception => e
+ #   RAILS_DEFAULT_LOGGER.warn("ERROR registering devices, #{e}")
+ # 	render :action => 'create_subscriber'
+  end
+  
+  def edit_serial_number
+  	@user = User.find(params[:id])
+    @gateway = Device.new
+    @strap = Device.new	
+  end
+  
+  def create_serial_number
+  	
+  	@user = User.find(params[:user_id])
+  	gateway_serial_number = params[:gateway_serial_number]
+    
+    unless gateway_serial_number
+      gateway_serial_number = params[:gateway][:serial_number]      
+    end
+    #check if gateway exists
+    if !gateway_serial_number.blank?
+      if gateway_serial_number.size == 7
+        gateway_serial_number = gateway_serial_number[0,2] + "000" + gateway_serial_number[2, 5] 
+      end
+
+      @gateway = Device.find_by_serial_number(gateway_serial_number)
+      unless @gateway
+      	params[:gateway][:serial_number] = gateway_serial_number
+        @gateway = @user.devices.build(params[:gateway])
+      end
+      begin
+        @gateway.set_gateway_type
+        @gateway.save!
+      rescue Exception => e
+        flash[:warning] = "#{e}"
+        throw e
+      end
+    else
+      msg = "Gateway Serial Number cannot be blank."
+      flash[:warning] = msg
+      throw msg
+    end
+    
+     strap_serial_number = params[:strap_serial_number]
+    unless strap_serial_number
+      strap_serial_number = params[:strap][:serial_number]
+    end
+    if !strap_serial_number.blank?
+      if strap_serial_number.size == 7
+        strap_serial_number = strap_serial_number[0,2] + "000" + strap_serial_number[2, 5] 
+      end
+      @strap = Device.find_by_serial_number(strap_serial_number)
+      if @strap && !@strap.users.blank? && !@strap.users.include?(@user)
+        flash[:warning] = "Chest Strap with Serial Number #{strap_serial_number} is already assigned to a user."
+        @remove_link = true
+        throw Exception.new
+      end
+      unless @strap
+      	params[:strap][:serial_number] = strap_serial_number
+        @strap = @user.devices.build(params[:strap]) 
+      end
+      begin
+        @strap.set_chest_strap_type
+        @strap.save!
+      rescue Exception => e
+        flash[:warning] = "#{e}"
+        throw e
+      end
+    else
+      msg = "Chest Strap Serial Number cannot be blank."
+      flash[:warning] = msg
+      throw msg
+    end
+	redirect_to :controller => 'profiles',:action => 'edit_caregiver_profile',:id => @user.profile.id,:user_id => @user.id
+    #redirect_to "/profiles/edit_caregiver_profile/#{@user.profile.id}/?user_id=#{@user.id]}"
+    rescue Exception => e
+    RAILS_DEFAULT_LOGGER.warn("ERROR registering devices, #{e}")
+  	render :action => 'edit_serial_number'
+    
+  end
+  
   def new
+  	  	RAILS_DEFAULT_LOGGER.debug("****START new")
+
     @user = User.new
     @profile = Profile.new
     @groups = []
@@ -26,6 +335,9 @@ class UsersController < ApplicationController
   end
 
   def create
+  	
+  	  RAILS_DEFAULT_LOGGER.debug("****START create")
+
    
       @user = User.new(params[:user])
       @user.email = params[:email]
@@ -50,6 +362,7 @@ class UsersController < ApplicationController
                 @user.is_halouser_of Group.find_by_name('SafetyCare')
               end
             end
+            redirect_to :controller => 'users', :action => 'credit_card_authorization',:user_id => @user.id
           else
             raise "Invalid User"
           end
@@ -225,7 +538,12 @@ class UsersController < ApplicationController
     refresh_caregivers(@user)
   end
   def create_caregiver
-    @user = User.new(params[:user])
+  	if params[:user][:login] != ''
+  		@user = User.find_by_login(params[:user][:login])
+  	else
+  		@user = User.new(params[:user])	
+  	end
+    
     
     if !@user.email.blank?
       # if existing_user = User.find_by_email(@user.email)

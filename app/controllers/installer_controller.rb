@@ -1,5 +1,5 @@
 class InstallerController < ApplicationController
-  
+  #include 'registration_helper'
   def index
     
   end
@@ -231,7 +231,9 @@ class InstallerController < ApplicationController
         				<input type="hidden" name="gateway_id" value="#{@gateway_id}" />
         				<input type="hidden" name="strap_id" value="#{@strap_id}" />
         				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
+        				<span style="padding-left:30px">
         			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
+        			</span>
         			</form>
             	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
         eos
@@ -292,7 +294,9 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="gateway_id" value="#{@gateway_id}" />
               				<input type="hidden" name="strap_id" value="#{@strap_id}" />
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
+              				<span style="padding-left:30px">
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
+              			</span>
               			</form>
                   	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
@@ -323,7 +327,9 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="gateway_id" value="#{@gateway_id}" />
               				<input type="hidden" name="strap_id" value="#{@strap_id}" />
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
+              				<span style="padding-left:30px">
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
+              			</span>
               			</form>
                   	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
@@ -360,7 +366,9 @@ class InstallerController < ApplicationController
             				<input type="hidden" name="gateway_id" value="#{@gateway_id}" />
             				<input type="hidden" name="strap_id" value="#{@strap_id}" />
             				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
+            				<span style="padding-left:30px">
             			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
+            			</span>
             			</form>
                 	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
         eos
@@ -413,7 +421,9 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="gateway_id" value="#{@gateway_id}" />
               				<input type="hidden" name="strap_id" value="#{@strap_id}" />
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
+              				<span style="padding-left:30px">
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
+              			</span>
               			</form>
                   	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
@@ -444,7 +454,9 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="gateway_id" value="#{@gateway_id}" />
               				<input type="hidden" name="strap_id" value="#{@strap_id}" />
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
+              				<span style="padding-left:30px">
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
+              			</span>
               			</form>
                   	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
@@ -480,7 +492,9 @@ class InstallerController < ApplicationController
             				<input type="hidden" name="gateway_id" value="#{@gateway_id}" />
             				<input type="hidden" name="strap_id" value="#{@strap_id}" />
             				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
+            				<span style="padding-left:30px">
             			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
+            			</span>
             			</form>
                 	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
         eos
@@ -537,7 +551,9 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="gateway_id" value="#{@gateway_id}" />
               				<input type="hidden" name="strap_id" value="#{@strap_id}" />
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
+              				<span style="padding-left:30px">
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
+              			</span>
               			</form>
                   	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
@@ -568,7 +584,9 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="gateway_id" value="#{@gateway_id}" />
               				<input type="hidden" name="strap_id" value="#{@strap_id}" />
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
+              				<span style="padding-left:30px">
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
+              			</span>
               			</form>
                   	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
@@ -604,7 +622,9 @@ class InstallerController < ApplicationController
             				<input type="hidden" name="gateway_id" value="#{@gateway_id}" />
             				<input type="hidden" name="strap_id" value="#{@strap_id}" />
             				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
+            				<span style="padding-left:30px">
             			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
+            			</span>
             			</form>
                 	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
         eos
@@ -659,7 +679,9 @@ class InstallerController < ApplicationController
               				<input type="hidden" name="gateway_id" value="#{@gateway_id}" />
               				<input type="hidden" name="strap_id" value="#{@strap_id}" />
               				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
+              			<span style="padding-left:30px">
               			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
+              			</span>
               			</form>
                   	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
           eos
@@ -695,7 +717,9 @@ class InstallerController < ApplicationController
             				<input type="hidden" name="gateway_id" value="#{@gateway_id}" />
             				<input type="hidden" name="strap_id" value="#{@strap_id}" />
             				<input type="hidden" name="self_test_session_id" value="#{@self_test_session_id}" />
+            				<span style="padding-left:30px">
             			<input type="submit" name="Restart Installation Wizard" value="Restart Installation Wizard">
+            			</span>
             			</form>
                 	</div><img src="/images/lightbox-col-footer-700.gif" /></div>
         eos
@@ -737,11 +761,11 @@ class InstallerController < ApplicationController
 			<br />
 			<br />
 			<button onclick="javascript:start_range_test();">Start Range Test</button>
-			
+			<br/><br/>
+			<a href="/installer/add_caregiver/?gateway_id=#{params[:gateway_id]}&self_test_session_id=#{params[:self_test_session_id]}&strap_id=#{params[:strap_id]}&user_id=#{params[:user_id]}">Skip range test (only for phone install)</a>
         	</div></div><img src="/images/lightbox-col-footer-700.gif" />
 		</div>
     eos
-    
   render(:update) do |page|
     page.replace_html('installer_div_id', str)
   end

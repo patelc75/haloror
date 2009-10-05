@@ -235,3 +235,6 @@ HV_CERT_FILE = "#{RAILS_ROOT}/config/healthvault/halo_monitor-6019e8f1-413f-4dfc
 HV_CERT_PASS = ""
 HV_SHELL_URL = "https://account.healthvault-ppe.com"
 HV_HV_URL = "https://platform.healthvault-ppe.com/platform/wildcat.ashx"
+
+
+

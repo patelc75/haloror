@@ -1,0 +1,48 @@
+<div id="call_list-col">
+	<div id="call_list-col-header">
+		Enter Serial Numbers
+	</div>
+	<%= error_messages_for :user %>
+    <%= error_messages_for :gateway %>
+    <%= error_messages_for :strap %>
+    <div id="errors">
+      <% if flash[:warning] %>
+			<%= flash[:warning]%>
+			<br />
+			<br />
+			<% end %>
+		
+		</div>
+	<div class="content" style="padding-left:30px;">
+		<div style="width:230px;float:left">
+		<% form_tag :action => 'signup_info' do -%>
+	  <input type="hidden" name="user_id" value="<%= @user.id %>" />
+	  <input type="hidden" name="self_test_session_id" value="<%#= @self_test_session.id %>" />
+	  <label for="serial_number">Serial Number</label><br/>
+	  <%= text_field :kit, :serial_number %>
+	  
+	  <!--
+       <label for="serial_number">Gateway Serial Number</label><br/>
+        <%#= text_field :gateway, :serial_number %>
+        <br />
+        <br />
+        <label for="serial_number">Chest Strap Serial Number</label><br/>
+        <%#= text_field :strap, :serial_number %>
+    -->
+        <br />
+        <br />
+          <input name="commit" type="image" src="/images/next.gif" />
+          
+      <% end %>
+</div>
+      <div style="width:650px;float:right;padding-right:20px;">
+      	When looking at the box as if opening it, the system level serial number is located on the left end of the box and on the left side of the end
+      	<br><br>
+      <img src="/images/side_of_box.jpg"><br><br>
+
+		</div>
+	</div>
+
+	<div style="clear:both"></div>
+	<div id="call_list-col-footer"></div>
+</div>

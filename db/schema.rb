@@ -9,8 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090924202337) do
-
+ActiveRecord::Schema.define(:version => 20091005153117) do
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
     t.string   "status"
@@ -753,6 +752,19 @@ ActiveRecord::Schema.define(:version => 20090924202337) do
     t.integer  "user_id"
   end
 
+  create_table "subscriptions", :force => true do |t|
+    t.integer  "arb_subscriptionId"
+    t.integer  "senior_user_id"
+    t.integer  "subscriber_user_id"
+    t.integer  "cc_last_four"
+    t.decimal  "bill_amount"
+    t.string   "bill_to_first_name"
+    t.string   "bill_to_last_name"
+    t.date     "bill_start_date"
+    t.text     "special_notes"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
   create_table "system_timeouts", :force => true do |t|
     t.string   "mode"
     t.integer  "gateway_offline_timeout_sec"

@@ -75,6 +75,17 @@ class User < ActiveRecord::Base
     nil
   end
   
+  def get_gateway
+  	gateway = nil
+  	self.devices.each do |device|
+  		if device.device_type == "Gateway"
+  			gateway = device
+  			break
+  		end
+  	end
+  	gateway
+  end
+  
   def get_strap
     self.devices.each do |device|
       if device.device_type == 'Chest Strap'
@@ -245,6 +256,9 @@ class User < ActiveRecord::Base
   end
   def roles_user_by_caregiver(caregiver)
     caregiver.roles_users.find(:first, :conditions => "roles.authorizable_id = #{self.id}", :include => :role)
+  end
+  def roles_user_by_subscriber(subscriber)
+    subscriber.roles_users.find(:first, :conditions => "roles.authorizable_id = #{self.id}", :include => :role)
   end
   def alert_option(type)
     alert_option = nil
