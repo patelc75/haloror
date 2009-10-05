@@ -30,12 +30,6 @@ require "digest"
 	  <td>&nbsp;<%= submit_tag "Submit" %></td>
     </tr>
   </table>
-  <% if params[:id] %>
-    <input type="checkbox" name="include_strap_not_worn" />
-  <% else %>
-    <input type="checkbox" name="include_strap_not_worn" disabled />
-  <% end %>
- <label for"include_strap_not_worn">Include Strap Not Worn (slow, so only available for individual user)</label>
   </form>
   <br>
 
@@ -100,19 +94,18 @@ end %>
 
   	    	<!-- Strap Not Worn -->
 			<td>
-				<% if(!params[:include_strap_not_worn].blank?) %>
-					<% @strap_not_worn = DailyReports.device_not_worn(user.id,@begin_time,@end_time) %>
-					<% strap_not_worn_total += @strap_not_worn if @strap_not_worn%>
-	  	    		<% @total_per = 0%>
-  	    			<% @total_per = ((@strap_not_worn / (@end_time.to_time.to_f - @begin_time.to_time.to_f) ) * 100) if @strap_not_worn%>
-					<%= @total_per.round(1).to_s + '%' if @strap_not_worn%><br>
-					<%= [@strap_not_worn.round/3600, @strap_not_worn.round/60 % 60, @strap_not_worn.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @strap_not_worn %>	    		
-				<% end %>
+				<% @strap_not_worn_array = DailyReports.fast_device_not_worn_by_user(user.id,@begin_time,@end_time) %>
+		    	<% @strap_not_worn = DailyReports.strap_not_worn_sum(@strap_not_worn_array) %>
+				<% strap_not_worn_total += @strap_not_worn if @strap_not_worn%>
+  	    		<% @total_per = 0%>
+	    			<% @total_per = ((@strap_not_worn / (@end_time.to_time.to_f - @begin_time.to_time.to_f) ) * 100) if @strap_not_worn%>
+				<%= @total_per.round(1).to_s + '%' if @strap_not_worn%><br>
+				<%= [@strap_not_worn.round/3600, @strap_not_worn.round/60 % 60, @strap_not_worn.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @strap_not_worn %>	    		
   	    	</td>
 
   	    	<!-- Lost Data -->
   	    	<td>
-	  	    	<% @lost_data_array = DailyReports.lost_data_by_user(user.id,@begin_time.to_time,@end_time.to_time)  %>
+	  	    	<% @lost_data_array = DailyReports.fast_lost_data_by_user(user.id,@begin_time.to_time,@end_time.to_time)  %>
 	  	    	<% @lost_data = DailyReports.lost_data_sum(@lost_data_array) %>
 				<% lost_data_total += @lost_data if @lost_data %>
 				<% @lost_data_per = 0%>

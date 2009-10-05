@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  user_id: 
+  begin_time: 
+  end_time: 2009-09-24 10:48:33
+
+two:
+  user_id: 
+  begin_time: 
+  end_time: 2009-09-24 10:48:33
