@@ -5,12 +5,14 @@
 			 gs << g.name
 		   end %>
 Select Group:  
-<%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, params[:group]), {:onchange => "$('group_form_id').submit();"}%>
-</form>
-<%=link_to 'Not Completed',request.env['REQUEST_URI']+"&display=not_completed"%>
+<%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, params[:group]), {:onchange => "$('group_form_id').submit();"}%> &nbsp;&nbsp;
+<%=link_to 'Show Not Completed Only',request.env['REQUEST_URI']+"&display=not_completed"%>
 <%elsif @groups and @groups.length == 1%>
+<%=link_to 'Show Not Completed Only',request.env['REQUEST_URI']+"&display=not_completed"%>
+</form>
+
 <input type="hidden" name="group" value="<%= @groups[0].name %>">
-<%=link_to 'Not Completed',request.env['REQUEST_URI']+"&display=not_completed"%>
+
 <% end %>
 <script src="/javascripts/browser_detect.js" type="text/javascript"></script>
 

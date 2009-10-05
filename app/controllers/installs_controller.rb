@@ -99,7 +99,13 @@ class InstallsController < ApplicationController
       conds = "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{@group.id}"
       @role = Role.find(:first, :conditions => conds)
       if params[:display] == 'not_completed'
-      	@users = User.paginate(:page    => params[:page],:include => [:roles_users,:self_test_sessions],  :conditions  => "roles_users.role_id = #{@role.id} and self_test_sessions.completed_on is NULL",:order => "users.id asc",:per_page => 10)
+      	@users = User.find(:all,:include => [:roles_users],:conditions  => "roles_users.role_id = #{@role.id}",:order => "users.id asc")
+      	@all_users = []
+      	for user in @users
+      	install_session = user.self_test_sessions.find(:first,:conditions => "completed_on is not NULL", :order => 'completed_on desc')
+      	@all_users << install_session.user_id if install_session
+  		end
+  		@users = User.paginate(:page => params[:page],:include => [:roles_users],:per_page => 10,:conditions => ["roles_users.role_id = #{@role.id} and users.id not in (?)",@all_users],:order => "users.id asc")
   	  elsif params[:display] == 'completed'
   	  	@users = User.paginate(:page    => params[:page],:include  => [:roles_users,:self_test_sessions],  :conditions  => "roles_users.role_id = #{@role.id}",:order => "self_test_sessions.completed_on desc",:per_page => 10)
   	  else
