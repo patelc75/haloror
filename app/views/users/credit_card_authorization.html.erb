@@ -19,7 +19,7 @@
 			  <%= error_messages_for :user %>
 			  <br>
 			<% end %>
-			<% if @profile.errors %>
+			<% if @profile && @profile.errors %>
 			<%= error_messages_for :profile %>
 			<% end %>
 	</div>
@@ -46,13 +46,9 @@
 	        </div>  
 	      </span>
 	      <div class="col-250" style="padding-left: 30px;">
-	        <label for="credit_card_type">Credit Card Type</label>
-	        <br />
-	        <%= text_field 'credit_card','type' %>
-	        <br /><br />
 	        <label for="credit_card_number">Credit Card Number</label>
 	        <br />
-	        <%= text_field 'credit_card','number' %>
+	        <%= text_field 'credit_card','number', :size => '16' %>
 	        <br /><br />
 	        <label for="credit_card_expiration_month">Credit Card Expiration </label>
 	        <br /><br/>
