@@ -219,7 +219,7 @@ class ProfilesController < ApplicationController
   
   def change_password_init
     @user = User.find(params[:user_id])
-    render :partial => 'change_password_init'
+    #render :partial => 'change_password_init'
   end
   def change_password
     user_hash = params[:user]
@@ -259,6 +259,10 @@ class ProfilesController < ApplicationController
       CriticalMailer.deliver_password_confirmation(user)
     end
     @user = user
-    render :partial => 'change_password_init'
+    if request.xhr?
+    	render :partial => 'change_password_init'
+    else
+    	render :action => 'change_password_init',:user_id => params[:user][:id]
+    end
   end
 end
