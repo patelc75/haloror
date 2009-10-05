@@ -5,7 +5,20 @@
 	
 	<div class="content">
 		<p>An activation email AND an email with the following instructions have been sent to <%= @user.name %> (<%= @user.id %>) </p>
-		<ul> 
+		<ul>
+		<li>
+		<P>Please print below:<br>
+			<table>
+				<tr><td><img src="/images/pdf-icon.gif" width="30px" height="30px"></td>
+					<td><a href="/Halo_Subscriber_Agreement.pdf" target="_blank">Halo Subscriber Agreement</a></td>
+					</tr>
+				<tr><td><img src="/images/pdf-icon.gif" width="30px" height="30px"></td>
+					<td><a href="/Halo_User_Intake_Form.pdf" target="_blank">Halo User Intake Form</a></td>
+				</tr>
+			</table>
+						
+		</p>
+		</li> 
 		<li><p>Make sure all computers visiting myhalomonitor.com are NOT running Internet Explorer 6 by going to <a href="/ie6check.html">http://www.myhalomonitor.com/ie6check</a>.  </p></li>	
 		<!-- li><p>Ask if caregivers need to be added now. If so, <a href="/call_list/show/<%=@user.id %>">click here to add caregivers</a> for user <%= @user.name %>.</p></li-->
 		<li><p>The following will be needed for the installation:
