@@ -48,14 +48,21 @@
 	      <div class="col-250" style="padding-left: 30px;">
 	        <label for="credit_card_number">Credit Card Number</label>
 	        <br />
+	        <label for="credit_card_number">format: 1111222233334444</label><br/>
 	        <%= text_field 'credit_card','number', :size => '16' %>
 	        <br /><br />
 	        <label for="credit_card_expiration_month">Credit Card Expiration </label>
 	        <br /><br/>
 	        <%= date_select("credit_card", "expiration_time", :order => [:month, :year])%>
 	        <%#= text_field 'credit_card','expiration_month' %>
+			<br /><br />
+	        <label for="credit_card_notes">Special Notes</label>
+	        <br /><br/>
+	        <%= text_area("credit_card", "special_notes", :size => "20x10")%>
+
 <br/><br/><br/>
-	        <input name="commit" type="image" src="/images/subscribe.gif" />
+			<%= image_submit_tag("/images/subscribe.gif", :id => "submit_button", :onclick => "this.disabled=true;this.form.submit();")%>
+	        <%#<input name="commit" type="image" src="/images/subscribe.gif" />%>
 	      </div>
         </div>
       </div>

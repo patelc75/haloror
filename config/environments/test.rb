@@ -17,3 +17,15 @@ config.action_controller.perform_caching             = false
 # The :test delivery method accumulates sent emails in the
 # ActionMailer::Base.deliveries array.
 config.action_mailer.delivery_method = :test
+
+# Authorize.net settings
+AUTH_NET_LOGIN="54PB5egZ" #test
+AUTH_NET_TXN_KEY="48V258vr55AE8tcg" #test
+AUTH_NET_URL="https://apitest.authorize.net/xml/v1/request.api" # test
+#AUTH_NET_LOGIN="9J37JJs8hvB3" #production
+#AUTH_NET_TXN_KEY="84ZnG87jcJMu8R6Z" #producion
+#AUTH_NET_URL="https://api.authorize.net/xml/v1/request.api" # production
+AUTH_NET_SUBSCRIPTION_TOTAL_OCCURANCES=9999 # 9999 means subscription with no end date 
+AUTH_NET_SUBSCRIPTION_INTERVAL_UNITS="month"
+AUTH_NET_SUBSCRIPTION_INTERVAL=1 # e.g. if units is 'months' and interval=1, then subscription will bill once monthly.
+AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL=65.00

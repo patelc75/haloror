@@ -38,9 +38,15 @@ class UsersController < ApplicationController
   	
   	RAILS_DEFAULT_LOGGER.debug("****START create_subscriber")
   	
+	senior_user_id = params[:user_id]
   	if params[:users][:same_as_senior] == "1"
   		@user = User.find_by_id(params[:user_id])
   		@max_position = get_max_caregiver_position(@user)
+  		subscriber_user_id = senior_user_id
+		RAILS_DEFAULT_LOGGER.debug("**same as senior == 1 ; subscriber_user_id = #{@senior_user_id}")
+		bill_to_fn = @user.profile.first_name
+		bill_to_ln = @user.profile.last_name
+
   	else
   		@user = User.new
   		@user.email = params[:email]
@@ -76,56 +82,47 @@ class UsersController < ApplicationController
 	        	raise "Invalid Subscriber"
 	  		end
   		end
+  		
+  		subscriber_user_id = @user.id
+		RAILS_DEFAULT_LOGGER.debug("**subscriber_user_id= #{@user.id}")
+		bill_to_fn = @user.profile.first_name
+		bill_to_ln = @user.profile.last_name
+
   	end
   	
-  	RAILS_DEFAULT_LOGGER.debug("1")
-
 	patient = User.find(params[:user_id].to_i)
-  	RAILS_DEFAULT_LOGGER.debug("2")
 	role = @user.has_role 'subscriber', patient
-	RAILS_DEFAULT_LOGGER.debug("3")
 
 	subscriber = @user
-	  	RAILS_DEFAULT_LOGGER.debug("4")
 
 	@roles_user = patient.roles_user_by_subscriber(subscriber)
-	  	RAILS_DEFAULT_LOGGER.debug("5")
 
 	update_from_position(@max_position, @roles_user.role_id, subscriber.id)
-	  	RAILS_DEFAULT_LOGGER.debug("6")
 
 	RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => @max_position, :active => 0)
       
-	  	RAILS_DEFAULT_LOGGER.debug("7")
 
     # Start authorize.net create subscription code
   	auth = MerchantAuthenticationType.new(AUTH_NET_LOGIN, AUTH_NET_TXN_KEY)
-	  	RAILS_DEFAULT_LOGGER.debug("8")
   	# subscription name - use subscriber user id
-	subname = "user_id-#{@subscriber.id}"
-		  	RAILS_DEFAULT_LOGGER.debug("9")
+	subname = "sen_uid-#{senior_user_id}-sub_uid-#{subscriber_user_id}"
 
 	RAILS_DEFAULT_LOGGER.info("Attempting to create Authorize.Net subscription.  Subscription name = #{subname}")
+	RAILS_DEFAULT_LOGGER.debug("Authorize.Net AUTH_NET_LOGIN= #{AUTH_NET_LOGIN}, AUTH_NET_TXN_KEY= #{AUTH_NET_TXN_KEY}")
 
   	# 1 month interval
 	interval = IntervalType.new(AUTH_NET_SUBSCRIPTION_INTERVAL, AUTH_NET_SUBSCRIPTION_INTERVAL_UNITS)
-	  	RAILS_DEFAULT_LOGGER.debug("10")
 
 	sub_start_date = Time.now
 	schedule = PaymentScheduleType.new(interval, sub_start_date.strftime("%Y-%m-%d"), AUTH_NET_SUBSCRIPTION_TOTAL_OCCURANCES, 0)
 	
-		  	RAILS_DEFAULT_LOGGER.debug("11")
-
 	RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription startdate = #{sub_start_date.strftime("%Y-%m-%d")} num_occurances = #{AUTH_NET_SUBSCRIPTION_TOTAL_OCCURANCES} interval = #{AUTH_NET_SUBSCRIPTION_INTERVAL} interval_units = #{AUTH_NET_SUBSCRIPTION_INTERVAL_UNITS}")
 	
 	cc_exp = "#{params[:credit_card][:"expiration_time(1i)"]}-#{params[:credit_card][:"expiration_time(2i)"]}"
 
 	cinfo = CreditCardType.new(params[:credit_card][:number], cc_exp)
-	
-	# TODO: Remove line below!!!
-	RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription cc numb = #{cinfo.cardNumber} cc expdate = #{cc_exp}")
-	
-	binfo = NameAndAddressType.new(params[:profile][:first_name], params[:profile][:last_name])
+		
+	binfo = NameAndAddressType.new(bill_to_fn, bill_to_ln)
 	RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription cc fn = #{binfo.firstName} cc ln = #{binfo.lastName}")
 	
 	aReq = ArbApi.new
@@ -144,20 +141,27 @@ class UsersController < ApplicationController
 	   RAILS_DEFAULT_LOGGER.info("Subscription Created successfully")
 	   RAILS_DEFAULT_LOGGER.info("Subscription id : " + apiresp.subscriptionid)
 	else
-	   RAILS_DEFAULT_LOGGER.info("Subscription Creation Failed")
-	   apiresp.messages.each { |message| 
-	      RAILS_DEFAULT_LOGGER.info("Error Code=" + message.code)
-	      RAILS_DEFAULT_LOGGER.info("Error Message = " + message.text)
-	   }
-	   
-       raise "Unable to create subscription.  Check credit card information."
+		RAILS_DEFAULT_LOGGER.info("Subscription Creation Failed")
+		apiresp.messages.each { |message| 
+			RAILS_DEFAULT_LOGGER.info("Error Code=" + message.code)
+			RAILS_DEFAULT_LOGGER.info("Error Message = " + message.text)
+			flash[:warning] = "Unable to create subscription.  Check credit card information. Error Code=" + message.code + ", Error Message = " + message.text
+		}   
+		raise "Unable to create subscription."
 
 	end
-	
+		
 	@subscription = Subscription.new
 	@subscription[:arb_subscriptionId] = apiresp.subscriptionid
-	@subscription[:user_id] = subscriber.id
-	@subscription[:cc_last_four] = subscriber.id
+	@subscription[:senior_user_id] = senior_user_id
+	@subscription[:subscriber_user_id] = subscriber_user_id
+	@subscription[:cc_last_four] = (params[:credit_card][:number]).last(4)
+	@subscription[:special_notes] = params[:credit_card][:special_notes]
+	@subscription[:bill_amount] = AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL
+	@subscription[:bill_to_first_name] = bill_to_fn
+	@subscription[:bill_to_last_name] = bill_to_ln
+	@subscription[:bill_start_date] = sub_start_date
+	@subscription.save!
 		
   	# End authorize.net create subscription code
   	

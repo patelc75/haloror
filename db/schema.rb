@@ -740,9 +740,14 @@ ActiveRecord::Schema.define(:version => 20091005153117) do
 
   create_table "subscriptions", :force => true do |t|
     t.integer  "arb_subscriptionId"
-    t.integer  "user_id"
+    t.integer  "senior_user_id"
+    t.integer  "subscriber_user_id"
     t.integer  "cc_last_four"
-    t.text     "comments"
+    t.decimal  "bill_amount"
+    t.string   "bill_to_first_name"
+    t.string   "bill_to_last_name"
+    t.date     "bill_start_date"
+    t.text     "special_notes"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
