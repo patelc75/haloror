@@ -1,3 +1,5 @@
+require "ArbApiLib"
+
 class UsersController < ApplicationController  
   before_filter :authenticated?, :except => [:init_user, :update_user]
   def save_timezone
@@ -16,12 +18,14 @@ class UsersController < ApplicationController
   end
   
   def show
+  	RAILS_DEFAULT_LOGGER.debug("****START show")
   	@user = User.new
     @profile = Profile.new
   render :action => 'credit_card_authorization'
   end
   
   def credit_card_authorization
+  	RAILS_DEFAULT_LOGGER.debug("****START credit_card_authorization")
   	if params[:user_id]
   		@user = User.find(params[:user_id])
   	else
@@ -32,6 +36,8 @@ class UsersController < ApplicationController
   
   def create_subscriber
   	
+  	RAILS_DEFAULT_LOGGER.debug("****START create_subscriber")
+  	
   	if params[:users][:same_as_senior] == "1"
   		@user = User.find_by_id(params[:user_id])
   		@max_position = get_max_caregiver_position(@user)
@@ -41,51 +47,129 @@ class UsersController < ApplicationController
   		@profile = Profile.new(params[:profile])
   		
   		if params[:users][:add_caregiver] != "1"
-  			 @user.is_new_caregiver = true
+  			@user.is_new_caregiver = true
       		@user[:is_caregiver] =  true
       		
   		end
   		
   		User.transaction do
-  		@user[:is_new_user] = true
-        if @user.save!
-        # create profile
-        	
-        	@profile.user_id = @user.id
-        	@profile[:is_new_caregiver] = true if params[:users][:add_caregiver] != "1"
-            if @profile.save!
-            	if params[:users][:add_caregiver] != "1"
-            		@max_position = get_max_caregiver_position(@user)
-          			patient = User.find(params[:user_id].to_i)
-      				role = @user.has_role 'caregiver', patient
-     				caregiver = @user
-     				@roles_user = patient.roles_user_by_caregiver(caregiver)
-					update_from_position(@max_position, @roles_user.role_id, caregiver.id)
-					RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => @max_position, :active => 0)
-				end
-            else
-              raise "Invalid Profile"  
-            end
-        else
-        	raise "Invalid Subscriber"
-  		end
+	  		@user[:is_new_user] = true
+	        if @user.save!
+	        # create profile
+	        	
+	        	@profile.user_id = @user.id
+	        	@profile[:is_new_caregiver] = true if params[:users][:add_caregiver] != "1"
+	            if @profile.save!
+	            	if params[:users][:add_caregiver] != "1"
+	            		@max_position = get_max_caregiver_position(@user)
+	          			patient = User.find(params[:user_id].to_i)
+	      				role = @user.has_role 'caregiver', patient
+	     				caregiver = @user
+	     				@roles_user = patient.roles_user_by_caregiver(caregiver)
+						update_from_position(@max_position, @roles_user.role_id, caregiver.id)
+						RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => @max_position, :active => 0)
+					end
+	            else
+	              raise "Invalid Profile"  
+	            end
+	        else
+	        	raise "Invalid Subscriber"
+	  		end
   		end
   	end
   	
-  	  patient = User.find(params[:user_id].to_i)
-      role = @user.has_role 'subscriber', patient
-      subscriber = @user
-      @roles_user = patient.roles_user_by_subscriber(subscriber)
+  	RAILS_DEFAULT_LOGGER.debug("1")
+
+	patient = User.find(params[:user_id].to_i)
+  	RAILS_DEFAULT_LOGGER.debug("2")
+	role = @user.has_role 'subscriber', patient
+	RAILS_DEFAULT_LOGGER.debug("3")
+
+	subscriber = @user
+	  	RAILS_DEFAULT_LOGGER.debug("4")
+
+	@roles_user = patient.roles_user_by_subscriber(subscriber)
+	  	RAILS_DEFAULT_LOGGER.debug("5")
+
+	update_from_position(@max_position, @roles_user.role_id, subscriber.id)
+	  	RAILS_DEFAULT_LOGGER.debug("6")
+
+	RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => @max_position, :active => 0)
       
-      update_from_position(@max_position, @roles_user.role_id, subscriber.id)
-    
-      RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => @max_position, :active => 0)
+	  	RAILS_DEFAULT_LOGGER.debug("7")
+
+    # Start authorize.net create subscription code
+  	auth = MerchantAuthenticationType.new(AUTH_NET_LOGIN, AUTH_NET_TXN_KEY)
+	  	RAILS_DEFAULT_LOGGER.debug("8")
+  	# subscription name - use subscriber user id
+	subname = "user_id-#{@subscriber.id}"
+		  	RAILS_DEFAULT_LOGGER.debug("9")
+
+	RAILS_DEFAULT_LOGGER.info("Attempting to create Authorize.Net subscription.  Subscription name = #{subname}")
+
+  	# 1 month interval
+	interval = IntervalType.new(AUTH_NET_SUBSCRIPTION_INTERVAL, AUTH_NET_SUBSCRIPTION_INTERVAL_UNITS)
+	  	RAILS_DEFAULT_LOGGER.debug("10")
+
+	sub_start_date = Time.now
+	schedule = PaymentScheduleType.new(interval, sub_start_date.strftime("%Y-%m-%d"), AUTH_NET_SUBSCRIPTION_TOTAL_OCCURANCES, 0)
+	
+		  	RAILS_DEFAULT_LOGGER.debug("11")
+
+	RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription startdate = #{sub_start_date.strftime("%Y-%m-%d")} num_occurances = #{AUTH_NET_SUBSCRIPTION_TOTAL_OCCURANCES} interval = #{AUTH_NET_SUBSCRIPTION_INTERVAL} interval_units = #{AUTH_NET_SUBSCRIPTION_INTERVAL_UNITS}")
+	
+	cc_exp = "#{params[:credit_card][:"expiration_time(1i)"]}-#{params[:credit_card][:"expiration_time(2i)"]}"
+
+	cinfo = CreditCardType.new(params[:credit_card][:number], cc_exp)
+	
+	# TODO: Remove line below!!!
+	RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription cc numb = #{cinfo.cardNumber} cc expdate = #{cc_exp}")
+	
+	binfo = NameAndAddressType.new(params[:profile][:first_name], params[:profile][:last_name])
+	RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription cc fn = #{binfo.firstName} cc ln = #{binfo.lastName}")
+	
+	aReq = ArbApi.new
+	xmlout = aReq.CreateSubscription(auth,subname,schedule,AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL,0, cinfo,binfo)
+	
+	RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription amount = #{AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL}")
+	
+	RAILS_DEFAULT_LOGGER.info("Authorize.Net Submitting to URL = #{AUTH_NET_URL}")
+	xmlresp = HttpTransport.TransmitRequest(xmlout, AUTH_NET_URL)
+
+	apiresp = aReq.ProcessResponse(xmlresp)
+	
+	RAILS_DEFAULT_LOGGER.info("\nXML Dump:" + xmlresp)
+
+	if apiresp.success 
+	   RAILS_DEFAULT_LOGGER.info("Subscription Created successfully")
+	   RAILS_DEFAULT_LOGGER.info("Subscription id : " + apiresp.subscriptionid)
+	else
+	   RAILS_DEFAULT_LOGGER.info("Subscription Creation Failed")
+	   apiresp.messages.each { |message| 
+	      RAILS_DEFAULT_LOGGER.info("Error Code=" + message.code)
+	      RAILS_DEFAULT_LOGGER.info("Error Message = " + message.text)
+	   }
+	   
+       raise "Unable to create subscription.  Check credit card information."
+
+	end
+	
+	@subscription = Subscription.new
+	@subscription[:arb_subscriptionId] = apiresp.subscriptionid
+	@subscription[:user_id] = subscriber.id
+	@subscription[:cc_last_four] = subscriber.id
+		
+  	# End authorize.net create subscription code
+  	
   rescue Exception => e
- # 	RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
+  	RAILS_DEFAULT_LOGGER.warn("ERROR in create_subscriber, #{e}")
+  	RAILS_DEFAULT_LOGGER.debug(e.backtrace.join("\n"))
   	render :action => 'credit_card_authorization'
   end
   
   def new
+  	  	RAILS_DEFAULT_LOGGER.debug("****START new")
+
     @user = User.new
     @profile = Profile.new
     @groups = []
@@ -96,6 +180,9 @@ class UsersController < ApplicationController
   end
 
   def create
+  	
+  	  RAILS_DEFAULT_LOGGER.debug("****START create")
+
    
       @user = User.new(params[:user])
       @user.email = params[:email]

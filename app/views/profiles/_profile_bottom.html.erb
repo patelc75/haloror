@@ -28,14 +28,14 @@
 	    <br />
 	  
 	    <select id="profile_carrier_id" name="profile[carrier_id]" style="width:200px;">
-	      <% if @profile.carrier_id == 0 or @profile.carrier_id == nil -%>
+	      <% if @profile == nil or @profile.carrier_id == 0 or @profile.carrier_id == nil -%>
 	        <option value="" selected="selected" >
 	        Select a Service Provider </option>
 	      <% end -%>
 	      <% @carrier = Carrier.find(:all, :order => "id")
 	           @carrier.each do |carrier| %>
 	        <option value="<%= carrier.id %>"
-	         <% if @profile.carrier_id == carrier.id -%> selected="selected"<% end -%>
+	         <% if @profile && @profile.carrier_id == carrier.id -%> selected="selected"<% end -%>
 	         >
 	         <%= carrier.name %> 
 	         </option>
