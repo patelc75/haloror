@@ -191,7 +191,7 @@ class ProfilesController < ApplicationController
         @roles_users_option.save!
       end
     
-      @profile.update_attributes!(params[:profile])
+      if @profile.update_attributes!(params[:profile])
       if((current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)) and user.is_halouser)
         group = Group.find_by_name('SafetyCare')
         if(params[:opt_out_call_center].blank?)
@@ -202,17 +202,20 @@ class ProfilesController < ApplicationController
           RolesUser.delete(ru)
         end
       end
-      
+ 	  else
+  		#raise "Invalid Profile"
+  	  end
       #render :text => 'chirag'
-      
-      
+      @alert_message = true
+      render :action => 'edit_caregiver_profile'
         #render(:update) do |page|
         #  page << "RedBox.close(); window.location = window.location;"
         #end
         #render :action => 'edit_caregiver_profile'
         #redirect_to request.env['HTTP_REFERER']
     end   
-    rescue 
+    rescue Exception => e
+    #	RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
       render :action => 'edit_caregiver_profile'
     end
   end
