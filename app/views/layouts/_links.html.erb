@@ -37,18 +37,17 @@
 			<% if current_user.is_admin? || current_user.is_super_admin? %>
 			  <li><%= link_to 'Vitals List', :controller => 'vital_lists', :action => 'index' %></li>
 			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? %>
-				<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_sales? %>
+				<li><%= link_to 'Config', :controller => 'reporting', :action => 'index' %></li>
 			<% end %>
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_sales? %>
-				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'index' %></li>
+				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'fall_panic_report' %></li>
 			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_moderator? %>
-				<li><%= link_to 'Operators', :controller => 'call_center', :action => 'show' %></li>
-			<% end %>
-			<% halo_group = Group.find_by_name('halo') %>
-			<% if current_user.is_super_admin? || current_user.is_admin_of?(halo_group) || current_user.is_sales? || current_user.is_installer? %>
-				<li><%= link_to "Emergency_#s", :action => 'index', :controller => 'emergency_numbers' %></li>
+			<% if current_user.is_admin? || current_user.is_super_admin? %>
+				<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
+			<% end %>			
+			<% if current_user.is_super_admin? %>
+				<li><a href="/atp/index">ATP</a></li>
 			<% end %>
 			<% if (current_user.is_admin? || current_user.is_super_admin?) and ServerInstance.in_hostname?('idev') %>
 				<li><%= link_to 'Healthvault', :controller => 'healthvault', :action => 'index' %></li>

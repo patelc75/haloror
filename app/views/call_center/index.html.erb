@@ -1,7 +1,8 @@
 <meta http-equiv="refresh" content="30">
+<%=render :partial=>'/reporting/nav'%>
+
 <% is_admin = current_user.is_super_admin? %>
 <h2>Crtical Event Log</h2>
-<br>
 All times are in <%= current_user.profile.time_zone if current_user.profile %> timezone <br>
 <div class="table">
   <div class="row header">
