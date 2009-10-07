@@ -328,6 +328,17 @@ class User < ActiveRecord::Base
     groups.uniq!
     return groups
   end
+  
+  def group_memberships_by_role(role)
+  	groups = []
+  	@role = Role.find_by_name(role)
+  	groups << Group.find(@role.authorizable_id)
+  end
+  
+  def group_recurring_charge
+  	self.group_memberships_by_role('halouser').first.recurring_charges.length > 0 ? self.group_memberships_by_role('halouser').first.recurring_charges.first.group_charge : AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL
+  end
+  
   def is_moderator_of_any?(groups)
     groups.each do |group|
       if self.is_moderator_of? group

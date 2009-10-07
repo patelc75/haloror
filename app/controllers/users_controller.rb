@@ -89,7 +89,7 @@ class UsersController < ApplicationController
 		bill_to_ln = @user.profile.last_name
 
   	end
-  	
+  	@senior = User.find(senior_user_id)
 	patient = User.find(params[:user_id].to_i)
 	role = @user.has_role 'subscriber', patient
 
@@ -127,8 +127,10 @@ class UsersController < ApplicationController
 	binfo = NameAndAddressType.new(bill_to_fn, bill_to_ln)
 	RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription cc fn = #{binfo.firstName} cc ln = #{binfo.lastName}")
 	
+	charge = @senior.group_recurring_charge
+	
 	aReq = ArbApi.new
-	xmlout = aReq.CreateSubscription(auth,subname,schedule,AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL,0, cinfo,binfo)
+	xmlout = aReq.CreateSubscription(auth,subname,schedule,charge,0, cinfo,binfo)
 	
 	RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription amount = #{AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL}")
 	
@@ -159,7 +161,7 @@ class UsersController < ApplicationController
 	@subscription[:subscriber_user_id] = subscriber_user_id
 	@subscription[:cc_last_four] = (params[:credit_card][:number]).last(4)
 	@subscription[:special_notes] = params[:credit_card][:special_notes]
-	@subscription[:bill_amount] = AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL
+	@subscription[:bill_amount] = charge
 	@subscription[:bill_to_first_name] = bill_to_fn
 	@subscription[:bill_to_last_name] = bill_to_ln
 	@subscription[:bill_start_date] = sub_start_date

@@ -1,0 +1,10 @@
+<form method='post' action='/recurring_charges/create'>
+<table>
+<tr><th>Group</th><th>Charge</th></tr>
+<tr>
+<td><%= select_tag 'group', options_for_select(@groups.collect { |g| [g.name, g.id]})%></td>
+<td><%= text_field :recurring_charges, :charge %></td>
+</tr>
+<tr><td colspan="2"><input type="submit" name="Submit" value="Add Recurring Charge">
+</table>
+</form>

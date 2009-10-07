@@ -1,0 +1,17 @@
+<br>
+<h3>Recurring Charges for each group</h3>
+<br>
+<%= link_to 'Add New Recurring Group Charge', new_recurring_charge_path %>
+<br><br>
+<div>
+<table border="1" style="text-align:left">
+<tr><th>Group</th><th>Charge</th><th>Actions</th></tr>
+<% @recurring_charges.each do |rc|  %>
+  <tr>
+  	<td><%= rc.group.name %></td>
+  	<td>$ <%=rc.charge.round(2) %></td>
+  	<td><%= link_to 'Edit', '/recurring_charges/edit/' + rc.id.to_s %> | <%= link_to 'Remove', '/recurring_charges/destroy/' + rc.id.to_s, :confirm => 'Are you sure?', :method => :delete%></td>
+  	</tr>
+<% end %>
+</table>
+</div>

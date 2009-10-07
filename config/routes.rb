@@ -18,6 +18,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :oscope_msgs
 
   map.resources :bundle
+  map.resources :recurring_charges
   #device alert models derived from RestfulAuthController
   map.resources :battery_pluggeds
   map.resources :battery_unpluggeds

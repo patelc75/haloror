@@ -1,0 +1,17 @@
+<%  group_name = @recurring_charge.group.name 		
+	      gs = [group_name]
+        group_name = @group.name if @group  
+		  
+		   @groups.each do |g|
+			 gs << g.name
+		   end %>
+<form method='post' action='/recurring_charges/update/<%=@recurring_charge.id %>'>
+<table>
+<tr><th>Group</th><th>Charge</th></tr>
+<tr>
+<td><%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, group_name)%></td>
+<td><%= text_field :recurring_charges, :charge,:value => @recurring_charge.charge %></td>
+</tr>
+<tr><td colspan="2"><input type="submit" name="Submit" value="Update Recurring Charge">
+</table>
+</form>
