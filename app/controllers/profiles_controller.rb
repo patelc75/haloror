@@ -175,6 +175,7 @@ class ProfilesController < ApplicationController
     end
   end
   def update_caregiver_profile
+  	
     sent = false
     user = User.find(params[:user_id])
     @profile = Profile.find(params[:id])
@@ -192,7 +193,7 @@ class ProfilesController < ApplicationController
       end
     
       if @profile.update_attributes!(params[:profile])
-      if((current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)) and user.is_halouser)
+      if((current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)) and user.is_halouser?)
         group = Group.find_by_name('SafetyCare')
         if(params[:opt_out_call_center].blank?)
           user.is_halouser_of group
