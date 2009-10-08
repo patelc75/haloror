@@ -38,7 +38,7 @@ Select Group:
 		</div>
 		<div class="col-150"><%= link_to_function("Start Wizard", "browserCheckStartRegistration('#{user.id}', '#{@group.name}')") %>
 			<% @kit_serial_number = KitSerialNumber.find_by_user_id(user.id,:order => 'created_at desc') %>
-			<span style="font-size: 80%;"><br><%= @kit_serial_number.serial_number if @kit_serial_number %></font>
+			<span style="font-size: 80%;"><br><%= @kit_serial_number.serial_number if @kit_serial_number %></span>
 		</div>
 		<div class="col-100"><%= link_to_remote "Start Range Test Only", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :group => @group.name, :id => user.id} %></div>
 		<div class="col-200">
