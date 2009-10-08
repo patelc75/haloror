@@ -23,4 +23,7 @@
 <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_moderator? %>
 | <%= link_to 'Operators', :controller => 'call_center', :action => 'show' %>
 <% end %>
+<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_moderator? %>
+| <%= link_to 'Send Test Email', :controller => 'util', :action => 'send_test_email'%>
+<% end %>
 <br><br>
