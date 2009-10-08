@@ -59,6 +59,7 @@
 							| <a href="<%= url_for(:controller => 'call_center', :action => 'all_user_notes', :id => user[:id], :user_id => user[:id])%>">Notes</a>			
 			<% if device %> | <a href="/reporting/remove_user_mapping/<%=user.id%>?device_id=<%= device.id %>">Remove</a>
 				<% end %>
+					| <a href="/blood_pressures?id=<%=user.id%>">Vital List</a>
 					<% end %>
 		<% else %>
 			&nbsp;
