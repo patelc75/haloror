@@ -18,10 +18,12 @@ Select Group:
 	<%=render :partial => 'user_table', :locals => {:users => @users, :sortby => 'id', :reverse => false}%>
 	<br>
     <br>
-    <center><%= will_paginate @users %></center>
+    
 
 </div>
-
+<div style="clear:both;"></div>
+<br><br>
+<center><%= will_paginate @users %></center>
 <div id="range_test_launcher"></div>
 <script language="javascript">
 function start_range_test(user_id){
