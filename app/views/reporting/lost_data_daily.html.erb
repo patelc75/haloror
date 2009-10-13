@@ -1,4 +1,4 @@
-<% begin_time, end_time, lost_data_hash = DailyReports.job_lost_data; users = User.find(:all, :order => "id asc") -%>
+<% begin_time, end_time, lost_data_hash = Compliance.lost_data_job; users = User.find(:all, :order => "id asc") -%>
 <% total_num = 0; total_duration = 0; -%>
 <% users.each do |user|  -%>
 <% 	total_user_duration 	= 0; total_user_num	= 0; lost_data = lost_data_hash[user.id]; user[:lost_data] = lost_data;

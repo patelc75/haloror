@@ -1,12 +1,12 @@
-<% begin_time, end_time, strap_not_worn_hash = DailyReports.job_device_not_warn; users = User.find(:all, :order => "id asc") -%>
+<% users = User.find(:all, :order => "id asc") -%>
 <% total_num = 0; total_duration = 0; -%>
 <% users.each do |user| -%>
-<% 	total_user_duration 	= 0; total_user_num	= 0; strap_not_worn = strap_not_worn_hash[user.id]; user[:strap_not_worn] = strap_not_worn;
+<% 	total_user_duration 	= 0; total_user_num	= 0; strap_not_worn = StrapNotWorn.rows_by_user(user.id, 1.days.ago, Time.now); user[:strap_not_worn] = strap_not_worn;
 	strap_not_worn.each do |reading|	total_user_num += 1; duration = (reading.end_time - reading.begin_time).seconds; total_user_duration += duration; user[:total_user_num] = total_user_num; user[:total_user_duration] = total_user_duration; end 
    total_duration += total_user_duration; total_num += total_user_num;  	end -%>
 Device Not Worn (All times are in UTC timezone)
-Starting Time: <%= begin_time %>  
-Ending Time :  <%= end_time %>
+Starting Time: <%= 1.days.ago %>  
+Ending Time :  <%= Time.now %>
 
 Name                Ocurrences                Total Duration
 ------------------------------------------------------------

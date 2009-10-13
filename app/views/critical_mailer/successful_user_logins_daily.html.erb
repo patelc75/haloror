@@ -1,6 +1,6 @@
 <%  end_time = Time.now
     begin_time = 1.day.ago(end_time)
-    users = DailyReports.successful_user_logins(begin_time, end_time)  -%>
+    users = Compliance.successful_user_logins(begin_time, end_time)  -%>
 Successful Logins:
 All times are in UTC timezone
 	Starting Time: <%= begin_time %>

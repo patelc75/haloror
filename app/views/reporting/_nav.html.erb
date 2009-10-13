@@ -5,9 +5,7 @@
 | <%= link_to 'User Compliance', '/reporting/compliance_report'%>
 <% end %>
 <% if current_user.is_admin? || current_user.is_super_admin? %>
-<% if false %>
-| <a href="/reporting/init_strap_not_worn">User Compliance</a> 
-<% end %>
+<!--a href="/reporting/init_strap_not_worn">User Compliance</a--> 
 | <a href="/reporting/init_successful_user_logins">User Logins</a> 
 <% end %>
 <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? %>
