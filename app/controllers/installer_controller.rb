@@ -219,7 +219,7 @@ class InstallerController < ApplicationController
          	<div class="lightbox-content-700">
           		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
           			<div id="installer_div_id">
-            			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{message}</div>
+            			<div id="message_div_id" style="font-size: 125%;vertical-align: middle;">#{message}</div>
             			<div id="duration_div_id" style="vertical-align: middle;"></div>
           			</div>
           		</div>
@@ -539,7 +539,7 @@ class InstallerController < ApplicationController
        	<div class="lightbox-content-700">
             		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
             			<div id="installer_div_id">
-              			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{message}</div>
+              			<div id="message_div_id" style="font-size: 125%;vertical-align: middle;">#{message}</div>
               			<div id="duration_div_id" style="vertical-align: middle;"></div>
             			</div>
             		</div>
@@ -572,7 +572,7 @@ class InstallerController < ApplicationController
        	<div class="lightbox-content-700">
             		<div style="width:600px;margin-left:auto;margin-right:auto" id="container">
             			<div id="installer_div_id">
-              			<div id="message_div_id" style="font-size: 200%;vertical-align: middle;">#{message}</div>
+              			<div id="message_div_id" style="font-size: 125%;vertical-align: middle;">#{message}</div>
               			<div id="duration_div_id" style="vertical-align: middle;"></div>
             			</div>
             		</div>

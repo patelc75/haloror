@@ -1,0 +1,39 @@
+
+
+<%if @installs %>
+ <br>
+ <b><%= UtilityHelper.format_datetime(@begin_time, current_user) %></b> to <b><%= UtilityHelper.format_datetime(@end_time, current_user) %></b> in
+ <%= current_user.profile.time_zone if current_user.profile %> timezone<br>
+ <br>
+ 	<table border="1">
+ 		<tr>
+ 			<th bgcolor="#E1E1E1">Group</th>
+ 			<th bgcolor="#E1E1E1">New<br> Installs</th>
+ 			<th bgcolor="#E1E1E1">Installed Users</th>
+ 		</tr>
+ 		<%@group_stats.keys.sort.each {|key|%>
+ 			<tr align="center">
+ 				<td align="left"><%= key%></td>
+ 				<td><b><% if installs = @group_stats[key][:installs] %>
+					<%= @group_stats[key][:installs].length %>
+					<% else %> 0 <% end%>
+				</td>
+				<td>
+					<br>
+					<% users = ""%>
+					<% if installs %> 
+					<% num_users = 0 %>
+					<% installs.each do |install|%>
+					<% users += install.user_id.to_s + "," %>
+					<% num_users = num_users + 1 %>
+					<% if num_users % 4 == 0 %>
+					<% users << "<br>" %>
+					<% end %>
+					<% end %>
+					<% end %>
+					(<%= users.chop %>)	
+				</td>	
+ 			</tr>
+		<%}%>
+ 	</table>
+ <%end%>
