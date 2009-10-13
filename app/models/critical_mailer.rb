@@ -2,43 +2,8 @@ class CriticalMailer < ActionMailer::ARMailer
   include UtilityHelper
   include ServerInstance
   NO_REPLY = "no-reply@halomonitoring.com"
-  
-  def monitoring_failure(message, event)
-    setup_message("SafetyCare monitoring failure: #{message}", "The following event triggered, but an error was encountered.\n\nTime: #{Time.now}\n\nError: #{message}\n\nEvent: #{event.to_s}\n\n#{event.inspect}\n\n")
-    @recipients = ["exceptions@halomonitoring.com"]
-  end
 
-  def monitoring_heartbeat_failure(message, exception)
-    setup_message("SafetyCare HEARTBEAT failure", "There was a HEARTBEAT failure!\n\nTime: #{Time.now}\n\n  Exception: #{exception}\nError: #{message}\n\n")
-    @recipients = ["exceptions@halomonitoring.com"]
-  end
-  
-  def background_task_notification(alert, user)
-    body = "User #{user.name} (#{user.id})\n" +
-      "Detected at #{UtilityHelper.format_datetime(alert.created_at, user)}\n" +
-      "Device ID: #{alert.device.id}  Alert ID: #{alert.id}\n"
-    setup_message(alert.to_s, body)
-    setup_caregivers(user, alert, :recepients)
-    self.priority = alert.priority
-  end
-  
-  def admin_call_log(event, body, recipients)
-    @recipients = []
-    setup_message("Call Log for #{event.user.name} #{event.event_type} at #{UtilityHelper.format_datetime(event.timestamp, event.user)}", body)
-    recipients.each do |admin|
-     @recipients << ["#{admin.email}"] 
-    end
-    @recipients << ["reports@halomonitoring.com"] 
-    self.priority = Priority::IMMEDIATE
-  end
-  def gw_alarm(event)
-      setup_caregivers(event.user, event, :recepients)
-      #setup_halo_operators()
-	  setup_operators(event, :recepients, :include_phone_call, :halo_only) 
-      setup_message(event.to_s, event.email_body)
-      self.priority = Priority::IMMEDIATE
-      @recipients = @recipients + @text_recipients
-  end
+#=============== Alerts ======================       
   def device_event_admin(event)
     setup_caregivers(event.user, event, :recepients)
     setup_operators(event, :recepients, :include_phone_call, :halo_only) 
@@ -71,19 +36,7 @@ class CriticalMailer < ActionMailer::ARMailer
     #setup_emergency_group(event, :recepients)
     self.priority  = event.priority
   end
-
-#this method is deperecated, use this for from event observer when the call center wizard is being used
-#CP 05/13/09
-  def device_event_operator_wizard(event)
-    setup_caregivers(event.user, event, :caregiver_info)
-    link = get_link_to_call_center()
-    @caregiver_info << '\n\n(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
-    setup_message('URGENT:  ' + event.to_s, "You received this email because you’re an operator.\n\n#{link}\n" + @caregiver_info)
-    setup_operators(event, :recepients, :include_phone_call) 
-    #setup_emergency_group(event, :recepients)
-    self.priority  = event.priority
-  end
-  
+ 
   def device_event_operator_text(event)
     setup_caregivers(event.user, event, :caregiver_info)
     @caregiver_info << '(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
@@ -96,34 +49,51 @@ class CriticalMailer < ActionMailer::ARMailer
     @recipients = @text_recipients
     self.priority  = event.priority    
   end
-  
-  def get_link_to_call_center_text()
-    set_hostnames
-	return "https://#{@primary_host}/call_center If the site is not available then try the backup link https://#{@secondary_host}/call_center "
+
+  def gw_alarm(event)
+    setup_caregivers(event.user, event, :recepients)
+    #setup_halo_operators()
+    setup_operators(event, :recepients, :include_phone_call, :halo_only) 
+    setup_message(event.to_s, event.email_body)
+    self.priority = Priority::IMMEDIATE
+    @recipients = @recipients + @text_recipients
   end
-  
-  def get_link_to_call_center()
-    suffix = "The following contact info is only used for disaster recovery."
-	set_hostnames
-    if ServerInstance.in_hostname?('crit1') || ServerInstance.in_hostname?('crit2')	  
-      return "Please use the following link to accept and handle the event on the the call center overview page.  \nhttps://#{@primary_host}/call_center  \n\nIf the site is not available then try the backup link \nhttps://#{@secondary_host}/call_center \n\n" + suffix 
-    else
-      return "Please use the following link to accept and handle the event on the the call center overview page.  \nhttps://#{@primary_host}/call_center \n\n" + suffix 
-    end
-  end
-  
+
+#=============== Call Center  ======================     
   def call_center_caregiver(event_action)
     setup_message(event_action.to_s, event_action.email_body + "\n\nYou received this email because you’re a Halo User or caregiver of #{event_action.event.user.name}")
     setup_caregivers(event_action.event.user, event_action.event.event, :recepients)
     self.priority  = event_action.priority
   end
   
-  def call_center_operator(event_action)    
+  def call_center_operator(event_action)
     setup_message(event_action.to_s, event_action.email_body + event_action.event.notes_string + "\n\nYou received this email because you’re an operator.")
     setup_operators(event_action.event.event, :recepients)
     self.priority  = event_action.priority
   end
-  
+
+  def admin_call_log(event, body, recipients)
+    @recipients = []
+    setup_message("Call Log for #{event.user.name} #{event.event_type} at #{UtilityHelper.format_datetime(event.timestamp, event.user)}", body)
+    recipients.each do |admin|
+     @recipients << ["#{admin.email}"] 
+    end
+    @recipients << ["reports@halomonitoring.com"] 
+    self.priority = Priority::IMMEDIATE
+  end
+
+  #CP 05/13/09 this method is deperecated, use this for from event observer when the call center wizard is being used
+  def device_event_operator_wizard(event)
+    setup_caregivers(event.user, event, :caregiver_info)
+    link = get_link_to_call_center()
+    @caregiver_info << '\n\n(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
+    setup_message('URGENT:  ' + event.to_s, "You received this email because you’re an operator.\n\n#{link}\n" + @caregiver_info)
+    setup_operators(event, :recepients, :include_phone_call) 
+    #setup_emergency_group(event, :recepients)
+    self.priority  = event.priority
+  end
+
+#=============== Reporting  ========================    
   def lost_data_daily()
     subject = 'Lost Data Daily Report'
     setup_daily(subject)
@@ -138,7 +108,8 @@ class CriticalMailer < ActionMailer::ARMailer
     subject = 'Logins Daily Report'
     setup_daily(subject)
   end
-  
+
+#================== Other   ========================    
   def test_email(to, subject, body) 
     setup_message(subject, body)
     @recipients = []
@@ -160,8 +131,30 @@ class CriticalMailer < ActionMailer::ARMailer
     subject     = "[" + ServerInstance.current_host_short_string + "] Password Changed"
     setup_message(subject, msg_body)
   end
+
+#============ Safetycare Monitoring ================
+  def monitoring_failure(message, event)
+    setup_message("SafetyCare monitoring failure: #{message}", "The following event triggered, but an error was encountered.\n\nTime: #{Time.now}\n\nError: #{message}\n\nEvent: #{event.to_s}\n\n#{event.inspect}\n\n")
+    @recipients = ["exceptions@halomonitoring.com"]
+  end
+
+  def monitoring_heartbeat_failure(message, exception)
+    setup_message("SafetyCare HEARTBEAT failure", "There was a HEARTBEAT failure!\n\nTime: #{Time.now}\n\n  Exception: #{exception}\nError: #{message}\n\n")
+    @recipients = ["exceptions@halomonitoring.com"]
+  end
+
+  def background_task_notification(alert, user)
+    body = "User #{user.name} (#{user.id})\n" +
+      "Detected at #{UtilityHelper.format_datetime(alert.created_at, user)}\n" +
+      "Device ID: #{alert.device.id}  Alert ID: #{alert.id}\n"
+    setup_message(alert.to_s, body)
+    setup_caregivers(user, alert, :recepients)
+    self.priority = alert.priority
+  end
+
+#=============== Utility Methods  ===================  
   protected
-  
+    
   def setup_message(subject, msg_body)
     @from        = "no-reply@#{ServerInstance.current_host}"
     @subject     = "[" + ServerInstance.current_host_short_string + "] "
@@ -169,12 +162,14 @@ class CriticalMailer < ActionMailer::ARMailer
     @sent_on     = Time.now
     body msg_body
   end
+
   def setup_daily(subject)
     @recipients = daily_recipients
     @from        = NO_REPLY
     @subject     = "[" + ServerInstance.current_host_short_string + "] #{subject}"
     @sent_on     = Time.now
   end
+
   def setup_caregivers(user, alert, mode, list_caregivers = false)
     self_alert = user.alert_option(alert)
     recipients_setup(user, self_alert, mode)
@@ -254,9 +249,11 @@ class CriticalMailer < ActionMailer::ARMailer
       end       
     end
   end
+  
   def daily_recipients
-    ["reports@halomonitoring.com"]  
+    return ["reports@halomonitoring.com"]  
   end
+  
   def recipients_setup(user, alert_option, mode, phone = :no_phone_call)
     @recipients = Array.new if @recipients.nil?
     @text_recipients = Array.new if @text_recipients.nil?
@@ -289,7 +286,7 @@ class CriticalMailer < ActionMailer::ARMailer
     end  
   
     @recipients = @recipients.uniq
-end
+  end
   
   def set_hostnames
     @primary_host = ServerInstance.current_host
@@ -298,4 +295,20 @@ end
     end
     @secondary_host = @primary_host.gsub('crit1', 'crit2')
   end
+ 
+  def get_link_to_call_center_text()
+    set_hostnames
+	return "https://#{@primary_host}/call_center If the site is not available then try the backup link https://#{@secondary_host}/call_center "
+  end
+  
+  def get_link_to_call_center()
+    suffix = "The following contact info is only used for disaster recovery."
+	set_hostnames
+    if ServerInstance.in_hostname?('crit1') || ServerInstance.in_hostname?('crit2')	  
+      return "Please use the following link to accept and handle the event on the the call center overview page.  \nhttps://#{@primary_host}/call_center  \n\nIf the site is not available then try the backup link \nhttps://#{@secondary_host}/call_center \n\n" + suffix 
+    else
+      return "Please use the following link to accept and handle the event on the the call center overview page.  \nhttps://#{@primary_host}/call_center \n\n" + suffix 
+    end
+  end
+
  end

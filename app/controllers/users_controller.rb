@@ -554,41 +554,42 @@ class UsersController < ApplicationController
     @user = User.find(params[:user_id])
     refresh_caregivers(@user)
   end
-  def create_caregiver
-  	if params[:user][:login] != ''
+  def create_caregiver    
+    existing_user = User.find_by_email(params[:user][:email])
+    
+  	if !params[:user][:login].nil?
   		@user = User.find_by_login(params[:user][:login])
-  	else
+  	elsif !existing_user.nil? 
+  	  @user = existing_user
+	  else
   		@user = User.new(params[:user])	
   	end
     
-    
     if !@user.email.blank?
-      # if existing_user = User.find_by_email(@user.email)
-      #         raise "Existing User"
-      #       end
-      
      User.transaction do  
       @user.is_new_caregiver = true
       @user[:is_caregiver] =  true
       @user.save!
-      profile = Profile.new(:user_id => @user.id)
+      @user.profile.nil? ? profile = Profile.new(:user_id => @user.id) : profile = @user.profile
       profile[:is_new_caregiver] = true
       profile.save!
     
       #patient = User.find(params[:user_id].to_i)
       patient = User.find(params[:user_id].to_i)
-      role = @user.has_role 'caregiver', patient
+      role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return that
       caregiver = @user
       @roles_user = patient.roles_user_by_caregiver(caregiver)
     
       update_from_position(params[:position], @roles_user.role_id, caregiver.id)
     
-      RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => 0)
-      
-      #enable_by_default(@roles_user)
-      
+      #enable_by_default(@roles_user)      
       #redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
-      UserMailer.deliver_caregiver_email(caregiver, patient)
+      
+      if existing_user.nil?
+        RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => 0)
+        UserMailer.deliver_caregiver_email(caregiver, patient)
+      end
+      
       render :partial => 'caregiver_email'
      end
     end
