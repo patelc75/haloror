@@ -86,6 +86,7 @@ class ProfilesController < ApplicationController
     if(!params[:roles_user_id].blank?)
       @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
     end
+    session[:redirect_url] = request.env['HTTP_REFERER']
   end
   
   def new_caregiver_profile
@@ -213,7 +214,8 @@ class ProfilesController < ApplicationController
         #  page << "RedBox.close(); window.location = window.location;"
         #end
         #render :action => 'edit_caregiver_profile'
-        #redirect_to request.env['HTTP_REFERER']
+        
+    	
     end   
     rescue Exception => e
     #	RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")

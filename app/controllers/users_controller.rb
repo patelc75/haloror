@@ -190,6 +190,8 @@ class UsersController < ApplicationController
   	kit_serial_number = params[:kit][:serial_number] 
     @kit = KitSerialNumber.create(:serial_number => kit_serial_number,:user_id => @user.id)
     UserMailer.deliver_kit_serial_number_register(@user,@kit)
+    @subscription = Subscription.find_by_subscriber_user_id(params[:user_id])
+    
 =begin  	
   	gateway_serial_number = params[:gateway_serial_number]
     
@@ -254,6 +256,11 @@ class UsersController < ApplicationController
  # 	rescue Exception => e
  #   RAILS_DEFAULT_LOGGER.warn("ERROR registering devices, #{e}")
  # 	render :action => 'create_subscriber'
+  end
+  
+  def receipt
+  	@subscription = Subscription.find_by_subscriber_user_id(1)
+  	@user = User.find(params[:id])
   end
   
   def edit_serial_number
