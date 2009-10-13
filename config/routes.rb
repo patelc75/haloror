@@ -62,6 +62,13 @@ ActionController::Routing::Routes.draw do |map|
   #deprecated models
   #map.resources :caregivers, :active_scaffold => true 
   
+  ActiveRecord::Base::Group.find(:all).each do |group|
+	map.connect "/#{group.name}",:controller => 'users',:action => 'new'
+	#map.connect "/#{group.name.downcase}",:controller => 'users',:action => 'new'
+	#map.connect "/#{group.name.gsub('_','')}",:controller => 'users',:action => 'new'
+  end
+  
+  
   map.connect '', :controller => 'redirector', :action => 'index'
   
   map.signup '/signup/:group', :controller => 'users', :action => 'new'
@@ -79,6 +86,7 @@ ActionController::Routing::Routes.draw do |map|
     # 
     # map.signup_caregiver '/activate/caregiver/:activation_code', :controller => 'users', :action => 'init_caregiver'
   
+
 
   # The priority is based upon order of creation: first created -> highest priority.
   
@@ -101,4 +109,5 @@ ActionController::Routing::Routes.draw do |map|
   # Install the default route as the lowest priority.
   map.connect ':controller/:action/:id.:format'
   map.connect ':controller/:action/:id'
+  
 end
