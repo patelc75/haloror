@@ -150,7 +150,7 @@ class InstallerController < ApplicationController
         throw e
       end
     else
-      msg = "Chest Strap Serial Number cannot be blank."
+      msg = "Chest Strap/Belt Clip Serial Number cannot be blank."
       flash[:warning] = msg
       throw msg
     end
@@ -172,6 +172,7 @@ class InstallerController < ApplicationController
     create_self_test_step(INSTALLATION_SERIAL_NUMBERS_ENTERED_FAILED_ID)
     render :action => 'registration_step'
   end
+  
   def installer
     init_user_group
     init_devices_self_test_session    
@@ -211,7 +212,7 @@ class InstallerController < ApplicationController
       step = create_self_test_step(REGISTRATION_TIMEOUT_ID)
       @self_test_step = step
       @self_test_step_id = step.id
-      message = 'Registration timed out.<br><br>The chest strap wearer is either out of range of the gateway OR in low power mode. <br><br>If the chest strap has been unplugged for more than 15 miutes, then press the panic button. <br><br> OR <br><br>If the chest strap wearer is out of range of the gateway, please try to lay the antennae flat or try to move the gateway to another position.  <br><br> Once the strap is out of low power mode or back in range, the PAN LED on the gateway will turn green in approximately 1 minute. Please ensure that the WAN and PAN LEDs are green on the gateway and then restart the wizard.'
+      message = 'Registration timed out.<br><br>The chest strap/belt clip wearer is either out of range of the gateway OR in low power mode. <br><br>If the chest strap/belt clip has been unplugged for more than 15 miutes, then press the panic button. <br><br> OR <br><br>If the chest strap/belt clip wearer is out of range of the gateway, please try to lay the antennae flat or try to move the gateway to another position.  <br><br> Once the strap is out of low power mode or back in range, the PAN LED on the gateway will turn green in approximately 1 minute. Please ensure that the WAN and PAN LEDs are green on the gateway and then restart the wizard.'
       str = <<-eos
           
           <div id="lightbox-col-700">
@@ -382,7 +383,7 @@ class InstallerController < ApplicationController
   def chest_strap_progress
     init_user_group
     init_devices_self_test_session
-    message = 'Chest Strap Self Test'
+    message = 'Chest Strap/Belt Clip Self Test'
     battery_msg = check_battery_critical?
     if !check_battery_critical?
     self_test_step = check_chest_strap_self_test()
@@ -400,7 +401,7 @@ class InstallerController < ApplicationController
         session[:progress_count][:chest_strap] = nil
         step = create_self_test_step(SELF_TEST_CHEST_STRAP_TIMEOUT_ID)
         @self_test_step_id = step.id
-        message = "Self Test Chest Strap timed out."
+        message = "Self Test Chest Strap/Belt Clip timed out."
         clear_session_data
         str = <<-eos
 
@@ -434,7 +435,7 @@ class InstallerController < ApplicationController
       elsif session[:halo_check_chest_strap_self_test_result] && !session[:halo_check_chest_strap_self_test_result].result
         step = create_self_test_step(SELF_TEST_CHEST_STRAP_FAILED_ID)
         @self_test_step_id = step.id
-        message = "Self Test Chest Strap failed.  To reset your chest strap please plug it in and hold panic button for 7 seconds."
+        message = "Self Test Chest Strap/Belt Clip failed.  To reset your chest strap/belt clip please plug it in and hold panic button for 7 seconds."
         str = <<-eos
 
         <div id="lightbox-col-700">
@@ -524,8 +525,15 @@ class InstallerController < ApplicationController
           page.call('updateCheckSelfTestPhone', false)
           page.replace_html('message_div_id', message)
           page.call('update_percentage', PHONE_SELF_TEST_PERCENTAGE)
-          page.call('updateCheckHeartrate', true)
-        end      
+
+          if @strap.device_type.eql? DEVICE_TYPES[:H5]
+            page.call('updateCheckHeartrate', false)
+
+          else
+            page.call('updateCheckHeartrate', true)
+
+          end
+        end
       elsif check_phone_timeout?
         session[:progress_count][:phone] = nil
         step = create_self_test_step(SELF_TEST_PHONE_TIMEOUT_ID)

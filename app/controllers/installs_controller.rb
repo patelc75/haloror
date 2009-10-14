@@ -189,7 +189,7 @@ class InstallsController < ApplicationController
       end
       @strap = Device.find_by_serial_number(strap_serial_number)
       if @strap && !@strap.users.blank? && !@strap.users.include?(@user)
-        flash[:warning] = "Chest Strap with Serial Number #{strap_serial_number} is already assigned to a user."
+        flash[:warning] = "Chest Strap/Belt Clip with Serial Number #{strap_serial_number} is already assigned to a user."
         @remove_link = true
         throw Exception.new
       end
@@ -204,7 +204,7 @@ class InstallsController < ApplicationController
         throw e
       end
     else
-      msg = "Chest Strap Serial Number cannot be blank."
+      msg = "Chest Strap/Belt Clip Serial Number cannot be blank."
       flash[:warning] = msg
       throw msg
     end
@@ -312,7 +312,7 @@ class InstallsController < ApplicationController
       step = create_self_test_step(REGISTRATION_TIMEOUT_ID)
       @self_test_step = step
       @self_test_step_id = step.id
-      message = 'Registration timed out.<br><br>The chest strap wearer is either out of range of the gateway OR in low power mode. <br><br>If the chest strap has been unplugged for more than 15 miutes, then press the panic button. <br><br> OR <br><br>If the chest strap wearer is out of range of the gateway, please try to lay the antennae flat or try to move the gateway to another position.  <br><br> Once the strap is out of low power mode or back in range, the PAN LED on the gateway will turn green in approximately 1 minute. Please ensure that the WAN and PAN LEDs are green on the gateway and then restart the wizard.'
+      message = 'Registration timed out.<br><br>The chest strap/belt clip wearer is either out of range of the gateway OR in low power mode. <br><br>If the chest strap/belt clip has been unplugged for more than 15 miutes, then press the panic button. <br><br> OR <br><br>If the chest strap/belt clip wearer is out of range of the gateway, please try to lay the antennae flat or try to move the gateway to another position.  <br><br> Once the strap is out of low power mode or back in range, the PAN LED on the gateway will turn green in approximately 1 minute. Please ensure that the WAN and PAN LEDs are green on the gateway and then restart the wizard.'
       render_update_timeout('registered_div_id', message, 'updateCheckRegistration', 'install_wizard_launch')
     else
       render_update_message('registered_div_id', message, :register)
@@ -354,7 +354,7 @@ class InstallsController < ApplicationController
   
   def install_wizard_chest_strap_progress
     init_devices_user
-    message = 'Chest Strap Self Test'
+    message = 'Chest Strap/Belt Clip Self Test'
     battery_msg = check_battery_critical?
     if !check_battery_critical?
     self_test_step = check_chest_strap_self_test()
@@ -368,13 +368,13 @@ class InstallsController < ApplicationController
         session[:progress_count][:chest_strap] = nil
         step = create_self_test_step(SELF_TEST_CHEST_STRAP_TIMEOUT_ID)
         @self_test_step_id = step.id
-        message = "Self Test Chest Strap timed out."
+        message = "Self Test Chest Strap/Belt Clip timed out."
         clear_session_data
         render_update_timeout('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'install_wizard_launch')
       elsif session[:halo_check_chest_strap_self_test_result] && !session[:halo_check_chest_strap_self_test_result].result
         step = create_self_test_step(SELF_TEST_CHEST_STRAP_FAILED_ID)
         @self_test_step_id = step.id
-        message = "Self Test Chest Strap failed.  To reset your chest strap please plug it in and hold panic button for 7 seconds."
+        message = "Self Test Chest Strap/Belt Clip failed.  To reset your chest strap/belt clip please plug it in and hold panic button for 7 seconds."
         render_update_failure('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'install_wizard_launch')
       else
         render_update_message('chest_strap_div_id', message, :chest_strap)
@@ -450,7 +450,7 @@ class InstallsController < ApplicationController
         session[:progress_count][:strap_fastened] = nil
         step = create_self_test_step(CHEST_STRAP_FASTENED_TIMEOUT_ID)
         @self_test_step_id = step.id
-        message = "Strap Fastened Detection timed out.  To reset your chest strap please plug it in and hold panic button for 7 seconds.  Please put on the chest strap and rerun the Installation Wizard."
+        message = "Strap Fastened Detection timed out.  To reset your chest strap/belt clip please plug it in and hold panic button for 7 seconds.  Please put on the chest strap/belt clip and rerun the Installation Wizard."
         clear_session_data
         render_update_timeout('strap_fastened_div_id', message, 'updateCheckStrapFastened', 'install_wizard_launch')
       else

@@ -223,7 +223,7 @@ BATTERY_REMINDER_THREE = 14400  #4 hours
 SYSTEM_USERNAME="HALO_SYSTEM_USER"
 SYSTEM_PASSWORD="Halo_p455w0rd"
 
-DEVICE_TYPES = {:H1 => 'Chest Strap', :H2 => 'Gateway'}
+DEVICE_TYPES = {:H1 => 'Chest Strap', :H2 => 'Gateway', :H5 => 'Belt Clip'}
 GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT=1800  #30 minutes
 
 
