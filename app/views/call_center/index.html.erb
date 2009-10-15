@@ -49,14 +49,15 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       <% end %>
 
       <div class="col-125">
-        <%=UtilityHelper.format_datetime(event.timestamp, current_user) %>
+        <%= event.timestamp.in_time_zone.to_s(:date_time_seconds) %>
       </div>
       <div class="col-125">
         <% if(event[:timestamp_server] == nil) %>
           No timestamp
         <% else %>
-                     <%= UtilityHelper.format_datetime(event[:timestamp_server],current_user) %>
-           <% end %>
+		  <%= event[:timestamp_server].in_time_zone.to_s(:date_time_seconds) %>
+          <!--%= UtilityHelper.format_datetime(event[:timestamp_server],current_user) %-->
+        <% end %>
       </div>
       <div class="col-150">
       <% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
