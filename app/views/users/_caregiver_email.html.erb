@@ -1,6 +1,7 @@
 
-<div style="width:200px;margin-left:320px" id="container">
+<div style="width:200px;margin-left:350px" id="container">
 	<%=link_to_remote image_tag("/images/tooltip-close.gif", :id => "tooltip_close"), :update => 'call_list', :url => {:controller => 'users', :action => 'refresh', :user_id => params[:user_id]}, :complete => "RedBox.close();headerDisplay();"%> 
 </div>
-	<h2><b>Caregiver Email Sent</b></h2>
-	<p>Your caregiver has been emailed.</p>
+<div style="margin-left:10px"
+<p>If that email was in our system, the user was added to your caregiver list. If not, an email was sent to that email address.</p>
+</div>

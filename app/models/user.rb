@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
   #has_one :roles_user
   #has_one :roles_users_option
   has_many :self_test_sessions
-  
+  has_many :subscriptions,:foreign_key => "senior_user_id"
   has_many :roles_users
   has_many :roles, :through => :roles_users#, :include => [:roles_users]
   

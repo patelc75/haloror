@@ -172,7 +172,7 @@ class ReportingController < ApplicationController
   def lost_data
   	if user_id = params[:id]
     	@user = User.find(user_id)
-    	DailyReports.lost_data_scan(user_id)
+    	Compliance.lost_data_scan(user_id)
   		if params[:begin_time]
   			@user_begin_time = params[:begin_time]
     		@user_end_time = params[:end_time]
@@ -214,7 +214,7 @@ class ReportingController < ApplicationController
       #@begin_time = @begin_time.to_time
       @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
       @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
-      @users, @total_lost_data, @total_not_worn = DailyReports.device_not_worn_halousers(@begin_time, @end_time)
+      @users, @total_lost_data, @total_not_worn = Compliance.compliance_halousers(@begin_time, @end_time)
     else
       flash[:warning] = 'Begin Time and End Time are required.'
       render :partial => 'init_strap_not_worn', :layout => true
@@ -233,7 +233,7 @@ class ReportingController < ApplicationController
       #@begin_time = @begin_time.to_time
       @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
       @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
-      @users = DailyReports.successful_user_logins(@begin_time, @end_time)
+      @users = Compliance.successful_user_logins(@begin_time, @end_time)
     else
       flash[:warning] = 'Begin Time and End Time are required.'
       render :partial => 'init_successful_user_logins', :layout => true

@@ -1,5 +1,6 @@
 <%=render :partial => 'search'%>
-<%=render :partial => 'nav'%>
+<%=render :partial => 'nav_config'%>
+<h3> Users table </h3>
 <form id="group_form_id" action="/reporting/users" method="GET">
 <% gs = ['']
    @groups.each do |group|
@@ -11,15 +12,18 @@ Select Group:
 <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]}, @group_name), {:onchange => "$('group_form_id').submit();"}%>
 </form>
 <div id="user-table" class="table">
-	<center><%= will_paginate @users %></center>
 	<br>
+	<center><%= will_paginate @users %></center>
+	<br><br>
 	<%=render :partial => 'user_table', :locals => {:users => @users, :sortby => 'id', :reverse => false}%>
 	<br>
     <br>
-    <center><%= will_paginate @users %></center>
+    
 
 </div>
-
+<div style="clear:both;"></div>
+<br><br>
+<center><%= will_paginate @users %></center>
 <div id="range_test_launcher"></div>
 <script language="javascript">
 function start_range_test(user_id){

@@ -47,6 +47,7 @@
         		</div>
         		<div class="col-250" style="width:400px;">
         			<%= render :partial => '/profiles/profile_bottom' %>
+					<br><br>
         			<label for="relationship"> Relationship </label>
 	      			<br />
 	      			<%= text_field_tag :relationship %>
@@ -58,12 +59,12 @@
         		</div>
 			</div>
 	 	</div>		
-        <br/>
-        <br/>
-
+        <br/><br/>
+        <br/><br/>
+		 <div style="margin-left:130px">
           <input name="commit" type="image" src="/images/add.gif"  /> 
           <a href="/call_list/show/<%= current_user.id%>"><img src="/images/cancel.gif" onClick="" /></a>
-       
+       	</div>
       <% end %>
       </div>
       <div style="clear:both"></div>

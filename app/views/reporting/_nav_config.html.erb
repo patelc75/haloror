@@ -1,0 +1,29 @@
+<b>Config:</b><% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
+<a href="/reporting/users">Users</a> 
+<% end %>
+<% if current_user.is_admin? || current_user.is_super_admin? %>
+| <a href="/reporting/devices">Devices</a> 
+<% end %>
+<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
+| <a href="/user_admin/roles">Roles</a> 
+<% end %>
+<% if current_user.is_super_admin? %>
+| <a href="/system_timeouts/index">System Timeouts</a>
+<% end %>
+<% if current_user.is_super_admin? %>
+| <a href="/recurring_charges">Recurring Charges</a>
+<% end %>
+<% if current_user.is_super_admin? %>
+| <a href="/carriers/">Cell Carriers</a>
+<% end %>
+<% halo_group = Group.find_by_name('halo') %>
+<% if current_user.is_super_admin? || current_user.is_admin_of?(halo_group) || current_user.is_sales? || current_user.is_installer? %>
+| <%= link_to "Emergency #s", :action => 'index', :controller => 'emergency_numbers' %>
+<% end %>
+<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_moderator? %>
+| <%= link_to 'Operators', :controller => 'call_center', :action => 'show' %>
+<% end %>
+<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_moderator? %>
+| <%= link_to 'Send Test Email', :controller => 'util', :action => 'send_test_email'%>
+<% end %>
+<br><br>

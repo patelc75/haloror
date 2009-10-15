@@ -1,6 +1,9 @@
+<%=render :partial=>'/reporting/nav'%>
+<h3>Oscope CSV</h3>
 <div id="date_range" class="date_range">
 	<% if !flash[:warning].blank? -%>
-	<b><%= flash[:warning] %></b>
+	<%= flash[:warning] %>
+	<br><br>
 	<% end -%>
 	Enter Start Message ID or Query Below
 	<form action="/oscopes/csv">

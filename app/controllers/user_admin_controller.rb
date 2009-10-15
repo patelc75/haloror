@@ -7,7 +7,7 @@ class UserAdminController < ApplicationController
     @groups = []
     gs = current_user.group_memberships
     gs.each do |g|
-      @groups << g if(current_user.is_admin_of?(g) || current_user.is_super_admin?)
+      @groups << g if(current_user.is_admin_of?(g) || current_user.is_super_admin?) || current_user.is_sales?
     end
     @group = nil
     if params[:group].blank? || params[:group] == 'Choose a Group'

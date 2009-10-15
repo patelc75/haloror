@@ -1,0 +1,21 @@
+<%=debug @subscription%>
+
+<h3>Subscription Details</h3>
+<table>
+<tr><td>Subscription User Id: </td><td><%= @subscription.subscriber_user_id%></td></tr>
+<tr><td>Senior User Id: </td><td><%= @subscription.senior_user_id%></td></tr>
+<tr><td>Bill Amount: </td><td><%= @subscription.bill_amount%></td></tr>
+<tr><td>Bill Start Date: </td><td><%= @subscription.bill_start_date%></td></tr>
+<tr><td>Bill To First Name: </td><td><%= @subscription.bill_to_first_name%></td></tr>
+<tr><td>Bill To Last Name: </td><td><%= @subscription.bill_to_last_name%></td></tr>
+<tr><td>CC Last Four: </td><td><%= @subscription.cc_last_four%></td></tr>
+<tr><td>Arb Subscription Id: </td><td><%= @subscription.arb_subscriptionId%></td></tr>
+</table>
+
+<%if @subscription.subscriber%>
+<h3>Subscriber Details</h3>
+<%=debug @subscription.subscriber%>
+<%=debug @subscription.subscriber.profile%>
+<%end%>
+<%#= link_to 'Edit', edit_carrier_path(@carrier) %>
+<%#= link_to 'Back', carriers_path %>

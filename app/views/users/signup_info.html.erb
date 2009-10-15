@@ -32,8 +32,44 @@
 		<br>
 		<p>Admin only: <%= link_to "Senior's profile", :controller => 'users',:action => 'signup_details',:id => @user.id %>
 		</p>
-
+		<font size="3"><center><%= link_to "Signup Another User",:controller => 'users',:action => 'new'%></center></font>
+<!--		<br><br>
+		<font size="3"><center><%= link_to "Receipt",:controller => 'users',:action => 'receipt',:id => @user.id%></center></font> -->
 	</div>
+</div>
+<div style="clear:both"></div>
+	<div id="call_list-col-footer"></div>
+</div>
+
+<div id="call_list-col" style="margin-top:20px;">
+	<div id="call_list-col-header">
+		Receipt for Monthly Subscription
+	</div>
+	<div class="content" style="padding-left:30px;">
+		<%if @subscription%>
+		<h3>Halo Monitoring, Inc.</h3>
+		515 Sparkman Drive<br>
+		Huntsville, AL 35816<br>
+		Phone 888.971.HALO (888-971-4256)<br>
+		Fax 866.275.1904</p>
+		<p><%= @subscription.created_at.strftime("%A %m/%d/%Y %H:%M:%S %p")%></p>
+		
+		<p>
+			<table>
+				<tr><td>Name:</td><td><%= @user.name%></td></tr>
+				<tr><td>Email:</td><td><%= @user.email%></td></tr>
+				<tr><td>Address:</td><td><%= @user.address%></td></tr>
+				<tr><td>&nbsp;</td></tr>
+				<tr><td>SubscriptionID:</td><td><%= @subscription.arb_subscriptionId%></td></tr>
+				<tr><td>Card holder</td><td><%=@subscription.bill_to_last_name.upcase%>/<%= @subscription.bill_to_first_name.upcase%></td></tr>
+				<tr><td>Card</td><td>############<%=@subscription.cc_last_four%></td></tr>
+				<tr><td><font size="3">Amount: </font></td><td><font size="3">$ <%= sprintf("%0.2f",@subscription.bill_amount)%></font></td></tr>
+			</table>
+			
+		</p>
+		<%end%>
+	</div>
+	
 </div>
 	<div style="clear:both"></div>
 	<div id="call_list-col-footer"></div>

@@ -1,28 +1,12 @@
-<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
-<a href="/reporting/users">Users</a> 
+<b>Reporting:</b><% if current_user.is_admin? || current_user.is_super_admin? %>
+<%= link_to 'Group Falls/Panics', url_for(:controller => "reporting", :action => "fall_panic_report")%>
 <% end %>
 <% if current_user.is_admin? || current_user.is_super_admin? %>
-| <a href="/reporting/devices">Devices</a> 
-| <a href="/reporting/summary">Summary</a> 
-<% if false %>
-| <a href="/reporting/init_strap_not_worn">User Compliance</a> 
+| <%= link_to 'User Compliance', '/reporting/compliance_report'%>
 <% end %>
+<% if current_user.is_admin? || current_user.is_super_admin? %>
+<!--a href="/reporting/init_strap_not_worn">User Compliance</a--> 
 | <a href="/reporting/init_successful_user_logins">User Logins</a> 
-<% end %>
-<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
-| <a href="/user_admin/roles">Assign Roles</a> 
-<% end %>
-<% if current_user.is_super_admin? %>
-| <a href="/carriers/">Cell Carriers</a>
-<% end %>
-<% if current_user.is_super_admin? %>
-| <a href="/oscopes/index">Oscope CSV</a>
-<% end %>
-<% if current_user.is_super_admin? %>
-| <a href="/atp/index">ATP</a>
-<% end %>
-<% if current_user.is_super_admin? %>
-| <a href="/system_timeouts/index">System Timeouts</a>
 <% end %>
 <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? %>
 | <%= link_to 'Critical Event Log', url_for(:controller => 'call_center', :action => 'index') %>
@@ -30,10 +14,12 @@
 <% if current_user.is_admin? || current_user.is_super_admin? %>
 | <%= link_to 'Audits', url_for(:controller => "reporting", :action => "audit")%>
 <% end %>
-<% if current_user.is_admin? || current_user.is_super_admin? %>
-| <%= link_to 'Group Falls/Panics', url_for(:controller => "reporting", :action => "fall_panic_report")%>
+<% if current_user.is_super_admin? %>
+| <a href="/oscopes/index">Oscope CSV</a>
 <% end %>
 <% if current_user.is_admin? || current_user.is_super_admin? %>
-| <%= link_to 'User Compliance', '/reporting/compliance_report'%>
+| <a href="/reporting/summary">Graphs</a> 
 <% end %>
 <br><br>
+
+

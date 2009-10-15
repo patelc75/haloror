@@ -1,9 +1,10 @@
 <div id="date_range" class="date_range">
-  <% if !flash[:warning].blank? -%>
-  <b><%= flash[:warning] %></b>
-  <% end -%>
   <form action="/reporting/audit">
   <h3>Audit Report (by Group)</h3>
+  <% if !flash[:warning].blank? -%>
+  <%= flash[:warning] %>
+  <br><br>
+  <% end -%>
   <% gs = ['Choose a Group']
 		   @groups.each do |g|
 			 gs << g.name

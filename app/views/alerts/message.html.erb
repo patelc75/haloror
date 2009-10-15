@@ -2,11 +2,14 @@
 	<img src="/images/lightbox-col-header.gif" /><br />
 	<div class="lightbox-content">
 		<div style="width:200px;margin-left:320px" id="container">
-	 <a href="#"><img src="/images/tooltip-close.gif" onClick="RedBox.close()" /></a>
+<!--	 <a href="<%= session[:redirect_url]%>"><img src="/images/tooltip-close.gif" /></a> -->
 	</div>
 			<div style="width:200px;margin-left:auto;margin-right:auto" id="container">
 Profile Updated. This may take up to 24 hours to take effect for critical alerts.
 		</div>
+		<br>
+		<center><a href="<%= session[:redirect_url]%>"><img src="/images/ok_button.png" /></a></center>
 	</div>
+	
 	<img src="/images/lightbox-col-footer.gif" />
 </div>

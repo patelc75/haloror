@@ -32,13 +32,13 @@ Select Group:
 		<div class="col-75"><%=  user.id     %></div>
 		<div class="col-200"><%= user.name  %>
 			<span style="font-size: 80%;"><br><% if user.login %><%=user.login%><% else %><%= user.email %><%end%>
-				(<%=link_to('Edit Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile.id, :frame => true,:user_id => user.id )%>)
+				(<%=link_to('Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile.id, :frame => true,:user_id => user.id )%><%if user.subscriptions.length > 0 %>|<%= link_to('Subscription',subscription_path(user.subscriptions.first))%>)<%else%>)<%end%>
 			</span>
 
 		</div>
 		<div class="col-150"><%= link_to_function("Start Wizard", "browserCheckStartRegistration('#{user.id}', '#{@group.name}')") %>
 			<% @kit_serial_number = KitSerialNumber.find_by_user_id(user.id,:order => 'created_at desc') %>
-			<span style="font-size: 80%;"><br><%= @kit_serial_number.serial_number if @kit_serial_number %></font>
+			<span style="font-size: 80%;"><br><%= @kit_serial_number.serial_number if @kit_serial_number %></span>
 		</div>
 		<div class="col-100"><%= link_to_remote "Start Range Test Only", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :group => @group.name, :id => user.id} %></div>
 		<div class="col-200">
