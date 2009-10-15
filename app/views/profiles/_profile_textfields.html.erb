@@ -1,3 +1,5 @@
+
+<%if @user.is_halouser?%>
 <label for="access">Premises Access (Combination, Lockbox Code, Key Location)</label>
 <br />
 	<%= text_field :profile, :access_information %>
@@ -28,3 +30,4 @@
 <br />
 	<%= text_field :profile, :doctor_phone %>
 	
+<%end%>

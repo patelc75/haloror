@@ -1,4 +1,4 @@
-  <% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) || current_user.is_installer? %>
+  <% if (current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) || current_user.is_installer?) && @user.is_halouser? %>
  <label for="emergency_number">Emergency Number(<%= link_to "Configure", :action => 'index', :controller => 'emergency_numbers' %>)</label>
       <br />
          	    <% groups = current_user.group_memberships

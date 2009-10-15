@@ -37,10 +37,10 @@
 			<% if current_user.is_admin? || current_user.is_super_admin? %>
 			  <li><%= link_to 'Vitals List', :controller => 'vital_lists', :action => 'index',:id => current_user %></li>
 			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_sales? %>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_installer? %>
 				<li><%= link_to 'Config', :controller => 'reporting', :action => 'index' %></li>
 			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_sales? %>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_installer? %>
 				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'fall_panic_report' %></li>
 			<% end %>
 			<% if current_user.is_admin? || current_user.is_super_admin? %>
