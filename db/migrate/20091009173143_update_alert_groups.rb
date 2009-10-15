@@ -38,7 +38,7 @@ class UpdateAlertGroups < ActiveRecord::Migration
 	alert_type.alert_groups << normal_group if normal_group
 	alert_type.save
 	
-	alert_type = AlertType.find_by_alert_type('BatteryReminder ')
+	alert_type = AlertType.find_by_alert_type('BatteryReminder')
     normal_group = AlertGroup.find_by_group_type('normal')
 	alert_type.alert_groups << normal_group if normal_group
 	alert_type.save
