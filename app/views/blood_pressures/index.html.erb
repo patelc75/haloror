@@ -2,7 +2,9 @@
 <div id="call_list-col">
 	<div id="call_list-col-header">
 		Blood Pressure | <span style="color:#000;font-size:.75em">
-		<%= current_user.name %> (<%= current_user.id %>)</big> - all times are in <%= current_user.profile.time_zone if current_user.profile %> timezone <br>
+		<%if @blood_pressure%>
+		<%= @blood_pressure.first.user.name %> (<%= @blood_pressure.first.user.id %>)</big> - all times are in <%= @blood_pressure.first.user.profile.time_zone if @blood_pressure.first.user.profile %> timezone <br>
+		<%end%>
 		</span>
 	</div>
 <div class="content">
@@ -32,7 +34,7 @@
      <div id="event_event_<%= blood_pressure.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px;cursor:pointer">
 	<div class="row">
       <div style="float:left;padding-top:25px;width:350px">
-        <%#= UtilityHelper.format_datetime(blood_pressure.timestamp,blood_pressure.user) %>&nbsp
+        <%= UtilityHelper.format_datetime(blood_pressure.timestamp,blood_pressure.user) %>&nbsp
       </div>
           <div style="float:left;padding-top:25px;width:150px">
           	<%= blood_pressure.systolic + blood_pressure.diastolic %>
