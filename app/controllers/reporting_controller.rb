@@ -1,5 +1,5 @@
 class ReportingController < ApplicationController
-  before_filter :authenticate_admin_moderator_sales?
+  before_filter :authenticate_admin_moderator_installer?
   include UtilityHelper
   
   def avg_skin_temps
