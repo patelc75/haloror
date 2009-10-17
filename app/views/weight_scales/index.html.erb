@@ -2,7 +2,9 @@
 <div id="call_list-col">
 	<div id="call_list-col-header">
 		Weight Scale | <span style="color:#000;font-size:.75em">
-		<%= current_user.name %> (<%= current_user.id %>)</big> - all times are in <%= current_user.profile.time_zone if current_user.profile %> timezone <br>
+		<%if @weight_scales %>	
+		<%= @weight_scales.first.user.name %> (<%= @weight_scales.first.user.id %>)</big> - all times are in <%= @weight_scales.first.user.profile.time_zone if @weight_scales.first.user.profile %> timezone <br>
+		<%end%>
 		</span>
 	</div>
 <div class="content">
@@ -29,7 +31,7 @@
      <div id="event_event_<%= weight_scale.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px;cursor:pointer">
 	<div class="row">
       <div style="float:left;padding-top:25px;width:450px">
-        <%#= UtilityHelper.format_datetime(weight_scale.timestamp,weight_scale.user) %>&nbsp
+        <%= UtilityHelper.format_datetime(weight_scale.timestamp,weight_scale.user) %>&nbsp
       </div>
           <div style="float:left;padding-top:25px;width:150px">
           	<%= (weight_scale.weight.to_f/1000.0).round(1)%>&nbsp <%= weight_scale.weight_unit%>

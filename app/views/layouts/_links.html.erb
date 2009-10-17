@@ -40,7 +40,7 @@
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_installer? %>
 				<li><%= link_to 'Config', :controller => 'reporting', :action => 'index' %></li>
 			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_installer? %>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
 				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'fall_panic_report' %></li>
 			<% end %>
 			<% if current_user.is_admin? || current_user.is_super_admin? %>
