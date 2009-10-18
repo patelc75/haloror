@@ -20,10 +20,10 @@ class HealthvaultController < ApplicationController
   end
   
   def index
-    if !session[:healthvault_app].blank? && !session[:healthvault_conn].blank?
+    if !session[:healthvault_app_marshal].blank? && !session[:healthvault_conn_marshal].blank?
       @connected = true
-      @hv_app = session[:healthvault_app]
-      @hv_conn = session[:healthvault_conn]
+      @hv_app = Marshal.load(session[:healthvault_app_marshal])
+      @hv_conn = Marshal.load(session[:healthvault_conn_marshal])
       @hv_record_id = session[:healthvault_record_id]
       @hv_name = session[:healthvault_name]
     else
@@ -203,8 +203,8 @@ class HealthvaultController < ApplicationController
       flash[:message] = "Your record-sharing invitation has been sent."
       redirect_to 'index' and return
     when "signout"
-      session[:healthvault_app] = nil
-      session[:healthvault_conn] = nil
+      session[:healthvault_app_marshal] = nil
+      session[:healthvault_conn_marshal] = nil
       session[:healthvault_record_id] = nil
       session[:healthvault_name] = nil
       flash[:message] = "logged out"
@@ -231,16 +231,16 @@ class HealthvaultController < ApplicationController
     Configuration.instance.hv_url = HV_HV_URL
     
     # Try to get the existing app and connection from the session
-    if !session[:healthvault_app].blank? && !session[:healthvault_conn].blank?
-      @hv_app = session[:healthvault_app]
-      @hv_conn = session[:healthvault_conn]
+    if !session[:healthvault_app_marshal].blank? && !session[:healthvault_conn_marshal].blank?
+      @hv_app = Marshal.load(session[:healthvault_app_marshal])
+      @hv_conn = Marshal.load(session[:healthvault_conn_marshal])
     else
     # otherwise, connect to healthvault, authenticate the app, and store the result in the session
       @hv_app = Application.default
       @hv_conn = @hv_app.create_connection
       @hv_conn.authenticate
-      session[:healthvault_app] = @hv_app
-      session[:healthvault_conn] = @hv_conn
+      session[:healthvault_app_marshal] = Marshal.dump(@hv_app)
+      session[:healthvault_conn_marshal] = Marshal.dump(@hv_conn)
     end
     
     # error checking
