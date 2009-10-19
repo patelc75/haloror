@@ -47,13 +47,12 @@ end %>
   
   <%if @group or params[:id] and @begin_time%>	
 	  <hr>
-		<h2>Group: <%= @group.name %></h2>
+  	<% if !params[:id] %>
+	  <h2>Group: <%= @group.name %></h2>
+	<% end %>
 		<b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
 	  <%= current_user.profile.time_zone if current_user.profile %> timezone<br><br>
 	  <% debug Time.zone %>	
-  	<% if !params[:id] %>
-
-	<% end %>
 	<table border="1">
   		<tr>
   			<th bgcolor="#E1E1E1">User</th>

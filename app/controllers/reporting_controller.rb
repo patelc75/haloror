@@ -418,13 +418,16 @@ class ReportingController < ApplicationController
     @user_end_time = params[:end_time]
   	
     @groups = current_user.group_memberships
-    if !@user_end_time.blank? && !@user_begin_time.blank? && !params[:id]
+    if !@user_end_time.blank? && !@user_begin_time.blank?
 		
     	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
     	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
- 
-    	@group = Group.find_by_name(params[:group_name])
-    	@users = User.find(:all)
+
+        #emacs
+	if(!params[:id])  
+    	  @group = Group.find_by_name(params[:group_name])
+    	  @users = User.find(:all)
+	end
     end
     #flash[:warning] = 'Begin Time and End Time are required.'
   end
