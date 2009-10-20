@@ -148,9 +148,14 @@ class UserAdminController < ApplicationController
     group_name = params[:group_name]
     if(!group_name.blank?)
       if(Group.find_by_name(group_name).blank?)
-        Group.create(:name => group_name)
-        @success = true
-        @message = "Group(#{group_name}) Added"
+        @group = Group.create(:name => group_name)
+        if @group.valid?
+        	@success = true
+        	@message = "Group(#{group_name}) Added"
+        else
+        	@success = false
+        	@message = "Group Name is not valid. It should contains only lowercase characters or numeric values."
+        end
       else
         @success = false
         @message = "Group(#{group_name}) Already exists"
