@@ -303,7 +303,7 @@ function toggleCaregiver(action, pos, id, phone_active, email_active, text_activ
 			document.getElementById('item_text_' + id).alt = 'Text will not be sent to this '+person+' in the case of a fall or panic.  Click to enable.';
 		}
 
-		callListImg[id] = '/images/call_list-item.gif';
+		callListImg[id] = '/images/call_list-item-caregiver.gif';
 	  if(pos != null){
 		  document.getElementById('item_'+id+'_'+pos).className = 'active';
 	  }else{
