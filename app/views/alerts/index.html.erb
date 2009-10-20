@@ -2,6 +2,8 @@
 	<div id="call_list-col-header">
 		Alerts
 	</div>
+	<div id="hidden_content_extra_info">
+</div>
 	<div class="content">
 		  <div id="call_list_header" style="height:25px">
         <div style="float:left;width:805px;padding-left:10px">
@@ -105,8 +107,11 @@
 								end
 							%>
 							
-							
+							<%if !@user.profile.cell_phone_exists? || @user.profile.carrier_id == nil || @user.profile.carrier_id == "" %>
+								<%=link_to image_tag(img),'javascript:;',:onclick => 'call_lightbox('+@user.id.to_s + ',"text");' %>
+							<%else%>
 							<%=link_to_remote(image_tag(img, :id => 'alert_text_'+alert.id.to_s), :url => { :action => "toggle_text",:id => alert.id, :roles_user_id => @roles_user.id }, :before => 'toggleAlert('+alert.id.to_s+', '+text_active.to_s+', \'text\')')%>
+							<%end%>
 						</div>
 					</div>
 				</div>
@@ -139,5 +144,11 @@ function run_redbox()
 new Ajax.Updater('hidden_content_failure_sessions', '/alerts/invalid/', {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('hidden_content_failure_sessions'); }, onLoading:function(request){RedBox.loading(); }})
 //]]>
 
+}
+
+function call_lightbox(user_id,what)
+{
+	new Ajax.Updater('hidden_content_extra_info', '/users/existing_info/'+user_id+'?user_id='+user_id+'&what='+what, {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('hidden_content_extra_info'); }, onLoading:function(request){RedBox.loading(); }});
+	
 }
 </script>

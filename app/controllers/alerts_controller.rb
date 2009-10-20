@@ -66,7 +66,8 @@ class AlertsController < ApplicationController
   end
   
   def toggle_text
-    toggle('text')
+    toggle('text') unless User.find(params[:roles_user_id]).profile.cell_phone.blank?
+    render :text => '', :layout => false
   end
   
   def invalid
