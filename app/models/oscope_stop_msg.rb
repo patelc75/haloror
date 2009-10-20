@@ -1,7 +1,7 @@
 class OscopeStopMsg < ActiveRecord::Base
   has_many :oscope_msgs
   
-  after_save :reference_oscope_msgs
+  # after_save :reference_oscope_msgs
   
   private
   
