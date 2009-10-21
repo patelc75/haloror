@@ -1,6 +1,4 @@
 class PoolsController < ApplicationController
-  # GET /pools
-  # GET /pools.xml
   def index
     @pools = Pool.find(:all)
 
@@ -10,8 +8,6 @@ class PoolsController < ApplicationController
     end
   end
 
-  # GET /pools/1
-  # GET /pools/1.xml
   def show
     @pool = Pool.find(params[:id])
 
@@ -21,8 +17,6 @@ class PoolsController < ApplicationController
     end
   end
 
-  # GET /pools/new
-  # GET /pools/new.xml
   def new
     @pool = Pool.new
 
@@ -32,13 +26,10 @@ class PoolsController < ApplicationController
     end
   end
 
-  # GET /pools/1/edit
   def edit
     @pool = Pool.find(params[:id])
   end
 
-  # POST /pools
-  # POST /pools.xml
   def create
     @pool = Pool.new(params[:pool])
     @pool.starting_mac_address = '002440'
@@ -56,23 +47,6 @@ class PoolsController < ApplicationController
     end
   end
 
-  # PUT /pools/1
-  # PUT /pools/1.xml
-  # def update
-  #     @pool = Pool.find(params[:id])
-  # 
-  #     respond_to do |format|
-  #       if @pool.update_attributes(params[:pool])
-  #         flash[:notice] = 'Pool was successfully updated.'
-  #         format.html { redirect_to(@pool) }
-  #         format.xml  { head :ok }
-  #       else
-  #         format.html { render :action => "edit" }
-  #         format.xml  { render :xml => @pool.errors, :status => :unprocessable_entity }
-  #       end
-  #     end
-  #   end
-  
   private
   def generate_serial_number_mac_address_mappings(pool)
     start_serial_number = pool.starting_serial_number
@@ -81,35 +55,40 @@ class PoolsController < ApplicationController
     #Serial Number Generation
     serial_numbers = []
     last_serial_number = get_last_serial_number(pool) + 1
-    (0..pool.size-1).each do |i|
+    
+    #generate array of serial numbers
+    (0..pool.size-1).each do |i| 
       num = i + last_serial_number
       serial_numbers << get_serial_number(pool, num)
     end
     
-      #Mac Adrress Generation
-      mac_addresses = []
-      last_mac_address = 0
+    #Mac Adrress Generation
+    mac_addresses = []
+    last_mac_address = 0
+    if is_zigby?(pool) || is_gateway?(pool)
+      last_mac_address = get_last_mac_address(pool) + 1
+    end
+    
+    (0..pool.size-1).each do |i|
+      num = i + last_mac_address
       if is_zigby?(pool) || is_gateway?(pool)
-        last_mac_address = get_last_mac_address(pool) + 1
+        mac_addresses << get_mac_address(pool, num)
+      else
+        mac_addresses << ''
       end
-        (0..pool.size-1).each do |i|
-        num = i + last_mac_address
-        if is_zigby?(pool) || is_gateway?(pool)
-          mac_addresses << get_mac_address(pool, num)
-        else
-          mac_addresses << ''
-        end
+    end
+    
+    Device.transaction do
+      (0..pool.size-1).each do |i|
+        device = Device.new(:active => false, :pool_id => pool.id, :serial_number => serial_numbers[i], :mac_address => mac_addresses[i])
+        device.save!
       end
-      Device.transaction do
-        (0..pool.size-1).each do |i|
-          device = Device.new(:active => false, :pool_id => pool.id, :serial_number => serial_numbers[i], :mac_address => mac_addresses[i])
-          device.save!
-        end
-        pool.ending_serial_number = serial_numbers[pool.size - 1]
-        pool.ending_mac_address = mac_addresses[pool.size - 1]
-        pool.save!
-      end
+      pool.ending_serial_number = serial_numbers[pool.size - 1]
+      pool.ending_mac_address = mac_addresses[pool.size - 1]
+      pool.save!
+    end
   end
+  
   def get_serial_number(pool, num)
     end_num = num.to_s
     serial_number = pool.starting_serial_number
@@ -134,11 +113,13 @@ class PoolsController < ApplicationController
                         :conditions => "serial_number_prefixes.prefix = '#{pool.starting_serial_number[0,3]}'")
     return dt.mac_address_type == 0
   end
+  
   def is_gateway?(pool)
     dt = DeviceType.find(:first, :include => :serial_number_prefixes, 
                         :conditions => "serial_number_prefixes.prefix = '#{pool.starting_serial_number[0,3]}'")
     return dt.mac_address_type == 1    
   end
+  
   def get_last_mac_address(pool)
     pools = []
     num = -1
