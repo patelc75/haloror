@@ -2,7 +2,7 @@
 <div id="call_list-col">
 	<div id="call_list-col-header">
 		Blood Pressure | <span style="color:#000;font-size:.75em">
-		<%if @blood_pressure%>
+		<%if @blood_pressure and @blood_pressure.first and @blood_pressure.first.user %>
 		<%= @blood_pressure.first.user.name %> (<%= @blood_pressure.first.user.id %>)</big> - all times are in <%= @blood_pressure.first.user.profile.time_zone if @blood_pressure.first.user.profile %> timezone <br>
 		<%end%>
 		</span>

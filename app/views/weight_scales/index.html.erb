@@ -2,7 +2,7 @@
 <div id="call_list-col">
 	<div id="call_list-col-header">
 		Weight Scale | <span style="color:#000;font-size:.75em">
-		<%if @weight_scales %>	
+		<%if @weight_scales and @weight_scales.first and @weight_scales.first.user %>	
 		<%= @weight_scales.first.user.name %> (<%= @weight_scales.first.user.id %>)</big> - all times are in <%= @weight_scales.first.user.profile.time_zone if @weight_scales.first.user.profile %> timezone <br>
 		<%end%>
 		</span>
