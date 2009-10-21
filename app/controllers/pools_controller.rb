@@ -48,36 +48,39 @@ class PoolsController < ApplicationController
   end
 
   private
+  
+  #calculate the input pool's starting and ending serial num and mac address starting from the exisiting pools (in pools table)
+  #most recent ending_serial_num and ending_mac_address. Starts at xxxxx00100 if no existing pools. Also, creates new rows in 
+  #devices table for the size of the pool
   def generate_serial_number_mac_address_mappings(pool)
     start_serial_number = pool.starting_serial_number
     start_mac_address   = pool.starting_mac_address
     
-    #Serial Number Generation
+    #generate array (serial_numbers), one serial number per row based on size of pool
     serial_numbers = []
-    last_serial_number = get_last_serial_number(pool) + 1
-    
-    #generate array of serial numbers
+    last_serial_number = get_last_serial_number(pool) + 1    
     (0..pool.size-1).each do |i| 
       num = i + last_serial_number
       serial_numbers << get_serial_number(pool, num)
     end
     
-    #Mac Adrress Generation
+    #generate array (mac_addresses), one mac address per row based on size of pool
     mac_addresses = []
     last_mac_address = 0
-    if is_zigby?(pool) || is_gateway?(pool)
+    if is_zigbee?(pool) || is_gateway?(pool) #checks device_type.mac_address_type (zigbee = 0, gateway = 1)
       last_mac_address = get_last_mac_address(pool) + 1
     end
     
     (0..pool.size-1).each do |i|
       num = i + last_mac_address
-      if is_zigby?(pool) || is_gateway?(pool)
+      if is_zigbee?(pool) || is_gateway?(pool)
         mac_addresses << get_mac_address(pool, num)
       else
         mac_addresses << ''
       end
     end
     
+    #add a new device for each row in the pool and save the pool
     Device.transaction do
       (0..pool.size-1).each do |i|
         device = Device.new(:active => false, :pool_id => pool.id, :serial_number => serial_numbers[i], :mac_address => mac_addresses[i])
@@ -89,6 +92,7 @@ class PoolsController < ApplicationController
     end
   end
   
+  #utility method to generate the serial number string
   def get_serial_number(pool, num)
     end_num = num.to_s
     serial_number = pool.starting_serial_number
@@ -97,7 +101,8 @@ class PoolsController < ApplicationController
     RAILS_DEFAULT_LOGGER.warn(serial_number)
     return serial_number
   end
-  
+
+  #utility method to generate the mac addr string  
   def get_mac_address(pool, num)
     end_num = num.to_s(16)
     # mac_address = pool.starting_mac_address
@@ -107,23 +112,27 @@ class PoolsController < ApplicationController
     mac_address = mac_address[0,2] + ':' + mac_address[2, 2] + ':' + mac_address[4,2] + ':' + mac_address[6,2] + ':' + mac_address[8,2] + ':' + mac_address[10,2]
     return mac_address
   end
-  
-  def is_zigby?(pool)
+
+  #returns true if device_type.serial_number_prefix.mac_address_type = 0
+  def is_zigbee?(pool)
     dt = DeviceType.find(:first, :include => :serial_number_prefixes, 
                         :conditions => "serial_number_prefixes.prefix = '#{pool.starting_serial_number[0,3]}'")
     return dt.mac_address_type == 0
   end
   
+  #returns true if device_type.serial_number_prefix.mac_address_type = 1
   def is_gateway?(pool)
     dt = DeviceType.find(:first, :include => :serial_number_prefixes, 
                         :conditions => "serial_number_prefixes.prefix = '#{pool.starting_serial_number[0,3]}'")
     return dt.mac_address_type == 1    
   end
-  
+
+  #get the ending mac addr by looping through all pools with the starting_serial_number 
+  #(the prefix) matching the input pool's starting_serial_number  
   def get_last_mac_address(pool)
     pools = []
     num = -1
-    if(is_zigby?(pool))
+    if(is_zigbee?(pool))
       #num needs to start at hex 80:01:00
       num = '800000'.hex - 1
       dts = DeviceType.find(:all, :conditions => "mac_address_type = 0")
@@ -173,11 +182,14 @@ class PoolsController < ApplicationController
     return num
   end
   
+  #returns last 6 chars of input mac addr (mac)
   def get_last_mac_num(mac)
     num = mac.gsub(':', '')[6,6].hex
     return num
   end
   
+  #get the ending serial number by looping through all pools with the starting_serial_number 
+  #(the prefix) matching the input pool's starting_serial_number
   def get_last_serial_number(pool)
     pools = Pool.find(:all, :conditions => "starting_serial_number like '#{pool.starting_serial_number}%'")
     num = 99
@@ -194,6 +206,7 @@ class PoolsController < ApplicationController
     return num
   end
   
+  #returns last 5 chars of the input serial number (sn)
   def get_last_num(sn)
     sn = sn[5,5]
     sn = sn.to_i
