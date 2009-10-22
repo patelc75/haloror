@@ -41,7 +41,7 @@ class User < ActiveRecord::Base
   attr_accessor :password
   attr_accessor :current_password
   validates_presence_of     :login, :if => :password_required?
-  validates_presence_of     :email
+  #validates_presence_of     :email
   #validates_presence_of     :serial_number
   
   validates_presence_of     :password,                   :if => :password_required?
@@ -60,7 +60,9 @@ class User < ActiveRecord::Base
   
   before_save :encrypt_password
   before_create :make_activation_code
-  
+  def before_validation
+  	    self.email = "no-email@halomonitoring.com" if self.email == ''
+  end
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
   #attr_accessible :login, :email, :password, :password_confirmation
