@@ -1,6 +1,6 @@
 class Profile < ActiveRecord::Base
   
-  acts_as_audited
+  acts_as_audited :except => [:is_caregiver, :is_new_caregiver]
   
   #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
   composed_of :tz, :class_name => 'TimeZone', :mapping => %w(time_zone identifier)

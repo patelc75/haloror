@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
   
   acts_as_authorized_user
   acts_as_authorizable
-  acts_as_audited
+  acts_as_audited :except => [:is_caregiver, :is_new_caregiver]
   
   has_many :notes
   has_many :panics
