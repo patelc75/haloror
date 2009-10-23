@@ -76,4 +76,5 @@ class AlertsController < ApplicationController
   def message
   	
   end
+  
 end
