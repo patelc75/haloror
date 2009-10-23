@@ -260,7 +260,7 @@ class ReportingController < ApplicationController
           :page => params[:page],
           :per_page => 10,
           :conditions => ["created_at >= ? AND created_at <= ? and owner_id IN (#{owners})", @begin_time, @end_time], 
-          :order => "owner_id ASC, created_at ASC"
+          :order => "owner_id ASC, created_at DESC"
          # :include => [:owner] :error => Can not eagerly load the polymorphic association :owner
           )
     else
