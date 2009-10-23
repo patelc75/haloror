@@ -87,13 +87,10 @@ class Device < ActiveRecord::Base
 
   def find_device_revision(device)
     if (device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
-      #chest strap
       return DeviceRevision.find(:first, :order => "device_types.id desc", :include => [{:device_model => :device_type}], :conditions => "device_types.device_type = 'Chest Strap'")
     elsif (device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
-      #gateway
       return DeviceRevision.find(:first, :order => "device_types.id desc", :include => [{:device_model => :device_type}], :conditions => "device_types.device_type = 'Gateway'")
     elsif (device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '5')
-      #belt
       return DeviceRevision.find(:first, :order => "device_types.id desc", :include => [{:device_model => :device_type}], :conditions => "device_types.device_type = 'Belt Clip'")
     else
       return nil

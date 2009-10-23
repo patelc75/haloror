@@ -36,6 +36,10 @@ class MgmtCmdsController < RestfulAuthController
         device.save
       end
       
+      if(device.device_revision.nil?)
+        device.device_revision = device.find_device_revision(device)
+        device.save
+      end
       cmd.device_id = device.id
     end
     
