@@ -301,12 +301,12 @@ class UsersController < ApplicationController
       throw msg
     end
     
-     strap_serial_number = params[:strap_serial_number]
-    unless strap_serial_number
+    strap_serial_number = params[:strap_serial_number]
+    unless strap_serial_number #two diff param locations because they're used on different forms
       strap_serial_number = params[:strap][:serial_number]
     end
     if !strap_serial_number.blank?
-      if strap_serial_number.size == 7
+      if strap_serial_number.size == 7  #in case there's a short serial number
         strap_serial_number = strap_serial_number[0,2] + "000" + strap_serial_number[2, 5] 
       end
       @strap = Device.find_by_serial_number(strap_serial_number)
