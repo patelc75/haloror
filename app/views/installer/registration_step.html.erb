@@ -17,7 +17,7 @@
 				<%= link_to 'Remove User Mapping', :controller => 'installer', :action => 'remove_user_mapping', 
 							:user_id => @user.id, :device_id => @strap.id, :self_test_session_id => @self_test_session.id,
 							:gateway_serial_number => @gateway.serial_number, :strap_serial_number => @strap.serial_number %>
-				&nbsp; or enter another Chest Strap Serial Number
+				&nbsp; or enter another Strap/Clip Serial Number
 			<% end %>
 		</div>
     	<div>Registering <%= @user.name %> (<%= @user.id %>)</div>
@@ -29,7 +29,7 @@
         <%= text_field :gateway, :serial_number %>
         <br />
         <br />
-        <label for="serial_number">Chest Strap/Belt Clip Serial Number</label><br/>
+        <label for="serial_number">Strap/Clip Serial Number</label><br/>
         <%= text_field :strap, :serial_number %>
         <br />
         <br />
@@ -38,7 +38,7 @@
         <%if @user.get_gateway and @user.get_strap %>
 		<a href="/installer/installer/?gateway_id=<%= @user.get_gateway.id %>&self_test_session_id=<%= @self_test_session.id%>&strap_id=<%= @user.get_strap.id %>&user_id=<%= @user.id %>">Skip this step (phone install only)</a>
 		<%else%>
-		Gateway and Chest Strap Serial Numbers are not registered.
+		Gateway and Strap/Clip Serial Numbers are not registered.
 		<%end%>
 		<br><br></font>
           <input name="commit" type="image" src="/images/next.gif" />
