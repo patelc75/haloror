@@ -1,6 +1,6 @@
 <div id="user_signup-col">
 	<div id="user_signup-col-header">
-		Edit Profile
+		Edit Profile: <%= @user.name%>
 	</div>
   <div class="content">
 	
@@ -14,7 +14,6 @@
 			<% end %>
 			<% if @user.errors %>
 			  <%= error_messages_for :user %>
-			  <br>
 			<% end %>
 			
 			<% if @profile.errors %>
@@ -34,13 +33,15 @@
 		<%end%>
 	<div style="width:380px;" id="container"></div>
 	<span style="padding-left:30px;">
-		<% @kit_serial_number = KitSerialNumber.find_by_user_id(@user.id,:order => 'created_at desc') %>
-	<%=link_to('Change Password', :controller => "profiles", :action => "change_password_init", :id => @user.profile.id,:user_id => @user.id )%> | <%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id %> | 
-	<%  if @kit_serial_number %>
-	<%= link_to "Enter CS and GW serial numbers for #{@kit_serial_number.serial_number}",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> 
-	<%else%>
-	<%= link_to "Enter CS and GW serial numbers",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> 
-	<%end%>
+		<% if current_user.is_admin? || current_user.is_super_admin? %>
+		  <% @kit_serial_number = KitSerialNumber.find_by_user_id(@user.id,:order => 'created_at desc') %>
+	      <%=link_to('Change Password', :controller => "profiles", :action => "change_password_init", :id => @user.profile.id,:user_id => @user.id )%> | <%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id %> | 
+	      <%  if @kit_serial_number %>
+	        <%= link_to "Enter CS and GW serial numbers for #{@kit_serial_number.serial_number}",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> 
+	      <%else%>
+	       <%= link_to "Enter CS and GW serial numbers",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> 
+	      <%end%>
+	    <%end%>
       <%# form_tag :action => 'create' do -%>
 		<% form_tag(:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]) do %>
 		<%# form_remote_tag(:update => 'container', :url => {:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]}, :html => { :id => 'profile_form'}) do %>
@@ -62,7 +63,7 @@
 			<br />
 			<input name="commit" type="image" src="/images/update.gif"  />
 		  </div>
-		
+			
 			<div class="col-250">
 				<%= render :partial => '/profiles/profile_textfields' %>
 			</div>

@@ -34,13 +34,14 @@
         <br />
         <br />
         <%#= @user.devices[0].id%>
-        <font size="2">
+		<span style="font-size: 60%;">
         <%if @user.get_gateway and @user.get_strap %>
 		<a href="/installer/installer/?gateway_id=<%= @user.get_gateway.id %>&self_test_session_id=<%= @self_test_session.id%>&strap_id=<%= @user.get_strap.id %>&user_id=<%= @user.id %>">Skip this step (phone install only)</a>
 		<%else%>
 		Gateway and Strap/Clip Serial Numbers are not registered.
 		<%end%>
-		<br><br></font>
+		</span>
+		<br><br>
           <input name="commit" type="image" src="/images/next.gif" />
       <% end %>
           </div>

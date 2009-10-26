@@ -10,7 +10,7 @@ require "digest"
 
 <% current_user = nil %>
   <% if @stream %>
-  <table>
+  <table border="1">
     <th>User</th><th>Audited</th><th>Changes</th><th>Changed by</th><th>IP</th><th>URL / Referring URL</th><th>Timestamp</th>
   <% end %>
   <% @audits.each do |audit| %>
@@ -19,15 +19,24 @@ require "digest"
       <% if !current_user.nil? %>
         </table>
       <% end %>
-      <hr>
+     
       <h2><%= owner_user.name rescue "unknown" %></h2>
-      <table>
+      <table border="1">
         <th>Audited</th><th>Changes</th><th>Changed by</th><th>IP</th><th>URL / Referring URL</th><th>Timestamp</th>
       <% current_user = owner_user %>
     <% end %>
     <tr>
-      <%= @stream ? "<td>#{owner_user.name rescue "unknown"}</td>" : "" %>
-      <td><%= audit.auditable_type.to_s.underscore.humanize %></td>
+      <%= @stream ? "<td>#{owner_user.name rescue "unknown"}(#{owner_user.id rescue "unknown"})</td>" : "" %>
+      <td>
+      	<%if audit.auditable_type == 'AlertOption'%>
+      	  <%= audit.auditable.alert_type.alert_type %>
+      	<%elsif audit.auditable_type == 'RolesUsersOption' %>
+      	  <%= 'Critical Alerts ' %>
+      	  <%= '- caregiver for ' + audit.auditable.roles_user.role.authorizable.name + ' (' + audit.auditable.roles_user.role.authorizable.id.to_s + ')' if audit.auditable.roles_user.role.authorizable_type != 'Group' %>
+      	<%else%>
+      	  <%= audit.auditable_type.to_s.underscore.humanize %>
+      	<%end%>
+  	</td>
       <td><%= audit.action %>:
         <% audit.changes.each do |key, values| %>
           <% next if value[0] == value[1] rescue true %>
@@ -39,7 +48,7 @@ require "digest"
       <td>
         <%= link_to "URL", audit.url %> / <%=link_to "Referer", audit.referer %>
       </td>
-      <td><%=h audit.created_at %></td>
+      <td><%=h audit.created_at.in_time_zone.to_s(:date_time_timezone) %></td>
     </tr>
  
   <% end %>

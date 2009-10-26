@@ -101,7 +101,7 @@
 				alt = "Caregiver is active."
 			end
 		%>
-		<%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_active_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "activate",:id => opts.id}, :before => 'toggleCaregiver(\'enable\', '+i.to_s+', '+caregiver.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
+		<%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_active_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "activate",:id => opts.id}, :before => 'toggleCaregiver(\'enable\', '+i.to_s+', '+caregiver.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')',:complete => "show_message()")%>
 		<br />
 		
 		<% 
@@ -115,7 +115,7 @@
 			end
 		%>
 
-		<%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_away_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "deactivate",:id => opts.id}, :before => 'toggleCaregiver(\'disable\', '+i.to_s+', '+caregiver.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')')%>
+		<%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_away_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "deactivate",:id => opts.id}, :before => 'toggleCaregiver(\'disable\', '+i.to_s+', '+caregiver.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')',:complete => "show_message()")%>
 	</div>
 <% else %>
  	<div style="float:left;padding-top:25px;width:100px">
@@ -188,7 +188,7 @@
 			end
 		%>
     <% if opts.active? %>
-		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_text_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_text",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\', '+user_id+')', :complete => 'updatePositions()')%>
+		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_text_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_text",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'return toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\', '+user_id+')', :complete => 'updatePositions()')%>
 		<% else %>
 		  <%= image_tag(img, :alt => alt, :id => 'item_text_'+caregiver.id.to_s) %>
 		<% end %>
@@ -218,7 +218,7 @@
 		<!--% puts edit_user_url(caregiver)%-->
 		<% alt = "Edit caregiver's profile." %>
 		<%#=link_to_remote_redbox('Edit Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true, :user_id => user_id, :roles_user_id => user.roles_user_by_caregiver(caregiver).id }, :html => {:alt => alt, :method => :get, :complete => 'updatePositions()'})%>
-		<%=link_to('Edit Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true,:user_id => caregiver.id )%>
+		<%=link_to('Edit Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id,:user_id => caregiver.id )%>
 		| <% alt = 'View / Edit Alerts.' %><br>
 		<%=link_to('Non-critical Alerts', :controller => "alerts", :action => "index", :alt => alt, :id => user.roles_user_by_caregiver(caregiver).id)%>
 	</div>

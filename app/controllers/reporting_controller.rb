@@ -1,5 +1,5 @@
 class ReportingController < ApplicationController
-  before_filter :authenticate_admin_moderator_sales?
+  before_filter :authenticate_admin_moderator_installer?
   include UtilityHelper
   
   def avg_skin_temps
@@ -260,7 +260,7 @@ class ReportingController < ApplicationController
           :page => params[:page],
           :per_page => 10,
           :conditions => ["created_at >= ? AND created_at <= ? and owner_id IN (#{owners})", @begin_time, @end_time], 
-          :order => "owner_id ASC, created_at ASC"
+          :order => "owner_id ASC, created_at DESC"
          # :include => [:owner] :error => Can not eagerly load the polymorphic association :owner
           )
     else
@@ -319,7 +319,7 @@ class ReportingController < ApplicationController
           		       end
           		       @group_stats[group.name][:test_alarm_falls] << fall
           		       @group_totals[:test_alarm_falls] += 1 if group.name !="SafetyCare" and group.name !="halo"
-        		     elsif
+        		     else
         		       if @group_stats[group.name][:real_falls].nil?
         		         @group_stats[group.name][:real_falls] = [] 
         		       end
@@ -362,8 +362,8 @@ class ReportingController < ApplicationController
             		  end 
             		  @group_stats[group.name][:non_emerg_panics]  << panic
             		  @group_totals[:non_emerg_panics] += 1 if group.name !="SafetyCare" and group.name !="halo"
-          		  else
-          		    if @group_stats[group.name][:real_panics].nil?
+          		else
+          		  if @group_stats[group.name][:real_panics].nil?
             		    @group_stats[group.name][:real_panics] = []
             		  end
             		  @group_stats[group.name][:real_panics]  << panic
@@ -418,13 +418,16 @@ class ReportingController < ApplicationController
     @user_end_time = params[:end_time]
   	
     @groups = current_user.group_memberships
-    if !@user_end_time.blank? && !@user_begin_time.blank? && !params[:id]
+    if !@user_end_time.blank? && !@user_begin_time.blank?
 		
     	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
     	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
- 
-    	@group = Group.find_by_name(params[:group_name])
-    	@users = User.find(:all)
+
+        #emacs
+	if(!params[:id])  
+    	  @group = Group.find_by_name(params[:group_name])
+    	  @users = User.find(:all)
+	end
     end
     #flash[:warning] = 'Begin Time and End Time are required.'
   end

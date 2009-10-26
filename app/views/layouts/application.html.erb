@@ -96,7 +96,7 @@
 				
 				Welcome, <%=current_user.profile.first_name%> <!--% if ENV['RAILS_ENV'] == "development"%--> (#<%=current_user.id%>) <!--% end %-->
 				<span class="divider">|</span>
-				<a href="/logout" style="font-weight:bold">Logout</a>
+				<span id="logout"><a href="/logout">Logout</a></span>
 				<span class="divider">|</span>				
 			<% end %>
 			</div>

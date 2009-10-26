@@ -4,7 +4,7 @@
 		My&nbsp;Links&nbsp;
 		<ul>
 			<li><%#=link_to_remote_redbox('My&nbsp;Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%>
-		<%=link_to('My Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id )%>
+		<%=link_to('My Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id ,:user_id => current_user.id )%>
 				
 			</li>
 
@@ -37,10 +37,10 @@
 			<% if current_user.is_admin? || current_user.is_super_admin? %>
 			  <li><%= link_to 'Vitals List', :controller => 'vital_lists', :action => 'index',:id => current_user %></li>
 			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_sales? %>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_installer? %>
 				<li><%= link_to 'Config', :controller => 'reporting', :action => 'index' %></li>
 			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_sales? %>
+			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
 				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'fall_panic_report' %></li>
 			<% end %>
 			<% if current_user.is_admin? || current_user.is_super_admin? %>

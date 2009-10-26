@@ -169,7 +169,6 @@ h3 a {
 {
 	width:418px;
 	
-
 }
 
 #lightbox-col-header
@@ -768,3 +767,6 @@ ul.removed_caregivers li a
 #my_links li:hover > ul {display: block; position: absolute; top: -1px; float:left; left:100%; margin-left:-55px;margin-top:15px;}
 #my_links li a {display: block;text-decoration:none}
 #my_links li a:hover{font-weight:bold}
+
+#logout a{text-decoration:none;}
+#logout a:hover{font-weight:bold};

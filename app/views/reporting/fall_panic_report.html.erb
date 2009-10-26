@@ -22,7 +22,7 @@ require "digest"
 
   <%if @falls or @panics %>
   <br>
-  <b><%= UtilityHelper.format_datetime(@user_begin_time.to_time, current_user) %></b> to <b><%= UtilityHelper.format_datetime(@user_end_time.to_time, current_user) %></b> in
+<b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
   <%= current_user.profile.time_zone if current_user.profile %> timezone<br>
  <br>
   	<table border="1">
@@ -56,7 +56,7 @@ require "digest"
   				<td><%= @false_alarm_falls = @group_stats[key][:false_alarm_falls].length if @group_stats[key][:false_alarm_falls]%></td>
   				<td><%= @test_falls = @group_stats[key][:test_alarm_falls].length if @group_stats[key][:test_alarm_falls]%></td>
   				<td><% falls_specify = (@real_falls.to_f / (@false_alarm_falls.to_f + @real_falls.to_f)) if @real_falls != 0%>
-  	    		<%= (falls_specify * 100).to_s + '%' if falls_specify%>
+  	    		<%= (falls_specify * 100).round(1).to_s + '%' if falls_specify%>
   				</td>
   				
 				<td><%=@real_panics = @group_stats[key][:real_panics].length if @group_stats[key][:real_panics]%></td>

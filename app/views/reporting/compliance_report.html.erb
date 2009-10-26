@@ -47,13 +47,12 @@ end %>
   
   <%if @group or params[:id] and @begin_time%>	
 	  <hr>
-		<h2>Group: <%= @group.name %></h2>
+  	<% if !params[:id] %>
+	  <h2>Group: <%= @group.name %></h2>
+	<% end %>
 		<b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
 	  <%= current_user.profile.time_zone if current_user.profile %> timezone<br><br>
 	  <% debug Time.zone %>	
-  	<% if !params[:id] %>
-
-	<% end %>
 	<table border="1">
   		<tr>
   			<th bgcolor="#E1E1E1">User</th>
@@ -116,9 +115,7 @@ end %>
 				
 	  	    <!-- Total Compliance % -->  	    	
 			<td>
-			<% if(!params[:include_strap_not_worn].blank?) %>
 			<%= @total_compliance = (100.0 - @lost_data_per - @total_per).round(1).to_s + '%' %>
-  	    	<% end %>	
   	    	</td>
   	     	
 	  	    <!-- Senior Logins -->  	    	
@@ -142,13 +139,10 @@ end %>
 			<td align ="left"><b>Total</b></td>
 			<td></td>
 			<td></td>
-			<td><% if(!params[:include_strap_not_worn].blank?) %>
-			<%= (strap_not_worn_total_perc = (strap_not_worn_total/((@end_time.to_time.to_f - @begin_time.to_time.to_f)*users.length.to_f))*100.0).round(1).to_s %>%<br>
-			<% end %></td>
+			<td><%= (strap_not_worn_total_perc = (strap_not_worn_total/((@end_time.to_time.to_f - @begin_time.to_time.to_f)*users.length.to_f))*100.0).round(1).to_s %>%<br>
+			</td>
 			<td><%= (lost_data_total_perc = (lost_data_total/((@end_time.to_time.to_f - @begin_time.to_time.to_f)*users.length.to_f))*100.0).round(1).to_s %>%<br></td> 
-			<td><% if(!params[:include_strap_not_worn].blank?) %>
-			<%= (100.0 - lost_data_total_perc - strap_not_worn_total_perc).round(1).to_s + '%' %>
-			<% end %></td>
+			<td><%= (100.0 - lost_data_total_perc - strap_not_worn_total_perc).round(1).to_s + '%' %></td>
 			<td><%= senior_logins_total %></td>
 			<td><%= caregiver_logins_total %></td>
 			<td><%= caregiver_logins_total + senior_logins_total %></td>			

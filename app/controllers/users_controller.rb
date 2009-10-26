@@ -301,12 +301,12 @@ class UsersController < ApplicationController
       throw msg
     end
     
-     strap_serial_number = params[:strap_serial_number]
-    unless strap_serial_number
+    strap_serial_number = params[:strap_serial_number]
+    unless strap_serial_number #two diff param locations because they're used on different forms
       strap_serial_number = params[:strap][:serial_number]
     end
     if !strap_serial_number.blank?
-      if strap_serial_number.size == 7
+      if strap_serial_number.size == 7  #in case there's a short serial number
         strap_serial_number = strap_serial_number[0,2] + "000" + strap_serial_number[2, 5] 
       end
       @strap = Device.find_by_serial_number(strap_serial_number)
@@ -501,17 +501,17 @@ class UsersController < ApplicationController
   end
   
   def new_caregiver
-    # get removed caregivers 
+    senior = User.find(params[:user_id].to_i)    
     
     @removed_caregivers = []
-    
-    current_user.caregivers.each do |caregiver|
+    senior.caregivers.each do |caregiver|
       if caregiver
-        caregiver.roles_users.each do |roles_user|
+        roles_user = senior.roles_user_by_caregiver(caregiver)
+        #caregiver.roles_users.each do |roles_user|
           if roles_user.roles_users_option and roles_user.roles_users_option[:removed]
             @removed_caregivers << caregiver
           end
-        end 
+        #end 
       end
     end
     
@@ -566,7 +566,7 @@ class UsersController < ApplicationController
   	end
     
     if !@user.email.blank?
-     User.transaction do  
+     User.transaction do
       @user.is_new_caregiver = true
       @user[:is_caregiver] =  true
       @user.save!
@@ -576,7 +576,7 @@ class UsersController < ApplicationController
     
       #patient = User.find(params[:user_id].to_i)
       patient = User.find(params[:user_id].to_i)
-      role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return that
+      role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return nil
       caregiver = @user
       @roles_user = patient.roles_user_by_caregiver(caregiver)
     
@@ -585,8 +585,10 @@ class UsersController < ApplicationController
       #enable_by_default(@roles_user)      
       #redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
       
+      #if role.nil? then the roles_user does not exist already
+      RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => 0) if !role.nil?
+      
       if existing_user.nil?
-        RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => 0)
         UserMailer.deliver_caregiver_email(caregiver, patient)
       end
       
@@ -623,6 +625,8 @@ end
   
   def destroy_caregiver
     option = RolesUsersOption.find(params[:id])
+    
+    #get all roles_users_options above the position you want to delete at
     options = RolesUsersOption.find(:all, :conditions => "position > #{option.position} and roles_users.role_id = #{option.roles_user.role_id}", :include => :roles_user )
     
     options.each do |opt|
@@ -666,8 +670,18 @@ end
   end
   
   def get_max_caregiver_position(user)
-    get_caregivers(user)
-    @caregivers.size + 1
+    #get_caregivers(user)
+    #@caregivers.size + 1  #the old method would not work if a position num was skipped
+    max_position = 1
+    user.caregivers.each do |caregiver|
+      roles_user = user.roles_user_by_caregiver(caregiver)
+      if opts = roles_user.roles_users_option
+        if opts.position >= max_position
+          max_position = opts.position + 1
+        end
+      end
+    end
+    return max_position    
   end
   
   def update_from_position(position, roles_user_id, user_id)

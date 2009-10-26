@@ -202,8 +202,8 @@ class ApplicationController < ActionController::Base
     true
   end
   
-  def authenticate_admin_moderator_sales?
-  	unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_sales?)
+  def authenticate_admin_moderator_installer?
+  	unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_installer?)
       return redirect_to('/login')
     end
     true
