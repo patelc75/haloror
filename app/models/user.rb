@@ -111,6 +111,8 @@ class User < ActiveRecord::Base
       bc.device_type
     elsif cs = self.get_strap
       cs.device_type
+    else
+      "None"
     end
   end
     
