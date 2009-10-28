@@ -96,6 +96,24 @@ class User < ActiveRecord::Base
     end
     return nil
   end
+  
+  def get_belt_clip
+    self.devices.each do |device|
+      if device.device_type == 'Belt Clip'
+        return device
+      end
+    end
+    return nil
+  end
+  
+  def get_wearable_type
+    if bc = self.get_belt_clip
+      bc.device_type
+    elsif cs = self.get_strap
+      cs.device_type
+    end
+  end
+    
   # Activates the user in the database.
   def activate
     @activated = true

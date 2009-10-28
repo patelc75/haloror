@@ -2,8 +2,10 @@ class BundleProcessor
   @@bundled_models = [Vital, StrapRemoved, StrapFastened, Step, 
                       SkinTemp, Battery, BatteryChargeComplete, 
                       BatteryCritical, BatteryPlugged, BatteryUnplugged, 
-                      Fall, Panic, WeightScale, BloodPressure, HaloDebugMsg]
+                      Fall, Panic, WeightScale, BloodPressure, 
+                      HaloDebugMsg, OscopeMsg, OscopeStopMsg, OscopeStartMsg]
   def self.process(bundle)
+    RAILS_DEFAULT_LOGGER.warn("Entering BundleProcessor.self_process")
     begin
       @@bundled_models[0].transaction do
         @@bundled_models.each do |model|
