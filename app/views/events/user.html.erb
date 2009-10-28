@@ -109,7 +109,7 @@
 	    </div>
 		<div style="float:left;padding-top:5px;width:100px">
 		<% if vital && vital.heartrate != -1  %>
-	      <%= Vital.get_adl(vital.orientation, vital.activity) %>
+	      <%= vital.adl %>
 		<% else %>
 			N/A
 		<% end  %>
