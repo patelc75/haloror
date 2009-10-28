@@ -3,8 +3,7 @@ class InstallerController < ApplicationController
   def index
     
   end
-  
-  
+   
   def add_caregiver
     init_user_group
     init_devices_self_test_session
@@ -33,7 +32,6 @@ class InstallerController < ApplicationController
       flash[:warning] = "Email Required"
     end
   end
-  
   
   def ie6
     
@@ -172,6 +170,7 @@ class InstallerController < ApplicationController
     create_self_test_step(INSTALLATION_SERIAL_NUMBERS_ENTERED_FAILED_ID)
     render :action => 'registration_step'
   end
+
   def installer
     init_user_group
     init_devices_self_test_session    
@@ -191,6 +190,7 @@ class InstallerController < ApplicationController
     redirect_to :action => 'installer', :controller => 'installer', :self_test_session_id => @self_test_session_id,
     :gateway_id => @gateway.id, :strap_id => @strap.id, :user_id => @user.id
   end
+
   def registration_progress
     init_user_group
     init_devices_self_test_session
@@ -821,8 +821,7 @@ class InstallerController < ApplicationController
       page.replace_html('installer_div_id', str)
     end
   end
-  
-  
+   
   def stop_range_test
     init_user_group
     init_devices_self_test_session
@@ -867,7 +866,9 @@ class InstallerController < ApplicationController
     @self_test_result = SelfTestResult.find(@self_test_result_id) if !@self_test_result_id.blank?
     #clear_session_data
   end
+
   private
+
   def dots(count)
     dts = ''
     (0..count).each do |i|
@@ -875,6 +876,7 @@ class InstallerController < ApplicationController
     end
     return dts
   end
+
   def check_registered()
     if(!session[:halo_check_registered])
       conds = "device_id = #{@strap_id} AND user_id = #{@user.id} AND cmd_type = 'user_registration'"
@@ -891,12 +893,14 @@ class InstallerController < ApplicationController
       return session[:halo_check_registered]
     end
   end
+
   def init_user_group
     @user_id = params[:user_id]
     @user = User.find(@user_id)
     @group_name = params[:group_name]
     @group = Group.find_by_name(@group_name)
   end
+
   def init_devices_self_test_session
     @gateway_id = params[:gateway_id]
     @strap_id = params[:strap_id]
@@ -1003,6 +1007,7 @@ class InstallerController < ApplicationController
     session[:halo_check_chest_strap_self_test_result] = @self_test
     return self_test_step
   end
+
   def check_phone_self_test()
     delay = @self_test_session.created_at
     #    if(!session[:halo_check_phone_self_test])
@@ -1023,8 +1028,7 @@ class InstallerController < ApplicationController
     #      return session[:halo_check_phone_self_test]
     #    end
   end
-  
-  
+   
   def check_heartrate
     step = @self_test_session.self_test_steps.find(:first,:conditions => "self_test_step_description_id = #{SELF_TEST_CHEST_STRAP_COMPLETE_ID}")
     delay = step.timestamp
@@ -1048,8 +1052,7 @@ class InstallerController < ApplicationController
                    :timestamp_initiated => Time.now,
                    :param1              => param1)
   end
-  
-  
+    
   def timeout?(self_test_step_description_id, seconds)
     step = @self_test_session.self_test_steps.find(:first,:conditions => "self_test_step_description_id = #{self_test_step_description_id}")
     if Time.now > (step.timestamp + seconds)
@@ -1070,8 +1073,7 @@ class InstallerController < ApplicationController
   def check_phone_timeout?
     timeout?(SELF_TEST_CHEST_STRAP_COMPLETE_ID, INSTALL_WIZ_TIMEOUT_PHONE)
   end
-  
-  
+    
   def check_heartrate_timeout?
    if previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_PHONE_COMPLETE_ID}")
       timeout?(SELF_TEST_PHONE_COMPLETE_ID, INSTALL_WIZ_TIMEOUT_HEARTRATE)
@@ -1081,8 +1083,7 @@ class InstallerController < ApplicationController
       timeout?(SELF_TEST_PHONE_TIMEOUT_ID, INSTALL_WIZ_TIMEOUT_HEARTRATE)
     end
   end
-  
-  
+   
   def save_notes(step_id)
     self_test_step = SelfTestStep.find(step_id)
     self_test_step.notes = params[:notes]
