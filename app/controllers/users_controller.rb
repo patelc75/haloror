@@ -2,13 +2,14 @@ require "ArbApiLib"
 
 class UsersController < ApplicationController  
   before_filter :authenticated?, :except => [:init_user, :update_user]
+
   def save_timezone
     user = User.find(current_user.id)
     user.profile.tz = tzinfo_from_timezone(TimeZone.new(params[:user][:timezone_name]))
     user.save
   end
   
-  def tzinfo_from_timezone(timezone) 
+  def tzinfo_from_timezone(timezone)
     TZInfo::Timezone.all.each do |tz|
       if tz.current_period.utc_offset.to_i == timezone.utc_offset.to_i
         return tz
@@ -35,55 +36,50 @@ class UsersController < ApplicationController
   end
   
   def create_subscriber
-  	
-  	RAILS_DEFAULT_LOGGER.debug("****START create_subscriber")
-  	
-	senior_user_id = params[:user_id]
-	if !request.post?  # when click on the skip this page
-	  @user = User.find(params[:user_id])
-	  session[:new_user] = nil
-	else
-  	  if params[:users][:same_as_senior] == "1"
-  	    @user = User.find_by_id(params[:user_id])
-  		subscriber_user_id = senior_user_id
-		RAILS_DEFAULT_LOGGER.debug("**same as senior == 1 ; subscriber_user_id = #{@senior_user_id}")
-		bill_to_fn = @user.profile.first_name
-		bill_to_ln = @user.profile.last_name
-		credit_card_validate(senior_user_id,subscriber_user_id,@user)
-  	  else
-  	    User.transaction do
-  		  if params[:users][:add_caregiver] != "1"
-    	    populate_caregiver(params[:email],params[:users],params[:user_id].to_i)
-	  	  else
-	  	    @user = User.new
-  			@user.email = params[:email]
-  			@profile = Profile.new(params[:profile])
-	  		@user[:is_new_user] = true
-	  		if @user.save!
-	    	  @profile.user_id = @user.id
-	    	end
-	    	@profile.save!
-  	      end
-  			subscriber_user_id = @user.id
-  			credit_card_validate(senior_user_id,subscriber_user_id,@user)
-  		end
+  	senior_user_id = params[:user_id]
+  	if !request.post?  # when click on the skip this page
+  	  @user = User.find(params[:user_id])
+  	  session[:new_user] = nil
+  	else
+    	if params[:users][:same_as_senior] == "1"
+    	  @user = User.find_by_id(params[:user_id])
+    	  subscriber_user_id = senior_user_id
+  		  RAILS_DEFAULT_LOGGER.debug("**same as senior == 1 ; subscriber_user_id = #{@senior_user_id}")
+  		  bill_to_fn = @user.profile.first_name
+  		  bill_to_ln = @user.profile.last_name
+  		  credit_card_validate(senior_user_id,subscriber_user_id,@user)
+    	else
+    	  User.transaction do
+    		  if params[:users][:add_caregiver] != "1"
+      	    populate_caregiver(params[:email],params[:users],params[:user_id].to_i)
+  	  	  else
+  	  	    @user = User.new
+      			@user.email = params[:email]
+      			@profile = Profile.new(params[:profile])
+    	  		@user[:is_new_user] = true
+    	  		if @user.save!
+    	    	  @profile.user_id = @user.id
+    	    	end
+    	    	@profile.save!
+    	    end
+    		  subscriber_user_id = @user.id
+    		  credit_card_validate(senior_user_id,subscriber_user_id,@user)
+        end
+      end
 	
-	  end
-	  @senior = User.find(senior_user_id)
-	  patient = User.find(params[:user_id].to_i)
-	  role = @user.has_role 'subscriber', patient
-  
-	  	# End authorize.net create subscription code 	
-  	end
+  	  @senior = User.find(senior_user_id)
+  	  patient = User.find(params[:user_id].to_i)
+  	  role = @user.has_role 'subscriber', patient
+    end
 
     rescue Exception => e
-	  RAILS_DEFAULT_LOGGER.warn("ERROR in create_subscriber, #{e}")
-	  RAILS_DEFAULT_LOGGER.debug(e.backtrace.join("\n"))
-	  if request.post?
-	    render :action => 'credit_card_authorization'
-  	  else
-  		@user = User.find(params[:id])
-  	  end
+  	RAILS_DEFAULT_LOGGER.warn("ERROR in create_subscriber, #{e}")
+  	RAILS_DEFAULT_LOGGER.debug(e.backtrace.join("\n"))
+  	if request.post?
+  	  render :action => 'credit_card_authorization'
+    else
+    	@user = User.find(params[:id])
+    end
   end
   
   def signup_info
@@ -309,7 +305,7 @@ class UsersController < ApplicationController
     end
   end
   
-  def add_device_to_user    
+  def add_device_to_user
     if valid_serial_number(params[:serial_number])
     	register_user_with_serial_num(User.find(params[:user_id]),params[:serial_number].strip)
     else
@@ -453,6 +449,7 @@ class UsersController < ApplicationController
   render :partial => 'call_list/extra_info_lightbox', :locals => {:id => params[:id], :user_id => params[:user_id], :missing => missing_what} 
     
   end
+
   def refresh
     @user = User.find(params[:user_id])
     refresh_caregivers(@user)
@@ -460,6 +457,7 @@ class UsersController < ApplicationController
   
   def populate_caregiver(email,user = nil, patient=nil, position = nil,login = nil)
   	existing_user = User.find_by_email(email)
+  	
   	if !login.nil?
   		@user = User.find_by_login(login)
   	elsif !existing_user.nil? 
@@ -468,9 +466,9 @@ class UsersController < ApplicationController
   		@user = User.new
   		@user.email = email
   	end
+  	
   	if !@user.email.blank?
     	User.transaction do
-  			
   			@user.is_new_caregiver = true
     		@user[:is_caregiver] =  true
     		@user.save!
@@ -481,34 +479,31 @@ class UsersController < ApplicationController
     		profile[:is_new_caregiver] = true
     		profile.save!
     
-      		#patient = User.find(params[:user_id].to_i)
-      		patient = User.find(patient)
-      		role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return nil
-      		caregiver = @user
-      		@roles_user = patient.roles_user_by_caregiver(caregiver)
+    		#patient = User.find(params[:user_id].to_i)
+    		patient = User.find(patient)
+    		role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return nil
+    		caregiver = @user
+    		@roles_user = patient.roles_user_by_caregiver(caregiver)
+  
+    		update_from_position(position, @roles_user.role_id, caregiver.id)
+  
+    		#enable_by_default(@roles_user)      
+    		#redirect_to 	"/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
     
-      		update_from_position(position, @roles_user.role_id, caregiver.id)
+    		#if role.nil? then the roles_user does not exist already
+    		RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0) if !role.nil?
     
-      		#enable_by_default(@roles_user)      
-      		#redirect_to 	"/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
-      
-      		#if role.nil? then the roles_user does not exist already
-      		RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0) if !role.nil?
-      
-      		if existing_user.nil?
-        		UserMailer.deliver_caregiver_email(caregiver, patient)
-      		end
-  	    end
+    		if existing_user.nil?
+      		UserMailer.deliver_caregiver_email(caregiver, patient)
+    		end
+  	  end
     end
-    
   end
   
-  def create_caregiver    
-    
-      populate_caregiver(params[:user][:email],params[:user],params[:user_id].to_i,params[:position],params[:user][:login])
+  def create_caregiver
+    populate_caregiver(params[:user][:email],params[:user],params[:user_id].to_i,params[:position],params[:user][:login])
       
-      render :partial => 'caregiver_email'
- 
+    render :partial => 'caregiver_email'
 =begin
   rescue Exception => e
     RAILS_DEFAULT_LOGGER.warn "#{e}"
@@ -529,7 +524,8 @@ class UsersController < ApplicationController
          render :partial => 'caregiver_form'
     end
 =end
-end  
+  end  
+  
   def destroy_operator
     RolesUsersOption.update(params[:id], {:removed => 1, :position => 0})
     @operators = User.operators
@@ -610,24 +606,7 @@ end
   def random_password
     Digest::SHA1.hexdigest("--#{Time.now.to_s}--")[0,6]
   end
-  
-  private
-#  def get_device_type(device)
-#    if(device.serial_number == nil)
-#      device_type = "Invalid serial num"
-#    elsif(device.serial_number.length != 10)
-#      device_type = "Invalid serial num"
-#    elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
-#      device_type = "Halo Chest Strap"
-#    elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
-#      device_type = "Halo Gateway"
-#    else
-#      device_type = "Unknown Device"
-#    end
-#    
-#    device_type
-#  end
-  
+    
   def register_user_with_serial_num(user, serial_number)
     unless device = Device.find_by_serial_number(serial_number)
       device = Device.new
@@ -650,26 +629,21 @@ end
     device.users << user
     device.save!
   end
-  
-  private
-  
+    
   def credit_card_validate(senior_user_id,subscriber_user_id,user)
-  		bill_to_fn = user.profile.first_name
+    bill_to_fn = user.profile.first_name
 		bill_to_ln = user.profile.last_name
   	  	
-		
-  		#@gateway = Device.new
-  		#@strap = Device.new    
-
-    	# Start authorize.net create subscription code
-  		auth = MerchantAuthenticationType.new(AUTH_NET_LOGIN, AUTH_NET_TXN_KEY)
-  		# subscription name - use subscriber user id
+    # Start authorize.net create subscription code
+  	auth = MerchantAuthenticationType.new(AUTH_NET_LOGIN, AUTH_NET_TXN_KEY)
+  	
+  	# subscription name - use subscriber user id
 		subname = "sen_uid-#{senior_user_id}-sub_uid-#{subscriber_user_id}"
 
 		RAILS_DEFAULT_LOGGER.info("Attempting to create Authorize.Net subscription.  Subscription name = #{subname}")
 		RAILS_DEFAULT_LOGGER.debug("Authorize.Net AUTH_NET_LOGIN= #{AUTH_NET_LOGIN}, AUTH_NET_TXN_KEY= #{AUTH_NET_TXN_KEY}")
 
-	  	# 1 month interval
+	  # 1 month interval
 		interval = IntervalType.new(AUTH_NET_SUBSCRIPTION_INTERVAL, AUTH_NET_SUBSCRIPTION_INTERVAL_UNITS)
 
 		sub_start_date = Time.now
@@ -698,19 +672,18 @@ end
 	
 		RAILS_DEFAULT_LOGGER.info("\nXML Dump:" + xmlresp)
 
-				if apiresp.success 
+		if apiresp.success 
 			session[:new_user] = nil
-		   RAILS_DEFAULT_LOGGER.info("Subscription Created successfully")
-		   RAILS_DEFAULT_LOGGER.info("Subscription id : " + apiresp.subscriptionid)
+		  RAILS_DEFAULT_LOGGER.info("Subscription Created successfully")
+		  RAILS_DEFAULT_LOGGER.info("Subscription id : " + apiresp.subscriptionid)
 		else
 			RAILS_DEFAULT_LOGGER.info("Subscription Creation Failed")
 			apiresp.messages.each { |message| 
-				RAILS_DEFAULT_LOGGER.info("Error Code=" + message.code)
-				RAILS_DEFAULT_LOGGER.info("Error Message = " + message.text)
-				flash[:warning] = "Unable to create subscription.  Check credit card information. Error Code=" + message.code + ", Error Message = " + message.text
+			  RAILS_DEFAULT_LOGGER.info("Error Code=" + message.code)
+			  RAILS_DEFAULT_LOGGER.info("Error Message = " + message.text)
+			  flash[:warning] = "Unable to create subscription.  Check credit card information. Error Code=" + message.code + ", Error Message = " + message.text
 			}   
 			raise "Unable to create subscription."
-
 		end
 		
 		@subscription = Subscription.new
