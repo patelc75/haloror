@@ -37,36 +37,33 @@ class UsersController < ApplicationController
   
   def create_subscriber
   	senior_user_id = params[:user_id]
-  	if !request.post?  # when click on the skip this page
+  	if !request.post?  #there's a GET when clicking "skip"
   	  @user = User.find(params[:user_id])
   	  session[:new_user] = nil
   	else
-    	if params[:users][:same_as_senior] == "1"
-    	  @user = User.find_by_id(params[:user_id])
-    	  subscriber_user_id = senior_user_id
-  		  RAILS_DEFAULT_LOGGER.debug("**same as senior == 1 ; subscriber_user_id = #{@senior_user_id}")
-  		  bill_to_fn = @user.profile.first_name
-  		  bill_to_ln = @user.profile.last_name
-  		  credit_card_validate(senior_user_id,subscriber_user_id,@user)
-    	else
-    	  User.transaction do
+  	  User.transaction do  	  
+      	if params[:users][:same_as_senior] == "1"
+      	  @user = User.find_by_id(params[:user_id])
+      	  subscriber_user_id = senior_user_id
+    		  RAILS_DEFAULT_LOGGER.debug("**same as senior == 1 ; subscriber_user_id = #{@senior_user_id}")
+    		  credit_card_validate(senior_user_id,subscriber_user_id,@user)
+      	else
     		  if params[:users][:add_caregiver] != "1"
       	    populate_caregiver(params[:email],params[:users],params[:user_id].to_i)
   	  	  else
   	  	    @user = User.new
       			@user.email = params[:email]
       			@profile = Profile.new(params[:profile])
+      			@profile.user_id = @user.id
+	    	  
     	  		@user[:is_new_user] = true
-    	  		if @user.save!
-    	    	  @profile.user_id = @user.id
-    	    	end
+    	  		@user.save!
     	    	@profile.save!
     	    end
     		  subscriber_user_id = @user.id
     		  credit_card_validate(senior_user_id,subscriber_user_id,@user)
         end
       end
-	
   	  @senior = User.find(senior_user_id)
   	  patient = User.find(params[:user_id].to_i)
   	  role = @user.has_role 'subscriber', patient
@@ -468,40 +465,45 @@ class UsersController < ApplicationController
   	end
   	
   	if !@user.email.blank?
-    	User.transaction do
-  			@user.is_new_caregiver = true
-    		@user[:is_caregiver] =  true
-    		@user.save!
-    		if position == nil
-    			position = get_max_caregiver_position(@user)
-    		end
-    		@user.profile.nil? ? profile = Profile.new(:user_id => @user.id) : profile = @user.profile
-    		profile[:is_new_caregiver] = true
-    		profile.save!
-    
-    		#patient = User.find(params[:user_id].to_i)
-    		patient = User.find(patient)
-    		role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return nil
-    		caregiver = @user
-    		@roles_user = patient.roles_user_by_caregiver(caregiver)
+			@user.is_new_caregiver = true
+  		@user[:is_caregiver] =  true
+  		@user.save!
+  		if position == nil
+  			position = get_max_caregiver_position(@user)
+  		end
+  		if @user.profile.nil?
+  		  profile = Profile.new(:user_id => @user.id)
+  		  profile.user_id = @user.id
+  		else  
+  		  profile = @user.profile
+  		end
+  		profile[:is_new_caregiver] = true
+  		profile.save!
   
-    		update_from_position(position, @roles_user.role_id, caregiver.id)
+  		#patient = User.find(params[:user_id].to_i)
+  		patient = User.find(patient)
+  		role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return nil
+  		caregiver = @user
+  		@roles_user = patient.roles_user_by_caregiver(caregiver)
+
+  		update_from_position(position, @roles_user.role_id, caregiver.id)
+
+  		#enable_by_default(@roles_user)      
+  		#redirect_to 	"/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
   
-    		#enable_by_default(@roles_user)      
-    		#redirect_to 	"/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
-    
-    		#if role.nil? then the roles_user does not exist already
-    		RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0) if !role.nil?
-    
-    		if existing_user.nil?
-      		UserMailer.deliver_caregiver_email(caregiver, patient)
-    		end
-  	  end
+  		#if role.nil? then the roles_user does not exist already
+  		RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0) if !role.nil?
+  
+  		if existing_user.nil?
+    		UserMailer.deliver_caregiver_email(caregiver, patient)
+  		end
     end
   end
   
   def create_caregiver
-    populate_caregiver(params[:user][:email],params[:user],params[:user_id].to_i,params[:position],params[:user][:login])
+    User.transaction do  	  
+	    populate_caregiver(params[:user][:email],params[:user],params[:user_id].to_i,params[:position],params[:user][:login])
+    end
       
     render :partial => 'caregiver_email'
 =begin
@@ -657,7 +659,9 @@ class UsersController < ApplicationController
 		
 		binfo = NameAndAddressType.new(bill_to_fn, bill_to_ln)
 		RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription cc fn = #{binfo.firstName} cc ln = #{binfo.lastName}")
-	
+	  
+	  @senior = User.find(senior_user_id)
+	  
 		charge = @senior.group_recurring_charge
 	
 		aReq = ArbApi.new
@@ -673,9 +677,9 @@ class UsersController < ApplicationController
 		RAILS_DEFAULT_LOGGER.info("\nXML Dump:" + xmlresp)
 
 		if apiresp.success 
-			session[:new_user] = nil
 		  RAILS_DEFAULT_LOGGER.info("Subscription Created successfully")
 		  RAILS_DEFAULT_LOGGER.info("Subscription id : " + apiresp.subscriptionid)
+=begin
 		else
 			RAILS_DEFAULT_LOGGER.info("Subscription Creation Failed")
 			apiresp.messages.each { |message| 
@@ -684,6 +688,7 @@ class UsersController < ApplicationController
 			  flash[:warning] = "Unable to create subscription.  Check credit card information. Error Code=" + message.code + ", Error Message = " + message.text
 			}   
 			raise "Unable to create subscription."
+=end
 		end
 		
 		@subscription = Subscription.new

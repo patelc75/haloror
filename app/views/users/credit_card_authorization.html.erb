@@ -7,21 +7,22 @@
   <div class="content">
 	<div id="errors">
  	  <% if flash[:warning] %>
-	    <span style="font-size: 150%;">
+		<font color="red">'
+	    <span style="font-size: 120%">
 		  The following error occurred:
 		<ul>
 		  <li><%= flash[:warning]%></li>
-		</ul>
-		
+		</ul>		
 		</span>
 	  <% end %>
 	  <% if @user.errors %>
-			  <%= error_messages_for :user %>
-			  <br>
-			<% end %>
-			<% if @profile && @profile.errors %>
-			<%= error_messages_for :profile %>
-			<% end %>
+	    <%= error_messages_for :user %>
+		<br>
+	  <% end %>
+	  <% if @profile && @profile.errors %>
+	    <%= error_messages_for :profile %>
+	  <% end %>
+	  </font>
 	</div>
 
     <% form_tag :action => 'create_subscriber' do -%>
