@@ -101,7 +101,7 @@ class ProfilesController < ApplicationController
       end
     end
     get_caregivers(current_user)
-    @max_position = @caregivers.size + 1
+    @max_position = get_max_caregiver_position(current_user)
     @user = User.new 
     @profile = Profile.new    	
   end

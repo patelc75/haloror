@@ -48,18 +48,18 @@ class UsersController < ApplicationController
     		  RAILS_DEFAULT_LOGGER.debug("**same as senior == 1 ; subscriber_user_id = #{@senior_user_id}")
     		  credit_card_validate(senior_user_id,subscriber_user_id,@user)
       	else
-    		  if params[:users][:add_caregiver] != "1"
-      	    populate_caregiver(params[:email],params[:users],params[:user_id].to_i)
+    	  if params[:users][:add_caregiver] != "1"
+      	    populate_caregiver(params[:email],params[:user_id].to_i,nil,nil,params[:profile])
   	  	  else
   	  	    @user = User.new
-      			@user.email = params[:email]
-      			@profile = Profile.new(params[:profile])
-      			@profile.save!
-      			@user.profile = @profile
+      		@user.email = params[:email]
+      		@profile = Profile.new(params[:profile])
+      		@profile.save!
+      		@user.profile = @profile
 	    	  
-    	  		@user[:is_new_user] = true
-    	  		@user.save!
-    	    end
+    	  	@user[:is_new_user] = true
+    	  	@user.save!
+    	  end
     		  subscriber_user_id = @user.id
     		  credit_card_validate(senior_user_id,subscriber_user_id,@user)
         end
@@ -452,35 +452,39 @@ class UsersController < ApplicationController
     refresh_caregivers(@user)
   end
   
-  def populate_caregiver(email,user = nil, patient=nil, position = nil,login = nil)
+  def populate_caregiver(email,patient_id=nil, position = nil,login = nil,profile_hash = nil)
   	existing_user = User.find_by_email(email)
   	
-  	if !login.nil?
-  		@user = User.find_by_login(login)
+  	if !login.nil? and login != ""
+  	  @user = User.find_by_login(login)
   	elsif !existing_user.nil? 
   	  @user = existing_user
-	  else
-  		@user = User.new
-  		@user.email = email
+	else
+  	  @user = User.new
+  	  @user.email = email
   	end
   	
   	if !@user.email.blank?
-			@user.is_new_caregiver = true
+		@user.is_new_caregiver = true
   		@user[:is_caregiver] =  true
   		@user.save!
-  		if position == nil
-  			position = get_max_caregiver_position(@user)
+  		if position.nil?
+  		  position = get_max_caregiver_position(@user)
   		end
   		if @user.profile.nil?
-  		  profile = Profile.new(:user_id => @user.id)
+  		  if profile_hash.nil?
+  		    profile = Profile.new(:user_id => @user.id)
+  		  else
+  		  	profile = Profile.new(profile_hash)
+  		  end
+  		  profile[:is_new_caregiver] = true
   		  profile.save!
+  		  profile[:is_new_caregiver] = true
   		  @user.profile = profile
-  		else  
-  		  profile = @user.profile
   		end
-  		profile[:is_new_caregiver] = true
+  		
   		#patient = User.find(params[:user_id].to_i)
-  		patient = User.find(patient)
+  		patient = User.find(patient_id)
   		role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return nil
   		caregiver = @user
   		@roles_user = patient.roles_user_by_caregiver(caregiver)
@@ -501,7 +505,7 @@ class UsersController < ApplicationController
   
   def create_caregiver
     User.transaction do  	  
-	    populate_caregiver(params[:user][:email],params[:user],params[:user_id].to_i,params[:position],params[:user][:login])
+	    populate_caregiver(params[:user][:email],params[:user_id].to_i,params[:position],params[:user][:login])
     end
       
     render :partial => 'caregiver_email'
@@ -580,20 +584,6 @@ class UsersController < ApplicationController
     refresh_caregivers(@patient)
   end
   
-  def get_max_caregiver_position(user)
-    #get_caregivers(user)
-    #@caregivers.size + 1  #the old method would not work if a position num was skipped
-    max_position = 1
-    user.caregivers.each do |caregiver|
-      roles_user = user.roles_user_by_caregiver(caregiver)
-      if opts = roles_user.roles_users_option
-        if opts.position >= max_position
-          max_position = opts.position + 1
-        end
-      end
-    end
-    return max_position    
-  end
   
   def update_from_position(position, roles_user_id, user_id)
     caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and roles_user_id = #{roles_user_id}")
@@ -678,7 +668,7 @@ class UsersController < ApplicationController
 		if apiresp.success 
 		  RAILS_DEFAULT_LOGGER.info("Subscription Created successfully")
 		  RAILS_DEFAULT_LOGGER.info("Subscription id : " + apiresp.subscriptionid)
-=begin
+#=begin
 		else
 			RAILS_DEFAULT_LOGGER.info("Subscription Creation Failed")
 			apiresp.messages.each { |message| 
@@ -687,7 +677,7 @@ class UsersController < ApplicationController
 			  flash[:warning] = "Unable to create subscription.  Check credit card information. Error Code=" + message.code + ", Error Message = " + message.text
 			}   
 			raise "Unable to create subscription."
-=end
+#=end
 		end
 		
 		@subscription = Subscription.new
