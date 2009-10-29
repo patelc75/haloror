@@ -116,7 +116,7 @@ class ProfilesController < ApplicationController
     		@user.is_new_caregiver = true
     		@user[:is_caregiver] =  true
     		if @user.save
-    			@user.activate
+    			@user.activate #this call differentiates this method UsersController.populate_caregiver 
     			
     			@profile.user_id = @user.id
     			@profile[:is_new_caregiver] = true
@@ -126,7 +126,9 @@ class ProfilesController < ApplicationController
     				caregiver = @user
     				@roles_user = patient.roles_user_by_caregiver(caregiver)
     				update_from_position(params[:position], @roles_user.role_id, caregiver.id)
-    				RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => true,:relationship => params[:relationship],:is_keyholder => params[:key_holder][:is_keyholder])
+    				if !role.nil?
+    				  RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => true,:relationship => params[:relationship],:is_keyholder => params[:key_holder][:is_keyholder])
+    				end
     			else
     				#render :action => 'new_caregiver_profile',:user_id => current_user
     				raise "Invalid Profile"

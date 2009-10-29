@@ -479,10 +479,9 @@ class UsersController < ApplicationController
   		  end
   		  profile[:is_new_caregiver] = true
   		  profile.save!
-  		  profile[:is_new_caregiver] = true
   		  @user.profile = profile
   		end
-  		
+
   		#patient = User.find(params[:user_id].to_i)
   		patient = User.find(patient_id)
   		role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return nil
@@ -584,7 +583,6 @@ class UsersController < ApplicationController
     refresh_caregivers(@patient)
   end
   
-  
   def update_from_position(position, roles_user_id, user_id)
     caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and roles_user_id = #{roles_user_id}")
     
@@ -681,7 +679,7 @@ class UsersController < ApplicationController
 		end
 		
 		@subscription = Subscription.new
-		@subscription[:arb_subscriptionId] = apiresp.subscriptionid
+		#@subscription[:arb_subscriptionId] = apiresp.subscriptionid
 		@subscription[:senior_user_id] = senior_user_id
 		@subscription[:subscriber_user_id] = subscriber_user_id
 		@subscription[:cc_last_four] = (params[:credit_card][:number]).last(4)
