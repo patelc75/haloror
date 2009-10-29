@@ -223,7 +223,7 @@ class UsersController < ApplicationController
         throw e
       end
     else
-      msg = "Chest Strap Serial Number cannot be blank."
+      msg = "Chest Strap/Belt Clip Serial Number cannot be blank."
       flash[:warning] = msg
       throw msg
     end

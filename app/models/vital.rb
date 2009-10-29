@@ -206,7 +206,7 @@ class Vital < ActiveRecord::Base
     conds << "reconnected_at is null"
     conds << "(device_id in (select device_id from access_mode_statuses where mode = 'ethernet') OR device_id not in (select device_id from access_mode_statuses))"
     conds << "device_id in (select v.id from latest_vitals v where v.updated_at >= now() - interval '#{ethernet_system_timeout.device_unavailable_timeout_sec/60} minutes')"
-    conds << "device_id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
+    conds << "device_id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type in ('Chest Strap', 'Belt Clip')))"
     conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"
     
     alerts = DeviceUnavailableAlert.find(:all,
@@ -224,7 +224,7 @@ class Vital < ActiveRecord::Base
     conds << "reconnected_at is null"
     conds << "device_id in (select device_id from access_mode_statuses where mode = 'dialup') "
     conds << "device_id in (select v.id from latest_vitals v where v.updated_at >= now() - interval '#{dialup_system_timeout.device_unavailable_timeout_sec/60} minutes')"
-    conds << "device_id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
+    conds << "device_id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type in ('Chest Strap', 'Belt Clip')))"
     conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"
     
     alerts = DeviceUnavailableAlert.find(:all,
@@ -244,7 +244,7 @@ class Vital < ActiveRecord::Base
     conds = []
     conds << "(id in (select device_id from access_mode_statuses where mode = 'ethernet') OR id not in (select device_id from access_mode_statuses))"
     conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{ethernet_system_timeout.device_unavailable_timeout_sec/60} minutes')"
-    conds << "id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
+    conds << "id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type in ('Chest Strap', 'Belt Clip')))"
     conds << "id in (select status.id from device_strap_status status where is_fastened > 0)"
 
     devices = Device.find(:all,
@@ -263,7 +263,7 @@ class Vital < ActiveRecord::Base
     conds = []
     conds << "id in (select device_id from access_mode_statuses where mode = 'dialup')"
     conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{dialup_system_timeout.device_unavailable_timeout_sec/60} minutes')"
-    conds << "id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
+    conds << "id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type in ('Chest Strap', 'Belt Clip')))"
     conds << "id in (select status.id from device_strap_status status where is_fastened > 0)"
 
     devices = Device.find(:all,

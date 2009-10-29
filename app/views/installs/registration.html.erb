@@ -39,7 +39,7 @@
 				<%= link_to 'Remove User Mapping', :controller => 'installs', :action => 'remove_user_mapping', 
 							:user_id => @user.id, :device_id => @strap.id, :self_test_session_id => @self_test_session.id,
 							:gateway_serial_number => @gateway.serial_number, :strap_serial_number => @strap.serial_number %>
-				&nbsp; or enter another Chest Strap Serial Number
+				&nbsp; or enter another Strap/Clip Serial Number
 			<% end %>
 		</div>
     <div style="width:200px;margin-left:auto;margin-right:auto">
@@ -52,7 +52,7 @@
         <%= text_field :gateway, :serial_number %>
         <br />
         <br />
-        <label for="serial_number">Chest Strap Serial Number</label><br/>
+        <label for="serial_number">Strap/Clip Serial Number</label><br/>
         <%= text_field :strap, :serial_number %>
         <br />
         <br />

@@ -75,7 +75,7 @@ namespace :halo do
       validatation
       start_time = Time.now.utc
     if ENV['method'] == "activerecord"
-            set_test_phone = SelfTestResult.new(:device_id => ENV['gateway_id'],:cmd_type => 'self_test_phone', :result => 'f', :timestamp => start_time)
+            set_test_phone = SelfTestResult.new(:device_id => ENV['gateway_id'],:cmd_type => 'self_test_phone', :result => 't', :timestamp => start_time)
             set_test_phone.save
 	end
   end
