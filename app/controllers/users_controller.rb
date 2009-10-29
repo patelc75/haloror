@@ -54,11 +54,11 @@ class UsersController < ApplicationController
   	  	    @user = User.new
       			@user.email = params[:email]
       			@profile = Profile.new(params[:profile])
-      			@profile.user_id = @user.id
+      			@profile.save!
+      			@user.profile = @profile
 	    	  
     	  		@user[:is_new_user] = true
     	  		@user.save!
-    	    	@profile.save!
     	    end
     		  subscriber_user_id = @user.id
     		  credit_card_validate(senior_user_id,subscriber_user_id,@user)
@@ -473,13 +473,12 @@ class UsersController < ApplicationController
   		end
   		if @user.profile.nil?
   		  profile = Profile.new(:user_id => @user.id)
-  		  profile.user_id = @user.id
+  		  profile.save!
+  		  @user.profile = profile
   		else  
   		  profile = @user.profile
   		end
   		profile[:is_new_caregiver] = true
-  		profile.save!
-  
   		#patient = User.find(params[:user_id].to_i)
   		patient = User.find(patient)
   		role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return nil
