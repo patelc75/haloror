@@ -55,8 +55,9 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
                     xml.activity(reading[:activity])
                     if reading[:orientation]
                       xml.orientation(reading[:orientation])
-                      xml.adl(Vital.get_adl(reading[:orientation], reading[:activity]))
+                      #xml.adl(Vital.get_adl(reading[:orientation], reading[:activity]))
                     end
+                    xml.adl(reading[:adl])                    
                   end
                 elsif reading.class.to_s == 'SkinTemp' || reading[:type] == 'SkinTemp'
                   if reading[:skin_temp]

@@ -312,7 +312,11 @@ class FlexController < ApplicationController
       else
         orientation = -1
       end
-      vital_row = {:type => 'Vital', :heartrate => heart_rate, :hrv => hrv, :activity => activity, :orientation => orientation}
+      
+      temp_vital = Vital.new(:user_id => user.id, :orientation => orientation, :activity => activity)
+      adl = temp_vital.adl
+      
+      vital_row = {:type => 'Vital', :heartrate => heart_rate, :hrv => hrv, :activity => activity, :orientation => orientation, :adl => adl}
       timestamp = Time.parse(result['ts'])
       data[timestamp] = [] unless data[timestamp]
       data[timestamp] << vital_row
