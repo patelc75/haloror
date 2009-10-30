@@ -125,7 +125,11 @@ class BundleJob
         
         unless bundle_hash.blank? || bundle_hash.nil? || xml_string.blank?
           #puts("%s: %s" % [xml_file_name, bundle_hash['bundle'].keys.join(', ')])
-          BundleProcessor.process(bundle_hash['bundle']) #processes bundle hash, can't use a symbol, have to pass in 'bundle'
+          bundle_hash.keys.each do |key|
+            unless bundle_hash[key].empty?
+              BundleProcessor.process(bundle_hash[key]) 
+            end
+          end
         
         end
         #delete xml file
