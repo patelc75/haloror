@@ -26,13 +26,13 @@ class AddNegativeOneCheckForBeltClip < ActiveRecord::Migration
       et timestamp := ct + ("interval"(p_interval));
     begin
       query_vitals := 'select avg(heartrate) as average_heartrate, avg(activity) as average_activity, ' || quote_literal(et) || ' as ts, avg(hrv) as average_hrv, avg(orientation) as average_orientation from vitals ' ||
-          ' where heartrate <> -1 AND activity <> -1 AND user_id = ' || p_user_id || ' AND (timestamp >= ' || quote_literal(ct) || ' AND timestamp < ' || quote_literal(et) || ')';
+          ' where activity <> -1 AND user_id = ' || p_user_id || ' AND (timestamp >= ' || quote_literal(ct) || ' AND timestamp < ' || quote_literal(et) || ')';
       for i in 1..p_num_points loop
         EXECUTE query_vitals into averages_row;
         ct := et;
         et := ct + ("interval"(p_interval));
         query_vitals := 'select avg(heartrate) as average_heartrate, avg(activity) as average_activity, ' || quote_literal(et) || ' as ts, avg(hrv) as average_hrv, avg(orientation) as average_orientation from vitals ' ||
-          ' where heartrate <> -1 AND activity <> -1 AND user_id = ' || p_user_id || ' AND (timestamp >= ' || quote_literal(ct) || ' AND timestamp < ' || quote_literal(et) || ')';
+          ' where activity <> -1 AND user_id = ' || p_user_id || ' AND (timestamp >= ' || quote_literal(ct) || ' AND timestamp < ' || quote_literal(et) || ')';
         RETURN NEXT averages_row;
       end loop;
 
