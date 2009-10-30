@@ -126,12 +126,14 @@ class BundleJob
         unless bundle_hash.blank?
           #puts("%s: %s" % [xml_file_name, bundle_hash['bundle'].keys.join(', ')])
           BundleProcessor.process(bundle_hash['bundle']) #processes bundle hash, can't use a symbol, have to pass in 'bundle'
+        
         end
-        #delete xml file
-        File.delete(xml_file_path_and_name)
       rescue Exception => e
         @error_collection << "BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_path_and_name}: #{e}"
         RAILS_DEFAULT_LOGGER.warn "BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_path_and_name}: #{e}"
+      ensure
+        #delete xml file
+        File.delete(xml_file_path_and_name)
       end
     end
   end
