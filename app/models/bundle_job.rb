@@ -101,7 +101,7 @@ class BundleJob
 
       if archive_file_names.size == 0  #if not files, return nil
         return nil
-	  elsif archive_file_names.size > DIAL_UP_ARCHIVE_FILES_TO_KEEP   #if more archive files then get oldest first in array for remove
+	  elsif archive_file_names.size > DIAL_UP_ARCHIVE_FILES_TO_KEEP_MIN   #if more archive files then get oldest first in array for remove
   	  	archive_file_names.sort! do |afile, bfile|
       		atime = get_time_in_seconds(afile)
       		btime = get_time_in_seconds(bfile)
