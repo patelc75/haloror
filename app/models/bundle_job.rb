@@ -2,8 +2,12 @@ class BundleJob
   BUNDLE_PATH = "#{RAILS_ROOT}/dialup"
   ARCHIVE_PATH = "#{RAILS_ROOT}/dialup/archive"
   EXT_NAME = '.tar.bz2'
+  
+  @error_collection = []
   def self.job_process_bundles
+    
     RAILS_DEFAULT_LOGGER.warn("BundleJob.job_process_bundle running at #{Time.now}")
+    @error_collection = []
    
     begin 
       Dir.mkdir(BUNDLE_PATH) unless File.exists?(BUNDLE_PATH)
@@ -11,41 +15,90 @@ class BundleJob
       #retrieve file names
       file_names = []
       Dir.foreach(BUNDLE_PATH) do |file_name|  #create list of filenames that need to be processed
-        unless file_name == '.' || file_name == '..' || file_name.include?('.part')
+        unless file_name == '.' || file_name == '..' || 
+               file_name.include?('.part') || file_name == "archive" ||
+               (!file_name.include?(EXT_NAME) && 
+                  !File.directory?("#{BUNDLE_PATH}/#{file_name}"))
+               
           file_names << file_name
         end
       end
       if file_names.size == 0  #if not files, return nil
         return nil
       end
-      while file_names.size > 0 
-        file_names = process_files(file_names) #after file is process, the name is removed from the array
+      
+      # sort the filenames once
+      file_names.sort! do |afile, bfile|
+        get_time_in_seconds(afile) <=> get_time_in_seconds(bfile)
       end
+
+      self.process_files(file_names)
+
     rescue Exception => e
-      RAILS_DEFAULT_LOGGER.warn "BUNDLE_JOB_EXCEPTION:  #{e}"
+      @error_collection << "BUNDLE_JOB_EXCEPTION while finding files:  #{e}"
+      RAILS_DEFAULT_LOGGER.warn "BUNDLE_JOB_EXCEPTION while finding files:  #{e}"
     end
+    
+    if !@error_collection.blank?
+      RAILS_DEFAULT_LOGGER.warn("BundleJob.job_process_bundle finished with errors at #{Time.now}")
+      error_string = "BUNDLE JOB PROCESSING: the following errors were logged:\n %s" % [@error_collection.join("\n")]
+      @error_collection = []
+      raise error_string
+    end
+    RAILS_DEFAULT_LOGGER.warn("BundleJob.job_process_bundle finished at #{Time.now}")
   end
   
-  def self.process_files(file_names) #array of filenames passed in
+  def self.process_files(file_names)
+    RAILS_DEFAULT_LOGGER.warn("BundleJob.job_process_files started at #{Time.now}")
     
-    #select oldest file
-    file_name = select_oldest_file_for_processing(file_names)
-    file_names.delete_if do |name| #delete the filename 
-      name == file_name
-    end
-    file_path_and_name = "#{BUNDLE_PATH}/#{file_name}"  #append filename to path to create a new dir
-    #create dir with file_name - extension
-    base_name = File.basename(file_path_and_name, EXT_NAME) #remove extension from filename
-    dir_path = "#{BUNDLE_PATH}/#{base_name}"
     begin
-      Dir.mkdir(dir_path) #try to make the directory
-    rescue
-      #dir already exists so file already being processed, returning file_names early
-      return file_names
+      file_names.each do |file_name|
+        file_path_and_name = "#{BUNDLE_PATH}/#{file_name}"
+        
+        if (file_name.include?(EXT_NAME) && 
+           !File.directory?(file_path_and_name))
+
+          base_name = File.basename(file_path_and_name, EXT_NAME) #remove extension from filename
+          dir_path = "#{BUNDLE_PATH}/#{base_name}"
+          begin
+            Dir.mkdir(dir_path) #try to make the directory
+          rescue
+          end
+          self.extract(file_path_and_name,  dir_path) 
+          self.archive(file_path_and_name,  ARCHIVE_PATH) #archive the file to the /archive directory
+          RAILS_DEFAULT_LOGGER.warn("BundleJob beginng work on extracted #{file_name}")
+          
+        else
+          RAILS_DEFAULT_LOGGER.warn("BundleJob beginng work on directory #{file_name}")
+          dir_path = file_path_and_name
+        end
+        
+        if File.directory?(dir_path)
+          begin
+            self.process_xml_files_in_dir(dir_path)
+            Dir.delete(dir_path)
+            delete_oldest_file_from_archive
+          rescue Exception => e
+            @error_collection << "BUNDLE_JOB_EXCEPTION while processing a directory:  #{e}"
+            RAILS_DEFAULT_LOGGER.warn "BUNDLE_JOB_EXCEPTION while processing a directory:  #{e}"
+          end
+        elsif file_name.include?(".xml")
+          # @error_collection << "Found a random xml file in the bundle dir:  #{file_name}"
+          RAILS_DEFAULT_LOGGER.warn "Found a random xml file in the bundle dir:  #{file_name}"
+          # process a single XML file here, sometime
+        end
+        
+      end
+    rescue Exception => e
+      @error_collection << "BUNDLE_JOB_EXCEPTION in process_files:  #{e}"
+      RAILS_DEFAULT_LOGGER.warn "BUNDLE_JOB_EXCEPTION in process_files:  #{e}"
     end
-    #extract file into dir
-    self.extract(file_path_and_name,  dir_path) 
-    self.archive(file_path_and_name,  ARCHIVE_PATH) #archive the file to the /archive directory
+    
+    RAILS_DEFAULT_LOGGER.warn("BundleJob.job_process_files finished at #{Time.now}")
+    
+  end
+    
+  def self.process_xml_files_in_dir(dir_path)
     #retrieve file names
     xml_file_names = []  
     Dir.foreach(dir_path) do |xml_file_name|  #crate an array of the xml file names
@@ -53,26 +106,33 @@ class BundleJob
         xml_file_names << xml_file_name
       end
     end
-    while xml_file_names.size > 0
-      #select oldest file, but first in sequence
-      xml_file_name = select_oldest_xml_file_for_processing(xml_file_names) #xml files have a timestamp
-      xml_file_path_and_name = "#{dir_path}/#{xml_file_name}"
-      #read file into string
-      xml_string = File.read(xml_file_path_and_name)
-      #convert to hash
-      bundle_hash = Hash.from_xml(xml_string)
-      #call bundle processor on hash (aka bundle)
-      BundleProcessor.process(bundle_hash['bundle']) #processes bundle hash, can't use a symbol, have to pass in 'bundle'
-      #delete xml file
-      File.delete(xml_file_path_and_name)
-      xml_file_names.delete_if do |name|
-        xml_file_name == name
+    xml_file_names.sort! do |afile, bfile|
+      atime, aseq = get_time_in_seconds_xml(afile)
+      btime, bseq = get_time_in_seconds_xml(bfile)
+      if atime == btime
+        aseq <=> bseq
+      else
+        atime <=> btime
       end
     end
     
-    Dir.delete(dir_path)
-    delete_oldest_file_from_archive
-    return file_names
+    xml_file_names.each do |xml_file_name|
+      begin
+        xml_file_path_and_name = "#{dir_path}/#{xml_file_name}"
+        xml_string = File.read(xml_file_path_and_name)
+
+        bundle_hash = Hash.from_xml(xml_string)
+
+        #puts("%s: %s" % [xml_file_name, bundle_hash['bundle'].keys.join(', ')])
+        BundleProcessor.process(bundle_hash['bundle']) #processes bundle hash, can't use a symbol, have to pass in 'bundle'
+
+        #delete xml file
+        File.delete(xml_file_path_and_name)
+      rescue Exception => e
+        @error_collection << "BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_path_and_name}: #{e}"
+        RAILS_DEFAULT_LOGGER.warn "BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_path_and_name}: #{e}"
+      end
+    end
   end
   
   def self.select_oldest_file_for_processing(file_names)
@@ -145,6 +205,7 @@ class BundleJob
     end
     return xml_file_names[0]
   end
+  
   def self.get_time_in_seconds_xml(file_name)
     base_name = File.basename(file_name, '.xml')
     i = base_name.index('_')
@@ -154,14 +215,16 @@ class BundleJob
     seconds_string = base_name[11, base_name.size - 11 - sequence_num.size - 1]
     return seconds_string.to_i, sequence_num.to_i
   end
+  
   def self.archive(file_path_and_name, directory)
-    command = "mv #{file_path_and_name} #{directory}"
+    command = "mv -f #{file_path_and_name} #{directory}"
     success = system(command)
     success && $?.exitstatus == 0
   end
+  
   def self.extract(file_path_and_name, directory)
     command = "tar -xjf #{file_path_and_name} -C #{directory}"
     success = system(command)
     success && $?.exitstatus == 0
   end
-end
+end  
