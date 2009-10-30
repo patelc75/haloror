@@ -123,7 +123,7 @@ class BundleJob
 
         bundle_hash = Hash.from_xml(xml_string) rescue nil
         
-        unless bundle_hash.blank?
+        unless bundle_hash.blank? || bundle_hash.nil? || xml_string.blank?
           #puts("%s: %s" % [xml_file_name, bundle_hash['bundle'].keys.join(', ')])
           BundleProcessor.process(bundle_hash['bundle']) #processes bundle hash, can't use a symbol, have to pass in 'bundle'
         
@@ -154,30 +154,28 @@ class BundleJob
   end
   
   def self.delete_oldest_file_from_archive
-  	archive_file_names = []
-      Dir.foreach(ARCHIVE_PATH) do |file_name|  #create list of zip files from archive directory
-        unless file_name == '.' || file_name == '..' 
-          archive_file_names << file_name
-        end
+    archive_file_names = []
+    Dir.foreach(ARCHIVE_PATH) do |file_name|  #create list of zip files from archive directory
+      unless file_name == '.' || file_name == '..' || 
+            File.directory?("#{ARCHIVE_PATH}/#{file_name}")
+        archive_file_names << file_name
       end
+    end
 
-      if archive_file_names.size == 0  #if not files, return nil
-        return nil
-	  elsif archive_file_names.size > DIAL_UP_ARCHIVE_FILES_TO_KEEP_MIN   #if more archive files then get oldest first in array for remove
-  	  	archive_file_names.sort! do |afile, bfile|
-      		atime = get_time_in_seconds(afile)
-      		btime = get_time_in_seconds(bfile)
-      		if atime <= btime
-      	  	 -1
-      		else
-      		  1
-      		end
-    	end
-    	archive_file_path = ARCHIVE_PATH + '/' + archive_file_names[0]
-    	File.delete(archive_file_path)
-      else
-  	    	return nil
+    if archive_file_names.size == 0  #if not files, return nil
+      return nil
+    elsif archive_file_names.size > DIAL_UP_ARCHIVE_FILES_TO_KEEP_MIN   #if more archive files then get oldest first in array for remove
+      archive_file_names.sort! do |afile, bfile|
+        get_time_in_seconds(afile) <=> get_time_in_seconds(bfile)
       end
+      
+      archive_file_path = ARCHIVE_PATH + '/' + archive_file_names[0]
+      if (!File.directory?(archive_file_path))
+        File.delete(archive_file_path)
+      end
+    else
+      return nil
+    end
   end
   
   def self.get_time_in_seconds(file_name)
