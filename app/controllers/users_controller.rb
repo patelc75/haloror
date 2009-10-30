@@ -44,23 +44,22 @@ class UsersController < ApplicationController
       	  @user = User.find_by_id(params[:user_id])
       	  subscriber_user_id = senior_user_id
     		  RAILS_DEFAULT_LOGGER.debug("**same as senior == 1 ; subscriber_user_id = #{@senior_user_id}")
-    		  Subscription.credit_card_validate(senior_user_id,subscriber_user_id,@user)
       	else
-    	  if params[:users][:add_caregiver] != "1"
+    	    if params[:users][:add_caregiver] != "1"
       	    populate_caregiver(params[:email],params[:user_id].to_i,nil,nil,params[:profile])
   	  	  else
   	  	    @user = User.new
-      		@user.email = params[:email]
-      		@profile = Profile.new(params[:profile])
-      		@profile.save!
-      		@user.profile = @profile
+      		  @user.email = params[:email]
+      		  @profile = Profile.new(params[:profile])
+      		  @profile.save!
+      		  @user.profile = @profile
 	    	  
-    	  	@user[:is_new_user] = true
-    	  	@user.save!
-    	  end
+    	  	  @user[:is_new_user] = true
+    	  	  @user.save!
+    	    end
     		  subscriber_user_id = @user.id
-    		  Subscription.credit_card_validate(senior_user_id,subscriber_user_id,@user)
         end
+        Subscription.credit_card_validate(senior_user_id,subscriber_user_id,@user,params[:credit_card],flash)  		  
       end
   	  @senior = User.find(senior_user_id)
   	  patient = User.find(params[:user_id].to_i)
