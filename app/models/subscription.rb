@@ -5,7 +5,7 @@ class Subscription < ActiveRecord::Base
 	belongs_to :senior, :class_name => "User", :foreign_key => "senior_user_id"
 	belongs_to :subscriber, :class_name => "User", :foreign_key => "subscriber_user_id"
 
-  def self.credit_card_validate(senior_user_id,subscriber_user_id,user)
+  def self.credit_card_validate(senior_user_id,subscriber_user_id,user,credit_card,flash)
     bill_to_fn = user.profile.first_name
 		bill_to_ln = user.profile.last_name
 
@@ -26,7 +26,7 @@ class Subscription < ActiveRecord::Base
 
 		RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription startdate = #{sub_start_date.strftime("%Y-%m-%d")} num_occurances = #{AUTH_NET_SUBSCRIPTION_TOTAL_OCCURANCES} interval = #{AUTH_NET_SUBSCRIPTION_INTERVAL} interval_units = #{AUTH_NET_SUBSCRIPTION_INTERVAL_UNITS}")
 
-		cc_exp = "#{params[:credit_card][:"expiration_time(1i)"]}-#{params[:credit_card][:"expiration_time(2i)"]}"
+		cc_exp = "#{credit_card[:"expiration_time(1i)"]}-#{credit_card[:"expiration_time(2i)"]}"
 
 		cinfo = CreditCardType.new(params[:credit_card][:number], cc_exp)
 
@@ -68,8 +68,8 @@ class Subscription < ActiveRecord::Base
 		@subscription[:arb_subscriptionId] = apiresp.subscriptionid
 		@subscription[:senior_user_id] = senior_user_id
 		@subscription[:subscriber_user_id] = subscriber_user_id
-		@subscription[:cc_last_four] = (params[:credit_card][:number]).last(4)
-		@subscription[:special_notes] = params[:credit_card][:special_notes]
+		@subscription[:cc_last_four] = credit_card[:number].last(4)
+		@subscription[:special_notes] = credit_card[:special_notes]
 		@subscription[:bill_amount] = charge
 		@subscription[:bill_to_first_name] = bill_to_fn
 		@subscription[:bill_to_last_name] = bill_to_ln
