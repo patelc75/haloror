@@ -6,7 +6,7 @@ ActiveRecord::Base.allow_concurrency = true
 
 SCHEDULER.schedule_every('10s') { RAILS_DEFAULT_LOGGER.debug("Job scheduler from #{__FILE__} is running at #{Time.now}") }
 
-SCHEDULER.schedule_every(BUNDLE_JOB_DIAL_UP_TIME) { 
+SCHEDULER.schedule_every(BUNDLE_JOB_DIAL_UP_TIME, :blocking => true) { 
   begin
     BundleJob.job_process_bundles() 
     ActiveRecord::Base.verify_active_connections!()
