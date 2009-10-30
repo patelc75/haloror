@@ -28,7 +28,7 @@ class Subscription < ActiveRecord::Base
 
 		cc_exp = "#{credit_card[:"expiration_time(1i)"]}-#{credit_card[:"expiration_time(2i)"]}"
 
-		cinfo = CreditCardType.new(params[:credit_card][:number], cc_exp)
+		cinfo = CreditCardType.new(credit_card[:number], cc_exp)
 
 		binfo = NameAndAddressType.new(bill_to_fn, bill_to_ln)
 		RAILS_DEFAULT_LOGGER.info("Authorize.Net Subscription cc fn = #{binfo.firstName} cc ln = #{binfo.lastName}")
