@@ -136,6 +136,9 @@ class FlexController < ApplicationController
           unless data[timestamp]
             data[timestamp] = []
           end
+          if model.class_name == "Vital"
+            row[:adl] = row.adl
+          end
           data[timestamp] << row
         end
       end
