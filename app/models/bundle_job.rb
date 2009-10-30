@@ -121,11 +121,12 @@ class BundleJob
         xml_file_path_and_name = "#{dir_path}/#{xml_file_name}"
         xml_string = File.read(xml_file_path_and_name)
 
-        bundle_hash = Hash.from_xml(xml_string)
-
-        #puts("%s: %s" % [xml_file_name, bundle_hash['bundle'].keys.join(', ')])
-        BundleProcessor.process(bundle_hash['bundle']) #processes bundle hash, can't use a symbol, have to pass in 'bundle'
-
+        bundle_hash = Hash.from_xml(xml_string) rescue nil
+        
+        unless bundle_hash.blank?
+          #puts("%s: %s" % [xml_file_name, bundle_hash['bundle'].keys.join(', ')])
+          BundleProcessor.process(bundle_hash['bundle']) #processes bundle hash, can't use a symbol, have to pass in 'bundle'
+        end
         #delete xml file
         File.delete(xml_file_path_and_name)
       rescue Exception => e
