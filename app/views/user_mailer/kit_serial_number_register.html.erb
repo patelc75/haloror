@@ -1,5 +1,12 @@
 New Kit Serial Number Registered
 
+Signed Up by <%= @current_user.name %> on <%=Time.now%>.
+
+Group: <%= @group %>
 User ID: <%= @user.id %>
 User: <%= @user.name %>
 Kit Serial Number: <%=@kit.serial_number %>
+
+Profile Information:
+
+<%= @profile.to_yaml %>
