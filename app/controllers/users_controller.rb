@@ -244,48 +244,41 @@ class UsersController < ApplicationController
   end
 
   def create  	
-  	  RAILS_DEFAULT_LOGGER.debug("****START create")
-
-      @user = User.new(params[:user])
-      @user.email = params[:email]
-      @group = params[:group]
-      @profile = Profile.new(params[:profile])
+    @user = User.new(params[:user])
+    @user.email = params[:email]
+    @group = params[:group]
+    @profile = Profile.new(params[:profile])
     if !@group.blank? && @group != 'Choose a Group'
-  
       User.transaction do
-          @user[:is_new_user] = true
-          if @user.save
-            # create profile
-            @profile.user_id = @user.id
-            if @profile.save
-          
-            else
-              raise "Invalid Profile"  
-            end
-            # create halouser role
-            @user.is_halouser_of Group.find_by_name(@group)
-            if(current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships))
-              if(params[:opt_out_call_center].blank?)
-                @user.is_halouser_of Group.find_by_name('SafetyCare')
-              end
-            end
-            redirect_to :controller => 'users', :action => 'credit_card_authorization',:user_id => @user.id
-          else
-            raise "Invalid User"
+        @user[:is_new_user] = true
+        if @user.save
+          @profile.user_id = @user.id
+          if !@profile.save
+            raise "Invalid Profile"  
           end
+
+          @user.is_halouser_of Group.find_by_name(@group)
+          if(params[:opt_out_call_center].blank?)
+            @user.is_halouser_of Group.find_by_name('SafetyCare')
+          end
+          redirect_to :controller => 'users', :action => 'credit_card_authorization',:user_id => @user.id
+        else
+          raise "Invalid User"
+        end
       end
     else 
       flash[:warning] = "Group is Required"
       redirect_to :controller => 'users', :action => 'new'
     end
-  rescue Exception => e
-    RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
-     @groups = []
-      gs = current_user.group_memberships
-      gs.each do |g|
-        @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g) || current_user.is_super_admin?)
-      end
-    render :action => 'new'
+    
+    rescue Exception => e
+      RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
+       @groups = []
+        gs = current_user.group_memberships
+        gs.each do |g|
+          @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g) || current_user.is_super_admin?)
+        end
+      render :action => 'new'
   end
   
   def signup_details
