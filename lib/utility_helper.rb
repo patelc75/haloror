@@ -166,4 +166,23 @@ module UtilityHelper
     end
     return time_string
   end
+
+  def self.models()
+    Dir.glob(RAILS_ROOT + '/app/models/*.rb').each { |file| require file }
+    @models = Object.subclasses_of(ActiveRecord::Base) #get all the tables in the database
+    @models.sort_by { |m| m.class_name }.each do |m| #loop through them
+      print m.class_name + ", "
+    end    
+  end
+  
+  def self.models_with_column(column)
+    Dir.glob(RAILS_ROOT + '/app/models/*.rb').each { |file| require file }
+    @models = Object.subclasses_of(ActiveRecord::Base) #get all the tables in the database
+    @models.sort_by { |m| m.class_name }.each do |m| #loop through them
+      if ActiveRecord::Base.connection.tables.include?(m.class_name.underscore.pluralize) and m.columns_hash.has_key?(column)
+        puts m.class_name
+      end
+    end
+  end
+  
 end
