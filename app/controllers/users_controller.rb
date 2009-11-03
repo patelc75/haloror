@@ -82,7 +82,7 @@ class UsersController < ApplicationController
   	
   	kit_serial_number = params[:kit][:serial_number] 
     @kit = KitSerialNumber.create(:serial_number => kit_serial_number,:user_id => @user.id)
-    UserMailer.deliver_kit_serial_number_register(@user,@kit)
+    UserMailer.deliver_kit_serial_number_register(@user,@kit,current_user)
     @subscription = Subscription.find_by_subscriber_user_id(params[:user_id])
     
 =begin  	
