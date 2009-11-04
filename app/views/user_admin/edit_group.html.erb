@@ -1,0 +1,13 @@
+<% form_tag :url => {:controller => 'user_admin',:action => 'edit_group'} do |f|%>
+	<%= error_messages_for :group %>
+	<input type="hidden" name="id" value="<%= params[:id]%>">
+  <label for="group_name">Group Name</label>
+  <br />
+  <%= text_field_tag 'group_name' , @group.name%>
+  <br>
+  <label for="description">Description</label>
+  <br />
+  <%= text_area_tag 'description', @group.description%>
+  <br>
+  <%=submit_tag 'Save Group'%>
+<% end %>

@@ -7,7 +7,11 @@ class UserAdminController < ApplicationController
     @groups = []
     gs = current_user.group_memberships
     gs.each do |g|
-      @groups << g if(current_user.is_admin_of?(g) || current_user.is_super_admin?) || current_user.is_sales?
+    	if g == 'sales' or g == 'installer' and current_user.is_admin?
+    		@groups << g if(current_user.is_admin_of?(g) || current_user.is_super_admin?) || current_user.is_sales?
+    	else
+      		@groups << g if(current_user.is_admin_of?(g) || current_user.is_super_admin?) || current_user.is_sales?
+  		end
     end
     @group = nil
     if params[:group].blank? || params[:group] == 'Choose a Group'
@@ -144,11 +148,15 @@ class UserAdminController < ApplicationController
     render :action => 'assign_role', :layout => false 
   end
   
+  def groups
+  	@groups = Group.find(:all)
+  end
+  
   def add_group
     group_name = params[:group_name]
     if(!group_name.blank?)
       if(Group.find_by_name(group_name).blank?)
-        @group = Group.create(:name => group_name)
+        @group = Group.create(:name => group_name,:description => params[:description])
         if @group.valid?
         	@success = true
         	@message = "Group(#{group_name}) Added"
@@ -165,6 +173,16 @@ class UserAdminController < ApplicationController
        @message = "Choose a user"
     end
     render :action => 'assign_role', :layout => false
+  end
+  
+  def edit_group
+  	@group = Group.find(params[:id])
+  	if request.post?
+  		
+		if @group.update_attributes(:name => params[:group_name],:description => params[:description])
+  			redirect_to :action => 'roles'
+  		end
+  	end
   end
   
   def assign_caregiver_role

@@ -25,12 +25,27 @@
   <%=submit_tag 'Remove Role and Group'%>
 <% end %>
 <br><br>
-<h2>Add Group</h2>
+<h2>Groups</h2>
 <% form_remote_tag :url => {:controller => 'user_admin',:action => 'add_group'}, :update => 'assign_role' do |f|%>
 	<%= error_messages_for :group %>
   <label for="group_name">Group Name</label>
-  <br />
   <%= text_field_tag 'group_name' %>
+  <label for="description">Description</label>
+  <%= text_field_tag 'description'%>
   <br>
   <%=submit_tag 'Add Group'%>
 <% end %>
+
+<br>
+<div>
+<table border="1" style="text-align:left">
+<tr><th>Group</th><th>Description</th><th>Actions</th></tr>
+<% @groups=Group.find(:all).each do |group|  %>
+  <tr>
+  	<td><%= group.name %></td>
+  	<td><%=group.description %></td>
+  	<td><%= link_to 'Edit', '/user_admin/edit_group/' + group.id.to_s %> <%#= link_to 'Remove', '/recurring_charges/destroy/' + rc.id.to_s, :confirm => 'Are you sure?', :method => :delete%></td>
+  	</tr>
+<% end %>
+</table>
+</div>
