@@ -13,7 +13,7 @@ class UserMailer < ActionMailer::ARMailer
   
   def signup_notification(user)
     setup_email(user)
-    @subject    += 'Please activate your new account'
+    @subject    += 'Please activate your new myHalo account'
   
     #@body[:url]  = "http://67-207-146-58.slicehost.net/activate/#{user.activation_code}"
     #@body[:url]  = "http://localhost:3000/activate/#{user.activation_code}"
@@ -36,13 +36,16 @@ class UserMailer < ActionMailer::ARMailer
     EOF
   end
   
-  def kit_serial_number_register(user,kit)
+  def kit_serial_number_register(user,kit,current_user)
   	@recipients  = "senior_signup@halomonitoring.com"
   	@from = "no-reply@halomonitoring.com"
   	@subject = "New Kit Serial Number Registered"
   	@sent_on = Time.now
   	@body[:user] = user
   	@body[:kit] = kit
+  	@body[:group] = user.is_halouser_for_what.first.name
+  	@body[:current_user] = current_user
+  	@body[:profile] = user.profile
   end
   
   protected
