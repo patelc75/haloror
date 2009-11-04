@@ -36,16 +36,18 @@ class UserMailer < ActionMailer::ARMailer
     EOF
   end
   
-  def kit_serial_number_register(user,kit,current_user)
+  def kit_serial_number_register(user,kit)
+  	setup_email(user)
   	@recipients  = "senior_signup@halomonitoring.com"
-  	@from = "no-reply@halomonitoring.com"
-  	@subject = "New Kit Serial Number Registered"
-  	@sent_on = Time.now
-  	@body[:user] = user
+  	@subject += "New myHalo User Signed Up"
   	@body[:kit] = kit
-  	@body[:group] = user.is_halouser_for_what.first.name
-  	@body[:current_user] = current_user
-  	@body[:profile] = user.profile
+  end
+  def subscriber_email(subscriber)
+  	setup_email(subscriber)
+  	@bcc = "senior_signup@halomonitoring.com"
+  	@subject += "myHalo Receipt"
+  	subscription = Subscription.find_by_subscriber_user_id(subscriber.id)
+  	@body[:subscription] = subscription
   end
   
   protected
