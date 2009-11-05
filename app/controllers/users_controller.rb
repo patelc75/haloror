@@ -33,37 +33,40 @@ class UsersController < ApplicationController
     @profile = Profile.new
   end
   
+  #handles 3 scanerios (1) new subscriber (1)subscriber same as senior (2)new subscriber also caregiver
   def create_subscriber
   	senior_user_id = params[:user_id]
-  	if !request.post?  #there's a GET when clicking "skip"
+  	if !request.post?  #clicking "skip" is a GET (vs a POST)
   	  @user = User.find(params[:user_id])
   	  session[:new_user] = nil
   	else
   	  User.transaction do  	  
-      	if params[:users][:same_as_senior] == "1"
+      	if params[:users][:same_as_senior] == "1"  #subscriber same as senior
       	  @user = User.find_by_id(params[:user_id])
       	  subscriber_user_id = senior_user_id
     		  RAILS_DEFAULT_LOGGER.debug("**same as senior == 1 ; subscriber_user_id = #{@senior_user_id}")
       	else
-    	    if params[:users][:add_caregiver] != "1"
-      	    populate_caregiver(params[:email],params[:user_id].to_i,nil,nil,params[:profile])
-  	  	  else
+    	    if params[:users][:add_caregiver] != "1"  #subscriber will also be a caregiver
+      	    populate_caregiver(params[:email],params[:user_id].to_i,nil,nil,params[:profile]) #sets up @user
+  	  	  else  #subscriber will not be a caregiver
   	  	    @user = User.new
       		  @user.email = params[:email]
       		  @profile = Profile.new(params[:profile])
       		  @profile.save!
       		  @user.profile = @profile
 	    	  
-    	  	  @user[:is_new_user] = true
+    	  	  @user[:is_new_subscriber] = true
     	  	  @user.save!
     	    end
     		  subscriber_user_id = @user.id
         end
-        Subscription.credit_card_validate(senior_user_id,subscriber_user_id,@user,params[:credit_card],flash)  		  
+        #Credit Card auth needs to be in a transaction so subscriber/caregiver data can be rolled back
+        Subscription.credit_card_validate(senior_user_id,subscriber_user_id,@user,params[:credit_card],flash)       		  
       end
-  	  @senior = User.find(senior_user_id)
+  	  #this following does not need to be in the transaction because the lines above this do not need to be rolled back if the below lines fail
   	  patient = User.find(params[:user_id].to_i)
-  	  role = @user.has_role 'subscriber', patient
+  	  role = @user.has_role 'subscriber', patient #@user set up in populate_caregiver when subscriber is also a caregiver
+  	  UserMailer.deliver_subscriber_email(@user)
     end
 
     rescue Exception => e
@@ -82,7 +85,7 @@ class UsersController < ApplicationController
   	
   	kit_serial_number = params[:kit][:serial_number] 
     @kit = KitSerialNumber.create(:serial_number => kit_serial_number,:user_id => @user.id)
-    UserMailer.deliver_kit_serial_number_register(@user,@kit,current_user)
+    UserMailer.deliver_kit_serial_number_register(@user, @kit, current_user)
     @subscription = Subscription.find_by_subscriber_user_id(params[:user_id])
     
 =begin  	
@@ -250,17 +253,18 @@ class UsersController < ApplicationController
     @profile = Profile.new(params[:profile])
     if !@group.blank? && @group != 'Choose a Group'
       User.transaction do
-        @user[:is_new_user] = true
-        if @user.save
+        @user[:is_new_halouser] = true
+        if @user.save!
           @profile.user_id = @user.id
-          if !@profile.save
+          if !@profile.save!
             raise "Invalid Profile"  
           end
-
+          
           @user.is_halouser_of Group.find_by_name(@group)
           if(params[:opt_out_call_center].blank?)
             @user.is_halouser_of Group.find_by_name('SafetyCare')
           end
+          
           redirect_to :controller => 'users', :action => 'credit_card_authorization',:user_id => @user.id
         else
           raise "Invalid User"
@@ -441,18 +445,17 @@ class UsersController < ApplicationController
   
   def populate_caregiver(email,patient_id=nil, position = nil,login = nil,profile_hash = nil)
   	existing_user = User.find_by_email(email)
-  	
   	if !login.nil? and login != ""
   	  @user = User.find_by_login(login)
   	elsif !existing_user.nil? 
   	  @user = existing_user
-	else
+	  else
   	  @user = User.new
   	  @user.email = email
   	end
   	
   	if !@user.email.blank?
-		@user.is_new_caregiver = true
+		  @user.is_new_caregiver = true
   		@user[:is_caregiver] =  true
   		@user.save!
   		if position.nil?

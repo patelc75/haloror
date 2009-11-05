@@ -1,12 +1,10 @@
-New Kit Serial Number Registered
+New User Signed Up by <%= @current_user.name %> on  <%=UtilityHelper.format_datetime(Time.now, @current_user)%>
 
-Signed Up by <%= @current_user.name %> on <%=Time.now%>.
-
-Group: <%= @group %>
 User ID: <%= @user.id %>
 User: <%= @user.name %>
+Groups: <%= @groups %>
 Kit Serial Number: <%=@kit.serial_number %>
 
 Profile Information:
 
-<%= @profile.to_yaml %>
+<%= @user.profile.to_yaml %>

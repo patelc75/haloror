@@ -36,11 +36,15 @@ class UserMailer < ActionMailer::ARMailer
     EOF
   end
   
-  def kit_serial_number_register(user,kit)
+  def kit_serial_number_register(user,kit,current_user)
   	setup_email(user)
   	@recipients  = "senior_signup@halomonitoring.com"
   	@subject += "New myHalo User Signed Up"
   	@body[:kit] = kit
+  	@body[:current_user] = current_user
+  	groups = ""
+  	user.is_halouser_for_what.each { |group| groups+= group.name + " " }
+  	@body[:groups] = groups
   end
   def subscriber_email(subscriber)
   	setup_email(subscriber)
