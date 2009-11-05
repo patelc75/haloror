@@ -38,7 +38,6 @@ class UsersController < ApplicationController
   	senior_user_id = params[:user_id]
   	if !request.post?  #clicking "skip" is a GET (vs a POST)
   	  @user = User.find(params[:user_id])
-  	  session[:new_user] = nil
   	else
   	  User.transaction do  	  
       	if params[:users][:same_as_senior] == "1"  #subscriber same as senior
