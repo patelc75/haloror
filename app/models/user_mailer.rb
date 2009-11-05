@@ -64,14 +64,3 @@ class UserMailer < ActionMailer::ARMailer
     self.priority = Priority::IMMEDIATE
   end
 end
-
-
-def caregiver_email(caregiver, user)
-  setup_email(caregiver)
-  @subject += "#{user.name} wants you to be their caregiver"
-  body <<-EOF
-    You have been invited to be a caregiver for #{user.name}.
-    
-     Please click here to activate the account and configure your alerts:  http://#{ServerInstance.current_host}/activate/#{caregiver.activation_code}?senior=#{user.id}
-  EOF
-end

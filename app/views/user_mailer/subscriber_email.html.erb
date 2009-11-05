@@ -6,11 +6,11 @@ Fax 866.275.1904
 
 <%= @subscription.created_at.strftime("%A %m/%d/%Y %H:%M:%S %p")%>
 
-* Name: <%= @user.name%>
-* Email: <%= @user.email%>
-* Address: <%= @user.address%>
+Name: <%= @user.name%>
+Email: <%= @user.email%>
+Address: <%= @user.address%>
 
-* SubscriptionID: <%= @subscription.arb_subscriptionId%>
-* Card holder: <%=@subscription.bill_to_last_name.upcase%>/<%= @subscription.bill_to_first_name.upcase%>
-* Card: ############<%=@subscription.cc_last_four%>
-* Amount: $ <%= sprintf("%0.2f",@subscription.bill_amount)%>
+SubscriptionID: <%= @subscription.arb_subscriptionId%>
+Card holder: <%=@subscription.bill_to_last_name.upcase%>/<%= @subscription.bill_to_first_name.upcase%>
+Card: ############<%=@subscription.cc_last_four%>
+Amount: $ <%= sprintf("%0.2f",@subscription.bill_amount)%>
