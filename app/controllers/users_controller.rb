@@ -340,7 +340,11 @@ class UsersController < ApplicationController
         end
         current_user.set_active()
         if current_user.is_caregiver?
-          redirect_to :controller => 'call_list', :action => 'show', :recently_activated => 'true'
+          	if session[:senior]
+        		redirect_to :controller => 'call_list', :action => 'show', :id => session[:senior]
+        	else
+          		redirect_to :controller => 'call_list', :action => 'show', :recently_activated => 'true'
+      		end
         else
           redirect_to '/'
         end
