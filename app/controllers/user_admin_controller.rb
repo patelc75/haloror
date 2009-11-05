@@ -40,10 +40,8 @@ class UserAdminController < ApplicationController
       User.transaction do
         @user[:is_new_user] = true
         @user.save!        
-      # create profile
         @profile.user_id = @user.id
         @profile.save!
-      # assign role
         @user.roles << role
       end
     else

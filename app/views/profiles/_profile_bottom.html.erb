@@ -27,10 +27,10 @@
 	    <br />
 	    <br />
 	  
-	    <select id="profile_carrier_id" name="profile[carrier_id]" style="width:200px;">
+	    <select id="profile_carrier_id" name="profile[carrier_id]" style="width:220px;">
 	      <% if @profile == nil or @profile.carrier_id == 0 or @profile.carrier_id == nil -%>
 	        <option value="" selected="selected" >
-	        Select a Service Provider </option>
+	        Select Cell Provider for Text Msg </option>
 	      <% end -%>
 	      <% @carrier = Carrier.find(:all, :order => "id")
 	           @carrier.each do |carrier| %>
