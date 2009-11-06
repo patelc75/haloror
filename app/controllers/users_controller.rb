@@ -63,9 +63,10 @@ class UsersController < ApplicationController
         Subscription.credit_card_validate(senior_user_id,subscriber_user_id,@user,params[:credit_card],flash)       		  
       end
   	  #this following does not need to be in the transaction because the lines above this do not need to be rolled back if the below lines fail
-  	  patient = User.find(params[:user_id].to_i)
-  	  role = @user.has_role 'subscriber', patient #@user set up in populate_caregiver when subscriber is also a caregiver
+  	  halouser = User.find(params[:user_id].to_i)
+  	  role = @user.has_role 'subscriber', halouser #@user set up in populate_caregiver when subscriber is also a caregiver
   	  UserMailer.deliver_subscriber_email(@user)
+  	  UserMailer.deliver_signup_notification_halouser(@user,halouser)
     end
 
     rescue Exception => e
