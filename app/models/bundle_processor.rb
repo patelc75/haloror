@@ -3,7 +3,8 @@ class BundleProcessor
                       SkinTemp, Battery, BatteryChargeComplete, 
                       BatteryCritical, BatteryPlugged, BatteryUnplugged, 
                       Fall, Panic, WeightScale, BloodPressure, 
-                      HaloDebugMsg, OscopeMsg, OscopeStopMsg, OscopeStartMsg]
+                      HaloDebugMsg, OscopeMsg, OscopeStopMsg, 
+                      OscopeStartMsg, GwAlarmButton]
   def self.process(bundle)
     RAILS_DEFAULT_LOGGER.warn("Entering BundleProcessor.self_process")
     begin
