@@ -10,6 +10,8 @@ Name: <%= @user.name%>
 Email: <%= @user.email%>
 Address: <%= @user.address%>
 
+Description: Monthly subscription for <%= @halouser %>
+
 SubscriptionID: <%= @subscription.arb_subscriptionId%>
 Card holder: <%=@subscription.bill_to_last_name.upcase%>/<%= @subscription.bill_to_first_name.upcase%>
 Card: ############<%=@subscription.cc_last_four%>

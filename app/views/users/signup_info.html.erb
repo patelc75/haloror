@@ -57,6 +57,8 @@
 				<tr><td>Email:</td><td><%= @user.email%></td></tr>
 				<tr><td>Address:</td><td><%= @user.address%></td></tr>
 				<tr><td>&nbsp;</td></tr>
+				<tr><td>Description:</td><td>Monthly subscription for <%= @user.is_subscriber_for_what.first.name %></td></tr>
+				<tr><td>&nbsp;</td></tr>
 				<tr><td>SubscriptionID:</td><td><%= @subscription.arb_subscriptionId%></td></tr>
 				<tr><td>Card holder</td><td><%=@subscription.bill_to_last_name.upcase%>/<%= @subscription.bill_to_first_name.upcase%></td></tr>
 				<tr><td>Card</td><td>############<%=@subscription.cc_last_four%></td></tr>

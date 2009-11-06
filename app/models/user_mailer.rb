@@ -1,7 +1,7 @@
 class UserMailer < ActionMailer::ARMailer
   include ServerInstance
   
-  def signup_notification_halouser(user)
+  def signup_notification_halouser(user,patient)
     setup_email(user)
     @subject    += 'Please read before your installation'
   
@@ -9,6 +9,7 @@ class UserMailer < ActionMailer::ARMailer
     #@body[:url]  = "http://localhost:3000/activate/#{user.activation_code}"
     @body[:host] = "http://#{ServerInstance.current_host}"
     @body[:url]  = "http://#{ServerInstance.current_host}/activate/#{user.activation_code}"
+    @body[:name] = patient.name
   end
   
   def signup_notification(user)
@@ -18,6 +19,7 @@ class UserMailer < ActionMailer::ARMailer
     #@body[:url]  = "http://67-207-146-58.slicehost.net/activate/#{user.activation_code}"
     #@body[:url]  = "http://localhost:3000/activate/#{user.activation_code}"
     @body[:url]  = "http://#{ServerInstance.current_host}/activate/#{user.activation_code}"
+    @body[:name] = user.name
   end
   
   def activation(user)
@@ -52,6 +54,7 @@ class UserMailer < ActionMailer::ARMailer
   	@subject += "myHalo Receipt"
   	subscription = Subscription.find_by_subscriber_user_id(subscriber.id)
   	@body[:subscription] = subscription
+  	@body[:halouser] = subscriber.is_subscriber_for_what.first.name
   end
   
   protected
