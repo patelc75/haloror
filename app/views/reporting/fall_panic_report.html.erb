@@ -34,16 +34,17 @@ require "digest"
 			<%= link_to "New<br> Installs", :controller => "reporting", :action => "installs", :begin_date => @begin_date, :end_date => @end_date %>
 			<% end %>
 			</th>
+			<th bgcolor="#E1E1E1">Battery<br> Reminders</th>
   			<th bgcolor="#FFD0B4">Real<br> Falls</th>
   			<th bgcolor="#FFD0B4">False<br> Alarm<br> Falls</th>
   			<th bgcolor="#FFD0B4">Test<br> Falls</th>
-  			<th bgcolor="#FFD0B4">Unclassified<br> Falls</th>
+  			<th bgcolor="#FFD0B4">Un- <br>classified<br> Falls</th>
   			<th bgcolor="#FFD0B4">Falls<br> Specificity</th>
   			<th bgcolor="#E1d1E1">Real<br> Panics</th>
   			<th bgcolor="#E1d1E1">False<br> Alarm<br> Panics</th>
   			<th bgcolor="#E1d1E1">Test<br> Panics</th>
   			<th bgcolor="#E1d1E1">Non<br> Emerg<br> Panics</th>
-  			<th bgcolor="#E1d1E1">Unclassified<br> Panics</th>
+  			<th bgcolor="#E1d1E1">Un- <br>classified<br> Panics</th>
   			<th bgcolor="#E1d1E1">Panics<br> Specificity</th>
   		</tr>
   		<%@group_stats.keys.sort.each {|key|%>
@@ -54,6 +55,9 @@ require "digest"
 					<%= @group_stats[key][:installs].length %>
 					<% else %> 0 <% end%>
 				</td>
+				<td><% if installs = @group_stats[key][:battery_reminders] %>
+					<%= @group_stats[key][:battery_reminders].length %>
+					<% else %> 0 <% end%></td>
 				<td><%= @real_falls = @group_stats[key][:real_alarm_falls].length if @group_stats[key][:real_alarm_falls]%></td>
   				<td><%= @false_alarm_falls = @group_stats[key][:false_alarm_falls].length if @group_stats[key][:false_alarm_falls]%></td>
   				<td><%= @test_falls = @group_stats[key][:test_alarm_falls].length if @group_stats[key][:test_alarm_falls]%></td>
@@ -74,6 +78,7 @@ require "digest"
 		<tr align = "center">
 		<td align = "left" ><b>Total<sup>*</sup></b></td>
 		<td><%= @group_totals[:installs] %></td>
+		<td><%= @group_totals[:battery_reminders] %></td>
 		<td><%= @group_totals[:real_alarm_falls] %></td>
 		<td><%= @group_totals[:false_alarm_falls] %></td>
 		<td><%= @group_totals[:test_alarm_falls] %></td>

@@ -299,6 +299,7 @@ class ReportingController < ApplicationController
       	@group_totals[:unclassified_panics] = 0
       	@group_totals[:real_panics] = 0
       	@group_totals[:installs] = 0
+		@group_totals[:battery_reminders] = 0
       	      	
       	for fall in @falls
       	  id = fall.user.id
@@ -391,6 +392,8 @@ class ReportingController < ApplicationController
       	end
       	
         get_installs
+        
+        get_battery_reminders
     end
   	#flash[:warning] = 'Begin Time and End Time are required.'
   end
@@ -421,6 +424,31 @@ class ReportingController < ApplicationController
   			end
 		  end
   	 end
+  end
+  
+  def get_battery_reminders
+  	@battery_reminders = BatteryReminder.find(:all,:conditions => ["reminder_num >= ?",3])
+  	for battery_reminder in @battery_reminders
+  		id = battery_reminder.user.id
+  		if (groups = @user_groups[id]) == nil
+		    groups = @user_groups[id] = battery_reminder.user.is_halouser_for_what
+		end
+		if(groups)
+      		groups.each do |group|
+      			if !group.nil?
+      			  if @group_stats[group.name].nil? 
+       			   @group_stats[group.name] = {} 
+       			  end
+       			  
+      			  if @group_stats[group.name][:battery_reminders].nil?
+        		    @group_stats[group.name][:battery_reminders] = []
+        		  end
+      			  @group_stats[group.name][:battery_reminders]  << battery_reminder
+      			  @group_totals[:battery_reminders] += 1 if group.name !="SafetyCare" and group.name !="halo"
+  			    end
+  			end
+		end
+  	end
   end
   
   def installs
