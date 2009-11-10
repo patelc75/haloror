@@ -289,10 +289,14 @@ class ReportingController < ApplicationController
       	@group_totals[:false_alarm_falls] = 0
       	@group_totals[:test_alarm_falls] = 0
       	@group_totals[:real_falls] = 0
-
+      	@group_totals[:real_alarm_falls] = 0
+ 		@group_totals[:unclassified_falls] = 0
+ 		
       	@group_totals[:false_alarm_panics] = 0
       	@group_totals[:test_alarm_panics] = 0
       	@group_totals[:non_emerg_panics] = 0
+      	@group_totals[:real_alarm_panics] = 0
+      	@group_totals[:unclassified_panics] = 0
       	@group_totals[:real_panics] = 0
       	@group_totals[:installs] = 0
       	      	
@@ -319,12 +323,18 @@ class ReportingController < ApplicationController
           		       end
           		       @group_stats[group.name][:test_alarm_falls] << fall
           		       @group_totals[:test_alarm_falls] += 1 if group.name !="SafetyCare" and group.name !="halo"
+          		     elsif fall.real_alarm?
+          		       if @group_stats[group.name][:real_alarm_falls].nil?
+          		         @group_stats[group.name][:real_alarm_falls] = []
+          		       end
+          		       @group_stats[group.name][:real_alarm_falls] << fall
+          		       @group_totals[:real_alarm_falls] += 1 if group.name !="SafetyCare" and group.name !="halo"
         		     else
-        		       if @group_stats[group.name][:real_falls].nil?
-        		         @group_stats[group.name][:real_falls] = [] 
+        		       if @group_stats[group.name][:unclassified_falls].nil?
+        		         @group_stats[group.name][:unclassified_falls] = [] 
         		       end
-          			   @group_stats[group.name][:real_falls] << fall
-          			   @group_totals[:real_falls] += 1 if group.name !="SafetyCare" and group.name !="halo"
+          			   @group_stats[group.name][:unclassified_falls] << fall
+          			   @group_totals[:unclassified_falls] += 1 if group.name !="SafetyCare" and group.name !="halo"
           		     end	
       		       end
   		         end
@@ -342,7 +352,7 @@ class ReportingController < ApplicationController
         		  if !group.nil?  
         		    if @group_stats[group.name].nil? 
          			   @group_stats[group.name] = {} 
-         			  end
+         			end
        			  
             		if panic.false_alarm?
             		  if @group_stats[group.name][:false_alarm_panics].nil? 
@@ -362,15 +372,21 @@ class ReportingController < ApplicationController
             		  end 
             		  @group_stats[group.name][:non_emerg_panics]  << panic
             		  @group_totals[:non_emerg_panics] += 1 if group.name !="SafetyCare" and group.name !="halo"
-          		else
-          		  if @group_stats[group.name][:real_panics].nil?
-            		    @group_stats[group.name][:real_panics] = []
+            		elsif panic.real_alarm?
+            		  if @group_stats[group.name][:real_alarm_panics].nil?
+            		    @group_stats[group.name][:real_alarm_panics] = []
             		  end
-            		  @group_stats[group.name][:real_panics]  << panic
-            		  @group_totals[:real_panics] += 1 if group.name !="SafetyCare" and group.name !="halo"
+            		  @group_stats[group.name][:real_alarm_panics]  << panic
+            		  @group_totals[:real_alarm_panics] += 1 if group.name !="SafetyCare" and group.name !="halo"
+          			else
+          		  	  if @group_stats[group.name][:unclassified_panics].nil?
+            		    @group_stats[group.name][:unclassified_panics] = []
+            		  end
+            		  @group_stats[group.name][:unclassified_panics]  << panic
+            		  @group_totals[:unclassified_panics] += 1 if group.name !="SafetyCare" and group.name !="halo"
             		end
-          	  end
-      		  end
+          	  	  end
+      		    end
         	end	
       	end
       	

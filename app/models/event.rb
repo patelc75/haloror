@@ -68,6 +68,14 @@ class Event < ActiveRecord::Base
     return false
   end
   
+  def real_alarm?
+  	EventAction.find(:all, :conditions => "event_id = '#{self.id}'").each do |action|
+  		return action if action.description == 'real_alarm'
+  	end
+  	
+  	return false
+  end
+  
   def non_emerg_panic?
     EventAction.find(:all, :conditions => "event_id = '#{self.id}'").each do |action|
       return action if action.description == 'non_emerg_panic'

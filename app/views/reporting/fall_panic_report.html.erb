@@ -37,11 +37,13 @@ require "digest"
   			<th bgcolor="#FFD0B4">Real<br> Falls</th>
   			<th bgcolor="#FFD0B4">False<br> Alarm<br> Falls</th>
   			<th bgcolor="#FFD0B4">Test<br> Falls</th>
+  			<th bgcolor="#FFD0B4">Unclassified<br> Falls</th>
   			<th bgcolor="#FFD0B4">Falls<br> Specificity</th>
   			<th bgcolor="#E1d1E1">Real<br> Panics</th>
   			<th bgcolor="#E1d1E1">False<br> Alarm<br> Panics</th>
   			<th bgcolor="#E1d1E1">Test<br> Panics</th>
   			<th bgcolor="#E1d1E1">Non<br> Emerg<br> Panics</th>
+  			<th bgcolor="#E1d1E1">Unclassified<br> Panics</th>
   			<th bgcolor="#E1d1E1">Panics<br> Specificity</th>
   		</tr>
   		<%@group_stats.keys.sort.each {|key|%>
@@ -52,17 +54,18 @@ require "digest"
 					<%= @group_stats[key][:installs].length %>
 					<% else %> 0 <% end%>
 				</td>
-				<td><%= @real_falls = @group_stats[key][:real_falls].length if @group_stats[key][:real_falls]%></td>
+				<td><%= @real_falls = @group_stats[key][:real_alarm_falls].length if @group_stats[key][:real_alarm_falls]%></td>
   				<td><%= @false_alarm_falls = @group_stats[key][:false_alarm_falls].length if @group_stats[key][:false_alarm_falls]%></td>
   				<td><%= @test_falls = @group_stats[key][:test_alarm_falls].length if @group_stats[key][:test_alarm_falls]%></td>
+  				<td><%= @group_stats[key][:unclassified_falls].length if @group_stats[key][:unclassified_falls]%></td>
   				<td><% falls_specify = (@real_falls.to_f / (@false_alarm_falls.to_f + @real_falls.to_f)) if @real_falls != 0%>
   	    		<%= (falls_specify * 100).round(1).to_s + '%' if falls_specify%>
   				</td>
-  				
-				<td><%=@real_panics = @group_stats[key][:real_panics].length if @group_stats[key][:real_panics]%></td>
+				<td><%=@real_panics = @group_stats[key][:real_alarm_panics].length if @group_stats[key][:real_alarm_panics]%></td>
   				<td><%= @false_alarm_panic = @group_stats[key][:false_alarm_panics].length if @group_stats[key][:false_alarm_panics]%></td>
   				<td><%= @test_panics = @group_stats[key][:test_alarm_panics].length if @group_stats[key][:test_alarm_panics]%></td>
   				<td><%= @non_emerg_panic = @group_stats[key][:non_emerg_panics].length if @group_stats[key][:non_emerg_panics]%></td>
+  				<td><%= @group_stats[key][:unclassified_panics].length if @group_stats[key][:unclassified_panics]%></td>
   				<td><% panic_specify = ((@real_panics.to_f + @non_emerg_panic.to_f) / ( @false_alarm_panic.to_f + @real_panics.to_f + @non_emerg_panic.to_f)) if @real_panics != 0%>
   				<%= (panic_specify * 100).round(1).to_s + '%' if panic_specify%>
   				</td>
@@ -71,17 +74,19 @@ require "digest"
 		<tr align = "center">
 		<td align = "left" ><b>Total<sup>*</sup></b></td>
 		<td><%= @group_totals[:installs] %></td>
-		<td><%= @group_totals[:real_falls] %></td>
+		<td><%= @group_totals[:real_alarm_falls] %></td>
 		<td><%= @group_totals[:false_alarm_falls] %></td>
 		<td><%= @group_totals[:test_alarm_falls] %></td>
+		<td><%= @group_totals[:unclassified_falls]%></td>
 		<td>
 			<% (total_percentage = @group_totals[:real_falls].to_f / (@group_totals[:false_alarm_falls].to_f + @group_totals[:real_falls].to_f)) if @group_totals[:real_falls] != 0 %>
 			<%= (total_percentage * 100).round(1).to_s + '%' if total_percentage%>
 		</td>		
-		<td><%= @group_totals[:real_panics] %></td>		
+		<td><%= @group_totals[:real_alarm_panics] %></td>		
 		<td><%= @group_totals[:false_alarm_panics] %></td>
 		<td><%= @group_totals[:test_alarm_panics] %></td>
 		<td><%= @group_totals[:non_emerg_panics] %></td>
+		<td><%= @group_totals[:unclassified_panics] %></td>
 		<td>
 			<% if @group_totals[:real_panics] != 0 %>	
 			<% total_percentage = ((@group_totals[:real_panics].to_f + @group_totals[:non_emerg_panics].to_f) / (@group_totals[:false_alarm_panics].to_f + @group_totals[:real_panics].to_f + @group_totals[:non_emerg_panics].to_f))%>
