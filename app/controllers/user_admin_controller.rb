@@ -176,8 +176,7 @@ class UserAdminController < ApplicationController
   def edit_group
   	@group = Group.find(params[:id])
   	if request.post?
-  		
-		if @group.update_attributes(:name => params[:group_name],:description => params[:description])
+		if @group.update_attributes!(:name => params[:group_name],:description => params[:description],:sales_type => params[:sales_type])
   			redirect_to :action => 'roles'
   		end
   	end

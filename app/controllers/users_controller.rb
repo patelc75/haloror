@@ -18,7 +18,10 @@ class UsersController < ApplicationController
   
   def show
   	RAILS_DEFAULT_LOGGER.debug("****START show")
-  	@user = User.new
+  	if params[:user_id]
+  		@senior_user = User.find(params[:user_id])
+  	end
+	@user = User.new
     @profile = Profile.new
   render :action => 'credit_card_authorization'
   end
