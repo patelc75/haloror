@@ -81,80 +81,53 @@ class UsersController < ApplicationController
     	@user = User.find(params[:id])
     end
   end
-  
+
   def signup_info
   	
   	@user = User.find(params[:user_id])
   	
-  	kit_serial_number = params[:kit][:serial_number] 
-    @kit = KitSerialNumber.create(:serial_number => kit_serial_number,:user_id => @user.id)
-    UserMailer.deliver_kit_serial_number_register(@user, @kit, current_user)
-    @subscription = Subscription.find_by_subscriber_user_id(params[:user_id])
-    
-=begin  	
-  	gateway_serial_number = params[:gateway_serial_number]
-    
-    unless gateway_serial_number
-      gateway_serial_number = params[:gateway][:serial_number]      
+  	kit_serial_number = params[:kit][:serial_number]  
+  	if (kit_serial_number == nil || kit_serial_number.size != 10 || kit_serial_number[0,2] != 'H4' ) 
+  		msg = "Invalid serial number"	
+  	else
+  		msg = ""
+  	end  
+    kit_device = Device.find_by_serial_number(kit_serial_number)
+    if kit_device
+	  if kit_device.kits.first
+	    kit = kit_device.kits.first
+	    gw = kit.check_for_device_type('Gateway')
+	    cs = kit.check_for_device_type('Chest Strap')
+	    bc = kit.check_for_device_type('Belt Clip')
+	    if gw == false
+	      msg += "<br> Not found Gateway "
+	    end
+	
+	    if cs == false && bc == false
+	      msg += "<br> Not found Chest Strap or Belt Clip "
+	    end
+	  else
+	    msg = "<br> Not found Kit Id"
+	  end
+    else
+     @kit = KitSerialNumber.create(:serial_number => kit_serial_number,:user_id => @user.id)
+     # msg = "<br> Not found Kit Number "
     end
-    #check if gateway exists
-    if !gateway_serial_number.blank?
-      if gateway_serial_number.size == 7
-        gateway_serial_number = gateway_serial_number[0,2] + "000" + gateway_serial_number[2, 5] 
+    error_message = "Error(s):" + msg
+    flash[:warning] = error_message
+    if msg != ""
+      redirect_to "/users/create_subscriber/#{@user.id}"
+    else
+      if !@kit
+        params[:gateway_serial_number] = gw.serial_number
+        params[:strap_serial_number] = cs.serial_number if cs != false
+        params[:strap_serial_number] = bc.serial_number if bc != false
+        map_serial_numbers
       end
+      UserMailer.deliver_kit_serial_number_register(@user, kit_serial_number, current_user)
+      @subscription = Subscription.find_by_subscriber_user_id(params[:user_id])
+    end
 
-      @gateway = Device.find_by_serial_number(gateway_serial_number)
-      unless @gateway
-      	params[:gateway][:serial_number] = gateway_serial_number
-        @gateway = @user.devices.build(params[:gateway])
-      end
-      begin
-        @gateway.set_gateway_type
-        @gateway.save!
-      rescue Exception => e
-        flash[:warning] = "#{e}"
-        throw e
-      end
-    else
-      msg = "Gateway Serial Number cannot be blank."
-      flash[:warning] = msg
-      throw msg
-    end
-    
-     strap_serial_number = params[:strap_serial_number]
-    unless strap_serial_number
-      strap_serial_number = params[:strap][:serial_number]
-    end
-    if !strap_serial_number.blank?
-      if strap_serial_number.size == 7
-        strap_serial_number = strap_serial_number[0,2] + "000" + strap_serial_number[2, 5] 
-      end
-      @strap = Device.find_by_serial_number(strap_serial_number)
-      if @strap && !@strap.users.blank? && !@strap.users.include?(@user)
-        flash[:warning] = "Chest Strap with Serial Number #{strap_serial_number} is already assigned to a user."
-        @remove_link = true
-        throw Exception.new
-      end
-      unless @strap
-      	params[:strap][:serial_number] = strap_serial_number
-        @strap = @user.devices.build(params[:strap]) 
-      end
-      begin
-        @strap.set_chest_strap_type
-        @strap.save!
-      rescue Exception => e
-        flash[:warning] = "#{e}"
-        throw e
-      end
-    else
-      msg = "Chest Strap Serial Number cannot be blank."
-      flash[:warning] = msg
-      throw msg
-    end
-=end
- # 	rescue Exception => e
- #   RAILS_DEFAULT_LOGGER.warn("ERROR registering devices, #{e}")
- # 	render :action => 'create_subscriber'
   end
   
   def receipt
@@ -168,9 +141,8 @@ class UsersController < ApplicationController
     @strap = Device.new	
   end
   
-  def create_serial_number
-  	
-  	@user = User.find(params[:user_id])
+  def map_serial_numbers
+  	  	@user = User.find(params[:user_id])
   	gateway_serial_number = params[:gateway_serial_number]
     
     unless gateway_serial_number
@@ -230,7 +202,13 @@ class UsersController < ApplicationController
       flash[:warning] = msg
       throw msg
     end
-	  redirect_to :controller => 'profiles',:action => 'edit_caregiver_profile',:id => @user.profile.id,:user_id => @user.id
+  end
+  
+  def create_serial_number
+  	
+	map_serial_numbers
+    redirect_to :controller => 'profiles',:action => 'edit_caregiver_profile',:id => @user.profile.id,:user_id => @user.id
+
     #redirect_to "/profiles/edit_caregiver_profile/#{@user.profile.id}/?user_id=#{@user.id]}"
     rescue Exception => e
     RAILS_DEFAULT_LOGGER.warn("ERROR registering devices, #{e}")
