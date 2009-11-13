@@ -5,14 +5,16 @@ class UserAdminController < ApplicationController
      
   def new_admin
     @groups = []
-    gs = current_user.group_memberships
-    gs.each do |g|
-    	if g == 'sales' or g == 'installer' and current_user.is_admin?
-    		@groups << g if(current_user.is_admin_of?(g) || current_user.is_super_admin?) || current_user.is_sales?
-    	else
-      		@groups << g if(current_user.is_admin_of?(g) || current_user.is_super_admin?) || current_user.is_sales?
-  		end
+    if current_user.is_super_admin?
+    	@groups = Group.find(:all)
+    else
+      gs = current_user.group_memberships
+      gs.each do |g|
+        @groups << g if(current_user.is_admin_of?(g))
+      end
     end
+    
+    
     @group = nil
     if params[:group].blank? || params[:group] == 'Choose a Group'
       if @groups.size == 1
