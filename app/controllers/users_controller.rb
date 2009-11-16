@@ -221,10 +221,14 @@ class UsersController < ApplicationController
     @user = User.new
     @profile = Profile.new
     @groups = []
-    gs = current_user.group_memberships
-    gs.each do |g|
-      @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g) || current_user.is_super_admin?)
-    end
+    if current_user.is_super_admin?
+      @groups = Group.find(:all)
+    else
+      gs = current_user.group_memberships
+      gs.each do |g|
+        @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
+      end
+	end
   end
 
   def create  	

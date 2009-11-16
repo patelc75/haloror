@@ -57,7 +57,11 @@ class ReportingController < ApplicationController
     rows.collect do |row|
       @roles << row['name']
     end
-    @groups = current_user.group_memberships
+    if current_user.is_super_admin?
+      @groups = Group.find(:all)
+	else
+      @groups = current_user.group_memberships
+    end
     @group_name = ''
     if !params[:group_name].blank?
       @group_name = params[:group_name]
@@ -244,7 +248,11 @@ class ReportingController < ApplicationController
     @stream = params[:stream].to_i > 0 ? true : false
     @user_begin_time = params[:begin_time]
     @user_end_time = params[:end_time]
-    @groups = current_user.group_memberships
+    if current_user.is_super_admin?
+      @groups = Group.find(:all)
+    else
+      @groups = current_user.group_memberships
+	end
     if !@user_end_time.blank? && !@user_begin_time.blank?
     	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
     	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
@@ -460,8 +468,11 @@ class ReportingController < ApplicationController
   def compliance_report
     @user_begin_time = params[:begin_time]
     @user_end_time = params[:end_time]
-  	
-    @groups = current_user.group_memberships
+  	if current_user.is_super_admin?
+  	  @groups = Group.find(:all)
+  	else
+      @groups = current_user.group_memberships
+    end
     if !@user_end_time.blank? && !@user_begin_time.blank?
 		
     	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)

@@ -70,9 +70,13 @@ class InstallsController < ApplicationController
   end
   def index
     @groups = []
-    gs = current_user.group_memberships
-    gs.each do |g| 
-      @groups << g if(current_user.is_installer_of?(g) || current_user.is_admin_of?(g) || current_user.is_super_admin?)
+    if current_user.is_super_admin?
+      @groups = Group.find(:all)	
+    else
+      gs = current_user.group_memberships
+      gs.each do |g| 
+        @groups << g if(current_user.is_installer_of?(g) || current_user.is_admin_of?(g))
+      end
     end
     if @groups and @groups.length == 1
     	redirect_to :action => 'index_users',:group => @groups[0].name
@@ -89,15 +93,19 @@ class InstallsController < ApplicationController
   
   def users
   	 @groups = []
-    gs = current_user.group_memberships
-    gs.each do |g| 
-      @groups << g if(current_user.is_installer_of?(g) || current_user.is_admin_of?(g) || current_user.is_super_admin?)
+    if current_user.is_super_admin?
+      @groups = Group.find(:all)	
+    else
+      gs = current_user.group_memberships
+      gs.each do |g| 
+        @groups << g if(current_user.is_installer_of?(g) || current_user.is_admin_of?(g))
+      end
     end
-    
     if check_params_for_group
       @group = Group.find_by_name(params[:group])
       conds = "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{@group.id}"
       @role = Role.find(:first, :conditions => conds)
+      
       if params[:display] == 'not_completed'
       	@users = User.find(:all,:include => [:roles_users],:conditions  => "roles_users.role_id = #{@role.id}",:order => "users.id asc")
       	@all_users = []
