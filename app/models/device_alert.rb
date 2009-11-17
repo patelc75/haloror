@@ -82,9 +82,9 @@ class DeviceAlert < ActiveRecord::Base
     
     critical_alerts = []
     
-    critical_alerts += Panic.find(:all, :conditions => "call_center_pending is true and timestamp_server > now() - interval '#{dialup_system_timeout.critical_event_delay_sec/60} minutes'", :order => "timestamp asc")
-    critical_alerts += Fall.find(:all, :conditions => "call_center_pending is true and timestamp_server > now() - interval '#{dialup_system_timeout.critical_event_delay_sec/60} minutes'", :order => "timestamp asc")
-    critical_alerts += GwAlarmButton.find(:all, :conditions => "call_center_pending is true and timestamp_server > now() - interval '#{dialup_system_timeout.critical_event_delay_sec/60} minutes'", :order => "timestamp asc")
+    critical_alerts += Panic.find(:all, :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout.critical_event_delay_sec/60} minutes'", :order => "timestamp asc")
+    critical_alerts += Fall.find(:all, :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout.critical_event_delay_sec/60} minutes'", :order => "timestamp asc")
+    critical_alerts += GwAlarmButton.find(:all, :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout.critical_event_delay_sec/60} minutes'", :order => "timestamp asc")
     
     #not going to filter access_mode == 'dialup' because access_mode is not yet reliable according to corey
     #{}"id in (select device_id from access_mode_statuses where mode = 'dialup') " <<    
@@ -92,9 +92,9 @@ class DeviceAlert < ActiveRecord::Base
     #sort by timestamp, instead of timestamp_server in case GW sends them out of order in the alert_bundle
     critical_alerts.sort_by { |event| event[:timestamp] }.each do |crit|
       #RAILS_DEFAULT_LOGGER.info("crit.class = #{crit.class}, crit.timestamp_server = #{crit.class}\n")
-      crit.timestamp_call_center = Time.now
       crit.call_center_pending = false
       crit.save
+      crit.timestamp_call_center = Time.now
     end
   end
 end
