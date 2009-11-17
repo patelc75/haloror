@@ -93,8 +93,8 @@ class DeviceAlert < ActiveRecord::Base
     critical_alerts.sort_by { |event| event[:timestamp] }.each do |crit|
       #RAILS_DEFAULT_LOGGER.info("crit.class = #{crit.class}, crit.timestamp_server = #{crit.class}\n")
       crit.call_center_pending = false
-      crit.save
       crit.timestamp_call_center = Time.now
+      crit.save
     end
   end
 end
