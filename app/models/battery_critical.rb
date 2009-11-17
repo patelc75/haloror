@@ -4,30 +4,33 @@ class BatteryCritical < ActiveRecord::Base
   belongs_to :device
   has_many :battery_reminders
 	include Priority
+	
 	def priority
-      return IMMEDIATE
-    end
+    return IMMEDIATE
+  end
     
   def before_create
   	self.timestamp_server = Time.now.utc
   end
   
   def after_save
-  	if self.mode.nil?  #backward compatibility for GWs with old code
-  	  DeviceAlert.notify_caregivers(self)
-  	elsif
-  	  if self.mode == 'stop'
-  		@most_recent = BatteryReminder.most_recent_reminder(self.device_id)
-		@most_recent.update_attributes(:stopped_at => Time.now)	if @most_recent
-		DeviceAlert.notify_caregivers(self)
-	  elsif self.mode == 'start'
-		BatteryReminder.create(:reminder_num => 1,
-							   :user_id =>self.user_id ,
-							   :device_id => self.device_id,
-							   :time_remaining => self.time_remaining,
-							   :battery_critical_id => self.id)
-	  end
-  	end
+  	if UtilityHelper.validate_event(self) == true
+    	if self.mode.nil?  #backward compatibility for GWs with old code
+    	  DeviceAlert.notify_caregivers(self)
+    	elsif
+    	  if self.mode == 'stop'
+      		@most_recent = BatteryReminder.most_recent_reminder(self.device_id)
+      		@most_recent.update_attributes(:stopped_at => Time.now)	if @most_recent
+      		DeviceAlert.notify_caregivers(self)
+    	  elsif self.mode == 'start'
+      		BatteryReminder.create(:reminder_num => 1,
+      							   :user_id =>self.user_id ,
+      							   :device_id => self.device_id,
+      							   :time_remaining => self.time_remaining,
+      							   :battery_critical_id => self.id)
+  	    end
+    	end
+    end
   end
   
   def to_s

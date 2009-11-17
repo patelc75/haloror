@@ -4,11 +4,21 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
     observe Fall, Panic, GwAlarmButton, CallCenterFollowUp
 
     def before_save(event)
-      DeviceAlert.notify_operators_and_caregivers(event)
+      if UtilityHelper.validate_event_user(event) == true #only validating user because GW does not use the device_id
+        if event.call_center_pending == false
+          DeviceAlert.notify_operators(event)
+        else
+          if(ServerInstance.current_host_short_string() != "ATL-WEB1")
+            DeviceAlert.notify_caregivers(event)
+          end
+        end
+      end
     end
 
-    def after_save(alert)
-      Event.create_event(alert.user_id, alert.class.to_s, alert.id, alert.timestamp)
+    def after_save(event)
+      if event.call_center_pending == true
+        Event.create_event(event.user_id, event.class.to_s, event.id, event.timestamp)
+      end
 =begin      
       if alert.class == Fall or alert.class == Panic
     	  gw_timeout = GwAlarmButtonTimeout.create(:pending => true, 
