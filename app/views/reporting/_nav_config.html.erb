@@ -26,4 +26,7 @@
 <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator? || current_user.is_moderator? %>
 | <%= link_to 'Send Test Email', :controller => 'util', :action => 'send_test_email'%>
 <% end %>
+<% if current_user.is_super_admin? %>
+| <%= link_to 'Activate Users', :controller => 'util', :action => 'activate_users'%>
+<% end %>
 <br><br>

@@ -33,7 +33,7 @@ class UtilController < ApplicationController
     render :layout => false
   end
   
-  def home_install
+  def activate_users
     events_per_page = 25
     @users = User.paginate :page => params[:page], :order => "created_at DESC", :per_page => events_per_page
   end

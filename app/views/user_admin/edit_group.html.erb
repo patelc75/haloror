@@ -9,5 +9,13 @@
   <br />
   <%= text_area_tag 'description', @group.description%>
   <br>
+  <label for="group_name">Type</label>
+  <br>
+  <select name="sales_type">
+  	<option value="">Select</option>
+  	<option value="reseller" <%if @group.sales_type == 'reseller'%>selected<%end%>>Reseller</option>
+  	<option value="retailer" <%if @group.sales_type == 'retailer'%>selected<%end%>>Retailer</option>
+  </select>
+  <br><br>
   <%=submit_tag 'Save Group'%>
 <% end %>

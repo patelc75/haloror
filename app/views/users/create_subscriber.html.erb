@@ -5,13 +5,12 @@
 	<%= error_messages_for :user %>
     <%= error_messages_for :gateway %>
     <%= error_messages_for :strap %>
-    <div id="errors">
-      <%# if flash[:warning] %>
-			<%#= flash[:warning]%>
-			
-			<%# end %>
+    <div id="errors" style="padding-left:30px;color:red">
+      <% if flash[:warning] %>
+		<%= flash[:warning]%>	
+	  <% end %>
 		
-		</div>
+	</div>
 	<div class="content" style="padding-left:30px;">
 		<div style="width:230px;float:left">
 		<% form_tag :action => 'signup_info' do -%>

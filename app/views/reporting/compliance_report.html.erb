@@ -69,7 +69,7 @@ end %>
 		<% caregiver_logins_total = 0 %>
 		<% strap_not_worn_total = 0 %>		
 		<% lost_data_total = 0 %>
-				
+		
   		<% for user in users %>
   	    <tr align="center">
   	    	<td align="left"><a href="/reporting/compliance_report/<%=user.id%>"><%= user.name %></a></td>
@@ -135,6 +135,7 @@ end %>
    		 	<td><%= @senior_logins + @caregiver_logins%></td>
    	    </tr>
    	    <%end%>
+   	    <%if users.length > 0%>
 		<tr align = "center">
 			<td align ="left"><b>Total</b></td>
 			<td></td>
@@ -147,6 +148,7 @@ end %>
 			<td><%= caregiver_logins_total %></td>
 			<td><%= caregiver_logins_total + senior_logins_total %></td>			
 		</tr>
+		<%end%>
    	</table>
 	<br>
 	Legend:<br> 

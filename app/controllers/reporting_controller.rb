@@ -57,7 +57,11 @@ class ReportingController < ApplicationController
     rows.collect do |row|
       @roles << row['name']
     end
-    @groups = current_user.group_memberships
+    if current_user.is_super_admin?
+      @groups = Group.find(:all)
+	else
+      @groups = current_user.group_memberships
+    end
     @group_name = ''
     if !params[:group_name].blank?
       @group_name = params[:group_name]
@@ -244,7 +248,11 @@ class ReportingController < ApplicationController
     @stream = params[:stream].to_i > 0 ? true : false
     @user_begin_time = params[:begin_time]
     @user_end_time = params[:end_time]
-    @groups = current_user.group_memberships
+    if current_user.is_super_admin?
+      @groups = Group.find(:all)
+    else
+      @groups = current_user.group_memberships
+	end
     if !@user_end_time.blank? && !@user_begin_time.blank?
     	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
     	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
@@ -289,12 +297,17 @@ class ReportingController < ApplicationController
       	@group_totals[:false_alarm_falls] = 0
       	@group_totals[:test_alarm_falls] = 0
       	@group_totals[:real_falls] = 0
-
+      	@group_totals[:real_alarm_falls] = 0
+ 		@group_totals[:unclassified_falls] = 0
+ 		
       	@group_totals[:false_alarm_panics] = 0
       	@group_totals[:test_alarm_panics] = 0
       	@group_totals[:non_emerg_panics] = 0
+      	@group_totals[:real_alarm_panics] = 0
+      	@group_totals[:unclassified_panics] = 0
       	@group_totals[:real_panics] = 0
       	@group_totals[:installs] = 0
+		@group_totals[:battery_reminders] = 0
       	      	
       	for fall in @falls
       	  id = fall.user.id
@@ -319,12 +332,18 @@ class ReportingController < ApplicationController
           		       end
           		       @group_stats[group.name][:test_alarm_falls] << fall
           		       @group_totals[:test_alarm_falls] += 1 if group.name !="SafetyCare" and group.name !="halo"
+          		     elsif fall.real_alarm?
+          		       if @group_stats[group.name][:real_alarm_falls].nil?
+          		         @group_stats[group.name][:real_alarm_falls] = []
+          		       end
+          		       @group_stats[group.name][:real_alarm_falls] << fall
+          		       @group_totals[:real_alarm_falls] += 1 if group.name !="SafetyCare" and group.name !="halo"
         		     else
-        		       if @group_stats[group.name][:real_falls].nil?
-        		         @group_stats[group.name][:real_falls] = [] 
+        		       if @group_stats[group.name][:unclassified_falls].nil?
+        		         @group_stats[group.name][:unclassified_falls] = [] 
         		       end
-          			   @group_stats[group.name][:real_falls] << fall
-          			   @group_totals[:real_falls] += 1 if group.name !="SafetyCare" and group.name !="halo"
+          			   @group_stats[group.name][:unclassified_falls] << fall
+          			   @group_totals[:unclassified_falls] += 1 if group.name !="SafetyCare" and group.name !="halo"
           		     end	
       		       end
   		         end
@@ -342,7 +361,7 @@ class ReportingController < ApplicationController
         		  if !group.nil?  
         		    if @group_stats[group.name].nil? 
          			   @group_stats[group.name] = {} 
-         			  end
+         			end
        			  
             		if panic.false_alarm?
             		  if @group_stats[group.name][:false_alarm_panics].nil? 
@@ -362,19 +381,27 @@ class ReportingController < ApplicationController
             		  end 
             		  @group_stats[group.name][:non_emerg_panics]  << panic
             		  @group_totals[:non_emerg_panics] += 1 if group.name !="SafetyCare" and group.name !="halo"
-          		else
-          		  if @group_stats[group.name][:real_panics].nil?
-            		    @group_stats[group.name][:real_panics] = []
+            		elsif panic.real_alarm?
+            		  if @group_stats[group.name][:real_alarm_panics].nil?
+            		    @group_stats[group.name][:real_alarm_panics] = []
             		  end
-            		  @group_stats[group.name][:real_panics]  << panic
-            		  @group_totals[:real_panics] += 1 if group.name !="SafetyCare" and group.name !="halo"
+            		  @group_stats[group.name][:real_alarm_panics]  << panic
+            		  @group_totals[:real_alarm_panics] += 1 if group.name !="SafetyCare" and group.name !="halo"
+          			else
+          		  	  if @group_stats[group.name][:unclassified_panics].nil?
+            		    @group_stats[group.name][:unclassified_panics] = []
+            		  end
+            		  @group_stats[group.name][:unclassified_panics]  << panic
+            		  @group_totals[:unclassified_panics] += 1 if group.name !="SafetyCare" and group.name !="halo"
             		end
-          	  end
-      		  end
+          	  	  end
+      		    end
         	end	
       	end
       	
         get_installs
+        
+        get_battery_reminders
     end
   	#flash[:warning] = 'Begin Time and End Time are required.'
   end
@@ -407,6 +434,31 @@ class ReportingController < ApplicationController
   	 end
   end
   
+  def get_battery_reminders
+  	@battery_reminders = BatteryReminder.find(:all,:conditions => ["reminder_num >= ?",3])
+  	for battery_reminder in @battery_reminders
+  		id = battery_reminder.user.id
+  		if (groups = @user_groups[id]) == nil
+		    groups = @user_groups[id] = battery_reminder.user.is_halouser_for_what
+		end
+		if(groups)
+      		groups.each do |group|
+      			if !group.nil?
+      			  if @group_stats[group.name].nil? 
+       			   @group_stats[group.name] = {} 
+       			  end
+       			  
+      			  if @group_stats[group.name][:battery_reminders].nil?
+        		    @group_stats[group.name][:battery_reminders] = []
+        		  end
+      			  @group_stats[group.name][:battery_reminders]  << battery_reminder
+      			  @group_totals[:battery_reminders] += 1 if group.name !="SafetyCare" and group.name !="halo"
+  			    end
+  			end
+		end
+  	end
+  end
+  
   def installs
     @begin_date = params[:begin_date]
     @end_date = params[:end_date]
@@ -416,8 +468,11 @@ class ReportingController < ApplicationController
   def compliance_report
     @user_begin_time = params[:begin_time]
     @user_end_time = params[:end_time]
-  	
-    @groups = current_user.group_memberships
+  	if current_user.is_super_admin?
+  	  @groups = Group.find(:all)
+  	else
+      @groups = current_user.group_memberships
+    end
     if !@user_end_time.blank? && !@user_begin_time.blank?
 		
     	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)

@@ -39,11 +39,12 @@
 <br>
 <div>
 <table border="1" style="text-align:left">
-<tr><th>Group</th><th>Description</th><th>Actions</th></tr>
+<tr><th>Group</th><th>Description</th><th>Type</th><th>Actions</th></tr>
 <% @groups=Group.find(:all).each do |group|  %>
   <tr>
   	<td><%= group.name %></td>
   	<td><%=group.description %></td>
+  	<td><%=group.sales_type %></td>
   	<td><%= link_to 'Edit', '/user_admin/edit_group/' + group.id.to_s %> <%#= link_to 'Remove', '/recurring_charges/destroy/' + rc.id.to_s, :confirm => 'Are you sure?', :method => :delete%></td>
   	</tr>
 <% end %>
