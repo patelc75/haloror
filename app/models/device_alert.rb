@@ -55,12 +55,15 @@ class DeviceAlert < ActiveRecord::Base
       else 
         # refs 1523:
         begin
+          if event.user.is_halouser_of? Group.find_by_name('criticalhealth')
+            CriticalHealthClient.alert(event.user.id, CriticalHealthClient.event_type_string(event.event.class.name),event.timestamp)
+          end
           if event.user.is_halouser_of? Group.find_by_name('SafetyCare')
             if event.user.profile
               if !event.user.profile.account_number.blank?
               	#don't need to filter because safetycare filters by IP
                 #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
-                  SafetyCareClient.alert(event.user.profile.account_number, event.event_type_numeric)
+                  SafetyCareClient.alert(event.user.profile.account_number, SafetyCareClient.event_type_numeric(event.event.class.name))
                 #end
               else
                 CriticalMailer.deliver_monitoring_failure("Missing account number!", event)

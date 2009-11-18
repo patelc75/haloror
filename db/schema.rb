@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20091014160546) do
+ActiveRecord::Schema.define(:version => 20091117195711) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -30,6 +30,13 @@ ActiveRecord::Schema.define(:version => 20091014160546) do
     t.string   "mode"
     t.datetime "timestamp"
     t.string   "number"
+  end
+
+  create_table "accounts", :id => false, :force => true do |t|
+    t.integer "aid",                    :null => false
+    t.integer "bid"
+    t.integer "abalance"
+    t.string  "filler",   :limit => 84
   end
 
   create_table "alert_groups", :force => true do |t|
@@ -149,6 +156,8 @@ ActiveRecord::Schema.define(:version => 20091014160546) do
     t.integer  "percentage",     :null => false
     t.integer  "time_remaining", :null => false
     t.integer  "device_id"
+    t.boolean  "acpower_status"
+    t.boolean  "charge_status"
   end
 
   add_index "batteries", ["device_id", "timestamp"], :name => "index_batteries_on_device_id_and_timestamp"
@@ -217,6 +226,12 @@ ActiveRecord::Schema.define(:version => 20091014160546) do
     t.string   "sw_rev"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "branches", :id => false, :force => true do |t|
+    t.integer "bid",                    :null => false
+    t.integer "bbalance"
+    t.string  "filler",   :limit => 88
   end
 
   create_table "call_center_deferreds", :force => true do |t|
@@ -500,9 +515,11 @@ ActiveRecord::Schema.define(:version => 20091014160546) do
   end
 
   create_table "groups", :force => true do |t|
-    t.string   "name",       :null => false
+    t.string   "name",        :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "description"
+    t.string   "sales_type"
   end
 
   create_table "gw_alarm_button_timeouts", :force => true do |t|
@@ -520,6 +537,34 @@ ActiveRecord::Schema.define(:version => 20091014160546) do
     t.datetime "timestamp"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "halo_debug_msgs", :force => true do |t|
+    t.integer  "source_mote_id"
+    t.datetime "timestamp"
+    t.integer  "dbg_type"
+    t.integer  "param1"
+    t.integer  "param2"
+    t.integer  "param3"
+    t.integer  "param4"
+    t.integer  "param5"
+    t.integer  "param6"
+    t.integer  "param7"
+    t.integer  "param8"
+    t.integer  "user_id"
+    t.string   "source_device_type"
+    t.integer  "device_id"
+    t.string   "dbg_level"
+    t.text     "description"
+  end
+
+  create_table "history", :id => false, :force => true do |t|
+    t.integer  "tid"
+    t.integer  "bid"
+    t.integer  "aid"
+    t.integer  "delta"
+    t.datetime "mtime"
+    t.string   "filler", :limit => 22
   end
 
   create_table "installation_notes", :force => true do |t|
@@ -629,7 +674,16 @@ ActiveRecord::Schema.define(:version => 20091014160546) do
     t.integer  "user_id"
     t.datetime "timestamp"
     t.integer  "device_id"
+    t.integer  "duration_press"
   end
+
+  create_table "points", :force => true do |t|
+    t.integer "seq"
+    t.integer "data"
+    t.integer "oscope_msg_id"
+  end
+
+  add_index "points", ["oscope_msg_id"], :name => "index_points_on_oscope_msg_id"
 
   create_table "pool_mappings", :force => true do |t|
     t.string   "serail_number", :null => false
@@ -668,7 +722,7 @@ ActiveRecord::Schema.define(:version => 20091014160546) do
     t.text    "allergies"
     t.text    "pet_information"
     t.text    "access_information"
-    t.string  "account_number"
+    t.string  "account_number",      :limit => 10
     t.string  "door"
     t.string  "hospital_preference"
     t.string  "hospital_number"
@@ -863,6 +917,14 @@ ActiveRecord::Schema.define(:version => 20091014160546) do
     t.integer  "strap_off_timeout_sec"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "critical_event_delay"
+  end
+
+  create_table "tellers", :id => false, :force => true do |t|
+    t.integer "tid",                    :null => false
+    t.integer "bid"
+    t.integer "tbalance"
+    t.string  "filler",   :limit => 84
   end
 
   create_table "users", :force => true do |t|
@@ -896,6 +958,7 @@ ActiveRecord::Schema.define(:version => 20091014160546) do
     t.integer  "orientation"
     t.datetime "timestamp"
     t.integer  "user_id"
+    t.boolean  "strap_status"
   end
 
   add_index "vitals", ["timestamp", "user_id"], :name => "index_vitals_on_user_id_and_timestamp"
