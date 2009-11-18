@@ -392,7 +392,7 @@ class UsersController < ApplicationController
       end
     end
     
-    @max_position = get_max_caregiver_position(current_user)
+    @max_position = get_max_caregiver_position(senior)
     
     @password = random_password
     
