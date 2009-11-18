@@ -39,6 +39,7 @@ class UsersController < ApplicationController
   #handles 3 scanerios (1) new subscriber (1)subscriber same as senior (2)new subscriber also caregiver
   def create_subscriber
   	senior_user_id = params[:user_id]
+  	@senior = User.find senior_user_id
   	if !request.post?  #clicking "skip" is a GET (vs a POST)
   	  @user = User.find(params[:user_id])
   	else
@@ -78,7 +79,7 @@ class UsersController < ApplicationController
   	if request.post?
   	  render :action => 'credit_card_authorization'
     else
-    	@user = User.find(params[:id])
+    	@senior = User.find(params[:id])
     end
   end
 
