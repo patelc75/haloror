@@ -1,6 +1,7 @@
 require 'net/http'
 require 'net/https'
 class EventActionObserver < ActiveRecord::Observer
+=begin
   def before_save(event_action)
     if event_action[:send_email] != false
       email = CriticalMailer.deliver_call_center_operator(event_action)
@@ -13,7 +14,7 @@ class EventActionObserver < ActiveRecord::Observer
       end
     end
   end
-  
+=end
   def after_save(event_action)
     Event.create_event(event_action.event.user_id, EventAction.class_name, event_action.id,event_action.created_at)
   end

@@ -25,7 +25,7 @@ class DeviceAlert < ActiveRecord::Base
     case self.class.name
       when "Fall" then "001"
       when "Panic" then "002"
-      #when "GwAlarmButton" then "003"
+      when "GwAlarmButton" then "003"
       #when "CallCenterFollowUp" then "004"
       when "BatteryReminder" then "100"
   	  when "StrapOff" then "101"
@@ -35,57 +35,66 @@ class DeviceAlert < ActiveRecord::Base
   	end
   end
   
+  
   def self.notify_caregivers(event)
-  	if event.user_id < 1 or event.user_id == nil or event.user == nil 
-      raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
-    elsif event.device_id < 1 or event.device_id == nil or event.device == nil
-      raise "#{event.class.to_s}: device_id = #{event.device_id} does not exist"
-    else
-      CriticalMailer.deliver_device_event_caregiver(event)
+    CriticalMailer.deliver_device_event_caregiver(event)
+  end
+
+
+  def self.notify_operators(event)
+    if event.class == CallCenterFollowUp
+      CriticalMailer.deliver_device_event_admin(event)
+    else 
+      begin
+        if event.user.is_halouser_of? Group.find_by_name('SafetyCare')
+          if event.user.profile
+            if !event.user.profile.account_number.blank?
+            	#don't need to filter because safetycare filters by IP
+              #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
+                SafetyCareClient.alert(event.user.profile.account_number, event.event_type_numeric)
+              #end
+            else
+              CriticalMailer.deliver_monitoring_failure("Missing account number!", event)
+            end
+          else
+            CriticalMailer.deliver_monitoring_failure("Missing user profile!", event)
+          end
+        end
+      rescue Exception => e
+        CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
+        UtilityHelper.log_message("SafetyCareClient.alert::Exception:: #{e} : #{event.to_s}", e)
+      rescue Timeout::Error => e
+        CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
+        UtilityHelper.log_message("SafetyCareClient.alert::Timeout::Error:: #{e} : #{event.to_s}", e)
+      rescue
+        CriticalMailer.deliver_monitoring_failure("UNKNOWN error", event)
+        UtilityHelper.log_message("SafetyCareClient.alert::UNKNOWN::Error: #{event.to_s}")         
+      end
+
+      CriticalMailer.deliver_device_event_operator_text(event)
+      CriticalMailer.deliver_device_event_operator(event)
     end
   end
   
-  def self.notify_operators_and_caregivers(event)
-  	if event.user_id < 1 or event.user_id == nil or event.user == nil
-        raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
-      elsif event.class == CallCenterFollowUp
-        CriticalMailer.deliver_device_event_admin(event)
-      elsif event.class == GwAlarmButton
-        CriticalMailer.deliver_gw_alarm(event)
-      else 
-        # refs 1523:
-        begin
-          if event.user.is_halouser_of? Group.find_by_name('SafetyCare')
-            if event.user.profile
-              if !event.user.profile.account_number.blank?
-              	#don't need to filter because safetycare filters by IP
-                #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
-                  SafetyCareClient.alert(event.user.profile.account_number, event.event_type_numeric)
-                #end
-              else
-                CriticalMailer.deliver_monitoring_failure("Missing account number!", event)
-              end
-            else
-              CriticalMailer.deliver_monitoring_failure("Missing user profile!", event)
-            end
-          end
-        rescue Exception => e
-          CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
-          UtilityHelper.log_message("SafetyCareClient.alert::Exception:: #{e} : #{event.to_s}", e)
-        rescue Timeout::Error => e
-          CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
-          UtilityHelper.log_message("SafetyCareClient.alert::Timeout::Error:: #{e} : #{event.to_s}", e)
-        rescue
-          CriticalMailer.deliver_monitoring_failure("UNKNOWN error", event)
-          UtilityHelper.log_message("SafetyCareClient.alert::UNKNOWN::Error: #{event.to_s}")         
-        end
-
-        CriticalMailer.deliver_device_event_operator_text(event)
-        CriticalMailer.deliver_device_event_operator(event)
-        if(ServerInstance.current_host_short_string() != "ATL-WEB1")
-          CriticalMailer.deliver_device_event_caregiver(event)
-        end
-      end
+  def self.job_process_crtical_alerts
+    ethernet_system_timeout = SystemTimeout.find_by_mode('ethernet')
+    dialup_system_timeout   = SystemTimeout.find_by_mode('dialup')
+    
+    critical_alerts = []
+    
+    critical_alerts += Panic.find(:all, :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout.critical_event_delay_sec/60} minutes'", :order => "timestamp asc")
+    critical_alerts += Fall.find(:all, :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout.critical_event_delay_sec/60} minutes'", :order => "timestamp asc")
+    critical_alerts += GwAlarmButton.find(:all, :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout.critical_event_delay_sec/60} minutes'", :order => "timestamp asc")
+    
+    #not going to filter access_mode == 'dialup' because access_mode is not yet reliable according to corey
+    #{}"id in (select device_id from access_mode_statuses where mode = 'dialup') " <<    
+    
+    #sort by timestamp, instead of timestamp_server in case GW sends them out of order in the alert_bundle
+    critical_alerts.sort_by { |event| event[:timestamp] }.each do |crit|
+      #RAILS_DEFAULT_LOGGER.info("crit.class = #{crit.class}, crit.timestamp_server = #{crit.class}\n")
+      crit.call_center_pending = false
+      crit.timestamp_call_center = Time.now
+      crit.save
+    end
   end
-  
 end

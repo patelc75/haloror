@@ -4,43 +4,45 @@ class BatteryReminder < DeviceAlert
 	belongs_to :device
 	belongs_to :battery_critical
 	include Priority
-	def priority
-      return IMMEDIATE
-    end
 	
-    def to_s
-   	  "Battery has approx. #{time_remaining < 0 ? 0:time_remaining} minutes left for #{user.name} at #{UtilityHelper.format_datetime(created_at, user)}"   if time_remaining 	  
-    end
+	def priority
+    return IMMEDIATE
+  end
+	
+  def to_s
+   	"Battery has approx. #{time_remaining < 0 ? 0:time_remaining} minutes left for #{user.name} at #{UtilityHelper.format_datetime(created_at, user)}"   if time_remaining 	  
+  end
 
-    def email_body
-   	  "#{user.name}'s battery has approximately #{time_remaining < 0 ? 0:time_remaining} minutes left for as of #{UtilityHelper.format_datetime(created_at, user)}. Please charge the battery immediately"
-    end
+  def email_body
+   	"#{user.name}'s battery has approximately #{time_remaining < 0 ? 0:time_remaining} minutes left for as of #{UtilityHelper.format_datetime(created_at, user)}. Please charge the battery immediately"
+  end
   
-    def after_save
-    	if self.reminder_num == 3
-			DeviceAlert.notify_operators_and_caregivers(self)
-		else
-			DeviceAlert.notify_caregivers(self)
-		end
-		
-    	Event.create_event(self.user_id, self.class.to_s, self.id, self.created_at)
-    	
-    	@device = DeviceBatteryReminder.find_by_device_id(self.device_id)
-		
-    	if @device
-			@device.update_attributes(:reminder_num => self.reminder_num,
-									  :stopped_at => self.stopped_at,
-									  :time_remaining => self.time_remaining,
-									  :battery_critical_id => self.battery_critical_id)
-		else
-			DeviceBatteryReminder.create(:device_id => self.device_id,
-										 :user_id => self.user_id,
-										 :reminder_num => self.reminder_num,
-										 :stopped_at => self.stopped_at,
-										 :time_remaining => self.time_remaining,
-										 :battery_critical_id => self.battery_critical_id)
-		end
-    end
+  def after_save
+  	if self.reminder_num == 3
+		  DeviceAlert.notify_operators(self)
+		  DeviceAlert.notify_caregivers(self)
+	  else
+		  DeviceAlert.notify_caregivers(self)
+	  end
+	
+  	Event.create_event(self.user_id, self.class.to_s, self.id, self.created_at)
+  	
+  	@device = DeviceBatteryReminder.find_by_device_id(self.device_id)
+	
+  	if @device
+		  @device.update_attributes(:reminder_num => self.reminder_num,
+								  :stopped_at => self.stopped_at,
+								  :time_remaining => self.time_remaining,
+								  :battery_critical_id => self.battery_critical_id)
+	  else
+		  DeviceBatteryReminder.create(:device_id => self.device_id,
+									 :user_id => self.user_id,
+									 :reminder_num => self.reminder_num,
+									 :stopped_at => self.stopped_at,
+									 :time_remaining => self.time_remaining,
+									 :battery_critical_id => self.battery_critical_id)
+	  end
+  end
     
     
 	def self.most_recent_reminder(device_id)
