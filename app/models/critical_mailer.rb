@@ -161,6 +161,8 @@ class CriticalMailer < ActionMailer::ARMailer
     @sent_on     = Time.now
   end
 
+  #if mode = :caregiver_info, then show user AND caregiver info in body
+  #if mode = :recepients, then add to @recepients list
   def setup_caregivers(user, alert, mode, list_caregivers = false)
     self_alert = user.alert_option(alert)
     recipients_setup(user, self_alert, mode)
