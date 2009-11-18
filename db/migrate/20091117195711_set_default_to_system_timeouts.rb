@@ -4,7 +4,7 @@ class SetDefaultToSystemTimeouts < ActiveRecord::Migration
   	
   	SystemTimeout.find(:all).each do |system_timeout|
   		if system_timeout.critical_event_delay.nil? or system_timeout.critical_event_delay == ""
-  			system_timeout.update_attributes(:critical_event_delay => '120 seconds')
+  			system_timeout.update_attributes(:critical_event_delay => 120)
   		end
   	end
   	
