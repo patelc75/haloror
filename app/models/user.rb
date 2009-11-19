@@ -277,10 +277,10 @@ class User < ActiveRecord::Base
     self.roles_users.find(:first, :conditions => "role_id = #{role.id}", :include => :role)
   end
   def roles_user_by_caregiver(caregiver)
-    caregiver.roles_users.find(:first, :conditions => "roles.authorizable_id = #{self.id}", :include => :role)
+    caregiver.roles_users.find(:first, :conditions => "roles.name = 'caregiver' and roles.authorizable_id = #{self.id}", :include => :role)
   end
   def roles_user_by_subscriber(subscriber)
-    subscriber.roles_users.find(:first, :conditions => "roles.authorizable_id = #{self.id}", :include => :role)
+    subscriber.roles_users.find(:first, :conditions => "roles.name = 'subscriber' and roles.authorizable_id = #{self.id}", :include => :role)
   end
   def alert_option(type)
     alert_option = nil
