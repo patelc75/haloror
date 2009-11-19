@@ -4,7 +4,7 @@
 		img = '/images/call_list-item-away.gif'
 		className = 'inactive'
 	else
-		img = '/images/call_list-item.gif'
+		img = '/images/call_list-item-caregiver.gif'
 		className = 'active'
 	end
 %>
@@ -157,7 +157,8 @@
 	<div style="float:left;padding-top:35px;width:125px" id="item_edit_<%=operator.id%>">
 		<!--% puts edit_user_url(operator)%-->
 		<% alt = "Edit operator's profile." %>
-		<%=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :group_id => params[:group_id],:id => operator.profile.id, :frame => true, :roles_user_id => operator.roles_user_by_role_name('operator').id, :operator => true }, :html => {:alt => alt, :method => :get})%>
+		<%=link_to('Edit Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => operator.profile.id,:user_id => operator.id )%>
+		<%#=link_to_remote_redbox('Edit Info', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :group_id => params[:group_id],:id => operator.profile.id, :frame => true, :roles_user_id => operator.roles_user_by_role_name('operator').id, :operator => true }, :html => {:alt => alt, :method => :get})%>
 	</div>
 	
 	<!--TOOLTIP-->
