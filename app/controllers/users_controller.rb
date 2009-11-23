@@ -39,6 +39,7 @@ class UsersController < ApplicationController
   #handles 3 scanerios (1) new subscriber (1)subscriber same as senior (2)new subscriber also caregiver
   def create_subscriber
   	senior_user_id = params[:user_id]
+  	@senior = User.find senior_user_id
   	if !request.post?  #clicking "skip" is a GET (vs a POST)
   	  @user = User.find(params[:user_id])
   	else
@@ -46,7 +47,6 @@ class UsersController < ApplicationController
       	if params[:users][:same_as_senior] == "1"  #subscriber same as senior
       	  @user = User.find_by_id(params[:user_id])
       	  subscriber_user_id = senior_user_id
-    		  RAILS_DEFAULT_LOGGER.debug("**same as senior == 1 ; subscriber_user_id = #{@senior_user_id}")
       	else
     	    if params[:users][:add_caregiver] != "1"  #subscriber will also be a caregiver
       	    populate_caregiver(params[:email],params[:user_id].to_i,nil,nil,params[:profile]) #sets up @user
@@ -78,7 +78,7 @@ class UsersController < ApplicationController
   	if request.post?
   	  render :action => 'credit_card_authorization'
     else
-    	@user = User.find(params[:id])
+    	@senior = User.find(params[:id])
     end
   end
 
@@ -391,7 +391,7 @@ class UsersController < ApplicationController
       end
     end
     
-    @max_position = get_max_caregiver_position(current_user)
+    @max_position = get_max_caregiver_position(senior)
     
     @password = random_password
     
@@ -447,9 +447,7 @@ class UsersController < ApplicationController
 		  @user.is_new_caregiver = true
   		@user[:is_caregiver] =  true
   		@user.save!
-  		if position.nil?
-  		  position = get_max_caregiver_position(@user)
-  		end
+
   		if @user.profile.nil?
   		  if profile_hash.nil?
   		    profile = Profile.new(:user_id => @user.id)
@@ -460,9 +458,13 @@ class UsersController < ApplicationController
   		  profile.save!
   		  @user.profile = profile
   		end
-
-  		#patient = User.find(params[:user_id].to_i)
+  		
   		patient = User.find(patient_id)
+
+  		if position.nil?
+  		  position = get_max_caregiver_position(patient)
+  		end
+  		
   		role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return nil
   		caregiver = @user
   		@roles_user = patient.roles_user_by_caregiver(caregiver)
