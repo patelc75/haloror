@@ -19,10 +19,9 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def device_event_operator(event)
     # refs #864, New non-wizard email for call center agents
-    setup_caregivers(event.user, event, :caregiver_info, true)
-    #@caregiver_info << '\n\n(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
+    setup_caregivers(event.user, event, :caregiver_info)
     
-    @caregiver_info << 'EMERGENCY NUM ' + '<br>' + event.user.profile.emergency_number.name + '<br>' + event.user.profile.emergency_number.number if event.user.profile.emergency_number
+    @caregiver_info << "EMERGENCY NUM\n" + event.user.profile.emergency_number.name + "\n" + event.user.profile.emergency_number.number if event.user.profile.emergency_number
     message_text = "You received this email because you’re a Halo call center agent.\n\n#{@caregiver_info}\n\n"
     
     user = event.user
@@ -163,7 +162,7 @@ class CriticalMailer < ActionMailer::ARMailer
 
   #if mode = :caregiver_info, then show user AND caregiver info in body
   #if mode = :recepients, then add to @recepients list
-  def setup_caregivers(user, alert, mode, list_caregivers = false)
+  def setup_caregivers(user, alert, mode)
     self_alert = user.alert_option(alert)
     recipients_setup(user, self_alert, mode)
     if mode == :caregiver_info and self_alert == nil
@@ -257,7 +256,7 @@ class CriticalMailer < ActionMailer::ARMailer
       email_bool = alert_option.email_active
       text_msg_bool = alert_option.text_active
       call_bool = alert_option.phone_active
-      
+
       if text_msg_bool == true and mode == :recepients
         if !user.profile.cell_phone.blank? and !user.profile.carrier.nil? and mode == :recepients
           @text_recipients  << ["#{user.profile.phone_strip(user.profile.cell_phone)}" + "#{user.profile.carrier.domain}"]
