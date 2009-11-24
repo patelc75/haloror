@@ -1,0 +1,2 @@
+module AlertBundleHelper
+end
