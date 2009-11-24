@@ -11,7 +11,8 @@
 <div id="call_list-col">
 	<div id="call_list-col-header">
 		Critical Alert Settings: <span style="color:#000;font-size:.75em">
-			<%=link_to_remote_redbox(@user.name + "`s", :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => @user.profile.id, :frame => true,:user_id => @user.id }, :html => {:method => :get})%>
+			<%#=link_to_remote_redbox(@user.name + "`s", :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => @user.profile.id, :frame => true,:user_id => @user.id }, :html => {:method => :get})%>
+			<%=link_to(@user.name + "`s", :controller => "profiles", :action => "edit_caregiver_profile", :id => @user.profile.id,:user_id => @user.id )%>
 			<% if @user.is_halouser? %>
 			Caregivers
 			<% end %>
