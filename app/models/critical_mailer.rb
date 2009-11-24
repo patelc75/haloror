@@ -3,7 +3,7 @@ class CriticalMailer < ActionMailer::ARMailer
   include ServerInstance
   NO_REPLY = "no-reply@halomonitoring.com"
 
-#=============== Alerts ======================       
+#=============== General Methods for Alerts ======================       
   def device_event_admin(event)
     setup_caregivers(event.user, event, :recepients)
     setup_operators(event, :recepients, :include_phone_call, :halo_only) 
@@ -19,10 +19,9 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def device_event_operator(event)
     # refs #864, New non-wizard email for call center agents
-    setup_caregivers(event.user, event, :caregiver_info, true)
-    #@caregiver_info << '\n\n(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
+    setup_caregivers(event.user, event, :caregiver_info)
     
-    @caregiver_info << 'EMERGENCY NUM ' + '<br>' + event.user.profile.emergency_number.name + '<br>' + event.user.profile.emergency_number.number if event.user.profile.emergency_number
+    @caregiver_info << "EMERGENCY NUM\n" + event.user.profile.emergency_number.name + "\n" + event.user.profile.emergency_number.number if event.user.profile.emergency_number
     message_text = "You received this email because you’re a Halo call center agent.\n\n#{@caregiver_info}\n\n"
     
     user = event.user
@@ -47,19 +46,10 @@ class CriticalMailer < ActionMailer::ARMailer
     setup_operators(event, :recepients, :include_phone_call) 
     # setup_emergency_group(event, :recepients)
     @recipients = @text_recipients
-    self.priority  = event.priority    
+    self.priority  = event.priority
   end
 
-  def gw_alarm(event)
-    setup_caregivers(event.user, event, :recepients)
-    #setup_halo_operators()
-    setup_operators(event, :recepients, :include_phone_call, :halo_only) 
-    setup_message(event.to_s, event.email_body)
-    self.priority = Priority::IMMEDIATE
-    @recipients = @recipients + @text_recipients
-  end
-
-#=============== Call Center  ======================     
+#=============== Call Center Operator ======================     
   def call_center_caregiver(event_action)
     setup_message(event_action.to_s, event_action.email_body + "\n\nYou received this email because you’re a Halo User or caregiver of #{event_action.event.user.name}")
     setup_caregivers(event_action.event.user, event_action.event.event, :recepients)
@@ -170,7 +160,9 @@ class CriticalMailer < ActionMailer::ARMailer
     @sent_on     = Time.now
   end
 
-  def setup_caregivers(user, alert, mode, list_caregivers = false)
+  #if mode = :caregiver_info, then show user AND caregiver info in body
+  #if mode = :recepients, then add to @recepients list
+  def setup_caregivers(user, alert, mode)
     self_alert = user.alert_option(alert)
     recipients_setup(user, self_alert, mode)
     if mode == :caregiver_info and self_alert == nil
@@ -182,6 +174,7 @@ class CriticalMailer < ActionMailer::ARMailer
     @recipients = @recipients + @text_recipients
   end
   
+  #if group = :halo_only, only set up operators for the 'halo' group
   def setup_operators(event, mode, phone = :no_phone_call, group = :all)
     ops = User.active_operators
     groups = event.user.is_halouser_for_what
@@ -263,7 +256,7 @@ class CriticalMailer < ActionMailer::ARMailer
       email_bool = alert_option.email_active
       text_msg_bool = alert_option.text_active
       call_bool = alert_option.phone_active
-      
+
       if text_msg_bool == true and mode == :recepients
         if !user.profile.cell_phone.blank? and !user.profile.carrier.nil? and mode == :recepients
           @text_recipients  << ["#{user.profile.phone_strip(user.profile.cell_phone)}" + "#{user.profile.carrier.domain}"]

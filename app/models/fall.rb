@@ -1,8 +1,5 @@
-class Fall < DeviceAlert
+class Fall < CriticalDeviceAlert
   set_table_name("falls")
-  def priority
-    return IMMEDIATE
-  end
 
   def to_s
     "#{user.name}(#{user.id}) fell at #{UtilityHelper.format_datetime(timestamp, user)}"

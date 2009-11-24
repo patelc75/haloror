@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20091014160546) do
+ActiveRecord::Schema.define(:version => 20091030205045) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -149,6 +149,8 @@ ActiveRecord::Schema.define(:version => 20091014160546) do
     t.integer  "percentage",     :null => false
     t.integer  "time_remaining", :null => false
     t.integer  "device_id"
+    t.boolean  "acpower_status"
+    t.boolean  "charge_status"
   end
 
   add_index "batteries", ["device_id", "timestamp"], :name => "index_batteries_on_device_id_and_timestamp"
@@ -522,6 +524,25 @@ ActiveRecord::Schema.define(:version => 20091014160546) do
     t.datetime "updated_at"
   end
 
+  create_table "halo_debug_msgs", :force => true do |t|
+    t.integer  "source_mote_id"
+    t.datetime "timestamp"
+    t.integer  "dbg_type"
+    t.integer  "param1"
+    t.integer  "param2"
+    t.integer  "param3"
+    t.integer  "param4"
+    t.integer  "param5"
+    t.integer  "param6"
+    t.integer  "param7"
+    t.integer  "param8"
+    t.integer  "user_id"
+    t.string   "source_device_type"
+    t.integer  "device_id"
+    t.string   "dbg_level"
+    t.text     "description"
+  end
+
   create_table "installation_notes", :force => true do |t|
     t.integer  "user_id",    :null => false
     t.text     "notes"
@@ -629,7 +650,16 @@ ActiveRecord::Schema.define(:version => 20091014160546) do
     t.integer  "user_id"
     t.datetime "timestamp"
     t.integer  "device_id"
+    t.integer  "duration_press"
   end
+
+  create_table "points", :force => true do |t|
+    t.integer "seq"
+    t.integer "data"
+    t.integer "oscope_msg_id"
+  end
+
+  add_index "points", ["oscope_msg_id"], :name => "index_points_on_oscope_msg_id"
 
   create_table "pool_mappings", :force => true do |t|
     t.string   "serail_number", :null => false
@@ -896,6 +926,7 @@ ActiveRecord::Schema.define(:version => 20091014160546) do
     t.integer  "orientation"
     t.datetime "timestamp"
     t.integer  "user_id"
+    t.boolean  "strap_status"
   end
 
   add_index "vitals", ["timestamp", "user_id"], :name => "index_vitals_on_user_id_and_timestamp"

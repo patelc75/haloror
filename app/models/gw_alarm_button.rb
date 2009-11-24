@@ -1,10 +1,6 @@
-class GwAlarmButton < DeviceAlert
+class GwAlarmButton < CriticalDeviceAlert
   set_table_name "gw_alarm_buttons"
 
-  def priority
-    return IMMEDIATE
-  end
-  
   def to_s
   	"Gateway Alarm button has been pushed for #{user.name} on #{UtilityHelper.format_datetime(timestamp, user)}"
   end
@@ -13,7 +9,8 @@ class GwAlarmButton < DeviceAlert
     "We have detected that the Gateway Alarm button has been pushed for #{user.name} on #{UtilityHelper.format_datetime(timestamp, user)}\n\n" +
       "Sincerely, Halo Staff"
   end
-  
+
+=begin  
   def after_save
     #removed since we're not using the call center wizard
     #deferred = CallCenterDeferred.find(:all, :conditions => "user_id = #{user_id} AND pending = true")
@@ -33,6 +30,7 @@ class GwAlarmButton < DeviceAlert
       end
     end    
   end
+=end
   
   def resolve_event(evt)
       follows = CallCenterFollowUp.find(:all, :conditions => "event_id = #{evt.id}")
@@ -50,11 +48,5 @@ class GwAlarmButton < DeviceAlert
           end
         end
       end
-  end
-  
-  #for rspec
-  def self.new_initialize(random=false)
-    model = self.new
-    return model    
   end
 end
