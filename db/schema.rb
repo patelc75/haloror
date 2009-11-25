@@ -9,8 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20091117195711) do
-
+ActiveRecord::Schema.define(:version => 20091030205045) do
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
     t.string   "status"
@@ -520,6 +519,9 @@ ActiveRecord::Schema.define(:version => 20091117195711) do
     t.datetime "updated_at"
     t.text     "description"
     t.string   "sales_type"
+    t.string   "name",       :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "gw_alarm_button_timeouts", :force => true do |t|

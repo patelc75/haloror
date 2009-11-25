@@ -7,6 +7,7 @@
     <th>Gateway Offline <br> Timeout (seconds)<br>10% buffer <br>on alert</th>
     <th>Device Unavailable<br> Timeout (seconds)</th>
     <th>Strap Off<br> Timeout (seconds)</th>
+    <th>Critical Event <br>Delay (seconds)</th>
     <th>&nbsp;</th>
   </tr>
   <% @system_timeouts.each do |system_timeout|  %>
@@ -16,6 +17,7 @@
     <td><%= h system_timeout.gateway_offline_timeout_sec %></td>
     <td><%= h system_timeout.device_unavailable_timeout_sec %></td>
     <td><%= h system_timeout.strap_off_timeout_sec %></td>
+    <td><%= h system_timeout.critical_event_delay_sec %></td>
     <td><%= link_to '[edit]', :controller => 'system_timeouts', :action => 'edit', :id => system_timeout.id %>
   </tr>
   <% end %>

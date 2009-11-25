@@ -185,4 +185,21 @@ module UtilityHelper
     end
   end
   
+  def self.validate_event(event)
+    if event.user_id < 1 or event.user_id == nil or event.user == nil 
+      raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
+    elsif event.device_id < 1 or event.device_id == nil or event.device == nil
+      raise "#{event.class.to_s}: device_id = #{event.device_id} does not exist"
+    else
+      true
+    end
+  end
+  
+  def self.validate_event_user(event)
+    if event.user_id < 1 or event.user_id == nil or event.user == nil 
+      raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
+    else
+      true
+    end    
+  end
 end
