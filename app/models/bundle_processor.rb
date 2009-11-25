@@ -14,6 +14,7 @@ class BundleProcessor
           if !value.blank?
             if value.class == Array
               value.each do |v|
+              	debugger
                 model.new(v).save!
               end
             else

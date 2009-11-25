@@ -57,4 +57,8 @@ class SandboxController < ApplicationController
     @recentHeartRate = Heartrate.find(:first, :order => 'id DESC')
     @currentHeartRate = @recentHeartRate.heartRate
   end
+  
+  def ruby_debug
+  	debugger		BundleJob.process_xml_file("C:/pgRails/rails_apps/master/haloror/dialup/H200000025_1258657698/H200000025_1258657676_2.xml")
+  end
 end
