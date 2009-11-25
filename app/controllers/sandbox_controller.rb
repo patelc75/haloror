@@ -1,6 +1,12 @@
 class SandboxController < ApplicationController
   #layout "application", :except => "chart"
 
+  #use this method to debug Rufus jobs
+  def debug
+    debugger
+    DeviceAlert.job_process_crtical_alerts() #Rufus job
+  end
+
   def helloworld
     @heartrate = Heartrate.new
     @display = 0
