@@ -18,7 +18,7 @@ class SafetyCareClient
   # (ideally, the heartbeat should run from the task scheduler, of course)
   
   def self.heartbeat()
-  	RAILS_DEFAULT_LOGGER.warn("SafetyCareClient.heartbeat running at #{Time.now}")
+  	RAILS_DEFAULT_LOGGER.warn("SafetyCareClient.heartbeat running at #{Time.now}")  	
     Timeout::timeout(5) {
       sock = TCPSocket.open(SAFETYCARE_ADDRESS, SAFETYCARE_PORT)
       sock.write(64.chr) # 64.chr => @
@@ -26,16 +26,22 @@ class SafetyCareClient
     }
   end
   
-  def self.alert(account_number, alarm_code)
-    Timeout::timeout(2) {
-      sock = TCPSocket.open(SAFETYCARE_ADDRESS, SAFETYCARE_PORT)
-      sock.write("%s%s\r\n" % [account_number, alarm_code])
-      response = sock.readline
-      sock.close
-    }
+  def self.alert(event_type,user_id,account_num,timestamp=Time.now)
+    alarm_code = event_type_numeric(event_type)
+
+    #don't need to filter because safetycare filters by IP
+    #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
+      Timeout::timeout(2) {
+        sock = TCPSocket.open(SAFETYCARE_ADDRESS, SAFETYCARE_PORT)
+        sock.write("%s%s\r\n" % [account_num, alarm_code])
+        response = sock.readline
+        sock.close
+      }
+    RAILS_DEFAULT_LOGGER.warn("refs #2224 SafetyCareClient:: "%s%s\r\n" % [account_num, alarm_code])
+    #end
   end
 
-  def event_type_numeric(klass)
+  def event_type_numeric(event_type)
     # FIXME: TODO: fill out these event types properly
     case klass
       when "Fall" then "001"

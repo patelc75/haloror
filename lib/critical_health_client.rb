@@ -7,19 +7,18 @@ class CriticalHealthClient
   CRITICALHEALTH_EVENT_PORT = 50000
   CRITICALHEALTH_COMMAND_PORT = 50001
 
-  def self.alert(user, event_type,timestamp)
+  def self.alert(event_type,user_id,account_num,timestamp=Time.now)
+    event_type = event_type_string(event_type)
   	time_format = timestamp.strftime("%Y-%m-%d|%H:%M:%S")
+
     Timeout::timeout(2) {
       sock = TCPSocket.open(CRITICALHEALTH_ADDRESS, CRITICALHEALTH_COMMAND_PORT)
-      sock.write("event,%s,%s,%s\r\n" % [event_type, time_format, user ])
+      sock.write("event,%s,%s,%s\r\n" % [event_type, time_format, user_id])
       
-      RAILS_DEFAULT_LOGGER.info("event,%s,%s,%s\r\n" % [event_type, time_format, user ])
-      RAILS_DEFAULT_LOGGER.info("user_id: "+ user.to_s)
-      RAILS_DEFAULT_LOGGER.info("event type: "+ event_type)
-
       response = sock.readline
       sock.close
     }
+    RAILS_DEFAULT_LOGGER.warn("refs #2224 CriticalHealthClient:: event, %s, %s, %s\r\n" % [event_type, time_format, user_id])
   end
 
   def self.event_type_string(klass)

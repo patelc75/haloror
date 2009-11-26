@@ -6,6 +6,7 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
     def before_save(event)
       if UtilityHelper.validate_event_user(event) == true #only validating user because GW does not use the device_id
         if event.call_center_pending == false
+          DeviceAlert.notify_call_center_and_partners(event)
           DeviceAlert.notify_operators(event)
         else
           if(ServerInstance.current_host_short_string() != "ATL-WEB1")

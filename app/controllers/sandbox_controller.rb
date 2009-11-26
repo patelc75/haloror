@@ -1,5 +1,9 @@
 class SandboxController < ApplicationController
   #layout "application", :except => "chart"
+  def ruby_debug
+    DeviceAlert.job_process_crtical_alerts() 
+    render :nothing => true
+  end
 
   def helloworld
     @heartrate = Heartrate.new
