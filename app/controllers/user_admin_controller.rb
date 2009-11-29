@@ -165,7 +165,7 @@ class UserAdminController < ApplicationController
         	@message = "Group(#{group_name}) Added"
         else
         	@success = false
-        	@message = "Group Name is not valid. It should contains only lowercase characters or numeric values."
+        	@message = "Group Name is not valid. It should contains only lowercase characters  numeric values and underscore."
         end
       else
         @success = false
