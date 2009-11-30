@@ -6,7 +6,7 @@ class BundleJob
   @error_collection = []
   def self.job_process_bundles
     
-    RAILS_DEFAULT_LOGGER.warn("BundleJob.job_process_bundle running at #{Time.now}")
+    RAILS_DEFAULT_LOGGER.warn("#{Time.now}: BundleJob.job_process_bundle running")
     @error_collection = []
    
     begin 
@@ -35,21 +35,21 @@ class BundleJob
       self.process_files(file_names)
 
     rescue Exception => e
-      @error_collection << "BUNDLE_JOB_EXCEPTION while finding files:  #{e}"
-      RAILS_DEFAULT_LOGGER.warn "BUNDLE_JOB_EXCEPTION while finding files:  #{e}"
+      @error_collection << "#{Time.now}: BUNDLE_JOB_EXCEPTION while finding files:  #{e}"
+      RAILS_DEFAULT_LOGGER.warn "#{Time.now}: BUNDLE_JOB_EXCEPTION while finding files:  #{e}"
     end
     
     if !@error_collection.blank?
-      RAILS_DEFAULT_LOGGER.warn("BundleJob.job_process_bundle finished with errors at #{Time.now}")
+      RAILS_DEFAULT_LOGGER.warn("#{Time.now}: BundleJob.job_process_bundle finished with errors")
       error_string = "BUNDLE JOB PROCESSING: the following errors were logged:\n %s" % [@error_collection.join("\n")]
       @error_collection = []
       raise error_string
     end
-    RAILS_DEFAULT_LOGGER.warn("BundleJob.job_process_bundle finished at #{Time.now}")
+    RAILS_DEFAULT_LOGGER.warn("#{Time.now}: BundleJob.job_process_bundle finished")
   end
   
   def self.process_files(file_names)
-    RAILS_DEFAULT_LOGGER.warn("BundleJob.job_process_files started at #{Time.now}")
+    RAILS_DEFAULT_LOGGER.warn("#{Time.now}: BundleJob.job_process_files started")
     
     begin
       file_names.each do |file_name|
@@ -66,10 +66,10 @@ class BundleJob
           end
           self.extract(file_path_and_name,  dir_path) 
           self.archive(file_path_and_name,  ARCHIVE_PATH) #archive the file to the /archive directory
-          RAILS_DEFAULT_LOGGER.warn("BundleJob beginng work on extracted #{file_name}")
+          RAILS_DEFAULT_LOGGER.warn("#{Time.now}: BundleJob beginng work on extracted #{file_name}")
           
         else
-          RAILS_DEFAULT_LOGGER.warn("BundleJob beginng work on directory #{file_name}")
+          RAILS_DEFAULT_LOGGER.warn("#{Time.now}: BundleJob beginng work on directory #{file_name}")
           dir_path = file_path_and_name
         end
         
@@ -79,22 +79,22 @@ class BundleJob
             Dir.delete(dir_path)
             delete_oldest_file_from_archive
           rescue Exception => e
-            @error_collection << "BUNDLE_JOB_EXCEPTION while processing a directory:  #{e}"
-            RAILS_DEFAULT_LOGGER.warn "BUNDLE_JOB_EXCEPTION while processing a directory:  #{e}"
+            @error_collection << "#{Time.now}: BUNDLE_JOB_EXCEPTION while processing a directory:  #{e}"
+            RAILS_DEFAULT_LOGGER.warn "#{Time.now}: BUNDLE_JOB_EXCEPTION while processing a directory:  #{e}"
           end
         elsif file_name.include?(".xml")
           # @error_collection << "Found a random xml file in the bundle dir:  #{file_name}"
-          RAILS_DEFAULT_LOGGER.warn "Found a random xml file in the bundle dir:  #{file_name}"
+          RAILS_DEFAULT_LOGGER.warn "#{Time.now}: Found a random xml file in the bundle dir:  #{file_name}"
           # process a single XML file here, sometime
         end
         
       end
     rescue Exception => e
-      @error_collection << "BUNDLE_JOB_EXCEPTION in process_files:  #{e}"
-      RAILS_DEFAULT_LOGGER.warn "BUNDLE_JOB_EXCEPTION in process_files:  #{e}"
+      @error_collection << "#{Time.now}: BUNDLE_JOB_EXCEPTION in process_files:  #{e}"
+      RAILS_DEFAULT_LOGGER.warn "#{Time.now}: BUNDLE_JOB_EXCEPTION in process_files:  #{e}"
     end
     
-    RAILS_DEFAULT_LOGGER.warn("BundleJob.job_process_files finished at #{Time.now}")
+    RAILS_DEFAULT_LOGGER.warn("#{Time.now}: BundleJob.job_process_files finished")
     
   end
     
@@ -135,8 +135,8 @@ class BundleJob
         #delete xml file
         File.delete(xml_file_path_and_name)
       rescue Exception => e
-        @error_collection << "BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_path_and_name}: #{e}"
-        RAILS_DEFAULT_LOGGER.warn "BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_path_and_name}: #{e}"
+        @error_collection << "#{Time.now}: BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_path_and_name}: #{e}"
+        RAILS_DEFAULT_LOGGER.warn "#{Time.now}: BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_path_and_name}: #{e}"
       end
     end
   end
