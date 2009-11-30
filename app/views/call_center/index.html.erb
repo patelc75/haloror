@@ -96,6 +96,8 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       <div class="col-150" id="false_alarm_<%=event.id%>">
       	<% if action = event.false_alarm? %>
 		  <b>False Alarm</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
+		<% elsif action = event.real_alarm? %>
+		  <b>Real Alarm</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
       	<% elsif action = event.test_alarm? %>
 		  Marked <b>Test</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>		  
 		<% elsif action = event.non_emerg_panic? %>
