@@ -1,7 +1,7 @@
 class CallListController < ApplicationController
 
   #before_filter :authenticate_admin_operator?, :except => 'show'
-  before_filter :authenticate_admin_halouser_caregiver_operator_sales?, :only => 'show'
+  before_filter :authenticate_admin_halouser_caregiver_operator_sales_installer?, :only => 'show'
   
   def recently_activated
     
@@ -13,7 +13,7 @@ class CallListController < ApplicationController
       @user = User.find(params[:id])
       get_caregivers(@user)
       groups = @user.group_memberships
-      unless((@user.id == current_user.id) || current_user.patients.include?(@user) || current_user.is_super_admin? || current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups) || current_user.is_sales_of_any?(groups))    
+      unless((@user.id == current_user.id) || current_user.patients.include?(@user) || current_user.is_super_admin? || current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups) || current_user.is_sales_of_any?(groups) || current_user.is_installer_of_any?(groups))    
         redirect_to :action => 'unauthorized', :controller => 'security'
       end
     else

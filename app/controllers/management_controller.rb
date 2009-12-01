@@ -1,6 +1,7 @@
 class ManagementController < ApplicationController
   
-  before_filter :authenticate_admin?
+  before_filter :authenticate_admin?, :except => 'issue'
+  before_filter :authenticate_admin_installer?, :only => 'issue'
   
   def mgmt_cmds
     @type = 'mgmt_cmds'
