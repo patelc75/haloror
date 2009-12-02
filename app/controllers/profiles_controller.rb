@@ -90,7 +90,7 @@ class ProfilesController < ApplicationController
   end
   
   def new_caregiver_profile
-	@removed_caregivers = []   
+	@removed_caregivers = []
     current_user.caregivers.each do |caregiver|
       if caregiver
         caregiver.roles_users.each do |roles_user|
@@ -101,7 +101,7 @@ class ProfilesController < ApplicationController
       end
     end
     get_caregivers(current_user)
-    @max_position = get_max_caregiver_position(current_user)
+    @max_position = User.get_max_caregiver_position(current_user)
     @user = User.new 
     @profile = Profile.new    	
   end
@@ -110,7 +110,7 @@ class ProfilesController < ApplicationController
   	
   	@user = User.new(params[:user])
     @profile = Profile.new(params[:profile])
-   
+  
     	User.transaction do 
     		@user.email = params[:email]
     		@user.is_new_caregiver = true
@@ -178,7 +178,7 @@ class ProfilesController < ApplicationController
     end
   end
   def update_caregiver_profile
-  	
+
     sent = false
     user = User.find(params[:user_id])
     @profile = Profile.find(params[:id])
@@ -197,7 +197,7 @@ class ProfilesController < ApplicationController
     
       if @profile.update_attributes!(params[:profile])
       if((current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)) and user.is_halouser?)
-        group = Group.find_by_name('SafetyCare')
+        group = Group.find_by_name('safety_care')
         if(params[:opt_out_call_center].blank?)
           user.is_halouser_of group
         elsif(user.is_halouser_of? group)

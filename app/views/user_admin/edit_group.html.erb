@@ -15,6 +15,7 @@
   	<option value="">Select</option>
   	<option value="reseller" <%if @group.sales_type == 'reseller'%>selected<%end%>>Reseller</option>
   	<option value="retailer" <%if @group.sales_type == 'retailer'%>selected<%end%>>Retailer</option>
+  	<option value="call_center" <%if @group.sales_type == 'call_center'%>selected<%end%>>call_center</option>
   </select>
   <br><br>
   <%=submit_tag 'Save Group'%>

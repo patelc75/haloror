@@ -158,11 +158,14 @@ class UserAdminController < ApplicationController
       if(Group.find_by_name(group_name).blank?)
         @group = Group.create(:name => group_name,:description => params[:description])
         if @group.valid?
+        	HALO_ROLES.each do |role|
+        		Role.create(:name => role,:authorizable_type => 'Group',:authorizable_id => @group.id)
+        	end
         	@success = true
         	@message = "Group(#{group_name}) Added"
         else
         	@success = false
-        	@message = "Group Name is not valid. It should contains only lowercase characters or numeric values."
+        	@message = "Group Name is not valid. It should contains only lowercase characters  numeric values and underscore."
         end
       else
         @success = false

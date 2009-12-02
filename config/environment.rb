@@ -133,6 +133,8 @@ Time::DATE_FORMATS[:time_date] = "%I:%M%p on %a %b %d,%Y" #03:52PM on Tue Dec 25
 Time::DATE_FORMATS[:time_date_timezone] = "%I:%M%p %Z on %a %b %d, %Y" #03:52PM CST on Tue Dec 25, 2007
 Time::DATE_FORMATS[:timezone] = "%Z" #CST
 
+HALO_ROLES = ['installer','operator','moderator','sales','admin']
+
 #Rufus-related constants
 GATEWAY_OFFLINE_TIMEOUT=20
 GATEWAY_OFFLINE_TIMEOUT_MARGIN=0.10
@@ -213,7 +215,7 @@ INSTALLATION_SERIAL_NUMBERS_ENTERED_ID=27
 INSTALLATION_SERIAL_NUMBERS_ENTERED_FAILED_ID=28
 REGISTRATION_TIMEOUT_ID=29
 DIAL_UP_ARCHIVE_FILES_TO_KEEP_MIN=2
-EMERGENCY_GROUPS=['EMS', 'SafetyCare']
+EMERGENCY_GROUPS=['EMS', 'safety_care']
 ALERTS_ENABLED_BY_DEFAULT=['BatteryCritical']
 BATTERY_REMINDER_POLL_RATE='15m'
 BATTERY_REMINDER_TWO = 7200     #2 hours

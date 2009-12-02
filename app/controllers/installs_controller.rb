@@ -4,41 +4,6 @@ class InstallsController < ApplicationController
   include ActionView::Helpers::TagHelper
   include RedboxHelper
   
-  def add_caregiver
-    init_devices_user
-    if(!params[:caregiver_email].blank?)
-      @caregiver = User.new
-      @caregiver.email = params[:caregiver_email]
-      @caregiver.is_new_caregiver = true
-      @caregiver[:is_caregiver] =  true
-      @caregiver.save!
-      profile = Profile.create(:user_id => @caregiver.id)
-    
-      role = @caregiver.has_role 'caregiver', @user
-      @roles_user = @user.roles_user_by_caregiver(@caregiver)
-    
-      RolesUsersOption.create(:roles_user_id => @roles_user.id, 
-                              :position => get_max_caregiver_position(@user), 
-                              :active => 0)
-      #redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
-      UserMailer.deliver_caregiver_email(@caregiver, @user)
-      @caregiver_added = @caregiver
-    else
-      flash[:warning] = "Email Required"
-    end
-    if @caregiver_added
-      launcher = launch_remote_redbox(:url =>  {  :action => 'add_caregiver', :controller => 'installs', 
-                                       :email => @caregiver.email,
-                                       :self_test_session_id => @self_test_session_id, :user_id => @user.id,
-                                       :gateway_id => @gateway_id, :strap_id => @strap_id
-                                    }, 
-                           :html => { :method => :get, :complete => '' } )
-      render(:update) do |page|
-        page.replace_html 'install_wizard_launch', launcher
-      end
-    end
-  end
-  
   def stop_wizard
     init_devices_user
     launcher = new_remote_redbox('install_wizard_complete')
@@ -306,131 +271,8 @@ class InstallsController < ApplicationController
     
   end
   
-  def install_wizard_registration_progress
-    init_devices_user
-    message = 'Registering'
-    self_test_step = check_registered()
-    #self_test_step = false
-    if self_test_step
-      session[:progress_count][:register] = nil
-      message = self_test_step.self_test_step_description.description
-      render_update_success('registered_div_id', message, 'updateCheckRegistration', 'updateCheckSelfTestGateway', 'registered_check', 'update_percentage', REGISTRATION_PERCENTAGE, self_test_step.timestamp - session[:self_test_time_created])
-    elsif check_registration_timeout?
-      session[:progress_count][:register] = nil
-      step = create_self_test_step(REGISTRATION_TIMEOUT_ID)
-      @self_test_step = step
-      @self_test_step_id = step.id
-      message = 'Registration timed out.<br><br>The chest strap/belt clip wearer is either out of range of the gateway OR in low power mode. <br><br>If the chest strap/belt clip has been unplugged for more than 15 miutes, then press the panic button. <br><br> OR <br><br>If the chest strap/belt clip wearer is out of range of the gateway, please try to lay the antennae flat or try to move the gateway to another position.  <br><br> Once the strap is out of low power mode or back in range, the PAN LED on the gateway will turn green in approximately 1 minute. Please ensure that the WAN and PAN LEDs are green on the gateway and then restart the wizard.'
-      render_update_timeout('registered_div_id', message, 'updateCheckRegistration', 'install_wizard_launch')
-    else
-      render_update_message('registered_div_id', message, :register)
-    end
-  end
-  
-  
-  def install_wizard_gateway_progress
-    init_devices_user
-    message = 'Gateway Self Test'
-    battery_msg = check_battery_critical?
-    if !battery_msg
-      self_test_step = check_gateway_self_test()
-      if self_test_step
-        session[:progress_count][:gateway] = nil
-        previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{REGISTRATION_COMPLETE_ID}")
-        message = self_test_step.self_test_step_description.description
-        render_update_success('gateway_div_id', message, 'updateCheckSelfTestGateway', 'updateCheckSelfTestChestStrap', 
-                              'self_test_gateway_check', 'update_percentage', GATEWAY_SELF_TEST_PERCENTAGE, self_test_step.timestamp - previous_step.timestamp)
-      elsif check_gateway_timeout?
-        session[:progress_count][:gateway] = nil
-        step = create_self_test_step(SELF_TEST_GATEWAY_TIMEOUT_ID)
-        @self_test_step_id = step.id
-        message = "Please check your power and ethernet connection on your gateway."
-        clear_session_data
-        render_update_timeout('gateway_div_id', message, 'updateCheckSelfTestGateway', 'install_wizard_launch')
-      elsif session[:halo_check_gateway_self_test_result] && !session[:halo_check_gateway_self_test_result].result
-        step = create_self_test_step(SELF_TEST_GATEWAY_FAILED_ID)
-        @self_test_step_id = step.id
-        message = "Gateway Self Test failed"
-        render_update_failure('gateway_div_id', message, 'updateCheckSelfTestGateway', 'install_wizard_launch')
-      else
-        render_update_message('gateway_div_id', message, :gateway)
-      end
-    else
-      render_update_battery_critical('battery_critical_div_id', battery_msg, 'updateCheckSelfTestGateway')
-    end
-  end
-  
-  def install_wizard_chest_strap_progress
-    init_devices_user
-    message = 'Chest Strap/Belt Clip Self Test'
-    battery_msg = check_battery_critical?
-    if !check_battery_critical?
-    self_test_step = check_chest_strap_self_test()
-      if self_test_step
-        session[:progress_count][:chest_strap] = nil
-        previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_GATEWAY_COMPLETE_ID}")
-        message = self_test_step.self_test_step_description.description
-        render_update_success('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'updateCheckSelfTestPhone', 
-                              'self_test_chest_strap_check', 'update_percentage', CHEST_STRAP_SELF_TEST_PERCENTAGE, self_test_step.timestamp - previous_step.timestamp)
-      elsif check_chest_strap_timeout?
-        session[:progress_count][:chest_strap] = nil
-        step = create_self_test_step(SELF_TEST_CHEST_STRAP_TIMEOUT_ID)
-        @self_test_step_id = step.id
-        message = "Self Test Chest Strap/Belt Clip timed out."
-        clear_session_data
-        render_update_timeout('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'install_wizard_launch')
-      elsif session[:halo_check_chest_strap_self_test_result] && !session[:halo_check_chest_strap_self_test_result].result
-        step = create_self_test_step(SELF_TEST_CHEST_STRAP_FAILED_ID)
-        @self_test_step_id = step.id
-        message = "Self Test Chest Strap/Belt Clip failed.  To reset your chest strap/belt clip please plug it in and hold panic button for 7 seconds."
-        render_update_failure('chest_strap_div_id', message, 'updateCheckSelfTestChestStrap', 'install_wizard_launch')
-      else
-        render_update_message('chest_strap_div_id', message, :chest_strap)
-      end
-    else
-      render_update_battery_critical('battery_critical_div_id', battery_msg, 'updateCheckSelfTestChestStrap')
-    end
-  end
-  
   def flash_install_upgrade
     
-  end
-  
-  
-  def install_wizard_phone_progress
-    init_devices_user
-    message = 'Phone Self Test'
-    battery_msg = check_battery_critical?
-    if !check_battery_critical?
-      self_test_step = check_phone_self_test()
-      if self_test_step
-        session[:progress_count][:phone] = nil
-        previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_CHEST_STRAP_COMPLETE_ID}")
-        duration = 0
-        if((self_test_step.timestamp - previous_step.timestamp) > 0)
-          duration = self_test_step.timestamp - previous_step.timestamp
-        end
-        message = self_test_step.self_test_step_description.description
-        render_update_success('phone_div_id', message, 'updateCheckSelfTestPhone', 'updateCheckHeartrate', 
-                              'self_test_phone_check', 'update_percentage', PHONE_SELF_TEST_PERCENTAGE, duration)
-      elsif check_phone_timeout?
-        session[:progress_count][:phone] = nil
-        step = create_self_test_step(SELF_TEST_PHONE_TIMEOUT_ID)
-        @self_test_step_id = step.id
-        message = "Self Test of phone line timed out.  Please use a regular phone to check for a dial tone and plug the phone line back into the gateway.<br><br>You can opt out of the phone line backup. Please be aware that opting out disables the backup if your internet connection is temporarily down.<br><br><button onclick=\"javascript:continueWithoutPhone(" + @self_test_step_id.to_s + ");\" >Continue without Phone Backup</button><br><br>OR<br><br>You can try again by restarting the wizard:"
-        # clear_session_data
-        render_update_timeout('phone_div_id', message, 'updateCheckSelfTestPhone', 'install_wizard_launch')
-      elsif session[:halo_check_phone_self_test_result] && !session[:halo_check_phone_self_test_result].result
-        step = create_self_test_step(SELF_TEST_PHONE_FAILED_ID)
-        @self_test_step_id = step.id
-        message = "Self Test of phone line failed.<br><br>You can opt out of the phone line backup. Please be aware that opting out disables the backup if your internet connection is temporarily down.<br><br><button onclick=\"javascript:continueWithoutPhone(" + @self_test_step_id.to_s + ");\" >Continue without Phone Backup</button><br><br>OR<br><br>You can try again by restarting the wizard:"
-        render_update_failure('phone_div_id', message, 'updateCheckSelfTestPhone', 'install_wizard_launch')
-      else
-        render_update_message('phone_div_id', message, :phone)
-      end
-    else
-      render_update_battery_critical('battery_critical_div_id', battery_msg, 'updateCheckSelfTestPhone')
-    end
   end
   
   def failure_notice
@@ -468,38 +310,7 @@ class InstallsController < ApplicationController
       render_update_battery_critical('battery_critical_div_id', battery_msg, 'updateCheckStrapFastened')
     end
   end
-  
-  def install_wizard_heartrate_progress
-    init_devices_user
-    message = 'Detecting Heartrate'
-    battery_msg = check_battery_critical?
-    if !check_battery_critical?
-      self_test_step = check_heartrate()
-      if self_test_step
-        session[:progress_count][:heartrate] = nil
-        previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_PHONE_COMPLETE_ID}")
-         unless previous_step
-            previous_step = @self_test_session.self_test_steps.find(:first, :conditions => "self_test_step_description_id = #{SELF_TEST_CHEST_STRAP_COMPLETE_ID}")
-          end
-        message = self_test_step.self_test_step_description.description
-        render_update_success('heartrate_div_id', message, 'updateCheckHeartrate', nil, 
-                              'heartrate_check', 'update_percentage', HEARTRATE_DETECTED_PERCENTAGE, self_test_step.timestamp - previous_step.timestamp, 'phone_test_complete', 'install_wizard_launch')
-        
-      elsif check_heartrate_timeout?
-        session[:progress_count][:heartrate] = nil
-        step = create_self_test_step(HEARTRATE_TIMEOUT_ID)
-        @self_test_step_id = step.id
-        message = "Heartrate Detection timed out. To reset your chest strap please plug it in and hold panic button for 7 seconds.  Please put on the chest strap and rerun the Installation Wizard."
-        clear_session_data
-        render_update_timeout('heartrate_div_id', message, 'updateCheckHeartrate', 'install_wizard_launch')
-      else
-        render_update_message('heartrate_div_id', message, :heartrate)
-      end
-    else
-      render_update_battery_critical('battery_critical_div_id', battery_msg, 'updateCheckHeartrate')
-    end
-  end
-  
+    
   def phone_test_complete
     init_devices_user
     @battery = Battery.find(:first, :conditions => "device_id = #{@strap.id} AND timestamp >= '#{@self_test_session.created_at.to_s}'", :order => 'timestamp desc')  
@@ -944,12 +755,5 @@ class InstallsController < ApplicationController
     self_test_step.notes = params[:notes]
     self_test_step.save!
   end
-  
-  def get_max_caregiver_position(user)
-    get_caregivers(user)
-    @caregivers.size + 1
-  end
-  
-
   
 end

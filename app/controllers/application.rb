@@ -91,22 +91,7 @@ class ApplicationController < ActionController::Base
     @user = user
     @caregivers = user.caregivers_sorted_by_position
   end
-  
-  def get_max_caregiver_position(user)
-    #get_caregivers(user)
-    #@caregivers.size + 1  #the old method would not work if a position num was skipped
-    max_position = 1
-    user.caregivers.each do |caregiver|
-      roles_user = user.roles_user_by_caregiver(caregiver)
-      if opts = roles_user.roles_users_option
-        if opts.position >= max_position
-          max_position = opts.position + 1
-        end
-      end
-    end
-    return max_position    
-  end
-  
+
   private
 
   def set_user_time_zone
@@ -183,6 +168,12 @@ class ApplicationController < ActionController::Base
     end
     true
   end
+  def authenticate_admin_halouser_caregiver_operator_sales_installer?
+    unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_halouser? || current_user.is_caregiver? || current_user.is_operator? || current_user.is_sales? || current_user.is_installer?)
+      return redirect_to('/login')
+    end
+    true
+  end
   def authenticate_admin_operator?
     unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_operator?)
       return redirect_to('/login')
@@ -213,6 +204,13 @@ class ApplicationController < ActionController::Base
   end
   def authenticate_admin?
     unless logged_in? && (current_user.is_admin? || current_user.is_super_admin?)
+      return redirect_to('/login')
+    end
+    true
+  end
+  
+  def authenticate_admin_installer?
+  	unless logged_in? && (current_user.is_admin? || current_user.is_super_admin? || current_user.is_installer?)
       return redirect_to('/login')
     end
     true

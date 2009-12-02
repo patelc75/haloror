@@ -49,7 +49,7 @@ class UsersController < ApplicationController
       	  subscriber_user_id = senior_user_id
       	else
     	    if params[:users][:add_caregiver] != "1"  #subscriber will also be a caregiver
-      	    populate_caregiver(params[:email],params[:user_id].to_i,nil,nil,params[:profile]) #sets up @user
+      	    @user = User.populate_caregiver(params[:email],params[:user_id].to_i,nil,nil,params[:profile]) #sets up @user
   	  	  else  #subscriber will not be a caregiver
   	  	    @user = User.new
       		  @user.email = params[:email]
@@ -72,14 +72,15 @@ class UsersController < ApplicationController
   	  UserMailer.deliver_signup_notification_halouser(@user,halouser)
     end
 
-    rescue Exception => e
-  	RAILS_DEFAULT_LOGGER.warn("ERROR in create_subscriber, #{e}")
-  	RAILS_DEFAULT_LOGGER.debug(e.backtrace.join("\n"))
-  	if request.post?
-  	  render :action => 'credit_card_authorization'
-    else
-    	@senior = User.find(params[:id])
-    end
+#    rescue Exception => e
+#  	RAILS_DEFAULT_LOGGER.warn("ERROR in create_subscriber, #{e}")
+#  	RAILS_DEFAULT_LOGGER.debug(e.backtrace.join("\n"))
+#  	if request.post?
+#  		@senior_user = @senior
+#  	  render :action => 'credit_card_authorization'
+#    else
+#    	@senior = User.find(params[:id])
+#    end
   end
 
   def signup_info
@@ -247,7 +248,7 @@ class UsersController < ApplicationController
           
           @user.is_halouser_of Group.find_by_name(@group)
           if(params[:opt_out_call_center].blank?)
-            @user.is_halouser_of Group.find_by_name('SafetyCare')
+            @user.is_halouser_of Group.find_by_name('safety_care')
           end
           
           redirect_to :controller => 'users', :action => 'credit_card_authorization',:user_id => @user.id
@@ -306,7 +307,18 @@ class UsersController < ApplicationController
   
   def init_user
     @user = User.find_by_activation_code(params[:activation_code])
-    session[:senior] = params[:senior]
+    if !@user.login.blank? or @user.login != ""
+    	@user.activation_code = nil
+    	@user.activated_at = Time.now.utc
+    	@user.save
+    	senior = User.find params[:senior]
+    	role_user = senior.roles_user_by_caregiver(@user)
+    	RolesUsersOption.update(role_user.roles_users_option.id, {:active => 1,:position => User.get_max_caregiver_position(senior)})
+      redirect_to('/login')
+    else
+      session[:senior] = params[:senior]	
+    end
+    
   end
   
   def update_user
@@ -391,7 +403,7 @@ class UsersController < ApplicationController
       end
     end
     
-    @max_position = get_max_caregiver_position(senior)
+    @max_position = User.get_max_caregiver_position(senior)
     
     @password = random_password
     
@@ -431,7 +443,7 @@ class UsersController < ApplicationController
     @user = User.find(params[:user_id])
     refresh_caregivers(@user)
   end
-  
+=begin  
   def populate_caregiver(email,patient_id=nil, position = nil,login = nil,profile_hash = nil)
   	existing_user = User.find_by_email(email)
   	if !login.nil? and login != ""
@@ -462,7 +474,7 @@ class UsersController < ApplicationController
   		patient = User.find(patient_id)
 
   		if position.nil?
-  		  position = get_max_caregiver_position(patient)
+  		  position = User.get_max_caregiver_position(patient)
   		end
   		
   		role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return nil
@@ -482,10 +494,10 @@ class UsersController < ApplicationController
   		end
     end
   end
-  
+=end  
   def create_caregiver
     User.transaction do  	  
-	    populate_caregiver(params[:user][:email],params[:user_id].to_i,params[:position],params[:user][:login])
+	    User.populate_caregiver(params[:user][:email],params[:user_id].to_i,params[:position],params[:user][:login])
     end
       
     render :partial => 'caregiver_email'
@@ -502,7 +514,7 @@ class UsersController < ApplicationController
    #render :partial => 'caregiver_form'
   
    #new code with if else and created a new partial existing_caregiver_form and removed <% if @add_existing %> function in  caregiver_form   
-    @max_position = get_max_caregiver_position(@user)
+    @max_position = User.get_max_caregiver_position(@user)
      if (@add_existing == true )
          render :partial => 'existing_caregiver_form'
          else
@@ -537,7 +549,7 @@ class UsersController < ApplicationController
     
     opt = RolesUsersOption.find(params[:id])
     opt.removed = false
-    opt.position = get_max_caregiver_position(user)
+    opt.position = User.get_max_caregiver_position(user)
     opt.save
     
     refresh_caregivers(user)
@@ -556,14 +568,14 @@ class UsersController < ApplicationController
     end
     
     opt.active = true
-    opt.position = get_max_caregiver_position(@patient)
+    opt.position = User.get_max_caregiver_position(@patient)
     #opt.position = 1
     opt.removed = false
     opt.save
     
     refresh_caregivers(@patient)
   end
-  
+=begin  
   def update_from_position(position, roles_user_id, user_id)
     caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and roles_user_id = #{roles_user_id}")
     
@@ -572,7 +584,7 @@ class UsersController < ApplicationController
       caregiver.save
     end
   end
-  
+=end  
   def random_password
     Digest::SHA1.hexdigest("--#{Time.now.to_s}--")[0,6]
   end

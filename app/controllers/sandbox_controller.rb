@@ -1,3 +1,4 @@
+<<<<<<< HEAD:app/controllers/sandbox_controller.rb
 class SandboxController < ApplicationController
   #layout "application", :except => "chart"
   def ruby_debug

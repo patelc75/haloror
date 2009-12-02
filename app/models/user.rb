@@ -358,7 +358,21 @@ class User < ActiveRecord::Base
   end
   
   def group_recurring_charge
-  	self.group_memberships_by_role('halouser').first.recurring_charges.length > 0 ? self.group_memberships_by_role('halouser').first.recurring_charges.first.group_charge : AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL
+  	#self.group_memberships_by_role('halouser').first.recurring_charges.length > 0 ? self.group_memberships_by_role('halouser').first.recurring_charges.first.group_charge : AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL
+  	
+  	group_charge = 0;
+  	
+  	self.is_halouser_for_what.each do |group|
+  		debugger
+  		if !group.nil? and group.sales_type != 'call_center'
+  			if group.recurring_charges.length > 0
+  			  group_charge = group.recurring_charges.first.group_charge
+  			end
+  		end
+  	end
+  	
+  	group_charge == 0 ? AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL : group_charge
+  	
   end
   
   def is_moderator_of_any?(groups)
@@ -615,6 +629,83 @@ class User < ActiveRecord::Base
         script = scripts[key]
         return script
   end 
+  
+  def self.populate_caregiver(email,senior_id=nil, position = nil,login = nil,profile_hash = nil)
+  	existing_user = User.find_by_email(email)
+  	if !login.nil? and login != ""
+  	  @user = User.find_by_login(login)
+  	elsif !existing_user.nil? 
+  	  @user = existing_user
+  	  @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+	else
+  	  @user = User.new
+  	  @user.email = email
+  	end
+  	
+  	if !@user.email.blank?
+		@user.is_new_caregiver = true
+  		@user[:is_caregiver] =  true
+  		@user.save!
+
+  		if @user.profile.nil?
+  		  if profile_hash.nil?
+  		    profile = Profile.new(:user_id => @user.id)
+  		  else
+  		  	profile = Profile.new(profile_hash)
+  		  end
+  		  profile[:is_new_caregiver] = true
+  		  profile.save!
+  		  @user.profile = profile
+  		end
+  		
+  		senior = User.find(senior_id)
+
+  		if position.nil?
+  		  position = self.get_max_caregiver_position(senior)
+  		end
+  		
+  		role = @user.has_role 'caregiver', senior #if 'caregiver' role already exists, it will return nil
+  		caregiver = @user
+  		@roles_user = senior.roles_user_by_caregiver(caregiver)
+
+  		self.update_from_position(position, @roles_user.role_id, caregiver.id)
+
+  		#enable_by_default(@roles_user)      
+  
+  		#if role.nil? then the roles_user does not exist already
+  		RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0) if !role.nil?
+  
+  		#if existing_user.nil?
+    	UserMailer.deliver_caregiver_email(caregiver, senior)
+  		#end
+    end
+    @user
+  end
+  
+  def self.get_max_caregiver_position(user)
+    #get_caregivers(user)
+    #@caregivers.size + 1  #the old method would not work if a position num was skipped
+    max_position = 1
+    user.caregivers.each do |caregiver|
+      roles_user = user.roles_user_by_caregiver(caregiver)
+      if opts = roles_user.roles_users_option
+        if opts.position >= max_position
+          max_position = opts.position + 1
+        end
+      end
+    end
+    return max_position    
+  end
+  
+  def self.update_from_position(position, roles_user_id, user_id)
+    caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and roles_user_id = #{roles_user_id}")
+    
+    caregivers.each do |caregiver|
+      caregiver.position+=1
+      caregiver.save
+    end
+  end
+  
   def get_call_halo_admin()
       info = <<-eos	
         <div style="font-size: x-large"><font color="white">"Call Halo Admin in <a href="/call_center/faq">FAQ</a>."</div>

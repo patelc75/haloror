@@ -23,7 +23,7 @@ class DeviceAlert < ActiveRecord::Base
   def self.notify_caregivers(event)
     CriticalMailer.deliver_device_event_caregiver(event)
   end
-  
+
   def self.notify_call_center_and_partners(event)
     groups = event.user.is_halouser_for_what
     groups.each do |group|
