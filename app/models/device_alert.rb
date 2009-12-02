@@ -27,26 +27,28 @@ class DeviceAlert < ActiveRecord::Base
   def self.notify_call_center_and_partners(event)
     groups = event.user.is_halouser_for_what
     groups.each do |group|
-      model_string = (group.name.camelcase + "Client") if !group.nil?
-      begin
-        if event.user.profile
-          if !event.user.profile.account_number.blank?
-            model_string.constantize.alert(event.class.name, event.user.id, event.user.profile.account_number, event.timestamp) if !(defined?(model_string)).nil?        
+      if !group.nil? and group.sales_type == "call_center"
+        model_string = (group.name.camelcase + "Client")
+        begin
+          if event.user.profile
+            if !event.user.profile.account_number.blank?
+              model_string.constantize.alert(event.class.name, event.user.id, event.user.profile.account_number, event.timestamp)
+            else
+              CriticalMailer.deliver_monitoring_failure("Missing account number!", event)
+            end
           else
-            CriticalMailer.deliver_monitoring_failure("Missing account number!", event)
+            CriticalMailer.deliver_monitoring_failure("Missing user profile!", event)
           end
-        else
-          CriticalMailer.deliver_monitoring_failure("Missing user profile!", event)
+        rescue Exception => e
+          CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
+          UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::Exception:: #{e} : #{event.to_s}", e)
+        rescue Timeout::Error => e
+          CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
+          UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::Timeout::Error:: #{e} : #{event.to_s}", e)
+        rescue
+          CriticalMailer.deliver_monitoring_failure("UNKNOWN error", event)
+          UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::UNKNOWN::Error: #{event.to_s}")         
         end
-      rescue Exception => e
-        CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
-        UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::Exception:: #{e} : #{event.to_s}", e)
-      rescue Timeout::Error => e
-        CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
-        UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::Timeout::Error:: #{e} : #{event.to_s}", e)
-      rescue
-        CriticalMailer.deliver_monitoring_failure("UNKNOWN error", event)
-        UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::UNKNOWN::Error: #{event.to_s}")         
       end          
     end
   end  
