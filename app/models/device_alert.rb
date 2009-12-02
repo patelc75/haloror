@@ -46,7 +46,7 @@ class DeviceAlert < ActiveRecord::Base
       CriticalMailer.deliver_device_event_admin(event)
     else 
       begin
-        if event.user.is_halouser_of? Group.find_by_name('SafetyCare')
+        if event.user.is_halouser_of? Group.find_by_name('safety_care')
           if event.user.profile
             if !event.user.profile.account_number.blank?
             	#don't need to filter because safetycare filters by IP

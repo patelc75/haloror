@@ -91,22 +91,7 @@ class ApplicationController < ActionController::Base
     @user = user
     @caregivers = user.caregivers_sorted_by_position
   end
-  
-  def get_max_caregiver_position(user)
-    #get_caregivers(user)
-    #@caregivers.size + 1  #the old method would not work if a position num was skipped
-    max_position = 1
-    user.caregivers.each do |caregiver|
-      roles_user = user.roles_user_by_caregiver(caregiver)
-      if opts = roles_user.roles_users_option
-        if opts.position >= max_position
-          max_position = opts.position + 1
-        end
-      end
-    end
-    return max_position    
-  end
-  
+
   private
 
   def set_user_time_zone

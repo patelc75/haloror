@@ -5,29 +5,44 @@ class InstallerController < ApplicationController
   end
    
   def add_caregiver
+  	require 'digest/sha1'
     init_user_group
     init_devices_self_test_session
+    
     if(!params[:caregiver_email].blank?)
+    	User.populate_caregiver(params[:caregiver_email],@user.id)
+=begin
      User.transaction do
-      @caregiver = User.new
-      @caregiver.email = params[:caregiver_email]
+      active_caregiver = User.find_by_email(params[:caregiver_email])
+      @caregiver = active_caregiver
+      unless @caregiver
+        @caregiver = User.new
+        @caregiver.email = params[:caregiver_email]
+      else
+      	@caregiver.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+      end
       @caregiver.is_new_caregiver = true
       @caregiver[:is_caregiver] =  true
       @caregiver.save!
-      profile = Profile.new(:user_id => @caregiver.id)
-      profile[:is_new_caregiver] = true
-      profile.save!
+      unless active_caregiver
+        profile = Profile.new(:user_id => @caregiver.id)
+        profile[:is_new_caregiver] = true
+        profile.save!
+      end
       role = @caregiver.has_role 'caregiver', @user
+      unless active_caregiver
       @roles_user = @user.roles_user_by_caregiver(@caregiver)
     
       RolesUsersOption.create(:roles_user_id => @roles_user.id, 
-                              :position => get_max_caregiver_position(@user), 
+                              :position => User.get_max_caregiver_position(@user), 
                               :active => 0)
+	  end
       #redirect_to "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
       UserMailer.deliver_caregiver_email(@caregiver, @user)
       @caregiver_added = @caregiver
       params[:email] = params[:caregiver_email]
      end
+=end
     else
       flash[:warning] = "Email Required"
     end
@@ -1096,9 +1111,5 @@ class InstallerController < ApplicationController
     self_test_step.notes = params[:notes]
     self_test_step.save!
   end
-  
-  def get_max_caregiver_position(user)
-    get_caregivers(user)
-    @caregivers.size + 1
-  end
+
 end
