@@ -31,11 +31,7 @@ class DeviceAlert < ActiveRecord::Base
         model_string = (group.name.camelcase + "Client")
         begin
           if event.user.profile
-            if !event.user.profile.account_number.blank?
-              model_string.constantize.alert(event.class.name, event.user.id, event.user.profile.account_number, event.timestamp)
-            else
-              CriticalMailer.deliver_monitoring_failure("Missing account number!", event)
-            end
+            model_string.constantize.alert(event.class.name, event.user.id, event.user.profile.account_number, event.timestamp)
           else
             CriticalMailer.deliver_monitoring_failure("Missing user profile!", event)
           end

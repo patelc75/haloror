@@ -28,17 +28,20 @@ class SafetyCareClient
   
   def self.alert(event_type,user_id,account_num,timestamp=Time.now)
     alarm_code = event_type_numeric(event_type)
-
-    #don't need to filter because safetycare filters by IP
-    #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
+    
+    if !account_num.blank?
+      #don't need to filter because safetycare filters by IP
+      #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
       Timeout::timeout(2) {
         sock = TCPSocket.open(SAFETYCARE_ADDRESS, SAFETYCARE_PORT)
         sock.write("%s%s\r\n" % [account_num, alarm_code])
         response = sock.readline
         sock.close
       }
-    RAILS_DEFAULT_LOGGER.warn("refs #2224 SafetyCareClient:: "%s%s\r\n" % [account_num, alarm_code])
-    #end
+      RAILS_DEFAULT_LOGGER.warn("refs #2224 TCP alert sent | SafetyCareClient:: "%s%s\r\n" % [account_num, alarm_code])
+    else
+      UtilityHelper.log_message("SafetyCareClient.alert::Missing account number!")   
+    end
   end
 
   def event_type_numeric(event_type)
