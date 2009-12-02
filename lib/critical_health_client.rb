@@ -12,7 +12,7 @@ class CriticalHealthClient
   	time_format = timestamp.strftime("%Y-%m-%d|%H:%M:%S")
 
     Timeout::timeout(2) {
-      sock = TCPSocket.open(CRITICALHEALTH_ADDRESS, CRITICALHEALTH_COMMAND_PORT)
+      sock = TCPSocket.open(CRITICALHEALTH_ADDRESS, CRITICALHEALTH_EVENT_PORT)
       sock.write("event,%s,%s,%s\r\n" % [event_type, time_format, user_id])
       
       response = sock.readline
