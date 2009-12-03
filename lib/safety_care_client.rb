@@ -38,7 +38,7 @@ class SafetyCareClient
         response = sock.readline
         sock.close
       }
-      RAILS_DEFAULT_LOGGER.warn("refs #2224 TCP alert sent | SafetyCareClient:: "%s%s\r\n" % [account_num, alarm_code])
+      RAILS_DEFAULT_LOGGER.warn("SafetyCareClient::alert" + "%s%s\r\n" % [account_num, alarm_code])
     else
       UtilityHelper.log_message("SafetyCareClient.alert::Missing account number!")   
     end
