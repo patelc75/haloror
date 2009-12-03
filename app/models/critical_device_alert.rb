@@ -4,8 +4,8 @@ class CriticalDeviceAlert < DeviceAlert
   end
   
   def before_create
-  	self.timestamp_server = Time.now.utc
-  	self.call_center_pending = true
+    self.timestamp_server = Time.now.utc
+    self.call_center_pending = true
   end
   
   #for rspec
