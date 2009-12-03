@@ -38,15 +38,15 @@ class SafetyCareClient
         response = sock.readline
         sock.close
       }
-      RAILS_DEFAULT_LOGGER.warn("SafetyCareClient::alert" + "%s%s\r\n" % [account_num, alarm_code])
+      RAILS_DEFAULT_LOGGER.warn("SafetyCareClient::alert = " + "%s%s\r\n" % [account_num, alarm_code])
     else
       UtilityHelper.log_message("SafetyCareClient.alert::Missing account number!")   
     end
   end
 
-  def event_type_numeric(event_type)
+  def self.event_type_numeric(event_type)
     # FIXME: TODO: fill out these event types properly
-    case klass
+    case event_type
       when "Fall" then "001"
       when "Panic" then "002"
       when "GwAlarmButton" then "003"
