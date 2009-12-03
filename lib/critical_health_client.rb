@@ -18,7 +18,8 @@ class CriticalHealthClient
       response = sock.readline
       sock.close
     }
-    RAILS_DEFAULT_LOGGER.warn("refs #2224 CriticalHealthClient::" +  "event, %s, %s, %s\r\n" % [event_type, time_format, user_id])
+
+    RAILS_DEFAULT_LOGGER.warn("CriticalHealthClient::alert = " +  "event, %s, %s, %s\r\n" % [event_type, time_format, user_id])
   end
 
   def self.event_type_string(klass)
