@@ -59,6 +59,6 @@ class SandboxController < ApplicationController
   end
   
   def ruby_debug
-  	debugger		BundleJob.process_xml_file("C:/pgRails/rails_apps/master/haloror/dialup/H200000025_1258657698/H200000025_1258657676_2.xml")
+  	BundleJob.process_xml_file("dialup/H200000025_1258657676_2.xml")
   end
 end

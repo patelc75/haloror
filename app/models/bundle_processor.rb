@@ -14,11 +14,16 @@ class BundleProcessor
           if !value.blank?
             if value.class == Array
               value.each do |v|
-              	debugger
-                model.new(v).save!
+                obj = model.new(v)
+                if !obj.nil? #OscopeMsg.new does not return an object since it's not a simple object
+                  obj.save!
+                end
               end
             else
-              model.new(value).save!
+              obj = model.new(v)
+              if !obj.nil? #OscopeMsg.new does not return an object since it's not a simple objectd
+                obj.save!
+              end
             end
           end
         end
