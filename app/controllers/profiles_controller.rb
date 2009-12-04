@@ -91,7 +91,8 @@ class ProfilesController < ApplicationController
   
   def new_caregiver_profile
 	@removed_caregivers = []
-    current_user.caregivers.each do |caregiver|
+	@senior = User.find params[:user_id]
+    @senior.caregivers.each do |caregiver|
       if caregiver
         caregiver.roles_users.each do |roles_user|
           if roles_user.roles_users_option and roles_user.roles_users_option[:removed]
@@ -101,7 +102,7 @@ class ProfilesController < ApplicationController
       end
     end
     get_caregivers(current_user)
-    @max_position = User.get_max_caregiver_position(current_user)
+    @max_position = User.get_max_caregiver_position(@senior)
     @user = User.new 
     @profile = Profile.new    	
   end
@@ -137,7 +138,7 @@ class ProfilesController < ApplicationController
     			#render :action => 'new_caregiver_profile',:user_id => current_user
     			 raise "Invalid User"
     		end
-    	redirect_to :controller => 'call_list',:action => 'show',:id => current_user
+    	redirect_to :controller => 'call_list',:action => 'show',:id => params[:patient_id]
     		
 		end
 		

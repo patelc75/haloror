@@ -390,12 +390,12 @@ class UsersController < ApplicationController
   end
   
   def new_caregiver
-    senior = User.find(params[:user_id].to_i)    
+    @senior = User.find(params[:user_id].to_i)    
     
     @removed_caregivers = []
-    senior.caregivers.each do |caregiver|
+    @senior.caregivers.each do |caregiver|
       if caregiver
-        roles_user = senior.roles_user_by_caregiver(caregiver)
+        roles_user = @senior.roles_user_by_caregiver(caregiver)
         #caregiver.roles_users.each do |roles_user|
           if roles_user.roles_users_option and roles_user.roles_users_option[:removed]
             @removed_caregivers << caregiver
@@ -404,7 +404,7 @@ class UsersController < ApplicationController
       end
     end
     
-    @max_position = User.get_max_caregiver_position(senior)
+    @max_position = User.get_max_caregiver_position(@senior)
     
     @password = random_password
     
