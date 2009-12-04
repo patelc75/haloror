@@ -119,24 +119,26 @@ class BundleJob
     xml_file_names.each do |xml_file_name|
       begin
         xml_file_path_and_name = "#{dir_path}/#{xml_file_name}"
-        xml_string = File.read(xml_file_path_and_name)
-
-        bundle_hash = Hash.from_xml(xml_string) rescue nil
-        
-        unless bundle_hash.blank? || bundle_hash.nil? || xml_string.blank?
-          #puts("%s: %s" % [xml_file_name, bundle_hash['bundle'].keys.join(', ')])
-          bundle_hash.keys.each do |key|
-            unless bundle_hash[key].empty?
-              BundleProcessor.process(bundle_hash[key]) 
-            end
-          end
-        
-        end
+        self.process_xml_file(xml_file_path_and_name)
         #delete xml file
         File.delete(xml_file_path_and_name)
       rescue Exception => e
         @error_collection << "#{Time.now}: BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_path_and_name}: #{e}"
         RAILS_DEFAULT_LOGGER.warn "#{Time.now}: BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_path_and_name}: #{e}"
+      end
+    end
+  end
+  
+  def self.process_xml_file(xml_file_path_and_name)
+    xml_string = File.read(xml_file_path_and_name)
+    bundle_hash = Hash.from_xml(xml_string) rescue nil
+    
+    unless bundle_hash.blank? || bundle_hash.nil? || xml_string.blank?
+      #puts("%s: %s" % [xml_file_name, bundle_hash['bundle'].keys.join(', ')])
+      bundle_hash.keys.each do |key|
+        unless bundle_hash[key].empty?
+          BundleProcessor.process(bundle_hash[key]) 
+        end
       end
     end
   end
