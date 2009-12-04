@@ -34,8 +34,8 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
           gw_timeout = GwAlarmButtonTimeout.find(gw_timeout.id)
           if gw_timeout && gw_timeout.pending
             gw_timeout.update_attributes(:timestamp => Time.now)
-          	CriticalMailer.deliver_gw_alarm(gw_timeout)
-    		    Event.create_event(gw_timeout.user_id, GwAlarmButtonTimeout.class_name, gw_timeout.id, gw_timeout.timestamp)
+            CriticalMailer.deliver_gw_alarm(gw_timeout)
+            Event.create_event(gw_timeout.user_id, GwAlarmButtonTimeout.class_name, gw_timeout.id, gw_timeout.timestamp)
           end
         end
       end
