@@ -26,14 +26,14 @@ class CriticalHealthClient
     # FIXME: TODO: fill out these event types properly
     case klass
       when "Fall" then "FALL"
-      when "Panic" then "PANIC"
+      when "Panic" then "BUTTON"
       when "GwAlarmButton" then "GwAlarmButton"
       #when "CallCenterFollowUp" then "004"
       when "BatteryReminder" then "BatteryReminder"
-  	  when "StrapOff" then "StrapOff"
-  	  when "GatewayOfflineAlert" then "GatewayOfflineAlert"
-  	  when "DeviceUnavailableAlert" then "DeviceUnavailableAlert"	
+      when "StrapOff" then "StrapOff"
+      when "GatewayOfflineAlert" then "GatewayOfflineAlert"
+      when "DeviceUnavailableAlert" then "DeviceUnavailableAlert"	
       else "000"
-  	end
+    end
   end
 end
