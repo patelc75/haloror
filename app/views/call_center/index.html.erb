@@ -7,7 +7,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
 <div class="table">
   <div class="row header">
     <div class="col-75">
-      Event <br>Type
+      Event <br>Type <br>(Oscope Start Msg ID)
     </div>
 
     <div class="col-125">
@@ -32,7 +32,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
     </div>
     <% if is_admin %>
       <div class="col-125">
-        Oscope Start Msg ID
+        Call Center Response
       </div>
     <% end %>
   </div>
@@ -45,9 +45,16 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       <% else %>
       <div class="col-75">
         <%=event.event_type%>&nbsp;
+        <% if is_admin %>
+        <% if event.event_type == 'Fall' %>
+          <% oscope_start = OscopeStartMsg.find_by_timestamp_and_user_id(event.timestamp, event.user_id) %>
+          <% if oscope_start %>
+            <br>(<%= link_to ("#{oscope_start.id}", :controller => 'oscopes', :action => 'csv', :id => oscope_start.id) %>)
+          <% end %>
+        <% end %>
+      <% end %>
       </div>
       <% end %>
-
       <div class="col-125">
         <%= event.timestamp.in_time_zone.to_s(:date_time_seconds) %>
       </div>
@@ -112,25 +119,14 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
 		  <% end %>
 		<% end %>
       </div>
-      
-      <% if is_admin %>
-        <% if event.event_type == 'Fall' %>
-          <% oscope_start = OscopeStartMsg.find_by_timestamp_and_user_id(event.timestamp, event.user_id) %>
-          <% if oscope_start %>
-            <div class="col-125">
-            <%= link_to ("#{oscope_start.id}", :controller => 'oscopes', :action => 'csv', :id => oscope_start.id) %>
-            </div>
-          <% else %>
-            <div class="col-125">
-            &nbsp;
-            </div>
-          <% end %>
-        <% else %>
-          <div class="col-125">
-          &nbsp;
-          </div>
-        <% end %>
-      <% end %>
+      <div class="col-125" id="div_<%= event.id.to_s%>">
+      	<%if event.call_center_response.nil?%>
+      	<%= link_to_remote (image_tag("/images/calendar_date_select/calendar.gif", :size => "17x17", :border => 0), 
+:url => {:action => 'enter_call_center_response',:id => event.id })%>
+		<%else%>
+		<%= event.call_center_response.in_time_zone.to_s(:date_time_seconds)%>
+		<%end%>
+      </div>
         </div>
         <div id="notes_<%=event.id %>">
         </div>

@@ -374,6 +374,21 @@ class CallCenterController < ApplicationController
     @event = Event.find(params[:id])
     @session = @event.call_center_session
   end
+  
+  def call_center_response
+  	@event = Event.find(params[:id])
+  	@event.update_attributes(:call_center_response => params[:call_center_response])
+    render :update do |page|
+      page.replace_html 'div_' +@event.id.to_s, @event.call_center_response.in_time_zone.to_s(:date_time_seconds)
+    end
+  end
+  
+  def enter_call_center_response
+  	@event = Event.find(params[:id])
+    render :update do |page|
+      page.replace_html 'div_' +@event.id.to_s, :partial => 'enter_call_center_response'
+    end
+  end
   ###############################################
   private
   ###############################################

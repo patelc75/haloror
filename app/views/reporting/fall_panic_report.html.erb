@@ -46,6 +46,7 @@ require "digest"
   			<th bgcolor="#E1d1E1">Non<br> Emerg<br> Panics</th>
   			<th bgcolor="#E1d1E1">Un- <br>classified<br> Panics</th>
   			<th bgcolor="#E1d1E1">Panics<br> Specificity</th>
+  			<th bgcolor="#E1E1E1">Average<br>Response<br> Time</th>
   		</tr>
   		<%@group_stats.keys.sort.each {|key|%>
   			<tr align="center">
@@ -73,6 +74,13 @@ require "digest"
   				<td><% panic_specify = ((@real_panics.to_f + @non_emerg_panic.to_f) / ( @false_alarm_panic.to_f + @real_panics.to_f + @non_emerg_panic.to_f)) if @real_panics != 0%>
   				<%= (panic_specify * 100).round(1).to_s + '%' if panic_specify%>
   				</td>
+  				<td><%if @group_stats[key][:total_response] %>
+  					<%minutes = @group_stats[key][:total_response].round/60 %>
+  					<%@time_response = minutes.round * 60%>
+  					<%seconds = @group_stats[key][:total_response].round - @time_response%>
+  					<%=minutes.to_s + " mins " + seconds.to_s + " sec"%>
+  					<%end%>
+			    </td>
   			</tr>
 		<%}%>
 		<tr align = "center">
@@ -98,11 +106,13 @@ require "digest"
 			<%= (total_percentage * 100).round(1).to_s + '%' if total_percentage%>
 			<% end %>
 		</td>
+		<td></td>
 		</tr> 
   	</table><br>
 	<b><sup>*</sup></b>Total does not include safety_care and halo groups<br><br>
 	Formulas:<br> 
-	Falls Specificity = Real Falls / (Fall Alarm Falls + Real Falls)<br>
-	Panics Specificity = (Real Panics + Non Emerg Panics) / (Fall Alarm Panics + Real Panics + Non Emerg Panics)<br>
+	<li> Falls Specificity = Real Falls / (Fall Alarm Falls + Real Falls)</li>
+	<li> Panics Specificity = (Real Panics + Non Emerg Panics) / (Fall Alarm Panics + Real Panics + Non Emerg Panics)</li>
+	<li> Average response time does not include test falls and test panics</li>
   <%end%>
 </div>
