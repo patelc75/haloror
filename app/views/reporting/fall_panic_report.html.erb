@@ -19,7 +19,7 @@ require "digest"
   </table>
   </form>
   <br>	
-
+<%@total_response_time = 0 %>
   <%if @falls or @panics %>
   <br>
 <b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
@@ -75,9 +75,10 @@ require "digest"
   				<%= (panic_specify * 100).round(1).to_s + '%' if panic_specify%>
   				</td>
   				<td><%if @group_stats[key][:total_response] %>
-  					<%minutes = @group_stats[key][:total_response].round/60 %>
+  					<%response_time = @group_stats[key][:total_response].to_f / @group_stats[key][:total].to_f%>
+  					<%minutes = response_time.round/60 %>
   					<%@time_response = minutes.round * 60%>
-  					<%seconds = @group_stats[key][:total_response].round - @time_response%>
+  					<%seconds = response_time.round - @time_response%>
   					<%=minutes.to_s + " mins " + seconds.to_s + " sec"%>
   					<%end%>
 			    </td>
@@ -106,7 +107,16 @@ require "digest"
 			<%= (total_percentage * 100).round(1).to_s + '%' if total_percentage%>
 			<% end %>
 		</td>
-		<td></td>
+		<td>
+			<%if @group_totals[:total_response] != 0.0 %>
+			<%avg_response_time = @group_totals[:total_response].to_f / @group_totals[:total].to_f%>
+			<%@minutes = avg_response_time.round/60 %>
+			<%total_time = @minutes.round * 60%>
+			<%@seconds = avg_response_time.round - total_time%>
+			<%= @minutes.to_s + " mins " + @seconds.to_s + " sec"%>
+			<%end%>
+			
+		</td>
 		</tr> 
   	</table><br>
 	<b><sup>*</sup></b>Total does not include safety_care and halo groups<br><br>
