@@ -1,6 +1,6 @@
 <select name="firmware_upgrade">
   <option>Select Firmware</option>
-  <% FirmwareUpgrade.find(:all).each do |firmware| %>
+  <% FirmwareUpgrade.find(:all).sort_by { |firmware| firmware[:filename] }.each do |firmware| %>
     <option value="<%=firmware.id%>"><%=firmware[:filename]%> | <%=firmware.version%> </option>
   <% end %>
 </select>
