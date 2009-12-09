@@ -4,8 +4,6 @@ class MgmtResponsesController < RestfulAuthController
   def conditions_from_hash(response)
     conds = []
     if @@responses_cmds.has_key?("#{response}")
-      
-   
      @@responses_cmds["#{response}"].each do |cmd|
         conds << "cmd_type = '#{cmd}'"
       end
@@ -17,8 +15,6 @@ class MgmtResponsesController < RestfulAuthController
     else
       conds = "cmd_type = '#{response}'"
     end
-    
-
   end
   
   def create

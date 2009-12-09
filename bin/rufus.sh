@@ -4,7 +4,7 @@
 MODE=$1
 shift
 
-TASKS=${@:-task safetycare bundlejob reporting critical_alert}
+TASKS=${@:-task safetycare critical_alert bundlejob reporting critical_alert}
 
 RAILS_ENV=${RAILS_ENV:-production}
 export RAILS_ENV
