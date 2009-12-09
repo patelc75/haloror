@@ -110,7 +110,6 @@ class ManagementController < ApplicationController
     @pending_cmds = []
     
     request = params[:management_cmd_device] #from the issue commands form
-    
     if request[:cmd_type] == nil
       @success = false
       @message = 'Please select a command type.'
@@ -119,7 +118,7 @@ class ManagementController < ApplicationController
         cmd = {}
         cmd[:cmd_type] = request[:cmd_type]
 
-        #this is here if there's more to cmd than just the basics (i.e. firmware_upgrate, mgmt_poll_rate)
+        #this is here if there's more to cmd than just the basics (i.e. firmware_upgrade, mgmt_poll_rate)
         cmd[:cmd_id] = params[request[:cmd_type].to_sym]  
         
         cmd[:timestamp_initiated] = Time.now
@@ -133,7 +132,7 @@ class ManagementController < ApplicationController
         cmd[:param1] = request[:param2] if !request[:param2].blank? and request[:cmd_type] == 'dial_up_num'
         cmd[:param2] = request[:param3] if !request[:param3].blank? and request[:cmd_type] == 'dial_up_num'
         cmd[:param3] = request[:param4] if !request[:param4].blank? and request[:cmd_type] == 'dial_up_num'
-        
+
         if /-/.match(request[:ids])     
           create_cmds_for_range_of_devices(request[:ids], cmd)
         elsif /,/.match(request[:ids]) 

@@ -51,14 +51,14 @@ class Profile < ActiveRecord::Base
   	if self[:is_new_caregiver]
       return false
     else	
-  	errors.add(:home_phone," is the wrong length (should be 10 digits)") if self.home_phone != '' and !self.home_phone.nil? and phone_strip(self.home_phone).length != 10 
-  	errors.add(:work_phone," is the wrong length (should be 10 digits)") if self.work_phone != '' and !self.work_phone.nil? and phone_strip(self.work_phone).length != 10 
-  	errors.add(:cell_phone," is the wrong length (should be 10 digits)") if self.cell_phone != '' and !self.cell_phone.nil? and phone_strip(self.cell_phone).length != 10
+  	errors.add(:home_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.home_phone != '' and !self.home_phone.nil? and phone_strip(self.home_phone).length != 10 
+  	errors.add(:work_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.work_phone != '' and !self.work_phone.nil? and phone_strip(self.work_phone).length != 10 
+  	errors.add(:cell_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.cell_phone != '' and !self.cell_phone.nil? and phone_strip(self.cell_phone).length != 10
   	end
   end
   
   def phone_strip(phone)
-	phone.tr("-().{}@~+=","").gsub(/[a-z]/,'')  	
+	phone.tr("-().{}@~+=","").gsub(/[a-z]/,'').gsub(/[A-Z]/,'')
   end
 
   def unless_new_caregiver

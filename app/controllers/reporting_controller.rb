@@ -308,6 +308,8 @@ class ReportingController < ApplicationController
       	@group_totals[:real_panics] = 0
       	@group_totals[:installs] = 0
 		@group_totals[:battery_reminders] = 0
+		@group_totals[:total] = 0
+      	@group_totals[:total_response] = 0.0
       	      	
       	for fall in @falls
       	  id = fall.user.id
@@ -320,6 +322,14 @@ class ReportingController < ApplicationController
         		     if @group_stats[group.name].nil? 
          			   @group_stats[group.name] = {} 
          			 end
+         			 if fall.call_center_response and not fall.test_alarm?
+         			   @group_stats[group.name][:total_response] = 0.0 if !@group_stats[group.name][:total_response]
+         			   @group_stats[group.name][:total] = 0 if !@group_stats[group.name][:total]
+         			   @group_stats[group.name][:total_response] += fall.call_center_response.to_time - fall.timestamp.to_time
+         			   @group_stats[group.name][:total] += 1
+         			   @group_totals[:total] += 1
+         			   @group_totals[:total_response] += fall.call_center_response.to_time - fall.timestamp.to_time
+     			     end
           		     if fall.false_alarm?
             			   if @group_stats[group.name][:false_alarm_falls].nil? 
             			     @group_stats[group.name][:false_alarm_falls] = [] 
@@ -355,14 +365,21 @@ class ReportingController < ApplicationController
       		id = panic.user.id
       		if (groups = @user_groups[id]) == nil
     		    groups = @user_groups[id] = panic.user.is_halouser_for_what
-    		  end
+    		end
       		if(groups)
         		groups.each do |group|  
         		  if !group.nil?  
         		    if @group_stats[group.name].nil? 
          			   @group_stats[group.name] = {} 
          			end
-       			  
+       			    if panic.call_center_response and not panic.test_alarm?
+         	          @group_stats[group.name][:total_response] = 0.0 if !@group_stats[group.name][:total_response]
+         	          @group_stats[group.name][:total] = 0 if !@group_stats[group.name][:total]
+         	          @group_stats[group.name][:total_response] += panic.call_center_response.to_time - panic.timestamp.to_time
+         	          @group_stats[group.name][:total] += 1
+         	          @group_totals[:total] += 1
+         	          @group_totals[:total_response] += panic.call_center_response.to_time - panic.timestamp.to_time
+     		        end
             		if panic.false_alarm?
             		  if @group_stats[group.name][:false_alarm_panics].nil? 
             		    @group_stats[group.name][:false_alarm_panics] = [] 

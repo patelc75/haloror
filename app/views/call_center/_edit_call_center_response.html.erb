@@ -1,0 +1,5 @@
+<% form_remote_tag :url => '/call_center/call_center_response' do -%>
+<input type="hidden" name="id" value="<%= @event.id.to_s %>">
+<input type="text" name="call_center_response" value="<%= @event.call_center_response%>">
+<%= submit_tag "ok"%>
+<%end%>

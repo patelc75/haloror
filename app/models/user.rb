@@ -665,16 +665,17 @@ class User < ActiveRecord::Base
   		end
   		
   		role = @user.has_role 'caregiver', senior #if 'caregiver' role already exists, it will return nil
-  		caregiver = @user
-  		@roles_user = senior.roles_user_by_caregiver(caregiver)
+  		
+  		if !role.nil? #if role.nil? then the roles_user does not exist already
+  		  caregiver = @user
+  		  @roles_user = senior.roles_user_by_caregiver(caregiver)
 
-  		self.update_from_position(position, @roles_user.role_id, caregiver.id)
-
-  		#enable_by_default(@roles_user)      
+  		  self.update_from_position(position, @roles_user.role_id, caregiver.id)
+        #enable_by_default(@roles_user)      
   
-  		#if role.nil? then the roles_user does not exist already
-  		RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0) if !role.nil?
-  
+  		  RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0) 
+      end
+          
   		#if existing_user.nil?
     	UserMailer.deliver_caregiver_email(caregiver, senior)
   		#end
@@ -694,7 +695,7 @@ class User < ActiveRecord::Base
         end
       end
     end
-    return max_position    
+    return max_position
   end
   
   def self.update_from_position(position, roles_user_id, user_id)
