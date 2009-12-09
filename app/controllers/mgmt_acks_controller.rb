@@ -7,12 +7,13 @@ class MgmtAcksController < RestfulAuthController
     conds << "originator = 'server'"
     conds << "pending = true"
     conds << "pending_on_ack = true"
+    conds << "attempts_no_ack > 0"    
     conds << "cmd_type = '#{request[:cmd_type]}'"
     conds << "device_id = #{request[:device_id]}"
         
     cmd = MgmtCmd.find(:first, :conditions => conds.join(' and '), :order => "id asc")
     
-    unless cmd.mgmt_ack
+    if !cmd.nil? and !cmd.mgmt_ack  #in case an ack is delayed or a stray ack is sent
       ack = MgmtAck.new
       ack.mgmt_cmd_id = cmd.id
       ack.timestamp_device = request[:timestamp]
