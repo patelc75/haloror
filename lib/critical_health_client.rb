@@ -5,7 +5,7 @@ class CriticalHealthClient
 
   CRITICALHEALTH_ADDRESS = "62.28.143.10"#Andre's machine
   #CRITICALHEALTH_ADDRESS = "89.214.140.7" #Andre's air card
-  CRITICALHEALTH_EVENT_PORT = 50000
+  CRITICALHEALTH_EVENT_PORT = 8910
   CRITICALHEALTH_COMMAND_PORT = 50001
 
   def self.alert(event_type,user_id,account_num,timestamp=Time.now)
