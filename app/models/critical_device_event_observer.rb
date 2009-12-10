@@ -6,6 +6,7 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
     def before_save(event)
       if UtilityHelper.validate_event_user(event) == true #only validating user because GW does not use the device_id
         if event.call_center_pending == false
+          DeviceAlert.notify_call_center_and_partners(event)
           DeviceAlert.notify_operators(event)
         else
           if(ServerInstance.current_host_short_string() != "ATL-WEB1")
@@ -33,8 +34,8 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
           gw_timeout = GwAlarmButtonTimeout.find(gw_timeout.id)
           if gw_timeout && gw_timeout.pending
             gw_timeout.update_attributes(:timestamp => Time.now)
-          	CriticalMailer.deliver_gw_alarm(gw_timeout)
-    		    Event.create_event(gw_timeout.user_id, GwAlarmButtonTimeout.class_name, gw_timeout.id, gw_timeout.timestamp)
+            CriticalMailer.deliver_gw_alarm(gw_timeout)
+            Event.create_event(gw_timeout.user_id, GwAlarmButtonTimeout.class_name, gw_timeout.id, gw_timeout.timestamp)
           end
         end
       end

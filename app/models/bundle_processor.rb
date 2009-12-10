@@ -20,7 +20,7 @@ class BundleProcessor
                 end
               end
             else
-              obj = model.new(v)
+              obj = model.new(value)
               if !obj.nil? #OscopeMsg.new does not return an object since it's not a simple objectd
                 obj.save!
               end

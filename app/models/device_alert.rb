@@ -20,57 +20,39 @@ class DeviceAlert < ActiveRecord::Base
     "We have detected a #{alert_name} event for #{user.name} (#{user_id}) at #{UtilityHelper.format_datetime(timestamp,user)} "
   end
   
-  def event_type_numeric
-    # FIXME: TODO: fill out these event types properly
-    case self.class.name
-      when "Fall" then "001"
-      when "Panic" then "002"
-      when "GwAlarmButton" then "003"
-      #when "CallCenterFollowUp" then "004"
-      when "BatteryReminder" then "100"
-  	  when "StrapOff" then "101"
-  	  when "GatewayOfflineAlert" then "102"
-  	  when "DeviceUnavailableAlert" then "103"	
-      else "000"
-  	end
-  end
-  
-  
   def self.notify_caregivers(event)
     CriticalMailer.deliver_device_event_caregiver(event)
   end
 
-
-  def self.notify_operators(event)
-    if event.class == CallCenterFollowUp
-      CriticalMailer.deliver_device_event_admin(event)
-    else 
-      begin
-        if event.user.is_halouser_of? Group.find_by_name('safety_care')
+  def self.notify_call_center_and_partners(event)
+    groups = event.user.is_halouser_for_what
+    groups.each do |group|
+      if !group.nil? and group.sales_type == "call_center"
+        model_string = (group.name.camelcase + "Client")
+        begin
           if event.user.profile
-            if !event.user.profile.account_number.blank?
-            	#don't need to filter because safetycare filters by IP
-              #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
-                SafetyCareClient.alert(event.user.profile.account_number, event.event_type_numeric)
-              #end
-            else
-              CriticalMailer.deliver_monitoring_failure("Missing account number!", event)
-            end
+            model_string.constantize.alert(event.class.name, event.user.id, event.user.profile.account_number, event.timestamp)
           else
             CriticalMailer.deliver_monitoring_failure("Missing user profile!", event)
           end
+        rescue Exception => e
+          CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
+          UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::Exception:: #{e} : #{event.to_s}", e)
+        rescue Timeout::Error => e
+          CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
+          UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::Timeout::Error:: #{e} : #{event.to_s}", e)
+        rescue
+          CriticalMailer.deliver_monitoring_failure("UNKNOWN error", event)
+          UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::UNKNOWN::Error: #{event.to_s}")         
         end
-      rescue Exception => e
-        CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
-        UtilityHelper.log_message("SafetyCareClient.alert::Exception:: #{e} : #{event.to_s}", e)
-      rescue Timeout::Error => e
-        CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
-        UtilityHelper.log_message("SafetyCareClient.alert::Timeout::Error:: #{e} : #{event.to_s}", e)
-      rescue
-        CriticalMailer.deliver_monitoring_failure("UNKNOWN error", event)
-        UtilityHelper.log_message("SafetyCareClient.alert::UNKNOWN::Error: #{event.to_s}")         
-      end
-
+      end          
+    end
+  end  
+  
+  def self.notify_operators(event)
+    if event.class == CallCenterFollowUp
+      CriticalMailer.deliver_device_event_admin(event)
+    else
       CriticalMailer.deliver_device_event_operator_text(event)
       CriticalMailer.deliver_device_event_operator(event)
     end

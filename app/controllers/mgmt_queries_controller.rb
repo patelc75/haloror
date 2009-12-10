@@ -50,7 +50,7 @@ class MgmtQueriesController < RestfulAuthController
     conds << "pending = true"  #this is reset to false in mgmt_acks_controller.rb    
     conds << "device_id = #{query.device_id}"
     
-    pending_on_ack_and_response = MgmtCmd.find(:first, :conditions => conds.join(' and '), :order => 'timestamp_initiated DESC'))
+    pending_on_ack_and_response = MgmtCmd.find(:first, :conditions => conds.join(' and '), :order => 'timestamp_initiated DESC')
     
     if(!pending_on_ack_and_response.nil?)
       if pending_on_ack_and_response.attempts_no_ack.nil?

@@ -3,7 +3,7 @@ class SandboxController < ApplicationController
 
   #use this method to debug Rufus jobs
   #run server like this: ruby script/server -p 3001 --debugger
-  def debug
+  def ruby_debug
     debugger
     DeviceAlert.job_process_crtical_alerts() #Rufus job
     BundleJob.process_xml_file("dialup/H200000025_1258657676_2.xml") #Rufus job

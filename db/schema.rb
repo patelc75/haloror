@@ -10,7 +10,6 @@
 # It's strongly recommended to check this file into your version control system.
 
 ActiveRecord::Schema.define(:version => 20091030205045) do
-
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
     t.string   "status"
@@ -30,6 +29,13 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.string   "mode"
     t.datetime "timestamp"
     t.string   "number"
+  end
+
+  create_table "accounts", :id => false, :force => true do |t|
+    t.integer "aid",                    :null => false
+    t.integer "bid"
+    t.integer "abalance"
+    t.string  "filler",   :limit => 84
   end
 
   create_table "alert_groups", :force => true do |t|
@@ -219,6 +225,12 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.string   "sw_rev"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "branches", :id => false, :force => true do |t|
+    t.integer "bid",                    :null => false
+    t.integer "bbalance"
+    t.string  "filler",   :limit => 88
   end
 
   create_table "call_center_deferreds", :force => true do |t|
@@ -502,6 +514,11 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
   end
 
   create_table "groups", :force => true do |t|
+    t.string   "name",        :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "description"
+    t.string   "sales_type"
     t.string   "name",       :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -541,6 +558,15 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.integer  "device_id"
     t.string   "dbg_level"
     t.text     "description"
+  end
+
+  create_table "history", :id => false, :force => true do |t|
+    t.integer  "tid"
+    t.integer  "bid"
+    t.integer  "aid"
+    t.integer  "delta"
+    t.datetime "mtime"
+    t.string   "filler", :limit => 22
   end
 
   create_table "installation_notes", :force => true do |t|
@@ -698,7 +724,7 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.text    "allergies"
     t.text    "pet_information"
     t.text    "access_information"
-    t.string  "account_number"
+    t.string  "account_number",      :limit => 10
     t.string  "door"
     t.string  "hospital_preference"
     t.string  "hospital_number"
@@ -893,6 +919,14 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.integer  "strap_off_timeout_sec"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "critical_event_delay"
+  end
+
+  create_table "tellers", :id => false, :force => true do |t|
+    t.integer "tid",                    :null => false
+    t.integer "bid"
+    t.integer "tbalance"
+    t.string  "filler",   :limit => 84
   end
 
   create_table "users", :force => true do |t|
