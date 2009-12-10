@@ -37,8 +37,8 @@ class UserAdminController < ApplicationController
     @group = params[:group]
     @profile = Profile.new(params[:profile])
     if !params[:role].blank? && params[:role] != 'Choose a Role'
-      role_name = params[:role]
-      role = Role.find_by_name(role_name)
+      role_id = params[:role]
+      role = Role.find_by_id(role_id)
       User.transaction do
         @user[:is_new_user] = true
         @user.save!        

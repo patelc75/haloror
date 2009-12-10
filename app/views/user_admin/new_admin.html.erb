@@ -47,7 +47,8 @@ Select Group:
   		   @group_roles.each do |r|
   			 gr << r.name
   		   end %>
-  		<%= select_tag :role, options_for_select(gr.collect {|r| [r,r]}) %>
+  		<%#= select_tag :role, options_for_select(gr.collect {|r| [r,r]}) %>
+  		<%= select_tag :role, "<option value='Choose a Role'>Choose a Role</option>" + options_for_select(@group_roles.map {|role| [role.name,role.id]}) %>
   		<br />
   		<br />
 		  </div>
