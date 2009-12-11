@@ -24,7 +24,7 @@
 			<a href="javascript:void(0)" onClick="toggle_device_hidden(<%=device.id%>)" id="device_<%=device.id%>-toggle">[+]</a>
 		</div>
 		<div class="col-75">
-			<%=device[:id]%>
+			<%= link_to device[:id],:controller => 'atp',:action => 'report',:device_id => device[:id]%>
 		</div>
 		
 		<div class="col-150">

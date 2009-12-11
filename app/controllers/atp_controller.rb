@@ -5,7 +5,11 @@ class AtpController < ApplicationController
   end
   
   def report
-    @atp_test_results = AtpTestResult.find(:all)
+  	if params[:device_id] and params[:device_id] != ""
+  	  @atp_test_results = AtpTestResult.find_all_by_device_id(params[:device_id])
+  	else
+      @atp_test_results = AtpTestResult.find(:all)
+    end
   end
   def atp_test_result_view
     @atp_test_result = AtpTestResult.find(params[:id], :include => :atp_item_results)
