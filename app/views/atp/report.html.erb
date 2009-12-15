@@ -1,10 +1,10 @@
 <%= render :partial => 'nav'%>
 <form method="get" action="/atp/report">
 <input type="text" name="device_id" value="<%= params[:device_id]%>">
-<input type="submit" value="search">
+<input type="submit" value="Enter device_id">
 </form>
 <h3>Reports</h3>
-<table> 
+<table border="1"> 
   <tr><th>ID</th>
   <th>Result</th>
   <th>Device ID</th>
