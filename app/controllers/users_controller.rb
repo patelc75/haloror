@@ -245,10 +245,12 @@ class UsersController < ApplicationController
           if !@profile.save!
             raise "Invalid Profile"  
           end
-          
-          @user.is_halouser_of Group.find_by_name(@group)
+          group = Group.find_by_name(@group)
+          @user.is_halouser_of group if !group.nil?
           if(params[:opt_out_call_center].blank?)
-            @user.is_halouser_of Group.find_by_name('safety_care')
+            group = Group.find_by_name('safety_care')
+            raise "safety_care group missing!" if group.nil? 
+            @user.is_halouser_of group if !group.nil?
           end
           
           redirect_to :controller => 'users', :action => 'credit_card_authorization',:user_id => @user.id
