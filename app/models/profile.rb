@@ -50,7 +50,7 @@ class Profile < ActiveRecord::Base
   def validate
   	if self[:is_new_caregiver]
       return false
-    else	
+    else
   	errors.add(:home_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.home_phone != '' and !self.home_phone.nil? and phone_strip(self.home_phone).length != 10 
   	errors.add(:work_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.work_phone != '' and !self.work_phone.nil? and phone_strip(self.work_phone).length != 10 
   	errors.add(:cell_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.cell_phone != '' and !self.cell_phone.nil? and phone_strip(self.cell_phone).length != 10
@@ -58,7 +58,12 @@ class Profile < ActiveRecord::Base
   end
   
   def phone_strip(phone)
-	phone.tr("-().{}@~+=","").gsub(/[a-z]/,'').gsub(/[A-Z]/,'')
+  	phone_number = phone.tr("/[A-Z]/[a-z]/",'')
+  	if phone_number == phone
+	  phone.tr("-().","")  #.gsub(/[a-z]/,'').gsub(/[A-Z]/,'')
+    else
+      phone
+    end
   end
 
   def unless_new_caregiver
