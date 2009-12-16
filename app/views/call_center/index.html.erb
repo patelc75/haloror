@@ -1,13 +1,12 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
 <%=render :partial=>'/reporting/nav'%>
 
-<% is_admin = current_user.is_super_admin? %>
 <h2>Crtical Event Log</h2>
 All times are in <%= current_user.profile.time_zone if current_user.profile %> timezone <br>
 <div class="table">
   <div class="row header">
     <div class="col-75">
-      Event <br>Type <br>(Oscope Start Msg ID)
+      Event <br>Type <br><sub>(Oscope Start Msg ID)</sub>
     </div>
 
     <div class="col-125">
@@ -30,7 +29,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
     <div class="col-150">
       False Alarm
     </div>
-    <% if is_admin %>
+    <% if current_user.is_super_admin? %>
       <div class="col-125">
         Call Center Response
       </div>
@@ -45,14 +44,14 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       <% else %>
       <div class="col-75">
         <%=event.event_type%>&nbsp;
-        <% if is_admin %>
+        <% if current_user.is_super_admin? || current_user.is_admin? %>
         <% if event.event_type == 'Fall' %>
           <% oscope_start = OscopeStartMsg.find_by_timestamp_and_user_id(event.timestamp, event.user_id) %>
           <% if oscope_start %>
             <br>(<%= link_to ("#{oscope_start.id}", :controller => 'oscopes', :action => 'csv', :id => oscope_start.id) %>)
           <% end %>
         <% end %>
-      <% end %>
+        <% end %>
       </div>
       <% end %>
       <div class="col-125">
