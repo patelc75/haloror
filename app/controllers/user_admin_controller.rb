@@ -122,10 +122,15 @@ class UserAdminController < ApplicationController
       unless group[:name].empty?
         g = Group.find_by_name(group[:name])
         r = Role.find(:first, :conditions => "name = '#{role[:name]}' AND authorizable_type = 'Group' AND authorizable_id = #{g.id}")
-        roles_users = RolesUser.find(:all, :conditions => "user_id = #{user_id} AND role_id = #{r.id}")
-        RolesUser.delete(roles_users)
-        @success = true
-        @message = "Role/Group Removed"
+        if r
+          roles_users = RolesUser.find(:all, :conditions => "user_id = #{user_id} AND role_id = #{r.id}")
+          RolesUser.delete(roles_users)
+          @success = true
+          @message = "Role/Group Removed"
+        else
+    	  @success = false
+    	  @message = "Role not found for selected user"
+        end
       else
         user = User.find(user_id)
         roles = user.roles.find(:all, :conditions => "name = '#{role[:name]}'")
@@ -156,16 +161,21 @@ class UserAdminController < ApplicationController
     group_name = params[:group_name]
     if(!group_name.blank?)
       if(Group.find_by_name(group_name).blank?)
-        @group = Group.create(:name => group_name,:description => params[:description])
-        if @group.valid?
+      	if params[:sales_type] != ""
+        @group = Group.create(:name => group_name,:description => params[:description],:sales_type => params[:sales_type])
+          if @group.valid?
         	HALO_ROLES.each do |role|
         		Role.create(:name => role,:authorizable_type => 'Group',:authorizable_id => @group.id)
         	end
         	@success = true
         	@message = "Group(#{group_name}) Added"
-        else
+          else
         	@success = false
         	@message = "Group Name is not valid. It should contains only lowercase characters  numeric values and underscore."
+          end
+        else
+          @success = false
+          @message = "Please select Sales Type for create group."
         end
       else
         @success = false

@@ -26,10 +26,18 @@
 <% end %>
 <br><br>
 <h2>Groups</h2>
-<% form_remote_tag :url => {:controller => 'user_admin',:action => 'add_group'}, :update => 'assign_role' do |f|%>
+<div id="group"></div>
+<% form_remote_tag :url => {:controller => 'user_admin',:action => 'add_group'}, :update => 'group' do |f|%>
 	<%= error_messages_for :group %>
   <label for="group_name">Group Name</label>
-  <%= text_field_tag 'group_name' %>
+  <%= text_field_tag 'group_name' %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <label for="sales_type">Sales Type</label>
+  <select name="sales_type">
+  	<option value="">Select</option>
+  	<option value="reseller">reseller</option>
+  	<option value="retailer">retailer</option>
+  	<option value="call_center">call_center</option>
+  </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <label for="description">Description</label>
   <%= text_field_tag 'description'%>
   <br>
