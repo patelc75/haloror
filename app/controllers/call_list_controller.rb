@@ -119,7 +119,10 @@ class CallListController < ApplicationController
   end
   
   def toggle_text
-    toggle_critical('text', params[:id]) unless User.find(params[:user_id]).profile.cell_phone.blank?
+  	@user = User.find(params[:user_id])
+  	unless @user.profile.cell_phone.blank? || @user.profile.carrier_id == nil || @user.profile.carrier_id == ""
+      toggle_critical('text', params[:id])
+    end
     render :text => '', :layout => false
   end
   
