@@ -14,7 +14,7 @@
 	<div class="content" style="padding-left:30px;">
 		<div style="width:230px;float:left">
 		<% form_tag :action => 'signup_info' do -%>
-	  <input type="text" name="user_id" value="<%= @senior.id %>" />
+	  <input type="hidden" name="user_id" value="<%= @senior.id %>" />
 	  <input type="hidden" name="self_test_session_id" value="<%#= @self_test_session.id %>" />
 	  <label for="serial_number">Serial Number</label><br/>
 	  <%= text_field :kit, :serial_number %>
