@@ -4,7 +4,7 @@ include UtilityHelper
 ## sure things are running - eventually, we should remove it.
 ActiveRecord::Base.allow_concurrency = true
 
-SCHEDULER.schedule_every('10s') { RAILS_DEFAULT_LOGGER.debug("Job scheduler from #{__FILE__} is running at #{Time.now}") }
+#SCHEDULER.schedule_every('10s') { RAILS_DEFAULT_LOGGER.debug("Job scheduler from #{__FILE__} is running at #{Time.now}") }
 
 SCHEDULER.schedule_every(BUNDLE_JOB_DIAL_UP_TIME, :blocking => true) { 
   begin

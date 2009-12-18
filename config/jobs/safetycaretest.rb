@@ -4,7 +4,7 @@ include UtilityHelper
 ## sure things are running - eventually, we should remove it.
 ActiveRecord::Base.allow_concurrency = true
 
-SCHEDULER.schedule_every('10s') { RAILS_DEFAULT_LOGGER.debug("Safetycare Test scheduler is running at #{Time.now}") }
+#SCHEDULER.schedule_every('10s') { RAILS_DEFAULT_LOGGER.debug("Safetycare Test scheduler is running at #{Time.now}") }
 
 SCHEDULER.schedule_every(SAFETYCARE_HEARTBEAT_TIME) {
   begin
