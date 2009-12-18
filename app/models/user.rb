@@ -371,7 +371,6 @@ class User < ActiveRecord::Base
   	group_charge = 0;
   	
   	self.is_halouser_for_what.each do |group|
-  		debugger
   		if !group.nil? and group.sales_type != 'call_center'
   			if group.recurring_charges.length > 0
   			  group_charge = group.recurring_charges.first.group_charge
