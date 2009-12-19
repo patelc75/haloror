@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
   has_many :access_logs
   
   has_many :event_actions
-  
+  belongs_to :creator, :class_name => 'User',:foreign_key => 'created_by'
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
   

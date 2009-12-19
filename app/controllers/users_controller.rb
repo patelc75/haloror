@@ -240,6 +240,7 @@ class UsersController < ApplicationController
     if !@group.blank? && @group != 'Choose a Group'
       User.transaction do
         @user[:is_new_halouser] = true
+        @user.created_by = current_user.id
         if @user.save!
           @profile.user_id = @user.id
           if !@profile.save!
