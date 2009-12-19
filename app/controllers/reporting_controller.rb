@@ -46,11 +46,7 @@ class ReportingController < ApplicationController
   end
   
   def users
-    #@users = User.find(:all, :include => [:roles, :roles_users], :order => 'users.id')
-    @users = User.paginate :page    => params[:page],
-                           :include => [:roles, :roles_users],
-                           :order   => 'users.id',
-                           :per_page => REPORTING_USERS_PER_PAGE
+    users = User.find(:all, :include => [:roles, :roles_users], :order => 'users.id')
     @roles = []
     rows = Role.connection.select_all("Select Distinct name from roles order by name asc")
     
@@ -69,6 +65,19 @@ class ReportingController < ApplicationController
       @group = Group.find_by_name(@group_name)
     end
     @user_names = {''=>''}
+    
+     if @group
+      us = []
+      users.each do |user|
+        us << user if user.group_memberships.include? @group
+      end
+      @users = User.paginate :page => params[:page],:include => [:roles, :roles_users],:conditions => ['users.id in (?)',us] ,:order   => 'users.id',:per_page => REPORTING_USERS_PER_PAGE
+    else
+	  @users = User.paginate :page    => params[:page],
+                           :include => [:roles, :roles_users],
+                           :order   => 'users.id',
+                           :per_page => REPORTING_USERS_PER_PAGE
+    end
     
     @users.each do |user|
       if user
