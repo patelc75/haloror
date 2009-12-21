@@ -30,7 +30,8 @@ Select Group:
 		<div class="col-200">Completed On</div>
 		<div class="col-100">Activation</div>
 		<div class="col-100"></div>
-	</div>	
+	</div>
+<%if @users%>	
 <% @users.each do |user| %>
 	<div class="row">
 		<div class="col-75"><%=  user.id     %></div>
@@ -68,6 +69,7 @@ Select Group:
 <br>
 <div>
 <center><big><%= will_paginate @users, :params => {:group => @group.name} %></big></center>
+<%end%>
 </div>
 
 <script language="javascript">

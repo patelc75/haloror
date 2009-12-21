@@ -41,6 +41,7 @@ class UserAdminController < ApplicationController
       role = Role.find_by_id(role_id)
       User.transaction do
         @user[:is_new_user] = true
+        @user.created_by = current_user.id
         @user.save!        
         @profile.user_id = @user.id
         @profile.save!

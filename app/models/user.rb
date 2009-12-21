@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
   has_many :access_logs
   
   has_many :event_actions
-  
+  belongs_to :creator, :class_name => 'User',:foreign_key => 'created_by'
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
   
@@ -357,13 +357,20 @@ class User < ActiveRecord::Base
   	groups << Group.find(@role.authorizable_id)
   end
   
+  def group_sales_type
+  	self.is_halouser_for_what.each do |group|
+  		if !group.nil? and group.sales_type != 'call_center'
+  			return group.sales_type
+  		end
+  	end
+  end
+  
   def group_recurring_charge
   	#self.group_memberships_by_role('halouser').first.recurring_charges.length > 0 ? self.group_memberships_by_role('halouser').first.recurring_charges.first.group_charge : AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL
   	
   	group_charge = 0;
   	
   	self.is_halouser_for_what.each do |group|
-  		debugger
   		if !group.nil? and group.sales_type != 'call_center'
   			if group.recurring_charges.length > 0
   			  group_charge = group.recurring_charges.first.group_charge

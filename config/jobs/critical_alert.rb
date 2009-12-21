@@ -2,7 +2,7 @@ include UtilityHelper
 
 ActiveRecord::Base.allow_concurrency = true
 
-SCHEDULER.schedule_every('10s') { RAILS_DEFAULT_LOGGER.debug("Job scheduler from #{__FILE__} is running at #{Time.now}") }
+#SCHEDULER.schedule_every('10s') { RAILS_DEFAULT_LOGGER.debug("Job scheduler from #{__FILE__} is running at #{Time.now}") }
 
 SCHEDULER.schedule_every(CRITICAL_ALERT_JOB_TIME, :blocking => true) { 
   begin

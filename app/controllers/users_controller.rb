@@ -41,7 +41,7 @@ class UsersController < ApplicationController
   	senior_user_id = params[:user_id]
   	@senior = User.find senior_user_id
   	if !request.post?  #clicking "skip" is a GET (vs a POST)
-  	  @user = User.find(params[:user_id])
+  	  #@user = User.find(params[:user_id])
   	else
   	  User.transaction do  	  
       	if params[:users][:same_as_senior] == "1"  #subscriber same as senior
@@ -72,15 +72,15 @@ class UsersController < ApplicationController
   	  UserMailer.deliver_signup_notification_halouser(@user,halouser)
     end
 
-#    rescue Exception => e
-#  	RAILS_DEFAULT_LOGGER.warn("ERROR in create_subscriber, #{e}")
-#  	RAILS_DEFAULT_LOGGER.debug(e.backtrace.join("\n"))
-#  	if request.post?
-#  		@senior_user = @senior
-#  	  render :action => 'credit_card_authorization'
-#    else
-#    	@senior = User.find(params[:id])
-#    end
+    rescue Exception => e
+  	RAILS_DEFAULT_LOGGER.warn("ERROR in create_subscriber, #{e}")
+  	RAILS_DEFAULT_LOGGER.debug(e.backtrace.join("\n"))
+  	if request.post?
+  		@senior_user = @senior
+  	  render :action => 'credit_card_authorization'
+    else
+    	@senior = User.find(params[:id])
+    end
   end
 
   def signup_info
@@ -240,6 +240,7 @@ class UsersController < ApplicationController
     if !@group.blank? && @group != 'Choose a Group'
       User.transaction do
         @user[:is_new_halouser] = true
+        @user.created_by = current_user.id
         if @user.save!
           @profile.user_id = @user.id
           if !@profile.save!

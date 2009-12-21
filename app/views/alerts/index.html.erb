@@ -110,7 +110,7 @@
 							<%if !@user.profile.cell_phone_exists? || @user.profile.carrier_id == nil || @user.profile.carrier_id == "" %>
 								<%=link_to image_tag(img),'javascript:;',:onclick => 'call_lightbox('+@user.id.to_s + ',"text");' %>
 							<%else%>
-							<%=link_to_remote(image_tag(img, :id => 'alert_text_'+alert.id.to_s), :url => { :action => "toggle_text",:id => alert.id, :roles_user_id => @roles_user.id }, :before => 'toggleAlert('+alert.id.to_s+', '+text_active.to_s+', \'text\')')%>
+							<%=link_to_remote(image_tag(img, :id => 'alert_text_'+alert.id.to_s), :url => { :action => "toggle_text",:id => alert.id, :roles_user_id => @roles_user.id,:user_id => @roles_user.user.id }, :before => 'toggleAlert('+alert.id.to_s+', '+text_active.to_s+', \'text\')')%>
 							<%end%>
 						</div>
 					</div>

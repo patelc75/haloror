@@ -81,7 +81,7 @@ class InstallsController < ApplicationController
   		@users = User.paginate(:page => params[:page],:include => [:roles_users],:per_page => 10,:conditions => ["roles_users.role_id = #{@role.id} and users.id not in (?)",@all_users],:order => "users.id asc")
   	  elsif params[:display] == 'completed'
   	  	@users = User.paginate(:page    => params[:page],:include  => [:roles_users,:self_test_sessions],  :conditions  => "roles_users.role_id = #{@role.id}",:order => "self_test_sessions.completed_on desc",:per_page => 10)
-  	  else
+  	  elsif !@role.nil?
       				@users = User.paginate(:page    => params[:page],
                                            :include     => [:roles_users,:self_test_sessions], 
                  #                         :conditions  => "users.id NOT IN (SELECT devices_users.user_id from devices_users) AND roles_users.role_id = #{@role.id}",
