@@ -1,13 +1,13 @@
 class DropManyIndexes < ActiveRecord::Migration
   def self.up
     # steps
-    remove_index :steps, [:user_id, :begin_timestamp], :quiet=>true	
-
+    remove_index :steps, [:user_id, :begin_timestamp]	
+ 
     # skin_temps 
-    remove_index :skin_temps, [:user_id, :timestamp], :quiet=>true
+    remove_index :skin_temps, [:user_id, :timestamp]
 
     # vitals
-    remove_index :vitals, [:user_id, :timestamp], :quiet=>true
+    remove_index :vitals, [:user_id, :timestamp]
 
     # batteries 
     remove_index :batteries, [:user_id, :timestamp]
