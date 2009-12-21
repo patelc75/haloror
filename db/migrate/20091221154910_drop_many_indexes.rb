@@ -10,7 +10,7 @@ class DropManyIndexes < ActiveRecord::Migration
     remove_index :vitals, [:user_id, :timestamp]
 
     # batteries 
-    remove_index :batteries, [:batteries, :user_id, :timestamp]
+    remove_index :batteries, [:user_id, :timestamp]
 
   end
 
