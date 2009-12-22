@@ -644,7 +644,7 @@ class User < ActiveRecord::Base
   	elsif !existing_user.nil? 
   	  @user = existing_user
   	  @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
-	else
+	  else
   	  @user = User.new
   	  @user.email = email
   	end
@@ -674,18 +674,15 @@ class User < ActiveRecord::Base
   		role = @user.has_role 'caregiver', senior #if 'caregiver' role already exists, it will return nil
   		
   		if !role.nil? #if role.nil? then the roles_user does not exist already
-  		  caregiver = @user
-  		  @roles_user = senior.roles_user_by_caregiver(caregiver)
+  		  @roles_user = senior.roles_user_by_caregiver(@user)
 
-  		  self.update_from_position(position, @roles_user.role_id, caregiver.id)
+  		  self.update_from_position(position, @roles_user.role_id, @user.id)
         #enable_by_default(@roles_user)      
   
   		  RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0) 
       end
           
-  		#if existing_user.nil?
-    	UserMailer.deliver_caregiver_email(caregiver, senior)
-  		#end
+    	UserMailer.deliver_caregiver_email(@user, senior)
     end
     @user
   end
