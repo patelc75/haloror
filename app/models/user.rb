@@ -641,10 +641,11 @@ class User < ActiveRecord::Base
   	existing_user = User.find_by_email(email)
   	if !login.nil? and login != ""
   	  @user = User.find_by_login(login)
+  	  @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
   	elsif !existing_user.nil? 
   	  @user = existing_user
   	  @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
-	  else
+	else
   	  @user = User.new
   	  @user.email = email
   	end

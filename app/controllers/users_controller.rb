@@ -310,7 +310,8 @@ class UsersController < ApplicationController
   
   def init_user
     @user = User.find_by_activation_code(params[:activation_code])
-    if !@user.login.nil? and !@user.crypted_password.nil?
+    if @user
+      if !@user.login.nil? and !@user.crypted_password.nil?
     	@user.activation_code = nil
     	@user.activated_at = Time.now.utc
     	@user.save
@@ -318,10 +319,11 @@ class UsersController < ApplicationController
     	  senior = User.find params[:senior]
     	  role_user = senior.roles_user_by_caregiver(@user)
     	  RolesUsersOption.update(role_user.roles_users_option.id, {:active => 1,:position => User.get_max_caregiver_position(senior)})
-  	  end
-      redirect_to('/login')
-    else
-      session[:senior] = params[:senior]	
+  	    end
+        redirect_to('/login')
+      else
+        session[:senior] = params[:senior]	
+      end
     end
   end
   
