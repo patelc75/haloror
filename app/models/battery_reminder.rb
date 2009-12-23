@@ -11,9 +11,9 @@ class BatteryReminder < DeviceAlert
 	
   def to_s
    	if reminder_num == 4
-   	  "Battery critical state resolved on #{UtilityHelper.format_datetime(timestamp, user)}"
+   	  "Battery critical state resolved on #{UtilityHelper.format_datetime(updated_at, user)}"
  	  else
- 	    "Battery Reminder ##{reminder_num}: Approx. #{time_remaining < 0 ? 0:time_remaining} minutes left for #{user.name} as of #{UtilityHelper.format_datetime(created_at, user)}" 
+ 	    "Battery Reminder ##{reminder_num}: Approx. #{time_remaining < 0 ? 0:time_remaining} minutes left for #{user.name} as of #{UtilityHelper.format_datetime(updated_at, user)}" 
     end
   end
 
@@ -21,7 +21,7 @@ class BatteryReminder < DeviceAlert
     if reminder_num == 4
       to_s
  	  else
-   	  "Battery Reminder ##{reminder_num}: #{user.name}'s battery has approximately #{time_remaining < 0 ? 0:time_remaining} minutes left for as of #{UtilityHelper.format_datetime(created_at, user)}. Please charge the battery immediately"
+   	  "Battery Reminder ##{reminder_num}: #{user.name}'s battery has approximately #{time_remaining < 0 ? 0:time_remaining} minutes left for as of #{UtilityHelper.format_datetime(updated_at, user)}. Please charge the battery immediately"
  	  end
   end
   
