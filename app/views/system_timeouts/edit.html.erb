@@ -6,20 +6,20 @@
 <table>
   <tr>
     <th>ID</th><th>Mode</th>
-    <th>Gateway Offline<br>Timeout (seconds)<br>10% buffer <br>on alert</th>
-    <th>Device Unavailable<br>Timeout (seconds)</th>
-    <th>Strap Off <br>Timeout (seconds)</th>
-    <th>Critical Event<br>Delay (seconds)</th>
+    <th>Gateway<br>Offline<br>Timeout<br>(seconds)<br>10% buffer <br>on alert</th>
+    <th>Device<br>Unavailable<br>Timeout<br>(seconds)</th>
+    <th>Strap Off<br>Timeout<br>(seconds)</th>
+    <th>Critical<br>Event<br>Delay<br>(seconds)</th>
 
     <th>&nbsp;</th>
   </tr>
   <tr>
     <td><%= @system_timeout.id %></td>
-    <td><%= text_field :system_timeout, :mode %></td>
-    <td><%= text_field :system_timeout, :gateway_offline_timeout_sec %></td>
-    <td><%= text_field :system_timeout, :device_unavailable_timeout_sec %></td>
-    <td><%= text_field :system_timeout, :strap_off_timeout_sec %></td>
-    <td><%= text_field :system_timeout, :critical_event_delay_sec %></td>
+    <td><%= text_field :system_timeout, :mode,  :size => 10 %></td>
+    <td><%= text_field :system_timeout, :gateway_offline_timeout_sec,  :size => 10 %></td>
+    <td><%= text_field :system_timeout, :device_unavailable_timeout_sec,  :size => 10 %></td>
+    <td><%= text_field :system_timeout, :strap_off_timeout_sec,  :size => 10 %></td>
+    <td><%= text_field :system_timeout, :critical_event_delay_sec,  :size => 10 %></td>
     <td><input type="submit" name="Save Changes" value="Save Changes" /></td>
   </tr>
 </table>
