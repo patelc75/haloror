@@ -10,11 +10,19 @@ class BatteryReminder < DeviceAlert
   end
 	
   def to_s
-   	"Battery Reminder ##{reminder_num}: Approx. #{time_remaining < 0 ? 0:time_remaining} minutes left for #{user.name} as of #{UtilityHelper.format_datetime(created_at, user)}"   if time_remaining 	  
+   	if reminder_num == 4
+   	  "Battery critical state resolved on #{UtilityHelper.format_datetime(timestamp, user)}"
+ 	  elsif
+ 	    "Battery Reminder ##{reminder_num}: Approx. #{time_remaining < 0 ? 0:time_remaining} minutes left for #{user.name} as of #{UtilityHelper.format_datetime(created_at, user)}" 
+    end
   end
 
   def email_body
-   	"Battery Reminder ##{reminder_num}: #{user.name}'s battery has approximately #{time_remaining < 0 ? 0:time_remaining} minutes left for as of #{UtilityHelper.format_datetime(created_at, user)}. Please charge the battery immediately"
+    if reminder_num == 4
+      to_s
+ 	  elsif
+   	  "Battery Reminder ##{reminder_num}: #{user.name}'s battery has approximately #{time_remaining < 0 ? 0:time_remaining} minutes left for as of #{UtilityHelper.format_datetime(created_at, user)}. Please charge the battery immediately"
+ 	  end
   end
   
   def after_create
