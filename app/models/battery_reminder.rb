@@ -63,7 +63,7 @@ class BatteryReminder < DeviceAlert
     
 		RAILS_DEFAULT_LOGGER.warn("BatteryReminder.send_reminders running at #{Time.now}")
     conds = ["stopped_at IS NULL"]
-    conds << "now() < updated_at + interval '#{BATTERY_REMINDER_THREE * 1.5} seconds'"
+    conds << "now() < updated_at + interval '#{(BATTERY_REMINDER_TWO + BATTERY_REMINDER_THREE)*2} seconds'"
     conds << "reminder_num < 3"
 		@devices = DeviceBatteryReminder.find(:all, :conditions => conds.join(' and '), :order => "updated_at asc")	
 		@devices.each do |device|
@@ -92,7 +92,7 @@ class BatteryReminder < DeviceAlert
   												:battery_critical_id => device.battery_critical_id)
 												
   					elsif device.reminder_num == 2 and Time.now > (device.updated_at + BATTERY_REMINDER_THREE)						
-  						time_remaining = device.time_remaining - (BATTERY_REMINDER_THREE / 60) + (BATTERY_REMINDER_TWO / 60)
+  						time_remaining = device.time_remaining - (BATTERY_REMINDER_THREE / 60)
   						BatteryReminder.create(:device_id => device.device_id, 
   											   :reminder_num => 3,
   											   :user_id => device.user_id,
