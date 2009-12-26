@@ -1,0 +1,539 @@
+<form name="user_intake_form" action="user_intake_form" method="post">
+<div id="call_list-col">
+	<div id="call_list-col-header">
+		User Intake Form
+	</div>
+  <div style="margin-left:25px">
+  	<center><h2>myHalo User Intake Form</h2></center>
+    <div class="content" style="padding-right:20px;">
+      <div style="border:2px solid;width:99.6%;height:40px;padding-top:10px;">
+      	Installation Date:<%= date_select :user_intake,:installation_date %>
+      </div>					
+      <div style="float:left;width:49%;border-right:2px solid;border-left:2px solid;height:400px;">
+      	<center><h3>User Information</h3></center>
+	    <table width="100%">
+	      <tr>
+		    <td>First Name:</td>
+		    <td><input type="text" size="50" name="user[first_name]"></td>
+	      </tr>
+	      <tr>
+		    <td>Last Name:</td>
+		    <td><input type="text" size="50" name="user[last_name]"></td>
+	      </tr>
+	      <tr>
+	        <td>Address:</td>
+	        <td><input type="text" size="50" name="user[address]"></td>
+          </tr>
+	      <tr>
+	        <td>City:</td>
+	        <td><input type="text" size="10" name="user[city]">State:<input type="text" size="10" name="user[state]">Zip:<input type="text" size="6" name="user[zipcode]"></td>
+          </tr>
+	      <tr>
+	        <td>Phone Number:</td>
+	        <td><input type="text" size="50" name="user[home_phone]"></td>
+          </tr>
+	      <tr>
+	        <td>Cell Number:</td>
+	        <td><input type="text" size="50" name="user[cell_phone]"></td>
+          </tr>
+          <tr>
+          	<td>Cell Provider:</td>
+          	<td>
+            <select id="user_carrier_id" name="user[carrier_id]" style="width:220px;">
+	        <% if @profile == nil or @profile.carrier_id == 0 or @profile.carrier_id == nil -%>
+	          <option value="" selected="selected" >
+	          Select Cell Provider for Text Msg </option>
+	        <% end -%>
+	        <% @carrier = Carrier.find(:all, :order => "id")
+	             @carrier.each do |carrier| %>
+	          <option value="<%= carrier.id %>"
+	           <% if @profile && @profile.carrier_id == carrier.id -%> selected="selected"<% end -%>
+	          >
+	          <%= carrier.name %> 
+	         </option>
+	        <% end %>
+	        </select>
+	        </td>
+	      </tr>    
+          <tr>
+	        <td>Email(optional):</td>
+	        <td><input type="text" size="50" name="user_email"></td>
+          </tr>
+	      <tr>
+	        <td>Date of Birth:</td>
+	        <td><%= date_select :user, :birth_date,:start_year => 1900%></td>
+          </tr>
+          <tr>
+	        <td>Hidden Key:</td>
+	        <td><input type="text" size="50"></td>
+          </tr>
+          <tr>
+	        <td>Additional Information:</td>
+	        <td><input type="text" size="50"></td>
+          </tr>
+          <tr>
+	        <td colspan="2"><input type="text" size="67"></td>
+          </tr>
+          <tr>
+          	<td>Time zone:</td>
+            <td><%= time_zone_select :user, :time_zone, TimeZone.us_zones,:default => "Central Time (US & Canada)"%></td>
+          </tr>
+		</table>
+	  </div>
+	  <div style="float:right;width:50%;border-right:2px solid;height:400px;">
+	  	<center><h3>Billing Information</h3></center>
+	    <table width="100%">
+	      <tr>
+		    <td>First Name:</td>
+		    <td><input type="text" size="50" name="subscriber[first_name]"></td>
+	      </tr>
+	      <tr>
+		    <td>Last Name:</td>
+		    <td><input type="text" size="50" name="subscriber[last_name]"></td>
+	      </tr>
+	      <tr>
+	        <td>Address:</td>
+	        <td><input type="text" size="50" name="subscriber[address]"></td>
+          </tr>
+	      <tr>
+	        <td>City:</td>
+	        <td><input type="text" size="10" name="subscriber[city]">State:<input type="text" size="10" name="subscriber[state]">Zip:<input type="text" size="6" name="subscriber[zipcode]"></td>
+          </tr>
+	      <tr>
+	        <td>Phone Number:</td>
+	        <td><input type="text" size="50" name="subscriber[home_phone]"></td>
+          </tr>
+	      <tr>
+	        <td>Cell Number:</td>
+	        <td><input type="text" size="50" name="subscriber[cell_phone]"></td>
+          </tr>
+          <tr>
+	        <td>Work Phone:</td>
+	        <td><input type="text" size="50" name="subscriber[work_phone]"></td>
+          </tr>
+          <tr>
+	        <td>Email:</td>
+	        <td><input type="text" size="50" name="subscriber_email"></td>
+          </tr>
+          <tr>
+          	<td>Time zone:</td>
+            <td><%= time_zone_select :subscriber, :time_zone, TimeZone.us_zones,:default => "Central Time (US & Canada)" %></td>
+          </tr>
+          <tr>
+          	<td>Cell Provider:</td>
+          	<td>
+            <select id="profile_carrier_id" name="profile[carrier_id]" style="width:220px;">
+	        <% if @profile == nil or @profile.carrier_id == 0 or @profile.carrier_id == nil -%>
+	          <option value="" selected="selected" >
+	          Select Cell Provider for Text Msg </option>
+	        <% end -%>
+	        <% @carrier = Carrier.find(:all, :order => "id")
+	             @carrier.each do |carrier| %>
+	          <option value="<%= carrier.id %>"
+	           <% if @profile && @profile.carrier_id == carrier.id -%> selected="selected"<% end -%>
+	          >
+	          <%= carrier.name %> 
+	         </option>
+	        <% end %>
+	        </select>
+	        </td>
+	      </tr>    
+          <tr>
+	        <td colspan="2"><input type="checkbox" name="credit_card">Credit Card/Debit Card Processed:</td>
+          </tr>
+          <tr>
+	        <td colspan="2"><input type="checkbox" name="same_as_user">Same as User</td>
+          </tr>
+		</table>
+	  </div>
+	  <div style="clear:both"></div>
+	  <div style="border:2px solid;width:99.6%;height:40px;padding-top:10px;">
+      	<center><h3>Caregiver Information (in order of notification)</h3></center>
+      </div>
+	  <div style="float:left;width:32%;border-right:2px solid;border-left:2px solid">
+	  	<table border="0" width="100%">
+          <tr>
+	        <td colspan="2"><input type="checkbox" name="no_caregiver_1">No Caregiver #1</td>
+          </tr>
+	      <tr>
+		    <td>First Name:</td>
+		    <td><input type="text" size="20" name="caregiver1[first_name]"></td>
+	      </tr>
+	      <tr>
+		    <td>Last Name:</td>
+		    <td><input type="text" size="20" name="caregiver1[last_name]"></td>
+	      </tr>
+	      <tr>
+	        <td>Address:</td>
+	        <td><input type="text" size="20" name="caregiver1[address]"></td>
+          </tr>
+	      <tr>
+	        <td>City:</td>
+	        <td><input type="text" size="20" name="caregiver1[city]"></td>
+          </tr>
+	      <tr>
+	        <td>State:</td>
+	        <td><input type="text" size="6" name="caregiver1[state]">Zip:<input type="text" size="4" name="caregiver1[zipcode]"></td>
+          </tr>
+	      <tr>
+	        <td>Phone Number:</td>
+	        <td><input type="text" size="20" name="caregiver1[home_phone]"></td>
+          </tr>
+	      <tr>
+	        <td>Cell Number:</td>
+	        <td><input type="text" size="20" name="caregiver1[cell_phone]"></td>
+          </tr>
+          <tr>
+	        <td>Work Phone:</td>
+	        <td><input type="text" size="20" name="caregiver1[work_phone]"></td>
+          </tr>
+          <tr>
+	        <td>Additional:</td>
+	        <td><input type="text" size="20" name="caregiver1[other_phone]"></td>
+          </tr>
+	      <tr>
+	        <td>Email:</td>
+	        <td><input type="text" size="20" name="caregiver1_email"></td>
+          </tr>
+          <tr>
+          	<td>Time zone:</td>
+            <td><%= time_zone_select :caregiver1, :time_zone, TimeZone.us_zones,:default => "Central Time (US & Canada)" %></td>
+          </tr>
+	      <tr>
+	        <td colspan="2">Order of Numbers to call in case of Emergency:</td>
+          </tr>
+	      <tr>
+	        <td>#1:<%#= select("caregiver1", "work_phone_order", @CATEGORIES, {:include_blank => true})
+%></td>
+	        <td><input type="text" size="20" name="caregiver1[home_phone_order]"></td>
+          </tr>
+	      <tr>
+	        <td>#2:</td>
+	        <td><input type="text" size="20" name="caregiver1[work_phone_order]"></td>
+          </tr>
+	      <tr>
+	        <td>#3:</td>
+	        <td><input type="text" size="20" name="caregiver1[cell_phone_order]"></td>
+          </tr>
+	      <tr>
+	        <td>Cell Phone Provider:</td>
+	        <td>
+	        	<select>
+	        	<option value="" selected="selected" >
+	            Select Cell Provider </option>
+	           <% @carrier = Carrier.find(:all, :order => "id")
+	             @carrier.each do |carrier| %>
+	               <option value="<%= carrier.id %>"
+	                <% if @profile && @profile.carrier_id == carrier.id -%> selected="selected"<% end -%>
+	               >
+	               <%= carrier.name %> 
+	               </option>
+	          <% end %>
+	          </select>
+            </td>
+          </tr>
+          <tr>
+	        <td colspan="2">Do you have key to residence:
+	        	<select>
+	        		<option value="yes">Yes</option>
+	        		<option value="no">No</option>
+	        	</select>
+	        </td>
+          </tr>
+          <tr>
+	        <td colspan="2"><center>Alert you wish to use:</center></td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> Call</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> Email</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> Text</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> All</td>
+          </tr>
+		</table>
+	  </div>
+	  <div style="float:left;width:32%;border-right:2px solid;">
+	  	<table border="0" width="100%">
+          <tr>
+	        <td colspan="2"><input type="checkbox" name="no_caregiver_2">No Caregiver #2</td>
+          </tr>
+	      <tr>
+		    <td>First Name:</td>
+		    <td><input type="text" size="20" name="caregiver2[first_name]"></td>
+	      </tr>
+	      <tr>
+		    <td>Last Name:</td>
+		    <td><input type="text" size="20" name="caregiver2[last_name]"></td>
+	      </tr>
+	      <tr>
+	        <td>Address:</td>
+	        <td><input type="text" size="20" name="caregiver2[address]"></td>
+          </tr>
+	      <tr>
+	        <td>City:</td>
+	        <td><input type="text" size="20" name="caregiver2[city]"></td>
+          </tr>
+	      <tr>
+	        <td>State:</td>
+	        <td><input type="text" size="6" name="caregiver2[state]">Zip:<input type="text" size="4" name="caregiver2[zipcode]"></td>
+          </tr>
+	      <tr>
+	        <td>Phone Number:</td>
+	        <td><input type="text" size="20" name="caregiver2[home_phone]"></td>
+          </tr>
+	      <tr>
+	        <td>Cell Number:</td>
+	        <td><input type="text" size="20" name="caregiver2[cell_phone]"></td>
+          </tr>
+          <tr>
+	        <td>Work Phone:</td>
+	        <td><input type="text" size="20" name="caregiver2[work_phone]"></td>
+          </tr>
+          <tr>
+	        <td>Additional:</td>
+	        <td><input type="text" size="20" name="caregiver2[other_phone]"></td>
+          </tr>
+	      <tr>
+	        <td>Email:</td>
+	        <td><input type="text" size="20" name="caregiver2_email"></td>
+          </tr>
+          <tr>
+          	<td>Time zone:</td>
+            <td><%= time_zone_select :caregiver2, :time_zone, TimeZone.us_zones,:default => "Central Time (US & Canada)" %></td>
+          </tr>
+	      <tr>
+	        <td colspan="2">Order of Numbers to call in case of Emergency:</td>
+          </tr>
+	      <tr>
+	        <td>#1:</td>
+	        <td><input type="text" size="20" name="caregiver2[home_phone_order]"></td>
+          </tr>
+	      <tr>
+	        <td>#2:</td>
+	        <td><input type="text" size="20" name="caregiver2[work_phone_order]"></td>
+          </tr>
+	      <tr>
+	        <td>#3:</td>
+	        <td><input type="text" size="20" name="caregiver2[cell_phone_order]"></td>
+          </tr>
+	      <tr>
+	        <td>Cell Phone Provider:</td>
+	        <td>
+	        	<select>
+	        	<option value="" selected="selected" >
+	            Select Cell Provider </option>
+	           <% @carrier = Carrier.find(:all, :order => "id")
+	             @carrier.each do |carrier| %>
+	               <option value="<%= carrier.id %>"
+	                <% if @profile && @profile.carrier_id == carrier.id -%> selected="selected"<% end -%>
+	               >
+	               <%= carrier.name %> 
+	               </option>
+	          <% end %>
+	          </select>
+	        </td>
+          </tr>
+          <tr>
+	        <td colspan="2">Do you have key to residence:
+	        	<select>
+	        		<option value="yes">Yes</option>
+	        		<option value="no">No</option>
+	        	</select>
+	        </td>
+          </tr>
+          <tr>
+	        <td colspan="2"><center>Alert you wish to use:</center></td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> Call</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> Email</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> Text</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> All</td>
+          </tr>
+		</table>
+	  </div>
+	  <div style="float:right;width:32%;border-right:2px solid">
+	  	<table border="0" width="100%">
+          <tr>
+	        <td colspan="2"><input type="checkbox" name="no_caregiver_3">No Caregiver #3</td>
+          </tr>
+	      <tr>
+		    <td>First Name:</td>
+		    <td><input type="text" size="20" name="caregiver3[first_name]"></td>
+	      </tr>
+	      <tr>
+		    <td>Last Name:</td>
+		    <td><input type="text" size="20" name="caregiver3[last_name]"></td>
+	      </tr>
+	      <tr>
+	        <td>Address:</td>
+	        <td><input type="text" size="20" name="caregiver3[address]"></td>
+          </tr>
+	      <tr>
+	        <td>City:</td>
+	        <td><input type="text" size="20" name="caregiver3[city]"></td>
+          </tr>
+	      <tr>
+	        <td>State:</td>
+	        <td><input type="text" size="6" name="caregiver3[state]">Zip:<input type="text" size="4" name="caregiver3[zipcode]"></td>
+          </tr>
+	      <tr>
+	        <td>Phone Number:</td>
+	        <td><input type="text" size="20" name="caregiver3[home_phone]"></td>
+          </tr>
+	      <tr>
+	        <td>Cell Number:</td>
+	        <td><input type="text" size="20" name="caregiver3[cell_phone]"></td>
+          </tr>
+          <tr>
+	        <td>Work Phone:</td>
+	        <td><input type="text" size="20" name="caregiver3[work_phone]"></td>
+          </tr>
+          <tr>
+	        <td>Additional:</td>
+	        <td><input type="text" size="20" name="caregiver3[other_phone]"></td>
+          </tr>
+	      <tr>
+	        <td>Email:</td>
+	        <td><input type="text" size="20" name="caregiver3_email"></td>
+          </tr>
+          <tr>
+          	<td>Time zone:</td>
+            <td><%= time_zone_select :caregiver3, :time_zone, TimeZone.us_zones,:default => "Central Time (US & Canada)" %></td>
+          </tr>
+	      <tr>
+	        <td colspan="2">Order of Numbers to call in case of Emergency:</td>
+          </tr>
+	      <tr>
+	        <td>#1:</td>
+	        <td><input type="text" size="20" name="caregiver3[home_phone_order]"></td>
+          </tr>
+	      <tr>
+	        <td>#2:</td>
+	        <td><input type="text" size="20" name="caregiver3[work_phone_order]"></td>
+          </tr>
+	      <tr>
+	        <td>#3:</td>
+	        <td><input type="text" size="20" name="caregiver3[cell_phone_order]"></td>
+          </tr>
+	      <tr>
+	        <td>Cell Phone Provider:</td>
+	        <td>
+	        	<select>
+	        	<option value="" selected="selected" >
+	            Select Cell Provider </option>
+	           <% @carrier = Carrier.find(:all, :order => "id")
+	             @carrier.each do |carrier| %>
+	               <option value="<%= carrier.id %>"
+	                <% if @profile && @profile.carrier_id == carrier.id -%> selected="selected"<% end -%>
+	               >
+	               <%= carrier.name %> 
+	               </option>
+	          <% end %>
+	          </select>
+	        </td>
+          </tr>
+          <tr>
+	        <td colspan="2">Do you have key to residence:
+	        	<select>
+	        		<option value="yes">Yes</option>
+	        		<option value="no">No</option>
+	        	</select>
+	        </td>
+          </tr>
+          <tr>
+	        <td colspan="2"><center>Alert you wish to use:</center></td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> Call</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> Email</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> Text</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> All</td>
+          </tr>
+		</table>
+	  </div>
+	  <div style="clear:both"></div>
+	  <div style="border:2px solid;width:99.6%">
+	  	<center><h3>Medical Information</h3></center>
+	  	<table>
+	  	  <tr>
+	  	  	<td>Medical Equipment used in home:</td>
+	  	  	<td><input type="text" size="70"></td>
+	  	  </tr>
+	  	</table>
+	  	<center><h3>Medical history</h3></center>
+	  	<table style="padding-left:100px;">
+	  	  <tr>
+	  	  	<td><input type="checkbox"> Diabetes</td>
+	  	  	<td></td>
+	  	  	<td>Any know drug Allergies:</td>
+	  	  	<td><input type="text" size="20"></td>
+	  	  </tr>
+	  	  <tr>
+	  	  	<td><input type="checkbox"> Cancer</td>
+	  	  	<td></td>
+	  	  	<td colspan="2"><input type="text" size="50"></td>
+	  	  </tr>
+	  	  <tr>
+	  	  	<td><input type="checkbox"> Seizures</td>
+	  	  	<td></td>
+	  	  	<td colspan="2"><input type="text" size="50"></td>
+	  	  </tr>
+	  	  <tr>
+	  	  	<td><input type="checkbox"> Stroke/CVA/TIA</td>
+	  	  	<td width="200px"></td>
+	  	  	<td>Additional Information:</td>
+	  	  	<td><input type="text" size="20"></td>
+	  	  </tr>
+	  	  <tr>
+	  	  	<td><input type="checkbox"> Cardiac history</td>
+	  	  	<td width="200px"></td>
+	  	  	<td colspan="2"><input type="text" size="50"></td>
+	  	  </tr>
+	  	  <tr>
+	  	  	<td><input type="checkbox"> Pacemaker</td>
+	  	  	<td width="200px"></td>
+	  	  	<td colspan="2"><input type="text" size="50"></td>
+	  	  </tr>
+	  	</table>
+	  	<br>
+	  	Subscriber Signature:_____________________________________
+	  	Installer Signature:_____________________________________
+	  	<br><br>
+	  </div>
+	</div>
+	<center><input type="submit" value="submit"></center>
+</div>
+	<div style="clear:both"></div>
+	<div id="call_list-col-footer"></div>
+</div>
+</form>
