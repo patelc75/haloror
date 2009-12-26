@@ -58,7 +58,7 @@ ActionController::Routing::Routes.draw do |map|
   
   #user related models
   map.resources :profiles
-  map.resources :users, :sessions  #added automatically after running restful_authentication script
+  map.resources :users, :sessions,:collection => {:user_intake_form => :get}#added automatically after running restful_authentication script
   
   #deprecated models
   #map.resources :caregivers, :active_scaffold => true 
@@ -84,6 +84,8 @@ ActionController::Routing::Routes.draw do |map|
   map.new_caregiver_profile '/profiles/new_caregiver_profile/:user_id', :controller => 'profiles', :action => 'new_caregiver_profile'
   map.resend '/installs/resend/:id',:controller => 'installs',:action => 'resend'
   map.support '/support',:controller => 'util',:action => 'support'
+  map.user_intake_form '/user/user_intake_form',:controller => 'users',:action => 'user_intake_form'
+  
   #map.resend '/resend/:id', :controller => 'installs', :action => 'resend'
     # 
     # map.signup_caregiver '/activate/caregiver/:activation_code', :controller => 'users', :action => 'init_caregiver'

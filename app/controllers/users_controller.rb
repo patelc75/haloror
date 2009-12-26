@@ -274,6 +274,67 @@ class UsersController < ApplicationController
       render :action => 'new'
   end
   
+  def user_intake_form
+    if request.post?
+    	@user = User.new
+    	@user.email = params[:user_email]
+    	User.transaction do
+    		@user[:is_new_halouser] = true
+            @user.created_by = current_user.id
+            if @user.save!
+            	debugger
+            	@profile = Profile.new(params[:user])
+            	@profile.user_id = @user.id
+            	@profile.save!
+                group = Group.find_by_name('halouser')
+                @user.is_halouser_of group if !group.nil?
+            end
+            
+            @subscription = Subscription.new
+	        @subscription[:senior_user_id] = @user.id
+            if params[:same_as_user] and params[:same_as_user] == 'on'
+            	debugger
+              halouser = User.find(@user.id)
+              @subscription[:subscriber_user_id] = @user.id
+              @subscription[:bill_to_first_name] = halouser.profile.first_name
+		      @subscription[:bill_to_last_name] = halouser.profile.last_name
+		      @subscription[:bill_amount] = halouser.group_recurring_charge
+		      
+              @subscription.save!
+  	          role = @user.has_role 'subscriber', halouser
+  	          UserMailer.deliver_subscriber_email(@user)
+  	          UserMailer.deliver_signup_notification_halouser(@user,halouser)
+  	        else
+  	        	@subscriber = User.new
+  	        	@subscriber.email = params[:subscriber_email]
+  	        	@subscriber[:is_new_subscriber] = true
+  	        	
+  	        	if @subscriber.save!
+  	        		@subscriber_profile = Profile.new(params[:subscriber])
+  	        		#@subscriber_profile.last_name = 'test'
+  	        		@subscriber_profile.user_id = @subscriber.id
+  	        		@subscriber_profile.save
+  	        		subscriber = User.find(@subscriber.id)
+  	        		@subscription[:bill_to_first_name] = subscriber.profile.first_name
+		      		@subscription[:bill_to_last_name] = subscriber.profile.last_name
+  	        		@subscription[:bill_amount] = subscriber.group_recurring_charge
+  	        		@subscription[:subscriber_user_id] = @subscriber.id
+  	        		@subscription.save!
+  	        		role = @subscriber.has_role 'subscriber', @user
+  	                UserMailer.deliver_subscriber_email(@subscriber)
+  	                UserMailer.deliver_signup_notification_halouser(@subscriber,@user)
+  	        	end
+            end
+            
+@car1 = User.populate_caregiver(params[:caregiver1_email],@user.id,nil,nil,params[:caregiver1]) unless params[:no_caregiver_1]
+@car2 = User.populate_caregiver(params[:caregiver2_email],@user.id,nil,nil,params[:caregiver2]) unless params[:no_caregiver_2]
+@car3 = User.populate_caregiver(params[:caregiver3_email],@user.id,nil,nil,params[:caregiver3]) unless params[:no_caregiver_3]
+    	end
+    	redirect_to :action => 'user_intake_form'
+	end
+  	
+  end
+  
   def signup_details
   	@user = User.find params[:id]
   	@alert_types = []
