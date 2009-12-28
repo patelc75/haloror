@@ -39,7 +39,21 @@
   <div id="secondary-col-footer"></div>
 </div>
 <% else %>
+<div id="call_list-col">
+	<div id="call_list-col-header">
+		Activation
+	</div>
+	
+	<div class="content">
+		<p>
+			User was already activated. You can now <%= link_to 'login.', :controller => 'sessions', :action => 'new'%>
+		</p>	
+	</div>
+
+	<div style="clear:both"></div>
+	<div id="call_list-col-footer"></div>
+</div>
   <script>
-    window.location = "/login"
+    //window.location = "/login"
   </script>
 <% end %>
