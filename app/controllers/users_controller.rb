@@ -273,15 +273,7 @@ class UsersController < ApplicationController
         end
       render :action => 'new'
   end
-  def validation
-  	@user = User.new
-  	@user.email = "test@test.com"
-  	if @user.email.valid?
-  		render :text => 'valid'
-  	else
-  		render :text => @user.errors.size
-  	end
-  end
+
   def user_intake_form
     if request.post?
     	@user = User.new
@@ -333,37 +325,31 @@ class UsersController < ApplicationController
   	                UserMailer.deliver_signup_notification_halouser(@subscriber,@user)
   	        	end
             end
-unless params[:no_caregiver_1]
-@car1 = User.populate_caregiver(params[:caregiver1_email],@user.id,nil,nil,params[:caregiver1]) 
-@roles_users_option_car1 = RolesUsersOption.find_by_roles_user_id(@user.roles_user_by_caregiver(@car1).id)
-@roles_users_option_car1.is_keyholder = params[:car1_roles_users_option][:is_keyholder] = '1'? true:false
-@roles_users_option_car1.phone_active = params[:car1_roles_users_option][:phone_active] == 'on'? true:false
-@roles_users_option_car1.email_active = params[:car1_roles_users_option][:email_active] == 'on'? true:false
-@roles_users_option_car1.text_active = params[:car1_roles_users_option][:text_active] == 'on'? true:false
-@roles_users_option_car1.save
-end
-unless params[:no_caregiver_2]
-@car2 = User.populate_caregiver(params[:caregiver2_email],@user.id,nil,nil,params[:caregiver2])
-@roles_users_option_car2 = RolesUsersOption.find_by_roles_user_id(@user.roles_user_by_caregiver(@car2).id)
-@roles_users_option_car2.is_keyholder = params[:car2_roles_users_option][:is_keyholder] = '1'? true:false
-@roles_users_option_car2.phone_active = params[:car2_roles_users_option][:phone_active] == 'on'? true:false
-@roles_users_option_car2.email_active = params[:car2_roles_users_option][:email_active] == 'on'? true:false
-@roles_users_option_car2.text_active = params[:car2_roles_users_option][:text_active] == 'on'? true:false
-@roles_users_option_car2.save
-end
-unless params[:no_caregiver_3]
-@car3 = User.populate_caregiver(params[:caregiver3_email],@user.id,nil,nil,params[:caregiver3]) 
-@roles_users_option_car3 = RolesUsersOption.find_by_roles_user_id(@user.roles_user_by_caregiver(@car3).id)
-@roles_users_option_car3.is_keyholder = params[:car3_roles_users_option][:is_keyholder] = '1'? true:false
-@roles_users_option_car3.phone_active = params[:car3_roles_users_option][:phone_active] == 'on'? true:false
-@roles_users_option_car3.email_active = params[:car3_roles_users_option][:email_active] == 'on'? true:false
-@roles_users_option_car3.text_active = params[:car3_roles_users_option][:text_active] == 'on'? true:false
-@roles_users_option_car3.save
-end
+            unless params[:no_caregiver_1]
+             @car1 = User.populate_caregiver(params[:caregiver1_email],@user.id,nil,nil,params[:caregiver1])
+             set_roles_users_option(@car1,params[:car1_roles_users_option])
+            end
+            unless params[:no_caregiver_2]
+             @car2 = User.populate_caregiver(params[:caregiver2_email],@user.id,nil,nil,params[:caregiver2])
+             set_roles_users_option(@car2,params[:car2_roles_users_option])
+            end
+            unless params[:no_caregiver_3]
+             @car3 = User.populate_caregiver(params[:caregiver3_email],@user.id,nil,nil,params[:caregiver3])
+             set_roles_users_option(@car3,params[:car3_roles_users_option])
+            end
     	end
     	redirect_to :action => 'user_intake_form'
 	end
   	
+  end
+
+  def set_roles_users_option(caregiver,roles_users_option)
+  @roles_users_option = RolesUsersOption.find_by_roles_user_id(@user.roles_user_by_caregiver(caregiver).id)
+  @roles_users_option.is_keyholder = roles_users_option[:is_keyholder] = '1'? true:false
+  @roles_users_option.phone_active = roles_users_option[:phone_active] == 'on'? true:false
+  @roles_users_option.email_active = roles_users_option[:email_active] == 'on'? true:false
+  @roles_users_option.text_active = roles_users_option[:text_active] == 'on'? true:false
+  @roles_users_option.save
   end
   
   def signup_details
