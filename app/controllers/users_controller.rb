@@ -283,11 +283,12 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
              user_intake.users.push(@car3)
             end
     	end
+    	redirect_to :action => 'user_intake_form'
     elsif params[:id]
     	@user_intake = UserIntake.find(params[:id])
     	@user_intake.users
 	end
-  	redirect_to :action => 'user_intake_form'
+  	
   end
 
   def set_roles_users_option(caregiver,roles_users_option)

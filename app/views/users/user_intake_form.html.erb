@@ -499,7 +499,11 @@
 		</table>
 	  </div>
 	  <div style="clear:both"></div>
-	  <div style="border:2px solid;width:99.6%">
+	  <div style="border-top:2px solid;width:99.6%;"> 
+	  	<center><h3>Medical Information</h3></center>
+	    <div style="float:left;width:32%;">
+	  	
+<!--	  	
 	  	<center><h3>Medical Information</h3></center>
 	  	<table>
 	  	  <tr>
@@ -546,8 +550,89 @@
 	  	Subscriber Signature:_____________________________________
 	  	Installer Signature:_____________________________________
 	  	<br><br>
+-->
+		  <table>
+	  	    <tr>
+		      <td>Premises Access (Combination, Lockbox Code, Key Location)</td>
+		      <td><%= text_field :profile, :access_information ,:size => "20"%></td>
+		    </tr>
+		    <tr>
+		  	  <td>Door to break into if no key</td>
+		  	  <td><%= text_field :profile, :door,:size => "20" %></td>
+		    </tr>
+		    <tr>
+		  	  <td>Pet Information</td>
+		  	  <td><%= text_field :profile, :pet_information,:size => "20" %></td>
+		    </tr>
+		    <tr>
+		  	  <td>Hospital Preference</td>
+		  	  <td><%= text_field :profile, :hospital_preference ,:size => "20"%></td>
+		    </tr>
+		    <tr>
+		  	  <td>Hospital Number</td>
+		  	  <td><%= text_field :profile, :hospital_number ,:size => "20"%></td>
+		    </tr>
+		    <tr>
+		  	  <td>Doctor Name</td>
+		  	  <td><%= text_field :profile, :doctor_name ,:size => "20"%></td>
+		    </tr>
+		  </table>	
+	    </div>
+	    <div style="float:left;width:32%;">
+	  	  <table>
+	  	    <tr>
+		      <td>Doctor Phone</td>
+		      <td><%= text_field :profile, :doctor_phone ,:size => "20"%></td>
+		    </tr>
+		    <tr>
+		  	  <td>Medical equipment in the home</td>
+		  	  <td><%= text_field :profile, :medical_equipment_in_the_home ,:size => "20"%></td>
+		    </tr>
+		    <tr>
+		      <td>Medications</td>
+		      <td><%= text_area :profile, :medications , :cols => 20, :rows => 5%></td>
+		    </tr>
+		    <tr>
+		      <td>Drug Allergies</td>
+		      <td><%= text_area :profile, :allergies, :cols => 20, :rows => 5%></td>
+		    </tr>
+	      </table>
+	    </div>
+	    <div style="float:right;width:32%;">
+	  	  <table>
+	  	    <tr>
+		      <td><%= check_box :profile, :diabetes %></td>
+		      <td>Diabetes</td>
+		    </tr>
+		    <tr>
+		  	  <td><%= check_box :profile, :cancer %></td>
+		  	  <td>Cancer</td>
+		    </tr>
+		    <tr>
+		      <td><%= check_box :profile, :seizures %></td>
+		      <td>Seizures</td>
+		    </tr>
+		    <tr>
+		      <td><%= check_box :profile, :stroke_cva_tia %></td>
+		      <td>Stroke/CVA/TIA</td>
+		    </tr>
+		    <tr>
+		      <td><%= check_box :profile, :cardiac_history %></td>
+		      <td>Cardiac history</td>
+		    </tr>
+		    <tr>
+		      <td><%= check_box :profile, :pacemaker %></td>
+		      <td>Pacemaker</td>
+		    </tr>
+		    <tr>
+		      <td>Additional Info</td>
+		      <td><%= text_area :profile,:additional_info,:cols => 20, :rows => 5%></td>
+		    </tr>
+	      </table>
+	    </div>
 	  </div>
 	</div>
+	<div style="clear:both"></div>
 	<center><input type="submit" value="submit"></center>
 </div>
 	<div style="clear:both"></div>

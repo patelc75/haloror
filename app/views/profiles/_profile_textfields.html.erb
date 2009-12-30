@@ -10,10 +10,6 @@
 <br />
 	<%= text_field :profile, :pet_information %>
 
-<br/><br/><label for="allergies">Allergies and Medical Information</label>
-<br />
-	<%= text_area :profile, :allergies, :cols => 30, :rows => 10%>
-
 <br/><br/><label for="hospital_preference">Hospital Preference</label>
 <br />
 	<%= text_field :profile, :hospital_preference %>
@@ -29,5 +25,27 @@
 <br/><br/><label for="doctor_phone">Doctor Phone</label>
 <br />
 	<%= text_field :profile, :doctor_phone %>
+
+<br/><br/><label for="medical_equipment_in_the_home">Medical equipment in the home</label>
+<br />
+	<%= text_field :profile, :medical_equipment_in_the_home %>
 	
+<br/><br/><label for="medications">Medications</label>
+<br />
+	<%= text_area :profile, :medications , :cols => 30, :rows => 5%>
+	
+<br/><br/><label for="allergies">Drug Allergies</label>
+<br />
+	<%= text_area :profile, :allergies, :cols => 30, :rows => 5%>	
+	
+<br/><br/><%= check_box :profile, :diabetes %><label for="medications">Diabetes</label>
+<br/><br/><%= check_box :profile, :cancer %><label for="medications">Cancer</label>
+<br/><br/><%= check_box :profile, :seizures %><label for="medications">Seizures</label>
+<br/><br/><%= check_box :profile, :stroke_cva_tia %><label for="medications">Stroke/CVA/TIA</label>
+<br/><br/><%= check_box :profile, :cardiac_history %><label for="medications">Cardiac history</label>
+<br/><br/><%= check_box :profile, :pacemaker %><label for="medications">Pacemaker</label>
+	
+<br><br>	<label for="additional_info">Additional Info</label>
+<br>
+<%= text_area :profile,:additional_info,:cols => 30, :rows => 5%>
 <%end%>
