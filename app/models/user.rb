@@ -28,6 +28,7 @@ class User < ActiveRecord::Base
   has_many :roles, :through => :roles_users#, :include => [:roles_users]
   
   has_and_belongs_to_many :devices
+  has_and_belongs_to_many :user_intakes
   
   has_many :access_logs
   
@@ -636,7 +637,7 @@ class User < ActiveRecord::Base
         script = scripts[key]
         return script
   end 
-  
+
   def self.populate_caregiver(email,senior_id=nil, position = nil,login = nil,profile_hash = nil)
   	existing_user = User.find_by_email(email)
   	if !login.nil? and login != ""

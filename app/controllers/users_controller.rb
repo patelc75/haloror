@@ -1,6 +1,7 @@
 class UsersController < ApplicationController  
   before_filter :authenticated?, :except => [:init_user, :update_user]
-
+  require 'user_helper'
+  include UserHelper
   def save_timezone
     user = User.find(current_user.id)
     user.profile.tz = tzinfo_from_timezone(TimeZone.new(params[:user][:timezone_name]))
@@ -43,35 +44,21 @@ class UsersController < ApplicationController
   	if !request.post?  #clicking "skip" is a GET (vs a POST)
   	  #@user = User.find(params[:user_id])
   	else
-  	  User.transaction do  	  
-      	if params[:users][:same_as_senior] == "1"  #subscriber same as senior
-      	  @user = User.find_by_id(params[:user_id])
-      	  subscriber_user_id = senior_user_id
-      	else
-    	    if params[:users][:add_caregiver] != "1"  #subscriber will also be a caregiver
-      	    @user = User.populate_caregiver(params[:email],params[:user_id].to_i,nil,nil,params[:profile]) #sets up @user
-  	  	  else  #subscriber will not be a caregiver
-  	  	    @user = User.new
-      		  @user.email = params[:email]
-      		  @profile = Profile.new(params[:profile])
-      		  @profile.save!
-      		  @user.profile = @profile
-	    	  
-    	  	  @user[:is_new_subscriber] = true
-    	  	  @user.save!
-    	    end
-    		  subscriber_user_id = @user.id
-        end
+  	  User.transaction do
+  	  	same_as_senior = params[:users][:same_as_senior]
+  	  	add_caregiver = params[:users][:add_caregiver] 
+  	  	populate_subscriber(params[:user_id],same_as_senior,add_caregiver,params[:email],params[:profile])  
+ 
         #Credit Card auth needs to be in a transaction so subscriber/caregiver data can be rolled back
-        Subscription.credit_card_validate(senior_user_id,subscriber_user_id,@user,params[:credit_card],flash)       		  
+
+Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_card],flash)       		  
       end
   	  #this following does not need to be in the transaction because the lines above this do not need to be rolled back if the below lines fail
-  	  halouser = User.find(params[:user_id].to_i)
-  	  role = @user.has_role 'subscriber', halouser #@user set up in populate_caregiver when subscriber is also a caregiver
+  	 # role = @user.has_role 'subscriber', halouser #@user set up in populate_caregiver when subscriber is also a caregiver
   	  UserMailer.deliver_subscriber_email(@user)
-  	  UserMailer.deliver_signup_notification_halouser(@user,halouser)
+  	  UserMailer.deliver_signup_notification_halouser(@user,@senior)
     end
-
+#=begin
     rescue Exception => e
   	RAILS_DEFAULT_LOGGER.warn("ERROR in create_subscriber, #{e}")
   	RAILS_DEFAULT_LOGGER.debug(e.backtrace.join("\n"))
@@ -81,6 +68,7 @@ class UsersController < ApplicationController
     else
     	@senior = User.find(params[:id])
     end
+#=end    
   end
 
   def signup_info
@@ -233,27 +221,11 @@ class UsersController < ApplicationController
   end
 
   def create  	
-    @user = User.new(params[:user])
-    @user.email = params[:email]
     @group = params[:group]
-    @profile = Profile.new(params[:profile])
     if !@group.blank? && @group != 'Choose a Group'
       User.transaction do
-        @user[:is_new_halouser] = true
-        @user.created_by = current_user.id
-        if @user.save!
-          @profile.user_id = @user.id
-          if !@profile.save!
-            raise "Invalid Profile"  
-          end
-          group = Group.find_by_name(@group)
-          @user.is_halouser_of group if !group.nil?
-          if(params[:opt_out_call_center].blank?)
-            group = Group.find_by_name('safety_care')
-            raise "safety_care group missing!" if group.nil? 
-            @user.is_halouser_of group if !group.nil?
-          end
-          
+      	populate_user(params[:profile],params[:email],@group,current_user.id,params[:opt_out_call_center])
+        if @user
           redirect_to :controller => 'users', :action => 'credit_card_authorization',:user_id => @user.id
         else
           raise "Invalid User"
@@ -263,7 +235,6 @@ class UsersController < ApplicationController
       flash[:warning] = "Group is Required"
       redirect_to :controller => 'users', :action => 'new'
     end
-    
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
        @groups = []
@@ -273,74 +244,50 @@ class UsersController < ApplicationController
         end
       render :action => 'new'
   end
-
+  
   def user_intake_form
     if request.post?
-    	@user = User.new
-    	@user.email = params[:user_email]
     	User.transaction do
-    		@user[:is_new_halouser] = true
-            @user.created_by = current_user.id
-            if @user.save!
-            	debugger
-            	@profile = Profile.new(params[:user])
-            	@profile.user_id = @user.id
-            	@profile.save!
-                group = Group.find_by_name('halouser')
-                @user.is_halouser_of group if !group.nil?
+    		user_intake = UserIntake.new
+            user_intake.installation_date = params[:user_intake][:installation_date]
+            user_intake.created_by = current_user.id
+            user_intake.updated_by = current_user.id
+            user_intake.save
+    		populate_user(params[:user],params[:user_email],'halouser',current_user.id)
+    		user_intake.users.push(@user)
+    		
+	        add_caregiver = "1"
+            if params[:same_as_user] and params[:same_as_user] == 'on'
+              populate_subscriber(@user.id,"1",add_caregiver,params[:user_email],params[:user])
+              user_intake.users.push(@user)
+  	        else
+  	          populate_subscriber(@user.id,"0",add_caregiver,params[:subscriber_email],params[:subscriber])
+  	          user_intake.users.push(@user)
             end
             
-            @subscription = Subscription.new
-	        @subscription[:senior_user_id] = @user.id
-            if params[:same_as_user] and params[:same_as_user] == 'on'
-            	debugger
-              halouser = User.find(@user.id)
-              @subscription[:subscriber_user_id] = @user.id
-              @subscription[:bill_to_first_name] = halouser.profile.first_name
-		      @subscription[:bill_to_last_name] = halouser.profile.last_name
-		      @subscription[:bill_amount] = halouser.group_recurring_charge
-		      
-              @subscription.save!
-  	          role = @user.has_role 'subscriber', halouser
-  	          UserMailer.deliver_subscriber_email(@user)
-  	          UserMailer.deliver_signup_notification_halouser(@user,halouser)
-  	        else
-  	        	@subscriber = User.new
-  	        	@subscriber.email = params[:subscriber_email]
-  	        	@subscriber[:is_new_subscriber] = true
-  	        	
-  	        	if @subscriber.save!
-  	        		@subscriber_profile = Profile.new(params[:subscriber])
-  	        		#@subscriber_profile.last_name = 'test'
-  	        		@subscriber_profile.user_id = @subscriber.id
-  	        		@subscriber_profile.save
-  	        		subscriber = User.find(@subscriber.id)
-  	        		@subscription[:bill_to_first_name] = subscriber.profile.first_name
-		      		@subscription[:bill_to_last_name] = subscriber.profile.last_name
-  	        		@subscription[:bill_amount] = subscriber.group_recurring_charge
-  	        		@subscription[:subscriber_user_id] = @subscriber.id
-  	        		@subscription.save!
-  	        		role = @subscriber.has_role 'subscriber', @user
-  	                UserMailer.deliver_subscriber_email(@subscriber)
-  	                UserMailer.deliver_signup_notification_halouser(@subscriber,@user)
-  	        	end
-            end
+            #UserMailer.deliver_subscriber_email(@user)
+  	        UserMailer.deliver_signup_notification_halouser(@user,@senior)
             unless params[:no_caregiver_1]
              @car1 = User.populate_caregiver(params[:caregiver1_email],@user.id,nil,nil,params[:caregiver1])
              set_roles_users_option(@car1,params[:car1_roles_users_option])
+             user_intake.users.push(@car1)
             end
             unless params[:no_caregiver_2]
              @car2 = User.populate_caregiver(params[:caregiver2_email],@user.id,nil,nil,params[:caregiver2])
              set_roles_users_option(@car2,params[:car2_roles_users_option])
+             user_intake.users.push(@car2)
             end
             unless params[:no_caregiver_3]
              @car3 = User.populate_caregiver(params[:caregiver3_email],@user.id,nil,nil,params[:caregiver3])
              set_roles_users_option(@car3,params[:car3_roles_users_option])
+             user_intake.users.push(@car3)
             end
     	end
-    	redirect_to :action => 'user_intake_form'
+    elsif params[:id]
+    	@user_intake = UserIntake.find(params[:id])
+    	@user_intake.users
 	end
-  	
+  	redirect_to :action => 'user_intake_form'
   end
 
   def set_roles_users_option(caregiver,roles_users_option)

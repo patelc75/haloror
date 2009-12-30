@@ -7,7 +7,8 @@
   	<center><h2>myHalo User Intake Form</h2></center>
     <div class="content" style="padding-right:20px;">
       <div style="border:2px solid;width:99.6%;height:40px;padding-top:10px;">
-      	Installation Date:<%= date_select :user_intake,:installation_date %>
+      	Installation Date:<%= date_select :user_intake,:installation_date %><br>
+      	<div id="hits"></div>
       </div>					
       <div style="float:left;width:49%;border-right:2px solid;border-left:2px solid;height:400px;">
       	<center><h3>User Information</h3></center>
@@ -57,8 +58,11 @@
 	      </tr>    
           <tr>
 	        <td>Email(optional):</td>
-	        <td><input type="text" size="50" name="user_email"></td>
+	        <td><input type="text" size="50" name="user_email" id="user_mail"></td>
           </tr>
+          <%#= observe_field(:user_mail, :url => { :action => :validation },
+      						:update => :hits, :on => 'blur') %>
+
 	      <tr>
 	        <td>Date of Birth:</td>
 	        <td><%= date_select :user, :birth_date,:start_year => 1900%></td>
@@ -197,23 +201,28 @@
           </tr>
           <tr>
           	<td>Time zone:</td>
-            <td><%= time_zone_select :caregiver1, :time_zone, TimeZone.us_zones,:default => "Central Time (US & Canada)" %></td>
+            <td><%= time_zone_select :caregiver1, :time_zone, TimeZone.us_zones,{:default => "Central Time (US & Canada)"},html_options = {:style=>"width:150px;"} %></td>
           </tr>
 	      <tr>
 	        <td colspan="2">Order of Numbers to call in case of Emergency:</td>
           </tr>
 	      <tr>
-	        <td>#1:<%#= select("caregiver1", "work_phone_order", @CATEGORIES, {:include_blank => true})
+	        <td>Home Phone Order
+	        	<%#= select("caregiver1", "work_phone_order", @CATEGORIES, {:include_blank => true})
 %></td>
 	        <td><input type="text" size="20" name="caregiver1[home_phone_order]"></td>
           </tr>
 	      <tr>
-	        <td>#2:</td>
+	        <td>Work Phone Order</td>
 	        <td><input type="text" size="20" name="caregiver1[work_phone_order]"></td>
           </tr>
 	      <tr>
-	        <td>#3:</td>
+	        <td>Cell Phone Order</td>
 	        <td><input type="text" size="20" name="caregiver1[cell_phone_order]"></td>
+          </tr>
+	      <tr>
+	        <td>Other Phone Order</td>
+	        <td><input type="text" size="20" name="caregiver1[other_phone_order]"></td>
           </tr>
 	      <tr>
 	        <td>Cell Phone Provider:</td>
@@ -234,9 +243,9 @@
           </tr>
           <tr>
 	        <td colspan="2">Do you have key to residence:
-	        	<select>
-	        		<option value="yes">Yes</option>
-	        		<option value="no">No</option>
+	        	<select name="car1_roles_users_option[is_keyholder]">
+	        		<option value="1">Yes</option>
+	        		<option value="0">No</option>
 	        	</select>
 	        </td>
           </tr>
@@ -245,19 +254,19 @@
           </tr>
 	      <tr>
 	        <td></td>
-	        <td><input type="checkbox"> Call</td>
+	        <td><input type="checkbox" name="car1_roles_users_option[phone_active]"> Call</td>
           </tr>
 	      <tr>
 	        <td></td>
-	        <td><input type="checkbox"> Email</td>
+	        <td><input type="checkbox" name="car1_roles_users_option[email_active]"> Email</td>
           </tr>
 	      <tr>
 	        <td></td>
-	        <td><input type="checkbox"> Text</td>
+	        <td><input type="checkbox" name="car1_roles_users_option[text_active]"> Text</td>
           </tr>
 	      <tr>
 	        <td></td>
-	        <td><input type="checkbox"> All</td>
+	        <td><input type="checkbox" name="car1_roles_users_option[all_active]"> All</td>
           </tr>
 		</table>
 	  </div>
@@ -308,22 +317,26 @@
           </tr>
           <tr>
           	<td>Time zone:</td>
-            <td><%= time_zone_select :caregiver2, :time_zone, TimeZone.us_zones,:default => "Central Time (US & Canada)" %></td>
+            <td><%= time_zone_select :caregiver2, :time_zone, TimeZone.us_zones,{:default => "Central Time (US & Canada)"},html_options = {:style=>"width:150px;"} %></td>
           </tr>
 	      <tr>
 	        <td colspan="2">Order of Numbers to call in case of Emergency:</td>
           </tr>
 	      <tr>
-	        <td>#1:</td>
+	        <td>Home Phone Order</td>
 	        <td><input type="text" size="20" name="caregiver2[home_phone_order]"></td>
           </tr>
 	      <tr>
-	        <td>#2:</td>
+	        <td>Work Phone Order</td>
 	        <td><input type="text" size="20" name="caregiver2[work_phone_order]"></td>
           </tr>
 	      <tr>
-	        <td>#3:</td>
+	        <td>Cell Phone Order</td>
 	        <td><input type="text" size="20" name="caregiver2[cell_phone_order]"></td>
+          </tr>
+	      <tr>
+	        <td>Other Phone Order</td>
+	        <td><input type="text" size="20" name="caregiver2[other_phone_order]"></td>
           </tr>
 	      <tr>
 	        <td>Cell Phone Provider:</td>
@@ -344,9 +357,9 @@
           </tr>
           <tr>
 	        <td colspan="2">Do you have key to residence:
-	        	<select>
-	        		<option value="yes">Yes</option>
-	        		<option value="no">No</option>
+	        	<select name="car2_roles_users_option[:is_keyholder]">
+	        		<option value="1">Yes</option>
+	        		<option value="0">No</option>
 	        	</select>
 	        </td>
           </tr>
@@ -355,15 +368,15 @@
           </tr>
 	      <tr>
 	        <td></td>
-	        <td><input type="checkbox"> Call</td>
+	        <td><input type="checkbox" name="car2_roles_users_option[phone_active]"> Call</td>
           </tr>
 	      <tr>
 	        <td></td>
-	        <td><input type="checkbox"> Email</td>
+	        <td><input type="checkbox" name="car2_roles_users_option[email_active]"> Email</td>
           </tr>
 	      <tr>
 	        <td></td>
-	        <td><input type="checkbox"> Text</td>
+	        <td><input type="checkbox" name="car2_roles_users_option[text_active]"> Text</td>
           </tr>
 	      <tr>
 	        <td></td>
@@ -418,22 +431,26 @@
           </tr>
           <tr>
           	<td>Time zone:</td>
-            <td><%= time_zone_select :caregiver3, :time_zone, TimeZone.us_zones,:default => "Central Time (US & Canada)" %></td>
+            <td><%= time_zone_select(:caregiver3, :time_zone, TimeZone.us_zones,{:default => "Central Time (US & Canada)"},html_options = {:style=>"width:150px;"} ) %></td>
           </tr>
 	      <tr>
 	        <td colspan="2">Order of Numbers to call in case of Emergency:</td>
           </tr>
 	      <tr>
-	        <td>#1:</td>
+	        <td>Home Phone Order</td>
 	        <td><input type="text" size="20" name="caregiver3[home_phone_order]"></td>
           </tr>
 	      <tr>
-	        <td>#2:</td>
+	        <td>Work Phone Order</td>
 	        <td><input type="text" size="20" name="caregiver3[work_phone_order]"></td>
           </tr>
 	      <tr>
-	        <td>#3:</td>
+	        <td>Cell Phone Order</td>
 	        <td><input type="text" size="20" name="caregiver3[cell_phone_order]"></td>
+          </tr>
+	      <tr>
+	        <td>Other Phone Order</td>
+	        <td><input type="text" size="20" name="caregiver3[other_phone_order]"></td>
           </tr>
 	      <tr>
 	        <td>Cell Phone Provider:</td>
@@ -454,9 +471,9 @@
           </tr>
           <tr>
 	        <td colspan="2">Do you have key to residence:
-	        	<select>
-	        		<option value="yes">Yes</option>
-	        		<option value="no">No</option>
+	        	<select name="car3_roles_users_option[:is_keyholder]">
+	        		<option value="1">Yes</option>
+	        		<option value="0">No</option>
 	        	</select>
 	        </td>
           </tr>
@@ -465,15 +482,15 @@
           </tr>
 	      <tr>
 	        <td></td>
-	        <td><input type="checkbox"> Call</td>
+	        <td><input type="checkbox" name="car3_roles_users_option[phone_active]"> Call</td>
           </tr>
 	      <tr>
 	        <td></td>
-	        <td><input type="checkbox"> Email</td>
+	        <td><input type="checkbox" name="car3_roles_users_option[email_active]"> Email</td>
           </tr>
 	      <tr>
 	        <td></td>
-	        <td><input type="checkbox"> Text</td>
+	        <td><input type="checkbox" name="car3_roles_users_option[text_active]"> Text</td>
           </tr>
 	      <tr>
 	        <td></td>
