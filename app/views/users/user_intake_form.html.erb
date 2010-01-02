@@ -554,27 +554,27 @@
 		  <table>
 	  	    <tr>
 		      <td>Premises Access (Combination, Lockbox Code, Key Location)</td>
-		      <td><%= text_field :profile, :access_information ,:size => "20"%></td>
+		      <td><%= text_field :user, :access_information ,:size => "20"%></td>
 		    </tr>
 		    <tr>
 		  	  <td>Door to break into if no key</td>
-		  	  <td><%= text_field :profile, :door,:size => "20" %></td>
+		  	  <td><%= text_field :user, :door,:size => "20" %></td>
 		    </tr>
 		    <tr>
 		  	  <td>Pet Information</td>
-		  	  <td><%= text_field :profile, :pet_information,:size => "20" %></td>
+		  	  <td><%= text_field :user, :pet_information,:size => "20" %></td>
 		    </tr>
 		    <tr>
 		  	  <td>Hospital Preference</td>
-		  	  <td><%= text_field :profile, :hospital_preference ,:size => "20"%></td>
+		  	  <td><%= text_field :user, :hospital_preference ,:size => "20"%></td>
 		    </tr>
 		    <tr>
 		  	  <td>Hospital Number</td>
-		  	  <td><%= text_field :profile, :hospital_number ,:size => "20"%></td>
+		  	  <td><%= text_field :user, :hospital_number ,:size => "20"%></td>
 		    </tr>
 		    <tr>
 		  	  <td>Doctor Name</td>
-		  	  <td><%= text_field :profile, :doctor_name ,:size => "20"%></td>
+		  	  <td><%= text_field :user, :doctor_name ,:size => "20"%></td>
 		    </tr>
 		  </table>	
 	    </div>
@@ -582,51 +582,51 @@
 	  	  <table>
 	  	    <tr>
 		      <td>Doctor Phone</td>
-		      <td><%= text_field :profile, :doctor_phone ,:size => "20"%></td>
+		      <td><%= text_field :user, :doctor_phone ,:size => "20"%></td>
 		    </tr>
 		    <tr>
 		  	  <td>Medical equipment in the home</td>
-		  	  <td><%= text_field :profile, :medical_equipment_in_the_home ,:size => "20"%></td>
+		  	  <td><%= text_field :user, :medical_equipment_in_the_home ,:size => "20"%></td>
 		    </tr>
 		    <tr>
 		      <td>Medications</td>
-		      <td><%= text_area :profile, :medications , :cols => 20, :rows => 5%></td>
+		      <td><%= text_area :user, :medications , :cols => 20, :rows => 5%></td>
 		    </tr>
 		    <tr>
 		      <td>Drug Allergies</td>
-		      <td><%= text_area :profile, :allergies, :cols => 20, :rows => 5%></td>
+		      <td><%= text_area :user, :allergies, :cols => 20, :rows => 5%></td>
 		    </tr>
 	      </table>
 	    </div>
 	    <div style="float:right;width:32%;">
 	  	  <table>
 	  	    <tr>
-		      <td><%= check_box :profile, :diabetes %></td>
+		      <td><%= check_box :user, :diabetes %></td>
 		      <td>Diabetes</td>
 		    </tr>
 		    <tr>
-		  	  <td><%= check_box :profile, :cancer %></td>
+		  	  <td><%= check_box :user, :cancer %></td>
 		  	  <td>Cancer</td>
 		    </tr>
 		    <tr>
-		      <td><%= check_box :profile, :seizures %></td>
+		      <td><%= check_box :user, :seizures %></td>
 		      <td>Seizures</td>
 		    </tr>
 		    <tr>
-		      <td><%= check_box :profile, :stroke_cva_tia %></td>
+		      <td><%= check_box :user, :stroke_cva_tia %></td>
 		      <td>Stroke/CVA/TIA</td>
 		    </tr>
 		    <tr>
-		      <td><%= check_box :profile, :cardiac_history %></td>
+		      <td><%= check_box :user, :cardiac_history %></td>
 		      <td>Cardiac history</td>
 		    </tr>
 		    <tr>
-		      <td><%= check_box :profile, :pacemaker %></td>
+		      <td><%= check_box :user, :pacemaker %></td>
 		      <td>Pacemaker</td>
 		    </tr>
 		    <tr>
 		      <td>Additional Info</td>
-		      <td><%= text_area :profile,:additional_info,:cols => 20, :rows => 5%></td>
+		      <td><%= text_area :user,:additional_info,:cols => 20, :rows => 5%></td>
 		    </tr>
 	      </table>
 	    </div>

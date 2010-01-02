@@ -259,7 +259,6 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
 	        add_caregiver = "1"
             if params[:same_as_user] and params[:same_as_user] == 'on'
               populate_subscriber(@user.id,"1",add_caregiver,params[:user_email],params[:user])
-              user_intake.users.push(@user)
   	        else
   	          populate_subscriber(@user.id,"0",add_caregiver,params[:subscriber_email],params[:subscriber])
   	          user_intake.users.push(@user)
