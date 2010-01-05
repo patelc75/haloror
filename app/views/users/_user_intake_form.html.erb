@@ -1,0 +1,663 @@
+<div id="call_list-col">
+	<div id="call_list-col-header">
+		myHalo User Intake Form
+	</div>
+  <div style="margin-left:25px">
+    <div class="content" style="padding-right:20px;">
+      <div style="border:2px solid;width:99.6%;height:40px;padding-top:10px;">
+      	Installation Date:<%= date_select :user_intake,:installation_date %><br>
+      	<div id="hits"></div>
+      </div>					
+      <div style="float:left;width:49%;border-right:2px solid;border-left:2px solid;height:400px;">
+      	<center><h3>User Information</h3></center>
+	    <table width="100%">
+	      <tr>
+		    <td>First Name:</td>
+		    <td><%= text_field :user, :first_name ,:size => "50"%></td>
+	      </tr>
+	      <tr>
+		    <td>Last Name:</td>
+		    <td><%= text_field :user, :last_name ,:size => "50"%></td>
+	      </tr>
+	      <tr>
+	        <td>Address:</td>
+	        <td><%= text_field :user, :address ,:size => "50"%></td>
+          </tr>
+	      <tr>
+	        <td>City:</td>
+	        <td><%= text_field :user, :city ,:size => "9"%>State:<%= text_field :user, :state ,:size => "9"%>Zip:<%= text_field :user, :zipcode ,:size => "9"%></td>
+          </tr>
+	      <tr>
+	        <td>Phone Number:</td>
+	        <td><%= text_field :user, :home_phone ,:size => "50"%></td>
+          </tr>
+	      <tr>
+	        <td>Cell Number:</td>
+	        <td><%= text_field :user, :cell_phone ,:size => "50"%></td>
+          </tr>
+          <tr>
+          	<td>Cell Provider:</td>
+          	<td>
+            <select id="user_carrier_id" name="user[carrier_id]" style="width:220px;">
+	        <% if @user == nil or @user.carrier_id == 0 or @user.carrier_id == nil -%>
+	          <option value="" selected="selected" >
+	          Select Cell Provider for Text Msg </option>
+	        <% end -%>
+	        <% @carrier = Carrier.find(:all, :order => "id")
+	             @carrier.each do |carrier| %>
+	          <option value="<%= carrier.id %>"
+	           <% if @user && @user.carrier_id == carrier.id -%> selected="selected"<% end -%>
+	          >
+	          <%= carrier.name %> 
+	         </option>
+	        <% end %>
+	        </select>
+	        </td>
+	      </tr>    
+          <tr>
+	        <td>Email(optional):</td>
+	        <td><%= text_field :user, :email ,:size => "50"%></td>
+          </tr>
+          <%#= observe_field(:user_mail, :url => { :action => :validation },
+      						:update => :hits, :on => 'blur') %>
+
+	      <tr>
+	        <td>Date of Birth:</td>
+	        <td><%= date_select :user, :birth_date,:start_year => 1900%></td>
+          </tr>
+          <tr>
+	        <td>Hidden Key:</td>
+	        <td><input type="text" size="50"></td>
+          </tr>
+          <tr>
+	        <td>Additional Information:</td>
+	        <td><input type="text" size="50"></td>
+          </tr>
+          <tr>
+	        <td colspan="2"><input type="text" size="67"></td>
+          </tr>
+          <tr>
+          	<td>Time zone:</td>
+            <td><%= time_zone_select :user, :time_zone, TimeZone.us_zones,:default => "Central Time (US & Canada)"%></td>
+          </tr>
+		</table>
+	  </div>
+	  <div style="float:right;width:50%;border-right:2px solid;height:400px;">
+	  	<center><h3>Billing Information</h3></center>
+	  	<table width="100%">
+          <tr>
+	        <td colspan="2"><input type="checkbox" name="same_as_user" <%unless @subscriber %>checked<%end%> onclick="show_form(this,'subscriber_form')">Same as User</td>
+          </tr>
+	  	</table>
+	  	<span id="subscriber_form" <%unless @subscriber %>style="display:none"<%end%>>
+	    <table width="100%">
+	      <tr>
+		    <td>First Name:</td>
+		    <td><%= text_field :subscriber, :first_name ,:size => "50"%></td>
+	      </tr>
+	      <tr>
+		    <td>Last Name:</td>
+		    <td><%= text_field :subscriber, :last_name ,:size => "50"%></td>
+	      </tr>
+	      <tr>
+	        <td>Address:</td>
+	        <td><%= text_field :subscriber, :address ,:size => "50"%></td>
+          </tr>
+	      <tr>
+	        <td>City:</td>
+	        <td><%= text_field :subscriber, :city ,:size => "9"%>State:<%= text_field :subscriber, :state ,:size => "9"%>Zip:<%= text_field :subscriber, :zipcode ,:size => "9"%></td>
+          </tr>
+	      <tr>
+	        <td>Phone Number:</td>
+	        <td><%= text_field :subscriber, :home_phone ,:size => "50"%></td>
+          </tr>
+	      <tr>
+	        <td>Cell Number:</td>
+	        <td><%= text_field :subscriber, :cell_phone ,:size => "50"%></td>
+          </tr>
+          <tr>
+	        <td>Work Phone:</td>
+	        <td><%= text_field :subscriber, :work_phone ,:size => "50"%></td>
+          </tr>
+          <tr>
+	        <td>Email:</td>
+	        <td><%= text_field :subscriber, :email ,:size => "50"%></td>
+          </tr>
+          <tr>
+          	<td>Time zone:</td>
+            <td><%= time_zone_select :subscriber, :time_zone, TimeZone.us_zones,:default => "Central Time (US & Canada)" %></td>
+          </tr>
+          <tr>
+          	<td>Cell Provider:</td>
+          	<td>
+            <select id="subscriber_carrier_id" name="subscriber[carrier_id]" style="width:220px;">
+	        <% if @subscriber == nil or @subscriber.carrier_id == 0 or @subscriber.carrier_id == nil -%>
+	          <option value="" selected="selected" >
+	          Select Cell Provider for Text Msg </option>
+	        <% end -%>
+	        <% @carrier = Carrier.find(:all, :order => "id")
+	             @carrier.each do |carrier| %>
+	          <option value="<%= carrier.id %>"
+	           <% if @subscriber && @subscriber.carrier_id == carrier.id -%> selected="selected"<% end -%>
+	          >
+	          <%= carrier.name %> 
+	         </option>
+	        <% end %>
+	        </select>
+	        </td>
+	      </tr>    
+          <tr>
+	        <td colspan="2"><input type="checkbox" name="credit_card">Credit Card/Debit Card Processed:</td>
+          </tr>
+		</table>
+		</span>
+	  </div>
+	  <div style="clear:both"></div>
+	  <div style="border:2px solid;width:99.6%;height:40px;padding-top:10px;">
+      	<center><h3>Caregiver Information (in order of notification)</h3></center>
+      </div>
+	  <div style="float:left;width:33%;border-right:2px solid;border-left:2px solid;height:620px;">
+        <table border="0" width="100%">
+          <tr>
+	        <td colspan="2"><input type="checkbox" name="no_caregiver_1" <%unless @caregiver1 %>checked<%end%> onclick = "show_form(this,'caregiver1_form')">No Caregiver #1</td>
+          </tr>
+        </table>
+        <span id="caregiver1_form" <%unless @caregiver1 %>style="display:none"<%end%>>
+	  	<table border="0" width="100%">
+	      <tr>
+		    <td>First Name:</td>
+		    <td><%= text_field :caregiver1, :first_name ,:size => "20"%></td>
+	      </tr>
+	      <tr>
+		    <td>Last Name:</td>
+		    <td><%= text_field :caregiver1, :last_name ,:size => "20"%></td>
+	      </tr>
+	      <tr>
+	        <td>Address:</td>
+	        <td><%= text_field :caregiver1, :address ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>City:</td>
+	        <td><%= text_field :caregiver1, :city ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>State:</td>
+	        <td><%= text_field :caregiver1, :state ,:size => "6"%>Zip:<%= text_field :caregiver1, :zipcode ,:size => "4"%></td>
+          </tr>
+	      <tr>
+	        <td>Phone Number:</td>
+	        <td><%= text_field :caregiver1, :home_phone ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Cell Number:</td>
+	        <td><%= text_field :caregiver1, :cell_phone ,:size => "20"%></td>
+          </tr>
+          <tr>
+	        <td>Work Phone:</td>
+	        <td><%= text_field :caregiver1, :work_phone ,:size => "20"%></td>
+          </tr>
+          <tr>
+	        <td>Additional:</td>
+	        <td><%= text_field :caregiver1, :other_phone ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Email:</td>
+	        <td><%= text_field :caregiver1, :email ,:size => "20"%></td>
+          </tr>
+          <tr>
+          	<td>Time zone:</td>
+            <td><%= time_zone_select :caregiver1, :time_zone, TimeZone.us_zones,{:default => "Central Time (US & Canada)"},html_options = {:style=>"width:150px;"} %></td>
+          </tr>
+	      <tr>
+	        <td colspan="2">Order of Numbers to call in case of Emergency:</td>
+          </tr>
+	      <tr>
+	        <td>Home Phone Order
+	        	<%#= select("caregiver1", "work_phone_order", @CATEGORIES, {:include_blank => true})
+%></td>
+	        <td><%= text_field :caregiver1, :home_phone_order ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Work Phone Order</td>
+	        <td><%= text_field :caregiver1, :work_phone_order ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Cell Phone Order</td>
+	        <td><%= text_field :caregiver1, :cell_phone_order ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Other Phone Order</td>
+	        <td><%= text_field :caregiver1, :other_phone_order ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Cell Phone Provider:</td>
+	        <td>
+	        	<select id="caregiver1_carrier_id" name="caregiver1[carrier_id]">
+	        	<option value="" selected="selected" >
+	            Select Cell Provider </option>
+	           <% @carrier = Carrier.find(:all, :order => "id")
+	             @carrier.each do |carrier| %>
+	               <option value="<%= carrier.id %>"
+	                <% if @caregiver1 and @caregiver1.carrier_id == carrier.id -%> selected="selected"<% end -%>
+	               >
+	               <%= carrier.name %> 
+	               </option>
+	          <% end %>
+	          </select>
+            </td>
+          </tr>
+          <tr>
+	        <td colspan="2">Do you have key to residence:
+	        	<select id="car1_roles_users_option_is_keyholder" name="car1_roles_users_option[is_keyholder]">
+	        		<option value="1">Yes</option>
+	        		<option value="0">No</option>
+	        	</select>
+	        </td>
+          </tr>
+          <tr>
+	        <td colspan="2"><center>Alert you wish to use:</center></td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><%= check_box :car1_roles_users_option, :phone_active %> Call</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><%= check_box :car1_roles_users_option, :email_active %> Email</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><%= check_box :car1_roles_users_option, :text_active %> Text</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox" name="car1_roles_users_option[all_active]"> All</td>
+          </tr>
+		</table>
+		</span>
+	  </div>
+	  <div style="float:left;width:33%;border-right:2px solid;height:620px;">
+        <table border="0" width="100%">
+          <tr>
+	        <td colspan="2"><input type="checkbox" name="no_caregiver_2" <%unless @caregiver2 %>checked<%end%> onclick = "show_form(this,'caregiver2_form')">No Caregiver #2</td>
+          </tr>
+        </table>
+        <span id="caregiver2_form" <%unless @caregiver2 %>style="display:none"<%end%>>
+	  	<table border="0" width="100%">
+	      <tr>
+		    <td>First Name:</td>
+		    <td><%= text_field :caregiver2, :first_name ,:size => "20"%></td>
+	      </tr>
+	      <tr>
+		    <td>Last Name:</td>
+		    <td><%= text_field :caregiver2, :last_name ,:size => "20"%></td>
+	      </tr>
+	      <tr>
+	        <td>Address:</td>
+	        <td><%= text_field :caregiver2, :address ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>City:</td>
+	        <td><%= text_field :caregiver2, :city ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>State:</td>
+	        <td><%= text_field :caregiver2, :state ,:size => "6"%>Zip:<%= text_field :caregiver2, :zipcode ,:size => "4"%></td>
+          </tr>
+	      <tr>
+	        <td>Phone Number:</td>
+	        <td><%= text_field :caregiver2, :home_phone ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Cell Number:</td>
+	        <td><%= text_field :caregiver2, :cell_phone ,:size => "20"%></td>
+          </tr>
+          <tr>
+	        <td>Work Phone:</td>
+	        <td><%= text_field :caregiver2, :work_phone ,:size => "20"%></td>
+          </tr>
+          <tr>
+	        <td>Additional:</td>
+	        <td><%= text_field :caregiver2, :other_phone ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Email:</td>
+	        <td><%= text_field :caregiver2, :email ,:size => "20"%></td>
+          </tr>
+          <tr>
+          	<td>Time zone:</td>
+            <td><%= time_zone_select :caregiver2, :time_zone, TimeZone.us_zones,{:default => "Central Time (US & Canada)"},html_options = {:style=>"width:150px;"} %></td>
+          </tr>
+	      <tr>
+	        <td colspan="2">Order of Numbers to call in case of Emergency:</td>
+          </tr>
+	      <tr>
+	        <td>Home Phone Order</td>
+	        <td><%= text_field :caregiver2, :home_phone_order ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Work Phone Order</td>
+	        <td><%= text_field :caregiver2, :work_phone_order ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Cell Phone Order</td>
+	        <td><%= text_field :caregiver2, :cell_phone_order ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Other Phone Order</td>
+	        <td><%= text_field :caregiver2, :other_phone_order ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Cell Phone Provider:</td>
+	        <td>
+	        	<select>
+	        	<option value="" selected="selected" >
+	            Select Cell Provider </option>
+	           <% @carrier = Carrier.find(:all, :order => "id")
+	             @carrier.each do |carrier| %>
+	               <option value="<%= carrier.id %>"
+	                <% if @caregiver2 && @caregiver2.carrier_id == carrier.id -%> selected="selected"<% end -%>
+	               >
+	               <%= carrier.name %> 
+	               </option>
+	          <% end %>
+	          </select>
+	        </td>
+          </tr>
+          <tr>
+	        <td colspan="2">Do you have key to residence:
+	        	<select id="car2_roles_users_option_is_keyholder" name="car2_roles_users_option[:is_keyholder]">
+	        		<option value="1">Yes</option>
+	        		<option value="0">No</option>
+	        	</select>
+	        </td>
+          </tr>
+          <tr>
+	        <td colspan="2"><center>Alert you wish to use:</center></td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><%= check_box :car2_roles_users_option, :phone_active %> Call</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><%= check_box :car2_roles_users_option, :email_active %> Email</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><%= check_box :car2_roles_users_option, :text_active %> Text</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> All</td>
+          </tr>
+		</table>
+		</span>
+	  </div>
+	  <div style="float:right;width:33%;border-right:2px solid;height:620px;">
+	  	<table width="100%">
+	  	  <tr>
+	        <td colspan="2"><input type="checkbox" name="no_caregiver_3" <%unless @caregiver3 %>checked<%end%> onclick = "show_form(this,'caregiver3_form')">No Caregiver #3</td>
+          </tr>
+        </table>
+        <span id="caregiver3_form" <%unless @caregiver3 %>style="display:none"<%end%>>
+	  	<table border="0" width="100%">
+	      <tr>
+		    <td>First Name:</td>
+		    <td><%= text_field :caregiver3, :first_name ,:size => "20"%></td>
+	      </tr>
+	      <tr>
+		    <td>Last Name:</td>
+		    <td><%= text_field :caregiver3, :last_name ,:size => "20"%></td>
+	      </tr>
+	      <tr>
+	        <td>Address:</td>
+	        <td><%= text_field :caregiver3, :address ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>City:</td>
+	        <td><%= text_field :caregiver3, :city ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>State:</td>
+	        <td><%= text_field :caregiver3, :state ,:size => "6"%>Zip:<%= text_field :caregiver3, :zipcode ,:size => "4"%></td>
+          </tr>
+	      <tr>
+	        <td>Phone Number:</td>
+	        <td><%= text_field :caregiver3, :home_phone ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Cell Number:</td>
+	        <td><%= text_field :caregiver3, :cell_phone ,:size => "20"%></td>
+          </tr>
+          <tr>
+	        <td>Work Phone:</td>
+	        <td><%= text_field :caregiver3, :work_phone ,:size => "20"%></td>
+          </tr>
+          <tr>
+	        <td>Additional:</td>
+	        <td><%= text_field :caregiver3, :other_phone ,:size => "20"%></td>
+          </tr>
+          <tr>
+	        <td>Email:</td>
+	        <td><%= text_field :caregiver3, :email ,:size => "20"%></td>
+          </tr>
+          <tr>
+          	<td>Time zone:</td>
+            <td><%= time_zone_select(:caregiver3, :time_zone, TimeZone.us_zones,{:default => "Central Time (US & Canada)"},html_options = {:style=>"width:150px;"} ) %></td>
+          </tr>
+	      <tr>
+	        <td colspan="2">Order of Numbers to call in case of Emergency:</td>
+          </tr>
+	      <tr>
+	        <td>Home Phone Order</td>
+	        <td><%= text_field :caregiver3, :home_phone_order ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Work Phone Order</td>
+	        <td><%= text_field :caregiver3, :work_phone_order ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Cell Phone Order</td>
+	        <td><%= text_field :caregiver3, :cell_phone_order ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Other Phone Order</td>
+	        <td><%= text_field :caregiver3, :other_phone_order ,:size => "20"%></td>
+          </tr>
+	      <tr>
+	        <td>Cell Phone Provider:</td>
+	        <td>
+	        	<select>
+	        	<option value="" selected="selected" >
+	            Select Cell Provider </option>
+	           <% @carrier = Carrier.find(:all, :order => "id")
+	             @carrier.each do |carrier| %>
+	               <option value="<%= carrier.id %>"
+	                <% if @profile && @profile.carrier_id == carrier.id -%> selected="selected"<% end -%>
+	               >
+	               <%= carrier.name %> 
+	               </option>
+	          <% end %>
+	          </select>
+	        </td>
+          </tr>
+          <tr>
+	        <td colspan="2">Do you have key to residence:
+	        	<select id="car3_roles_users_option_is_keyholder" name="car3_roles_users_option[:is_keyholder]">
+	        		<option value="1">Yes</option>
+	        		<option value="0">No</option>
+	        	</select>
+	        </td>
+          </tr>
+          <tr>
+	        <td colspan="2"><center>Alert you wish to use:</center></td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><%= check_box :car3_roles_users_option, :phone_active %> Call</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><%= check_box :car3_roles_users_option, :email_active %> Email</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><%= check_box :car3_roles_users_option, :text_active %> Text</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox"> All</td>
+          </tr>
+		</table>
+		</span>
+	  </div>
+	  <div style="clear:both"></div>
+	  <div style="border:2px solid;border-left:2px solid;width:99.6%;height:400px;"> 
+	  	<center><h3>Medical Information</h3></center>
+	    <div style="float:left;width:32%;">
+	  	
+<!--	  	
+	  	<center><h3>Medical Information</h3></center>
+	  	<table>
+	  	  <tr>
+	  	  	<td>Medical Equipment used in home:</td>
+	  	  	<td><input type="text" size="70"></td>
+	  	  </tr>
+	  	</table>
+	  	<center><h3>Medical history</h3></center>
+	  	<table style="padding-left:100px;">
+	  	  <tr>
+	  	  	<td><input type="checkbox"> Diabetes</td>
+	  	  	<td></td>
+	  	  	<td>Any know drug Allergies:</td>
+	  	  	<td><input type="text" size="20"></td>
+	  	  </tr>
+	  	  <tr>
+	  	  	<td><input type="checkbox"> Cancer</td>
+	  	  	<td></td>
+	  	  	<td colspan="2"><input type="text" size="50"></td>
+	  	  </tr>
+	  	  <tr>
+	  	  	<td><input type="checkbox"> Seizures</td>
+	  	  	<td></td>
+	  	  	<td colspan="2"><input type="text" size="50"></td>
+	  	  </tr>
+	  	  <tr>
+	  	  	<td><input type="checkbox"> Stroke/CVA/TIA</td>
+	  	  	<td width="200px"></td>
+	  	  	<td>Additional Information:</td>
+	  	  	<td><input type="text" size="20"></td>
+	  	  </tr>
+	  	  <tr>
+	  	  	<td><input type="checkbox"> Cardiac history</td>
+	  	  	<td width="200px"></td>
+	  	  	<td colspan="2"><input type="text" size="50"></td>
+	  	  </tr>
+	  	  <tr>
+	  	  	<td><input type="checkbox"> Pacemaker</td>
+	  	  	<td width="200px"></td>
+	  	  	<td colspan="2"><input type="text" size="50"></td>
+	  	  </tr>
+	  	</table>
+	  	<br>
+	  	Subscriber Signature:_____________________________________
+	  	Installer Signature:_____________________________________
+	  	<br><br>
+-->
+		  <table>
+	  	    <tr>
+		      <td>Premises Access (Combination, Lockbox Code, Key Location)</td>
+		      <td><%= text_field :user, :access_information ,:size => "20"%></td>
+		    </tr>
+		    <tr>
+		  	  <td>Door to break into if no key</td>
+		  	  <td><%= text_field :user, :door,:size => "20" %></td>
+		    </tr>
+		    <tr>
+		  	  <td>Pet Information</td>
+		  	  <td><%= text_field :user, :pet_information,:size => "20" %></td>
+		    </tr>
+		    <tr>
+		  	  <td>Hospital Preference</td>
+		  	  <td><%= text_field :user, :hospital_preference ,:size => "20"%></td>
+		    </tr>
+		    <tr>
+		  	  <td>Hospital Number</td>
+		  	  <td><%= text_field :user, :hospital_number ,:size => "20"%></td>
+		    </tr>
+		    <tr>
+		  	  <td>Doctor Name</td>
+		  	  <td><%= text_field :user, :doctor_name ,:size => "20"%></td>
+		    </tr>
+		  </table>	
+	    </div>
+	    <div style="float:left;width:32%;">
+	  	  <table>
+	  	    <tr>
+		      <td>Doctor Phone</td>
+		      <td><%= text_field :user, :doctor_phone ,:size => "20"%></td>
+		    </tr>
+		    <tr>
+		  	  <td>Medical equipment in the home</td>
+		  	  <td><%= text_field :user, :medical_equipment_in_the_home ,:size => "20"%></td>
+		    </tr>
+		    <tr>
+		      <td colspan="2"><br>Medications<br>
+		      <%= text_area :user, :medications , :cols => 32, :rows => 5%></td>
+		    </tr>
+		    <tr>
+		      <td colspan="2"><br>Drug Allergies<br>
+		      <%= text_area :user, :allergies, :cols => 32, :rows => 5%></td>
+		    </tr>
+	      </table>
+	    </div>
+	    <div style="float:right;width:32%;">
+	  	  <table>
+	  	    <tr>
+		      <td><%= check_box :user, :diabetes %></td>
+		      <td>Diabetes</td>
+		    </tr>
+		    <tr>
+		  	  <td><%= check_box :user, :cancer %></td>
+		  	  <td>Cancer</td>
+		    </tr>
+		    <tr>
+		      <td><%= check_box :user, :seizures %></td>
+		      <td>Seizures</td>
+		    </tr>
+		    <tr>
+		      <td><%= check_box :user, :stroke_cva_tia %></td>
+		      <td>Stroke/CVA/TIA</td>
+		    </tr>
+		    <tr>
+		      <td><%= check_box :user, :cardiac_history %></td>
+		      <td>Cardiac history</td>
+		    </tr>
+		    <tr>
+		      <td><%= check_box :user, :pacemaker %></td>
+		      <td>Pacemaker</td>
+		    </tr>
+		    <tr>
+		      <td colspan="2"><br>Additional Info<br>
+		      <%= text_area :user,:additional_info,:cols => 32, :rows => 5%></td>
+		    </tr>
+	      </table>
+	    </div>
+	  </div>
+	</div>
+	<div style="clear:both"></div>
+	<center><input type="submit" value="submit"></center>
+</div>
+	<div style="clear:both"></div>
+	<div id="call_list-col-footer"></div>
+</div>
+<script>
+function show_form(checkbox,form)
+{
+	if(checkbox.checked == true)
+	  document.getElementById(form).style.display = 'none'
+	else
+	  document.getElementById(form).style.display = 'block'
+}
+</script>

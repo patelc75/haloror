@@ -58,7 +58,7 @@ ActionController::Routing::Routes.draw do |map|
   
   #user related models
   map.resources :profiles
-  map.resources :users, :sessions,:collection => {:user_intake_form => :get}#added automatically after running restful_authentication script
+  map.resources :users, :sessions,:member => {:edit_user_intake_form => :any}#added automatically after running restful_authentication script
   
   #deprecated models
   #map.resources :caregivers, :active_scaffold => true 

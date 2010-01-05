@@ -40,6 +40,13 @@ class Profile < ActiveRecord::Base
   	
   	#check_valid_phone_numbers
  #end
+def email=(email)
+	nil
+end
+def email
+	self.user.email
+end
+
 
  def owner_user # for auditing
    self.user
