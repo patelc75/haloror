@@ -1,6 +1,6 @@
 <% rs = []
 	 user.roles.each do |role| 
-	  rs << role
+	  rs << role unless role.nil?
    end 
    rs.sort! do |a,b|
      a.name <=> b.name

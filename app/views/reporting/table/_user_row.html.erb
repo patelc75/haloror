@@ -51,6 +51,9 @@
 		<% if user.profile %>
 			<%#=link_to_remote_redbox('Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile[:id], :frame => true }, :html => {:method => :get})%>
 			<%=link_to('Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile.id,:user_id => user.id )%>
+			        <%if user.user_intakes and user.user_intakes.length > 0%>
+			        | <%=link_to 'Intake',edit_user_intake_form_user_path(user.user_intakes[0])%>
+			        <%end%>
 					<% if user.is_halouser? %>
 						| <%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => user.id %> 
 					    | <%= link_to_remote "Start Range Test", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :id => user.id} %> 
