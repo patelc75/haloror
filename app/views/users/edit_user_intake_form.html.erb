@@ -1,8 +1,10 @@
 <form name="edit_user_intake_form" action="edit_user_intake_form" method="post">
-	<input type="hidden" name="halo_user" value="<%= @user.id if @user%>">
-	<input type="hidden" name="sub" value="<%= @subscriber.id if @subscriber%>">
-	<input type="hidden" name="car1" value="<%= @caregiver1.id if @caregiver1%>">
-	<input type="hidden" name="car2" value="<%= @caregiver2.id if @caregiver2%>">
-	<input type="hidden" name="car3" value="<%= @caregiver3.id if @caregiver3%>">
+	u<input type="text" name="halo_user" value="<%= @user.id if @user%>">
+	s<input type="text" name="sub" value="<%= @subscriber.id if @subscriber%>">
+	c1<input type="text" name="car1" value="<%= @caregiver1.id if @caregiver1%>">
+	c2<input type="text" name="car2" value="<%= @caregiver2.id if @caregiver2%>">
+	c3<input type="text" name="car3" value="<%= @caregiver3.id if @caregiver3%>">
+	ui<input type="text" name="user_intake_id" value="<%= params[:id] %>">
+	
   <%= render :partial => 'user_intake_form'%>
 </form>

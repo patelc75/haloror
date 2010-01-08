@@ -8,7 +8,7 @@
       	Installation Date:<%= date_select :user_intake,:installation_date %><br>
       	<div id="hits"></div>
       </div>					
-      <div style="float:left;width:49%;border-right:2px solid;border-left:2px solid;height:400px;">
+      <div style="float:left;width:49%;border-right:2px solid;border-left:2px solid;height:520px;">
       	<center><h3>User Information</h3></center>
 	    <table width="100%">
 	      <tr>
@@ -82,7 +82,7 @@
           </tr>
 		</table>
 	  </div>
-	  <div style="float:right;width:50%;border-right:2px solid;height:400px;">
+	  <div style="float:right;width:50%;border-right:2px solid;height:520px;">
 	  	<center><h3>Billing Information</h3></center>
 	  	<table width="100%">
           <tr>
@@ -91,6 +91,12 @@
 	  	</table>
 	  	<span id="subscriber_form" <%unless @subscriber %>style="display:none"<%end%>>
 	    <table width="100%">
+          <tr>
+	        <td colspan="2">
+	          <input type="checkbox" name="add_caregiver" <%if @add_as_caregiver%>checked<%end%> onclick="caregiver_show_form(this,'caregiver_fields')">
+	        	Add as #1 caregiver
+        	</td>
+          </tr>
 	      <tr>
 		    <td>First Name:</td>
 		    <td><%= text_field :subscriber, :first_name ,:size => "50"%></td>
@@ -151,6 +157,37 @@
           </tr>
 		</table>
 		</span>
+		<span id="caregiver_fields" <%unless @add_as_caregiver%>style="display:none"<%end%>>
+		<table width="100%">
+          <tr>
+	        <td colspan="2">Do you have key to residence:
+	        	<select id="sub_roles_users_option_is_keyholder" name="sub_roles_users_option[is_keyholder]">
+	        		<option value="1">Yes</option>
+	        		<option value="0">No</option>
+	        	</select>
+	        </td>
+          </tr>
+          <tr>
+	        <td colspan="2"><center>Alert you wish to use:</center></td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><%= check_box :sub_roles_users_option, :phone_active %> Call</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><%= check_box :sub_roles_users_option, :email_active %> Email</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><%= check_box :sub_roles_users_option, :text_active %> Text</td>
+          </tr>
+	      <tr>
+	        <td></td>
+	        <td><input type="checkbox" name="sub_roles_users_option[all_active]"> All</td>
+          </tr>
+		</table>
+		</span>
 	  </div>
 	  <div style="clear:both"></div>
 	  <div style="border:2px solid;width:99.6%;height:40px;padding-top:10px;">
@@ -159,7 +196,7 @@
 	  <div style="float:left;width:33%;border-right:2px solid;border-left:2px solid;height:620px;">
         <table border="0" width="100%">
           <tr>
-	        <td colspan="2"><input type="checkbox" name="no_caregiver_1" <%unless @caregiver1 %>checked<%end%> onclick = "show_form(this,'caregiver1_form')">No Caregiver #1</td>
+	        <td colspan="2"><input type="checkbox" id="no_caregiver_1" name="no_caregiver_1" <%unless @caregiver1 %>checked <%end%><%if @add_as_caregiver%>disabled<%end%> onclick = "show_form(this,'caregiver1_form')">No Caregiver #1</td>
           </tr>
         </table>
         <span id="caregiver1_form" <%unless @caregiver1 %>style="display:none"<%end%>>
@@ -659,5 +696,20 @@ function show_form(checkbox,form)
 	  document.getElementById(form).style.display = 'none'
 	else
 	  document.getElementById(form).style.display = 'block'
+}
+function caregiver_show_form(checkbox,form)
+{
+	if(checkbox.checked == true)
+	{
+	  document.getElementById(form).style.display = 'block'
+	  document.getElementById('no_caregiver_1').checked =true
+	  document.getElementById('caregiver1_form').style.display = 'none'
+	  document.getElementById('no_caregiver_1').disabled =true
+    }
+	else
+	{
+	  document.getElementById(form).style.display = 'none'
+	  document.getElementById('no_caregiver_1').disabled =false
+    }
 }
 </script>

@@ -248,30 +248,36 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
   def user_intake_form
     if request.post?
     	User.transaction do
-    		user_intake = UserIntake.new
-            user_intake.installation_date = params[:user_intake][:installation_date]
+    		user_intake = UserIntake.new(params[:user_intake])
             user_intake.created_by = current_user.id
             user_intake.updated_by = current_user.id
             user_intake.save
     		populate_user(params[:user],params[:user][:email],'halouser',current_user.id)
     		user_intake.users.push(@user)
     		@senior_user = @user
-	        add_caregiver = "1"
+    		if params[:add_caregiver] and params[:add_caregiver] == 'on'
+    			add_caregiver = "0"   #0 for subscriber add as #1 caregiver
+    		else
+    			add_caregiver = "1"   #1 for subscriber do not add as caregiver
+    		end
             if params[:same_as_user] and params[:same_as_user] == 'on'
-              populate_subscriber(@user.id,"1",add_caregiver,params[:user_email],params[:user])
+              populate_subscriber(@user.id,"1",add_caregiver,params[:user][:email],params[:user])
   	        else
   	          subscriber_email = params[:subscriber][:email]
   	          populate_subscriber(@user.id,"0",add_caregiver,subscriber_email,params[:subscriber])
+  	          set_roles_users_option(@user,params[:sub_roles_users_option]) if add_caregiver == "0"
   	          user_intake.users.push(@user)
             end
-            
+
             #UserMailer.deliver_subscriber_email(@user)
   	        UserMailer.deliver_signup_notification_halouser(@user,@senior)
-            unless params[:no_caregiver_1]
-             caregiver1_email = params[:caregiver1][:email]
-             @car1 = User.populate_caregiver(caregiver1_email,@senior.id,nil,nil,params[:caregiver1])
-             set_roles_users_option(@car1,params[:car1_roles_users_option])
-             user_intake.users.push(@car1)
+  	        if add_caregiver == "1"
+              unless params[:no_caregiver_1]
+               caregiver1_email = params[:caregiver1][:email]
+               @car1 = User.populate_caregiver(caregiver1_email,@senior.id,nil,nil,params[:caregiver1])
+               set_roles_users_option(@car1,params[:car1_roles_users_option])
+               user_intake.users.push(@car1)
+              end
             end
             unless params[:no_caregiver_2]
              caregiver2_email = params[:caregiver2][:email]
@@ -294,22 +300,98 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
 	end
   	
   end
-  def update_user_profile(id,params,senior=nil,roles_users_option=nil)
-  	@user = Profile.find(id)
-  	@user.update_attributes(params)
+  def update_user_profile(id,params,senior=nil,roles_users_option=nil,position=nil)
+  	@user = Profile.find_by_id(id.to_i)
+  	unless @user
+  		caregiver1_email = params[:email]
+  		@user = User.populate_caregiver(caregiver1_email,senior.id,position,nil,params)
+  		@user_intake.users.push(@user)
+  		@user = @user.profile
+  	else
+  	  @user.update_attributes(params)
+  	end
   	set_roles_users_option(@user.user,roles_users_option,senior) if roles_users_option != nil
   	@user
   end
   def edit_user_intake_form
   	if request.post?
-  	   	@user = update_user_profile(params[:halo_user],params[:user]) unless params[:halo_user].empty?
-  	   	@senior = @user.user if params[:halo_user]
-  	   	@subscriber = update_user_profile(params[:sub],params[:subscriber]) unless params[:sub].empty?
-  	   	@caregiver1 = update_user_profile(params[:car1],params[:caregiver1],@senior,params[:car1_roles_users_option]) unless params[:car1].empty?
-  	   	@caregiver2 = update_user_profile(params[:car2],params[:caregiver2],@senior,params[:car2_roles_users_option]) unless params[:car2].empty?
-  	   	@caregiver3 = update_user_profile(params[:car3],params[:caregiver3],@senior,params[:car3_roles_users_option]) unless params[:car3].empty?
+  	  @user_intake = UserIntake.find(params[:user_intake_id].to_i)
+  	  @user = update_user_profile(params[:halo_user],params[:user]) unless params[:halo_user].empty?
+  	  @senior = @user.user if params[:halo_user]
   	  
-  	  redirect_to :action => 'user_intake_form'
+  	  if params[:same_as_user] and params[:same_as_user] == 'on' and !params[:sub].empty?
+  	  	# remove the subscriber and set senior user as subscriber
+  	  	@sub_profile = Profile.find_by_id(params[:sub].to_i)
+  	  	User.destroy(@sub_profile.user_id)
+        populate_subscriber(@senior.id,"1","1",params[:user][:email],params[:user])
+      else
+      	unless params[:sub].empty?
+      		#any changes in subscriber profile will be updated here
+  	      @subscriber = update_user_profile(params[:sub],params[:subscriber])
+  	      if params[:add_caregiver] and params[:add_caregiver] == 'on'
+  	      	@caregiver_1 = "1"
+  	      	unless @subscriber.user.is_caregiver?
+  	      		#add caregiver role to the subscriber
+  	      		role = @subscriber.user.has_role 'caregiver', @senior
+  	      		@roles_user = @senior.roles_user_by_caregiver(@subscriber.user)
+  	      		params[:sub_roles_users_option][:roles_user_id] = @roles_user.id
+  	      		params[:sub_roles_users_option][:position] = 1
+  	      		RolesUsersOption.create(params[:sub_roles_users_option])
+  	      		#remove previously added caregiver
+  	      		if !params[:car1].empty?
+  	      		  @caregiver_1 = Profile.find(params[:car1])
+  	      		  User.destroy(@caregiver_1.user_id)
+  	      		end
+  	      	else
+              @subscriber = update_user_profile(params[:sub],params[:subscriber],@senior,params[:sub_roles_users_option])
+  	      	end
+  	      else
+      		if @subscriber.user.is_caregiver?
+      			#remove caregiver role from subscriber
+              @subscriber.user.roles_users.each do |role_type|
+      	        if role_type.role.name == 'caregiver'
+      		      RolesUser.destroy(role_type.id)
+       	        end
+              end
+      		end
+  	      end
+  	    else
+  	    	#create new subscriber and remove subscriber role from senior user   
+  	      @senior.roles_users.each do |role_type|
+  	      	if role_type.role.name == 'subscriber'
+  	      		RolesUser.destroy(role_type.id)
+  	      	end
+  	      end
+  	      subscriber_email = params[:subscriber][:email]
+  	      if subscriber_email != ""
+  	      populate_subscriber(@senior.id,"0","1",subscriber_email,params[:subscriber]) 
+  	      @user_intake.users.push(@user) # @user will came from users_helper file
+  	      end
+  	    end
+  	  end
+  	   	
+  	  if !params[:no_caregiver_1] and !@caregiver_1
+  	   	@caregiver1 = update_user_profile(params[:car1],params[:caregiver1],@senior,params[:car1_roles_users_option],1)
+  	  elsif !params[:car1].empty? and params[:no_caregiver_1]
+  	  	@profile = Profile.find_by_id(params[:car1].to_i)
+  	  	User.destroy(@profile.user_id)
+  	  end
+  	   	
+  	  if !params[:no_caregiver_2]
+  	   	@caregiver2 = update_user_profile(params[:car2],params[:caregiver2],@senior,params[:car2_roles_users_option],2)
+  	  elsif !params[:car2].empty? and params[:no_caregiver_2]
+  	  	@profile = Profile.find_by_id(params[:car2].to_i)
+  	  	User.destroy(@profile.user_id)
+  	  end
+  	   	
+  	  if !params[:no_caregiver_3]
+  	   	@caregiver3 = update_user_profile(params[:car3],params[:caregiver3],@senior,params[:car3_roles_users_option],3)
+  	  elsif !params[:car3].empty? and params[:no_caregiver_3]
+  	  	@profile = Profile.find_by_id(params[:car3].to_i)
+  	  	User.destroy(@profile.user_id)
+  	  end
+  	    
+  	  redirect_to :controller => 'users',:action =>'edit_user_intake_form' ,:id => @user_intake.id
   	else
       @user_intake = UserIntake.find(params[:id])
       @caregivers = []
@@ -318,15 +400,29 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
           @intake_user = User.find(user)
     	  @halo_user = @intake_user if @intake_user.is_halouser?
     	  @subscriber_user = @intake_user if @intake_user.is_subscriber?
-    	  @caregivers << @intake_user if @intake_user.is_caregiver?
+    	  #@caregivers << @intake_user if @intake_user.is_caregiver?
         end
       end
       @user = @halo_user.profile if @halo_user
       @subscriber = @subscriber_user.profile if @subscriber_user and @subscriber_user != @halo_user
+      @halo_user.caregivers_sorted_by_position.each do |car|
+       	@caregivers[0] = car[1] if car[1].user_intakes and car[0] == 1
+       	@caregivers[1] = car[1] if car[1].user_intakes and car[0] == 2
+       	@caregivers[2] = car[1] if car[1].user_intakes and car[0] == 3
+      end
       @caregiver1 = @caregivers[0].profile if @caregivers[0]
       @caregiver2 = @caregivers[1].profile if @caregivers[1]
       @caregiver3 = @caregivers[2].profile if @caregivers[2]
+      
       if @halo_user
+        if @subscriber == @caregiver1 #subscriber as #1 caregiver
+          @caregiver1 = @caregivers[0] = nil
+          
+          if @subscriber != nil
+          	@add_as_caregiver = '1'
+          @sub_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@subscriber_user).id)
+          end
+        end
         @car1_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[0]).id) if @caregivers[0]
         @car2_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[1]).id) if @caregivers[1]
         @car3_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[2]).id) if @caregivers[2]
@@ -334,6 +430,7 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
     end
   end
   def set_roles_users_option(caregiver,roles_users_option,senior=nil)
+  	debugger
   	@senior = senior if senior != nil
   @roles_users_option = RolesUsersOption.find_by_roles_user_id(@senior.roles_user_by_caregiver(caregiver).id)
   @roles_users_option.is_keyholder = roles_users_option[:is_keyholder] = '1'? true:false
