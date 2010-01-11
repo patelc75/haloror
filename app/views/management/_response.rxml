@@ -4,7 +4,7 @@ xml.management_response_server do
   #only one response per command for server-generated response so this should work
   if response.mgmt_cmds.first.device and response.mgmt_cmds.first.device.users
     if response.mgmt_cmds.first.device.users.first == nil
-      xml.user_id = -1
+      xml.user_id -1
     else
       xml.user_id response.mgmt_cmds.first.device.users.first.id  
     end
