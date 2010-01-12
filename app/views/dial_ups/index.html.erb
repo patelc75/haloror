@@ -1,0 +1,39 @@
+<h1>Listing dialups</h1>
+
+<table border="1">
+  <tr>
+  	<th>Username</th>
+  	<th>Password</th>
+  	<th>Phone<br>Number</th>
+  	<th>City</th>
+  	<th>State</th>
+  	<th>Zip</th>
+  	<th>Type</th>
+  	<th>Default<br>Order</th>
+  	<th>Created By</th>
+  	<th>Created At</th>
+  	<th>Edit</th>
+  	<th>Delete</th>
+  </tr>
+
+<% for dial_up in @dial_ups %>
+  <tr>
+  	<td><%= dial_up.username%></td>
+  	<td><%= dial_up.password%></td>
+  	<td><%= dial_up.phone_number%></td>
+  	<td><%= dial_up.city%></td>
+  	<td><%= dial_up.state%></td>
+    <td><%= dial_up.zip%></td>
+    <td><%= dial_up.dialup_type%></td>
+    <td><%= dial_up.order_number%></td>
+    <td><%= dial_up.user.name + '(' + dial_up.created_by.to_s + ')' unless dial_up.created_by.nil? %></td>
+    <td><%= UtilityHelper.format_datetime(dial_up.created_at,current_user)%></td>
+    <td><%= link_to 'Edit', edit_dial_up_path(dial_up) %></td>
+    <td><%= link_to 'Destroy', dial_up, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New dial up', new_dial_up_path %>

@@ -1,0 +1,12 @@
+<h1>Editing dialup</h1>
+
+<%= error_messages_for :dial_up %>
+<table>
+<% form_for(@dial_up) do |f| %>
+ <%= render :partial => 'form',:locals => {:f => f}%>
+  <tr>
+  	<td><%= link_to 'Back', dial_ups_path %></td>
+    <td><%= f.submit "Update" %></td>
+  </tr>
+<% end %>
+</table>

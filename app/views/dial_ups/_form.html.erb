@@ -1,0 +1,32 @@
+  <tr>
+  	<td><%= f.label :username,'Username' %></td>
+  	<td><%= f.text_field :username%></td>
+  </tr>	
+  <tr>
+  	<td><%= f.label :password,'Password' %></td>
+  	<td><%= f.password_field :password %></td>
+  </tr>	
+  <tr>
+  	<td><%= f.label :phone_number,'Phone Number' %></td>
+  	<td><%= f.text_field :phone_number%></td>
+  </tr>	
+  <tr>
+  	<td><%= f.label :city,'City' %></td>
+  	<td><%= f.text_field :city%></td>
+  </tr>	
+  <tr>
+  	<td><%= f.label :state,'State' %></td>
+  	<td><%= f.text_field :state%></td>
+  </tr>	
+  <tr>
+  	<td><%= f.label :zip,'Zipcode' %></td>
+  	<td><%= f.text_field :zip%></td>
+  </tr>
+  <tr>
+  	<td><%= f.label :dialup_type,'Type' %></td>
+  	<td><%= f.select :dialup_type,['Local','Global']%></td>
+  </tr>
+  <tr>
+  	<td><%= f.label :order,'order_number' %></td>
+  	<td><%= f.select :order_number,['1','2'],:prompt => 'select'%></td>
+  </tr>

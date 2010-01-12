@@ -89,7 +89,10 @@ class MgmtQueriesController < RestfulAuthController
         @more = {'poll_rate' => cmd.param1 }
       elsif cmd.cmd_type == 'dial_up_num' && cmd.param1 && cmd.param2 && cmd.param3
         @more = {'number' => cmd.param1,'username' => cmd.param2,'password' => cmd.param3 }
-        
+      elsif cmd.cmd_type == 'dial_up_num_glob_prim' && cmd.param1 && cmd.param2 && cmd.param3 && cmd.param4
+        cmd.cmd_type = 'dial_up_num'
+        @local_pri = DialUp.find_by_phone_number(cmd.param1)   
+        @more = {'number' => cmd.param1,'username' => @local_pri.username,'password' => @local_pri.password,'alt_number' => cmd.param2,'alt_username' => @local_pri.username,'alt_password' => @local_pri.password,'global_prim_number' => cmd.param3,'global_prim_username' => @local_pri.username,'global_prim_password' => @local_pri.password,'global_alt_number' => cmd.param4,'global_alt_username' => @local_pri.username,'global_alt_password' => @local_pri.password}
       end
       
       query.mgmt_cmd_id = cmd.id

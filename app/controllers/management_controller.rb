@@ -133,6 +133,17 @@ class ManagementController < ApplicationController
         cmd[:param2] = request[:param3] if !request[:param3].blank? and request[:cmd_type] == 'dial_up_num'
         cmd[:param3] = request[:param4] if !request[:param4].blank? and request[:cmd_type] == 'dial_up_num'
 
+        if request[:cmd_type] == 'dial_up_num_glob_prim'
+          cmd[:param1] = request[:local_primary] unless request[:local_primary].blank?
+          cmd[:param2] = request[:local_secondary] unless request[:local_secondary].blank?
+          glob_prim = DialUp.find(:first,:conditions => "dialup_type ='Global' and order_number = '1'")
+          cmd[:param3] = glob_prim.phone_number if params[:global_default] and glob_prim
+          cmd[:param3] = request[:global_primary] unless request[:global_primary].blank? and params[:global_default]
+          glob_alt = DialUp.find(:first,:conditions => "dialup_type = 'Global' and order_number = '2'")
+          cmd[:param4] = glob_alt.phone_number if params[:global_alt_default] and glob_alt
+          cmd[:param4] = request[:global_secondary] unless request[:global_secondary].blank? and params[:global_alt_default]
+        end
+
         if /-/.match(request[:ids])     
           create_cmds_for_range_of_devices(request[:ids], cmd)
         elsif /,/.match(request[:ids]) 

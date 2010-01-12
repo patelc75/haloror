@@ -26,6 +26,7 @@ class User < ActiveRecord::Base
   has_many :subscriptions,:foreign_key => "senior_user_id"
   has_many :roles_users,:dependent => :destroy
   has_many :roles, :through => :roles_users#, :include => [:roles_users]
+  has_many :dial_ups
   
   has_and_belongs_to_many :devices
   has_and_belongs_to_many :user_intakes
