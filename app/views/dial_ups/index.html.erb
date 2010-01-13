@@ -1,10 +1,12 @@
+<%= link_to "Issue Dial up Mgmt Command",:controller => "management",:action => "issue" %>
+
 <h1>Listing dialups</h1>
 
 <table border="1">
   <tr>
+  	<th>Phone<br>Number</th>
   	<th>Username</th>
   	<th>Password</th>
-  	<th>Phone<br>Number</th>
   	<th>City</th>
   	<th>State</th>
   	<th>Zip</th>
@@ -18,9 +20,9 @@
 
 <% for dial_up in @dial_ups %>
   <tr>
+  	<td><%= dial_up.phone_number%></td>
   	<td><%= dial_up.username%></td>
   	<td><%= dial_up.password%></td>
-  	<td><%= dial_up.phone_number%></td>
   	<td><%= dial_up.city%></td>
   	<td><%= dial_up.state%></td>
     <td><%= dial_up.zip%></td>

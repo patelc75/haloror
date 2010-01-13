@@ -28,5 +28,6 @@
 <% end %>
 <% if current_user.is_super_admin? %>
 | <%= link_to 'Activate Users', :controller => 'util', :action => 'activate_users'%>
+| <%= link_to 'Dialup Num Table', dial_ups_path%>
 <% end %>
 <br><br>

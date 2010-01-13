@@ -8,7 +8,7 @@
   </tr>	
   <tr>
   	<td><%= f.label :phone_number,'Phone Number' %></td>
-  	<td><%= f.text_field :phone_number%></td>
+  	<td><%= f.text_field :phone_number%> (eg. 8005551212)</td>
   </tr>	
   <tr>
   	<td><%= f.label :city,'City' %></td>
@@ -27,6 +27,6 @@
   	<td><%= f.select :dialup_type,['Local','Global']%></td>
   </tr>
   <tr>
-  	<td><%= f.label :order,'order_number' %></td>
-  	<td><%= f.select :order_number,['1','2'],:prompt => 'select'%></td>
+  	<td><%= f.label :order_number,'Default Order' %></td>
+  	<td><%= f.select :order_number,['1','2'],:prompt => 'none'%> (select none for local number)</td>
   </tr>
