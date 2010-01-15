@@ -8,14 +8,14 @@ ActiveRecord::Base.allow_concurrency = true
 
 SCHEDULER.schedule_every(GATEWAY_OFFLINE_POLL_RATE) { 
   begin
-    MgmtQuery.job_detect_disconnected_users 
+    MgmtQuery.job_gw_offline_online 
     ActiveRecord::Base.verify_active_connections!()
   rescue Exception => e
-    UtilityHelper.log_message("MgmtQuery.job_detect_disconnected_users::Exception:: #{e}", e)
+    UtilityHelper.log_message("MgmtQuery.job_gw_offline_online::Exception:: #{e}", e)
   rescue Timeout::Error => e
-    UtilityHelper.log_message("MgmtQuery.job_detect_disconnected_users::Timeout::Error:: #{e}", e)
+    UtilityHelper.log_message("MgmtQuery.job_gw_offline_online::Timeout::Error:: #{e}", e)
   rescue
-    UtilityHelper.log_message("MgmtQuery.job_detect_disconnected_users::UNKNOWN::Error")
+    UtilityHelper.log_message("MgmtQuery.job_gw_offline_online::UNKNOWN::Error")
   end
 }
 
