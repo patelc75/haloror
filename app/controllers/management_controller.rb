@@ -103,7 +103,7 @@ class ManagementController < ApplicationController
   end
   
   def create_many
-  	
+
     @success = true
     #@message = "Command created"
     @message = "Command created by #{current_user.id} #{current_user.name}"
@@ -126,6 +126,7 @@ class ManagementController < ApplicationController
         cmd[:attempts_no_ack] = 0
         cmd[:pending_on_ack] = true
         cmd[:created_by] = current_user.id if current_user
+        cmd[:instantaneous] = true if request[:instantaneous] == "1"
         
         #command specific parameter (such as <poll_rate> for the mgmt_poll_rate cmd)
         cmd[:param1] = request[:param1] if !request[:param1].blank? and request[:cmd_type] == 'mgmt_poll_rate'
