@@ -1,0 +1,25 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+
+one:
+
+  device_id: 1
+
+  last_successful_number: MyString
+
+  last_successful_username: MyString
+
+  last_successful_password: MyString
+
+
+two:
+
+  device_id: 1
+
+  last_successful_number: MyString
+
+  last_successful_username: MyString
+
+  last_successful_password: MyString
+
+

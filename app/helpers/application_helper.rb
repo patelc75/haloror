@@ -19,7 +19,7 @@ module ApplicationHelper
    type = event[:event_type]
    if ['Fall', 'Panic'].include? type
      return image_tag('/images/severe_button_82_22.png')
-   elsif ['GatewayOfflineAlert', 'DeviceUnavailbleAlert', 'BatteryCritical'].include? type
+   elsif ['GatewayOfflineAlert', 'DeviceUnavailbleAlert', 'BatteryCritical','DialUpStatus','StrapRemoved'].include? type
      return image_tag('/images/caution_button_82_22.png')
    elsif ['BatteryReminder'].include? type
    	if event.event.reminder_num < 3

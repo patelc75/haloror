@@ -4,3 +4,7 @@ class DialUp < ActiveRecord::Base
   has_and_belongs_to_many :gateways
   validates_uniqueness_of :phone_number
 end
+
+class DialUpNum < DialUp
+	
+end

@@ -45,4 +45,9 @@ class DialUpsController < ApplicationController
   	end
   end
   
+  def dial_up_num
+  	 @global_alt = DialUp.find(:first,:conditions => "order_number = 2  and dialup_type = 'Global'")
+     @global_prim = DialUp.find(:first,:conditions => "order_number = 1  and dialup_type = 'Global'")
+  end
+  
 end
