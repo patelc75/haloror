@@ -252,7 +252,7 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
             user_intake.created_by = current_user.id
             user_intake.updated_by = current_user.id
             user_intake.save
-    		populate_user(params[:user],params[:user][:email],'halouser',current_user.id)
+    		populate_user(params[:user],params[:user][:email],params[:group],current_user.id)
     		user_intake.users.push(@user)
     		@senior_user = @user
     		if params[:add_caregiver] and params[:add_caregiver] == 'on'
@@ -293,10 +293,16 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
             end
     	end
     	redirect_to :action => 'user_intake_form'
-    elsif params[:id]
-
-    	
-    	
+    else
+      @groups = []
+      if current_user.is_super_admin?
+        @groups = Group.find(:all)
+      else
+        gs = current_user.group_memberships
+        gs.each do |g|
+          @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
+        end
+	  end
 	end
   	
   end

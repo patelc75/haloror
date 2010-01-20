@@ -1,0 +1,11 @@
+xml.instruct!             # <?xml version="1.0" encoding="UTF-8"?>
+xml.comment! "a comment"  # <!-- a comment -->
+xml.dial_up_num do
+xml.global_alt_username @global_alt.username
+xml.global_alt_username @global_alt.username
+xml.global_alt_number @global_alt.phone_number
+
+xml.global_prim_username @global_prim.username
+xml.global_prim_username @global_prim.username
+xml.global_prim_number @global_prim.phone_number
+end

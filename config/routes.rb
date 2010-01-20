@@ -10,7 +10,8 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :atp_device
   map.resources :atp_next_device
   map.resources :self_test_results
-  map.resources :dial_ups
+  map.resources :dial_ups,:collection => {:dial_up_num => :get}
+  map.resources :dial_up_statuses
 
   map.resources :vitals
   

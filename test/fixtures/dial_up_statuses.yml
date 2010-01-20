@@ -1,0 +1,41 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+
+one:
+
+  device_id: 1
+
+  phone_number: MyString
+
+  status: MyString
+
+  configured: MyString
+
+  num_failures: 1
+
+  consecutive_fails: 1
+
+  ever_connected: false
+
+  dialup_type: MyString
+
+
+two:
+
+  device_id: 1
+
+  phone_number: MyString
+
+  status: MyString
+
+  configured: MyString
+
+  num_failures: 1
+
+  consecutive_fails: 1
+
+  ever_connected: false
+
+  dialup_type: MyString
+
+

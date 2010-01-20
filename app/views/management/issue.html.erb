@@ -71,13 +71,14 @@
 	<p>
 		<%=f.radio_button :cmd_type, 'boot_image'%> Instruct cheststrap to switchover to a newly downloaded image
 	</p>
-
-
+    <p>
+		<%=f.radio_button :cmd_type, 'remote_access'%> Remote Access
+	</p>
 	<p>&nbsp;</p>
 	<p>Enter a range of device ids (min-max) -or- ids separated by commas:</p>
 	<%=f.text_field 'ids'%>
 	<p>&nbsp;</p>
-	<%=f.submit 'Queue up Command'%>
+	<%=f.submit 'Queue up Command'%>&nbsp;&nbsp;<%= f.check_box :instantaneous %>Instantaneous
 <% end %>
 
 <div id="issue_cmd">

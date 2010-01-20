@@ -1,0 +1,44 @@
+<!-- <meta http-equiv="refresh" content="30"> -->
+<h2>Dial Up Statuses</h2>
+<br>
+<table border="1">
+	<th>Device Id</th>
+	<th>Number</th>
+	<th>Status</th>
+	<th>Configured</th>
+	<th>Num Failures</th>
+	<th>Consecutive Fails</th>
+	<th>Ever Connected</th>
+	<th>Type</th>
+	
+	<%@dial_up_statuses.each do |dial_up|%>
+	  <tr>
+	  	<td><%= dial_up.device_id %></td>
+	  	<td><%= dial_up.phone_number %></td>
+	  	<td><%= dial_up.status %></td>
+	  	<td><%= dial_up.configured %></td>
+	  	<td><%= dial_up.num_failures %></td>
+	  	<td><%= dial_up.consecutive_fails %></td>
+	  	<td><%= dial_up.ever_connected %></td>
+	  	<td><%= dial_up.dialup_type%></td>
+	  </tr>
+	<%end%>
+</table>
+<br>
+<h2>Dial Up Last Successfuls</h2>
+<br>
+<table border="1">
+	<th>Device Id</th>
+	<th>last_successful_number</th>
+	<th>last_successful_username </th>
+	<th>last_successful_password</th>
+	
+	<%@dial_up_last_successfuls.each do |dial_up_last_successful|%>
+	  <tr>
+	  	<td><%= dial_up_last_successful.device_id %></td>
+	  	<td><%= dial_up_last_successful.last_successful_number %></td>
+	  	<td><%= dial_up_last_successful.last_successful_username %></td>
+	  	<td><%= dial_up_last_successful.last_successful_password %></td>
+	  </tr>
+	<%end%>
+</table>
