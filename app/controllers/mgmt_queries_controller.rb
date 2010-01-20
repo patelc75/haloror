@@ -1,8 +1,16 @@
 class MgmtQueriesController < RestfulAuthController
   # POST /mgmt_queries  
   def create
-    # 1. Create mgmt_query
+    #Create a GWOnlineAlert if in offline mode (reconnected_at == nil) 
     request = params[:management_query_device]
+    
+    dlq = DeviceLatestQuery.find(request[:device_id])
+    if(dlq.reconnected_at == nil)
+      GatewayOnlineAlert.create(:device => Device.find(dlq.id))
+      dlq.reconnected_at = Time.now
+      dlq.save!
+    end
+    
     
     query = MgmtQuery.new
     query.device_id = request[:device_id]
