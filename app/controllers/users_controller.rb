@@ -71,11 +71,7 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
 #=end    
   end
 
-  def signup_info
-  	
-  	@user = User.find(params[:user_id])
-  	
-  	kit_serial_number = params[:kit][:serial_number]  
+  def add_kit_number(kit_serial_number,user)
   	if (kit_serial_number == nil || kit_serial_number.size != 10 || kit_serial_number[0,2] != 'H4' ) 
   		msg = "Invalid serial number"	
   	else
@@ -100,8 +96,15 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
 	  end
     else
      @kit = KitSerialNumber.create(:serial_number => kit_serial_number,:user_id => @user.id)
-     # msg = "<br> Not found Kit Number "
     end
+  end
+ 
+  def signup_info
+  	
+  	@user = User.find(params[:user_id])
+  	kit_serial_number = params[:kit][:serial_number]
+  	add_kit_number(kit_serial_number,@user)
+  	
     error_message = "Error(s):" + msg
     flash[:warning] = error_message
     if msg != ""
@@ -255,6 +258,7 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
     		populate_user(params[:user],params[:user][:email],params[:group],current_user.id)
     		user_intake.users.push(@user)
     		@senior_user = @user
+    		add_kit_number(params[:kit][:serial_number],@senior_user)
     		if params[:add_caregiver] and params[:add_caregiver] == 'on'
     			add_caregiver = "0"   #0 for subscriber add as #1 caregiver
     		else
