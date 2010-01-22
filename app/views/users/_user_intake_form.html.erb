@@ -15,7 +15,7 @@
 		<table width="100%"><tr>
 		<td>Group: <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group),:onchange => "select_group(this);"%></td>
       	<td>Installation Date:<%= date_select :user_intake,:installation_date %></td>
-      	<td>Serial Number:<%= text_field :kit, :serial_number %></td>
+      	<td>Kit Serial #:<%= text_field :kit, :serial_number %></td>
       	</tr>
       	</table>
       	<div id="hits"></div>
