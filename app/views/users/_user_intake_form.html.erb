@@ -20,7 +20,7 @@
       	</table>
       	<div id="hits"></div>
       </div>
-      <span id="user_intake_form" style="display:none;">					
+      <div id="user_intake" style="display:none;">					
       <div style="float:left;width:49%;border-right:2px solid;border-left:2px solid;height:520px;">
       	<center><h3>User Information</h3></center>
 	    <table width="100%">
@@ -778,11 +778,12 @@
 		 	</table>
 		 </div>
 	  </div>
-	</div>
-	</span>
+	  </div>
+    </div>
+	
 	<div style="clear:both"></div>
 	<center><input type="submit" value="submit"></center>
-</div>
+  </div>
 	<div style="clear:both"></div>
 	<div id="call_list-col-footer"></div>
 </div>
@@ -819,8 +820,12 @@ function caregiver_show_form(checkbox,form)
 function select_group(dropdown)
 {
 	if(dropdown.value == 'Choose a Group')
-	  document.getElementById('user_intake_form').style.display = 'none'
+	{
+	  document.getElementById('user_intake').style.display = 'none'
+    }
 	else
-	  document.getElementById('user_intake_form').style.display = 'block'
+	{
+	  document.getElementById('user_intake').style.display = 'block'
+    }
 }
 </script>
