@@ -23,7 +23,7 @@
       	<div id="hits"></div>
       </div>
       <div id="user_intake" <% unless @group %>style="display:none;" <%end%>>					
-      <div style="float:left;width:49%;border-right:2px solid;border-left:2px solid;height:520px;">
+      <div style="float:left;width:49%;border-right:2px solid;border-left:2px solid;height:570px;">
       	<center><h3>User Information</h3></center>
 	    <table width="100%">
 	      <tr>
@@ -110,7 +110,7 @@
 	      </tr>
 		</table>
 	  </div>
-	  <div style="float:right;width:50%;border-right:2px solid;height:520px;">
+	  <div style="float:right;width:50%;border-right:2px solid;height:570px;">
 	  	<center><h3>Billing Information (Responsible Person)</h3></center>
 	  	<table width="100%">
           <tr>
@@ -181,10 +181,10 @@
 	        </td>
 	      </tr>
 	      <tr>
-	      	<td colspan="2"><%= check_box :subscriber,:credit_debit_card_proceessed %>Credit/Debit Card Processed</td>
+	      	<td colspan="2"><%= radio_button :user_intakes,:options,'credit_card' %>Credit/Debit Card Processed</td>
 	      </tr>
 	      <tr>
-	      	<td colspan="2"><%= check_box :subscriber,:bill_monthly %>Bill Monthly</td>
+	      	<td colspan="2"><%= radio_button :user_intakes,:options,'bill_monthly' %>Bill Monthly</td>
 	      </tr>    
 		</table>
 		</span>
@@ -224,7 +224,7 @@
 	  <div style="border:2px solid;width:99.6%;height:40px;padding-top:10px;">
       	<center><h3>Caregiver Information (in order of notification)</h3></center>
       </div>
-	  <div style="float:left;width:33%;border-right:2px solid;border-left:2px solid;height:620px;">
+	  <div style="float:left;width:33%;border-right:2px solid;border-left:2px solid;height:650px;">
         <table border="0" width="100%">
           <tr>
 	        <td colspan="2"><input type="checkbox" id="no_caregiver_1" name="no_caregiver_1" <%unless @caregiver1 %>checked <%end%><%if @add_as_caregiver%>disabled<%end%> onclick = "show_form(this,'caregiver1_form')">No Caregiver #1</td>
@@ -344,7 +344,7 @@
 		</table>
 		</span>
 	  </div>
-	  <div style="float:left;width:33%;border-right:2px solid;height:620px;">
+	  <div style="float:left;width:33%;border-right:2px solid;height:650px;">
         <table border="0" width="100%">
           <tr>
 	        <td colspan="2"><input type="checkbox" name="no_caregiver_2" <%unless @caregiver2 %>checked<%end%> onclick = "show_form(this,'caregiver2_form')">No Caregiver #2</td>
@@ -462,7 +462,7 @@
 		</table>
 		</span>
 	  </div>
-	  <div style="float:right;width:33%;border-right:2px solid;height:620px;">
+	  <div style="float:right;width:33%;border-right:2px solid;height:650px;">
 	  	<table width="100%">
 	  	  <tr>
 	        <td colspan="2"><input type="checkbox" name="no_caregiver_3" <%unless @caregiver3 %>checked<%end%> onclick = "show_form(this,'caregiver3_form')">No Caregiver #3</td>
@@ -739,7 +739,7 @@
 	    </div>
 	  </div>
       <div style="border:2px solid;width:99.6%;height:150px;"> 
-      	<center><h3>Medical Information</h3></center>
+      	<center><h3>Signature</h3></center>
 		 <div style="float:left;width:32%;">
 		 	<table>
 		 		<tr>

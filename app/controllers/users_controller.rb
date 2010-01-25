@@ -254,6 +254,14 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
     		user_intake = UserIntake.new(params[:user_intake])
             user_intake.created_by = current_user.id
             user_intake.updated_by = current_user.id
+            user_intake.kit_serial_number = params[:kit][:serial_number]
+            if params[:user_intakes] and params[:user_intakes][:options] == 'credit_card'
+              user_intake.credit_debit_card_proceessed = true
+              user_intake.bill_monthly = false	
+            else
+              user_intake.bill_monthly = true
+              user_intake.credit_debit_card_proceessed = false
+            end
             user_intake.save
     		populate_user(params[:user],params[:users][:email],params[:group],current_user.id)
     		user_intake.users.push(@user)
@@ -296,7 +304,7 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
              user_intake.users.push(@car3)
             end
     	end
-    	#redirect_to '/user/user_intake_form'
+    	redirect_to '/user/user_intake_form'
     else
       @groups = []
       if current_user.is_super_admin?
@@ -308,7 +316,7 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
         end
 	  end
 	end
- 
+#=begin 
   rescue
   	  @user = Profile.new(params[:user])
   	  @subscriber = Profile.new(params[:subscriber])
@@ -323,6 +331,7 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
         end
 	  end
   	render :action => 'user_intake_form'
+#=end  	
   end
   def update_user_profile(id,params,senior=nil,roles_users_option=nil,position=nil)
   	@user = Profile.find_by_id(id.to_i)

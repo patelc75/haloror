@@ -47,7 +47,6 @@ def email
 	self.user.email
 end
 
-
  def owner_user # for auditing
    self.user
  rescue
