@@ -255,7 +255,7 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
             user_intake.created_by = current_user.id
             user_intake.updated_by = current_user.id
             user_intake.save
-    		populate_user(params[:user],params[:user][:email],params[:group],current_user.id)
+    		populate_user(params[:user],params[:users][:email],params[:group],current_user.id)
     		user_intake.users.push(@user)
     		@senior_user = @user
     		add_kit_number(params[:kit][:serial_number],@senior_user)
@@ -265,9 +265,9 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
     			add_caregiver = "1"   #1 for subscriber do not add as caregiver
     		end
             if params[:same_as_user] and params[:same_as_user] == 'on'
-              populate_subscriber(@user.id,"1",add_caregiver,params[:user][:email],params[:user])
+              populate_subscriber(@user.id,"1",add_caregiver,params[:users][:email],params[:user])
   	        else
-  	          subscriber_email = params[:subscriber][:email]
+  	          subscriber_email = params[:subscribers][:email]
   	          populate_subscriber(@user.id,"0",add_caregiver,subscriber_email,params[:subscriber])
   	          set_roles_users_option(@user,params[:sub_roles_users_option]) if add_caregiver == "0"
   	          user_intake.users.push(@user)
@@ -296,7 +296,7 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
              user_intake.users.push(@car3)
             end
     	end
-    	redirect_to :action => 'user_intake_form'
+    	#redirect_to '/user/user_intake_form'
     else
       @groups = []
       if current_user.is_super_admin?
@@ -308,7 +308,21 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
         end
 	  end
 	end
-  	
+ 
+  rescue
+  	  @user = Profile.new(params[:user])
+  	  @subscriber = Profile.new(params[:subscriber])
+  	  @group = params[:group]
+  	  @groups = []
+      if current_user.is_super_admin?
+        @groups = Group.find(:all)
+      else
+        gs = current_user.group_memberships
+        gs.each do |g|
+          @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
+        end
+	  end
+  	render :action => 'user_intake_form'
   end
   def update_user_profile(id,params,senior=nil,roles_users_option=nil,position=nil)
   	@user = Profile.find_by_id(id.to_i)

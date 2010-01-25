@@ -6,6 +6,8 @@
 		* Asterisk denotes fields that are optional for Halo Monitoring <br>but may be required by Halo partners or affiliates
 	</span><br><br>
   <div style="margin-left:25px">
+  	<font color='red'><%=error_messages_for :profile%>
+  	<%=error_messages_for :subscriber_profile%></font>
     <div class="content" style="padding-right:20px;">
       <div style="border:2px solid;width:99.6%;height:40px;padding-top:10px;">
       	<% gs = ['Choose a Group']
@@ -20,7 +22,7 @@
       	</table>
       	<div id="hits"></div>
       </div>
-      <div id="user_intake" style="display:none;">					
+      <div id="user_intake" <% unless @group %>style="display:none;" <%end%>>					
       <div style="float:left;width:49%;border-right:2px solid;border-left:2px solid;height:520px;">
       	<center><h3>User Information</h3></center>
 	    <table width="100%">
@@ -73,7 +75,7 @@
 	      </tr>    
           <tr>
 	        <td>Email(optional):</td>
-	        <td><%= text_field :user, :email ,:size => "40"%></td>
+	        <td><%= text_field :users, :email ,:size => "40"%></td>
           </tr>
           <%#= observe_field(:user_mail, :url => { :action => :validation },
       						:update => :hits, :on => 'blur') %>
@@ -153,7 +155,7 @@
           </tr>
           <tr>
 	        <td>Email:</td>
-	        <td><%= text_field :subscriber, :email ,:size => "50"%></td>
+	        <td><%= text_field :subscribers, :email ,:size => "50"%></td>
           </tr>
           <tr>
           	<td>Time zone:</td>

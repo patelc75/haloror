@@ -32,9 +32,9 @@ module UserHelper
   	  else  #subscriber will not be a caregiver
   	    @user = User.new
       	@user.email = email
-      	@profile = Profile.new(params_profile)
-      	@profile.save!
-      	@user.profile = @profile
+      	@subscriber_profile = Profile.new(params_profile)
+      	@subscriber_profile.save!
+      	@user.profile = @subscriber_profile
 	    	  
     	@user[:is_new_subscriber] = true
     	@user.save!
