@@ -14,11 +14,11 @@ module UserHelper
           @group = Group.find_by_name(group)
           role = @user.has_role 'halouser'
           @user.is_halouser_of @group if !@group.nil?
-          if opt_out_call_center.blank?
+#          if opt_out_call_center.blank?
             @group = Group.find_by_name('safety_care')
             raise "safety_care group missing!" if @group.nil? 
             @user.is_halouser_of @group if !@group.nil?
-          end
+#          end
         end
   	end
   end  
