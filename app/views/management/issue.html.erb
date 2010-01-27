@@ -33,30 +33,34 @@
 		<table>
 		<tr>
 		  <td>Primary</td>
-		  <td><%=f.select(:local_primary,DialUp.find(:all,:conditions => "dialup_type = 'Local'").map {|u| [u.phone_number,u.phone_number]},:prompt => 'Select')%></td>
+		  <td><%=f.select(:local_primary,DialUp.find(:all,:conditions => "dialup_type = 'Local'").map {|u| [u.phone_number,u.phone_number]},:prompt => 'none')%></td>
 		  <td></td>
 		</tr>
 		<tr>
 		  <td>Secondary</td>
-		  <td><%=f.select(:local_secondary,DialUp.find(:all,:conditions => "dialup_type = 'Local'").map {|u| [u.phone_number,u.phone_number]},:prompt => 'Select')%></td>
+		  <td><%=f.select(:local_secondary,DialUp.find(:all,:conditions => "dialup_type = 'Local'").map {|u| [u.phone_number,u.phone_number]},:prompt => 'none')%></td>
 		  <td></td>
 		</tr>
 		<tr>
 		  <td>Global Primary</td>
-		  <td><%=f.select(:global_primary,DialUp.find(:all,:conditions => "dialup_type = 'Global'").map {|u| [u.phone_number,u.phone_number]},:prompt => 'Select')%></td>
-		  <td><%= check_box_tag "global_default"%> Default</td>
+		  <% @glob_prim = DialUp.find(:first,:conditions => "dialup_type ='Global' and order_number = '1'") %>
+		  <input type="hidden" id="global_prim_hidden" value="<%= @glob_prim.phone_number %>">
+		  <td><%=f.select(:global_primary,DialUp.find(:all,:conditions => "dialup_type = 'Global'").map {|u| [u.phone_number,u.phone_number]},:prompt => 'none')%></td>
+		  <td><%= check_box_tag "global_default",{},checked = false,:onclick => "set_default_number(this,'global_prim_hidden','management_cmd_device_global_primary')"%> Default</td>
 		</tr>
 		<tr>
 		  <td>Global Secondary</td>
-		  <td><%=f.select(:global_secondary,DialUp.find(:all,:conditions => "dialup_type = 'Global'").map {|u| [u.phone_number,u.phone_number]},:prompt => 'Select')%></td>
-		  <td><%= check_box_tag "global_alt_default"%> Default</td>
+		  <% @global_alt = DialUp.find(:first,:conditions => "dialup_type = 'Global' and order_number = '2'") %>
+		  <input type="hidden" id="global_alt_hidden" value="<%= @global_alt.phone_number %>">
+		  <td><%=f.select(:global_secondary,DialUp.find(:all,:conditions => "dialup_type = 'Global'").map {|u| [u.phone_number,u.phone_number]},:prompt => 'none')%></td>
+		  <td><%= check_box_tag "global_alt_default",{},checked = false,{:onclick => "set_default_number(this,'global_alt_hidden','management_cmd_device_global_secondary')"}%> Default</td>
 		</tr>
 		</table>
 		</div>
 	</p>
 
 	<p>
-		<%=f.radio_button :cmd_type, 'dial_up_num'%>Change Only Local Dial Up Numbers<br>
+		<%=f.radio_button :cmd_type, 'dial_up_num'%>Change only Local Primary dial up number (backward compatible cmd)<br>
 		<div style="margin-left:20px;">
 		<table>
 		<tr><td>Number</td><td> : </td><td><%= f.text_field :param2 %></td><td> (eg. 8005551212)</td></tr>
@@ -72,13 +76,13 @@
 		<%=f.radio_button :cmd_type, 'boot_image'%> Instruct cheststrap to switchover to a newly downloaded image
 	</p>
     <p>
-		<%=f.radio_button :cmd_type, 'remote_access'%> Remote Access
+		<%=f.radio_button :cmd_type, 'remote_access',:disabled => 'disabled'%> Remote Access
 	</p>
 	<p>&nbsp;</p>
 	<p>Enter a range of device ids (min-max) -or- ids separated by commas:</p>
 	<%=f.text_field 'ids'%>
 	<p>&nbsp;</p>
-	<%=f.submit 'Queue up Command'%>&nbsp;&nbsp;<%= f.check_box :instantaneous %>Instantaneous
+	<%=f.submit 'Queue up Command'%>&nbsp;&nbsp;<%= f.check_box :instantaneous ,:disabled => 'disabled'%>Instantaneous
 <% end %>
 
 <div id="issue_cmd">
@@ -90,3 +94,12 @@
 <br>
 <br>
 <%= render :partial => 'ftp_table' %>
+<script>
+function set_default_number(checkbox,default_textbox,dropdown)
+{
+	if(checkbox.checked)
+	  document.getElementById(dropdown).value = document.getElementById(default_textbox).value
+	else
+	  document.getElementById(dropdown).value = ''
+}
+</script>

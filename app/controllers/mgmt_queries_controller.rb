@@ -4,8 +4,8 @@ class MgmtQueriesController < RestfulAuthController
     #Create a GWOnlineAlert if in offline mode (reconnected_at == nil) 
     request = params[:management_query_device]
     
-    dlq = DeviceLatestQuery.find(request[:device_id])
-    if(dlq.reconnected_at == nil)
+    dlq = DeviceLatestQuery.find_by_id(request[:device_id])
+    if(dlq and dlq.reconnected_at == nil)
       GatewayOnlineAlert.create(:device => Device.find(dlq.id))
       dlq.reconnected_at = Time.now
       dlq.save!
@@ -97,12 +97,22 @@ class MgmtQueriesController < RestfulAuthController
         @more = {'poll_rate' => cmd.param1,'instantaneous' => cmd.instantaneous }
       elsif cmd.cmd_type == 'dial_up_num' && cmd.param1 && cmd.param2 && cmd.param3
         @more = {'number' => cmd.param1,'username' => cmd.param2,'password' => cmd.param3,'instantaneous' => cmd.instantaneous }
-      elsif cmd.cmd_type == 'dial_up_num_glob_prim' && cmd.param1 && cmd.param2 && cmd.param3 && cmd.param4
-        cmd.cmd_type = 'dial_up_num'
+      elsif cmd.cmd_type == 'dial_up_num_glob_prim' && (cmd.param1 or cmd.param2 or cmd.param3 or cmd.param4)
+        #cmd.cmd_type = 'dial_up_num'
+        
         @local_pri = DialUp.find_by_phone_number(cmd.param1)   
-        @more = {'number' => cmd.param1,'username' => @local_pri.username,'password' => @local_pri.password,'alt_number' => cmd.param2,'alt_username' => @local_pri.username,'alt_password' => @local_pri.password,'global_prim_number' => cmd.param3,'global_prim_username' => @local_pri.username,'global_prim_password' => @local_pri.password,'global_alt_number' => cmd.param4,'global_alt_username' => @local_pri.username,'global_alt_password' => @local_pri.password,'instantaneous' => cmd.instantaneous}
+        @local_alt = DialUp.find_by_phone_number(cmd.param2)   
+        @global_pri = DialUp.find_by_phone_number(cmd.param3)   
+        @global_alt = DialUp.find_by_phone_number(cmd.param4)   
+        
+        @more = {'instantaneous' => cmd.instantaneous }
+        @more = @more.merge({'number' => cmd.param1,'username' => @local_pri.username,'password' => @local_pri.password}) if @local_pri
+        @more = @more.merge({'alt_number' => cmd.param2,'alt_username' => @local_alt.username,'alt_password' => @local_alt.password}) if @local_alt
+        @more = @more.merge({'global_prim_number' => cmd.param3,'global_prim_username' => @global_pri.username,'global_prim_password' => @global_pri.password}) if @global_pri
+        @more = @more.merge({'global_alt_number' => cmd.param4,'global_alt_username' => @global_alt.username,'global_alt_password' => @global_alt.password}) if @global_alt
+        
       elsif cmd.cmd_type == 'remote_access'
-      	@more = {'instantaneous' => cmd.instantaneous }
+      	
       end
       
       query.mgmt_cmd_id = cmd.id
