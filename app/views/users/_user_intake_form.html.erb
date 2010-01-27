@@ -47,12 +47,16 @@
 	        <td><%= text_field :user, :city ,:size => "7"%>State:<%= text_field :user, :state ,:size => "7"%>Zip:<%= text_field :user, :zipcode ,:size => "6"%></td>
           </tr>
 	      <tr>
-	        <td>Phone Number:</td>
+	        <td>Home Number:</td>
 	        <td><%= text_field :user, :home_phone ,:size => "40"%></td>
           </tr>
 	      <tr>
 	        <td>Cell Number:</td>
 	        <td><%= text_field :user, :cell_phone ,:size => "40"%></td>
+          </tr>
+          <tr>
+	        <td>Work Number:</td>
+	        <td><%= text_field :user, :work_phone ,:size => "40"%></td>
           </tr>
           <tr>
           	<td>Cell Provider:</td>
@@ -84,17 +88,6 @@
 	        <td>Date of Birth:</td>
 	        <td>
 	        <%= date_select:user, :birth_date, :start_year => 1900,:prompt => { :day => 'Day', :month => 'Month', :year => 'Year' }, :order => [:day, :month, :year]%></td>
-          </tr>
-          <tr>
-	        <td>Hidden Key:</td>
-	        <td><input type="text" size="40"></td>
-          </tr>
-          <tr>
-	        <td>Additional Information:</td>
-	        <td><input type="text" size="40"></td>
-          </tr>
-          <tr>
-	        <td colspan="2"><input type="text" size="57"></td>
           </tr>
           <tr>
           	<td>Time zone:</td>

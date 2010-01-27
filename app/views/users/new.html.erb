@@ -9,7 +9,7 @@
 	</div>
   <div class="content">
 	
-		<div id="errors">
+		<div id="errors" style="color:red">
 			<% if flash[:warning] %>
 			  <span style="font-size: 150%;">
 			  The following error occurred:
@@ -37,20 +37,24 @@
 		  	<% if @groups.length > 1 %>
 	 		  <label for="group">Select Group</label>
 			  <br />
-		    <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group)%>
+		    <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group),:onchange => "select_group(this);"%>
 		    <br /><br /><br>
         	<%else%>
         	<input type="hidden" name="group" value="<%= @groups[0].name %>">
         	<%end%>
-        
-		  	<%= render :partial => '/profiles/profile_top' %>
+            <span id="profile_top" style="display:none">
+		    <%= render :partial => '/profiles/profile_top' %> 
+		    </span>
 		  </div>
-		  
+		  	 
 		  <div class="col-250">
+		  	<span id="profile_bottom" style="display:none">
 		  	<%= render :partial => '/profiles/profile_bottom' %>
+		  	
 		  	<%#= render :partial => '/profiles/profile_halousers_only' %>
 			<br /><br /><br />
 			<input name="commit" type="image" src="/images/next.gif" />
+			</span>
 		  </div>
 		
 			<div class="col-250">
@@ -65,3 +69,18 @@
 	<div style="clear:both"></div>
 	<div id="user_signup-col-footer"></div>
 </div>
+<script>
+function select_group(dropdown)
+{
+	if(dropdown.value == 'Choose a Group')
+	{
+	  document.getElementById('profile_top').style.display = 'none'
+	  document.getElementById('profile_bottom').style.display = 'none'
+    }
+	else
+	{
+	  document.getElementById('profile_top').style.display = 'block'
+	  document.getElementById('profile_bottom').style.display = 'block'
+    }
+}
+</script>
