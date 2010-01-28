@@ -460,6 +460,18 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
         @car2_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[1]).id) if @caregivers[1]
         @car3_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[2]).id) if @caregivers[2]
       end
+      
+      @group = @halo_user.group_memberships.first.name if @halo_user.group_memberships.first
+      @groups = []
+      if current_user.is_super_admin?
+        @groups = Group.find(:all)
+      else
+        gs = current_user.group_memberships
+        gs.each do |g|
+          @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
+        end
+	  end
+      
     end
   end
   def set_roles_users_option(caregiver,roles_users_option,senior=nil)
