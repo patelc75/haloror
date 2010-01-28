@@ -37,17 +37,17 @@ All times are in <%= @user.profile.time_zone %> time zone
         <% @lost_data.each do |reading| %>
         <tr>
             <td>
-                <%=reading.begin_time.to_s(:db) %>
+				<%= UtilityHelper.format_datetime(reading.begin_time, current_user, :date_time) %>
             </td>
             <td>
             </td>
             <td>
-                <%=reading.end_time.to_s(:db) %>
+				<%= UtilityHelper.format_datetime(reading.end_time, current_user, :date_time) %>
             </td>
             <td>
             </td>
             <td>
-                <%=(reading.end_time - reading.begin_time).seconds %>s
+                <%=UtilityHelper.seconds_format(reading.end_time - reading.begin_time) %>
             </td>						
         </tr>
         <% end %>
