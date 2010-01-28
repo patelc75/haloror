@@ -6,6 +6,7 @@
 <form method="get" action="/dial_up_statuses">
 <input type="text" name="device_id" value="<%= params[:device_id]%>">
 <input type="submit" value="Enter device_id">
+<%= select_tag "dialup_type", options_for_select([ "Select Type","Global", "Local"],"Select Type"),:onchange => "this.form.submit();"%>
 </form>
 <br><br>
 <table border="1">

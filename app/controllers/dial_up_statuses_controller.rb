@@ -2,11 +2,10 @@ class DialUpStatusesController < RestfulAuthController
 layout 'application'
 
 def index
-	if params[:device_id] and params[:device_id] != ""
-      @dial_up_statuses = DialUpStatus.paginate :page => params[:page],:conditions => ["device_id = ?",params[:device_id]],:order   => 'created_at desc',:per_page => 50
-	else
-	  @dial_up_statuses = DialUpStatus.paginate :page => params[:page],:order => 'created_at desc',:per_page => 50
-    end
+	conditions = "1=1"
+	conditions += " and device_id = #{params[:device_id]}" if params[:device_id] and params[:device_id] != ""
+	conditions += " and dialup_type = '#{params[:dialup_type]}'" if params[:dialup_type] != 'Select Type'
+    @dial_up_statuses = DialUpStatus.paginate :page => params[:page],:conditions => conditions,:order => 'created_at desc',:per_page => 50
 end
 
 def last_successful
@@ -15,10 +14,6 @@ def last_successful
 	else
 	  @dial_up_last_successfuls = DialUpLastSuccessful.paginate :page => params[:page],:order   => 'created_at desc',:per_page => 10
     end
-end
-
-def dialup_last_successful
-	exit
 end
 
 def create
