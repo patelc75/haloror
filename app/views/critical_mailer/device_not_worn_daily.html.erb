@@ -1,17 +1,11 @@
-<% users = User.find(:all, :order => "id asc") -%>
-<% total_num = 0; total_duration = 0; -%>
-<% users.each do |user| -%>
-<% 	total_user_duration 	= 0; total_user_num	= 0; strap_not_worn = StrapNotWorn.rows_by_user(user.id, 1.days.ago, Time.now); user[:strap_not_worn] = strap_not_worn;
-	strap_not_worn.each do |reading|	total_user_num += 1; duration = (reading.end_time - reading.begin_time).seconds; total_user_duration += duration; user[:total_user_num] = total_user_num; user[:total_user_duration] = total_user_duration; end 
-   total_duration += total_user_duration; total_num += total_user_num;  	end -%>
-Device Not Worn (All times are in UTC timezone)
-Starting Time: <%= 1.days.ago %>  
-Ending Time :  <%= Time.now %>
+Device Not Worn Daily Report
+Begin: <%=  1.days.ago.in_time_zone('America/Chicago')  %> CST
+End  : <%= Time.now.in_time_zone('America/Chicago')  %> CST
 
-Name                Ocurrences                Total Duration
+User  |  Occurrences  |  Total Duration
 ------------------------------------------------------------
-All                 <%= total_num%>                <%= UtilityHelper.seconds_format(total_duration) %><% users.each do |user| -%> <% if !user[:total_user_num].nil? -%><%= user.name   %>  <%= user[:total_user_num]%>    <%= user[:total_user_duration]%>s <% end -%><% end -%>
-<% users.each do |user| -%> <% if !user[:total_user_num].nil? -%><%  user[:strap_not_worn].each do |reading| -%>	
-		Start:    <%= reading.begin_time.to_s() %>
-		End:      <%= reading.end_time.to_s() %>
-		Duration: <%= UtilityHelper.seconds_format((reading.end_time - reading.begin_time).seconds) %><% end -%><% end -%><% end -%>
+<% @users.sort_by { |k,v| v[:duration]}.each do |key| -%> 
+<%= key[1][:name] %> (<%= key[0] %>) | <%= key[1][:occurrences] %> intervals | <%= UtilityHelper.seconds_format(key[1][:duration]) %>
+<% end -%>	
+
+Go to My Links to get complete breakdown

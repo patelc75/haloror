@@ -11,6 +11,5 @@ class StrapNotWorn < ActiveRecord::Base
       user_ids << s.user_id
     end
     return user_ids
-  end
-  
+  end 
 end

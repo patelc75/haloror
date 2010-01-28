@@ -33,7 +33,7 @@ class Compliance
     
     strap_not_worn = nil
     
-    #find the timestamp of the most recent row in the strap_not_worns table
+    #find the timestamp of the most recent row in the strap_not_worns table (could be optimized by storing this Pg function device_not_worn_function)
     if begin_time
       strap_not_worn = StrapNotWorn.find(:first, :order => "end_time desc", :conditions => "user_id = #{user_id} AND end_time > '#{begin_time.to_s(:db)}'")
     else
@@ -41,7 +41,7 @@ class Compliance
     end
     prev_timestamp = strap_not_worn.end_time if strap_not_worn
     
-    #mark the spot where it last left off in the strap_not_worn_scans table  
+    #store the spot where it last left off in the strap_not_worn_scans table  
     if(!prev_timestamp.nil? and (!last or prev_timestamp > last.timestamp))
       last = StrapNotWornScan.new
       last.user_id = user_id
@@ -151,16 +151,27 @@ class Compliance
  
   def self.successful_user_logins(begin_time=nil, end_time=Time.now)
     RAILS_DEFAULT_LOGGER.warn("Compliance.successful_user_logins running at #{Time.now}")
-    users = User.find(:all, :order => 'id')
-    users.each do |user|
-      conds = "status = 'successful' AND user_id = #{user.id} AND created_at <= '#{end_time.to_s(:db)}' "
-      if !begin_time.nil?
-        conds = conds + " AND created_at >= '#{begin_time.to_s(:db)}'"
-      end
-      logins = AccessLog.count(:all, :conditions => conds)
-      user[:logins] = logins
+    conds = ["status = 'successful'"]
+    conds << "created_at <= '#{end_time.to_s(:db)}'"
+    if !begin_time.nil?
+      conds << "created_at >= '#{begin_time.to_s(:db)}'"
     end
-    return users
+    
+    users = {}
+    logins = AccessLog.find(:all, :conditions => conds.join(' and '))
+    
+    logins.each do |login|
+      users[login.user_id]
+      
+      users[login.user_id] = {} if users[login.user_id].nil?
+      users[login.user_id][:last_login] = login.created_at if users[login.user_id][:last_login].nil?
+      users[login.user_id][:last_login] = login.created_at if users[login.user_id][:last_login] < login.created_at
+      users[login.user_id][:occurrences] = 0 if users[login.user_id][:occurrences].nil?
+      users[login.user_id][:occurrences] += 1
+      users[login.user_id][:name] = User.find(login.user_id).name
+      users[login.user_id][:main_role] = User.find(login.user_id).main_role if users[login.user_id][:main_role].nil?
+    end
+    users
   end
 
   #bulky method to get both lost data and strap not worn for all halousers
@@ -195,4 +206,18 @@ class Compliance
     return halousers, total_lost_data, total_not_worn
   end
 
+  def self.report(class_name, begin_time = 1.days.ago)
+    conds = ["begin_time > '#{begin_time.to_s(:db)}'"]
+    users = {}
+    strap_not_worns = class_name.find(:all, :order => "end_time desc", :conditions => conds.join(' and '))
+    strap_not_worns.each do |snw|
+      users[snw.user_id] = {} if users[snw.user_id].nil?
+      users[snw.user_id][:duration] = 0 if users[snw.user_id][:duration].nil?
+      users[snw.user_id][:duration]    += (snw.end_time - snw.begin_time).seconds
+      users[snw.user_id][:occurrences] = 0 if users[snw.user_id][:occurrences].nil?
+      users[snw.user_id][:occurrences] += 1
+      users[snw.user_id][:name] = User.find(snw.user_id).name
+    end
+    users
+  end
 end

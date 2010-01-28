@@ -86,16 +86,19 @@ class CriticalMailer < ActionMailer::ARMailer
 #=============== Reporting  ========================    
   def lost_data_daily()
     subject = 'Lost Data Daily Report'
+    @body[:users] = Compliance.report(LostData, 1.week.ago)    
     setup_daily(subject)
   end
   
   def device_not_worn_daily()
     subject = 'Device Not Worn Daily Report'
+    @body[:users] = Compliance.report(StrapNotWorn, 1.week.ago)
     setup_daily(subject)
   end
   
   def successful_user_logins_daily()
     subject = 'Logins Daily Report'
+    @body[:users] = Compliance.successful_user_logins(1.week.ago)    
     setup_daily(subject)
   end
 
