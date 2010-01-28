@@ -1,9 +1,24 @@
 class DialUpStatusesController < RestfulAuthController
+layout 'application'
 
 def index
-	@dial_up_statuses = DialUpStatus.find(:all)
-	@dial_up_last_successfuls = DialUpLastSuccessful.find(:all)
-	render :layout => 'application'
+	if params[:device_id] and params[:device_id] != ""
+      @dial_up_statuses = DialUpStatus.paginate :page => params[:page],:conditions => ["device_id = ?",params[:device_id]],:order   => 'created_at desc',:per_page => 50
+	else
+	  @dial_up_statuses = DialUpStatus.paginate :page => params[:page],:order => 'created_at desc',:per_page => 50
+    end
+end
+
+def last_successful
+	if params[:device_id] and params[:device_id] != ""
+      @dial_up_last_successfuls = DialUpLastSuccessful.paginate :page => params[:page],:conditions => ["device_id = ?",params[:device_id]],:order   => 'created_at desc',:per_page => 10
+	else
+	  @dial_up_last_successfuls = DialUpLastSuccessful.paginate :page => params[:page],:order   => 'created_at desc',:per_page => 10
+    end
+end
+
+def dialup_last_successful
+	exit
 end
 
 def create
