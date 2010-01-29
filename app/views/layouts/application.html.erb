@@ -8,12 +8,14 @@
 	<%= javascript_include_tag 'reporting' %>
 	<%= javascript_include_tag 'swfobject' %>
 	<%= javascript_include_tag 'jsProgressBarHandler' %>
+	<%= yield :js %> <!-- on-demand javascripts. Example: facebox -->
 	
 	<%= calendar_date_select_includes 'blue' %>
 	
     <%= stylesheet_link_tag "layout" %> 
 	<%= stylesheet_link_tag 'redbox' %>
 	<%= stylesheet_link_tag 'tables' %>
+	<%= yield :css %> <!-- on-demand stylesheets. Example: facebox -->
 	
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     

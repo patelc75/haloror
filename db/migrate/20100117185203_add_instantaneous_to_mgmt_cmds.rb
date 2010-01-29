@@ -1,6 +1,6 @@
 class AddInstantaneousToMgmtCmds < ActiveRecord::Migration
   def self.up
-  	add_column :mgmt_cmds,:instantaneous,:boolean
+    add_column :mgmt_cmds,:instantaneous,:boolean
   end
 
   def self.down

@@ -1,0 +1,146 @@
+
+<% form_tag "/store/thanks" do %>
+  <fieldset>
+    <legend>Please confirm your order</legend>
+    <table width="100%">
+      <tr>
+        <td>
+          <table>
+            <% if @store[:product] == "halo_complete" %>
+            <tr>
+              <td>MyHalo Complete ($59/mo)</td>
+              <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
+            </tr>
+            <% end -%>
+            
+            <% if @store[:product] == "halo_clip" %>
+            <tr>
+              <td>MyHalo Clip ($49/mo)</td>
+              <td><%= image_tag 'myhalo-belt-clip.gif' %></td>
+            </tr>
+            <% end -%>
+          </table>
+        </td>
+        
+        <!-- needs to be DRY -->
+        <td>
+          <% if @store[:product] == "halo_complete" %>
+          <div id="halo_complete" style="float:left; margin-top: 20px; width: 100%">
+            <table width="100%" class="colored">
+              <tr><th>Shopping cart items</th><th>Price</th></tr>
+              <tr><td>Deposit</td><td>$249.00</td></tr>
+              <tr class="altrow"><td>3 months advance ($59 x 3)</td><td>$177.00</td></tr>
+              <tr><td>Shipping</td><td>$15.00</td></tr>
+              <tr class="altrow"><td>Total</td><td><strong>$439.00</strong></td></tr>
+            </table>
+            <p>
+              *Note: Recurring monthly charge of $59.00/mo will begin <%= 3.months.from_now.to_s(:day_date) %>
+            </p>
+          </div>
+          <% end -%>
+          
+          <% if @store[:product] == "halo_clip" %>
+          <div id="halo_clip" style="float:left; margin-top: 20px; width: 100%">
+            <table width="100%" class="colored">
+              <tr><th>Shopping cart items</th><th>Price</th></tr>
+              <tr><td>Deposit</td><td>$249.00</td></tr>
+              <tr class="altrow"><td>3 months advance ($49 x 3)</td><td>$147.00</td></tr>
+              <tr><td>Shipping</td><td>$15.00</td></tr>
+              <tr class="altrow"><td>Total</td><td><strong>$409.00</strong></td></tr>
+            </table>
+            <p>
+              *Note: Recurring monthly charge of $49.00/mo will begin <%= 3.months.from_now.to_s(:day_date) %>
+            </p>
+          </div>
+          <% end -%>
+        </td>
+
+      </tr>
+    </table>
+  </fieldset>
+  <br />
+  <fieldset>
+    <legend>Billing and Shipping</legend>
+    <table width="100%">
+      <td width="33%">
+        <h3>Shipping address</h3>
+        <p>
+          <label>Name</label><br />
+          <%= h @store[:ship_name] %>
+        </p>
+        <p>
+          <label>Shipping address</label><br />
+          <%= h @store[:ship_address] %>
+        </p>
+        <p>
+          <label>City</label><br />
+          <%= h @store[:ship_city] %>
+        </p>
+        <p>
+          <label>State</label><br />
+          <%= h @store[:ship_state] %>
+        </p>
+        <p>
+          <label>Zip</label><br />
+          <%= h @store[:ship_zip] %>
+        </p>
+        <p>
+          <label>Phone</label><br />
+          <%= h @store[:ship_phone] %>
+        </p>
+      </td>
+      
+      <td style="vertical-align: top;" width="33%">
+        <h3>Billing address</h3>
+
+        <p>
+          <label>Name</label><br />
+          <%= h @store[:bill_name] %>
+        </p>
+        <p>
+          <label>Shipping address</label><br />
+          <%= h @store[:bill_address] %>
+        </p>
+        <p>
+          <label>City</label><br />
+          <%= h @store[:bill_city] %>
+        </p>
+        <p>
+          <label>State</label><br />
+          <%= h @store[:bill_state] %>
+        </p>
+        <p>
+          <label>Zip</label><br />
+          <%= h @store[:bill_zip] %>
+        </p>
+        <p>
+          <label>Phone</label><br />
+          <%= h @store[:bill_phone] %>
+        </p>
+        <p>
+          <label>Email</label><br />
+          <%= h @store[:bill_email] %>
+        </p>
+      </td>
+      
+      <td width="33%">
+        <h3>Payment method</h3>
+        <p>
+          <label>Card number</label><br />
+          <%= h '****' + @store[:card_number][-3..-1] %> <!-- mask card number -->
+        </p>
+        <p>
+          <label>Expiration (Month/Year)</label><br />
+          <%= h Date::MONTHNAMES[@store['card_month_year(2i)'].to_i]  %>, <%= h @store['card_month_year(1i)'] %>
+        </p>
+        <p>
+          <label>Comments and Special shipping instructions</label>
+          <%= h @store[:card_comments] %>
+        </p>
+      </td>
+    </table>
+  </fieldset>
+  <p class="textright">
+    <%= submit_tag 'Place Order', :class => 'largebutton' %>
+  </p>
+<% end -%>

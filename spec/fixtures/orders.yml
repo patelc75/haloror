@@ -1,0 +1,35 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  ship_name: MyString
+  ship_address: MyText
+  ship_city: MyString
+  ship_state: MyString
+  ship_zip: MyString
+  ship_phone: MyString
+  bill_name: MyString
+  bill_address: MyText
+  bill_city: MyString
+  bill_state: MyString
+  bill_zip: MyString
+  bill_phone: MyString
+  bill_email: MyString
+  price: 1.5
+  comments: MyText
+
+two:
+  ship_name: MyString
+  ship_address: MyText
+  ship_city: MyString
+  ship_state: MyString
+  ship_zip: MyString
+  ship_phone: MyString
+  bill_name: MyString
+  bill_address: MyText
+  bill_city: MyString
+  bill_state: MyString
+  bill_zip: MyString
+  bill_phone: MyString
+  bill_email: MyString
+  price: 1.5
+  comments: MyText

@@ -1,0 +1,20 @@
+Order summary:
+
+Product: <%= @order[:product] %>
+
+Shipping
+  Name    : <%= @order[:ship_name] %>
+  Address : <%= @order[:ship_address] %>
+  City    : <%= @order[:ship_city] %>
+  State   : <%= @order[:ship_state] %>
+  ZIP     : <%= @order[:ship_zip] %>
+  Phone   : <%= @order[:ship_phone] %>
+
+Billing
+  Name    : <%= @order[:bill_name] %>
+  Address : <%= @order[:bill_address] %>
+  City    : <%= @order[:bill_city] %>
+  State   : <%= @order[:bill_state] %>
+  ZIP     : <%= @order[:bill_zip] %>
+  Phone   : <%= @order[:bill_phone] %>
+  Email   : <%= @order[:bill_email] %>

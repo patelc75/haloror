@@ -84,3 +84,16 @@
 {
 	width:300px;
 }
+
+table.colored {
+  border: 1px solid #4C4C4C;
+  padding: 10px;
+}
+table.colored th {
+  background-color: #B3B3B3;
+  text-align: left;
+  padding-left: 5px;
+}
+table.colored .altrow {
+  background-color: #E6E6E6;
+}

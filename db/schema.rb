@@ -9,7 +9,8 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20091030205045) do
+ActiveRecord::Schema.define(:version => 20100127224934) do
+
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
     t.string   "status"
@@ -29,13 +30,6 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.string   "mode"
     t.datetime "timestamp"
     t.string   "number"
-  end
-
-  create_table "accounts", :id => false, :force => true do |t|
-    t.integer "aid",                    :null => false
-    t.integer "bid"
-    t.integer "abalance"
-    t.string  "filler",   :limit => 84
   end
 
   create_table "alert_groups", :force => true do |t|
@@ -149,20 +143,6 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
   add_index "audits", ["created_at"], :name => "index_audits_on_created_at"
   add_index "audits", ["user_id", "user_type"], :name => "user_index"
 
-  create_table "batteries", :force => true do |t|
-    t.integer  "user_id"
-    t.datetime "timestamp"
-    t.integer  "percentage",     :null => false
-    t.integer  "time_remaining", :null => false
-    t.integer  "device_id"
-    t.boolean  "acpower_status"
-    t.boolean  "charge_status"
-  end
-
-  add_index "batteries", ["device_id", "timestamp"], :name => "index_batteries_on_device_id_and_timestamp"
-  add_index "batteries", ["timestamp", "user_id"], :name => "index_batteries_on_user_id_and_timestamp"
-  add_index "batteries", ["percentage", "timestamp", "user_id"], :name => "index_batteries_on_user_id_and_timestamp_and_percentage"
-
   create_table "battery_charge_completes", :force => true do |t|
     t.integer  "device_id"
     t.datetime "timestamp"
@@ -193,6 +173,8 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.integer  "user_id"
   end
 
+  add_index "battery_pluggeds", ["device_id", "timestamp"], :name => "index_battery_pluggeds_on_device_id_and_timestamp"
+
   create_table "battery_reminders", :force => true do |t|
     t.integer  "reminder_num"
     t.integer  "user_id"
@@ -212,6 +194,8 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.integer  "user_id"
   end
 
+  add_index "battery_unpluggeds", ["device_id", "timestamp"], :name => "index_battery_unpluggeds_on_device_id_and_timestamp"
+
   create_table "blood_pressures", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
@@ -225,12 +209,6 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.string   "sw_rev"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "branches", :id => false, :force => true do |t|
-    t.integer "bid",                    :null => false
-    t.integer "bbalance"
-    t.string  "filler",   :limit => 88
   end
 
   create_table "call_center_deferreds", :force => true do |t|
@@ -331,7 +309,8 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
   add_index "device_infos", ["device_id"], :name => "index_device_infos_on_device_id"
 
   create_table "device_latest_queries", :force => true do |t|
-    t.datetime "updated_at", :null => false
+    t.datetime "updated_at",     :null => false
+    t.datetime "reconnected_at"
   end
 
   add_index "device_latest_queries", ["updated_at"], :name => "device_latest_queries_updated_at_idx"
@@ -417,8 +396,40 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
   add_index "devices_users", ["device_id"], :name => "index_devices_users_on_device_id"
   add_index "devices_users", ["user_id"], :name => "index_devices_users_on_user_id"
 
+  create_table "dial_up_last_successfuls", :force => true do |t|
+    t.integer  "device_id"
+    t.string   "last_successful_number"
+    t.string   "last_successful_username"
+    t.string   "last_successful_password"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "dial_up_statuses", :force => true do |t|
+    t.integer  "device_id"
+    t.string   "phone_number"
+    t.string   "status"
+    t.string   "configured"
+    t.integer  "num_failures"
+    t.integer  "consecutive_fails"
+    t.boolean  "ever_connected"
+    t.string   "dialup_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "dial_ups", :force => true do |t|
-    t.integer "phone_number"
+    t.text     "phone_number"
+    t.text     "username"
+    t.text     "password"
+    t.text     "city"
+    t.text     "state"
+    t.text     "zip"
+    t.text     "dialup_type"
+    t.integer  "order_number"
+    t.integer  "created_by"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "dial_ups_gateways", :id => false, :force => true do |t|
@@ -455,13 +466,19 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.string   "event_type"
     t.integer  "event_id"
     t.datetime "timestamp_server"
+    t.datetime "call_center_response"
   end
+
+  add_index "events", ["timestamp", "user_id"], :name => "index_events_on_user_id_and_timestamp"
 
   create_table "falls", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
-    t.integer  "magnitude", :null => false
+    t.integer  "magnitude",             :null => false
     t.integer  "device_id"
+    t.datetime "timestamp_call_center"
+    t.boolean  "call_center_pending"
+    t.datetime "timestamp_server"
   end
 
   create_table "firmware_upgrades", :force => true do |t|
@@ -519,9 +536,6 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.datetime "updated_at"
     t.text     "description"
     t.string   "sales_type"
-    t.string   "name",       :null => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "gw_alarm_button_timeouts", :force => true do |t|
@@ -539,34 +553,9 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.datetime "timestamp"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "halo_debug_msgs", :force => true do |t|
-    t.integer  "source_mote_id"
-    t.datetime "timestamp"
-    t.integer  "dbg_type"
-    t.integer  "param1"
-    t.integer  "param2"
-    t.integer  "param3"
-    t.integer  "param4"
-    t.integer  "param5"
-    t.integer  "param6"
-    t.integer  "param7"
-    t.integer  "param8"
-    t.integer  "user_id"
-    t.string   "source_device_type"
-    t.integer  "device_id"
-    t.string   "dbg_level"
-    t.text     "description"
-  end
-
-  create_table "history", :id => false, :force => true do |t|
-    t.integer  "tid"
-    t.integer  "bid"
-    t.integer  "aid"
-    t.integer  "delta"
-    t.datetime "mtime"
-    t.string   "filler", :limit => 22
+    t.datetime "timestamp_call_center"
+    t.boolean  "call_center_pending"
+    t.datetime "timestamp_server"
   end
 
   create_table "installation_notes", :force => true do |t|
@@ -600,12 +589,6 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
 
   add_index "lost_datas", ["begin_time", "end_time", "user_id"], :name => "index_lost_datas_on_user_id_and_end_time_and_begin_time"
 
-  create_table "mgmt_acks", :force => true do |t|
-    t.integer  "mgmt_cmd_id"
-    t.datetime "timestamp_device"
-    t.datetime "timestamp_server"
-  end
-
   create_table "mgmt_cmds", :force => true do |t|
     t.integer  "device_id"
     t.integer  "user_id"
@@ -622,23 +605,11 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.string   "param1"
     t.string   "param2"
     t.string   "param3"
+    t.text     "param4"
+    t.boolean  "instantaneous"
   end
 
-  create_table "mgmt_queries", :force => true do |t|
-    t.integer  "device_id"
-    t.datetime "timestamp_device"
-    t.datetime "timestamp_server"
-    t.integer  "poll_rate"
-    t.integer  "mgmt_cmd_id"
-    t.integer  "cycle_num"
-  end
-
-  create_table "mgmt_responses", :force => true do |t|
-    t.datetime "timestamp_device"
-    t.datetime "timestamp_server"
-  end
-
-  add_index "mgmt_responses", ["timestamp_server"], :name => "index_mgmt_responses_on_timestamp_server"
+  add_index "mgmt_cmds", ["device_id", "originator"], :name => "index_mgmt_cmds_on_device_id_and_originator"
 
   create_table "notes", :force => true do |t|
     t.integer  "user_id"
@@ -648,28 +619,39 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.integer  "created_by"
   end
 
-  create_table "oscope_msgs", :force => true do |t|
-    t.datetime "timestamp"
-    t.integer  "channel_num"
-    t.integer  "user_id"
-    t.integer  "oscope_start_msg_id"
-    t.integer  "oscope_stop_msg_id"
+  create_table "order_items", :force => true do |t|
+    t.integer  "device_revision_id"
+    t.integer  "order_id"
+    t.float    "cost"
+    t.integer  "quantity"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
-  add_index "oscope_msgs", ["oscope_start_msg_id"], :name => "index_oscope_msgs_on_oscope_start_msg_id"
-
-  create_table "oscope_start_msgs", :force => true do |t|
-    t.string   "capture_reason"
-    t.integer  "source_mote_id"
-    t.datetime "timestamp"
-    t.integer  "user_id"
-  end
-
-  create_table "oscope_stop_msgs", :force => true do |t|
-    t.string   "capture_reason"
-    t.integer  "source_mote_id"
-    t.datetime "timestamp"
-    t.integer  "user_id"
+  create_table "orders", :force => true do |t|
+    t.string   "number"
+    t.string   "bill_name"
+    t.text     "bill_address"
+    t.string   "bill_city"
+    t.string   "bill_state"
+    t.string   "bill_zip"
+    t.string   "bill_phone"
+    t.string   "bill_email"
+    t.float    "cost"
+    t.string   "card_number"
+    t.date     "card_expiry"
+    t.text     "comments"
+    t.boolean  "halouser"
+    t.string   "ship_name"
+    t.text     "ship_address"
+    t.string   "ship_city"
+    t.string   "ship_state"
+    t.string   "ship_zip"
+    t.string   "ship_phone"
+    t.integer  "created_by"
+    t.integer  "updated_by"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "panics", :force => true do |t|
@@ -677,15 +659,10 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.datetime "timestamp"
     t.integer  "device_id"
     t.integer  "duration_press"
+    t.datetime "timestamp_call_center"
+    t.boolean  "call_center_pending"
+    t.datetime "timestamp_server"
   end
-
-  create_table "points", :force => true do |t|
-    t.integer "seq"
-    t.integer "data"
-    t.integer "oscope_msg_id"
-  end
-
-  add_index "points", ["oscope_msg_id"], :name => "index_points_on_oscope_msg_id"
 
   create_table "pool_mappings", :force => true do |t|
     t.string   "serail_number", :null => false
@@ -724,14 +701,34 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.text    "allergies"
     t.text    "pet_information"
     t.text    "access_information"
-    t.string  "account_number",      :limit => 10
+    t.string  "account_number"
     t.string  "door"
     t.string  "hospital_preference"
     t.string  "hospital_number"
     t.string  "doctor_name"
     t.string  "doctor_phone"
-    t.string  "sex",                 :limit => 1
+    t.string  "sex",                           :limit => 1
     t.date    "birth_date"
+    t.string  "home_phone_order"
+    t.string  "work_phone_order"
+    t.string  "cell_phone_order"
+    t.string  "other_phone_order"
+    t.string  "other_phone"
+    t.string  "medical_equipment_in_the_home"
+    t.text    "medications"
+    t.boolean "diabetes"
+    t.boolean "cancer"
+    t.boolean "seizures"
+    t.boolean "stroke_cva_tia"
+    t.boolean "cardiac_history"
+    t.boolean "pacemaker"
+    t.text    "additional_info"
+    t.string  "cross_st"
+    t.boolean "internet_access_at_home"
+    t.boolean "permission_to_break_door"
+    t.string  "police"
+    t.string  "fire"
+    t.string  "ambulance"
   end
 
   add_index "profiles", ["user_id"], :name => "index_profiles_on_user_id"
@@ -835,25 +832,6 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.datetime "updated_at"
   end
 
-  create_table "skin_temps", :force => true do |t|
-    t.integer  "user_id"
-    t.datetime "timestamp"
-    t.float    "skin_temp", :null => false
-  end
-
-  add_index "skin_temps", ["timestamp", "user_id"], :name => "index_skin_temps_on_user_id_and_timestamp"
-  add_index "skin_temps", ["skin_temp", "timestamp", "user_id"], :name => "index_skin_temps_on_user_id_and_timestamp_and_skin_temp"
-
-  create_table "steps", :force => true do |t|
-    t.integer  "user_id"
-    t.datetime "begin_timestamp"
-    t.datetime "end_timestamp"
-    t.integer  "steps",           :null => false
-  end
-
-  add_index "steps", ["begin_timestamp", "user_id"], :name => "index_steps_on_user_id_and_begin_timestamp"
-  add_index "steps", ["begin_timestamp", "steps", "user_id"], :name => "index_steps_on_user_id_and_begin_timestamp_and_steps"
-
   create_table "strap_fasteneds", :force => true do |t|
     t.integer  "device_id"
     t.datetime "timestamp"
@@ -919,14 +897,23 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.integer  "strap_off_timeout_sec"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "critical_event_delay"
+    t.integer  "critical_event_delay_sec"
   end
 
-  create_table "tellers", :id => false, :force => true do |t|
-    t.integer "tid",                    :null => false
-    t.integer "bid"
-    t.integer "tbalance"
-    t.string  "filler",   :limit => 84
+  create_table "user_intakes", :force => true do |t|
+    t.date     "installation_date"
+    t.integer  "created_by"
+    t.integer  "updated_by"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "credit_debit_card_proceessed"
+    t.boolean  "bill_monthly"
+    t.string   "kit_serial_number"
+  end
+
+  create_table "user_intakes_users", :id => false, :force => true do |t|
+    t.integer "user_id"
+    t.integer "user_intake_id"
   end
 
   create_table "users", :force => true do |t|
@@ -944,6 +931,7 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
     t.string   "type"
     t.string   "serial_number"
     t.string   "time_zone"
+    t.integer  "created_by"
   end
 
   create_table "vital_scans", :force => true do |t|
@@ -952,19 +940,6 @@ ActiveRecord::Schema.define(:version => 20091030205045) do
   end
 
   add_index "vital_scans", ["timestamp", "user_id"], :name => "index_vital_scans_on_user_id_and_timestamp"
-
-  create_table "vitals", :force => true do |t|
-    t.integer  "heartrate"
-    t.integer  "hrv"
-    t.integer  "activity"
-    t.integer  "orientation"
-    t.datetime "timestamp"
-    t.integer  "user_id"
-    t.boolean  "strap_status"
-  end
-
-  add_index "vitals", ["timestamp", "user_id"], :name => "index_vitals_on_user_id_and_timestamp"
-  add_index "vitals", ["heartrate", "timestamp", "user_id"], :name => "index_vitals_on_user_id_and_timestamp_and_heartrate"
 
   create_table "weight_scales", :force => true do |t|
     t.integer  "user_id"

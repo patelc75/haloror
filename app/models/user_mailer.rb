@@ -48,6 +48,7 @@ class UserMailer < ActionMailer::ARMailer
   	user.is_halouser_for_what.each { |group| groups+= group.name + " " }
   	@body[:groups] = groups
   end
+  
   def subscriber_email(subscriber)
   	setup_email(subscriber)
   	@bcc = "senior_signup@halomonitoring.com"
@@ -57,7 +58,15 @@ class UserMailer < ActionMailer::ARMailer
   	@body[:halouser] = subscriber.is_subscriber_for_what.first.name
   end
   
+  def order_summary(user)
+    setup_email(user) # recipient is hard coded
+    @bcc = 'senior_signup@halomonitoring.com'
+    @subject += "Order summary"
+    @body[:order] = Order.find_by_user_id(user.id)
+  end
+  
   protected
+  
   def setup_email(user)
     @recipients  = "#{user.email}"
     @from        = "no-reply@halomonitoring.com"

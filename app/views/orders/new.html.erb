@@ -1,0 +1,224 @@
+<% unless @confirmation %>
+  <% if session[:order].blank? %>
+    <% content_for :js do %>
+      <%= javascript_include_tag "facebox/facebox.js" %>
+    <% end -%>
+    <% content_for :css do %>
+      <%= stylesheet_link_tag "facebox/facebox.css" %>
+    <% end -%>
+  <% end -%>
+<% end -%>
+
+<% form_for @order, :url => {:action => (@confirmation ? "create" : "new")}, :html => {:id => 'form1'} do |f| %>
+  <fieldset>
+    <legend>Pick a product</legend>
+    <table width="100%">
+      <tr>
+        <td>
+          <table>
+            <% if @confirmation.blank? || (@product == "halo_complete") %>
+            <tr>
+              <td><%= radio_button_tag 'product', 'halo_complete', :checked => 'checked' unless @confirmation %> MyHalo Complete ($59/mo)</td>
+              <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
+              <%= observe_field(:product_halo_complete,
+                                :on => :click,
+                                :function => "toggleDiv('halo_complete_box');toggleDiv('halo_clip_box')"
+                                ) %>
+            </tr>
+            <% end -%>
+            <% if @confirmation.blank? || (@product == "halo_clip") %>
+            <tr>
+              <td><%= radio_button_tag "product", "halo_clip" unless @confirmation %> MyHalo Clip ($49/mo)</td>
+              <td><%= image_tag 'myhalo-belt-clip.gif' %></td>
+              <%= observe_field(:product_halo_clip,
+                                :on => :click,
+                                :function => "toggleDiv('halo_complete_box');toggleDiv('halo_clip_box')"
+                                ) %>
+            </tr>
+            <% end -%>
+            <% if !@confirmation %>
+            <tr><td colspan="2"><%= link_to "What's the difference?", image_path("product_matrix.jpg"), :rel => "facebox" %></td></tr>
+            <% end -%>
+          </table>
+        </td>
+        
+        <td>
+          <% if @confirmation.blank? || (@product == "halo_complete") %>
+          <div id="halo_complete_box" style="float:left; margin-top: 20px; width: 100%">
+            <table width="100%" class="colored">
+              <tr><th>Shopping cart items</th><th>Price</th></tr>
+              <tr><td>Deposit</td><td>$249.00</td></tr>
+              <tr class="altrow"><td>3 months advance ($59 x 3)</td><td>$177.00</td></tr>
+              <tr><td>Shipping</td><td>$15.00</td></tr>
+              <tr class="altrow"><td>Total</td><td>
+                <% if @confirmation %>
+                  <%= f.text_field "cost", :disabled => true %>
+                <% else %>
+                  <strong>$439.00</strong>
+                <% end -%>
+              </td></tr>
+            </table>
+            <p>
+              *Note: Recurring monthly charge of $59.00/mo will begin <%= 3.months.from_now.to_s(:day_date) %>
+            </p>
+          </div>
+          <% end -%>
+
+          <% if @confirmation.blank? || (@product == "halo_clip") %>
+          <div id="halo_clip_box" style="display: <%= @confirmation ? 'normal' : 'none' %>; float:left; margin-top: 20px; width: 100%">
+            <table width="100%" class="colored">
+              <tr><th>Shopping cart items</th><th>Price</th></tr>
+              <tr><td>Deposit</td><td>$249.00</td></tr>
+              <tr class="altrow"><td>3 months advance ($49 x 3)</td><td>$147.00</td></tr>
+              <tr><td>Shipping</td><td>$15.00</td></tr>
+              <tr class="altrow"><td>Total</td><td>
+                <% if @confirmation %>
+                  <%= f.text_field "cost", :disabled => true %>
+                <% else %>
+                  <strong>$409.00</strong>
+                <% end -%>
+              </td></tr>
+            </table>
+            <p>
+              *Note: Recurring monthly charge of $49.00/mo will begin <%= 3.months.from_now.to_s(:day_date) %>
+            </p>
+          </div>
+          <% end -%>
+          
+          <br/>
+        </td>
+
+      </tr>
+    </table>
+  </fieldset>
+  <br />
+  <fieldset>
+    <legend>Billing and Shipping</legend>
+    <table width="100%">
+      <td style="vertical-align: top;" width="33%">
+        <h3>Shipping address</h3>
+        <p>&nbsp;</p>
+        <p>
+          <label>Name</label><br />
+          <%= f.text_field "ship_name", :disabled => @confirmation %>
+        </p>
+        <p>
+          <label>Shipping address</label><br />
+          <%= f.text_field "ship_address", :disabled => @confirmation %>
+        </p>
+        <p>
+          <label>City</label><br />
+          <%= f.text_field "ship_city", :disabled => @confirmation %>
+        </p>
+        <p>
+          <label>State</label><br />
+          <% if @confirmation %>
+            <%= f.text_field "ship_state", :disabled => true %>
+          <% else %>
+            <%= f.select "ship_state", State::NAMES %>
+          <% end -%>
+        </p>
+        <p>
+          <label>Zip</label><br />
+          <%= f.text_field "ship_zip", :disabled => @confirmation %>
+        </p>
+        <p>
+          <label>Phone</label><br />
+          <%= f.text_field "ship_phone", :disabled => @confirmation %>
+        </p>
+      </td>
+      
+      <td style="vertical-align: top;" width="33%">
+        <h3>Billing address</h3>
+        <% unless @confirmation %>
+        <p>
+          <%= link_to_function "same_as_shipping" do |page|
+            page[:order_bill_name].value = page[:order_ship_name].value
+          end %>
+        </p>
+        <% end -%>
+        <div id="billing">
+          <p>
+            <label>Name</label><br />
+            <%= f.text_field "bill_name", :disabled => @confirmation %>
+          </p>
+          <p>
+            <label>Billing address</label><br />
+            <%= f.text_field "bill_address", :disabled => @confirmation %>
+          </p>
+          <p>
+            <label>City</label><br />
+            <%= f.text_field "bill_city", :disabled => @confirmation %>
+          </p>
+          <p>
+            <label>State</label><br />
+            <% if @confirmation %>
+              <%= f.text_field "bill_state", :disabled => true %>
+            <% else %>
+              <%= f.select "bill_state", State::NAMES %>
+            <% end -%>
+          </p>
+          <p>
+            <label>Zip</label><br />
+            <%= f.text_field "bill_zip", :disabled => @confirmation %>
+          </p>
+          <p>
+            <label>Phone</label><br />
+            <%= f.text_field "bill_phone", :disabled => @confirmation %>
+          </p>
+          <p>
+            <label>Email</label><br />
+            <%= f.text_field "bill_email", :disabled => @confirmation %>
+          </p>
+          <p>
+            <%= f.check_box "halouser", :disabled => @confirmation %>
+            <label>Also myHalo user</label>
+          </p>
+        </div>
+      </td>
+      
+      <td style="vertical-align: top;" width="33%">
+        <h3>Payment method</h3>
+        <p>&nbsp;</p>
+        <p>
+          <label>Card number</label><br />
+          <%= f.text_field "card_number", :disabled => @confirmation %>
+        </p>
+        <p>
+          <label>Expiration (Month/Year)</label><br />
+          <%= f.date_select "card_expiry", :order => [:month, :year], :disabled => @confirmation  %>
+        </p>
+        <p>
+          <label>CSC</label><br />
+          <%= password_field "other", "card_csc", :disabled => @confirmation %>
+        </p>
+        <p class="hint">*Note: The CSC is located on the back of the MasterCard or VISA debit or credit cards and is typically a separate group of 3 digits to the right of signature strip</p>
+        <p>
+          <label>Comments and Special shipping instructions</label>
+          <%= f.text_area "comments", :rows => 5, :disabled => @confirmation %>
+        </p>
+      </td>
+    </table>
+  </fieldset>
+  <p class="textright">
+    <%= f.submit "#{@confirmation ? 'Place Order' : 'Continue'}", :class => 'largebutton' %>
+  </p>
+<% end -%>
+
+<script type="text/javascript" charset="utf-8">
+  function toggleDiv( whichLayer )
+  {
+    var elem, vis;
+    if( document.getElementById ) // this is the way the standards work
+      elem = document.getElementById( whichLayer );
+    else if( document.all ) // this is the way old msie versions work
+        elem = document.all[whichLayer];
+    else if( document.layers ) // this is the way nn4 works
+      elem = document.layers[whichLayer];
+    vis = elem.style;
+    // if the style.display value is blank we try to figure it out here
+    if(vis.display==''&&elem.offsetWidth!=undefined&&elem.offsetHeight!=undefined)
+      vis.display = (elem.offsetWidth!=0&&elem.offsetHeight!=0)?'block':'none';
+    vis.display = (vis.display==''||vis.display=='block')?'none':'block';
+  }
+</script>

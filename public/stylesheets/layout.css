@@ -770,3 +770,20 @@ ul.removed_caregivers li a
 
 #logout a{text-decoration:none;}
 #logout a:hover{font-weight:bold};
+
+label {
+  font-weight: bold;
+}
+.hint {
+  font: 75% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+}
+.largebutton {
+  font: 200% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+  background-color: #008040;
+  color: #FFF;
+  border: 2px solid #333;
+  
+}
+.textright {
+  text-align: right;
+}
