@@ -4,7 +4,7 @@ layout 'application'
 def index
 	conditions = "1=1"
 	conditions += " and device_id = #{params[:device_id]}" if params[:device_id] and params[:device_id] != ""
-	conditions += " and dialup_type = '#{params[:dialup_type]}'" if params[:dialup_type] != 'Select Type'
+	conditions += " and dialup_type = '#{params[:dialup_type]}'" if params[:dialup_type] && params[:dialup_type] != 'Select Type'
     @dial_up_statuses = DialUpStatus.paginate :page => params[:page],:conditions => conditions,:order => 'created_at desc',:per_page => 50
 end
 

@@ -73,29 +73,29 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
 
   def add_kit_number(kit_serial_number,user)
   	if (kit_serial_number == nil || kit_serial_number.size != 10 || kit_serial_number[0,2] != 'H4' ) 
-  		msg = "Invalid serial number"	
+  		@msg = "Invalid serial number"	
   	else
-  		msg = ""
+  		@msg = ""
   	end  
     kit_device = Device.find_by_serial_number(kit_serial_number)
     if kit_device
 	  if kit_device.kits.first
-	    kit = kit_device.kits.first
-	    gw = kit.check_for_device_type('Gateway')
-	    cs = kit.check_for_device_type('Chest Strap')
-	    bc = kit.check_for_device_type('Belt Clip')
-	    if gw == false
-	      msg += "<br> Not found Gateway "
+	    @kit = kit_device.kits.first
+	    @gw = @kit.check_for_device_type('Gateway')
+	    @cs = @kit.check_for_device_type('Chest Strap')
+	    @bc = @kit.check_for_device_type('Belt Clip')
+	    if @gw == false
+	      @msg += "<br> Not found Gateway "
 	    end
 	
-	    if cs == false && bc == false
-	      msg += "<br> Not found Chest Strap or Belt Clip "
+	    if @cs == false && @bc == false
+	      @msg += "<br> Not found Chest Strap or Belt Clip "
 	    end
 	  else
-	    msg = "<br> Not found Kit Id"
+	    @msg = "<br> Not found Kit Id"
 	  end
     else
-     @kit = KitSerialNumber.create(:serial_number => kit_serial_number,:user_id => @user.id)
+     @new_kit = KitSerialNumber.create(:serial_number => kit_serial_number,:user_id => @user.id)
     end
   end
  
@@ -103,17 +103,19 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
   	
   	@user = User.find(params[:user_id])
   	kit_serial_number = params[:kit][:serial_number]
+  	@msg = ""
+  	
   	add_kit_number(kit_serial_number,@user)
   	
-    error_message = "Error(s):" + msg
+    error_message = "Error(s):" + @msg
     flash[:warning] = error_message
-    if msg != ""
+    if @msg != ""
       redirect_to "/users/create_subscriber/#{@user.id}"
     else
-      if !@kit
-        params[:gateway_serial_number] = gw.serial_number
-        params[:strap_serial_number] = cs.serial_number if cs != false
-        params[:strap_serial_number] = bc.serial_number if bc != false
+      if !@new_kit
+        params[:gateway_serial_number] = @gw.serial_number
+        params[:strap_serial_number] = @cs.serial_number if @cs != false
+        params[:strap_serial_number] = @bc.serial_number if @bc != false
         map_serial_numbers
       end
       UserMailer.deliver_kit_serial_number_register(@user, kit_serial_number, current_user)
