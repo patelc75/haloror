@@ -39,22 +39,23 @@ class OrdersController < ApplicationController
         flash[:notice] = 'Thank you for your order.'
         format.html { redirect_to(:controller => 'orders', :action => 'show', :id => @order) }
 
-        Order.transaction do
-          @group = Group.find_or_create_by_name("direct_to_consumer")
-          @user = User.create!(
-            :login => @order.name.downcase.gsub(' ',''),
-            :password => 'changeme',
-            :password_confirmation => 'chamgeme',
-            :email => @order.bill_email
-            )
-          same_as_senior = (@order.halouser ? "1", "0")
-          senior_user_id = @user.id
-          add_caregiver = "1"
-          profile = nil # ?? data fields are not received in the order form! how to create profile?
-          populate_subscriber(@user,same_as_senior,add_caregiver,@user.email,profile)  
-          Subscription.credit_card_validate(senior_user_id,@user.id,@user,@order.card_number,flash)             
+        # Order.transaction do
+        #   @group = Group.find_or_create_by_name("direct_to_consumer")
+        #   # UserHelper::populate_user
+        #   @user = User.create!(
+        #     :login => @order.bill_name.downcase.gsub(' ',''),
+        #     :password => 'changeme',
+        #     :password_confirmation => 'changeme',
+        #     :email => @order.bill_email
+        #     )
+        #   same_as_senior = "1" # (@order.halouser ? "1", "0")
+        #   senior_user_id = @user.id
+        #   add_caregiver = "0" # if "1", we need caregiver profile. anything else, profile = nil
+        #   profile = nil # ?? data fields are not received in the order form! how to create profile?
+        #   populate_subscriber(@user,same_as_senior,add_caregiver,@user.email,profile)  
+        #   Subscription.credit_card_validate(senior_user_id,@user.id,@user,@order.card_number,flash)             
         end
-        UserMailer.deliver_order_summary(@user)
+        # UserMailer.deliver_order_summary(@user)
       else
         format.html { render :action => "new" }
       end

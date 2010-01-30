@@ -38,7 +38,7 @@ var Facebox = Class.create({
 	              </div> \
 	              <div class="footer"> \
 	                <a href="#" class="close"> \
-	                  <img src="closelabel.gif" title="close" class="close_image" /> \
+	                  <img src="/javascripts/facebox/closelabel.gif" title="close" class="close_image" /> \
 	                </a> \
 	              </div> \
 	            </td> \
