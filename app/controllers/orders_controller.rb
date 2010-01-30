@@ -16,7 +16,7 @@ class OrdersController < ApplicationController
           "number" => "#{Time.now.to_i.to_s}-#{rand(99999).to_s}", 
           "cost" => "#{@product == 'halo_complete' ? '439.00' : '409.00'}"
           )
-      @order = Order.new(params[:order])
+      @order = Order.new(session[:order])
       
     else # store mode
       session[:order] = nil # fresh start
