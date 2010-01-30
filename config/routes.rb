@@ -12,6 +12,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :self_test_results
   map.resources :dial_ups,:collection => {:dial_up_num => :get}
   map.resources :dial_up_statuses,:collection => {:last_successful => :get}
+  map.resources :dial_up_alerts
 
   map.resources :vitals
   

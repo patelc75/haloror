@@ -1,0 +1,42 @@
+<!-- <meta http-equiv="refresh" content="30"> -->
+<%=render :partial => 'reporting/nav'%>
+<%= render :partial => 'reporting/nav_dialup_status'%>
+<h2>Dial Up Alerts</h2>
+<br>
+<form method="get" action="/dial_up_alerts">
+<input type="text" name="device_id" value="<%= params[:device_id]%>">
+<input type="submit" value="Enter device_id">
+</form>
+<br><br>
+<table border="1">
+	<th>Device Id</th>
+	<th>Number</th>
+	<th>Username</th>
+	<th>Password</th>
+	<th>Alt Number</th>
+	<th>Alt Username</th>
+	<th>Alt Password</th>
+	<th>Last Successful <br>Number</th>
+	<th>Last Successful <br>Username</th>
+	<th>Last Successful <br>Password</th>
+	<th>Timestamp</th>
+	
+	<% @dial_up_alerts.each do |dial_alert| %>
+	  <tr>
+	  	<td><%= dial_alert.device_id %></td>
+	  	<td><%= dial_alert.phone_number %></td>
+	  	<td><%= dial_alert.username %></td>
+	  	<td><%= dial_alert.password %></td>
+	  	<td><%= dial_alert.alt_number %></td>
+	  	<td><%= dial_alert.alt_username %></td>
+	  	<td><%= dial_alert.alt_password %></td>
+	  	<td><%= dial_alert.last_successful_number %></td>
+	  	<td><%= dial_alert.last_successful_username %></td>
+	  	<td><%= dial_alert.last_successful_password %></td>
+	  	<td><%= UtilityHelper.format_datetime(dial_alert.timestamp,current_user) %></td>
+
+	  </tr>
+	<%end%>
+</table>
+<br>
+<center><%= will_paginate @dial_up_alerts %></center>
