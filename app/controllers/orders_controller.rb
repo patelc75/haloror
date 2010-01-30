@@ -54,7 +54,7 @@ class OrdersController < ApplicationController
         #   profile = nil # ?? data fields are not received in the order form! how to create profile?
         #   populate_subscriber(@user,same_as_senior,add_caregiver,@user.email,profile)  
         #   Subscription.credit_card_validate(senior_user_id,@user.id,@user,@order.card_number,flash)             
-        end
+        # end
         # UserMailer.deliver_order_summary(@user)
       else
         format.html { render :action => "new" }

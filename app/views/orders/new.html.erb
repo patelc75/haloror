@@ -11,7 +11,7 @@
 
 <% form_for @order, :url => {:action => (@confirmation ? "create" : "new")}, :html => {:id => 'form1'} do |f| %>
   <fieldset>
-    <legend>Pick a product</legend>
+    <legend><%= @confirmation ? 'Order summary' : 'Pick a product' %></legend>
     <table width="100%">
       <tr>
         <td>
