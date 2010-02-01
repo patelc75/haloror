@@ -1,11 +1,11 @@
 <b>Other Dialup:</b>
   <%= link_to 'Status Table', dial_up_statuses_path %>
 | <%= link_to 'Successfuls', '/dial_up_statuses/last_successful'%>
-| <%= link_to "Issue Dial up Mgmt Command",:controller => "management",:action => "issue" %>
-<% if current_user.is_super_admin? %>
-| <%= link_to 'Dialup Num Table', dial_ups_path%>
-<% end %>
-| <%= link_to 'Dialup Alert', dial_up_alerts_path%>
+| <%= link_to '800 Abuse Alerts', dial_up_alerts_path%>
+<%# if current_user.is_super_admin? %>
+|| <%= link_to 'Config: Dialup Num Table', dial_ups_path%>
+|| <%= link_to "Issue: Dial up Mgmt Command",:controller => "management",:action => "issue" %>
+<%# end %>
 <br><br>
 
 
