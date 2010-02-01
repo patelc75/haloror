@@ -1,0 +1,40 @@
+<!-- <meta http-equiv="refresh" content="30"> -->
+<%=render :partial => 'reporting/nav'%>
+<%= render :partial => 'reporting/nav_dialup_status'%>
+<h2>Orders</h2>
+<br>
+
+<table border="1">
+	<th>Id</th>
+	<th>Number</th>
+	<th>Billing</th>
+	<th>Cost</th>
+	<th>Card Number</th>
+	<th>Shipping</th>
+	<th>Created At</th>
+	<th>User Intake</th>
+	<% @orders.each do |order| %>
+	  <tr>
+	  	<td><%= order.id %></td>
+	  	<td><%= order.number %></td>
+	  	<td><b><%= order.bill_name %></b><br>
+	  		<%= order.bill_address%><br>
+	  		<%= order.bill_city%>,<%= order.bill_state %>-<%= order.bill_zip%><br>
+	  		<b>phone: </b><%= order.bill_phone%><br>
+	  		<%= order.bill_email %>
+	  	</td>
+	  	<td><%= order.cost %></td>
+	  	<td>xxxx<%= order.card_number[12,16] %></td>
+	  	<td><b><%= order.ship_name %></b><br>
+	  		<%= order.ship_address%><br>
+	  		<%= order.ship_city%>,<%= order.ship_state %>-<%= order.ship_zip%><br>
+	  		<b>phone: </b><%= order.ship_phone%><br>
+	  		<%#= ship.bill_email %>
+	  	</td>
+	  	<td><%= UtilityHelper.format_datetime(order.created_at,current_user) %></td>
+	  	<td><a href="">Intake</a></td>
+	  </tr>
+	<%end%>
+</table>
+<br>
+<center><%#= will_paginate @dial_up_statuses %></center>

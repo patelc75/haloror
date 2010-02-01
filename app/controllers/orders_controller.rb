@@ -2,6 +2,10 @@ class OrdersController < ApplicationController
   # keeping RESTful
   include UserHelper
   
+  def index
+  	@orders = Order.find(:all,:order =>'created_at desc')
+  end
+  
   def new
     @confirmation = false
     @product = ""
