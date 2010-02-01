@@ -18,7 +18,7 @@
           <table>
             <% if @confirmation.blank? || (@product == "complete") %>
             <tr>
-              <td><%= radio_button_tag 'product', 'complete', true unless @confirmation %> <%= DeviceType.find_product_by_any_name("Halo Complete, Chest Strap") %> ($59/mo)</td>
+              <td><%= radio_button_tag 'product', 'complete', true unless @confirmation %> <%= DeviceType.find_product_by_any_name("Halo Complete, Chest Strap").latest_model_revision_name %> ($59/mo)</td>
               <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
               <%= observe_field(:product_complete,
                                 :frequency => 1,
@@ -28,7 +28,7 @@
             <% end -%>
             <% if @confirmation.blank? || (@product == "clip") %>
             <tr>
-              <td><%= radio_button_tag "product", "clip" unless @confirmation %> <%= DeviceType.find_product_by_any_name("Halo Clip, Belt Clip") %> ($49/mo)</td>
+              <td><%= radio_button_tag "product", "clip" unless @confirmation %> <%= DeviceType.find_product_by_any_name("Halo Clip, Belt Clip").latest_model_revision_name %> ($49/mo)</td>
               <td><%= image_tag 'myhalo-belt-clip.gif' %></td>
               <%= observe_field(:product_clip,
                                 :frequency => 1,

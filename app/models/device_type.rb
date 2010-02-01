@@ -2,19 +2,38 @@ class DeviceType < ActiveRecord::Base
   has_many :device_models
   has_many :serial_number_prefixes
   
-  # find device by any name in given comma separated values
-  # usage: find_product_bY_any_name("Halo Complete, Chest Strap")
+  # class methods
   #
-  def self.find_product_by_any_name(phrase)
-    full_name = ""
-    names = phrase.split(',').collect {|p| p.gsub(/^ +/,'').gsub(/ +$/,'') }
-    names.each do |name|
-      unless count(:conditions => {:device_type => name}).zero?
-        full_name = find_by_device_type(name).latest_model_revision_name
-        break
+  class << self
+    # find device by any name in given comma separated values
+    # usage: find_product_by_any_name("Halo Complete, Chest Strap")
+    #
+    def find_product_by_any_name(phrase)
+      device = nil
+      names = phrase.split(',').collect {|p| p.lstrip.rstrip }
+      names.each do |name|
+        unless count(:conditions => {:device_type => name}).zero?
+          device = find_by_device_type(name)
+          break
+        end
+      end
+      device
+    end
+  end
+
+  # instance methods
+  #
+  
+  # find latest revision of latest model
+  # TODO: change the logic to pick up device_revisions instead of device_type
+  #
+  def latest_model_revision
+    unless device_models.length.zero?
+      device_model = device_models.last
+      unless device_model.device_revisions.length.zero?
+        device_revision = device_model.device_revisions.last
       end
     end
-    full_name
   end
   
   # latest revision of latest model will be picked
@@ -31,4 +50,5 @@ class DeviceType < ActiveRecord::Base
       end
     end
   end
+  
 end
