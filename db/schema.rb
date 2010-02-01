@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100201144912) do
+ActiveRecord::Schema.define(:version => 20100201181936) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -332,6 +332,7 @@ ActiveRecord::Schema.define(:version => 20100201144912) do
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
+    t.boolean  "online_store"
   end
 
   create_table "device_revisions_work_orders", :force => true do |t|
@@ -355,7 +356,6 @@ ActiveRecord::Schema.define(:version => 20100201144912) do
     t.integer  "created_by"
     t.string   "comments"
     t.integer  "mac_address_type"
-    t.boolean  "online_store"
   end
 
   create_table "device_unavailable_alerts", :force => true do |t|

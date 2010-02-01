@@ -3,9 +3,9 @@ module UserHelper
   #
   def populate_user(params,email,group,created_by_user = nil,opt_out_call_center = 0)
   	@user = User.new
-  	@user.email = email
+  	@user.email = email #namdatory for all cases
   	User.transaction do
-  		@user[:is_new_halouser] = true
+  		@user[:is_new_halouser] = true # skip validations except email
     	@user.created_by = (created_by_user || @user) # 2010-02-01 when not created by logged_in user, then it is direct_customer
     	if @user.save!
     	  unless params.blank? # TODO: handle better. 2010-02-01 profile not required for direct_online_customer
@@ -29,7 +29,7 @@ module UserHelper
   
   def populate_subscriber(user,same_as_senior,add_caregiver,email,params_profile)
   	if same_as_senior == "1"  #subscriber same as senior
-      @user = User.find_by_id(user)
+      @user = (user.is_a?(User) ? user : User.find_by_id(user)) # avoid searching again
     else
       if add_caregiver != "1"  #subscriber will also be a caregiver
         @user = User.populate_caregiver(email,user.to_i,nil,nil,params_profile) #sets up @user
