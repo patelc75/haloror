@@ -1,5 +1,6 @@
 class OrdersController < ApplicationController
   # keeping RESTful
+  include UserHelper
   
   def new
     @confirmation = false
@@ -37,23 +38,28 @@ class OrdersController < ApplicationController
         flash[:notice] = 'Thank you for your order.'
         format.html { redirect_to(:controller => 'orders', :action => 'show', :id => @order) }
 
-        # Order.transaction do
-        #   @group = Group.find_or_create_by_name("direct_to_consumer")
-        #   # UserHelper::populate_user
-        #   @user = User.create!(
-        #     :login => @order.bill_name.downcase.gsub(' ',''),
-        #     :password => 'changeme',
-        #     :password_confirmation => 'changeme',
-        #     :email => @order.bill_email
-        #     )
-        #   same_as_senior = "1" # (@order.halouser ? "1", "0")
-        #   senior_user_id = @user.id
-        #   add_caregiver = "0" # if "1", we need caregiver profile. anything else, profile = nil
-        #   profile = nil # ?? data fields are not received in the order form! how to create profile?
-        #   populate_subscriber(@user,same_as_senior,add_caregiver,@user.email,profile)  
-        #   Subscription.credit_card_validate(senior_user_id,@user.id,@user,@order.card_number,flash)             
-        # end
-        # UserMailer.deliver_order_summary(@user)
+        Order.transaction do
+          add_caregiver = "0" # if "1", we need caregiver profile. anything else, profile = nil
+          profile = nil # ?? data fields are not received in the order form! how to create profile?
+
+          @group = Group.find_or_create_by_name("direct_to_consumer")
+          # UserHelper::populate_user. cannot be created unless we have login & password.
+          populate_user(profile, @order.bill_email, @group, nil) # TODO: method should assume default values instead of blanks
+          @user = User.find_by_email(@order.bill_email)
+          # @user = User.create(
+          #   :login => @order.bill_name.downcase.gsub(' ',''),
+          #   :password => 'changeme',
+          #   :password_confirmation => 'changeme',
+          #   :email => @order.bill_email
+          #   )
+          unless @user.blank?
+            same_as_senior = (@order.halouser ? "1" : "0")
+            senior_user_id = @user.id
+            populate_subscriber(@user,same_as_senior,add_caregiver,@user.email,profile)  
+            Subscription.credit_card_validate(senior_user_id,@user.id,@user,@order.card_number,flash)             
+          end
+        end
+        UserMailer.deliver_order_summary(@user) unless @user.blank?
       else
         format.html { render :action => "new" }
       end
