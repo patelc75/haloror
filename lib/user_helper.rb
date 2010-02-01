@@ -1,25 +1,29 @@
 module UserHelper
-  def populate_user(params,email,group,created_by_user,opt_out_call_center = 0)
+  # 2010-02-01 accept default value for created_by_user
+  #
+  def populate_user(params,email,group,created_by_user = nil,opt_out_call_center = 0)
   	@user = User.new
   	@user.email = email
   	User.transaction do
   		@user[:is_new_halouser] = true
-    	@user.created_by = created_by_user
+    	@user.created_by = (created_by_user || @user) # 2010-02-01 when not created by logged_in user, then it is direct_customer
     	if @user.save!
+    	  unless params.blank? # TODO: handle better. 2010-02-01 profile not required for direct_online_customer
           @profile = Profile.new(params)
           @profile.user_id = @user.id
           if !@profile.save!
             raise "Invalid Profile"  
           end
-          @group = Group.find_by_name(group)
-#          role = @user.has_role 'halouser'
-          @user.is_halouser_of @group if !@group.nil?
-#          if opt_out_call_center.blank?
-            @group = Group.find_by_name('safety_care')
-            raise "safety_care group missing!" if @group.nil? 
-            @user.is_halouser_of @group if !@group.nil?
-#          end
         end
+        @group = (group.is_a?(Group) ? group : Group.find_by_name(group)) # 2010-02-01 accept String or Group.instance
+#          role = @user.has_role 'halouser'
+        @user.is_halouser_of @group unless @group.blank? # 2010-02-01 !@group.nil? will have errors later
+#          if opt_out_call_center.blank?
+          @group = Group.find_by_name('safety_care') # TODO: 
+          raise "safety_care group missing!" if @group.nil? 
+          @user.is_halouser_of @group if !@group.nil?
+#          end
+      end
   	end
   end  
   

@@ -16,6 +16,10 @@ h3 a {
 	font-weight:normal;
 }
 
+table th {
+  background-color: #E6E6E6;
+}
+
 .container
 {
 	width:950px;
@@ -786,4 +790,8 @@ label {
 }
 .textright {
   text-align: right;
+}
+
+.shaded {
+  background-color: #E6E6E6;
 }

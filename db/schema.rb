@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100127224934) do
+ActiveRecord::Schema.define(:version => 20100201144912) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -355,6 +355,7 @@ ActiveRecord::Schema.define(:version => 20100127224934) do
     t.integer  "created_by"
     t.string   "comments"
     t.integer  "mac_address_type"
+    t.boolean  "online_store"
   end
 
   create_table "device_unavailable_alerts", :force => true do |t|
@@ -395,6 +396,22 @@ ActiveRecord::Schema.define(:version => 20100127224934) do
 
   add_index "devices_users", ["device_id"], :name => "index_devices_users_on_device_id"
   add_index "devices_users", ["user_id"], :name => "index_devices_users_on_user_id"
+
+  create_table "dial_up_alerts", :force => true do |t|
+    t.integer  "device_id"
+    t.string   "phone_number"
+    t.string   "username"
+    t.string   "password"
+    t.string   "alt_number"
+    t.string   "alt_username"
+    t.string   "alt_password"
+    t.string   "last_successful_number"
+    t.string   "last_successful_username"
+    t.string   "last_successful_password"
+    t.datetime "timestamp"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "dial_up_last_successfuls", :force => true do |t|
     t.integer  "device_id"
@@ -652,6 +669,7 @@ ActiveRecord::Schema.define(:version => 20100127224934) do
     t.integer  "updated_by"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "ship_email"
   end
 
   create_table "panics", :force => true do |t|

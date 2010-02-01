@@ -115,7 +115,8 @@ class ApplicationController < ActionController::Base
       controller_name == 'util' && action_name == 'privacy' ||
       controller_name == 'util' && action_name == 'support' ||
       controller_name == 'healthvault' && action_name == 'redirect' ||      
-      controller_name == 'security')
+      controller_name == 'security') ||
+      controller_name == 'orders' && ['new','create','show'].include?(action_name) # we will create user here
       return authenticate
     else
       return true
