@@ -2,9 +2,9 @@
   <%= link_to 'Status Table', dial_up_statuses_path %>
 | <%= link_to 'Successfuls', '/dial_up_statuses/last_successful'%>
 | <%= link_to "Issue Dial up Mgmt Command",:controller => "management",:action => "issue" %>
-<%# if current_user.is_super_admin? %>
+<% if current_user.is_super_admin? %>
 | <%= link_to 'Dialup Num Table', dial_ups_path%>
-<%# end %>
+<% end %>
 | <%= link_to 'Dialup Alert', dial_up_alerts_path%>
 <br><br>
 

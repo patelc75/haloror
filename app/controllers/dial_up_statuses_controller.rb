@@ -1,6 +1,6 @@
 class DialUpStatusesController < RestfulAuthController
 layout 'application'
-
+session :on,:except => :create
 def index
 	conditions = "1=1"
 	conditions += " and device_id = #{params[:device_id]}" if params[:device_id] and params[:device_id] != ""
