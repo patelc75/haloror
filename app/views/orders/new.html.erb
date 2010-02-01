@@ -18,21 +18,21 @@
           <table>
             <% if @confirmation.blank? || (@product == "halo_complete") %>
             <tr>
-              <td><%= radio_button_tag 'product', 'halo_complete', :checked => 'checked' unless @confirmation %> MyHalo Complete ($59/mo)</td>
+              <td><%= radio_button_tag 'product', 'complete', true unless @confirmation %> MyHalo Complete ($59/mo)</td>
               <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
-              <%= observe_field(:product_halo_complete,
-                                :on => :click,
-                                :function => "toggleDiv('halo_complete_box');toggleDiv('halo_clip_box')"
+              <%= observe_field(:product_complete,
+                                :frequency => 1,
+                                :function => "toggleProductDetails();"
                                 ) %>
             </tr>
             <% end -%>
             <% if @confirmation.blank? || (@product == "halo_clip") %>
             <tr>
-              <td><%= radio_button_tag "product", "halo_clip" unless @confirmation %> MyHalo Clip ($49/mo)</td>
+              <td><%= radio_button_tag "product", "clip" unless @confirmation %> MyHalo Clip ($49/mo)</td>
               <td><%= image_tag 'myhalo-belt-clip.gif' %></td>
-              <%= observe_field(:product_halo_clip,
-                                :on => :click,
-                                :function => "toggleDiv('halo_complete_box');toggleDiv('halo_clip_box')"
+              <%= observe_field(:product_clip,
+                                :frequency => 1,
+                                :function => "toggleProductDetails();"
                                 ) %>
             </tr>
             <% end -%>
@@ -44,7 +44,7 @@
         
         <td>
           <% if @confirmation.blank? || (@product == "halo_complete") %>
-          <div id="halo_complete_box" style="float:left; margin-top: 20px; width: 100%">
+          <div id="halo_complete_box" style="display: block; float:left; margin-top: 20px; width: 100%">
             <table width="100%" class="colored">
               <tr><th>Shopping cart items</th><th>Price</th></tr>
               <tr><td>Deposit</td><td>$249.00</td></tr>
@@ -65,7 +65,7 @@
           <% end -%>
 
           <% if @confirmation.blank? || (@product == "halo_clip") %>
-          <div id="halo_clip_box" style="display: <%= @confirmation ? 'normal' : 'none' %>; float:left; margin-top: 20px; width: 100%">
+          <div id="halo_clip_box" style="display: <%= @confirmation ? 'block' : 'none' %>; float:left; margin-top: 20px; width: 100%">
             <table width="100%" class="colored">
               <tr><th>Shopping cart items</th><th>Price</th></tr>
               <tr><td>Deposit</td><td>$249.00</td></tr>
@@ -98,6 +98,10 @@
       <td style="vertical-align: top;" width="33%">
         <h3>Shipping address</h3>
         <p>&nbsp;</p>
+        <p>
+          <%= f.check_box "halouser", :disabled => @confirmation %>
+          <label>Also myHalo user</label>
+        </p>
         <p>
           <label>Name</label><br />
           <%= f.text_field "ship_name", :disabled => @confirmation %>
@@ -132,12 +136,15 @@
         <h3>Billing address</h3>
         <% unless @confirmation %>
         <p>
-          <%= link_to_function "same_as_shipping" do |page|
-            page[:order_bill_name].value = page[:order_ship_name].value
-          end %>
+          <%= check_box "billing", "same_as_shipping", :checked => 'checked' %>
+          <label>Same as shipping</label>
+          <%= observe_field(:billing_same_as_shipping,
+                            :on => :click,
+                            :function => "toggleDiv('billing_block');"
+                            ) %>
         </p>
         <% end -%>
-        <div id="billing">
+        <div id="billing_block" style="display:none;">
           <p>
             <label>Name</label><br />
             <%= f.text_field "bill_name", :disabled => @confirmation %>
@@ -169,10 +176,6 @@
           <p>
             <label>Email</label><br />
             <%= f.text_field "bill_email", :disabled => @confirmation %>
-          </p>
-          <p>
-            <%= f.check_box "halouser", :disabled => @confirmation %>
-            <label>Also myHalo user</label>
           </p>
         </div>
       </td>
@@ -206,19 +209,32 @@
 <% end -%>
 
 <script type="text/javascript" charset="utf-8">
-  function toggleDiv( whichLayer )
+  function toggleDiv(what)
   {
-    var elem, vis;
-    if( document.getElementById ) // this is the way the standards work
-      elem = document.getElementById( whichLayer );
-    else if( document.all ) // this is the way old msie versions work
-        elem = document.all[whichLayer];
-    else if( document.layers ) // this is the way nn4 works
-      elem = document.layers[whichLayer];
-    vis = elem.style;
-    // if the style.display value is blank we try to figure it out here
-    if(vis.display==''&&elem.offsetWidth!=undefined&&elem.offsetHeight!=undefined)
-      vis.display = (elem.offsetWidth!=0&&elem.offsetHeight!=0)?'block':'none';
-    vis.display = (vis.display==''||vis.display=='block')?'none':'block';
+    found = document.getElementById(what);
+    if (found.style.display == "block") {
+      found.style.display = "none";
+    }
+    else {
+      found.style.display = "block";
+    }
+  }
+  
+  function showDiv(what) {
+    document.getElementById(what).style.display = "block";
+  }
+
+  function hideDiv(what) {
+    document.getElementById(what).style.display = "none";
+  }
+  
+  function toggleProductDetails() {
+    if (document.getElementById('product_complete').checked == true) {
+      showDiv('halo_complete_box');
+      hideDiv('halo_clip_box');
+    } else {
+      hideDiv('halo_complete_box');
+      showDiv('halo_clip_box');
+    }
   }
 </script>
