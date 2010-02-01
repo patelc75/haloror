@@ -1,27 +1,25 @@
 <h1 id="thank_you_for_placing_the_order_with_us">Thank you for placing the order with us</h1>
 
 <p>
-  Your card has been charged <%= @order.cost %>.<br />
-  Order confirmation has been emailed to <%= @order.bill_email %>
+  Your card has been charged <strong><%= number_to_currency(@order.cost, :precision => 2, :unit => '$') %></strong>. 
+  Order confirmation has been emailed to <strong><%= @order.bill_email %></strong>
 </p>
 <p>
-  Your order number is <%= @order.number %>
+  Your order number is <%= @order.full_number %>
 </p>
 <hr />
 
 <table width="100%">
   <tr>
-    <td>Order number: <%= @order.number %></td>
-    <td>Order date: <%= @order.created_at %></td>
-    <td>Status: Shipped</td>
+    <td>Order number: <strong><%= @order.full_number %></strong></td>
+    <td>Order date: <%= @order.created_at.to_s(:day_date) %></td>
+    <td>Status: In Process</td>
   </tr>
 </table>
 
-<p>
-  Package: Shipped on <%= @order.created_at.to_s(:long) %>
-</p>
+<br />
 
-<table>
+<table width="100%">
   <tr>
     <th>Product</th>
     <th>Status</th>
@@ -32,18 +30,18 @@
   <% @order.order_items.each do |item| %>
   <tr>
     <td><%= item.product_model %></td>
-    <td>Shipped</td>
-    <td><%= item.quantity %></td>
-    <td><%= item.cost %></td>
-    <td><%= item.calculated_cost %></td>
+    <td>In Process</td>
+    <td class="textright"><%= item.quantity %></td>
+    <td class="textright"><%= number_to_currency(item.cost, :precision => 2, :unit => '$') %></td>
+    <td class="textright"><%= number_to_currency(item.calculated_cost, :precision => 2, :unit => '$') %></td>
   </tr>
   <% end -%>
 </table>
 <hr />
 <table width="100%">
   <tr>
-    <td>Billing address</td>
-    <td>Your payment</td>
+    <td><strong>Billing address</strong></td>
+    <td><strong>Your payment</strong></td>
   </tr>
   <tr>
     <td>
