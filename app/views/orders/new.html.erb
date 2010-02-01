@@ -12,11 +12,11 @@
 <% form_for @order, :url => {:action => (@confirmation ? "create" : "new")}, :html => {:id => 'form1'} do |f| %>
   <fieldset>
     <legend><%= @confirmation ? 'Order summary' : 'Pick a product' %></legend>
-    <table width="100%">
+    <table id="product_detail_box" width="100%">
       <tr>
         <td>
           <table>
-            <% if @confirmation.blank? || (@product == "halo_complete") %>
+            <% if @confirmation.blank? || (@product == "complete") %>
             <tr>
               <td><%= radio_button_tag 'product', 'complete', true unless @confirmation %> MyHalo Complete ($59/mo)</td>
               <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
@@ -26,7 +26,7 @@
                                 ) %>
             </tr>
             <% end -%>
-            <% if @confirmation.blank? || (@product == "halo_clip") %>
+            <% if @confirmation.blank? || (@product == "clip") %>
             <tr>
               <td><%= radio_button_tag "product", "clip" unless @confirmation %> MyHalo Clip ($49/mo)</td>
               <td><%= image_tag 'myhalo-belt-clip.gif' %></td>
@@ -43,7 +43,7 @@
         </td>
         
         <td>
-          <% if @confirmation.blank? || (@product == "halo_complete") %>
+          <% if @confirmation.blank? || (@product == "complete") %>
           <div id="halo_complete_box" style="display: block; float:left; margin-top: 20px; width: 100%">
             <table width="100%" class="colored">
               <tr><th>Shopping cart items</th><th>Price</th></tr>
@@ -64,7 +64,7 @@
           </div>
           <% end -%>
 
-          <% if @confirmation.blank? || (@product == "halo_clip") %>
+          <% if @confirmation.blank? || (@product == "clip") %>
           <div id="halo_clip_box" style="display: <%= @confirmation ? 'block' : 'none' %>; float:left; margin-top: 20px; width: 100%">
             <table width="100%" class="colored">
               <tr><th>Shopping cart items</th><th>Price</th></tr>
@@ -134,17 +134,15 @@
       
       <td style="vertical-align: top;" width="33%">
         <h3>Billing address</h3>
-        <% unless @confirmation %>
         <p>
-          <%= check_box "billing", "same_as_shipping", :checked => 'checked' %>
+          <%= check_box "billing", "same_as_shipping", :checked => "#{@same_address}", :disabled => @confirmation %>
           <label>Same as shipping</label>
           <%= observe_field(:billing_same_as_shipping,
                             :on => :click,
                             :function => "toggleDiv('billing_block');"
                             ) %>
         </p>
-        <% end -%>
-        <div id="billing_block" style="display:none;">
+        <div id="billing_block" style="display: <%= (@confirmation && @same_address == '') ? 'block' : 'none' %>;">
           <p>
             <label>Name</label><br />
             <%= f.text_field "bill_name", :disabled => @confirmation %>

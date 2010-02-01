@@ -4,17 +4,16 @@ class OrdersController < ApplicationController
   def new
     @confirmation = false
     @product = ""
+    @same_address = "checked"
     
     if request.post? # confirmation mode
       @confirmation = true # simpler than checking session[:order]
       @product = params[:product]
       temp_order = params[:order].merge(
           "number" => "#{Time.now.to_i.to_s}-#{rand(99999).to_s}", 
-          "cost" => "#{@product == 'halo_complete' ? '439.00' : '409.00'}"
+          "cost" => "#{@product == 'complete' ? '439.00' : '409.00'}"
           )
-      if params["billing"]["same_as_shipping"] == "1"
-        
-      end
+      @same_address = (params["billing"]["same_as_shipping"] == "1" ? "checked" : "")
       session[:order] = temp_order
       @order = Order.new(session[:order])
       
