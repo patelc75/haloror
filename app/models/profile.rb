@@ -40,18 +40,45 @@ class Profile < ActiveRecord::Base
   	
   	#check_valid_phone_numbers
  #end
-def email=(email)
-	nil
-end
-def email
-	self.user.email
-end
+  def email=(email); nil; end
+  def email; self.user.email; end
 
- def owner_user # for auditing
-   self.user
- rescue
-   nil
- end
+  def owner_user # for auditing
+    self.user rescue nil
+  end
+
+ class << self # class methods
+
+   # create profile for provided user. bypass all validations
+   #
+   def generate_for_online_customer(options = nil)
+     unless options.blank?
+       if options.is_a?(Integer) # direct user.id given
+         user = User.find_by_id(options)
+         first_name = last_name = (user.login.blank? ? user.email : user.login)
+         
+       elsif options.is_a?(User)
+         user = options
+         first_name = last_name = (user.login.blank? ? user.email : user.login)
+         
+       elsif options.is_a?(Hash) # multiple options supplied
+         user = (options.key?(:user) ? options[:user] : (options.key?(:user_id) ? User.find_by_id(options[:user_id]) : nil))
+         first_name = (options.key?(:first_name) ? options[:first_name] : (user.login.blank? ? user.email : user.login))
+         last_name = (options.key?(:last_name) ? options[:last_name] : (user.login.blank? ? user.email : user.login))
+       end
+   
+       unless user.blank?
+         profile = Profile.new(:first_name => first_name, :last_name => last_name)
+         profile[:is_halouser] = false
+         profile[:is_new_caregiver] = true
+         profile[:user_id] = user.id
+         profile.save!
+         profile
+       end
+     end
+   end
+ 
+ end # class methods
 
   def validate
   	if self[:is_new_caregiver]
