@@ -13,6 +13,7 @@
 	<th>Shipping</th>
 	<th>Created At</th>
 	<th>User Intake</th>
+	<% if @orders %>
 	<% @orders.each do |order| %>
 	  <tr>
 	  	<td><%= order.id %></td>
@@ -34,6 +35,7 @@
 	  	<td><%= UtilityHelper.format_datetime(order.created_at,current_user) %></td>
 	  	<td><a href="">Intake</a></td>
 	  </tr>
+	<%end%>
 	<%end%>
 </table>
 <br>
