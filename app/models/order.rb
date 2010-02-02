@@ -1,3 +1,4 @@
+require "active_merchant"
 
 class Order < ActiveRecord::Base
   has_many :order_items
