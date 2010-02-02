@@ -1,0 +1,33 @@
+<h1 id="failed_order">Failed order</h1>
+<h2>You order has failed for the following reason</h2>
+
+<hr />
+
+<h3>One time charge</h3>
+<p>
+  Authorization: <%= @one_time_fee.authorization %>
+</p>
+<p>
+  Message: <%= @one_time_fee.message %>
+</p>
+<p>
+  Parameters: <%= @one_time_fee.params.to_yaml %>
+</p>
+
+<hr />
+
+<h3>Subscription charges (begins after 3 months from the date of purchase)</h3>
+<p>
+  Authorization: <%= @subscription.authorization %>
+</p>
+<p>
+  Message: <%= @subscription.message %>
+</p>
+<p>
+  Parameters: <%= @subscription.params.to_yaml %>
+</p>
+
+<br /><br />
+<p>
+  Please attempt to order again by <%= link_to 'clicking here', :controller => 'orders', :action => 'new' %>
+</p>
