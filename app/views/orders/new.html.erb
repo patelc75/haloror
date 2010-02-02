@@ -108,8 +108,8 @@
         </p>
         <p>
           <label>Name</label><br />
-          <%= f.text_field "ship_first_name", :disabled => @confirmation %> 
-          <%= f.text_field "ship_last_name", :disabled => @confirmation %>
+          <%= f.text_field "ship_first_name", :disabled => @confirmation, :class => "jsrequired" %> 
+          <%= f.text_field "ship_last_name", :disabled => @confirmation, :class => "jsrequired" %>
         </p>
         <p>
           <label>Shipping address</label><br />
@@ -204,7 +204,7 @@
           <% if @confirmation %>
             <%= f.text_field "card_type", :disabled => true %>
           <% else %>
-            <%= f.select "card_type", [["Visa", "visa"], ["MasterCard", "master"]]  %>
+            <%= f.select "card_type", [["Visa", "visa"], ["MasterCard", "master"], ["American Express", "express"],["Discover", "discover"]]  %>
           <% end -%>
         </p>
         <p>
