@@ -60,13 +60,20 @@ class OrdersController < ApplicationController
                 same_as_senior = (@order.halouser ? "1" : "0")
                 senior_user_id = @user.id
                 populate_subscriber(@user.id.to_s,same_as_senior,add_caregiver,@user.email,profile)
-                credit_card = {
-                    :"expiration_time(1i)" => :"card_expiry(1i)",
-                    :"expiration_time(2i)" => :"card_expiry(2i)",
-                    :number => @order.card_number,
-                    :special_notes => "direct_to_consumer #{@order.order_items.first.device_revision.revision_model_type}"
-                  }
-                Subscription.credit_card_validate(senior_user_id,@user.id,@user,credit_card,flash)             
+                
+                @order.charge_one_time_fee # simpler way to credit_card charges
+                @order.charge_subscription
+                
+                # Not used because it has lot of logic mixed in the lengthy implementation
+                # => code is not touched currently. eventually this will be deprecated
+                #
+                # credit_card = {
+                #     :"expiration_time(1i)" => :"card_expiry(1i)",
+                #     :"expiration_time(2i)" => :"card_expiry(2i)",
+                #     :number => @order.card_number,
+                #     :special_notes => "direct_to_consumer #{@order.order_items.first.device_revision.revision_model_type}"
+                #   }
+                # Subscription.credit_card_validate(senior_user_id,@user.id,@user,credit_card,flash)             
               end
             end
             UserMailer.deliver_order_summary(@user) unless @user.blank?

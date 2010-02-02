@@ -13,6 +13,8 @@ class ApplicationController < ActionController::Base
   # Pick a unique cookie name to distinguish our session data from others'
   session :session_key => '_HaloRoR2_session_id'  
 
+  filter_parameter_logging :card_number
+  
   #This method is needed because of the way attachment_fu stores the files 
   #uploaded on the file system.  attachment_fu stores the files in a folder with 
   #the same name as the model within the public folder.  This causes issues 
