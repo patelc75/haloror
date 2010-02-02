@@ -349,7 +349,7 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
   	@user
   end
   def edit_user_intake_form
-  	if request.post?
+  	if request.post? #comes here if the form is resubmitted
   	  @user_intake = UserIntake.find(params[:user_intake_id].to_i)
   	  @user = update_user_profile(params[:halo_user],params[:user]) unless params[:halo_user].empty?
   	  @senior = @user.user if params[:halo_user]
@@ -385,7 +385,7 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
       			#remove caregiver role from subscriber
               @subscriber.user.roles_users.each do |role_type|
       	        if role_type.role.name == 'caregiver'
-      		      RolesUser.destroy(role_type.id)
+      		        RolesUser.destroy(role_type.id)
        	        end
               end
       		end
@@ -427,24 +427,28 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
   	  end
   	    
   	  redirect_to :controller => 'users',:action =>'edit_user_intake_form' ,:id => @user_intake.id
-  	else
+  	else #comes here if the form is being loaded
       @user_intake = UserIntake.find(params[:id])
       @caregivers = []
+      
+      #loop through all users associated with user intake form and extract user and subscriber
       if @user_intake.users.size > 0
         @user_intake.users.each do |user|
           @intake_user = User.find(user)
-    	  @halo_user = @intake_user if @intake_user.is_halouser?
-    	  @subscriber_user = @intake_user if @intake_user.is_subscriber?
-    	  #@caregivers << @intake_user if @intake_user.is_caregiver?
+    	    @halo_user = @intake_user if @intake_user.is_halouser?
+    	    @subscriber_user = @intake_user if @intake_user.is_subscriber?
         end
       end
-      @user = @halo_user.profile if @halo_user
+      
+      @user = @halo_user.profile if @halo_user 
       @subscriber = @subscriber_user.profile if @subscriber_user and @subscriber_user != @halo_user
+      
       @halo_user.caregivers_sorted_by_position.each do |car|
        	@caregivers[0] = car[1] if car[1].user_intakes and car[0] == 1
        	@caregivers[1] = car[1] if car[1].user_intakes and car[0] == 2
        	@caregivers[2] = car[1] if car[1].user_intakes and car[0] == 3
       end
+      
       @caregiver1 = @caregivers[0].profile if @caregivers[0]
       @caregiver2 = @caregivers[1].profile if @caregivers[1]
       @caregiver3 = @caregivers[2].profile if @caregivers[2]
@@ -465,6 +469,7 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
       
       @group = @halo_user.group_memberships.first.name if @halo_user.group_memberships.first
       @groups = []
+      
       if current_user.is_super_admin?
         @groups = Group.find(:all)
       else
@@ -472,10 +477,10 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
         gs.each do |g|
           @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
         end
-	  end
-      
+	    end  
     end
   end
+  
   def set_roles_users_option(caregiver,roles_users_option,senior=nil)
   	debugger
   	@senior = senior if senior != nil
