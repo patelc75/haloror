@@ -56,11 +56,10 @@
               <tr><td>Shipping</td><td>$15.00</td></tr>
               <tr class="altrow"><td>Total</td><td>
                 <% if @confirmation %>
-                  <%= f.text_field "cost", :disabled => true %>
-                <% else %>
-                  <strong>$439.00</strong>
+                  <%= f.hidden_field "cost", :disabled => true %>
                 <% end -%>
-              </td></tr>
+                <strong>$439.00</strong>
+            </td></tr>
             </table>
             <p>
               *Note: Recurring monthly charge of $59.00/mo will begin <%= 3.months.from_now.to_s(:day_date) %>
@@ -77,10 +76,9 @@
               <tr><td>Shipping</td><td>$15.00</td></tr>
               <tr class="altrow"><td>Total</td><td>
                 <% if @confirmation %>
-                  <%= f.text_field "cost", :disabled => true %>
-                <% else %>
-                  <strong>$409.00</strong>
+                  <%= f.hidden_field "cost", :disabled => true %>
                 <% end -%>
+                <strong>$409.00</strong>
               </td></tr>
             </table>
             <p>
