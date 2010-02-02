@@ -19,8 +19,8 @@
 var Facebox = Class.create({
 	initialize	: function(extra_set){
 		this.settings = {
-			loading_image	: 'loading.gif',
-			close_image		: 'closelabel.gif',
+			loading_image	: '/javascripts/facebox/loading.gif',
+			close_image		: '/javascripts/facebox/closelabel.gif',
 			image_types		: new RegExp('\.' + ['png', 'jpg', 'jpeg', 'gif'].join('|') + '$', 'i'),
 			inited				: true,	
 			facebox_html	: '\
