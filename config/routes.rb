@@ -88,6 +88,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resend '/installs/resend/:id',:controller => 'installs',:action => 'resend'
   map.support '/support',:controller => 'util',:action => 'support'
   map.user_intake_form '/user/user_intake_form',:controller => 'users',:action => 'user_intake_form'
+  map.order '/order', :controller => 'orders', :action => 'new'
   
   #map.resend '/resend/:id', :controller => 'installs', :action => 'resend'
     # 
