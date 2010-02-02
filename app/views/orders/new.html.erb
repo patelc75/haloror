@@ -9,6 +9,10 @@
   <% end -%>
 <% end -%>
 
+<% flash.each do |type| %>
+  <%= flash[type] %>
+<% end %>
+
 <% form_for @order, :url => {:action => (@confirmation ? "create" : "new")}, :html => {:id => 'form1'} do |f| %>
   <fieldset>
     <legend><%= @confirmation ? 'Order summary' : 'Pick a product' %></legend>

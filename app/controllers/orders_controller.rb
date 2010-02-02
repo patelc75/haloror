@@ -2,10 +2,6 @@ class OrdersController < ApplicationController
   # keeping RESTful
   include UserHelper
   
-  def index
-  	@orders = Order.find(:all,:order =>'created_at desc')
-  end
-  
   def new
     @confirmation = false
     @product = ""
@@ -33,38 +29,45 @@ class OrdersController < ApplicationController
   end
 
   def create
-    unless session[:order].blank?
+    # unless session[:order].blank?
       @order = Order.new(session[:order]) # pick from session, not params
 
       respond_to do |format|
         if @order.save
           # pick any of these hard coded values for now. This will change to device_revisions on order screen
           device_name = (session[:product] == "complete") ? "Chest Strap, Halo Complete" : "Belt Clip, Halo Clip"
-          device_type = DeviceType.find_product_by_any_name(device_name)
-          unless device_type.blank?
-            @order.order_items.create!(:device_revision_id => device_type.latest_model_revision, :cost => @order.cost, :quantity => 1)
+          device_revision = DeviceRevision.find_by_device_names(device_name)
+          unless device_revision.blank?
+            @order.order_items.create!(:device_revision_id => device_revision.id, :cost => @order.cost, :quantity => 1)
             flash[:notice] = 'Thank you for your order.'
             format.html { redirect_to(:controller => 'orders', :action => 'show', :id => @order) }
 
             Order.transaction do
               add_caregiver = "0" # if "1", we need caregiver profile. anything else, profile = nil
-              profile = nil # ?? data fields are not received in the order form! how to create profile?
-
               @group = Group.find_or_create_by_name("direct_to_consumer")
-              # UserHelper::populate_user. cannot be created unless we have login & password.
-              populate_user(profile, @order.bill_email, @group, nil) # TODO: method should assume default values instead of blanks
+              populate_user(nil, @order.bill_email, @group) # TODO: method should assume default values instead of blanks
               @user = User.find_by_email(@order.bill_email)
-              # @user = User.create(
-              #   :login => @order.bill_name.downcase.gsub(' ',''),
-              #   :password => 'changeme',
-              #   :password_confirmation => 'changeme',
-              #   :email => @order.bill_email
-              #   )
+              
+              # force save profile with first name and last name
+              # => required in credit card processing
+              split_name = @order.bill_name.split(" ")
+              profile = Profile.new(:first_name => split_name.first, :last_name => split_name.last)
+              profile[:is_halouser] = false
+              profile[:is_new_caregiver] = true
+              profile[:user_id] = @user.id
+              profile.save!
+
               unless @user.blank?
                 same_as_senior = (@order.halouser ? "1" : "0")
                 senior_user_id = @user.id
-                populate_subscriber(@user,same_as_senior,add_caregiver,@user.email,profile)  
-                Subscription.credit_card_validate(senior_user_id,@user.id,@user,@order.card_number,flash)             
+                populate_subscriber(@user.id.to_s,same_as_senior,add_caregiver,@user.email,profile)
+                credit_card = {
+                    :"expiration_time(1i)" => :"card_expiry(1i)",
+                    :"expiration_time(2i)" => :"card_expiry(2i)",
+                    :number => @order.card_number,
+                    :special_notes => "direct_to_consumer #{@order.order_items.first.device_revision.revision_model_type}"
+                  }
+                Subscription.credit_card_validate(senior_user_id,@user.id,@user,credit_card,flash)             
               end
             end
             UserMailer.deliver_order_summary(@user) unless @user.blank?
@@ -75,9 +78,9 @@ class OrdersController < ApplicationController
         
         # clear off session data to avoid multiple submits on reload
         #
-        session[:order] = nil
-        session[:product] = nil
-      end # redirect or save      
+      #   session[:order] = nil
+      #   session[:product] = nil
+      # end # redirect or save      
     end
   end
   

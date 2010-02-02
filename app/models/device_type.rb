@@ -1,6 +1,12 @@
 class DeviceType < ActiveRecord::Base
   has_many :device_models
   has_many :serial_number_prefixes
+  named_scope :find_all_names, lambda { |phrase| 
+    names = phrase.split(',').collect {|p| p.lstrip.rstrip };
+    {
+      :conditions => {:device_type => names}
+    }
+  }
   
   # class methods
   #

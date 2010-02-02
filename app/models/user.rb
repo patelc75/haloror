@@ -27,6 +27,8 @@ class User < ActiveRecord::Base
   has_many :roles_users,:dependent => :destroy
   has_many :roles, :through => :roles_users#, :include => [:roles_users]
   has_many :dial_ups
+  has_many :orders_created, :class_name => 'Order', :foreign_key => 'created_by'
+  has_many :orders_updated, :class_name => 'Order', :foreign_key => 'updated_by'
   
   has_and_belongs_to_many :devices
   has_and_belongs_to_many :user_intakes
@@ -657,8 +659,8 @@ class User < ActiveRecord::Base
   		@user[:is_caregiver] =  true
   		@user.save!
 
-  		if @user.profile.nil?
-  		  if profile_hash.nil?
+  		if @user.profile.blank?
+  		  if profile_hash.blank?
   		    profile = Profile.new(:user_id => @user.id)
   		  else
   		  	profile = Profile.new(profile_hash)
@@ -670,7 +672,7 @@ class User < ActiveRecord::Base
   		
   		senior = User.find(senior_id)
 
-  		if position.nil?
+  		if position.blank?
   		  position = self.get_max_caregiver_position(senior)
   		end
   		
