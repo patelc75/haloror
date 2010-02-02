@@ -220,7 +220,8 @@
     </table>
   </fieldset>
   <p class="textright">
-    <%= f.submit "#{@confirmation ? 'Place Order' : 'Continue'}", :class => 'largebutton' %>
+    <%= link_to "< Back", "#", :class => 'largebutton', :onclick => "history.back();" if @confirmation %>
+    <%= f.submit "#{@confirmation ? 'Place Order >' : 'Continue >'}", :class => 'largebutton' %>
   </p>
 <% end -%>
 

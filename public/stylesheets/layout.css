@@ -788,6 +788,10 @@ label {
   border: 2px solid #333;
   
 }
+a.largebutton {
+ text-decoration: none; 
+ padding: 1px 10px;
+}
 .textright {
   text-align: right;
 }
