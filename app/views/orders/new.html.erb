@@ -108,7 +108,8 @@
         </p>
         <p>
           <label>Name</label><br />
-          <%= f.text_field "ship_name", :disabled => @confirmation %>
+          <%= f.text_field "ship_first_name", :disabled => @confirmation %> 
+          <%= f.text_field "ship_last_name", :disabled => @confirmation %>
         </p>
         <p>
           <label>Shipping address</label><br />
@@ -153,7 +154,8 @@
         <div id="billing_block" style="display: <%= (@confirmation && @same_address == '') ? 'block' : 'none' %>;">
           <p>
             <label>Name</label><br />
-            <%= f.text_field "bill_name", :disabled => @confirmation %>
+            <%= f.text_field "bill_first_name", :disabled => @confirmation %> 
+            <%= f.text_field "bill_last_name", :disabled => @confirmation %>
           </p>
           <p>
             <label>Billing address</label><br />
@@ -196,6 +198,14 @@
         <p>
           <label>Expiration (Month/Year)</label><br />
           <%= f.date_select "card_expiry", :order => [:month, :year], :disabled => @confirmation  %>
+        </p>
+        <p>
+          <label>Card Type</label><br />
+          <% if @confirmation %>
+            <%= f.text_field "card_type", :disabled => true %>
+          <% else %>
+            <%= f.select "card_type", [["Visa", "visa"], ["MasterCard", "master"]]  %>
+          <% end -%>
         </p>
         <p>
           <label>CSC</label><br />

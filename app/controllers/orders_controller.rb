@@ -50,8 +50,7 @@ class OrdersController < ApplicationController
               
               # force save profile with first name and last name
               # => required in credit card processing
-              split_name = @order.bill_name.split(" ")
-              profile = Profile.new(:first_name => split_name.first, :last_name => split_name.last)
+              profile = Profile.new(:first_name => @order.bill_first_name, :last_name => @order.bill_last_name)
               profile[:is_halouser] = false
               profile[:is_new_caregiver] = true
               profile[:user_id] = @user.id

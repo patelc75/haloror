@@ -3,7 +3,7 @@ Order summary:
 Product: <%= @order[:product] %>
 
 Shipping
-  Name    : <%= @order[:ship_name] %>
+  Name    : <%= @order[:ship_first_name] %> <%= @order[:ship_last_name] %>
   Address : <%= @order[:ship_address] %>
   City    : <%= @order[:ship_city] %>
   State   : <%= @order[:ship_state] %>
@@ -11,7 +11,7 @@ Shipping
   Phone   : <%= @order[:ship_phone] %>
 
 Billing
-  Name    : <%= @order[:bill_name] %>
+  Name    : <%= @order[:bill_first_name] %> <%= @order[:bill_last_name] %>
   Address : <%= @order[:bill_address] %>
   City    : <%= @order[:bill_city] %>
   State   : <%= @order[:bill_state] %>

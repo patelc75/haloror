@@ -73,7 +73,7 @@
         <p>&nbsp;</p>
         <p>
           <label>Name</label><br />
-          <%= text_field "order", "ship_name" %>
+          <%= text_field "order", "ship_first_name" %> <%= text_field "order", "ship_last_name" %>
         </p>
         <p>
           <label>Shipping address</label><br />
@@ -111,7 +111,7 @@
         <div id="billing" style="display: none;">
           <p>
             <label>Name</label><br />
-            <%= text_field "order", "bill_name" %>
+            <%= text_field "order", "bill_first_name" %> <%= text_field "order", "bill_last_name" %>
           </p>
           <p>
             <label>Billing address</label><br />

@@ -66,7 +66,7 @@
         <h3>Shipping address</h3>
         <p>
           <label>Name</label><br />
-          <%= h @store[:ship_name] %>
+          <%= h @store[:ship_first_name] %> <%= h @store[:ship_last_name] %>
         </p>
         <p>
           <label>Shipping address</label><br />
@@ -95,7 +95,7 @@
 
         <p>
           <label>Name</label><br />
-          <%= h @store[:bill_name] %>
+          <%= h @store[:bill_first_name] %> <%= h @store[:bill_last_name] %>
         </p>
         <p>
           <label>Shipping address</label><br />

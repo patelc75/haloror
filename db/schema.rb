@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100201181936) do
+ActiveRecord::Schema.define(:version => 20100202184700) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -647,7 +647,7 @@ ActiveRecord::Schema.define(:version => 20100201181936) do
 
   create_table "orders", :force => true do |t|
     t.string   "number"
-    t.string   "bill_name"
+    t.string   "bill_first_name"
     t.text     "bill_address"
     t.string   "bill_city"
     t.string   "bill_state"
@@ -659,7 +659,7 @@ ActiveRecord::Schema.define(:version => 20100201181936) do
     t.date     "card_expiry"
     t.text     "comments"
     t.boolean  "halouser"
-    t.string   "ship_name"
+    t.string   "ship_first_name"
     t.text     "ship_address"
     t.string   "ship_city"
     t.string   "ship_state"
@@ -670,6 +670,9 @@ ActiveRecord::Schema.define(:version => 20100201181936) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "ship_email"
+    t.string   "card_type"
+    t.string   "ship_last_name"
+    t.string   "bill_last_name"
   end
 
   create_table "panics", :force => true do |t|
