@@ -1,3 +1,8 @@
+<div style="float:right">
+	<form action='/reporting/devices' method="get">
+		Search: <input type="text" name="query" value="<%= params[:query] %>"/> <input type="submit" value="Go" />
+	</form>
+</div>
 <%=render :partial => 'nav_config'%>
 <h3>Devices table</h3>
 <div id="device-table" class="table">
