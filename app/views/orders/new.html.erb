@@ -15,7 +15,7 @@
   <%= flash[type] %>
 <% end %>
 
-<% form_for @order, :url => {:action => (@confirmation ? "create" : "new")}, :html => {:id => 'form1'} do |f| %>
+<% form_for @order, :url => {:action => (@confirmation ? "create" : "new")}, :html => {:id => 'form1', :class => "#{@confirmation ? 'confirm-form' : 'form'}"} do |f| %>
   <fieldset>
     <legend><%= @confirmation ? 'Order summary' : 'Pick a product' %></legend>
     <table id="product_detail_box" width="100%">

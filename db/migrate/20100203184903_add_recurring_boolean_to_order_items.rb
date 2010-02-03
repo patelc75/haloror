@@ -7,4 +7,3 @@ class AddRecurringBooleanToOrderItems < ActiveRecord::Migration
     remove_column :order_items, :recurring_monthly
   end
 end
-t
