@@ -2,6 +2,7 @@
   <% if session[:order].blank? %>
     <% content_for :js do %>
       <%= javascript_include_tag "facebox/facebox.js" %>
+      <%= javascript_include_tag "validation.js" %>
     <% end -%>
     <% content_for :css do %>
       <%= stylesheet_link_tag "facebox/facebox.css" %>
@@ -131,36 +132,36 @@
       <td>
         <p>
           <label>First name, Last name</label><br />
-          <%= f.text_field "ship_first_name", :disabled => @confirmation, :class => "jsrequired" %> 
-          <%= f.text_field "ship_last_name", :disabled => @confirmation, :class => "jsrequired" %>
+          <%= f.text_field "ship_first_name", :class => "required", :disabled => @confirmation %> 
+          <%= f.text_field "ship_last_name", :class => "required", :disabled => @confirmation %>
         </p>
         <p>
           <label>Shipping address</label><br />
-          <%= f.text_field "ship_address", :disabled => @confirmation %>
+          <%= f.text_field "ship_address", :class => "required", :disabled => @confirmation %>
         </p>
         <p>
           <label>City</label><br />
-          <%= f.text_field "ship_city", :disabled => @confirmation %>
+          <%= f.text_field "ship_city", :class => "required", :disabled => @confirmation %>
         </p>
         <p>
           <label>State</label><br />
           <% if @confirmation %>
             <%= f.text_field "ship_state", :disabled => true %>
           <% else %>
-            <%= f.select "ship_state", State::NAMES %>
+            <%= f.select "ship_state", State::NAMES, :class => "required" %>
           <% end -%>
         </p>
         <p>
           <label>Zip</label><br />
-          <%= f.text_field "ship_zip", :disabled => @confirmation %>
+          <%= f.text_field "ship_zip", :class => "required", :disabled => @confirmation %>
         </p>
         <p>
           <label>Phone</label><br />
-          <%= f.text_field "ship_phone", :disabled => @confirmation %>
+          <%= f.text_field "ship_phone", :class => "required", :disabled => @confirmation %>
         </p>
         <p>
           <label>Email</label><br />
-          <%= f.text_field "ship_email", :disabled => @confirmation %>
+          <%= f.text_field "ship_email", :class => "required", :disabled => @confirmation %>
         </p>
       </td>
       
@@ -168,36 +169,36 @@
         <div id="billing_block" style="margin-left: 5px; display: <%= (@confirmation && @same_address == '') ? 'block' : 'none' %>; margin: 0px; padding: 0px;">
           <p>
             <label>First name, Last name</label><br />
-            <%= f.text_field "bill_first_name", :disabled => @confirmation %> 
-            <%= f.text_field "bill_last_name", :disabled => @confirmation %>
+            <%= f.text_field "bill_first_name", :class => "required", :disabled => @confirmation %> 
+            <%= f.text_field "bill_last_name", :class => "required", :disabled => @confirmation %>
           </p>
           <p>
             <label>Billing address</label><br />
-            <%= f.text_field "bill_address", :disabled => @confirmation %>
+            <%= f.text_field "bill_address", :class => "required", :disabled => @confirmation %>
           </p>
           <p>
             <label>City</label><br />
-            <%= f.text_field "bill_city", :disabled => @confirmation %>
+            <%= f.text_field "bill_city", :class => "required", :disabled => @confirmation %>
           </p>
           <p>
             <label>State</label><br />
             <% if @confirmation %>
               <%= f.text_field "bill_state", :disabled => true %>
             <% else %>
-              <%= f.select "bill_state", State::NAMES %>
+              <%= f.select "bill_state", State::NAMES, :class => "required validate-selection" %>
             <% end -%>
           </p>
           <p>
             <label>Zip</label><br />
-            <%= f.text_field "bill_zip", :disabled => @confirmation %>
+            <%= f.text_field "bill_zip", :class => "required", :disabled => @confirmation %>
           </p>
           <p>
             <label>Phone</label><br />
-            <%= f.text_field "bill_phone", :disabled => @confirmation %>
+            <%= f.text_field "bill_phone", :class => "required", :disabled => @confirmation %>
           </p>
           <p>
             <label>Email</label><br />
-            <%= f.text_field "bill_email", :disabled => @confirmation %>
+            <%= f.text_field "bill_email", :class => "required", :disabled => @confirmation %>
           </p>
         </div>
       </td>
@@ -205,23 +206,23 @@
       <td>
         <p>
           <label>Card number</label><br />
-          <%= f.text_field "card_number", :disabled => @confirmation %>
+          <%= f.text_field "card_number", :class => "required", :disabled => @confirmation %>
         </p>
         <p>
           <label>Expiration (Month/Year)</label><br />
-          <%= f.date_select "card_expiry", :order => [:month, :year], :disabled => @confirmation  %>
+          <%= f.date_select "card_expiry", :class => "required", :order => [:month, :year], :disabled => @confirmation  %>
         </p>
         <p>
           <label>Card Type</label><br />
           <% if @confirmation %>
-            <%= f.text_field "card_type", :disabled => true %>
+            <%= f.text_field "card_type", :class => "required", :disabled => true %>
           <% else %>
             <%= f.select "card_type", [["Visa", "visa"], ["MasterCard", "master"], ["American Express", "express"],["Discover", "discover"]]  %>
           <% end -%>
         </p>
         <p>
           <label>CSC</label><br />
-            <%= f.password_field "card_csc", :disabled => @confirmation %>
+            <%= f.password_field "card_csc", :class => "required", :disabled => @confirmation %>
         </p>
         <p class="hint">*Note: The CSC is located on the back of the MasterCard or VISA debit or credit cards and is typically a separate group of 3 digits to the right of signature strip</p>
         <p>
@@ -237,6 +238,12 @@
     <%= f.submit "#{@confirmation ? 'Place Order >' : 'Continue >'}", :class => 'largebutton' %>
   </p>
 <% end -%>
+
+
+<script type="text/javascript" charset="utf-8">
+  new Validation('form1', {immediate : true});
+</script>
+
 
 <script type="text/javascript" charset="utf-8">
   function toggleDiv(what)
