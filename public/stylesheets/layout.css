@@ -782,13 +782,13 @@ label {
   background-color: #EDEDED;
 }
 .box {
-  display: inline-block;
+  display: block;
   padding: 10px;
   border: 1px solid #CCC;
 }
 .confirm-form input, .confirm-form textarea, .confirm-form select {
-  border: 1px solid #FFF;
-  background-color: #FFF;
+  border-color: transparent;
+  background-color: transparent;
   font-weight: bold;
   color: #000;
   font-size: 100%;
