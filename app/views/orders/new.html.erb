@@ -3,6 +3,7 @@
     <% content_for :js do %>
       <%= javascript_include_tag "facebox/facebox.js" %>
       <%= javascript_include_tag "validation.js" %>
+      <%= javascript_include_tag "masked-input.js" %>
     <% end -%>
     <% content_for :css do %>
       <%= stylesheet_link_tag "facebox/facebox.css" %>
@@ -132,8 +133,8 @@
       <td>
         <p>
           <label>First name, Last name</label><br />
-          <%= f.text_field "ship_first_name", :class => "required", :disabled => @confirmation %> 
-          <%= f.text_field "ship_last_name", :class => "required", :disabled => @confirmation %>
+          <%= f.text_field "ship_first_name", :class => "required validate-alpha", :disabled => @confirmation %> 
+          <%= f.text_field "ship_last_name", :class => "required validate-alpha", :disabled => @confirmation %>
         </p>
         <p>
           <label>Shipping address</label><br />
@@ -153,7 +154,7 @@
         </p>
         <p>
           <label>Zip</label><br />
-          <%= f.text_field "ship_zip", :class => "required", :disabled => @confirmation %>
+          <%= f.text_field "ship_zip", :class => "required validate-digits", :size => 10, :disabled => @confirmation %>
         </p>
         <p>
           <label>Phone</label><br />
@@ -161,7 +162,7 @@
         </p>
         <p>
           <label>Email</label><br />
-          <%= f.text_field "ship_email", :class => "required", :disabled => @confirmation %>
+          <%= f.text_field "ship_email", :class => "required validate-email", :disabled => @confirmation %>
         </p>
       </td>
       
@@ -169,36 +170,36 @@
         <div id="billing_block" style="margin-left: 5px; display: <%= (@confirmation && @same_address == '') ? 'block' : 'none' %>; margin: 0px; padding: 0px;">
           <p>
             <label>First name, Last name</label><br />
-            <%= f.text_field "bill_first_name", :class => "required", :disabled => @confirmation %> 
-            <%= f.text_field "bill_last_name", :class => "required", :disabled => @confirmation %>
+            <%= f.text_field "bill_first_name", :class => "validate-alpha", :disabled => @confirmation %> 
+            <%= f.text_field "bill_last_name", :class => "validate-alpha", :disabled => @confirmation %>
           </p>
           <p>
             <label>Billing address</label><br />
-            <%= f.text_field "bill_address", :class => "required", :disabled => @confirmation %>
+            <%= f.text_field "bill_address", :disabled => @confirmation %>
           </p>
           <p>
             <label>City</label><br />
-            <%= f.text_field "bill_city", :class => "required", :disabled => @confirmation %>
+            <%= f.text_field "bill_city", :disabled => @confirmation %>
           </p>
           <p>
             <label>State</label><br />
             <% if @confirmation %>
               <%= f.text_field "bill_state", :disabled => true %>
             <% else %>
-              <%= f.select "bill_state", State::NAMES, :class => "required validate-selection" %>
+              <%= f.select "bill_state", State::NAMES %>
             <% end -%>
           </p>
           <p>
             <label>Zip</label><br />
-            <%= f.text_field "bill_zip", :class => "required", :disabled => @confirmation %>
+            <%= f.text_field "bill_zip", :class => "validate-digits", :size => 10, :disabled => @confirmation %>
           </p>
           <p>
             <label>Phone</label><br />
-            <%= f.text_field "bill_phone", :class => "required", :disabled => @confirmation %>
+            <%= f.text_field "bill_phone", :disabled => @confirmation %>
           </p>
           <p>
             <label>Email</label><br />
-            <%= f.text_field "bill_email", :class => "required", :disabled => @confirmation %>
+            <%= f.text_field "bill_email", :class => "validate-email", :disabled => @confirmation %>
           </p>
         </div>
       </td>
@@ -206,7 +207,7 @@
       <td>
         <p>
           <label>Card number</label><br />
-          <%= f.text_field "card_number", :class => "required", :disabled => @confirmation %>
+          <%= f.text_field "card_number", :class => "required validate-digits", :size => 20, :disabled => @confirmation %>
         </p>
         <p>
           <label>Expiration (Month/Year)</label><br />
@@ -222,7 +223,7 @@
         </p>
         <p>
           <label>CSC</label><br />
-            <%= f.password_field "card_csc", :class => "required", :disabled => @confirmation %>
+            <%= f.password_field "card_csc", :class => "required validate-digits", :size => 4, :disabled => @confirmation %>
         </p>
         <p class="hint">*Note: The CSC is located on the back of the MasterCard or VISA debit or credit cards and is typically a separate group of 3 digits to the right of signature strip</p>
         <p>
@@ -244,6 +245,13 @@
   new Validation('form1', {immediate : true});
 </script>
 
+<script type="text/javascript" charset="utf-8">
+  // var f = document.forms[0];
+  MaskInput(document.getElementById("order_card_number"), "9999999999999999");
+  MaskInput(document.getElementById("order_card_csc"), "9999");
+  MaskInput(document.getElementById("order_bill_zip"), "999999");
+  MaskInput(document.getElementById("order_ship_zip"), "999999");
+</script>
 
 <script type="text/javascript" charset="utf-8">
   function toggleDiv(what)
