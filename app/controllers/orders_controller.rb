@@ -16,10 +16,11 @@ class OrdersController < ApplicationController
       @same_address = (params["billing"]["same_as_shipping"] == "1" ? "checked" : "")
       session[:order] = temp_order
       session[:product] = @product # same as params[:product]. Will be used later in create
+      session[:card_csc] = params[:other][:card_csc] # card CSC
       @order = Order.new(session[:order])
       
     else # store mode
-      session[:order] = nil # fresh start
+      reset_session # start fresh
       @order = Order.new
     end
     

@@ -207,7 +207,11 @@
         </p>
         <p>
           <label>CSC</label><br />
-          <%= password_field "other", "card_csc", :disabled => @confirmation %>
+          <% if @confirmation %>
+            <%= h ('*' * session[:card_csc].length) unless session[:card_csc].blank? %>
+          <% else %>
+            <%= password_field "other", "card_csc", :disabled => @confirmation %>
+          <% end -%>
         </p>
         <p class="hint">*Note: The CSC is located on the back of the MasterCard or VISA debit or credit cards and is typically a separate group of 3 digits to the right of signature strip</p>
         <p>

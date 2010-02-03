@@ -27,7 +27,8 @@ class Order < ActiveRecord::Base
       :year => card_expiry.year,
       :first_name => bill_first_name,
       :last_name => bill_last_name,
-      :type => card_type
+      :type => card_type,
+      :verification_value => session[:card_csc]
     )
     
     if credit_card.valid?
