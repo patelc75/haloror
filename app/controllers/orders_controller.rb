@@ -16,7 +16,7 @@ class OrdersController < ApplicationController
           )
       @same_address = (temp_order[:bill_address_same] ? "checked" : "")
       session[:order] = temp_order
-      # session[:product] = @product # same as params[:product]. Will be used later in create
+      session[:product] = @product # same as params[:product]. Will be used later in create
       # session[:card_csc] = params[:other][:card_csc] # card CSC
       # session[:bill_address_same] = params[:billing][:same_as_shipping]
       @order = Order.new(session[:order])
@@ -42,66 +42,42 @@ class OrdersController < ApplicationController
       @order.bill_zip = @order.ship_zip
       @order.bill_email = @order.ship_email
     end
+    @group = Group.find_or_create_by_name("direct_to_consumer")
+    @order.group_id = @group.id if !@group.nil?
 
-    debugger
     respond_to do |format|
       if @order.save
         # pick any of these hard coded values for now. This will change to device_revisions on order screen
-        #
         device_name = (session[:product] == "complete") ? "Chest Strap, Halo Complete" : "Belt Clip, Halo Clip"
         device_revision = DeviceRevision.find_by_device_names(device_name)
-        debugger
         unless device_revision.blank?
           @order.order_items.create!(:device_revision_id => device_revision.id, :cost => @order.cost, :quantity => 1)
-
-          debugger
+          if session[:product] == "clip"
+            @order.order_items.create!(:cost => 49, :quantity => 1, :recurring_monthly => true)
+          elsif session[:product] == "complete"
+            @order.order_items.create!(:cost => 59, :quantity => 1, :recurring_monthly => true)              
+          end
           Order.transaction do
-            add_caregiver = "0" # if "1", we need caregiver profile. anything else, profile = nil
-            @group = Group.find_or_create_by_name("direct_to_consumer")
-            populate_user(nil, @order.bill_email, @group) # TODO: method should assume default values instead of blanks
-            @user = User.find_by_email(@order.bill_email)
-            
-            debugger
-            # TODO: ramonrails: why just keep creating BLANK profiles when users cannot access them?
-            # force save profile with first name and last name
-            # => required in credit card processing
-            @user.profile = Profile.generate_for_online_customer(
-              :user => @user, 
-              :first_name => @order.bill_first_name, 
-              :last_name => @order.bill_last_name
-            )
-
-            debugger
-            unless @user.blank?
-              same_as_senior = (@order.halouser ? "1" : "0")
-              senior_user_id = @user.id
-              
-              # FIXME: ramonrails: we may not need this. we already created a profile.
-              #
-              # populate_subscriber(@user.id.to_s,same_as_senior,add_caregiver,@user.email,profile)
-              
-              debugger
-              @one_time_fee = @order.charge_one_time_fee # variables used in failure if that happens
-              if @one_time_fee.success?
-                @subscription = @order.charge_subscription(session[:product] == "complete" ? 5900 : 4900) # cents
-                success = @subscription.success?
-              end
+            @one_time_fee = @order.charge_one_time_fee # variables used in failure if that happens
+            if @one_time_fee.success?
+              @subscription = @order.charge_subscription(session[:product] == "complete" ? 5900 : 4900) # cents
+              success = true #@subscription.success?
             end
             
-            debugger
             if success.blank?
               format.html { render :action => 'failure' }
             else
               flash[:notice] = 'Thank you for your order.'
-              format.html { render :action => 'success' }
-              UserMailer.deliver_order_summary(@user) unless @user.blank?
+              format.html { render :action => 'success' }              
+              UserMailer.deliver_signup_installation(@order.ship_email,:exclude_senior_info)   
+              UserMailer.deliver_signup_installation(@order.bill_email,:exclude_senior_info)
+              UserMailer.deliver_order_summary(@order) #goes to @order.bill_email
             end
           end
         end
       else
         format.html { render :action => "new" }
       end
-
     end
   end
   

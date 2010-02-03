@@ -31,11 +31,14 @@ class DeviceRevision < ActiveRecord::Base
   end
   
   # instance methods
+  def revision_model
+    return "#{self.device_model.part_number}-#{self.revision}" if(self.device_model)
+    return "#{self.revision}"
+  end
   
   def revision_model_type
-    return "#{self.revision} -- #{self.device_model.part_number} -- #{self.device_model.device_type.device_type}" if(self.device_model && self.device_model.device_type)
-    return "#{self.revision} -- #{self.device_model.part_number}" if(self.device_model)
-    return "#{self.revision}"
+    return "#{self.device_model.device_type.device_type} #{self.device_model.part_number}-#{self.revision}" if(self.device_model && self.device_model.device_type)
+    return revision_model
   end
   
   # get device_type_name

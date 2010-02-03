@@ -1,15 +1,18 @@
 class UserMailer < ActionMailer::ARMailer
   include ServerInstance
   
-  def signup_notification_halouser(user,patient)
-    setup_email(user)
+  def signup_installation(recipient,senior=:exclude_senior_info)
+    setup_email(recipient)
     @subject    += 'Please read before your installation'
-  
-    #@body[:url]  = "http://67-207-146-58.slicehost.net/activate/#{user.activation_code}"
-    #@body[:url]  = "http://localhost:3000/activate/#{user.activation_code}"
     @body[:host] = "http://#{ServerInstance.current_host}"
-    @body[:url]  = "http://#{ServerInstance.current_host}/activate/#{user.activation_code}"
-    @body[:name] = patient.name
+    if senior == :exclude_senior_info
+      @body[:name] = nil
+    elsif senior.is_a?(User)
+      @body[:url]  = "http://#{ServerInstance.current_host}/activate/#{senior.activation_code}"
+      @body[:name] = senior.name
+    else
+      raise "senior must be a User object or :exclude_senior_info"
+    end
   end
   
   def signup_notification(user)
@@ -26,6 +29,7 @@ class UserMailer < ActionMailer::ARMailer
     setup_email(user)
     @subject    += 'Your account has been activated!'
     @body[:url]  = "http://#{ServerInstance.current_host}/login"
+    @body[:user] = user
   end
   
   def caregiver_email(caregiver, user)
@@ -47,6 +51,7 @@ class UserMailer < ActionMailer::ARMailer
   	groups = ""
   	user.is_halouser_for_what.each { |group| groups+= group.name + " " }
   	@body[:groups] = groups
+  	@body[:user] = user
   end
   
   def subscriber_email(subscriber)
@@ -56,23 +61,30 @@ class UserMailer < ActionMailer::ARMailer
   	subscription = Subscription.find_by_subscriber_user_id(subscriber.id)
   	@body[:subscription] = subscription
   	@body[:halouser] = subscriber.is_subscriber_for_what.first.name
+  	@body[:user] = subscriber
   end
   
-  def order_summary(user)
-    setup_email(user) # recipient is hard coded
+  def order_summary(order)
+    setup_email(order.bill_email)
     @bcc = 'senior_signup@halomonitoring.com'
-    @subject += "Order summary"
-    @body[:order] = Order.find_by_created_by(user.id)
+    @subject += "Order Summary"
+    @body[:order] = order
   end
   
   protected
   
-  def setup_email(user)
-    @recipients  = "#{user.email}"
+  def setup_email(user_obj_or_email_addr)
+    if user_obj_or_email_addr.is_a?(User)
+      @recipients  = "#{user_obj_or_email_addr.email}"
+    elsif user_obj_or_email_addr.is_a?(String)
+      @recipients  = user_obj_or_email_addr
+    else
+      raise "user_obj_or_email_addr must be a User object or email string"
+    end
     @from        = "no-reply@halomonitoring.com"
     @subject     = "[" + ServerInstance.current_host_short_string + "] "
+    @bcc         = "emaillog@halomonitoring.com"
     @sent_on     = Time.now
-    @body[:user] = user
     self.priority = Priority::IMMEDIATE
   end
 end

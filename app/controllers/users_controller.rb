@@ -51,12 +51,12 @@ class UsersController < ApplicationController
  
         #Credit Card auth needs to be in a transaction so subscriber/caregiver data can be rolled back
 
-Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_card],flash)       		  
+        Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_card],flash)       		  
       end
   	  #this following does not need to be in the transaction because the lines above this do not need to be rolled back if the below lines fail
   	 # role = @user.has_role 'subscriber', halouser #@user set up in populate_caregiver when subscriber is also a caregiver
   	  UserMailer.deliver_subscriber_email(@user)
-  	  UserMailer.deliver_signup_notification_halouser(@user,@senior)
+  	  UserMailer.deliver_signup_installation(@user,@senior) # @user = subscriber
     end
 #=begin
     rescue Exception => e
@@ -284,7 +284,7 @@ Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_c
             end
 
             #UserMailer.deliver_subscriber_email(@user)
-  	        UserMailer.deliver_signup_notification_halouser(@user,@senior)
+  	        UserMailer.deliver_signup_installation(@user,@senior)
   	        if add_caregiver == "1"
               unless params[:no_caregiver_1]
                caregiver1_email = params[:caregiver1][:email]

@@ -3,7 +3,7 @@ class Order < ActiveRecord::Base
   belongs_to :creator, :class_name => 'User', :foreign_key => 'created_by'
   belongs_to :updater, :class_name => 'User', :foreign_key => 'updated_by'
   attr_accessor :card_csc, :product, :bill_address_same
-  validate_on_create :validate_card
+#  validate_on_create :validate_card
   
   # order number : YYYYMMDD-id
   #
@@ -21,19 +21,15 @@ class Order < ActiveRecord::Base
   
   def charge_credit_card(recurring = nil, charge_amount = 0) # default is one-time-charge. any value for recurring will work.
     # mode is set (in environment config files) to :test for development and test, :production when production
-    #
     if credit_card.valid?
-      debugger
       if recurring.blank?
         # one time charge as presented in the product detail box
-        #
         charge_amount = (cost * 100) # cents
         @response = GATEWAY.purchase(charge_amount, credit_card) # GATEWAY in environment files
       else
         # recurring subscription for 60 months, starting 3.months.from_now
         # TODO: do not hard code. pick from database
         # =>  keep charging 5 years at least
-        #
         @response = GATEWAY.recurring(charge_amount, credit_card, {
             :billing_address => {:first_name => bill_first_name, :last_name => bill_last_name},
             :interval => {:unit => :months, :length => 1},
@@ -41,7 +37,6 @@ class Order < ActiveRecord::Base
           }
         )
       end
-      debugger
       @response
     end
   end

@@ -1,15 +1,15 @@
 module UserHelper
   # 2010-02-01 accept default value for created_by_user
   #
-  def populate_user(params,email,group,created_by_user = nil,opt_out_call_center = 0)
+  def populate_user(profile_hash,email,group,created_by_user = nil,opt_out_call_center = 0)
   	@user = User.new
   	@user.email = email #namdatory for all cases
   	User.transaction do
   		@user[:is_new_halouser] = true # skip validations except email
     	@user.created_by = (created_by_user || @user) # 2010-02-01 when not created by logged_in user, then it is direct_customer
     	if @user.save!
-    	  unless params.blank? # TODO: handle better. 2010-02-01 profile not required for direct_online_customer
-          @profile = Profile.new(params)
+    	  unless profile_hash.blank? # TODO: handle better. 2010-02-01 profile not required for direct_online_customer
+          @profile = Profile.new(profile_hash)
           @profile.user_id = @user.id
           if !@profile.save!
             raise "Invalid Profile"  
