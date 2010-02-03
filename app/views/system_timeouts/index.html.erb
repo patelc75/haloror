@@ -8,6 +8,8 @@
     <th>Device<br>Unavailable<br>Timeout<br>(seconds)</th>
     <th>Strap Off<br> Timeout<br>(seconds)</th>
     <th>Critical<br>Event<br>Delay<br>(seconds)</th>
+    <th>Battery<br>Reminder<br>Two<br>(seconds)</th>
+    <th>Battery<br>Reminder<br>Three<br>(seconds)</th>
     <th>&nbsp;</th>
   </tr>
   <% @system_timeouts.each do |system_timeout|  %>
@@ -17,7 +19,9 @@
     <td><%= h system_timeout.gateway_offline_timeout_sec %></td>
     <td><%= h system_timeout.device_unavailable_timeout_sec %></td>
     <td><%= h system_timeout.strap_off_timeout_sec %></td>
-    <td><%= h system_timeout.critical_event_delay_sec %></td>
+    <td><%= h system_timeout.critical_event_delay %></td>
+    <td><%= h system_timeout.battery_reminder_two_sec %></td>
+    <td><%= h system_timeout.battery_reminder_three_sec %></td>
     <td><%= link_to '[edit]', :controller => 'system_timeouts', :action => 'edit', :id => system_timeout.id %>
   </tr>
   <% end %>

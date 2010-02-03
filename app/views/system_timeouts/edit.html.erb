@@ -10,7 +10,8 @@
     <th>Device<br>Unavailable<br>Timeout<br>(seconds)</th>
     <th>Strap Off<br>Timeout<br>(seconds)</th>
     <th>Critical<br>Event<br>Delay<br>(seconds)</th>
-
+    <th>Battery<br>Reminder<br>Two<br>(seconds)</th>
+    <th>Battery<br>Reminder<br>Three<br>(seconds)</th>
     <th>&nbsp;</th>
   </tr>
   <tr>
@@ -19,7 +20,9 @@
     <td><%= text_field :system_timeout, :gateway_offline_timeout_sec,  :size => 10 %></td>
     <td><%= text_field :system_timeout, :device_unavailable_timeout_sec,  :size => 10 %></td>
     <td><%= text_field :system_timeout, :strap_off_timeout_sec,  :size => 10 %></td>
-    <td><%= text_field :system_timeout, :critical_event_delay_sec,  :size => 10 %></td>
+    <td><%= text_field :system_timeout, :critical_event_delay,  :size => 10 %></td>
+    <td><%= text_field :system_timeout, :battery_reminder_two_sec,  :size => 10 %></td>
+    <td><%= text_field :system_timeout, :battery_reminder_three_sec,  :size => 10 %></td>
     <td><input type="submit" name="Save Changes" value="Save Changes" /></td>
   </tr>
 </table>

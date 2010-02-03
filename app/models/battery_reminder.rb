@@ -63,12 +63,13 @@ class BatteryReminder < DeviceAlert
     
 		RAILS_DEFAULT_LOGGER.warn("BatteryReminder.send_reminders running at #{Time.now}")
     conds = ["stopped_at IS NULL"]
-    conds << "now() < updated_at + interval '#{(BATTERY_REMINDER_TWO + BATTERY_REMINDER_THREE)*2} seconds'"
+    @st = SystemTimeout.find_by_mode('ethernet')
+    conds << "now() < updated_at + interval '#{(@st.battery_reminder_two_sec + @st.battery_reminder_three_sec)*2} seconds'"
     conds << "reminder_num < 3"
 		@devices = DeviceBatteryReminder.find(:all, :conditions => conds.join(' and '), :order => "updated_at asc")	
 		@devices.each do |device|
 			user = User.find(device.user_id) if device.user_id
-
+    
       if user and user.profile and user.profile.time_zone
         Time.zone = user.profile.time_zone
         now = Time.now.in_time_zone
@@ -79,20 +80,20 @@ class BatteryReminder < DeviceAlert
   			if (now > eight_am and now < eight_thirty_pm) #make sure it's not during the middle of the night
   				eight_fifteen_pm = Time.zone.local(now.year,now.month,now.day,20,15,0)
   				if (now >= eight_fifteen_pm) #if between 8:15PM and 8:30PM, skip to the third battery reminder	
-  					time_remaining = device.time_remaining - (BATTERY_REMINDER_TWO / 60) 
+  					time_remaining = device.time_remaining - (@st.battery_reminder_two_sec / 60) 
   					BatteryReminder.create(:device_id => device.device_id, :reminder_num => 3,:user_id => device.user_id,
   										   :time_remaining => time_remaining,:battery_critical_id => device.battery_critical_id)
   				else
-  					if device.reminder_num == 1 and Time.now > (device.updated_at + BATTERY_REMINDER_TWO) 						
-  						time_remaining = device.time_remaining - (BATTERY_REMINDER_TWO / 60) 
+  					if device.reminder_num == 1 and Time.now > (device.updated_at + @st.battery_reminder_two_sec)
+  						time_remaining = device.time_remaining - (@st.battery_reminder_two_sec / 60) 
   						BatteryReminder.create(:device_id => device.device_id, 
   												:reminder_num => 2,
   												:user_id => device.user_id,
   												:time_remaining => time_remaining,
   												:battery_critical_id => device.battery_critical_id)
 												
-  					elsif device.reminder_num == 2 and Time.now > (device.updated_at + BATTERY_REMINDER_THREE)						
-  						time_remaining = device.time_remaining - (BATTERY_REMINDER_THREE / 60)
+  					elsif device.reminder_num == 2 and Time.now > (device.updated_at + @st.battery_reminder_three_sec)						
+  						time_remaining = device.time_remaining - (@st.battery_reminder_three_sec / 60)
   						BatteryReminder.create(:device_id => device.device_id, 
   											   :reminder_num => 3,
   											   :user_id => device.user_id,
