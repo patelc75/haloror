@@ -778,6 +778,11 @@ ul.removed_caregivers li a
 label {
   font-weight: bold;
 }
+.box {
+  display: inline-block;
+  padding: 10px;
+  border: 1px solid #CCC;
+}
 .hint {
   font: 75% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
 }
@@ -798,4 +803,13 @@ a.largebutton {
 
 .shaded {
   background-color: #E6E6E6;
+}
+.back-green {
+  background-color: #A2FF37;
+}
+.back-grey, .back-gray {
+  background-color: #CCC;
+}
+.back-orange {
+  background-color: #FFB237;
 }

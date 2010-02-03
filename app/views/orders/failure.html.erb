@@ -3,25 +3,28 @@
 
 <hr />
 
-<h3>One time charge</h3>
-<p>
-  Message: <%= @one_time_fee.message %>
-</p>
-<p>
-  Parameters: <%= @one_time_fee.params.to_yaml %>
-</p>
+<div class="box <%= @one_time_fee.success? ? 'back-green' : 'back-orange' %>">  
+  <h3>One time charge</h3>
+  <p>
+    Message: <%= @one_time_fee.message %>
+  </p>
+  <p>
+    Parameters: <%= @one_time_fee.params.to_yaml %>
+  </p>
+</div>
 
 <hr />
 
-<h3>Subscription charges (begins after 3 months from the date of purchase)</h3>
-<p>
-  Message: <%= @subscription.message %>
-</p>
-<p>
-  Parameters: <%= @subscription.params.to_yaml %>
-</p>
+<div class="box <%= @subscription.success? ? 'back-green' : 'back-orange' %>">
+  <h3>Subscription charges (begins after 3 months from the date of purchase)</h3>
+  <p>
+    Message: <%= @subscription.message %>
+  </p>
+  <p>
+    Parameters: <%= @subscription.params.to_yaml %>
+  </p>
+</div>
 
-<br /><br />
-<p>
-  Please attempt to order again by <%= link_to 'clicking here', :controller => 'orders', :action => 'new' %>
+<p class="box back-grey">
+  Please attempt to <%= link_to 'order again', {:controller => 'orders', :action => 'new'}, :class => '' %>
 </p>
