@@ -46,8 +46,11 @@ class OrdersController < ApplicationController
     @order.group_id = @group.id if !@group.nil?
 
     respond_to do |format|
-      if @order.save
+      # verify re-CAPTCHA and save order
+      #
+      if verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
         # pick any of these hard coded values for now. This will change to device_revisions on order screen
+        #
         device_name = (session[:product] == "complete") ? "Chest Strap, Halo Complete" : "Belt Clip, Halo Clip"
         device_revision = DeviceRevision.find_by_device_names(device_name)
         unless device_revision.blank?

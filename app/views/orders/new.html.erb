@@ -230,6 +230,7 @@
           <label>Comments and Special shipping instructions</label>
           <%= f.text_area "comments", :rows => 5, :disabled => @confirmation %>
         </p>
+        <%= recaptcha_tags %>
       </td>
       </tr>
     </table>
