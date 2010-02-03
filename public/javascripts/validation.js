@@ -236,6 +236,9 @@ Validation.addAllThese([
 	['validate-digits', 'Please use numbers only in this field. please avoid spaces or other characters such as dots or commas.', function(v) {
 				return Validation.get('IsEmpty').test(v) ||  !/[^\d]/.test(v);
 			}],
+	['validate-card', 'Please enter a valid debit card or credit card number in this field.', function(v) {
+				return Validation.get('IsEmpty').test(v) ||  /^[\d]{15,16}$/.test(v);
+			}],
 	['validate-alpha', 'Please use letters only (a-z) in this field.', function (v) {
 				return Validation.get('IsEmpty').test(v) ||  /^[a-zA-Z]+$/.test(v)
 			}],
