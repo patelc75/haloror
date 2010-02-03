@@ -62,7 +62,7 @@ class UserMailer < ActionMailer::ARMailer
     setup_email(user) # recipient is hard coded
     @bcc = 'senior_signup@halomonitoring.com'
     @subject += "Order summary"
-    @body[:order] = Order.find_by_user_id(user.id)
+    @body[:order] = Order.find_by_created_by(user.id)
   end
   
   protected

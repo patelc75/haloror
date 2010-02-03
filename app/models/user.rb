@@ -663,7 +663,12 @@ class User < ActiveRecord::Base
   		  if profile_hash.blank?
   		    profile = Profile.new(:user_id => @user.id)
   		  else
-  		  	profile = Profile.new(profile_hash)
+  		    profile = case profile_hash.is_a?
+  		    when Profile
+  		      profile_hash # its Profile instance already
+		      when Hash
+		        Profile.new(profile_hash)
+  		    end
   		  end
   		  profile[:is_new_caregiver] = true
   		  profile.save!

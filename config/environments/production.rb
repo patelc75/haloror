@@ -47,3 +47,11 @@ AUTH_NET_SUBSCRIPTION_TOTAL_OCCURANCES=9999 # 9999 means subscription with no en
 AUTH_NET_SUBSCRIPTION_INTERVAL_UNITS="month"
 AUTH_NET_SUBSCRIPTION_INTERVAL=1 # e.g. if units is 'months' and interval=1, then subscription will bill once monthly.
 AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL=65.00
+
+config.after_initialize do
+  ActiveMerchant::Billing::Base.mode = :production
+  ::GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
+    :login => AUTH_NET_LOGIN,
+    :password => AUTH_NET_TXN_KEY
+  )
+end

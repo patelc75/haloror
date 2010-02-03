@@ -68,11 +68,15 @@ class Profile < ActiveRecord::Base
        end
    
        unless user.blank?
-         profile = Profile.new(:first_name => first_name, :last_name => last_name)
-         profile[:is_halouser] = false
-         profile[:is_new_caregiver] = true
-         profile[:user_id] = user.id
-         profile.save!
+         if user.profile.blank?
+           profile = Profile.new(:first_name => first_name, :last_name => last_name)
+           profile[:is_halouser] = false
+           profile[:is_new_caregiver] = true
+           profile[:user_id] = user.id
+           profile.save!
+         else
+           profile = user.profile
+         end
          profile
        end
      end
