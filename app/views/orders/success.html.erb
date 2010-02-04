@@ -6,13 +6,24 @@
 </p>
 <hr/>
 <table width="100%">
-  <tr>
-    <td>Order number: <strong><%= @order.full_number %></strong></td>
-    <td>Order date: <%= @order.created_at.to_s(:day_date) %></td>
+  <tr align="left">
+    <th>Company</th>
+    <th>Order number</th>
+    <th>Order date</th>
+  </tr>
+  <tr align="left" valign="top">
+    <td>Halo Monitoring, Inc.<br>
+	515 Sparkman Drive<br>
+	Huntsville, AL 35816<br>
+	Phone 888.971.HALO<br> 
+	(888-971-4256)<br>
+	Fax 866.275.1904</td>	
+    <td><%= @order.full_number %></td>
+    <td><%= @order.created_at.to_s(:day_date) %></td>
   </tr>
 </table>
 
-<br />
+<br/>
 
 <table width="100%">
   <tr align="left">
@@ -36,9 +47,11 @@
 <table width="100%">
   <tr align="left">
     <th>Billing address</th>
-    <th><strong>Your payment</strong></th>
+    <th>Shipping address</th>
+    <th>Your payment</th>
+    <th>Note</th>
   </tr>
-  <tr>
+  <tr valign="top">
     <td>
       <%= @order.bill_first_name %> <%= @order.bill_last_name %><br />
       <%= @order.bill_address %><br />
@@ -46,10 +59,20 @@
       <%= @order.bill_phone %><br />
       <%= @order.bill_email %><br />
     </td>
-    <td valign="top">
+    <td>
+      <%= @order.ship_first_name %> <%= @order.ship_last_name %><br />
+      <%= @order.ship_address %><br />
+      <%= @order.ship_city %>, <%= @order.ship_state %> <%= @order.ship_zip %><br />
+      <%= @order.ship_phone %><br />
+      <%= @order.ship_email %><br />
+    </td>
+    <td>
       Card: *****<%= @order.card_number[-4..-1] %><br />
       Expiry: <%= @order.card_expiry %>
     </td>
+    <td>
+	  <%= @order.comments %>
+	</td>
   </tr>
 </table>
 <br><br>

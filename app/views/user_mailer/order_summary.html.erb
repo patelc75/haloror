@@ -1,3 +1,9 @@
+Halo Monitoring, Inc.
+515 Sparkman Drive
+Huntsville, AL 35816
+Phone 888.971.HALO (888-971-4256)
+Fax 866.275.1904
+
 ORDER SUMMARY
 Order number: <%= @order.full_number %>
 Order date: <%= @order.created_at.to_s(:day_date) %>
@@ -17,6 +23,9 @@ Shipping
   State   : <%= @order[:ship_state] %>
   ZIP     : <%= @order[:ship_zip] %>
   Phone   : <%= @order[:ship_phone] %>
+
+Comments and special shipping instructions   
+  <%= @order.comments %>
 
 Billing
   Name    : <%= @order[:bill_first_name] %> <%= @order[:bill_last_name] %>
