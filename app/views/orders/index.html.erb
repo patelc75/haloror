@@ -13,6 +13,7 @@ Purchased from <a href="http://www.myhalomonitor.com/order">http://www.myhalomon
 	<th>Shipping</th>
 	<th>Order Items</th>
 	<th>Total<br>Charged</th>
+	<th>Notes</th>
 	<% if @orders %>
 	<% @orders.each do |order| %>
 	  <tr>
@@ -37,7 +38,8 @@ Purchased from <a href="http://www.myhalomonitor.com/order">http://www.myhalomon
 		    <%= item.product_model %> x <%= item.quantity %> = <%= item.formatted_cost(item.quantity) %>
 		  <% end -%>
 		</td>
-		<td><%= number_to_currency(order.cost, :precision => 2, :unit => '$') %></td>	  	
+		<td><%= number_to_currency(order.cost, :precision => 2, :unit => '$') %></td>
+		<td><%= link_to truncate(order.comments, 10, "..."),:controller => 'orders',:action => 'comments',:order_id => order.id %></td>
 	  </tr>
 	<%end%>
 	<%end%>

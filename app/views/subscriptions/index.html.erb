@@ -14,18 +14,33 @@ Purchased from My Links > User Signup
 	<th>Billing Name</th>
 	<th>Start Date</th>
 	<th>Total<br>Charged</th>
+	<th>Notes</th>
+	
 	<% if @subscriptions %>
 	<% @subscriptions.each do |sub| %>
 	  <tr>
 	  	<td><%= sub.id %></td>
 	  	<td><%= sub.arb_subscriptionId %></td>	
-	  	<td><%= UtilityHelper.format_datetime(sub.created_at,current_user) %></td>				
-	  	<td><%= link_to User.find(sub.senior_user_id).name, :controller => 'profiles', :action => 'edit_caregiver_profile', :id => sub.senior_user_id %></td>
-	  	<td><%= link_to User.find(sub.subscriber_user_id).name, :controller => 'profiles', :action => 'edit_caregiver_profile', :id => sub.subscriber_user_id %></td>
+	  	<td><%= UtilityHelper.format_datetime(sub.created_at,current_user) %></td>	
+	  	
+	  	<td>
+	  	  <%unless sub.senior_user_id.blank?%>
+	  	    <%= link_to User.find_by_id(sub.senior_user_id).name, :controller => 'profiles', :action => 'edit_caregiver_profile', :id => sub.senior_user_id %>
+	  	  <%end%>
+  		</td>
+	  	
+	  	<td>
+	  		<%unless sub.subscriber_user_id.blank?%>
+	  		<%= link_to User.find_by_id(sub.senior_user_id).name, :controller => 'profiles', :action => 'edit_caregiver_profile', :id => sub.subscriber_user_id %>
+	  		<%end%></td>
 	  	<td>xxxx<%= sub.cc_last_four %></td>
 	  	<td><%= sub.bill_to_first_name %> <%= sub.bill_to_last_name %></td>
 		<td><%= sub.bill_start_date %></td>
-		<td><%= number_to_currency(sub.bill_amount, :precision => 2, :unit => '$') %></td>	  	
+		<td><%= number_to_currency(sub.bill_amount, :precision => 2, :unit => '$') %></td>
+		<td><%unless sub.special_notes.blank?%>
+			<%= link_to "Note", notes_subscription_path(sub.id) %>
+			<%end%>
+		</td>	  	
 	  </tr>
 	<%end%>
 	<%end%>
