@@ -51,7 +51,7 @@ Rails::Initializer.run do |config|
   config.active_record.observers = :user_observer, :device_event_observer, :event_action_observer, :critical_device_event_observer, :gateway_event_observer
   
   config.gem "rufus-scheduler", :version => ">= 2.0.1", :lib => false
-  config.gem "ambethia-recaptcha", :lib => "recaptcha/rails"
+  #config.gem "ambethia-recaptcha", :lib => "recaptcha/rails"
 end
 
 # Add new inflection rules using the following format 
@@ -240,5 +240,5 @@ HV_HV_URL = "https://platform.healthvault-ppe.com/platform/wildcat.ashx"
 
 # re-captcha
 #
-ENV['RECAPTCHA_PUBLIC_KEY']  = '6Lc6BAAAAAAAAChqRbQZcn_yyyyyyyyyyyyyyyyy'
-ENV['RECAPTCHA_PRIVATE_KEY'] = '6Lc6BAAAAAAAAKN3DRm6VA_xxxxxxxxxxxxxxxxx'
+ENV['RECAPTCHA_PUBLIC_KEY']  = '6LeR9goAAAAAANZVo52U0AV9iwu0PoslF_FAwF-F'
+ENV['RECAPTCHA_PRIVATE_KEY'] = '6LeR9goAAAAAAP4iAFbMvp91jkxVyWegay5k-b1v'

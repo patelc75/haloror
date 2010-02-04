@@ -52,7 +52,7 @@ class Subscription < ActiveRecord::Base
 		if apiresp.success 
 		  RAILS_DEFAULT_LOGGER.info("Subscription Created successfully")
 		  RAILS_DEFAULT_LOGGER.info("Subscription id : " + apiresp.subscriptionid)
-#=begin comment out if you want to test sign up without credit card failure throwing an exception
+=begin comment out if you want to test sign up without credit card failure throwing an exception
 		else
 			RAILS_DEFAULT_LOGGER.info("Subscription Creation Failed")
 			apiresp.messages.each { |message| 
@@ -61,11 +61,11 @@ class Subscription < ActiveRecord::Base
 			  flash[:warning] = "Unable to create subscription.  Check credit card information. Error Code=" + message.code + ", Error Message = " + message.text
 			}   
 			raise "Unable to create subscription."
-#=end
+=end
 		end
 
 		@subscription = Subscription.new
-		@subscription[:arb_subscriptionId] = apiresp.subscriptionid
+		#@subscription[:arb_subscriptionId] = apiresp.subscriptionid
 		@subscription[:senior_user_id] = senior_user_id
 		@subscription[:subscriber_user_id] = subscriber_user_id
 		@subscription[:cc_last_four] = credit_card[:number].last(4)

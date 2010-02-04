@@ -1,0 +1,34 @@
+<!-- <meta http-equiv="refresh" content="30"> -->
+<%=render :partial => 'reporting/nav'%>
+<h2>Retail Orders</h2>
+Purchased from My Links > User Signup
+<br><br>
+
+<table bsub="1">
+	<th>Id</th>
+	<th>Sub ID</th>	
+	<th>Created At</th>
+	<th>Senior</th>
+	<th>Subscriber</th>
+	<th>Card Number</th>
+	<th>Billing Name</th>
+	<th>Start Date</th>
+	<th>Total<br>Charged</th>
+	<% if @subscriptions %>
+	<% @subscriptions.each do |sub| %>
+	  <tr>
+	  	<td><%= sub.id %></td>
+	  	<td><%= sub.arb_subscriptionId %></td>	
+	  	<td><%= UtilityHelper.format_datetime(sub.created_at,current_user) %></td>				
+	  	<td><%= link_to User.find(sub.senior_user_id).name, :controller => 'profiles', :action => 'edit_caregiver_profile', :id => sub.senior_user_id %></td>
+	  	<td><%= link_to User.find(sub.subscriber_user_id).name, :controller => 'profiles', :action => 'edit_caregiver_profile', :id => sub.subscriber_user_id %></td>
+	  	<td>xxxx<%= sub.cc_last_four %></td>
+	  	<td><%= sub.bill_to_first_name %> <%= sub.bill_to_last_name %></td>
+		<td><%= sub.bill_start_date %></td>
+		<td><%= number_to_currency(sub.bill_amount, :precision => 2, :unit => '$') %></td>	  	
+	  </tr>
+	<%end%>
+	<%end%>
+</table>
+<center><big><%= will_paginate @subscriptions %></big></center>
+<br>

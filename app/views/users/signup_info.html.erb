@@ -5,27 +5,7 @@
  <div style="margin-left:25px">
 	<div class="content">
 		<p>Please print this page <b>and</b> and the following forms for the myHalo user to fill out at home. If a printer is not available, please notify the myHalo user that this has been emailed to <%= @user.email %></p>
-	
-		<p><ul>
-			<table>
-				<tr><td><img src="/images/pdf-icon.gif" width="30px" height="30px"></td>
-					<td><a href="/Halo_Subscriber_Agreement.pdf" target="_blank">Halo Subscriber Agreement</a></td>
-					</tr>
-				<tr><td><img src="/images/pdf-icon.gif" width="30px" height="30px"></td>
-					<td><a href="/Halo_User_Intake_Form.pdf" target="_blank">Halo User Intake Form</a></td>
-				</tr>
-			</table>
-						
-		</ul></p><br>
-
-		<p>To begin the home installation, please locate and follow the printed instructions in the box. The instructions are titled <i>"User Installation Guide for the myHalo™ System"</i>.  The following computer/network setup will be needed for the installation: </p>
-		<!-- li><p>Ask if caregivers need to be added now. If so, <a href="/call_list/show/<%=@user.id %>">click here to add caregivers</a> for user <%= @user.name %>.</p></li-->
-			<ul><li>A standard phone line OR an open wired Ethernet port on either your router or cable modem/DSL modem
-				<li>Make sure all computers (including caregivers) visiting the myHalo web portal are NOT running Internet Explorer 6 (IE6) by visiting <a href="/ie6check.html">http://www.myhalomonitor.com/ie6check</a> on all computers</li>
-				<li>If a firewall is setup, please make sure ports 123, 443, and 37215 are unblocked
-				<li>Enough table space for the Halo gateway (L x W x H = approx 6" x  9"  x  2")
-				<li>An open 2-prong power outlet 
-			</ul>
+		<%= render :partial => 'users/forms_and_installation'%>
 		<br>
 		<p>Admin only: <%= link_to "Senior's profile", :controller => 'users',:action => 'signup_details',:id => @user.id %>
 		</p>

@@ -1,42 +1,46 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
 <%=render :partial => 'reporting/nav'%>
-<%= render :partial => 'reporting/nav_dialup_status'%>
-<h2>Orders</h2>
+<h2>DTC Orders </h2>
+Purchased from <a href="http://www.myhalomonitor.com/order">http://www.myhalomonitor.com/order</a>
 <br>
-
+<br>
 <table border="1">
 	<th>Id</th>
-	<th>Number</th>
-	<th>Billing</th>
-	<th>Cost</th>
-	<th>Card Number</th>
-	<th>Shipping</th>
 	<th>Created At</th>
-	<th>User Intake</th>
+	<th>Order #</th>
+	<th>Card Number</th>
+	<th>Billing</th>
+	<th>Shipping</th>
+	<th>Order Items</th>
+	<th>Total<br>Charged</th>
 	<% if @orders %>
 	<% @orders.each do |order| %>
 	  <tr>
 	  	<td><%= order.id %></td>
-	  	<td><%= order.number %></td>
-	  	<td><b><%= order.bill_name %></b><br>
+	  	<td><%= UtilityHelper.format_datetime(order.created_at,current_user) %></td>	
+	  	<td><%= order.full_number %></td>
+	  	<td>xxxx<% if !order.card_number.nil? %><%=  order.card_number[12,16] %> <% end %></td>
+	  	<td><b><%= order.bill_first_name %> <%= order.bill_last_name %></b><br>
 	  		<%= order.bill_address%><br>
 	  		<%= order.bill_city%>,<%= order.bill_state %>-<%= order.bill_zip%><br>
-	  		<b>phone: </b><%= order.bill_phone%><br>
+	  		phone: <%= order.bill_phone%><br>
 	  		<%= order.bill_email %>
 	  	</td>
-	  	<td><%= order.cost %></td>
-	  	<td>xxxx<%= order.card_number[12,16] %></td>
-	  	<td><b><%= order.ship_name %></b><br>
+	  	<td><b><%= order.ship_first_name %> <%= order.ship_last_name %></b><br>
 	  		<%= order.ship_address%><br>
 	  		<%= order.ship_city%>,<%= order.ship_state %>-<%= order.ship_zip%><br>
-	  		<b>phone: </b><%= order.ship_phone%><br>
+	  		phone: <%= order.ship_phone%><br>
 	  		<%#= ship.bill_email %>
 	  	</td>
-	  	<td><%= UtilityHelper.format_datetime(order.created_at,current_user) %></td>
-	  	<td><a href="">Intake</a></td>
+		<td>
+		  <% order.order_items.each do |item| %>
+		    <%= item.product_model %> x <%= item.quantity %> = <%= item.formatted_cost(item.quantity) %>
+		  <% end -%>
+		</td>
+		<td><%= number_to_currency(order.cost, :precision => 2, :unit => '$') %></td>	  	
 	  </tr>
 	<%end%>
 	<%end%>
 </table>
 <br>
-<center><%#= will_paginate @dial_up_statuses %></center>
+<center><big><%= will_paginate @orders %></big></center>

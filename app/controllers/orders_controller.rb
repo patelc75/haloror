@@ -2,6 +2,10 @@ class OrdersController < ApplicationController
   # keeping RESTful
   include UserHelper
   
+  def index
+    @orders = Order.paginate :page => params[:page],:order => 'created_at desc',:per_page => 20
+  end
+  
   def new
     @confirmation = false
     @product = ""
@@ -41,6 +45,7 @@ class OrdersController < ApplicationController
       @order.bill_state = @order.ship_state
       @order.bill_zip = @order.ship_zip
       @order.bill_email = @order.ship_email
+      @order.bill_phone = @order.ship_phone
     end
     @group = Group.find_or_create_by_name("direct_to_consumer")
     @order.group_id = @group.id if !@group.nil?
@@ -48,7 +53,7 @@ class OrdersController < ApplicationController
     respond_to do |format|
       # verify re-CAPTCHA and save order
       #
-      if verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
+      if @order.save #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
         # pick any of these hard coded values for now. This will change to device_revisions on order screen
         #
         device_name = (session[:product] == "complete") ? "Chest Strap, Halo Complete" : "Belt Clip, Halo Clip"

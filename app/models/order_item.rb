@@ -28,8 +28,8 @@ class OrderItem < ActiveRecord::Base
     end
   end
   
-  def formatted_cost(qty=1)
-    qty = quantity if qty != 1
+  def formatted_cost(qty=nil)
+    qty = 1 if qty == nil
     formatted_cost = number_to_currency(qty * cost, :precision => 2, :unit => '$')
     if(recurring_monthly == true)
       formatted_cost = formatted_cost.to_s + "/mo"

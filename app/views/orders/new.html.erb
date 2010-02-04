@@ -1,3 +1,6 @@
+<% if @confirmation %>
+<h1>Please verify your order</h1>
+<% end %>
 <% unless @confirmation %>
   <% if session[:order].blank? %>
     <% content_for :js do %>
@@ -16,15 +19,15 @@
 <% end %>
 
 <% form_for @order, :url => {:action => (@confirmation ? "create" : "new")}, :html => {:id => 'form1', :class => "#{@confirmation ? 'confirm-form' : 'form'}"} do |f| %>
-  <fieldset>
-    <legend><%= @confirmation ? 'Order summary' : 'Pick a product' %></legend>
+ 	<fieldset style="border: 2px solid ; padding: 10px;">    
+	<legend><%= @confirmation ? 'Order summary' : 'Pick a product' %></legend>
     <table id="product_detail_box" width="100%">
       <tr>
         <td>
           <table>
             <% if @confirmation.blank? || (@product == "complete") %>
             <tr>
-              <td><%= radio_button_tag 'product', 'complete', true unless @confirmation %> <%= DeviceType.find_product_by_any_name("Halo Complete, Chest Strap").latest_model_revision_name %> ($59/mo)</td>
+              <td><%= radio_button_tag 'product', 'complete', true unless @confirmation %> myHalo Complete ($59/mo)</td>
               <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
               <%= observe_field(:product_complete,
                                 :frequency => 1,
@@ -34,7 +37,7 @@
             <% end -%>
             <% if @confirmation.blank? || (@product == "clip") %>
             <tr>
-              <td><%= radio_button_tag "product", "clip" unless @confirmation %> <%= DeviceType.find_product_by_any_name("Halo Clip, Belt Clip").latest_model_revision_name %> ($49/mo)</td>
+              <td><%= radio_button_tag "product", "clip" unless @confirmation %> myHalo Clip ($49/mo)</td>
               <td><%= image_tag 'myhalo-belt-clip.gif' %></td>
               <%= observe_field(:product_clip,
                                 :frequency => 1,
@@ -43,7 +46,7 @@
             </tr>
             <% end -%>
             <% if !@confirmation %>
-            <tr><td colspan="2"><%= link_to "What's the difference?", image_path("product_matrix.jpg"), :rel => "facebox" %></td></tr>
+            <tr><td colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "What's the difference?", image_path("product_matrix.jpg"), :rel => "facebox" %></td></tr>
             <% end -%>
           </table>
         </td>
@@ -56,7 +59,7 @@
               <tr><td>Deposit</td><td>$249.00</td></tr>
               <tr class="altrow"><td>3 months advance ($59 x 3)</td><td>$177.00</td></tr>
               <tr><td>Shipping</td><td>$15.00</td></tr>
-              <tr class="altrow"><td>Total</td><td>
+              <tr class="altrow"><td>Total*</td><td>
                 <% if @confirmation %>
                   <%= f.hidden_field "cost", :disabled => true %>
                 <% end -%>
@@ -64,7 +67,7 @@
             </td></tr>
             </table>
             <p>
-              *Note: Recurring monthly charge of $59.00/mo will begin <%= 3.months.from_now.to_s(:day_date) %>
+              *Note: Recurring monthly charge of <b>$59.00/mo</b> will begin <%= 3.months.from_now.to_s(:day_date) %>
             </p>
           </div>
           <% end -%>
@@ -76,7 +79,7 @@
               <tr><td>Deposit</td><td>$249.00</td></tr>
               <tr class="altrow"><td>3 months advance ($49 x 3)</td><td>$147.00</td></tr>
               <tr><td>Shipping</td><td>$15.00</td></tr>
-              <tr class="altrow"><td>Total</td><td>
+              <tr class="altrow"><td>Total*</td><td>
                 <% if @confirmation %>
                   <%= f.hidden_field "cost", :disabled => true %>
                 <% end -%>
@@ -84,7 +87,7 @@
               </td></tr>
             </table>
             <p>
-              *Note: Recurring monthly charge of $49.00/mo will begin <%= 3.months.from_now.to_s(:day_date) %>
+              *Note: Recurring monthly charge of <b>$49.00/mo</b> will begin <%= 3.months.from_now.to_s(:day_date) %>
             </p>
           </div>
           <% end -%>
@@ -95,11 +98,11 @@
       </tr>
     </table>
   </fieldset>
-  <br />
-  <fieldset>
-    <legend>Billing and Shipping</legend>
+  <br><br>
+	<fieldset style="border: 2px solid; padding: 10px;">   		 
+    <legend>Billing and Shipping<%= ' Summary' if @confirmation %></legend>
     <table width="100%">
-      <tr>
+      <tr align="left">
         <th style="vertical-align: top;" width="33%">
           Shipping address
         </th>
@@ -230,7 +233,7 @@
           <label>Comments and Special shipping instructions</label>
           <%= f.text_area "comments", :rows => 5, :disabled => @confirmation %>
         </p>
-        <%= recaptcha_tags %>
+        <% #= recaptcha_tags %>
       </td>
       </tr>
     </table>

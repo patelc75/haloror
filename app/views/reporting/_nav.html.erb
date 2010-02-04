@@ -16,12 +16,12 @@
 <% end %>
 <% if current_user.is_super_admin? %>
 | <a href="/oscopes/index">Oscope CSV</a>
-<% end %>
-<% if current_user.is_admin? || current_user.is_super_admin? %>
-| <a href="/reporting/summary">Graphs</a> 
-<% end %>
 | <a href="/dial_up_statuses">Dial Up Status</a>
 | <a href="/orders">DTC Orders</a>
+| <a href="/subscriptions">Retail Orders</a>
+| <%= link_to 'User Intakes', url_for(:controller => "users", :action => "user_intake_table")%>
+| <a href="/reporting/summary">Graphs</a> 
+<% end %>
 <br><br>
 
 

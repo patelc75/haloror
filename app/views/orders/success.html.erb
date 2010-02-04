@@ -9,7 +9,6 @@
   <tr>
     <td>Order number: <strong><%= @order.full_number %></strong></td>
     <td>Order date: <%= @order.created_at.to_s(:day_date) %></td>
-    <td>Status: In Process</td>
   </tr>
 </table>
 
@@ -33,25 +32,29 @@
   </tr>
   <% end -%>
 </table>
-<hr />
+<br>
 <table width="100%">
-  <tr>
-    <td><strong>Billing address</strong></td>
-    <td><strong>Your payment</strong></td>
+  <tr align="left">
+    <th>Billing address</th>
+    <th><strong>Your payment</strong></th>
   </tr>
   <tr>
     <td>
       <%= @order.bill_first_name %> <%= @order.bill_last_name %><br />
       <%= @order.bill_address %><br />
-      <%= @order.bill_city %><br />
-      <%= @order.bill_state %><br />
-      <%= @order.bill_zip %><br />
+      <%= @order.bill_city %>, <%= @order.bill_state %> <%= @order.bill_zip %><br />
       <%= @order.bill_phone %><br />
       <%= @order.bill_email %><br />
     </td>
-    <td>
+    <td valign="top">
       Card: *****<%= @order.card_number[-4..-1] %><br />
       Expiry: <%= @order.card_expiry %>
     </td>
   </tr>
 </table>
+<br><br>
+<fieldset style="border: 2px solid ; padding: 10px;">
+<legend><b>Follow-up Forms and Instructions</b></legend>
+Halo support will soon be calling you to begin installation. In the meantime, please print the following forms and fill them out:
+<%= render :partial => 'users/forms_and_installation'%>
+</fieldset>
