@@ -134,7 +134,7 @@
       
       <tr>
       <td>
-        <p class="altrow">
+        <p>
           <label>First name, Last name</label><br />
           <%= f.text_field "ship_first_name", :class => "required validate-alpha", :disabled => @confirmation %> 
           <%= f.text_field "ship_last_name", :class => "required validate-alpha", :disabled => @confirmation %>
@@ -143,7 +143,7 @@
           <label>Shipping address</label><br />
           <%= f.text_field "ship_address", :class => "required", :disabled => @confirmation %>
         </p>
-        <p class="altrow">
+        <p>
           <label>City</label><br />
           <%= f.text_field "ship_city", :class => "required", :disabled => @confirmation %>
         </p>
@@ -155,7 +155,7 @@
             <%= f.select "ship_state", State::NAMES, :class => "required" %>
           <% end -%>
         </p>
-        <p class="altrow">
+        <p>
           <label>Zip</label><br />
           <%= f.text_field "ship_zip", :class => "required validate-digits", :size => 10, :disabled => @confirmation %>
         </p>
@@ -163,7 +163,7 @@
           <label>Phone</label><br />
           <%= f.text_field "ship_phone", :class => "required", :disabled => @confirmation %>
         </p>
-        <p class="altrow">
+        <p>
           <label>Email</label><br />
           <%= f.text_field "ship_email", :class => "required validate-email", :disabled => @confirmation %>
         </p>
@@ -171,7 +171,7 @@
       
       <td>
         <div id="billing_block" style="margin-left: 5px; display: <%= (@confirmation && @same_address == '') ? 'block' : 'none' %>; margin: 0px; padding: 0px;">
-          <p class="altrow">
+          <p>
             <label>First name, Last name</label><br />
             <%= f.text_field "bill_first_name", :class => "validate-alpha", :disabled => @confirmation %> 
             <%= f.text_field "bill_last_name", :class => "validate-alpha", :disabled => @confirmation %>
@@ -180,7 +180,7 @@
             <label>Billing address</label><br />
             <%= f.text_field "bill_address", :disabled => @confirmation %>
           </p>
-          <p class="altrow">
+          <p>
             <label>City</label><br />
             <%= f.text_field "bill_city", :disabled => @confirmation %>
           </p>
@@ -192,7 +192,7 @@
               <%= f.select "bill_state", State::NAMES %>
             <% end -%>
           </p>
-          <p class="altrow">
+          <p>
             <label>Zip</label><br />
             <%= f.text_field "bill_zip", :class => "validate-digits", :size => 10, :disabled => @confirmation %>
           </p>
@@ -200,7 +200,7 @@
             <label>Phone</label><br />
             <%= f.text_field "bill_phone", :disabled => @confirmation %>
           </p>
-          <p class="altrow">
+          <p>
             <label>Email</label><br />
             <%= f.text_field "bill_email", :class => "validate-email", :disabled => @confirmation %>
           </p>
@@ -208,7 +208,7 @@
       </td>
       
       <td>
-        <p class="altrow">
+        <p>
           <label>Card number</label><br />
           <%= f.text_field "card_number", :class => "required validate-card", :size => 20, :disabled => @confirmation %>
         </p>
@@ -216,7 +216,7 @@
           <label>Expiration (Month/Year)</label><br />
           <%= f.date_select "card_expiry", :class => "required", :order => [:month, :year], :disabled => @confirmation  %>
         </p>
-        <p class="altrow">
+        <p>
           <label>Card Type</label><br />
           <% if @confirmation %>
             <%= f.text_field "card_type", :class => "required", :disabled => true %>
@@ -225,11 +225,11 @@
           <% end -%>
         </p>
         <p>
-          <label>CSC</label><br />
+          <label>CSC (Card Security Code)</label><br />
             <%= f.password_field "card_csc", :class => "required validate-digits", :size => 4, :disabled => @confirmation %>
         </p>
-        <span class="hint">*Note: The CSC is located on the back of the MasterCard or VISA debit or credit cards and is typically a separate group of 3 digits to the right of signature strip</span>
-        <p class="altrow">
+        <span class="hint">Note: The CSC is located on the back of <%= link_to "MasterCard, VISA, or Discover", image_path("CVC2SampleVisaNew.png"), :rel => "facebox" %> cards and is typically a separate group of 3 digits to the right of signature strip. On <%= link_to "American Express", image_path("CIDSampleAmex.png"), :rel => "facebox" %> cards, the CSC is a 4 digit code on the front towards the right.</span>
+        <p>
           <label>Comments and Special shipping instructions</label>
           <%= f.text_area "comments", :rows => 5, :disabled => @confirmation %>
         </p>
