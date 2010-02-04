@@ -1,0 +1,2 @@
+module UserIntakesHelper
+end

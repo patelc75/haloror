@@ -23,7 +23,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :bundle
   map.resources :alert_bundle
   map.resources :recurring_charges
-  map.resources :subscriptions
+  map.resources :subscriptions,:member => {:notes => :get}
   #device alert models derived from RestfulAuthController
   map.resources :battery_pluggeds
   map.resources :battery_unpluggeds
@@ -62,6 +62,7 @@ ActionController::Routing::Routes.draw do |map|
   #user related models
   map.resources :profiles
   map.resources :users, :sessions,:member => {:edit_user_intake_form => :any}#added automatically after running restful_authentication script
+  map.resources :user_intakes
   
   #deprecated models
   #map.resources :caregivers, :active_scaffold => true 

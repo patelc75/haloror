@@ -1,0 +1,34 @@
+<!-- <meta http-equiv="refresh" content="30"> -->
+<%=render :partial => 'reporting/nav'%>
+<h2>User Intakes</h2>
+<br>
+
+<table bsub="1">
+	<th>Id</th>
+	<th>Installation Date</th>	
+	<th>Created By</th>
+	<th>Credit/Debit Card <br>Processed</th>
+	<th>Bill Monthly</th>
+	<th>Kit Serial Number</th>
+	<th>Order ID</th>
+	<th>Created At</th>
+	<% if @user_intakes %>
+	<% @user_intakes.each do |user_intake| %>
+	  <tr>
+	  	<td><%= user_intake.id %></td>
+	  	<td><%= user_intake.installation_date %></td>	
+	  	<td><%= user_intake.created_by %></td>	
+	  	<td><%= user_intake.credit_debit_card_proceessed%></td>
+	  	<td><%= user_intake.bill_monthly %></td>
+	  	<td><%= user_intake.kit_serial_number %></td>
+	  	<td><%unless user_intake.order_id.blank?%>
+	  		<%= link_to user_intake.order_id,:controller => 'orders',:action => 'index',:id => user_intake.order_id %>
+	  		<%end%>
+  		</td>
+		<td><%= UtilityHelper.format_datetime(user_intake.created_at,current_user) %></td>
+	  </tr>
+	<%end%>
+	<%end%>
+</table>
+<center><big><%= will_paginate @user_intakes %></big></center>
+<br>

@@ -7,9 +7,11 @@
 	</span><br><br>
   <div style="margin-left:25px">
   	<font color='red'><%=error_messages_for :profile%>
-  	<%=error_messages_for :subscriber_profile%></font>
+  	<%=error_messages_for :subscriber_profile%>
+  	<%=error_messages_for :user_intakes%>
+  	</font>
     <div class="content" style="padding-right:20px;">
-      <div style="border:2px solid;width:99.6%;height:40px;padding-top:10px;">
+      <div style="border:2px solid;width:99.6%;height:60px;padding-top:10px;">
       	<% gs = ['Choose a Group']
 		   @groups.each do |g|
 			 gs << g.name
@@ -17,7 +19,12 @@
 		<table width="100%"><tr>
 		<td>Group: <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group),:onchange => "select_group(this);"%></td>
       	<td>Installation Date:<%= date_select :user_intake,:installation_date %></td>
-      	<td>Kit Serial #:<%= text_field :kit, :serial_number %></td>
+      	<td>Kit Serial #:</td><td><%= text_field :kit, :serial_number%></td>
+      	</tr>
+      	<tr>
+      	<td></td>
+      	<td></td>
+      	<td>Order ID #(optional):</td><td><%= text_field :user_intake, :order_id %></td>
       	</tr>
       	</table>
       	<div id="hits"></div>

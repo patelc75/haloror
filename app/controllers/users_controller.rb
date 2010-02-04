@@ -253,57 +253,58 @@ class UsersController < ApplicationController
   def user_intake_form
     if request.post?
     	User.transaction do
-    		user_intake = UserIntake.new(params[:user_intake])
-            user_intake.created_by = current_user.id
-            user_intake.updated_by = current_user.id
-            user_intake.kit_serial_number = params[:kit][:serial_number]
+    		@user_intake = UserIntake.new(params[:user_intake])
+            @user_intake.created_by = current_user.id
+            @user_intake.updated_by = current_user.id
+            @user_intake.kit_serial_number = params[:kit][:serial_number]
             if params[:user_intakes] and params[:user_intakes][:options] == 'credit_card'
-              user_intake.credit_debit_card_proceessed = true
-              user_intake.bill_monthly = false	
+              @user_intake.credit_debit_card_proceessed = true
+              @user_intake.bill_monthly = false	
             else
-              user_intake.bill_monthly = true
-              user_intake.credit_debit_card_proceessed = false
+              @user_intake.bill_monthly = true
+              @user_intake.credit_debit_card_proceessed = false
             end
-            user_intake.save
-    		populate_user(params[:user],params[:users][:email],params[:group],current_user.id)
-    		user_intake.users.push(@user)
-    		@senior_user = @user
-    		add_kit_number(params[:kit][:serial_number],@senior_user)
-    		if params[:add_caregiver] and params[:add_caregiver] == 'on'
-    			add_caregiver = "0"   #0 for subscriber add as #1 caregiver
-    		else
-    			add_caregiver = "1"   #1 for subscriber do not add as caregiver
-    		end
-            if params[:same_as_user] and params[:same_as_user] == 'on'
-              populate_subscriber(@user.id,"1",add_caregiver,params[:users][:email],params[:user])
-  	        else
-  	          subscriber_email = params[:subscribers][:email]
-  	          populate_subscriber(@user.id,"0",add_caregiver,subscriber_email,params[:subscriber])
-  	          set_roles_users_option(@user,params[:sub_roles_users_option]) if add_caregiver == "0"
-  	          user_intake.users.push(@user)
-            end
-
-            #UserMailer.deliver_subscriber_email(@user)
-  	        UserMailer.deliver_signup_installation(@user,@senior)
-  	        if add_caregiver == "1"
-              unless params[:no_caregiver_1]
-               caregiver1_email = params[:caregiver1][:email]
-               @car1 = User.populate_caregiver(caregiver1_email,@senior.id,nil,nil,params[:caregiver1])
-               set_roles_users_option(@car1,params[:car1_roles_users_option])
-               user_intake.users.push(@car1)
+            if @user_intake.save
+    		  populate_user(params[:user],params[:users][:email],params[:group],current_user.id)
+    		  @user_intake.users.push(@user)
+    		  @senior_user = @user
+    		  add_kit_number(params[:kit][:serial_number],@senior_user)
+    		  if params[:add_caregiver] and params[:add_caregiver] == 'on'
+    		    add_caregiver = "0"   #0 for subscriber add as #1 caregiver
+    		  else
+    		    add_caregiver = "1"   #1 for subscriber do not add as caregiver
+    		  end
+              if params[:same_as_user] and params[:same_as_user] == 'on'
+                populate_subscriber(@user.id,"1",add_caregiver,params[:users][:email],params[:user])
+  	          else
+  	            subscriber_email = params[:subscribers][:email]
+  	            populate_subscriber(@user.id,"0",add_caregiver,subscriber_email,params[:subscriber])
+  	            set_roles_users_option(@user,params[:sub_roles_users_option]) if add_caregiver == "0"
+  	            @user_intake.users.push(@user)
               end
-            end
-            unless params[:no_caregiver_2]
-             caregiver2_email = params[:caregiver2][:email]
-             @car2 = User.populate_caregiver(caregiver2_email,@senior.id,nil,nil,params[:caregiver2])
-             set_roles_users_option(@car2,params[:car2_roles_users_option])
-             user_intake.users.push(@car2)
-            end
-            unless params[:no_caregiver_3]
-             caregiver3_email = params[:caregiver3][:email]
-             @car3 = User.populate_caregiver(caregiver3_email,@senior.id,nil,nil,params[:caregiver3])
-             set_roles_users_option(@car3,params[:car3_roles_users_option])
-             user_intake.users.push(@car3)
+
+              #UserMailer.deliver_subscriber_email(@user)
+  	          UserMailer.deliver_signup_installation(@user,@senior)
+  	          if add_caregiver == "1"
+                unless params[:no_caregiver_1]
+                  caregiver1_email = params[:caregiver1][:email]
+                  @car1 = User.populate_caregiver(caregiver1_email,@senior.id,nil,nil,params[:caregiver1])
+                  set_roles_users_option(@car1,params[:car1_roles_users_option])
+                  @user_intake.users.push(@car1)
+                end
+              end
+              unless params[:no_caregiver_2]
+                caregiver2_email = params[:caregiver2][:email]
+                @car2 = User.populate_caregiver(caregiver2_email,@senior.id,nil,nil,params[:caregiver2])
+                set_roles_users_option(@car2,params[:car2_roles_users_option])
+                @user_intake.users.push(@car2)
+              end
+              unless params[:no_caregiver_3]
+                caregiver3_email = params[:caregiver3][:email]
+                @car3 = User.populate_caregiver(caregiver3_email,@senior.id,nil,nil,params[:caregiver3])
+                set_roles_users_option(@car3,params[:car3_roles_users_option])
+                @user_intake.users.push(@car3)
+              end
             end
     	end
     	redirect_to '/user/user_intake_form'

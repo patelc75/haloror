@@ -3,7 +3,9 @@ class OrdersController < ApplicationController
   include UserHelper
   
   def index
-    @orders = Order.paginate :page => params[:page],:order => 'created_at desc',:per_page => 20
+  	cond = ""
+  	cond += "id = #{params[:id]}" if params[:id]
+    @orders = Order.paginate :page => params[:page],:order => 'created_at desc',:per_page => 20,:conditions => cond
   end
   
   def new
@@ -101,5 +103,9 @@ class OrdersController < ApplicationController
     respond_to do |format|
       format.html # show.html.erb
     end
+  end
+  
+  def comments
+  	@order = Order.find_by_id(params[:order_id])
   end
 end
