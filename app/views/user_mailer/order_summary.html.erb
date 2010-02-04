@@ -1,6 +1,14 @@
-Order summary:
+ORDER SUMMARY
+Order number: <%= @order.full_number %>
+Order date: <%= @order.created_at.to_s(:day_date) %>
 
-Product: <%= @order[:product] %>
+Order items:
+<% @order.order_items.each do |item| %><%= item.product_model %>
+<%= item.status %>
+Qty:<%= item.quantity %> Cost:<%= item.formatted_cost(item.quantity) %>
+
+<% end -%>
+Card Number *****<%= @order.card_number[-4..-1] %> (exp <%= @order.card_expiry %>) has been charged <%= number_to_currency(@order.cost, :precision => 2, :unit => '$') %>
 
 Shipping
   Name    : <%= @order[:ship_first_name] %> <%= @order[:ship_last_name] %>

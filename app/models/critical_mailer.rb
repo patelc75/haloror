@@ -130,12 +130,12 @@ class CriticalMailer < ActionMailer::ARMailer
 
 #============ Safetycare Monitoring ================
   def monitoring_failure(message, event)
-    setup_message("safety_care monitoring failure: #{message}", "The following event triggered, but an error was encountered.\n\nTime: #{Time.now}\n\nError: #{message}\n\nEvent: #{event.to_s}\n\n#{event.inspect}\n\n")
+    setup_message("safety_care monitoring failure: #{message}", "The following event triggered, but an error was encountered.\n\nTime: #{Time.now}\n\nError: #{message}\n\nEvent: #{event.to_s}\n\n#{event.inspect}\n\n", :no_email_log)
     @recipients = ["exceptions@halomonitoring.com"]
   end
 
   def monitoring_heartbeat_failure(message, exception)
-    setup_message("safety_care HEARTBEAT failure", "There was a HEARTBEAT failure!\n\nTime: #{Time.now}\n\n  Exception: #{exception}\nError: #{message}\n\n")
+    setup_message("safety_care HEARTBEAT failure", "There was a HEARTBEAT failure!\n\nTime: #{Time.now}\n\n  Exception: #{exception}\nError: #{message}\n\n", :no_email_log)
     @recipients = ["exceptions@halomonitoring.com"]
   end
 
@@ -151,11 +151,12 @@ class CriticalMailer < ActionMailer::ARMailer
 #=============== Utility Methods  ===================  
   protected
     
-  def setup_message(subject, msg_body)
+  def setup_message(subject, msg_body, email_log=nil)
     @from        = "no-reply@#{ServerInstance.current_host}"
     @subject     = "[" + ServerInstance.current_host_short_string + "] "
     @subject     += subject unless subject.blank?
     @sent_on     = Time.now
+    @bcc         = "email_log@halomonitoring.com" if email_log != :no_email_log
     body msg_body
   end
 

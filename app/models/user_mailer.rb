@@ -83,7 +83,7 @@ class UserMailer < ActionMailer::ARMailer
     end
     @from        = "no-reply@halomonitoring.com"
     @subject     = "[" + ServerInstance.current_host_short_string + "] "
-    @bcc         = "emaillog@halomonitoring.com"
+    @bcc         = "email_log@halomonitoring.com"
     @sent_on     = Time.now
     self.priority = Priority::IMMEDIATE
   end
