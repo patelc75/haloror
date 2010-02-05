@@ -80,7 +80,7 @@ class OrdersController < ApplicationController
               flash[:notice] = 'Thank you for your order.'
               format.html { render :action => 'success' }              
               UserMailer.deliver_signup_installation(@order.ship_email,:exclude_senior_info)   
-              UserMailer.deliver_signup_installation(@order.bill_email,:exclude_senior_info)
+              UserMailer.deliver_signup_installation(@order.bill_email,:exclude_senior_info) if @order.bill_address_same != "1"
               UserMailer.deliver_order_summary(@order, @order.bill_email) #goes to @order.bill_email
               UserMailer.deliver_order_summary(@order, "senior_signup@halomonitoring.com", :no_email_log) #do not send to email_log@halo
             end
