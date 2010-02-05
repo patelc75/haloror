@@ -20,7 +20,7 @@ class OrdersController < ApplicationController
           "cost" => "#{@product == 'complete' ? '439.00' : '409.00'}",
           "product" => params[:product]
           )
-      @same_address = (temp_order[:bill_address_same] ? "checked" : "")
+      @same_address = (temp_order[:bill_address_same] == "1" ? "checked" : "")
       session[:order] = temp_order
       session[:product] = @product # same as params[:product]. Will be used later in create
       # session[:card_csc] = params[:other][:card_csc] # card CSC
