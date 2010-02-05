@@ -128,6 +128,13 @@ class CriticalMailer < ActionMailer::ARMailer
     setup_message(subject, msg_body)
   end
 
+  def dialup_800_abuse(dial_up_alert)
+    @from        = "alerts@halomonitoring.com"
+    @subject     = "800 Abuse Alert"
+    @sent_on     = Time.now
+    body dial_up_alert.email_body
+  end
+
 #============ Safetycare Monitoring ================
   def monitoring_failure(message, event)
     setup_message("safety_care monitoring failure: #{message}", "The following event triggered, but an error was encountered.\n\nTime: #{Time.now}\n\nError: #{message}\n\nEvent: #{event.to_s}\n\n#{event.inspect}\n\n", :no_email_log)
