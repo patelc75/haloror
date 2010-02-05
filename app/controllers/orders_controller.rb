@@ -81,8 +81,8 @@ class OrdersController < ApplicationController
               format.html { render :action => 'success' }              
               UserMailer.deliver_signup_installation(@order.ship_email,:exclude_senior_info)   
               UserMailer.deliver_signup_installation(@order.bill_email,:exclude_senior_info)
-              UserMailer.deliver_order_summary(@order) #goes to @order.bill_email
-              UserMailer.deliver_order_summary("senior_signup@halomonitoring.com", :no_email_log) #do not send to email_log@halo
+              UserMailer.deliver_order_summary(@order, @order.bill_email) #goes to @order.bill_email
+              UserMailer.deliver_order_summary(@order, "senior_signup@halomonitoring.com", :no_email_log) #do not send to email_log@halo
             end
           end
         end

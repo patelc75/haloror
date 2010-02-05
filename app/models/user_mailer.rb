@@ -64,8 +64,8 @@ class UserMailer < ActionMailer::ARMailer
   	@body[:user] = subscriber
   end
   
-  def order_summary(order, email_log=nil)
-    setup_email(order.bill_email, email_log)
+  def order_summary(order, email_addr, email_log=nil)
+    setup_email(email_addr, email_log)
     @subject += "Order Summary"
     @body[:order] = order
   end
