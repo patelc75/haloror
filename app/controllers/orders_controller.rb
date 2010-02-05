@@ -71,10 +71,10 @@ class OrdersController < ApplicationController
             @one_time_fee = @order.charge_one_time_fee # variables used in failure if that happens
             if @one_time_fee.success?
               @subscription = @order.charge_subscription(session[:product] == "complete" ? 5900 : 4900) # cents
-              success = true #@subscription.success?
+              success = @subscription.success? unless @subscription.blank? # ramonrails: true = incorrect logic. subscription can fail for some gateway reason
             end
             
-            if success.blank?
+            if success.blank? || !success
               format.html { render :action => 'failure' }
             else
               flash[:notice] = 'Thank you for your order.'
@@ -82,6 +82,7 @@ class OrdersController < ApplicationController
               UserMailer.deliver_signup_installation(@order.ship_email,:exclude_senior_info)   
               UserMailer.deliver_signup_installation(@order.bill_email,:exclude_senior_info)
               UserMailer.deliver_order_summary(@order) #goes to @order.bill_email
+              UserMailer.deliver_order_summary("senior_signup@halomonitoring.com", :no_email_log) #do not send to email_log@halo
             end
           end
         end

@@ -64,16 +64,15 @@ class UserMailer < ActionMailer::ARMailer
   	@body[:user] = subscriber
   end
   
-  def order_summary(order)
-    setup_email(order.bill_email)
-    @bcc = 'senior_signup@halomonitoring.com'
+  def order_summary(order, email_log=nil)
+    setup_email(order.bill_email, email_log)
     @subject += "Order Summary"
     @body[:order] = order
   end
   
   protected
   
-  def setup_email(user_obj_or_email_addr)
+  def setup_email(user_obj_or_email_addr, email_log=nil)
     if user_obj_or_email_addr.is_a?(User)
       @recipients  = "#{user_obj_or_email_addr.email}"
     elsif user_obj_or_email_addr.is_a?(String)
@@ -83,7 +82,7 @@ class UserMailer < ActionMailer::ARMailer
     end
     @from        = "no-reply@halomonitoring.com"
     @subject     = "[" + ServerInstance.current_host_short_string + "] "
-    @bcc         = "email_log@halomonitoring.com"
+    @bcc         = "email_log@halomonitoring.com" if email_log != :no_email_log
     @sent_on     = Time.now
     self.priority = Priority::IMMEDIATE
   end
