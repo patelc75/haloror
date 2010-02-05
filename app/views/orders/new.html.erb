@@ -173,36 +173,36 @@
         <div id="billing_block" style="margin-left: 5px; display: <%= (@confirmation && @same_address == '') ? 'block' : 'none' %>; margin: 0px; padding: 0px;">
           <p>
             <label>First name, Last name</label><br />
-            <%= f.text_field "bill_first_name", :class => "validate-alpha", :disabled => @confirmation %> 
-            <%= f.text_field "bill_last_name", :class => "validate-alpha", :disabled => @confirmation %>
+            <%= f.text_field "bill_first_name", :class => "required validate-alpha", :disabled => @confirmation %> 
+            <%= f.text_field "bill_last_name", :class => "required validate-alpha", :disabled => @confirmation %>
           </p>
           <p>
             <label>Billing address</label><br />
-            <%= f.text_field "bill_address", :disabled => @confirmation %>
+            <%= f.text_field "bill_address", :class => "required", :disabled => @confirmation %>
           </p>
           <p>
             <label>City</label><br />
-            <%= f.text_field "bill_city", :disabled => @confirmation %>
+            <%= f.text_field "bill_city", :class => "required", :disabled => @confirmation %>
           </p>
           <p>
             <label>State</label><br />
             <% if @confirmation %>
               <%= f.text_field "bill_state", :disabled => true %>
             <% else %>
-              <%= f.select "bill_state", State::NAMES %>
+              <%= f.select "bill_state", State::NAMES, :class => "required" %>
             <% end -%>
           </p>
           <p>
             <label>Zip</label><br />
-            <%= f.text_field "bill_zip", :class => "validate-digits", :size => 10, :disabled => @confirmation %>
+            <%= f.text_field "bill_zip", :class => "required validate-digits", :size => 10, :disabled => @confirmation %>
           </p>
           <p>
             <label>Phone</label><br />
-            <%= f.text_field "bill_phone", :disabled => @confirmation %>
+            <%= f.text_field "bill_phone", :class => "required", :disabled => @confirmation %>
           </p>
           <p>
             <label>Email</label><br />
-            <%= f.text_field "bill_email", :class => "validate-email", :disabled => @confirmation %>
+            <%= f.text_field "bill_email", :class => "required", :class => "validate-email", :disabled => @confirmation %>
           </p>
         </div>
       </td>
