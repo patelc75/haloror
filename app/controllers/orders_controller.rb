@@ -46,8 +46,7 @@ class OrdersController < ApplicationController
       
         @order = Order.new(session[:order]) # pick from session, not params
         @order.populate_billing_address
-        @group = Group.find_or_create_by_name("direct_to_consumer")
-        @order.group_id = @group.id if !@group.nil?
+        @order.assign_group("direct_to_consumer")
 
         # verify re-CAPTCHA and save order
         #
@@ -59,21 +58,12 @@ class OrdersController < ApplicationController
           device_revision = DeviceRevision.find_by_device_names(device_name)
           unless device_revision.blank?
             @order.order_items.create!(:device_revision_id => device_revision.id, :cost => @order.cost, :quantity => 1)
-            # CHANGED: DRYed here
             static_cost = {"clip" => 49, "complete" => 59}
-            @order.order_items.create!( static_cost[product], :quantity => 1, :recurring_monthly => true) if static_cost.has_key?(product)
-            # if product == "clip"
-            #   @order.order_items.create!(:cost => 49, :quantity => 1, :recurring_monthly => true)
-            # elsif product == "complete"
-            #   @order.order_items.create!(:cost => 59, :quantity => 1, :recurring_monthly => true)              
-            # end
+            @order.order_items.create!( :cost => static_cost[product], :quantity => 1, :recurring_monthly => true) if static_cost.has_key?(product)
           
             Order.transaction do
-              @one_time_fee = @order.charge_one_time_fee # variables used in failure if that happens
-              if !@one_time_fee.blank? && @one_time_fee.success?
-                @subscription = @order.charge_subscription(product == "complete" ? 5900 : 4900) # cents
-                success = @subscription.success? unless @subscription.blank? # ramonrails: true = incorrect logic. subscription can fail for some gateway reason
-              end
+              one_time_fee, subscription = @order.charge_one_time_and_subscription(product == "complete" ? 5900 : 4900)
+              success = (one_time_fee.success? && subscription.success?) unless (one_time_fee.blank? || subscription.blank?)
             
               if success.blank? || !success
                 goto = "failure"
@@ -85,7 +75,6 @@ class OrdersController < ApplicationController
                 UserMailer.deliver_order_summary(@order, "senior_signup@halomonitoring.com", :no_email_log) #do not send to email_log@halo
                 flash[:notice] = 'Thank you for your order.'
                 goto = "success"
-                # format.html { render :action => 'success' }
               end
               reset_session # start fresh
               @order = nil

@@ -9,6 +9,17 @@ class Order < ActiveRecord::Base
   def full_number
     "#{created_at.to_date.to_s(:number)}-#{id}"
   end
+
+  # one time fee = from order
+  # subscription = received as argument
+  #
+  def charge_one_time_and_subscription(charge_amount)
+    one_time_fee = charge_one_time_fee
+    if !one_time_fee.blank? && one_time_fee.success?
+      subscription = charge_subscription(charge_amount)
+    end
+    return one_time_fee, subscription
+  end
   
   def charge_one_time_fee
     charge_credit_card
@@ -63,5 +74,9 @@ class Order < ActiveRecord::Base
       bill_email = ship_email
       bill_phone = ship_phone
     end
+  end
+
+  def assign_group(name)
+    group_id = Group.find_or_create_by_name(name) # usually in a new order, so no need to check nil? zero?
   end
 end
