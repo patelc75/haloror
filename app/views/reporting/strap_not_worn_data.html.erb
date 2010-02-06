@@ -1,0 +1,62 @@
+<h2>Strap not Worn for <%=@user.name %>:</h2>
+All times are in <%= @user.profile.time_zone %> time zone
+<br>
+<form action="/reporting/strap_not_worn_data/<%= params[:id]%>" method="post">
+<table>
+    <tr><td>Begin Time (<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= Time.zone.name.split(/\s+/).first %>)</td></tr>
+    <tr>
+      <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
+      <td><%= calendar_date_select_tag "end_time", @user_end_time, :time => true, :popup => 'force' %></td>
+	  <td>&nbsp;<%= submit_tag "Submit" %></td>
+    </tr>
+  </table>
+ </form>
+<p>
+	<% if params[:begin_time] %>
+	<b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
+	  <%= current_user.profile.time_zone if current_user.profile %> timezone<br><br>
+	<% end %>
+    <table>
+        <tr>
+            <td>
+                <b>Start</b>
+            </td>
+            <td>
+                &nbsp;&nbsp;
+            </td>
+            <td>
+                <b>End</b>
+            </td>
+            <td>
+                &nbsp;&nbsp;
+            </td>
+            <td>
+                <b>Duration</b>
+            </td>
+        </tr>
+        <% @strap_not_worn.each do |reading| %>
+        <tr>
+            <td>
+				<%= UtilityHelper.format_datetime(reading.begin_time, current_user, :date_time) %>
+            </td>
+            <td>
+            </td>
+            <td>
+				<%= UtilityHelper.format_datetime(reading.end_time, current_user, :date_time) %>
+            </td>
+            <td>
+            </td>
+            <td>
+                <%=UtilityHelper.seconds_format(reading.end_time - reading.begin_time) %>
+            </td>						
+        </tr>
+        <% end %>
+    </table>
+    <br>
+    <br>
+    <center>
+        <big>
+            <%= will_paginate @strap_not_worn %>
+        </big>
+    </center>
+</p>

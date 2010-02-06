@@ -1,3 +1,6 @@
+<% if @order.blank? %>
+Please contact support@halomonitoring.com for your order details
+<% else %>
 Halo Monitoring, Inc.
 515 Sparkman Drive
 Huntsville, AL 35816
@@ -35,3 +38,4 @@ Billing
   ZIP     : <%= @order[:bill_zip] %>
   Phone   : <%= @order[:bill_phone] %>
   Email   : <%= @order[:bill_email] %>
+<% end -%>

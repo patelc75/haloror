@@ -28,8 +28,7 @@ class OrdersController < ApplicationController
       @order = Order.new(session[:order])
       
     else # store mode
-      reset_session # start fresh
-      @order = Order.new
+      @order ||= (session[:order].blank? ? Order.new : Order.new(session[:order]))
     end
     
     respond_to do |format|
@@ -38,58 +37,57 @@ class OrdersController < ApplicationController
   end
 
   def create
-    @order = Order.new(session[:order]) # pick from session, not params
-    if @order.bill_address_same == "1"
-      @order.bill_first_name = @order.ship_first_name
-      @order.bill_last_name = @order.ship_last_name
-      @order.bill_address = @order.ship_address
-      @order.bill_city = @order.ship_city
-      @order.bill_state = @order.ship_state
-      @order.bill_zip = @order.ship_zip
-      @order.bill_email = @order.ship_email
-      @order.bill_phone = @order.ship_phone
-    end
-    @group = Group.find_or_create_by_name("direct_to_consumer")
-    @order.group_id = @group.id if !@group.nil?
+    if session[:order].blank?
+      redirect_to :action => 'new'
+    else
+      goto = "new"
+      respond_to do |format|
+        unless session[:order].blank?
+      
+        @order = Order.new(session[:order]) # pick from session, not params
+        @order.populate_billing_address
+        @order.assign_group("direct_to_consumer")
 
-    respond_to do |format|
-      # verify re-CAPTCHA and save order
-      #
-      if @order.save #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
-        # pick any of these hard coded values for now. This will change to device_revisions on order screen
+        # verify re-CAPTCHA and save order
         #
-        device_name = (session[:product] == "complete") ? "Chest Strap, Halo Complete" : "Belt Clip, Halo Clip"
-        device_revision = DeviceRevision.find_by_device_names(device_name)
-        unless device_revision.blank?
-          @order.order_items.create!(:device_revision_id => device_revision.id, :cost => @order.cost, :quantity => 1)
-          if session[:product] == "clip"
-            @order.order_items.create!(:cost => 49, :quantity => 1, :recurring_monthly => true)
-          elsif session[:product] == "complete"
-            @order.order_items.create!(:cost => 59, :quantity => 1, :recurring_monthly => true)              
-          end
-          Order.transaction do
-            @one_time_fee = @order.charge_one_time_fee # variables used in failure if that happens
-            if @one_time_fee.success?
-              @subscription = @order.charge_subscription(session[:product] == "complete" ? 5900 : 4900) # cents
-              success = @subscription.success? unless @subscription.blank? # ramonrails: true = incorrect logic. subscription can fail for some gateway reason
-            end
+        if @order.save #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
+          # pick any of these hard coded values for now. This will change to device_revisions on order screen
+          #
+          product = session[:product]
+          device_name = (product == "complete") ? "Chest Strap, Halo Complete" : "Belt Clip, Halo Clip"
+          device_revision = DeviceRevision.find_by_device_names(device_name)
+          unless device_revision.blank?
+            @order.order_items.create!(:device_revision_id => device_revision.id, :cost => @order.cost, :quantity => 1)
+            static_cost = {"clip" => 49, "complete" => 59}
+            @order.order_items.create!( :cost => static_cost[product], :quantity => 1, :recurring_monthly => true) if static_cost.has_key?(product)
+          
+            Order.transaction do
+              one_time_fee, subscription = @order.charge_one_time_and_subscription(product == "complete" ? 5900 : 4900)
+              success = (one_time_fee.success? && subscription.success?) unless (one_time_fee.blank? || subscription.blank?)
             
-            if success.blank? || !success
-              format.html { render :action => 'failure' }
-            else
-              flash[:notice] = 'Thank you for your order.'
-              format.html { render :action => 'success' }              
-              UserMailer.deliver_signup_installation(@order.ship_email,:exclude_senior_info)   
-              UserMailer.deliver_signup_installation(@order.bill_email,:exclude_senior_info) if @order.bill_address_same != "1"
-              UserMailer.deliver_order_summary(@order, @order.bill_email) #goes to @order.bill_email
-              UserMailer.deliver_order_summary(@order, "senior_signup@halomonitoring.com", :no_email_log) #do not send to email_log@halo
-            end
-          end
-        end
-      else
-        format.html { render :action => "new" }
+              if success.blank? || !success
+                goto = "failure"
+                # format.html { render :action => 'failure' }
+              else
+                UserMailer.deliver_signup_installation(@order.ship_email,:exclude_senior_info)   
+                UserMailer.deliver_signup_installation(@order.bill_email,:exclude_senior_info)
+                UserMailer.deliver_order_summary(@order, @order.bill_email) #goes to @order.bill_email
+                UserMailer.deliver_order_summary(@order, "senior_signup@halomonitoring.com", :no_email_log) #do not send to email_log@halo
+                flash[:notice] = 'Thank you for your order.'
+                goto = "success"
+              end
+              reset_session # start fresh
+              @order = nil
+            
+            end # order
+          end # revision
+        
+        end # save
+        end # session[:order]
+      
+        format.html { render :action => goto }
       end
-    end
+    end # redirect_to new
   end
   
   def success
