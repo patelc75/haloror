@@ -238,6 +238,20 @@ class ReportingController < ApplicationController
     end    
   end
   
+  def strap_not_worn_data
+    @user_begin_time = params[:begin_time]
+    @user_end_time = params[:end_time]
+    user_id = params[:id]
+    @user = User.find(user_id)
+    if params[:begin_time]
+    	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+      	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
+        @strap_not_worn = StrapNotWorn.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id} and begin_time > '#{@begin_time}' and end_time < '#{@end_time}'", :order => "id desc") 
+    else
+    	@strap_not_worn = StrapNotWorn.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id}", :order => "id desc")
+    end
+  end
+  
   def init_successful_user_logins
     render :partial => 'init_successful_user_logins', :layout => true
   end

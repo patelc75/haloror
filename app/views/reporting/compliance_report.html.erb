@@ -99,7 +99,8 @@ end %>
   	    		<% @total_per = 0%>
 	    			<% @total_per = ((@strap_not_worn / (@end_time.to_time.to_f - @begin_time.to_time.to_f) ) * 100) if @strap_not_worn%>
 				<%= @total_per.round(1).to_s + '%' if @strap_not_worn%><br>
-				<%= [@strap_not_worn.round/3600, @strap_not_worn.round/60 % 60, @strap_not_worn.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @strap_not_worn %>	    		
+				<a href="/reporting/strap_not_worn_data/<%=user.id%>?begin_time=<%= params[:begin_time]%>&end_time=<%=params[:end_time]%>">
+				<%= [@strap_not_worn.round/3600, @strap_not_worn.round/60 % 60, @strap_not_worn.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @strap_not_worn %></a>   		
   	    	</td>
 
   	    	<!-- Lost Data -->
