@@ -5,7 +5,7 @@
 
 <div class="box <%= @one_time_fee.success? ? 'back-green' : 'back-orange' rescue 'back-orange' %>">  
   <% if @one_time_fee.blank? %>
-    <h3>Credit card charge failed</h3>
+    <h3>Credit card charge failed. Please check your credit card number carefully.</h3>
   <% else %>
     <h3>One time charge</h3>
     <p>
@@ -20,7 +20,7 @@
 
 <div class="box <%= @subscription.success? ? 'back-green' : 'back-orange' rescue 'back-orange' %>">
   <% if @subscription.blank? %>
-    <h3>Subscription failed</h3>
+    <h3>Subscription failed. Please check your credit card number carefully.</h3>
   <% else %>
     <h3>Subscription charges (begins after 3 months from the date of purchase)</h3>
     <p>
@@ -33,5 +33,5 @@
 </div>
 
 <p class="box back-grey">
-  Please attempt to <%= link_to 'order again', {:controller => 'orders', :action => 'new'}, :class => '' %>
+  Please attempt to <%= link_to 'order again', {:controller => 'orders', :action => 'new'}, :class => 'largebutton' %>
 </p>
