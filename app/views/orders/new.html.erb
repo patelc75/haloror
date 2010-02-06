@@ -2,7 +2,6 @@
 <h1>Please verify your order</h1>
 <% end %>
 <% unless @confirmation %>
-  <% if session[:order].blank? %>
     <% content_for :js do %>
       <%= javascript_include_tag "facebox/facebox.js" %>
       <%= javascript_include_tag "validation.js" %>
@@ -11,7 +10,6 @@
     <% content_for :css do %>
       <%= stylesheet_link_tag "facebox/facebox.css" %>
     <% end -%>
-  <% end -%>
 <% end -%>
 
 <% flash.each do |type| %>
@@ -98,42 +96,42 @@
       </tr>
     </table>
   </fieldset>
-  <br><br>
+  <br /><br />
 	<fieldset style="border: 2px solid; padding: 10px;">   		 
     <legend>Billing and Shipping<%= ' Summary' if @confirmation %></legend>
     <table width="100%">
       <tr align="left">
-        <th style="vertical-align: top;" width="33%">
+        <th width="33%">
           Shipping address
         </th>
         
-        <th style="vertical-align: top;" width="33%">
+        <th width="33%">
           Billing address
         </th>
         
-        <th style="vertical-align: top;">
+        <th>
           Payment method
         </th>
       </tr>
       
       <tr>
-        <td>
+        <td width="33%">
           <%= f.check_box "halouser", :disabled => @confirmation %>
           <label>Also myHalo user</label>
         </td>
-        <td>
+        <td width="33%">
           <%= f.check_box "bill_address_same", :checked => "#{@same_address}", :disabled => @confirmation %>
           <label>Same as shipping</label>
           <%= observe_field(:order_bill_address_same,
-                            :on => :click,
-                            :function => "toggleDiv('billing_block');"
+                            :frequency => 1,
+                            :function => "if (document.getElementById('order_bill_address_same').checked) { hideDiv('billing_block'); } else { showDiv('billing_block'); }"
                             ) %>
         </td>
         <td>&nbsp;</td>
       </tr>
       
       <tr>
-      <td>
+      <td style="vertical-align: top;">
         <p>
           <label>First name, Last name</label><br />
           <%= f.text_field "ship_first_name", :class => "required validate-alpha", :disabled => @confirmation %> 
@@ -169,7 +167,7 @@
         </p>
       </td>
       
-      <td>
+      <td style="vertical-align: top;" width="33%">
         <div id="billing_block" style="margin-left: 5px; display: <%= (@confirmation && @same_address == '') ? 'block' : 'none' %>; margin: 0px; padding: 0px;">
           <p>
             <label>First name, Last name</label><br />
@@ -207,7 +205,7 @@
         </div>
       </td>
       
-      <td>
+      <td style="vertical-align: top;">
         <p>
           <label>Card number</label><br />
           <%= f.text_field "card_number", :class => "required validate-card", :size => 20, :disabled => @confirmation %>
@@ -230,7 +228,7 @@
         </p>
         <span class="hint">Note: The CSC is located on the back of <%= link_to "MasterCard, VISA, or Discover", image_path("CVC2SampleVisaNew.png"), :rel => "facebox" %> cards and is typically a separate group of 3 digits to the right of signature strip. On <%= link_to "American Express", image_path("CIDSampleAmex.png"), :rel => "facebox" %> cards, the CSC is a 4 digit code on the front towards the right.</span>
         <p>
-          <label>Comments and special shipping instructions</label>
+          <label>Comments and special shipping instructions</label><br />
           <%= f.text_area "comments", :rows => 5, :disabled => @confirmation %>
         </p>
         <% #= recaptcha_tags %>
@@ -239,25 +237,26 @@
     </table>
   </fieldset>
   <p class="textright">
-    <%= link_to "< Back", "#", :class => 'largebutton', :onclick => "history.back();" if @confirmation %>
+    <%= link_to "< Back", "#", :class => 'largebutton', :onclick => "history.go(-1);" if @confirmation %>
     <%= f.submit "#{@confirmation ? 'Place Order >' : 'Continue >'}", :class => 'largebutton' %>
   </p>
 <% end -%>
 
 
-<script type="text/javascript" charset="utf-8">
+<script type="text/javascript" charset="utf-8">  
+  // javasript form validation
+  //
   new Validation('form1', {immediate : true});
-</script>
-
-<script type="text/javascript" charset="utf-8">
-  // var f = document.forms[0];
+  
+  // data entry masking
+  //
   MaskInput(document.getElementById("order_card_number"), "9999999999999999");
   MaskInput(document.getElementById("order_card_csc"), "9999");
   MaskInput(document.getElementById("order_bill_zip"), "999999");
   MaskInput(document.getElementById("order_ship_zip"), "999999");
-</script>
 
-<script type="text/javascript" charset="utf-8">
+  // hide, show elements
+  //
   function toggleDiv(what)
   {
     found = document.getElementById(what);

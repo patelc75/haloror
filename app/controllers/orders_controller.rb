@@ -28,8 +28,7 @@ class OrdersController < ApplicationController
       @order = Order.new(session[:order])
       
     else # store mode
-      reset_session # start fresh
-      @order = Order.new
+      @order ||= (session[:order].blank? ? Order.new : Order.new(session[:order]))
     end
     
     respond_to do |format|
@@ -38,21 +37,24 @@ class OrdersController < ApplicationController
   end
 
   def create
-    @order = Order.new(session[:order]) # pick from session, not params
-    if @order.bill_address_same == "1"
-      @order.bill_first_name = @order.ship_first_name
-      @order.bill_last_name = @order.ship_last_name
-      @order.bill_address = @order.ship_address
-      @order.bill_city = @order.ship_city
-      @order.bill_state = @order.ship_state
-      @order.bill_zip = @order.ship_zip
-      @order.bill_email = @order.ship_email
-      @order.bill_phone = @order.ship_phone
-    end
-    @group = Group.find_or_create_by_name("direct_to_consumer")
-    @order.group_id = @group.id if !@group.nil?
-
+    goto = "new"
     respond_to do |format|
+      unless session[:order].blank?
+      
+      @order = Order.new(session[:order]) # pick from session, not params
+      if @order.bill_address_same == "1"
+        @order.bill_first_name = @order.ship_first_name
+        @order.bill_last_name = @order.ship_last_name
+        @order.bill_address = @order.ship_address
+        @order.bill_city = @order.ship_city
+        @order.bill_state = @order.ship_state
+        @order.bill_zip = @order.ship_zip
+        @order.bill_email = @order.ship_email
+        @order.bill_phone = @order.ship_phone
+      end
+      @group = Group.find_or_create_by_name("direct_to_consumer")
+      @order.group_id = @group.id if !@group.nil?
+
       # verify re-CAPTCHA and save order
       #
       if @order.save #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
@@ -67,28 +69,36 @@ class OrdersController < ApplicationController
           elsif session[:product] == "complete"
             @order.order_items.create!(:cost => 59, :quantity => 1, :recurring_monthly => true)              
           end
+          
           Order.transaction do
             @one_time_fee = @order.charge_one_time_fee # variables used in failure if that happens
-            if @one_time_fee.success?
+            if !@one_time_fee.blank? && @one_time_fee.success?
               @subscription = @order.charge_subscription(session[:product] == "complete" ? 5900 : 4900) # cents
               success = @subscription.success? unless @subscription.blank? # ramonrails: true = incorrect logic. subscription can fail for some gateway reason
             end
             
             if success.blank? || !success
-              format.html { render :action => 'failure' }
+              goto = "failure"
+              # format.html { render :action => 'failure' }
             else
-              flash[:notice] = 'Thank you for your order.'
-              format.html { render :action => 'success' }              
               UserMailer.deliver_signup_installation(@order.ship_email,:exclude_senior_info)   
-              UserMailer.deliver_signup_installation(@order.bill_email,:exclude_senior_info) if @order.bill_address_same != "1"
+              UserMailer.deliver_signup_installation(@order.bill_email,:exclude_senior_info)
               UserMailer.deliver_order_summary(@order, @order.bill_email) #goes to @order.bill_email
               UserMailer.deliver_order_summary(@order, "senior_signup@halomonitoring.com", :no_email_log) #do not send to email_log@halo
+              reset_session # start fresh
+              @order = nil
+              flash[:notice] = 'Thank you for your order.'
+              goto = "success"
+              # format.html { render :action => 'success' }
             end
-          end
-        end
-      else
-        format.html { render :action => "new" }
-      end
+            
+          end # order
+        end # revision
+        
+      end # save
+      end # session[:order]
+      
+      format.html { render :action => goto }
     end
   end
   
