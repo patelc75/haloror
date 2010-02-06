@@ -42,16 +42,17 @@ class OrdersController < ApplicationController
       unless session[:order].blank?
       
       @order = Order.new(session[:order]) # pick from session, not params
-      if @order.bill_address_same == "1"
-        @order.bill_first_name = @order.ship_first_name
-        @order.bill_last_name = @order.ship_last_name
-        @order.bill_address = @order.ship_address
-        @order.bill_city = @order.ship_city
-        @order.bill_state = @order.ship_state
-        @order.bill_zip = @order.ship_zip
-        @order.bill_email = @order.ship_email
-        @order.bill_phone = @order.ship_phone
-      end
+      @order.populate_billing_address
+      # if @order.bill_address_same == "1"
+      #   @order.bill_first_name = @order.ship_first_name
+      #   @order.bill_last_name = @order.ship_last_name
+      #   @order.bill_address = @order.ship_address
+      #   @order.bill_city = @order.ship_city
+      #   @order.bill_state = @order.ship_state
+      #   @order.bill_zip = @order.ship_zip
+      #   @order.bill_email = @order.ship_email
+      #   @order.bill_phone = @order.ship_phone
+      # end
       @group = Group.find_or_create_by_name("direct_to_consumer")
       @order.group_id = @group.id if !@group.nil?
 
@@ -85,12 +86,12 @@ class OrdersController < ApplicationController
               UserMailer.deliver_signup_installation(@order.bill_email,:exclude_senior_info)
               UserMailer.deliver_order_summary(@order, @order.bill_email) #goes to @order.bill_email
               UserMailer.deliver_order_summary(@order, "senior_signup@halomonitoring.com", :no_email_log) #do not send to email_log@halo
-              reset_session # start fresh
-              @order = nil
               flash[:notice] = 'Thank you for your order.'
               goto = "success"
               # format.html { render :action => 'success' }
             end
+            reset_session # start fresh
+            @order = nil
             
           end # order
         end # revision

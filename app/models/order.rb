@@ -3,7 +3,6 @@ class Order < ActiveRecord::Base
   belongs_to :creator, :class_name => 'User', :foreign_key => 'created_by'
   belongs_to :updater, :class_name => 'User', :foreign_key => 'updated_by'
   attr_accessor :card_csc, :product, :bill_address_same
-#  validate_on_create :validate_card
   
   # order number : YYYYMMDD-id
   #
@@ -53,11 +52,16 @@ class Order < ActiveRecord::Base
     )
   end
   
-  # def validate_card
-  #   unless credit_card.valid?
-  #     credit_card.errors.full_messages.each do |message|
-  #       errors.add_to_base message
-  #     end
-  #   end
-  # end
+  def populate_billing_address
+    if bill_address_same == "1"
+      bill_first_name = ship_first_name
+      bill_last_name = ship_last_name
+      bill_address = ship_address
+      bill_city = ship_city
+      bill_state = ship_state
+      bill_zip = ship_zip
+      bill_email = ship_email
+      bill_phone = ship_phone
+    end
+  end
 end
