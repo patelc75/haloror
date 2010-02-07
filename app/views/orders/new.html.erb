@@ -123,7 +123,7 @@
           <%= f.check_box "bill_address_same", :checked => "#{@same_address}", :disabled => @confirmation %>
           <label>Same as shipping</label>
           <%= observe_field(:order_bill_address_same,
-                            :frequency => 1,
+                            :on => :click,
                             :function => "if (document.getElementById('order_bill_address_same').checked) { hideDiv('billing_block'); } else { showDiv('billing_block'); }"
                             ) %>
         </td>
@@ -243,7 +243,14 @@
 <% end -%>
 
 
-<script type="text/javascript" charset="utf-8">  
+<script type="text/javascript" charset="utf-8">
+  // billing address bug fix. frequency was not triggering it on back()
+  //
+  if (document.getElementById('order_bill_address_same').checked) { 
+    hideDiv('billing_block');
+  } else {
+    showDiv('billing_block');
+  }
   // javasript form validation
   //
   new Validation('form1', {immediate : true});

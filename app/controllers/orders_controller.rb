@@ -11,7 +11,7 @@ class OrdersController < ApplicationController
   def new
     @confirmation = false
     @product = ""
-    @same_address = "checked"
+    @same_address ||= "checked"
     
     if request.post? # confirmation mode
       @confirmation = true # simpler than checking session[:order]
