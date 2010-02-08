@@ -39,8 +39,14 @@
 	      <%  if @kit_serial_number %>
 	        <%= link_to "Enter CS and GW serial numbers for #{@kit_serial_number.serial_number}",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> 
 	      <%else%>
-	       <%= link_to "Enter CS and GW serial numbers",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> 
+	       <%= link_to "Enter CS and GW serial numbers",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> |
 	      <%end%>
+	    <%end%>
+	    <% if @roles_users_option %>
+	      <%= link_to "Resend Caregiver Email",:controller => 'profiles',:action => 'resend_mail',:id => @user.id,:roles_user_id => params[:roles_user_id]%>
+	    <%end%> 
+	    <%if !@user.created_by.nil?%>
+	      Added By <%= @user.creator.name%>
 	    <%end%>
       <%# form_tag :action => 'create' do -%>
 		<% form_tag(:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]) do %>

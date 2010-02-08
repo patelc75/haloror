@@ -79,6 +79,12 @@ class ProfilesController < ApplicationController
     end
   end
 
+  def resend_mail
+  	@roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
+  	User.resend_mail(params[:id],@roles_users_option.roles_user.role.authorizable_id)
+  	redirect_to request.env['HTTP_REFERER']
+  end
+
   def edit_caregiver_profile
     @profile = Profile.find(params[:id], :include => :user)
     @group_id = params[:group_id]

@@ -697,6 +697,14 @@ class User < ActiveRecord::Base
     @user
   end
   
+  def self.resend_mail(id,senior)
+  	@user = User.find(id)
+  	@user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+  	@user.save
+  	@senior = User.find(senior)
+  	UserMailer.deliver_caregiver_email(@user, @senior)
+  end
+  
   def self.get_max_caregiver_position(user)
     #get_caregivers(user)
     #@caregivers.size + 1  #the old method would not work if a position num was skipped
