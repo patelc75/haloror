@@ -11,7 +11,6 @@ class OrdersController < ApplicationController
   def new
     @confirmation = false
     @product = ""
-    @same_address ||= "checked"
     
     if request.post? # confirmation mode
       @confirmation = true # simpler than checking session[:order]
@@ -23,11 +22,11 @@ class OrdersController < ApplicationController
       @same_address = (temp_order[:bill_address_same] == "1" ? "checked" : "")
       session[:order] = temp_order
       session[:product] = @product # same as params[:product]. Will be used later in create
-      # session[:card_csc] = params[:other][:card_csc] # card CSC
       # session[:bill_address_same] = params[:billing][:same_as_shipping]
       @order = Order.new(session[:order])
       
     else # store mode
+      @same_address ||= (session[:order].blank? ? "checked" : session[:order][:bill_address_same])
       @order ||= (session[:order].blank? ? Order.new : Order.new(session[:order]))
     end
     
