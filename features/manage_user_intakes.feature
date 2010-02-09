@@ -16,11 +16,7 @@ Feature: Manage user_intakes
      When I click "Add as #1 Caregiver"
   	  And I click "Email" 
       And I press "Submit"
+      And I go to call list for user "user"
   	 Then user "user" should have "halouser" role
-  	  And user "separateuser" should have "subscriber" role for the "halouser" user
-  	  And user "subscriber" should have "caregiver" role for the "halouser" user
-  	  And user "subscriber" should have email toggled for "halouser" user
-
-      # not sure what this scenario meant. too many checks in one statement
-      #
-	    # And the email toggle in the User for "caregiver" role User in caregiver table for the "halouser" should show the email toggled
+  	  And user "separateuser" should have "subscriber, caregiver" roles for the "halouser" user
+  	  And user "separateuser" should have email toggled for "halouser" user
