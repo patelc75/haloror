@@ -137,8 +137,8 @@ class ManagementController < ApplicationController
         @flag = false
         @flag = true unless request[:local_primary].blank?
         @flag = true unless request[:local_secondary].blank?
-        @flag = true unless request[:global_primary].blank? and params[:global_default]
-        @flag = true unless request[:global_secondary].blank? and params[:global_alt_default]
+        @flag = true if not request[:global_primary].blank? and params[:global_default]
+        @flag = true if not request[:global_secondary].blank? and params[:global_alt_default]
         
         if request[:cmd_type] == 'dial_up_num_glob_prim' and @flag == true
           cmd[:param1] = request[:local_primary] unless request[:local_primary].blank?
@@ -149,7 +149,7 @@ class ManagementController < ApplicationController
           glob_alt = DialUp.find(:first,:conditions => "dialup_type = 'Global' and order_number = '2'")
           cmd[:param4] = glob_alt.phone_number if params[:global_alt_default] and glob_alt
           cmd[:param4] = request[:global_secondary] unless request[:global_secondary].blank? and params[:global_alt_default]
-        else
+        elsif request[:cmd_type] == 'dial_up_num_glob_prim' and @flag == false
           @success = false
           @message = 'Please Select at least one dialup number' 
         end
