@@ -2,7 +2,7 @@
 <p><%= flash[:warning] %></p>
 <p><%= error_messages_for :system_timeout %></p>
 <form action="/system_timeouts/update" method="post">
-  <input type="hidden" name="id" value="<%= @system_timeout.id %>"
+  <input type="hidden" name="id" value="<%= @system_timeout.id %>">
 <table>
   <tr>
     <th>ID</th><th>Mode</th>
