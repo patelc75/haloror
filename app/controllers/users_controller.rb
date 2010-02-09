@@ -486,7 +486,7 @@ class UsersController < ApplicationController
   	debugger
   	@senior = senior if senior != nil
   @roles_users_option = RolesUsersOption.find_by_roles_user_id(@senior.roles_user_by_caregiver(caregiver).id)
-  @roles_users_option.is_keyholder = roles_users_option[:is_keyholder] = '1'? true:false
+  @roles_users_option.is_keyholder = roles_users_option[:is_keyholder] == '1'? true:false
   @roles_users_option.phone_active = roles_users_option[:phone_active] == '1'? true:false
   @roles_users_option.email_active = roles_users_option[:email_active] == '1'? true:false
   @roles_users_option.text_active = roles_users_option[:text_active] == '1'? true:false

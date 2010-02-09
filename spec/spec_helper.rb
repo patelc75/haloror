@@ -1,11 +1,16 @@
 # This file is copied to ~/spec when you run 'ruby script/generate rspec'
 # from the project root directory.
-ENV["RAILS_ENV"] ||= "test"
-IS_RANDOM=true
-require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
-require 'spec'
+ENV["RAILS_ENV"] ||= 'test'
+require File.expand_path(File.join(File.dirname(__FILE__),'..','config','environment'))
+require 'spec/autorun'
 require 'spec/rails'
-require 'digest'
+
+# Uncomment the next line to use webrat's matchers
+#require 'webrat/integrations/rspec-rails'
+
+# Requires supporting files with custom matchers and macros, etc,
+# in ./support/ and its subdirectories.
+Dir[File.expand_path(File.join(File.dirname(__FILE__),'support','**','*.rb'))].each {|f| require f}
 
 Spec::Runner.configure do |config|
   # If you're not using ActiveRecord you should remove these
@@ -14,7 +19,7 @@ Spec::Runner.configure do |config|
   config.use_transactional_fixtures = true
   config.use_instantiated_fixtures  = false
   config.fixture_path = RAILS_ROOT + '/spec/fixtures/'
-  
+
   # == Fixtures
   #
   # You can declare fixtures for each example_group like this:
@@ -30,175 +35,20 @@ Spec::Runner.configure do |config|
   # If you declare global fixtures, be aware that they will be declared
   # for all of your examples, even those that don't use them.
   #
+  # You can also declare which fixtures to use (for example fixtures for test/fixtures):
+  #
+  # config.fixture_path = RAILS_ROOT + '/spec/fixtures/'
+  #
   # == Mock Framework
   #
-  # RSpec uses it's own mocking framework by default. If you prefer to
+  # RSpec uses its own mocking framework by default. If you prefer to
   # use mocha, flexmock or RR, uncomment the appropriate line:
   #
   # config.mock_with :mocha
   # config.mock_with :flexmock
   # config.mock_with :rr
-end
-#CONSTANTS
-CAREGIVER1='test_caregiver1'
-CAREGIVER2='test_caregiver2'
-OPERATOR='test_operator'
-USER='chirag'
-HALO_GATEWAY='Gateway'
-HALO_CHEST_STRAP='Chest Strap'
-SITE_URL = "localhost:3000"
-BEGIN_CURL='curl -v -H "Content-Type: text/xml" -d '
-CLAZZES = [BatteryChargeComplete, BatteryPlugged, BatteryUnplugged, BatteryCritical, StrapFastened, StrapRemoved, Vital]
-
-def get_bundled_curl_cmd(models)
-  curl_cmd = BEGIN_CURL 
-  curl_cmd += '"'
-  
-  user = get_user
-  device = get_device(user)
-  gateway = get_gateway(user)
-  ts = Time.now
-  auth = generate_auth(ts, gateway.id)
-  
-  curl_cmd += '<bundle><timestamp>'
-  curl_cmd += ts.strftime("%a %b %d %H:%M:%S -0600 %Y")
-  curl_cmd += '</timestamp>'
-  models.each do |model|    
-    curl_cmd += get_xml(user.id, device.id, ts, model)
-  end
-  curl_cmd += '</bundle>" "http://'
-  curl_cmd += SITE_URL
-  curl_cmd += '/bundle?gateway_id=' + gateway.id.to_s  
-  curl_cmd += '&auth=' + auth
-  curl_cmd += '"'
-  puts curl_cmd
-  return curl_cmd
-end
-def setup_model(model)
-  user = get_user
-  device = get_device(user)
-  ts = Time.now
-  if model.respond_to? :user_id
-    model.user_id = user.id
-  end
-  if model.respond_to? :device_id
-    model.device_id = device.id
-  end
-  set_timestamp(ts, model)
-  return user, device, ts
-end
-def get_curl_cmd(model)  
-  user, device, ts = setup_model(model)
-  puts user.inspect
-  gateway = get_gateway(user)  
-  auth = generate_auth(ts, gateway.id)
-  
-  curl_cmd = BEGIN_CURL 
-  curl_cmd += '"'
-  curl_cmd += get_xml(user.id, device.id, ts, model)
-  curl_cmd += '" "http://'
-  curl_cmd += SITE_URL
-  curl_cmd += '/'
-  curl_cmd += get_model_url(model)
-  curl_cmd += '?gateway_id=' + '0'
-  curl_cmd += '&auth=' + auth
-  curl_cmd += '"'
-  return curl_cmd
-end
-
-def get_curl_cmd_for_ack(model, type)
-  user, device, ts = setup_model(model)
-  gateway = get_gateway(user)
-  auth = generate_auth(ts, gateway.id)
-  
-  curl_cmd = BEGIN_CURL 
-  curl_cmd += '"<management_ack_device><device_id>'
-  curl_cmd += device.id.to_s
-  curl_cmd += '</device_id><cmd_type>'
-  curl_cmd += type
-  curl_cmd += '</cmd_type><timestamp>'
-  curl_cmd += ts.strftime("%a %b %d %H:%M:%S -0600 %Y")
-  curl_cmd += '</timestamp></management_ack_device>" "http://'
-  curl_cmd += SITE_URL
-  curl_cmd += '/'
-  curl_cmd += get_model_url(model)
-  curl_cmd += '?gateway_id=' + '0' + '&auth=' + auth + '"'
-  return curl_cmd
-end
-def get_user
-  User.find_by_login(USER)
-end
-
-def get_device(user)
-  #user.devices.find(:first, :conditions => "device_types.device_type = '#{HALO_CHEST_STRAP}'")
-  user.devices.each do |device|
-  	if device.device_type_object('#{HALO_CHEST_STRAP}')
-  		device_type = device.device_type_object('#{HALO_CHEST_STRAP}')
-  		return device_type
-  	end
-  end
-  
-end
-
-def get_gateway(user)
-  #user.devices.find(:first, :conditions => "device_type = '#{HALO_GATEWAY}'")
-  user.devices[0].device_type
-	user.devices.each do |device|
-  	if device.device_type_object('#{HALO_GATEWAY}')
-  		device_type = device.device_type_object('#{HALO_GATEWAY}')
-   		return device_type
-  	end
-  end
-
-end
-
-def set_timestamp(timestamp, model)
-  if model.respond_to? :timestamp
-    model.timestamp = timestamp
-    model.timestamp
-  elsif model.respond_to? :begin_timestamp
-    model.begin_timestamp = timestamp
-    model.begin_timestamp
-  elsif model.respond_to? :timestamp_device
-    model.timestamp_device = timestamp
-    model.timestamp_device
-  end
-end
-#.strftime("%a %b %d %H:%M:%S -0600 %Y")
-def generate_auth(timestamp, gateway_id)
-	require 'digest/sha2'
-  ts = timestamp.strftime("%a %b %d %H:%M:%S -0600 %Y")
-  Hash::XML_FORMATTING['datetime'] = Proc.new { |datetime| 
-    datetime.strftime("%a %b %d %H:%M:%S -0600 %Y") } 
-     #serial_number = Device.find_by_device_revision_id(gateway_id).serial_number
-    serial_number = Device.find_by_device_revision_id(2).serial_number
-  
-  serial_number.strip!
-  sn = "#{ts}#{serial_number}"
-  puts sn
-  return Digest::SHA256.hexdigest(sn)
-end
-
-def get_xml(user_id, device_id, timestamp, model)
-  if model.respond_to? :user_id
-    model.user_id = user_id
-  end
-  if model.respond_to? :device_id
-    model.device_id = device_id
-  end
-  set_timestamp(timestamp, model)
-  xml = ""
-  if model.class == MgmtQuery
-    xml = "<management_query_device><timestamp>#{timestamp.strftime("%a %b %d %H:%M:%S -0600 %Y")}</timestamp><device_id>#{model.device_id}</device_id><poll_rate>#{model.poll_rate}</poll_rate></management_query_device>"
-  else
-    xml = model.to_xml(:dasherize => false, :skip_instruct => true, :skip_types => true)
-  end
-  xml.gsub!("\n", '')
-  xml.gsub!("nil=\"true\"", '')
-  puts xml
-  return xml
-end
-
-def get_model_url(model)
-  return model.class.to_s.pluralize.underscore
+  #
+  # == Notes
+  #
+  # For more information take a look at Spec::Runner::Configuration and Spec::Runner
 end

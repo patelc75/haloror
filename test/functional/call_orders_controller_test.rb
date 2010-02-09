@@ -1,5 +1,5 @@
 require File.dirname(__FILE__) + '/../test_helper'
-require 'call_orders_controller'
+# require 'call_orders_controller'
 
 # Re-raise errors caught by the controller.
 class CallOrdersController; def rescue_action(e) raise e end; end
