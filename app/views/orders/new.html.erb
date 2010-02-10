@@ -36,7 +36,7 @@
             <% if @confirmation.blank? || (@product == "clip") %>
             <tr>
               <td><%= radio_button_tag "product", "clip" unless @confirmation %> myHalo Clip ($49/mo)</td>
-              <td><%= image_tag 'myhalo-belt-clip.gif' %></td>
+              <td><%= image_tag 'myhalo-belt-clip.jpg' %></td>
               <%= observe_field(:product_clip,
                                 :frequency => 1,
                                 :function => "toggleProductDetails();"
