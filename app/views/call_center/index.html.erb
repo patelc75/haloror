@@ -101,21 +101,15 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
         
       <div class="col-150" id="false_alarm_<%=event.id%>">
       	<% if action = event.false_alarm? %>
-		  <b>False Alarm</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
+		  <%= render :partial => 'false_alarm',:locals => {:event => event}%>
 		<% elsif action = event.real_alarm? %>
-		  <b>Real Alarm</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
+		  <%= render :partial => 'real_alarm',:locals => {:event => event}%>
       	<% elsif action = event.test_alarm? %>
-		  Marked <b>Test</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>		  
+      	  <%= render :partial => 'test_alarm',:locals => {:event => event}%>
 		<% elsif action = event.non_emerg_panic? %>
-		  <b>Non Emergency Panic</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
+          <%= render :partial => 'non_emerg_panic',:locals => {:event => event}%>
 		<% else %>
-		  Mark as <%= link_to_remote "False Alarm", :update => "false_alarm_#{event.id}", :url => {:action => "false_alarm", :id => event.id} %> or
-		  <%= link_to_remote "Test", :update => "false_alarm_#{event.id}", :url => {:action => "test_alarm", :id => event.id} %> or 
-		  <%= link_to_remote "Real", :update => "false_alarm_#{event.id}", :url => {:action => "real_alarm", :id => event.id} %>
-		  <% if event.event_type == 'Panic' %>
-		   or
-		  <%= link_to_remote "Non emergency Panic", :update => "false_alarm_#{event.id}", :url => {:action => "non_emerg_panic", :id => event.id} %>
-		  <% end %>
+		  <%= render :partial => 'mark_event',:locals => {:event => event}%>
 		<% end %>
       </div>
       <div class="col-125" id="div_<%= event.id.to_s%>">

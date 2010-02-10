@@ -6,6 +6,7 @@ tmp/*
 doc/api
 doc/app
 coverage
+rerun.txt
 db/*.sqlite3
 config/database.yml
 public/stylesheets/cache

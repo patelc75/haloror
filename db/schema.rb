@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100203184903) do
+ActiveRecord::Schema.define(:version => 20100204171838) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -921,6 +921,8 @@ ActiveRecord::Schema.define(:version => 20100203184903) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "critical_event_delay_sec"
+    t.integer  "battery_reminder_two_sec"
+    t.integer  "battery_reminder_three_sec"
   end
 
   create_table "user_intakes", :force => true do |t|
@@ -932,6 +934,7 @@ ActiveRecord::Schema.define(:version => 20100203184903) do
     t.boolean  "credit_debit_card_proceessed"
     t.boolean  "bill_monthly"
     t.string   "kit_serial_number"
+    t.integer  "order_id"
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|
