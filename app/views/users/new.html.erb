@@ -42,13 +42,13 @@
         	<%else%>
         	<input type="hidden" name="group" value="<%= @groups[0].name %>">
         	<%end%>
-            <span id="profile_top" style="display:none">
+            <span id="profile_top" <% if @groups.length > 1 %>style="display:none" <%end%>>
 		    <%= render :partial => '/profiles/profile_top' %> 
 		    </span>
 		  </div>
 		  	 
 		  <div class="col-250">
-		  	<span id="profile_bottom" style="display:none">
+		  	<span id="profile_bottom" <% if @groups.length > 1 %>style="display:none"<%end%>>
 		  	<%= render :partial => '/profiles/profile_bottom' %>
 		  	
 		  	<%#= render :partial => '/profiles/profile_halousers_only' %>
