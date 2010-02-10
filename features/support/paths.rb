@@ -11,7 +11,7 @@ module NavigationHelpers
     when /the home\s?page/
       '/'
     when /new user_intake page/
-      new_user_intake_path
+      user_intake_form_path
       
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

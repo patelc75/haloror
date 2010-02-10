@@ -14,3 +14,4 @@ public/javascripts/cache
 log/lsws
 db/schema.rb
 dialup
+webrat-*

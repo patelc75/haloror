@@ -27,3 +27,5 @@ config.gem 'rspec-rails',      :lib => 'spec/rails', :version => '>=1.3.2' unles
 config.gem 'rspec',            :lib => 'spec', :version => '>=1.3.0' unless File.directory?(File.join(Rails.root, 'vendor/plugins/rspec'))
 config.gem 'cucumber'
 config.gem 'cucumber-rails',   :lib => 'cucumber/rails', :version => '>=0.2.4' unless File.directory?(File.join(Rails.root, 'vendor/plugins/cucumber-rails'))
+config.gem "faker"
+config.gem "factory_girl"
