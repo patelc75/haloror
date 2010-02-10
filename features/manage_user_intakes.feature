@@ -5,7 +5,8 @@ Feature: Manage user_intakes
   
   Scenario: Submit new user_intake with billing same as user
     Given I am on the new user_intake page
-  	 When I click "Same As User" 
+  	 When I select "halo" from "group"
+  	  And I check "same_as_user" 
       And I press "Submit"
   	 Then user "user" should have "halouser" role
   	  And user "halouser" should have "subscriber" role for the "halouser" user

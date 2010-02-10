@@ -47,14 +47,14 @@ class UserStoriesTest < ActionController::IntegrationTest
   
   
     
- puts " ////////////////////////////////////////"
-  puts" please check whether you received eight emails in https://mail.google.com/a/halomonitoring.com . "
-  puts" User Name: test_caregiver1 "
-  puts" Password : test_caregiver1 "
-  puts "Please also check you received eight emails in another account with "
-  puts" User Name: test_user"
-  puts" Password : test_user"
-  puts" ///// The End /////// Part 2 is coming soon "
+ # puts " ////////////////////////////////////////"
+ #  puts" please check whether you received eight emails in https://mail.google.com/a/halomonitoring.com . "
+ #  puts" User Name: test_caregiver1 "
+ #  puts" Password : test_caregiver1 "
+ #  puts "Please also check you received eight emails in another account with "
+ #  puts" User Name: test_user"
+ #  puts" Password : test_user"
+ #  puts" ///// The End /////// Part 2 is coming soon "
  
   
 
