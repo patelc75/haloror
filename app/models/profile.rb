@@ -98,6 +98,8 @@ class Profile < ActiveRecord::Base
   	phone_number = phone.tr("/[A-Z]/[a-z]/",'')
   	if phone_number == phone
 	  phone.tr("-().","")  #.gsub(/[a-z]/,'').gsub(/[A-Z]/,'')
+    elsif phone.size == 10
+      phone + "invalid"
     else
       phone
     end
