@@ -13,6 +13,9 @@ module NavigationHelpers
     when /new user_intake page/
       user_intake_form_path
       
+    when /call list/
+      "call_list/show/#{current_user.id}"
+      
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
     #

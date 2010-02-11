@@ -114,7 +114,7 @@
 	  	<center><h3>Billing Information (Responsible Person)</h3></center>
 	  	<table width="100%">
           <tr>
-	        <td colspan="2"><input type="checkbox" name="same_as_user" <%unless @subscriber %>checked<%end%> onclick="show_form(this,'subscriber_form')">Same as User</td>
+	        <td colspan="2"><input type="checkbox" id="same_as_user" name="same_as_user" <%unless @subscriber %>checked<%end%> onclick="show_form(this,'subscriber_form')"><label for="same_as_user">Same as User</label></td>
           </tr>
 	  	</table>
 	  	<span id="subscriber_form" <%unless @subscriber %>style="display:none"<%end%>>
@@ -224,10 +224,10 @@
 	  <div style="border:2px solid;width:99.6%;height:40px;padding-top:10px;">
       	<center><h3>Caregiver Information (in order of notification)</h3></center>
       </div>
-	  <div style="float:left;width:33%;border-right:2px solid;border-left:2px solid;height:650px;">
+	  <div id="caregiver_1" style="float:left;width:33%;border-right:2px solid;border-left:2px solid;height:650px;">
         <table border="0" width="100%">
           <tr>
-	        <td colspan="2"><input type="checkbox" id="no_caregiver_1" name="no_caregiver_1" <%unless @caregiver1 %>checked <%end%><%if @add_as_caregiver%>disabled<%end%> onclick = "show_form(this,'caregiver1_form')">No Caregiver #1</td>
+	        <td colspan="2"><input type="checkbox" id="no_caregiver_1" name="no_caregiver_1" <%unless @caregiver1 %>checked <%end%><%if @add_as_caregiver%>disabled<%end%> onclick = "show_form(this,'caregiver1_form')"><label for="no_caregiver_1">No Caregiver #1</label></td>
           </tr>
         </table>
         <span id="caregiver1_form" <%unless @caregiver1 %>style="display:none"<%end%>>
@@ -331,7 +331,7 @@
           </tr>
 	      <tr>
 	        <td></td>
-	        <td><%= check_box :car1_roles_users_option, :email_active %> Email</td>
+	        <td><%= check_box :car1_roles_users_option, :email_active %> <label for="car1_roles_users_option_email_active">Email</label></td>
           </tr>
 	      <tr>
 	        <td></td>

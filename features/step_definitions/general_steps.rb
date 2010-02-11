@@ -82,6 +82,18 @@ When /^(?:|I )visit "([^\"]*)"$/ do |path|
   visit path
 end
 
+When /^I check "([^\"]*)" within "([^\"]*)"$/ do |name, scope_name|
+  within scope_name do |scope|
+    scope.check name
+  end
+end
+
+When /^I uncheck "([^\"]*)" within "([^\"]*)"$/ do |name, scope_name|
+  within scope_name do |scope|
+    scope.uncheck name
+  end
+end
+
 # Thens
 
 Then /^I should see the following (.+):$/ do |model, expected_table|
