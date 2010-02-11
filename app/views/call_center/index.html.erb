@@ -26,14 +26,14 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
     <div class="col-125">
       Timestamp<br>Server
     </div>
-    <div class="col-150">
+    <div class="col-125">
       Name
     </div>
     <% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
-    <div class="col-75">
+    <div class="col-50">
       Chart
     </div>
-    <div class="col-75">
+    <div class="col-50">
       Notes
     </div>
     <% end %>
@@ -43,6 +43,9 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
     <% if current_user.is_super_admin? %>
       <div class="col-125">
         Call Center Response
+      </div>
+      <div class="col-125">
+        Average Response Time
       </div>
     <% end %>
   </div>
@@ -76,7 +79,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
           <!--%= UtilityHelper.format_datetime(event[:timestamp_server],current_user) %-->
         <% end %>
       </div>
-      <div class="col-150">
+      <div class="col-125">
       <% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
         <a href="/call_list/show/<%=event.user[:id]%>"><%=event.user.name%></a> (<%=event.user.id%>)
       <% else %>
@@ -84,10 +87,10 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       <% end %>
       </div>
       <% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
-      <div class="col-75">
+      <div class="col-50">
         <a target="_blank" href="/chart/flex/<%= event.user.id %>">Chart</a>
       </div>
-      <div class="col-75" id="false_test_<%=event.id %>">
+      <div class="col-50" id="false_test_<%=event.id %>">
         <%= link_to_remote '+', :update => "notes_#{event.id}", :url => {:action => 'toggle_note', :new_note => true, :event_id => event.id, :user_id => event.user.id }%>
         &nbsp;
         <%= link_to_remote '-', :update => "notes_#{event.id}", :url => {:action => 'toggle_note' }%>
@@ -132,6 +135,11 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
 :url => {:action => 'edit_call_center_response',:id => event.id })%>
 		<%= event.call_center_response.in_time_zone.to_s(:date_time_seconds)%>
 		<%end%>
+      </div>
+      <div class="col-125" id="div_response_<%= event.id.to_s%>">
+        <%unless event.call_center_response.nil?%>
+          <%= UtilityHelper.seconds_format(event.call_center_response.to_time - event.timestamp.to_time) %>
+        <%end%>
       </div>
         </div>
         <div id="notes_<%=event.id %>">

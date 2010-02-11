@@ -397,6 +397,7 @@ class CallCenterController < ApplicationController
   	@event.update_attributes(:call_center_response => params[:call_center_response])
     render :update do |page|
       page.replace_html 'div_' +@event.id.to_s, :partial => 'call_center_response'
+      page.replace_html 'div_response_' +@event.id.to_s, :partial => 'response_time'
     end
   end
   
@@ -411,6 +412,7 @@ class CallCenterController < ApplicationController
   	@event = Event.find(params[:id])
     render :update do |page|
       page.replace_html 'div_' +@event.id.to_s, :partial => 'edit_call_center_response'
+      page.replace_html 'div_response_' +@event.id.to_s, :partial => 'response_time'
     end
   end
   ###############################################
