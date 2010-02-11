@@ -1,3 +1,8 @@
+# general steps
+#
+
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "scopes"))
+
 # Givens
 
 Given /^debug$/ do
@@ -83,13 +88,13 @@ When /^(?:|I )visit "([^\"]*)"$/ do |path|
 end
 
 When /^I check "([^\"]*)" within "([^\"]*)"$/ do |name, scope_name|
-  within scope_name do |scope|
+  within scope_of(scope_name) do |scope|
     scope.check name
   end
 end
 
 When /^I uncheck "([^\"]*)" within "([^\"]*)"$/ do |name, scope_name|
-  within scope_name do |scope|
+  within scope_of(scope_name) do |scope|
     scope.uncheck name
   end
 end
