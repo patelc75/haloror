@@ -8,6 +8,7 @@ class CallCenterController < ApplicationController
   def index
     events_per_page = 25
     conditions = ''
+    
     if !current_user.is_super_admin?
       groups = current_user.group_memberships
       g_ids = []
@@ -22,6 +23,15 @@ class CallCenterController < ApplicationController
       conditions = "event_type = 'Fall' or event_type = 'Panic'"
     end
     @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => conditions, :per_page => events_per_page
+    
+    @user_begin_time = params[:begin_time]
+    @user_end_time = params[:end_time]
+    if !@user_end_time.blank? && !@user_begin_time.blank?
+    	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+    	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
+    	@events = Event.find(:all, :conditions => conditions)
+    	@events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => ["timestamp >= ? AND timestamp <= ? and id IN (?)", @begin_time, @end_time,@events], :per_page => events_per_page
+    end
   end 
   
   def faq

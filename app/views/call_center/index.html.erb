@@ -2,6 +2,17 @@
 <%=render :partial=>'/reporting/nav'%>
 
 <h2>Crtical Event Log</h2>
+  <form action="/call_center">
+  <table>
+    <tr><td>Begin Time (<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= Time.zone.name.split(/\s+/).first %>)</td></tr>
+    <tr>
+      <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
+      <td><%= calendar_date_select_tag "end_time", @user_end_time, :time => true, :popup => 'force' %></td>
+	  <td>&nbsp;<%= submit_tag "Submit" %></td>
+    </tr>
+  </table>
+  </form>
+  <br>
 All times are in <%= current_user.profile.time_zone if current_user.profile %> timezone <br>
 <div class="table">
   <div class="row header">
