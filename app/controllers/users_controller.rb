@@ -483,7 +483,6 @@ class UsersController < ApplicationController
   end
   
   def set_roles_users_option(caregiver,roles_users_option,senior=nil)
-  	debugger
   	@senior = senior if senior != nil
   @roles_users_option = RolesUsersOption.find_by_roles_user_id(@senior.roles_user_by_caregiver(caregiver).id)
   @roles_users_option.is_keyholder = roles_users_option[:is_keyholder] == '1'? true:false

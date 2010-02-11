@@ -29,6 +29,15 @@ Given /^the following (.+):$/ do |name, table|
   model.create!(table.hashes)
 end
 
+Given /^an? (.+) exists with the following attributes:$/ do |name, attrs_table|
+  attrs = {}
+  attrs_table.raw.each do |(attr, value)|
+    sanitized_attr = attr.gsub(/\s+/, "-").underscore
+    attrs[sanitized_attr.to_sym] = value
+  end
+  Factory.create(name.downcase.gsub(/ /,'_'), attrs)
+end
+
 Given /^(?:|a |an )existing (.+) with (.+) as "([^\"]*)"$/ do |name, col, value|
   model = if name.include?(' ')
     name.singularize.split(' ').collect(&:capitalize).join.constantize
@@ -79,7 +88,7 @@ Then /^I should see the following (.+):$/ do |model, expected_table|
   expected_table.diff!(tableish('table tr', 'td,th'))
 end
 
-Then /^(?:|page )content should have "([^\"]*)"$/ do |array_as_text|
+Then /^(?:|the )(?:|page )content should have "([^\"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect {|p| p.lstrip.rstrip}
   if defined?(Spec::Rails::Matchers)
     contents.each {|text| response.should contain(text)}
@@ -104,5 +113,4 @@ def authenticate(login, password)
   fill_in "username", :with => login
   fill_in "password", :with => password
   click_button "login"
-  response.body.should =~ /Prototype.swf/m
 end

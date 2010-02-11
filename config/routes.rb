@@ -61,7 +61,7 @@ ActionController::Routing::Routes.draw do |map|
   
   #user related models
   map.resources :profiles
-  map.resources :users, :sessions,:member => {:edit_user_intake_form => :any}#added automatically after running restful_authentication script
+  map.resources :users, :sessions,:member => {:edit_user_intake_form => :any} # added automatically after running restful_authentication script
   map.resources :user_intakes
   
   #deprecated models
@@ -89,6 +89,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resend '/installs/resend/:id',:controller => 'installs',:action => 'resend'
   map.support '/support',:controller => 'util',:action => 'support'
   map.user_intake_form '/user/user_intake_form',:controller => 'users',:action => 'user_intake_form'
+  map.user_intake_post '/user/user_intake_form',:controller => 'users',:action => 'user_intake_form', :method => :post
   map.order '/order', :controller => 'orders', :action => 'new'
   
   #map.resend '/resend/:id', :controller => 'installs', :action => 'resend'
