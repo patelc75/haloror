@@ -11,6 +11,7 @@ class CallCenterController < ApplicationController
     if !current_user.is_super_admin?
       groups = current_user.group_memberships
       g_ids = []
+      g_ids << 0
       groups.each do |group|
         g_ids << group.id if(current_user.is_admin_of?(group) || current_user.is_operator_of?(group))
       end
@@ -131,6 +132,12 @@ class CallCenterController < ApplicationController
     ea = action      
   	
     render :partial => 'non_emerg_panic', :locals => {:event => Event.find(params[:id])}
+  end
+  
+  def undo_action
+  	@event_action = EventAction.find_by_event_id(params[:id])
+  	@event_action.destroy
+  	render :partial => 'mark_event',:locals => {:event => Event.find(params[:id])}
   end
   
   def script_wizard

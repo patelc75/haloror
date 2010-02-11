@@ -1,6 +1,6 @@
 <% if action = event.non_emerg_panic? %>
 	<b>Non Emergency Panic</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
+	<%= render :partial => 'undo_action',:locals => {:event => event}%>
 <% else %>
-    Mark as <%=link_to_remote "False Alarm", :update => "#{event.id}_false_alarm", :url => { :action => "resolve", :id => event.id }%> or 
-	<%=link_to_remote "Test", :update => "#{event.id}_test_alarm", :url => { :action => "resolve", :id => event.id }%>
+    <%= render :partial => 'mark_event',:locals => {:event => event}%>
 <% end %>
