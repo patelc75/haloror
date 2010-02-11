@@ -4,7 +4,7 @@
 		My&nbsp;Links&nbsp;
 		<ul>
 			<li><%#=link_to_remote_redbox('My&nbsp;Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%>
-		<%=link_to('My Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id ,:user_id => current_user.id )%>
+		<%= link_to('My Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id ,:user_id => current_user.id ) unless current_user.profile.blank? %>
 				
 			</li>
 

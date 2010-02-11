@@ -10,6 +10,7 @@ class CallListController < ApplicationController
   def show
     number_ext
     session[:redirect_url] = request.env['REQUEST_URI']
+    debugger
     if(!params[:id].blank?)
       @user = User.find(params[:id])
       get_caregivers(@user)

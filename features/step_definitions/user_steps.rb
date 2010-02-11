@@ -3,9 +3,21 @@
 
 # Given
 
-Given /^user "([^\"]*)" has "([^\"]*)" role$/ do |user_name, role_name|
+Given /^a user "([^\"]*)" exists with profile$/ do |user_name|
+  profile = Factory.create(:profile)
+  profile.user = Factory.create(:user, :login => user_name)
+  profile.save
+  profile.user.activate
+end
+
+Given /^user "([^\"]*)" is activated$/ do |user_name|
+  User.find_by_login(user_name).activate
+end
+
+Given /^user "([^\"]*)" has "([^\"]*)" role(?:|s)$/ do |user_name, role_name|
   user = User.find_by_login(user_name)
-  user.has_role role_name.gsub(/ /,'_')
+  roles = role_name.split(',').collect {|p| p.lstrip.rstrip.gsub(/ /,'_')}
+  roles.each {|role| user.has_role role}
 end
 
 # When
@@ -19,7 +31,7 @@ end
 # roles pattern can be: "caregiver", "caregiver, user, halouser"
 # role(s) can be used singular or plural
 #
-Then /^user "([^\"]*)" should have "([^\"]*)" role(?:|s) for "([^\"]*)" user$/ do |user_name, role_name, for_user_name|
+Then /^user "([^\"]*)" should have "([^\"]*)" role(?:|s) for user "([^\"]*)"$/ do |user_name, role_name, for_user_name|
   user = User.find_by_login(user_name)
   for_user = User.find_by_login(for_user_name)
   ((role_name.split(',').collect {|p| p.lstrip.rstrip}) - user.roles_for(for_user).map(&:name)).blank?
