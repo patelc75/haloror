@@ -274,11 +274,15 @@ class UsersController < ApplicationController
     		  else
     		    add_caregiver = "1"   #1 for subscriber do not add as caregiver
     		  end
-              if params[:same_as_user] and params[:same_as_user] == 'on'
-                populate_subscriber(@user.id,"1",add_caregiver,params[:users][:email],params[:user])
-  	          else
-  	            subscriber_email = params[:subscribers][:email]
-  	            populate_subscriber(@user.id,"0",add_caregiver,subscriber_email,params[:subscriber])
+    		      params[:same_as_user] and params[:same_as_user] == 'on' ? same_as_senior_bool = true : same_as_senior_bool = false
+    		      subscriber_hash = { "email" => params[:subscribers][:email], 
+    		                          "profile_hash" => params[:subscriber], 
+    		                          "senior_object" => @user, 
+    		                          "same_as_senior" => same_as_senior_bool
+    		                          "add_as_caregiver" => add_caregiver == "0" ? true : false }
+  	          setup_subscriber subscriber_hash
+  	          
+  	          if same_as_senior_bool == true
   	            set_roles_users_option(@user,params[:sub_roles_users_option]) if add_caregiver == "0"
   	            @user_intake.users.push(@user)
               end
