@@ -278,7 +278,7 @@ class UsersController < ApplicationController
     		      subscriber_hash = { "email" => params[:subscribers][:email], 
     		                          "profile_hash" => params[:subscriber], 
     		                          "senior_object" => @user, 
-    		                          "same_as_senior" => same_as_senior_bool
+    		                          "same_as_senior" => same_as_senior_bool,
     		                          "add_as_caregiver" => add_caregiver == "0" ? true : false }
   	          setup_subscriber subscriber_hash
   	          
