@@ -59,8 +59,8 @@ module UserHelper
     if params_hash["same_as_senior"] == true
       subscriber = params_hash["senior_object"]
     elsif params_hash["add_as_caregiver"] == true
-      subscriber = User.populate_caregiver(params_hash)
-    elsif !params_hash["subscriber_email"].nil? or !params_hash["subscriber_email"].nil?
+      subscriber = User.populate_caregiver(params_hash["email"],params_hash["senior_object"].id, nil, nil,params_hash["profile_hash"])
+    elsif !params_hash["email"].nil? or !params_hash["profile_hash"].nil?
       subscriber = User.new
       subscriber.email = params_hash["subscriber_email"] if !params_hash["subscriber_email"].nil?
       subscriber_profile = Profile.new(params_hash["profile_hash"])
@@ -73,7 +73,7 @@ module UserHelper
     role = subscriber.has_role 'subscriber', params_hash["senior_object"]
   end
   
-  def setup_subscriber_test(subscriber_hash)
+  def self.setup_subscriber_test()
     profile_hash = {"work_phone"=>"", "city"=>"Brooklyn", "carrier_id"=>"", "zipcode"=>"", "cell_phone"=>"", "home_phone"=>"", "time_zone"=>"Central Time (US & Canada)", "first_name"=>"af", "address"=>"1212 W. Grand Ave", "last_name"=>"ads", "state"=>"ny"}
     senior = User.first
     
