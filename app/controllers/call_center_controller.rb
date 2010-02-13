@@ -10,17 +10,22 @@ class CallCenterController < ApplicationController
     conditions = ''
     
     if !current_user.is_super_admin?
-      groups = current_user.group_memberships
+      @groups = current_user.group_memberships
       g_ids = []
       g_ids << 0
-      groups.each do |group|
+      @groups.each do |group|
         g_ids << group.id if(current_user.is_admin_of?(group) || current_user.is_operator_of?(group))
       end
       group_ids = g_ids.join(', ')
       RAILS_DEFAULT_LOGGER.warn(group_ids)
       conditions = "(event_type = 'Fall' or event_type = 'Panic') AND events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids})))"
     else
+      @groups = Group.find(:all)	
       conditions = "event_type = 'Fall' or event_type = 'Panic'"
+    end
+    if params[:group_name] and params[:group_name] != "Choose a Group"
+        group = Group.find_by_name(params[:group_name])
+    	conditions = "(event_type = 'Fall' or event_type = 'Panic') AND events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id = #{group.id}))"
     end
     @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => conditions, :per_page => events_per_page
     

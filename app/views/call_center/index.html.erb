@@ -3,7 +3,14 @@
 
 <h2>Crtical Event Log</h2>
   <form action="/call_center">
+   <% gs = ['Choose a Group']
+		   @groups.each do |g|
+			 gs << g.name
+		   end %>
+  Select Group:  
+  <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]},params[:group_name])%><br>
   <table>
+  	
     <tr><td>Begin Time (<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= Time.zone.name.split(/\s+/).first %>)</td></tr>
     <tr>
       <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
