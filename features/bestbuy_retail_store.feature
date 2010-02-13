@@ -12,7 +12,7 @@ Feature: Bestbuy retail store
     And I am authenticated as "test-user" with password "12345"
     And the following groups:
       | name | halo-group |
-    And I navigate to the bestbuy store
+    And I go to the bestbuy store
     When I fill in the following:
       | Kit Serial Number | 1234567              |
       | Name              | myhalouser name      |
@@ -25,7 +25,7 @@ Feature: Bestbuy retail store
       | Card number       | 4111111111111111     |
       | CSC               | 123                  |
       | Comments          | Just some comments   |
-    And I select "3 Jan 2012" as "Expiration" date
+    And I select "3 Jan 2012" as the "Expiration" date
     And I select "halo-group" from "Group"
 
   Scenario: User purchases retail product for self
