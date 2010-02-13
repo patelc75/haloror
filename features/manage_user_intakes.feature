@@ -35,8 +35,7 @@ Feature: Manage user_intakes
     When I check "same_as_user"
     And I uncheck "Add as #1 caregiver"
     And I press "Submit"
-    Then profile "myfirstname mylastname" should exist
-    And profile "myfirstname mylastname" should have "halouser" role
+    Then profile "myfirstname mylastname" should have "halouser" role
     And profile "myfirstname mylastname" should have "subscriber" role for profile "myfirstname mylastname"
 
   # This has a few HTML element IDs instead of visible text, due to a bug in webrat
@@ -63,8 +62,6 @@ Feature: Manage user_intakes
       | subscribers_email     | halo_subscriber@chirag.name |
     And I press "Submit"
     Then profile "myfirstname mylastname" should have "halouser" role
-    # And profile "subscriberfirstname subscriberlastname" should exist
-    # And profile "subscriberfirstname subscriberlastname" should have "subscriber, caregiver" roles
     And profile "subscriberfirstname subscriberlastname" should have "subscriber" role for profile "myfirstname mylastname"
     And profile "subscriberfirstname subscriberlastname" should have "caregiver" role for profile "myfirstname mylastname" with attributes:
      | email_active | true |
