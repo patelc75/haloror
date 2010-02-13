@@ -3,7 +3,7 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "scopes"))
 
-# Givens
+# Given
 
 Given /^debug$/ do
   save_and_open_page
@@ -69,7 +69,7 @@ Given /^I am listing (.+)$/ do |model|
   visit "/#{model.downcase.pluralize.gsub(' ','_')}"
 end
 
-# Whens
+# When
 
 When /^I reload$/ do
   reload
@@ -87,19 +87,37 @@ When /^(?:|I )visit "([^\"]*)"$/ do |path|
   visit path
 end
 
-When /^I check "([^\"]*)" within "([^\"]*)"$/ do |name, scope_name|
-  within scope_of(scope_name) do |scope|
+When /^(?:|I )fill in "([^\"]*)" with "([^\"]*)" within "([^\"]*)"$/ do |field, value, selector|
+  within(scope_of(selector)) do |scope|
+    scope.fill_in(field, :with => value)
+  end
+end
+
+When /^(?:|I )fill in "([^\"]*)" for "([^\"]*)" within "([^\"]*)"$/ do |value, field, selector|
+  within(scope_of(selector)) do |scope|
+    scope.fill_in(field, :with => value)
+  end
+end
+
+When /^(?:|I )fill in the following within "([^\"]*)":$/ do |scope, fields|
+  fields.rows_hash.each do |name, value|
+    When %{I fill in "#{name}" with "#{value}" within "#{scope}"}
+  end
+end
+
+When /^I check "([^\"]*)" within "([^\"]*)"$/ do |name, selector|
+  within scope_of(selector) do |scope|
     scope.check name
   end
 end
 
-When /^I uncheck "([^\"]*)" within "([^\"]*)"$/ do |name, scope_name|
-  within scope_of(scope_name) do |scope|
+When /^I uncheck "([^\"]*)" within "([^\"]*)"$/ do |name, selector|
+  within scope_of(selector) do |scope|
     scope.uncheck name
   end
 end
 
-# Thens
+# Then
 
 Then /^I should see the following (.+):$/ do |model, expected_table|
   expected_table.diff!(tableish('table tr', 'td,th'))

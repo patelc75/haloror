@@ -30,7 +30,7 @@
       	<div id="hits"></div>
       </div>
       <div id="user_intake" <% unless @group %>style="display:none;" <%end%>>					
-      <div style="float:left;width:49%;border-right:2px solid;border-left:2px solid;height:570px;">
+      <div id="user_information" style="float:left;width:49%;border-right:2px solid;border-left:2px solid;height:570px;">
       	<center><h3>User Information</h3></center>
 	    <table width="100%">
 	      <tr>
@@ -67,25 +67,10 @@
           </tr>
           <tr>
           	<td><label for="user_carrier_id">Cell Provider</label>:</td>
-          	<td>
-            <select id="user_carrier_id" name="user[carrier_id]" style="width:220px;">
-	        <% if @user == nil or @user.carrier_id == 0 or @user.carrier_id == nil -%>
-	          <option value="" selected="selected" >
-	          Select Cell Provider for Text Msg </option>
-	        <% end -%>
-	        <% @carrier = Carrier.find(:all, :order => "id")
-	             @carrier.each do |carrier| %>
-	          <option value="<%= carrier.id %>"
-	           <% if @user && @user.carrier_id == carrier.id -%> selected="selected"<% end -%>
-	          >
-	          <%= carrier.name %> 
-	         </option>
-	        <% end %>
-	        </select>
-	        </td>
-	      </tr>    
+          	<td><%= select :user, :carrier_id, Carrier.ordered.collect {|p| [p.name, p.id]}, :include_blank => "Select Cell Provider for Text Msg..." %></td>
+  	      </tr>
           <tr>
-	        <td>Email(optional):</td>
+	        <td><label for="users_email">Email</label>(optional):</td>
 	        <td><%= text_field :users, :email ,:size => "40"%></td>
           </tr>
           <%#= observe_field(:user_mail, :url => { :action => :validation },
@@ -121,44 +106,44 @@
 	    <table width="100%">
           <tr>
 	        <td colspan="2">
-	          <input type="checkbox" name="add_caregiver" <%if @add_as_caregiver%>checked<%end%> onclick="caregiver_show_form(this,'caregiver_fields')">
-	        	Add as #1 caregiver
+	          <input id="add_as_1_caregiver" type="checkbox" name="add_caregiver" <%if @add_as_caregiver%>checked<%end%> onclick="caregiver_show_form(this,'caregiver_fields')">
+	        	<label for="add_as_1_caregiver">Add as #1 caregiver</label>
         	</td>
           </tr>
 	      <tr>
-		    <td>First Name:</td>
+		    <td><label for="subscriber_first_name">First Name</label>:</td>
 		    <td><%= text_field :subscriber, :first_name ,:size => "50"%></td>
 	      </tr>
 	      <tr>
-		    <td>Last Name:</td>
+		    <td><label for="subscriber_last_name">Last Name</label>:</td>
 		    <td><%= text_field :subscriber, :last_name ,:size => "50"%></td>
 	      </tr>
 	      <tr>
-	        <td>Address:</td>
+	        <td><label for="subscriber_address">Address</label>:</td>
 	        <td><%= text_field :subscriber, :address ,:size => "50"%></td>
           </tr>
 	      <tr>
-	        <td>City:</td>
-	        <td><%= text_field :subscriber, :city ,:size => "9"%>State:<%= text_field :subscriber, :state ,:size => "9"%>Zip:<%= text_field :subscriber, :zipcode ,:size => "9"%></td>
+	        <td><label for="subscriber_city">City</label>:</td>
+	        <td><%= text_field :subscriber, :city ,:size => "9"%><label for="subscriber_state">State</label>:<%= text_field :subscriber, :state ,:size => "9"%><label for="subscriber_zipcode">Zip</label>:<%= text_field :subscriber, :zipcode ,:size => "9"%></td>
           </tr>
 	      <tr>
-	        <td>Phone Number:</td>
+	        <td><label for="subscriber_home_phone">Phone Number</label>:</td>
 	        <td><%= text_field :subscriber, :home_phone ,:size => "50"%></td>
           </tr>
 	      <tr>
-	        <td>Cell Number:</td>
+	        <td><label for="subscriber_cell_phone">Cell Number</label>:</td>
 	        <td><%= text_field :subscriber, :cell_phone ,:size => "50"%></td>
           </tr>
           <tr>
-	        <td>Work Phone:</td>
+	        <td><label for="subscriber_work_phone">Work Phone</label>:</td>
 	        <td><%= text_field :subscriber, :work_phone ,:size => "50"%></td>
           </tr>
           <tr>
-	        <td>Email:</td>
+	        <td><label for="subscribers_email">Email</label>:</td>
 	        <td><%= text_field :subscribers, :email ,:size => "50"%></td>
           </tr>
           <tr>
-          	<td>Time zone:</td>
+          	<td><label for="subscriber_time_zone">Time zone</label>:</td>
             <td><%= time_zone_select :subscriber, :time_zone, TimeZone.us_zones,:default => "Central Time (US & Canada)" %></td>
           </tr>
           <tr>
@@ -193,8 +178,8 @@
           <tr>
 	        <td colspan="2">Do you have key to residence:
 	        	<select id="sub_roles_users_option_is_keyholder" name="sub_roles_users_option[is_keyholder]">
-	        		<option value="1">Yes</option>
-	        		<option value="0">No</option>
+	        		<option id="sub_roles_users_option_is_keyholder_yes" value="1">Yes</option>
+	        		<option id="sub_roles_users_option_is_keyholder_no" value="0">No</option>
 	        	</select>
 	        </td>
           </tr>
@@ -207,7 +192,7 @@
           </tr>
 	      <tr>
 	        <td></td>
-	        <td><%= check_box :sub_roles_users_option, :email_active %> Email</td>
+	        <td><%= check_box :sub_roles_users_option, :email_active %> <label for="sub_roles_users_option_email_active">Email</label></td>
           </tr>
 	      <tr>
 	        <td></td>

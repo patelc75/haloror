@@ -34,11 +34,11 @@ class Profile < ActiveRecord::Base
   #before_create             :check_phone_numbers
 
  #def check_phone_numbers
- # 	self.home_phone = self.home_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'')
- # 	self.work_phone = self.work_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'') if self.work_phone
- # 	self.cell_phone = self.cell_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'')
-  	
-  	#check_valid_phone_numbers
+ #  self.home_phone = self.home_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'')
+ #  self.work_phone = self.work_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'') if self.work_phone
+ #  self.cell_phone = self.cell_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'')
+    
+    #check_valid_phone_numbers
  #end
   def email=(email); nil; end
   def email; self.user.email; end
@@ -70,7 +70,7 @@ class Profile < ActiveRecord::Base
        unless user.blank?
          if user.profile.blank?
            profile = Profile.new(:first_name => first_name, :last_name => last_name)
-           profile[:is_halouser] = false
+           profile[:is_new_halouser] = false
            profile[:is_new_caregiver] = true
            profile[:user_id] = user.id
            profile.save!
@@ -85,19 +85,20 @@ class Profile < ActiveRecord::Base
  end # class methods
 
   def validate
-  	if self[:is_new_caregiver]
+    if self[:is_new_caregiver]
       return false
     else
-  	errors.add(:home_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.home_phone != '' and !self.home_phone.nil? and phone_strip(self.home_phone).length != 10 
-  	errors.add(:work_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.work_phone != '' and !self.work_phone.nil? and phone_strip(self.work_phone).length != 10 
-  	errors.add(:cell_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.cell_phone != '' and !self.cell_phone.nil? and phone_strip(self.cell_phone).length != 10
-  	end
+      # "length != 10" changed to "length < 10" for compatibility with user_intake_form
+      errors.add(:home_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.home_phone != '' and !self.home_phone.nil? and phone_strip(self.home_phone).length < 10 
+      errors.add(:work_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.work_phone != '' and !self.work_phone.nil? and phone_strip(self.work_phone).length < 10 
+      errors.add(:cell_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.cell_phone != '' and !self.cell_phone.nil? and phone_strip(self.cell_phone).length < 10
+    end
   end
   
   def phone_strip(phone)
-  	phone_number = phone.tr("/[A-Z]/[a-z]/",'')
-  	if phone_number == phone
-	  phone.tr("-().","")  #.gsub(/[a-z]/,'').gsub(/[A-Z]/,'')
+    phone_number = phone.tr("/[A-Z]/[a-z]/",'')
+    if phone_number == phone
+      phone.tr("-().","")  #.gsub(/[a-z]/,'').gsub(/[A-Z]/,'')
     elsif phone.size == 10
       phone + "invalid"
     else
@@ -113,7 +114,7 @@ class Profile < ActiveRecord::Base
     end
   end
   def unless_new_halouser
-    if self[:is_halouser]
+    if self[:is_halouser] # WARNING: :is_halouser is a mis-type?
       return true
     else
       return false
@@ -122,12 +123,12 @@ class Profile < ActiveRecord::Base
   
   def cell_phone_exists?
     if self[:is_new_caregiver]
-    	return false
+      return false
     else
       if self.cell_phone.blank?
         return false
       else
-      	return true
+        return true
       end
     end
       
@@ -153,8 +154,8 @@ class Profile < ActiveRecord::Base
  # private
   
  # def check_valid_phone_numbers
-  #	errors.add(:home_phone," is the wrong length (should be 10 characters)") if home_phone.length != 10
- # 	return false
+  # errors.add(:home_phone," is the wrong length (should be 10 characters)") if home_phone.length != 10
+ #  return false
  # end
   
 end

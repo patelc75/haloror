@@ -34,14 +34,14 @@ end
 Then /^user "([^\"]*)" should have "([^\"]*)" role(?:|s) for user "([^\"]*)"$/ do |user_name, role_name, for_user_name|
   user = User.find_by_login(user_name)
   for_user = User.find_by_login(for_user_name)
-  ((role_name.split(',').collect {|p| p.lstrip.rstrip}) - user.roles_for(for_user).map(&:name)).blank?
+  assert ((role_name.split(',').collect {|p| p.lstrip.rstrip}) - user.roles_for(for_user).map(&:name)).blank?
 end
 
 # role(s) can be used singular or plural
 #
 Then /^user "([^\"]*)" should have "([^\"]*)" role(?:|s)$/ do |user_name, role_name|
   user = User.find_by_login(user_name)
-  ((role_name.split(',').collect {|p| p.lstrip.rstrip}) - user.roles.map(&:name)).blank?
+  assert ((role_name.split(',').collect {|p| p.lstrip.rstrip}) - user.roles.map(&:name)).blank?
 end
 
 Then /^user "([^\"]*)" should have email switched (on|off) for "([^\"]*)" user$/ do |user_name, status, for_user_name|
