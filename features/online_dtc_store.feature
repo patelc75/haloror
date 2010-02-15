@@ -1,4 +1,6 @@
-Feature: Online DTC store
+# https://redmine.corp.halomonitor.com/issues/show/2558
+#
+Feature: Online (D)irect (T)o (C)ustomer store
   In order sell Halo products online to direct customer
   As an administrator
   I want to provide a public online store to direct customers
@@ -33,6 +35,7 @@ Feature: Online DTC store
   Scenario Outline: Confirmation view, back button
     When I fill the shipping details
     And I fill the billing details
+    And I fill the credit card details
     And I press "Continue"
     And I press "<button>"
     Then I <action> edit the following:
@@ -66,6 +69,7 @@ Feature: Online DTC store
 
   Scenario: Same as shipping copies shipping data to billing
     When I fill the shipping details
+    And I fill the credit card details
     And I check "Same as shipping"
     And I press "Continue"
     And I press "Place Order"
@@ -76,6 +80,7 @@ Feature: Online DTC store
   Scenario: Not same as shipping has separate shipping and billing data
     When I fill the shipping details
     And I fill the billing details
+    And I fill the credit card details
     And I uncheck "Same as shipping"
     And I press "Continue"
     And I press "Place Order"
@@ -86,6 +91,7 @@ Feature: Online DTC store
   Scenario: One time and subscription charges
     When I fill the shipping details
     And I fill the billing details
+    And I fill the credit card details
     And I press "Continue"
     And I press "Place Order"
     Then I should see either of the following:
@@ -94,22 +100,37 @@ Feature: Online DTC store
       You order has failed for the following reason
       """
 
-  # how to verify the subscription or one time charges?
-  # we are not keeping log of all attempts to charge the card
+  Scenario Outline: Passed and failed credit card, with log entry
+    When I fill the shipping details
+    And I fill the billing details
+    And I fill in "123" for "CSC"
+    And I fill in "Credit card" with "<card>"
+    And I press "Continue"
+    And I press "Place Order"
+    Then I should see "<result>"
+    # And I should get a log entry for the attempt        # TODO: for later maybe?
+    # we must keep history of all attempts for all cards. Keeps us safe of unwanted claims.
+      
+    Scenarios: pass and failed card
+      | card             | result  |
+      | 4111111111111111 | Success |
+      | 1234567812345678 | Failure |
+
 
   # sample data to fill for myhalo user. similar for billing details
+  #   for billing: ship/shipp becomes bill
   #
   # When I fill in the following:
-  # | ship_first_name | shipping f name   |
-  # | ship_last_name  | shipping l name   |
-  # | ship_address    | shipping address  |
-  # | ship_city       | shipping city     |
-  # | ship_zip        | shipping zip      |
-  # | ship_phone      | shipping phone    |
-  # | ship_email      | shipping email    |
-  # | Card number     | 4111111111111111  |
-  # | CSC             | 123               |
-  # | Comments        | Some comments     |
+  # | ship_first_name | shipping f name  |
+  # | ship_last_name  | shipping l name  |
+  # | ship_address    | shipping address |
+  # | ship_city       | shipping city    |
+  # | ship_zip        | shipping zip     |
+  # | ship_phone      | shipping phone   |
+  # | ship_email      | shipping email   |
+  # | Card number     | 4111111111111111 |
+  # | CSC             | 123              |
+  # | Comments        | Some comments    |
   # And I uncheck "Same as shipping"
   # And I select "Alabama" from the "ship_state"
   # And I select "Iowa" from the "bill_state"
