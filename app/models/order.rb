@@ -13,42 +13,45 @@ class Order < ActiveRecord::Base
   # one time fee = from order
   # subscription = received as argument
   #
-  def charge_one_time_and_subscription(charge_amount)
-    one_time_fee = charge_one_time_fee
-    if !one_time_fee.blank? && one_time_fee.success?
-      subscription = charge_subscription(charge_amount)
-    end
-    return one_time_fee, subscription
+  def charge_one_time_and_subscription(one_time_fee, subscription_fee)
+    return charge_credit_card(one_time_fee, subscription_fee)
+    # one_time_fee = charge_one_time_fee(one_time_fee)
+    # if !one_time_fee.blank? && one_time_fee.success?
+    #   subscription = charge_subscription(subscription_fee)
+    # end
+    # return one_time_fee, subscription
   end
   
-  def charge_one_time_fee
-    charge_credit_card
+  def charge_one_time_fee(fee)
+    charge_credit_card(fee, 0)
   end
   
-  def charge_subscription(charge_amount)
-    charge_credit_card("recurring",charge_amount)
+  def charge_subscription(recurring_fee)
+    charge_credit_card(0, recurring_fee)
   end
   
-  def charge_credit_card(recurring = nil, charge_amount = 0) # default is one-time-charge. any value for recurring will work.
+  def charge_credit_card(one_time_fee = 0, recurring_fee = 0)
     # mode is set (in environment config files) to :test for development and test, :production when production
-    if credit_card.valid?
-      if recurring.blank?
+    if validate_card
+      unless one_time_fee.blank?
         # one time charge as presented in the product detail box
         charge_amount = (cost * 100) # cents
-        @response = GATEWAY.purchase(charge_amount, credit_card) # GATEWAY in environment files
-      else
+        @one_time_fee_response = GATEWAY.purchase(charge_amount, credit_card) # GATEWAY in environment files
+      end
+      
+      unless recurring_fee.blank?
         # recurring subscription for 60 months, starting 3.months.from_now
         # TODO: do not hard code. pick from database
         # =>  keep charging 5 years at least
-        @response = GATEWAY.recurring(charge_amount, credit_card, {
+        @recurring_fee_response = GATEWAY.recurring(charge_amount, credit_card, {
             :billing_address => {:first_name => bill_first_name, :last_name => bill_last_name},
             :interval => {:unit => :months, :length => 1},
             :duration => {:start_date => 3.months.from_now.to_date, :occurrences => 60}
           }
         )
       end
-      @response
     end
+    return @one_time_fee_response, @recurring_fee_response
   end
 
   def credit_card
@@ -61,6 +64,17 @@ class Order < ActiveRecord::Base
       :type => card_type,
       :verification_value => card_csc
     )
+  end
+  
+  def validate_card
+    if credit_card.valid?
+      return true
+    else
+      credit_card.errors.full_messages.each do |message|
+        errors.add_to_base message
+      end
+      return false
+    end
   end
   
   def populate_billing_address
