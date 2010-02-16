@@ -12,24 +12,24 @@ Feature: Online (D)irect (T)o (C)ustomer store
   Scenario: Direct to customer online store visible to public
     Then page content should have "myHalo Complete, myHalo Clip, Pick a product, Billing and Shipping"
   
-  Scenario: Choice for HaloComplete
-    When I choose "myHalo Complete"
-    Then the following content is visible:
-      """
-      $439.00
-      Recurring monthly charge of $59.00/mo
-      """
+  # Scenario: Choice for HaloComplete
+  #   When I choose "myHalo Complete"
+  #   Then page has the following content visible:
+  #     """
+  #     $439.00
+  #     Recurring monthly charge of $59.00/mo
+  #     """
 
-  Scenario: Choice for HaloClip
-    When I choose "myHalo Clip"
-    Then the following content is visible:
-      """
-      $409.00
-      Recurring monthly charge of $49.00/mo
-      """
+  # Scenario: Choice for HaloClip
+  #   When I choose "myHalo Clip"
+  #   Then page has the following content visible:
+  #     """
+  #     $409.00
+  #     Recurring monthly charge of $49.00/mo
+  #     """
 
   # Scenario Outline covers multiple scenarios that have little variation
-  # Scenarios: is the keyword to define variations
+  # Examples: is the keyword to define variations
   #   keeps steps DRY
   #
   Scenario Outline: Confirmation view, back button
@@ -62,7 +62,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
       | card_type        |
     And page content should have "<content>"
 
-    Scenarios: Edit, read only views
+    Examples: Edit, read only views
       | button | action | content                                                        |
       |        | cannot | Place Order, Back, Order Summary, Billing and Shipping Summary |
       | Back   | can    | Continue, Pick a product                                       |
@@ -111,7 +111,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     # And I should get a log entry for the attempt        # TODO: for later maybe?
     # we must keep history of all attempts for all cards. Keeps us safe of unwanted claims.
       
-    Scenarios: pass and failed card
+    Examples: pass and failed card
       | card             | result  |
       | 4111111111111111 | Success |
       | 1234567812345678 | Failure |

@@ -119,6 +119,12 @@ end
 
 # Then
 
+Then /^page has the following content visible:$/ do |string|
+  string.each do |row|
+    assert_have_selector4
+  end
+end
+
 Then /^I should see the following (.+):$/ do |model, expected_table|
   expected_table.diff!(tableish('table tr', 'td,th'))
 end

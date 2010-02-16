@@ -68,15 +68,22 @@ class OrdersController < ApplicationController
                 goto = "failure"
                 # format.html { render :action => 'failure' }
               else
-                UserMailer.deliver_signup_installation(@order.ship_email,:exclude_senior_info)   
-                UserMailer.deliver_signup_installation(@order.bill_email,:exclude_senior_info)
-                UserMailer.deliver_order_summary(@order, @order.bill_email) #goes to @order.bill_email
-                UserMailer.deliver_order_summary(@order, "senior_signup@halomonitoring.com", :no_email_log) #do not send to email_log@halo
+                [@order.ship_email, @order.bill_email].each do |email|
+                  UserMailer.deliver_signup_installation(email,:exclude_senior_info)
+                end
+                [@order.bill_email, "senior_signup@halomonitoring.com"].each do |email|
+                  UserMailer.deliver_order_summary(@order, email, (email.include?(senior_signup) ? :no_email_log : nil))
+                end
+                # DRY
+                # UserMailer.deliver_signup_installation(@order.ship_email,:exclude_senior_info)   
+                # UserMailer.deliver_signup_installation(@order.bill_email,:exclude_senior_info)
+                # UserMailer.deliver_order_summary(@order, @order.bill_email) #goes to @order.bill_email
+                # UserMailer.deliver_order_summary(@order, "senior_signup@halomonitoring.com", :no_email_log) #do not send to email_log@halo
                 flash[:notice] = 'Thank you for your order.'
                 goto = "success"
               end
               reset_session # start fresh
-              @order = nil
+              # @order = nil # fixes #2564. need to check through cucumber
             
             end # order
           end # revision
