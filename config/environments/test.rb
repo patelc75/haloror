@@ -33,4 +33,8 @@ AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL=65.00
 config.after_initialize do
   ActiveMerchant::Billing::Base.mode = :test
   ::GATEWAY = ActiveMerchant::Billing::BogusGateway.new
+  # ::GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
+  #   :login => AUTH_NET_LOGIN,
+  #   :password => AUTH_NET_TXN_KEY
+  # )
 end

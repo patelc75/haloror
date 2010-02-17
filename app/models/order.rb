@@ -14,12 +14,8 @@ class Order < ActiveRecord::Base
   # subscription = received as argument
   #
   def charge_one_time_and_subscription(one_time_fee, subscription_fee)
-    return charge_credit_card(one_time_fee, subscription_fee)
-    # one_time_fee = charge_one_time_fee(one_time_fee)
-    # if !one_time_fee.blank? && one_time_fee.success?
-    #   subscription = charge_subscription(subscription_fee)
-    # end
-    # return one_time_fee, subscription
+    one_time_response, subscription_response = charge_credit_card(one_time_fee, subscription_fee)
+    return one_time_response, subscription_response
   end
   
   def charge_one_time_fee(fee)
@@ -37,6 +33,7 @@ class Order < ActiveRecord::Base
         # one time charge as presented in the product detail box
         charge_amount = (cost * 100) # cents
         @one_time_fee_response = GATEWAY.purchase(charge_amount, credit_card) # GATEWAY in environment files
+        errors.add_to_base @one_time_fee_response.message unless @one_time_fee_response.success?
       end
       
       unless recurring_fee.blank?
@@ -49,20 +46,21 @@ class Order < ActiveRecord::Base
             :duration => {:start_date => 3.months.from_now.to_date, :occurrences => 60}
           }
         )
+        errors.add_to_base @recurring_fee_response.message unless @recurring_fee_response.success?
       end
     end
     return @one_time_fee_response, @recurring_fee_response
   end
 
   def credit_card
-    @credit_card ||= ActiveMerchant::Billing::CreditCard.new(
-      :number => card_number,
-      :month => card_expiry.month,
-      :year => card_expiry.year,
-      :first_name => bill_first_name,
-      :last_name => bill_last_name,
-      :type => card_type,
-      :verification_value => card_csc
+    ActiveMerchant::Billing::CreditCard.new(
+      :number => self.card_number,
+      :month => self.card_expiry.month,
+      :year => self.card_expiry.year,
+      :first_name => self.bill_first_name,
+      :last_name => self.bill_last_name,
+      :type => self.card_type,
+      :verification_value => self.card_csc
     )
   end
   
@@ -79,14 +77,14 @@ class Order < ActiveRecord::Base
   
   def populate_billing_address
     if bill_address_same == "1"
-      bill_first_name = ship_first_name
-      bill_last_name = ship_last_name
-      bill_address = ship_address
-      bill_city = ship_city
-      bill_state = ship_state
-      bill_zip = ship_zip
-      bill_email = ship_email
-      bill_phone = ship_phone
+      self.bill_first_name  = self.ship_first_name
+      self.bill_last_name   = self.ship_last_name
+      self.bill_address     = self.ship_address
+      self.bill_city        = self.ship_city
+      self.bill_state       = self.ship_state
+      self.bill_zip         = self.ship_zip
+      self.bill_email       = self.ship_email
+      self.bill_phone       = self.ship_phone
     end
   end
 

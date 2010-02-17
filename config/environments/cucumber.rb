@@ -29,3 +29,16 @@ config.gem 'cucumber'
 config.gem 'cucumber-rails',   :lib => 'cucumber/rails', :version => '>=0.2.4' unless File.directory?(File.join(Rails.root, 'vendor/plugins/cucumber-rails'))
 config.gem "faker"
 config.gem "factory_girl"
+
+AUTH_NET_LOGIN="54PB5egZ" #test
+AUTH_NET_TXN_KEY="48V258vr55AE8tcg" #test
+AUTH_NET_URL="https://apitest.authorize.net/xml/v1/request.api" # test
+
+config.after_initialize do
+  ActiveMerchant::Billing::Base.mode = :test
+  # ::GATEWAY = ActiveMerchant::Billing::BogusGateway.new
+  ::GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
+    :login => AUTH_NET_LOGIN,
+    :password => AUTH_NET_TXN_KEY
+  )
+end

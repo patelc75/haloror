@@ -12,6 +12,16 @@ Feature: Online (D)irect (T)o (C)ustomer store
   Scenario: Direct to customer online store visible to public
     Then page content should have "myHalo Complete, myHalo Clip, Pick a product, Billing and Shipping"
   
+    Scenario: Same as shipping copies shipping data to billing
+      When I fill the shipping details
+      And I fill the credit card details
+      And I check "Same as shipping"
+      And I press "Continue"
+      And I press "Place Order"
+      Then page content should have "Thank you"
+      And profile "shipping f name shipping l name" should have "halouser" role
+      And profile "shipping f name shipping l name" should have "subscriber" role for "shipping f name shipping l name"
+
   # Scenario: Choice for HaloComplete
   #   When I choose "myHalo Complete"
   #   Then page has the following content visible:
@@ -67,52 +77,42 @@ Feature: Online (D)irect (T)o (C)ustomer store
   #     |        | cannot | Place Order, Back, Order Summary, Billing and Shipping Summary |
   #     | Back   | can    | Continue, Pick a product                                       |
 
-  Scenario: Same as shipping copies shipping data to billing
-    When I fill the shipping details
-    And I fill the credit card details
-    And I check "Same as shipping"
-    And I press "Continue"
-    And I press "Place Order"
-    Then I should see "Thank you"
-    And profile "shipping f name shipping l name" should have "halouser" role
-    And profile "shipping f name shipping l name" should have "subscriber" role for "shipping f name shipping l name"
+  # Scenario: Not same as shipping has separate shipping and billing data
+  #   When I fill the shipping details
+  #   And I fill the billing details
+  #   And I fill the credit card details
+  #   And I uncheck "Same as shipping"
+  #   And I press "Continue"
+  #   And I press "Place Order"
+  #   Then I should see "Thank you"
+  #   And profile "shipping f name shipping l name" should have "halouser" role
+  #   And profile "ship f name ship l name" should have "subscriber" role for "shipping f name shipping l name"
 
-  Scenario: Not same as shipping has separate shipping and billing data
-    When I fill the shipping details
-    And I fill the billing details
-    And I fill the credit card details
-    And I uncheck "Same as shipping"
-    And I press "Continue"
-    And I press "Place Order"
-    Then I should see "Thank you"
-    And profile "shipping f name shipping l name" should have "halouser" role
-    And profile "ship f name ship l name" should have "subscriber" role for "shipping f name shipping l name"
+  # Scenario: One time and subscription charges
+  #   When I fill the shipping details
+  #   And I fill the billing details
+  #   And I fill the credit card details
+  #   And I press "Continue"
+  #   And I press "Place Order"
+  #   Then I should see either of the following:
+  #     """
+  #     Thank you for placing the order with us
+  #     You order has failed for the following reason
+  #     """
 
-  Scenario: One time and subscription charges
-    When I fill the shipping details
-    And I fill the billing details
-    And I fill the credit card details
-    And I press "Continue"
-    And I press "Place Order"
-    Then I should see either of the following:
-      """
-      Thank you for placing the order with us
-      You order has failed for the following reason
-      """
-
-  Scenario Outline: Passed and failed credit card, with log entry
-    When I fill the shipping details
-    And I fill the billing details
-    And I fill in "123" for "CSC"
-    And I fill in "Credit card" with "<card>"
-    And I press "Continue"
-    And I press "Place Order"
-    Then I should see "<result>"
-      
-    Examples: pass and failed card
-      | card             | result  |
-      | 4111111111111111 | Success |
-      | 1234567812345678 | Failure |
+  # Scenario Outline: Passed and failed credit card, with log entry
+  #   When I fill the shipping details
+  #   And I fill the billing details
+  #   And I fill in "123" for "CSC"
+  #   And I fill in "Credit card" with "<card>"
+  #   And I press "Continue"
+  #   And I press "Place Order"
+  #   Then I should see "<result>"
+  #     
+  #   Examples: pass and failed card
+  #     | card             | result  |
+  #     | 4111111111111111 | Success |
+  #     | 1234567812345678 | Failure |
 
 
   # sample data to fill for myhalo user. similar for billing details
