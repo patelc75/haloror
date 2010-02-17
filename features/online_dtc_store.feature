@@ -12,15 +12,13 @@ Feature: Online (D)irect (T)o (C)ustomer store
   Scenario: Direct to customer online store visible to public
     Then page content should have "myHalo Complete, myHalo Clip, Pick a product, Billing and Shipping"
   
-    Scenario: Same as shipping copies shipping data to billing
-      When I fill the shipping details
-      And I fill the credit card details
-      And I check "Same as shipping"
-      And I press "Continue"
-      And I press "Place Order"
-      Then page content should have "Thank you"
-      And profile "shipping f name shipping l name" should have "halouser" role
-      And profile "shipping f name shipping l name" should have "subscriber" role for "shipping f name shipping l name"
+  Scenario: Same as shipping copies shipping data to billing
+    When I fill the shipping details
+    And I fill the credit card details
+    And I check "Same as shipping"
+    And I press "Continue"
+    And I press "Place Order"
+    Then page content should have "Thank you"
 
   # Scenario: Choice for HaloComplete
   #   When I choose "myHalo Complete"

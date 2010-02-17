@@ -1,3 +1,10 @@
+<% content_for :meta_tags do %>
+  <meta http-equiv="cache-control" content="no-cache"> <!-- tells browser not to cache -->
+  <meta http-equiv="expires" content="0"> <!-- says that the cache expires 'now' -->
+  <meta http-equiv="pragma" content="no-cache"> <!-- says not to use cached stuff, if there is any -->
+  <!-- <meta http-equiv="refresh" content="2"> -->
+<% end -%>
+
 <% if @confirmation %>
 <h1>Please verify your order</h1>
 <% end %>
@@ -244,12 +251,17 @@
 
 
 <script type="text/javascript" charset="utf-8">
+  //
+  showProductDetails();
+
   // billing address bug fix. frequency was not triggering it on back()
   //
-  if (document.getElementById('order_bill_address_same').checked) { 
-    hideDiv('billing_block');
-  } else {
-    showDiv('billing_block');
+  function showProductDetails() {
+    if (document.getElementById('order_bill_address_same').checked) { 
+      hideDiv('billing_block');
+    } else {
+      showDiv('billing_block');
+    }
   }
   // javasript form validation
   //
@@ -264,16 +276,16 @@
 
   // hide, show elements
   //
-  function toggleDiv(what)
-  {
-    found = document.getElementById(what);
-    if (found.style.display == "block") {
-      found.style.display = "none";
-    }
-    else {
-      found.style.display = "block";
-    }
-  }
+  // function toggleDiv(what)
+  // {
+  //   found = document.getElementById(what);
+  //   if (found.style.display == "block") {
+  //     found.style.display = "none";
+  //   }
+  //   else {
+  //     found.style.display = "block";
+  //   }
+  // }
   
   function showDiv(what) {
     document.getElementById(what).style.display = "block";
