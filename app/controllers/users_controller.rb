@@ -286,7 +286,7 @@ class UsersController < ApplicationController
           #UserMailer.deliver_subscriber_email(@user)
           UserMailer.deliver_signup_installation(@user,@senior)
           if add_caregiver == "1"
-            if params[:no_caregiver_1] == "on"
+            if params[:no_caregiver_1].blank? || params[:no_caregiver_1] != "on"
               caregiver1_email = params[:caregiver1][:email]
               @car1 = User.populate_caregiver(caregiver1_email,@senior.id,nil,nil,params[:caregiver1])
               if !@car1.profile.nil?
@@ -297,7 +297,7 @@ class UsersController < ApplicationController
               end
             end
           end
-          if params[:no_caregiver_2] =="on"
+          if params[:no_caregiver_2].blank? || params[:no_caregiver_2] != "on"
             caregiver2_email = params[:caregiver2][:email]
             @car2 = User.populate_caregiver(caregiver2_email,@senior.id,nil,nil,params[:caregiver2])
             if !@car2.profile.nil?
@@ -307,7 +307,7 @@ class UsersController < ApplicationController
               raise "Caregiver 2 validation errors"
             end
           end
-          if params[:no_caregiver_3] == "on"
+          if params[:no_caregiver_3].blank? || params[:no_caregiver_3] != "on"
             caregiver3_email = params[:caregiver3][:email]
             @car3 = User.populate_caregiver(caregiver3_email,@senior.id,nil,nil,params[:caregiver3])
             if !@car3.profile.nil?
