@@ -26,7 +26,7 @@ Feature: Manage user_intakes
       | user_home_phone | 1-517-123-4567          |
       | user_cell_phone | 1-917-123-4567          |
       | user_work_phone | 1-212-123-4567          |
-      | users_email     | halo_senior@chirag.name |
+      | users_email     | cuc_senior@chirag.name |
     And I select "verizon" from "Cell Provider"
     And I select "1 Nov 2000" as the "Date of Birth" date
     And I choose "user_sex_m"
@@ -57,9 +57,8 @@ Feature: Manage user_intakes
       | subscriber_state      | NY                          |
       | subscriber_zipcode    | 12201                       |
       | subscriber_home_phone | 1-517-123-4567              |
-      | subscriber_cell_phone | 1-917-123-4567              |
       | subscriber_work_phone | 1-212-123-4567              |
-      | subscribers_email     | halo_subscriber@chirag.name |
+      | subscribers_email     | cuc_sub_care@chirag.name |
     And I press "Submit"
     Then profile "myfirstname mylastname" should have "halouser" role
     And profile "subscriberfirstname subscriberlastname" should have "subscriber" role for profile "myfirstname mylastname"

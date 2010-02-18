@@ -278,8 +278,7 @@ class UsersController < ApplicationController
             populate_subscriber(@user.id,"1",add_caregiver,params[:users][:email],params[:user])
           else
             subscriber_email = params[:subscribers][:email]
-           
-           populate_subscriber(@user.id, "0", add_caregiver, subscriber_email, params[:subscriber], params[:sub_roles_users_option])
+            populate_subscriber(@user.id, "0", add_caregiver, subscriber_email, params[:subscriber])#, params[:sub_roles_users_option])
             set_roles_users_option(@user,params[:sub_roles_users_option]) if add_caregiver == "0"
             @user_intake.users.push(@user)
           end
@@ -290,25 +289,38 @@ class UsersController < ApplicationController
             unless params[:no_caregiver_1]
               caregiver1_email = params[:caregiver1][:email]
               @car1 = User.populate_caregiver(caregiver1_email,@senior.id,nil,nil,params[:caregiver1])
-              set_roles_users_option(@car1,params[:car1_roles_users_option])
-              @user_intake.users.push(@car1)
+              if !@car1.profile.nil?
+                set_roles_users_option(@car1,params[:car1_roles_users_option])
+                @user_intake.users.push(@car1)
+              else
+                raise "Caregiver 1 validation errors"
+              end
             end
           end
           unless params[:no_caregiver_2]
             caregiver2_email = params[:caregiver2][:email]
             @car2 = User.populate_caregiver(caregiver2_email,@senior.id,nil,nil,params[:caregiver2])
-            set_roles_users_option(@car2,params[:car2_roles_users_option])
-            @user_intake.users.push(@car2)
+            if !@car2.profile.nil?
+              set_roles_users_option(@car2,params[:car2_roles_users_option])
+              @user_intake.users.push(@car2)
+            else
+              raise "Caregiver 2 validation errors"
+            end
           end
           unless params[:no_caregiver_3]
             caregiver3_email = params[:caregiver3][:email]
             @car3 = User.populate_caregiver(caregiver3_email,@senior.id,nil,nil,params[:caregiver3])
-            set_roles_users_option(@car3,params[:car3_roles_users_option])
-            @user_intake.users.push(@car3)
+            if !@car3.profile.nil?
+              set_roles_users_option(@car3,params[:car1_roles_users_option])
+              @user_intake.users.push(@car3)
+            else
+              raise "Caregiver 3 validation errors"
+            end
           end
         end
       end
       redirect_to '/user/user_intake_form'
+      #redirect_to :action => 'user_intake_form_confirm', :user_intake_id => @user_intake.id
     else
       @groups = []
       if current_user.is_super_admin?
@@ -320,8 +332,8 @@ class UsersController < ApplicationController
         end
       end
     end
-    #=begin 
-    rescue
+=begin 
+    rescue 
       @user = Profile.new(params[:user])
       @subscriber = Profile.new(params[:subscriber])
       @group = params[:group]
@@ -333,10 +345,10 @@ class UsersController < ApplicationController
         gs.each do |g|
           @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
         end
-      end
+      end      
     render :action => 'user_intake_form'
-  #=end   
-  end
+=end   
+end
   
   def update_user_profile(id,params,senior=nil,roles_users_option=nil,position=nil)
     @user = Profile.find_by_id(id.to_i)

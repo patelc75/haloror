@@ -14,10 +14,10 @@ module UserHelper
           if !@profile.save!
             raise "Invalid Profile"  
           end
-        end
-        @group = (group.is_a?(Group) ? group : Group.find_by_name(group)) # 2010-02-01 accept String or Group.instance
-        # role = @user.has_role 'halouser'
-        @user.is_halouser_of @group unless @group.blank? # 2010-02-01 !@group.nil? will have errors later
+          end
+          @group = (group.is_a?(Group) ? group : Group.find_by_name(group)) # 2010-02-01 accept String or Group.instance
+          # role = @user.has_role 'halouser'
+          @user.is_halouser_of @group unless @group.blank? # 2010-02-01 !@group.nil? will have errors later
         # if opt_out_call_center.blank?
         @group = Group.find_or_create_by_name('safety_care') #FIXME: just create if it does not exist
         # raise "safety_care group missing!" if @group.nil? 
@@ -27,12 +27,15 @@ module UserHelper
   	end
   end  
   
-  def populate_subscriber(user,same_as_senior,add_caregiver,email,params_profile,roles_users_hash = {})
+  #user = senior user object or senior user id
+  #email = subscriber email
+  #params_profile = subscriber profile
+  def populate_subscriber(user,same_as_senior,add_caregiver,email,params_profile)#,roles_users_hash = {})
   	if same_as_senior == "1"  #subscriber same as senior
       @user = (user.is_a?(User) ? user : User.find_by_id(user)) # avoid searching again
     else
       if add_caregiver != "1"  #subscriber will also be a caregiver
-        @user = User.populate_caregiver(email,user.to_i,nil,nil,params_profile,roles_users_hash) #sets up @user
+        @user = User.populate_caregiver(email,user.to_i,nil,nil,params_profile)#,roles_users_hash) #sets up @user
   	  else  #subscriber will not be a caregiver
   	    @user = User.new
       	@user.email = email

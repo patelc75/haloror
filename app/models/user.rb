@@ -641,8 +641,11 @@ class User < ActiveRecord::Base
         script = scripts[key]
         return script
   end 
-
-  def self.populate_caregiver(email,senior_id=nil, position = nil,login = nil,profile_hash = nil, roles_users_hash = {})
+  
+  # email = caregiver email
+  # seniod_id = senior id
+  # return variable = caregiver object
+  def self.populate_caregiver(email,senior_id=nil, position = nil,login = nil,profile_hash = nil)#, roles_users_hash = {})
     existing_user = User.find_by_email(email)
     if !login.nil? and login != ""
       @user = User.find_by_login(login)
@@ -689,7 +692,7 @@ class User < ActiveRecord::Base
 
         self.update_from_position(position, @roles_user.role_id, @user.id)
         #enable_by_default(@roles_user)      
-        RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0, :email_active => (roles_users_hash["email_active"] == "1"), :is_keyholder => (roles_users_hash["is_keyholder"] == "1"))
+        RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0)#, :email_active => (roles_users_hash["email_active"] == "1"), :is_keyholder => (roles_users_hash["is_keyholder"] == "1"))
       end
       UserMailer.deliver_caregiver_email(@user, senior)
     end
