@@ -319,8 +319,8 @@ class UsersController < ApplicationController
           end
         end
       end
-      redirect_to '/user/user_intake_form'
-      #redirect_to :action => 'user_intake_form_confirm', :user_intake_id => @user_intake.id
+      #redirect_to '/user/user_intake_form'
+      redirect_to :action => 'user_intake_form_confirm', :id => @user_intake.id
     else
       @groups = []
       if current_user.is_super_admin?
@@ -350,6 +350,10 @@ class UsersController < ApplicationController
 =end   
 end
   
+  def user_intake_form_confirm
+  	edit_user_intake_info(params[:id])
+  end
+
   def update_user_profile(id,params,senior=nil,roles_users_option=nil,position=nil)
     @user = Profile.find_by_id(id.to_i)
     unless @user
@@ -443,7 +447,24 @@ end
         
       redirect_to :controller => 'users',:action =>'edit_user_intake_form' ,:id => @user_intake.id
     else #comes here if the form is being loaded
-      @user_intake = UserIntake.find(params[:id])
+      edit_user_intake_info(params[:id])
+      
+      @group = @halo_user.group_memberships.first.name if @halo_user.group_memberships.first
+      @groups = []
+      
+      if current_user.is_super_admin?
+        @groups = Group.find(:all)
+      else
+        gs = current_user.group_memberships
+        gs.each do |g|
+          @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
+        end
+      end  
+    end
+  end
+  
+  def edit_user_intake_info(user_intake_id)
+      @user_intake = UserIntake.find_by_id(user_intake_id)
       @caregivers = []
       
       #loop through all users associated with user intake form and extract user and subscriber
@@ -481,19 +502,6 @@ end
         @car2_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[1]).id) if @caregivers[1]
         @car3_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[2]).id) if @caregivers[2]
       end
-      
-      @group = @halo_user.group_memberships.first.name if @halo_user.group_memberships.first
-      @groups = []
-      
-      if current_user.is_super_admin?
-        @groups = Group.find(:all)
-      else
-        gs = current_user.group_memberships
-        gs.each do |g|
-          @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
-        end
-      end  
-    end
   end
   
   def set_roles_users_option(caregiver,roles_users_option,senior=nil)
