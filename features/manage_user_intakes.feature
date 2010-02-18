@@ -27,7 +27,7 @@ Feature: Manage user_intakes
       | user_cell_phone | 1-917-123-4567          |
       | user_work_phone | 1-212-123-4567          |
       | users_email     | cuc_senior@chirag.name |
-    And I select "verizon" from "Cell Provider"
+    And I select "verizon" from "user_carrier_id"
     And I select "1 Nov 2000" as the "Date of Birth" date
     And I choose "user_sex_m"
         

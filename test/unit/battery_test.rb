@@ -1,10 +1,10 @@
-require File.dirname(__FILE__) + '/../test_helper'
-
-class BatteryTest < Test::Unit::TestCase
-  fixtures :batteries
-
-  # Replace this with your real tests.
-  def test_truth
-    assert true
-  end
-end
+# require File.dirname(__FILE__) + '/../test_helper'
+# 
+# class BatteryTest < Test::Unit::TestCase
+#   fixtures :batteries
+# 
+#   # Replace this with your real tests.
+#   def test_truth
+#     assert true
+#   end
+# end
