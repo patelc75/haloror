@@ -252,11 +252,12 @@
 
 <script type="text/javascript" charset="utf-8">
   //
-  showProductDetails();
-
+  showBillingDetails();
+  toggleProductDetails();
+  
   // billing address bug fix. frequency was not triggering it on back()
   //
-  function showProductDetails() {
+  function showBillingDetails() {
     if (document.getElementById('order_bill_address_same').checked) { 
       hideDiv('billing_block');
     } else {
