@@ -96,7 +96,6 @@ class MgmtQueriesController < RestfulAuthController
   def send_command(cmd, query)
     if cmd
       @more = nil
-      @cmd_type = cmd.cmd_type
       if cmd.cmd_type == 'firmware_upgrade' && cmd.cmd_id
         @more = FirmwareUpgrade.find(cmd.cmd_id)
       elsif cmd.cmd_type == 'mgmt_poll_rate' && cmd.param1
@@ -104,8 +103,8 @@ class MgmtQueriesController < RestfulAuthController
       elsif cmd.cmd_type == 'dial_up_num' && cmd.param1 && cmd.param2 && cmd.param3
         @more = {'number' => cmd.param1,'username' => cmd.param2,'password' => cmd.param3,'instantaneous' => cmd.instantaneous }
       elsif cmd.cmd_type == 'dial_up_num_glob_prim' && (cmd.param1 or cmd.param2 or cmd.param3 or cmd.param4)
-        @cmd_type = 'dial_up_num'
-        
+        cmd.cmd_type = 'dial_up_num'
+        cmd.save
         @local_pri = DialUp.find_by_phone_number(cmd.param1)   
         @local_alt = DialUp.find_by_phone_number(cmd.param2)   
         @global_pri = DialUp.find_by_phone_number(cmd.param3)   
