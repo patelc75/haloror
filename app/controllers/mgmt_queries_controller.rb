@@ -46,7 +46,12 @@ class MgmtQueriesController < RestfulAuthController
           new_cmd.timestamp_initiated = pending.timestamp_initiated
           new_cmd.cmd_type = pending.cmd_type
           new_cmd.originator = pending.originator
-          new_cmd.cmd_id = pending.cmd_id        
+          new_cmd.cmd_id = pending.cmd_id
+          new_cmd.param1 = pending.param1
+          new_cmd.param2 = pending.param2
+          new_cmd.param3 = pending.param3
+          new_cmd.param4 = pending.param4
+          new_cmd.instantaneous = pending.instantaneous                                            
           new_cmd.save
         end        
       end
