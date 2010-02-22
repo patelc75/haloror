@@ -57,6 +57,7 @@ class ReportingController < ApplicationController
       @groups = Group.find(:all)
 	else
       @groups = current_user.group_memberships
+      @group = @groups.first
     end
     @group_name = ''
     if !params[:group_name].blank?

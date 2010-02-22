@@ -18,7 +18,9 @@
 		   end %>
 		<table width="100%"><tr>
 		<td><label for="group">Group</label> <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group),:onchange => "select_group(this);"%></td>
-      	<td>Installation Date:<%= date_select :user_intake,:installation_date %></td>
+      	<td>Installation Date:<%#= date_select :user_intake,:installation_date %>
+      		<%= calendar_date_select :user_intake,:installation_date, :popup => 'force' ,:style => "width:120px;"%>
+      	</td>
       	<td>Kit Serial #:</td><td><%= text_field :kit, :serial_number%></td>
       	</tr>
       	<tr>
