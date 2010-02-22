@@ -24,7 +24,7 @@ config.action_view.debug_rjs                         = true
 config.whiny_nils = true
 
 # Don't care if the mailer can't send
-config.action_mailer.raise_delivery_errors = false # debugging exception_notifier
+config.action_mailer.raise_delivery_errors = true # debugging exception_notifier
 
 HV_APP_ID = "388278cd-5467-45af-a2b5-3d2c5fabffa3"
 HV_CERT_FILE = "#{RAILS_ROOT}/config/healthvault/halo_monitor-prod-388278cd-5467-45af-a2b5-3d2c5fabffa3.pfx"
