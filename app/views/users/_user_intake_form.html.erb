@@ -334,7 +334,7 @@
 	  <div style="float:left;width:33%;border-right:2px solid;height:650px;">
         <table border="0" width="100%">
           <tr>
-	        <td colspan="2"><input type="checkbox" name="no_caregiver_2" <%unless @caregiver2 %>checked<%end%> onclick = "show_form(this,'caregiver2_form')">No Caregiver #2</td>
+	        <td colspan="2"><input type="checkbox" id="no_caregiver_2" name="no_caregiver_2" <%unless @caregiver2 %>checked<%end%> onclick = "show_form(this,'caregiver2_form')">No Caregiver #2</td>
           </tr>
         </table>
         <span id="caregiver2_form" <%unless @caregiver2 %>style="display:none"<%end%>>
@@ -452,7 +452,7 @@
 	  <div style="float:right;width:33%;border-right:2px solid;height:650px;">
 	  	<table width="100%">
 	  	  <tr>
-	        <td colspan="2"><input type="checkbox" name="no_caregiver_3" <%unless @caregiver3 %>checked<%end%> onclick = "show_form(this,'caregiver3_form')">No Caregiver #3</td>
+	        <td colspan="2"><input type="checkbox" id="no_caregiver_3" name="no_caregiver_3" <%unless @caregiver3 %>checked<%end%> onclick = "show_form(this,'caregiver3_form')">No Caregiver #3</td>
           </tr>
         </table>
         <span id="caregiver3_form" <%unless @caregiver3 %>style="display:none"<%end%>>

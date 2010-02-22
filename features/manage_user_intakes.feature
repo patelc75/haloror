@@ -30,6 +30,9 @@ Feature: Manage user_intakes
     And I select "verizon" from "user_carrier_id"
     And I select "1 Nov 2000" as the "Date of Birth" date
     And I choose "user_sex_m"
+    And I check "no_caregiver_1"
+    And I check "no_caregiver_2"
+    And I check "no_caregiver_3"
         
   Scenario: Submit new user_intake with billing same as user
     When I check "same_as_user"
