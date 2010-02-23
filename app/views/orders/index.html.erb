@@ -39,7 +39,7 @@ Purchased from <a href="http://www.myhalomonitor.com/order">http://www.myhalomon
 		  <% end -%>
 		</td>
 		<td><%= number_to_currency(order.cost, :precision => 2, :unit => '$') %></td>
-		<td><%= link_to truncate(order.comments, 10, "..."),:controller => 'orders',:action => 'comments',:order_id => order.id %></td>
+		<td><%unless order.comments.nil?%><%= link_to truncate(order.comments, 10, "..."),:controller => 'orders',:action => 'comments',:order_id => order.id  %><%end%></td>
 	  </tr>
 	<%end%>
 	<%end%>
