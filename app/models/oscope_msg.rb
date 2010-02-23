@@ -1,28 +1,9 @@
-class OscopeMsg < ActiveRecord::Base
+class OscopeMsg < BundleProcessor
   has_many :points
   belongs_to :oscope_start_msg
   belongs_to :oscope_stop_msg
   
-  #override new so it will accept parse through multiple points in an oscope_msg node  
-  def self.new(oscope_msg=nil)
-    if(!oscope_msg.nil?)
-  	  self.process_oscope_msg(oscope_msg)
-  	  return nil
-	  else
-	    super
-  	end
-  end
-  
-  #initialize will need to be overriden since new() was overriden
-  def self.initialize(oscope_msg=nil)
-    if(oscope_msg.nil?)
-      super
-    else
-      self.new(oscope_msg)
-    end
-  end
-  
-  def self.process_oscope_msg(msg)
+  def self.process_xml_hash(msg)
     timestamp = msg["timestamp"].to_time if msg["timestamp"]
     channel_num = msg["channel_num"].to_i if msg["channel_num"]
     user_id = msg["user_id"].to_i if msg["user_id"]

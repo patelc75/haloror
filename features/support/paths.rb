@@ -10,6 +10,9 @@ module NavigationHelpers
     
     when /the home\s?page/
       '/'
+    when /the new bundle_processor page/
+      new_bundle_processor_path
+
     when /new user_intake page/
       user_intake_form_path
       

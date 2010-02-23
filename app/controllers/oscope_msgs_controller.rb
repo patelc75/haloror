@@ -9,7 +9,7 @@ class OscopeMsgsController < RestfulAuthController
       end
       
       msgs.each do |msg|
-        OscopeMsg.process_oscope_msg(msg)
+        OscopeMsg.process_xml_hash(msg)
       end
       
       respond_to do |format|
