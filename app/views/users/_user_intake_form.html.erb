@@ -67,22 +67,7 @@
           </tr>
           <tr>
           	<td><label for="user_carrier_id">Cell Provider</label>:</td>
-          	<td>
-            <select id="user_carrier_id" name="user[carrier_id]" style="width:220px;">
-	        <% if @user == nil or @user.carrier_id == 0 or @user.carrier_id == nil -%>
-	          <option value="" selected="selected" >
-	          Select Cell Provider for Text Msg </option>
-	        <% end -%>
-	        <% @carrier = Carrier.find(:all, :order => "id")
-	             @carrier.each do |carrier| %>
-	          <option value="<%= carrier.id %>"
-	           <% if @user && @user.carrier_id == carrier.id -%> selected="selected"<% end -%>
-	          >
-	          <%= carrier.name %> 
-	         </option>
-	        <% end %>
-	        </select>
-	        </td>
+          	<td><%= select :user, :carrier_id, Carrier.ordered.collect {|p| [p.name, p.id]}, :include_blank => "Select Cell Provider for Text Msg..." %></td>
 	      </tr>    
           <tr>
 	        <td>Email(optional):</td>
@@ -233,7 +218,7 @@
         <span id="caregiver1_form" <%unless @caregiver1 %>style="display:none"<%end%>>
 	  	<table border="0" width="100%">
 	      <tr>
-		    <td>First Name:</td>
+		    <td><label for="caregiver1_first_name">First Name</label>:</td>
 		    <td><%= text_field :caregiver1, :first_name ,:size => "20"%></td>
 	      </tr>
 	      <tr>

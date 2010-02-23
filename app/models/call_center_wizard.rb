@@ -1,4 +1,4 @@
-require 'ruleby'
+# require 'ruleby'
 class CallCenterWizard < ActiveRecord::Base
   belongs_to :call_center_session
   belongs_to :event
@@ -42,7 +42,7 @@ class CallCenterWizard < ActiveRecord::Base
   RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET_CONTINUE = "Caregiver Not Able to Reset Gateway, Continue."
   CALL_HALO_ADMIN = "Call Halo Admin."
   
-  include Ruleby
+  # include Ruleby
   def first_step()
     self.call_center_session.call_center_steps.sort! do |a, b|
       a.created_at <=> b.created_at

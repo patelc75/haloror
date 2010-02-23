@@ -1,4 +1,4 @@
-require 'ruleby'
+# require 'ruleby'
 class CallCenterRulebook < Ruleby::Rulebook
   def initialize(eng, wizard)
     super(eng)
