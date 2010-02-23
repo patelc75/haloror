@@ -81,31 +81,24 @@ SMTP_SETTINGS_LOCALHOST={
   :port => 25,
   :domain => "halomonitor.com"
 }
-SMTP_SETTINGS_SERVER2={
+SMTP_SETTINGS_LOCALHOST_BACKUP={
   :address => "localhost" ,
   :port => 25,
   :domain => "halomonitor.com"
 }
-SMTP_SETTINGS_NARFONIX = {
-  :address => "mail.haloresearch.net" ,
-  :port => 25,
-  :domain => "haloresearch.net" ,
-  :authentication => :login,
-  :user_name => "chirag@haloresearch.net" ,
-  :password => "irdikt75" 
-}
+
 SMTP_SETTINGS_GMAIL = {
   :address => "smtp.gmail.com" ,
   :port => 587,
   :authentication => :plain,
-  :user_name => "patelc75@gmail.com",
-  :password => "irdikt75" 
+  :user_name => "healthserver@halomonitoring.com",
+  :password => "halo75halo" 
 }
 
 if (ENV['RAILS_ENV'] == 'production')
   ActionMailer::Base.smtp_settings = SMTP_SETTINGS_LOCALHOST
 else
-  ActionMailer::Base.smtp_settings = SMTP_SETTINGS_NARFONIX
+  ActionMailer::Base.smtp_settings = SMTP_SETTINGS_GMAIL
 end
 
 require 'rubygems'

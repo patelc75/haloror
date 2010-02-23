@@ -25,7 +25,7 @@ class ActionMailer::ARMailer < ActionMailer::Base
         end
       end
     rescue Exception => e
-      ActionMailer::Base.smtp_settings = SMTP_SETTINGS_NARFONIX
+      ActionMailer::Base.smtp_settings = SMTP_SETTINGS_GMAIL
       UtilityHelper.safe_send_email("Error sending mail: perform_delivery_activerecord\n  #{e}", 'exceptions@halomonitoring.com')
       ActionMailer::Base.smtp_settings = SMTP_SETTINGS_LOCALHOST
     end
@@ -40,13 +40,13 @@ class ActionMailer::ARMailer < ActionMailer::Base
       end
       if !mail.destinations.blank?
         if ENV['RAILS_ENV'] == 'development' 
-          ActionMailer::Base.smtp_settings = SMTP_SETTINGS_NARFONIX
+          ActionMailer::Base.smtp_settings = SMTP_SETTINGS_GMAIL
           safe_send_emails(mail)
         elsif self.priority > Priority::THRESH_HOLD
           ActionMailer::Base.smtp_settings = SMTP_SETTINGS_LOCALHOST
           safe_send_emails(mail)
         else
-          ActionMailer::Base.smtp_settings = SMTP_SETTINGS_SERVER2
+          ActionMailer::Base.smtp_settings = SMTP_SETTINGS_LOCALHOST_BACKUP
           safe_send_emails(mail)
         end
       end
