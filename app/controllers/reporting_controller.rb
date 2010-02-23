@@ -57,6 +57,7 @@ class ReportingController < ApplicationController
       @groups = Group.find(:all)
 	else
       @groups = current_user.group_memberships
+      @group = @groups.first
     end
     @group_name = ''
     if !params[:group_name].blank?
@@ -289,6 +290,9 @@ class ReportingController < ApplicationController
     	owners = "0"
 	  	@users.each do |user|
 		  owners += "," + user.id.to_s if user.has_role? "halouser", @group
+		  user.has_caregivers.each do |caregiver|
+		  	owners += "," + caregiver.id.to_s
+	      end
 	  	end
 
         @audits = Audit.paginate(

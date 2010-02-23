@@ -1,4 +1,4 @@
-# require 'ruleby'
+require 'ruleby'
 class CallCenterWizard < ActiveRecord::Base
   belongs_to :call_center_session
   belongs_to :event

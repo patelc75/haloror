@@ -23,7 +23,7 @@ module NavigationHelpers
     #     user_profile_path(User.find_by_login($1))
 
     else
-      '#' + $1.downcase.gsub(/ /,'_') # default value = id
+      '#' + scope_name.downcase.gsub(/ /,'_') # default = element id, underscored, lowercase
     end
   end
 end

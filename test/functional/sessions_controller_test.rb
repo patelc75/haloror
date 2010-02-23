@@ -73,6 +73,7 @@
 #     get :new
 #     assert !@controller.send(:logged_in?)
 #   end
+
 # 
 #   protected
 #     def auth_token(token)

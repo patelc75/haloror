@@ -1,3 +1,12 @@
+<% content_for :meta_tags do %>
+  <meta http-equiv="cache-control" content="no-cache"> <!-- tells browser not to cache -->
+  <meta http-equiv="expires" content="0"> <!-- says that the cache expires 'now' -->
+  <meta http-equiv="pragma" content="no-cache"> <!-- says not to use cached stuff, if there is any -->
+  <!-- <meta http-equiv="refresh" content="2"> -->
+<% end -%>
+<% if current_user.is_super_admin? %>
+<p><a href="/orders">DTC Orders table</a></p>
+<% end %>
 <% if @confirmation %>
 <h1>Please verify your order</h1>
 <% end %>
@@ -25,7 +34,7 @@
           <table>
             <% if @confirmation.blank? || (@product == "complete") %>
             <tr>
-              <td><%= radio_button_tag 'product', 'complete', true unless @confirmation %> myHalo Complete ($59/mo)</td>
+              <td><%= radio_button_tag 'product', 'complete', true unless @confirmation %> <label for="product_complete">myHalo Complete</label> ($59/mo)</td>
               <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
               <%= observe_field(:product_complete,
                                 :frequency => 1,
@@ -35,7 +44,7 @@
             <% end -%>
             <% if @confirmation.blank? || (@product == "clip") %>
             <tr>
-              <td><%= radio_button_tag "product", "clip" unless @confirmation %> myHalo Clip ($49/mo)</td>
+              <td><%= radio_button_tag "product", "clip" unless @confirmation %> <label for="product_clip">myHalo Clip</label> ($49/mo)</td>
               <td><%= image_tag 'myhalo-belt-clip.jpg' %></td>
               <%= observe_field(:product_clip,
                                 :frequency => 1,
@@ -121,7 +130,7 @@
         </td>
         <td width="33%">
           <%= f.check_box "bill_address_same", :checked => "#{@same_address}", :disabled => @confirmation %>
-          <label>Same as shipping</label>
+          <label for="order_bill_address_same">Same as shipping</label>
           <%= observe_field(:order_bill_address_same,
                             :on => :click,
                             :function => "if (document.getElementById('order_bill_address_same').checked) { hideDiv('billing_block'); } else { showDiv('billing_block'); }"
@@ -133,20 +142,20 @@
       <tr>
       <td style="vertical-align: top;">
         <p>
-          <label>First name, Last name</label><br />
+          <label for="order_ship_first_name">First name</label>, <label for="order_ship_last_name">Last name</label><br />
           <%= f.text_field "ship_first_name", :class => "required validate-alpha", :disabled => @confirmation %> 
           <%= f.text_field "ship_last_name", :class => "required validate-alpha", :disabled => @confirmation %>
         </p>
         <p>
-          <label>Shipping address</label><br />
+          <label for="order_ship_address">Shipping address</label><br />
           <%= f.text_field "ship_address", :class => "required", :disabled => @confirmation %>
         </p>
         <p>
-          <label>City</label><br />
+          <label for="order_ship_city">City</label><br />
           <%= f.text_field "ship_city", :class => "required", :disabled => @confirmation %>
         </p>
         <p>
-          <label>State</label><br />
+          <label for="order_ship_state">State</label><br />
           <% if @confirmation %>
             <%= f.text_field "ship_state", :disabled => true %>
           <% else %>
@@ -154,15 +163,15 @@
           <% end -%>
         </p>
         <p>
-          <label>Zip</label><br />
+          <label for="order_ship_zip">Zip</label><br />
           <%= f.text_field "ship_zip", :class => "required validate-digits", :size => 10, :disabled => @confirmation %>
         </p>
         <p>
-          <label>Phone</label><br />
+          <label for="order_ship_phone">Phone</label><br />
           <%= f.text_field "ship_phone", :class => "required", :disabled => @confirmation %>
         </p>
         <p>
-          <label>Email</label><br />
+          <label for="order_ship_email">Email</label><br />
           <%= f.text_field "ship_email", :class => "required validate-email", :disabled => @confirmation %>
         </p>
       </td>
@@ -170,20 +179,20 @@
       <td style="vertical-align: top;" width="33%">
         <div id="billing_block" style="margin-left: 5px; display: <%= (@confirmation && @same_address == '') ? 'block' : 'none' %>; margin: 0px; padding: 0px;">
           <p>
-            <label>First name, Last name</label><br />
+            <label for="order_bill_first_name">First name</label>, <label for="order_bill_last_name">Last name</label><br />
             <%= f.text_field "bill_first_name", :class => "required validate-alpha", :disabled => @confirmation %> 
             <%= f.text_field "bill_last_name", :class => "required validate-alpha", :disabled => @confirmation %>
           </p>
           <p>
-            <label>Billing address</label><br />
+            <label for="order_bill_address">Billing address</label><br />
             <%= f.text_field "bill_address", :class => "required", :disabled => @confirmation %>
           </p>
           <p>
-            <label>City</label><br />
+            <label for="order_bill_city">City</label><br />
             <%= f.text_field "bill_city", :class => "required", :disabled => @confirmation %>
           </p>
           <p>
-            <label>State</label><br />
+            <label for="order_bill_state">State</label><br />
             <% if @confirmation %>
               <%= f.text_field "bill_state", :disabled => true %>
             <% else %>
@@ -191,15 +200,15 @@
             <% end -%>
           </p>
           <p>
-            <label>Zip</label><br />
+            <label for="order_bill_zip">Zip</label><br />
             <%= f.text_field "bill_zip", :class => "required validate-digits", :size => 10, :disabled => @confirmation %>
           </p>
           <p>
-            <label>Phone</label><br />
+            <label for="order_bill_phone">Phone</label><br />
             <%= f.text_field "bill_phone", :class => "required", :disabled => @confirmation %>
           </p>
           <p>
-            <label>Email</label><br />
+            <label for="order_bill_email">Email</label><br />
             <%= f.text_field "bill_email", :class => "required validate-email", :disabled => @confirmation %>
           </p>
         </div>
@@ -207,15 +216,15 @@
       
       <td style="vertical-align: top;">
         <p>
-          <label>Card number</label><br />
-          <%= f.text_field "card_number", :class => "required validate-card", :size => 20, :disabled => @confirmation %>
+          <label for="order_card_number">Card number</label><br />
+          <%= f.text_field "card_number", :class => "required", :size => 20, :disabled => @confirmation %>
         </p>
         <p>
-          <label>Expiration (Month/Year)</label><br />
+          <label for="order_card_expiry">Expiration</label> (Month/Year)<br />
           <%= f.date_select "card_expiry", :class => "required", :order => [:month, :year], :disabled => @confirmation  %>
         </p>
         <p>
-          <label>Card Type</label><br />
+          <label for="order_card_type">Card Type</label><br />
           <% if @confirmation %>
             <%= f.text_field "card_type", :class => "required", :disabled => true %>
           <% else %>
@@ -223,8 +232,8 @@
           <% end -%>
         </p>
         <p>
-          <label>CSC (Card Security Code)</label><br />
-            <%= f.password_field "card_csc", :class => "required validate-digits", :size => 4, :disabled => @confirmation %>
+          <label for="order_card_csc">CSC</label> (Card Security Code)<br />
+            <%= f.password_field "card_csc", :class => "required", :size => 4, :disabled => @confirmation %>
         </p>
         <span class="hint">Note: The CSC is located on the back of <%= link_to "MasterCard, VISA, or Discover", image_path("CVC2SampleVisaNew.png"), :rel => "facebox" %> cards and is typically a separate group of 3 digits to the right of signature strip. On <%= link_to "American Express", image_path("CIDSampleAmex.png"), :rel => "facebox" %> cards, the CSC is a 4 digit code on the front towards the right.</span>
         <p>
@@ -244,12 +253,18 @@
 
 
 <script type="text/javascript" charset="utf-8">
+  //
+  showBillingDetails();
+  toggleProductDetails();
+  
   // billing address bug fix. frequency was not triggering it on back()
   //
-  if (document.getElementById('order_bill_address_same').checked) { 
-    hideDiv('billing_block');
-  } else {
-    showDiv('billing_block');
+  function showBillingDetails() {
+    if (document.getElementById('order_bill_address_same').checked) { 
+      hideDiv('billing_block');
+    } else {
+      showDiv('billing_block');
+    }
   }
   // javasript form validation
   //
@@ -264,16 +279,16 @@
 
   // hide, show elements
   //
-  function toggleDiv(what)
-  {
-    found = document.getElementById(what);
-    if (found.style.display == "block") {
-      found.style.display = "none";
-    }
-    else {
-      found.style.display = "block";
-    }
-  }
+  // function toggleDiv(what)
+  // {
+  //   found = document.getElementById(what);
+  //   if (found.style.display == "block") {
+  //     found.style.display = "none";
+  //   }
+  //   else {
+  //     found.style.display = "block";
+  //   }
+  // }
   
   function showDiv(what) {
     document.getElementById(what).style.display = "block";

@@ -202,4 +202,11 @@ module UtilityHelper
       true
     end    
   end
+
+  # split a phrase into array
+  #   trim extra spaces on both sides for every element
+  #
+  def split_phrase(phrase, delimeter = ' ')
+    phrase.blank? ? [""] : phrase.split(delimeter).collect {|p| p.lstrip.rstrip}
+  end
 end

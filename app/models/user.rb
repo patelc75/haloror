@@ -65,7 +65,7 @@ class User < ActiveRecord::Base
   before_save :encrypt_password
   before_create :make_activation_code
   def before_validation
-  	    self.email = "no-email@halomonitoring.com" if self.email == ''
+        self.email = "no-email@halomonitoring.com" if self.email == ''
   end
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
@@ -82,14 +82,14 @@ class User < ActiveRecord::Base
   end
   
   def get_gateway
-  	gateway = nil
-  	self.devices.each do |device|
-  		if device.device_type == "Gateway"
-  			gateway = device
-  			break
-  		end
-  	end
-  	gateway
+    gateway = nil
+    self.devices.each do |device|
+      if device.device_type == "Gateway"
+        gateway = device
+        break
+      end
+    end
+    gateway
   end
   
   def get_strap
@@ -136,20 +136,20 @@ class User < ActiveRecord::Base
     end
   end
   def full_name
-  	self.profile.first_name && self.profile.last_name ? self.profile.first_name + " " + self.profile.last_name : nil
+    self.profile.first_name && self.profile.last_name ? self.profile.first_name + " " + self.profile.last_name : nil
   end
   def address
-  	address = self.profile.address
-  	pcity = self.profile.city
-  	pstate = self.profile.state
-  	zipcode = self.profile.zipcode
-  	address && pcity && pstate && zipcode ? address + ', ' + pcity + ', ' + pstate + ' - ' + zipcode : nil
+    address = self.profile.address
+    pcity = self.profile.city
+    pstate = self.profile.state
+    zipcode = self.profile.zipcode
+    address && pcity && pstate && zipcode ? address + ', ' + pcity + ', ' + pstate + ' - ' + zipcode : nil
   end
   def carrier
-  	self.profile.cell_phone && self.profile.carrier_id ? self.profile.carrier.name : nil
+    self.profile.cell_phone && self.profile.carrier_id ? self.profile.carrier.name : nil
   end
   def emergency_number_with_name
-  	self.profile.emergency_number_id ? self.profile.emergency_number.name + ' - ' + self.profile.emergency_number.number : nil
+    self.profile.emergency_number_id ? self.profile.emergency_number.name + ' - ' + self.profile.emergency_number.number : nil
   end
   def activated?
     # the existence of an activation code means they have not activated yet
@@ -207,9 +207,9 @@ class User < ActiveRecord::Base
   end
   
   def get_patients
-    # 	@x = Array.new
-    # 	for role in roles
-    # 	 @X << [role.authorizable_id, role.Auth
+    #   @x = Array.new
+    #   for role in roles
+    #    @X << [role.authorizable_id, role.Auth
     #   end
   end
   
@@ -356,34 +356,34 @@ class User < ActiveRecord::Base
   end
   
   def group_memberships_by_role(role)
-  	groups = []
-  	@role = Role.find_by_name(role)
-  	groups << Group.find(@role.authorizable_id)
+    groups = []
+    @role = Role.find_by_name(role)
+    groups << Group.find(@role.authorizable_id)
   end
   
   def group_sales_type
-  	self.is_halouser_for_what.each do |group|
-  		if !group.nil? and group.sales_type != 'call_center'
-  			return group.sales_type
-  		end
-  	end
+    self.is_halouser_for_what.each do |group|
+      if !group.nil? and group.sales_type != 'call_center'
+        return group.sales_type
+      end
+    end
   end
   
   def group_recurring_charge
-  	#self.group_memberships_by_role('halouser').first.recurring_charges.length > 0 ? self.group_memberships_by_role('halouser').first.recurring_charges.first.group_charge : AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL
-  	
-  	group_charge = 0;
-  	
-  	self.is_halouser_for_what.each do |group|
-  		if !group.nil? and group.sales_type != 'call_center'
-  			if group.recurring_charges.length > 0
-  			  group_charge = group.recurring_charges.first.group_charge
-  			end
-  		end
-  	end
-  	
-  	group_charge == 0 ? AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL : group_charge
-  	
+    #self.group_memberships_by_role('halouser').first.recurring_charges.length > 0 ? self.group_memberships_by_role('halouser').first.recurring_charges.first.group_charge : AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL
+    
+    group_charge = 0;
+    
+    self.is_halouser_for_what.each do |group|
+      if !group.nil? and group.sales_type != 'call_center'
+        if group.recurring_charges.length > 0
+          group_charge = group.recurring_charges.first.group_charge
+        end
+      end
+    end
+    
+    group_charge == 0 ? AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL : group_charge
+    
   end
   
   def is_moderator_of_any?(groups)
@@ -614,6 +614,7 @@ class User < ActiveRecord::Base
     script = scripts[key]
     return script
   end
+  
   def get_script(key, operator, event)
     now = Time.now
     minutes = ((now - event.timestamp_server) / (60)).round
@@ -640,69 +641,70 @@ class User < ActiveRecord::Base
         script = scripts[key]
         return script
   end 
-
-  def self.populate_caregiver(email,senior_id=nil, position = nil,login = nil,profile_hash = nil)
-  	existing_user = User.find_by_email(email)
-  	if !login.nil? and login != ""
-  	  @user = User.find_by_login(login)
-  	  @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
-  	elsif !existing_user.nil? 
-  	  @user = existing_user
-  	  @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
-	else
-  	  @user = User.new
-  	  @user.email = email
-  	end
-  	
-  	if !@user.email.blank?
-		@user.is_new_caregiver = true
-  		@user[:is_caregiver] =  true
-  		@user.save!
-
-  		if @user.profile.blank?
-  		  if profile_hash.blank?
-  		    profile = Profile.new(:user_id => @user.id)
-  		  else
-  		    profile = case profile_hash.is_a?
-  		    when Profile
-  		      profile_hash # its Profile instance already
-		      when Hash
-		        Profile.new(profile_hash)
-  		    end
-  		  end
-  		  profile[:is_new_caregiver] = true
-  		  profile.save!
-  		  @user.profile = profile
-  		end
-  		
-  		senior = User.find(senior_id)
-
-  		if position.blank?
-  		  position = self.get_max_caregiver_position(senior)
-  		end
-  		
-  		role = @user.has_role 'caregiver', senior #if 'caregiver' role already exists, it will return nil
-  		
-  		if !role.nil? #if role.nil? then the roles_user does not exist already
-  		  @roles_user = senior.roles_user_by_caregiver(@user)
-
-  		  self.update_from_position(position, @roles_user.role_id, @user.id)
-        #enable_by_default(@roles_user)      
   
-  		  RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0) 
+  # email = caregiver email
+  # seniod_id = senior id
+  # return variable = caregiver object
+  def self.populate_caregiver(email,senior_id=nil, position = nil,login = nil,profile_hash = nil)#, roles_users_hash = {})
+    existing_user = User.find_by_email(email)
+    if !login.nil? and login != ""
+      @user = User.find_by_login(login)
+      @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+    elsif !existing_user.nil? 
+      @user = existing_user
+      @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+    else
+      @user = User.new
+      @user.email = email
+    end
+    
+    # WARNING: some bug here. DO NOT USE 'case' within 'if' this would not execute conditionally!
+    #
+    if !@user.email.blank?
+      @user.is_new_caregiver = true
+      @user[:is_caregiver] =  true
+      @user.save!
+
+      if @user.profile.blank?
+        if profile_hash.blank?
+          profile = Profile.new(:user_id => @user.id)
+        else
+          if profile_hash.is_a?( Profile)
+            profile = profile_hash # its Profile instance already
+          elsif profile_hash.is_a?( Hash)
+            profile = Profile.new(profile_hash)
+          end
+        end
+        profile[:is_new_caregiver] = true
+        profile.save!
+        @user.profile = profile
       end
-          
-    	UserMailer.deliver_caregiver_email(@user, senior)
+      senior = User.find(senior_id)
+
+      if position.blank?
+        position = self.get_max_caregiver_position(senior)
+      end
+      
+      role = @user.has_role 'caregiver', senior #if 'caregiver' role already exists, it will return nil
+      
+      if !role.nil? #if role.nil? then the roles_user does not exist already
+        @roles_user = senior.roles_user_by_caregiver(@user)
+
+        self.update_from_position(position, @roles_user.role_id, @user.id)
+        #enable_by_default(@roles_user)      
+        RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0)#, :email_active => (roles_users_hash["email_active"] == "1"), :is_keyholder => (roles_users_hash["is_keyholder"] == "1"))
+      end
+      UserMailer.deliver_caregiver_email(@user, senior)
     end
     @user
   end
   
   def self.resend_mail(id,senior)
-  	@user = User.find(id)
-  	@user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
-  	@user.save
-  	@senior = User.find(senior)
-  	UserMailer.deliver_caregiver_email(@user, @senior)
+    @user = User.find(id)
+    @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+    @user.save
+    @senior = User.find(senior)
+    UserMailer.deliver_caregiver_email(@user, @senior)
   end
   
   def self.get_max_caregiver_position(user)
@@ -730,106 +732,106 @@ class User < ActiveRecord::Base
   end
   
   def get_call_halo_admin()
-      info = <<-eos	
+      info = <<-eos 
         <div style="font-size: x-large"><font color="white">"Call Halo Admin in <a href="/call_center/faq">FAQ</a>."</div>
         eos
       return info
     
   end
   def get_help_coming_soon()
-      info = <<-eos	
+      info = <<-eos 
         <font color="white">Recite this script:</font><br>
         <i><div style="font-size: 150%; color: yellow;">"There will be somebody there to help you soon. If we can't reach your caregivers, we will dispatch an ambulance. Goodbye."</div></i>
         eos
       return info
   end
   def get_user_able_to_reset()
-    info = <<-eos	
-	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"If you’re not able to press the Gateway reset button, we will be calling you back at this number. Thank you. Goodbye"</div></i>
-	  eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"If you’re not able to press the Gateway reset button, we will be calling you back at this number. Thank you. Goodbye"</div></i>
+    eos
     return info
   end
   def get_user_not_able_to_reset_continue()
-    info = <<-eos	
-	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"If you’re not able to press the Gateway reset button, we will be calling you back at this number. Thank you. Goodbye"</div></i>
-	  eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"If you’re not able to press the Gateway reset button, we will be calling you back at this number. Thank you. Goodbye"</div></i>
+    eos
     return info
   end
   def get_user_not_able_to_reset()
-    info = <<-eos	
-	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it."</div></i>
-	  eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it."</div></i>
+    eos
     return info
   end
   def get_user_recontact_ok()
-    info = <<-eos	
-	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Will you be able to locate and press the red alarm reset button on the Halo gateway for #{name}? It will be beeping loudly."</div></i>
-	  eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"Will you be able to locate and press the red alarm reset button on the Halo gateway for #{name}? It will be beeping loudly."</div></i>
+    eos
     return info
   end
   
   def get_user_recontact(minutes, operator)
     first_name = ''
     first_name = self.profile.first_name if self.profile && self.profile.first_name
-    info = <<-eos	
-	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"My name is #{operator.name} calling on behalf of Halo Monitoring. We are calling to follow up #{name}’s fall. We have detected that no one has pushed the alarm reset button on #{first_name}'s Halo Gateway. Can you please verify that #{first_name}'s Fall has been successfully resolved?"</div></i>
-	  eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"My name is #{operator.name} calling on behalf of Halo Monitoring. We are calling to follow up #{name}’s fall. We have detected that no one has pushed the alarm reset button on #{first_name}'s Halo Gateway. Can you please verify that #{first_name}'s Fall has been successfully resolved?"</div></i>
+    eos
     return info
   end
   def get_caregiver_recontact_responsibilty()
-    info = <<-eos	
-	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Will you be able to locate and press the red alarm reset button on the Halo gateway for #{name}?. It will be beeping loudly."</div></i>
-	  eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"Will you be able to locate and press the red alarm reset button on the Halo gateway for #{name}?. It will be beeping loudly."</div></i>
+    eos
     return info
   end
   
   def get_caregiver_able_to_reset()
-    info = <<-eos	
-	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"If you’re not able to press the Gateway reset button, we will be calling you back at this number. Thank you. Goodbye"</div></i>
-	  eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"If you’re not able to press the Gateway reset button, we will be calling you back at this number. Thank you. Goodbye"</div></i>
+    eos
     return info
   end
   def get_caregiver_not_able_to_reset_continue()
-    info = <<-eos	
-	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"If you’re not able to press the Gateway reset button, we will be calling you back at this number. Thank you. Goodbye"</div></i>
-	  eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"If you’re not able to press the Gateway reset button, we will be calling you back at this number. Thank you. Goodbye"</div></i>
+    eos
     return info
   end
   def get_caregiver_not_able_to_reset()
-    info = <<-eos	
-	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it."</div></i>
-	  eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it."</div></i>
+    eos
     return info
   end
   def get_caregiver_recontact(minutes)
-    info = <<-eos	
-	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"We called you #{minutes} minutes ago about #{name}’s fall. We have detected that no one has pushed the alarm reset button on your Halo Gateway. Can you please verify that #{name} is safe and been attended to?"</div></i>
-	  eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"We called you #{minutes} minutes ago about #{name}’s fall. We have detected that no one has pushed the alarm reset button on your Halo Gateway. Can you please verify that #{name} is safe and been attended to?"</div></i>
+    eos
     return info
   end
   def get_user_good_bye_script()
-    info = <<-eos	
-	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it.  Thank You.  Good Bye."</div></i>
-	  eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it.  Thank You.  Good Bye."</div></i>
+    eos
     return info
   end
   
   def get_caregiver_good_bye_script()
-    info = <<-eos	
-	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it.  Thank You.  Good Bye."</div></i>
-	  eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it.  Thank You.  Good Bye."</div></i>
+    eos
     return info
   end
   
@@ -870,17 +872,17 @@ class User < ActiveRecord::Base
     caregiver_name = ''
     caregiver_name = ncg.name if ncg
     if !caregiver_name.blank?
-      info = <<-eos	
-  	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size: 150%; color: yellow;">"Thank You.  We will be contacting #{caregiver_name}, the next caregiver.  Good Bye."</div></i>
-  	  eos
+      info = <<-eos 
+      <font color="white">Recite this script:</font><br>
+      <i><div style="font-size: 150%; color: yellow;">"Thank You.  We will be contacting #{caregiver_name}, the next caregiver.  Good Bye."</div></i>
+      eos
       return info
     else  service_name = 'local emergency service'
       service_name = self.profile.emergency_number.name if self.profile.emergency_number
-      info = <<-eos	
-  	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size: 150%; color: yellow;">"Thank You.  We will now be calling #{service_name} to dispatch an amublance. Good Bye."</div></i>
-  	  eos
+      info = <<-eos 
+      <font color="white">Recite this script:</font><br>
+      <i><div style="font-size: 150%; color: yellow;">"Thank You.  We will now be calling #{service_name} to dispatch an amublance. Good Bye."</div></i>
+      eos
       return info
     
     end
@@ -888,10 +890,10 @@ class User < ActiveRecord::Base
   def get_thank_you_pre_agent
     service_name = 'local emergency service'
     service_name = self.profile.emergency_number.name if self.profile.emergency_number
-    info = <<-eos	
-	  <font color="white">Recite this script:</font><br>
-	  <i><div style="font-size: 150%; color: yellow;">"Thank You.  We will now be calling #{service_name} to dispatch an amublance. Good Bye."</div></i>
-	  eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"Thank You.  We will now be calling #{service_name} to dispatch an amublance. Good Bye."</div></i>
+    eos
     return info
   end
   def get_user_ok_script(operator,event)
@@ -901,15 +903,15 @@ class User < ActiveRecord::Base
       event_type = get_event_type(event)
     end
     if !self.active_caregivers.blank?
-      info = <<-eos	
-  	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring. We have detected a #{event_type}. Would you like us to call your caregivers to help you?"</div></i>
-  	  eos
-	  else
-	    info = <<-eos	
-  	  <font color="white">Recite this script:</font><br>
-  	  <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring. We have detected a #{event_type}. Would you like us to dispatch an ambulance for you?"</div></i>
-  	  eos
+      info = <<-eos 
+      <font color="white">Recite this script:</font><br>
+      <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring. We have detected a #{event_type}. Would you like us to call your caregivers to help you?"</div></i>
+      eos
+    else
+      info = <<-eos 
+      <font color="white">Recite this script:</font><br>
+      <i><div style="font-size: 150%; color: yellow;">"Hello #{self.profile.first_name}, my name is #{operator.name} representing Halo Monitoring. We have detected a #{event_type}. Would you like us to dispatch an ambulance for you?"</div></i>
+      eos
     end
     return info
   end
@@ -918,24 +920,24 @@ class User < ActiveRecord::Base
     if event_type == CallCenterFollowUp.class_name
       event_type = get_event_type(event)
     end
-    info = <<-eos	
-  	<font color="white">Recite this script:</font><br>
-  	<i><div style="font-size: 150%; color: yellow;">Hello #{caregiver.profile.first_name}, my name is #{operator.name} representing Halo Monitoring. We have detected a #{event_type} for #{self.name}. Do you accept responsibility for handling #{self.name}'s #{event_type}?</div></i>
-  	eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">Hello #{caregiver.profile.first_name}, my name is #{operator.name} representing Halo Monitoring. We have detected a #{event_type} for #{self.name}. Do you accept responsibility for handling #{self.name}'s #{event_type}?</div></i>
+    eos
     return info
   end
   def get_caregiver_are_you_at_house_script(caregiver)
-    info = <<-eos	
-  	<font color="white">Recite this script:</font><br>
-  	<i><div style="font-size: 150%; color: yellow;">Are you at #{self.profile.first_name}'s house?</div></i>
-  	eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">Are you at #{self.profile.first_name}'s house?</div></i>
+    eos
     return info
   end
   def get_caregiver_go_to_house_script(caregiver)
-    info = <<-eos	
-  	<font color="white">Recite this script:</font><br>
-  	<i><div style="font-size: 150%; color: yellow;">Can you go to #{self.profile.first_name}'s house to determine if #{self.name} is OK?</div></i>
-  	eos
+    info = <<-eos 
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">Can you go to #{self.profile.first_name}'s house to determine if #{self.name} is OK?</div></i>
+    eos
     return info
   end
   def get_able_to_reach_script_work(user, role)
@@ -993,23 +995,23 @@ class User < ActiveRecord::Base
   end
   
   def get_able_to_reach_script(phone, role, name, place)
-    info = <<-eos	
-	    <div style="font-size: x-large"><font color="white">Call #{role} <b>#{name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
-	    <br><br>
-	    <font color="white">Recite this script:</font><br>
-	    <i><div style="font-size: 150%; color: yellow;">"Can I speak to #{name}?"</div></i>
-	    <br><br>
-	    Were you able to reach #{name} at #{place}?
-		  eos
+    info = <<-eos 
+      <div style="font-size: x-large"><font color="white">Call #{role} <b>#{name}</b> at #{place} <b>#{format_phone(phone)}</b></font></div>
+      <br><br>
+      <font color="white">Recite this script:</font><br>
+      <i><div style="font-size: 150%; color: yellow;">"Can I speak to #{name}?"</div></i>
+      <br><br>
+      Were you able to reach #{name} at #{place}?
+      eos
     return info
   end
   
   def get_user_script(operator, event, phone)
     info = <<-eos
-		<font color="white">Recite this script:</font><br>
-		<i><div style="font-size: 150%; color: yellow;">"Would you like us to dispatch an ambulance for you?"
-		</div></i>
-		eos
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"Would you like us to dispatch an ambulance for you?"
+    </div></i>
+    eos
     return info
   end
   
@@ -1030,34 +1032,34 @@ class User < ActiveRecord::Base
     caregiver_name = ncg.name if ncg
     if !caregiver_name.blank?
       info = <<-eos
-		  <font color="white">Recite this script:</font><br>
-		  <i><div style="font-size: 150%; color: yellow;">"Would you like for an ambulance to be dispatched for #{self.name}?"
-		  </div></i>
-		  eos
+      <font color="white">Recite this script:</font><br>
+      <i><div style="font-size: 150%; color: yellow;">"Would you like for an ambulance to be dispatched for #{self.name}?"
+      </div></i>
+      eos
       return info
     else
         info = <<-eos
-  		  <font color="white">Recite this script:</font><br>
-  		  <i><div style="font-size: 150%; color: yellow;">"Would you like for an ambulance to be dispatched for #{self.name}?"
-  		  </div></i>
-  		  eos
+        <font color="white">Recite this script:</font><br>
+        <i><div style="font-size: 150%; color: yellow;">"Would you like for an ambulance to be dispatched for #{self.name}?"
+        </div></i>
+        eos
         return info      
     end
   end
   def get_on_behalf_script(name)
     info = <<-eos
-		<font color="white">Recite this script:</font><br>
-		<i><div style="font-size: 150%; color: yellow;">"Can you call 911 on behalf of #{name}?
-		</div></i>
-		eos
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"Can you call 911 on behalf of #{name}?
+    </div></i>
+    eos
     return info
   end
   def get_on_behalf_script_orig(name)
     info = <<-eos
-		<font color="white">Recite this script:</font><br>
-		<i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it.  Thank You.  Good Bye."
-		</div></i>
-		eos
+    <font color="white">Recite this script:</font><br>
+    <i><div style="font-size: 150%; color: yellow;">"Please make sure that the red reset button on the gateway device is pressed.  The Halo Gateway is a black box, probably near the computer or internet router. It has green and red lights and says Halo on it. If it is still beeping, please press the red button to reset it.  Thank You.  Good Bye."
+    </div></i>
+    eos
     return info
   end
   def get_ambulance_start_script(operator, event)
@@ -1070,10 +1072,10 @@ class User < ActiveRecord::Base
     number = ''
     number = self.profile.emergency_number.number if self.profile.emergency_number
     info = <<-eos
-		<div style="font-size: x-large"><b><font color="white">Call #{service_name} at #{number}</font></b></div>
-		<br><br>
-		<font color="white">Recite this script:</font><br><br>
-		<i><div style="font-size: 150%; color: yellow;">"My name is #{operator.name} representing Halo Monitoring. We have  
+    <div style="font-size: x-large"><b><font color="white">Call #{service_name} at #{number}</font></b></div>
+    <br><br>
+    <font color="white">Recite this script:</font><br><br>
+    <i><div style="font-size: 150%; color: yellow;">"My name is #{operator.name} representing Halo Monitoring. We have  
     detected a #{event_type} for #{self.name} and have the approval to dispatch an  
     ambulance. Can you dispatch an ambulance?”</div></i>
     <br><br>
@@ -1095,17 +1097,17 @@ class User < ActiveRecord::Base
     number = ''
     number = self.profile.emergency_number.number if self.profile.emergency_number
     info = <<-eos
-		<font color="white">Recite this script:</font><br><br>
-		<i><div style="font-size: 150%; color: yellow;">"Please send amublance to<br>
-		<br>
-		#{self.profile.address}<br>
-		#{self.profile.city}, #{self.profile.state} #{self.profile.zipcode}<br>"
-		</div></i>
-		<br><br>
-		<i><div style="font-size: 150%; color: yellow;">#{self.vitals_text}</div></i>
-		<br><br>
-		Was the ambulance dispatched properly?
-		eos
+    <font color="white">Recite this script:</font><br><br>
+    <i><div style="font-size: 150%; color: yellow;">"Please send amublance to<br>
+    <br>
+    #{self.profile.address}<br>
+    #{self.profile.city}, #{self.profile.state} #{self.profile.zipcode}<br>"
+    </div></i>
+    <br><br>
+    <i><div style="font-size: 150%; color: yellow;">#{self.vitals_text}</div></i>
+    <br><br>
+    Was the ambulance dispatched properly?
+    eos
     return info
   end
   def vitals_text

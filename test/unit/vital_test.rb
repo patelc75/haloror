@@ -1,3 +1,5 @@
+# 2010-02-17 does not exist in schema
+#
 # require File.dirname(__FILE__) + '/../test_helper'
 # 
 # class VitalTest < Test::Unit::TestCase

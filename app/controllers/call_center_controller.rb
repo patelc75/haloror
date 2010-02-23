@@ -10,27 +10,32 @@ class CallCenterController < ApplicationController
     conditions = ''
     
     if !current_user.is_super_admin?
-      groups = current_user.group_memberships
+      @groups = current_user.group_memberships
       g_ids = []
       g_ids << 0
-      groups.each do |group|
+      @groups.each do |group|
         g_ids << group.id if(current_user.is_admin_of?(group) || current_user.is_operator_of?(group))
       end
       group_ids = g_ids.join(', ')
       RAILS_DEFAULT_LOGGER.warn(group_ids)
       conditions = "(event_type = 'Fall' or event_type = 'Panic') AND events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids})))"
     else
+      @groups = Group.find(:all)  
       conditions = "event_type = 'Fall' or event_type = 'Panic'"
+    end
+    if params[:group_name] and params[:group_name] != "Choose a Group"
+        group = Group.find_by_name(params[:group_name])
+      conditions = "(event_type = 'Fall' or event_type = 'Panic') AND events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id = #{group.id}))"
     end
     @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => conditions, :per_page => events_per_page
     
     @user_begin_time = params[:begin_time]
     @user_end_time = params[:end_time]
     if !@user_end_time.blank? && !@user_begin_time.blank?
-    	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
-    	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
-    	@events = Event.find(:all, :conditions => conditions)
-    	@events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => ["timestamp >= ? AND timestamp <= ? and id IN (?)", @begin_time, @end_time,@events], :per_page => events_per_page
+      @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+      @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
+      @events = Event.find(:all, :conditions => conditions)
+      @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => ["timestamp >= ? AND timestamp <= ? and id IN (?)", @begin_time, @end_time,@events], :per_page => events_per_page
     end
   end 
   
@@ -93,61 +98,61 @@ class CallCenterController < ApplicationController
   end
 
   def test_alarm
-  	@event = Event.find(params[:id])
-  	
+    @event = Event.find(params[:id])
+    
     action = EventAction.new
     action.user_id = current_user.id
     action.event_id = params[:id]
     action.description = 'test_alarm'
     action.save!
     ea = action      
-  	
+    
     render :partial => 'test_alarm', :locals => {:event => Event.find(params[:id])}
   end
   
   def false_alarm
-  	@event = Event.find(params[:id])
-  	
+    @event = Event.find(params[:id])
+    
     action = EventAction.new
     action.user_id = current_user.id
     action.event_id = params[:id]
     action.description = 'false_alarm'
     action.save!
     ea = action      
-  	
+    
     render :partial => 'false_alarm', :locals => {:event => Event.find(params[:id])}
   end
   
   def real_alarm
-  	@event = Event.find(params[:id])
-  	
-  	action = EventAction.new
+    @event = Event.find(params[:id])
+    
+    action = EventAction.new
     action.user_id = current_user.id
     action.event_id = params[:id]
     action.description = 'real_alarm'
     action.save!
     ea = action      
-  	
+    
     render :partial => 'real_alarm', :locals => {:event => Event.find(params[:id])}
   end
   
   def non_emerg_panic
-  	@event = Event.find(params[:id])
-  	
+    @event = Event.find(params[:id])
+    
     action = EventAction.new
     action.user_id = current_user.id
     action.event_id = params[:id]
     action.description = 'non_emerg_panic'
     action.save!
     ea = action      
-  	
+    
     render :partial => 'non_emerg_panic', :locals => {:event => Event.find(params[:id])}
   end
   
   def undo_action
-  	@event_action = EventAction.find_by_event_id(params[:id])
-  	@event_action.destroy
-  	render :partial => 'mark_event',:locals => {:event => Event.find(params[:id])}
+    @event_action = EventAction.find_by_event_id(params[:id])
+    @event_action.destroy
+    render :partial => 'mark_event',:locals => {:event => Event.find(params[:id])}
   end
   
   def script_wizard
@@ -393,8 +398,8 @@ class CallCenterController < ApplicationController
   end
   
   def call_center_response
-  	@event = Event.find(params[:id])
-  	@event.update_attributes(:call_center_response => params[:call_center_response])
+    @event = Event.find(params[:id])
+    @event.update_attributes(:call_center_response => params[:call_center_response])
     render :update do |page|
       page.replace_html 'div_' +@event.id.to_s, :partial => 'call_center_response'
       page.replace_html 'div_response_' +@event.id.to_s, :partial => 'response_time'
@@ -402,14 +407,14 @@ class CallCenterController < ApplicationController
   end
   
   def enter_call_center_response
-  	@event = Event.find(params[:id])
+    @event = Event.find(params[:id])
     render :update do |page|
       page.replace_html 'div_' +@event.id.to_s, :partial => 'enter_call_center_response'
     end
   end
   
   def edit_call_center_response
-  	@event = Event.find(params[:id])
+    @event = Event.find(params[:id])
     render :update do |page|
       page.replace_html 'div_' +@event.id.to_s, :partial => 'edit_call_center_response'
       page.replace_html 'div_response_' +@event.id.to_s, :partial => 'response_time'

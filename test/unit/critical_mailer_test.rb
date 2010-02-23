@@ -16,21 +16,22 @@
 #     @expected.mime_version = '1.0'
 #   end
 # 
-#   # def test_fall
-#   #   @expected.subject = 'CriticalMailer#fall'
-#   #   @expected.body    = read_fixture('fall')
-#   #   @expected.date    = Time.now
-#   # 
-#   #   # assert_equal @expected.encoded, CriticalMailer.create_fall(@expected.date).encoded
-#   # end
+
+#   def test_fall
+#     @expected.subject = 'CriticalMailer#fall'
+#     @expected.body    = read_fixture('fall')
+#     @expected.date    = Time.now
 # 
-#   # def test_panic
-#   #   @expected.subject = 'CriticalMailer#panic'
-#   #   @expected.body    = read_fixture('panic')
-#   #   @expected.date    = Time.now
-#   # 
-#   #   # assert_equal @expected.encoded, CriticalMailer.create_panic(@expected.date).encoded
-#   # end
+#     assert_equal @expected.encoded, CriticalMailer.create_fall(@expected.date).encoded
+#   end
+# 
+#   def test_panic
+#     @expected.subject = 'CriticalMailer#panic'
+#     @expected.body    = read_fixture('panic')
+#     @expected.date    = Time.now
+# 
+#     assert_equal @expected.encoded, CriticalMailer.create_panic(@expected.date).encoded
+#   end
 # 
 #   private
 #     def read_fixture(action)

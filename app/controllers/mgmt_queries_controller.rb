@@ -46,7 +46,12 @@ class MgmtQueriesController < RestfulAuthController
           new_cmd.timestamp_initiated = pending.timestamp_initiated
           new_cmd.cmd_type = pending.cmd_type
           new_cmd.originator = pending.originator
-          new_cmd.cmd_id = pending.cmd_id        
+          new_cmd.cmd_id = pending.cmd_id
+          new_cmd.param1 = pending.param1
+          new_cmd.param2 = pending.param2
+          new_cmd.param3 = pending.param3
+          new_cmd.param4 = pending.param4
+          new_cmd.instantaneous = pending.instantaneous                                            
           new_cmd.save
         end        
       end
@@ -98,8 +103,8 @@ class MgmtQueriesController < RestfulAuthController
       elsif cmd.cmd_type == 'dial_up_num' && cmd.param1 && cmd.param2 && cmd.param3
         @more = {'number' => cmd.param1,'username' => cmd.param2,'password' => cmd.param3,'instantaneous' => cmd.instantaneous }
       elsif cmd.cmd_type == 'dial_up_num_glob_prim' && (cmd.param1 or cmd.param2 or cmd.param3 or cmd.param4)
-        #cmd.cmd_type = 'dial_up_num'
-        
+        cmd.cmd_type = 'dial_up_num'
+        cmd.save
         @local_pri = DialUp.find_by_phone_number(cmd.param1)   
         @local_alt = DialUp.find_by_phone_number(cmd.param2)   
         @global_pri = DialUp.find_by_phone_number(cmd.param3)   

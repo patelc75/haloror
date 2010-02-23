@@ -15,6 +15,12 @@ module NavigationHelpers
       
     when /call list/
       "call_list/show/#{current_user.id}"
+
+    when /the bestbuy store/
+      bestbuy_store_path
+      
+    when /the online store/
+      order_path
       
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

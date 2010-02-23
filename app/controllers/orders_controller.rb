@@ -26,6 +26,7 @@ class OrdersController < ApplicationController
       @order = Order.new(session[:order])
       
     else # store mode
+      # back button needs this
       @same_address ||= (session[:order].blank? ? "checked" : session[:order][:bill_address_same])
       @order ||= (session[:order].blank? ? Order.new : Order.new(session[:order]))
     end
@@ -61,22 +62,25 @@ class OrdersController < ApplicationController
             @order.order_items.create!( :cost => static_cost[product], :quantity => 1, :recurring_monthly => true) if static_cost.has_key?(product)
           
             Order.transaction do
-              one_time_fee, subscription = @order.charge_one_time_and_subscription(product == "complete" ? 5900 : 4900)
-              success = (one_time_fee.success? && subscription.success?) unless (one_time_fee.blank? || subscription.blank?)
+              charges = (product == "complete" ? [43900, 5900] : [40900, 4900])
+              @one_time_fee, @subscription = @order.charge_one_time_and_subscription(charges[0], charges[1])
+              success = (@one_time_fee.success? && @subscription.success?) unless (@one_time_fee.blank? || @subscription.blank?)
             
               if success.blank? || !success
                 goto = "failure"
                 # format.html { render :action => 'failure' }
               else
-                UserMailer.deliver_signup_installation(@order.ship_email,:exclude_senior_info)   
-                UserMailer.deliver_signup_installation(@order.bill_email,:exclude_senior_info)
-                UserMailer.deliver_order_summary(@order, @order.bill_email) #goes to @order.bill_email
-                UserMailer.deliver_order_summary(@order, "senior_signup@halomonitoring.com", :no_email_log) #do not send to email_log@halo
+                [@order.ship_email, @order.bill_email].each do |email|
+                  UserMailer.deliver_signup_installation(email,:exclude_senior_info)
+                end
+                [@order.bill_email, "senior_signup@halomonitoring.com"].each do |email|
+                  UserMailer.deliver_order_summary(@order, email, (email.include?("senior_signup") ? :no_email_log : nil))
+                end
                 flash[:notice] = 'Thank you for your order.'
                 goto = "success"
               end
               reset_session # start fresh
-              @order = nil
+              # @order = nil # fixes #2564. need to check through cucumber
             
             end # order
           end # revision
