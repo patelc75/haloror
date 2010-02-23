@@ -1,7 +1,7 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
 <%=render :partial => 'reporting/nav'%>
 <h2>DTC Orders </h2>
-Purchased from <a href="http://www.myhalomonitor.com/order">http://www.myhalomonitor.com/order</a>
+Purchased from <%= link_to 'http://'+ServerInstance.current_host+'/order' %>
 <br>
 <br>
 <table border="1">
