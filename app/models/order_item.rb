@@ -4,19 +4,15 @@ class OrderItem < ActiveRecord::Base
   belongs_to :order
   belongs_to :device_model
   
-  @@product_hash = Hash[
+  PRODUCT_HASH = Hash[
    "myHalo Complete" => "12001002-1", 
    "myHalo Clip"     => "12001008-1" 
    ]
   
-  def self.get_part_num(product_name)
-    @@product_hash[product_name]
-  end
-  
   # Retruns the product type based on device model or recurring charge
   # TODO: change the logic to use device_types table instead of hardcoding the label from @@products_hash
   def product_model
-    part_num_hash = @@product_hash.invert
+    part_num_hash = PRODUCT_HASH.invert
     
     if(recurring_monthly == true)
       "Recurring Monthly"

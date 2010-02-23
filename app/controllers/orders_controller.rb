@@ -57,7 +57,7 @@ class OrdersController < ApplicationController
           #device_name = (product == "complete") ? "Chest Strap, Halo Complete" : "Belt Clip, Halo Clip"
           #device_revision = DeviceRevision.find_by_device_names(device_name)
           product_string = (product == "complete") ? "myHalo Complete": "myHalo Clip"
-          device_model = DeviceModel.find_by_part_number(OrderItem.get_part_num(product_string))
+          device_model = DeviceModel.find_by_part_number(OrderItem::PRODUCT_HASH[product_string])
           unless device_model.blank?
             @order.order_items.create!(:device_model_id => device_model.id, :cost => @order.cost, :quantity => 1)
             static_cost = {"clip" => 49, "complete" => 59}
