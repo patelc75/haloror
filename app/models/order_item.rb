@@ -2,21 +2,30 @@ class OrderItem < ActiveRecord::Base
   include ActionView::Helpers::NumberHelper
   
   belongs_to :order
-  belongs_to :device_revision
+  belongs_to :device_model
   
+  @@product_hash = Hash[
+   "myHalo Complete" => "12001002-1", 
+   "myHalo Clip"     => "12001008-1" 
+   ]
+  
+  def self.get_part_num(product_name)
+    @@product_hash[product_name]
+  end
+  
+  # Retruns the product type based on device model or recurring charge
+  # TODO: change the logic to use device_types table instead of hardcoding the label from @@products_hash
   def product_model
+    part_num_hash = @@product_hash.invert
+    
     if(recurring_monthly == true)
       "Recurring Monthly"
-    else      
-      if DeviceType.find_product_by_any_name("Halo Clip, Belt Clip")
-        label = "myHalo Clip"
-      elsif DeviceType.find_product_by_any_name("Halo Complete, Chest Strap")
-        label = "myHalo Complete"        
+    else
+      if !device_model.nil?
+        label = part_num_hash[device_model.part_number] + " (" + device_model.part_number + ")" 
       else
         label = "Unknown"
       end
-      
-      label = label + " (" + device_revision.revision_model + ")"
     end
   end
   

@@ -54,10 +54,12 @@ class OrdersController < ApplicationController
           # pick any of these hard coded values for now. This will change to device_revisions on order screen
           #
           product = session[:product]
-          device_name = (product == "complete") ? "Chest Strap, Halo Complete" : "Belt Clip, Halo Clip"
-          device_revision = DeviceRevision.find_by_device_names(device_name)
-          unless device_revision.blank?
-            @order.order_items.create!(:device_revision_id => device_revision.id, :cost => @order.cost, :quantity => 1)
+          #device_name = (product == "complete") ? "Chest Strap, Halo Complete" : "Belt Clip, Halo Clip"
+          #device_revision = DeviceRevision.find_by_device_names(device_name)
+          product_string = (product == "complete") ? "myHalo Complete": "myHalo Clip"
+          device_model = DeviceModel.find_by_part_number(OrderItem.get_part_num(product_string))
+          unless device_model.blank?
+            @order.order_items.create!(:device_model_id => device_model.id, :cost => @order.cost, :quantity => 1)
             static_cost = {"clip" => 49, "complete" => 59}
             @order.order_items.create!( :cost => static_cost[product], :quantity => 1, :recurring_monthly => true) if static_cost.has_key?(product)
           
