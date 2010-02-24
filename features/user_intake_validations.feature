@@ -35,21 +35,21 @@ Feature: Manage user_intakes
     Cell phone or Home Phone is required
     """
     
-  Scenario: All valid data. No errors.
-    When I uncheck "no_caregiver_1"
-    And I fill in the following:
-      | user_first_name | myfirstname             |
-      # | user_last_name  | mylastname              |
-      # | user_address    | 110, Madison Ave, NY    |
-      # | user_cross_st   | Street 42               |
-      # | user_city       | NY                      |
-      # | user_state      | NY                      |
-      # | user_zipcode    | 12201                   |
-      # | user_home_phone | 1-517-123-4567          |
-      # | user_cell_phone | 1-917-123-4567          |
-      # | user_work_phone | 1-212-123-4567          |
-      # | users_email     | cuc_senior@chirag.name  |
-    # And I select "verizon" from "user_carrier_id"
-    # And I select "1 Nov 2000" as the "Date of Birth" date
-    # And I choose "user_sex_m"
-    Then page content should have "Thank you"
+  # Scenario: All valid data. No errors.
+  #   When I uncheck "no_caregiver_1"
+  #   And I fill in the following:
+  #     | user_first_name | myfirstname             |
+  #     # | user_last_name  | mylastname              |
+  #     # | user_address    | 110, Madison Ave, NY    |
+  #     # | user_cross_st   | Street 42               |
+  #     # | user_city       | NY                      |
+  #     # | user_state      | NY                      |
+  #     # | user_zipcode    | 12201                   |
+  #     # | user_home_phone | 1-517-123-4567          |
+  #     # | user_cell_phone | 1-917-123-4567          |
+  #     # | user_work_phone | 1-212-123-4567          |
+  #     # | users_email     | cuc_senior@chirag.name  |
+  #   # And I select "verizon" from "user_carrier_id"
+  #   # And I select "1 Nov 2000" as the "Date of Birth" date
+  #   # And I choose "user_sex_m"
+  #   Then page content should have "Thank you"

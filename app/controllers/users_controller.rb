@@ -251,44 +251,55 @@ class UsersController < ApplicationController
   end
   
   def user_intake_form
+    #
+    # TODO: this should go to user_intakes_controller, new and create actions appropriately
+    #
     if request.post?
     	User.transaction do
     		@user_intake = UserIntake.new(params[:user_intake])
-            @user_intake.created_by = current_user.id
-            @user_intake.updated_by = current_user.id
-            @user_intake.kit_serial_number = params[:kit][:serial_number]
-            if params[:user_intakes] and params[:user_intakes][:options] == 'credit_card'
-              @user_intake.credit_debit_card_proceessed = true
-              @user_intake.bill_monthly = false	
-            else
-              @user_intake.bill_monthly = true
-              @user_intake.credit_debit_card_proceessed = false
-            end
-            if @user_intake.save
-    		  populate_user(params[:user],params[:users][:email],params[:group],current_user.id)
+        @user_intake.created_by = @user_intake.updated_by = current_user.id # single line for multiple assignments
+        @user_intake.kit_serial_number = params[:kit][:serial_number]
+        @user_intake.credit_debit_card_proceessed = (!params[:user_intakes].blank? && params[:user_intakes][:options] == 'credit_card')
+        @user_intake.bill_monthly = !@user_intake.credit_debit_card_proceessed # opposite value
+        # if params[:user_intakes] and params[:user_intakes][:options] == 'credit_card'
+        #   @user_intake.credit_debit_card_proceessed = true
+        #   @user_intake.bill_monthly = false 
+        # else
+        #   @user_intake.bill_monthly = true
+        #   @user_intake.credit_debit_card_proceessed = false
+        # end
+        if @user_intake.save
+    		  populate_user(params[:user_profile],params[:user_profile][:email],params[:group],current_user.id)
+    		  #
+    		  # add errors from @profile and @user objects to @user_intake
+    		  #   errors may be caused by activerecord validations of these objects using save!
+    		  #   this will show proper validation errors on the form
+    		  #
+  		    [@profile, @user].each do |obj|
+  		      obj.errors.each_full { |e| @user_intake.errors.add_to_base e } unless obj.errors.count.zero?
+		      end
     		  @user_intake.users.push(@user)
-    		  @senior_user = @user
+    		  @senior_user = @user # FIXME: what is the point of this?
     		  add_kit_number(params[:kit][:serial_number],@senior_user)
     		  if params[:add_caregiver] and params[:add_caregiver] == 'on'
     		    add_caregiver = "0"   #0 for subscriber add as #1 caregiver
     		  else
     		    add_caregiver = "1"   #1 for subscriber do not add as caregiver
     		  end
-    		      params[:same_as_user] and params[:same_as_user] == 'on' ? same_as_senior_bool = true : same_as_senior_bool = false
-    		      subscriber_hash = { "email" => params[:subscribers][:email], 
-    		                          "profile_hash" => params[:subscriber], 
-    		                          "senior_object" => @user, 
-    		                          "same_as_senior" => same_as_senior_bool,
-    		                          "add_as_caregiver" => add_caregiver == "0" ? true : false }
-  	          setup_subscriber subscriber_hash
-  	          
-  	          if same_as_senior_bool == true
-  	            set_roles_users_option(@user,params[:sub_roles_users_option]) if add_caregiver == "0"
-  	            @user_intake.users.push(@user)
-              end
+		      same_as_senior_bool = (!params[:same_as_user].blank? && params[:same_as_user] == 'on') # will set a true/false
+          subscriber = setup_subscriber( { "email" => params[:subscribers][:email], # pass arguments as hash
+		                          "profile_hash" => params[:subscriber], 
+		                          "senior_object" => @user, 
+		                          "same_as_senior" => same_as_senior_bool,
+		                          "add_as_caregiver" => (add_caregiver == "0") })
+          
+          if add_caregiver == "0"
+            set_roles_users_option(subscriber,params[:sub_roles_users_option],@user)
+            @user_intake.users.push(@user)
+          end
 
           #UserMailer.deliver_subscriber_email(@user)
-          UserMailer.deliver_signup_installation(@user,@senior)
+          UserMailer.deliver_signup_installation(@user,@senior_user)
           if add_caregiver == "1"
             if params[:no_caregiver_1].blank? || params[:no_caregiver_1] != "on"
               caregiver1_email = params[:caregiver1][:email]
@@ -323,36 +334,39 @@ class UsersController < ApplicationController
           end
         end
       end
-      #redirect_to '/user/user_intake_form'
-      redirect_to :action => 'user_intake_form_confirm', :id => @user_intake.id
+      #
+      # do not just redirect. stay on the form if @user_intake has validation errors
+      #
+      redirect_to :action => 'user_intake_form_confirm', :id => @user_intake.id if @user_intake.errors.count.zero?
+    end
+
+    # we always need @groups. cannot omit it conditionally.
+    #
+    @groups = []
+    if current_user.is_super_admin?
+      @groups = Group.find(:all)
     else
-      @groups = []
-      if current_user.is_super_admin?
-        @groups = Group.find(:all)
-      else
-        gs = current_user.group_memberships
-        gs.each do |g|
-          @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
-        end
+      gs = current_user.group_memberships
+      gs.each do |g|
+        @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
       end
     end
-=begin 
-    rescue 
-      @user = Profile.new(params[:user])
-      @subscriber = Profile.new(params[:subscriber])
-      @group = params[:group]
-      @groups = []
-      if current_user.is_super_admin?
-        @groups = Group.find(:all)
-      else
-        gs = current_user.group_memberships
-        gs.each do |g|
-          @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
-        end
-      end      
-    render :action => 'user_intake_form'
-=end   
-end
+
+    # rescue 
+    #   @user = Profile.new(params[:user])
+    #   @subscriber = Profile.new(params[:subscriber])
+    #   @group = params[:group]
+    #   @groups = []
+    #   if current_user.is_super_admin?
+    #     @groups = Group.find(:all)
+    #   else
+    #     gs = current_user.group_memberships
+    #     gs.each do |g|
+    #       @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
+    #     end
+    #   end      
+    # render :action => 'user_intake_form'
+  end
   
   def user_intake_form_confirm
   	edit_user_intake_info(params[:id])
@@ -371,6 +385,7 @@ end
     set_roles_users_option(@user.user,roles_users_option,senior) if roles_users_option != nil
     @user
   end
+
   def edit_user_intake_form
     if request.post? #comes here if the form is resubmitted
       @user_intake = UserIntake.find(params[:user_intake_id].to_i)
@@ -510,12 +525,12 @@ end
   
   def set_roles_users_option(caregiver,roles_users_option,senior=nil)
     @senior = senior if senior != nil
-  @roles_users_option = RolesUsersOption.find_by_roles_user_id(@senior.roles_user_by_caregiver(caregiver).id)
-  @roles_users_option.is_keyholder = roles_users_option[:is_keyholder] == '1'? true:false
-  @roles_users_option.phone_active = roles_users_option[:phone_active] == '1'? true:false
-  @roles_users_option.email_active = roles_users_option[:email_active] == '1'? true:false
-  @roles_users_option.text_active = roles_users_option[:text_active] == '1'? true:false
-  @roles_users_option.save
+    @roles_users_option = RolesUsersOption.find_by_roles_user_id(@senior.roles_user_by_caregiver(caregiver).id)
+    @roles_users_option.is_keyholder = roles_users_option[:is_keyholder] == '1'? true:false
+    @roles_users_option.phone_active = roles_users_option[:phone_active] == '1'? true:false
+    @roles_users_option.email_active = roles_users_option[:email_active] == '1'? true:false
+    @roles_users_option.text_active = roles_users_option[:text_active] == '1'? true:false
+    @roles_users_option.save
   end
   
   def signup_details

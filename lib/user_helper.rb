@@ -11,13 +11,12 @@ module UserHelper
     	  unless profile_hash.blank? # FIXME: handle better. 2010-02-01 profile not required for direct_online_customer
           @profile = Profile.new(profile_hash)
           @profile.user_id = @user.id
-          if !@profile.save!
-            raise "Invalid Profile"  
-          end
-          end
-          @group = (group.is_a?(Group) ? group : Group.find_by_name(group)) # 2010-02-01 accept String or Group.instance
-          # role = @user.has_role 'halouser'
-          @user.is_halouser_of @group unless @group.blank? # 2010-02-01 !@group.nil? will have errors later
+          @profile.save! rescue nil # do not throw code to browser here. ! will force validation
+        end
+        # FIXME: avoid instance variable. It is over-written here anyways
+        @group = (group.is_a?(Group) ? group : Group.find_by_name(group)) # 2010-02-01 accept String or Group.instance
+        # role = @user.has_role 'halouser'
+        @user.is_halouser_of @group unless @group.blank? # 2010-02-01 !@group.nil? will have errors later
         # if opt_out_call_center.blank?
         @group = Group.find_or_create_by_name('safety_care') #FIXME: just create if it does not exist
         # raise "safety_care group missing!" if @group.nil? 
@@ -52,31 +51,41 @@ module UserHelper
 	  @subscriber_user_id = @user.id
   end
   
+  # TODO: This should ideally be done using 'Subscriber < User' model
+  #   subscriber.build(params[:subscriber]) is the ideal call in user_intake model
+  #   subscriber belongs_to user_intake
+  #
   def setup_subscriber(params_hash)
-    if params_hash["senior_object"].nil? 
-      raise "senior_object is needed so we know who the subscriber is a subscriber for"
-    elsif params_hash["same_as_senior"] == true and params_hash["add_as_caregiver"] == true
-      raise "senior cannot be caregiver of themselves"
+    unless params_hash.blank?
+      if params_hash["senior_object"].nil? 
+        raise "senior_object is needed so we know who the subscriber is a subscriber for"
+      elsif params_hash["same_as_senior"] == true and params_hash["add_as_caregiver"] == true
+        raise "senior cannot be caregiver of themselves"
+      end
+
+      if params_hash["same_as_senior"] == true
+        subscriber = params_hash["senior_object"]
+      elsif params_hash["add_as_caregiver"] == true
+        subscriber = User.populate_caregiver(params_hash["email"],params_hash["senior_object"].id, nil, nil,params_hash["profile_hash"])
+      elsif !params_hash["email"].nil? or !params_hash["profile_hash"].nil?
+        subscriber = User.new
+        subscriber.email = params_hash["subscriber_email"] if !params_hash["subscriber_email"].nil?
+        subscriber_profile = Profile.new(params_hash["profile_hash"])
+      	subscriber_profile.save!
+      	subscriber_profile.profile = subscriber_profile
+      	subscriber[:is_new_subscriber] = true
+      	subscriber.save!
+      end
+
+      role = subscriber.has_role 'subscriber', params_hash["senior_object"]
     end
-    
-    if params_hash["same_as_senior"] == true
-      subscriber = params_hash["senior_object"]
-    elsif params_hash["add_as_caregiver"] == true
-      subscriber = User.populate_caregiver(params_hash["email"],params_hash["senior_object"].id, nil, nil,params_hash["profile_hash"])
-    elsif !params_hash["email"].nil? or !params_hash["profile_hash"].nil?
-      subscriber = User.new
-      subscriber.email = params_hash["subscriber_email"] if !params_hash["subscriber_email"].nil?
-      subscriber_profile = Profile.new(params_hash["profile_hash"])
-    	subscriber_profile.save!
-    	subscriber_profile.profile = subscriber_profile
-    	subscriber[:is_new_subscriber] = true
-    	subscriber.save!
-    end
-    
-    role = subscriber.has_role 'subscriber', params_hash["senior_object"]
+    #
+    # CHANGED: this method should return some value unless we use instance variables
+    #
+    subscriber
   end
   
-  def self.setup_subscriber_test()
+  def self.setup_subscriber_test
     profile_hash = {"work_phone"=>"", "city"=>"Brooklyn", "carrier_id"=>"", "zipcode"=>"", "cell_phone"=>"", "home_phone"=>"", "time_zone"=>"Central Time (US & Canada)", "first_name"=>"af", "address"=>"1212 W. Grand Ave", "last_name"=>"ads", "state"=>"ny"}
     senior = User.first
     

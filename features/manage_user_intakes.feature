@@ -16,20 +16,20 @@ Feature: Manage user_intakes
     And I am on new user_intake page
     When I select "halo_group" from "group"
     And I fill in the following:
-      | user_first_name | myfirstname             |
-      | user_last_name  | mylastname              |
-      | user_address    | 110, Madison Ave, NY    |
-      | user_cross_st   | Street 42               |
-      | user_city       | NY                      |
-      | user_state      | NY                      |
-      | user_zipcode    | 12201                   |
-      | user_home_phone | 1-517-123-4567          |
-      | user_cell_phone | 1-917-123-4567          |
-      | user_work_phone | 1-212-123-4567          |
-      | users_email     | cuc_senior@chirag.name |
-    And I select "verizon" from "user_carrier_id"
+      | user_profile_first_name | myfirstname             |
+      | user_profile_last_name  | mylastname              |
+      | user_profile_address    | 110, Madison Ave, NY    |
+      | user_profile_cross_st   | Street 42               |
+      | user_profile_city       | NY                      |
+      | user_profile_state      | NY                      |
+      | user_profile_zipcode    | 12201                   |
+      | user_profile_home_phone | 1-517-123-4567          |
+      | user_profile_cell_phone | 1-917-123-4567          |
+      | user_profile_work_phone | 1-212-123-4567          |
+      | user_profile_email      | cuc_senior@chirag.name  |
+    And I select "verizon" from "user_profile_carrier_id"
     And I select "1 Nov 2000" as the "Date of Birth" date
-    And I choose "user_sex_m"
+    And I choose "user_profile_sex_m"
     And I check "no_caregiver_1"
     And I check "no_caregiver_2"
     And I check "no_caregiver_3"
@@ -61,7 +61,7 @@ Feature: Manage user_intakes
       | subscriber_zipcode    | 12201                       |
       | subscriber_home_phone | 1-517-123-4567              |
       | subscriber_work_phone | 1-212-123-4567              |
-      | subscribers_email     | cuc_sub_care@chirag.name |
+      | subscribers_email     | cuc_sub_care@chirag.name    |
     And I press "Submit"
     Then profile "myfirstname mylastname" should have "halouser" role
     And profile "subscriberfirstname subscriberlastname" should have "subscriber" role for profile "myfirstname mylastname"

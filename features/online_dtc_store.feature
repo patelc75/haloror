@@ -13,8 +13,8 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Then page content should have "myHalo Complete, myHalo Clip, Pick a product, Billing and Shipping"
   
   Scenario: Same as shipping copies shipping data to billing
-    When I fill the shipping details
-    And I fill the credit card details
+    When I fill the shipping details for online store
+    And I fill the credit card details for online store
     And I check "Same as shipping"
     And I press "Continue"
     And I press "Place Order"
@@ -41,9 +41,9 @@ Feature: Online (D)irect (T)o (C)ustomer store
   # #   keeps steps DRY
   # #
   # Scenario Outline: Confirmation view, back button
-  #   When I fill the shipping details
-  #   And I fill the billing details
-  #   And I fill the credit card details
+  #   When I fill the shipping details for online store
+  #   And I fill the billing details for online store
+  #   And I fill the credit card details for online store
   #   And I press "Continue"
   #   And I press "<button>"
   #   Then I <action> edit the following:
@@ -76,9 +76,9 @@ Feature: Online (D)irect (T)o (C)ustomer store
   #     | Back   | can    | Continue, Pick a product                                       |
 
   # Scenario: Not same as shipping has separate shipping and billing data
-  #   When I fill the shipping details
-  #   And I fill the billing details
-  #   And I fill the credit card details
+  #   When I fill the shipping details for online store
+  #   And I fill the billing details for online store
+  #   And I fill the credit card details for online store
   #   And I uncheck "Same as shipping"
   #   And I press "Continue"
   #   And I press "Place Order"
@@ -87,9 +87,9 @@ Feature: Online (D)irect (T)o (C)ustomer store
   #   And profile "ship f name ship l name" should have "subscriber" role for "shipping f name shipping l name"
 
   # Scenario: One time and subscription charges
-  #   When I fill the shipping details
-  #   And I fill the billing details
-  #   And I fill the credit card details
+  #   When I fill the shipping details for online store
+  #   And I fill the billing details for online store
+  #   And I fill the credit card details for online store
   #   And I press "Continue"
   #   And I press "Place Order"
   #   Then I should see either of the following:
@@ -99,8 +99,8 @@ Feature: Online (D)irect (T)o (C)ustomer store
   #     """
 
   # Scenario Outline: Passed and failed credit card, with log entry
-  #   When I fill the shipping details
-  #   And I fill the billing details
+  #   When I fill the shipping details for online store
+  #   And I fill the billing details for online store
   #   And I fill in "123" for "CSC"
   #   And I fill in "Credit card" with "<card>"
   #   And I press "Continue"

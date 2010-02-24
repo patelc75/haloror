@@ -1,7 +1,7 @@
 # steps for online direct to customer store
 #
 
-When /^I fill the (.+) details$/ do |which|
+When /^I fill the (.+) details for online store$/ do |which|
   if ['shipping', 'billing'].include?(which)
     which = which[0..3] # shipping, billing
     { "first_name"  => "#{which} first name",

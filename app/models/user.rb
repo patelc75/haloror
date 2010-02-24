@@ -662,7 +662,7 @@ class User < ActiveRecord::Base
     #
     if !@user.email.blank?
       @user.is_new_caregiver = true
-      @user[:is_caregiver] =  true
+      @user[:is_caregiver] = true
       @user.save!
 
       if @user.profile.blank?
