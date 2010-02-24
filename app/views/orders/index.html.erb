@@ -35,7 +35,7 @@ Purchased from <%= link_to 'http://'+ServerInstance.current_host+'/order' %>
 	  	</td>
 		<td>
 		  <% order.order_items.each do |item| %>
-		    <%= item.product_model %> x <%= item.quantity %> = <%= item.formatted_cost(item.quantity) %>
+		    <%= item.product_model %> x <%= item.quantity %> = <%= item.formatted_cost(item.quantity) %><br>
 		  <% end -%>
 		</td>
 		<td><%= number_to_currency(order.cost, :precision => 2, :unit => '$') %></td>
