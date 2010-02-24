@@ -65,23 +65,27 @@ module UserHelper
 
       if params_hash["same_as_senior"] == true
         subscriber = params_hash["senior_object"]
+        
       elsif params_hash["add_as_caregiver"] == true
         subscriber = User.populate_caregiver(params_hash["email"],params_hash["senior_object"].id, nil, nil,params_hash["profile_hash"])
+
+      # FIXME: Incorrect condition here. where is params_hash["email"] used?
       elsif !params_hash["email"].nil? or !params_hash["profile_hash"].nil?
         subscriber = User.new
         subscriber.email = params_hash["subscriber_email"] if !params_hash["subscriber_email"].nil?
         subscriber_profile = Profile.new(params_hash["profile_hash"])
-      	subscriber_profile.save!
-      	subscriber_profile.profile = subscriber_profile
+        #
+        # FIXME: profile should be saved "after" User? It has reference to user.id
+      	subscriber_profile.save! rescue nil # tech stuff is not for browser
+      	subscriber_profile.profile = subscriber_profile # FIXME: should this be subscriber.profile = subscriber_profile ?
       	subscriber[:is_new_subscriber] = true
-      	subscriber.save!
+      	subscriber.save! rescue nil # tech stuff is not for browser
       end
 
       role = subscriber.has_role 'subscriber', params_hash["senior_object"]
     end
     #
     # CHANGED: this method should return some value unless we use instance variables
-    #
     subscriber
   end
   
