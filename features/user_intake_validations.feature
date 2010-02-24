@@ -35,7 +35,7 @@ Feature: Manage user_intakes
     Cell phone or Home Phone is required
     """
     
-  # Scenario: All valid data. No errors.
+  # Scenario: Valid user profile. Subscriber is same as user
   #   When I uncheck "no_caregiver_1"
   #   And I fill in the following:
   #     | user_first_name | myfirstname             |
