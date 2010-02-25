@@ -279,10 +279,6 @@ class UsersController < ApplicationController
             set_roles_users_option(subscriber, params[:sub_roles_users_option], senior)
             @user_intake.users.push(senior)
           end
-          #
-          # collect errors in activerecord instance
-          # this will show proper validation errors on form
-          collect_active_record_errors(@user_intake, ["profile", "user", "roles_users_option"])
 
           #
           # TODO: when user == subscriber, email should be differently personalized
@@ -292,7 +288,7 @@ class UsersController < ApplicationController
           if !subscriber_is_caregiver
             if params[:no_caregiver_1].blank? || params[:no_caregiver_1] != "on"
               caregiver1_email = params[:caregiver1][:email]
-              @car1 = User.populate_caregiver(caregiver1_email,@senior.id,nil,nil,params[:caregiver1])
+              @car1 = User.populate_caregiver(caregiver1_email,senior.id,nil,nil,params[:caregiver1])
               if !@car1.profile.nil?
                 set_roles_users_option(@car1,params[:car1_roles_users_option])
                 @user_intake.users.push(@car1)
@@ -303,7 +299,7 @@ class UsersController < ApplicationController
           end
           if params[:no_caregiver_2].blank? || params[:no_caregiver_2] != "on"
             caregiver2_email = params[:caregiver2][:email]
-            @car2 = User.populate_caregiver(caregiver2_email,@senior.id,nil,nil,params[:caregiver2])
+            @car2 = User.populate_caregiver(caregiver2_email,senior.id,nil,nil,params[:caregiver2])
             if !@car2.profile.nil?
               set_roles_users_option(@car2,params[:car2_roles_users_option])
               @user_intake.users.push(@car2)
@@ -313,7 +309,7 @@ class UsersController < ApplicationController
           end
           if params[:no_caregiver_3].blank? || params[:no_caregiver_3] != "on"
             caregiver3_email = params[:caregiver3][:email]
-            @car3 = User.populate_caregiver(caregiver3_email,@senior.id,nil,nil,params[:caregiver3])
+            @car3 = User.populate_caregiver(caregiver3_email,senior.id,nil,nil,params[:caregiver3])
             if !@car3.profile.nil?
               set_roles_users_option(@car3,params[:car1_roles_users_option])
               @user_intake.users.push(@car3)
@@ -321,6 +317,10 @@ class UsersController < ApplicationController
               raise "Caregiver 3 validation errors"
             end
           end
+          #
+          # collect errors in activerecord instance
+          # this will show proper validation errors on form
+          collect_active_record_errors(@user_intake, ["profile", "user", "roles_users_option", "car1", "car2", "car3"])
         end # @user_intake.save
       end # User.transaction
       #
@@ -329,7 +329,7 @@ class UsersController < ApplicationController
     end # request.post?
 
     # we always need @groups. cannot omit it conditionally.
-    #
+    # TODO: shift this to model
     @groups = []
     if current_user.is_super_admin?
       @groups = Group.find(:all)
