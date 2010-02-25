@@ -12,7 +12,7 @@ Feature: Manage user_intakes
     And the following carriers:
       | name    |
       | verizon |
-    And user "test-user" has "super admin, caregiver" roles
+    And user "test-user" has "super admin" roles
     And I am on new user_intake page
     When I select "halo_group" from "group"
     And I select "verizon" from "user_profile_carrier_id"
@@ -23,6 +23,7 @@ Feature: Manage user_intakes
         
   Scenario: Validation errors for user profile
     When I press "Submit"
+    When I check "same_as_user"
     Then page content should have the following:
     """
     errors prohibited this profile from being saved
@@ -42,7 +43,7 @@ Feature: Manage user_intakes
     And I press "Submit"
     Then page content should not have "prohibited this"
 
-  Scenario: Valid user. Mising Subscriber. Subscriber is not the user.
+  Scenario: Valid user. Missing Subscriber. Subscriber is not the user.
     When I uncheck "same_as_user"
     And I fill the user profile details for user intake form
     And I press "Submit"
