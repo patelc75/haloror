@@ -292,6 +292,10 @@ class CallCenterController < ApplicationController
     render :partial => 'resolve', :locals => {:event => Event.find(params[:id])}
   end
   
+  def event_details
+  	@event = Event.find_by_id(params[:id])
+  end
+  
   def show
     @user = current_user
     @groups = []

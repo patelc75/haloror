@@ -23,48 +23,56 @@
 All times are in <%= current_user.profile.time_zone if current_user.profile %> timezone <br>
 <div class="table">
   <div class="row header">
-    <div class="col-75">
+    <div class="col-50" style="background-color:#E6E6E6;height:75px;">
       Event <br>Type <br><sub>(Oscope Start Msg ID)</sub>
     </div>
 
-    <div class="col-125">
+    <div class="col-125" style="background-color:#E6E6E6;height:75px;">
       Timestamp<br>Device
     </div>
-    <div class="col-125">
+    <div class="col-125" style="background-color:#E6E6E6;height:75px;">
       Timestamp<br>Server
     </div>
-    <div class="col-125">
+    <div class="col-125" style="background-color:#E6E6E6;height:75px;">
       Name
     </div>
     <% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
+    <!--
     <div class="col-50">
       Chart
-    </div>
-    <div class="col-50">
+    </div> 
+    -->
+    <div class="col-50" style="background-color:#E6E6E6;height:75px;">
       Notes
     </div>
     <% end %>
-    <div class="col-150">
-      False Alarm
+    <div class="col-150" style="background-color:#E6E6E6;height:75px;">
+      Classification
     </div>
     <% if current_user.is_super_admin? %>
-      <div class="col-125">
+      <div class="col-100" style="background-color:#E6E6E6;height:75px;">
         Call Center Response
       </div>
-      <div class="col-125">
-        Average Response Time
+      <div class="col-75" style="background-color:#E6E6E6;height:75px;">
+        Response <br>Time
       </div>
     <% end %>
+    <div class="col-75" style="background-color:#E6E6E6;height:75px;">
+    	Server Delay
+    </div>
+    <div class="col-50" style="background-color:#E6E6E6;height:75px;">
+    	Call Center Delay
+    </div>
   </div>
   <% @events.each do |event| %>
     <div class="row">
       <% if event.event_type == 'CallCenterFollowUp' %>
-        <div class="col-75">
+        <div class="col-50">
           Follow Up
         </div>
       <% else %>
-      <div class="col-75">
-        <%=event.event_type%>&nbsp;
+      <div class="col-50">
+        <%= link_to event.event_type,:action => 'event_details',:id => event.id%>&nbsp;
         <% if current_user.is_super_admin? || current_user.is_admin? %>
         <% if event.event_type == 'Fall' %>
           <% oscope_start = OscopeStartMsg.find_by_timestamp_and_user_id(event.timestamp, event.user_id) %>
@@ -76,14 +84,17 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       </div>
       <% end %>
       <div class="col-125">
-        <%= event.timestamp.in_time_zone.to_s(:date_time_seconds) %>
+        <%#= event.timestamp.in_time_zone.to_s(:date_time_seconds) %>
+        <%= UtilityHelper.format_datetime(event.timestamp,current_user,:date_time_seconds_2)%>
+        <%#= event.timestamp.strftime(Time::DATE_FORMATS[:date_time_seconds_2])%>
       </div>
       <div class="col-125">
         <% if(event[:timestamp_server] == nil) %>
           No timestamp
         <% else %>
-		  <%= event[:timestamp_server].in_time_zone.to_s(:date_time_seconds) %>
-          <!--%= UtilityHelper.format_datetime(event[:timestamp_server],current_user) %-->
+		  <%#= event[:timestamp_server].in_time_zone.to_s(:date_time_seconds) %>
+          <%= UtilityHelper.format_datetime(event[:timestamp_server],current_user,:date_time_seconds_2) %>
+          <%#= event[:timestamp_server].strftime(Time::DATE_FORMATS[:date_time_seconds_2])%>
         <% end %>
       </div>
       <div class="col-125">
@@ -94,9 +105,11 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       <% end %>
       </div>
       <% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
+      <!--
       <div class="col-50">
         <a target="_blank" href="/chart/flex/<%= event.user.id %>">Chart</a>
       </div>
+       -->
       <div class="col-50" id="false_test_<%=event.id %>">
         <%= link_to_remote '+', :update => "notes_#{event.id}", :url => {:action => 'toggle_note', :new_note => true, :event_id => event.id, :user_id => event.user.id }%>
         &nbsp;
@@ -133,21 +146,30 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
 		  <%= render :partial => 'mark_event',:locals => {:event => event}%>
 		<% end %>
       </div>
-      <div class="col-125" id="div_<%= event.id.to_s%>">
+      <div class="col-100" id="div_<%= event.id.to_s%>">
       	<%if event.call_center_response.nil?%>
       	<%= link_to_remote (image_tag("/images/calendar_date_select/calendar.gif", :size => "17x17", :border => 0), 
 :url => {:action => 'enter_call_center_response',:id => event.id })%>
 		<%else%>
 		<%= link_to_remote (image_tag("/images/calendar_date_select/calendar.gif", :size => "17x17", :border => 0), 
 :url => {:action => 'edit_call_center_response',:id => event.id })%>
-		<%= event.call_center_response.in_time_zone.to_s(:date_time_seconds)%>
+		<%#= event.call_center_response.in_time_zone.to_s(:date_time_seconds)%>
+		<%= UtilityHelper.format_datetime(event.call_center_response,current_user,:date_time_seconds_2)%>
 		<%end%>
       </div>
-      <div class="col-125" id="div_response_<%= event.id.to_s%>">
+      <div class="col-75" id="div_response_<%= event.id.to_s%>">
         <%unless event.call_center_response.nil?%>
           <%= UtilityHelper.seconds_format(event.call_center_response.to_time - event.timestamp.to_time) %>
         <%end%>
+        &nbsp;
       </div>
+       <div class="col-75">
+    	<%= UtilityHelper.seconds_format(event.timestamp_server.to_time - event.timestamp.to_time) if event.timestamp_server %>
+       </div>
+       <div class="col-50">
+       	<%= UtilityHelper.seconds_format(event.timestamp_server.to_time - event.call_center_response.to_time) if event.timestamp_server and event.call_center_response %>
+       </div>
+      
         </div>
         <div id="notes_<%=event.id %>">
         </div>

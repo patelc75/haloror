@@ -1,6 +1,12 @@
-<% if action = event.real_alarm? %>
-	<b>Real Alarm</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
+<% unless controller.action_name == 'event_details'%>
+  <% if action = event.real_alarm? %>
+	<b>Real Alarm</b>
 	<%= render :partial => 'undo_action',:locals => {:event => event}%>
-<% else %>
+  <% else %>
 	<%= render :partial => 'mark_event',:locals => {:event => event}%>
-<% end %>
+  <% end %>
+<%else%>
+  <%if action = event.real_alarm?%>
+    Marked <b>Real Alarm</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
+  <%end%>
+<%end%>

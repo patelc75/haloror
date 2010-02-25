@@ -1,0 +1,12 @@
+<%=debug @event%>
+<% if action = @event.false_alarm? %>
+  <%= render :partial => 'false_alarm',:locals => {:event => @event}%>
+<% elsif action = @event.real_alarm? %>
+  <%= render :partial => 'real_alarm',:locals => {:event => @event}%>
+<% elsif action = @event.test_alarm? %>
+  <%= render :partial => 'test_alarm',:locals => {:event => @event}%>
+<% elsif action = @event.non_emerg_panic? %>
+  <%= render :partial => 'non_emerg_panic',:locals => {:event => @event}%>
+<% else %>
+  <%= render :partial => 'mark_event',:locals => {:event => @event}%>
+<% end %>
