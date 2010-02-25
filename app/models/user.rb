@@ -676,8 +676,9 @@ class User < ActiveRecord::Base
           end
         end
         profile[:is_new_caregiver] = true
-        profile.save!
-        @user.profile = profile
+        if profile.valid? && profile.save!
+          @user.profile = profile
+        end
       end
       senior = User.find(senior_id)
 

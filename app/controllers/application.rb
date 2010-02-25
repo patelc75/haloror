@@ -237,7 +237,7 @@ class ApplicationController < ActionController::Base
   # collect activerecord errors using add_to_base
   # required only for procedural progamming used in user, user_intake etc
   #
-  def collect_active_record_errors(collect_here, names_to_collect_from = [])
+  def collect_active_record_errors(collect_here, valid_and_not_blank_objects = [], blank_or_valid_objects = [])
     if collect_here.is_a? ActiveRecord::Base # forget otherwise
       #
 		  # = Add errors and validation to activerecord
@@ -246,18 +246,28 @@ class ApplicationController < ActionController::Base
 		  #   errors may be caused by activerecord validations of these objects using save!
 		  #   this will show proper validation errors on the form
 		  #
-	    names_to_collect_from.each do |obj_name|
+	    valid_and_not_blank_objects.each do |obj_name|
 	      obj = eval("@#{obj_name}")
         #
         # variable does not exist? or not AR? add a general validation error
         if obj.blank? || !obj.is_a?(ActiveRecord::Base)
           collect_here.errors.add_to_base "#{obj_name} data is not appropriate. Please notify the administrator if you have filled the profile correctly but see this error."
         else
-          #
-          # variable exists? is AR?, add specific validation errors
           obj.errors.each_full { |e| collect_here.errors.add_to_base e } unless obj.errors.count.zero?
         end
       end # each
+      
+      blank_or_valid_objects.each do |obj_name|
+	      obj = eval("@#{obj_name}")
+	      unless obj.blank?
+          if !obj.is_a?(ActiveRecord::Base)
+            collect_here.errors.add_to_base "#{obj_name} data is not appropriate. Please notify the administrator if you have filled the profile correctly but see this error."
+          else
+            obj.errors.each_full { |e| collect_here.errors.add_to_base e } unless obj.errors.count.zero?
+          end
+        end
+      end # each
+	    
     end # only collect when AR
   end
 

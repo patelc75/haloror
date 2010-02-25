@@ -21,7 +21,7 @@ Feature: Manage user_intakes
     And I check "no_caregiver_2"
     And I check "no_caregiver_3"
         
-  Scenario: Validation errors for all fields
+  Scenario: Validation errors for user profile
     When I press "Submit"
     Then page content should have the following:
     """
@@ -40,27 +40,27 @@ Feature: Manage user_intakes
     When I check "same_as_user"
     And I fill the user profile details for user intake form
     And I press "Submit"
-    Then page content should not have "prohibited this profile from being saved"
+    Then page content should not have "prohibited this"
 
   Scenario: Valid user. Mising Subscriber. Subscriber is not the user.
     When I uncheck "same_as_user"
     And I fill the user profile details for user intake form
     And I press "Submit"
-    Then page content should have "prohibited this user intake from being saved"
+    Then page content should have "prohibited this"
 
   Scenario: Valid user. Valid Subscriber. Subscriber is not the user. Subscriber is not caregiver.
     When I uncheck "same_as_user"
     And I fill the user profile details for user intake form
     And I fill the subscriber details for user intake form
     And I press "Submit"
-    Then page content should have "prohibited this user intake from being saved"
+    Then page content should have "prohibited this"
 
   Scenario: Valid user. Missing Subscriber/Caregiver. Subscriber is not user. Subscriber is caregiver
     When I uncheck "same_as_user"
     And I check "Add as #1 caregiver"
     And I fill the user profile details for user intake form
     And I press "Submit"
-    Then page content should have "prohibited this user intake from being saved"
+    Then page content should have "prohibited this"
 
   Scenario: Valid user. Valid Subscriber/Caregiver. Subscriber is not user. Subscriber is caregiver
     When I uncheck "same_as_user"
@@ -70,4 +70,15 @@ Feature: Manage user_intakes
     And I check "sub_roles_users_option_email_active"
     And I select "Yes" from "sub_roles_users_option_is_keyholder"
     And I press "Submit"
-    Then page content should not have "prohibited this user intake from being saved"
+    Then page content should not have "prohibited this"
+
+  Scenario: Valid user. Valid Subscriber. Subscriber is not user/caregiver. Invalid Caregiver 1.
+    When I uncheck "same_as_user"
+    And I uncheck "Add as #1 caregiver"
+    And I fill the user profile details for user intake form
+    And I fill the subscriber details for user intake form
+    And I check "sub_roles_users_option_email_active"
+    And I select "Yes" from "sub_roles_users_option_is_keyholder"
+    And I uncheck "no_caregiver_1"
+    And I press "Submit"
+    Then page content should have "prohibited this"
