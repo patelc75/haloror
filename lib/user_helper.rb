@@ -56,18 +56,23 @@ module UserHelper
   #   subscriber belongs_to user_intake
   #
   def setup_subscriber(params_hash)
+    subscriber = subscriber_profile = nil # Something to begin with. We have to return some value.
+    
     unless params_hash.blank?
       if params_hash["senior_object"].nil? 
         raise "senior_object is needed so we know who the subscriber is a subscriber for"
+        
       elsif params_hash["same_as_senior"] == true and params_hash["add_as_caregiver"] == true
         raise "senior cannot be caregiver of themselves"
       end
 
       if params_hash["same_as_senior"] == true
         subscriber = params_hash["senior_object"]
+        subscriber_profile = subscriber.profile unless subscriber.blank?
         
       elsif params_hash["add_as_caregiver"] == true
         subscriber = User.populate_caregiver(params_hash["email"],params_hash["senior_object"].id, nil, nil,params_hash["profile_hash"])
+        subscriber_profile = subscriber.profile unless subscriber.blank?
 
       # FIXME: Incorrect condition here. where is params_hash["email"] used?
       elsif !params_hash["email"].nil? or !params_hash["profile_hash"].nil?
@@ -76,17 +81,25 @@ module UserHelper
         subscriber_profile = Profile.new(params_hash["profile_hash"])
         #
         # FIXME: profile should be saved "after" User? It has reference to user.id
-      	subscriber_profile.save! rescue nil # tech stuff is not for browser
-      	subscriber_profile.profile = subscriber_profile # FIXME: should this be subscriber.profile = subscriber_profile ?
-      	subscriber[:is_new_subscriber] = true
-      	subscriber.save! rescue nil # tech stuff is not for browser
+        if subscriber_profile.valid? # check before saving. avoid tech crash on browser
+        	if subscriber_profile.save!
+          	subscriber.profile = subscriber_profile
+          	subscriber[:is_new_subscriber] = true
+          	subscriber.save! rescue nil # tech stuff is not for browser
+        	end
+        end
       end
 
-      role = subscriber.has_role 'subscriber', params_hash["senior_object"]
+      subscriber.has_role 'subscriber', params_hash["senior_object"] unless subscriber.blank?
     end
     #
     # CHANGED: this method should return some value unless we use instance variables
-    subscriber
+    # returns: subscriber, subscriber_profile, success (boolean)
+    return subscriber, subscriber_profile, \
+      ( !subscriber.blank? && !subscriber_profile.blank? && \
+        subscriber.is_a?(ActiveRecord::Base) && subscriber_profile.is_a?(ActiveRecord::Base) && \
+        subscriber.errors.count.zero? && subscriber_profile.errors.count.zero?
+      )
   end
   
   def self.setup_subscriber_test

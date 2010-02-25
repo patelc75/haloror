@@ -34,32 +34,5 @@ module ApplicationHelper
      return image_tag('/images/normal_button_82_22.png')
    end
   end
-
-  # collect activerecord errors using add_to_base
-  # required only for procedural progamming used in user, user_intake etc
-  #
-  def collect_active_record_errors(collect_here, names_to_collect_from = [])
-    if collect_here.is_a? ActiveRecord::Base # forget otherwise
-      #
-		  # = Add errors and validation to activerecord
-		  # example: add errors from @profile and @user objects to @user_intake
-		  # Errors will be added only for variables that exist right now
-		  #   errors may be caused by activerecord validations of these objects using save!
-		  #   this will show proper validation errors on the form
-		  #
-	    names_to_collect_from.each do |obj_name|
-	      obj = eval("@#{obj_name}")
-        #
-        # variable does not exist? or not AR? add a general validation error
-        if obj.blank? || !obj.is_a?(ActiveRecord::Base)
-          collect_here.errors.add_to_base "#{obj_name} data is not appropriate. Please notify the administrator if you have filled the profile correctly but see this error."
-        else
-          #
-          # variable exists? is AR?, add specific validation errors
-          obj.errors.each_full { |e| collect_here.errors.add_to_base e } unless obj.errors.count.zero?
-        end
-      end # each
-    end # only collect when AR
-  end
   
 end

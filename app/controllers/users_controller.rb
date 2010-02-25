@@ -270,16 +270,25 @@ class UsersController < ApplicationController
     		  add_kit_number(params[:kit][:serial_number], senior)
     		  subscriber_is_caregiver = (!params[:add_caregiver].blank? && params[:add_caregiver] == 'on')
 		      subscriber_is_senior = (!params[:same_as_user].blank? && params[:same_as_user] == 'on') # will set a true/false
-          subscriber = setup_subscriber( { "email" => params[:subscribers][:email], # pass arguments as hash
-		                          "profile_hash" => params[:subscriber], 
-		                          "senior_object" => senior, 
-		                          "same_as_senior" => subscriber_is_senior,
-		                          "add_as_caregiver" => subscriber_is_caregiver })
-          if subscriber_is_caregiver
-            set_roles_users_option(subscriber, params[:sub_roles_users_option], senior)
+          #
+          # when user != subscriber && subscriber != caregiver, then who is caregiver?
+          @user_intake.errors.add_to_base "Caregiver is missing. Please provide at least one caregiver" \
+            if !(subscriber_is_senior || subscriber_is_caregiver)
+		      #
+		      # setup subscriber and its profile
+		      # we need instance variables to catch AR errors until we have model based approach
+          @subscriber_temp, @subscriber_profile_temp, subscriber_success = setup_subscriber( 
+              { "email" => params[:subscriber][:email], # pass arguments as hash
+                "profile_hash" => params[:subscriber], 
+                "senior_object" => senior, 
+                "same_as_senior" => subscriber_is_senior,
+                "add_as_caregiver" => subscriber_is_caregiver })
+          #
+          # set roleS_users_option for caregiver
+          if subscriber_is_caregiver && subscriber_success
+            set_roles_users_option(@subscriber_temp, params[:sub_roles_users_option], senior)
             @user_intake.users.push(senior)
           end
-
           #
           # TODO: when user == subscriber, email should be differently personalized
           UserMailer.deliver_signup_installation(@user, senior)
@@ -320,7 +329,12 @@ class UsersController < ApplicationController
           #
           # collect errors in activerecord instance
           # this will show proper validation errors on form
-          collect_active_record_errors(@user_intake, ["profile", "user", "roles_users_option", "car1", "car2", "car3"])
+          collect_active_record_errors(@user_intake, ["profile", "user", "subscriber_temp", "subscriber_profile_temp"])
+          #
+          # blank car1..3 are ok. When they are filled, then they should be valid.
+          ["roles_users_option", "car1", "car2", "car3"].each do |var|
+            collect_active_record_errors(@user_intake, [var]) unless eval("@#{var}").blank?
+          end
         end # @user_intake.save
       end # User.transaction
       #
@@ -340,6 +354,23 @@ class UsersController < ApplicationController
       end
     end
   end # user_intake_form
+  
+  def set_roles_users_option(caregiver, roles_users_option, senior = nil)
+    unless caregiver.blank? || senior.blank? || roles_users_option.blank? || !(roles_users_option.is_a?(Hash))
+      @roles_users_option = RolesUsersOption.find_by_roles_user_id(senior.roles_user_by_caregiver(caregiver))
+      #
+      # We need to setup boolean flag for each of these attributes
+      unless @roles_users_option.blank?
+        [:is_keyholder, :phone_active, :email_active, :text_active].each do |attribute|
+          @roles_users_option.send("#{attribute}=".to_sym, (roles_users_option[attribute] == '1'))
+        end
+        #
+        # force validation. do not raise exceptions. add exceptions to base mnaually in code where this is called from
+        # ideally this should be RESTful model for user, roles_user. then this tricky /manual logic is not required
+        @roles_users_option.save! rescue nil
+      end
+    end
+  end
   
   def user_intake_form_confirm
   	edit_user_intake_info(params[:id])
@@ -494,21 +525,6 @@ class UsersController < ApplicationController
         @car2_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[1]).id) if @caregivers[1]
         @car3_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[2]).id) if @caregivers[2]
       end
-  end
-  
-  def set_roles_users_option(caregiver, roles_users_option, senior = nil)
-    unless caregiver.blank? || senior.blank?
-      @roles_users_option = RolesUsersOption.find_by_roles_user_id(senior.roles_user_by_caregiver(caregiver).id)
-      #
-      # We need to setup boolean flag for each of these attributes
-      [:is_keyholder, :phone_active, :email_active, :text_active].each do |attribute|
-        @roles_users_option.send("#{attribute}=".to_sym, (roles_users_option[attribute] == '1'))
-      end
-      #
-      # force validation. do not raise exceptions. add exceptions to base mnaually in code where this is called from
-      # ideally this should be RESTful model for user, roles_user. then this tricky /manual logic is not required
-      @roles_users_option.save! rescue nil
-    end
   end
   
   def signup_details

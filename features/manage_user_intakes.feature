@@ -61,7 +61,7 @@ Feature: Manage user_intakes
       | subscriber_zipcode    | 12201                       |
       | subscriber_home_phone | 1-517-123-4567              |
       | subscriber_work_phone | 1-212-123-4567              |
-      | subscribers_email     | cuc_sub_care@chirag.name    |
+      | subscriber_email      | cuc_sub_care@chirag.name    |
     And I press "Submit"
     Then profile "myfirstname mylastname" should have "halouser" role
     And profile "subscriberfirstname subscriberlastname" should have "subscriber" role for profile "myfirstname mylastname"
