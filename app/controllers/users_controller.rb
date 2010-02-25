@@ -253,7 +253,6 @@ class UsersController < ApplicationController
   def user_intake_form
     #
     # TODO: this should go to user_intakes_controller, new and create actions appropriately
-    #
     if request.post?
       save_and_continue = (params[:commit] == "Save")
     	User.transaction do
@@ -303,6 +302,7 @@ class UsersController < ApplicationController
           UserMailer.deliver_signup_installation(@user, senior) unless save_and_continue
           #
           # populate caregivers 1..3 as appropriate
+          # caregiver1 is not required when subscriber_is_caregiver
           ((subscriber_is_caregiver ? 2 : 1)..3).each do |value|
             if params["no_caregiver_#{value}".to_sym].blank? || params["no_caregiver_#{value}".to_sym] != "on"
               email = params["caregiver#{value}".to_sym][:email]
@@ -314,49 +314,11 @@ class UsersController < ApplicationController
               end
             end
           end
-          
-          # if !subscriber_is_caregiver
-          #   if params[:no_caregiver_1].blank? || params[:no_caregiver_1] != "on"
-          #     caregiver1_email = params[:caregiver1][:email]
-          #     @car1 = User.populate_caregiver(caregiver1_email,senior.id,nil,nil,params[:caregiver1])
-          #     if !@car1.blank? && @car1.valid? && !@car1.profile.blank?
-          #       set_roles_users_option(@car1,params[:car1_roles_users_option])
-          #       @user_intake.users.push(@car1)
-          #     # else
-          #     #   raise "Caregiver 1 validation errors"
-          #     end
-          #   end
-          # end
-          # if params[:no_caregiver_2].blank? || params[:no_caregiver_2] != "on"
-          #   caregiver2_email = params[:caregiver2][:email]
-          #   @car2 = User.populate_caregiver(caregiver2_email,senior.id,nil,nil,params[:caregiver2])
-          #   if !@car2.profile.nil?
-          #     set_roles_users_option(@car2,params[:car2_roles_users_option])
-          #     @user_intake.users.push(@car2)
-          #   # else
-          #   #   raise "Caregiver 2 validation errors"
-          #   end
-          # end
-          # if params[:no_caregiver_3].blank? || params[:no_caregiver_3] != "on"
-          #   caregiver3_email = params[:caregiver3][:email]
-          #   @car3 = User.populate_caregiver(caregiver3_email,senior.id,nil,nil,params[:caregiver3])
-          #   if !@car3.profile.nil?
-          #     set_roles_users_option(@car3,params[:car1_roles_users_option])
-          #     @user_intake.users.push(@car3)
-          #   # else
-          #   #   raise "Caregiver 3 validation errors"
-          #   end
-          # end
           #
           # collect errors in activerecord instance
-          # this will show proper validation errors on form
+          # this will show proper validation errors on form. first array errors on blank?, second does not.
           collect_active_record_errors(@user_intake, ["profile", "user"],
             ["roles_users_option", "subscriber_details", "subscriber_profile", "car1", "car2", "car3"])
-          # #
-          # # blank car1..3 are ok. When they are filled, then they should be valid.
-          # ["roles_users_option", "subscriber_details", "subscriber_profile", "car1", "car2", "car3"].each do |var|
-          #   collect_active_record_errors(@user_intake, [var]) unless eval("@#{var}").blank?
-          # end
         end # @user_intake.save
       end # User.transaction
       #
@@ -365,16 +327,8 @@ class UsersController < ApplicationController
     end # request.post?
 
     # we always need @groups. cannot omit it conditionally.
-    # TODO: shift this to model
-    @groups = []
-    if current_user.is_super_admin?
-      @groups = Group.find(:all)
-    else
-      gs = current_user.group_memberships
-      gs.each do |g|
-        @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
-      end
-    end
+    # CHANGED: shifted business logic to model
+    @groups = Group.for_user(current_user)
   end # user_intake_form
   
   def set_roles_users_option(caregiver, roles_users_option, senior = nil)

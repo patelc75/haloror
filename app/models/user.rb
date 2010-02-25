@@ -336,10 +336,12 @@ class User < ActiveRecord::Base
       return nil
     end
   end
+  
   def group_roles
     roles = self.roles.find(:all, :conditions => "authorizable_type = 'Group'")
     return roles.uniq
   end
+  
   def group_memberships
     roles = group_roles
     groups = []

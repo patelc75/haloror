@@ -26,7 +26,7 @@ Feature: Manage user_intakes
     When I check "same_as_user"
     Then page content should have the following:
     """
-    errors prohibited this profile from being saved
+    prohibited this user intake from being saved
     First name can't be blank
     Last name can't be blank
     Address can't be blank
