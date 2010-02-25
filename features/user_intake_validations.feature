@@ -41,7 +41,7 @@ Feature: Manage user_intakes
     When I check "same_as_user"
     And I fill the user profile details for user intake form
     And I press "Submit"
-    Then page content should not have "prohibited this"
+    Then page content should have "User Intake: Successfully saved"
 
   Scenario: Valid user. Missing Subscriber. Subscriber is not the user.
     When I uncheck "same_as_user"
@@ -71,7 +71,7 @@ Feature: Manage user_intakes
     And I check "sub_roles_users_option_email_active"
     And I select "Yes" from "sub_roles_users_option_is_keyholder"
     And I press "Submit"
-    Then page content should not have "prohibited this"
+    Then page content should have "User Intake: Successfully saved"
 
   Scenario: Valid user. Valid Subscriber. Subscriber is not user/caregiver. Invalid Caregiver 1.
     When I uncheck "same_as_user"
@@ -81,5 +81,17 @@ Feature: Manage user_intakes
     And I check "sub_roles_users_option_email_active"
     And I select "Yes" from "sub_roles_users_option_is_keyholder"
     And I uncheck "no_caregiver_1"
+    And I press "Submit"
+    Then page content should have "prohibited this"
+
+  Scenario: Valid user. Valid Subscriber. Valid Caregiver 1. User, Subscriber, Caregiver are separate.
+    When I uncheck "same_as_user"
+    And I uncheck "Add as #1 caregiver"
+    And I fill the user profile details for user intake form
+    And I fill the subscriber details for user intake form
+    And I check "sub_roles_users_option_email_active"
+    And I select "Yes" from "sub_roles_users_option_is_keyholder"
+    And I uncheck "no_caregiver_1"
+    And I fill the caregiver1 details for user intake form
     And I press "Submit"
     Then page content should have "prohibited this"

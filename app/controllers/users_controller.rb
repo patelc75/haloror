@@ -265,7 +265,7 @@ class UsersController < ApplicationController
         @user_intake.credit_debit_card_proceessed = (!params[:user_intakes].blank? && params[:user_intakes][:options] == 'credit_card')
         @user_intake.bill_monthly = !@user_intake.credit_debit_card_proceessed # opposite value
         if @user_intake.save
-    		  populate_user(params[:user_profile],params[:user_profile][:email],params[:group],current_user.id)
+    		  populate_user(params[:user_profile], params[:user_profile][:email], params[:group], current_user.id)
     		  @user_intake.users.push(@user)
     		  senior = @user # FIXME: what is the point of this?
           #
@@ -287,6 +287,11 @@ class UsersController < ApplicationController
                 "same_as_senior" => subscriber_is_senior,
                 "add_as_caregiver" => subscriber_is_caregiver })
           #
+          # when subscriber & profile creation failed, add error
+          if !subscriber_success
+            @user_intake.errors.add_to_base("Subscriber profile is incomplete. Please try again.")
+          end
+          #
           # set roleS_users_option for caregiver
           if subscriber_is_caregiver && subscriber_success
             set_roles_users_option(@subscriber_details, params[:sub_roles_users_option], senior)
@@ -297,39 +302,51 @@ class UsersController < ApplicationController
           # do not ptocess mail delivery when "Save" button was hit on the form
           UserMailer.deliver_signup_installation(@user, senior) unless save_and_continue
           #
-          # TODO: refactor this DRY
-          if !subscriber_is_caregiver
-            if params[:no_caregiver_1].blank? || params[:no_caregiver_1] != "on"
-              caregiver1_email = params[:caregiver1][:email]
-              @car1 = User.populate_caregiver(caregiver1_email,senior.id,nil,nil,params[:caregiver1])
-              if !@car1.blank? && @car1.valid? && !@car1.profile.blank?
-                set_roles_users_option(@car1,params[:car1_roles_users_option])
-                @user_intake.users.push(@car1)
-              # else
-              #   raise "Caregiver 1 validation errors"
+          # populate caregivers 1..3 as appropriate
+          ((subscriber_is_caregiver ? 2 : 1)..3).each do |value|
+            if params["no_caregiver_#{value}".to_sym].blank? || params["no_caregiver_#{value}".to_sym] != "on"
+              email = params["caregiver#{value}".to_sym][:email]
+              instance_variable_set( "@car#{value}", User.populate_caregiver(email, senior.id, nil, nil, params["caregiver#{value}"]) )
+              caregiver = instance_variable_get("@car#{value}")
+              if !caregiver.blank? && caregiver.valid? && !caregiver.profile.blank?
+                set_roles_users_option(caregiver, params["car#{value}_roles_users_option".to_sym])
+                @user_intake.users.push(caregiver)
               end
             end
           end
-          if params[:no_caregiver_2].blank? || params[:no_caregiver_2] != "on"
-            caregiver2_email = params[:caregiver2][:email]
-            @car2 = User.populate_caregiver(caregiver2_email,senior.id,nil,nil,params[:caregiver2])
-            if !@car2.profile.nil?
-              set_roles_users_option(@car2,params[:car2_roles_users_option])
-              @user_intake.users.push(@car2)
-            # else
-            #   raise "Caregiver 2 validation errors"
-            end
-          end
-          if params[:no_caregiver_3].blank? || params[:no_caregiver_3] != "on"
-            caregiver3_email = params[:caregiver3][:email]
-            @car3 = User.populate_caregiver(caregiver3_email,senior.id,nil,nil,params[:caregiver3])
-            if !@car3.profile.nil?
-              set_roles_users_option(@car3,params[:car1_roles_users_option])
-              @user_intake.users.push(@car3)
-            # else
-            #   raise "Caregiver 3 validation errors"
-            end
-          end
+          
+          # if !subscriber_is_caregiver
+          #   if params[:no_caregiver_1].blank? || params[:no_caregiver_1] != "on"
+          #     caregiver1_email = params[:caregiver1][:email]
+          #     @car1 = User.populate_caregiver(caregiver1_email,senior.id,nil,nil,params[:caregiver1])
+          #     if !@car1.blank? && @car1.valid? && !@car1.profile.blank?
+          #       set_roles_users_option(@car1,params[:car1_roles_users_option])
+          #       @user_intake.users.push(@car1)
+          #     # else
+          #     #   raise "Caregiver 1 validation errors"
+          #     end
+          #   end
+          # end
+          # if params[:no_caregiver_2].blank? || params[:no_caregiver_2] != "on"
+          #   caregiver2_email = params[:caregiver2][:email]
+          #   @car2 = User.populate_caregiver(caregiver2_email,senior.id,nil,nil,params[:caregiver2])
+          #   if !@car2.profile.nil?
+          #     set_roles_users_option(@car2,params[:car2_roles_users_option])
+          #     @user_intake.users.push(@car2)
+          #   # else
+          #   #   raise "Caregiver 2 validation errors"
+          #   end
+          # end
+          # if params[:no_caregiver_3].blank? || params[:no_caregiver_3] != "on"
+          #   caregiver3_email = params[:caregiver3][:email]
+          #   @car3 = User.populate_caregiver(caregiver3_email,senior.id,nil,nil,params[:caregiver3])
+          #   if !@car3.profile.nil?
+          #     set_roles_users_option(@car3,params[:car1_roles_users_option])
+          #     @user_intake.users.push(@car3)
+          #   # else
+          #   #   raise "Caregiver 3 validation errors"
+          #   end
+          # end
           #
           # collect errors in activerecord instance
           # this will show proper validation errors on form

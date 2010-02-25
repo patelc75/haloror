@@ -164,6 +164,15 @@ Then /^(?:|the )(?:|page )content should not have the following:$/ do |text|
   end
 end
 
+Then /^(?:|the )page has no rails trace$/ do
+  text = "Full trace"
+  if defined?(Spec::Rails::Matchers)
+    contents.each {|text| response.should_not contain(text)}
+  else
+    contents.each {|text| assert_not_contain text}
+  end
+end
+
 # General methods
 
 def authenticate(login, password)

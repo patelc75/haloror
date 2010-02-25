@@ -1,7 +1,7 @@
 module UserHelper
   # 2010-02-01 accept default value for created_by_user
   #
-  def populate_user(profile_hash,email,group,created_by_user = nil,opt_out_call_center = 0)
+  def populate_user(profile_hash, email, group, created_by_user = nil, opt_out_call_center = 0)
   	@user = User.new
   	@user.email = email #namdatory for all cases
   	User.transaction do
@@ -11,8 +11,11 @@ module UserHelper
     	  unless profile_hash.blank? # FIXME: handle better. 2010-02-01 profile not required for direct_online_customer
           @profile = Profile.new(profile_hash)
           @profile.user_id = @user.id
-          @profile.save! rescue nil # do not throw code to browser here. ! will force validation
+          #
+          # we need to reload @user object because the @profile was created later
+          ((@user = @profile.user) if @profile.save!) unless !@profile.valid? # do not throw code to browser here. ! will force validation
         end
+        
         # FIXME: avoid instance variable. It is over-written here anyways
         @group = (group.is_a?(Group) ? group : Group.find_by_name(group)) # 2010-02-01 accept String or Group.instance
         # role = @user.has_role 'halouser'
@@ -66,7 +69,7 @@ module UserHelper
         raise "senior cannot be caregiver of themselves"
       end
 
-      if params_hash["same_as_senior"] == true
+      if params_hash["same_as_senior"]
         subscriber = params_hash["senior_object"]
         subscriber_profile = subscriber.profile unless subscriber.blank?
         
