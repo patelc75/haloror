@@ -9,7 +9,7 @@ class ActionMailer::ARMailer < ActionMailer::Base
         self.priority = Priority::IMMEDIATE
       end
       if !mail.destinations.blank?
-        if self.priority > Priority::THRESH_HOLD || ENV['RAILS_ENV'] == 'development'
+        if (ENV['RAILS_ENV'] == 'production' or ENV['RAILS_ENV'] == 'staging') and self.priority > Priority::THRESH_HOLD
           emails = []
           mail.destinations.each do |destination|
             emails << Email.new(:mail => mail.encoded,    :to => destination,
