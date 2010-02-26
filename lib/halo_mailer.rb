@@ -39,7 +39,7 @@ class ActionMailer::ARMailer < ActionMailer::Base
         self.priority = Priority::LOW
       end
       if !mail.destinations.blank?
-        if ENV['RAILS_ENV'] == 'development' 
+        if ENV['RAILS_ENV'] == 'development'
           ActionMailer::Base.smtp_settings = SMTP_SETTINGS_GMAIL
           safe_send_emails(mail)
         elsif self.priority > Priority::THRESH_HOLD
