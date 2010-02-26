@@ -17,6 +17,7 @@ class DeviceRevision < ActiveRecord::Base
     # find first online revision that matches any comma separated device name
     # usage: find_by_device_names("Chest Strap, Halo Complete")
     #
+    # TODO: can be refactored better as named_scope
     def find_by_device_names(phrase)
       found = nil
       device_types = DeviceType.find_all_names(phrase)
@@ -31,14 +32,15 @@ class DeviceRevision < ActiveRecord::Base
   end
   
   # instance methods
+  
   def revision_model
-    return "#{self.device_model.part_number}-#{self.revision}" if(self.device_model)
-    return "#{self.revision}"
+    return self.device_model ? "#{self.device_model.part_number}-#{self.revision}" : "#{self.revision}"
   end
   
   def revision_model_type
-    return "#{self.device_model.device_type.device_type} #{self.device_model.part_number}-#{self.revision}" if(self.device_model && self.device_model.device_type)
-    return revision_model
+    return (self.device_model && self.device_model.device_type) ? \
+      "#{self.device_model.device_type.device_type} #{self.device_model.part_number}-#{self.revision}" : \
+      revision_model
   end
   
   # get device_type_name

@@ -7,84 +7,30 @@ Feature: Online (D)irect (T)o (C)ustomer store
 
   Background:
     Given I am guest
+    And the product catalog exists
     When I go to the online store
 
   Scenario: Direct to customer online store visible to public
     Then page content should have "myHalo Complete, myHalo Clip, Pick a product, Billing and Shipping"
   
   Scenario: Same as shipping copies shipping data to billing
-    When I fill the shipping details
-    And I fill the credit card details
+    When I fill the shipping details for online store
+    And I fill the credit card details for online store
     And I check "Same as shipping"
     And I press "Continue"
     And I press "Place Order"
     Then page content should have "Thank you"
 
-  # Scenario: Choice for HaloComplete
-  #   When I choose "myHalo Complete"
-  #   Then page has the following content visible:
-  #     """
-  #     $439.00
-  #     Recurring monthly charge of $59.00/mo
-  #     """
-
-  # Scenario: Choice for HaloClip
-  #   When I choose "myHalo Clip"
-  #   Then page has the following content visible:
-  #     """
-  #     $409.00
-  #     Recurring monthly charge of $49.00/mo
-  #     """
-
-  # # Scenario Outline covers multiple scenarios that have little variation
-  # # Examples: is the keyword to define variations
-  # #   keeps steps DRY
-  # #
-  # Scenario Outline: Confirmation view, back button
-  #   When I fill the shipping details
-  #   And I fill the billing details
-  #   And I fill the credit card details
-  #   And I press "Continue"
-  #   And I press "<button>"
-  #   Then I <action> edit the following:
-  #     | ship_first_name |
-  #     | ship_last_name  |
-  #     | ship_address    |
-  #     | ship_city       |
-  #     | ship_zip        |
-  #     | ship_phone      |
-  #     | ship_email      |
-  #     | Card number     |
-  #     | CSC             |
-  #     | Comments        |
-  #     | bill_first_name |
-  #     | bill_last_name  |
-  #     | bill_address    |
-  #     | bill_city       |
-  #     | bill_zip        |
-  #     | bill_phone      |
-  #     | bill_email      |
-  #   And I <action> select the following:
-  #     | expiration_month |
-  #     | expiration_year  |
-  #     | card_type        |
-  #   And page content should have "<content>"
-  # 
-  #   Examples: Edit, read only views
-  #     | button | action | content                                                        |
-  #     |        | cannot | Place Order, Back, Order Summary, Billing and Shipping Summary |
-  #     | Back   | can    | Continue, Pick a product                                       |
-
-  # Scenario: Not same as shipping has separate shipping and billing data
-  #   When I fill the shipping details
-  #   And I fill the billing details
-  #   And I fill the credit card details
-  #   And I uncheck "Same as shipping"
-  #   And I press "Continue"
-  #   And I press "Place Order"
-  #   Then I should see "Thank you"
-  #   And profile "shipping f name shipping l name" should have "halouser" role
-  #   And profile "ship f name ship l name" should have "subscriber" role for "shipping f name shipping l name"
+  Scenario: Not same as shipping has separate shipping and billing data
+    When I fill the shipping details for online store
+    And I fill the billing details for online store
+    And I fill the credit card details
+    And I uncheck "Same as shipping"
+    And I press "Continue"
+    And I press "Place Order"
+    Then I should see "Thank you"
+    And profile "ship first name ship last name" should have "halouser" role
+    And profile "bill first name bill last name" should have "subscriber" role for "ship first name ship last name"
 
   # Scenario: One time and subscription charges
   #   When I fill the shipping details
@@ -131,3 +77,42 @@ Feature: Online (D)irect (T)o (C)ustomer store
   # And I select "Alabama" from the "ship_state"
   # And I select "Iowa" from the "bill_state"
   # And I choose "myHalo Complete"
+
+  # # Scenario Outline covers multiple scenarios that have little variation
+  # # Examples: is the keyword to define variations
+  # #   keeps steps DRY
+  # #
+  # Scenario Outline: Confirmation view, back button
+  #   When I fill the shipping details
+  #   And I fill the billing details
+  #   And I fill the credit card details
+  #   And I press "Continue"
+  #   And I press "<button>"
+  #   Then I <action> edit the following:
+  #     | ship_first_name |
+  #     | ship_last_name  |
+  #     | ship_address    |
+  #     | ship_city       |
+  #     | ship_zip        |
+  #     | ship_phone      |
+  #     | ship_email      |
+  #     | Card number     |
+  #     | CSC             |
+  #     | Comments        |
+  #     | bill_first_name |
+  #     | bill_last_name  |
+  #     | bill_address    |
+  #     | bill_city       |
+  #     | bill_zip        |
+  #     | bill_phone      |
+  #     | bill_email      |
+  #   And I <action> select the following:
+  #     | expiration_month |
+  #     | expiration_year  |
+  #     | card_type        |
+  #   And page content should have "<content>"
+  # 
+  #   Examples: Edit, read only views
+  #     | button | action | content                                                        |
+  #     |        | cannot | Place Order, Back, Order Summary, Billing and Shipping Summary |
+  #     | Back   | can    | Continue, Pick a product                                       |
