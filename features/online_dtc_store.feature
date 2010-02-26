@@ -24,7 +24,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
   Scenario: Not same as shipping has separate shipping and billing data
     When I fill the shipping details for online store
     And I fill the billing details for online store
-    And I fill the credit card details
+    And I fill the credit card details for online store
     And I uncheck "Same as shipping"
     And I press "Continue"
     And I press "Place Order"

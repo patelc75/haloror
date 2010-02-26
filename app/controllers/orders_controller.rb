@@ -57,7 +57,8 @@ class OrdersController < ApplicationController
           if @order.valid? && @order.save! #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
             # pick any of these hard coded values for now. This will change to device_revisions on order screen
             #
-            device_model = DeviceModel.find_complete_or_clip(session[:product]) # finds clip or complete. default == complete
+            product = session[:product] # used at many places in this code
+            device_model = DeviceModel.find_complete_or_clip(product) # finds clip or complete. default == complete
             if device_model.blank?
               #
               # this should have been caught on first page though
