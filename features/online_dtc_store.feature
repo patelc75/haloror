@@ -32,31 +32,31 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And profile "ship first name ship last name" should have "halouser" role
     And profile "bill first name bill last name" should have "subscriber" role for "ship first name ship last name"
 
-  Scenario Outline: Passed and failed credit card, with log entry
-    When I fill the shipping details
-    And I fill the billing details
-    And I fill in "111" for "CSC"
-    And I fill in "Credit card" with "<card>"
-    And I select "<type>" from the "order_card_type"
-    And I press "Continue"
-    And I press "Place Order"
-    Then I should see "<result>"
-      
-    Examples: pass and failed card
-      | card             | result  | type             |
-      | 4111111111111111 | Success | VISA             |
-      | 4012888888881881 | Success | VISA             |
-      | 1234567812345678 | Failure | VISA             |
-      | 370000000000002  | Success | American Express |
-      | 378282246310005  | Success | American Express |
-      | 371449635398431  | Success | American Express |
-      | 6011000000000012 | Success | Discover         |
-      | 6011111111111117 | Success | Discover         |
-      | 6011000990139424 | Success | Discover         |
-      | 5424000000000015 | Success | MasterCard       |
-      | 5555555555554444 | Success | MasterCard       |
-      | 5105105105105100 | Success | MasterCard       |
-      | 4222222222222    | Failure | VISA             |
+  # Scenario Outline: Passed and failed credit card, with log entry
+  #   When I fill the shipping details
+  #   And I fill the billing details
+  #   And I fill in "111" for "CSC"
+  #   And I fill in "Credit card" with "<card>"
+  #   And I select "<type>" from the "order_card_type"
+  #   And I press "Continue"
+  #   And I press "Place Order"
+  #   Then I should see "<result>"
+  #     
+  #   Examples: pass and failed card
+  #     | card             | result  | type             |
+  #     | 4111111111111111 | Success | VISA             |
+  #     | 4012888888881881 | Success | VISA             |
+  #     | 1234567812345678 | Failure | VISA             |
+  #     | 370000000000002  | Success | American Express |
+  #     | 378282246310005  | Success | American Express |
+  #     | 371449635398431  | Success | American Express |
+  #     | 6011000000000012 | Success | Discover         |
+  #     | 6011111111111117 | Success | Discover         |
+  #     | 6011000990139424 | Success | Discover         |
+  #     | 5424000000000015 | Success | MasterCard       |
+  #     | 5555555555554444 | Success | MasterCard       |
+  #     | 5105105105105100 | Success | MasterCard       |
+  #     | 4222222222222    | Failure | VISA             |
 
 
   # # Scenario Outline covers multiple scenarios that have little variation

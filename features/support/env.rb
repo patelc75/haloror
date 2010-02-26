@@ -12,6 +12,7 @@ require 'cucumber/rails/rspec'
 require 'cucumber/rails/world'
 require 'cucumber/rails/active_record'
 require 'cucumber/web/tableish'
+require 'spec/stubs/cucumber'
 
 require 'webrat'
 require 'webrat/core/matchers'
@@ -49,5 +50,19 @@ Cucumber::Rails::World.use_transactional_fixtures = true
 
 # How to clean your database when transactions are turned off. See
 # http://github.com/bmabey/database_cleaner for more info.
-# require 'database_cleaner'
-# DatabaseCleaner.strategy = :truncation
+require 'database_cleaner'
+DatabaseCleaner.strategy = :truncation
+
+# Global setup
+ActionMailer::Base.delivery_method = :test
+ActionMailer::Base.perform_deliveries = false
+
+Before do
+  # Scenario setup
+  ActionMailer::Base.deliveries.clear
+end
+
+After do
+  # Scenario teardown
+  DatabaseCleaner.clean
+end

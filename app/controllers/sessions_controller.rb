@@ -44,7 +44,7 @@ class SessionsController < ApplicationController
   
   def destroy
     log = AccessLog.new
-    log.user_id = current_user.id # TODO: Object.id is deprecated. Maybe change logic here to log differently
+    log.user_id = current_user # TODO: Object.id is deprecated. Maybe change logic here to log differently
     log.status = 'logout'
     log.save
     

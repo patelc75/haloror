@@ -96,11 +96,12 @@ class OrdersController < ApplicationController
           end # save
         end # session[:order]
 
-        if @order.errors.count.zero?
+        # if @order.errors.count.zero?
           format.html { render :action => goto }
-        else
-          redirect_to :action => 'new'
-        end
+        # else
+        #   redirect_to :action => 'new'
+        # end
+        
       end
     end # redirect_to new
   end
