@@ -20,7 +20,7 @@
   <%= flash[type] %>
 <% end %>
 
-<% unless @order.errors.count.zero? %>  <!-- show validation errors -->
+<% unless @order.errors.blank? %>  <!-- show validation errors -->
   <div id="errors" class="box error">
     <%= error_messages_for :order %>
   </div>
@@ -229,7 +229,7 @@
           <% if @confirmation %>
             <%= f.text_field "card_type", :class => "required", :disabled => true %>
           <% else %>
-            <%= f.select "card_type", [["Visa", "visa"], ["MasterCard", "master"], ["American Express", "express"],["Discover", "discover"]]  %>
+            <%= f.select "card_type", credit_card_types.to_a %>
           <% end -%>
         </p>
         <p>

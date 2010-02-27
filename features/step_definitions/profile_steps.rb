@@ -3,7 +3,7 @@
 include ApplicationHelper # methods: find_profile_user, split_phrase
 
 Then /^profile "([^\"]*)" should have "([^\"]*)" role(?:|s) for profile "([^\"]*)" with attributes:$/ do |full_name, role_name, for_full_name, attrs_table|
-  Then %{profile "#{full_name}" should have "#{role_name}" roles for profile "#{for_full_name}"}
+  Then %{profile "#{full_name}" should have "#{role_name}" role for profile "#{for_full_name}"}
   
   # make hash from cucumber attributes table
   attrs = {}
@@ -35,7 +35,7 @@ end
 # profile roles pattern can be: "caregiver", "caregiver, user, halouser"
 # profile role(s) can be used singular or plural
 #
-Then /^profile "([^\"]*)" should have "([^\"]*)" role(?:|s) for profile "([^\"]*)"$/ do |full_name, role_name, for_full_name|
+Then /^profile "([^\"]*)" should have "([^\"]*)" role? for profile "([^\"]*)"$/ do |full_name, role_name, for_full_name|
   Then %{profile "#{full_name}" should exist}
   Then %{profile "#{for_full_name}" should exist}
 
@@ -49,7 +49,7 @@ end
 
 # profile role(s) can be used singular or plural
 #
-Then /^profile "([^\"]*)" should have "([^\"]*)" role(?:|s)$/ do |full_name, role_name|
+Then /^profile "([^\"]*)" should have "([^\"]*)" role?$/ do |full_name, role_name|
   Then %{profile "#{full_name}" should exist}
   
   user = find_profile_user(full_name)

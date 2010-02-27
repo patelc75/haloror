@@ -1,4 +1,13 @@
-<h1 id="thank_you_for_placing_the_order_with_us">Thank you for placing the order with us</h1>
+<% unless @order.errors.blank? %>
+  <div id="order_errors" class="box error"><ul>
+  <% @order.errors.each_full do |error_message| %>
+    <li><%= error_message %></li>
+  <% end -%>
+  </ul></div>
+  <hr />
+<% end -%>
+
+<h1 id="thank_you_for_placing_the_order_with_us">Success: Thank you for placing the order with us</h1>
 <% if logged_in? and current_user.is_super_admin? %>
 <p><a href="/orders">DTC Orders table</a></p>
 <% end %>

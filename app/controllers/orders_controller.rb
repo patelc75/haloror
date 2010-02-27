@@ -41,6 +41,8 @@ class OrdersController < ApplicationController
     end
   end
 
+  # create order with products, charge card for one time fee & recurring subscription
+  #
   def create
     if session[:order].blank?
       redirect_to :action => 'new'
@@ -49,7 +51,7 @@ class OrdersController < ApplicationController
       goto = "new"
       respond_to do |format|
         unless session[:order].blank?
-      
+
           @order = Order.new(session[:order]) # pick from session, not params
           @order.populate_billing_address
           @order.assign_group("direct_to_consumer")
@@ -67,13 +69,13 @@ class OrdersController < ApplicationController
             else
               @order.order_items.create!(:device_model_id => device_model.id, :cost => @order.cost, :quantity => 1)
               static_cost = {"clip" => 49, "complete" => 59}
-              @order.order_items.create!( :cost => static_cost[product], :quantity => 1, :recurring_monthly => true) if static_cost.has_key?(product)
+              @order.order_items.create!(:cost => static_cost[product], :quantity => 1, :recurring_monthly => true, :device_model_id => device_model.id) if static_cost.has_key?(product)
           
               Order.transaction do
                 charges = (product == "complete" ? [43900, 5900] : [40900, 4900])
                 @one_time_fee, @subscription = @order.charge_one_time_and_subscription(charges[0], charges[1])
                 success = (@one_time_fee.success? && @subscription.success?) unless (@one_time_fee.blank? || @subscription.blank?)
-            
+
                 if success.blank? || !success
                   goto = "failure"
                   # format.html { render :action => 'failure' }
@@ -96,12 +98,7 @@ class OrdersController < ApplicationController
           end # save
         end # session[:order]
 
-        # if @order.errors.count.zero?
-          format.html { render :action => goto }
-        # else
-        #   redirect_to :action => 'new'
-        # end
-        
+        format.html { render :action => goto }
       end
     end # redirect_to new
   end

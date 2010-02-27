@@ -1,14 +1,14 @@
-<h1 id="failed_order">Failed order</h1>
+<h1 id="failed_order">Failure: Incomplete order</h1>
 <h2>Thank you for your order. Your order has failed for the following reason</h2>
 
-<% unless @order.errors.empty? %>
-  <div id="order_errors"><ul>
+<% unless @order.errors.blank? %>
+  <div id="order_errors" class="box error"><ul>
   <% @order.errors.each_full do |error_message| %>
     <li><%= error_message %></li>
   <% end -%>
   </ul></div>
+  <hr />
 <% end -%>
-<hr />
 
 <div class="box <%= @one_time_fee.success? ? 'back-green' : 'back-orange' rescue 'back-orange' %>">  
   <% if @one_time_fee.blank? %>

@@ -57,12 +57,14 @@ DatabaseCleaner.strategy = :truncation
 ActionMailer::Base.delivery_method = :test
 ActionMailer::Base.perform_deliveries = false
 
-Before do
-  # Scenario setup
-  ActionMailer::Base.deliveries.clear
-end
+# cucumber hooks
 
-After do
-  # Scenario teardown
-  DatabaseCleaner.clean
-end
+# Before do
+#   # Scenario setup
+#   ActionMailer::Base.deliveries.clear
+# end
+
+# After do
+#   # Scenario teardown
+#   DatabaseCleaner.clean
+# end

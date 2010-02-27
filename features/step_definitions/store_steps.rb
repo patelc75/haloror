@@ -30,8 +30,8 @@ When /^I fill the (.+) details for online store$/ do |which|
       "card_csc"    => "111"}.each do |field, value|
       When %{I fill in "order_#{field}" with "#{value}"}
     end
-    When %{I select "Visa" from "order_card_type"}
+    When %{I select "VISA" from "order_card_type"}
     When %{I select "January" from "order_card_expiry_2i"}
-    When %{I select "#{1.year.from_now.to_date.year}" from "order_card_expiry_1i"}
+    When %{I select "#{2.years.from_now.to_date.year}" from "order_card_expiry_1i"}
   end
 end
