@@ -1,0 +1,24 @@
+<h1>New RMA</h1>
+
+<% form_for(@rma) do |f| %>
+  <%= f.error_messages %>
+  <table>
+    <tr>
+      <td><label name="colpleted_on">Completed On:</td><td><%= f.date_select :completed_on %></td>
+    </tr>
+    <tr>
+      <td><label name="group_id">Group:</td><td><%= f.collection_select(:group_id, @groups, :id, :name, {:prompt => true}) %></td>
+    </tr>
+    <tr>
+      <td><label name="user_id">User ID#:</td><td><%= f.text_field :user_id %></td>
+    </tr>
+    <tr>
+      <td><label name="phone_number">Phone Number:</td><td><%= f.text_field :phone_number %></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td><td>&nbsp;</td><td><%= f.submit "Create" %></td>
+    </tr>
+  </table>
+<% end %>
+
+<%= link_to 'Back', rmas_path %>
