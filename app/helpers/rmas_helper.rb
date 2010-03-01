@@ -1,0 +1,2 @@
+module RmasHelper
+end
