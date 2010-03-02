@@ -43,4 +43,11 @@ module ApplicationHelper
       'Discover'          => 'discover'
     }
   end
+
+  # accepts the name of model as string, returns and constant for the model
+  #   singular, plural, with or without underscore
+  #   examples: user, book_store. book stores, account payables
+  def model_name_to_constant(name)
+    name.singularize.split(' ').collect(&:capitalize).join.constantize
+  end
 end

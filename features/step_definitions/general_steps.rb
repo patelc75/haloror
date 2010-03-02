@@ -40,9 +40,11 @@ Given /^an? (.+) exists with the following attributes:$/ do |name, attrs_table|
     sanitized_attr = attr.gsub(/\s+/, "-").underscore
     attrs[sanitized_attr.to_sym] = value
   end
-  cannot_create = attrs.has_key?(:id)
-  cannot_create = !name.singularize.split(' ').collect(&:capitalize).join.constantize.count(:conditions => {:id => attrs[:id]}).zero? unless cannot_create # if record with same ID exists, we cannot create new
-  Factory.create(name.downcase.gsub(/ /,'_'), attrs) unless cannot_create
+  remove_existing = attrs.has_key?(:id) # do we have ID?
+  id = attrs[:id].to_i # fetch ID as integer
+  model_const = model_name_to_constant(name)
+  model_const.delete(id) if model_const.count(:conditions => {:id => id}) # remove any existing with same ID
+  Factory.create(name.downcase.gsub(/ /,'_'), attrs) # create now
 end
 
 Given /^(?:|a |an )existing (.+) with (.+) as "([^\"]*)"$/ do |name, col, value|
@@ -146,6 +148,12 @@ Then /^(?:|page )content should not have "([^\"]*)"$/ do |array_as_text|
     contents.each {|text| response.should_not contain(text)}
   else
     contents.each {|text| assert_not_contain text}
+  end
+end
+
+Then /^I should have the following counts of data:$/ do |table|
+  table.raw.each do |model_name, count|
+    model_name_to_constant(model_name).count.should == count.to_i
   end
 end
 

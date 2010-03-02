@@ -7,9 +7,9 @@ Feature: Bundle job
     Given a user exists with the following attributes:
       | id | 44 |
     When I process the bundle job "spec/H200000023_1240876150.tar.bz2"
-    Then I should have the following data:
-      | 94 | batteries         |
-      | 1  | battery unplugged |
-      | 93 | vitals            |
-      | 93 | steps             |
-      | 93 | skin temps        |
+    Then I should have the following counts of data:
+      | batteries         | 94 |
+      | battery unplugged | 1  |
+      | vitals            | 93 |
+      | steps             | 93 |
+      | skin temps        | 93 |
