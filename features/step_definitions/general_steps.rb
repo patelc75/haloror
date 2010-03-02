@@ -40,8 +40,9 @@ Given /^an? (.+) exists with the following attributes:$/ do |name, attrs_table|
     sanitized_attr = attr.gsub(/\s+/, "-").underscore
     attrs[sanitized_attr.to_sym] = value
   end
-  debugger
-  Factory.create(name.downcase.gsub(/ /,'_'), attrs)
+  cannot_create = attrs.has_key?(:id)
+  cannot_create = !name.singularize.split(' ').collect(&:capitalize).join.constantize.count(:conditions => {:id => attrs[:id]}).zero? unless cannot_create # if record with same ID exists, we cannot create new
+  Factory.create(name.downcase.gsub(/ /,'_'), attrs) unless cannot_create
 end
 
 Given /^(?:|a |an )existing (.+) with (.+) as "([^\"]*)"$/ do |name, col, value|
