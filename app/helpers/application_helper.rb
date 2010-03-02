@@ -50,4 +50,16 @@ module ApplicationHelper
   def model_name_to_constant(name)
     name.singularize.split(' ').collect(&:capitalize).join.constantize
   end
+  
+  # just ensure the folder exists as specified in the full path
+  def ensure_folder(path)
+    paths = csv_to_array(path)
+    Dir.mkdir(path) unless File.exists?(path)
+  end
+  
+  # take a comma/<delimiter> separated string/text and return an array of strings.
+  # no blank spaces before/after each element value
+  def csv_to_array(phrase, delimiter = ',')
+    phrase.split(delimiter).collect {|p| p.lstrip.rstrip }
+  end
 end

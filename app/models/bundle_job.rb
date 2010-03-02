@@ -10,8 +10,8 @@ class BundleJob
     @error_collection = []
    
     begin 
-      Dir.mkdir(BUNDLE_PATH) unless File.exists?(BUNDLE_PATH)
-      Dir.mkdir(ARCHIVE_PATH) unless File.exists?(ARCHIVE_PATH)
+      ensure_folder(BUNDLE_PATH)
+      ensure_folder(ARCHIVE_PATH)
       #retrieve file names
       file_names = []
       Dir.foreach(BUNDLE_PATH) do |file_name|  #create list of filenames that need to be processed
@@ -60,10 +60,7 @@ class BundleJob
 
           base_name = File.basename(file_path_and_name, EXT_NAME) #remove extension from filename
           dir_path = "#{BUNDLE_PATH}/#{base_name}"
-          begin
-            Dir.mkdir(dir_path) #try to make the directory
-          rescue
-          end
+          Dir.mkdir(dir_path) rescue nil #try to make the directory
           self.extract(file_path_and_name,  dir_path) 
           self.archive(file_path_and_name,  ARCHIVE_PATH) #archive the file to the /archive directory
           RAILS_DEFAULT_LOGGER.warn("#{Time.now}: BundleJob beginng work on extracted #{file_name}")

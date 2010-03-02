@@ -6,6 +6,8 @@ Feature: Bundle job
   Scenario: Load the bundle file and verify data
     Given a user exists with the following attributes:
       | id | 44 |
+    And a device exists with the following attributes:
+      | id | 965 |
     When I process the bundle job "spec/H200000023_1240876150.tar.bz2"
     Then I should have the following counts of data:
       | batteries         | 94 |

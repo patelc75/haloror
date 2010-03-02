@@ -5,6 +5,11 @@ Factory.define :carrier do |v|
   v.domain Faker::Internet.domain_name
 end
 
+Factory.define :device do |v|
+  v.serial_number Faker::Lorem.words
+  v.active = true
+end
+
 Factory.define :emergency_number do |v|
   v.name Faker::Company.name
   v.number Faker::PhoneNumber.phone_number
