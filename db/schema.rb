@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100223043212) do
+ActiveRecord::Schema.define(:version => 20100301192847) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -777,6 +777,10 @@ ActiveRecord::Schema.define(:version => 20100223043212) do
     t.datetime "created_at"
     t.integer  "created_by"
     t.string   "comments"
+    t.integer  "group_id"
+    t.string   "status"
+    t.integer  "user_id"
+    t.string   "phone_number"
   end
 
   create_table "roles", :force => true do |t|

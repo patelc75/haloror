@@ -40,6 +40,7 @@ Given /^an? (.+) exists with the following attributes:$/ do |name, attrs_table|
     sanitized_attr = attr.gsub(/\s+/, "-").underscore
     attrs[sanitized_attr.to_sym] = value
   end
+  debugger
   Factory.create(name.downcase.gsub(/ /,'_'), attrs)
 end
 
