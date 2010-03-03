@@ -6,8 +6,8 @@ Factory.define :carrier do |v|
 end
 
 Factory.define :device do |v|
-  v.serial_number Faker::Lorem.words
-  v.active = true
+  v.serial_number '1234567890'
+  v.active true
 end
 
 Factory.define :emergency_number do |v|

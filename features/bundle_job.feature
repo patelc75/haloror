@@ -10,8 +10,8 @@ Feature: Bundle job
       | id | 965 |
     When I process the bundle job "spec/H200000023_1240876150.tar.bz2"
     Then I should have the following counts of data:
-      | batteries         | 94 |
+      | batteries         | 93 |
       | battery unplugged | 1  |
       | vitals            | 93 |
-      | steps             | 93 |
-      | skin temps        | 93 |
+      | steps             | 92 |
+      | skin temps        | 92 |
