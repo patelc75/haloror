@@ -1,7 +1,7 @@
 module UserHelper
   # 2010-02-01 accept default value for created_by_user
   #
-  def populate_user(profile_hash,email,group,created_by_user = nil,opt_out_call_center = 0)
+  def populate_user(profile_hash, email, group, created_by_user = nil, opt_out_call_center = 0)
   	@user = User.new
   	@user.email = email #namdatory for all cases
   	User.transaction do

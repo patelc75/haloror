@@ -1,6 +1,8 @@
 <!-- <form name="user_intake_form" action="user_intake_form" method="post"> -->
 
-<h3>User Intake</h3>
+<h3>User Intake Submitted</h3>
+Please verify information below. If ready to install, go to the <%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %>
+
 <%=debug UserIntake.find params[:id]%><br><br>
 ================================================
 <br><b>Halo User</b><br>

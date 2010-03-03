@@ -658,8 +658,6 @@ class User < ActiveRecord::Base
       @user.email = email
     end
     
-    # WARNING: some bug here. DO NOT USE 'case' within 'if' this would not execute conditionally!
-    #
     if !@user.email.blank?
       @user.is_new_caregiver = true
       @user[:is_caregiver] =  true

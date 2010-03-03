@@ -5,8 +5,8 @@ class OrderItem < ActiveRecord::Base
   belongs_to :device_model
   
   PRODUCT_HASH = Hash[
-   "myHalo Complete" => "12001002-1", 
-   "myHalo Clip"     => "12001008-1" 
+   "myHalo Complete" => "12001002-1",
+   "myHalo Clip"     => "12001008-1"
    ]
   
   # Retruns the product type based on device model or recurring charge

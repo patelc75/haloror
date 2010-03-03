@@ -17,26 +17,22 @@ class Order < ActiveRecord::Base
     one_time_response, subscription_response = charge_credit_card(one_time_fee, subscription_fee)
     return one_time_response, subscription_response
   end
-  
-  def charge_one_time_fee(fee)
-    charge_credit_card(fee, 0)
-  end
-  
-  def charge_subscription(recurring_fee)
-    charge_credit_card(0, recurring_fee)
-  end
-  
+    
   def charge_credit_card(one_time_fee = 0, recurring_fee = 0)
     # mode is set (in environment config files) to :test for development and test, :production when production
     if validate_card
-      unless one_time_fee.blank?
+      if one_time_fee.blank?
+        errors.add_to_base "One time fee: #{one_time_fee}"
+      else
         # one time charge as presented in the product detail box
         charge_amount = (cost * 100) # cents
         @one_time_fee_response = GATEWAY.purchase(charge_amount, credit_card) # GATEWAY in environment files
         errors.add_to_base @one_time_fee_response.message unless @one_time_fee_response.success?
       end
       
-      unless recurring_fee.blank?
+      if recurring_fee.blank?
+        errors.add_to_base "Recurring subscription fee: #{recurring_fee}"
+      else
         # recurring subscription for 60 months, starting 3.months.from_now
         # TODO: do not hard code. pick from database
         # =>  keep charging 5 years at least
@@ -49,6 +45,7 @@ class Order < ActiveRecord::Base
         errors.add_to_base @recurring_fee_response.message unless @recurring_fee_response.success?
       end
     end
+    
     return @one_time_fee_response, @recurring_fee_response
   end
 

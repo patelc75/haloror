@@ -1,10 +1,5 @@
-<% content_for :meta_tags do %>
-  <meta http-equiv="cache-control" content="no-cache"> <!-- tells browser not to cache -->
-  <meta http-equiv="expires" content="0"> <!-- says that the cache expires 'now' -->
-  <meta http-equiv="pragma" content="no-cache"> <!-- says not to use cached stuff, if there is any -->
-  <!-- <meta http-equiv="refresh" content="2"> -->
-<% end -%>
-<% if current_user.is_super_admin? %>
+
+<% if logged_in? and current_user.is_super_admin? %>
 <p><a href="/orders">DTC Orders table</a></p>
 <% end %>
 <% if @confirmation %>
@@ -24,6 +19,12 @@
 <% flash.each do |type| %>
   <%= flash[type] %>
 <% end %>
+
+<% unless @order.errors.blank? %>  <!-- show validation errors -->
+  <div id="errors" class="box error">
+    <%= error_messages_for :order %>
+  </div>
+<% end -%>
 
 <% form_for @order, :url => {:action => (@confirmation ? "create" : "new")}, :html => {:id => 'form1', :class => "#{@confirmation ? 'confirm-form' : 'form'}"} do |f| %>
  	<fieldset style="border: 2px solid ; padding: 10px;">    
@@ -228,7 +229,7 @@
           <% if @confirmation %>
             <%= f.text_field "card_type", :class => "required", :disabled => true %>
           <% else %>
-            <%= f.select "card_type", [["Visa", "visa"], ["MasterCard", "master"], ["American Express", "express"],["Discover", "discover"]]  %>
+            <%= f.select "card_type", credit_card_types.to_a %>
           <% end -%>
         </p>
         <p>

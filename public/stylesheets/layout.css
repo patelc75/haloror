@@ -859,3 +859,6 @@ input.validation-failed, textarea.validation-failed {
 	font-weight: bold;
 }
 
+.error {
+  color: #F00;
+}

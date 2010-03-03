@@ -51,6 +51,7 @@ Rails::Initializer.run do |config|
   config.active_record.observers = :user_observer, :device_event_observer, :event_action_observer, :critical_device_event_observer, :gateway_event_observer
   
   config.gem "rufus-scheduler", :version => ">= 2.0.1", :lib => false
+  config.gem "rubyhealthvault", :lib => "healthvault"
   #config.gem "ambethia-recaptcha", :lib => "recaptcha/rails"
 end
 
@@ -121,6 +122,7 @@ ExceptionNotifier.email_prefix = "[" + ServerInstance.current_host_short_string 
 ENV['TZ'] = 'UTC' # This makes Time.now return time in UTC and assumes all data in DB is this timezone, seems to only work in production mode
 Time::DATE_FORMATS[:date_time] = "%a %b %d, %Y at %I:%M%p" #Tue Dec 25,2007 at 03:52PM
 Time::DATE_FORMATS[:date_time_seconds] = "%a %b %d, %Y at %I:%M:%S%p" #Tue Dec 25,2007 at 03:52PM
+Time::DATE_FORMATS[:date_time_seconds_2] = "%m/%d/%y %I:%M%p" #12/25/07 03:52PM
 Time::DATE_FORMATS[:date_time_timezone] = Time::DATE_FORMATS[:date_time] + " %Z" #Tue Dec 25, 2007 at 03:52PM CST
 Time::DATE_FORMATS[:time_date] = "%I:%M%p on %a %b %d,%Y" #03:52PM on Tue Dec 25,2007
 Time::DATE_FORMATS[:time_date_timezone] = "%I:%M%p %Z on %a %b %d, %Y" #03:52PM CST on Tue Dec 25, 2007

@@ -14,9 +14,9 @@ module ApplicationHelper
 #  
   def google_analytics_check    
    (request.host == 'myhalomonitor.com' or request.host == 'www.myhalomonitor.com') #and !@@google_analytics_filter.include? request.env["REMOTE_ADDR"].to_s
- end
+  end
  
- def image_for_event(event)
+  def image_for_event(event)
    type = event[:event_type]
    if ['Fall', 'Panic'].include? type
      return image_tag('/images/severe_button_82_22.png')
@@ -33,5 +33,33 @@ module ApplicationHelper
    else 
      return image_tag('/images/normal_button_82_22.png')
    end
- end
+  end
+
+  def credit_card_types
+    return {
+      'VISA'              => 'visa',
+      'MasterCard'        => 'master',
+      'American Express'  => 'american_express',
+      'Discover'          => 'discover'
+    }
+  end
+
+  # accepts the name of model as string, returns and constant for the model
+  #   singular, plural, with or without underscore
+  #   examples: user, book_store. book stores, account payables
+  def model_name_to_constant(name)
+    name.singularize.split(' ').collect(&:capitalize).join.constantize
+  end
+  
+  # just ensure the folder exists as specified in the full path
+  def ensure_folder(path)
+    paths = csv_to_array(path)
+    Dir.mkdir(path) unless File.exists?(path)
+  end
+  
+  # take a comma/<delimiter> separated string/text and return an array of strings.
+  # no blank spaces before/after each element value
+  def csv_to_array(phrase, delimiter = ',')
+    phrase.split(delimiter).collect {|p| p.lstrip.rstrip }
+  end
 end
