@@ -1,0 +1,29 @@
+<oscope_msgs>
+  <timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp>
+  <oscope_msg>
+    <channel_num>10</channel_num>
+    <point>
+      <seq>19849</seq>
+      <data>2566</data>
+    </point>
+    <point>
+      <seq>19850</seq>
+      <data>2324</data>
+    </point>
+    <timestamp>Thu Nov 19 19:07:20 UTC 2009</timestamp>
+    <user_id>276</user_id>
+  </oscope_msg>
+  <oscope_msg>
+    <channel_num>11</channel_num>
+    <point>
+      <seq>19849</seq>
+      <data>2219</data>
+    </point>
+    <point>
+      <seq>19850</seq>
+      <data>2206</data>
+    </point>
+    <timestamp>Thu Nov 19 19:07:20 UTC 2009</timestamp>
+    <user_id>276</user_id>
+  </oscope_msg>
+</oscope_msgs>

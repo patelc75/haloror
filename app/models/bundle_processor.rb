@@ -1,3 +1,5 @@
+# FIXME: this will fail for sure. bundle_processors table does not exist
+# WARNING: Need to discuss business logic here, or, get structure of the table
 class BundleProcessor < ActiveRecord::Base
   @@bundled_models = [Vital, StrapRemoved, StrapFastened, Step, 
                       SkinTemp, Battery, BatteryChargeComplete, 
