@@ -26,5 +26,5 @@ Feature: Bundle job
   
     Examples:
       | part_name | oscope | points |
-      | no_points | 2      | 0      |
       | points    | 2      | 4      |
+      | no_points | 2      | 0      |

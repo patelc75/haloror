@@ -11,7 +11,7 @@
       <data>2324</data>
     </point>
     <timestamp>Thu Nov 19 19:07:20 UTC 2009</timestamp>
-    <user_id>276</user_id>
+    <user_id>44</user_id>
   </oscope_msg>
   <oscope_msg>
     <channel_num>11</channel_num>
@@ -24,6 +24,6 @@
       <data>2206</data>
     </point>
     <timestamp>Thu Nov 19 19:07:20 UTC 2009</timestamp>
-    <user_id>276</user_id>
+    <user_id>44</user_id>
   </oscope_msg>
 </oscope_msgs>
