@@ -336,10 +336,12 @@ class User < ActiveRecord::Base
       return nil
     end
   end
+  
   def group_roles
     roles = self.roles.find(:all, :conditions => "authorizable_type = 'Group'")
     return roles.uniq
   end
+  
   def group_memberships
     roles = group_roles
     groups = []
@@ -660,7 +662,7 @@ class User < ActiveRecord::Base
     
     if !@user.email.blank?
       @user.is_new_caregiver = true
-      @user[:is_caregiver] =  true
+      @user[:is_caregiver] = true
       @user.save!
 
       if @user.profile.blank?
@@ -674,8 +676,9 @@ class User < ActiveRecord::Base
           end
         end
         profile[:is_new_caregiver] = true
-        profile.save!
-        @user.profile = profile
+        if profile.valid? && profile.save!
+          @user.profile = profile
+        end
       end
       senior = User.find(senior_id)
 

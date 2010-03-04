@@ -1,6 +1,5 @@
 # general steps
 #
-
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "scopes"))
 
 # Given
@@ -140,6 +139,33 @@ end
 
 Then /^(?:|page )content should not have "([^\"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect {|p| p.lstrip.rstrip}
+  if defined?(Spec::Rails::Matchers)
+    contents.each {|text| response.should_not contain(text)}
+  else
+    contents.each {|text| assert_not_contain text}
+  end
+end
+
+Then /^(?:|the )(?:|page )content should have the following:$/ do |text|
+  contents = text.collect {|p| p.lstrip.rstrip}
+  if defined?(Spec::Rails::Matchers)
+    contents.each {|text| response.should contain(text)}
+  else
+    contents.each {|text| assert_contain text}
+  end
+end
+
+Then /^(?:|the )(?:|page )content should not have the following:$/ do |text|
+  contents = text.collect {|p| p.lstrip.rstrip}
+  if defined?(Spec::Rails::Matchers)
+    contents.each {|text| response.should_not contain(text)}
+  else
+    contents.each {|text| assert_not_contain text}
+  end
+end
+
+Then /^(?:|the )page has no rails trace$/ do
+  text = "Full trace"
   if defined?(Spec::Rails::Matchers)
     contents.each {|text| response.should_not contain(text)}
   else

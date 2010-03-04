@@ -1,6 +1,5 @@
-
-<% if logged_in? and current_user.is_super_admin? %>
-<p><a href="/orders">DTC Orders table</a></p>
+<% if logged_in? && current_user.is_super_admin? %>
+  <p><a href="/orders">DTC Orders table</a></p>
 <% end %>
 <% if @confirmation %>
 <h1>Please verify your order</h1>

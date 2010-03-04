@@ -1,10 +1,8 @@
-# 2010-02-17 switched off for now
-#
 # require 'rubygems'
 # # require 'ruleby'
-# require 'call_center_rulebook'
+# # require 'call_center_rulebook'
 # class TestCallCenterRulebook
-#   include Ruleby
+#   # include Ruleby
 #   def run
 #     new_step = nil
 #     engine :engine do |e|
