@@ -40,6 +40,7 @@ Feature: Manage user_intakes
     And I press "Submit"
     Then profile "myfirstname mylastname" should have "halouser" role
     And profile "myfirstname mylastname" should have "subscriber" role for profile "myfirstname mylastname"
+	And email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
   # This has a few HTML element IDs instead of visible text, due to a bug in webrat
   # possible fix:
