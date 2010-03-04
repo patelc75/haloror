@@ -19,7 +19,7 @@ class OscopeMsg < ActiveRecord::Base
     point.each {|p| points.build(p)} unless point.blank?
     #
     # we need to link an OscopeStartMsg if we can find one suitable
-    # oscope_start_msg = OscopeStartMsg.find_by_timestamp_and_user_id("'#{timestamp.to_s(:db)}'", user_id)
+    oscope_start_msg = OscopeStartMsg.find_by_timestamp_and_user_id("'#{timestamp.to_s(:db)}'", user_id)
     #
     # That is it. Let ActiveRecord do the magic from here. :)
   end
