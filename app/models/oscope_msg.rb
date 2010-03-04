@@ -23,7 +23,15 @@ class OscopeMsg < ActiveRecord::Base
     #
     # That is it. Let ActiveRecord do the magic from here. :)
   end
-  
+
+  # method called from oscope_msgs_controller
+  #
+  def self.process_xml_hash(msg)
+    oscope_msg = self.new(msg)
+    oscope_msg.parse_for_xml_hash
+    oscope_msg.save! if oscope_msg.valid?
+  end
+
   # def self.process_xml_hash(msg)
   #   timestamp = msg["timestamp"].to_time if msg["timestamp"]
   #   channel_num = msg["channel_num"].to_i if msg["channel_num"]
