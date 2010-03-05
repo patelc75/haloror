@@ -1,3 +1,5 @@
+include DialUpStatusesHelper # for method: split_dial_up_status_hash_and_create_tuples
+
 class BundleJob
   BUNDLE_PATH = "#{RAILS_ROOT}/dialup"
   ARCHIVE_PATH = "#{RAILS_ROOT}/dialup/archive"
@@ -140,9 +142,15 @@ class BundleJob
     # process the XML data. no file handling here.
     #
     def process_xml_data(bundle_hash)
-      bundle_hash.keys.each \
-        {|key| BundleProcessor.process(bundle_hash[key]) unless bundle_hash[key].blank? } \
-        unless bundle_hash.blank?
+      bundle_hash.keys.each do |key|
+        #
+        # This is a special one. One hash with mix of columns for multiple tuples of DialUpStatus
+        if key == "dial_up_status"
+          split_dial_up_status_hash_and_create_tuples( bundle_hash[key] )
+        else
+          BundleProcessor.process(bundle_hash[key])
+        end unless bundle_hash[key].blank?
+      end unless bundle_hash.blank?
     end
   
     def select_oldest_file_for_processing(file_names)

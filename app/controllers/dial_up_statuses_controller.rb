@@ -43,16 +43,11 @@ class DialUpStatusesController < RestfulAuthController
   # new data posted from user-agent
   #
   def create
+    debugger
     #
     # get the hashes separate for each row of AR
-    prime, alternate, global_prime, global_alternate, last_successful = \
-      split_hashes_for_dial_up_status( params[:dial_up_status])
-    #
-    # create the AR now
-    [prime, alternate, global_prime, global_alternate].each {|which| DialUpStatus.create(which) }
-    #
-    # successful status. This has different attributes, therefore separate from others
-    DialUpLastSuccessful.create(last_successful)
+    # WARNING: Not tested
+    split_dial_up_status_hash_and_create_tuples( params[:dial_up_status] )
     
     # request = params[:dial_up_status]
     # DialUpStatus.process_xml_hash(request)
