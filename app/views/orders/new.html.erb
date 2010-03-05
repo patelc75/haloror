@@ -35,7 +35,7 @@
           <table>
             <% if @confirmation.blank? || (@product == "complete") %>
             <tr>
-              <td><%= radio_button_tag 'product', 'complete', true unless @confirmation %> <label for="product_complete">myHalo Complete</label> ($59/mo)</td>
+              <td><%= radio_button_tag 'product', 'complete' unless @confirmation %> <label for="product_complete">myHalo Complete</label> ($59/mo)</td>
               <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
               <%= observe_field(:product_complete,
                                 :frequency => 1,
@@ -302,10 +302,13 @@
   function toggleProductDetails() {
     if (document.getElementById('product_complete').checked == true) {
       showDiv('halo_complete_box');
-      hideDiv('halo_clip_box');
     } else {
       hideDiv('halo_complete_box');
+    }
+    if (document.getElementById('product_clip').checked == true) {
       showDiv('halo_clip_box');
+    } else {
+      hideDiv('halo_clip_box');
     }
   }
 </script>
