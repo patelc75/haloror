@@ -46,7 +46,7 @@ class DialUpStatusesController < RestfulAuthController
     #
     # get the hashes separate for each row of AR
     prime, alternate, global_prime, global_alternate, last_successful = \
-      split_hashes_for_dialups( params[:dial_up_status])
+      split_hashes_for_dial_up_status( params[:dial_up_status])
     #
     # create the AR now
     [prime, alternate, global_prime, global_alternate].each {|which| DialUpStatus.create(which) }

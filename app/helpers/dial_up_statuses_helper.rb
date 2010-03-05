@@ -2,7 +2,7 @@ module DialUpStatusesHelper
 
   # split the hash into multiple hashes. it can be saved simply by Model.create(hash) then
   #
-  def split_hashes_for_dialups(hash)
+  def split_hashes_for_dial_up_status(hash)
     prime = alternate = global_prime = global_alternate = last_successful = {}
     #
     { "prime"            => "",
@@ -17,6 +17,7 @@ module DialUpStatusesHelper
       eval("#{key}[:device_id] = hash[:device_id]") # same for all
       # TODO: pending
     end
+    debugger
     #
     # dialup_type
     [prime, alternate].each {|which| which[:dialup_type] = 'Local'}
@@ -29,6 +30,10 @@ module DialUpStatusesHelper
     last_successful[:password]                = hash[:last_successful_password]
     #
     # get the hashes back to calling method
-    return prime, alternate, global_prime, global_alternate, last_successful
+    debugger
+    return {
+      :dial_up_status => [prime, alternate, global_prime, global_alternate], \
+      :dial_up_last_successful => [last_successful]
+    }
   end
 end

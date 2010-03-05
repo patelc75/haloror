@@ -6,7 +6,7 @@ class BundleProcessor # < ActiveRecord::Base
                       BatteryCritical, BatteryPlugged, BatteryUnplugged, 
                       Fall, Panic, WeightScale, BloodPressure, 
                       HaloDebugMsg, OscopeMsg, OscopeStopMsg, 
-                      OscopeStartMsg, GwAlarmButton, DialUpStatus]
+                      OscopeStartMsg, GwAlarmButton, DialUpStatus, DialUpLastSuccessful]
 
   # #override new so it will accept parse through custom or multiple xml nodes in the model  
   # def self.new(xml_hash=nil)
@@ -35,7 +35,7 @@ class BundleProcessor # < ActiveRecord::Base
       @@bundled_models[0].transaction do
         @@bundled_models.each do |model|
           value = bundle[model.to_s.underscore]
-
+          
           unless value.blank?
             value = (value.class == Array ? value : [value])
             value.each do |v|
