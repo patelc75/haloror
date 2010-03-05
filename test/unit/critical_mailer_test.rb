@@ -16,6 +16,7 @@
 #     @expected.mime_version = '1.0'
 #   end
 # 
+
 #   def test_fall
 #     @expected.subject = 'CriticalMailer#fall'
 #     @expected.body    = read_fixture('fall')

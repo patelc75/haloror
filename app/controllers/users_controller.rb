@@ -251,104 +251,102 @@ class UsersController < ApplicationController
   end
   
   def user_intake_form
+    #
+    # TODO: this should go to user_intakes_controller, new and create actions appropriately
     if request.post?
-      User.transaction do
-        @user_intake = UserIntake.new(params[:user_intake])
-        @user_intake.created_by = current_user.id
-        @user_intake.updated_by = current_user.id
+      save_and_continue = (params[:commit] == "Save")
+    	User.transaction do
+    		@user_intake = UserIntake.new(params[:user_intake])
+        @user_intake.created_by = @user_intake.updated_by = current_user.id # single line for multiple assignments
         @user_intake.kit_serial_number = params[:kit][:serial_number]
-        if params[:user_intakes] and params[:user_intakes][:options] == 'credit_card'
-          @user_intake.credit_debit_card_proceessed = true
-          @user_intake.bill_monthly = false 
-        else
-          @user_intake.bill_monthly = true
-          @user_intake.credit_debit_card_proceessed = false
-        end
+        #
+        # credit_debit_card_processed? then do not bill_monthly
+        @user_intake.credit_debit_card_proceessed = (!params[:user_intakes].blank? && params[:user_intakes][:options] == 'credit_card')
+        @user_intake.bill_monthly = !@user_intake.credit_debit_card_proceessed # opposite value
         if @user_intake.save
-          populate_user(params[:user],params[:users][:email],params[:group],current_user.id)
-          @user_intake.users.push(@user)
-          @senior_user = @user
-          add_kit_number(params[:kit][:serial_number],@senior_user)
-          if params[:add_caregiver] and params[:add_caregiver] == 'on'
-            add_caregiver = "0"   #0 for subscriber add as #1 caregiver
-          else
-            add_caregiver = "1"   #1 for subscriber do not add as caregiver
+    		  populate_user(params[:user_profile], params[:user_profile][:email], params[:group], current_user.id)
+    		  @user_intake.users.push(@user)
+    		  senior = @user # FIXME: what is the point of this?
+          #
+          # do not process kit when "save" button was hit of the form
+    		  add_kit_number(params[:kit][:serial_number], senior) unless save_and_continue
+    		  subscriber_is_caregiver = (!params[:add_caregiver].blank? && params[:add_caregiver] == 'on')
+		      subscriber_is_senior = (!params[:same_as_user].blank? && params[:same_as_user] == 'on') # will set a true/false
+          #
+          # when user != subscriber && subscriber != caregiver, then who is caregiver?
+          @user_intake.errors.add_to_base "Caregiver is missing. Please provide at least one caregiver" \
+            if !(subscriber_is_senior || subscriber_is_caregiver)
+		      #
+		      # setup subscriber and its profile
+		      # we need instance variables to catch AR errors until we have model based approach
+          @subscriber_details, @subscriber_profile, subscriber_success = setup_subscriber( 
+              { "email" => params[:subscriber][:email], # pass arguments as hash
+                "profile_hash" => params[:subscriber], 
+                "senior_object" => senior, 
+                "same_as_senior" => subscriber_is_senior,
+                "add_as_caregiver" => subscriber_is_caregiver })
+          #
+          # when subscriber & profile creation failed, add error
+          if !subscriber_success
+            @user_intake.errors.add_to_base("Subscriber profile is incomplete. Please try again.")
           end
-          if params[:same_as_user] and params[:same_as_user] == 'on'
-            populate_subscriber(@user.id,"1",add_caregiver,params[:users][:email],params[:user])
-          else
-            subscriber_email = params[:subscribers][:email]
-            populate_subscriber(@user.id, "0", add_caregiver, subscriber_email, params[:subscriber])#, params[:sub_roles_users_option])
-            set_roles_users_option(@user,params[:sub_roles_users_option]) if add_caregiver == "0"
-            @user_intake.users.push(@user)
+          #
+          # set roleS_users_option for caregiver
+          if subscriber_is_caregiver && subscriber_success
+            set_roles_users_option(@subscriber_details, params[:sub_roles_users_option], senior)
+            @user_intake.users.push(senior)
           end
-
-          #UserMailer.deliver_subscriber_email(@user)
-          UserMailer.deliver_signup_installation(@user,@senior)
-          if add_caregiver == "1"
-            if params[:no_caregiver_1].blank? || params[:no_caregiver_1] != "on"
-              caregiver1_email = params[:caregiver1][:email]
-              @car1 = User.populate_caregiver(caregiver1_email,@senior.id,nil,nil,params[:caregiver1])
-              if !@car1.profile.nil?
-                set_roles_users_option(@car1,params[:car1_roles_users_option])
-                @user_intake.users.push(@car1)
-              else
-                raise "Caregiver 1 validation errors"
+          #
+          # TODO: when user == subscriber, email should be differently personalized
+          # do not ptocess mail delivery when "Save" button was hit on the form
+          UserMailer.deliver_signup_installation(@user, senior) unless save_and_continue
+          #
+          # populate caregivers 1..3 as appropriate
+          # caregiver1 is not required when subscriber_is_caregiver
+          ((subscriber_is_caregiver ? 2 : 1)..3).each do |value|
+            if params["no_caregiver_#{value}".to_sym].blank? || params["no_caregiver_#{value}".to_sym] != "on"
+              email = params["caregiver#{value}".to_sym][:email]
+              instance_variable_set( "@car#{value}", User.populate_caregiver(email, senior.id, nil, nil, params["caregiver#{value}"]) )
+              caregiver = instance_variable_get("@car#{value}")
+              if !caregiver.blank? && caregiver.valid? && !caregiver.profile.blank?
+                set_roles_users_option(caregiver, params["car#{value}_roles_users_option".to_sym])
+                @user_intake.users.push(caregiver)
               end
             end
           end
-          if params[:no_caregiver_2].blank? || params[:no_caregiver_2] != "on"
-            caregiver2_email = params[:caregiver2][:email]
-            @car2 = User.populate_caregiver(caregiver2_email,@senior.id,nil,nil,params[:caregiver2])
-            if !@car2.profile.nil?
-              set_roles_users_option(@car2,params[:car2_roles_users_option])
-              @user_intake.users.push(@car2)
-            else
-              raise "Caregiver 2 validation errors"
-            end
-          end
-          if params[:no_caregiver_3].blank? || params[:no_caregiver_3] != "on"
-            caregiver3_email = params[:caregiver3][:email]
-            @car3 = User.populate_caregiver(caregiver3_email,@senior.id,nil,nil,params[:caregiver3])
-            if !@car3.profile.nil?
-              set_roles_users_option(@car3,params[:car1_roles_users_option])
-              @user_intake.users.push(@car3)
-            else
-              raise "Caregiver 3 validation errors"
-            end
-          end
+          #
+          # collect errors in activerecord instance
+          # this will show proper validation errors on form. first array errors on blank?, second does not.
+          collect_active_record_errors(@user_intake, ["profile", "user"],
+            ["roles_users_option", "subscriber_details", "subscriber_profile", "car1", "car2", "car3"])
+        end # @user_intake.save
+      end # User.transaction
+      #
+      # do not just redirect. stay on the form if @user_intake has validation errors
+      redirect_to :action => 'user_intake_form_confirm', :id => @user_intake.id if @user_intake.errors.count.zero?
+    end # request.post?
+
+    # we always need @groups. cannot omit it conditionally.
+    # CHANGED: shifted business logic to model
+    @groups = Group.for_user(current_user)
+  end # user_intake_form
+  
+  def set_roles_users_option(caregiver, roles_users_option, senior = nil)
+    unless caregiver.blank? || senior.blank? || roles_users_option.blank? || !(roles_users_option.is_a?(Hash))
+      @roles_users_option = RolesUsersOption.find_by_roles_user_id(senior.roles_user_by_caregiver(caregiver))
+      #
+      # We need to setup boolean flag for each of these attributes
+      unless @roles_users_option.blank?
+        [:is_keyholder, :phone_active, :email_active, :text_active].each do |attribute|
+          @roles_users_option.send("#{attribute}=".to_sym, (roles_users_option[attribute] == '1'))
         end
-      end
-      #redirect_to '/user/user_intake_form'
-      redirect_to :action => 'user_intake_form_confirm', :id => @user_intake.id
-    else
-      @groups = []
-      if current_user.is_super_admin?
-        @groups = Group.find(:all)
-      else
-        gs = current_user.group_memberships
-        gs.each do |g|
-          @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
-        end
+        #
+        # force validation. do not raise exceptions. add exceptions to base mnaually in code where this is called from
+        # ideally this should be RESTful model for user, roles_user. then this tricky /manual logic is not required
+        @roles_users_option.save! rescue nil
       end
     end
-=begin 
-    rescue 
-      @user = Profile.new(params[:user])
-      @subscriber = Profile.new(params[:subscriber])
-      @group = params[:group]
-      @groups = []
-      if current_user.is_super_admin?
-        @groups = Group.find(:all)
-      else
-        gs = current_user.group_memberships
-        gs.each do |g|
-          @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
-        end
-      end      
-    render :action => 'user_intake_form'
-=end   
-end
+  end
   
   def user_intake_form_confirm
   	edit_user_intake_info(params[:id])
@@ -367,6 +365,7 @@ end
     set_roles_users_option(@user.user,roles_users_option,senior) if roles_users_option != nil
     @user
   end
+
   def edit_user_intake_form
     if request.post? #comes here if the form is resubmitted
       @user_intake = UserIntake.find(params[:user_intake_id].to_i)
@@ -502,16 +501,6 @@ end
         @car2_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[1]).id) if @caregivers[1]
         @car3_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[2]).id) if @caregivers[2]
       end
-  end
-  
-  def set_roles_users_option(caregiver,roles_users_option,senior=nil)
-    @senior = senior if senior != nil
-  @roles_users_option = RolesUsersOption.find_by_roles_user_id(@senior.roles_user_by_caregiver(caregiver).id)
-  @roles_users_option.is_keyholder = roles_users_option[:is_keyholder] == '1'? true:false
-  @roles_users_option.phone_active = roles_users_option[:phone_active] == '1'? true:false
-  @roles_users_option.email_active = roles_users_option[:email_active] == '1'? true:false
-  @roles_users_option.text_active = roles_users_option[:text_active] == '1'? true:false
-  @roles_users_option.save
   end
   
   def signup_details

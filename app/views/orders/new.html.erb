@@ -1,6 +1,5 @@
-
-<% if logged_in? and current_user.is_super_admin? %>
-<p><a href="/orders">DTC Orders table</a></p>
+<% if logged_in? && current_user.is_super_admin? %>
+  <p><a href="/orders">DTC Orders table</a></p>
 <% end %>
 <% if @confirmation %>
 <h1>Please verify your order</h1>
@@ -28,7 +27,7 @@
 
 <% form_for @order, :url => {:action => (@confirmation ? "create" : "new")}, :html => {:id => 'form1', :class => "#{@confirmation ? 'confirm-form' : 'form'}"} do |f| %>
  	<fieldset style="border: 2px solid ; padding: 10px;">    
-	<legend><%= @confirmation ? 'Order summary' : 'Pick a product' %></legend>
+	<legend><span style="color:#008040;font-size:150%"><b>&nbsp;<%= @confirmation ? 'Order summary' : 'Pick a product' %>&nbsp;</b></span></legend>
     <table id="product_detail_box" width="100%">
       <tr>
         <td>
@@ -36,6 +35,7 @@
             <% if @confirmation.blank? || (@product == "complete") %>
             <tr>
               <td><%= radio_button_tag 'product', 'complete' unless @confirmation %> <label for="product_complete">myHalo Complete</label> ($59/mo)</td>
+              <td><%= radio_button_tag 'product', 'complete' unless @confirmation %> <span style="font-size:120%"><label for="product_complete">myHalo Complete</label><b>&nbsp;($59/mo)</b></span></td>
               <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
               <%= observe_field(:product_complete,
                                 :frequency => 1,
@@ -45,7 +45,7 @@
             <% end -%>
             <% if @confirmation.blank? || (@product == "clip") %>
             <tr>
-              <td><%= radio_button_tag "product", "clip" unless @confirmation %> <label for="product_clip">myHalo Clip</label> ($49/mo)</td>
+              <td><%= radio_button_tag "product", "clip" unless @confirmation %><span style="font-size:120%"><label for="product_clip">&nbsp;myHalo Clip</label><b>&nbsp;($49/mo)</b></span></td>
               <td><%= image_tag 'myhalo-belt-clip.jpg' %></td>
               <%= observe_field(:product_clip,
                                 :frequency => 1,
@@ -108,7 +108,7 @@
   </fieldset>
   <br /><br />
 	<fieldset style="border: 2px solid; padding: 10px;">   		 
-    <legend>Billing and Shipping<%= ' Summary' if @confirmation %></legend>
+    <legend><span style="color:#008040;font-size:150%"><b>&nbsp;Billing and Shipping<%= ' Summary' if @confirmation %></b></span></legend>
     <table width="100%">
       <tr align="left">
         <th width="33%">
@@ -127,11 +127,11 @@
       <tr>
         <td width="33%">
           <%= f.check_box "halouser", :disabled => @confirmation %>
-          <label>Also myHalo user</label>
+          <label>This person will be the myHalo user</label>
         </td>
         <td width="33%">
           <%= f.check_box "bill_address_same", :checked => "#{@same_address}", :disabled => @confirmation %>
-          <label for="order_bill_address_same">Same as shipping</label>
+          <label for="order_bill_address_same">Same as shipping info</label>
           <%= observe_field(:order_bill_address_same,
                             :on => :click,
                             :function => "if (document.getElementById('order_bill_address_same').checked) { hideDiv('billing_block'); } else { showDiv('billing_block'); }"
@@ -143,8 +143,9 @@
       <tr>
       <td style="vertical-align: top;">
         <p>
-          <label for="order_ship_first_name">First name</label>, <label for="order_ship_last_name">Last name</label><br />
-          <%= f.text_field "ship_first_name", :class => "required validate-alpha", :disabled => @confirmation %> 
+          <label for="order_ship_first_name">First name</label> <br />
+          <%= f.text_field "ship_first_name", :class => "required validate-alpha", :disabled => @confirmation %> <br /><br/>
+		  <label for="order_ship_last_name">Last name</label> <br />	
           <%= f.text_field "ship_last_name", :class => "required validate-alpha", :disabled => @confirmation %>
         </p>
         <p>

@@ -1,0 +1,31 @@
+<dial_up_status>
+  <device_id>6832</device_id>
+  <alt_number>1111111111</alt_number>
+  <alt_status>fail</alt_status>
+  <alt_configured>new</alt_configured>
+  <alt_num_failures>2</alt_num_failures>
+  <alt_consecutive_fails>2</alt_consecutive_fails>
+  <alt_ever_connected>1</alt_ever_connected>
+  <number>2222222222</number>
+  <status>good</status>
+  <configured>old</configured>
+  <num_failures>2</num_failures>
+  <consecutive_fails>2</consecutive_fails>
+  <ever_connected>2</ever_connected>
+  <global_alt_number>3333333333</global_alt_number>
+  <global_alt_status>fail</global_alt_status>
+  <global_alt_configured>old</global_alt_configured>
+  <global_alt_num_failures>3</global_alt_num_failures>
+  <global_alt_consecutive_fails>5</global_alt_consecutive_fails>
+  <global_alt_ever_connected>3</global_alt_ever_connected>
+  <global_prim_number>4444444444</global_prim_number>
+  <global_prim_status>good</global_prim_status>
+  <global_prim_configured>new</global_prim_configured>
+  <global_prim_num_failures>4</global_prim_num_failures>
+  <global_prim_consecutive_fails>4</global_prim_consecutive_fails>
+  <global_prim_ever_connected>4</global_prim_ever_connected>
+  <last_successful_number>4444444444</last_successful_number>
+  <last_successful_username>chirag</last_successful_username>
+  <last_successful_password>chirag</last_successful_password>
+  <timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp>
+</dial_up_status>
