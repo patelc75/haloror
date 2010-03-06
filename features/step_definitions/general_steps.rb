@@ -153,6 +153,7 @@ end
 Then /^I should have the following counts of data:$/ do |table|
   table.raw.each do |model_name, count|
     model_name_to_constant(model_name).count.should == count.to_i
+  end
 end
 
 Then /^(?:|the )(?:|page )content should have the following:$/ do |text|

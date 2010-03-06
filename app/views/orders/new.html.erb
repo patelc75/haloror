@@ -34,7 +34,6 @@
           <table>
             <% if @confirmation.blank? || (@product == "complete") %>
             <tr>
-              <td><%= radio_button_tag 'product', 'complete' unless @confirmation %> <label for="product_complete">myHalo Complete</label> ($59/mo)</td>
               <td><%= radio_button_tag 'product', 'complete' unless @confirmation %> <span style="font-size:120%"><label for="product_complete">myHalo Complete</label><b>&nbsp;($59/mo)</b></span></td>
               <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
               <%= observe_field(:product_complete,

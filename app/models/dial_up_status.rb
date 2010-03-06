@@ -22,20 +22,27 @@ class DialUpStatus < ActiveRecord::Base
       end
     end
   end
-
+# <<<<<<< HEAD
+# 
+#   # class methods
+#   
+#   def self.process_xml_hash(msg)
+#     #
+#     # get the hashes separate for each row of AR
+#     prime, alternate, global_prime, global_alternate, last_successful = split_hashes_for_dialups(msg)
+#     #
+#     # create the AR now
+#     [prime, alternate, global_prime, global_alternate].each {|which| DialUpStatus.create(which) }
+#     #
+#     # successful status. This has different attributes, therefore separate from others
+#     DialUpLastSuccessful.create(last_successful)
+# 
+# #=======
+  
   # class methods
   
-  def self.process_xml_hash(msg)
-    #
-    # get the hashes separate for each row of AR
-    prime, alternate, global_prime, global_alternate, last_successful = split_hashes_for_dialups(msg)
-    #
-    # create the AR now
-    [prime, alternate, global_prime, global_alternate].each {|which| DialUpStatus.create(which) }
-    #
-    # successful status. This has different attributes, therefore separate from others
-    DialUpLastSuccessful.create(last_successful)
-
+  # def self.process_xml_hash(msg)
+#>>>>>>> master-2548-dialup-status-bundle
     #     #Primary Number
     # DialUpStatus.create(:phone_number => request[:number],:status => request[:status],:device_id => request[:device_id],:configured => request[:configured],:num_failures => request[:num_failures],:consecutive_fails => request[:consecutive_fails],:ever_connected => request[:ever_connected],:dialup_type => 'Local')
     # 
@@ -57,7 +64,7 @@ class DialUpStatus < ActiveRecord::Base
     # 
     # #Last Successful Number
     # DialUpLastSuccessful.create(:device_id => request[:device_id],:last_successful_number => request[:last_successful_number],:last_successful_username => request[:last_successful_username],:last_successful_password => request[:last_successful_password])
-  end
+  # end
 
   # instance methods
   
