@@ -299,7 +299,10 @@ class UsersController < ApplicationController
           #
           # TODO: when user == subscriber, email should be differently personalized
           # do not ptocess mail delivery when "Save" button was hit on the form
-          UserMailer.deliver_signup_installation(@user, senior) unless save_and_continue
+          unless save_and_continue
+            UserMailer.deliver_signup_installation(@user, senior) 
+            #UserMailer.deliver_signup_installation(params[:subscriber][:email], senior) 
+          end
           #
           # populate caregivers 1..3 as appropriate
           # caregiver1 is not required when subscriber_is_caregiver
