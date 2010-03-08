@@ -369,6 +369,14 @@ class User < ActiveRecord::Base
     end
   end
   
+  def halouser_group
+  	self.is_halouser_for_what.each do |group|
+  		if !group.nil? and group.sales_type != 'call_center'
+  			return group
+  		end
+  	end
+  end
+  
   def group_recurring_charge
     #self.group_memberships_by_role('halouser').first.recurring_charges.length > 0 ? self.group_memberships_by_role('halouser').first.recurring_charges.first.group_charge : AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL
     

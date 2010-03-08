@@ -3,7 +3,9 @@
 
 <table border="1">
   <tr>
-    <th>ID</th><th>Mode</th>
+    <th>ID</th>
+    <th>Group</th>
+    <th>Mode</th>
     <th>Gateway<br>Offline <br>Timeout<br>(seconds)<br>10% buffer <br>on alert</th>
     <th>Device<br>Unavailable<br>Timeout<br>(seconds)</th>
     <th>Strap Off<br> Timeout<br>(seconds)</th>
@@ -15,6 +17,7 @@
   <% @system_timeouts.each do |system_timeout|  %>
   <tr>
     <td><%= system_timeout.id %></td>
+    <td><%= h system_timeout.group.name %> (<%= system_timeout.group_id%>)</td>
     <td><%= h system_timeout.mode %></td>
     <td><%= h system_timeout.gateway_offline_timeout_sec %></td>
     <td><%= h system_timeout.device_unavailable_timeout_sec %></td>

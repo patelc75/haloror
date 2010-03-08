@@ -8,7 +8,7 @@ class Group < ActiveRecord::Base
   
   def get_timeout(mode, column)
   	st = self.system_timeouts.find_by_mode(mode)
-  	return st ? st.send(column) : false
+  	return st ? st.send(column) : Group.find_by_name('default').system_timeouts.find_by_mode(mode).send(column)
   end
   
 end

@@ -59,15 +59,19 @@ class DeviceAlert < ActiveRecord::Base
   end
   
   def self.job_process_crtical_alerts
-  	group = Group.find_by_name('default')
-    ethernet_system_timeout = group.get_timeout('ethernet','critical_event_delay_sec') #SystemTimeout.find_by_mode('ethernet')
-    dialup_system_timeout   = group.get_timeout('dialup','critical_event_delay_sec') #SystemTimeout.find_by_mode('dialup')
+  	#group = Group.find_by_name('default')
+    #ethernet_system_timeout = SystemTimeout.find_by_mode('ethernet') #group.get_timeout('ethernet','critical_event_delay_sec')
+    #dialup_system_timeout   = SystemTimeout.find_by_mode('dialup') #group.get_timeout('dialup','critical_event_delay_sec')
     
     critical_alerts = []
     
-    critical_alerts += Panic.find(:all, :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout} seconds'", :order => "timestamp asc")
-    critical_alerts += Fall.find(:all, :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout} seconds'", :order => "timestamp asc")
-    critical_alerts += GwAlarmButton.find(:all, :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout} seconds'", :order => "timestamp asc")
+    #critical_alerts += Panic.find(:all, :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout.critical_event_delay_sec} seconds'", :order => "timestamp asc")
+    #critical_alerts += Fall.find(:all, :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout.critical_event_delay_sec} seconds'", :order => "timestamp asc")
+    #critical_alerts += GwAlarmButton.find(:all, :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout.critical_event_delay_sec} seconds'", :order => "timestamp asc")
+    
+    critical_alerts += Panic.find(:all, :conditions => "call_center_pending is true", :order => "timestamp asc")
+    critical_alerts += Fall.find(:all, :conditions => "call_center_pending is true", :order => "timestamp asc")
+    critical_alerts += GwAlarmButton.find(:all, :conditions => "call_center_pending is true", :order => "timestamp asc")
     
     #not going to filter access_mode == 'dialup' because access_mode is not yet reliable according to corey
     #{}"id in (select device_id from access_mode_statuses where mode = 'dialup') " <<    
@@ -75,9 +79,12 @@ class DeviceAlert < ActiveRecord::Base
     #sort by timestamp, instead of timestamp_server in case GW sends them out of order in the alert_bundle
     critical_alerts.sort_by { |event| event[:timestamp] }.each do |crit|
       #RAILS_DEFAULT_LOGGER.info("crit.class = #{crit.class}, crit.timestamp_server = #{crit.class}\n")
-      crit.call_center_pending = false
-      crit.timestamp_call_center = Time.now
-      crit.save
+      group = crit.user.halouser_group || Group.find_by_name('default')
+      dialup_system_timeout = group.get_timeout('dialup','critical_event_delay_sec')
+      if dialup_system_timeout and Time.now > (crit.timestamp_server + dialup_system_timeout.to_i)
+        crit.timestamp_call_center = Time.now
+        crit.save
+      end
     end
   end
 end
