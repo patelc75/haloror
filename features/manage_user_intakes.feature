@@ -71,4 +71,4 @@ Feature: Manage user_intakes
      | position     | 1    |
      | is_keyholder | true |
 	And email to "cuc_senior@chirag.name" with text "Please read before your installation" should be sent for delivery
-	And email to "cuc_sub_care@chirag.name" with text "Please read before your installation" should be sent for delivery	
+	#And email to "cuc_sub_care@chirag.name" with text "Please read before your installation" should be sent for delivery	

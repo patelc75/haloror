@@ -12,7 +12,7 @@ Then /^email to "([^\"]*)" with text "([^\"]*)" should be sent for delivery$/ do
       found = true
     end
   end
-  debugger
+  #debugger
   assert found == true, "Email to #{email} with text #{subject} not found"
 end
 
