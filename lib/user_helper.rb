@@ -78,9 +78,9 @@ module UserHelper
         subscriber_profile = subscriber.profile unless subscriber.blank?
 
       # FIXME: Incorrect condition here. where is params_hash["email"] used?
-      elsif !params_hash["email"].nil? or !params_hash["profile_hash"].nil?
+      elsif !(params_hash["email"].blank? || params_hash["profile_hash"].blank?)
         subscriber = User.new
-        subscriber.email = params_hash["subscriber_email"] if !params_hash["subscriber_email"].nil?
+        subscriber.email = params_hash["email"] unless params_hash["email"].blank?
         subscriber_profile = Profile.new(params_hash["profile_hash"])
         #
         # FIXME: profile should be saved "after" User? It has reference to user.id

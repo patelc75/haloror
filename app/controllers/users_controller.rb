@@ -273,16 +273,12 @@ class UsersController < ApplicationController
     		  subscriber_is_caregiver = (!params[:add_caregiver].blank? && params[:add_caregiver] == 'on')
 		      subscriber_is_senior = (!params[:same_as_user].blank? && params[:same_as_user] == 'on') # will set a true/false
           #
-          # when user != subscriber && subscriber != caregiver, then who is caregiver?
-          @user_intake.errors.add_to_base "Caregiver is missing. Please provide at least one caregiver" \
-            if !(subscriber_is_senior || subscriber_is_caregiver)
-		      #
 		      # setup subscriber and its profile
 		      # we need instance variables to catch AR errors until we have model based approach
           @subscriber_details, @subscriber_profile, subscriber_success = setup_subscriber( 
               { "email" => params[:subscriber][:email], # pass arguments as hash
                 "profile_hash" => params[:subscriber], 
-                "senior_object" => senior, 
+                "senior_object" => senior,
                 "same_as_senior" => subscriber_is_senior,
                 "add_as_caregiver" => subscriber_is_caregiver })
           #
