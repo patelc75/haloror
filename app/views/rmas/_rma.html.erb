@@ -13,6 +13,10 @@
             <td><%= f.text_field :user_id %></td>
           </tr>
           <tr>
+            <td class="textright"><%= f.label :serial_number, "Serial Number" %>:</td>
+            <td><%= f.text_field :serial_number %></td>
+          </tr>
+          <tr>
             <td class="textright"><%= f.label :group_id, "Group" %>:</td>
             <td><%= f.collection_select(:group_id, @groups, :id, :name, {:prompt => true}) %></td>
           </tr>

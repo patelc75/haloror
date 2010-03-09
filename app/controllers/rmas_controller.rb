@@ -3,11 +3,14 @@ class RmasController < ApplicationController
   def index
   	@groups = current_user.group_memberships
 
-  	cond = "1=1"
+    cond = "1=1"
   	search = params[:search]
-  	cond += " and user_id = #{search} or phone_number like '%#{search}%'" if search and !search.blank?
-  	cond += " and group_id = #{params[:group][:id]}" if params[:group] and !params[:group][:id].blank?
-    @rmas = Rma.paginate :page => params[:page],:order => 'created_at desc',:per_page => 20,:conditions => cond
+    # cond += " and user_id = #{search} or phone_number like '%#{search}%'" if search and !search.blank?
+    # cond += " and group_id = #{params[:group][:id]}" if params[:group] and !params[:group][:id].blank?
+    cond = ["rmas.user_id = ? OR rmas.serial_number = ? OR rmas.status = ?", search.to_i, search, search] \
+      unless search.blank?
+    @rmas = Rma.paginate  :page => params[:page], \
+                          :order => 'created_at desc', :per_page => 20, :conditions => cond
   end
 
   def new
@@ -42,7 +45,7 @@ class RmasController < ApplicationController
     @rma = Rma.find(params[:id])
 
     respond_to do |format|
-      if @Rma.update_attributes(params[:rma])
+      if @rma.update_attributes(params[:rma])
         flash[:notice] = 'RMA was successfully updated.'
         format.html { redirect_to(:action => 'show', :id => @rma.id) }
         format.xml  { head :ok }
@@ -55,5 +58,15 @@ class RmasController < ApplicationController
   
   def show
   	@rma = Rma.find params[:id]
+  end
+  
+  def destroy
+    @rma = Rma.find(params[:id])
+    @rma.destroy
+
+    respond_to do |format|
+      format.html { redirect_to(:action => 'index') }
+      format.xml  { head :ok }
+    end
   end
 end

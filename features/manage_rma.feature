@@ -17,6 +17,7 @@ Feature: Manage RMA
     And I am creating an rma
     When I fill in the following:
       | User ID              | 100          |
+      | Serial Number        | 1234567890   |
       | Related RMA ID       | 123          |
       | Redmine Issue Ticket | 1234         |
       | RMA Created Date     | 1 Jan 2010   |

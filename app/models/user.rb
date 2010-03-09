@@ -350,35 +350,39 @@ class User < ActiveRecord::Base
   
   def group_roles(options = {})
     # CHANGED: test this
-    return self.roles.find(:all, :conditions => {:authorizable_type => 'Group'}.merge(options)).uniq
-    # roles = self.roles.find(:all, :conditions => "authorizable_type = 'Group'")
-    # return roles.uniq
+    # return self.roles.find(:all, :conditions => {:authorizable_type => 'Group'}.merge(options)).uniq
+    roles = self.roles.find(:all, :conditions => "authorizable_type = 'Group'")
+    return roles.uniq
   end
   
   def group_memberships
-    # CHANGED: test this
-    # Groups for which current_user has roles
-    #   ths method is self-contained. does not depend on group_roles
-    #   also has additional check for super_admin role
-    options = ( is_super_admin? ? {} : \
-                {:id => roles.find_all_by_authorizable_type('Group').map(&:authorizable_id).compact.uniq})
-    Group.all(:conditions => options, :order => 'name')
-    #   group roles of user, uniq, sorted
-    #   this method also works but requires "group_roles" method
-    # return group_roles.collect {|role| Group.find(role.authorizable_id) }.uniq.sort {|a, b| a <=> b}
+    # # CHANGED: test this
+    # # Groups for which current_user has roles
+    # #   ths method is self-contained. does not depend on group_roles
+    # #   also has additional check for super_admin role
+    # options = ( is_super_admin? ? {} : \
+    #             {:id => roles.find_all_by_authorizable_type('Group').map(&:authorizable_id).compact.uniq})
+    # Group.all(:conditions => options, :order => 'name')
+    # #   group roles of user, uniq, sorted
+    # #   this method also works but requires "group_roles" method
+    # # return group_roles.collect {|role| Group.find(role.authorizable_id) }.uniq.sort {|a, b| a <=> b}
     # 
-    # roles = group_roles
-    # groups = []
-    # if !roles.blank?
-    #   roles.each do |role|
-    #     groups << Group.find(role.authorizable_id)
-    #   end
-    # end
-    # groups.sort! do |a,b|
-    #   a.name <=> b.name
-    # end
-    # groups.uniq!
-    # return groups
+    if is_super_admin?
+      groups = Group.all
+    else
+      roles = group_roles
+      groups = []
+      if !roles.blank?
+        roles.each do |role|
+          groups << Group.find(role.authorizable_id)
+        end
+      end
+      groups.sort! do |a,b|
+        a.name <=> b.name
+      end
+      groups.uniq!
+    end
+    return groups
   end
   
   def group_memberships_by_role(role)
