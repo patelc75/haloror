@@ -24,7 +24,7 @@ class AccessModesController < RestfulAuthController
     device_id = params[:access_mode][:device_id] #device_id not being used
     mode = params[:access_mode][:mode] 
 
-	timeout = SystemTimeout.find_by_mode(mode)
+	timeout = SystemTimeout.default_timeout(mode)
 	
 	if timeout
 	  poll_rate = timeout.gateway_offline_timeout_sec	

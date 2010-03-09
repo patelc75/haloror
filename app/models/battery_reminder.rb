@@ -63,7 +63,7 @@ class BatteryReminder < DeviceAlert
     
 		RAILS_DEFAULT_LOGGER.warn("BatteryReminder.send_reminders running at #{Time.now}")
     conds = ["stopped_at IS NULL"]
-    @st = SystemTimeout.find_by_mode('ethernet')
+    @st = SystemTimeout.default_timeout('ethernet')
     conds << "now() < updated_at + interval '#{(@st.battery_reminder_two_sec + @st.battery_reminder_three_sec)*2} seconds'"
     conds << "reminder_num < 3"
 		@devices = DeviceBatteryReminder.find(:all, :conditions => conds.join(' and '), :order => "updated_at asc")	

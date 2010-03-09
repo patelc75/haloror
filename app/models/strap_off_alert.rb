@@ -4,8 +4,8 @@ class StrapOffAlert < DeviceAlert
   def self.job_detect_straps_off
     RAILS_DEFAULT_LOGGER.warn("StrapOffAlert.job_detect_straps_off running at #{Time.now}")
     
-    ethernet_system_timeout = SystemTimeout.find_by_mode('ethernet')
-    dialup_system_timeout   = SystemTimeout.find_by_mode('dialup')
+    ethernet_system_timeout = SystemTimeout.default_timeout('ethernet')
+    dialup_system_timeout   = SystemTimeout.default_timeout('dialup')
     
     conds = []
     conds << "reconnected_at is null"

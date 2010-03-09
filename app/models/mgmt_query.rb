@@ -19,8 +19,8 @@ class MgmtQuery < ActiveRecord::Base
   # not connected in a while and create notifications of GWOfflineAlert after a certain number of failures. 
   def MgmtQuery.job_gw_offline
     RAILS_DEFAULT_LOGGER.warn("MgmtQuery.job_gw_offline running at #{Time.now}")
-    ethernet_system_timeout = SystemTimeout.find_by_mode('ethernet')
-    dialup_system_timeout   = SystemTimeout.find_by_mode('dialup')
+    ethernet_system_timeout = SystemTimeout.default_timeout('ethernet')
+    dialup_system_timeout   = SystemTimeout.default_timeout('dialup')
 
 =begin
     #GWOnline check moved to MgmtQueriesController::create to cut down on Rufus load    

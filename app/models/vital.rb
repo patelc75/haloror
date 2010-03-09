@@ -198,8 +198,8 @@ class Vital < ActiveRecord::Base
   # Creates alerts for users that have become unavailable
   def Vital.job_detect_unavailable_devices
     RAILS_DEFAULT_LOGGER.warn("Vital.job_detect_unavailable_devices running at #{Time.now}")
-    ethernet_system_timeout = SystemTimeout.find_by_mode('ethernet')
-    dialup_system_timeout   = SystemTimeout.find_by_mode('dialup')
+    ethernet_system_timeout = SystemTimeout.default_timeout('ethernet')
+    dialup_system_timeout   = SystemTimeout.default_timeout('dialup')
     ## Find devices that were previously signaling errors but have
     ## come back Online.
     conds = []
