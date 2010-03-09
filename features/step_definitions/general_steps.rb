@@ -7,6 +7,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "sco
 Given /^debug$/ do
   save_and_open_page
   debugger
+  #emails = Email.all(:select => 'emails.mail').map {|p| puts p.mail[0..270] + "\n" }
 end
 
 Given /^I am (?:an )authenticated(?: user)$/ do

@@ -23,7 +23,7 @@ development: &DEVELOPMENT
     password:
     host: localhost
 
-test:
+test: &TEST
     adapter: postgresql
     database: haloror_test
     username: postgres
@@ -39,3 +39,6 @@ production:
 
 staging:
   <<: *DEVELOPMENT
+  
+cucumber:
+  <<: *TEST
