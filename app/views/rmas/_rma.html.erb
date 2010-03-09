@@ -1,0 +1,97 @@
+<% form_for(@rma) do |f| %>
+  <%= f.error_messages %>
+  <table>
+    <tr>
+      <td class="aligntop">
+        <table>
+          <tr>
+            <td class="textright"><%= f.label :status, "RMA Status" %>:</td>
+            <td><%= f.select :status, RmaStatus::STATUSES %></td>
+          </tr>
+          <tr>
+            <td class="textright"><%= f.label :user_id, "User ID" %>:</td>
+            <td><%= f.text_field :user_id %></td>
+          </tr>
+          <tr>
+            <td class="textright"><%= f.label :serial_number, "Serial Number" %>:</td>
+            <td><%= f.text_field :serial_number %></td>
+          </tr>
+          <tr>
+            <td class="textright"><%= f.label :group_id, "Group" %>:</td>
+            <td><%= f.collection_select(:group_id, @groups, :id, :name, {:prompt => true}) %></td>
+          </tr>
+          <tr>
+            <td class="textright"><%= f.label :related_rma, "Related RMA ID" %>#:</td>
+            <td><%= f.text_field :related_rma %></td>
+          </tr>
+          <tr>
+            <td class="textright"><%= f.label :redmine_ticket, "Redmine Issue Ticket #(s)" %>:</td>
+            <td><%= f.text_field :redmine_ticket %></td>
+          </tr>
+          <tr>
+            <td class="textright"><label for="rma_created_at">RMA Created Date</label>:</td>
+            <td><%= calendar_date_select_tag "rma[created_at]", @rma.created_at, :id => "rma_created_at", :popup => 'force' %></td>
+          </tr>
+          <tr>
+            <td class="textright"><label for="rma_completed_on">RMA Completed Date</label>:</td>
+            <td><%= calendar_date_select_tag "rma[completed_on]", @rma.completed_on, :id => "rma_completed_on", :popup => 'force' %></td>
+          </tr>
+        </table>
+      </td>
+      
+      <td width="15px"></td>
+      
+      <td class="aligntop">
+        <table>
+          <tr>
+            <td class="textright"><%= f.label :service_outage, "Service Outage" %>:</td>
+            <td><%= f.select :service_outage, [['Yes', 'Yes'], ['No', 'No']] %></td>
+          </tr>
+          <tr><td><h3>RMA Shipping</h3></td></tr>
+          <tr>
+            <td class="textright"><%= f.label :ship_name, "Name" %>:</td>
+            <td><%= f.text_field :ship_name %></td>
+          </tr>
+          <tr>
+            <td class="textright"><%= f.label :ship_address, "Address" %>:</td>
+            <td><%= f.text_area :ship_address, :rows => 3 %></td>
+          </tr>
+          <tr>
+            <td class="textright"><%= f.label :ship_city, "City" %>:</td>
+            <td><%= f.text_field :ship_city %></td>
+          </tr>
+          <tr>
+            <td class="textright"><%= f.label :ship_state, "State" %>:</td>
+            <td><%= f.text_field :ship_state %></td>
+          </tr>
+          <tr>
+            <td class="textright"><%= f.label :ship_zipcode, "Zip Code" %>:</td>
+            <td><%= f.text_field :ship_zipcode %></td>
+          </tr>
+          <tr>
+            <td class="textright"><%= f.label :notes, "Notes" %>:</td>
+            <td><%= f.text_area :notes, :rows => 3 %></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    
+    <tr>
+      <%= render :partial => "rma_items/rma_items", :locals => {:rma_items => @rma.rma_items} %>
+    </tr>
+    
+    <tr>
+      <td>
+      <table width="100%"><tr>
+        <td>
+          <%= link_to 'RMA List', rmas_path %> | 
+          <%= link_to 'View Read Only', rma_path(@rma) unless @rma.new_record? %>
+        </td>
+        <td class="textright"><%= f.submit "Submit", :class => 'button' %></td>
+      </tr></table>
+      </td>
+    </tr>
+  </table>
+<% end %>
+<br />
+

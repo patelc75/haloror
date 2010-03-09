@@ -48,13 +48,15 @@ ActionController::Base.allow_rescue = false
 # block that will explicitly put your database in a known state.
 Cucumber::Rails::World.use_transactional_fixtures = true
 
+# CHANGED: we do not need database_cleaner unless we turn off transactions
+#
 # How to clean your database when transactions are turned off. See
 # http://github.com/bmabey/database_cleaner for more info.
-require 'database_cleaner'
-require 'database_cleaner/cucumber'
-#DatabaseCleaner.strategy = :truncation
-DatabaseCleaner.clean_with :truncation
-DatabaseCleaner.strategy = :transaction
+# require 'database_cleaner'
+# require 'database_cleaner/cucumber'
+# # DatabaseCleaner.strategy = :truncation
+# DatabaseCleaner.clean_with :truncation
+# DatabaseCleaner.strategy = :transaction
 
 # Global setup
 ActionMailer::Base.delivery_method = :activerecord
@@ -65,12 +67,10 @@ ActionMailer::Base.perform_deliveries = true
 # Before do
 #   # Scenario setup
 #   ActionMailer::Base.deliveries.clear
+#   DatabaseCleaner.start
 # end
 
 # After do
 #   # Scenario teardown
 #   DatabaseCleaner.clean
 # end
-
-Before { DatabaseCleaner.start }
-After { DatabaseCleaner.clean }

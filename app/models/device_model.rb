@@ -1,6 +1,7 @@
 class DeviceModel < ActiveRecord::Base
   belongs_to :device_type
   has_many :device_revisions
+  has_many :rma_items
   named_scope :recent_on_top, :order => "created_at DESC"
 
   # class methods

@@ -2,41 +2,45 @@ require 'digest/sha1'
 class User < ActiveRecord::Base
   #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
   
+  # arranged associations alphabetically for easier traversing
+  
   acts_as_authorized_user
   acts_as_authorizable
   acts_as_audited :except => [:is_caregiver, :is_new_caregiver]
   
-  has_many :notes
-  has_many :panics
+  belongs_to :creator, :class_name => 'User',:foreign_key => 'created_by'
+  
+  has_many :access_logs
   has_many :batteries
-  has_many :falls  
+  has_many :blood_pressure
+  has_many :dial_ups
+  has_many :event_actions
   has_many :events
-  has_many :skin_temps
-  has_one  :profile,:dependent => :destroy
-  has_many :steps
-  has_many :vitals
+  has_many :falls  
   has_many :halo_debug_msgs
   has_many :mgmt_cmds
+  has_many :notes
+  has_many :orders_created, :class_name => 'Order', :foreign_key => 'created_by'
+  has_many :orders_updated, :class_name => 'Order', :foreign_key => 'updated_by'
+  has_many :panics
+  has_one  :profile, :dependent => :destroy
+  has_many :rma_items
+  has_many :roles_users,:dependent => :destroy
+  has_many :roles, :through => :roles_users#, :include => [:roles_users]
+  has_many :self_test_sessions
+  has_many :skin_temps
+  has_many :steps
+  has_many :subscriptions, :foreign_key => "senior_user_id"
+  has_many :vitals
   has_many :weight_scales
-  has_many :blood_pressure
   #belongs_to :role
   #has_one :roles_user
   #has_one :roles_users_option
-  has_many :self_test_sessions
-  has_many :subscriptions,:foreign_key => "senior_user_id"
-  has_many :roles_users,:dependent => :destroy
-  has_many :roles, :through => :roles_users#, :include => [:roles_users]
-  has_many :dial_ups
-  has_many :orders_created, :class_name => 'Order', :foreign_key => 'created_by'
-  has_many :orders_updated, :class_name => 'Order', :foreign_key => 'updated_by'
   
   has_and_belongs_to_many :devices
   has_and_belongs_to_many :user_intakes
   
-  has_many :access_logs
   
-  has_many :event_actions
-  belongs_to :creator, :class_name => 'User',:foreign_key => 'created_by'
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
   
@@ -135,9 +139,16 @@ class User < ActiveRecord::Base
       end
     end
   end
+  
   def full_name
-    self.profile.first_name && self.profile.last_name ? self.profile.first_name + " " + self.profile.last_name : nil
+    return (self.profile.blank? ? "" : \
+      ( self.profile.first_name && self.profile.last_name ? \
+          self.profile.first_name + " " + self.profile.last_name : \
+          nil
+      )
+    )
   end
+  
   def address
     address = self.profile.address
     pcity = self.profile.city
@@ -337,27 +348,45 @@ class User < ActiveRecord::Base
     end
   end
   
-  def group_roles
+  def group_roles(options = {})
+    # CHANGED: test this
+    # return self.roles.find(:all, :conditions => {:authorizable_type => 'Group'}.merge(options)).uniq
     roles = self.roles.find(:all, :conditions => "authorizable_type = 'Group'")
     return roles.uniq
   end
   
   def group_memberships
-    roles = group_roles
-    groups = []
-    if !roles.blank?
-      roles.each do |role|
-        groups << Group.find(role.authorizable_id)
+    # # CHANGED: test this
+    # # Groups for which current_user has roles
+    # #   ths method is self-contained. does not depend on group_roles
+    # #   also has additional check for super_admin role
+    # options = ( is_super_admin? ? {} : \
+    #             {:id => roles.find_all_by_authorizable_type('Group').map(&:authorizable_id).compact.uniq})
+    # Group.all(:conditions => options, :order => 'name')
+    # #   group roles of user, uniq, sorted
+    # #   this method also works but requires "group_roles" method
+    # # return group_roles.collect {|role| Group.find(role.authorizable_id) }.uniq.sort {|a, b| a <=> b}
+    # 
+    if is_super_admin?
+      groups = Group.all
+    else
+      roles = group_roles
+      groups = []
+      if !roles.blank?
+        roles.each do |role|
+          groups << Group.find(role.authorizable_id)
+        end
       end
+      groups.sort! do |a,b|
+        a.name <=> b.name
+      end
+      groups.uniq!
     end
-    groups.sort! do |a,b|
-      a.name <=> b.name
-    end
-    groups.uniq!
     return groups
   end
   
   def group_memberships_by_role(role)
+    # Group.all( :conditions => { :id => group_roles({:name => role}).collect(&:authorizable_id).compact.uniq })
     groups = []
     @role = Role.find_by_name(role)
     groups << Group.find(@role.authorizable_id)
