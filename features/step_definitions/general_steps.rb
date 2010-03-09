@@ -10,7 +10,7 @@ Given /^debug$/ do
 end
 
 Given /^I am (?:an )authenticated(?: user)$/ do
-  user = Factory.create(:user)
+  user = Factory.create(:user, {:login => 'demo', :password => '12345'})
   user.activate
   authenticate("demo", "12345")
 end
@@ -39,7 +39,10 @@ Given /^an? (.+) exists with the following attributes:$/ do |name, attrs_table|
     sanitized_attr = attr.gsub(/\s+/, "-").underscore
     attrs[sanitized_attr.to_sym] = value
   end
-  remove_existing = attrs.has_key?(:id) # do we have ID?
+  if attrs.has_key?(:id)
+    remove_existing = true # do we have ID?
+    attrs.map {|key, value| attrs[key] = value.to_i if key.to_s[-2..-1] == 'id' } # convert to integer if ID
+  end
   id = attrs[:id].to_i # fetch ID as integer
   model_const = model_name_to_constant(name)
   model_const.delete(id) if model_const.count(:conditions => {:id => id}) # remove any existing with same ID
@@ -117,6 +120,12 @@ end
 When /^I uncheck "([^\"]*)" within "([^\"]*)"$/ do |name, selector|
   within scope_of(selector) do |scope|
     scope.uncheck name
+  end
+end
+
+When /^(?:|I )select the following:$/ do |fields|
+  fields.rows_hash.each do |name, value|
+    When %{I select "#{value}" from "#{name}"}
   end
 end
 

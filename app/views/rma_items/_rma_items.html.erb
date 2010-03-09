@@ -1,0 +1,26 @@
+<table><tr><td><h2>RMA Items</h2></td></tr></table>
+<table class="bluegrey">
+  <tr>
+    <th>ID</th>
+    <th>Created</th>
+    <th>Item Type</th>
+    <th>Original Serial</th>
+    <th>Replacement Serial</th>
+    <th>Shipped Serial</th>
+    <th>Ship Date</th>
+  </tr>
+  <% unless @rma_items.blank? %>
+    <% @rma_items.each do |rma_item| %>
+    <tr class="<%= cycle('', 'altrow') %>">
+      <td><%=h rma_item.id %></td>
+      <td><%=h rma_item.created_at.to_s(:MM_DD_YYYY) %></td>
+      <td><%=h rma_item.type %></td>
+      <td><%=h rma_item.original_serial %></td>
+      <td><%=h rma_item.replacement_serial %></td>
+      <td><%=h rma_item.shipped_serial %></td>
+      <td><%=h rma_item.ship_date %></td>
+    </tr>
+    <% end -%>
+  <% end -%>
+</table>
+<br/>

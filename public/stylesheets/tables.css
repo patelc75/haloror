@@ -1,7 +1,8 @@
-.table
-{
-	
-}
+table.bluegrey { width: 100%; border: 1px solid #BBB; padding: 1px;}
+table.bluegrey td { border: none; }
+table.bluegrey th { background-color: #9ED3FA; border: none;}
+
+.aligntop { vertical-align: top;}
 
 .row
 {

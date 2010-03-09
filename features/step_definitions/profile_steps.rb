@@ -2,6 +2,10 @@
 #
 include ApplicationHelper # methods: find_profile_user, split_phrase
 
+Given /^a profile exists for user "([^\"]*)"$/ do |user_login|
+  profile = Factory.create(:profile, {:user => User.find_by_login(user_login)})
+end
+
 Then /^profile "([^\"]*)" should have "([^\"]*)" role(?:|s) for profile "([^\"]*)" with attributes:$/ do |full_name, role_name, for_full_name, attrs_table|
   Then %{profile "#{full_name}" should have "#{role_name}" role for profile "#{for_full_name}"}
   

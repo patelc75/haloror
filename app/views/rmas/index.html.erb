@@ -1,35 +1,53 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
-<%=render :partial => 'atp/nav'%>
-<h2>RMAs Navigation</h2> <%= link_to 'Create New RMA',new_rma_path%>
+<%= render :partial => 'atp/nav'%>
+<h2>RMAs Navigation</h2>
 
-<br><br>
+<p>
+  <%= link_to 'Create New RMA',new_rma_path -%> | 
+  <%= link_to 'RMA Reports' %> | 
+  <%= link_to 'RMA History' %>
+</p>
 
-<form name="rma_search" action="/rmas">
-<%= collection_select(:group, :id, @groups, :id, :name, {:prompt => true}) %>
-<input type="text" name="search">
-<input type="submit" value="Search">
-</form>
+<p>
+  <form name="rma_search" action="/rmas" class="textright">
+  <input type="text" name="search" size="50" value="Enter UID, Reseller or Status to filter" class="outlined" style="padding:2px 5px 3px 5px;">
+  <input type="submit" value="Search" class="outlined">
+  </form>
+  <!-- <=# collection_select(:group, :id, @groups, :id, :name, {:prompt => true}) > -->
+</p>
 
-<br>
-<table border="1">
-	<th>Id</th>
-	<th>Date Created</th>
-	<th>Halo User #</th>
-	<th>Group</th>
-	<th>RMA Staus</th>
-	<th>Phone Number</th>
+<p>
+  <table class="bluegrey">
+  	<th>ID</th>
+  	<th>Date Created</th>
+  	<th>Serial Number</th>
+  	<th>User ID</th>
+  	<th>Group</th>
+  	<th>Phone</th>
+  	<th>RMA Status</th>
+    <th>Action</th>
 
-	<% if @rmas %>
-	<% @rmas.each do |rma| %>
-	  <tr>
-	  	<td><%= link_to rma.id,rma_path(rma.id) %></td>
-	  	<td><%= UtilityHelper.format_datetime(rma.created_at,current_user) %></td>	
-	  	<td><%= rma.user.name %></td>
-	  	<td><%= rma.group.name %></td>
-	  	<td><b><%= rma.status %></b></td>
-	  	<td><b><%= rma.phone_number %></b></td>
-	<%end%>
-	<%end%>
-</table>
-<br>
-<center><big><%= will_paginate @rmas %></big></center>
+  	<% unless @rmas.blank? %>
+      <% @rmas.each do |rma| %>
+      <tr class="<%= cycle('', 'altrow') %>">
+        <td><%=h rma.id.to_i %></td>
+        <td><%=h rma.created_at.to_s(:MM_DD_YYYY) %></td>
+        <td><%=h rma.serial_number %></td>
+        <td><%=h rma.user_name %></td>
+        <td><%=h rma.group_name %></td>
+        <td><b><%=h rma.phone_number %></b></td>
+        <td><b><%=h rma.status %></b></td>
+        <td>
+          <%= link_to 'Edit', edit_rma_path(rma) %> | 
+          Copy | 
+          <%= link_to 'Delete', rma_path(rma), :confirm => 'Are you sure?', :method => :delete %>
+        </td>
+      </tr>
+      <% end -%>
+  	<% end -%>
+  </table>
+</p>
+
+<p>
+  <center><big><%= will_paginate @rmas %></big></center>
+</p>
