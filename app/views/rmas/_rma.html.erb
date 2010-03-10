@@ -6,11 +6,11 @@
         <table>
           <tr>
             <td class="textright"><%= f.label :status, "RMA Status" %>:</td>
-            <td><%= f.select :status, RmaStatus::STATUSES %></td>
+            <td><%=h @rma.computed_status %></td>
           </tr>
           <tr>
             <td class="textright"><%= f.label :user_id, "User ID" %>:</td>
-            <td><%= f.text_field :user_id %></td>
+            <td><%=h @rma.user_id %></td>
           </tr>
           <tr>
             <td class="textright"><%= f.label :serial_number, "Serial Number" %>:</td>
@@ -29,8 +29,12 @@
             <td><%= f.text_field :redmine_ticket %></td>
           </tr>
           <tr>
-            <td class="textright"><label for="rma_created_at">RMA Created Date</label>:</td>
-            <td><%= calendar_date_select_tag "rma[created_at]", @rma.created_at, :id => "rma_created_at", :popup => 'force' %></td>
+            <td class="textright"><%= f.label :created_at, "Created at" %>:</td>
+            <td><%=h @rma.created_at.to_s(:date_time_timezone) %></td>
+          </tr>
+          <tr>
+            <td class="textright"><%= f.label :updated_at, "Updated at" %>:</td>
+            <td><%=h @rma.updated_at.to_s(:date_time_timezone) %></td>
           </tr>
           <tr>
             <td class="textright"><label for="rma_completed_on">RMA Completed Date</label>:</td>
@@ -75,11 +79,7 @@
         </table>
       </td>
     </tr>
-    
-    <tr>
-      <%= render :partial => "rma_items/rma_items", :locals => {:rma_items => @rma.rma_items} %>
-    </tr>
-    
+        
     <tr>
       <td>
       <table width="100%"><tr>

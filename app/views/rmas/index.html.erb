@@ -18,17 +18,17 @@
 
 <p>
   <table class="bluegrey">
-  	<th>ID</th>
-  	<th>Date Created</th>
-  	<th>Serial Number</th>
-  	<th>User ID</th>
-  	<th>Group</th>
-  	<th>Phone</th>
-  	<th>RMA Status</th>
-    <th>Action</th>
-
-  	<% unless @rmas.blank? %>
-      <% @rmas.each do |rma| %>
+    <tr>
+    	<th>ID</th>
+    	<th>Date Created</th>
+    	<th>Serial Number</th>
+    	<th>User ID</th>
+    	<th>Group</th>
+    	<th>Phone</th>
+    	<th>RMA Status</th>
+      <th>Action</th>
+    </tr>
+    <% @rmas.each do |rma| %>
       <tr class="<%= cycle('', 'altrow') %>">
         <td><%=h rma.id.to_i %></td>
         <td><%=h rma.created_at.to_s(:MM_DD_YYYY) %></td>
@@ -40,11 +40,10 @@
         <td>
           <%= link_to 'Edit', edit_rma_path(rma) %> | 
           Copy | 
-          <%= link_to 'Delete', rma_path(rma), :confirm => 'Are you sure?', :method => :delete %>
+          <%= link_to 'Destroy', rma, :confirm => 'Are you sure?', :method => :delete %>
         </td>
       </tr>
-      <% end -%>
-  	<% end -%>
+    <% end -%>
   </table>
 </p>
 

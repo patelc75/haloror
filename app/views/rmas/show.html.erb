@@ -1,7 +1,9 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
 <%=render :partial => 'atp/nav'%>
-<h2>Show RMA #<%= @rma.id%></h2>
+<h2>Show RMA #<%= @rma.id%> (<%= @rma.computed_status %>)</h2>
 
-<br>
-<br>
+<p>
+  <%= render :partial => "rma_items/rma_items", :locals => {:rma => @rma} %>
+</p>
+<br />
 <%=debug @rma %>

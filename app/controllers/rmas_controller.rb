@@ -11,11 +11,19 @@ class RmasController < ApplicationController
       unless search.blank?
     @rmas = Rma.paginate  :page => params[:page], \
                           :order => 'created_at desc', :per_page => 20, :conditions => cond
+
+    respond_to do |format|
+      format.html
+    end
   end
 
   def new
   	@rma = Rma.new
     @groups = current_user.group_memberships
+
+    respond_to do |format|
+      format.html
+    end
   end
 
   def create

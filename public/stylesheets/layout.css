@@ -23,6 +23,8 @@ h3 a {
 	margin-right:auto;
 }
 
+.no-border { border: none; }
+
 #call_list
 {
 	padding:0;

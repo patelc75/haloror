@@ -1,0 +1,96 @@
+<% 
+  url = (@rma_item.new_record? ? rma_rma_items_path(@rma) : url_for(:controller => 'rma_items', :action => 'update'))
+  method = (@rma_item.new_record? ? :post : :put)
+%>
+<form action="<%= "#{url}" %>" method="<%= "#{method}" %>">
+  <%= error_messages_for(:rma_item) %>
+  <table width="100%">
+    <tr><td>
+      <table>
+        <tr>
+          <%= hidden_field_tag "rma_item[rma_id]", @rma.id %>
+          <td class="textright"><label for="rma_item_status">RMA Item Status</label>:</td>
+          <td><%= select "rma_item", "status", RmaItemStatus::STATUSES %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_user_id">User ID</label>:</td>
+          <td><%= text_field "rma_item", "user_id" %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_group_id">Group</label>:</td>
+          <td><%= select "rma_item", "group_id", @groups.collect {|p| [p.name, p.id]} %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_redmine_ticket">Redmine Issue Ticket #</label>:</td>
+          <td><%= text_field "rma_item", "redmine_ticket" %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_created_at">RMA Created date</label>:</td>
+          <td><%= text_field "rma_item", "created_at", :disabled => true %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_reinstalled_on">RMA Reinstalled date</label>:</td>
+          <td><%= calendar_date_select_tag "rma_item[reinstalled_on]", @rma_item.reinstalled_on, :id => "rma_item_reinstalled_on", :popup => 'force' %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_completed_on">RMA Completed date</label>:</td>
+          <td><%= calendar_date_select_tag "rma_item[completed_on]", @rma_item.completed_on, :id => "rma_item_completed_on", :popup => 'force' %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_received_on">RMA Received date</label>:</td>
+          <td><%= calendar_date_select_tag "rma_item[received_on]", @rma_item.received_on, :id => "rma_item_received_on", :popup => 'force' %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_shipped_on">RMA Shipped date</label>:</td>
+          <td><%= calendar_date_select_tag "rma_item[shipped_on]", @rma_item.shipped_on, :id => "rma_item_shipped_on", :popup => 'force' %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_atp_on">ATP date</label>:</td>
+          <td><%= calendar_date_select_tag "rma_item[atp_on]", @rma_item.atp_on, :id => "rma_item_atp_on", :popup => 'force' %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_atp_status">ATP status</label>:</td>
+          <td><%= select "rma_item", "atp_status", [['Pending', 'Pending']] %></td>
+        </tr>
+      </table>
+    </td>
+    
+    <td>
+      <table>
+        <tr>
+          <td class="textright"><label for="rma_item_device_model_id">Item Type</label>:</td>
+          <td><%= select "rma_item", "device_model_id", DeviceModel.all.collect {|p| [p.model_type, p.id]} %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_repair_action">Repair Action</label>:</td>
+          <td><%= text_area "rma_item", "repair_action", :rows => 5 %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_reason_for_return">Reason for Return</label>:</td>
+          <td><%= text_area "rma_item", "reason_for_return", :rows => 5 %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_condition_of_return">Condition of Return</label>:</td>
+          <td><%= select "rma_item", "condition_of_return", [['Like New', 'Like New']] %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_item_notes">Other Notes</label>:</td>
+          <td><%= text_area "rma_item", "notes", :rows => 5 %></td>
+        </tr>
+      </table>
+    </td>
+    </tr>
+    
+    <tr>
+      <td>
+      <table width="100%"><tr>
+        <td>
+          <%= link_to 'View RMA', rma_path(@rma_item.rma) %> | 
+          <%= link_to 'View RMA Item', rma_rma_item_path(@rma_item.rma, @rma_item) unless @rma_item.new_record? %>
+        </td>
+        <td class="textright"><%= submit_tag "Submit", :class => 'button' %></td>
+      </tr></table>
+      </td>
+    </tr>
+  </table>
+</form>
