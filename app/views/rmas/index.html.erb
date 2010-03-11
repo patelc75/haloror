@@ -36,7 +36,7 @@
         <td><%=h rma.user_name %></td>
         <td><%=h rma.group_name %></td>
         <td><b><%=h rma.phone_number %></b></td>
-        <td><b><%=h rma.computed_status %></b></td>
+        <td><b><%=h rma.computed_status %></b><span class="tiny"><br />(<%= rma.computed_status_detail.to_a.join(', ') %>)</span></td>
         <td>
           <%= link_to 'Edit', edit_rma_path(rma) %> | 
           Copy | 

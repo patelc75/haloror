@@ -821,6 +821,11 @@ a.largebutton {
 .shaded {
   background-color: #E6E6E6;
 }
+.tiny {
+  font: 75% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+  font-style: italic;
+  color: #808080;
+}
 .back-green {
   background-color: #A2FF37;
 }

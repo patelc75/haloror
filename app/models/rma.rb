@@ -37,4 +37,14 @@ class Rma < ActiveRecord::Base
       status = 'Waiting'
     end
   end
+  
+  def computed_status_detail
+    statuses = {}
+    arr = rma_items.collect(&:status)
+    ['New', 'Completed'].each do |status|
+      statuses[status] = arr.reject {|p| p == status}.length
+    end
+    statuses['Waiting'] = arr.length
+    return statuses
+  end
 end

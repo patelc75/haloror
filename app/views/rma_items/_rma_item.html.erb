@@ -1,8 +1,3 @@
-<% 
-  url = (@rma_item.new_record? ? rma_rma_items_path(@rma) : url_for(:controller => 'rma_items', :action => 'update'))
-  method = (@rma_item.new_record? ? :post : :put)
-%>
-
 <% form_for( [@rma, @rma_item]) do |f| -%>
   <%= f.error_messages %>
   
@@ -62,6 +57,18 @@
         <tr>
           <td class="textright"><%= f.label :device_model_id, "Item Type" %>:</td>
           <td><%= f.select :device_model_id, DeviceModel.all.collect {|p| [p.model_type, p.id]} %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :original_serial, "Original Serial" %>:</td>
+          <td><%= f.text_field :original_serial %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :replacement_serial, "Replacement Serial" %>:</td>
+          <td><%= f.text_field :replacement_serial %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :shipped_serial, "Shipped Serial" %>:</td>
+          <td><%= f.text_field :shipped_serial %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :repair_action, "Repair Action" %>:</td>

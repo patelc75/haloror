@@ -85,9 +85,11 @@
       <table width="100%"><tr>
         <td>
           <%= link_to 'RMA List', rmas_path %> | 
-          <%= link_to 'View Read Only', rma_path(@rma) unless @rma.new_record? %>
+          <% unless @rma.new_record? %>
+          <%= link_to 'View Read Only', rma_path(@rma) %> | 
+          <% end -%>
+          <%= f.submit "Submit", :class => 'button' %>
         </td>
-        <td class="textright"><%= f.submit "Submit", :class => 'button' %></td>
       </tr></table>
       </td>
     </tr>
