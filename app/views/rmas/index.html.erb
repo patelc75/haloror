@@ -30,13 +30,13 @@
     </tr>
     <% @rmas.each do |rma| %>
       <tr class="<%= cycle('', 'altrow') %>">
-        <td><%=h rma.id.to_i %></td>
+        <td><%= link_to "RMA #{rma.id}", rma %></td>
         <td><%=h rma.created_at.to_s(:MM_DD_YYYY) %></td>
         <td><%=h rma.serial_number %></td>
         <td><%=h rma.user_name %></td>
         <td><%=h rma.group_name %></td>
         <td><b><%=h rma.phone_number %></b></td>
-        <td><b><%=h rma.status %></b></td>
+        <td><b><%=h rma.computed_status %></b></td>
         <td>
           <%= link_to 'Edit', edit_rma_path(rma) %> | 
           Copy | 

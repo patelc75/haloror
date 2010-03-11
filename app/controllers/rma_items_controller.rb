@@ -10,7 +10,7 @@ class RmaItemsController < ApplicationController
   
   def new
     @rma = Rma.find_by_id(params[:rma_id])
-    @rma_item = RmaItem.new
+    @rma_item = @rma.rma_items.build
     @groups = current_user.group_memberships
 
     respond_to do |format|
@@ -19,13 +19,13 @@ class RmaItemsController < ApplicationController
   end
   
   def create
-    @rma = Rma.find_by_id(params[:rma_item][:rma_id])
     @rma_item = RmaItem.new(params[:rma_item])
+    # @rma = Rma.find_by_id(params[:rma_item][:rma_id].to_i)
     
     respond_to do |format|
       if @rma_item.save
         flash[:notice] = 'RMA Item was successfully saved.'
-        format.html { redirect_to( :controller => "rmas", :action => 'show', :id => @rma.id) }
+        format.html { redirect_to( :controller => "rmas", :action => 'show', :id => @rma_item.rma_id) }
       else
         format.html { render :action => "new" }
       end
@@ -44,12 +44,12 @@ class RmaItemsController < ApplicationController
   
   def update
     @rma_item = RmaItem.find(params[:id])
-    @rma = Rma.find_by_id(params[:rma_item][:rma_id])
+    # @rma = Rma.find_by_id(params[:rma_item][:rma_id].to_i)
 
     respond_to do |format|
       if @rma_item.update_attributes(params[:rma_item])
         flash[:notice] = 'RMA Item was successfully updated.'
-        format.html { redirect_to( :controller => "rmas", :action => 'show', :id => @rma.id) }
+        format.html { redirect_to( :controller => "rmas", :action => 'show', :id => @rma_item.rma_id) }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit", :id => @rma_item.id }

@@ -786,6 +786,7 @@ label {
 }
 .button {
   font: normal normal bold 1.5em Arial, sans-serif;
+  text-decoration: none;
   background-color: #BAD55E;
   border: 1px solid #000;
   color: #000;
