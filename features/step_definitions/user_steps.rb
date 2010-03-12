@@ -48,3 +48,18 @@ end
 Then /^user "([^\"]*)" should have email switched (on|off) for "([^\"]*)" user$/ do |user_name, status, for_user_name|
   pending # express the regexp above with the code you wish you had
 end
+
+When /^I simulate a "([^\"]*)" with delivery "([^\"]*)" to the call center for a user with id as "([^\"]*)"$/ do | model, success_or_failure, user_id|
+  SystemTimeout.create(:mode => "dialup", :critical_event_delay_sec => 0)
+  debugger
+  model.constantize.create(:timestamp => Time.now-1.minute, :user_id => user_id, :magnitude => 23, :device_id => 965)
+  DeviceAlert.job_process_crtical_alerts() 
+end
+
+Then /^I should have "([^\"]*)" count of "([^\"]*)"$/ do |count, model|
+  assert model.constantize.count == count
+end
+
+Then /^I should have a "([^\"]*)" alert "([^\"]*)" to the call center$/ do |model, pending_string|
+  assert model.constantize.first.call_center_pending == false, ""
+end
