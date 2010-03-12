@@ -50,11 +50,12 @@ Feature: Manage user_intakes
     Then page content should have "prohibited this"
 
   Scenario: Valid user. Valid Subscriber. Subscriber is not the user. Subscriber is not caregiver.
-    When I uncheck "same_as_user"
+    When I uncheck "same_as_user" 
     And I fill the user profile details for user intake form
     And I fill the subscriber details for user intake form
-    And I press "Submit"
-    Then page content should have "prohibited this"
+    And I select "verizon" from "subscriber_carrier_id"
+    And I press "Submit" 
+    Then page content should have "User Intake: Successfully saved" 
 
   Scenario: Valid user. Missing Subscriber/Caregiver. Subscriber is not user. Subscriber is caregiver
     When I uncheck "same_as_user"

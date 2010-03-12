@@ -148,24 +148,9 @@
             <td><%= time_zone_select :subscriber, :time_zone, TimeZone.us_zones,:default => "Central Time (US & Canada)" %></td>
           </tr>
           <tr>
-          	<td>Cell Provider:</td>
-          	<td>
-            <select id="subscriber_carrier_id" name="subscriber[carrier_id]" style="width:220px;">
-	        <% if @subscriber == nil or @subscriber.carrier_id == 0 or @subscriber.carrier_id == nil -%>
-	          <option value="" selected="selected" >
-	          Select Cell Provider for Text Msg </option>
-	        <% end -%>
-	        <% @carrier = Carrier.find(:all, :order => "id")
-	             @carrier.each do |carrier| %>
-	          <option value="<%= carrier.id %>"
-	           <% if @subscriber && @subscriber.carrier_id == carrier.id -%> selected="selected"<% end -%>
-	          >
-	          <%= carrier.name %> 
-	         </option>
-	        <% end %>
-	        </select>
-	        </td>
-	      </tr>
+          	<td><label for="subscriber_carrier_id">Cell Provider</label>:</td>
+          	<td><%= select :subscriber, :carrier_id, Carrier.ordered.collect {|p| [p.name, p.id]}, :include_blank => "Select Cell Provider for Text Msg..." %></td>
+            </tr>
 	      <tr>
 	      	<td colspan="2"><%= radio_button :user_intakes,:options,'credit_card' %>Credit/Debit Card Processed</td>
 	      </tr>
