@@ -2,6 +2,108 @@
 <%= link_to "Items for RMA #{@rma.id}", rma_rma_items_path(@rma) %> | 
 <%= link_to "RMA List", rmas_path %>
 <br />
-<%= debug @rma_item %>
-<br />
-<%= debug @rma_item.rma %>
+
+<h2>Items for RMA <%= @rma.id %></h2>
+<% form_for( [@rma, @rma_item]) do |f| -%>
+  
+  <table width="100%" class="bluegrey">
+    <tr><td>
+      <table>
+        <tr>
+          <td class="textright"><%= f.label :status, "RMA Item Status" %>:</td>
+          <td><%=h @rma_item.status %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :user_id, "User ID" %>:</td>
+          <td><%=h @rma_item.user_name %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :group_id, "Group" %>:</td>
+          <td><%=h @rma_item.group_name %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :redmine_ticket, "Redmine Issue Ticket #" %>:</td>
+          <td><%=h @rma_item.redmine_ticket %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :created_at, "RMA Created Date" %>:</td>
+          <td><%=h @rma_item.created_at %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :reinstalled_on, "RMA Reinstalled Date" %>:</td>
+          <td><%=h @rma_item.reinstalled_on %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :completed_on, "RMA Completed Date" %>:</td>
+          <td><%=h @rma_item.completed_on %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :received_on, "RMA Received Date" %>:</td>
+          <td><%=h @rma_item.received_on %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :shipped_on, "RMA Shipped Date" %>:</td>
+          <td><%=h @rma_item.shipped_on %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :atp_on, "ATP Date" %>:</td>
+          <td><%=h @rma_item.atp_on %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :atp_status, "ATP Status" %>:</td>
+          <td><%=h @rma_item.atp_status %></td>
+        </tr>
+      </table>
+    </td>
+    
+    <td>
+      <table>
+        <tr>
+          <td class="textright"><%= f.label :device_model_id, "Item Type" %>:</td>
+          <td><%=h @rma_item.type %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :original_serial, "Original Serial" %>:</td>
+          <td><%=h @rma_item.original_serial %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :replacement_serial, "Replacement Serial" %>:</td>
+          <td><%=h @rma_item.replacement_serial %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :shipped_serial, "Shipped Serial" %>:</td>
+          <td><%=h @rma_item.shipped_serial %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :repair_action, "Repair Action" %>:</td>
+          <td><%=h @rma_item.repair_action %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :reason_for_return, "Reason for Return" %>:</td>
+          <td><%=h @rma_item.reason_for_return %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :condition_of_return, "Condition of Return" %>:</td>
+          <td><%=h @rma_item.condition_of_return %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :notes, "Other Notes" %>:</td>
+          <td><%=h @rma_item.notes %></td>
+        </tr>
+      </table>
+    </td>
+    </tr>
+    
+    <tr>
+      <td>
+      <table width="100%"><tr>
+        <td>
+          <%= link_to "Show all Items for RMA #{@rma_item.rma.id}", rma_path(@rma_item.rma) %> | 
+          <%= link_to 'Edit this RMA Item', edit_rma_rma_item_path(@rma_item.rma, @rma_item) unless @rma_item.new_record? %> | 
+        </td>
+      </tr></table>
+      </td>
+    </tr>
+  </table>
+
+<% end -%>

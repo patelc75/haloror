@@ -27,11 +27,10 @@ Feature: Manage RMA
       | Zip Code             | 12345        |
       | Notes                | some text    |
     And I select the following:
-      | RMA Status     | Waiting on Return |
-      | Group          | mygroup           |
-      | Service Outage | Yes               |
+      | Group          | mygroup |
+      | Service Outage | Yes     |
     And I press "Submit"
-    Then page content should have "Show RMA, ship name, ship address, some text"
+    Then page content should have "Edit this RMA, ship name, ship address, some text"
 
   Scenario: Edit RMA
     Given the following rmas:

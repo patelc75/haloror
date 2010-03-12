@@ -1,9 +1,108 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
 <%=render :partial => 'atp/nav'%>
-<h2>RMA #<%= @rma.id%> (<%= @rma.computed_status %>)</h2>
+
+<% form_for @rma do |f| -%>
+  
+<table class="bluegrey">
+  <tr>
+    <td class="aligntop">
+      <table>
+        <tr>
+          <td class="textright"><%= f.label :status, "RMA Status" %>:</td>
+          <td><%=h @rma.computed_status %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :user_id, "User ID" %>:</td>
+          <td><%=h @rma.user_id %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :serial_number, "Serial Number" %>:</td>
+          <td><%=h @rma.serial_number %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :group_id, "Group" %>:</td>
+          <td><%=h @rma.group_name %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :related_rma, "Related RMA ID" %>#:</td>
+          <td><%=h @rma.related_rma %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :redmine_ticket, "Redmine Issue Ticket #(s)" %>:</td>
+          <td><%=h @rma.redmine_ticket %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :created_at, "Created at" %>:</td>
+          <td><%=h @rma.created_at %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :updated_at, "Updated at" %>:</td>
+          <td><%=h @rma.updated_at %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_completed_on">RMA Completed Date</label>:</td>
+          <td><%=h @rma.completed_on %></td>
+        </tr>
+      </table>
+    </td>
+    
+    <td width="15px"></td>
+    
+    <td class="aligntop">
+      <table>
+        <tr>
+          <td class="textright"><%= f.label :service_outage, "Service Outage" %>:</td>
+          <td><%=h @rma.service_outage %></td>
+        </tr>
+        <tr><td><h3>RMA Shipping</h3></td></tr>
+        <tr>
+          <td class="textright"><%= f.label :ship_name, "Name" %>:</td>
+          <td><%=h @rma.ship_name %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :ship_address, "Address" %>:</td>
+          <td><%=h @rma.ship_address %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :ship_city, "City" %>:</td>
+          <td><%=h @rma.ship_city %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :ship_state, "State" %>:</td>
+          <td><%=h @rma.ship_state %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :ship_zipcode, "Zip Code" %>:</td>
+          <td><%=h @rma.ship_zipcode %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :phone_number, "Phone Number" %>:</td>
+          <td><%=h @rma.phone_number %></td>
+        </tr>
+        <tr>
+          <td class="textright"><%= f.label :notes, "Notes" %>:</td>
+          <td><%=h @rma.notes %></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+      
+  <tr>
+    <td>
+    <table width="100%"><tr>
+      <td>
+        <%= link_to 'RMA List', rmas_path %> | 
+        <%= link_to 'Edit this RMA', edit_rma_path(@rma) unless @rma.new_record? %>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+</table>
+
 
 <p>
   <%= render :partial => "rma_items/rma_items", :locals => {:rma => @rma} %>
 </p>
 <br />
-<%=debug @rma %>
+
+<% end -%>

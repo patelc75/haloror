@@ -1,6 +1,6 @@
 <% form_for(@rma) do |f| %>
   <%= f.error_messages %>
-  <table>
+  <table class="bluegrey">
     <tr>
       <td class="aligntop">
         <table>
@@ -98,6 +98,10 @@
       </td>
     </tr>
   </table>
+  <br />
+  <p>
+    <%= render :partial => "rma_items/rma_items", :locals => {:rma => @rma} %>
+  </p>
 <% end %>
 <br />
 
