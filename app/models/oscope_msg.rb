@@ -34,13 +34,19 @@ class OscopeMsg < ActiveRecord::Base
     # That is it. Let ActiveRecord do the magic from here. :)
   end
 
-  # method called from oscope_msgs_controller
-  #
-  def self.process_xml_hash(msg)
-    oscope_msg = self.new(msg)
-    # oscope_msg.parse_for_xml_hash
-    oscope_msg.save! if oscope_msg.valid?
+  def after_validation
+    point = nil # we do not need it anymore, if it existed at all
   end
+
+  # 2010-03-13, not required anymore. all handled by before_validation
+  #
+  # # method called from oscope_msgs_controller
+  # #
+  # def self.process_xml_hash(msg)
+  #   oscope_msg = self.new(msg)
+  #   # oscope_msg.parse_for_xml_hash
+  #   oscope_msg.save! rescue nil # if oscope_msg.valid?
+  # end
 
   # def self.process_xml_hash(msg)
   #   timestamp = msg["timestamp"].to_time if msg["timestamp"]
