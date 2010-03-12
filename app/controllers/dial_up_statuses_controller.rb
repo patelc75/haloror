@@ -43,11 +43,10 @@ class DialUpStatusesController < RestfulAuthController
   # new data posted from user-agent
   #
   def create
-    debugger
     #
     # get the hashes separate for each row of AR
     # WARNING: Not tested
-    split_dial_up_status_hash_and_create_tuples( params[:dial_up_status] )
+    DialUpStatus.create!( params[:dial_up_status] ) rescue nil
     
     # request = params[:dial_up_status]
     # DialUpStatus.process_xml_hash(request)

@@ -15,7 +15,7 @@ class OscopeMsg < ActiveRecord::Base
   
   # method to parse additional values while creating an AR row from XML received from the device
   #
-  def before_validation
+  def after_initialize
     #
     # we get points as an array named 'point' when Hash.form_xml is loaded using XML from device. phew! :)
     # :point virtual attribute is to avoid ActiveRecord erorrs.
@@ -32,10 +32,6 @@ class OscopeMsg < ActiveRecord::Base
       if oscope_start_msg.blank?
     #
     # That is it. Let ActiveRecord do the magic from here. :)
-  end
-
-  def after_validation
-    point = nil # we do not need it anymore, if it existed at all
   end
 
   # 2010-03-13, not required anymore. all handled by before_validation

@@ -8,25 +8,6 @@ class BundleProcessor # < ActiveRecord::Base
                       HaloDebugMsg, OscopeMsg, OscopeStopMsg, 
                       OscopeStartMsg, GwAlarmButton, DialUpStatus, DialUpLastSuccessful]
 
-  # #override new so it will accept parse through custom or multiple xml nodes in the model  
-  # def self.new(xml_hash=nil)
-  #   if(!xml_hash.nil?)
-  #     self.process_xml_hash(xml_hash)
-  #     return nil
-  #     else
-  #       super
-  #   end
-  # end
-
-  # #initialize will need to be overriden since new() was overriden
-  # def self.initialize(xml_hash=nil)
-  #   if(xml_hash.nil?)
-  #     super
-  #   else
-  #     self.new(xml_hash)
-  #   end
-  # end
-
   # process the bundle
   #
   def self.process(bundle)
@@ -34,7 +15,9 @@ class BundleProcessor # < ActiveRecord::Base
     begin
       @@bundled_models[0].transaction do
         @@bundled_models.each do |model|
-          value = bundle[model.to_s.underscore]
+          #
+          # for dial_up_status, we want the entire bundle, not extracted hash
+          value = ((model.to_s.underscore == "dial_up_status") && bundle.has_key?("num_failures")) ? bundle : bundle[model.to_s.underscore]
           
           unless value.blank?
             value = (value.class == Array ? value : [value])

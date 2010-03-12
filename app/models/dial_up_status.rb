@@ -1,8 +1,28 @@
 class DialUpStatus < ActiveRecord::Base
   belongs_to :device
+
+  # instance variables to hold multiple row details from device hash, if present
+  # we will use these to save separate rows of data during before_save
+  attr_accessor :alternate, :global_prime, :global_alternate, :last_successful
+
+  # define the attr_accessor for all attributes of device hash
+  # this will avoid errors at initialize
+  # "prime"            => "",    # not required. we are in the model and these are valid columns
+  { 
+    "alternate"        => "alt_",
+    "global_prime"     => "global_prim_",
+    "global_alternate" => "global_alt_"
+  }.each do |key, value|
+    [ "status", "configured", "device_id", "num_failures", "consecutive_fails", "ever_connected",
+      "ever_connected", "phone_number", "number"].each do |hash_key|
+        attr_accessor "#{value}#{hash_key}".to_sym
+      end
+  end
+  attr_accessor :number, :timestamp # extra columns defined in XML
+  attr_accessor :last_successful_number, :last_successful_username, :last_successful_password
   
   # filters, scopes
-  #
+
   # dynamically generated named scope
   #  by_dialup_type([...]), by_device_id([...]), ...
   # To degine more similar scopes, just add the column name symbl to the array
@@ -13,15 +33,76 @@ class DialUpStatus < ActiveRecord::Base
     }    
   end
   
-  # triggers / hooks
+  # triggers / hooks / callbacks
   
+  # if the hash came from device, then parse it to instance variables
+  def after_initialize
+    self.alternate         = {}
+    self.global_prime      = {}
+    self.global_alternate  = {}
+    self.last_successful   = {}
+    # "prime"            => "",    # already assigned for this model from hash
+    { 
+      "alternate"        => "alt_",
+      "global_prime"     => "global_prim_",
+      "global_alternate" => "global_alt_"
+    }.each do |key, value|
+      ["status", "configured"].each do |hash_key|
+        eval("self.#{key}[:#{hash_key}] = #{value}#{hash_key}")
+      end
+      ["device_id", "num_failures", "consecutive_fails", "ever_connected"].each do |hash_key|
+        eval("self.#{key}[:#{hash_key}] = #{value}#{hash_key}.to_i")
+      end
+      # FIXME: structure is boolean, value received is integer
+      eval("self.#{key}[:ever_connected] = (#{value}ever_connected.to_i > 0)")
+      eval("self.#{key}[:phone_number] = #{value}number") # similar pattern for all
+    end
+
+    # dialup_type
+    self.dialup_type = 'Local' # self
+    self.alternate[:dialup_type] = 'Local'
+    self.global_prime[:dialup_type] = 'Global'
+    self.global_alternate[:dialup_type] = 'Global'
+
+    # last successful
+    self.last_successful[:device_id]                 = device_id.to_i
+    self.last_successful[:last_successful_number]    = last_successful_number
+    self.last_successful[:last_successful_username]  = last_successful_username
+    self.last_successful[:last_successful_password]  = last_successful_password
+  end
+
+
+  # some more work after the row is saved to database
+  #
   def after_create
     if (status == "fail" && consecutive_fails > 3 && configured == "old") or (status == "fail" && configured == "new") 
       device.users.each do |user|
         Event.create_event(user.id, self.class.name, id, created_at)
       end
     end
+
+    # if we initiated this instance from a device hash, we have more work to do
+    #
+    # We save a few more rows that came in the hash
+    # We did not save them earlier to avoid data inconsistency, just in case we decide not to save this instance
+    # so the extra tuples go along "this" instance. all saved or none.
+    #
+    # WARNING: We have a drawback here
+    #   We lose the callback to the Event.create_event for all these rows saved below
+    #
+    [self.alternate, self.global_prime, self.global_alternate].each do |tuple_hash|
+      unless tuple_hash.blank?
+          obj = DialUpStatus.new( tuple_hash)
+          obj.send(:create_without_callbacks) # Otherwise endless recursion will happen
+      end
+    end
+    
+    unless self.last_successful.blank?
+        obj = DialUpLastSuccessful.new( self.last_successful)
+        obj.send(:create_without_callbacks)
+    end
   end
+  
 # <<<<<<< HEAD
 # 
 #   # class methods
