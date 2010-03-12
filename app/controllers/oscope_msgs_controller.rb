@@ -3,8 +3,9 @@ class OscopeMsgsController < RestfulAuthController
     begin
       o_msgs = params[:oscope_msgs] #params is a hash but everything underneath is arrays. 
       msgs = o_msgs[:oscope_msg] #o_msgs[:oscope_msg] is automatically stored as an array of <oscope_msg> nodes by Rails
-      msgs = [msgs] if msgs.class != Array 
-      msgs.each {|msg| OscopeMsg.process_xml_hash(msg)}
+      msgs = [msgs] if msgs.class != Array
+      msgs.each {|msg| OscopeMsg.create!(msg)} # WARNING: not tested yet
+      # msgs.each {|msg| OscopeMsg.process_xml_hash(msg)}
       
       respond_to do |format|
         format.xml { head :ok } 
