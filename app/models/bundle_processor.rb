@@ -43,8 +43,11 @@ class BundleProcessor # < ActiveRecord::Base
               #
               # model specific additional parsing. check model class for more details.
               # keep this here. do not remove.
-              obj.parse_for_xml_hash if obj.respond_to?(:parse_for_xml_hash)
-              (obj.save! if obj.valid?) unless obj.blank?
+              # not required anymore => obj.parse_for_xml_hash if obj.respond_to?(:parse_for_xml_hash)
+              #
+              # CHANGED: As of 2010-03-12, we do not need this special case. The logic is inside model now.
+              #
+              obj.save! unless obj.blank? rescue nil
             end
 
           end
