@@ -16,10 +16,15 @@ Feature: Critical Alert
   # @wip here will skip only this scenario, unless feature has @wip tag
   Scenario: Simulate a fall with successful delivery to the call center
     When I simulate a "Fall" with delivery "success" to the call center for a user with id as "44"
-    Then I should have "1" count of "fall"
+    Then I should have "1" count of "Fall"
   	And I should have a "Fall" alert "not pending" to the call center
 
   # Scenario: Simulate a fall with failed delivery to the call center
   #   When I simulate a "Fall" with delivery "failure" to the call center for a user with id as "44"
   #   Then I should have "1" count of "fall"
   # 	And I should have a "Fall" alert "pending" to the call center
+	
+	# TODO: Just raise an exception instead of handling it separately!
+  #Scenario: Simulate a fall with failed delivery to the call center with valid call center account number
+  #Scenario: Simulate a fall with failed delivery to the call center with invalid call center account number
+

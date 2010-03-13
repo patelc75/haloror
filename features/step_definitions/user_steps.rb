@@ -50,9 +50,9 @@ Then /^user "([^\"]*)" should have email switched (on|off) for "([^\"]*)" user$/
 end
 
 When /^I simulate a "([^\"]*)" with delivery "([^\"]*)" to the call center for a user with id as "([^\"]*)"$/ do | model, success_or_failure, user_id|
-  SystemTimeout.create(:mode => "dialup", :critical_event_delay_sec => 0)
-  debugger
+  SystemTimeout.create(:mode => "dialup", :critical_event_delay_sec => 0, :gateway_offline_timeout_sec => 0, :device_unavailable_timeout_sec => 0, :strap_off_timeout_sec => 0)
   model.constantize.create(:timestamp => Time.now-1.minute, :user_id => user_id, :magnitude => 23, :device_id => 965)
+  SafetyCareClient.should_receive(:alert).once.and_raise(Timeout::Error)
   DeviceAlert.job_process_crtical_alerts() 
 end
 
