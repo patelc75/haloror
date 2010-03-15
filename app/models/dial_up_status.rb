@@ -75,11 +75,7 @@ class DialUpStatus < ActiveRecord::Base
   # some more work after the row is saved to database
   #
   def after_create
-    if (status == "fail" && consecutive_fails > 3 && configured == "old") or (status == "fail" && configured == "new") 
-      device.users.each do |user|
-        Event.create_event(user.id, self.class.name, id, created_at)
-      end
-    end
+    create_event
 
     # if we initiated this instance from a device hash, we have more work to do
     #
@@ -94,15 +90,24 @@ class DialUpStatus < ActiveRecord::Base
       unless tuple_hash.blank?
           obj = DialUpStatus.new( tuple_hash)
           obj.send(:create_without_callbacks) # Otherwise endless recursion will happen
+          create_event
       end
     end
     
     unless self.last_successful.blank?
         obj = DialUpLastSuccessful.new( self.last_successful)
         obj.send(:create_without_callbacks)
+        create_event
     end
   end
   
+  def create_event
+    if (status == "fail" && consecutive_fails > 3 && configured == "old") or (status == "fail" && configured == "new") 
+      device.users.each do |user|
+        Event.create_event(user.id, self.class.name, id, created_at)
+      end
+    end
+  end
 # <<<<<<< HEAD
 # 
 #   # class methods
