@@ -76,7 +76,7 @@
         </tr>
         <tr>
           <td class="textright"><%= f.label :reason_for_return, "Reason for Return" %>:</td>
-          <td><%= f.text_area :reason_for_return, :rows => 5 %></td>
+          <td><%= f.select :reason_for_return, RmaItem::REASON_FOR_RETURN %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :condition_of_return, "Condition of Return" %>:</td>

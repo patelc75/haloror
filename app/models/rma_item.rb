@@ -7,6 +7,24 @@ class RmaItem < ActiveRecord::Base
   def user_name; return (user.blank? ? '' : user.full_name); end
   def group_name; return (group.blank? ? '' : group.name); end
   
+  REASON_FOR_RETURN = ['Battery Issues',
+  'Cancel Request',
+  'Communications',
+  'Constant Dialing',
+  'Customer Data',
+  'Damaged Housing',
+  'Direct Customer',
+  'Fall Detection',
+  'False Event',
+  'Gateway Code',
+  'Gateway Offline',
+  'Hardware',
+  'Instructions',
+  'No Sync',
+  'Wearability',
+  'Other'
+  ]
+  
   # device_type_name
   #
   def type
