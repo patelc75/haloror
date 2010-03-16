@@ -17,7 +17,11 @@ Feature: Bundle job
       | vitals            | 93 |
       | steps             | 92 |
       | skin temps        | 92 |
-  
+#      | oscope msgs       | 6 |
+#      | points            | 2 |
+#      | dial up statuses        | 4 |
+#      | dial up last successful | 1 |
+      
   Scenario Outline: Verify OScopeMsg XML with & without points
     When I process the xml file "spec/data/oscope_msg_<part_name>.xml"
     Then I should have the following counts of data:
