@@ -1,5 +1,8 @@
 # Methods added to this helper will be available to all templates in the application.
-module ApplicationHelper
+module ApplicationHelper   
+  class CriticalAlertException < RuntimeError
+  end
+  
   include UtilityHelper
   include UserHelper
   #these are taken from cd /var/lib/pgsql/data/pg_hba.conf on dfw-web1
