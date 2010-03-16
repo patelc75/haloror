@@ -137,8 +137,8 @@ class CriticalMailer < ActionMailer::ARMailer
 
 #============ Safetycare Monitoring ================
   def monitoring_failure(message, event)
-    setup_message("safety_care monitoring failure: #{message}", "The following event triggered, but an error was encountered.\n\nTime: #{Time.now}\n\nError: #{message}\n\nEvent: #{event.to_s}\n\n#{event.inspect}\n\n", :no_email_log)
-    @recipients = ["exceptions@halomonitoring.com"]
+    setup_message("call center monitoring failure: #{message}", "The following event triggered, but an error was encountered.\n\nTime: #{Time.now}\n\nError: #{message}\n\nEvent: #{event.to_s}\n\n#{event.inspect}\n\n", :no_email_log)
+    @recipients = ["exceptions_critical@halomonitoring.com"]
   end
 
   def monitoring_heartbeat_failure(message, exception)

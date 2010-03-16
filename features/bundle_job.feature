@@ -12,15 +12,15 @@ Feature: Bundle job
   Scenario: Load the bundle file and verify data
     When I process the bundle job "spec/H200000023_1240876150.tar.bz2"
     Then I should have the following counts of data:
-      | batteries         | 93 |
-      | battery unplugged | 1  |
-      | vitals            | 93 |
-      | steps             | 92 |
-      | skin temps        | 92 |
-#      | oscope msgs       | 6 |
-#      | points            | 2 |
-#      | dial up statuses        | 4 |
-#      | dial up last successful | 1 |
+      | batteries               | 93 |
+      | battery unplugged       | 1  |
+      | vitals                  | 93 |
+      | steps                   | 92 |
+      | skin temps              | 92 |
+      | oscope msgs             | 6  |
+      | points                  | 2  |
+      | dial up statuses        | 4  |
+      | dial up last successful | 1  |                                                                        
       
   Scenario Outline: Verify OScopeMsg XML with & without points
     When I process the xml file "spec/data/oscope_msg_<part_name>.xml"

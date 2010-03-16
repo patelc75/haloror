@@ -40,8 +40,8 @@ class SafetyCareClient
       }
       RAILS_DEFAULT_LOGGER.warn("SafetyCareClient::alert = " + "%s%s\r\n" % [account_num, alarm_code])
     else
-      raise CriticalAlertException, "SafetyCareClient.alert::Missing account number! for user_id = #{user_id}"
-      #UtilityHelper.log_message("SafetyCareClient.alert::Missing account number! for user_id = #{user_id}")   
+      #raise CriticalAlertException, "SafetyCareClient.alert::Missing account number! for user_id = #{user_id}"
+      UtilityHelper.log_message_critical("SafetyCareClient.alert::Missing account number! for user_id = #{user_id}")   
     end
   end
 

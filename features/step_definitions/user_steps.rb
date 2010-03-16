@@ -75,11 +75,11 @@ When /^I simulate a "([^\"]*)" with delivery to the call center for user login "
   object = model.constantize.create(:timestamp => Time.now-2.minutes, :user_id => user.id, :magnitude => 23, :device_id => 965)
   object.timestamp_server = Time.now-1.minute
   object.save
-  begin
+  # begin
     DeviceAlert.job_process_crtical_alerts()
-  rescue CriticalAlertException => cae
-    puts "CriticalAlertException successfully raised for cucumber: " + cae.message + cae.inspect
-  end  
+  # rescue CriticalAlertException => cae
+  #   puts "CriticalAlertException successfully raised for cucumber: " + cae.message + cae.inspect
+  # end   
 end
 
 Then /^I should have "([^\"]*)" count of "([^\"]*)"$/ do |count, model|

@@ -93,7 +93,15 @@ module UtilityHelper
     RAILS_DEFAULT_LOGGER.warn(message)
     safe_send_email(message, 'exceptions@halomonitoring.com')
   end
-  
+
+  def self.log_message_critical(message, exception=nil) 
+    if !exception.nil?
+      message  = "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
+    end
+    RAILS_DEFAULT_LOGGER.warn(message)
+    safe_send_email(message, 'exceptions_critical@halomonitoring.com')
+  end
+    
   def self.safe_send_email(message, to)
     begin
       email = Email.new(:mail => "#{ServerInstance.current_host()}.Message = #{message}", 

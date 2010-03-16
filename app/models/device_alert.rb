@@ -30,24 +30,23 @@ class DeviceAlert < ActiveRecord::Base
     groups.each do |group|
       if !group.nil? and group.sales_type == "call_center"
         model_string = (group.name.camelcase + "Client")
-        # begin
+        begin
           if event.user.profile
-            #debugger
             model_string.constantize.alert(event.class.name, event.user.id, event.user.profile.account_number, event.timestamp)
           else
-           raise CriticalAlertException, "Missing user profile for user #{event.user.id}"
-           #CriticalMailer.deliver_monitoring_failure("Missing user profile!", event)
+           #raise CriticalAlertException, "Missing user profile for user #{event.user.id}"
+           CriticalMailer.deliver_monitoring_failure("Missing user profile!", event)
           end
-        # rescue Exception => e
-        #   CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
-        #   UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::Exception:: #{e} : #{event.to_s}", e)
-        # rescue Timeout::Error => e
-        #   CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
-        #   UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::Timeout::Error:: #{e} : #{event.to_s}", e)
-        # rescue
-        #   CriticalMailer.deliver_monitoring_failure("UNKNOWN error", event)
-        #   UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::UNKNOWN::Error: #{event.to_s}")         
-        # end
+        rescue Exception => e
+          CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
+          UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::Exception:: #{e} : #{event.to_s}", e)
+        rescue Timeout::Error => e
+          CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
+          UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::Timeout::Error:: #{e} : #{event.to_s}", e)
+        rescue
+          CriticalMailer.deliver_monitoring_failure("UNKNOWN error", event)
+          UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::UNKNOWN::Error: #{event.to_s}")         
+        end    
       end          
     end
   end  
@@ -77,11 +76,10 @@ class DeviceAlert < ActiveRecord::Base
 
     #sort by timestamp, instead of timestamp_server in case GW sends them out of order in the alert_bundle
     critical_alerts.sort_by { |event| event[:timestamp] }.each do |crit|
-      #RAILS_DEFAULT_LOGGER.warn("DeviceAlert.job_process_crtical_alerts running at #{Time.now}")
-      RAILS_DEFAULT_LOGGER.info("crit.class = #{crit.class}, crit.timestamp_server = #{crit.class}\n")
       crit.call_center_pending = false
       crit.timestamp_call_center = Time.now
       crit.save
+      RAILS_DEFAULT_LOGGER.warn("DeviceAlert.job_process_crtical_alerts: Critical alert sent to call center: #{crit.class}(#{crit.id}), #{Time.now}\n")  
     end
   end
 end
