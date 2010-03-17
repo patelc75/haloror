@@ -55,9 +55,8 @@ class BundleJob
       begin
         file_names.each do |file_name|
           file_path_and_name = "#{BUNDLE_PATH}/#{file_name}"
-        
-          if (file_name.include?(EXT_NAME) && 
-             !File.directory?(file_path_and_name))
+          
+          if (file_name.include?(EXT_NAME) && !File.directory?(file_path_and_name))
 
             base_name = File.basename(file_path_and_name, EXT_NAME) #remove extension from filename
             dir_path = "#{BUNDLE_PATH}/#{base_name}"
@@ -98,12 +97,15 @@ class BundleJob
     
     def process_xml_files_in_dir(dir_path)
       #retrieve file names
-      xml_file_names = []  
-      Dir.foreach(dir_path) do |xml_file_name|  #crate an array of the xml file names
-        unless xml_file_name == '.' || xml_file_name == '..'
-          xml_file_names << xml_file_name
-        end
-      end
+      xml_file_names = []
+      xml_file_names = Dir.glob( File.join(dir_path, "**", "*.xml"))
+      # Dir.foreach(dir_path) do |xml_file_name|  #crate an array of the xml file names
+      #   unless xml_file_name == '.' || xml_file_name == '..'
+      #     xml_file_names << xml_file_name
+      #   end
+      # end
+      # FIXME: Why are we sorting here? Do we really need the sorted order of files?
+      # We are going to process all of them anyways. Isn't it?
       xml_file_names.sort! do |afile, bfile|
         atime, aseq = get_time_in_seconds_xml(afile)
         btime, bseq = get_time_in_seconds_xml(bfile)
@@ -117,18 +119,19 @@ class BundleJob
     
       xml_file_names.each do |xml_file_name|
         begin
-          xml_file_path_and_name = "#{dir_path}/#{xml_file_name}"
-          self.process_xml_file(xml_file_path_and_name)
+          # we now have full path to file from Dir.glob above
+          # xml_file_path_and_name = "#{dir_path}/#{xml_file_name}"
+          self.process_xml_file(xml_file_name)
           #delete xml file
-          File.delete(xml_file_path_and_name)
+          File.delete(xml_file_name)
         rescue Exception => e
-          error_message = "#{Time.now}: BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_path_and_name}: #{e}"
+          error_message = "#{Time.now}: BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_name}: #{e}"
           @error_collection << error_message
           RAILS_DEFAULT_LOGGER.warn error_message
         end
       end
     end
-  
+    
     def process_xml_file(xml_file_path_and_name)
       unless (xml_string = File.read(xml_file_path_and_name)).blank?
         unless (bundle_hash = Hash.from_xml(xml_string)).blank?

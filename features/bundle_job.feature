@@ -20,7 +20,7 @@ Feature: Bundle job
       | oscope msgs             | 6  |
       | points                  | 2  |
       | dial up statuses        | 4  |
-      | dial up last successful | 1  |                                                                        
+      | dial up last successful | 1  |                                                                  
       
   Scenario Outline: Verify OScopeMsg XML with & without points
     When I process the xml file "spec/data/oscope_msg_<part_name>.xml"
