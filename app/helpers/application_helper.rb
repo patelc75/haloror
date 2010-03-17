@@ -59,7 +59,15 @@ module ApplicationHelper
     paths = csv_to_array(path)
     Dir.mkdir(path) unless File.exists?(path)
   end
-  
+
+  def recursively_delete_dir(dir)
+    ["*", ".*"].each do |matcher|
+      dirs = Dir.glob( File.join(dir, "**", matcher)).sort!.reject {|p| [".", ".."].include?(p.split('/')[-1]) }
+      dirs.each do |dir_or_file|
+        File.directory?(dir_or_file) ? Dir.delete(dir_or_file) : File.delete(dir_or_file)
+      end
+    end
+  end
   # take a comma/<delimiter> separated string/text and return an array of strings.
   # no blank spaces before/after each element value
   def csv_to_array(phrase, delimiter = ',')

@@ -73,7 +73,9 @@ class BundleJob
           if File.directory?(dir_path)
             begin
               self.process_xml_files_in_dir(dir_path)
-              Dir.delete(dir_path)
+              # CHANGED: Dir.delete(dir_path)
+              # recursively delete the folders. We can expect subfolders
+              recursively_delete_dir(dir_path)
               delete_oldest_file_from_archive
             rescue Exception => e
               @error_collection << "#{Time.now}: BUNDLE_JOB_EXCEPTION while processing a directory:  #{e}"
@@ -96,8 +98,8 @@ class BundleJob
     end
     
     def process_xml_files_in_dir(dir_path)
-      #retrieve file names
-      xml_file_names = []
+      # CHANGED: get all *.xml files in any subfolder within this folder
+      # this fetch works recursively
       xml_file_names = Dir.glob( File.join(dir_path, "**", "*.xml"))
       # Dir.foreach(dir_path) do |xml_file_name|  #crate an array of the xml file names
       #   unless xml_file_name == '.' || xml_file_name == '..'
@@ -106,17 +108,17 @@ class BundleJob
       # end
       # FIXME: Why are we sorting here? Do we really need the sorted order of files?
       # We are going to process all of them anyways. Isn't it?
-      xml_file_names.sort! do |afile, bfile|
-        atime, aseq = get_time_in_seconds_xml(afile)
-        btime, bseq = get_time_in_seconds_xml(bfile)
-        (atime == btime) ? (aseq <=> bseq) : (atime <=> btime)
-        # if atime == btime
-        #   aseq <=> bseq
-        # else
-        #   atime <=> btime
-        # end
-      end
-    
+      # xml_file_names.sort! do |afile, bfile|
+      #   atime, aseq = get_time_in_seconds_xml(afile)
+      #   btime, bseq = get_time_in_seconds_xml(bfile)
+      #   (atime == btime) ? (aseq <=> bseq) : (atime <=> btime)
+      #   # if atime == btime
+      #   #   aseq <=> bseq
+      #   # else
+      #   #   atime <=> btime
+      #   # end
+      # end
+
       xml_file_names.each do |xml_file_name|
         begin
           # we now have full path to file from Dir.glob above

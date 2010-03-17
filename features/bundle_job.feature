@@ -10,15 +10,15 @@ Feature: Bundle job
       | id | 965 |
   
   Scenario: Load the bundle file and verify data
-    When I process the bundle job "spec/H200000023_1240876150.tar.bz2"
+    When I process the bundle job "spec/H200000023_1240875421.tar.bz2"
     Then I should have the following counts of data:
       | batteries               | 93 |
       | battery unplugged       | 1  |
       | vitals                  | 93 |
       | steps                   | 92 |
       | skin temps              | 92 |
-      | oscope msgs             | 6  |
-      | points                  | 2  |
+      | oscope msgs             | 4  |
+      | points                  | 4  |
       | dial up statuses        | 4  |
       | dial up last successful | 1  |                                                                  
       
