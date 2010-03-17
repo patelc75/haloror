@@ -47,7 +47,7 @@
         </tr>
         <tr>
           <td class="textright"><%= f.label :atp_status, "ATP Status" %>:</td>
-          <td><%= f.select :atp_status, [['Pending', 'Pending']] %></td>
+          <td><%= f.select :atp_status, RmaItem::ATP_STATUS %></td>
         </tr>
       </table>
     </td>
@@ -80,7 +80,7 @@
         </tr>
         <tr>
           <td class="textright"><%= f.label :condition_of_return, "Condition of Return" %>:</td>
-          <td><%= f.select :condition_of_return, [['Like New', 'Like New']] %></td>
+          <td><%= f.select :condition_of_return, RmaItem::CONDITION_OF_RETURN %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :notes, "Other Notes" %>:</td>
