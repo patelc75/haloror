@@ -54,11 +54,12 @@ module ApplicationHelper
     name.singularize.split(' ').collect(&:capitalize).join.constantize
   end
   
+  # CHANGED: obsolete method. Use File.makedirs("/path/to/dir") instead
   # just ensure the folder exists as specified in the full path
-  def ensure_folder(path)
-    paths = csv_to_array(path)
-    Dir.mkdir(path) unless File.exists?(path)
-  end
+  # def ensure_folder(path)
+  #   # paths = csv_to_array(path)
+  #   # Dir.mkdir(path) unless File.exists?(path)
+  # end
 
   def recursively_delete_dir(dir)
     ["*", ".*"].each do |matcher|

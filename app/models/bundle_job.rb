@@ -1,3 +1,5 @@
+require "ftools" # File.makedirs
+
 class BundleJob
   BUNDLE_PATH = "#{RAILS_ROOT}/dialup"
   ARCHIVE_PATH = "#{RAILS_ROOT}/dialup/archive"
@@ -11,8 +13,8 @@ class BundleJob
       @error_collection = []
    
       begin 
-        ensure_folder(BUNDLE_PATH)
-        ensure_folder(ARCHIVE_PATH)
+        File.makedirs(BUNDLE_PATH) # create multiple level directories if they do not exist
+        File.makedirs(ARCHIVE_PATH)
         #retrieve file names
         file_names = []
         Dir.foreach(BUNDLE_PATH) do |file_name|  #create list of filenames that need to be processed
