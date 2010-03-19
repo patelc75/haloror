@@ -69,6 +69,7 @@ module ApplicationHelper
       end
     end
   end
+
   # take a comma/<delimiter> separated string/text and return an array of strings.
   # no blank spaces before/after each element value
   def csv_to_array(phrase, delimiter = ',')

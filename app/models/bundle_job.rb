@@ -7,6 +7,7 @@ class BundleJob
   @error_collection = []
   
   class << self
+    include ApplicationHelper # mixin for recursively deleting dir
     
     def job_process_bundles
       RAILS_DEFAULT_LOGGER.warn("#{Time.now}: BundleJob.job_process_bundle running")
@@ -250,4 +251,5 @@ class BundleJob
     end
     
   end # << self
+    
 end  
