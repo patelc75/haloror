@@ -355,10 +355,10 @@ class ReportingController < ApplicationController
         	  	  if @group_stats[group.name].nil? 
          		    @group_stats[group.name] = {} 
          		  end
-         		  if @group_stats[group.name][:false_alarm_falls].nil? 
+         		  if @group_stats[group.name][:gwalarm].nil? 
             	    @group_stats[group.name][:gwalarm] = [] 
             	  end
-         		  @group_stats[group.name][:gwalarm] << gwalarm
+         		  @group_stats[group.name][:gwalarm] << gwalarm 
          		  @group_totals[:gwalarm] += 1 if group.name !="safety_care" and group.name !="halo"
     	  	    end
     	      end
