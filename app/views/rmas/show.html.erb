@@ -33,15 +33,15 @@
         </tr>
         <tr>
           <td class="textright"><%= f.label :created_at, "Created at" %>:</td>
-          <td><%=h @rma.created_at %></td>
+          <td><%=h @rma.created_at.to_s(:MM_DD_YYYY) %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :updated_at, "Updated at" %>:</td>
-          <td><%=h @rma.updated_at %></td>
+          <td><%=h @rma.updated_at.to_s(:MM_DD_YYYY) %></td>
         </tr>
         <tr>
           <td class="textright"><label for="rma_completed_on">RMA Completed Date</label>:</td>
-          <td><%=h @rma.completed_on %></td>
+          <td><%=h @rma.completed_on.to_s(:MM_DD_YYYY) %></td>
         </tr>
       </table>
     </td>
