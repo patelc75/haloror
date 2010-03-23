@@ -8,6 +8,10 @@ Given /^the product catalog exists$/ do
   end
 end
 
+Given /^the payment gateway response log is empty$/ do
+  PaymentGatewayResponse.delete_all
+end
+
 When /^I fill the (.+) details for online store$/ do |which|
   if ['shipping', 'billing'].include?(which)
     which = which[0..3] # shipping, billing
@@ -34,4 +38,8 @@ When /^I fill the (.+) details for online store$/ do |which|
     When %{I select "January" from "order_card_expiry_2i"}
     When %{I select "#{2.years.from_now.to_date.year}" from "order_card_expiry_1i"}
   end
+end
+
+Then /^the payment gateway response should have (\d+) logs$/ do |row_count|
+  assert_equal row_count.to_i, PaymentGatewayResponse.count
 end

@@ -1,0 +1,19 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  action: MyString
+  order: 
+  amount: 1
+  success: false
+  authorization: MyString
+  message: MyString
+  params: MyText
+
+two:
+  action: MyString
+  order: 
+  amount: 1
+  success: false
+  authorization: MyString
+  message: MyString
+  params: MyText
