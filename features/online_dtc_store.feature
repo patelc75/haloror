@@ -97,3 +97,13 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     Then page content should have "Thank you"
     And the payment gateway response should have 2 logs
+
+  Scenario: Upfront (one time) and recurring amounts
+    When I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "Same as shipping"
+    And I press "Continue"
+    And I press "Place Order"
+    Then page content should have "Thank you"
+    And the payment gateway should have log for 441 USD
+    And the payment gateway should have log for 59 USD

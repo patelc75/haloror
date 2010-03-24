@@ -13,6 +13,7 @@ Given /^the payment gateway response log is empty$/ do
 end
 
 When /^I fill the (.+) details for online store$/ do |which|
+  %{When I choose "product_complete"}
   if ['shipping', 'billing'].include?(which)
     which = which[0..3] # shipping, billing
     #
@@ -42,4 +43,8 @@ end
 
 Then /^the payment gateway response should have (\d+) logs$/ do |row_count|
   assert_equal row_count.to_i, PaymentGatewayResponse.count
+end
+
+Then /^the payment gateway should have log for (\d+) USD$/ do |amount|
+  assert_equal 1, PaymentGatewayResponse.count(:conditions => {:amount => (amount.to_i*100)})
 end

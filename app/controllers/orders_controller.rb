@@ -72,7 +72,7 @@ class OrdersController < ApplicationController
               @order.order_items.create!(:cost => static_cost[product], :quantity => 1, :recurring_monthly => true, :device_model_id => device_model.id) if static_cost.has_key?(product)
           
               Order.transaction do
-                charges = (product == "complete" ? [44100, 5900] : [41100, 4900])
+                charges = (product == "clip" ? [41100, 4900] : [44100, 5900]) # default = complete
                 @one_time_fee, @subscription = @order.charge_one_time_and_subscription(charges[0], charges[1])
                 success = (@one_time_fee.success? && @subscription.success?) unless (@one_time_fee.blank? || @subscription.blank?)
 

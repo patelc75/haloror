@@ -77,13 +77,19 @@ class Order < ActiveRecord::Base
       :type => self.card_type,
       :verification_value => self.card_csc
     )
+    # @card.extend ActiveMerchant::Billing::CreditCardMethods::ClassMethods
+    # @card
   end
   
   def validate_card
-    # credit_card.extend ActiveMerchant::Billing::CreditCardMethods::ClassMethods
     if credit_card.valid?
       return true
     else
+      # [:expired?, :first_name?, :last_name?, :name?, 
+      #   :requires_verification_value?, :verification_value?].each do |method_sym|
+      #   credit_card.errors.add(method_sym.to_s) if credit_card.send(method_sym) == true
+      # end
+      # also add these errors to the AR for validation display
       credit_card.errors.full_messages.each do |message|
         errors.add_to_base message
       end
@@ -92,7 +98,7 @@ class Order < ActiveRecord::Base
   end
   
   def populate_billing_address
-    if bill_address_same == "1"
+    if self.bill_address_same == "1"
       self.bill_first_name  = self.ship_first_name
       self.bill_last_name   = self.ship_last_name
       self.bill_address     = self.ship_address
