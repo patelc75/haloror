@@ -22,6 +22,7 @@ class PaymentGatewayResponse < ActiveRecord::Base
         self.authorization = nil
         self.message       = e.message
         self.params        = {}
+        OrderMailer.deliver_payment_gateway_rsponse_exception(self, e.message) unless self.success
       end
     end
   end
@@ -29,8 +30,6 @@ class PaymentGatewayResponse < ActiveRecord::Base
   # send alert email to admin when card transaction fails
   #
   def send_alert_email_if_failure
-    unless self.success
-      
-    end
+    OrderMailer.deliver_card_failure_alert(self) unless self.success
   end
 end

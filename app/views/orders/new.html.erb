@@ -28,9 +28,10 @@
 <% form_for @order, :url => {:action => (@confirmation ? "create" : "new")}, :html => {:id => 'form1', :class => "#{@confirmation ? 'confirm-form' : 'form'}"} do |f| %>
  	<fieldset style="border: 2px solid ; padding: 10px;">    
 	<legend><span style="color:#008040;font-size:150%"><b>&nbsp;<%= @confirmation ? 'Order summary' : 'Pick a product' %>&nbsp;</b></span></legend>
+    <a name="top"></a>
     <table id="product_detail_box" width="100%">
       <tr>
-        <td>
+        <td width="50%">
           <table>
             <% if @confirmation.blank? || (@product == "complete") %>
             <tr>

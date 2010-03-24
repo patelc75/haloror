@@ -13,7 +13,6 @@ Given /^the payment gateway response log is empty$/ do
 end
 
 When /^I fill the (.+) details for online store$/ do |which|
-  %{When I choose "product_complete"}
   if ['shipping', 'billing'].include?(which)
     which = which[0..3] # shipping, billing
     #
@@ -24,7 +23,7 @@ When /^I fill the (.+) details for online store$/ do |which|
       "city"        => Faker::Address.city,
       "zip"         => Faker::Address.zip_code,
       "phone"       => Faker::PhoneNumber.phone_number,
-      "email"       => Faker::Internet.email
+      "email"       => "cuc_senior@chirag.name"
     }.each do |field, value|
       When %{I fill in "order_#{which}_#{field}" with "#{value}"}
     end

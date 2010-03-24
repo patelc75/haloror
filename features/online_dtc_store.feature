@@ -9,13 +9,15 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Given I am guest
     And the product catalog exists
     And the payment gateway response log is empty
+    And Email dispatch queue is empty
     When I go to the online store
 
   Scenario: Direct to customer online store visible to public
     Then page content should have "myHalo Complete, myHalo Clip, Pick a product, Billing and Shipping"
   
   Scenario: Same as shipping copies shipping data to billing
-    When I fill the shipping details for online store
+    When I choose "product_complete"
+    And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "Same as shipping"
     And I press "Continue"
@@ -24,7 +26,8 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And the payment gateway response should have 2 logs
 
   Scenario: Not same as shipping has separate shipping and billing data
-    When I fill the shipping details for online store
+    When I choose "product_complete"
+    And I fill the shipping details for online store
     And I fill the billing details for online store
     And I fill the credit card details for online store
     And I uncheck "Same as shipping"
@@ -34,7 +37,8 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And the payment gateway response should have 2 logs
 
   Scenario Outline: Success and Failure for credit cards
-    When I fill the shipping details for online store
+    When I choose "product_complete"
+    And I fill the shipping details for online store
     And I fill the billing details for online store
     And I fill in "<csc>" for "CSC"
     And I fill in "Card number" with "<card>"
@@ -79,7 +83,8 @@ Feature: Online (D)irect (T)o (C)ustomer store
       | 5105105105105100 | 123  | MasterCard       | Success |
 
   Scenario: Invalid card should log one payment gateway failure
-    When I fill the shipping details for online store
+    When I choose "product_complete"
+    And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I fill in "order_card_number" with "1234567890123456"
     And I check "Same as shipping"
@@ -87,9 +92,11 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     Then page content should have "Failure"
     And the payment gateway response should have 1 logs
+    And email to "exceptions_critical@halomonitoring.com" with subject "Credit Card transaction failed or declined" should be sent for delivery
 
   Scenario: Valid card, invalid data should have 2 log entries
-    When I fill the shipping details for online store
+    When I choose "product_complete"
+    And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I fill in "order_ship_first_name" with "123"
     And I check "Same as shipping"
@@ -99,7 +106,8 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And the payment gateway response should have 2 logs
 
   Scenario: Upfront (one time) and recurring amounts
-    When I fill the shipping details for online store
+    When I choose "product_complete"
+    And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "Same as shipping"
     And I press "Continue"
@@ -107,3 +115,14 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Then page content should have "Thank you"
     And the payment gateway should have log for 441 USD
     And the payment gateway should have log for 59 USD
+
+  Scenario: Signup Installation and Order Summary emails delivery
+    When I choose "product_complete"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "Same as shipping"
+    And I press "Continue"
+    And I press "Place Order"
+    Then page content should have "Thank you"
+    And email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
+    And email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery

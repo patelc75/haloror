@@ -12,20 +12,27 @@ class OrdersController < ApplicationController
     @confirmation = false
     @product = ""
     
+    @order = Order.new(session[:order])
     if request.post? # confirmation mode
       @product = params[:product]
-      session[:order] = params[:order].merge(
-          "cost" => "#{@product == 'complete' ? '439.00' : '409.00'}",
-          "product" => @product
-          )
-      @same_address = (params[:order][:bill_address_same] == "1" ? "checked" : "")
-      session[:product] = @product # same as params[:product]. Will be used later in create
-      @order = Order.new(session[:order])
-      #
-      # check some validation on the first page itself
-      # TODO: send an email to administrator or webmaster
-      @order.errors.add_to_base "Link to product catalog is broken. Please inform webmaster @ halomonitoring.com about this" \
-        if DeviceModel.find_complete_or_clip(params[:product]).blank?
+      if @product.blank?
+        @order.errors.add_to_base "Please select a product to order" if session[:product].blank?
+        
+      else
+        session[:order] = params[:order].merge(
+            "cost" => "#{@product == 'complete' ? '439.00' : '409.00'}",
+            "product" => @product
+            )
+        @same_address = (params[:order][:bill_address_same] == "1" ? "checked" : "")
+        session[:product] = @product # same as params[:product]. Will be used later in create
+        #
+        # check some validation on the first page itself
+        # TODO: send an email to administrator or webmaster
+        @order.errors.add_to_base \
+          "Link to product catalog is broken. Please inform webmaster @ halomonitoring.com about this" \
+          if DeviceModel.find_complete_or_clip(params[:product]).blank?
+
+      end
       #
       # get to confirmation mode only when no validation errors
       @confirmation = @order.errors.count.zero? # simpler than checking session[:order]
