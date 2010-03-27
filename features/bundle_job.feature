@@ -20,7 +20,8 @@ Feature: Bundle job
       | oscope msgs             | 4  |
       | points                  | 4  |
       | dial up statuses        | 4  |
-      | dial up last successful | 1  |                                                                  
+      | dial up last successful | 1  |
+    And I do not see "dialup/H200000023_1240875421" folder
       
   Scenario Outline: Verify OScopeMsg XML with & without points
     When I process the xml file "spec/data/oscope_msg_<part_name>.xml"
