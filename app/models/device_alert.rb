@@ -31,22 +31,22 @@ class DeviceAlert < ActiveRecord::Base
       if !group.nil? and group.sales_type == "call_center"
         model_string = (group.name.camelcase + "Client")
         begin
-          if event.user.profile
-            model_string.constantize.alert(event.class.name, event.user.id, event.user.profile.account_number, event.timestamp)
-          else
-           #raise CriticalAlertException, "Missing user profile for user #{event.user.id}"
-           CriticalMailer.deliver_monitoring_failure("Missing user profile!", event)
+          if model_string.constantize.alert(event.class.name, event.user.id, event.user.profile.account_number, event.timestamp) == false
+            event.timestamp_call_center = nil
           end
         rescue Exception => e
           CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
-          UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::Exception:: #{e} : #{event.to_s}", e)
+          UtilityHelper.log_message_critical("DeviceAlert.notify_call_center_and_partners::Exception:: #{e} : #{event.to_s}", e)
+          event.timestamp_call_center = nil
         rescue Timeout::Error => e
           CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
-          UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::Timeout::Error:: #{e} : #{event.to_s}", e)
+          UtilityHelper.log_message_critical("DeviceAlert.notify_call_center_and_partners::Timeout::Error:: #{e} : #{event.to_s}", e)
+          event.timestamp_call_center = nil
         rescue
           CriticalMailer.deliver_monitoring_failure("UNKNOWN error", event)
-          UtilityHelper.log_message("DeviceAlert.notify_call_center_and_partners::UNKNOWN::Error: #{event.to_s}")         
-        end    
+          UtilityHelper.log_message_critical("DeviceAlert.notify_call_center_and_partners::UNKNOWN::Error: #{event.to_s}")
+          event.timestamp_call_center = nil
+        end
       end          
     end
   end  
