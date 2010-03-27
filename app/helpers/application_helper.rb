@@ -62,12 +62,13 @@ module ApplicationHelper
   # end
 
   def recursively_delete_dir(dir)
-    ["*", ".*"].each do |matcher|
-      dirs = Dir.glob( File.join(dir, "**", matcher)).sort!.reject {|p| [".", ".."].include?(p.split('/')[-1]) }
-      dirs.each do |dir_or_file|
-        File.directory?(dir_or_file) ? Dir.delete(dir_or_file) : File.delete(dir_or_file)
-      end
-    end
+    system("rm -rf #{dir}")
+    # ["*", ".*"].each do |matcher|
+    #   dirs = Dir.glob( File.join(dir, "**", matcher)).sort!.reject {|p| [".", ".."].include?(p.split('/')[-1]) }
+    #   dirs.each do |dir_or_file|
+    #     File.directory?(dir_or_file) ? Dir.delete(dir_or_file) : File.delete(dir_or_file)
+    #   end
+    # end
   end
 
   # take a comma/<delimiter> separated string/text and return an array of strings.
