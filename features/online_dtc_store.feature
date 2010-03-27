@@ -92,7 +92,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     Then page content should have "Failure"
     And the payment gateway response should have 1 logs
-    And email to "exceptions_critical@halomonitoring.com" with subject "Credit Card transaction failed or declined" should be sent for delivery
+    And email to "payment_gateway@halomonitoring.com" with subject "Credit Card transaction failed or declined" should be sent for delivery
 
   Scenario: Valid card, invalid data should have 2 log entries
     When I choose "product_complete"
