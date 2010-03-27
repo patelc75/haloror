@@ -9,10 +9,12 @@ SCHEDULER.schedule_every(CRITICAL_ALERT_JOB_TIME, :blocking => true) {
     DeviceAlert.job_process_crtical_alerts() 
     ActiveRecord::Base.verify_active_connections!()
   rescue Exception => e
-    UtilityHelper.log_message("DeviceAlert.job_process_crtical_alerts::Exception:: #{e}", e)
+    UtilityHelper.log_message_critical("DeviceAlert.job_process_crtical_alerts::Exception:: #{e}", e)
   rescue Timeout::Error => e
-    UtilityHelper.log_message("DeviceAlert.job_process_crtical_alerts::Timeout::Error:: #{e}", e)
+    UtilityHelper.log_message_critical("DeviceAlert.job_process_crtical_alerts::Timeout::Error:: #{e}", e)
   rescue
-    UtilityHelper.log_message("DeviceAlert.job_process_crtical_alerts::UNKNOWN::Error")         
+    UtilityHelper.log_message_critical("DeviceAlert.job_process_crtical_alerts::UNKNOWN::Error")         
+  ensure
+    ActiveRecord::Base.verify_active_connections!()
   end
 }

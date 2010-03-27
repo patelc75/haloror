@@ -15,7 +15,6 @@ Then /^email to "([^\"]*)" with subject "([^\"]*)" should be sent for delivery$/
       found = true
     end
   end
-  #debugger
   assert found == true, "Email to #{email} with subject #{subject} not found"
 end
 

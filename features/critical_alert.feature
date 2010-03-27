@@ -8,7 +8,9 @@ Feature: Critical Alert
   Background:
 	  Given a user "test-user" exists with profile
 	  And a device exists with the following attributes:
-	    | id | 965 |
+	    | id | 965 |                                   
+		And a group exists with the following attributes:
+		  | name       | halo        |
 	  And a group exists with the following attributes:
 	    | name       | safety_care |
 	    | sales_type | call_center |
@@ -16,27 +18,28 @@ Feature: Critical Alert
   
   # @wip here will skip only this scenario, unless feature has @wip tag
   Scenario: Simulate a fall with successful delivery to the call center
-    When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "valid" "call center account number"
-		And user "test-user" has "halouser" role for group "safety_care"
+		When user "test-user" has "halouser" role for group "safety_care"
+    And I simulate a "Fall" with delivery to the call center for user login "test-user" with a "valid" "call center account number"
     Then I should have "1" count of "Fall"
-  	And I should have a "Fall" alert "not pending" to the call center with "valid" timestamp
+  	And I should have a "Fall" alert "not pending" to the call center with a "valid" call center delivery timestamp  
 
-  Scenario: Simulate a fall with successful delivery to the call center
-    When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "valid" "call center account number"
+  Scenario: Simulate a fall for a user with no call center group (eg. "safety_care")
+    When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "call center account number"
     Then I should have "1" count of "Fall"
-  	And I should have a "Fall" alert "not pending" to the call center with "nil" timestamp  
+  	And I should have a "Fall" alert "not pending" to the call center with a "missing" call center delivery timestamp
   	
-  # Scenario: Simulate a fall with delivery to the call center with invalid call center account number
-  # 	When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "call center account number"
-  #   Then I should have "1" count of "Fall"
-  # 	And I should have a "Fall" alert "not pending" to the call center
-  # 	And email to "exceptions@halomonitoring.com" with subject "SafetyCareClient.alert::Missing account number!" should be sent for delivery
+  Scenario: Simulate a fall for a user with an invalid call center account number
+	  When user "test-user" has "halouser" role for group "safety_care"
+  	And I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "call center account number"
+    Then I should have "1" count of "Fall"
+  	And I should have a "Fall" alert "not pending" to the call center with a "missing" call center delivery timestamp    
+  	And email to "exceptions_critical@halomonitoring.com" with subject "SafetyCareClient.alert::Missing account number!" should be sent for delivery
    
-  # Scenario: Simulate a fall with delivery to the call center with invalid profile
-  #   When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "profile"
-  #   Then I should have "1" count of "Fall"
-  # 	And I should have a "Fall" alert "not pending" to the call center 
-  # 		And email to "exceptions@halomonitoring.com" with subject "SafetyCareClient.alert::Missing user profile!" should be sent for delivery
+  Scenario: Simulate a fall for a user with an with invalid profile
+    When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "profile"
+    Then I should have "1" count of "Fall"
+  	And I should have a "Fall" alert "not pending" to the call center with a "missing" call center delivery timestamp    
+  	And email to "exceptions_critical@halomonitoring.com" with subject "Missing user profile!" should be sent for delivery
                                                                      
 	# Scenario: Simulate a fall with  delivery to the call center with Timeout exception
 	# 	When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "TCP connection"

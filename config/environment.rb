@@ -96,11 +96,8 @@ SMTP_SETTINGS_GMAIL = {
   :password => "halo75halo" 
 }
 
-if (ENV['RAILS_ENV'] == 'production')
-  ActionMailer::Base.smtp_settings = SMTP_SETTINGS_LOCALHOST
-else
-  ActionMailer::Base.smtp_settings = SMTP_SETTINGS_GMAIL
-end
+ActionMailer::Base.smtp_settings = SMTP_SETTINGS_LOCALHOST
+# ActionMailer::Base.smtp_settings = SMTP_SETTINGS_GMAIL
 
 require 'rubygems'
 require 'will_paginate'

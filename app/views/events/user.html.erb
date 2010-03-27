@@ -47,7 +47,11 @@
 		<%= event_display %> Events | <span style="color:#000;font-size:.75em">
 		<%= @user.name %> (<%= @user.id %>)</big>
 		<% if @user_begin_time and @user_end_time and params[:begin_time] != "" and params[:end_time] != ""%>
-		 - <%= UtilityHelper.format_datetime(@user_begin_time.to_time, current_user) %> to <%= UtilityHelper.format_datetime(@user_end_time.to_time, current_user) %> <br>
+		 - <%#= UtilityHelper.format_datetime(@user_begin_time.to_time, current_user) %>  <%#= UtilityHelper.format_datetime(@user_end_time.to_time, current_user) %> 
+		 <b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
+  <%= current_user.profile.time_zone if current_user.profile %> timezone
+		 
+		 <br>
 		<% end %>
 		</span>
 	</div>
@@ -88,7 +92,7 @@
           <%= image_for_event(event)%>
         </div>
         <div style="float:left;padding-top:5px;width:300px;padding-right:25px">
-          <%=event.event.to_s%> 
+          <%=event.event.to_s%>
 		  <% if current_user.is_admin? or current_user.is_super_admin? %>
 		    <span style="font-size: 80%;"><b>(server:<%= event.timestamp_server.to_s(:date_time_timezone) if !event.timestamp_server.nil? and !event.timestamp_server.blank? %>)</b></span>
 		  <% end %>

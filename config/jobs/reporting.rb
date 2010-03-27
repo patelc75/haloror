@@ -16,7 +16,9 @@ SCHEDULER.schedule(DAILY_REPORT_TIME) {
   rescue Timeout::Error => e
     UtilityHelper.log_message("CriticalMailer.lost_data_job()::Timeout::Error:: #{e}", e)
   rescue
-    UtilityHelper.log_message("CriticalMailer.lost_data_job()::UNKNOWN::Error")         
+    UtilityHelper.log_message("CriticalMailer.lost_data_job()::UNKNOWN::Error")  
+  ensure
+    ActiveRecord::Base.verify_active_connections!()           
   end
 }
 
@@ -31,6 +33,8 @@ SCHEDULER.schedule(DAILY_REPORT_TIME) {
     UtilityHelper.log_message("CriticalMailer.device_not_worn_job()::Timeout::Error:: #{e}", e)
   rescue
     UtilityHelper.log_message("CriticalMailer.device_not_worn_job()::UNKNOWN::Error")         
+  ensure
+    ActiveRecord::Base.verify_active_connections!()    
   end
 }
 
@@ -44,6 +48,8 @@ SCHEDULER.schedule(DAILY_REPORT_TIME) {
     UtilityHelper.log_message("CriticalMailer.deliver_lost_data_daily()::Timeout::Error:: #{e}", e)
   rescue
     UtilityHelper.log_message("CriticalMailer.deliver_lost_data_daily()::UNKNOWN::Error")         
+  ensure
+    ActiveRecord::Base.verify_active_connections!()    
   end
 }
 
@@ -57,6 +63,8 @@ SCHEDULER.schedule(DAILY_REPORT_TIME) {
     UtilityHelper.log_message("CriticalMailer.deliver_device_not_worn_daily()::Timeout::Error:: #{e}", e)
   rescue
     UtilityHelper.log_message("CriticalMailer.deliver_device_not_worn_daily()::UNKNOWN::Error")         
+  ensure
+    ActiveRecord::Base.verify_active_connections!()    
   end
 }
 
@@ -70,5 +78,7 @@ SCHEDULER.schedule(DAILY_REPORT_TIME) {
     UtilityHelper.log_message("CriticalMailer.deliver_successful_user_logins_daily()::Timeout::Error:: #{e}", e)
   rescue
     UtilityHelper.log_message("CriticalMailer.deliver_successful_user_logins_daily()::UNKNOWN::Error")         
+  ensure
+    ActiveRecord::Base.verify_active_connections!()    
   end
 }
