@@ -6,8 +6,14 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
     def before_save(event)
       if UtilityHelper.validate_event_user(event) == true #only validating user because GW does not use the device_id
         if event.call_center_pending == false
-          DeviceAlert.notify_call_center_and_partners(event)
-          DeviceAlert.notify_operators(event)
+          if event.user.profile         
+            DeviceAlert.notify_call_center_and_partners(event)
+            DeviceAlert.notify_operators(event)    
+          else
+            CriticalMailer.deliver_monitoring_failure("Missing user profile!", event)
+            UtilityHelper.log_message_critical("Missing user profile!")
+            event.timestamp_call_center = nil
+          end
         else
           if(ServerInstance.current_host_short_string() != "ATL-WEB1")
             DeviceAlert.notify_caregivers(event)

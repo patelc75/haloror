@@ -1,25 +1,25 @@
 module UtilityHelper
   include ServerInstance
   def self.change_password_by_user_id(user_id, password)
-	salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{User.find(user_id).login}--")
+  	salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{User.find(user_id).login}--")
 
-	crypted_password = Digest::SHA1.hexdigest("--#{salt}--#{password}--")
+  	crypted_password = Digest::SHA1.hexdigest("--#{salt}--#{password}--")
   
-	u = User.find(user_id)
-	u.crypted_password = crypted_password
-	u.salt = salt
-	u.save
+  	u = User.find(user_id)
+  	u.crypted_password = crypted_password
+  	u.salt = salt
+  	u.save 
   end
 
   def self.change_password_by_login(login, password)
-	salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--")
+  	salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--")
 
-	crypted_password = Digest::SHA1.hexdigest("--#{salt}--#{password}--")
+  	crypted_password = Digest::SHA1.hexdigest("--#{salt}--#{password}--")
   
-	u = User.find_by_login(login)
-	u.crypted_password = crypted_password
-	u.salt = salt
-	u.save
+  	u = User.find_by_login(login)
+  	u.crypted_password = crypted_password
+  	u.salt = salt
+  	u.save  
   end
   
   #return the offset for this time zone as a string
@@ -98,18 +98,23 @@ module UtilityHelper
     if !exception.nil?
       message  = "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
     end
-    RAILS_DEFAULT_LOGGER.warn(message)
+    RAILS_DEFAULT_LOGGER.warn(message)  
     safe_send_email(message, 'exceptions_critical@halomonitoring.com')
   end
     
   def self.safe_send_email(message, to)
     begin
-      email = Email.new(:mail => "#{ServerInstance.current_host()}.Message = #{message}", 
+      params_hash = {:mail => "#{ServerInstance.current_host()}.Message = #{message}", 
                         :to => to, 
                         :from => 'no-reply@halomonitoring.com', 
-                        :priority => 100)
-      ar_sendmail = ActionMailer::ARSendmail.new
-      ar_sendmail.deliver([email])
+                        :priority => 100 }
+      if (ENV['RAILS_ENV'] == 'production' or ENV['RAILS_ENV'] == 'staging')
+        email = Email.new(params_hash)
+        ar_sendmail = ActionMailer::ARSendmail.new  
+        ar_sendmail.deliver([email])
+      else
+        email = Email.create(params_hash)
+      end
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.warn("Exception in UtilityHelper.self.safe_send_email #{e}")
     rescue

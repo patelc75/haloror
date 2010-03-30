@@ -10,13 +10,7 @@ class ActionMailer::ARMailer < ActionMailer::Base
       end
       if !mail.destinations.blank?
         if (ENV['RAILS_ENV'] == 'production' or ENV['RAILS_ENV'] == 'staging') and self.priority > Priority::THRESH_HOLD
-          emails = []
-          mail.destinations.each do |destination|
-            emails << Email.new(:mail => mail.encoded,    :to => destination,
-                                :from => mail.from.first, :priority => self.priority)
-          end
-          ar_sendmail = ActionMailer::ARSendmail.new
-          ar_sendmail.deliver(emails)
+          safe_send_emails(mail)
         else
           mail.destinations.each do |destination|
             Email.create  :mail => mail.encoded,    :to => destination, 

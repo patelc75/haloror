@@ -16,6 +16,8 @@ SCHEDULER.schedule_every(SAFETYCARE_HEARTBEAT_TIME) {
   rescue Timeout::Error => e
 RAILS_DEFAULT_LOGGER.debug("Timeout: #{e} at #{Time.now}")
   rescue
-    RAILS_DEFAULT_LOGGER.debug("Unknown failure at #{Time.now}")
+    RAILS_DEFAULT_LOGGER.debug("Unknown failure at #{Time.now}")        
+  ensure
+    ActiveRecord::Base.verify_active_connections!()    
   end
 }

@@ -15,3 +15,7 @@ end
 When /^I process the xml file "([^\"]*)"$/ do |file_offset_path|
   BundleJob.process_xml_file(file_offset_path)
 end
+
+Then /^I do not see "([^\"]*)" folder$/ do |folder_offset|
+  File.exist?(folder_offset).should be_false # rspec matchers
+end

@@ -57,6 +57,7 @@ end
 When /^I simulate a "([^\"]*)" with delivery to the call center for user login "([^\"]*)" with a "([^\"]*)" "([^\"]*)"$/ do |model, login, valid, error_type|
   user = nil
   user = User.find_by_login(login)
+  
   if valid == "invalid"
     case error_type
       when "call center account number" 
@@ -75,23 +76,28 @@ When /^I simulate a "([^\"]*)" with delivery to the call center for user login "
   object = model.constantize.create(:timestamp => Time.now-2.minutes, :user_id => user.id, :magnitude => 23, :device_id => 965)
   object.timestamp_server = Time.now-1.minute
   object.save
-  # begin
-    DeviceAlert.job_process_crtical_alerts()
-  # rescue CriticalAlertException => cae
-  #   puts "CriticalAlertException successfully raised for cucumber: " + cae.message + cae.inspect
-  # end   
+  DeviceAlert.job_process_crtical_alerts()
 end
 
 Then /^I should have "([^\"]*)" count of "([^\"]*)"$/ do |count, model|
   assert model.constantize.count == count.to_i, "Should have #{count} #{model}"
 end
 
-Then /^I should have a "([^\"]*)" alert "([^\"]*)" to the call center$/ do |model, pending_string|
+Then /^I should have a "([^\"]*)" alert "([^\"]*)" to the call center with a "([^\"]*)" call center delivery timestamp$/ do |model, pending_string, timestamp_status|
+  critical_alert =  model.constantize.first   
   if pending_string == "not pending"
-    assert model.constantize.first.call_center_pending == false, "#{model} should be not pending"
+    assert critical_alert.call_center_pending == false, "#{model} should be not pending"
   elsif pending_string == "pending"
-    assert model.constantize.first.call_center_pending == true, "#{model} should be pending"  
+    assert critical_alert.call_center_pending == true, "#{model} should be pending"  
   else
     assert false, "#{pending_string} is not a valid pending status"
+  end
+
+  if timestamp_status == "missing"
+    assert critical_alert.timestamp_call_center.nil?, "#{model} should have nil timestamp"
+  elsif timestamp_status == "valid"
+    assert critical_alert.timestamp_call_center > critical_alert.timestamp_server, "#{model} should have timestamp_call_center later than timestamp_server"     
+  else
+    assert false, "#{timestamp_status} is not a valid timestamp status"
   end  
 end

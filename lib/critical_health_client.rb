@@ -21,6 +21,7 @@ class CriticalHealthClient
     }
 
     RAILS_DEFAULT_LOGGER.warn("CriticalHealthClient::alert = " +  "event, %s, %s, %s\r\n" % [event_type, time_format, user_id])
+    return true
   end
 
   def self.event_type_string(klass)
