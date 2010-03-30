@@ -449,10 +449,12 @@ class InstallsController < ApplicationController
     clear_session_data
     session[:self_test_time_created] = Time.now
   end
+
   def resend
   	user = User.find params[:id]
-  	UserMailer.deliver_activation(user) if user.recently_activated?
-  	flash[:notice] = "Activation Email sent to #{user.email}"
+  	#UserMailer.deliver_activation(user) if user.recently_activated?
+  	UserMailer.deliver_signup_installation(user,user)
+  	flash[:notice] = "Signup/Installation email resent to #{user.email}"
   	#redirect_to (request.env['HTTP_REFERER'])
   end
   
