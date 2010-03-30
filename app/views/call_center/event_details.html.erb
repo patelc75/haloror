@@ -7,6 +7,8 @@
   <%= render :partial => 'test_alarm',:locals => {:event => @event}%>
 <% elsif action = @event.non_emerg_panic? %>
   <%= render :partial => 'non_emerg_panic',:locals => {:event => @event}%>
+<% elsif action = @event.gw_reset? %>
+  <%= render :partial => 'gw_reset',:locals => {:event => @event}%>
 <% else %>
   <%= render :partial => 'mark_event',:locals => {:event => @event}%>
 <% end %>

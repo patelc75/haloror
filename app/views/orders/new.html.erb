@@ -28,13 +28,16 @@
 <% form_for @order, :url => {:action => (@confirmation ? "create" : "new")}, :html => {:id => 'form1', :class => "#{@confirmation ? 'confirm-form' : 'form'}"} do |f| %>
  	<fieldset style="border: 2px solid ; padding: 10px;">    
 	<legend><span style="color:#008040;font-size:150%"><b>&nbsp;<%= @confirmation ? 'Order summary' : 'Pick a product' %>&nbsp;</b></span></legend>
+    <a name="top"></a>
     <table id="product_detail_box" width="100%">
       <tr>
-        <td>
+        <td width="50%">
           <table>
             <% if @confirmation.blank? || (@product == "complete") %>
             <tr>
-              <td><%= radio_button_tag 'product', 'complete' unless @confirmation %> <span style="font-size:120%"><label for="product_complete">myHalo Complete</label><b>&nbsp;($59/mo)</b></span></td>
+              <td>
+                <%= radio_button_tag 'product', 'complete' unless @confirmation %> <span style="font-size:120%"><label for="product_complete">myHalo Complete</label><b>&nbsp;($59/mo)</b></span>
+              </td>
               <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
               <%= observe_field(:product_complete,
                                 :frequency => 1,
@@ -70,7 +73,7 @@
                 <% if @confirmation %>
                   <%= f.hidden_field "cost", :disabled => true %>
                 <% end -%>
-                <strong>$439.00</strong>
+                <strong>$441.00</strong>
             </td></tr>
             </table>
             <p>
@@ -90,7 +93,7 @@
                 <% if @confirmation %>
                   <%= f.hidden_field "cost", :disabled => true %>
                 <% end -%>
-                <strong>$409.00</strong>
+                <strong>$411.00</strong>
               </td></tr>
             </table>
             <p>

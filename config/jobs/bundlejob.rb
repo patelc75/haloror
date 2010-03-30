@@ -15,6 +15,8 @@ SCHEDULER.schedule_every(BUNDLE_JOB_DIAL_UP_TIME, :blocking => true) {
   rescue Timeout::Error => e
     UtilityHelper.log_message("BundleJob.job_process_bundles::Timeout::Error:: #{e}", e)
   rescue
-    UtilityHelper.log_message("BundleJob.job_process_bundles::UNKNOWN::Error")         
+    UtilityHelper.log_message("BundleJob.job_process_bundles::UNKNOWN::Error")
+  ensure
+    ActiveRecord::Base.verify_active_connections!()             
   end
 }

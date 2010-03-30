@@ -8,21 +8,30 @@ class RmaItem < ActiveRecord::Base
   def group_name; return (group.blank? ? '' : group.name); end
   
   REASON_FOR_RETURN = ['Battery Issues',
-  'Cancel Request',
-  'Communications',
-  'Constant Dialing',
-  'Customer Data',
-  'Damaged Housing',
-  'Direct Customer',
-  'Fall Detection',
-  'False Event',
   'Gateway Code',
-  'Gateway Offline',
-  'Hardware',
-  'Instructions',
   'No Sync',
   'Wearability',
-  'Other'
+  'Modem Upgrade', 
+  'Software Upgrade', 
+  'False Positives', 
+  'Discontinued Use', 
+  'Gateway Code', 
+  'Transmitter Exchange', 
+  'Hardware Defect',  
+  'Other'  
+  ]
+  
+  RmaItem::CONDITION_OF_RETURN = ['Like New',    
+    'Slightly Used',
+    'Basic Wear and Tear',
+    'Never Used',
+    'Destroyed',
+    'Reason for Return'
+  ]       
+    
+  RmaItem::ATP_STATUS = ['Pending',    
+    'Fail',
+    'Pass',
   ]
   
   # device_type_name

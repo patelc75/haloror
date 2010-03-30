@@ -136,6 +136,19 @@ class CallCenterController < ApplicationController
     render :partial => 'real_alarm', :locals => {:event => Event.find(params[:id])}
   end
   
+  def gw_reset
+    @event = Event.find(params[:id])
+    
+    action = EventAction.new
+    action.user_id = current_user.id
+    action.event_id = params[:id]
+    action.description = 'gw_reset'
+    action.save!
+    ea = action
+    
+    render :partial => 'gw_reset', :locals => {:event => Event.find(params[:id])}
+  end
+  
   def non_emerg_panic
     @event = Event.find(params[:id])
     

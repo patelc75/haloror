@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100308142034) do
+ActiveRecord::Schema.define(:version => 20100323133617) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -712,6 +712,18 @@ ActiveRecord::Schema.define(:version => 20100308142034) do
     t.datetime "timestamp_server"
   end
 
+  create_table "payment_gateway_responses", :force => true do |t|
+    t.string   "action"
+    t.integer  "order_id"
+    t.integer  "amount"
+    t.boolean  "success"
+    t.string   "authorization"
+    t.string   "message"
+    t.text     "params"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "points", :force => true do |t|
     t.integer "seq"
     t.integer "data"
@@ -809,11 +821,11 @@ ActiveRecord::Schema.define(:version => 20100308142034) do
     t.string   "status"
     t.string   "redmine_ticket"
     t.string   "atp_status"
-    t.date     "shipped_on"
-    t.date     "reinstalled_on"
-    t.date     "completed_on"
-    t.date     "received_on"
-    t.date     "atp_on"
+    t.datetime "shipped_on"
+    t.datetime "reinstalled_on"
+    t.datetime "completed_on"
+    t.datetime "received_on"
+    t.datetime "atp_on"
     t.text     "repair_action"
     t.text     "reason_for_return"
     t.text     "condition_of_return"
@@ -1039,7 +1051,6 @@ ActiveRecord::Schema.define(:version => 20100308142034) do
     t.string   "activation_code",           :limit => 40
     t.datetime "activated_at"
     t.string   "image"
-    t.string   "type"
     t.string   "serial_number"
     t.string   "time_zone"
     t.integer  "created_by"

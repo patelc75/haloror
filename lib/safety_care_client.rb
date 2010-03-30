@@ -26,9 +26,8 @@ class SafetyCareClient
     }
   end
   
-  def self.alert(event_type,user_id,account_num,timestamp=Time.now)
-    alarm_code = event_type_numeric(event_type)
-    
+  def self.alert(event_type,user_id,account_num,timestamp=Time.now)      
+    alarm_code = event_type_numeric(event_type)                      
     if !account_num.blank?
       #don't need to filter because safetycare filters by IP
       #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
@@ -39,9 +38,11 @@ class SafetyCareClient
         sock.close
       }
       RAILS_DEFAULT_LOGGER.warn("SafetyCareClient::alert = " + "%s%s\r\n" % [account_num, alarm_code])
+      return true
     else
-      raise CriticalAlertException, "SafetyCareClient.alert::Missing account number! for user_id = #{user_id}"
-      #UtilityHelper.log_message("SafetyCareClient.alert::Missing account number! for user_id = #{user_id}")   
+      #raise CriticalAlertException, "SafetyCareClient.alert::Missing account number! for user_id = #{user_id}"
+      UtilityHelper.log_message_critical("SafetyCareClient.alert::Missing account number! for user_id = #{user_id}")
+      return false
     end
   end
 

@@ -20,7 +20,7 @@
       <td><%=h rma_item.original_serial %></td>
       <td><%=h rma_item.replacement_serial %></td>
       <td><%=h rma_item.shipped_serial %></td>
-      <td><%=h rma_item.shipped_on %></td>
+      <td><%=h rma_item.shipped_on.to_s(:date_time_timezone) %></td>
       <td><%=h rma_item.status %></td>
       <td>
         <%= link_to 'Edit', edit_rma_rma_item_path(@rma, rma_item) %> | 

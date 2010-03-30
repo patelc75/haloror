@@ -14,13 +14,15 @@ ActiveRecord::Base.allow_concurrency = true
 	    ActiveRecord::Base.verify_active_connections!()
 	  rescue Exception => e
 	    #CriticalMailer.deliver_monitoring_hertbeat_failure("Exception!", e)
-	    UtilityHelper.log_message("SafetyCareClient.heartbeat::Exception:: #{e}", e)
+	    UtilityHelper.log_message_critical("SafetyCareClient.heartbeat::Exception:: #{e}", e)
 	  rescue Timeout::Error => e
 	    #CriticalMailer.deliver_monitoring_hertbeat_failure("Timeout!", e)
-	    UtilityHelper.log_message("SafetyCareClient.heartbeat::Timeout::Error:: #{e}", e)
+	    UtilityHelper.log_message_critical("SafetyCareClient.heartbeat::Timeout::Error:: #{e}", e)
 	  rescue
 	    #CriticalMailer.deliver_monitoring_hertbeat_failure("UNKNOWN ERROR!")
-	    UtilityHelper.log_message("SafetyCareClient.heartbeat::UNKNOWN::Error")         
+	    UtilityHelper.log_message_critical("SafetyCareClient.heartbeat::UNKNOWN::Error")
+	  ensure
+	    ActiveRecord::Base.verify_active_connections!()         
 	  end
 	}
 #end

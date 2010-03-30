@@ -1,3 +1,5 @@
+require "ftools" # File.makedirs
+
 class BundleJob
   BUNDLE_PATH = "#{RAILS_ROOT}/dialup"
   ARCHIVE_PATH = "#{RAILS_ROOT}/dialup/archive"
@@ -5,14 +7,15 @@ class BundleJob
   @error_collection = []
   
   class << self
+    include ApplicationHelper # mixin for recursively deleting dir
     
     def job_process_bundles
       RAILS_DEFAULT_LOGGER.warn("#{Time.now}: BundleJob.job_process_bundle running")
       @error_collection = []
    
       begin 
-        ensure_folder(BUNDLE_PATH)
-        ensure_folder(ARCHIVE_PATH)
+        File.makedirs(BUNDLE_PATH) # create multiple level directories if they do not exist
+        File.makedirs(ARCHIVE_PATH)
         #retrieve file names
         file_names = []
         Dir.foreach(BUNDLE_PATH) do |file_name|  #create list of filenames that need to be processed
@@ -55,9 +58,8 @@ class BundleJob
       begin
         file_names.each do |file_name|
           file_path_and_name = "#{BUNDLE_PATH}/#{file_name}"
-        
-          if (file_name.include?(EXT_NAME) && 
-             !File.directory?(file_path_and_name))
+          
+          if (file_name.include?(EXT_NAME) && !File.directory?(file_path_and_name))
 
             base_name = File.basename(file_path_and_name, EXT_NAME) #remove extension from filename
             dir_path = "#{BUNDLE_PATH}/#{base_name}"
@@ -74,7 +76,9 @@ class BundleJob
           if File.directory?(dir_path)
             begin
               self.process_xml_files_in_dir(dir_path)
-              Dir.delete(dir_path)
+              # CHANGED: Dir.delete(dir_path)
+              # recursively delete the folders. We can expect subfolders
+              recursively_delete_dir(dir_path)
               delete_oldest_file_from_archive
             rescue Exception => e
               @error_collection << "#{Time.now}: BUNDLE_JOB_EXCEPTION while processing a directory:  #{e}"
@@ -97,38 +101,42 @@ class BundleJob
     end
     
     def process_xml_files_in_dir(dir_path)
-      #retrieve file names
-      xml_file_names = []  
-      Dir.foreach(dir_path) do |xml_file_name|  #crate an array of the xml file names
-        unless xml_file_name == '.' || xml_file_name == '..'
-          xml_file_names << xml_file_name
-        end
-      end
-      xml_file_names.sort! do |afile, bfile|
-        atime, aseq = get_time_in_seconds_xml(afile)
-        btime, bseq = get_time_in_seconds_xml(bfile)
-        (atime == btime) ? (aseq <=> bseq) : (atime <=> btime)
-        # if atime == btime
-        #   aseq <=> bseq
-        # else
-        #   atime <=> btime
-        # end
-      end
-    
+      # CHANGED: get all *.xml files in any subfolder within this folder
+      # this fetch works recursively
+      xml_file_names = Dir.glob( File.join(dir_path, "**", "*.xml"))
+      # Dir.foreach(dir_path) do |xml_file_name|  #crate an array of the xml file names
+      #   unless xml_file_name == '.' || xml_file_name == '..'
+      #     xml_file_names << xml_file_name
+      #   end
+      # end
+      # FIXME: Why are we sorting here? Do we really need the sorted order of files?
+      # We are going to process all of them anyways. Isn't it?
+      # xml_file_names.sort! do |afile, bfile|
+      #   atime, aseq = get_time_in_seconds_xml(afile)
+      #   btime, bseq = get_time_in_seconds_xml(bfile)
+      #   (atime == btime) ? (aseq <=> bseq) : (atime <=> btime)
+      #   # if atime == btime
+      #   #   aseq <=> bseq
+      #   # else
+      #   #   atime <=> btime
+      #   # end
+      # end
+
       xml_file_names.each do |xml_file_name|
         begin
-          xml_file_path_and_name = "#{dir_path}/#{xml_file_name}"
-          self.process_xml_file(xml_file_path_and_name)
+          # we now have full path to file from Dir.glob above
+          # xml_file_path_and_name = "#{dir_path}/#{xml_file_name}"
+          self.process_xml_file(xml_file_name)
           #delete xml file
-          File.delete(xml_file_path_and_name)
+          File.delete(xml_file_name)
         rescue Exception => e
-          error_message = "#{Time.now}: BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_path_and_name}: #{e}"
+          error_message = "#{Time.now}: BUNDLE_JOB_EXCEPTION in process_xml_files_in_dir for #{xml_file_name}: #{e}"
           @error_collection << error_message
           RAILS_DEFAULT_LOGGER.warn error_message
         end
       end
     end
-  
+    
     def process_xml_file(xml_file_path_and_name)
       unless (xml_string = File.read(xml_file_path_and_name)).blank?
         unless (bundle_hash = Hash.from_xml(xml_string)).blank?
@@ -243,4 +251,5 @@ class BundleJob
     end
     
   end # << self
+    
 end  

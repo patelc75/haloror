@@ -1,7 +1,7 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper   
-  class CriticalAlertException < RuntimeError
-  end
+  # class CriticalAlertException < RuntimeError
+  # end  
   
   include UtilityHelper
   include UserHelper
@@ -54,12 +54,23 @@ module ApplicationHelper
     name.singularize.split(' ').collect(&:capitalize).join.constantize
   end
   
+  # CHANGED: obsolete method. Use File.makedirs("/path/to/dir") instead
   # just ensure the folder exists as specified in the full path
-  def ensure_folder(path)
-    paths = csv_to_array(path)
-    Dir.mkdir(path) unless File.exists?(path)
+  # def ensure_folder(path)
+  #   # paths = csv_to_array(path)
+  #   # Dir.mkdir(path) unless File.exists?(path)
+  # end
+
+  def recursively_delete_dir(dir)
+    system("rm -rf #{dir}")
+    # ["*", ".*"].each do |matcher|
+    #   dirs = Dir.glob( File.join(dir, "**", matcher)).sort!.reject {|p| [".", ".."].include?(p.split('/')[-1]) }
+    #   dirs.each do |dir_or_file|
+    #     File.directory?(dir_or_file) ? Dir.delete(dir_or_file) : File.delete(dir_or_file)
+    #   end
+    # end
   end
-  
+
   # take a comma/<delimiter> separated string/text and return an array of strings.
   # no blank spaces before/after each element value
   def csv_to_array(phrase, delimiter = ',')
