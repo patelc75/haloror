@@ -25,11 +25,21 @@ class EventsController < ApplicationController
     	end
     	conditions += ")"
       end
-      @events = Event.paginate :page => params[:page], 
+      unless current_user.is_admin? or current_user.is_super_admin?
+        @user_events = Event.find(:all,:conditions => conditions)
+        @collect_events = @user_events.collect{|e| e.id if e.event_type != 'EventAction'}
+        @events = Event.paginate :page => params[:page], 
+				# :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", 
+			       :order => "timestamp DESC",
+                   :conditions => ["id in (?)",@collect_events], 
+                   :per_page => EVENTS_PER_PAGE
+	  else
+	    @events = Event.paginate :page => params[:page], 
 				# :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", 
 			       :order => "timestamp DESC",
                                :conditions => conditions, 
-                               :per_page => EVENTS_PER_PAGE
+                               :per_page => EVENTS_PER_PAGE	
+      end
       render :layout => 'application'
     else
       redirect_to :action => 'unauthorized', :controller => 'security'
