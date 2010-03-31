@@ -1,0 +1,50 @@
+<% if narrow
+    label_span = "span-2"
+    field_span = "span-4"
+    field_size = "30"
+    phone_string = "Ph."
+    provider = "CellProvider"
+  else
+    label_span = "span-3"
+    field_span = "span-7"
+    field_size = "50"
+    phone_string = "Phone"
+    provider = "Cell Provider"
+  end %>
+  
+<div class="<%= label_span %>"><%= f.label :first_name, "First Name" %>:</div>
+<div class="<%= field_span %> last"><%= f.text_field :first_name, :size => field_size %></div>
+
+<div class="<%= label_span %>"><%= f.label :last_name, "Last Name" %>:</div>
+<div class="<%= field_span %> last"><%= f.text_field :last_name, :size => field_size %></div>
+
+<div class="<%= label_span %>"><%= f.label :address, "Address" %>:</div>
+<div class="<%= field_span %> last"><%= f.text_field :address, :size => field_size %></div>
+
+<div class="<%= label_span %>"><%= f.label :cross_st, "Cross St" %>:</div>
+<div class="<%= field_span %> last"><%= f.text_field :cross_st, :size => field_size %></div>
+
+<div class="span-2"><%= f.label :city, "City" %>:</div>
+<div class="span-<%= narrow ? '5 last' : '2' %>"><%= f.text_field :city, :size => (narrow ? "30" : "10") %></div>
+<div class="span-1"><%= f.label :state, "State" %>:</div>
+<div class="span-2"><%= f.text_field :state, :size => "10" %></div>
+<div class="span-1"><%= f.label :zipcode, "Zip" %>:</div>
+<div class="span-2 last"><%= f.text_field :zipcode, :size => "10" %></div>
+
+<div class="<%= label_span %>"><%= f.label :home_phone, "Home #{phone_string}" %>:</div>
+<div class="<%= field_span %> last"><%= f.text_field :home_phone, :size => field_size %></div>
+
+<div class="<%= label_span %>"><%= f.label :cell_phone, "Cell #{phone_string}" %>:</div>
+<div class="<%= field_span %> last"><%= f.text_field :cell_phone, :size => field_size %></div>
+
+<div class="<%= label_span %>"><%= f.label :work_phone, "Work #{phone_string}" %>:</div>
+<div class="<%= field_span %> last"><%= f.text_field :work_phone, :size => field_size %></div>
+
+<div class="<%= label_span %>"><%= f.label :carrier_id, provider %>:</div>
+<div class="<%= field_span %> last"><%= f.select :carrier_id, Carrier.ordered.collect {|p| [p.name, p.id]}, {:include_blank => "Select Cell Provider for Text Msg..."}, {:style => (narrow ? "width:160px" : "")} %></div>
+
+<div class="<%= label_span %>"><%= f.label :email, "Email" %><%= " (optional)" unless narrow %>:</div>
+<div class="<%= field_span %> last"><%= f.text_field :email, :size => field_size %></div>
+
+<div class="<%= label_span %>"><%= f.label :time_zone, "Time zone" %>:</div>
+<div class="<%= field_span %> last"><%= f.time_zone_select :time_zone, TimeZone.us_zones, {:default => "Central Time (US & Canada)"}, {:style => (narrow ? "width:160px" : "")} %></div>

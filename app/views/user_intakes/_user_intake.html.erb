@@ -1,0 +1,131 @@
+<% content_for :js do %>
+  <%= javascript_include_tag "jquery", "jquery-ui", :cache => true %>
+  <script type="text/javascript" charset="utf-8">
+    $(function() {
+  		$(".datepicker").datepicker({
+  		  showOn: 'both',
+  		  buttonImage: '../../images/calendar_date_select/calendar.gif',
+  		  buttonImageOnly: true
+  		});
+    });
+  </script>
+<% end -%>
+<% content_for :css do %>
+  <%= stylesheet_link_tag "screen", "myscreen", "jquery-ui", :media => "screen", :cache => true %>
+  <%= stylesheet_link_tag "print", :media => "print", :cache => true %>
+  <!--[if IE]>
+    <%= stylesheet_link_tag "ie", :media => "screen", :cache => true %>
+  <![endif]-->
+<% end -%>
+
+<div class="theme-body">
+  <div class="theme-header">
+    <p class="prepend-1 span-22 append-1"><%= @user_intake.new_record? ? "New" : "Edit" %> : myHalo User Intake Form</p>
+  </div>
+  <div class="span-1">&nbsp;</div>
+  <div class="span-22 last">
+    
+    <p class="textright hint">* Asterisk denotes fields that are optional for Halo Monitoring but may be required by Halo partners or affiliates</p>
+
+    <!-- form -->
+    <% form_for :user_intake do |f| -%>
+
+      <!-- errors block -->
+      <% unless @user_intake.errors.blank? %>
+        <div class="span-1">&nbsp;</div>
+        <div class="error span-21 last"><%= error_messages_for :user_intake %></div>
+      <% end -%>
+
+      <div class="span-22 last">
+        <div class="span-5">
+          <%= f.label :group_id, "Group" %>
+          <%= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"} %>
+          <!-- :onchange => "toggle_content(this);" -->
+        </div>
+        <div class="span-8">
+          <%= f.label :installation_date, "Installation Date:" %>
+          <%= f.text_field :installation_date, :class => "datepicker" %>
+        </div>
+        <div class="span-9 last">
+          <div class="span-4 textright"><%= f.label :kit_serial_number, "Kit Serial" %> #:</div>
+          <div class="span-5 last"><%= f.text_field :kit_serial_number %></div><br />
+        
+          <div class="span-4 textright"><%= f.label :order_id, "Order ID" %> #(optional):</div>
+          <div class="span-5 last"><%= f.text_field :order_id %></div>
+        </div>
+      </div>
+      <hr />
+      
+      <!-- this class is "hidden" -->
+      <div id="content" class="span-22 last">
+        <div id="senior_profile" class="colborder span-10">
+          <% fields_for "user_intake[senior_attributes][profile_attributes]", @user_intake.senior.profile do |senior_form| %>
+            <!-- senior profile details -->
+            <%= render :partial => 'senior_profile', :locals => {:f => senior_form} %>
+          <% end %>
+        </div>
+        
+        <div class="span-11 last">
+          <div class="span-3">&nbsp;</div>
+          <div class="span-7 last">
+            <%= f.check_box :same_as_user %>
+            <%= f.label :same_as_user, "Same as User" %> 
+            <!-- onclick show -->
+          </div>
+          <div class="span-3">&nbsp;</div>
+          <div class="span-7 last">
+            <%= f.check_box :add_as_caregiver %>
+            <%= f.label :add_as_caregiver, "Add as #1 Caregiver" %>
+          </div>
+          
+          <!-- hidden -->
+          <div id="subscriber_profile" class="">
+          <% fields_for "user_intake[subscriber_attributes][profile_attributes]", @user_intake.subscriber.profile do |subscriber_form| %>
+            <!-- subscriber profile details -->
+            <%= render :partial => 'subscriber_profile', :locals => {:f => subscriber_form} %>
+
+            <div class="span-3">&nbsp;</div>
+            <div class="span-7 last">
+              <%= f.radio_button :monthly_or_card, "Credit/Debit Card Processed" %>
+              <%= f.label :monthly_or_card, "Card" %>
+              <%= f.radio_button :monthly_or_card, "Monthly" %>
+              <%= f.label :monthly_or_card, "Bill Monthly" %>
+            </div>
+          <% end -%>
+          </div>
+        </div>
+        <hr class="space" />
+        <hr />
+        
+        <div class="span-22 last">
+          <h3 class="textcenter">Caregiver Information (in order of notification)</h3>
+          <hr />
+          
+          <!-- cycle for each caregiver -->
+          <% @user_intake.caregivers.each do |caregiver| %>
+            <div class="span-7 <%= 'border' unless caregiver == @user_intake.caregivers.last %>">
+              <!-- caregiver profile -->
+              <% fields_for "user_intake[caregiver_attributes][][profile_attributes]", caregiver.profile do |caregiver_form| %>
+                <%= render :partial => 'caregiver_profile', :locals => {:f => caregiver_form} %>
+              <% end -%>
+            </div>
+          <% end -%>
+        </div>
+      </div>
+    <% end -%> <!-- form -->
+    
+  </div>
+  <div style="clear:both"></div>
+  <div class="theme-footer"></div>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+  function toggle_content(dropdown)
+  {
+    if(dropdown.value == 'Choose a Group') {
+      document.getElementById('content').style.display = 'none';
+    } else {
+      document.getElementById('content').style.display = 'block';
+    }
+  }
+</script>

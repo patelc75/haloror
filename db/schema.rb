@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100323133617) do
+ActiveRecord::Schema.define(:version => 20100329214341) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1054,6 +1054,7 @@ ActiveRecord::Schema.define(:version => 20100323133617) do
     t.string   "serial_number"
     t.string   "time_zone"
     t.integer  "created_by"
+    t.string   "type"
   end
 
   create_table "vital_scans", :force => true do |t|

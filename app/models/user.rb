@@ -38,7 +38,7 @@ class User < ActiveRecord::Base
   #has_one :roles_users_option
   
   has_and_belongs_to_many :devices
-  has_and_belongs_to_many :user_intakes
+  # has_and_belongs_to_many :user_intakes # replaced with has_many :through on Senior, Subscriber, Caregiver
   
   
   #has_many :call_orders, :order => :position
@@ -66,10 +66,36 @@ class User < ActiveRecord::Base
   
   validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
   
+  # validate associations
+  validates_associated :profile
+  
   before_save :encrypt_password
   before_create :make_activation_code
+  
+  # build associated model
+  def after_initialize
+    self.profile = Profile.new(:user_id => self) if self.profile.blank?
+  end
+  
+  # profile_attributes hash can be given here to create a related profile
+  #
+  def profile_attributes=(attributes)
+    if profile.blank?
+      profile = Profile.new(attributes.merge("user_id" => self)) # new profile with "this" user
+    else
+      # keep the existing user connected. no need to re-assign
+      profile.attributes = attributes.reject {|k.v| k == "user_id"} # except user_id, take all attributes
+    end
+  end
+  
+  # roles_users_option attributes
+  def role_attributes=(attributes)
+    # create roles_users_option records here
+    debugger
+  end
+
   def before_validation
-        self.email = "no-email@halomonitoring.com" if self.email == ''
+    self.email = "no-email@halomonitoring.com" if self.email == ''
   end
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
