@@ -16,6 +16,24 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
           xml.battery_outlet_status(user[:status][:battery_outlet])
           xml.battery_level_status(user[:status][:battery_level])
           xml.battery_percentage(user[:battery][:percentage].to_f/100)
+          if user[:weight_scale]
+            xml.weight_scale do
+          	  xml.weight(user[:weight_scale][:weight])
+          	  xml.unit(user[:weight_scale][:unit])
+          	  xml.battery(user[:weight_scale][:battery])
+          	  xml.serial_number(user[:weight_scale][:serial_number])
+          	  xml.timestamp(UtilityHelper.format_datetime_flex(user[:weight_scale][:timestamp], user))
+            end
+          end
+          if user[:blood_pressure]
+            xml.blood_pressure do
+          	  xml.systolic(user[:blood_pressure][:systolic])
+          	  xml.diastolic(user[:blood_pressure][:diastolic])
+          	  xml.battery(user[:blood_pressure][:battery])
+          	  xml.serial_number(user[:blood_pressure][:serial_number])
+          	  xml.timestamp(UtilityHelper.format_datetime_flex(user[:blood_pressure][:timestamp], user))
+            end
+          end
         end
       else
         xml.LastReading(:datetime => UtilityHelper.format_datetime_flex(Time.now, user)) do
