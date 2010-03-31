@@ -5,7 +5,7 @@
 <!--	 <a href="<%= session[:redirect_url]%>"><img src="/images/tooltip-close.gif" /></a> -->
 	</div>
 			<div style="width:200px;margin-left:auto;margin-right:auto" id="container">
-			  <% if @user.is_super_admin? %> <!-- https://redmine.corp.halomonitor.com/issues/2722 -->
+			  <% if current_user.is_super_admin? %> <!-- https://redmine.corp.halomonitor.com/issues/2722 -->
           Profile Updated. This may take up to 24 hours to take effect for critical alerts.
         <% else %>
           Please call tech support to make the modification.
