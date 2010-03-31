@@ -124,7 +124,7 @@ class CriticalMailer < ActionMailer::ARMailer
 
   	Halo Staff
   	EOF
-    subject     = "[" + ServerInstance.current_host_short_string + "] Password Changed"
+    subject     = "Password Changed"
     setup_message(subject, msg_body)
   end
 
