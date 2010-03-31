@@ -283,55 +283,48 @@ namespace :halo do
           start_time = start_time + ENV['increment'].to_i #send a REST posts with the timestamp incremented by 15 seconds
         end
         calculathash = Digest::SHA256.hexdigest(start_time.to_s+ENV['gateway_serial_num'])
-        #calculathash = Digest::SHA256.hexdigest(start_time.to_s+"0123456789")
-     
-     
+        #calculathash = Digest::SHA256.hexdigest(start_time.to_s+"0123456789")     
                 
-         if hr == (randhr + ENV['swing'].to_i)
+        if hr == (randhr + ENV['swing'].to_i)
           direction = "down"
         elsif hr == (randhr - ENV['swing'].to_i)
           direction = "up"
-        end  
-       
+        end         
     
         if (direction == "up")           
           hr += ENV['slope'].to_i
         elsif (direction == "down")         
           hr -= ENV['slope'].to_i
         end  
-
        
         if ENV['curve'] == "sawtooth"
-          if(count % 15 == 0 || count % 16 == 0 || count % 17 == 0)
-            random_heartrate = -1
-            random_skin_temp = -1
-            random_percentage = -1
-            random_steps = -1
-            random_activity = -1
-          else
+          # if(count % 15 == 0 || count % 16 == 0 || count % 17 == 0)
+          #   random_heartrate = -1
+          #   random_skin_temp = -1
+          #   random_percentage = -1
+          #   random_steps = -1
+          #   random_activity = -1
+          # else  
             random_heartrate = hr
             random_skin_temp = hr + 30
             random_percentage = hr + 30
             random_steps = hr - 50
             random_activity = hr + 10000
-          end 
-          #new
-          
+          # end 
         elsif ENV['curve'] == "random"
-          if(count % 15 == 0 || count % 16 == 0 || count % 17 == 0)
-            random_heartrate = -1
-            random_skin_temp = -1
-            random_percentage = -1
-            random_steps = -1
-            random_activity = -1
-          else
+          # if(count % 15 == 0 || count % 16 == 0 || count % 17 == 0)
+          #   random_heartrate = -1
+          #   random_skin_temp = -1
+          #   random_percentage = -1
+          #   random_steps = -1
+          #   random_activity = -1
+          # else
             random_skin_temp = (rand() + rand(6) + 95.6).round(1)
             random_heartrate = rand(7)+70
             random_percentage = rand(100)
             random_steps = rand(20)
-            #new
             random_activity = rand(25000)+10000
-          end
+          # end
           count = count + 1
         end           
      
