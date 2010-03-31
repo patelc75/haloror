@@ -104,6 +104,7 @@
           <!-- cycle for each caregiver -->
           <% @user_intake.caregivers.each do |caregiver| %>
             <div class="span-7 <%= 'border' unless caregiver == @user_intake.caregivers.last %>">
+              <%= f.check_box :no_caregiver_1 %>
               <!-- caregiver profile -->
               <% fields_for "user_intake[caregiver_attributes][][profile_attributes]", caregiver.profile do |caregiver_form| %>
                 <%= render :partial => 'caregiver_profile', :locals => {:f => caregiver_form} %>
