@@ -112,6 +112,12 @@ class FlexController < ApplicationController
     # get events
     user_data[:events] = Event.find(:all, :conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'", :order => 'timestamp desc', :limit => 10)
     
+    # get blood_pressures
+    user_data[:blood_pressure] = BloodPressure.find(:first,:conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'",:order => 'timestamp desc')
+    
+    # get weight scales
+    user_data[:weight_scale] = WeightScale.find(:first,:conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'",:order => 'timestamp desc')
+    
     return user_data
   end
   
