@@ -5,7 +5,11 @@
 <!--	 <a href="<%= session[:redirect_url]%>"><img src="/images/tooltip-close.gif" /></a> -->
 	</div>
 			<div style="width:200px;margin-left:auto;margin-right:auto" id="container">
-Profile Updated. This may take up to 24 hours to take effect for critical alerts.
+			  <% if @user.is_super_admin? %> <!-- https://redmine.corp.halomonitor.com/issues/2722 -->
+          Profile Updated. This may take up to 24 hours to take effect for critical alerts.
+        <% else %>
+          Please call tech support to make the modification.
+        <% end -%>
 		</div>
 		<br>
 		<center><a href="<%= session[:redirect_url]%>"><img src="/images/ok_button.png" /></a></center>
