@@ -46,11 +46,19 @@
 				img = ''
 			end
 		%>
-		<a href="#" onClick="moveElementUp(<%=i%>, <%=caregiver.id%>, <%=user_id%>)">
+		<% if current_user.is_super_admin? %>
+		  <a href="#" onClick="moveElementUp(<%=i%>, <%=caregiver.id%>, <%=user_id%>)">
+	  <% else %>
+	    <a href="#" onClick="show_message();">
+	  <% end -%>
 			<img alt="Up" src="/images/call_list-up<%=img%>.gif" border="0" id="item_up_<%=caregiver.id%>" />
 		</a>
 		<br />
-		<a href="#" onClick="moveElementDown(<%=i%>, <%=caregiver.id%>, <%=user_id%>)">
+		<% if current_user.is_super_admin? %>
+		  <a href="#" onClick="moveElementDown(<%=i%>, <%=caregiver.id%>, <%=user_id%>)">
+		<% else %>
+		  <a href="#" onClick="show_message();">
+		<% end -%>
 			<img alt="Down" src="/images/call_list-down<%=img%>.gif" border="0" id="item_down_<%=caregiver.id%>" />
 		</a>
 	</div>
@@ -118,7 +126,7 @@
     <% if current_user.is_super_admin? %>  <!-- https://redmine.corp.halomonitor.com/issues/2722 -->
 		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_away_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "deactivate",:id => opts.id}, :before => 'toggleCaregiver(\'disable\', '+i.to_s+', '+caregiver.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')',:complete => "show_message()")%>
 	  <% else %>
-	    <%= link_to_function image_tag(img, :alt => alt, :id => 'item_away_'+caregiver.id.to_s), "alert('Please call tech support to make the modification');" %>
+	    <%= link_to_function image_tag(img, :alt => alt, :id => 'item_away_'+caregiver.id.to_s), "show_message();" %>
     <% end -%>
 	</div>
 <% else %>
