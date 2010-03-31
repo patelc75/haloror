@@ -44,21 +44,22 @@
         </div>
         <div class="span-8">
           <%= f.label :installation_date, "Installation Date:" %>
-          <%= f.text_field :installation_date, :class => "datepicker" %>
+          <%= f.text_field :installation_date, :class => "datepicker span-5" %>
         </div>
         <div class="span-9 last">
           <div class="span-4 textright"><%= f.label :kit_serial_number, "Kit Serial" %> #:</div>
-          <div class="span-5 last"><%= f.text_field :kit_serial_number %></div><br />
+          <div class="span-5 last"><%= f.text_field :kit_serial_number, :class => "span-5" %></div><br />
         
           <div class="span-4 textright"><%= f.label :order_id, "Order ID" %> #(optional):</div>
-          <div class="span-5 last"><%= f.text_field :order_id %></div>
+          <div class="span-5 last"><%= f.text_field :order_id, :class => "span-5" %></div>
         </div>
+        <hr class="space" />
       </div>
       <hr />
       
       <!-- this class is "hidden" -->
       <div id="content" class="span-22 last">
-        <div id="senior_profile" class="colborder span-10">
+        <div id="senior_profile" class="colborder span-10"> <!-- colborder takes one column -->
           <% fields_for "user_intake[senior_attributes][profile_attributes]", @user_intake.senior.profile do |senior_form| %>
             <!-- senior profile details -->
             <%= render :partial => 'senior_profile', :locals => {:f => senior_form} %>
@@ -66,6 +67,8 @@
         </div>
         
         <div class="span-11 last">
+          <h3 class="textcenter">Billing Information (Responsible Person)</h3>
+          
           <div class="span-3">&nbsp;</div>
           <div class="span-7 last">
             <%= f.check_box :same_as_user %>
@@ -80,18 +83,18 @@
           
           <!-- hidden -->
           <div id="subscriber_profile" class="">
-          <% fields_for "user_intake[subscriber_attributes][profile_attributes]", @user_intake.subscriber.profile do |subscriber_form| %>
-            <!-- subscriber profile details -->
-            <%= render :partial => 'subscriber_profile', :locals => {:f => subscriber_form} %>
+            <% fields_for "user_intake[subscriber_attributes][profile_attributes]", @user_intake.subscriber.profile do |subscriber_form| %>
+              <!-- subscriber profile details -->
+              <%= render :partial => 'subscriber_profile', :locals => {:f => subscriber_form} %>
 
-            <div class="span-3">&nbsp;</div>
-            <div class="span-7 last">
-              <%= f.radio_button :monthly_or_card, "Credit/Debit Card Processed" %>
-              <%= f.label :monthly_or_card, "Card" %>
-              <%= f.radio_button :monthly_or_card, "Monthly" %>
-              <%= f.label :monthly_or_card, "Bill Monthly" %>
-            </div>
-          <% end -%>
+              <div class="span-3">&nbsp;</div>
+              <div class="span-7 last">
+                <%= f.radio_button :monthly_or_card, "Credit/Debit Card Processed" %>
+                <%= f.label :monthly_or_card, "Card" %>
+                <%= f.radio_button :monthly_or_card, "Monthly" %>
+                <%= f.label :monthly_or_card, "Bill Monthly" %>
+              </div>
+            <% end -%>
           </div>
         </div>
         <hr class="space" />
@@ -102,15 +105,46 @@
           <hr />
           
           <!-- cycle for each caregiver -->
-          <% @user_intake.caregivers.each do |caregiver| %>
+          <% @user_intake.caregivers.each_with_index do |caregiver, index| %>
             <div class="span-7 <%= 'border' unless caregiver == @user_intake.caregivers.last %>">
-              <%= f.check_box :no_caregiver_1 %>
-              <!-- caregiver profile -->
-              <% fields_for "user_intake[caregiver_attributes][][profile_attributes]", caregiver.profile do |caregiver_form| %>
-                <%= render :partial => 'caregiver_profile', :locals => {:f => caregiver_form} %>
-              <% end -%>
+              <%= f.check_box "no_caregiver_#{index+1}".to_sym %>
+              <%= f.label "no_caregiver_#{index+1}".to_sym, "No Caregiver \##{index+1}" %>
+              <hr class="space" />
+              
+              <div id="caregiver#{index+1}_profile">
+                <!-- caregiver profile -->
+                <% fields_for "user_intake[caregiver_attributes][][profile_attributes]", caregiver.profile do |caregiver_profile_form| %>
+                  <%= render :partial => 'caregiver_profile', :locals => {:f => caregiver_profile_form} %>
+                <% end -%>
+                <!-- role attributes -->
+                <% fields_for "user_intake[caregiver_attributes][][role_attributes]", caregiver do |caregiver_form| %>
+                  <%= render :partial => 'caregiver_role_options', :locals => {:f => caregiver_form} %>
+                <% end -%>
+              </div>
             </div>
           <% end -%>
+        </div>
+        <hr class="space" />
+        <hr />
+        
+        <div id="profile_options" class="span-22 last">
+          <% fields_for "user_intake[senior_attributes][profile_attributes]", @user_intake.senior.profile do |senior_form| %>
+            <!-- senior profile details -->
+            <%= render :partial => 'senior_profile_options', :locals => {:f => senior_form} %>
+          <% end %>
+        </div>
+        <hr class="space" />
+        <hr />
+
+        <div class="span-22 last">
+          <%= render :partial => 'signature' %>
+        </div>
+        <hr class="space" />
+        <hr />
+        
+        <div class="buttons textcenter">
+          <%= f.submit "Submit" %>
+          <%= f.submit "Save" %>
         </div>
       </div>
     <% end -%> <!-- form -->

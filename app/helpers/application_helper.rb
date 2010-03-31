@@ -75,4 +75,8 @@ module ApplicationHelper
   def csv_to_array(phrase, delimiter = ',')
     phrase.split(delimiter).collect {|p| p.lstrip.rstrip }
   end
+  
+  def yes_no_options_for_select
+    [['Yes', 'Yes'], ['No', 'No']]
+  end
 end
