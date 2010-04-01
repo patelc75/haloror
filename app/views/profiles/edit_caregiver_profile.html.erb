@@ -65,6 +65,10 @@
 	    <%if !@user.created_by.nil?%>
 	      Added By <%= @user.creator.name%>
 	    <%end%>
+	    
+	    <% if !current_user.is_super_admin? %>
+	      <p class="color-red" style="padding-left:30px;">Please call tech support 1-888-971-HALO (4256) to make this modification.</p>
+	    <% end -%>
       <%# form_tag :action => 'create' do -%>
       <form action="/profiles/update_caregiver_profile/<%= params[:id] %>/" method="post" id="profile_form">
     <!-- <%# form_tag(:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]) do %> -->

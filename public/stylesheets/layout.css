@@ -835,6 +835,10 @@ a.largebutton {
 .back-orange {
   background-color: #FFB237;
 }
+.color-red {
+  color: #F00;
+  font-weight: bold;
+}
 
 /*form validation using javascript*/
 input.disabled {
