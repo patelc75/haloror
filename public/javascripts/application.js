@@ -566,9 +566,9 @@ function toggle_device_info(id)
 	{
 		$('toggle_info-'+id).innerHTML = '[-]';
 		$('info-'+id).style.display = 'block'
-	}	
-	
+	}
+}
 
-
-	
+function show_message() {
+  new Ajax.Updater('show_message', '/alerts/message/', {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('show_message'); }, onLoading:function(request){RedBox.loading(); }})
 }
