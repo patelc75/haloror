@@ -11,6 +11,7 @@ class BundleProcessor # < ActiveRecord::Base
   # process the bundle
   #
   def self.process(bundle)
+    debugger
     bundle = bundle["oscope_msgs"] if bundle.has_key?("oscope_msgs") # https://redmine.corp.halomonitor.com/issues/2724
     RAILS_DEFAULT_LOGGER.warn("Entering BundleProcessor.self_process")
     begin
