@@ -107,7 +107,7 @@ class UsersController < ApplicationController
     
     add_kit_number(kit_serial_number,@user)
     
-    error_message = "Error(s):" + @msg
+    error_message = @msg
     flash[:warning] = error_message
     if @msg != ""
       redirect_to "/users/create_subscriber/#{@user.id}"
