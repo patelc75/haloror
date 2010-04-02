@@ -416,10 +416,21 @@ class CallCenterController < ApplicationController
   
   def call_center_response
     @event = Event.find(params[:id])
-    @event.update_attributes(:call_center_response => params[:call_center_response])
-    render :update do |page|
-      page.replace_html 'div_' +@event.id.to_s, :partial => 'call_center_response'
-      page.replace_html 'div_response_' +@event.id.to_s, :partial => 'response_time'
+    debugger
+    #UtilityHelper.format_datetime(params[:call_center_response].to_time,current_user)
+     @response_time = UtilityHelper.user_time_zone_to_utc(params[:call_center_response])
+     @timestamp = UtilityHelper.user_time_zone_to_utc(@event.timestamp.to_s)
+    if @timestamp < @response_time
+      @event.update_attributes(:call_center_response => params[:call_center_response])
+      render :update do |page|
+        page.replace_html 'div_' +@event.id.to_s, :partial => 'call_center_response'
+        page.replace_html 'div_response_' +@event.id.to_s, :partial => 'response_time'
+      end
+    else
+      render :update do |page|
+        page.replace_html 'div_' +@event.id.to_s, :partial => 'call_center_response'
+        page.replace_html 'div_response_' +@event.id.to_s, '<font color="red">"Call Center Response" must be later then "Timestamp Device"</font>'
+      end
     end
   end
   
