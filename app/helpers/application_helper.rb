@@ -76,4 +76,14 @@ module ApplicationHelper
   def csv_to_array(phrase, delimiter = ',')
     phrase.split(delimiter).collect {|p| p.lstrip.rstrip }
   end
+  
+  # recursively find value in hash
+  def recursively_search_hash(hash, key)
+    values = hash.collect {|k, v| v if k == key}.compact
+    values << hash.collect { |k, v| recursively_search_hash(v, key) if v.is_a?(Hash) }
+    values << hash.collect do |k, v|
+        v.collect {|element| recursively_search_hash(element, key) if element.is_a?(Hash) } if v.is_a?(Array)
+    end
+    return values.flatten.compact.uniq
+  end
 end

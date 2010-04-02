@@ -4,7 +4,7 @@ class BundleController < RestfulAuthController
   def create
     bundle = params[:bundle]
     begin
-      BundleProcessor.process(bundle)
+      BundleProcessor.process(bundle) # https://redmine.corp.halomonitor.com/issues/2724
       respond_to do |format|
         format.xml { head :ok } 
       end

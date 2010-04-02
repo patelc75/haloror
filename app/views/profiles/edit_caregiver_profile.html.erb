@@ -1,3 +1,20 @@
+<% content_for :js do %>
+  <% if !current_user.is_super_admin? %> <!-- everything read only unless super admin -->
+    <script type="text/javascript" charset="utf-8">
+      function DisableEnableForm(xForm,xHow){
+        objElems = xForm.elements;
+        for(i=0;i<objElems.length;i++){
+          objElems[i].disabled = xHow;
+        }
+      }
+
+      window.onload = function(){
+        DisableEnableForm(document.getElementById("profile_form"),true);
+      }
+    </script>
+  <% end -%>
+<% end -%>
+
 <div id="user_signup-col">
 	<div id="user_signup-col-header">
 		Edit Profile: <%= @user.name%>
@@ -48,8 +65,13 @@
 	    <%if !@user.created_by.nil?%>
 	      Added By <%= @user.creator.name%>
 	    <%end%>
+	    
+	    <% if !current_user.is_super_admin? %>
+	      <p class="color-red" style="padding-left:30px;">Please call tech support 1-888-971-HALO (4256) to make this modification.</p>
+	    <% end -%>
       <%# form_tag :action => 'create' do -%>
-		<% form_tag(:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]) do %>
+      <form action="/profiles/update_caregiver_profile/<%= params[:id] %>/" method="post" id="profile_form">
+    <!-- <%# form_tag(:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]) do %> -->
 		<%# form_remote_tag(:update => 'container', :url => {:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]}, :html => { :id => 'profile_form'}) do %>
 	 <div id="device-table" class="table">
 	 	<div class="row">
@@ -67,7 +89,11 @@
 		  	<%= render :partial => '/profiles/profile_halousers_only' %>
 			<br />
 			<br />
-			<input name="commit" type="image" src="/images/update.gif"  />
+			<% if current_user.is_super_admin? %> <!-- super admin can update, others can just view -->
+			  <input name="commit" type="image" src="/images/update.gif"  />
+		  <% else %>
+		    <%= image_tag("update_grey.gif") %>
+			<% end -%>
 		  </div>
 			
 			<div class="col-250">
@@ -76,7 +102,8 @@
 		</div>
 	 </div>	
         
-      <% end -%>
+      </form>
+      <!-- <%# end -%> -->
     </div>
   </div>
 	<div style="clear:both"></div>

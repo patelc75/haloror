@@ -250,7 +250,7 @@
     </table>
   </fieldset>
   <p class="textright">
-    <%= link_to "< Back", "#", :class => 'largebutton', :onclick => "history.go(-1);" if @confirmation %>
+    <%= link_to "< Back", order_path, :class => 'largebutton' if @confirmation %>
     <%= f.submit "#{@confirmation ? 'Place Order >' : 'Continue >'}", :class => 'largebutton' %>
   </p>
 <% end -%>

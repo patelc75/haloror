@@ -16,6 +16,13 @@ Factory.define :emergency_number do |v|
   v.association :group, :factory => :group
 end
 
+Factory.define :gateway do |v|
+  v.serial_number { Time.now.to_i }
+  v.mac_address "01:23:45:67:89:ab"
+  v.vendor { Faker::Company.name }
+  v.model { Faker::Lorem.words[0] }
+end
+
 Factory.define :group do |v|
   v.name { Faker::Lorem.words[0] }
   v.description { Faker::Lorem.sentence }

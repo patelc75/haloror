@@ -6,6 +6,7 @@ Current user: <%= @current_user.name if @current_user %><br>
 Current time: <%= Time.zone.now.inspect %><br>
 Current user's time zone: <%= current_user.profile.time_zone %><br>
 <code>Health Server S/W version (via git describe): <%= `cd ~/haloror; /usr/bin/git describe` %></code><br>
+<code>ENV['RAILS_ENV'] = <%= ENV['RAILS_ENV'] %></code><br>
 <br>
 <b>Network</b><br>
 SERVER_ADDR: <code><%= request.env["SERVER_ADDR"].to_s %></code> <br>

@@ -39,3 +39,22 @@ Feature: Bundle job
     Then I should have the following counts of data:
       | dial up statuses        | 4 |
       | dial up last successful | 1 |
+
+  Scenario Outline: Simulate gateway with CURL
+    Given a gateway exists with the following attributes:
+      | id | 0 |
+    When I process the curl text file "spec/data/curl/<file_name>.txt"
+    Then I should have the following counts of data:
+      | batteries               | <bat>       |
+      | battery unplugged       | <unplug>    |
+      | vitals                  | <vital>     |
+      | steps                   | <step>      |
+      | skin temps              | <skin>      |
+      | oscope msgs             | <oscope>    |
+      | points                  | <point>     |
+      | dial up statuses        | <dial>      |
+      | dial up last successful | <dial_last> |
+
+    Examples:
+      | file_name   | bat | unplug | vital | step | skin | oscope | point | dial | dial_last |
+      | oscope_msgs |     |        |       |      |      | 2      | 4     |      |           |
