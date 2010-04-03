@@ -516,7 +516,11 @@ class UsersController < ApplicationController
     else
       flash[:notice] = "Not Valid Serial Number, Serial number must be exactly 10 digits."
     end
-      redirect_to :controller => 'reporting', :action => 'users'
+      unless params[:page] == '1'
+        redirect_to :controller => 'reporting', :action => 'users',:page => params[:page]
+      else
+      	redirect_to :controller => 'reporting', :action => 'users'
+      end
   end
   
   def valid_serial_number(serial_number)
