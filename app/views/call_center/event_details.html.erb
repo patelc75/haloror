@@ -1,4 +1,7 @@
 <%=debug @event%>
+<hr>
+<%=debug @event.event%>
+<hr>
 <% if action = @event.false_alarm? %>
   <%= render :partial => 'false_alarm',:locals => {:event => @event}%>
 <% elsif action = @event.real_alarm? %>
