@@ -23,12 +23,14 @@ class OscopeMsg < ActiveRecord::Base
     # we parse :point array to build Point.new values for this instance of OscopeMsg
     # I hope it makes sense. If not, just go through the business logic for this section, again.
     unless point.blank?
-      point.each {|p| points.build(p)}
+      point.each {|p| self.points.build(p)}
       point = nil # make it blank. both valid? and save! will call it otherwise, and make double copies
     end
     #
     # we need to link an OscopeStartMsg if we can find one suitable
-    oscope_start_msg = OscopeStartMsg.find_by_timestamp_and_user_id(timestamp.to_s(:db), user_id) \
+    # only find and relate when not already related
+    # oscope_start_msgs are created by gateway XMLs
+    self.oscope_start_msg = OscopeStartMsg.find_by_timestamp_and_user_id(timestamp.to_s(:db), user_id) \
       if oscope_start_msg.blank?
     #
     # That is it. Let ActiveRecord do the magic from here. :)
