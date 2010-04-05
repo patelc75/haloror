@@ -18,7 +18,6 @@ end
 
 When /^I process the curl text file "([^\"]*)"$/ do |text_file|
   curl = []
-  debugger
   File.open(text_file).each_line {|line| curl << line }
   # create a hash from XML data
   xml_hash = Hash.from_xml(curl[2])

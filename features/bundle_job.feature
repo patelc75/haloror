@@ -40,6 +40,7 @@ Feature: Bundle job
       | dial up statuses        | 4 |
       | dial up last successful | 1 |
 
+  @wip
   Scenario Outline: Simulate gateway with CURL
     Given a gateway exists with the following attributes:
       | id | 0 |
