@@ -11,22 +11,10 @@ class OscopeMsgsController < RestfulAuthController
       msgs = [msgs] if msgs.class != Array
       msgs.each {|msg| OscopeMsg.create!(msg)} # WARNING: tested manually
       # msgs.each {|msg| OscopeMsg.process_xml_hash(msg)}
-      
-      # TODO: optimize this after covering with test
-      # {:create_fails => :internal_server_error, :create => :ok}.each do |key, value|
-      #   response_for key do |format|
-      #     format.xml { head value }
-      #   end
-      # end
-      
-      response_for :create_fails do |format|
-        format.xml { head :internal_server_error }
-      end
-      
-      response_for :create do |format|
-        format.xml { head :ok }  
-      end
 
+      # respond_to block not required. make_resourceful will take care of that already
+      # https://redmine.corp.halomonitor.com/issues/2746
+      
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.warn("ERROR in OscopeMsgController:  #{e}")
       respond_to do |format|
