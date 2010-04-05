@@ -30,7 +30,7 @@ class OscopeMsg < ActiveRecord::Base
     # we need to link an OscopeStartMsg if we can find one suitable
     # only find and relate when not already related
     # oscope_start_msgs are created by gateway XMLs
-    self.oscope_start_msg = OscopeStartMsg.find_by_timestamp_and_user_id(timestamp.to_s(:db), user_id) \
+    self.oscope_start_msg = OscopeStartMsg.find_by_timestamp_and_user_id(timestamp, user_id) \
       if oscope_start_msg.blank?
     #
     # That is it. Let ActiveRecord do the magic from here. :)

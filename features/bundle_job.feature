@@ -40,6 +40,15 @@ Feature: Bundle job
       | dial up statuses        | 4 |
       | dial up last successful | 1 |
 
+  Scenario: OscopeStartMsg link to OscopeMsg
+    When I process the xml file "spec/data/oscope_start_msg.xml"
+    And I process the xml file "spec/data/oscope_msg_points.xml"
+    Then I should have the following counts of data:
+      | oscope msgs             | 2  |
+      | points                  | 4  |
+      | oscope start msgs       | 1  |
+    And last oscope_start_msg should at least have 2 oscope_msgs
+
   @wip
   Scenario Outline: Simulate gateway with CURL
     Given a gateway exists with the following attributes:

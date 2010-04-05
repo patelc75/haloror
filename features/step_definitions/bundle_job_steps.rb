@@ -44,3 +44,9 @@ end
 Then /^I do not see "([^\"]*)" folder$/ do |folder_offset|
   File.exist?(folder_offset).should be_false # rspec matchers
 end
+
+Then /^last (.+) should at least have (\d+) (.+)$/ do |one_name, number, many_name|
+  one_model = model_name_to_constant(one_name).last
+  one_model.should_not be_blank
+  one_model.send("#{many_name.gsub(/ /,'_')}".to_sym).length.should == number.to_i
+end
