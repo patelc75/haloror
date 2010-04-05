@@ -27,16 +27,25 @@ class CallCenterController < ApplicationController
         group = Group.find_by_name(params[:group_name])
       conditions = "(event_type = 'Fall' or event_type = 'Panic') AND events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id = #{group.id}))"
     end
-    @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => conditions, :per_page => events_per_page
+    
+    @events = Event.find(:all, :conditions => conditions)
+    
+    #@events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => conditions, :per_page => events_per_page
     
     @user_begin_time = params[:begin_time]
     @user_end_time = params[:end_time]
     if !@user_end_time.blank? && !@user_begin_time.blank?
       @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
       @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
-      @events = Event.find(:all, :conditions => conditions)
-      @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => ["timestamp >= ? AND timestamp <= ? and id IN (?)", @begin_time, @end_time,@events], :per_page => events_per_page
+#      @events = Event.find(:all, :conditions => conditions)
+      @events = Event.find(:all, :conditions => ["timestamp >= ? AND timestamp <= ? and id IN (?)", @begin_time, @end_time,@events])
+      #@events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => ["timestamp >= ? AND timestamp <= ? and id IN (?)", @begin_time, @end_time,@events], :per_page => events_per_page
     end
+    
+    @users = User.halousers.collect{|u| u.id}
+    
+    @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => ["id IN (?) and user_id IN (?)",@events,@users], :per_page => events_per_page
+    
   end 
   
   def faq
