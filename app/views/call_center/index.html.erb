@@ -7,13 +7,15 @@
 		   @groups.each do |g|
 			 gs << g.name
 		   end %>
-  Select Group:  
-  <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]},params[:group_name])%><br>
   <table>
-  	
-    <tr><td>Begin Time (<%= Time.zone.name.split(/\s+/).first %>)</td>&nbsp;&nbsp;<td>End Time (<%= Time.zone.name.split(/\s+/).first %>)</td></tr>
-    <tr>
-      <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
+  	<tr><td>Select Group:</td>
+  		<td>Begin Time (<%= Time.zone.name.split(/\s+/).first %>)</td>
+  		<td>End Time (<%= Time.zone.name.split(/\s+/).first %>)</td>
+  		<td>&nbsp;</td>
+  	</tr>
+  	<tr><td>
+  <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]},params[:group_name])%></td>
+  	  <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
       <td><%= calendar_date_select_tag "end_time", @user_end_time, :time => true, :popup => 'force' %></td>
 	  <td>&nbsp;<%= submit_tag "Submit" %></td>
     </tr>

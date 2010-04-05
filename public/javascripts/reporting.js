@@ -1,4 +1,4 @@
-function toggle_user_hidden(user_id)
+function toggle_user_hidden(user_id,page)
 {
 	var cur = $('user_'+user_id+'-hidden').style.display;
 	
@@ -6,7 +6,7 @@ function toggle_user_hidden(user_id)
 	{
 		$('user_'+user_id+'-hidden').style.display = 'block';
 		new Ajax.Updater('user_'+user_id+'-hidden', 
-										 '/reporting/user_hidden?user_id='+user_id, 
+										 '/reporting/user_hidden?user_id='+user_id+'&page='+page, 
 										 {asynchronous:true, evalScripts:true});
 		$('user_'+user_id+'-toggle').innerHTML = '[-]';
 	}		

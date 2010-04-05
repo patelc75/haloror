@@ -69,6 +69,7 @@
 	<div class="row">
 		<form action="/users/add_device_to_user" method="post">
 			<input type="hidden" name="user_id" value="<%=user.id%>" />
+			<input type="hidden" name="page" value="<%= params[:page]%>" />
 			Add a device by serial number: <input type="text" name="serial_number" /> <input type="submit" value="Add" />
 		</form>
 	</div>

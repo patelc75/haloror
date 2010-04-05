@@ -1,3 +1,8 @@
+<% if @event.call_center_response %>
 <%= link_to_remote (image_tag("/images/calendar_date_select/calendar.gif", :size => "17x17", :border => 0), 
 :url => {:action => 'edit_call_center_response',:id => @event.id })%>
-		<%= @event.call_center_response.in_time_zone.to_s(:date_time_seconds)%>
+		<%= @event.call_center_response.in_time_zone.to_s(:date_time_seconds) %>
+<%else%>
+	<%= link_to_remote (image_tag("/images/calendar_date_select/calendar.gif", :size => "17x17", :border => 0), 
+:url => {:action => 'enter_call_center_response',:id => @event.id })%>
+<%end%>
