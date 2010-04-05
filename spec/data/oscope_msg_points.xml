@@ -1,3 +1,9 @@
+<oscope_start_msg>
+	<capture_reason>Actual Fall</capture_reason>
+	<source_mote_id>0</source_mote_id>
+	<timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp>
+	<user_id>44</user_id>
+</oscope_start_msg>" 
 <oscope_msgs>
   <timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp>
   <oscope_msg>
@@ -10,7 +16,7 @@
       <seq>19850</seq>
       <data>2324</data>
     </point>
-    <timestamp>Thu Nov 19 19:07:20 UTC 2009</timestamp>
+    <timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp>
     <user_id>44</user_id>
   </oscope_msg>
   <oscope_msg>
@@ -23,7 +29,7 @@
       <seq>19850</seq>
       <data>2206</data>
     </point>
-    <timestamp>Thu Nov 19 19:07:20 UTC 2009</timestamp>
+    <timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp>
     <user_id>44</user_id>
   </oscope_msg>
 </oscope_msgs>
