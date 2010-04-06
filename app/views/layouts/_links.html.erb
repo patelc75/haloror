@@ -32,9 +32,9 @@
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
 				<li><%= link_to 'User&nbsp;Signup', url_for(:controller => 'users', :action => 'new') %></li>
 			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
-				<li><%= link_to 'User&nbsp;Intake', '/user/user_intake_form' %></li>
-			<% end %>
+      <!-- <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
+        <li><%= link_to 'User&nbsp;Intake', '/user/user_intake_form' %></li>
+      <% end %> -->
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_installer? %>
 				<li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li>
 			<% end %>						

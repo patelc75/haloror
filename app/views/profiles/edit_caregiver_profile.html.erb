@@ -48,24 +48,25 @@
 		<% end -%>
 	<div style="width:380px;" id="container"></div>
 	<span style="padding-left:30px;">
-		<% if current_user.is_admin? || current_user.is_super_admin? %>
-		  <% @kit_serial_number = KitSerialNumber.find_by_user_id(@user.id,:order => 'created_at desc') %>
-	      <%=link_to('Change Password', :controller => "profiles", :action => "change_password_init", :id => @user.profile.id,:user_id => @user.id )%> | <%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id %> | 
-	      <%  if @kit_serial_number %>
-	        <%= link_to "Enter CS and GW serial numbers for #{@kit_serial_number.serial_number}",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> 
-	      <%else%>
-	       <%= link_to "Enter CS and GW serial numbers",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> |
-	      <%end%>
-	    <%end%>
-	    <% if @roles_users_option %>
-	      <%= link_to "Resend Caregiver Email",:controller => 'profiles',:action => 'resend_mail',:id => @user.id,:roles_user_id => params[:roles_user_id]%>
-	    <%end%> 
-	    <%if !@user.created_by.nil?%>
+	 <% if current_user.is_admin? || current_user.is_super_admin? %>
+		 <% @kit_serial_number = KitSerialNumber.find_by_user_id(@user.id,:order => 'created_at desc') %>
+     <%= link_to('Change Password', :controller => "profiles", :action => "change_password_init", :id => @user.profile.id,:user_id => @user.id )%> | <%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id %> | 
+     <% if @kit_serial_number %>
+       <%= link_to "Enter CS and GW serial numbers for #{@kit_serial_number.serial_number}",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> 
+     <%else%>
+        <%= link_to "Enter CS and GW serial numbers",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> |
+     <%end%>
+      <%if !@user.created_by.nil?%>
 	      Added By <%= @user.creator.name%>
 	    <%end%>
+	 <%end%>
+
+   <% if @roles_users_option %>
+     <%= link_to "Resend Caregiver Invitation Email",:controller => 'profiles',:action => 'resend_mail',:id => @user.id,:roles_user_id => params[:roles_user_id]%>
+   <%end%> 
 	    
 	    <% if !current_user.is_super_admin? %>
-	      <p class="color-red" style="padding-left:30px;">Please call tech support 1-888-971-HALO (4256) to make this modification.</p>
+	      <p class="color-red" style="padding-left:30px;">Please call tech support 1-888-971-HALO (4256) to make modification to this profile.</p>
 	    <% end -%>
       <%# form_tag :action => 'create' do -%>
       <form action="/profiles/update_caregiver_profile/<%= params[:id] %>/" method="post" id="profile_form">
