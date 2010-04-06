@@ -38,16 +38,14 @@
 			<% end %>
 		</div>
 		<div id="message" style="display: none;"></div>
-		<%if @alert_message %>
-		<script type="text/javascript">
-
-		//<![CDATA[
-		new Ajax.Updater('message', '/alerts/message/', {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('message'); }, onLoading:function(request){RedBox.loading(); }})
-		//]]>
-
-		</script>
-		
-		<%end%>
+		<% if @alert_message %>
+		<%= launch_remote_redbox(:url => "/alerts/message", :id => current_user.profile.id, :user_id => current_user.id) %>
+    <!-- <script type="text/javascript">
+    //<![CDATA[
+    new Ajax.Updater('message', '/alerts/message/', {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('message'); }, onLoading:function(request){RedBox.loading(); }})
+    //]]>
+    </script> -->
+		<% end -%>
 	<div style="width:380px;" id="container"></div>
 	<span style="padding-left:30px;">
 		<% if current_user.is_admin? || current_user.is_super_admin? %>
