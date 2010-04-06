@@ -184,51 +184,46 @@ class ProfilesController < ApplicationController
       caregiver.save
     end
   end
+  
+  
   def update_caregiver_profile
+    if request.post?
+      sent = false
+      user = User.find(params[:user_id])
+      @profile = Profile.find(params[:id])
+      @user = user
+      @group_id = params[:group_id]
+      #    raise params.inspect
+      begin
+        User.transaction do
+          user.update_attribute('email', params[:email])
+          if(!params[:roles_user_id].blank?)
+            @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
+            @roles_users_option.update_attributes!(params[:roles_users_option])
+            @roles_users_option.relationship = params[:relationship]
+            @roles_users_option.save!
+          end
 
-    sent = false
-    user = User.find(params[:user_id])
-    @profile = Profile.find(params[:id])
-    @user = user
-    @group_id = params[:group_id]
-#    raise params.inspect
-    begin
-    User.transaction do
-      user.update_attribute('email', params[:email])
-      if(!params[:roles_user_id].blank?)
-        @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
-        @roles_users_option.update_attributes!(params[:roles_users_option])
-        @roles_users_option.relationship = params[:relationship]
-        @roles_users_option.save!
-      end
-    
-      if @profile.update_attributes!(params[:profile])
-      if((current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)) and user.is_halouser?)
-        group = Group.find_by_name('safety_care')
-        if(params[:opt_out_call_center].blank?)
-          user.is_halouser_of group
-        elsif(user.is_halouser_of? group)
-          role = Role.find(:first, :conditions => "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{group.id}")
-          ru = RolesUser.find(:first, :conditions => "user_id = #{user.id} AND role_id = #{role.id}")
-          RolesUser.delete(ru)
+          if @profile.update_attributes!(params[:profile])
+            if((current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)) and user.is_halouser?)
+              group = Group.find_by_name('safety_care')
+              if(params[:opt_out_call_center].blank?)
+                user.is_halouser_of group
+              elsif(user.is_halouser_of? group)
+                role = Role.find(:first, :conditions => "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{group.id}")
+                ru = RolesUser.find(:first, :conditions => "user_id = #{user.id} AND role_id = #{role.id}")
+                RolesUser.delete(ru)
+              end
+            end
+          end
+          @alert_message = true
+          render :action => 'edit_caregiver_profile'
         end
+      rescue Exception => e
+        render :action => 'edit_caregiver_profile'
       end
- 	  else
-  		#raise "Invalid Profile"
-  	  end
-      #render :text => 'chirag'
-      @alert_message = true
-      render :action => 'edit_caregiver_profile'
-        #render(:update) do |page|
-        #  page << "RedBox.close(); window.location = window.location;"
-        #end
-        #render :action => 'edit_caregiver_profile'
-        
-    	
-    end   
-    rescue Exception => e
-    #	RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
-      render :action => 'edit_caregiver_profile'
+    else
+      redirect_to :action => "edit_caregiver_profile", :id => current_user.profile.id, :user_id => current_user.id
     end
   end
   
