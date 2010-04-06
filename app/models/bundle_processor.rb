@@ -5,8 +5,8 @@ class BundleProcessor # < ActiveRecord::Base
                       SkinTemp, Battery, BatteryChargeComplete, 
                       BatteryCritical, BatteryPlugged, BatteryUnplugged, 
                       Fall, Panic, WeightScale, BloodPressure, 
-                      HaloDebugMsg, OscopeMsg, OscopeStopMsg, 
-                      OscopeStartMsg, GwAlarmButton, DialUpStatus, DialUpLastSuccessful]
+                      HaloDebugMsg, OscopeStartMsg, OscopeStopMsg, OscopeMsg,
+                      GwAlarmButton, DialUpStatus, DialUpLastSuccessful]
 
   # process the bundle
   #
@@ -18,7 +18,10 @@ class BundleProcessor # < ActiveRecord::Base
         @@bundled_models.each do |model|
           #
           # for dial_up_status, we want the entire bundle, not extracted hash
-          value = ((model.to_s.underscore == "dial_up_status") && bundle.has_key?("num_failures")) ? bundle : bundle[model.to_s.underscore]
+          # https://redmine.corp.halomonitor.com/issues/2742
+          value = ( ((model.to_s.underscore == "dial_up_status") && bundle.has_key?("num_failures")) || \
+                    ((model.to_s.underscore == "oscope_start_msg") && bundle.has_key?("capture_reason")) \
+                  ) ? bundle : bundle[model.to_s.underscore]
           
           unless value.blank?
             value = (value.class == Array ? value : [value])

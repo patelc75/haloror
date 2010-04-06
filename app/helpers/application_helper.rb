@@ -51,7 +51,8 @@ module ApplicationHelper
   #   singular, plural, with or without underscore
   #   examples: user, book_store. book stores, account payables
   def model_name_to_constant(name)
-    name.singularize.split(' ').collect(&:capitalize).join.constantize
+    name = name.gsub(/_/,' ') if name =~ /_/ # convert <underscore> to <space>
+    name.singularize.split(/ |_/).collect(&:capitalize).join.constantize
   end
   
   # CHANGED: obsolete method. Use File.makedirs("/path/to/dir") instead
