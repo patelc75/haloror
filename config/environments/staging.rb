@@ -14,9 +14,10 @@ config.cache_classes = true
 # config.action_mailer.raise_delivery_errors = false
 
 # my code starts here
+# config.log_level = :debug
 
 # Show full error reports and disable caching
-config.action_controller.consider_all_requests_local = false # debugging exception_notifier
+config.action_controller.consider_all_requests_local = true # debugging exception_notifier
 config.action_controller.perform_caching             = false
 config.action_view.debug_rjs                         = true
 
