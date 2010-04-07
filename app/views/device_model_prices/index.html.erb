@@ -1,0 +1,34 @@
+<h1>Listing device_model_prices</h1>
+
+<table>
+  <tr>
+    <th>Device model</th>
+    <th>Coupon code</th>
+    <th>Expiry date</th>
+    <th>Deposit</th>
+    <th>Shipping</th>
+    <th>Monthly recurring</th>
+    <th>Months advance</th>
+    <th>Months trial</th>
+  </tr>
+
+<% for device_model_price in @device_model_prices %>
+  <tr>
+    <td><%=h device_model_price.device_model %></td>
+    <td><%=h device_model_price.coupon_code %></td>
+    <td><%=h device_model_price.expiry_date %></td>
+    <td><%=h device_model_price.deposit %></td>
+    <td><%=h device_model_price.shipping %></td>
+    <td><%=h device_model_price.monthly_recurring %></td>
+    <td><%=h device_model_price.months_advance %></td>
+    <td><%=h device_model_price.months_trial %></td>
+    <td><%= link_to 'Show', device_model_price %></td>
+    <td><%= link_to 'Edit', edit_device_model_price_path(device_model_price) %></td>
+    <td><%= link_to 'Destroy', device_model_price, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New device_model_price', new_device_model_price_path %>

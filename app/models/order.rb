@@ -5,6 +5,46 @@ class Order < ActiveRecord::Base
   belongs_to :updater, :class_name => 'User', :foreign_key => 'updated_by'
   attr_accessor :card_csc, :product, :bill_address_same
   
+  # validate coupon code when present. ignore when missing
+  def validate_on_create
+    record.errors.add :coupon_code, 'is not valid' \
+      if DeviceModelPrice.count(:conditions => {:coupon_code => coupon_code}).zero? \
+        unless coupon_code.blank?
+  end
+  
+  # fetch device_model_price record from coupon_code when present
+  # return default record (coupon_code = "") when order does not have a coupon code
+  def coupon_tariff
+    DeviceModelPrice.first(:conditions => {:coupon_code => coupon_code})
+  end
+  
+  # dynamically define complete_tariff, clip_traiff
+  # these will fetch the default tariff (coupon code blank) for the type of product (complete or clip)
+  #   based on the search criteria in 
+  ["complete", "clip"].each do |type|
+    define_method("#{type}_tariff".to_sym) do
+      product = DeviceModel.find_complete_or_clip(type) # WARNING: find_complete_or_clip uses static values
+      product.default_tariff unless product.blank?
+    end
+  end
+  
+  # define <type>_tariff_... methods to access these values, or, return 0 (without causing an exception)
+  # example: coupon_tariff_deposit, complete_tariff_shipping, and so on...
+  ["coupon", "complete", "clip"].each do |type|
+    [ "deposit", "shipping", "months_advance", "monthly_recurring", 
+      "advance_charge", "upfront_charge"].each do |attr_name|
+      define_method("#{type}_tariff_#{attr_name}".to_sym) do
+        price_values = send("#{type}_tariff".to_sym)
+        price_values.blank? ? 0 : price_values.send(attr_name)
+      end
+    end
+  end
+
+  # based on the above definitions
+  def total_value
+    tariff_deposit + tariff_shipping + tariff_upfront_charge
+  end
+  
   # order number : YYYYMMDD-id
   #
   def full_number

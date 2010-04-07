@@ -31,80 +31,8 @@
     <a name="top"></a>
     <table id="product_detail_box" width="100%">
       <tr>
-        <td width="50%">
-          <table>
-            <% if @confirmation.blank? || (@product == "complete") %>
-            <tr>
-              <td>
-                <%= radio_button_tag 'product', 'complete' unless @confirmation %> <span style="font-size:120%"><label for="product_complete">myHalo Complete</label><b>&nbsp;($59/mo)</b></span>
-              </td>
-              <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
-              <%= observe_field(:product_complete,
-                                :frequency => 1,
-                                :function => "toggleProductDetails();"
-                                ) %>
-            </tr>
-            <% end -%>
-            <% if @confirmation.blank? || (@product == "clip") %>
-            <tr>
-              <td><%= radio_button_tag "product", "clip" unless @confirmation %><span style="font-size:120%"><label for="product_clip">&nbsp;myHalo Clip</label><b>&nbsp;($49/mo)</b></span></td>
-              <td><%= image_tag 'myhalo-belt-clip.jpg' %></td>
-              <%= observe_field(:product_clip,
-                                :frequency => 1,
-                                :function => "toggleProductDetails();"
-                                ) %>
-            </tr>
-            <% end -%>
-            <% if !@confirmation %>
-            <tr><td colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "What's the difference?", image_path("product_matrix.jpg"), :rel => "facebox" %></td></tr>
-            <% end -%>
-          </table>
-        </td>
-        
-        <td>
-          <% if @confirmation.blank? || (@product == "complete") %>
-          <div id="halo_complete_box" style="display: block; float:left; margin-top: 20px; width: 100%">
-            <table width="100%" class="colored">
-              <tr><th>Shopping cart items</th><th>Price</th></tr>
-              <tr><td>Deposit</td><td>$249.00</td></tr>
-              <tr class="altrow"><td>3 months advance ($59 x 3)</td><td>$177.00</td></tr>
-              <tr><td>Shipping</td><td>$15.00</td></tr>
-              <tr class="altrow"><td>Total*</td><td>
-                <% if @confirmation %>
-                  <%= f.hidden_field "cost", :disabled => true %>
-                <% end -%>
-                <strong>$441.00</strong>
-            </td></tr>
-            </table>
-            <p>
-              *Note: Recurring monthly charge of <b>$59.00/mo</b> will begin <%= 3.months.from_now.to_s(:day_date) %>
-            </p>
-          </div>
-          <% end -%>
-
-          <% if @confirmation.blank? || (@product == "clip") %>
-          <div id="halo_clip_box" style="display: <%= @confirmation ? 'block' : 'none' %>; float:left; margin-top: 20px; width: 100%">
-            <table width="100%" class="colored">
-              <tr><th>Shopping cart items</th><th>Price</th></tr>
-              <tr><td>Deposit</td><td>$249.00</td></tr>
-              <tr class="altrow"><td>3 months advance ($49 x 3)</td><td>$147.00</td></tr>
-              <tr><td>Shipping</td><td>$15.00</td></tr>
-              <tr class="altrow"><td>Total*</td><td>
-                <% if @confirmation %>
-                  <%= f.hidden_field "cost", :disabled => true %>
-                <% end -%>
-                <strong>$411.00</strong>
-              </td></tr>
-            </table>
-            <p>
-              *Note: Recurring monthly charge of <b>$49.00/mo</b> will begin <%= 3.months.from_now.to_s(:day_date) %>
-            </p>
-          </div>
-          <% end -%>
-          
-          <br/>
-        </td>
-
+        <td width="50%"><%= render :partial => 'product_listing', :locals => {:f => f} %></td>
+        <td><%= render :partial => 'product_detail', :locals => {:f => f} %></td>
       </tr>
     </table>
   </fieldset>
@@ -243,6 +171,10 @@
         <p>
           <label>Comments and special shipping instructions</label><br />
           <%= f.text_area "comments", :rows => 5, :disabled => @confirmation %>
+        </p>
+        <p>
+          <%= f.label :coupon_code, "Coupon Code" %> (if any)
+          <%= f.text_field :coupon_code %>
         </p>
         <% #= recaptcha_tags %>
       </td>

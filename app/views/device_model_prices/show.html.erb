@@ -1,0 +1,43 @@
+<p>
+  <b>Device model:</b>
+  <%=h @device_model_price.device_model %>
+</p>
+
+<p>
+  <b>Coupon code:</b>
+  <%=h @device_model_price.coupon_code %>
+</p>
+
+<p>
+  <b>Expiry date:</b>
+  <%=h @device_model_price.expiry_date %>
+</p>
+
+<p>
+  <b>Deposit:</b>
+  <%=h @device_model_price.deposit %>
+</p>
+
+<p>
+  <b>Shipping:</b>
+  <%=h @device_model_price.shipping %>
+</p>
+
+<p>
+  <b>Monthly recurring:</b>
+  <%=h @device_model_price.monthly_recurring %>
+</p>
+
+<p>
+  <b>Months advance:</b>
+  <%=h @device_model_price.months_advance %>
+</p>
+
+<p>
+  <b>Months trial:</b>
+  <%=h @device_model_price.months_trial %>
+</p>
+
+
+<%= link_to 'Edit', edit_device_model_price_path(@device_model_price) %> |
+<%= link_to 'Back', device_model_prices_path %>

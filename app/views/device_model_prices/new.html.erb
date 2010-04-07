@@ -1,0 +1,43 @@
+<h1>New device_model_price</h1>
+
+<% form_for(@device_model_price) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :device_model %><br />
+    <%= f.text_field :device_model %>
+  </p>
+  <p>
+    <%= f.label :coupon_code %><br />
+    <%= f.text_field :coupon_code %>
+  </p>
+  <p>
+    <%= f.label :expiry_date %><br />
+    <%= f.date_select :expiry_date %>
+  </p>
+  <p>
+    <%= f.label :deposit %><br />
+    <%= f.text_field :deposit %>
+  </p>
+  <p>
+    <%= f.label :shipping %><br />
+    <%= f.text_field :shipping %>
+  </p>
+  <p>
+    <%= f.label :monthly_recurring %><br />
+    <%= f.text_field :monthly_recurring %>
+  </p>
+  <p>
+    <%= f.label :months_advance %><br />
+    <%= f.text_field :months_advance %>
+  </p>
+  <p>
+    <%= f.label :months_trial %><br />
+    <%= f.text_field :months_trial %>
+  </p>
+  <p>
+    <%= f.submit "Create" %>
+  </p>
+<% end %>
+
+<%= link_to 'Back', device_model_prices_path %>
