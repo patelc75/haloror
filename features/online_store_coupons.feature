@@ -6,17 +6,15 @@ Feature: Online store coupons
 
   Background:
     Given I am guest
-    When I go to the online store
-    # And the payment gateway response log is empty
-    # And Email dispatch queue is empty
+    And the product catalog exists
 
   Scenario: referral link fills coupon code on online store
     When I visit "/order/coupon-code-1"
     Then the "Coupon Code" field should contain "coupon-code-1"
 
-  Scenario Outline: Valid coupon code places order with its prices
-    Given the product catalog exists
-    And I choose "product_complete"
+  Scenario Outline: Valid coupon code confirms order with coupon prices
+    When I go to the online store
+    And I choose "product_<product>"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "Same as shipping"
@@ -25,6 +23,13 @@ Feature: Online store coupons
     Then page content should have "<deposit>, <shipping>, <months> months, <advance>, <recurring>"
   
     Examples:
-      | coupon_code | deposit | shipping | months | recurring | advance |
-      |             | 249     | 15       | 3      | 59        | 177     |
-      | A1          | 239     | 10       | 2      | 49        | 98      |
+      | product  | coupon_code | deposit | shipping | months | free | recurring | advance |
+      | complete |             | 249     | 15       | 3      | 0    | 59        | 177     |
+      | complete | 99TRIAL     | 249     | 15       | 0      | 1    | 49        | 0       |
+      | clip     |             | 99      | 15       | 3      | 0    | 59        | 177     |
+      | clip     | 99TRIAL     | 99      | 15       | 0      | 1    | 49        | 0       |
+
+  Scenario: Visiting coupon code URL shows discounted products
+    When I visit "/store/99TRIAL"
+    Then page content should have "$99, $15, one free month, $59, $49, no advance charges"
+    And I should not see "$249"
