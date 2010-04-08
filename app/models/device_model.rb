@@ -16,6 +16,16 @@ class DeviceModel < ActiveRecord::Base
       product_string = (name == "clip") ? "myHalo Clip": "myHalo Complete" # default = myHaloComplete
       DeviceModel.recent_on_top.find_by_part_number(OrderItem::PRODUCT_HASH[product_string])
     end
+
+    # dynamically define complete_tariff, clip_traiff
+    # usage:
+    #   DeviceModel.complete_tariff [<coupon_code>] => default tariff, or based on coupon code
+    ["complete", "clip"].each do |type|
+      define_method("#{type}_tariff".to_sym) do |*coupon_code|
+        product = find_complete_or_clip(type) # WARNING: find_complete_or_clip uses static values
+        product.tariff(coupon_code.flatten.first) unless product.blank?
+      end
+    end
   end
   
   # instance methods
@@ -29,7 +39,15 @@ class DeviceModel < ActiveRecord::Base
     device_revisions.reent_on_top.first # (:order => "created_at DESC")
   end
   
-  def default_tariff
-    prices.recent_on_top.first(:conditions => {:coupon_code => [nil, ""]}) unless prices.blank?
+  # fetch related device_model_price record for "this" record, subject to coupon_code
+  def tariff(coupon_code = "")
+    unless prices.blank?
+      coupon_code = "" if coupon_code.nil? # we cannot search nil
+      found = prices.recent_on_top.first(:conditions => {:coupon_code => coupon_code}) # find coupon code price
+      # find default price if a valid coupon code price was not found
+      found = prices.recent_on_top.first(:conditions => {:coupon_code => [nil, ""]}) \
+        if found.blank? unless coupon_code.blank?
+    end
+    found
   end
 end
