@@ -50,7 +50,8 @@ Feature: Online store coupons
     And I press "Place Order"
     Then page content should have "Thank you, Success"
 
-  Scenario: Invalid coupon code gives validation alert
+  Scenario: Invalid coupon code gives error on order page
+  Scenario: Expired coupon code shows appropriate message on order page
   Scenario: Credit card is charged subject to selected product and coupon code
   Scenario: Subscription begins appropriately for regular and coupon purchases
   Scenario: Order items are created appropriately for selected product and coupon code
