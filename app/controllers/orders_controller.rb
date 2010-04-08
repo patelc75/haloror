@@ -88,27 +88,17 @@ class OrdersController < ApplicationController
               @order.errors.add_to_base "Link to product catalog is broken. Please inform webmaster @ halomonitoring.com about this"
               
             else
-              @order.order_items.create!(:device_model_id => device_model.id, :cost => @order.cost, :quantity => 1)
-              #
-              # create a hash of product tariffs
-              clip_tariff = DeviceModel.clip_tariff # fetch tariff records
-              complete_tariff = DeviceModel.complete_tariff
-              product_cost = { # prepre a hash of product charges
-                "clip" => [clip_tariff.upfront_charge, clip_tariff.monthly_recurring], 
-                "complete" => [complete_tariff.upfront_charge, complete_tariff.monthly_recurring]
-              }
-              #
+              # fetch product tariffs subject to coupon code from order
+              product_cost = device_model.tariff(:coupon_code => @order.coupon_code)
+              # create order item for product
+              @order.order_items.create!(:device_model_id => device_model.id, :cost => product_cost.upfront_charge, :quantity => 1)
               # create a recurring order item
-              @order.order_items.create!(:cost => product_cost[product][1], :quantity => 1, \
-                :recurring_monthly => true, :device_model_id => device_model.id) \
-                  if product_cost.has_key?(product)
-          
+              @order.order_items.create!(:cost => product_cost.monthly_recurring, :quantity => 1, \
+                :recurring_monthly => true, :device_model_id => device_model.id)
+
               Order.transaction do
-                # TODO: we can simply say => charges = product_cost[product], but that can have bugs during charge
-                charges = (product == "clip" ? product_cost["clip"] : product_cost["complete"]) # default = complete
-                #
                 # we process the card in cents, but the tariff is USD
-                @one_time_fee, @subscription = @order.charge_one_time_and_subscription_in_cents(charges[0]*100, charges[1]*100)
+                @one_time_fee, @subscription = @order.charge_credit_card_in_cents(product_cost)
                 success = (@one_time_fee.success? && @subscription.success?) \
                   unless (@one_time_fee.blank? || @subscription.blank?)
 

@@ -23,7 +23,7 @@ class DeviceModel < ActiveRecord::Base
     ["complete", "clip"].each do |type|
       define_method("#{type}_tariff".to_sym) do |*coupon_code|
         product = find_complete_or_clip(type) # WARNING: find_complete_or_clip uses static values
-        product.tariff(coupon_code.flatten.first) unless product.blank?
+        product.tariff(:coupon_code => coupon_code.flatten.first) unless product.blank?
       end
     end
   end
@@ -40,13 +40,13 @@ class DeviceModel < ActiveRecord::Base
   end
   
   # fetch related device_model_price record for "this" record, subject to coupon_code
-  def tariff(coupon_code = "")
+  def tariff(options)
+    options = {:coupon_code => "", :force_default => true}.merge(options)
     unless prices.blank?
-      coupon_code = "" if coupon_code.nil? # we cannot search nil
-      found = prices.recent_on_top.first(:conditions => {:coupon_code => coupon_code}) # find coupon code price
+      found = prices.recent_on_top.first(:conditions => {:coupon_code => options[:coupon_code]}) # find coupon code price
       # find default price if a valid coupon code price was not found
       found = prices.recent_on_top.first(:conditions => {:coupon_code => [nil, ""]}) \
-        if found.blank? unless coupon_code.blank?
+        if (found.blank? && options[:force_default]) unless options[:coupon_code].blank?
     end
     found
   end
