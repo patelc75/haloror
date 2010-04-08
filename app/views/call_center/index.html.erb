@@ -171,7 +171,8 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
     	<%= UtilityHelper.seconds_format(event.timestamp_server.to_time - event.timestamp.to_time) if event.timestamp_server %>
        </div>
        <div class="col-50">
-       	<%= UtilityHelper.seconds_format(event.timestamp_server.to_time - event.call_center_response.to_time) if event.timestamp_server and event.call_center_response %>
+       	<%#= UtilityHelper.seconds_format(event.timestamp_server.to_time - event.call_center_response.to_time) if event.timestamp_server and event.call_center_response %>
+       	<%= event.event.timestamp_call_center.nil? ? 'Not Sent' : UtilityHelper.seconds_format(event.event.timestamp_call_center.to_time - event.event.timestamp_server.to_time) %>
        </div>
       
         </div>
