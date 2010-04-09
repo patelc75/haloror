@@ -36,7 +36,7 @@ class DeviceModel < ActiveRecord::Base
   end
   
   def latest_revision
-    device_revisions.reent_on_top.first # (:order => "created_at DESC")
+    device_revisions.recent_on_top.first # (:order => "created_at DESC")
   end
   
   # fetch related device_model_price record for "this" record, subject to coupon_code
