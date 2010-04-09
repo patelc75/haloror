@@ -45,7 +45,7 @@ class DeviceModelPricesController < ApplicationController
     respond_to do |format|
       if @device_model_price.save
         flash[:notice] = 'DeviceModelPrice was successfully created.'
-        format.html { redirect_to device_model_prices_path }
+        format.html { redirect_to :action => 'show', :id => @device_model_price }
         format.xml  { render :xml => @device_model_price, :status => :created, :location => @device_model_price }
       else
         format.html { render :action => "new" }
@@ -62,7 +62,7 @@ class DeviceModelPricesController < ApplicationController
     respond_to do |format|
       if @device_model_price.update_attributes(params[:device_model_price])
         flash[:notice] = 'DeviceModelPrice was successfully updated.'
-        format.html { redirect_to device_model_prices_path }
+        format.html { redirect_to :action => 'show', :id => @device_model_price }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -78,7 +78,7 @@ class DeviceModelPricesController < ApplicationController
     @device_model_price.destroy
 
     respond_to do |format|
-      format.html { redirect_to(device_model_prices_url) }
+      format.html { redirect_to :action => 'index' }
       format.xml  { head :ok }
     end
   end
