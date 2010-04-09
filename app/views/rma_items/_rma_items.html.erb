@@ -15,12 +15,12 @@
     <% @rma.rma_items.each do |rma_item| %>
     <tr class="<%= cycle('', 'altrow') %>">
       <td><%= link_to "RMA Item:#{rma_item.id}", rma_rma_item_path(@rma, rma_item) %></td>
-      <td><%=h rma_item.created_at.to_s(:MM_DD_YYYY) %></td>
+      <td><%=h rma_item.created_at.to_formatted_s(:MM_DD_YYYY) %></td>
       <td><%=h rma_item.type %></td>
       <td><%=h rma_item.original_serial %></td>
       <td><%=h rma_item.replacement_serial %></td>
       <td><%=h rma_item.shipped_serial %></td>
-      <td><%=h rma_item.shipped_on.to_s(:date_time_timezone) %></td>
+      <td><%=h rma_item.shipped_on.to_formatted_s(:date_time_timezone) %></td>
       <td><%=h rma_item.status %></td>
       <td>
         <%= link_to 'Edit', edit_rma_rma_item_path(@rma, rma_item) %> | 

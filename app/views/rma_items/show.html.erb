@@ -27,27 +27,27 @@
         </tr>
         <tr>
           <td class="textright"><%= f.label :created_at, "RMA Created Date" %>:</td>
-          <td><%=h @rma_item.created_at.to_s(:date_time_timezone) %></td>
+          <td><%=h @rma_item.created_at.to_formatted_s(:date_time_timezone) %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :reinstalled_on, "RMA Reinstalled Date" %>:</td>
-          <td><%=h @rma_item.reinstalled_on.to_s(:date_time_timezone) %></td>
+          <td><%=h @rma_item.reinstalled_on.to_formatted_s(:date_time_timezone) %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :completed_on, "RMA Completed Date" %>:</td>
-          <td><%=h @rma_item.completed_on.to_s(:date_time_timezone) %></td>
+          <td><%=h @rma_item.completed_on.to_formatted_s(:date_time_timezone) %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :received_on, "RMA Received Date" %>:</td>
-          <td><%=h @rma_item.received_on.to_s(:date_time_timezone) %></td>
+          <td><%=h @rma_item.received_on.to_formatted_s(:date_time_timezone) %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :shipped_on, "RMA Shipped Date" %>:</td>
-          <td><%=h @rma_item.shipped_on.to_s(:date_time_timezone) %></td>
+          <td><%=h @rma_item.shipped_on.to_formatted_s(:date_time_timezone) %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :atp_on, "ATP Date" %>:</td>
-          <td><%=h @rma_item.atp_on.to_s(:date_time_timezone) %></td>
+          <td><%=h @rma_item.atp_on.to_formatted_s(:date_time_timezone) %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :atp_status, "ATP Status" %>:</td>

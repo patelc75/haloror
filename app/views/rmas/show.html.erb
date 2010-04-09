@@ -41,7 +41,7 @@
         </tr>
         <tr>
           <td class="textright"><label for="rma_completed_on">RMA Completed Date</label>:</td>
-          <td><%=h @rma.completed_on.to_s %></td>
+          <td><%=h @rma.completed_on.to_formatted_s(:date_time_timezone) %></td>
         </tr>
       </table>
     </td>
