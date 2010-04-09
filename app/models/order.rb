@@ -28,14 +28,6 @@ class Order < ActiveRecord::Base
     "#{created_at.to_date.to_s(:number)}-#{id}"
   end
 
-  # # one time fee = from order
-  # # subscription = received as argument
-  # #
-  # def charge_one_time_and_subscription_in_cents(device_model_price)
-  #   one_time_response, subscription_response = charge_credit_card_in_cents(device_model_price)
-  #   return one_time_response, subscription_response
-  # end
-  
   # 439 recurring error fix
   def charge_credit_card_in_cents(device_model_price)
     # mode is set (in environment config files) to :test for development and test, :production when production

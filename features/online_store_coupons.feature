@@ -48,10 +48,25 @@ Feature: Online store coupons
     And I fill in "Coupon Code" with "99TRIAL"
     And I press "Continue"
     And I press "Place Order"
-    Then page content should have "Thank you, Success"
+    Then page content should have "Thank you, Success, Billing starts `1.month.from_now.to_s(:day_date)`"
 
+  # Included Scenario: Subscription begins appropriately for regular and coupon purchases
+  Scenario Outline: Credit card is charged subject to selected product and coupon code
+    When I go to the online store
+    And I choose "product_complete"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "Same as shipping"
+    And I fill in "Coupon Code" with "<coupon_code>"
+    And I press "Continue"
+    And I press "Place Order"
+    Then page content should have "Thank you, Success, <upfront>, Billing starts <date>"
+    
+    Examples:
+      | coupon_code | date                                | upfront |
+      |             | `3.months.from_now.to_s(:day_date)` | 441     |
+      | 99TRIAL     | `1.month.from_now.to_s(:day_date)`  | 114     |
+  
   Scenario: Invalid coupon code gives error on order page
   Scenario: Expired coupon code shows appropriate message on order page
-  Scenario: Credit card is charged subject to selected product and coupon code
-  Scenario: Subscription begins appropriately for regular and coupon purchases
   Scenario: Order items are created appropriately for selected product and coupon code

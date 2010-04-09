@@ -28,7 +28,7 @@ class OrderItem < ActiveRecord::Base
   
   def status
     if(recurring_monthly == true)
-      "Billing starts " + 3.months.from_now.to_s(:day_date).to_s
+      "Billing starts " + device_model.tariff(:coupon_code => order.coupon_code).recurring_delay.months.from_now.to_s(:day_date).to_s
     else
       "In Process"
     end
