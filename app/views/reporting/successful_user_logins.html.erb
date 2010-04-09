@@ -1,10 +1,6 @@
 <html>
 <body>
 <%= render :partial => 'init_successful_user_logins' %>
-<h2>Successful Logins:</h2>
-<p>
-    &nbsp;
-</p>
 <p>
 	<b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
 	  <%= current_user.profile.time_zone if current_user.profile %> timezone<br><br>
@@ -16,15 +12,15 @@
 		<th>Name</th>
 		<th>Number of Logins</th>
 		<th>Logins Per Day</th>
-		<th>Roles</th>
-	</tr>
+		<th>Main Role</th>
+	</tr>  
 <% @users.each do |user| -%> 	
 	<tr>
-		<td><%= user.id %></td>
-		<td><%= user.name %></td>
-		<td><%= user[:logins]%></td>
-		<td><%= (user[:logins] / ((@end_time - @begin_time) / (60 * 60 * 24))).round(2) %>
-		<td><%= user.main_role %></td>
+		<td><%= user[0] %></td>
+		<td><%= user[1][:name] %></td>
+		<td><%= user[1][:occurrences]%></td>
+		<td><%= (user[1][:occurrences] / ((@end_time - @begin_time) / (60 * 60 * 24))).round(2) %>
+		<td><%= User.find(user[0]).main_role %></td>
 	</tr>
 <% end -%>
 </table>
