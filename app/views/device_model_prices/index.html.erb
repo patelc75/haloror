@@ -1,20 +1,22 @@
-<h1>Listing device_model_prices</h1>
+<h1>Coupon Codes</h1>
 
-<table>
+<table border="1">
   <tr>
-    <th>Device model</th>
-    <th>Coupon code</th>
-    <th>Expiry date</th>
+    <th>Part Num</th>
+    <th>Part Num</th>
+    <th>Coupon<br> Code</th>
+    <th>Expiry<br> Date</th>
     <th>Deposit</th>
     <th>Shipping</th>
-    <th>Monthly recurring</th>
-    <th>Months advance</th>
-    <th>Months trial</th>
+    <th>Monthly<br> recurring</th>
+    <th>Months<br> advance</th>
+    <th>Months<br> trial</th>
   </tr>
 
 <% for device_model_price in @device_model_prices %>
   <tr>
-    <td><%=h device_model_price.device_model %></td>
+    <td><%=h device_model_price.device_model.part_number %></td>
+    <td><%=h device_model_price.device_model.model %></td>    
     <td><%=h device_model_price.coupon_code %></td>
     <td><%=h device_model_price.expiry_date %></td>
     <td><%=h device_model_price.deposit %></td>
@@ -31,4 +33,4 @@
 
 <br />
 
-<%= link_to 'New device_model_price', new_device_model_price_path %>
+<%= link_to 'New coupon code', new_device_model_price_path %>

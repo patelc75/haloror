@@ -1,14 +1,14 @@
 ActionController::Routing::Routes.draw do |map|
 
   # nested device resources
-  map.resources :device_types do |device_types|
-    device_types.resources :device_models do |device_models|
-      device_models.resources :device_revisions
-      device_models.resources :rma_items
-      device_models.resources :device_model_prices # prices based on coupon codes
-    end
-  end
-
+  # map.resources :device_types do |device_types|
+  #   device_types.resources :device_models do |device_models|
+  #     device_models.resources :device_revisions
+  #     device_models.resources :rma_items
+  #     device_models.resources :device_model_prices # prices based on coupon codes
+  #   end
+  # end  
+  map.resources :device_model_prices
   map.resources :installation_in_progress
   map.resources :time_zones
   map.resources :access_modes
