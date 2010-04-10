@@ -1,0 +1,39 @@
+<%unless params[:commit]%>
+<b>Event Type:</b><br>
+<table>
+<tr>
+	<td><%= check_box_tag 'fall','yes',true %> Fall</td>
+	<td><%= check_box_tag 'panic','yes',true %>Panic</td>
+</tr>
+</table>
+<b>Classification:</b><br>
+<table>
+<tr>
+	<td><%= check_box_tag 'real','yes',true %> Real</td>
+	<td><%= check_box_tag 'false','yes',true %>False Alarm</td>
+    <td><%= check_box_tag 'test','yes',true %> Test</td>
+	<td><%= check_box_tag 'non_emergency','yes',true %>Non emergency</td>
+    <td><%= check_box_tag 'gw_reset','yes',true %> GW Reset</td>
+	<td><%= check_box_tag 'unclassified','yes',true %>Unclassified</td>
+</tr>
+</table>
+<%else%>
+<b>Event Type:</b><br>
+<table>
+<tr>
+	<td><%= check_box_tag 'fall','yes', params[:fall] ? true : false%> Fall</td>
+	<td><%= check_box_tag 'panic','yes', params[:panic] ? true : false%>Panic</td>
+</tr>
+</table>
+<b>Classification:</b><br>
+<table>
+<tr>
+	<td><%= check_box_tag 'real','yes',params[:real] ? true : false %> Real</td>
+	<td><%= check_box_tag 'false','yes',params[:false] ? true : false %>False Alarm</td>
+    <td><%= check_box_tag 'test','yes',params[:test] ? true : false %> Test</td>
+	<td><%= check_box_tag 'non_emergency','yes',params[:non_emergency] ? true : false %>Non emergency</td>
+    <td><%= check_box_tag 'gw_reset','yes', params[:gw_reset] ? true : false %> GW Reset</td>
+	<td><%= check_box_tag 'unclassified','yes',params[:unclassified] ? true : false %>Unclassified</td>
+</tr>
+</table>
+<%end%>

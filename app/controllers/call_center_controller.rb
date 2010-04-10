@@ -25,8 +25,9 @@ class CallCenterController < ApplicationController
     end
     if params[:group_name] and params[:group_name] != "Choose a Group"
         group = Group.find_by_name(params[:group_name])
-      conditions = "(event_type = 'Fall' or event_type = 'Panic') AND events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id = #{group.id}))"
+      conditions = "events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id = #{group.id}))"
     end
+    
     if params[:commit]
       conditions += conditions == '' ? set_checkbox_conditions : ' and ' + set_checkbox_conditions
     else
@@ -53,21 +54,26 @@ class CallCenterController < ApplicationController
   end 
   
   def set_checkbox_conditions
-  	cond = ''
+  	cond = '('
   	cond += params[:fall] ? "event_type = 'Fall'" : ''
   	cond += (params[:fall] and params[:panic]) ? " or " : ''
   	cond += params[:panic] ? "event_type = 'Panic'" : ''
+  	cond += ')'
     cond
   end
   
   def event_classification(events)
   	total_events = []
-  	total_events += events.collect{|event| event.id if event.event and event.event_type == 'EventAction' and event.event.description == 'real_alarm'} if params[:real]
-  	total_events += events.collect{|event| event.id if event.event and event.event_type == 'EventAction' and event.event.description == 'false_alarm'} if params[:false]
-  	total_events += events.collect{|event| event.id if event.event and event.event_type == 'EventAction' and event.event.description == 'test_alarm'} if params[:test]
-  	total_events += events.collect{|event| event.id if event.event and event.event_type == 'EventAction' and event.event.description == 'gw_reset'} if params[:gw_reset]
-  	total_events += events.collect{|event| event.id if event.event and event.event_type == 'EventAction' and event.event.description == 'non_emerg_panic'} if params[:non_emergency]
-  	total_events.uniq
+  	unless params[:unclassified]
+  	  total_events += events.collect{|event| event.id if event.real_alarm?}.uniq if params[:real]
+  	  total_events += events.collect{|event| event.id if event.false_alarm?}.uniq if params[:false]
+  	  total_events += events.collect{|event| event.id if event.test_alarm?}.uniq if params[:test]
+  	  total_events += events.collect{|event| event.id if event.gw_reset?}.uniq if params[:gw_reset]
+  	  total_events += events.collect{|event| event.id if event.non_emerg_panic?}.uniq if params[:non_emergency]
+  	  total_events.uniq.reject{|t| t.nil?}
+  	else
+  	  events
+  	end
   end
   
   def faq
