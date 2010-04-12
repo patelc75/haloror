@@ -101,8 +101,8 @@ class OrdersController < ApplicationController
                   end
                   flash[:notice] = 'Thank you for your order.'
                   goto = "success"
+                  reset_session # start fresh               
                 end
-                reset_session # start fresh
                 # @order = nil # fixes #2564. need to check through cucumber
             
               end # order
