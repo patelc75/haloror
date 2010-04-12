@@ -17,9 +17,11 @@
   <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]},params[:group_name])%></td>
   	  <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
       <td><%= calendar_date_select_tag "end_time", @user_end_time, :time => true, :popup => 'force' %></td>
-	  <td>&nbsp;<%= submit_tag "Submit" %></td>
+	  <td>&nbsp;<%#= submit_tag "Submit" %></td>
     </tr>
   </table>
+   <%= render :partial => 'event_classification_checkboxes'%>
+    <%= submit_tag "Submit" %>
   </form>
   <br>
 All times are in <%= current_user.profile.time_zone if current_user.profile %> timezone <br>

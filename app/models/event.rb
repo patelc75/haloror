@@ -92,6 +92,13 @@ class Event < ActiveRecord::Base
     return false
   end
   
+  def unclassified?
+  	if action = EventAction.find(:first, :conditions => "event_id = '#{self.id}'")
+      return false
+  	end
+  	return true
+  end
+  
   def self.get_latest_event_by_type_and_user(type, user_id)
     event = Event.find(:first, :order => "timestamp DESC", :conditions => "event_type = '#{type}' and user_id='#{user_id}' AND timestamp <= '#{Time.now.to_s}'")
     if(event == nil)
