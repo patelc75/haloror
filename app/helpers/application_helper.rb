@@ -47,6 +47,10 @@ module ApplicationHelper
     }
   end
 
+  def USD_value(amount = 0)
+    number_to_currency(amount, :precision => 2, :unit => "$", :delimiter => ",", :separator => ".")
+  end
+
   # accepts the name of model as string, returns and constant for the model
   #   singular, plural, with or without underscore
   #   examples: user, book_store. book stores, account payables

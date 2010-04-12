@@ -9,7 +9,7 @@ class DeviceRevision < ActiveRecord::Base
   has_many :order_items
   
   named_scope :online, :conditions => {:online_store => true}
-  named_scope :recent_first, :order => 'created_at DESC'
+  named_scope :recent_on_top, :order => 'created_at DESC'
   
   # class methods
   
@@ -21,7 +21,7 @@ class DeviceRevision < ActiveRecord::Base
     def find_by_device_names(phrase)
       found = nil
       device_types = DeviceType.find_all_names(phrase)
-      recent_first.map do |revision|
+      recent_on_top.map do |revision|
         if device_types.include?( revision.device_type)
           found = revision
           break

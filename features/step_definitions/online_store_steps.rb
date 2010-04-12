@@ -3,8 +3,25 @@
 require "faker"
 
 Given /^the product catalog exists$/ do
-  {"Chest Strap" => "12001002-1", "Belt Clip" => "12001008-1"}.each do |type, part_number|
-    DeviceType.find_or_create_by_device_type( type).device_models.find_or_create_by_part_number( part_number)
+  {
+    "Chest Strap" => {
+      :part_number => "12001002-1",
+      :default => { :coupon_code => "",       :deposit => 249, :shipping => 15, :monthly_recurring => 59, :months_advance => 3, :months_trial => 0},
+      :trial =>   { :coupon_code => "99TRIAL", :deposit => 99, :shipping => 15, :monthly_recurring => 59, :months_advance => 0, :months_trial => 1}
+    },
+    "Belt Clip" => {
+      :part_number => "12001008-1",
+      :default => { :coupon_code => "",       :deposit => 249, :shipping => 15, :monthly_recurring => 49, :months_advance => 3, :months_trial => 0},
+      :trial =>   { :coupon_code => "99TRIAL", :deposit => 99, :shipping => 15, :monthly_recurring => 49, :months_advance => 0, :months_trial => 1}
+    }
+  }.each do |type, values|
+    #
+    # we assume the test database blank at all times. We therefore create the data for each scenario
+    device_type = Factory.create(:device_type, :device_type => type)
+    device_model = Factory.create(:device_model, :device_type => device_type, :part_number => values[:part_number])
+    [values[:default], values[:trial]].each do |prices_hash|
+      Factory.create(:device_model_price, prices_hash.merge(:device_model => device_model))
+    end
   end
 end
 

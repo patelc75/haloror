@@ -1,0 +1,54 @@
+<!-- TODO: this can further be DRYed -->
+
+<% if @confirmation.blank? || (@product == "complete") %>
+<div id="halo_complete_box" style="display: block; float:left; margin-top: 20px; width: 100%">
+  <table width="100%" class="colored">
+    <tr><th>Shopping cart items</th><th style="text-align:right;">Price</th></tr>
+    <tr><td>Deposit</td><td style="text-align:right;"><%= USD_value(@complete_tariff.deposit) %></td></tr>
+    <% unless @complete_tariff.months_advance.zero? %>
+      <tr class="altrow"><td><%= pluralize(@complete_tariff.months_advance, "month") %> advance (<%= USD_value(@complete_tariff.monthly_recurring) %> x <%= @complete_tariff.months_advance %>)</td><td style="text-align:right;"><%= USD_value(@complete_tariff.advance_charge) %></td></tr>
+    <% end -%>
+    <% unless @complete_tariff.months_trial.zero? %>
+      <tr class="altrow red"><td><%= pluralize(@complete_tariff.months_trial, "month") %> trial (Free <%= USD_value(@complete_tariff.monthly_recurring) %> x <%= @complete_tariff.months_trial %>)</td><td style="text-align:right;"><%= USD_value(0) %></td></tr>
+    <% end -%>
+    <tr><td>Shipping</td><td style="text-align:right;"><%= USD_value(@complete_tariff.shipping) %></td></tr>
+    <tr class="altrow"><td style="text-align:right;">Total*</td><td style="text-align:right;">
+      <% if @confirmation %>
+      <%= f.hidden_field "cost", :disabled => true %>
+      <% end -%>
+      <strong><%= USD_value(@complete_tariff.upfront_charge) %></strong>
+    </td></tr>
+  </table>
+  <p>
+    *Note: Recurring monthly charge of <b><%= USD_value(@complete_tariff.monthly_recurring) %>/mo</b> will begin <%= @complete_tariff.recurring_delay.months.from_now.to_s(:day_date) %>
+  </p>
+</div>
+<% end -%>
+
+
+<% if @confirmation.blank? || (@product == "clip") %>
+<div id="halo_clip_box" style="display: <%= @confirmation ? 'block' : 'none' %>; float:left; margin-top: 20px; width: 100%">
+  <table width="100%" class="colored">
+    <tr><th>Shopping cart items</th><th style="text-align:right;">Price</th></tr>
+    <tr><td>Deposit</td><td style="text-align:right;"><%= USD_value(@clip_tariff.deposit) %></td></tr>
+    <% unless @clip_tariff.months_advance.zero? %>
+      <tr class="altrow"><td><%= pluralize(@clip_tariff.months_advance, "month") %> advance (<%= USD_value(@clip_tariff.monthly_recurring) %> x <%= @clip_tariff.months_advance %>)</td><td style="text-align:right;"><%= USD_value(@clip_tariff.advance_charge) %></td></tr>
+    <% end -%>
+    <% unless @clip_tariff.months_trial.zero? %>
+      <tr class="altrow red"><td><%= pluralize(@clip_tariff.months_trial, "month") %> trial (Free <%= USD_value(@clip_tariff.monthly_recurring) %> x <%= @clip_tariff.months_trial %>)</td><td style="text-align:right;"><%= USD_value(0) %></td></tr>
+    <% end -%>
+    <tr><td>Shipping</td><td style="text-align:right;"><%= USD_value(@clip_tariff.shipping) %></td></tr>
+    <tr class="altrow"><td style="text-align:right;">Total*</td><td style="text-align:right;">
+      <% if @confirmation %>
+      <%= f.hidden_field "cost", :disabled => true %>
+      <% end -%>
+      <strong><%= USD_value(@clip_tariff.upfront_charge) %></strong>
+    </td></tr>
+  </table>
+  <p>
+    *Note: Recurring monthly charge of <b><%= USD_value(@clip_tariff.monthly_recurring) %>/mo</b> will begin <%= @clip_tariff.recurring_delay.months.from_now.to_s(:day_date) %>
+  </p>
+</div>
+<% end -%>
+
+<br/>

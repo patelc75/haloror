@@ -4,6 +4,7 @@ class OrderItem < ActiveRecord::Base
   belongs_to :order
   belongs_to :device_model
   
+  # FIXME: this should not be static!  but while it is, this should be in device class. Why here?
   PRODUCT_HASH = Hash[
    "myHalo Complete" => "12001002-1",
    "myHalo Clip"     => "12001008-1"
@@ -34,7 +35,7 @@ class OrderItem < ActiveRecord::Base
   
   def status
     if(recurring_monthly == true)
-      "Billing starts " + 3.months.from_now.to_s(:day_date).to_s
+      "Billing starts " + device_model.tariff(:coupon_code => order.coupon_code).recurring_delay.months.from_now.to_s(:day_date).to_s
     else
       "In Process"
     end

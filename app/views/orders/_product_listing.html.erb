@@ -1,0 +1,29 @@
+<table>
+  <% if @confirmation.blank? || (@product == "complete") %>
+  <tr>
+    <td>
+      <%= radio_button_tag 'product', 'complete' unless @confirmation %> <span style="font-size:120%"><label for="product_complete">myHalo Complete</label><b>&nbsp;(<%= USD_value(@complete_tariff.monthly_recurring) %>/mo)</b></span>
+    </td>
+    <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
+    <% unless @confirmation %>
+    <%= observe_field(:product_complete,
+                      :frequency => 1,
+                      :function => "toggleProductDetails();"
+                      ) %>
+    <% end -%>
+  </tr>
+  <% end -%>
+  <% if @confirmation.blank? || (@product == "clip") %>
+  <tr>
+    <td><%= radio_button_tag "product", "clip" unless @confirmation %><span style="font-size:120%"><label for="product_clip">&nbsp;myHalo Clip</label><b>&nbsp;(<%= USD_value(@clip_tariff.monthly_recurring) %>/mo)</b></span></td>
+    <td><%= image_tag 'myhalo-belt-clip.jpg' %></td>
+    <%= observe_field(:product_clip,
+                      :frequency => 1,
+                      :function => "toggleProductDetails();"
+                      ) %>
+  </tr>
+  <% end -%>
+  <% if !@confirmation %>
+  <tr><td colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "What's the difference?", image_path("product_matrix.jpg"), :rel => "facebox" %></td></tr>
+  <% end -%>
+</table>

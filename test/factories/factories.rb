@@ -5,6 +5,26 @@ Factory.define :carrier do |v|
   v.domain { Faker::Internet.domain_name }
 end
 
+Factory.define :device_model_price do |v|
+  v.coupon_code { Faker::Lorem.words[0] }
+  v.expiry_date { 2.months.from_now.to_date }
+  v.deposit { rand(999) }
+  v.shipping { rand(15) }
+  v.monthly_recurring { rand(50) }
+  v.months_advance { rand(3) }
+  v.months_trial { rand(3) }
+  v.association :device_model
+end
+
+Factory.define :device_model do |v|
+  v.part_number "12001002-1" # "myHalo Complete" product
+  v.association :device_type
+end
+
+Factory.define :device_type do |v|
+  v.device_type "Chest Strap" # "myHalo Complete" product
+end
+
 Factory.define :device do |v|
   v.serial_number '1234567890'
   v.active true
@@ -13,7 +33,7 @@ end
 Factory.define :emergency_number do |v|
   v.name { Faker::Company.name }
   v.number { Faker::PhoneNumber.phone_number }
-  v.association :group, :factory => :group
+  v.association :group #, :factory => :group
 end
 
 Factory.define :gateway do |v|
@@ -41,9 +61,9 @@ Factory.define :profile do |v|
   v.account_number "1234"
   v.hospital_number "0987654321"
   v.doctor_phone "1234567890"
-  v.association :carrier, :factory => :carrier
-  v.association :emergency_number, :factory => :emergency_number
-  v.association :user, :factory => :user
+  v.association :carrier #, :factory => :carrier
+  v.association :emergency_number #, :factory => :emergency_number
+  v.association :user #, :factory => :user
 end
 
 Factory.define :rma do |v|

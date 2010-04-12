@@ -878,3 +878,5 @@ input.validation-failed, textarea.validation-failed {
 .error {
   color: #F00;
 }
+
+.red { color: #C80000; }
