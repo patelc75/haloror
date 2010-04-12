@@ -5,6 +5,25 @@ class Order < ActiveRecord::Base
   belongs_to :updater, :class_name => 'User', :foreign_key => 'updated_by'
   attr_accessor :card_csc, :product, :bill_address_same
   
+  # product from ["myHalo Complete", "myHalo Clip"] based on order_items < device_model
+  def product
+    order_item = order_items.find_by_recurring_monthly(nil, :include => :device_model)
+    unless order_item.blank?
+      part = order_item.device_model.part_number unless order_item.device_model.blank?
+      OrderItem::PRODUCT_HASH.index( part) unless part.blank?
+    end
+  end
+  
+  # same_as_shipping checkbox can reply on this
+  def ship_and_bill_address_same
+    ship = []; bill = []
+    ["first_name", "last_name", "address", "city", "state", "zip", "phone", "email"].each do |field|
+      ship << eval("ship_#{field}")
+      bill << eval("bill_#{field}")
+    end
+    ship.eql?( bill)
+  end
+  
   # order number : YYYYMMDD-id
   #
   def full_number
