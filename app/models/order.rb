@@ -22,7 +22,8 @@ class Order < ActiveRecord::Base
       bill << eval("bill_#{field}")
     end
     ship.eql?( bill)
-
+  end
+  
   # validate coupon code when present. ignore when missing
   def validate_on_create
     record.errors.add :coupon_code, 'is not valid' \
