@@ -64,16 +64,15 @@ class CallCenterController < ApplicationController
   
   def event_classification(events)
   	total_events = []
-  	unless params[:unclassified]
+  	#unless params[:unclassified]
   	  total_events += events.collect{|event| event.id if event.real_alarm?}.uniq if params[:real]
   	  total_events += events.collect{|event| event.id if event.false_alarm?}.uniq if params[:false]
   	  total_events += events.collect{|event| event.id if event.test_alarm?}.uniq if params[:test]
   	  total_events += events.collect{|event| event.id if event.gw_reset?}.uniq if params[:gw_reset]
   	  total_events += events.collect{|event| event.id if event.non_emerg_panic?}.uniq if params[:non_emergency]
+  	  total_events += events.collect{|event| event.id if event.unclassified?}.uniq if params[:unclassified]
   	  total_events.uniq.reject{|t| t.nil?}
-  	else
-  	  events
-  	end
+  	
   end
   
   def faq

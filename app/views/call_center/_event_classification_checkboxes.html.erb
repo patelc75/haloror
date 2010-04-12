@@ -1,14 +1,15 @@
 <%unless params[:commit]%>
-<b>Event Type:</b><br>
 <table>
 <tr>
+	<td><b>Event Type:&nbsp;&nbsp;</b></td>
 	<td><%= check_box_tag 'fall','yes',true %> Fall</td>
 	<td><%= check_box_tag 'panic','yes',true %>Panic</td>
 </tr>
 </table>
-<b>Classification:</b><br>
+
 <table>
 <tr>
+	<td><b>Classification:</b></td>
 	<td><%= check_box_tag 'real','yes',true %> Real</td>
 	<td><%= check_box_tag 'false','yes',true %>False Alarm</td>
     <td><%= check_box_tag 'test','yes',true %> Test</td>
@@ -18,16 +19,18 @@
 </tr>
 </table>
 <%else%>
-<b>Event Type:</b><br>
+
 <table>
 <tr>
+	<td><b>Event Type:</b></td>
 	<td><%= check_box_tag 'fall','yes', params[:fall] ? true : false%> Fall</td>
 	<td><%= check_box_tag 'panic','yes', params[:panic] ? true : false%>Panic</td>
 </tr>
 </table>
-<b>Classification:</b><br>
+
 <table>
 <tr>
+	<td><b>Classification:</b></td>
 	<td><%= check_box_tag 'real','yes',params[:real] ? true : false %> Real</td>
 	<td><%= check_box_tag 'false','yes',params[:false] ? true : false %>False Alarm</td>
     <td><%= check_box_tag 'test','yes',params[:test] ? true : false %> Test</td>
