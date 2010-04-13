@@ -5,6 +5,15 @@ class Order < ActiveRecord::Base
   belongs_to :updater, :class_name => 'User', :foreign_key => 'updated_by'
   attr_accessor :card_csc, :product, :bill_address_same
   
+  def after_initialize
+    bill_address_same = true if self.new_record?
+  end
+  
+  # quick shortcut for the bill and ship address same
+  def common_address
+    ((bill_address_same == "1") || ship_and_bill_address_match)
+  end
+  
   # product from ["myHalo Complete", "myHalo Clip"] based on order_items < device_model
   def product
     order_item = order_items.find_by_recurring_monthly(nil, :include => :device_model)
@@ -15,7 +24,7 @@ class Order < ActiveRecord::Base
   end
   
   # same_as_shipping checkbox can reply on this
-  def ship_and_bill_address_same
+  def ship_and_bill_address_match
     ship = []; bill = []
     ["first_name", "last_name", "address", "city", "state", "zip", "phone", "email"].each do |field|
       ship << eval("ship_#{field}")
