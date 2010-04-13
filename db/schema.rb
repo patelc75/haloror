@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100329214341) do
+ActiveRecord::Schema.define(:version => 20100407184340) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -324,6 +324,19 @@ ActiveRecord::Schema.define(:version => 20100329214341) do
   end
 
   add_index "device_latest_queries", ["updated_at"], :name => "device_latest_queries_updated_at_idx"
+
+  create_table "device_model_prices", :force => true do |t|
+    t.integer  "device_model_id"
+    t.string   "coupon_code"
+    t.date     "expiry_date"
+    t.integer  "deposit"
+    t.integer  "shipping"
+    t.integer  "monthly_recurring"
+    t.integer  "months_advance"
+    t.integer  "months_trial"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "device_models", :force => true do |t|
     t.integer  "device_type_id"
@@ -685,6 +698,7 @@ ActiveRecord::Schema.define(:version => 20100329214341) do
     t.string   "ship_last_name"
     t.string   "bill_last_name"
     t.integer  "group_id"
+    t.string   "coupon_code"
   end
 
   create_table "oscope_msgs", :force => true do |t|
@@ -1054,7 +1068,6 @@ ActiveRecord::Schema.define(:version => 20100329214341) do
     t.string   "serial_number"
     t.string   "time_zone"
     t.integer  "created_by"
-    t.string   "type"
   end
 
   create_table "vital_scans", :force => true do |t|

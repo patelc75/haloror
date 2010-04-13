@@ -39,8 +39,7 @@
       <div class="span-22 last">
         <div class="span-5">
           <%= f.label :group_id, "Group" %>
-          <%= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"} %>
-          <!-- :onchange => "toggle_content(this);" -->
+          <%= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"}, :onchange => "show_when_dropdown_selected(this);" %>
         </div>
         <div class="span-8">
           <%= f.label :installation_date, "Installation Date:" %>
@@ -58,7 +57,7 @@
       <hr />
       
       <!-- this class is "hidden" -->
-      <div id="content" class="span-22 last">
+      <div id="content" class="span-22 last hidden">
         <div id="senior_profile" class="colborder span-10"> <!-- colborder takes one column -->
           <% fields_for "user_intake[senior_attributes][profile_attributes]", @user_intake.senior.profile do |senior_form| %>
             <!-- senior profile details -->
@@ -71,18 +70,18 @@
           
           <div class="span-3">&nbsp;</div>
           <div class="span-7 last">
-            <%= f.check_box :same_as_user %>
+            <%= f.check_box :same_as_user, :checked => true, :onclick => "hide_when_checked(this, 'subscriber_profile');" %> <!--  -->
+            <!-- , :onchange => update_page {|page| page[:subscriber_profile].toggle } -->
             <%= f.label :same_as_user, "Same as User" %> 
-            <!-- onclick show -->
           </div>
-          <div class="span-3">&nbsp;</div>
-          <div class="span-7 last">
-            <%= f.check_box :add_as_caregiver %>
-            <%= f.label :add_as_caregiver, "Add as #1 Caregiver" %>
-          </div>
-          
           <!-- hidden -->
-          <div id="subscriber_profile" class="">
+          <div id="subscriber_profile" class="hidden">
+            <div class="span-3">&nbsp;</div>
+            <div class="span-7 last">
+              <%= f.check_box :add_as_caregiver, :onclick => "caregiver_extras_form(this, 'caregiver_extras');" %>
+              <%= f.label :add_as_caregiver, "Add as #1 Caregiver" %>
+            </div>
+
             <% fields_for "user_intake[subscriber_attributes][profile_attributes]", @user_intake.subscriber.profile do |subscriber_form| %>
               <!-- subscriber profile details -->
               <%= render :partial => 'subscriber_profile', :locals => {:f => subscriber_form} %>
@@ -93,6 +92,13 @@
                 <%= f.label :monthly_or_card, "Card" %>
                 <%= f.radio_button :monthly_or_card, "Monthly" %>
                 <%= f.label :monthly_or_card, "Bill Monthly" %>
+              </div>
+              
+              <!-- role attributes -->
+              <div id="caregiver_extras" class="prepend-3 span-7 hidden">
+              <% fields_for "user_intake[caregiver_attributes][][role_attributes]", @user_intake.caregivers.first do |caregiver_form| %>
+                <%= render :partial => 'caregiver_role_options', :locals => {:f => caregiver_form} %>
+              <% end -%>
               </div>
             <% end -%>
           </div>
@@ -107,11 +113,11 @@
           <!-- cycle for each caregiver -->
           <% @user_intake.caregivers.each_with_index do |caregiver, index| %>
             <div class="span-7 <%= 'border' unless caregiver == @user_intake.caregivers.last %>">
-              <%= f.check_box "no_caregiver_#{index+1}".to_sym %>
+              <%= f.check_box "no_caregiver_#{index+1}".to_sym, :checked => true, :onclick => "hide_when_checked(this, 'caregiver#{index+1}_profile')" %>
               <%= f.label "no_caregiver_#{index+1}".to_sym, "No Caregiver \##{index+1}" %>
               <hr class="space" />
               
-              <div id="caregiver#{index+1}_profile">
+              <div id="caregiver<%= index+1 %>_profile" class="hidden">
                 <!-- caregiver profile -->
                 <% fields_for "user_intake[caregiver_attributes][][profile_attributes]", caregiver.profile do |caregiver_profile_form| %>
                   <%= render :partial => 'caregiver_profile', :locals => {:f => caregiver_profile_form} %>
@@ -155,12 +161,19 @@
 </div>
 
 <script type="text/javascript" charset="utf-8">
-  function toggle_content(dropdown)
+  function caregiver_extras_form(checkbox, form)
   {
-    if(dropdown.value == 'Choose a Group') {
-      document.getElementById('content').style.display = 'none';
-    } else {
-      document.getElementById('content').style.display = 'block';
-    }
+  	if(checkbox.checked == true)
+  	{
+  	  document.getElementById(form).style.display = 'block';
+  	  document.getElementById('user_intake_no_caregiver_1').checked = true;
+  	  document.getElementById('caregiver1_profile').style.display = 'none';
+  	  document.getElementById('user_intake_no_caregiver_1').disabled = true;
+      }
+  	else
+  	{
+  	  document.getElementById(form).style.display = 'none';
+  	  document.getElementById('user_intake_no_caregiver_1').disabled = false;
+      }
   }
 </script>

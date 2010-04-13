@@ -566,9 +566,23 @@ function toggle_device_info(id)
 	{
 		$('toggle_info-'+id).innerHTML = '[-]';
 		$('info-'+id).style.display = 'block'
-	}	
-	
+	}
+}
 
+function hide_when_checked(checkbox, div_id)
+{
+  if(checkbox.checked == true) {
+    document.getElementById(div_id).style.display = 'none';
+  } else {
+    document.getElementById(div_id).style.display = 'block';
+  }
+}
 
-	
+function show_when_dropdown_selected(dropdown)
+{
+  if(dropdown.value == '') {
+    document.getElementById('content').style.display = 'none';
+  } else {
+    document.getElementById('content').style.display = 'block';
+  }
 }

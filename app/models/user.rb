@@ -38,7 +38,7 @@ class User < ActiveRecord::Base
   #has_one :roles_users_option
   
   has_and_belongs_to_many :devices
-  # has_and_belongs_to_many :user_intakes # replaced with has_many :through on Senior, Subscriber, Caregiver
+  has_and_belongs_to_many :user_intakes # replaced with has_many :through on Senior, Subscriber, Caregiver
   
   
   #has_many :call_orders, :order => :position
@@ -97,6 +97,34 @@ class User < ActiveRecord::Base
   def before_validation
     self.email = "no-email@halomonitoring.com" if self.email == ''
   end
+  
+  # methods for a RESTful approach
+  # using the authorization plugin for the following methods
+  # examples:
+  #   is_halouser?, is_subscriber?, is_caregiver?
+  #   is_subscriber_for? senior_user_object
+  #   is_caregiver_to? senior_user_object
+  #   is_caregiver_to_what => get array if users I am caregiving
+  #   has_caregiver => get array of caregivers for me
+  def options_for_senior(the_senior)
+    begin
+      if !self.eql?(the_senior) && self.is_caregiver_of?( the_senior)
+        role = self.roles.select {|role| role.name == "caregiver" && \
+          role.authorizable_id == the_senior.id && role.authorizable_type == "User" }.first
+        options = options_for_role(role)
+      end
+    rescue
+      options = {}
+    end
+    options
+  end
+  
+  def options_for_role(role_or_id)
+    role_id = (role_or_id.is_a?(Role) ? role_or_id.id : role_or_id)
+    RolesUser.find_by_user_id_and_role_id(self.id, role_id).roles_users_option
+  end
+  
+  
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
   #attr_accessible :login, :email, :password, :password_confirmation
