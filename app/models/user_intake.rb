@@ -62,7 +62,15 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver1
-    users.select {|user| user.is_caregiver_of?(senior) }
+    users.select {|user| user.options_for_senior(senior).position == 1 }
+  end
+
+  def caregiver2
+    users.select {|user| user.options_for_senior(senior).position == 2 }
+  end
+
+  def caregiver3
+    users.select {|user| user.options_for_senior(senior).position == 3 }
   end
 
   def caregivers
