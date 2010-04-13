@@ -48,6 +48,13 @@ class CallCenterController < ApplicationController
     end
     
     @users = User.halousers.collect{|u| u.id}
+    @events = @events.collect{|event| event if !event.call_center_response.nil? and ((event.call_center_response.to_time - event.timestamp.to_time) <= params[:response_time].to_f)} if !params[:response_time].blank?
+    @events = @events.reject{|t| t.nil?}
+    @events = @events.collect{|event| event if event.timestamp_server and ((event.timestamp_server.to_time - event.timestamp.to_time) <= params[:server_delay].to_f)} if !params[:server_delay].blank?
+    @events = @events.reject{|t| t.nil?}
+    @events = @events.collect{|event| event if event.timestamp_server and event.call_center_response and ((event.timestamp_server.to_time - event.call_center_response.to_time) <= params[:call_center_delay].to_f)} if !params[:call_center_delay].blank?
+    @events = @events.reject{|t| t.nil?}
+
     @events = event_classification(@events) if params[:commit]
     @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => ["id IN (?) and user_id IN (?)",@events,@users], :per_page => events_per_page
     

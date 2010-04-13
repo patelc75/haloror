@@ -21,6 +21,9 @@
     </tr>
   </table>
    <%= render :partial => 'event_classification_checkboxes'%>
+   Response Time: <input type="text" name="response_time" value="<%= params[:response_time]%>">
+   Server Delay: <input type="text" name="server_delay" value="<%= params[:server_delay]%>">
+   Call Center Delay: <input type="text" name="call_center_delay" value="<%= params[:call_center_delay]%>"><br>
     <%= submit_tag "Submit" %>
   </form>
   <br>
