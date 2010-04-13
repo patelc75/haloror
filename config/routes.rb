@@ -1,4 +1,14 @@
 ActionController::Routing::Routes.draw do |map|
+
+  # nested device resources
+  # map.resources :device_types do |device_types|
+  #   device_types.resources :device_models do |device_models|
+  #     device_models.resources :device_revisions
+  #     device_models.resources :rma_items
+  #     device_models.resources :device_model_prices # prices based on coupon codes
+  #   end
+  # end  
+  map.resources :device_model_prices
   map.resources :installation_in_progress
   map.resources :time_zones
   map.resources :access_modes
@@ -91,7 +101,7 @@ ActionController::Routing::Routes.draw do |map|
   map.support '/support',:controller => 'util',:action => 'support'
   map.user_intake_form '/user/user_intake_form',:controller => 'users',:action => 'user_intake_form'
   map.user_intake_post '/user/user_intake_form',:controller => 'users',:action => 'user_intake_form', :method => :post
-  map.order '/order', :controller => 'orders', :action => 'new'
+  map.order '/order/:coupon_code', :controller => 'orders', :action => 'new', :coupon_code => ''
   
   #map.resend '/resend/:id', :controller => 'installs', :action => 'resend'
     # 

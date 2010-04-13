@@ -1,0 +1,21 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  device_model: 
+  coupon_code: MyString
+  expiry_date: 2010-04-07
+  deposit: 1
+  shipping: 1
+  monthly_recurring: 1
+  months_advance: 1
+  months_trial: 1
+
+two:
+  device_model: 
+  coupon_code: MyString
+  expiry_date: 2010-04-07
+  deposit: 1
+  shipping: 1
+  monthly_recurring: 1
+  months_advance: 1
+  months_trial: 1

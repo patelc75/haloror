@@ -18,16 +18,21 @@ class CallCenterController < ApplicationController
       end
       group_ids = g_ids.join(', ')
       RAILS_DEFAULT_LOGGER.warn(group_ids)
-      conditions = "(event_type = 'Fall' or event_type = 'Panic') AND events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids})))"
+      conditions = "events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids})))"
     else
       @groups = Group.find(:all)  
-      conditions = "event_type = 'Fall' or event_type = 'Panic'"
+      #conditions = "event_type = 'Fall' or event_type = 'Panic'"
     end
     if params[:group_name] and params[:group_name] != "Choose a Group"
         group = Group.find_by_name(params[:group_name])
-      conditions = "(event_type = 'Fall' or event_type = 'Panic') AND events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id = #{group.id}))"
+      conditions = "events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id = #{group.id}))"
     end
     
+    if params[:commit]
+      conditions += conditions == '' ? set_checkbox_conditions : ' and ' + set_checkbox_conditions
+    else
+      conditions = "event_type = 'Fall' or event_type = 'Panic'"
+    end
     @events = Event.find(:all, :conditions => conditions)
     
     #@events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => conditions, :per_page => events_per_page
@@ -43,10 +48,32 @@ class CallCenterController < ApplicationController
     end
     
     @users = User.halousers.collect{|u| u.id}
-    
+    @events = event_classification(@events) if params[:commit]
     @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => ["id IN (?) and user_id IN (?)",@events,@users], :per_page => events_per_page
     
   end 
+  
+  def set_checkbox_conditions
+  	cond = '('
+  	cond += params[:fall] ? "event_type = 'Fall'" : ''
+  	cond += (params[:fall] and params[:panic]) ? " or " : ''
+  	cond += params[:panic] ? "event_type = 'Panic'" : ''
+  	cond += ')'
+    cond
+  end
+  
+  def event_classification(events)
+  	total_events = []
+  	#unless params[:unclassified]
+  	  total_events += events.collect{|event| event.id if event.real_alarm?}.uniq if params[:real]
+  	  total_events += events.collect{|event| event.id if event.false_alarm?}.uniq if params[:false]
+  	  total_events += events.collect{|event| event.id if event.test_alarm?}.uniq if params[:test]
+  	  total_events += events.collect{|event| event.id if event.gw_reset?}.uniq if params[:gw_reset]
+  	  total_events += events.collect{|event| event.id if event.non_emerg_panic?}.uniq if params[:non_emergency]
+  	  total_events += events.collect{|event| event.id if event.unclassified?}.uniq if params[:unclassified]
+  	  total_events.uniq.reject{|t| t.nil?}
+  	
+  end
   
   def faq
     @faq = CallCenterFaq.find(:first, :order => 'updated_at desc')
@@ -425,10 +452,9 @@ class CallCenterController < ApplicationController
   
   def call_center_response
     @event = Event.find(params[:id])
-    debugger
     #UtilityHelper.format_datetime(params[:call_center_response].to_time,current_user)
      @response_time = UtilityHelper.user_time_zone_to_utc(params[:call_center_response])
-     @timestamp = UtilityHelper.user_time_zone_to_utc(@event.timestamp.to_s)
+     @timestamp = UtilityHelper.user_time_zone_to_utc(@event.timestamp_server.to_s)
     if @timestamp < @response_time
       @event.update_attributes(:call_center_response => params[:call_center_response])
       render :update do |page|
@@ -438,7 +464,7 @@ class CallCenterController < ApplicationController
     else
       render :update do |page|
         page.replace_html 'div_' +@event.id.to_s, :partial => 'call_center_response'
-        page.replace_html 'div_response_' +@event.id.to_s, '<font color="red">"Call Center Response" must be later then "Timestamp Device"</font>'
+        page.replace_html 'div_response_' +@event.id.to_s, '<font color="red">"Call Center Response" must be later then "Timestamp Server"</font>'
       end
     end
   end

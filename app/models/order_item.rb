@@ -4,6 +4,7 @@ class OrderItem < ActiveRecord::Base
   belongs_to :order
   belongs_to :device_model
   
+  # FIXME: this should not be static!  but while it is, this should be in device class. Why here?
   PRODUCT_HASH = Hash[
    "myHalo Complete" => "12001002-1",
    "myHalo Clip"     => "12001008-1"
@@ -12,22 +13,29 @@ class OrderItem < ActiveRecord::Base
   # Retruns the product type based on device model or recurring charge
   # TODO: change the logic to use device_types table instead of hardcoding the label from @@products_hash
   def product_model
-    part_num_hash = PRODUCT_HASH.invert
+    # CHANGED: DRYed
+    # if recurring_monthly; elsif device_model.blank?; else <device_name_and_part_number>
+    recurring_monthly ? "Recurring Monthly" : \
+      (device_model.blank? ? "Unknown" : \
+        (PRODUCT_HASH.index(device_model.part_number) || '') + " (" + device_model.part_number + ")"
+      )
     
-    if(recurring_monthly == true)
-      "Recurring Monthly"
-    else
-      if !device_model.nil?
-        label = part_num_hash[device_model.part_number] + " (" + device_model.part_number + ")" 
-      else
-        label = "Unknown"
-      end
-    end
+    # part_num_hash = PRODUCT_HASH.invert
+    # 
+    # if(recurring_monthly == true)
+    #   "Recurring Monthly"
+    # else
+    #   if !device_model.nil?
+    #     label = part_num_hash[device_model.part_number] + " (" + device_model.part_number + ")" 
+    #   else
+    #     label = "Unknown"
+    #   end
+    # end
   end
   
   def status
     if(recurring_monthly == true)
-      "Billing starts " + 3.months.from_now.to_s(:day_date).to_s
+      "Billing starts " + device_model.tariff(:coupon_code => order.coupon_code).recurring_delay.months.from_now.to_s(:day_date).to_s
     else
       "In Process"
     end
