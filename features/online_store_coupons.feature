@@ -8,11 +8,11 @@ Feature: Online store coupons
     Given I am guest
     And the product catalog exists
 
-  Scenario: referral link fills coupon code on online store
+  Scenario: Order page - referral link fills coupon code text field
     When I visit "/order/coupon-code-1"
     Then the "Coupon Code" field should contain "coupon-code-1"
 
-  Scenario Outline: Only a valid coupon code url shows coupon prices
+  Scenario Outline: Order page - referral link for various coupon codes should show correct deposit, shipping, total, recurring, trial/advance
     When I visit "/order/<coupon_code>"
     And I choose "product_<product>"
     And I fill the shipping details for online store
@@ -29,7 +29,7 @@ Feature: Online store coupons
       | clip     | BOGUS_CODE  | 249     | 15       | 3      | 0    | 49        | 411   | 3 months advance |
       | clip     | 99TRIAL     | 99      | 15       | 0      | 1    | 49        | 114   | 1 month trial    |
 
-  Scenario: Valid coupon code in regular order shows coupon prices for confirmation
+  Scenario: Confirmation page - Filling in valid 99TRIAL shows correct deposit, trial period, total upfront
     When I go to the online store
     And I choose "product_complete"
     And I fill the shipping details for online store
@@ -39,7 +39,7 @@ Feature: Online store coupons
     And I press "Continue"
     Then page content should have "99, 1 month trial, 114"
 
-  Scenario: Successful 99TRIAL coupon code begins recurring charge after one month
+  Scenario: Success page - Filling in 99TRIAL shows correct recurring start date
     When I go to the online store
     And I choose "product_complete"
     And I fill the shipping details for online store
@@ -51,7 +51,7 @@ Feature: Online store coupons
     Then page content should have "Thank you, Success, Billing starts `1.month.from_now.to_s(:day_date)`"
 
   # Included Scenario: Subscription begins appropriately for regular and coupon purchases
-  Scenario Outline: Credit card is charged subject to selected product and coupon code
+  Scenario Outline: Success Page - Filling in various coupon codes shows recurring start date and upfront charge
     When I go to the online store
     And I choose "product_complete"
     And I fill the shipping details for online store
@@ -67,7 +67,7 @@ Feature: Online store coupons
       |             | `3.months.from_now.to_s(:day_date)` | 441     |
       | 99TRIAL     | `1.month.from_now.to_s(:day_date)`  | 114     |
   
-  Scenario Outline: Invalid or expired coupon code gives error on order page
+  Scenario Outline: Confirmation page - Invalid or expired coupon code gives error message
     When I go to the online store
     And I choose "product_complete"
     And I fill the shipping details for online store
