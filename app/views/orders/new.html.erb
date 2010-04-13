@@ -15,8 +15,8 @@
     <% end -%>
 <% end -%>
 
-<% flash.each do |type| %>
-  <%= flash[type] %>
+<% flash.each do |type, message| %>
+  <div class="<%= type %>"><%= message %></div>
 <% end %>
 
 <% unless @order.errors.blank? %>  <!-- show validation errors -->

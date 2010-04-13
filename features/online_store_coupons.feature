@@ -67,6 +67,19 @@ Feature: Online store coupons
       |             | `3.months.from_now.to_s(:day_date)` | 441     |
       | 99TRIAL     | `1.month.from_now.to_s(:day_date)`  | 114     |
   
-  Scenario: Invalid coupon code gives error on order page
-  Scenario: Expired coupon code shows appropriate message on order page
+  Scenario Outline: Invalid or expired coupon code gives error on order page
+    When I go to the online store
+    And I choose "product_complete"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "Same as shipping"
+    And I fill in "Coupon Code" with "<coupon_code>"
+    And I press "Continue"
+    Then page content should have "This coupon is <message>. Regular pricing is applied."
+    
+    Examples:
+      | coupon_code | message |
+      | ABC         | invalid |
+      | EXPIRED     | expired |
+      
   Scenario: Order items are created appropriately for selected product and coupon code

@@ -24,12 +24,14 @@ class Order < ActiveRecord::Base
     ship.eql?( bill)
   end
   
-  # validate coupon code when present. ignore when missing
-  def validate_on_create
-    record.errors.add :coupon_code, 'is not valid' \
-      if DeviceModelPrice.count(:conditions => {:coupon_code => coupon_code}).zero? \
-        unless coupon_code.blank?
-  end
+  # we do not want vaidation error.
+  #   business logic now is to switch back to default prices and show flash[:warning]
+  # # validate coupon code when present. ignore when missing
+  # def validate_on_create
+  #   record.errors.add :coupon_code, 'is not valid' \
+  #     if DeviceModelPrice.count(:conditions => {:coupon_code => coupon_code}).zero? \
+  #       unless coupon_code.blank?
+  # end
     
   # based on the above definitions
   def total_value
@@ -140,5 +142,40 @@ class Order < ActiveRecord::Base
 
   def assign_group(name)
     group_id = Group.find_or_create_by_name(name) # usually in a new order, so no need to check nil? zero?
+  end
+
+  # get invalid or expired warning messages for coupon code
+  #  optionally pass "complete" or "clip" to skip order_items and check directly in table
+  def message_for_coupon_code(which_code = coupon_code, product_type = "")
+    messages = []
+    if product_type.blank?      
+      order_items.each {|order_item| messages << device_model_coupon_messages( order_item.device_model, which_code) }
+    else
+      messages << device_model_coupon_messages( DeviceModel.find_complete_or_clip(product_type), which_code)
+    end
+    messages.flatten.join(',')
+  end
+    
+  # private methods
+  #
+  private
+  
+  def device_model_coupon_messages(device_model = nil, coupon_code = "")
+    messages = []
+    unless device_model.blank? || !device_model.is_a?( DeviceModel)
+      price = device_model.prices.find_by_coupon_code(coupon_code)
+      if price.blank?
+        messages << coupon_code_message( device_model.model_type, "invalid")
+      elsif price.expired?
+        messages << coupon_code_message( device_model.model_type, "expired")
+      end
+    else
+      messages << "Part number deprecated in product catalog. Please contact us with your order details." # at least some error should be shown
+    end
+    messages.flatten
+  end
+  
+  def coupon_code_message(product_name = "myHalo product", status = "invalid")
+    ["#{product_name}: This coupon is ", status, ". Regular pricing is applied."].join
   end
 end

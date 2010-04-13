@@ -17,4 +17,8 @@ class DeviceModelPrice < ActiveRecord::Base
   def recurring_delay
     months_advance.zero? ? months_trial : months_advance
   end
+  
+  def expired?
+    expiry_date.blank? ? false : (expiry_date < Date.today)
+  end
 end

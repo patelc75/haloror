@@ -880,3 +880,11 @@ input.validation-failed, textarea.validation-failed {
 }
 
 .red { color: #C80000; }
+.warning {
+  display: block;
+  border: 1px solid #000;
+  padding: 5px 10px;
+  background-color: #F00;
+  color: #FFF; 
+  font-weight: bold;
+  }
