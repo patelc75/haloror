@@ -1,5 +1,12 @@
 # profile related steps
 #
+
+# require ... is needed for --dry-run option of cucumber
+#
+# -d, --dry-run                    Invokes formatters without executing the steps.
+                                 # This also omits the loading of your support/env.rb file if it exists.
+                                 # Implies --no-snippets.
+require File.join("features", "support", "env.rb")
 include ApplicationHelper # methods: find_profile_user, split_phrase
 
 Given /^a profile exists for user "([^\"]*)"$/ do |user_login|
