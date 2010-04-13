@@ -1,0 +1,12 @@
+<% unless controller.action_name == 'event_details'%>
+  <% if action = event.gw_reset? %>
+	<b>GW Reset</b>
+	<%= render :partial => 'undo_action',:locals => {:event => event}%>
+  <% else %>
+	<%= render :partial => 'mark_event',:locals => {:event => event}%>
+  <% end %>
+<%else%>
+  <%if action = event.gw_reset?%>
+    Marked <b>GW Reset</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
+  <%end%>
+<%end%>
