@@ -29,6 +29,7 @@
 <% if current_user.is_super_admin? %>
 | <%= link_to 'Activate Users', :controller => 'util', :action => 'activate_users'%>
 | <%= link_to 'Dialup Num Table', dial_ups_path%>
+| <%= link_to 'Coupon Codes', device_model_prices_path%>
 <% end %>
 <% if(current_user.is_admin? || current_user.is_super_admin?) and params[:action] == 'roles' %>
 | <a href="/admin/signup">Sign up users with other roles</a>
