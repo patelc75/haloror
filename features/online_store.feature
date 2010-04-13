@@ -146,6 +146,9 @@ Feature: Online (D)irect (T)o (C)ustomer store
     # credit card number 4222222222222 and an amount of 12 dollars,
     # the payment gateway will respond with response code 12,
     # "Authorization Code is required but is not present."
+    #
+    # this is not working with authorize.net as mentioned
+    #
   Scenario: Do not attempt recurring when one_time fails
     When I choose "product_complete"
     And I fill the shipping details for online store
