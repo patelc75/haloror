@@ -60,7 +60,7 @@
           <label>This person will be the myHalo user</label>
         </td>
         <td width="33%">
-          <%= f.check_box "bill_address_same", :checked => "#{@same_address}", :disabled => @confirmation %>
+          <%= f.check_box "bill_address_same", :checked => @same_address, :disabled => @confirmation %>
           <label for="order_bill_address_same">Same as shipping info</label>
           <%= observe_field(:order_bill_address_same,
                             :on => :click,
@@ -182,7 +182,7 @@
     </table>
   </fieldset>
   <p class="textright">
-    <%= link_to "< Back", order_path, :class => 'largebutton' if @confirmation %>
+    <%= link_to "< Back", order_path, :id => "back_link", :class => 'largebutton' if @confirmation %>
     <%= f.submit "#{@confirmation ? 'Place Order >' : 'Continue >'}", :class => 'largebutton' %>
   </p>
 <% end -%>

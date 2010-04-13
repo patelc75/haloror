@@ -126,3 +126,16 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Then page content should have "Thank you"
     And email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
     And email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery
+
+  Scenario: product selection and same_as_shipping remembred in session
+    When I choose "product_complete"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "Same as shipping"
+    And I press "Continue"
+    And I follow "back_link"
+    Then the "myHalo Complete" checkbox should be checked
+    And the "Same as shipping info" checkbox should be checked
+  
+  Scenario: Do not attempt recurring when one_time fails
+  
