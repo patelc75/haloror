@@ -452,7 +452,6 @@ class CallCenterController < ApplicationController
   
   def call_center_response
     @event = Event.find(params[:id])
-    debugger
     #UtilityHelper.format_datetime(params[:call_center_response].to_time,current_user)
      @response_time = UtilityHelper.user_time_zone_to_utc(params[:call_center_response])
      @timestamp = UtilityHelper.user_time_zone_to_utc(@event.timestamp_server.to_s)
