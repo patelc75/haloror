@@ -10,7 +10,7 @@ class OrdersController < ApplicationController
   
   def new
     @confirmation = false
-    @product = ""
+    @product ||= ""
     @order = Order.new(session[:order]) # recall if any order data was remembered
     @complete_tariff = DeviceModel.complete_tariff(params[:coupon_code])
     @clip_tariff = DeviceModel.clip_tariff(params[:coupon_code])
@@ -57,7 +57,7 @@ class OrdersController < ApplicationController
       
     else # store mode
       # back button needs this
-      @same_address = (session[:order].blank? ? "checked" : (session[:order][:bill_address_same] || @order.ship_and_bill_address_same))
+      @same_address = (session[:order].blank? ? "checked" : (session[:order][:bill_address_same] || @order.bill_address_same || @order.ship_and_bill_address_same))
       @order = (session[:order].blank? ? Order.new(:coupon_code => params[:coupon_code]) : Order.new(session[:order]))
     end
     
