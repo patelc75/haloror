@@ -149,15 +149,24 @@ Feature: Online (D)irect (T)o (C)ustomer store
     #
     # this is not working with authorize.net as mentioned
     #
-  Scenario: Do not attempt recurring when one_time fails
+  Scenario: Duplicate order. Do not attempt recurring when one_time fails
     When I choose "product_complete"
-    And I fill the shipping details for online store
+    And I fill the test user for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
     And I fill in "Card number" with "4222222222222"
     And I fill in "Coupon Code" with "DECLINED"
+    And I check "Same as shipping"
+    And I press "Continue"
+    And I press "Place Order"
+    And I go to the online store
+    And I fill the test user for online store
+    And I fill the credit card details for online store
+    And I fill in "Card number" with "4222222222222"
+    And I fill in "Coupon Code" with "DECLINED"
+    And I check "Same as shipping"
+    And I erase the payment gateway response log
     And I press "Continue"
     And I press "Place Order"
     Then I should see "Failure"
     And the payment gateway should have log for 3 USD
-    # And the payment gateway should not have log for 59 USD
+    And the payment gateway should not have log for 59 USD
