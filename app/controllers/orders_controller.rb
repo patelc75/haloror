@@ -32,6 +32,10 @@ class OrdersController < ApplicationController
             )
         session[:product] = @product # same as params[:product]. Will be used later in create
         #
+        # any flash messages for invalid or expired coupon code
+        message = @order.message_for_coupon_code(@order.coupon_code, @product)
+        flash[:warning] = message unless message.blank?
+        #
         # check some validation on the first page itself
         # TODO: send an email to administrator or webmaster
         @order.errors.add_to_base \
