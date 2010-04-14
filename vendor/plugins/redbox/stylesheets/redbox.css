@@ -13,22 +13,15 @@
   filter: alpha(opacity=60);
 }
 
-#RB_redbox {
-  width: 100%;
-  position: absolute;
-  top: 0px;
-}
-
 #RB_loading {
-  position: relative;
-  top: 200px;
   z-index: 101;
   width: 70px;
-  height: 70px;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 200px;
+  padding-bottom: 30px;
   text-align: center;
-  background: #666 url(../images/redbox_spinner.gif) no-repeat center center;
-  border: 2px solid black;
+  background: url(../images/redbox_spinner.gif) no-repeat bottom center;
 }
 
 #RB_window {
@@ -38,5 +31,6 @@
   text-align: left;
   overflow: hidden;
   margin: 20px auto 0 auto;
-  position: absolute;  
+  position:fixed;
+  position: absolute;
 }
