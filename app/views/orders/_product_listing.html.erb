@@ -2,7 +2,7 @@
   <% if @confirmation.blank? || (@product == "complete") %>
   <tr>
     <td>
-      <%= radio_button_tag 'product', 'complete', :checked => (@product == "complete") unless @confirmation %> <span style="font-size:120%"><label for="product_complete">myHalo Complete</label><b>&nbsp;(<%= USD_value(@complete_tariff.monthly_recurring) %>/mo)</b></span>
+      <%= radio_button_tag 'product', 'complete', (@product == "complete") unless @confirmation %> <span style="font-size:120%"><label for="product_complete">myHalo Complete</label><b>&nbsp;(<%= USD_value(@complete_tariff.monthly_recurring) %>/mo)</b></span>
     </td>
     <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
     <% unless @confirmation %>
@@ -15,7 +15,7 @@
   <% end -%>
   <% if @confirmation.blank? || (@product == "clip") %>
   <tr>
-    <td><%= radio_button_tag "product", "clip", :checked => (@product == "clip") unless @confirmation %><span style="font-size:120%"><label for="product_clip">&nbsp;myHalo Clip</label><b>&nbsp;(<%= USD_value(@clip_tariff.monthly_recurring) %>/mo)</b></span></td>
+    <td><%= radio_button_tag "product", "clip", (@product == "clip") unless @confirmation %><span style="font-size:120%"><label for="product_clip">myHalo Clip</label><b>&nbsp;(<%= USD_value(@clip_tariff.monthly_recurring) %>/mo)</b></span></td>
     <td><%= image_tag 'myhalo-belt-clip.jpg' %></td>
     <%= observe_field(:product_clip,
                       :frequency => 1,

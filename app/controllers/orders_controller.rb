@@ -10,7 +10,7 @@ class OrdersController < ApplicationController
   
   def new
     @confirmation = false
-    @product ||= ""
+    @product = session[:product]
     @order = Order.new(session[:order]) # recall if any order data was remembered
     @complete_tariff = DeviceModel.complete_tariff(params[:coupon_code])
     @clip_tariff = DeviceModel.clip_tariff(params[:coupon_code])
