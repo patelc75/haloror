@@ -72,26 +72,25 @@ class Order < ActiveRecord::Base
         payment_gateway_responses.create!(:action => "purchase", :amount => device_model_price.upfront_charge*100, :response => @one_time_fee_response)
         errors.add_to_base @one_time_fee_response.message unless @one_time_fee_response.success?
 
-        #
-        # recurring should be attempted only when one-time is charged
-        #
-        
-        if device_model_price.monthly_recurring.zero?
-          errors.add_to_base "Recurring subscription fee: #{device_model_price.monthly_recurring}"
-        else
-          # recurring subscription for 60 months, starting 3.months.from_now
-          # TODO: do not hard code. pick from database
-          # =>  keep charging 5 years at least
-          @recurring_fee_response = GATEWAY.recurring(device_model_price.monthly_recurring*100, credit_card, {
-              :billing_address => {:first_name => bill_first_name, :last_name => bill_last_name},
-              :interval => {:unit => :months, :length => 1},
-              :duration => {:start_date => device_model_price.recurring_delay.from_now.to_date, :occurrences => 60}
-            }
-          )
-          # store response in database
-          payment_gateway_responses.create!(:action => "recurring", :amount => device_model_price.monthly_recurring*100, :response => @recurring_fee_response)
-          errors.add_to_base @recurring_fee_response.message unless @recurring_fee_response.success?
-        end # recurring
+        # recurring attempted only when one-time is success
+        if @one_time_fee_response.success?
+          if device_model_price.monthly_recurring.zero?
+            errors.add_to_base "Recurring subscription fee: #{device_model_price.monthly_recurring}"
+          else
+            # recurring subscription for 60 months, starting 3.months.from_now
+            # TODO: do not hard code. pick from database
+            # =>  keep charging 5 years at least
+            @recurring_fee_response = GATEWAY.recurring(device_model_price.monthly_recurring*100, credit_card, {
+                :billing_address => {:first_name => bill_first_name, :last_name => bill_last_name},
+                :interval => {:unit => :months, :length => 1},
+                :duration => {:start_date => device_model_price.recurring_delay.from_now.to_date, :occurrences => 60}
+              }
+            )
+            # store response in database
+            payment_gateway_responses.create!(:action => "recurring", :amount => device_model_price.monthly_recurring*100, :response => @recurring_fee_response)
+            errors.add_to_base @recurring_fee_response.message unless @recurring_fee_response.success?
+          end # recurring
+        end
         
       end # one time charge
     else

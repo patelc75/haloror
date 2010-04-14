@@ -23,27 +23,27 @@
         </tr>
         <tr>
           <td class="textright"><%= f.label :created_at, "RMA Created Date" %>:</td>
-          <td><%= f.text_field :created_at, :disabled => true ,:value => @rma_item.created_at.to_formatted_s(:date_time_timezone)%></td>
+          <td><%= f.text_field :created_at, :disabled => true %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :reinstalled_on, "RMA Reinstalled Date" %>:</td>
-          <td><%= calendar_date_select_tag "rma_item[reinstalled_on]", @rma_item.reinstalled_on.to_formatted_s(:date_time_timezone), :id => "rma_item_reinstalled_on", :popup => 'force' %></td>
+          <td><%= calendar_date_select_tag "rma_item[reinstalled_on]", @rma_item.reinstalled_on, :id => "rma_item_reinstalled_on", :popup => 'force' %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :completed_on, "RMA Completed Date" %>:</td>
-          <td><%= calendar_date_select_tag "rma_item[completed_on]", @rma_item.completed_on.to_formatted_s(:date_time_timezone), :id => "rma_item_completed_on", :popup => 'force' %></td>
+          <td><%= calendar_date_select_tag "rma_item[completed_on]", @rma_item.completed_on, :id => "rma_item_completed_on", :popup => 'force' %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :received_on, "RMA Received Date" %>:</td>
-          <td><%= calendar_date_select_tag "rma_item[received_on]", @rma_item.received_on.to_formatted_s(:date_time_timezone), :id => "rma_item_received_on", :popup => 'force' %></td>
+          <td><%= calendar_date_select_tag "rma_item[received_on]", @rma_item.received_on, :id => "rma_item_received_on", :popup => 'force' %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :shipped_on, "RMA Shipped Date" %>:</td>
-          <td><%= calendar_date_select_tag "rma_item[shipped_on]", @rma_item.shipped_on.to_formatted_s(:date_time_timezone), :id => "rma_item_shipped_on", :popup => 'force' %></td>
+          <td><%= calendar_date_select_tag "rma_item[shipped_on]", @rma_item.shipped_on, :id => "rma_item_shipped_on", :popup => 'force' %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :atp_on, "ATP Date" %>:</td>
-          <td><%= calendar_date_select_tag "rma_item[atp_on]", @rma_item.atp_on.to_formatted_s(:date_time_timezone), :id => "rma_item_atp_on", :popup => 'force' %></td>
+          <td><%= calendar_date_select_tag "rma_item[atp_on]", @rma_item.atp_on, :id => "rma_item_atp_on", :popup => 'force' %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :atp_status, "ATP Status" %>:</td>

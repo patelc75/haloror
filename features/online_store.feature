@@ -137,5 +137,36 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Then the "myHalo Complete" checkbox should be checked
     And the "Same as shipping info" checkbox should be checked
   
-  Scenario: Do not attempt recurring when one_time fails
-  
+    # To cause the payment gateway to respond with a specific response
+    # code, send a transaction with the Visa error test credit card
+    # number (x_card_num) 4222222222222 and an amount (x_amount) equal
+    # to the response code you want the payment gateway to return.
+    # 
+    # For example, if a transaction is sent in Test Mode with the
+    # credit card number 4222222222222 and an amount of 12 dollars,
+    # the payment gateway will respond with response code 12,
+    # "Authorization Code is required but is not present."
+    #
+    # this is not working with authorize.net as mentioned
+    #
+  Scenario: Duplicate order. Do not attempt recurring when one_time fails
+    When I choose "product_complete"
+    And I fill the test user for online store
+    And I fill the credit card details for online store
+    And I fill in "Card number" with "4222222222222"
+    And I fill in "Coupon Code" with "DECLINED"
+    And I check "Same as shipping"
+    And I press "Continue"
+    And I press "Place Order"
+    And I go to the online store
+    And I fill the test user for online store
+    And I fill the credit card details for online store
+    And I fill in "Card number" with "4222222222222"
+    And I fill in "Coupon Code" with "DECLINED"
+    And I check "Same as shipping"
+    And I erase the payment gateway response log
+    And I press "Continue"
+    And I press "Place Order"
+    Then I should see "Failure"
+    And the payment gateway should have log for 3 USD
+    And the payment gateway should not have log for 59 USD

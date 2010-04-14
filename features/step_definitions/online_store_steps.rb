@@ -8,6 +8,7 @@ Given /^the product catalog exists$/ do
       :part_number => "12001002-1", :tariff => {
       :default => { :coupon_code => "",       :deposit => 249, :shipping => 15, :monthly_recurring => 59, :months_advance => 3, :months_trial => 0},
       :expired => { :coupon_code => "EXPIRED", :deposit => 99, :shipping => 15, :monthly_recurring => 59, :months_advance => 3, :months_trial => 0, :expiry_date => 1.month.ago.to_date},
+      :declined => { :coupon_code => "DECLINED", :deposit => 3, :shipping => 0, :monthly_recurring => 59, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.ago.to_date},
       :trial =>   { :coupon_code => "99TRIAL", :deposit => 99, :shipping => 15, :monthly_recurring => 59, :months_advance => 0, :months_trial => 1, :expiry_date => 1.month.from_now.to_date}
       }
     },
@@ -15,6 +16,7 @@ Given /^the product catalog exists$/ do
       :part_number => "12001008-1", :tariff => {
       :default => { :coupon_code => "",       :deposit => 249, :shipping => 15, :monthly_recurring => 49, :months_advance => 3, :months_trial => 0},
       :expired => { :coupon_code => "EXPIRED", :deposit => 99, :shipping => 15, :monthly_recurring => 49, :months_advance => 3, :months_trial => 0, :expiry_date => 1.month.ago.to_date},
+      :declined => { :coupon_code => "DECLINED", :deposit => 3, :shipping => 0, :monthly_recurring => 49, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.ago.to_date},
       :trial =>   { :coupon_code => "99TRIAL", :deposit => 99, :shipping => 15, :monthly_recurring => 49, :months_advance => 0, :months_trial => 1, :expiry_date => 1.month.from_now.to_date}
       }
     }
@@ -30,6 +32,10 @@ Given /^the product catalog exists$/ do
 end
 
 Given /^the payment gateway response log is empty$/ do
+  PaymentGatewayResponse.delete_all
+end
+
+When /^I erase the payment gateway response log$/ do
   PaymentGatewayResponse.delete_all
 end
 
@@ -61,10 +67,25 @@ When /^I fill the (.+) details for online store$/ do |which|
   end
 end
 
+When /^I fill the test user for online store$/ do
+  When %{I fill in "order_ship_first_name" with "first name"}
+  When %{I fill in "order_ship_last_name" with "last name"}
+  When %{I fill in "order_ship_address" with "address"}
+  When %{I fill in "order_ship_city" with "city"}
+  When %{I fill in "order_ship_zip" with "11111"}
+  When %{I select "Alabama" from "order_ship_state"}
+  When %{I fill in "order_ship_phone" with "1234567890"}
+  When %{I fill in "order_ship_email" with "test@user.me"}
+end
+
 Then /^the payment gateway response should have (\d+) logs$/ do |row_count|
   assert_equal row_count.to_i, PaymentGatewayResponse.count
 end
 
 Then /^the payment gateway should have log for (\d+) USD$/ do |amount|
-  assert_equal 1, PaymentGatewayResponse.count(:conditions => {:amount => (amount.to_i*100)})
+  PaymentGatewayResponse.count(:conditions => {:amount => (amount.to_i*100)}).should == 1
+end
+
+Then /^the payment gateway should not have log for (\d+) USD$/ do |amount|
+  PaymentGatewayResponse.count(:conditions => {:amount => (amount.to_i*100)}).should == 0
 end

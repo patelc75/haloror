@@ -1,5 +1,5 @@
 #RB_overlay {
-  position: fixed;
+  position: absolute;
   z-index:100;
   width: 100%;
   height: 100%;
@@ -14,31 +14,28 @@
 }
 
 #RB_redbox {
-  	width: 100%;
-	position: absolute;
-	top: 0px;
-	left:0px;
-	z-index:100;
-}
-
-#RB_loading {
+  width: 100%;
   position: absolute;
-  z-index: 101;
-  width: 70px;
-  height: 70px;
-  text-align: center;
-  background: #666 url(../images/redbox_spinner.gif) no-repeat center center;
-  border: 2px solid black;
-  margin: 20px auto 0 auto;
-  display:none;
+  top: 0px;
 }
 
 #RB_window {
-  z-index: 102;
-  background: none;
-  display: block;
+	position: absolute;
+	left: 0;
+	width: 100%;
+	z-index: 102;
+/*  line-height: 0;*/
+}
+
+#RB_loading {
+  margin: 0 auto 0 auto;
+	width: 250px;
+	height: 250px;
+  text-align: center;
+  background: #FFF url(../images/redbox_spinner.gif) no-repeat center center;
+}
+
+.redbox_contents {
+  margin: 0 auto;
   text-align: left;
-  overflow: hidden;
-  margin: 20px auto 0 auto;
-  position: absolute;
 }
