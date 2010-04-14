@@ -335,6 +335,7 @@ class ReportingController < ApplicationController
       	@group_totals[:false_alarm_panics] = 0
       	@group_totals[:test_alarm_panics] = 0
       	@group_totals[:non_emerg_panics] = 0
+      	@group_totals[:duplicate] = 0
       	@group_totals[:real_alarm_panics] = 0
       	@group_totals[:unclassified_panics] = 0
       	@group_totals[:real_panics] = 0
@@ -460,6 +461,12 @@ class ReportingController < ApplicationController
             		  end 
             		  @group_stats[group.name][:non_emerg_panics]  << panic
             		  @group_totals[:non_emerg_panics] += 1 if group.name !="safety_care" and group.name !="halo"
+                    elsif panic.duplicate?
+            		  if @group_stats[group.name][:duplicate].nil?
+            		    @group_stats[group.name][:duplicate] = []
+            		  end 
+            		  @group_stats[group.name][:duplicate]  << panic
+            		  @group_totals[:duplicate] += 1 if group.name !="safety_care" and group.name !="halo"
             		elsif panic.real_alarm?
             		  if @group_stats[group.name][:real_alarm_panics].nil?
             		    @group_stats[group.name][:real_alarm_panics] = []

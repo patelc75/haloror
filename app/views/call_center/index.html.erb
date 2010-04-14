@@ -30,6 +30,9 @@
 All times are in <%= current_user.profile.time_zone if current_user.profile %> timezone <br>
 <div class="table">
   <div class="row header">
+  	<div class="col-50" style="background-color:#E6E6E6;height:75px;">
+      Event <br>ID
+    </div>
     <div class="col-50" style="background-color:#E6E6E6;height:75px;">
       Event <br>Type <br><sub>(Oscope Start Msg ID)</sub>
     </div>
@@ -40,7 +43,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
     <div class="col-125" style="background-color:#E6E6E6;height:75px;">
       Timestamp<br>Server
     </div>
-    <div class="col-125" style="background-color:#E6E6E6;height:75px;">
+    <div class="col-100" style="background-color:#E6E6E6;height:75px;">
       Name
     </div>
     <% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
@@ -73,6 +76,8 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
   </div>
   <% @events.each do |event| %>
     <div class="row">
+    	<div class="col-50"><%= event.id %>
+    	</div>
       <% if event.event_type == 'CallCenterFollowUp' %>
         <div class="col-50">
           Follow Up
@@ -104,7 +109,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
           <%#= event[:timestamp_server].strftime(Time::DATE_FORMATS[:date_time_seconds_2])%>
         <% end %>
       </div>
-      <div class="col-125">
+      <div class="col-100">
       <% if(current_user.is_super_admin? || current_user.is_admin? || current_user.is_moderator?) %>
         <a href="/call_list/show/<%=event.user[:id]%>"><%=event.user.name%></a> (<%=event.user.id%>)
       <% else %>
@@ -149,6 +154,8 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       	  <%= render :partial => 'test_alarm',:locals => {:event => event}%>
 		<% elsif action = event.non_emerg_panic? %>
           <%= render :partial => 'non_emerg_panic',:locals => {:event => event}%>
+        <% elsif action = event.duplicate? %>
+          <%= render :partial => 'duplicate_event',:locals => {:event => event}%>
         <% elsif action = event.gw_reset? %>
           <%= render :partial => 'gw_reset',:locals => {:event => event}%>
 		<% else %>

@@ -1,0 +1,20 @@
+<%if textfield%>
+	 <% remote_form_for("duplicate", :url => {:action => 'duplicate_event'},:update => "false_alarm_#{event.id}", :html => { :method => :post }) do |f|%>
+	<input type="text" name="duplicate_event" size="8">
+	<input type="hidden" name="event_id" value="<%= event.id%>">
+	<input type="submit" value="Add">
+	<%end%>
+<%else%>
+  <% unless controller.action_name == 'event_details'%>
+    <% if action = event.duplicate? %>
+	  <b>Duplicate Event</b>
+	  <%= render :partial => 'undo_action',:locals => {:event => event}%>
+    <% else %>
+      <%= render :partial => 'mark_event',:locals => {:event => event}%>
+    <% end %>
+  <%else%>
+    <% if action = event.duplicate? %>
+      Marked  <b>Duplicate</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
+    <%end%>
+  <%end%>
+<%end%>

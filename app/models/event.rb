@@ -92,6 +92,14 @@ class Event < ActiveRecord::Base
     return false
   end
   
+  def duplicate?
+    EventAction.find(:all, :conditions => "event_id = '#{self.id}'").each do |action|
+      return action if action.description == 'duplicate'
+    end
+    
+    return false
+  end
+  
   def unclassified?
   	if action = EventAction.find(:first, :conditions => "event_id = '#{self.id}'")
       return false
