@@ -67,6 +67,7 @@ var RedBox = {
     { // Explorer Mac...would also work in Explorer 6 Strict, Mozilla and Safari
       yScroll = document.body.offsetHeight;
     }
+    if (yScroll < 100) { yScroll = 100;}
     $("RB_overlay").style['height'] = yScroll +"px";
   },
 
