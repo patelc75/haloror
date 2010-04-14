@@ -46,6 +46,7 @@ require "digest"
   			<th bgcolor="#E1d1E1">False<br> Alarm<br> Panics</th>
   			<th bgcolor="#E1d1E1">Test<br> Panics</th>
   			<th bgcolor="#E1d1E1">Non<br> Emerg<br> Panics</th>
+  			<th bgcolor="#E1d1E1">Duplicate<br> Panics</th>
             <th bgcolor="#E1d1E1">GW Reset<br> Panics</th>
   			<th bgcolor="#E1d1E1">Un- <br>classified<br> Panics</th>
   			<th bgcolor="#E1d1E1">Panics<br> Specificity</th>
@@ -75,6 +76,7 @@ require "digest"
   				<td><%= @false_alarm_panic = @group_stats[key][:false_alarm_panics].length if @group_stats[key][:false_alarm_panics]%></td>
   				<td><%= @test_panics = @group_stats[key][:test_alarm_panics].length if @group_stats[key][:test_alarm_panics]%></td>
   				<td><%= @non_emerg_panic = @group_stats[key][:non_emerg_panics].length if @group_stats[key][:non_emerg_panics]%></td>
+  				<td><%= @duplicate = @group_stats[key][:duplicate].length if @group_stats[key][:duplicate]%></td>
   				<td><%= @real_falls = @group_stats[key][:gwreset_panics].length if @group_stats[key][:gwreset_panics]%></td>
   				<td><%= @group_stats[key][:unclassified_panics].length if @group_stats[key][:unclassified_panics]%></td>
   				<td><% panic_specify = ((@real_panics.to_f + @non_emerg_panic.to_f) / ( @false_alarm_panic.to_f + @real_panics.to_f + @non_emerg_panic.to_f)) if @real_panics != 0%>
@@ -108,6 +110,7 @@ require "digest"
 		<td><%= @group_totals[:false_alarm_panics] %></td>
 		<td><%= @group_totals[:test_alarm_panics] %></td>
 		<td><%= @group_totals[:non_emerg_panics] %></td>
+		<td><%= @group_totals[:duplicate] %></td>
 		<td><%= @group_totals[:gwreset_panics] %></td>
 		<td><%= @group_totals[:unclassified_panics] %></td>
 		<td>

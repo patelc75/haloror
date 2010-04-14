@@ -208,7 +208,27 @@ class CallCenterController < ApplicationController
     render :partial => 'non_emerg_panic', :locals => {:event => Event.find(params[:id])}
   end
   
+  def duplicate_event
+  	@event = Event.find(params[:id])
+  	if params[:textfield]
+      render :partial => 'duplicate_event', :locals => {:event => Event.find(params[:id]),:textfield => params[:textfield]}
+    else
+      action = EventAction.new
+      action.user_id = current_user.id
+      action.event_id = params[:id]
+      action.description = 'duplicate'
+      action.save!
+      ea = action 
+      @event.update_attributes(:duplicate_id => params[:duplicate_event])
+      render :partial => 'duplicate_event', :locals => {:event => Event.find(params[:id])}
+	end 
+
+
+  end
+  
   def undo_action
+  	@event = Event.find(params[:id])
+  	@event.update_attributes(:duplicate_id => nil)
     @event_action = EventAction.find_by_event_id(params[:id])
     @event_action.destroy
     render :partial => 'mark_event',:locals => {:event => Event.find(params[:id])}
