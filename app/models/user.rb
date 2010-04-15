@@ -39,7 +39,7 @@ class User < ActiveRecord::Base
   
   has_and_belongs_to_many :devices
   has_and_belongs_to_many :user_intakes # replaced with has_many :through on Senior, Subscriber, Caregiver
-  
+  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active
   
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
@@ -111,7 +111,7 @@ class User < ActiveRecord::Base
       if !self.eql?(the_senior) && self.is_caregiver_of?( the_senior)
         role = self.roles.select {|role| role.name == "caregiver" && \
           role.authorizable_id == the_senior.id && role.authorizable_type == "User" }.first
-        options = options_for_role(role)
+        options = options_for_role(role) unless role.blank?
       end
     rescue
       options = {}
@@ -121,7 +121,8 @@ class User < ActiveRecord::Base
   
   def options_for_role(role_or_id)
     role_id = (role_or_id.is_a?(Role) ? role_or_id.id : role_or_id)
-    RolesUser.find_by_user_id_and_role_id(self.id, role_id).roles_users_option
+    role_user = RolesUser.find_by_user_id_and_role_id(self.id, role_id)
+    role_user.roles_users_option unless role_user.blank?
   end
   
   

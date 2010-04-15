@@ -56,8 +56,26 @@ Factory.define :rma do |v|
   v.ship_zipcode rand(99999)
   v.notes { Faker::Lorem.paragraph }
   v.association :created_by, :factory => :user
-  v.association :group_id, :factory => :group
-  v.association :user_id, :factory => :user
+  v.association :group
+  v.association :user
+end
+
+Factory.define :user_intake do |v|
+  v.installation_date { 1.month.from_now }
+  v.association :created_by, :factory => :user
+  v.association :updated_by, :factory => :user
+  v.bill_monthly { rand(1) == 1 }
+  v.credit_debit_card_proceessed { |ui| !ui.bill_monthly } # reverse of the other field
+  v.kit_serial_number { Faker::PhoneNumber.phone_number }
+  v.association :group
+  v.subscriber_is_user { rand(1) == 1 }
+  v.subscriber_is_caregiver { rand(1) == 1 }
+  v.after_create do |ui|
+    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user|
+      ui.send("#{user}".to_sym, Factory.create(:user, :email => "#{user}@email.com"))
+    end
+  end
+  # v.association :order
 end
 
 Factory.define :user do |v|

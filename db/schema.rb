@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100407184340) do
+ActiveRecord::Schema.define(:version => 20100412225928) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1046,6 +1046,9 @@ ActiveRecord::Schema.define(:version => 20100407184340) do
     t.boolean  "bill_monthly"
     t.string   "kit_serial_number"
     t.integer  "order_id"
+    t.integer  "group_id"
+    t.boolean  "subscriber_is_user"
+    t.boolean  "subscriber_is_caregiver"
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|
