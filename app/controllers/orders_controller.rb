@@ -80,31 +80,23 @@ class OrdersController < ApplicationController
         unless session[:order].blank?
 
           @order = Order.new(session[:order]) # pick from session, not params
-          @order.populate_billing_address
           @order.assign_group("direct_to_consumer")
 
           if @order.valid? && @order.save! #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
             # pick any of these hard coded values for now. This will change to device_revisions on order screen
-            #
-            product = session[:product] # used at many places in this code
-            device_model = DeviceModel.find_complete_or_clip(product) # finds clip or complete. default == complete
-            if device_model.blank?
-              #
+            @order.product = session[:product] # used at many places in this code
+            
+            if @order.product_from_catalog.blank?
               # this should have been caught on first page though
               @order.errors.add_to_base "Link to product catalog is broken. Please inform webmaster @ halomonitoring.com about this"
               
             else
-              # fetch product tariffs subject to coupon code from order
-              product_cost = device_model.tariff(:coupon_code => @order.coupon_code)
-              # create order item for product
-              @order.order_items.create!(:device_model_id => device_model.id, :cost => product_cost.upfront_charge, :quantity => 1)
-              # create a recurring order item
-              @order.order_items.create!(:cost => product_cost.monthly_recurring, :quantity => 1, \
-                :recurring_monthly => true, :device_model_id => device_model.id)
-
+              # create order_items. @order has everything in it to create these
+              @order.create_order_items
+              
               Order.transaction do
                 # we process the card in cents, but the tariff is USD
-                @one_time_fee, @subscription = @order.charge_credit_card_in_cents(product_cost)
+                @one_time_fee, @subscription = @order.charge_credit_card
                 success = (@one_time_fee.success? && @subscription.success?) \
                   unless (@one_time_fee.blank? || @subscription.blank?)
 
