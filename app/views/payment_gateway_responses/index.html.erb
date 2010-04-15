@@ -1,0 +1,38 @@
+<!-- <meta http-equiv="refresh" content="30"> -->
+<%= render :partial => 'reporting/nav'%>
+<h2>Payment Gateway Responses</h2>
+
+<p>
+  <table class="bluegrey">
+    <tr>
+    	<th>ID</th>
+    	<th>Action</th>
+    	<th>Order ID</th>
+    	<th>Amount</th>
+    	<th>Sucess</th>
+    	<th>Authorization</th>
+    	<th>Message</th>
+        <th>Params</th>
+        <th>Created At</th>
+        <th>Updated At</th>
+    </tr>
+    <% @payment_gateway_responses.each do |pgr| %>
+      <tr class="<%= cycle('', 'altrow') %>">
+        <td><%=h pgr.id %></td>
+        <td><%=h pgr.action %></td>
+        <td><%=h pgr.order_id %></td>
+        <td><%=h pgr.amount %></td>
+        <td><%=h pgr.success %></td>
+        <td><%=h pgr.authorization %></td>
+        <td><%=h pgr.message %></td>
+        <td><%=h pgr.params %></td>
+        <td><%=h pgr.created_at.to_s(:MM_DD_YYYY) %></td>
+        <td><%=h pgr.updated_at.to_s(:MM_DD_YYYY) %></td>
+      </tr>
+    <% end -%>
+  </table>
+</p>
+
+<p>
+  <center><big><%= will_paginate @payment_gateway_responses %></big></center>
+</p>
