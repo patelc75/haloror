@@ -34,16 +34,19 @@ HV_SHELL_URL = "https://account.healthvault.com"
 HV_HV_URL = "https://platform.healthvault.com/platform/wildcat.ashx"
 
 # Authorize.net settings
-AUTH_NET_LOGIN="54PB5egZ" #test
-AUTH_NET_TXN_KEY="48V258vr55AE8tcg" #test
-AUTH_NET_URL="https://apitest.authorize.net/xml/v1/request.api" # test
+# AUTH_NET_LOGIN="54PB5egZ" #test
+# AUTH_NET_TXN_KEY="48V258vr55AE8tcg" #test
+# AUTH_NET_URL="https://apitest.authorize.net/xml/v1/request.api" # test
+AUTH_NET_LOGIN="9J37JJs8hvB3" #production
+AUTH_NET_TXN_KEY="84ZnG87jcJMu8R6Z" #producion
+AUTH_NET_URL="https://api.authorize.net/xml/v1/request.api" # production
 AUTH_NET_SUBSCRIPTION_TOTAL_OCCURANCES=9999 # 9999 means subscription with no end date 
 AUTH_NET_SUBSCRIPTION_INTERVAL_UNITS="month"
 AUTH_NET_SUBSCRIPTION_INTERVAL=1 # e.g. if units is 'months' and interval=1, then subscription will bill once monthly.
 AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL=65.00
 
 config.after_initialize do
-  ActiveMerchant::Billing::Base.mode = :test
+  ActiveMerchant::Billing::Base.mode = :production
   ::GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
     :login => AUTH_NET_LOGIN,
     :password => AUTH_NET_TXN_KEY
