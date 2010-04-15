@@ -137,6 +137,23 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Then the "myHalo Complete" checkbox should be checked
     And the "Same as shipping info" checkbox should be checked
   
+  Scenario Outline: product selection remembered from "order again"
+    When I choose "<selected>"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I fill in "order_card_number" with "4111111111111111"
+    And I select "MasterCard" from "order_card_type"
+    And I check "Same as shipping"
+    And I press "Continue"
+    And I press "Place Order"
+    And I follow "order_again"
+    Then the "<recalled>" checkbox should be checked
+    
+    Examples:
+      | selected         | recalled        |
+      | product_complete | myHalo Complete |
+      | product_clip     | myHalo Clip     |
+      
     # To cause the payment gateway to respond with a specific response
     # code, send a transaction with the Visa error test credit card
     # number (x_card_num) 4222222222222 and an amount (x_amount) equal
