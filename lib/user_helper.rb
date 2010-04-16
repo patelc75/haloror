@@ -125,4 +125,19 @@ module UserHelper
     user = profile.user unless profile.blank?
     user
   end
+  
+  # these variables are used when adding a "new caregiver"
+  def load_values_to_allow_new_caregiver(user_id)
+    @senior = User.find(user_id.to_i)
+    @removed_caregivers = []
+    @senior.caregivers.each do |caregiver|
+      roles_user = @senior.roles_user_by_caregiver(caregiver)
+      @removed_caregivers << caregiver \
+        if roles_user.roles_users_option && roles_user.roles_users_option[:removed]
+    end unless @senior.blank?
+    @max_position = User.get_max_caregiver_position(@senior)
+    @password = random_password
+    @user = User.new 
+    @profile = Profile.new
+  end
 end

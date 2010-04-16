@@ -1,0 +1,30 @@
+<div id="lightbox-col">
+  <img src="/images/lightbox-col-header.gif" /><br />
+  <div class="lightbox-content">
+    <div style="width:380px;" id="container">
+      <div id="removed_caregivers" align="center">
+        <p>
+          Choose a recently removed caregiver:
+          <ul class="removed_caregivers">
+            <% @removed_caregivers.each do |caregiver| %>
+            <% roles_user = @senior.roles_user_by_caregiver(caregiver) %>
+            <% if roles_user && roles_user.roles_users_option %>
+            <li onMouseOver="this.style.backgroundImage = 'url(\'/images/call_list-item_drag-small.gif\')'" onMouseOut="this.style.backgroundImage = 'url(\'/images/call_list-item-small.gif\')'"><%=link_to_remote caregiver.name, :update => 'call_list', :url => {:controller => 'users', :action => 'restore_caregiver_role', :id => roles_user.roles_users_option.id, :user_id => params[:user_id]} %></li>
+            <% end %>
+            <% end %>
+          </ul>
+        </p>
+        <p>OR</p>
+        <p><a href="#" onClick="$('removed_caregivers').style.display='none';$('caregiver_form').style.display='block'">+ Invite caregiver by email</a></p>
+        <p>OR</p>
+        <p><%= link_to "+ Add new caregiver with no email" , new_caregiver_profile_path(@senior) %></p>
+        <p>OR</p>
+        <p><%= link_to image_tag("cancel.gif"), @back_url %></p>
+      </div>
+      <div id="caregiver_form" style="display:none">
+        <%= render :partial => 'caregiver_form_no_ajax' %>
+      </div>
+    </div>
+  </div>
+  <img src="/images/lightbox-col-footer.gif" />
+</div>

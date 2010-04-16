@@ -8,9 +8,16 @@ Feature: Online store coupons
     Given I am guest
     And the product catalog exists
 
-  Scenario: Order page - referral link fills coupon code text field
-    When I visit "/order/coupon-code-1"
-    Then the "Coupon Code" field should contain "coupon-code-1"
+  Scenario Outline: Order page - referral link fills coupon code text field
+    When I visit "/order/<coupon>"
+    Then the "Coupon Code" field should contain "<coupon>"
+    
+    Examples:
+      | coupon            |
+      | coupon-code-1     |
+      | abc               |
+      | 12345             |
+      # | QUALITY-1.5.0-RC3 |
 
   Scenario Outline: Order page - referral link for various coupon codes should show correct deposit, shipping, total, recurring, trial/advance
     When I visit "/order/<coupon_code>"

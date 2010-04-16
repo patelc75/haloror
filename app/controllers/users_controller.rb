@@ -625,28 +625,35 @@ class UsersController < ApplicationController
   def redir_to_edit
     redirect_to '/users/'+params[:id]+';edit/'
   end
+
+  def new_caregiver_options
+    load_values_to_allow_new_caregiver(params[:user_id].to_i)
+    @back_url = params[:back_url]
+  end
+  
   
   def new_caregiver
-    @senior = User.find(params[:user_id].to_i)    
-    
-    @removed_caregivers = []
-    @senior.caregivers.each do |caregiver|
-      if caregiver
-        roles_user = @senior.roles_user_by_caregiver(caregiver)
-        #caregiver.roles_users.each do |roles_user|
-          if roles_user.roles_users_option and roles_user.roles_users_option[:removed]
-            @removed_caregivers << caregiver
-          end
-        #end 
-      end
-    end
-    
-    @max_position = User.get_max_caregiver_position(@senior)
-    
-    @password = random_password
-    
-    @user = User.new 
-    @profile = Profile.new  
+    load_values_to_allow_new_caregiver(params[:user_id].to_i) # shifted to helper. allow use at other places
+    # @senior = User.find(params[:user_id].to_i)    
+    # 
+    # @removed_caregivers = []
+    # @senior.caregivers.each do |caregiver|
+    #   if caregiver
+    #     roles_user = @senior.roles_user_by_caregiver(caregiver)
+    #     #caregiver.roles_users.each do |roles_user|
+    #       if roles_user.roles_users_option and roles_user.roles_users_option[:removed]
+    #         @removed_caregivers << caregiver
+    #       end
+    #     #end 
+    #   end
+    # end
+    # 
+    # @max_position = User.get_max_caregiver_position(@senior)
+    # 
+    # @password = random_password
+    # 
+    # @user = User.new 
+    # @profile = Profile.new  
     render :layout => false
   end
   
@@ -733,32 +740,37 @@ class UsersController < ApplicationController
     end
   end
 =end  
+
   def create_caregiver
+    @back_url = params[:back_url] # non ajax
+    
     User.transaction do     
       User.populate_caregiver(params[:user][:email],params[:user_id].to_i,params[:position],params[:user][:login])
     end
-      
-    render :partial => 'caregiver_email'
-=begin
-  rescue Exception => e
-    RAILS_DEFAULT_LOGGER.warn "#{e}"
-    # check if email exists
-    if existing_user = User.find_by_email(params[:user][:email])
-      @existing_id = existing_user[:id]
-      @add_existing = true
+    
+    if @back_url.blank?
+      render :partial => 'caregiver_email'
+    else
+      redirect_to_message(:message => :new_caregiver, :back_url => @back_url)
     end
-   
-  # old code without if else
-   #render :partial => 'caregiver_form'
-  
-   #new code with if else and created a new partial existing_caregiver_form and removed <% if @add_existing %> function in  caregiver_form   
-    @max_position = User.get_max_caregiver_position(@user)
-     if (@add_existing == true )
-         render :partial => 'existing_caregiver_form'
-         else
-         render :partial => 'caregiver_form'
-    end
-=end
+  # rescue Exception => e
+  #   RAILS_DEFAULT_LOGGER.warn "#{e}"
+  #   # check if email exists
+  #   if existing_user = User.find_by_email(params[:user][:email])
+  #     @existing_id = existing_user[:id]
+  #     @add_existing = true
+  #   end
+  #  
+  # # old code without if else
+  #  #render :partial => 'caregiver_form'
+  # 
+  #  #new code with if else and created a new partial existing_caregiver_form and removed <% if @add_existing %> function in  caregiver_form   
+  #   @max_position = User.get_max_caregiver_position(@user)
+  #    if (@add_existing == true )
+  #        render :partial => 'existing_caregiver_form'
+  #        else
+  #        render :partial => 'caregiver_form'
+  #   end
   end  
   
   def destroy_operator

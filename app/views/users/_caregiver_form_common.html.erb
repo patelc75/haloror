@@ -1,0 +1,32 @@
+<% if @max_position %>
+<div style="float:right;width:100px">
+  Position
+  <br />
+  <br />
+  <div style="float:left">
+    <a href="#" onClick="positionLabel('decrement')"><img src="/images/call_list-up.gif" /></a>
+    <br />
+    <a href="#" onClick="positionLabel('increment')"><img src="/images/call_list-down.gif" /></a>
+  </div>
+  <div id="position_label">
+    <%=@max_position%>
+  </div>
+</div>
+<% end %>
+
+<%= error_messages_for :user %>
+<%=hidden_field_tag :position, @max_position %>
+<%= f.hidden_field :serial_number, :value => '9999999999'%>
+
+<input type="hidden" name="user_id" value="<%=params[:user_id]%>" />
+<br/>
+<br />
+<br />
+<label for="email">Email</label>
+<%= f.text_field :email, :value => '' %>
+<br />
+<br />
+or<br><br>Username
+<%= f.text_field :login, :value => '' %>
+<br />
+<br />

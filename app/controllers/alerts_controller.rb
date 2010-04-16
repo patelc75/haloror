@@ -78,14 +78,15 @@ class AlertsController < ApplicationController
   def invalid
   	
   end
+  
   def message
-  	
   end
 
   # general purpose alert. just call redirect_to_message(message, back_url) from any controller action
   # environment.rb has constant ALERT_MESSAGES
   #
   def alert
+    debugger
     if !params[:message].blank? && !params[:back_url].blank?
       @phrase = ALERT_MESSAGES[params[:message].to_sym]
       @back_url = params[:back_url]
