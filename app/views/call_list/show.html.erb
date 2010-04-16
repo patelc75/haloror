@@ -96,7 +96,7 @@
 	<% if current_user.is_super_admin? %> <!-- @user.is_halouser? || @user.is_sales? -->
     <%=link_to_remote_redbox(image_tag('add-caregiver.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), :url => {:controller => 'users' , :action => 'new_caregiver', :user_id => params[:id]})%>
   <% else %>
-    <%= link_to_function image_tag('add-caregiver-grey.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), "show_message();" %>
+    <%= link_to image_tag('add-caregiver-grey.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), :controller => "alerts", :action => "alert", :message => "call_tech_support", :back_url => url_for(:controller => 'call_list', :action => 'show', :id => current_user.id) %>
 	<% end %>
 	</div>
 	<div style="clear:both"></div>

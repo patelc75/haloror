@@ -86,11 +86,16 @@ class AlertsController < ApplicationController
   # environment.rb has constant ALERT_MESSAGES
   #
   def alert
-    @phrase = (params[:message].blank? ? (session[:alert_phrase] || '') : ALERT_MESSAGES[params[:message].to_sym])
-    @back_url = (params[:back_url].blank? ? (session[:alert_back_url] || '/') : params[:back_url])
-    @partial = session[:alert_partial]
-    session[:alert_phrase] = nil
-    session[:alert_back_url] = nil
-    session[:alert_partial] = nil
+    if !params[:message].blank? && !params[:back_url].blank?
+      @phrase = ALERT_MESSAGES[params[:message].to_sym]
+      @back_url = params[:back_url]
+    else
+      @phrase = (session[:alert_phrase] || '')
+      @back_url = (session[:alert_back_url] || '/')
+      @partial = session[:alert_partial]
+      session[:alert_phrase] = nil
+      session[:alert_back_url] = nil
+      session[:alert_partial] = nil
+    end
   end
 end
