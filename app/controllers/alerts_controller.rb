@@ -1,5 +1,6 @@
 class AlertsController < ApplicationController
-  before_filter :authenticate_admin_halouser_caregiver_sales?
+  before_filter :authenticate_admin_halouser_caregiver_sales?, :except => :alert
+  
   def index
     @alert_types = []
     #AlertGroup.find(:all, :conditions => "group_type != 'critical'").each do |group|
@@ -80,5 +81,16 @@ class AlertsController < ApplicationController
   def message
   	
   end
-  
+
+  # general purpose alert. just call redirect_to_message(message, back_url) from any controller action
+  # environment.rb has constant ALERT_MESSAGES
+  #
+  def alert
+    @phrase = (params[:message].blank? ? (session[:alert_phrase] || '') : ALERT_MESSAGES[params[:message].to_sym])
+    @back_url = (params[:back_url].blank? ? (session[:alert_back_url] || '/') : params[:back_url])
+    @partial = session[:alert_partial]
+    session[:alert_phrase] = nil
+    session[:alert_back_url] = nil
+    session[:alert_partial] = nil
+  end
 end

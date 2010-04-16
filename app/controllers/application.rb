@@ -118,7 +118,8 @@ class ApplicationController < ActionController::Base
       controller_name == 'util' && action_name == 'support' ||
       controller_name == 'healthvault' && action_name == 'redirect' ||      
       controller_name == 'security') ||
-      controller_name == 'orders' && ['new','create','show'].include?(action_name) # we will create user here
+      (controller_name == 'orders' && ['new','create','show'].include?(action_name)) || # we will create user here
+      (controller_name == 'alerts' && action_name == 'alert')
       return authenticate
     else
       return true
@@ -268,6 +269,22 @@ class ApplicationController < ActionController::Base
       end # each
 	    
     end # only collect when AR
+  end
+
+  # redirect to message page, back to the calling page
+  def redirect_to_message(options)
+    {:message => ALERT_MESSAGES[:default], :back_url => nil, :template => nil}.merge(options)
+    unless options[:back_url].blank?
+      session[:alert_phrase] = (options[:message].is_a?(Symbol) ? ALERT_MESSAGES[options[:message]] : options[:message])
+      session[:alert_back_url] = options[:back_url] # blank will take to appropriate home page
+      session[:alert_template] = options[:template] # we can render a template or message
+      logger.debug "redirecting to alerts -- #{session[:alert_back_url]} -- #{session[:alert_phrase]}"
+      if options[:template].blank?
+        redirect_to :controller => "alerts", :action => "alert"
+      else
+        redirect_to options[:template]
+      end
+    end
   end
 
 end

@@ -90,5 +90,5 @@ module ApplicationHelper
         v.collect {|element| recursively_search_hash(element, key) if element.is_a?(Hash) } if v.is_a?(Array)
     end
     return values.flatten.compact.uniq
-  end
+  end  
 end

@@ -1,6 +1,7 @@
 # This controller handles the login/logout function of the site.  
 class SessionsController < ApplicationController
-
+  include ApplicationHelper
+  
   # render new.rhtml
   def new
   end
@@ -31,10 +32,10 @@ class SessionsController < ApplicationController
       log.status = 'failed'
       log.save
     
-     @show_redbox = true
-     
-    render :action => 'new'
-
+     # @show_redbox = true     
+    # render :action => 'new'
+      redirect_to_message(:message => :login_failed, :back_url => url_for(:controller => "sessions", :action => "new"))
+      # redirect_to :controller => "alerts", :action => "alert"
     end
   end
  

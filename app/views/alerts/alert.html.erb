@@ -1,0 +1,14 @@
+<div id="lightbox-col" style="position:fixed;top:200px;left:400px;">
+  <img src="/images/lightbox-col-header.gif" /><br />
+
+  <div class="lightbox-content">
+    <div style="width:200px;margin:auto;" id="container">
+      <%= @phrase %>
+      <%= render :partial => @partial unless @partial.blank? %>
+    </div>
+    <br>
+    <center><a href="<%= @back_url %>"><img src="/images/ok_button.png" /></a></center>
+  </div>
+
+  <img src="/images/lightbox-col-footer.gif" />
+</div>

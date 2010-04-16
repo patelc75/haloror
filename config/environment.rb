@@ -238,3 +238,11 @@ HV_HV_URL = "https://platform.healthvault-ppe.com/platform/wildcat.ashx"
 #
 ENV['RECAPTCHA_PUBLIC_KEY']  = '6LeR9goAAAAAANZVo52U0AV9iwu0PoslF_FAwF-F'
 ENV['RECAPTCHA_PRIVATE_KEY'] = '6LeR9goAAAAAAP4iAFbMvp91jkxVyWegay5k-b1v'
+
+# messages for redirect_to_message
+ALERT_MESSAGES = {
+  :default => "Please click the button to go back",
+  :login_failed => "The login information you entered does not match an account in our records. Remember, your login and password is case-sensitive, please check your Caps Lock key.",
+  :profile_updated => "Profile Updated. All users except super_admins must call tech support 1-888-971-HALO (4256) to make this modification.",
+  :call_tech_support => "Please call tech support 1-888-971-HALO (4256) to make this modification."
+}
