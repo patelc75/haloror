@@ -28,13 +28,11 @@ config.action_view.debug_rjs                         = true
 #config.action_mailer.raise_delivery_errors = false
 config.action_mailer.raise_delivery_errors = true # debugging exception_notifier
 
-
 HV_APP_ID = "388278cd-5467-45af-a2b5-3d2c5fabffa3"
 HV_CERT_FILE = "#{RAILS_ROOT}/config/healthvault/halo_monitor-prod-388278cd-5467-45af-a2b5-3d2c5fabffa3.pfx"
 HV_CERT_PASS = ""
 HV_SHELL_URL = "https://account.healthvault.com"
 HV_HV_URL = "https://platform.healthvault.com/platform/wildcat.ashx"
-
 
 # Authorize.net settings
 #AUTH_NET_LOGIN="54PB5egZ" #test
@@ -48,10 +46,15 @@ AUTH_NET_SUBSCRIPTION_INTERVAL_UNITS="month"
 AUTH_NET_SUBSCRIPTION_INTERVAL=1 # e.g. if units is 'months' and interval=1, then subscription will bill once monthly.
 AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL=65.00
 
+# * <tt>:login</tt> -- The Authorize.Net API Login ID (REQUIRED)
+# * <tt>:password</tt> -- The Authorize.Net Transaction Key. (REQUIRED)
+# * <tt>:test</tt> -- +true+ or +false+. If true, perform transactions against the test server. 
+#   Otherwise, perform transactions against the production server.
 config.after_initialize do
   ActiveMerchant::Billing::Base.mode = :production
   ::GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
     :login => AUTH_NET_LOGIN,
-    :password => AUTH_NET_TXN_KEY
+    :password => AUTH_NET_TXN_KEY,
+    :test => false
   )
 end

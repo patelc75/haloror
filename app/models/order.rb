@@ -61,6 +61,34 @@ class Order < ActiveRecord::Base
     "#{created_at.to_date.to_s(:number)}-#{id}"
   end
 
+  # reference from active_merchant code
+  #
+  # === Gateway Options
+  # The options hash consists of the following options:
+  #
+  # * <tt>:order_id</tt> - The order number
+  # * <tt>:ip</tt> - The IP address of the customer making the purchase
+  # * <tt>:customer</tt> - The name, customer number, or other information that identifies the customer
+  # * <tt>:invoice</tt> - The invoice number
+  # * <tt>:merchant</tt> - The name or description of the merchant offering the product
+  # * <tt>:description</tt> - A description of the transaction
+  # * <tt>:email</tt> - The email address of the customer
+  # * <tt>:currency</tt> - The currency of the transaction.  Only important when you are using a currency that is not the default with a gateway that supports multiple currencies.
+  # * <tt>:billing_address</tt> - A hash containing the billing address of the customer.
+  # * <tt>:shipping_address</tt> - A hash containing the shipping address of the customer.
+  # 
+  # The <tt>:billing_address</tt>, and <tt>:shipping_address</tt> hashes can have the following keys:
+  # 
+  # * <tt>:name</tt> - The full name of the customer.
+  # * <tt>:company</tt> - The company name of the customer.
+  # * <tt>:address1</tt> - The primary street address of the customer.
+  # * <tt>:address2</tt> - Additional line of address information.
+  # * <tt>:city</tt> - The city of the customer.
+  # * <tt>:state</tt> - The state of the customer.  The 2 digit code for US and Canadian addresses. The full name of the state or province for foreign addresses.
+  # * <tt>:country</tt> - The [ISO 3166-1-alpha-2 code](http://www.iso.org/iso/country_codes/iso_3166_code_lists/english_country_names_and_code_elements.htm) for the customer.
+  # * <tt>:zip</tt> - The zip or postal code of the customer.
+  # * <tt>:phone</tt> - The phone number of the customer.
+  #
   # 439 recurring error fix
   def charge_credit_card
     # mode is set (in environment config files) to :test for development and test, :production when production
@@ -70,7 +98,14 @@ class Order < ActiveRecord::Base
       else
         # one time charge as presented in the product detail box
         # charge_amount = (cost * 100) # cents
-        @one_time_fee_response = GATEWAY.purchase(product_cost.upfront_charge*100, credit_card) # GATEWAY in environment files
+        #
+        # reference from active_merchant code
+        #
+        # * <tt>purchase(money, creditcard, options = {})</tt>
+        # * <tt>money</tt> -- The amount to be purchased as an Integer value in cents.
+        # * <tt>creditcard</tt> -- The CreditCard details for the transaction.
+        # * <tt>options</tt> -- A hash of optional parameters.
+        @one_time_fee_response = GATEWAY.purchase( product_cost.upfront_charge*100, credit_card) # GATEWAY in environment files
         # store response in database
         payment_gateway_responses.create!(:action => "purchase", :amount => product_cost.upfront_charge*100, :response => @one_time_fee_response)
         errors.add_to_base @one_time_fee_response.message unless @one_time_fee_response.success?
@@ -86,10 +121,39 @@ class Order < ActiveRecord::Base
             # recurring subscription for 60 months, starting 3.months.from_now
             # TODO: do not hard code. pick from database
             # =>  keep charging 5 years at least
+            #
+            # reference from active_merchant code
+            #
+            # Create a recurring payment.
+            #
+            # This transaction creates a new Automated Recurring Billing (ARB) subscription. Your account must have ARB enabled.
+            #
+            # ==== Parameters
+            #
+            # * <tt>money</tt> -- The amount to be charged to the customer at each interval as an Integer value in cents.
+            # * <tt>creditcard</tt> -- The CreditCard details for the transaction.
+            # * <tt>options</tt> -- A hash of parameters.
+            #
+            # ==== Options
+            #
+            # * <tt>:interval</tt> -- A hash containing information about the interval of time between payments. Must
+            #   contain the keys <tt>:length</tt> and <tt>:unit</tt>. <tt>:unit</tt> can be either <tt>:months</tt> or <tt>:days</tt>.
+            #   If <tt>:unit</tt> is <tt>:months</tt> then <tt>:length</tt> must be an integer between 1 and 12 inclusive.
+            #   If <tt>:unit</tt> is <tt>:days</tt> then <tt>:length</tt> must be an integer between 7 and 365 inclusive.
+            #   For example, to charge the customer once every three months the hash would be
+            #   +:interval => { :unit => :months, :length => 3 }+ (REQUIRED)
+            # * <tt>:duration</tt> -- A hash containing keys for the <tt>:start_date</tt> the subscription begins (also the date the
+            #   initial billing occurs) and the total number of billing <tt>:occurrences</tt> or payments for the subscription. (REQUIRED)
+            #
+            # requires!(options, :interval, :duration, :billing_address)
+            # requires!(options[:interval], :length, [:unit, :days, :months])
+            # requires!(options[:duration], :start_date, :occurrences)
+            # requires!(options[:billing_address], :first_name, :last_name)
+            # 
             @recurring_fee_response = GATEWAY.recurring(product_cost.monthly_recurring*100, credit_card, {
-                :billing_address => {:first_name => credit_card.first_name, :last_name => credit_card.last_name},
                 :interval => {:unit => :months, :length => 1},
-                :duration => {:start_date => product_cost.recurring_delay.from_now.to_date, :occurrences => 60}
+                :duration => {:start_date => product_cost.recurring_delay.from_now.to_date, :occurrences => 60},
+                :billing_address => {:first_name => bill_first_name, :last_name => bill_last_name}
               }
             )
             # store response in database
@@ -111,14 +175,28 @@ class Order < ActiveRecord::Base
     return @one_time_fee_response, @recurring_fee_response
   end
 
+  # reference from the active_merchant code
+  #
+  #   cc = CreditCard.new(
+  #     :first_name => 'Steve', 
+  #     :last_name  => 'Smith', 
+  #     :month      => '9', 
+  #     :year       => '2010', 
+  #     :type       => 'visa', 
+  #     :number     => '4242424242424242'
+  #   )
+  #
+  # Optional verification_value (CVV, CVV2 etc). Gateways will try their best to 
+  # run validation on the passed in value if it is supplied
+  #
   def credit_card
     @card ||= ActiveMerchant::Billing::CreditCard.new(
-      :number => card_number,
-      :month => card_expiry.month,
-      :year => card_expiry.year,
       :first_name => bill_first_name,
       :last_name => bill_last_name,
+      :month => card_expiry.month,
+      :year => card_expiry.year,
       :type => card_type,
+      :number => card_number,
       :verification_value => card_csc
     )
     # @card.extend ActiveMerchant::Billing::CreditCardMethods::ClassMethods

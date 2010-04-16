@@ -30,11 +30,25 @@ AUTH_NET_SUBSCRIPTION_INTERVAL_UNITS="month"
 AUTH_NET_SUBSCRIPTION_INTERVAL=1 # e.g. if units is 'months' and interval=1, then subscription will bill once monthly.
 AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL=65.00
 
+# No use of bougs gateway --- see below
+# we are never going to pass on credit_card number as "1" or "2"
+#
+# # --def purchase(money, creditcard, options = {})
+# #   case creditcard.number
+# #   when '1'
+# #     Response.new(true, SUCCESS_MESSAGE, {:paid_amount => money.to_s}, :test => true)
+# #   when '2'
+# #     Response.new(false, FAILURE_MESSAGE, {:paid_amount => money.to_s, :error => FAILURE_MESSAGE },:test => true)
+# #   else
+# #     raise Error, ERROR_MESSAGE
+# #   end
+# # --end
 config.after_initialize do
   ActiveMerchant::Billing::Base.mode = :test
-  ::GATEWAY = ActiveMerchant::Billing::BogusGateway.new
-  # ::GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
-  #   :login => AUTH_NET_LOGIN,
-  #   :password => AUTH_NET_TXN_KEY
-  # )
+  # ::GATEWAY = ActiveMerchant::Billing::BogusGateway.new # -- see comment above
+  ::GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
+    :login => AUTH_NET_LOGIN,
+    :password => AUTH_NET_TXN_KEY,
+    :test => true
+  )
 end
