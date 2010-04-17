@@ -127,6 +127,10 @@ class OrdersController < ApplicationController
     end # redirect_to new
   end
   
+  def show
+    @order = Order.find(params[:id])
+  end
+  
   def success
     @order = Order.find(params[:id])
 

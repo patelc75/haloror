@@ -1,0 +1,4 @@
+<%= render :partial => 'reporting/nav'%>
+<h2><%=params[:column]%> for Payment Gateway Response ID# <%=params[:id]%></h2>
+<%= @payment_gateway_responses.message if params[:column] == 'message'%>
+<%= @payment_gateway_responses.params if params[:column] == 'params'%>

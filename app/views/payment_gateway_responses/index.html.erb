@@ -7,27 +7,25 @@
     <tr>
     	<th>ID</th>
     	<th>Action</th>
-    	<th>Order ID</th>
-    	<th>Amount</th>
-    	<th>Sucess</th>
-    	<th>Authorization</th>
+    	<th style="width:75px;">Order ID</th>
+    	<th style="width:75px;">Amount</th>
+    	<th style="width:75px;">Success</th>
+    	<th style="width:100px;">Authorization</th>
     	<th>Message</th>
         <th>Params</th>
         <th>Created At</th>
-        <th>Updated At</th>
     </tr>
     <% @payment_gateway_responses.each do |pgr| %>
       <tr class="<%= cycle('', 'altrow') %>">
         <td><%=h pgr.id %></td>
         <td><%=h pgr.action %></td>
-        <td><%=h pgr.order_id %></td>
+        <td><%= link_to pgr.order_id, :controller => 'orders',:action => 'show' ,:id => pgr.order_id %></td>
         <td><%=h pgr.amount %></td>
         <td><%=h pgr.success %></td>
         <td><%=h pgr.authorization %></td>
-        <td><%=h pgr.message %></td>
-        <td><%=h pgr.params %></td>
+        <td><%= link_to truncate(pgr.message, 20, "..."), :controller => 'payment_gateway_responses',:action => 'details' ,:id => pgr.id,:column => 'message'  %></td>
+        <td><%= link_to truncate(pgr.params, 20, "..."), :controller => 'payment_gateway_responses',:action => 'details' ,:id => pgr.id,:column => 'params'  %></td>
         <td><%=h pgr.created_at.to_s(:MM_DD_YYYY) %></td>
-        <td><%=h pgr.updated_at.to_s(:MM_DD_YYYY) %></td>
       </tr>
     <% end -%>
   </table>
