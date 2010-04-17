@@ -24,8 +24,8 @@
         <td><%=h pgr.success %></td>
         <td><%=h pgr.authorization %></td>
         <td><%= link_to truncate(pgr.message, 20, "..."), :controller => 'payment_gateway_responses',:action => 'details' ,:id => pgr.id,:column => 'message'  %></td>
-        <td><%= link_to truncate(pgr.params, 20, "..."), :controller => 'payment_gateway_responses',:action => 'details' ,:id => pgr.id,:column => 'params'  %></td>
-        <td><%=h pgr.created_at.to_s(:MM_DD_YYYY) %></td>
+        <td><%= link_to truncate(pgr.params.to_s, 20, "..."), :controller => 'payment_gateway_responses',:action => 'details' ,:id => pgr.id,:column => 'params'  %></td>
+        <td><%=h pgr.created_at %></td>
       </tr>
     <% end -%>
   </table>
