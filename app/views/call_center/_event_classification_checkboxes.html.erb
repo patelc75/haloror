@@ -4,6 +4,7 @@
 	<td><b>Event Type:&nbsp;&nbsp;</b></td>
 	<td><%= check_box_tag 'fall','yes',true %> Fall</td>
 	<td><%= check_box_tag 'panic','yes',true %>Panic</td>
+	<td><%= check_box_tag 'gwreset_button','yes',true %>Gw Reset Button</td>
 </tr>
 </table>
 
@@ -25,6 +26,7 @@
 	<td><b>Event Type:</b></td>
 	<td><%= check_box_tag 'fall','yes', params[:fall] ? true : false%> Fall</td>
 	<td><%= check_box_tag 'panic','yes', params[:panic] ? true : false%>Panic</td>
+	<td><%= check_box_tag 'gwreset_button','yes', params[:gwreset_button] ? true : false%>Gw Reset Button</td>
 </tr>
 </table>
 

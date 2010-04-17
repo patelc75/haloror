@@ -21,7 +21,6 @@ class CallCenterController < ApplicationController
       conditions = "events.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids})))"
     else
       @groups = Group.find(:all)  
-      #conditions = "event_type = 'Fall' or event_type = 'Panic'"
     end
     if params[:group_name] and params[:group_name] != "Choose a Group"
         group = Group.find_by_name(params[:group_name])
@@ -31,20 +30,16 @@ class CallCenterController < ApplicationController
     if params[:commit]
       conditions += conditions == '' ? set_checkbox_conditions : ' and ' + set_checkbox_conditions
     else
-      conditions = "event_type = 'Fall' or event_type = 'Panic'"
+      conditions = "event_type = 'Fall' or event_type = 'Panic' or event_type = 'GwAlarmButton'"
     end
     @events = Event.find(:all, :conditions => conditions)
-    
-    #@events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => conditions, :per_page => events_per_page
     
     @user_begin_time = params[:begin_time]
     @user_end_time = params[:end_time]
     if !@user_end_time.blank? && !@user_begin_time.blank?
       @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
       @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
-#      @events = Event.find(:all, :conditions => conditions)
       @events = Event.find(:all, :conditions => ["timestamp >= ? AND timestamp <= ? and id IN (?)", @begin_time, @end_time,@events])
-      #@events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => ["timestamp >= ? AND timestamp <= ? and id IN (?)", @begin_time, @end_time,@events], :per_page => events_per_page
     end
     
     @users = User.halousers.collect{|u| u.id}
@@ -55,10 +50,11 @@ class CallCenterController < ApplicationController
     @events = @events.reject{|t| t.nil?}
     @events = @events.collect{|event| event if !event.event.timestamp_call_center.nil? and ((event.event.timestamp_call_center.to_time - event.event.timestamp_server.to_time) >= params[:call_center_delay].to_f)} if !params[:call_center_delay].blank?
     @events = @events.reject{|t| t.nil?}
-    #@events = Event.find(:all,:conditions => ["id IN (?)",@all_events.uniq.reject{|t| t.nil?}]) unless @all_events.blank?
-
+    
     @events = event_classification(@events) if params[:commit]
     
+    @users = params[:user_id] if params[:user_id] and !params[:user_id].blank?
+    @my_events = Event.find(:all,:conditions => ["id IN (?) and user_id IN (?)",@events,@users])
     @events = Event.paginate :page => params[:page], :order => "(timestamp_server IS NOT NULL) DESC, timestamp_server DESC, timestamp DESC", :conditions => ["id IN (?) and user_id IN (?)",@events,@users], :per_page => events_per_page
     
   end 
@@ -68,21 +64,25 @@ class CallCenterController < ApplicationController
   	cond += params[:fall] ? "event_type = 'Fall'" : ''
   	cond += (params[:fall] and params[:panic]) ? " or " : ''
   	cond += params[:panic] ? "event_type = 'Panic'" : ''
+  	if params[:gwreset_button] and !params[:fall] and !params[:panic]
+  	  cond +=  "event_type = 'GwAlarmButton'"
+  	elsif params[:gwreset_button]
+  	  cond += " or event_type = 'GwAlarmButton'"	
+  	end
   	cond += ')'
     cond
   end
   
   def event_classification(events)
   	total_events = []
-  	#unless params[:unclassified]
-  	  total_events += events.collect{|event| event.id if event.real_alarm?}.uniq if params[:real]
-  	  total_events += events.collect{|event| event.id if event.false_alarm?}.uniq if params[:false]
-  	  total_events += events.collect{|event| event.id if event.test_alarm?}.uniq if params[:test]
-  	  total_events += events.collect{|event| event.id if event.gw_reset?}.uniq if params[:gw_reset]
-  	  total_events += events.collect{|event| event.id if event.non_emerg_panic?}.uniq if params[:non_emergency]
-  	  total_events += events.collect{|event| event.id if event.unclassified?}.uniq if params[:unclassified]
-  	  total_events.uniq.reject{|t| t.nil?}
-  	
+    total_events += events.collect{|event| event if event.real_alarm?}.uniq if params[:real]
+  	total_events += events.collect{|event| event if event.false_alarm?}.uniq if params[:false]
+  	total_events += events.collect{|event| event if event.test_alarm?}.uniq if params[:test]
+  	total_events += events.collect{|event| event if event.gw_reset?}.uniq if params[:gw_reset]
+  	total_events += events.collect{|event| event if event.non_emerg_panic?}.uniq if params[:non_emergency]
+  	total_events += events.collect{|event| event if event.unclassified?}.uniq if params[:unclassified]
+  	total_events += events.collect{|event| event if event.duplicate?}.uniq if params[:unclassified]
+  	total_events.uniq.reject{|t| t.nil?}
   end
   
   def faq

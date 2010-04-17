@@ -101,7 +101,7 @@ class Event < ActiveRecord::Base
   end
   
   def unclassified?
-  	if action = EventAction.find(:first, :conditions => "event_id = '#{self.id}'")
+  	if self.test_alarm? or self.real_alarm? or self.false_alarm? or self.gw_reset? or self.non_emerg_panic? or self.duplicate?
       return false
   	end
   	return true

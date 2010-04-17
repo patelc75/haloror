@@ -7,14 +7,19 @@
 		   @groups.each do |g|
 			 gs << g.name
 		   end %>
+		   Total: <%= @my_events.size %><br>
+		   
+		   <%#= @my_events.collect{|e| e.id.to_s + ', '}%>
   <table>
   	<tr><td>Select Group:</td>
+  		<td>User ID:(blank = All Users)</td>
   		<td>Begin Time (<%= Time.zone.name.split(/\s+/).first %>)</td>
   		<td>End Time (<%= Time.zone.name.split(/\s+/).first %>)</td>
   		<td>&nbsp;</td>
   	</tr>
   	<tr><td>
   <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]},params[:group_name])%></td>
+      <td><input type="text" name="user_id" value="<%= params[:user_id]%>"></td>
   	  <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
       <td><%= calendar_date_select_tag "end_time", @user_end_time, :time => true, :popup => 'force' %></td>
 	  <td>&nbsp;<%#= submit_tag "Submit" %></td>
@@ -158,6 +163,8 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
           <%= render :partial => 'duplicate_event',:locals => {:event => event}%>
         <% elsif action = event.gw_reset? %>
           <%= render :partial => 'gw_reset',:locals => {:event => event}%>
+        <% elsif event.event_type == 'GwAlarmButton'%>  
+          <%= "--"%>
 		<% else %>
 		  <%= render :partial => 'mark_event',:locals => {:event => event}%>
 		<% end %>
