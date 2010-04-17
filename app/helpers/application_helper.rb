@@ -106,5 +106,10 @@ module ApplicationHelper
         v.collect {|element| recursively_search_hash(element, key) if element.is_a?(Hash) } if v.is_a?(Array)
     end
     return values.flatten.compact.uniq
-  end  
+  end
+  
+  def hash_to_html(hash)
+    data = hash.collect {|k,v| v.is_a?(Hash) ? "<li>#{k}#{hash_to_html(v)}</li>" : "<li>#{k} => #{v}</li>"}
+    "<ul>#{data}</ul>"
+  end
 end
