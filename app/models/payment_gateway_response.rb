@@ -11,17 +11,23 @@ class PaymentGatewayResponse < ActiveRecord::Base
       self.authorization = response[:authorization]
       self.message       = response[:message]
       self.params        = response[:params]
+      self.request_data  = response[:request_data]
+      self.request_headers = response[:request_headers]
     else
       begin
         self.success       = response.success?
         self.authorization = response.authorization
         self.message       = response.message
         self.params        = response.params
+        self.request_data  = response.request_data
+        self.request_headers = response.request_headers
       rescue ActiveMerchant::ActiveMerchantError => e
         self.success       = false
         self.authorization = nil
         self.message       = e.message
         self.params        = {}
+        self.request_data  = response.request_data
+        self.request_headers = response.request_headers
         OrderMailer.deliver_payment_gateway_rsponse_exception(self, e.message) unless self.success
       end
     end

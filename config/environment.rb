@@ -106,6 +106,7 @@ require 'halo_mailer'
 require 'postgre_extensions'
 require 'server_instance'
 require 'rexml-expansion-fix'
+require 'active_merchant_extensions'
 
 ExceptionNotifier.exception_recipients = %w(exceptions@halomonitoring.com)  
 # defaults to exception.notifier@default.com
