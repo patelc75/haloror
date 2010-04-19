@@ -98,6 +98,13 @@ class User < ActiveRecord::Base
     self.email = "no-email@halomonitoring.com" if self.email == ''
   end
   
+  # get attribute value from the roles_users_options this user has for senior
+  # return blank when not found
+  def options_attribute_for_senior(senior, attribute)
+    options = options_for_senior(senior)
+    options.blank? ? options : options.send("#{attribute}".to_sym)
+  end
+  
   # methods for a RESTful approach
   # using the authorization plugin for the following methods
   # examples:
@@ -125,6 +132,7 @@ class User < ActiveRecord::Base
     role_user.roles_users_option unless role_user.blank?
   end
   
+  # ramonrails: above this are methods to help self contained logic for user_intake
   
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
