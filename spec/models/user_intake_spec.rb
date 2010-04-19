@@ -47,8 +47,18 @@ describe UserIntake do
         user.email.should == "#{user_type}@test.com"
       end
 
-      it "should have profile for #{user_type}" do
-        @user_intake.send("#{user_type}".to_sym).profile.should_not be_blank
+      it "should save profile for #{user_type}" do
+        user_hash = User.new(:email => "#{user_type}@test.com").attributes
+        profile_hash = { :first_name => "#{user_type} first name",
+          :last_name => "#{user_type} last name",
+          :address => "#{user_type} address",
+          :city => "#{user_type} city", 
+          :state => "#{user_type} state", 
+          :medications => "#{user_type} medications"}
+        @user_intake.send("#{user_type}=".to_sym, user_hash.merge( "profile_attributes" => Profile.new(profile_hash).attributes) )
+        @user_intake.save
+        profile = UserIntake.find_by_id(@user_intake.id).send("#{user_type}".to_sym).profile
+        profile_hash.each {|k,v| profile.send("#{k}").should == v }
       end
     end
   end

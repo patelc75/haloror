@@ -5,7 +5,7 @@ class UserIntake < ActiveRecord::Base
   # has_many :seniors, :through => :user_intakes_users, :source => :senior
   # has_many :subscribers, :through => :user_intakes_users, :source => :subscriber
   # has_many :caregivers, :through => :user_intakes_users, :source => :caregiver
-	validates_numericality_of :order_id, :if => :order_present?
+  validates_numericality_of :order_id, :if => :order_present?
   # validates_associated :seniors, :subscribers, :caregivers
   # attr_accessor :group_id, :same_as_user, :add_as_caregiver, :monthly_or_card
   # attr_accessor :no_caregiver_1, :no_caregiver_2, :no_caregiver_3
@@ -21,11 +21,28 @@ class UserIntake < ActiveRecord::Base
   # end
   
   def post_process_roles_and_options
-    senior.is_halouser_of group # user is halouser for self.group
+    [:senior, :subscriber, :caregiver1, :caregiver2, :caregiver3].each do |e|
+      self.send(e).save unless self.send(e).attributes.values.compact.blank?
+    end
+    # add roles and options
+    # senior
+    senior.valid? ? senior.is_halouser_of( group) : self.add_to_base("Insufficient information about Senior")
+    self.add_to_base() unless senior.profile.valid?
+    # subscriber
+    subscriber.is_subscriber_of(senior)
+    # caregivers
+    (1..3).each_with_index do |number, index|
+      caregiver = self.send("caregiver#{number}".to_sym)
+      caregiver.is_caregiver_of(senior) if caregiver.valid?
+      options = caregiver.options_for_senior(senior)
+      unless options.blank?
+        #...............
+      end
+    end
   end
-	
+  
   def created_by_user_name
-  	User.find(self.created_by).name
+    User.find(self.created_by).name
   end
 
   def order_present?
@@ -169,23 +186,23 @@ class UserIntake < ActiveRecord::Base
     self.mem_caregiver3 ||= User.new
   end
 
-  # def senior_attributes=(attributes)
-  #   senior = attributes # build
-  # end
-  # 
-  # def subscriber_attributes=(attributes)
-  #   subscriber = attributes # build
-  # end
-  # 
-  # def caregiver1_attributes=(attributes)
-  #   caregiver1 = attributes
-  # end
-  # 
-  # def caregiver2_attributes=(attributes)
-  #   caregiver2 = attributes
-  # end
-  # 
-  # def caregiver3_attributes=(attributes)
-  #   caregiver3 = attributes
-  # end
+  def senior_attributes=(attributes)
+    senior = attributes # build
+  end
+  
+  def subscriber_attributes=(attributes)
+    subscriber = attributes # build
+  end
+  
+  def caregiver1_attributes=(attributes)
+    caregiver1 = attributes
+  end
+  
+  def caregiver2_attributes=(attributes)
+    caregiver2 = attributes
+  end
+  
+  def caregiver3_attributes=(attributes)
+    caregiver3 = attributes
+  end
 end

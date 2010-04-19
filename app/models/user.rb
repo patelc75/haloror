@@ -74,17 +74,17 @@ class User < ActiveRecord::Base
   
   # build associated model
   def after_initialize
-    self.profile = Profile.new(:user_id => self) if self.profile.blank?
+    self.profile = Profile.new(:user_id => self) if self.profile.blank? && self.new_record?
   end
   
   # profile_attributes hash can be given here to create a related profile
   #
   def profile_attributes=(attributes)
     if profile.blank?
-      profile = Profile.new(attributes.merge("user_id" => self)) # new profile with "this" user
+      self.profile = Profile.new(attributes) # .merge("user_id" => self)
     else
       # keep the existing user connected. no need to re-assign
-      profile.attributes = attributes.reject {|k.v| k == "user_id"} # except user_id, take all attributes
+      self.profile.attributes = attributes.reject {|k,v| k == "user_id"} # except user_id, take all attributes
     end
   end
   
@@ -121,7 +121,7 @@ class User < ActiveRecord::Base
         options = options_for_role(role) unless role.blank?
       end
     rescue
-      options = {}
+      options = nil
     end
     options
   end
@@ -129,7 +129,7 @@ class User < ActiveRecord::Base
   def options_for_role(role_or_id)
     role_id = (role_or_id.is_a?(Role) ? role_or_id.id : role_or_id)
     role_user = RolesUser.find_by_user_id_and_role_id(self.id, role_id)
-    role_user.roles_users_option unless role_user.blank?
+    role_user.blank? ? nil : role_user.roles_users_option
   end
   
   # ramonrails: above this are methods to help self contained logic for user_intake
