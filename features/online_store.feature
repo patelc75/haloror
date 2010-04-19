@@ -35,6 +35,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     Then I should see "Thank you"
     And the payment gateway response should have 2 logs
+    And billing and shipping addresses should not be same
 
   Scenario Outline: Success and Failure for credit cards
     When I choose "product_complete"

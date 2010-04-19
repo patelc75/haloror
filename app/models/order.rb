@@ -6,7 +6,6 @@ class Order < ActiveRecord::Base
   attr_accessor :card_csc, :product, :bill_address_same
   
   def after_initialize
-    self.bill_address_same = "1" if self.new_record?
     populate_billing_address # copy billing address if bill_address_same
   end
   

@@ -78,6 +78,16 @@ When /^I fill the test user for online store$/ do
   When %{I fill in "order_ship_email" with "test@user.me"}
 end
 
+Then /^billing and shipping addresses should not be same$/ do
+  order = Order.last # just pick the last data
+  ship = []; bill = []
+  ["first_name", "last_name", "address", "city", "state", "zip", "phone", "email"].each do |field|
+    ship << eval("order.ship_#{field}")
+    bill << eval("order.bill_#{field}")
+  end
+  ship.join.should_not == bill.join # just one field different will mean different address
+end
+
 Then /^the payment gateway response should have (\d+) logs$/ do |row_count|
   assert_equal row_count.to_i, PaymentGatewayResponse.count
 end
