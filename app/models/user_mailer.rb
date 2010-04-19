@@ -38,7 +38,7 @@ class UserMailer < ActionMailer::ARMailer
     body <<-EOF
       You have been invited to be a caregiver for #{user.name}.
       
-       Please click here to activate the account and configure your alerts:  http://#{ServerInstance.current_host}/activate/#{caregiver.activation_code}?senior=#{user.id}
+       Please click here to activate the account:  http://#{ServerInstance.current_host}/activate/#{caregiver.activation_code}?senior=#{user.id}
     EOF
   end
   
