@@ -111,8 +111,9 @@
       <td style="vertical-align: top;" width="33%">
         <div id="billing_block" style="margin-left: 5px; display: <%= (@confirmation && @same_address == '') ? 'block' : 'none' %>; margin: 0px; padding: 0px;">
           <p>
-            <label for="order_bill_first_name">First name</label>, <label for="order_bill_last_name">Last name</label><br />
-            <%= f.text_field "bill_first_name", :class => "required validate-alpha", :disabled => @confirmation %> 
+            <label for="order_bill_first_name">First name</label><br />
+            <%= f.text_field "bill_first_name", :class => "required validate-alpha", :disabled => @confirmation %> <br/> <br/>     
+            <label for="order_bill_last_name">Last name</label><br />
             <%= f.text_field "bill_last_name", :class => "required validate-alpha", :disabled => @confirmation %>
           </p>
           <p>
