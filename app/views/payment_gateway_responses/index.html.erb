@@ -7,9 +7,9 @@
     <tr>
       <th>ID</th>
       <th>Action</th>
-      <th style="width:75px;">Order ID</th>
+      <th style="width:25px;">Order ID</th>
       <th style="width:75px;">Amount</th>
-      <th style="width:75px;">Success</th>
+      <th style="width:25px;">Success</th>
       <th style="width:100px;">Authorization</th>
       <th>Message</th>
       <th>Params</th>
@@ -21,9 +21,9 @@
     <tr class="<%= cycle('', 'altrow') %>">
       <td><%=h pgr.id %></td>
       <td><%=h pgr.action %></td>
-      <td><%= link_to pgr.order_id, :controller => 'orders',:action => 'show' ,:id => pgr.order_id %></td>
-      <td><%=h pgr.amount %></td>
-      <td><%=h pgr.success %></td>
+      <td class="textcenter"><%= link_to pgr.order_id, :controller => 'orders',:action => 'show' ,:id => pgr.order_id %></td>
+      <td class="textright"><%=h USD_value(pgr.amount/100) %></td>
+      <td class="textcenter"><%= image_tag(pgr.success ? "tick.png" : "exclamation.png") %></td>
       <td><%=h pgr.authorization %></td>
       <td><%= link_to truncate(pgr.message, 20, "..."), :controller => 'payment_gateway_responses',:action => 'details' ,:id => pgr.id,:column => 'message'  %></td>
       <td><%= link_to truncate(pgr.params.to_s, 20, "..."), :controller => 'payment_gateway_responses',:action => 'details' ,:id => pgr.id,:column => 'params'  %></td>

@@ -105,7 +105,18 @@ class Order < ActiveRecord::Base
         # * <tt>money</tt> -- The amount to be purchased as an Integer value in cents.
         # * <tt>creditcard</tt> -- The CreditCard details for the transaction.
         # * <tt>options</tt> -- A hash of optional parameters.
-        @one_time_fee_response = GATEWAY.purchase( product_cost.upfront_charge*100, credit_card) # GATEWAY in environment files
+        @one_time_fee_response = GATEWAY.purchase( product_cost.upfront_charge*100, credit_card,
+          :billing_address => {
+            :first_name => bill_first_name,
+            :last_name => bill_last_name,
+            :address1 => bill_address,
+            :phone => bill_phone,
+            :city => bill_city,
+            :state => bill_state,
+            :zip => bill_zip,
+            :country => "US",
+            }
+          ) # GATEWAY in environment files
         # store response in database
         payment_gateway_responses.create!(:action => "purchase", :amount => product_cost.upfront_charge*100, :response => @one_time_fee_response)
         errors.add_to_base @one_time_fee_response.message unless @one_time_fee_response.success?
@@ -153,7 +164,16 @@ class Order < ActiveRecord::Base
             @recurring_fee_response = GATEWAY.recurring(product_cost.monthly_recurring*100, credit_card, {
                 :interval => {:unit => :months, :length => 1},
                 :duration => {:start_date => product_cost.recurring_delay.from_now.to_date, :occurrences => 60},
-                :billing_address => {:first_name => bill_first_name, :last_name => bill_last_name}
+                :billing_address => {
+                  :first_name => bill_first_name,
+                  :last_name => bill_last_name,
+                  :address1 => bill_address,
+                  :phone => bill_phone,
+                  :city => bill_city,
+                  :state => bill_state,
+                  :zip => bill_zip,
+                  :country => "US",
+                  }
               }
             )
             # store response in database
