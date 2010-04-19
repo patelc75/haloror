@@ -1,0 +1,15 @@
+<%=render :partial => 'nav'%>
+<h2>Purge Data</h2>
+<form action="/reporting/purge_data" method="post">
+	<table>
+	<tr>
+	<td>User ID: </td>
+	<td><input type="text" name="user_id"><br></td></tr>
+	<tr>
+	<td>Timestamp: </td>
+	<td><%= calendar_date_select_tag "user_time", @user_time, :time => true, :popup => 'force' %></td>
+	</tr>
+	<tr><td></td><td><input type="submit" value="Submit"></td></tr>
+	</table>
+	
+</form>

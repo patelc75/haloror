@@ -87,6 +87,16 @@ class ReportingController < ApplicationController
     end
   end
   
+  def purge_data
+  	if request.post?
+  	  @user_time = UtilityHelper.user_time_zone_to_utc(params[:user_time])
+  	  Vital.delete_all(["user_id = ? and timestamp < ?",params[:user_id],@user_time])
+  	  SkinTemp.delete_all(["user_id = ? and timestamp < ?",params[:user_id],@user_time])
+  	  Battery.delete_all(["user_id = ? and timestamp < ?",params[:user_id],@user_time])
+  	  Step.delete_all(["user_id = ? and begin_timestamp < ?",params[:user_id],@user_time])
+  	end
+  end
+  
   def user_hidden
     @user = User.find(params[:user_id], :include => [:roles, :roles_users])
     render :partial => 'user_hidden', :layout => false
