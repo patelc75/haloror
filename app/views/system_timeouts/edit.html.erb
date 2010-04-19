@@ -7,7 +7,7 @@
   <tr>
     <th>ID</th><th>Mode</th>
     <th>Gateway<br>Offline<br>Timeout<br>(seconds)</th>
-    <th>Gateway<br>Offline <br>Percentage<br>(eg. 0.22)</th>
+    <th>Gateway<br>Offline <br>Alert Offset<br>(seconds)</th>
     <th>Device<br>Unavailable<br>Timeout<br>(seconds)</th>
     <th>Strap Off<br>Timeout<br>(seconds)</th>
     <th>Critical<br>Event<br>Delay<br>(seconds)</th>
@@ -19,7 +19,7 @@
     <td><%= @system_timeout.id %></td>
     <td><%= text_field :system_timeout, :mode,  :size => 10 %></td>
     <td><%= text_field :system_timeout, :gateway_offline_timeout_sec,  :size => 10 %></td>
-    <td><%= text_field :system_timeout, :gateway_offline_percentage,  :size => 10 %></td>
+    <td><%= text_field :system_timeout, :gateway_offline_offset_sec,  :size => 10 %></td>
     <td><%= text_field :system_timeout, :device_unavailable_timeout_sec,  :size => 10 %></td>
     <td><%= text_field :system_timeout, :strap_off_timeout_sec,  :size => 10 %></td>
     <td><%= text_field :system_timeout, :critical_event_delay_sec,  :size => 10 %></td>

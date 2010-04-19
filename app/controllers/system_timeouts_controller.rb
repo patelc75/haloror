@@ -1,7 +1,7 @@
 class SystemTimeoutsController < ApplicationController
   #list current system timeouts
   def index
-    @system_timeouts = SystemTimeout.find(:all)
+    @system_timeouts = SystemTimeout.find(:all, :order => 'id asc')
   end
   
   #edit a system timeout 
