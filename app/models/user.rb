@@ -39,7 +39,7 @@ class User < ActiveRecord::Base
   
   has_and_belongs_to_many :devices
   has_and_belongs_to_many :user_intakes # replaced with has_many :through on Senior, Subscriber, Caregiver
-  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active
+  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :from_user_intake
   
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
@@ -67,16 +67,21 @@ class User < ActiveRecord::Base
   validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
   
   # validate associations
-  validates_associated :profile
+  # validates_associated :profile
   
   before_save :encrypt_password
   before_create :make_activation_code
+  # after_save :post_process
   
-  # build associated model
-  def after_initialize
-    self.profile = Profile.new(:user_id => self) if self.profile.blank? && self.new_record?
-  end
+  # # build associated model
+  # def after_initialize
+  #   self.build_profile if (self.new_record? && profile.blank?)
+  # end
   
+  # def post_process
+  #   profile.save if !profile.blank? && profile.new_record?
+  # end
+
   # profile_attributes hash can be given here to create a related profile
   #
   def profile_attributes=(attributes)
@@ -114,22 +119,32 @@ class User < ActiveRecord::Base
   #   is_caregiver_to_what => get array if users I am caregiving
   #   has_caregiver => get array of caregivers for me
   def options_for_senior(the_senior)
-    begin
-      if !self.eql?(the_senior) && self.is_caregiver_of?( the_senior)
-        role = self.roles.select {|role| role.name == "caregiver" && \
-          role.authorizable_id == the_senior.id && role.authorizable_type == "User" }.first
-        options = options_for_role(role) unless role.blank?
-      end
-    rescue
-      options = nil
+    if self.is_caregiver_of?( the_senior)
+      role = self.roles.first(:conditions => {
+        :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
+      })
+      options = options_for_role(role) unless role.blank?
     end
     options
   end
   
-  def options_for_role(role_or_id)
-    role_id = (role_or_id.is_a?(Role) ? role_or_id.id : role_or_id)
-    role_user = RolesUser.find_by_user_id_and_role_id(self.id, role_id)
-    role_user.blank? ? nil : role_user.roles_users_option
+  def options_for_senior=(the_senior, attributes)
+    self.is_caregiver_of(the_senior)
+    role = self.roles.first(:conditions => {
+      :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
+    })
+    self.options_for_role(role, attributes)
+  end
+  
+  def options_for_role(role, attributes = nil)
+    role_id = (role.is_a?(Role) ? role.id : role)
+    if attributes.blank?
+      role_user = RolesUser.find_by_user_id_and_role_id(self.id, role_id)
+      role_user.blank? ? nil : role_user.roles_users_option
+    else
+      role_user = RolesUser.find_or_create_by_user_id_and_role_id(self.id, role_id) # find | create
+      role_user.create_roles_users_option(attributes)
+    end
   end
   
   # ramonrails: above this are methods to help self contained logic for user_intake
@@ -1308,7 +1323,7 @@ class User < ActiveRecord::Base
   
   # returns true if password is a required field
   def password_required?
-    if(self.is_new_caregiver || self[:is_new_user] || self[:is_new_subscriber] || self[:is_new_halouser])
+    if(self.is_new_caregiver || self[:is_new_user] || self[:is_new_subscriber] || self[:is_new_halouser] || from_user_intake)
       return false
     else
       crypted_password.blank? || !password.blank?

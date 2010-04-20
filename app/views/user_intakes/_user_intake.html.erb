@@ -111,7 +111,7 @@ $(function() {
         <hr />
 
         <!-- cycle for each caregiver -->
-        <% @user_intake..each_with_index do |caregiver, index| %>
+        <% @user_intake.caregivers_as_array.each_with_index do |caregiver, index| %>
         <div class="span-7 <%= 'border' unless caregiver == @user_intake.caregiver3 %>">
           <%= f.check_box "no_caregiver_#{index+1}".to_sym, :checked => true, :onclick => "hide_when_checked(this, 'caregiver#{index+1}_profile')" %>
           <%= f.label "no_caregiver_#{index+1}".to_sym, "No Caregiver \##{index+1}" %>

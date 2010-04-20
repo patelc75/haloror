@@ -9,36 +9,51 @@ class UserIntake < ActiveRecord::Base
   # validates_associated :seniors, :subscribers, :caregivers
   # attr_accessor :group_id, :same_as_user, :add_as_caregiver, :monthly_or_card
   # attr_accessor :no_caregiver_1, :no_caregiver_2, :no_caregiver_3
-  after_save :post_process_roles_and_options
+  before_create :collect_users_for_save
+  after_create :post_process_roles_and_options
   attr_accessor :mem_senior, :mem_subscriber, :mem_caregiver1, :mem_caregiver2, :mem_caregiver3
   attr_accessor :mem_caregiver1_options, :mem_caregiver2_options, :mem_caregiver3_options
 
   # for every instance, make sure the associated objects are built
-  # def after_initialize
-  #   self.senior = User.new(:email => "senior@example.com") if self.senior.blank?
-  #   self.subscriber = User.new(:email => "subscriber@example.com") if self.subscriber.blank?
-  #   # (3-self.caregivers.size).times { self.caregivers.build(:email => "caregiver@example.com") }
-  # end
+  def after_initialize
+    self.senior = User.new  if senior.blank?
+    senior.build_profile    if senior.profile.blank?
+    
+    self.subscriber = User.new  if subscriber.blank?
+    subscriber.build_profile    if subscriber.profile.blank?
+
+    (1..3).each do |e|
+      self.send("caregiver#{e}=", User.new) if self.send("caregiver#{e}").blank?
+      caregiver = self.send("caregiver#{e}")
+      caregiver.build_profile if caregiver.profile.blank?
+    end
+  end
+  
+  def collect_users_for_save
+    senior.profile = nil if senior.profile.attributes.values.compact.blank? unless senior.profile.blank?
+    self.senior = nil if senior.attributes.values.compact.blank?
+    self.senior.from_user_intake = true unless senior.blank?
+
+    debugger
+    self.users = [senior] # , subscriber, caregiver1, caregiver2, caregiver3
+  end
   
   def post_process_roles_and_options
-    [:senior, :subscriber, :caregiver1, :caregiver2, :caregiver3].each do |e|
-      self.send(e).save unless self.send(e).attributes.values.compact.blank?
-    end
     # add roles and options
     # senior
-    senior.valid? ? senior.is_halouser_of( group) : self.add_to_base("Insufficient information about Senior")
-    self.add_to_base(...) unless senior.profile.valid?
-    # subscriber
-    subscriber.is_subscriber_of(senior)
-    # caregivers
-    (1..3).each_with_index do |number, index|
-      caregiver = self.send("caregiver#{number}".to_sym)
-      caregiver.is_caregiver_of(senior) if caregiver.valid?
-      options = caregiver.options_for_senior(senior)
-      unless options.blank?
-        ...
-      end
-    end
+    debugger
+    senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")
+    self.errors.add_to_base("Senior profile needs more detail") unless senior.profile.valid? unless senior.profile.blank?
+    # # subscriber
+    # subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
+    # self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.valid?
+    # # caregivers
+    # (1..3).each_with_index do |number, index|
+    #   caregiver = self.send("caregiver#{number}".to_sym)
+    #   caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
+    #   self.errors.add_to_base("Caregiver #{index} profile needs more detail") unless caregiver.profile.valid?
+    #   options = caregiver.options_for_senior(senior)
+    # end
   end
   
   def created_by_user_name
@@ -52,26 +67,30 @@ class UserIntake < ActiveRecord::Base
   # TODO: DRYness required here
   def senior
     if self.new_record?
-      self.mem_senior ||= User.new
+      self.mem_senior # ||= User.new
     else
-      self.mem_senior ||= (users.select {|user| user.is_halouser_of?(group) }.first || User.new) # fetch first halouser from users
+      self.mem_senior ||= (users.select {|user| user.is_halouser_of?(group) }.first) #  || User.new
     end
     mem_senior
   end
   
   def senior=(arg)
-    attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
-    unless attributes.blank?
-      if self.new_record?
-        self.mem_senior = User.new(attributes)
-      else
-        user = senior
-        user.attributes = attributes
-        user.is_halouser_of( group) # self.group
-        self.mem_senior = user # keep in instance variable so that attrbutes can be saved with user_intake
+    if arg == nil
+      self.mem_senior = nil
+    else
+      attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
+      unless attributes.blank?
+        if self.new_record?
+          self.mem_senior = User.new(attributes)
+        else
+          user = senior
+          user.attributes = attributes
+          user.is_halouser_of( group) # self.group
+          self.mem_senior = user # keep in instance variable so that attrbutes can be saved with user_intake
+        end
       end
     end
-    self.mem_senior ||= User.new
+    self.mem_senior
   end
 
   def subscriber
@@ -93,6 +112,7 @@ class UserIntake < ActiveRecord::Base
     else
       attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
       unless attributes.blank?
+        attributes.merge(:from_user_intake => true)
         if self.new_record?
           self.mem_subscriber = User.new(attributes)
         else
@@ -104,6 +124,8 @@ class UserIntake < ActiveRecord::Base
       end
     end
     self.mem_subscriber ||= User.new
+    self.mem_subscriber.from_user_intake = true
+    self.mem_subscriber
   end
   
   def caregiver1
@@ -125,6 +147,7 @@ class UserIntake < ActiveRecord::Base
     else
       attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
       unless attributes.blank?
+        attributes.merge(:from_user_intake => true)
         if self.new_record?
           self.mem_caregiver1 = User.new(attributes)
         else
@@ -136,6 +159,8 @@ class UserIntake < ActiveRecord::Base
       end
     end
     self.mem_caregiver1 ||= User.new
+    self.mem_caregiver1.from_user_intake = true
+    self.mem_caregiver1
   end
 
   def caregiver2
@@ -150,6 +175,7 @@ class UserIntake < ActiveRecord::Base
   def caregiver2=(arg)
     attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
     unless attributes.blank?
+      attributes.merge(:from_user_intake => true)
       if self.new_record?
         self.mem_caregiver2 = User.new(attributes)
       else
@@ -160,6 +186,8 @@ class UserIntake < ActiveRecord::Base
       end
     end
     self.mem_caregiver2 ||= User.new
+    self.mem_caregiver2.from_user_intake = true
+    self.mem_caregiver2
   end
   
   def caregiver3
@@ -174,6 +202,7 @@ class UserIntake < ActiveRecord::Base
   def caregiver3=(arg)
     attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
     unless attributes.blank?
+      attributes.merge(:from_user_intake => true)
       if self.new_record?
         self.mem_caregiver3 = User.new(attributes)
       else
@@ -184,25 +213,31 @@ class UserIntake < ActiveRecord::Base
       end
     end
     self.mem_caregiver3 ||= User.new
+    self.mem_caregiver3.from_user_intake = true
+    self.mem_caregiver3
   end
 
+  def caregivers_as_array
+    [caregiver1, caregiver2, caregiver3]
+  end
+  
   def senior_attributes=(attributes)
-    senior = attributes # build
+    senior = attributes unless attributes.values.compact.blank?
   end
   
   def subscriber_attributes=(attributes)
-    subscriber = attributes # build
+    subscriber = attributes unless attributes.values.compact.blank?
   end
   
   def caregiver1_attributes=(attributes)
-    caregiver1 = attributes
+    caregiver1 = attributes unless attributes.values.compact.blank?
   end
   
   def caregiver2_attributes=(attributes)
-    caregiver2 = attributes
+    caregiver2 = attributes unless attributes.values.compact.blank?
   end
   
   def caregiver3_attributes=(attributes)
-    caregiver3 = attributes
+    caregiver3 = attributes unless attributes.values.compact.blank?
   end
 end
