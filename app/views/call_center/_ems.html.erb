@@ -1,0 +1,12 @@
+<% unless controller.action_name == 'event_details'%>
+  <% if action = event.ems? %>
+	<b>EMS</b>
+	<%= render :partial => 'undo_action',:locals => {:event => event}%>
+  <% else %>
+	<%= render :partial => 'mark_event',:locals => {:event => event}%>
+  <% end %>
+<%else%>
+  <%if action = event.ems?%>
+    Marked <b>EMS</b> by <%=action.user.name%> at <%=UtilityHelper.format_datetime(action.created_at, current_user)%>
+  <%end%>
+<%end%>

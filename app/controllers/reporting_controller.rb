@@ -356,6 +356,7 @@ class ReportingController < ApplicationController
       	@group_totals[:real_falls] = 0
       	@group_totals[:real_alarm_falls] = 0
  		@group_totals[:unclassified_falls] = 0
+ 		@group_totals[:ems_falls] = 0
  		
       	@group_totals[:false_alarm_panics] = 0
       	@group_totals[:test_alarm_panics] = 0
@@ -363,6 +364,7 @@ class ReportingController < ApplicationController
       	@group_totals[:duplicate] = 0
       	@group_totals[:real_alarm_panics] = 0
       	@group_totals[:unclassified_panics] = 0
+      	@group_totals[:ems_panics] = 0
       	@group_totals[:real_panics] = 0
       	@group_totals[:installs] = 0
 		@group_totals[:battery_reminders] = 0
@@ -430,12 +432,18 @@ class ReportingController < ApplicationController
           		       end
           		       @group_stats[group.name][:real_alarm_falls] << fall
           		       @group_totals[:real_alarm_falls] += 1 if group.name !="safety_care" and group.name !="halo"
-          		      elsif fall.gw_reset?
+          		     elsif fall.gw_reset?
             	  	    if @group_stats[group.name][:gwreset_falls].nil?
           		          @group_stats[group.name][:gwreset_falls] = []
           		        end
           		        @group_stats[group.name][:gwreset_falls] << gwalarm
           		        @group_totals[:gwreset_falls] += 1 if group.name !="safety_care" and group.name !="halo"
+                     elsif fall.ems?
+            	  	    if @group_stats[group.name][:ems_falls].nil?
+          		          @group_stats[group.name][:ems_falls] = []
+          		        end
+          		        @group_stats[group.name][:ems_falls] << fall
+          		        @group_totals[:ems_falls] += 1 if group.name !="safety_care" and group.name !="halo"
         		     else
         		       if @group_stats[group.name][:unclassified_falls].nil?
         		         @group_stats[group.name][:unclassified_falls] = [] 
@@ -504,6 +512,12 @@ class ReportingController < ApplicationController
           		      end
           		      @group_stats[group.name][:gwreset_panics] << gwalarm
           		      @group_totals[:gwreset_panics] += 1 if group.name !="safety_care" and group.name !="halo"
+                    elsif fall.ems?
+            	  	  if @group_stats[group.name][:ems_panics].nil?
+          		        @group_stats[group.name][:ems_panics] = []
+          		      end
+          		      @group_stats[group.name][:ems_panics] << panic
+          		      @group_totals[:ems_panics] += 1 if group.name !="safety_care" and group.name !="halo"
           			else
           		  	  if @group_stats[group.name][:unclassified_panics].nil?
             		    @group_stats[group.name][:unclassified_panics] = []

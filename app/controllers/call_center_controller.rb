@@ -76,6 +76,7 @@ class CallCenterController < ApplicationController
   def event_classification(events)
   	total_events = []
     total_events += events.collect{|event| event if event.real_alarm?}.uniq if params[:real]
+    total_events += events.collect{|event| event if event.ems?}.uniq if params[:ems]
   	total_events += events.collect{|event| event if event.false_alarm?}.uniq if params[:false]
   	total_events += events.collect{|event| event if event.test_alarm?}.uniq if params[:test]
   	total_events += events.collect{|event| event if event.gw_reset?}.uniq if params[:gw_reset]
@@ -194,6 +195,19 @@ class CallCenterController < ApplicationController
     
     render :partial => 'gw_reset', :locals => {:event => Event.find(params[:id])}
   end
+  
+  def ems
+    @event = Event.find(params[:id])
+    
+    action = EventAction.new
+    action.user_id = current_user.id
+    action.event_id = params[:id]
+    action.description = 'ems'
+    action.save!
+    ea = action
+    
+    render :partial => 'ems', :locals => {:event => Event.find(params[:id])}
+  end  
   
   def non_emerg_panic
     @event = Event.find(params[:id])

@@ -163,6 +163,8 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
           <%= render :partial => 'duplicate_event',:locals => {:event => event}%>
         <% elsif action = event.gw_reset? %>
           <%= render :partial => 'gw_reset',:locals => {:event => event}%>
+        <% elsif action = event.ems? %>
+          <%= render :partial => 'ems',:locals => {:event => event}%>          
         <% elsif event.event_type == 'GwAlarmButton'%>  
           <%= "--"%>
 		<% else %>

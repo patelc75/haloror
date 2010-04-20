@@ -12,6 +12,7 @@
 <tr>
 	<td><b>Classification:</b></td>
 	<td><%= check_box_tag 'real','yes',true %> Real</td>
+	<td><%= check_box_tag 'ems','yes',true %> EMS</td>
 	<td><%= check_box_tag 'false','yes',true %>False Alarm</td>
     <td><%= check_box_tag 'test','yes',true %> Test</td>
 	<td><%= check_box_tag 'non_emergency','yes',true %>Non emergency</td>
@@ -34,6 +35,7 @@
 <tr>
 	<td><b>Classification:</b></td>
 	<td><%= check_box_tag 'real','yes',params[:real] ? true : false %> Real</td>
+	<td><%= check_box_tag 'ems','yes',params[:ems] ? true : false %> EMS</td>
 	<td><%= check_box_tag 'false','yes',params[:false] ? true : false %>False Alarm</td>
     <td><%= check_box_tag 'test','yes',params[:test] ? true : false %> Test</td>
 	<td><%= check_box_tag 'non_emergency','yes',params[:non_emergency] ? true : false %>Non emergency</td>

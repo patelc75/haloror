@@ -37,12 +37,14 @@ require "digest"
 			<th bgcolor="#E1E1E1">Battery<br> Reminders</th>
 			<th bgcolor="#E1E1E1">GW Reset<br> Button</th>
   			<th bgcolor="#FFD0B4">Real<br> Falls</th>
+  			<th bgcolor="#FFD0B4">EMS<br> Falls</th>
   			<th bgcolor="#FFD0B4">False<br> Alarm<br> Falls</th>
   			<th bgcolor="#FFD0B4">Test<br> Falls</th>
 			<th bgcolor="#FFD0B4">GW Reset<br> Falls</th>
   			<th bgcolor="#FFD0B4">Un- <br>classified<br> Falls</th>
   			<th bgcolor="#FFD0B4">Falls<br> Specificity</th>
   			<th bgcolor="#E1d1E1">Real<br> Panics</th>
+  			<th bgcolor="#E1d1E1">EMS<br> Panics</th>
   			<th bgcolor="#E1d1E1">False<br> Alarm<br> Panics</th>
   			<th bgcolor="#E1d1E1">Test<br> Panics</th>
   			<th bgcolor="#E1d1E1">Non<br> Emerg<br> Panics</th>
@@ -63,16 +65,18 @@ require "digest"
 				<td><% if installs = @group_stats[key][:battery_reminders] %>
 					<%= @group_stats[key][:battery_reminders].length %>
 					<% else %> 0 <% end%></td>
-                <td><%= @real_falls = @group_stats[key][:gwalarm].length if @group_stats[key][:gwalarm]%></td>
+                <td><%= @group_stats[key][:gwalarm].length if @group_stats[key][:gwalarm]%></td>
 				<td><%= @real_falls = @group_stats[key][:real_alarm_falls].length if @group_stats[key][:real_alarm_falls]%></td>
+				<td><%= @ems_falls = @group_stats[key][:ems_falls].length if @group_stats[key][:ems_falls]%></td>
   				<td><%= @false_alarm_falls = @group_stats[key][:false_alarm_falls].length if @group_stats[key][:false_alarm_falls]%></td>
   				<td><%= @test_falls = @group_stats[key][:test_alarm_falls].length if @group_stats[key][:test_alarm_falls]%></td>
-  				<td><%= @real_falls = @group_stats[key][:gwreset_falls].length if @group_stats[key][:gwreset_falls]%></td>
+  				<td><%= @group_stats[key][:gwreset_falls].length if @group_stats[key][:gwreset_falls]%></td>
   				<td><%= @group_stats[key][:unclassified_falls].length if @group_stats[key][:unclassified_falls]%></td>
   				<td><% falls_specify = (@real_falls.to_f / (@false_alarm_falls.to_f + @real_falls.to_f)) if @real_falls != 0%>
   	    		<%= (falls_specify * 100).round(1).to_s + '%' if falls_specify%>
   				</td>
 				<td><%=@real_panics = @group_stats[key][:real_alarm_panics].length if @group_stats[key][:real_alarm_panics]%></td>
+				<td><%=@ems_panics = @group_stats[key][:ems_panics].length if @group_stats[key][:ems_panics]%></td>
   				<td><%= @false_alarm_panic = @group_stats[key][:false_alarm_panics].length if @group_stats[key][:false_alarm_panics]%></td>
   				<td><%= @test_panics = @group_stats[key][:test_alarm_panics].length if @group_stats[key][:test_alarm_panics]%></td>
   				<td><%= @non_emerg_panic = @group_stats[key][:non_emerg_panics].length if @group_stats[key][:non_emerg_panics]%></td>
@@ -98,6 +102,7 @@ require "digest"
 		<td><%= @group_totals[:battery_reminders] %></td>
 		<td><%= @group_totals[:gwalarm] %></td>
 		<td><%= @group_totals[:real_alarm_falls] %></td>
+		<td><%= @group_totals[:ems_falls] %></td>
 		<td><%= @group_totals[:false_alarm_falls] %></td>
 		<td><%= @group_totals[:test_alarm_falls] %></td>
         <td><%= @group_totals[:gwreset_falls] %></td>
@@ -106,7 +111,8 @@ require "digest"
 			<% (total_percentage = @group_totals[:real_falls].to_f / (@group_totals[:false_alarm_falls].to_f + @group_totals[:real_falls].to_f)) if @group_totals[:real_falls] != 0 %>
 			<%= (total_percentage * 100).round(1).to_s + '%' if total_percentage%>
 		</td>		
-		<td><%= @group_totals[:real_alarm_panics] %></td>		
+		<td><%= @group_totals[:real_alarm_panics] %></td>
+		<td><%= @group_totals[:ems_panics] %></td>		
 		<td><%= @group_totals[:false_alarm_panics] %></td>
 		<td><%= @group_totals[:test_alarm_panics] %></td>
 		<td><%= @group_totals[:non_emerg_panics] %></td>

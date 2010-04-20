@@ -6,5 +6,5 @@ Mark as <%= link_to_remote "False Alarm", :update => "false_alarm_#{event.id}", 
 		   or
 		  <%= link_to_remote "Non emergency Panic", :update => "false_alarm_#{event.id}", :url => {:action => "non_emerg_panic", :id => event.id} %> or <%= link_to_remote "Duplicate", :update => "false_alarm_#{event.id}", :url => {:action => "duplicate_event", :id => event.id,:textfield => true} %>
 		  <% end %> or 
-		  <%= link_to_remote "GW_Reset", :update => "false_alarm_#{event.id}", :url => {:action => "gw_reset", :id => event.id} %>
+		  <%= link_to_remote "GW_Reset", :update => "false_alarm_#{event.id}", :url => {:action => "gw_reset", :id => event.id} %> or <%= link_to_remote "EMS", :update => "false_alarm_#{event.id}", :url => {:action => "ems", :id => event.id} %> 
 <%end%>
