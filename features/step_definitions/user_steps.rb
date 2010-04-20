@@ -28,7 +28,7 @@ Given /^user "([^\"]*)" has "([^\"]*)" role(?:|s) for group "([^\"]*)"$/ do |use
   roles = role_name.split(',').collect {|p| p.strip.gsub(/ /,'_')}
   roles.each {|role| user.has_role role, Group.find_by_name(group_name)}
 end
-                
+
 When /^I navigate to caregiver page for "([^\"]*)" user$/ do |user_name|
   visit "call_list/show/#{User.find_by_login(user_name).id}"
 end

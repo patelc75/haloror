@@ -15,6 +15,7 @@ Feature: Critical Alert
 	    | name       | safety_care |
 	    | sales_type | call_center |
 		And user "test-user" has "halouser" role for group "halo"
+	  And I do not have any falls, events
   
   # @wip here will skip only this scenario, unless feature has @wip tag
   Scenario: Simulate a fall with successful delivery to the call center
