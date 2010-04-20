@@ -2,6 +2,9 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
 require "factory_girl"
 
 describe UserIntake do
+  
+  # common methods
+  
   def profile_hash(user_type)
     {
       :first_name => "#{user_type} first name",
@@ -21,12 +24,16 @@ describe UserIntake do
       :medications => "#{user_type} medications"
     }
   end
+
+  # callback events
+  
+  before(:each) do
+    @user_intake = UserIntake.new
+  end
   
   # in memory records
+  
   context "In memory records" do
-    before(:each) do
-      @user_intake = UserIntake.new
-    end
     #
     # check each user type in memory
     ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user_type|
@@ -48,11 +55,8 @@ describe UserIntake do
   end
     
   # saved records
+  
   context "saved records" do
-    before(:each) do
-      @user_intake = UserIntake.new
-    end
-
     #
     # check each user type after save
     ["senior"].each do |user_type| # , "subscriber", "caregiver1", "caregiver2", "caregiver3"
@@ -62,8 +66,10 @@ describe UserIntake do
         @user_intake.save
         user_intake = UserIntake.find(@user_intake.id)
         user_intake.should_not be_blank
+        
         user = user_intake.send("#{user_type}".to_sym)
         user.should_not be_blank
+        
         user.email.should == "#{user_type}@test.com"
       end
 
@@ -71,27 +77,37 @@ describe UserIntake do
         user_hash = User.new(:email => "#{user_type}@test.com").attributes
         local_profile_hash = profile_hash(user_type)
         attributes = user_hash.merge( "profile_attributes" => Profile.new(local_profile_hash).attributes)
-        debugger
         @user_intake.send("#{user_type}=".to_sym, attributes)
         @user_intake.save
+        
         user_intake = UserIntake.find_by_id(@user_intake.id)
         user_intake.should_not be_blank
+        
         user = user_intake.send("#{user_type}".to_sym)
         user.should_not be_blank
+        
         profile = user.profile
         profile.should_not be_blank
+        
         local_profile_hash.each {|k,v| profile.send("#{k}").should == v }
       end
     end
+    
+    it "should have halouser role for senior" do
+      @user_intake.subscriber_is_user = true
+      @user_intake.group = Group.create(:name => "group")
+      @user_intake.senior = User.new(:email => "senior@example.com")
+      @user_intake.save
+
+      user_intake = UserIntake.find(@user_intake.id)
+      user_intake.should_not be_blank
+
+      user_intake.senior.is_halouser_of?(user_intake.group).should be_true
+    end
+    
   end
     
-  # it "should have halouser role for senior" do
-  #   @user_intake.subscriber_is_user = true
-  #   @user_intake.senior = User.new(:email => "senior@example.com")
-  #   user_intake.save
-  #   user_intake.senior.is_halouser?.should be_true
-  # end
-    
+
     # it "should have subscriber role for senior when subscriber_is_user" do
     #   user_intake = Factory.create(:user_intake, :subscriber_is_user => true)
     #   user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true

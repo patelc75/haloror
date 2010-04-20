@@ -13,6 +13,7 @@ class UserIntake < ActiveRecord::Base
   after_create :post_process_roles_and_options
   attr_accessor :mem_senior, :mem_subscriber, :mem_caregiver1, :mem_caregiver2, :mem_caregiver3
   attr_accessor :mem_caregiver1_options, :mem_caregiver2_options, :mem_caregiver3_options
+  attr_accessor :subscriber_is_user, :subscriber_is_caregiver
 
   # for every instance, make sure the associated objects are built
   def after_initialize
