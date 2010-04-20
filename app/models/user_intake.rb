@@ -32,7 +32,7 @@ class UserIntake < ActiveRecord::Base
   def collect_users_for_save
     senior.profile = nil if senior.profile.attributes.values.compact.blank? unless senior.profile.blank?
     self.senior = nil if senior.attributes.values.compact.blank?
-    self.senior.from_user_intake = true unless senior.blank?
+    self.senior.skip_validation = true unless senior.blank?
 
     debugger
     self.users = [senior] # , subscriber, caregiver1, caregiver2, caregiver3
@@ -112,7 +112,7 @@ class UserIntake < ActiveRecord::Base
     else
       attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
       unless attributes.blank?
-        attributes.merge(:from_user_intake => true)
+        attributes.merge(:skip_validation => true)
         if self.new_record?
           self.mem_subscriber = User.new(attributes)
         else
@@ -124,7 +124,7 @@ class UserIntake < ActiveRecord::Base
       end
     end
     self.mem_subscriber ||= User.new
-    self.mem_subscriber.from_user_intake = true
+    self.mem_subscriber.skip_validation = true
     self.mem_subscriber
   end
   
@@ -147,7 +147,7 @@ class UserIntake < ActiveRecord::Base
     else
       attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
       unless attributes.blank?
-        attributes.merge(:from_user_intake => true)
+        attributes.merge(:skip_validation => true)
         if self.new_record?
           self.mem_caregiver1 = User.new(attributes)
         else
@@ -159,7 +159,7 @@ class UserIntake < ActiveRecord::Base
       end
     end
     self.mem_caregiver1 ||= User.new
-    self.mem_caregiver1.from_user_intake = true
+    self.mem_caregiver1.skip_validation = true
     self.mem_caregiver1
   end
 
@@ -175,7 +175,7 @@ class UserIntake < ActiveRecord::Base
   def caregiver2=(arg)
     attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
     unless attributes.blank?
-      attributes.merge(:from_user_intake => true)
+      attributes.merge(:skip_validation => true)
       if self.new_record?
         self.mem_caregiver2 = User.new(attributes)
       else
@@ -186,7 +186,7 @@ class UserIntake < ActiveRecord::Base
       end
     end
     self.mem_caregiver2 ||= User.new
-    self.mem_caregiver2.from_user_intake = true
+    self.mem_caregiver2.skip_validation = true
     self.mem_caregiver2
   end
   
@@ -202,7 +202,7 @@ class UserIntake < ActiveRecord::Base
   def caregiver3=(arg)
     attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
     unless attributes.blank?
-      attributes.merge(:from_user_intake => true)
+      attributes.merge(:skip_validation => true)
       if self.new_record?
         self.mem_caregiver3 = User.new(attributes)
       else
@@ -213,7 +213,7 @@ class UserIntake < ActiveRecord::Base
       end
     end
     self.mem_caregiver3 ||= User.new
-    self.mem_caregiver3.from_user_intake = true
+    self.mem_caregiver3.skip_validation = true
     self.mem_caregiver3
   end
 

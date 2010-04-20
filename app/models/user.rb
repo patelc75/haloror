@@ -39,7 +39,7 @@ class User < ActiveRecord::Base
   
   has_and_belongs_to_many :devices
   has_and_belongs_to_many :user_intakes # replaced with has_many :through on Senior, Subscriber, Caregiver
-  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :from_user_intake
+  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :skip_validation
   
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
@@ -1323,7 +1323,7 @@ class User < ActiveRecord::Base
   
   # returns true if password is a required field
   def password_required?
-    if(self.is_new_caregiver || self[:is_new_user] || self[:is_new_subscriber] || self[:is_new_halouser] || from_user_intake)
+    if(self.is_new_caregiver || self[:is_new_user] || self[:is_new_subscriber] || self[:is_new_halouser] || skip_validation)
       return false
     else
       crypted_password.blank? || !password.blank?
