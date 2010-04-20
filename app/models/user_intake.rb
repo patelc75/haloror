@@ -35,23 +35,27 @@ class UserIntake < ActiveRecord::Base
     self.senior = nil if senior.nothing_assigned?
     self.senior.skip_validation = true unless senior.blank?
 
-    # subscriber.profile = nil if subscriber.profile.nothing_assigned? unless subscriber.profile.blank?
-    # self.subscriber = nil if subscriber.nothing_assigned?
-    # self.subscriber.skip_validation = true unless subscriber.blank?
-
     debugger
-    self.users = [senior] # , subscriber, caregiver1, caregiver2, caregiver3
+    subscriber.profile = nil if subscriber.profile.nothing_assigned? unless subscriber.profile.blank?
+    self.subscriber = nil if subscriber.nothing_assigned?
+    self.subscriber.skip_validation = true unless subscriber.blank?
+
+    self.users = [senior, subscriber].compact # , caregiver1, caregiver2, caregiver3
   end
   
   def post_process_roles_and_options
     # add roles and options
     # senior
     debugger
-    senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")
-    self.errors.add_to_base("Senior profile needs more detail") unless senior.profile.valid? unless senior.profile.blank?
-    # # subscriber
-    # subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
-    # self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.valid?
+    unless senior.blank?
+      senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")
+      self.errors.add_to_base("Senior profile needs more detail") unless senior.profile.valid? unless senior.profile.blank?
+    end
+    # subscriber
+    unless subscriber.blank?
+      subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
+      self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.valid? unless subscriber.profile.blank?
+    end
     # # caregivers
     # (1..3).each_with_index do |number, index|
     #   caregiver = self.send("caregiver#{number}".to_sym)
@@ -88,7 +92,7 @@ class UserIntake < ActiveRecord::Base
         if self.new_record?
           self.mem_senior = User.new(attributes)
         else
-          user = senior
+          user = (senior || User.new)
           user.attributes = attributes
           user.is_halouser_of( group) # self.group
           self.mem_senior = user # keep in instance variable so that attrbutes can be saved with user_intake
@@ -100,36 +104,40 @@ class UserIntake < ActiveRecord::Base
 
   def subscriber
     if subscriber_is_user
-      self.mem_subscriber = senior # senior code handles everything. no caching, can change
+      self.mem_subscriber = senior # pick senior, if self subscribed
     else
       if self.new_record?
-        self.mem_subscriber ||= User.new
+        self.mem_subscriber # ||= User.new
       else
-        self.mem_subscriber ||= (users.select {|user| user.is_subscriber_of?(senior) }.first || User.new) # fetch first subscriber from users
+        self.mem_subscriber ||= (users.select {|user| user.is_subscriber_of?(senior) }.first ) # || User.new
       end
     end
     mem_subscriber
   end
   
   def subscriber=(arg)
-    if subscriber_is_user
-      self.mem_subscriber = self.senior = arg # senior code will handle this
+    if arg == nil
+      self.mem_subscriber = nil
     else
-      attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
-      unless attributes.blank?
-        attributes.merge(:skip_validation => true)
-        if self.new_record?
-          self.mem_subscriber = User.new(attributes)
-        else
-          user = subscriber
-          user.attributes = attributes
-          user.is_subscriber_of( senior) # self.senior
-          self.mem_subscriber = user
+      
+      if subscriber_is_user
+        self.mem_subscriber = self.senior = arg # assign to senior, then reference as subscriber
+      else
+        
+        attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
+        unless attributes.blank?
+          if self.new_record?
+            self.mem_subscriber = User.new(attributes)
+          else
+            user = (subscriber || User.new)
+            user.attributes = attributes
+            user.is_subscriber_of( senior) # self.senior
+            self.mem_subscriber = user
+          end
         end
+        
       end
     end
-    self.mem_subscriber ||= User.new
-    self.mem_subscriber.skip_validation = true
     self.mem_subscriber
   end
   
