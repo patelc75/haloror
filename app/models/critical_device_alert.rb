@@ -13,6 +13,9 @@ class CriticalDeviceAlert < DeviceAlert
         self.call_center_pending = true
       end
     end
+  end
+
+  def after_create 
     Event.create_event(self.user_id, self.class.to_s, self.id, self.timestamp)
   end
   
