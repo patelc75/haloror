@@ -1,0 +1,29 @@
+<!-- <meta http-equiv="refresh" content="30"> -->
+<%= render :partial => 'reporting/nav'%>
+<h2>Purged Logs</h2>
+
+<p>
+  <table class="bluegrey">
+    <tr>
+      <th>ID</th>
+      <th>Model</th>
+      <th>User (ID)</th>
+      <th>From Date</th>
+      <th>To Date</th>
+      <th>Created At</th>
+    </tr>
+    <% @purged_logs.each do |record| %>
+    <tr class="<%= cycle('', 'altrow') %>">
+      <td><%=h record.id %></td>
+      <td><%=h record.model %></td>
+      <td class="textcenter"><%= record.user.name + " (" + record.user_id.to_s + ")"%></td>
+      <td><%= record.from_date%></td>
+      <td><%= record.to_date%></td>
+      <td><%=h record.created_at %></td>
+    </tr>
+    <% end -%>
+  </table>
+</p>
+<p>
+  <center><big><%= will_paginate @purged_logs %></big></center>
+</p>

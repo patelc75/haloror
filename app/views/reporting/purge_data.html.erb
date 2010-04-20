@@ -6,10 +6,15 @@
 	<td>User ID: </td>
 	<td><input type="text" name="user_id"><br></td></tr>
 	<tr>
-	<td>Timestamp: </td>
-	<td><%= calendar_date_select_tag "user_time", @user_time, :time => true, :popup => 'force' %></td>
+	<td>Begin Time: </td>
+	<td><%= calendar_date_select_tag "user_begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
+	</tr>
+	<tr>
+	<td>End Time: </td>
+	<td><%= calendar_date_select_tag "user_end_time", @user_end_time, :time => true, :popup => 'force' %></td>
 	</tr>
 	<tr><td></td><td><input type="submit" value="Submit"></td></tr>
 	</table>
 	
 </form>
+<%= link_to 'Purged Logs' ,:controller => 'purged_logs',:action => 'index'%>

@@ -75,6 +75,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :sessions,:member => {:edit_user_intake_form => :any,:user_intake_form_confirm => :get} # added automatically after running restful_authentication script
   map.resources :user_intakes
   map.resources :rmas, :has_many => :rma_items
+  map.resources :purged_logs
   
   #deprecated models
   #map.resources :caregivers, :active_scaffold => true 

@@ -33,6 +33,7 @@ class User < ActiveRecord::Base
   has_many :subscriptions, :foreign_key => "senior_user_id"
   has_many :vitals
   has_many :weight_scales
+  has_many :purged_logs
   #belongs_to :role
   #has_one :roles_user
   #has_one :roles_users_option

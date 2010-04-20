@@ -89,11 +89,26 @@ class ReportingController < ApplicationController
   
   def purge_data
   	if request.post?
-  	  @user_time = UtilityHelper.user_time_zone_to_utc(params[:user_time])
-  	  Vital.delete_all(["user_id = ? and timestamp < ?",params[:user_id],@user_time])
-  	  SkinTemp.delete_all(["user_id = ? and timestamp < ?",params[:user_id],@user_time])
-  	  Battery.delete_all(["user_id = ? and timestamp < ?",params[:user_id],@user_time])
-  	  Step.delete_all(["user_id = ? and begin_timestamp < ?",params[:user_id],@user_time])
+  	  @user_begin_time = UtilityHelper.user_time_zone_to_utc(params[:user_begin_time])
+  	  @user_end_time = UtilityHelper.user_time_zone_to_utc(params[:user_end_time])
+  	  
+  	  if Vital.delete_all(["user_id = ? and timestamp > ? and timestamp < ? ",params[:user_id],@user_begin_time,@user_end_time]) > 0
+  	  	PurgedLog.create(:user_id => params[:user_id],:model => 'Vital',:from_date => @user_begin_time,:to_date => @user_end_time)
+  	  end
+  	  
+  	  if SkinTemp.delete_all(["user_id = ? and timestamp > ? and timestamp < ? ",params[:user_id],@user_begin_time,@user_end_time]) > 0
+  	    PurgedLog.create(:user_id => params[:user_id],:model => 'SkinTemp',:from_date => @user_begin_time,:to_date => @user_end_time)	
+  	  end
+  	  
+  	  if Battery.delete_all(["user_id = ? and timestamp > ? and timestamp < ? ",params[:user_id],@user_begin_time,@user_end_time]) > 0
+  	    PurgedLog.create(:user_id => params[:user_id],:model => 'Battery',:from_date => @user_begin_time,:to_date => @user_end_time)	
+  	  end
+  	  
+  	  if  Step.delete_all(["user_id = ? and begin_timestamp > ? and end_timestamp < ? ",params[:user_id],@user_begin_time,@user_end_time]) > 0
+  	    PurgedLog.create(:user_id => params[:user_id],:model => 'Step',:from_date => @user_begin_time,:to_date => @user_end_time)
+  	  end
+  	  
+  	  redirect_to :controller => 'purged_logs',:action => 'index'
   	end
   end
   

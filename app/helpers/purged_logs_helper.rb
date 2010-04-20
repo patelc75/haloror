@@ -1,0 +1,2 @@
+module PurgedLogsHelper
+end
