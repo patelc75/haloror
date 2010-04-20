@@ -27,7 +27,7 @@ class UserIntake < ActiveRecord::Base
     # add roles and options
     # senior
     senior.valid? ? senior.is_halouser_of( group) : self.add_to_base("Insufficient information about Senior")
-    self.add_to_base() unless senior.profile.valid?
+    self.add_to_base(...) unless senior.profile.valid?
     # subscriber
     subscriber.is_subscriber_of(senior)
     # caregivers
@@ -36,7 +36,7 @@ class UserIntake < ActiveRecord::Base
       caregiver.is_caregiver_of(senior) if caregiver.valid?
       options = caregiver.options_for_senior(senior)
       unless options.blank?
-        #...............
+        ...
       end
     end
   end

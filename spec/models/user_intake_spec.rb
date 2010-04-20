@@ -1,4 +1,4 @@
-require "spec_helper"
+require File.join(RAILS_ROOT, "spec", "spec_helper")
 require "factory_girl"
 
 describe UserIntake do

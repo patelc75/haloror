@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100412225928) do
+ActiveRecord::Schema.define(:version => 20100417214644) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -507,6 +507,7 @@ ActiveRecord::Schema.define(:version => 20100412225928) do
     t.integer  "event_id"
     t.datetime "timestamp_server"
     t.datetime "call_center_response"
+    t.integer  "duplicate_id"
   end
 
   add_index "events", ["timestamp", "user_id"], :name => "index_events_on_user_id_and_timestamp"
@@ -736,6 +737,8 @@ ActiveRecord::Schema.define(:version => 20100412225928) do
     t.text     "params"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "request_data"
+    t.text     "request_headers"
   end
 
   create_table "points", :force => true do |t|
