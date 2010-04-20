@@ -82,6 +82,15 @@ class User < ActiveRecord::Base
   #   profile.save if !profile.blank? && profile.new_record?
   # end
 
+  # checks if any attribute was assigned a value after "new"
+  # helps in user intake at least
+  # examples:
+  #    Profile.new.nothing_assigned? => true
+  #    Profile.new(:first_name => "first name").nothing_assigned? => false
+  def nothing_assigned?
+    attributes.values.compact.blank?
+  end
+
   # profile_attributes hash can be given here to create a related profile
   #
   def profile_attributes=(attributes)

@@ -31,9 +31,13 @@ class UserIntake < ActiveRecord::Base
   end
   
   def collect_users_for_save
-    senior.profile = nil if senior.profile.attributes.values.compact.blank? unless senior.profile.blank?
-    self.senior = nil if senior.attributes.values.compact.blank?
+    senior.profile = nil if senior.profile.nothing_assigned? unless senior.profile.blank?
+    self.senior = nil if senior.nothing_assigned?
     self.senior.skip_validation = true unless senior.blank?
+
+    # subscriber.profile = nil if subscriber.profile.nothing_assigned? unless subscriber.profile.blank?
+    # self.subscriber = nil if subscriber.nothing_assigned?
+    # self.subscriber.skip_validation = true unless subscriber.blank?
 
     debugger
     self.users = [senior] # , subscriber, caregiver1, caregiver2, caregiver3
@@ -223,22 +227,22 @@ class UserIntake < ActiveRecord::Base
   end
   
   def senior_attributes=(attributes)
-    senior = attributes unless attributes.values.compact.blank?
+    senior = attributes unless nothing_assigned?
   end
   
   def subscriber_attributes=(attributes)
-    subscriber = attributes unless attributes.values.compact.blank?
+    subscriber = attributes unless nothing_assigned?
   end
   
   def caregiver1_attributes=(attributes)
-    caregiver1 = attributes unless attributes.values.compact.blank?
+    caregiver1 = attributes unless nothing_assigned?
   end
   
   def caregiver2_attributes=(attributes)
-    caregiver2 = attributes unless attributes.values.compact.blank?
+    caregiver2 = attributes unless nothing_assigned?
   end
   
   def caregiver3_attributes=(attributes)
-    caregiver3 = attributes unless attributes.values.compact.blank?
+    caregiver3 = attributes unless nothing_assigned?
   end
 end

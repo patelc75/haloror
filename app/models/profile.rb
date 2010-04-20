@@ -84,6 +84,17 @@ class Profile < ActiveRecord::Base
  
  end # class methods
 
+ # instance methods
+ 
+ # checks if any attribute was assigned a value after "new"
+ # helps in user intake at least
+ # examples:
+ #    Profile.new.nothing_assigned? => true
+ #    Profile.new(:first_name => "first name").nothing_assigned? => false
+ def nothing_assigned?
+   attributes.values.compact.blank?
+ end
+
   def validate
     if self[:is_new_caregiver]
       return false
