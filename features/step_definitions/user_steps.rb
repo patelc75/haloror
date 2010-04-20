@@ -53,7 +53,6 @@ Then /^user "([^\"]*)" should have email switched (on|off) for "([^\"]*)" user$/
   pending # express the regexp above with the code you wish you had
 end
 
-#When I simulate a "Fall" with delivery to the call center for user id "44" with a "valid" "call center account number"
 When /^I simulate a "([^\"]*)" with delivery to the call center for user login "([^\"]*)" with a "([^\"]*)" "([^\"]*)"$/ do |model, login, valid, error_type|
   user = nil
   user = User.find_by_login(login)
@@ -75,12 +74,12 @@ When /^I simulate a "([^\"]*)" with delivery to the call center for user login "
   SystemTimeout.create(:mode => "dialup", :critical_event_delay_sec => 0, :gateway_offline_timeout_sec => 0, :device_unavailable_timeout_sec => 0, :strap_off_timeout_sec => 0)
   object = model.constantize.create(:timestamp => Time.now-2.minutes, :user_id => user.id, :magnitude => 23, :device_id => 965)
   object.timestamp_server = Time.now-1.minute
-  object.save
+  object.send(:update_without_callbacks)
   DeviceAlert.job_process_crtical_alerts()
 end
 
-Then /^I should have "([^\"]*)" count of "([^\"]*)"$/ do |count, model|
-  assert model.constantize.count == count.to_i, "Should have #{count} #{model}"
+Then /^I should have "([^\"]*)" count of "([^\"]*)"$/ do |count, model| 
+  assert model.constantize.count + Event.all.length == 2*count.to_i, "Should have #{count} #{model}"
 end
 
 Then /^I should have a "([^\"]*)" alert "([^\"]*)" to the call center with a "([^\"]*)" call center delivery timestamp$/ do |model, pending_string, timestamp_status|
