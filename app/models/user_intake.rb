@@ -12,8 +12,8 @@ class UserIntake < ActiveRecord::Base
   # validates_associated :seniors, :subscribers, :caregivers
   # attr_accessor :group_id, :same_as_user, :add_as_caregiver, :monthly_or_card
   # attr_accessor :no_caregiver_1, :no_caregiver_2, :no_caregiver_3
-  before_create :collect_users_for_save
-  after_create :post_process_roles_and_options
+  before_save :associations_before_save
+  after_save :associations_after_save
   attr_accessor :mem_senior, :mem_subscriber, :mem_caregiver1, :mem_caregiver2, :mem_caregiver3
   attr_accessor :mem_caregiver1_options, :mem_caregiver2_options, :mem_caregiver3_options
   attr_accessor :subscriber_is_user, :subscriber_is_caregiver
@@ -28,48 +28,51 @@ class UserIntake < ActiveRecord::Base
     #   workaround
     #     initialize the associations only for new instance. we are safe
     #     initialize the associations manually in the code for existing user_intake
-    load_empty_records_if_missing # if self.new_record?
+    build_associations if self.new_record?
   end
   
-  def load_empty_records_if_missing
-    self.senior = User.new  if senior.blank?
-    senior.build_profile    if senior.profile.blank?
+  def build_associations
+    self.senior = User.new  if senior.nil?
+    senior.build_associations
     
-    self.subscriber = User.new  if subscriber.blank?
-    subscriber.build_profile    if subscriber.profile.blank?
+    self.subscriber = User.new  if subscriber.nil?
+    subscriber.build_associations
 
     (1..3).each do |e|
-      self.send("caregiver#{e}=", User.new) if self.send("caregiver#{e}").blank?
+      self.send("caregiver#{e}=", User.new) if self.send("caregiver#{e}").nil?
       caregiver = self.send("caregiver#{e}")
-      caregiver.build_profile if caregiver.profile.blank?
+      caregiver.build_associations
     end
   end
   
-  def collect_users_for_save
-    unless senior.blank?
-      senior.profile = nil if senior.profile.nothing_assigned? unless senior.profile.blank?
+  def collapse_associations
+    unless senior.nil?
+      senior.collapse_associations
       senior.nothing_assigned? ? (self.senior = nil) : (self.senior.skip_validation = true)
     end
 
-    unless subscriber.blank?
-      subscriber.profile = nil if subscriber.profile.nothing_assigned? unless subscriber.profile.blank?
+    unless subscriber.nil?
+      subscriber.collapse_associations
       subscriber.nothing_assigned? ? (self.subscriber = nil) : (self.subscriber.skip_validation = true)
     end
+  end
 
+  def associations_before_save
+    collapse_associations
     self.users = [senior, subscriber].compact # , caregiver1, caregiver2, caregiver3
   end
   
-  def post_process_roles_and_options
+  def associations_after_save
     # add roles and options
     # senior
     unless senior.blank?
       senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")
-      self.errors.add_to_base("Senior profile needs more detail") unless senior.profile.valid? unless senior.profile.blank?
+      self.errors.add_to_base("Senior profile needs more detail") unless senior.profile.nil? || senior.profile.valid?
     end
     # subscriber
     unless subscriber.blank?
       subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
-      self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.valid? unless subscriber.profile.blank?
+      self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.nil? || subscriber.profile.valid?
     end
     # # caregivers
     # (1..3).each_with_index do |number, index|

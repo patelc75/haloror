@@ -73,10 +73,15 @@ class User < ActiveRecord::Base
   before_create :make_activation_code
   # after_save :post_process
   
-  # # build associated model
-  # def after_initialize
-  #   self.build_profile if (self.new_record? && profile.blank?)
-  # end
+  # build associated model
+  def build_associations
+    build_profile if profile.blank?
+  end
+  
+  # assign nil to the associated model if the record is just new with no data assigned
+  def collapse_associations
+    profile = nil if profile.nothing_assigned? unless profile.nil?
+  end
   
   # def post_process
   #   profile.save if !profile.blank? && profile.new_record?
