@@ -1,3 +1,6 @@
+# WARNING: to get proper behavior from user_intake instance for the views
+#   Always call user_intake.load_empty_records_if_missing immediately after find
+#
 class UserIntake < ActiveRecord::Base
   belongs_to :group
   has_and_belongs_to_many :users # replaced with has_many :through
@@ -17,6 +20,18 @@ class UserIntake < ActiveRecord::Base
 
   # for every instance, make sure the associated objects are built
   def after_initialize
+    # find(id, :include => :users) does not work due to activerecord design the way it is
+    #   AR should ideally fire a find_with_associations and then initialize each object
+    #   AR is not initializing the associations before it comes to this callback, in rails 2.1.0 at least
+    #   this means, the associations do exist in DB, and found in query, but not loaded yet
+    # 
+    #   workaround
+    #     initialize the associations only for new instance. we are safe
+    #     initialize the associations manually in the code for existing user_intake
+    load_empty_records_if_missing # if self.new_record?
+  end
+  
+  def load_empty_records_if_missing
     self.senior = User.new  if senior.blank?
     senior.build_profile    if senior.profile.blank?
     
@@ -31,14 +46,15 @@ class UserIntake < ActiveRecord::Base
   end
   
   def collect_users_for_save
-    senior.profile = nil if senior.profile.nothing_assigned? unless senior.profile.blank?
-    self.senior = nil if senior.nothing_assigned?
-    self.senior.skip_validation = true unless senior.blank?
+    unless senior.blank?
+      senior.profile = nil if senior.profile.nothing_assigned? unless senior.profile.blank?
+      senior.nothing_assigned? ? (self.senior = nil) : (self.senior.skip_validation = true)
+    end
 
-    debugger
-    subscriber.profile = nil if subscriber.profile.nothing_assigned? unless subscriber.profile.blank?
-    self.subscriber = nil if subscriber.nothing_assigned?
-    self.subscriber.skip_validation = true unless subscriber.blank?
+    unless subscriber.blank?
+      subscriber.profile = nil if subscriber.profile.nothing_assigned? unless subscriber.profile.blank?
+      subscriber.nothing_assigned? ? (self.subscriber = nil) : (self.subscriber.skip_validation = true)
+    end
 
     self.users = [senior, subscriber].compact # , caregiver1, caregiver2, caregiver3
   end
@@ -46,7 +62,6 @@ class UserIntake < ActiveRecord::Base
   def post_process_roles_and_options
     # add roles and options
     # senior
-    debugger
     unless senior.blank?
       senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")
       self.errors.add_to_base("Senior profile needs more detail") unless senior.profile.valid? unless senior.profile.blank?

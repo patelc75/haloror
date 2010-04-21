@@ -59,11 +59,21 @@ describe UserIntake do
   context "saved records" do
     #
     # check each user type after save
-    ["senior"].each do |user_type| # , "subscriber", "caregiver1", "caregiver2", "caregiver3"
+    ["subscriber"].each do |user_type| # , "caregiver1", "caregiver2", "caregiver3"
 
       it "should have a #{user_type}" do
         @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
         @user_intake.save
+        
+        @user_intake.new_record?.should be_false
+        @user_intake.send("#{user_type}".to_sym).new_record?.should be_false
+        @user_intake.users.length.should be(1)
+        @user_intake.users.first.should == @user_intake.send("#{user_type}".to_sym)
+        @user_intake.send("#{user_type}".to_sym).email.should == "#{user_type}@test.com"
+        @user_intake.send("#{user_type}".to_sym).roles.should_not be_blank
+        @user_intake.send("#{user_type}".to_sym).roles.each { |e| e.new_record?.should be_false }
+        
+        debugger
         user_intake = UserIntake.find(@user_intake.id)
         user_intake.should_not be_blank
         
@@ -80,6 +90,7 @@ describe UserIntake do
         @user_intake.send("#{user_type}=".to_sym, attributes)
         @user_intake.save
         
+        debugger
         user_intake = UserIntake.find_by_id(@user_intake.id)
         user_intake.should_not be_blank
         
