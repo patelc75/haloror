@@ -205,7 +205,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver1=(arg)
-    if (arg == nil) || no_caregiver_1
+    if (arg == nil) || (!subscriber_is_caregiver && no_caregiver_1)
       self.mem_caregiver1 = nil
     else
       

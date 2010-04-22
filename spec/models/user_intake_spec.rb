@@ -25,6 +25,25 @@ describe UserIntake do
     }
   end
 
+  def add_senior
+    @user_intake.senior = User.new(:email => "senior@example.com")
+    @user_intake.senior.profile = Profile.new(profile_hash("senior"))
+  end
+
+  def add_subscriber
+    @user_intake.subscriber = User.new(:email => "subscriber@example.com")
+    @user_intake.subscriber.profile = Profile.new(profile_hash("subscriber"))
+  end
+
+  def add_caregivers
+    (1..3).each do |index| # assign caregivers
+      @user_intake.send("no_caregiver_#{index}=".to_sym, false)
+      @user_intake.send("caregiver#{index}=".to_sym, User.new(:email => "caregiver#{index}@example.com"))
+      caregiver = @user_intake.send("caregiver#{index}".to_sym)
+      caregiver.send("profile=", Profile.new(profile_hash("caregiver#{index}")))
+    end
+  end
+  
   # callback events
   
   before(:each) do
@@ -124,27 +143,25 @@ describe UserIntake do
     
     context "attributes for profiles" do
       before(:each) do
-        @user_intake.senior = User.new(:email => "senior@example.com")
-        @user_intake.senior.profile = Profile.new(profile_hash("senior"))
+        add_senior # assign senior profile
       end
       
       it "should have subscriber attributes for senior & subscriber, when senior is subscriber" do
-        @user_intake.subscriber = User.new(:email => "subscriber@example.com")
-        @user_intake.subscriber.profile = Profile.new(profile_hash("subscriber"))
+        # assign subscriber. canot be :before
+        add_subscriber
         @user_intake.save
 
         (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
         user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
         user_intake.senior.email.should == "subscriber@example.com"
         [:id, :email].each do |attribute|
-          user_intake.subscriber.send(attribute).should == user_intake.senior.send(attribute)
+          user_intake.subscriber.send(attribute).should be(user_intake.senior.send(attribute))
         end
       end
       
       it "should have different attributes for senior and subscriber when they are not marked same" do
         @user_intake.subscriber_is_user = false
-        @user_intake.subscriber = User.new(:email => "subscriber@example.com")
-        @user_intake.subscriber.profile = Profile.new(profile_hash("subscriber"))
+        add_subscriber
         @user_intake.save
 
         (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
@@ -158,18 +175,25 @@ describe UserIntake do
         end
       end
 
-      it "should have different profile for each user when all of them are given" do
-        # @user_intake.subscriber_is_user = false
-        # @user_intake.subscriber_is_caregiver = false
-        # (1..3).each do |index| # assign caregivers
-        #   @user_intake.send("no_caregiver_#{index}=".to_sym, false)
-        #   @user_intake.send("caregiver#{index}=".to_sym, User.new(:email => "subscriber@example.com"))
-        #   caregiver = @user_intake.send("caregiver#{index}".to_sym)
-        #   caregiver.send("profile=", Profile.new(profile_hash("caregiver#{index}")))
-        # end
-        # (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
-        # ... add check for each different profile
+      it "should allow senior, subscriber and subscriber as caregiver" do
+        @user_intake.subscriber_is_user = false
+        @user_intake.subscriber_is_caregiver = true
+        add_subscriber
+        @user_intake.save
+        
+        (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
+        user_intake.subscriber.is_caregiver_to?(user_intake.senior).should be_true
+        user_intake.caregiver1.email.should be(user_intake.subscriber.email)
       end
+      
+      # it "should have different profile for each user when all of them are given" do
+      #   @user_intake.subscriber_is_user = false
+      #   add_subscriber
+      #   add_caregivers # all caregivers are given
+      #   @user_intake.save
+      #   (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
+      #   # ... add check for each different profile
+      # end
     end
     
     # it "should have caregiver role for subscriber when subscriber_is_caregiver" do
