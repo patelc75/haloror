@@ -148,14 +148,12 @@ describe UserIntake do
         add_senior # assign senior profile
       end
       
-      it "should have subscriber attributes for senior & subscriber, when senior is subscriber" do
-        # assign subscriber. canot be :before
-        add_subscriber
+      it "should have senior attributes for senior & subscriber, when senior is subscriber" do
         @user_intake.save
 
         (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
         user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
-        user_intake.senior.email.should == "subscriber@example.com"
+        user_intake.senior.email.should == "senior@example.com"
         [:id, :email].each do |attribute|
           user_intake.subscriber.send(attribute).should be(user_intake.senior.send(attribute))
         end

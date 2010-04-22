@@ -147,6 +147,8 @@ class UserIntake < ActiveRecord::Base
           user.is_halouser_of( group) # self.group
           self.mem_senior = user # keep in instance variable so that attrbutes can be saved with user_intake
         end
+        
+        (self.mem_subscriber = mem_senior) if subscriber_is_user # link both to same data
       end
     end
     self.mem_senior
@@ -186,8 +188,9 @@ class UserIntake < ActiveRecord::Base
           end
           
           # remember role option when subscriber is caregiver
-          if subscriber_is_caregiver && attributes.has_key?("role_options")
-            self.mem_caregiver1_options = attributes["role_options"]
+          if subscriber_is_caregiver
+            self.mem_caregiver1 = mem_subscriber
+            (self.mem_caregiver1_options = attributes["role_options"]) if attributes.has_key?("role_options")
           end
         end
         

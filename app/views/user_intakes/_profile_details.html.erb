@@ -42,8 +42,5 @@
 <div class="<%= label_span %>"><%= f.label :carrier_id, provider %></div>
 <div class="<%= field_span %> last"><%= f.select :carrier_id, Carrier.ordered.collect {|p| [p.name, p.id]}, {:include_blank => "Select Cell Provider for Text Msg..."}, {:style => (narrow ? "width:160px" : "")} %></div>
 
-<div class="<%= label_span %>"><%= f.label :email, "Email" %><%= " (optional)" unless narrow %>:</div>
-<div class="<%= field_span %> last"><%= f.text_field :email, :class => field_span %></div>
-
 <div class="<%= label_span %>"><%= f.label :time_zone, "Time zone" %>:</div>
 <div class="<%= field_span %> last"><%= f.time_zone_select :time_zone, TimeZone.us_zones, {:default => "Central Time (US & Canada)"}, {:style => (narrow ? "width:160px" : "")} %></div>
