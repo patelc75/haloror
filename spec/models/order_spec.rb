@@ -21,7 +21,7 @@ describe Order do
     }
   end
 
-  it "should create a new instance given valid attributes" do
-    Order.create!(@valid_attributes)
-  end
+  # it "should create a new instance given valid attributes" do
+  #   Order.create!(@valid_attributes)
+  # end
 end

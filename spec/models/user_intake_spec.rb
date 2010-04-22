@@ -59,7 +59,7 @@ describe UserIntake do
   context "saved records" do
     #
     # check each user type after save
-    ["senior", "subscriber"].each do |user_type| # , "caregiver1", "caregiver2", "caregiver3"
+    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user_type|
       it "should save the associations correctly" do
         @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
         @user_intake.save
@@ -79,7 +79,8 @@ describe UserIntake do
         @user_intake.save
         
         (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
-        (user = user_intake.send("#{user_type}".to_sym)).should_not be_blank
+        user = user_intake.send("#{user_type}".to_sym)
+        user.should_not be_blank
         user.email.should == "#{user_type}@test.com"
       end
 

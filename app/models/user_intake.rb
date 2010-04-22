@@ -1,5 +1,5 @@
 # WARNING: to get proper behavior from user_intake instance for the views
-#   Always call user_intake.load_empty_records_if_missing immediately after find
+#   Always call user_intake.build_associations immediately after creating an instance
 #
 class UserIntake < ActiveRecord::Base
   belongs_to :group
@@ -14,9 +14,10 @@ class UserIntake < ActiveRecord::Base
   # attr_accessor :no_caregiver_1, :no_caregiver_2, :no_caregiver_3
   before_save :associations_before_save
   after_save :associations_after_save
+  # hold the data temporarily
+  # user type is identified by the role it has subject to this user intake and other users
   attr_accessor :mem_senior, :mem_subscriber, :mem_caregiver1, :mem_caregiver2, :mem_caregiver3
   attr_accessor :mem_caregiver1_options, :mem_caregiver2_options, :mem_caregiver3_options
-  attr_accessor :subscriber_is_user, :subscriber_is_caregiver
 
   # for every instance, make sure the associated objects are built
   def after_initialize
@@ -27,10 +28,12 @@ class UserIntake < ActiveRecord::Base
     # 
     #   workaround
     #     initialize the associations only for new instance. we are safe
-    #     initialize the associations manually in the code for existing user_intake
+    #     call user_intake.build_associations in the code on user_intake instance
     build_associations if self.new_record?
   end
   
+  # create blank placeholder records
+  # required for user form input
   def build_associations
     self.senior = User.new  if senior.nil?
     senior.build_associations
@@ -38,13 +41,13 @@ class UserIntake < ActiveRecord::Base
     self.subscriber = User.new  if subscriber.nil?
     subscriber.build_associations
 
-    (1..3).each do |e|
-      self.send("caregiver#{e}=", User.new) if self.send("caregiver#{e}").nil?
-      caregiver = self.send("caregiver#{e}")
+    (1..3).each do |index|
+      caregiver = self.send("caregiver#{index}=".to_sym, User.new) if caregiver.nil?
       caregiver.build_associations
     end
   end
   
+  # collapse any associations to "nil" if they are just "new" (nothing assigned to them after "new")
   def collapse_associations
     unless senior.nil?
       senior.collapse_associations
@@ -55,13 +58,30 @@ class UserIntake < ActiveRecord::Base
       subscriber.collapse_associations
       subscriber.nothing_assigned? ? (self.subscriber = nil) : (self.subscriber.skip_validation = true)
     end
+    
+    (1..3).each do |index|
+      caregiver = self.send("caregiver#{index}".to_sym)
+      unless caregiver.nil?
+        caregiver.collapse_associations
+        if caregiver.nothing_assigned?
+          self.send("caregiver#{index}=".to_sym, nil)
+        else
+          user = self.send("caregiver#{index}")
+          user.send("skip_validation=", true)
+        end
+      end
+    end
   end
 
+  # collect self.users before saving self
+  # we are keeping senior, subscriber, ... in attr_accessor variables
   def associations_before_save
     collapse_associations
-    self.users = [senior, subscriber].compact # , caregiver1, caregiver2, caregiver3
+    self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].compact
   end
   
+  # create more data for the associations to keep them valid and associated
+  # roles, options for roles
   def associations_after_save
     # add roles and options
     # senior
@@ -74,13 +94,16 @@ class UserIntake < ActiveRecord::Base
       subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
       self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.nil? || subscriber.profile.valid?
     end
-    # # caregivers
-    # (1..3).each_with_index do |number, index|
-    #   caregiver = self.send("caregiver#{number}".to_sym)
-    #   caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
-    #   self.errors.add_to_base("Caregiver #{index} profile needs more detail") unless caregiver.profile.valid?
-    #   options = caregiver.options_for_senior(senior)
-    # end
+    # caregivers
+    (1..3).each do |index|
+      caregiver = self.send("caregiver#{index}".to_sym)
+      unless caregiver.blank?
+        caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
+        self.errors.add_to_base("Caregiver #{index} profile needs more detail") unless caregiver.profile.nil? || caregiver.profile.valid?
+        # save options
+        # caregiver.options_for_senior(senior, self.send("mem_caregiver#{index}_options"))
+      end
+    end
   end
   
   def created_by_user_name
@@ -94,9 +117,9 @@ class UserIntake < ActiveRecord::Base
   # TODO: DRYness required here
   def senior
     if self.new_record?
-      self.mem_senior # ||= User.new
+      self.mem_senior
     else
-      self.mem_senior ||= (users.select {|user| user.is_halouser_of?(group) }.first) #  || User.new
+      self.mem_senior ||= (users.select {|user| user.is_halouser_of?(group) }.first)
     end
     mem_senior
   end
@@ -125,9 +148,9 @@ class UserIntake < ActiveRecord::Base
       self.mem_subscriber = senior # pick senior, if self subscribed
     else
       if self.new_record?
-        self.mem_subscriber # ||= User.new
+        self.mem_subscriber
       else
-        self.mem_subscriber ||= (users.select {|user| user.is_subscriber_of?(senior) }.first ) # || User.new
+        self.mem_subscriber ||= (users.select {|user| user.is_subscriber_of?(senior) }.first )
       end
     end
     mem_subscriber
@@ -164,91 +187,104 @@ class UserIntake < ActiveRecord::Base
       self.mem_caregiver1 = subscriber # subscriber code handles everything
     else
       if self.new_record?
-        self.mem_caregiver1 ||= User.new
+        self.mem_caregiver1
       else
-        self.mem_caregiver1 ||= (users.select {|user| user.options_attribute_for_senior(senior, "position") == 1}.first || User.new) # fetch caregiver1 from users
+        self.mem_caregiver1 ||= (users.select {|user| user.is_caregiver_to?(senior)}.first) # fetch caregiver1 from users
+        # self.mem_caregiver1 ||= (users.select {|user| user.options_attribute_for_senior(senior, "position") == 1}.first) # fetch caregiver1 from users
       end
     end
     mem_caregiver1
   end
 
   def caregiver1=(arg)
-    if subscriber_is_caregiver
-      self.mem_caregiver1 = self.subscriber = arg # subscriber code will handle this
+    if arg == nil
+      self.mem_caregiver1 = nil
     else
-      attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
-      unless attributes.blank?
-        attributes.merge(:skip_validation => true)
-        if self.new_record?
-          self.mem_caregiver1 = User.new(attributes)
-        else
-          user = caregiver1
-          user.attributes = attributes
-          user.is_caregiver_of( subscriber) # self.subscriber
-          self.mem_caregiver1 = user
+      
+      if subscriber_is_caregiver
+        self.mem_caregiver1 = self.subscriber = arg # assign to subscriber, then reference as caregiver1
+      else
+        
+        attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
+        unless attributes.blank?
+          if self.new_record?
+            self.mem_caregiver1 = User.new(attributes)
+          else
+            user = (caregiver1 || User.new)
+            user.attributes = attributes
+            user.is_caregiver_of( senior) # self.senior
+            self.mem_caregiver1 = user
+          end
         end
+        
       end
     end
-    self.mem_caregiver1 ||= User.new
-    self.mem_caregiver1.skip_validation = true
     self.mem_caregiver1
   end
 
   def caregiver2
     if self.new_record?
-      self.mem_caregiver2 ||= User.new
+      self.mem_caregiver2
     else
-      self.mem_caregiver2 ||= (users.select {|user| user.options_attribute_for_senior(senior, "position") == 2}.first || User.new) # fetch caregiver2 from users
+      self.mem_caregiver2 ||= (users.select {|user| user.is_caregiver_to?(senior)}.first) # fetch caregiver2 from users
+      # self.mem_caregiver2 ||= (users.select {|user| user.options_attribute_for_senior(senior, "position") == 2}.first) # fetch caregiver2 from users
     end
     mem_caregiver2
   end
 
   def caregiver2=(arg)
-    attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
-    unless attributes.blank?
-      attributes.merge(:skip_validation => true)
-      if self.new_record?
-        self.mem_caregiver2 = User.new(attributes)
-      else
-        user = caregiver2
-        user.attributes = attributes
-        user.is_caregiver_of( subscriber) # self.subscriber
-        self.mem_caregiver2 = user
+    if arg == nil
+      self.mem_caregiver2 = nil
+    else
+
+      attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
+      unless attributes.blank?
+        if self.new_record?
+          self.mem_caregiver2 = User.new(attributes)
+        else
+          user = (caregiver2 || User.new)
+          user.attributes = attributes
+          user.is_caregiver_of( senior) # self.senior
+          self.mem_caregiver2 = user
+        end
       end
+
     end
-    self.mem_caregiver2 ||= User.new
-    self.mem_caregiver2.skip_validation = true
     self.mem_caregiver2
   end
   
   def caregiver3
     if self.new_record?
-      self.mem_caregiver3 ||= User.new
+      self.mem_caregiver3
     else
-      self.mem_caregiver3 ||= (users.select {|user| user.options_attribute_for_senior(senior, "position") == 3}.first || User.new) # fetch caregiver3 from users
+      self.mem_caregiver3 ||= (users.select {|user| user.is_caregiver_to?(senior)}.first) # fetch caregiver3 from users
+      # self.mem_caregiver3 ||= (users.select {|user| user.options_attribute_for_senior(senior, "position") == 3}.first) # fetch caregiver3 from users
     end
     mem_caregiver3
   end
 
   def caregiver3=(arg)
-    attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
-    unless attributes.blank?
-      attributes.merge(:skip_validation => true)
-      if self.new_record?
-        self.mem_caregiver3 = User.new(attributes)
-      else
-        user = caregiver3
-        user.attributes = attributes
-        user.is_caregiver_of( subscriber) # self.subscriber
-        self.mem_caregiver3 = user
+    if arg == nil
+      self.mem_caregiver3 = nil
+    else
+
+      attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
+      unless attributes.blank?
+        if self.new_record?
+          self.mem_caregiver3 = User.new(attributes)
+        else
+          user = (caregiver3 || User.new)
+          user.attributes = attributes
+          user.is_caregiver_of( senior) # self.senior
+          self.mem_caregiver3 = user
+        end
       end
+
     end
-    self.mem_caregiver3 ||= User.new
-    self.mem_caregiver3.skip_validation = true
     self.mem_caregiver3
   end
 
-  def caregivers_as_array
+  def all_caregivers
     [caregiver1, caregiver2, caregiver3]
   end
   

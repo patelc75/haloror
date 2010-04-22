@@ -80,7 +80,7 @@ class User < ActiveRecord::Base
   
   # assign nil to the associated model if the record is just new with no data assigned
   def collapse_associations
-    profile = nil if profile.nothing_assigned? unless profile.nil?
+    self.profile = nil if profile.nothing_assigned? unless profile.nil?
   end
   
   # def post_process
@@ -1337,7 +1337,7 @@ class User < ActiveRecord::Base
   
   # returns true if password is a required field
   def password_required?
-    if(self.is_new_caregiver || self[:is_new_user] || self[:is_new_subscriber] || self[:is_new_halouser] || skip_validation)
+    if(skip_validation || self.is_new_caregiver || self[:is_new_user] || self[:is_new_subscriber] || self[:is_new_halouser])
       return false
     else
       crypted_password.blank? || !password.blank?
