@@ -60,76 +60,82 @@ describe UserIntake do
   context "saved records" do
     #
     # check each user type after save
-    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user_type|
-      it "should save the associations correctly" do
-        @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
-        @user_intake.save
-        
-        @user_intake.new_record?.should be_false
-        @user_intake.send("#{user_type}".to_sym).new_record?.should be_false
-        @user_intake.users.length.should be(1)
-        @user_intake.users.first.should == @user_intake.send("#{user_type}".to_sym)
-        user =  @user_intake.send("#{user_type}".to_sym)
-        user.email.should == "#{user_type}@test.com"
-        user.roles.should_not be_blank
-        user.roles.each { |e| e.new_record?.should be_false }
-      end
+    context "associations" do
+      ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user_type|
+        it "should save the associations correctly" do
+          @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
+          @user_intake.save
 
-      it "should have a #{user_type}" do
-        @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
+          @user_intake.new_record?.should be_false
+          @user_intake.send("#{user_type}".to_sym).new_record?.should be_false
+          @user_intake.users.length.should be(1)
+          @user_intake.users.first.should == @user_intake.send("#{user_type}".to_sym)
+          user =  @user_intake.send("#{user_type}".to_sym)
+          user.email.should == "#{user_type}@test.com"
+          user.roles.should_not be_blank
+          user.roles.each { |e| e.new_record?.should be_false }
+        end
+
+        it "should have a #{user_type}" do
+          @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
+          @user_intake.save
+
+          (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
+          user = user_intake.send("#{user_type}".to_sym)
+          user.should_not be_blank
+          user.email.should == "#{user_type}@test.com"
+        end
+
+        it "should save profile for #{user_type}" do
+          user_hash = User.new(:email => "#{user_type}@test.com").attributes
+          local_profile_hash = profile_hash(user_type)
+          attributes = user_hash.merge( "profile_attributes" => Profile.new(local_profile_hash).attributes)
+          @user_intake.send("#{user_type}=".to_sym, attributes)
+          @user_intake.save
+
+          (user_intake = UserIntake.find_by_id(@user_intake.id)).should_not be_blank
+          (user = user_intake.send("#{user_type}".to_sym)).should_not be_blank
+          profile = user.profile
+          profile.should_not be_blank
+          local_profile_hash.each {|k,v| profile.send("#{k}").should == v }
+        end
+      end # each
+    end # associations
+    
+    context "roles" do
+      it "should have halouser role for senior" do
+        @user_intake.senior = User.new(:email => "senior@example.com")
         @user_intake.save
-        
+
         (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
-        user = user_intake.send("#{user_type}".to_sym)
-        user.should_not be_blank
-        user.email.should == "#{user_type}@test.com"
+        user_intake.senior.is_halouser_of?(user_intake.group).should be_true
       end
 
-      it "should save profile for #{user_type}" do
-        user_hash = User.new(:email => "#{user_type}@test.com").attributes
-        local_profile_hash = profile_hash(user_type)
-        attributes = user_hash.merge( "profile_attributes" => Profile.new(local_profile_hash).attributes)
-        @user_intake.send("#{user_type}=".to_sym, attributes)
+      it "should consider senior also as subscriber when flagged so" do
+        @user_intake.subscriber_is_user = true
+        @user_intake.senior = User.new(:email => "senior@example.com")
         @user_intake.save
-        
-        (user_intake = UserIntake.find_by_id(@user_intake.id)).should_not be_blank
-        (user = user_intake.send("#{user_type}".to_sym)).should_not be_blank
-        profile = user.profile
-        profile.should_not be_blank
-        local_profile_hash.each {|k,v| profile.send("#{k}").should == v }
+
+        (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
+        user_intake.subscriber.is_halouser_of?(user_intake.group).should be_true
+        user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
       end
     end
     
-    it "should have halouser role for senior" do
-      @user_intake.senior = User.new(:email => "senior@example.com")
-      @user_intake.save
+    context "common attributes" do
+      it "should over write senior attributes with subscriber's when same_as_user & attributes given" do
+        @user_intake.subscriber_is_user = true
+        @user_intake.senior = User.new(:email => "senior@example.com")
+        @user_intake.senior.profile = Profile.new(profile_hash("senior_n_subscriber"))
+        @user_intake.subscriber = User.new(:email => "subscriber@example.com")
+        @user_intake.save
 
-      (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
-      user_intake.senior.is_halouser_of?(user_intake.group).should be_true
-    end
-    
-    it "should consider senior also as subscriber when flagged so" do
-      @user_intake.subscriber_is_user = true
-      @user_intake.senior = User.new(:email => "senior@example.com")
-      @user_intake.save
-
-      (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
-      user_intake.subscriber.is_halouser_of?(user_intake.group).should be_true
-      user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
-    end
-    
-    it "should over write senior attributes with subscriber's when same_as_user & attributes given" do
-      @user_intake.subscriber_is_user = true
-      @user_intake.senior = User.new(:email => "senior@example.com")
-      @user_intake.senior.profile = Profile.new(profile_hash("senior_n_subscriber"))
-      @user_intake.subscriber = User.new(:email => "subscriber@example.com")
-      @user_intake.save
-    
-      (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
-      user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
-      user_intake.subscriber.email.should == "subscriber@example.com"
-      [:id, :email].each do |attribute|
-        user_intake.subscriber.send(attribute).should == user_intake.senior.send(attribute)
+        (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
+        user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
+        user_intake.subscriber.email.should == "subscriber@example.com"
+        [:id, :email].each do |attribute|
+          user_intake.subscriber.send(attribute).should == user_intake.senior.send(attribute)
+        end
       end
     end
     
@@ -143,8 +149,6 @@ describe UserIntake do
     #   user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
     # end
     
-  end
-    
     # it "should have a role_options for caregiver when subscriber_is_caregiver" do
     #   user_intake = Factory.create(:user_intake, :subscriber_is_caregiver => true)
     #   user_intake.subscriber.role_options_for_senior(user_intake.senior).should_not be_blank
@@ -156,4 +160,6 @@ describe UserIntake do
     # end
     
     # check senior, subscriber, ... attributes when saved, aborted on new_record?, exists?
-end
+    
+  end # saved records
+end #user intake
