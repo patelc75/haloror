@@ -1,5 +1,4 @@
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
-require "factory_girl"
 
 describe UserIntake do
   
@@ -24,7 +23,7 @@ describe UserIntake do
       :medications => "#{user_type} medications"
     }
   end
-
+  
   def add_senior
     @user_intake.senior = User.new(:email => "senior@example.com")
     @user_intake.senior.profile = Profile.new(profile_hash("senior"))
@@ -41,6 +40,7 @@ describe UserIntake do
       @user_intake.send("caregiver#{index}=".to_sym, User.new(:email => "caregiver#{index}@example.com"))
       caregiver = @user_intake.send("caregiver#{index}".to_sym)
       caregiver.send("profile=", Profile.new(profile_hash("caregiver#{index}")))
+      caregiver.send("options_for_senior".to_sym, @user_intake.senior, {:position => index})
     end
   end
   
@@ -98,6 +98,7 @@ describe UserIntake do
 
         it "should have a #{user_type}" do
           @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
+          add_senior if user_type.include?("caregiver") # business logic
           @user_intake.save
 
           (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
@@ -111,6 +112,7 @@ describe UserIntake do
           local_profile_hash = profile_hash(user_type)
           attributes = user_hash.merge( "profile_attributes" => Profile.new(local_profile_hash).attributes)
           @user_intake.send("#{user_type}=".to_sym, attributes)
+          add_senior if user_type.include?("caregiver") # business logic
           @user_intake.save
 
           (user_intake = UserIntake.find_by_id(@user_intake.id)).should_not be_blank
@@ -182,41 +184,31 @@ describe UserIntake do
         @user_intake.save
         
         (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
-        user_intake.subscriber.is_caregiver_to?(user_intake.senior).should be_true
-        user_intake.caregiver1.email.should be(user_intake.subscriber.email)
+        user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true # subscriber.is_subscriber?
+        user_intake.subscriber.is_caregiver_to?(user_intake.senior).should be_true # subscriber.is_caregiver?
+        user_intake.caregiver1.email.should be(user_intake.subscriber.email) # caregiver1 == subscriber
+        user_intake.subscriber.caregiver_position_for(user_intake.senior).should be(1) # subscriber == 1st caregiver
       end
       
-      # it "should have different profile for each user when all of them are given" do
-      #   @user_intake.subscriber_is_user = false
-      #   add_subscriber
-      #   add_caregivers # all caregivers are given
-      #   @user_intake.save
-      #   (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
-      #   # ... add check for each different profile
-      # end
+      it "should have different profile for everyone. no overlapping roles" do
+        @user_intake.subscriber_is_user = false
+        add_subscriber
+        add_caregivers # all caregivers are given. also marks no_caregiver_n to false.
+        @user_intake.save
+        (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
+        user_intake.users.length.should be(5) # five users
+        ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user_type|
+          user = user_intake.send("#{user_type}".to_sym)
+          user.should_not be_nil
+          user.email.should == "#{user_type}@example.com"
+        end
+        (1..3).each do |index|
+          caregiver = user_intake.send("caregiver#{index}".to_sym)
+          caregiver.should_not be_nil
+          caregiver.caregiver_position_for(user_intake.senior).should == index
+        end
+      end
     end
-    
-    # it "should have caregiver role for subscriber when subscriber_is_caregiver" do
-    #   @user_intake.subscriber_is_user = false
-    #   @user_intake.senior = User.new(:email => "senior@example.com")
-    #   @user_intake.subscriber = User.new(:email => "subscriber@example.com")
-    #   @user_intake.save
-    # 
-    #   (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
-    #   user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
-    # end
-    
-    # it "should have a role_options for caregiver when subscriber_is_caregiver" do
-    #   user_intake = Factory.create(:user_intake, :subscriber_is_caregiver => true)
-    #   user_intake.subscriber.role_options_for_senior(user_intake.senior).should_not be_blank
-    # end
-    # 
-    # it "should have a role_options for caregiver when caregiver1 is other than subscriber" do
-    #   user_intake = Factory.create(:user_intake, :subscriber_is_caregiver => false)
-    #   user_intake.caregiver1.role_options_for_senior(user_intake.senior).should_not be_blank
-    # end
-    
-    # check senior, subscriber, ... attributes when saved, aborted on new_record?, exists?
-    
+        
   end # saved records
 end #user intake

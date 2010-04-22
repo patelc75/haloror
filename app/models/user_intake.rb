@@ -36,6 +36,7 @@ class UserIntake < ActiveRecord::Base
     if self.new_record?
       self.subscriber_is_user = true
       self.subscriber_is_caregiver = false
+      (1..3).each {|e| self.send("mem_caregiver#{e}_options=".to_sym, {"position" => e}) }
       build_associations
     end
   end
@@ -85,7 +86,7 @@ class UserIntake < ActiveRecord::Base
   # we are keeping senior, subscriber, ... in attr_accessor variables
   def associations_before_save
     collapse_associations
-    self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq.compact
+    self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq.compact # omit nil, duplicates
   end
   
   # create more data for the associations to keep them valid and associated
@@ -109,7 +110,7 @@ class UserIntake < ActiveRecord::Base
         caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
         self.errors.add_to_base("Caregiver #{index} profile needs more detail") unless caregiver.profile.nil? || caregiver.profile.valid?
         # save options
-        # caregiver.options_for_senior(senior, self.send("mem_caregiver#{index}_options"))
+        caregiver.options_for_senior(senior, self.send("mem_caregiver#{index}_options"))
       end
     end
   end
@@ -183,6 +184,11 @@ class UserIntake < ActiveRecord::Base
             user.is_subscriber_of( senior) # self.senior
             self.mem_subscriber = user
           end
+          
+          # remember role option when subscriber is caregiver
+          if subscriber_is_caregiver && attributes.has_key?("role_options")
+            self.mem_caregiver1_options = attributes["role_options"]
+          end
         end
         
       end
@@ -197,8 +203,8 @@ class UserIntake < ActiveRecord::Base
       if self.new_record?
         self.mem_caregiver1
       else
-        self.mem_caregiver1 ||= (users.select {|user| user.is_caregiver_to?(senior)}.first) # fetch caregiver1 from users
-        # self.mem_caregiver1 ||= (users.select {|user| user.options_attribute_for_senior(senior, "position") == 1}.first) # fetch caregiver1 from users
+        # self.mem_caregiver1 ||= (users.select {|user| user.is_caregiver_to?(senior)}.first) # fetch caregiver1 from users
+        self.mem_caregiver1 ||= (users.select {|user| user.caregiver_position_for(senior) == 1}.first) # fetch caregiver1 from users
       end
     end
     mem_caregiver1
@@ -223,6 +229,8 @@ class UserIntake < ActiveRecord::Base
             user.is_caregiver_of( senior) # self.senior
             self.mem_caregiver1 = user
           end
+          
+          self.mem_caregiver1_options = attributes["role_options"] if attributes.has_key?("role_options")
         end
         
       end
@@ -234,8 +242,8 @@ class UserIntake < ActiveRecord::Base
     if self.new_record?
       self.mem_caregiver2
     else
-      self.mem_caregiver2 ||= (users.select {|user| user.is_caregiver_to?(senior)}.first) # fetch caregiver2 from users
-      # self.mem_caregiver2 ||= (users.select {|user| user.options_attribute_for_senior(senior, "position") == 2}.first) # fetch caregiver2 from users
+      # self.mem_caregiver2 ||= (users.select {|user| user.is_caregiver_to?(senior)}.first) # fetch caregiver2 from users
+      self.mem_caregiver2 ||= (users.select {|user| user.caregiver_position_for(senior) == 2}.first) # fetch caregiver2 from users
     end
     mem_caregiver2
   end
@@ -255,6 +263,8 @@ class UserIntake < ActiveRecord::Base
           user.is_caregiver_of( senior) # self.senior
           self.mem_caregiver2 = user
         end
+
+        self.mem_caregiver2_options = attributes["role_options"] if attributes.has_key?("role_options")
       end
 
     end
@@ -265,8 +275,8 @@ class UserIntake < ActiveRecord::Base
     if self.new_record?
       self.mem_caregiver3
     else
-      self.mem_caregiver3 ||= (users.select {|user| user.is_caregiver_to?(senior)}.first) # fetch caregiver3 from users
-      # self.mem_caregiver3 ||= (users.select {|user| user.options_attribute_for_senior(senior, "position") == 3}.first) # fetch caregiver3 from users
+      # self.mem_caregiver3 ||= (users.select {|user| user.is_caregiver_to?(senior)}.first) # fetch caregiver3 from users
+      self.mem_caregiver3 ||= (users.select {|user| user.caregiver_position_for(senior) == 3}.first) # fetch caregiver3 from users
     end
     mem_caregiver3
   end
@@ -286,6 +296,8 @@ class UserIntake < ActiveRecord::Base
           user.is_caregiver_of( senior) # self.senior
           self.mem_caregiver3 = user
         end
+
+        self.mem_caregiver3_options = attributes["role_options"] if attributes.has_key?("role_options")
       end
 
     end
@@ -297,22 +309,26 @@ class UserIntake < ActiveRecord::Base
   end
   
   def senior_attributes=(attributes)
-    senior = attributes unless nothing_assigned?
+    senior = attributes
   end
   
   def subscriber_attributes=(attributes)
-    subscriber = attributes unless nothing_assigned?
+    (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
+    subscriber = attributes
   end
   
   def caregiver1_attributes=(attributes)
-    caregiver1 = attributes unless nothing_assigned?
+    (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
+    caregiver1 = attributes
   end
   
   def caregiver2_attributes=(attributes)
-    caregiver2 = attributes unless nothing_assigned?
+    (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
+    caregiver2 = attributes
   end
   
   def caregiver3_attributes=(attributes)
-    caregiver3 = attributes unless nothing_assigned?
+    (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
+    caregiver3 = attributes
   end
 end

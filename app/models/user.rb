@@ -117,11 +117,16 @@ class User < ActiveRecord::Base
     self.email = "no-email@halomonitoring.com" if self.email == ''
   end
   
+  # fetch position if "this" user assuming he/she is a caregiver to given senior
+  def caregiver_position_for(senior)
+    options_attribute_for_senior(senior, :position)
+  end
+  
   # get attribute value from the roles_users_options this user has for senior
   # return blank when not found
   def options_attribute_for_senior(senior, attribute)
     options = options_for_senior(senior)
-    options.blank? ? options : options.send("#{attribute}".to_sym)
+    options.blank? ? nil : options.send("#{attribute}".to_sym)
   end
   
   # methods for a RESTful approach
@@ -132,22 +137,22 @@ class User < ActiveRecord::Base
   #   is_caregiver_to? senior_user_object
   #   is_caregiver_to_what => get array if users I am caregiving
   #   has_caregiver => get array of caregivers for me
-  def options_for_senior(the_senior)
-    if self.is_caregiver_of?( the_senior)
+  def options_for_senior(the_senior, attributes = nil)
+    if attributes.nil?
+      if self.is_caregiver_of?( the_senior)
+        role = self.roles.first(:conditions => {
+          :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
+        })
+        options = options_for_role(role) unless role.blank?
+      end
+    else
+      self.is_caregiver_of(the_senior)
       role = self.roles.first(:conditions => {
         :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
       })
-      options = options_for_role(role) unless role.blank?
+      options = self.options_for_role(role, attributes)
     end
     options
-  end
-  
-  def options_for_senior=(the_senior, attributes)
-    self.is_caregiver_of(the_senior)
-    role = self.roles.first(:conditions => {
-      :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
-    })
-    self.options_for_role(role, attributes)
   end
   
   def options_for_role(role, attributes = nil)
