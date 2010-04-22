@@ -12,15 +12,15 @@ describe UserIntake do
       :address => "#{user_type} address",
       :city => "#{user_type} city", 
       :state => "#{user_type} state", 
-      :zipcode => "12345", 
-      :time_zone => "12345", 
-      :home_phone => "1234567890", 
-      :cell_phone => "1234567890", 
-      :account_number => "1234", 
-      :hospital_number => "1234567890", 
-      :doctor_phone => "1234567890", 
-      :carrier_id => Carrier.create(:name => "carrier").id, 
-      :emergency_number_id => EmergencyNumber.create(:name => "1234567890").id,
+      :zipcode => ("%05d" % rand(99999)), 
+      :time_zone => ("%05d" % rand(99999)), 
+      :home_phone => ("%10d" % rand(99999_99999)), 
+      :cell_phone => ("%10d" % rand(99999_99999)), 
+      :account_number => ("%04d" % rand(9999)), 
+      :hospital_number => ("%10d" % rand(99999_99999)), 
+      :doctor_phone => ("%10d" % rand(99999_99999)), 
+      :carrier_id => Carrier.create(:name => "#{user_type} carrier").id, 
+      :emergency_number_id => EmergencyNumber.create(:name => ("%10d" % rand(99999_99999))).id,
       :medications => "#{user_type} medications"
     }
   end
@@ -45,7 +45,8 @@ describe UserIntake do
       end
 
       it "should allow assigning attributes to #{user_type}" do
-        user = @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@example.com").attributes)
+        @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@example.com").attributes)
+        user = @user_intake.send("#{user_type}".to_sym)
         user.email.should == "#{user_type}@example.com"
       end
 
@@ -103,39 +104,71 @@ describe UserIntake do
     end # associations
     
     context "roles" do
-      it "should have halouser role for senior" do
+      before(:each) do
+        @user_intake.subscriber_is_user = true
         @user_intake.senior = User.new(:email => "senior@example.com")
         @user_intake.save
-
+      end
+      
+      it "should have halouser role for senior" do
         (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
         user_intake.senior.is_halouser_of?(user_intake.group).should be_true
       end
 
       it "should consider senior also as subscriber when flagged so" do
-        @user_intake.subscriber_is_user = true
-        @user_intake.senior = User.new(:email => "senior@example.com")
-        @user_intake.save
-
         (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
         user_intake.subscriber.is_halouser_of?(user_intake.group).should be_true
         user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
       end
     end
     
-    context "common attributes" do
-      it "should over write senior attributes with subscriber's when same_as_user & attributes given" do
-        @user_intake.subscriber_is_user = true
+    context "attributes for profiles" do
+      before(:each) do
         @user_intake.senior = User.new(:email => "senior@example.com")
-        @user_intake.senior.profile = Profile.new(profile_hash("senior_n_subscriber"))
+        @user_intake.senior.profile = Profile.new(profile_hash("senior"))
+      end
+      
+      it "should have subscriber attributes for senior & subscriber, when senior is subscriber" do
         @user_intake.subscriber = User.new(:email => "subscriber@example.com")
+        @user_intake.subscriber.profile = Profile.new(profile_hash("subscriber"))
         @user_intake.save
 
         (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
         user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
-        user_intake.subscriber.email.should == "subscriber@example.com"
+        user_intake.senior.email.should == "subscriber@example.com"
         [:id, :email].each do |attribute|
           user_intake.subscriber.send(attribute).should == user_intake.senior.send(attribute)
         end
+      end
+      
+      it "should have different attributes for senior and subscriber when they are not marked same" do
+        @user_intake.subscriber_is_user = false
+        @user_intake.subscriber = User.new(:email => "subscriber@example.com")
+        @user_intake.subscriber.profile = Profile.new(profile_hash("subscriber"))
+        @user_intake.save
+
+        (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
+        user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
+        ["senior", "subscriber"].each do |user_type|
+          user = user_intake.send("#{user_type}")
+          user.email.should == "#{user_type}@example.com"
+        end
+        [:id, :email].each do |attribute|
+          user_intake.subscriber.send(attribute).should_not be(user_intake.senior.send(attribute))
+        end
+      end
+
+      it "should have different profile for each user when all of them are given" do
+        # @user_intake.subscriber_is_user = false
+        # @user_intake.subscriber_is_caregiver = false
+        # (1..3).each do |index| # assign caregivers
+        #   @user_intake.send("no_caregiver_#{index}=".to_sym, false)
+        #   @user_intake.send("caregiver#{index}=".to_sym, User.new(:email => "subscriber@example.com"))
+        #   caregiver = @user_intake.send("caregiver#{index}".to_sym)
+        #   caregiver.send("profile=", Profile.new(profile_hash("caregiver#{index}")))
+        # end
+        # (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
+        # ... add check for each different profile
       end
     end
     

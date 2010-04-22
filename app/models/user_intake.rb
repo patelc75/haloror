@@ -16,8 +16,12 @@ class UserIntake < ActiveRecord::Base
   after_save :associations_after_save
   # hold the data temporarily
   # user type is identified by the role it has subject to this user intake and other users
-  attr_accessor :mem_senior, :mem_subscriber, :mem_caregiver1, :mem_caregiver2, :mem_caregiver3
-  attr_accessor :mem_caregiver1_options, :mem_caregiver2_options, :mem_caregiver3_options
+  attr_accessor :mem_senior, :mem_subscriber
+  (1..3).each do |index|
+    attr_accessor "mem_caregiver#{index}".to_sym
+    attr_accessor "mem_caregiver#{index}_options".to_sym
+    attr_accessor "no_caregiver_#{index}".to_sym
+  end
 
   # for every instance, make sure the associated objects are built
   def after_initialize
@@ -29,7 +33,11 @@ class UserIntake < ActiveRecord::Base
     #   workaround
     #     initialize the associations only for new instance. we are safe
     #     call user_intake.build_associations in the code on user_intake instance
-    build_associations if self.new_record?
+    if self.new_record?
+      self.subscriber_is_user = true
+      self.subscriber_is_caregiver = false
+      build_associations
+    end
   end
   
   # create blank placeholder records
@@ -77,7 +85,7 @@ class UserIntake < ActiveRecord::Base
   # we are keeping senior, subscriber, ... in attr_accessor variables
   def associations_before_save
     collapse_associations
-    self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].compact
+    self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq.compact
   end
   
   # create more data for the associations to keep them valid and associated
@@ -197,7 +205,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver1=(arg)
-    if arg == nil
+    if (arg == nil) || no_caregiver_1
       self.mem_caregiver1 = nil
     else
       
@@ -233,7 +241,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver2=(arg)
-    if arg == nil
+    if (arg == nil) || no_caregiver_2
       self.mem_caregiver2 = nil
     else
 
@@ -264,7 +272,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver3=(arg)
-    if arg == nil
+    if (arg == nil) || no_caregiver_3
       self.mem_caregiver3 = nil
     else
 

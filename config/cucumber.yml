@@ -5,3 +5,9 @@ std_opts = "#{rerun_opts} --color --format rerun --out rerun.txt --strict --tags
 %>
 default: <%= std_opts %>
 wip: --tags @wip:3 --wip features
+
+# autotest-all: --color --require features --require lib --format progress features
+# autotest: --color --require features --require lib features  
+
+autospec-all: --color --require features --require lib --format progress features
+autospec: --color --require features --require lib features  
