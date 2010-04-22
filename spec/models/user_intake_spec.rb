@@ -29,6 +29,7 @@ describe UserIntake do
   
   before(:each) do
     @user_intake = UserIntake.new
+    @user_intake.group = Group.create(:name => "group")
   end
   
   # in memory records
@@ -100,30 +101,50 @@ describe UserIntake do
     end
     
     it "should have halouser role for senior" do
-      @user_intake.subscriber_is_user = true
-      @user_intake.group = Group.create(:name => "group")
       @user_intake.senior = User.new(:email => "senior@example.com")
       @user_intake.save
 
-      user_intake = UserIntake.find(@user_intake.id)
-      user_intake.should_not be_blank
-
+      (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
       user_intake.senior.is_halouser_of?(user_intake.group).should be_true
     end
     
-  end
-    
+    it "should consider senior also as subscriber when flagged so" do
+      @user_intake.subscriber_is_user = true
+      @user_intake.senior = User.new(:email => "senior@example.com")
+      @user_intake.save
 
-    # it "should have subscriber role for senior when subscriber_is_user" do
-    #   user_intake = Factory.create(:user_intake, :subscriber_is_user => true)
+      (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
+      user_intake.subscriber.is_halouser_of?(user_intake.group).should be_true
+      user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
+    end
+    
+    it "should over write senior attributes with subscriber's when same_as_user & attributes given" do
+      @user_intake.subscriber_is_user = true
+      @user_intake.senior = User.new(:email => "senior@example.com")
+      @user_intake.senior.profile = Profile.new(profile_hash("senior_n_subscriber"))
+      @user_intake.subscriber = User.new(:email => "subscriber@example.com")
+      @user_intake.save
+    
+      (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
+      user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
+      user_intake.subscriber.email.should == "subscriber@example.com"
+      [:id, :email].each do |attribute|
+        user_intake.subscriber.send(attribute).should == user_intake.senior.send(attribute)
+      end
+    end
+    
+    # it "should have caregiver role for subscriber when subscriber_is_caregiver" do
+    #   @user_intake.subscriber_is_user = false
+    #   @user_intake.senior = User.new(:email => "senior@example.com")
+    #   @user_intake.subscriber = User.new(:email => "subscriber@example.com")
+    #   @user_intake.save
+    # 
+    #   (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
     #   user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
     # end
-    # 
-    # it "should have caregiver role for subscriber when subscriber_is_caregiver" do
-    #   user_intake = Factory.create(:user_intake, :subscriber_is_caregiver => true)
-    #   user_intake.subscriber.is_caregiver_of?(user_intake.senior).should be_true
-    # end
-    # 
+    
+  end
+    
     # it "should have a role_options for caregiver when subscriber_is_caregiver" do
     #   user_intake = Factory.create(:user_intake, :subscriber_is_caregiver => true)
     #   user_intake.subscriber.role_options_for_senior(user_intake.senior).should_not be_blank
