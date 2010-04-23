@@ -4,9 +4,13 @@
 	<% if @user.is_halouser? %>
 		<option value="<%=@user.id%>"><%=@user.name%></option>
 	<% end %>
+	<%unless current_user.id == @user.id%>
+	<option value="<%=current_user.id%>"><%=current_user.name%></option>
+	<%end%>
 	<option value="">---</option>
 	
-	<% @user.patients.each do |patient| %>
+	<%# @user.patients.each do |patient| %>
+	<% current_user.patients.each do |patient| %>
 		<option value="<%=patient.id%>" <%='selected' if params[:id].to_i == patient.id or session[:senior].to_i == patient.id%>><%=patient.name%></option>
 	<% end %>
 </select>
