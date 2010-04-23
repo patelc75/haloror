@@ -28,12 +28,17 @@ $(function() {
     <p class="textright hint">* Asterisk denotes fields that are optional for Halo Monitoring but may be required by Halo partners or affiliates</p>
 
     <!-- form -->
-    <% form_for :user_intake do |f| -%>
+    <% form_for :user_intake, :url => { :controller => 'user_intakes', :action => "create", :id => @user_intake.id } do |f| %>
 
     <!-- errors block -->
     <% unless @user_intake.errors.blank? %>
     <div class="span-1">&nbsp;</div>
-    <div class="error span-21 last"><%= error_messages_for :user_intake %></div>
+    <div class="error span-22 last">
+      <%= f.error_messages :header_message => "Invalid user intake!",
+        :message => "You'll need to correct the following errors:",
+        :header_tag => :h3 %>
+    </div>
+    <br />
     <% end -%>
 
     <div class="span-22 last">
@@ -70,9 +75,9 @@ $(function() {
 
         <div class="span-3">&nbsp;</div>
         <div class="span-7 last">
-          <%= f.check_box :same_as_user, :checked => true, :onclick => "hide_when_checked(this, 'subscriber_profile');" %> <!--  -->
+          <%= f.check_box :subscriber_is_user, :checked => true, :onclick => "hide_when_checked(this, 'subscriber_profile');" %> <!--  -->
           <!-- , :onchange => update_page {|page| page[:subscriber_profile].toggle } -->
-          <%= f.label :same_as_user, "Same as User" %> 
+          <%= f.label :subscriber_is_user, "Same as User" %> 
         </div>
         <!-- hidden -->
         <div id="subscriber_profile" class="hidden">
@@ -97,8 +102,8 @@ $(function() {
 
           <!-- role attributes -->
           <div id="caregiver_extras" class="prepend-3 span-7 hidden">
-            <% fields_for "user_intake[caregiver1_attributes][role_attributes]", @user_intake.caregiver1 do |caregiver_form| %>
-            <%= render :partial => 'caregiver_role_options', :locals => {:f => caregiver_form} %>
+            <% fields_for "user_intake[subscriber_attributes][role_attributes]", @user_intake.subscriber do |subscriber_form| %>
+            <%= render :partial => 'caregiver_role_options', :locals => {:f => subscriber_form} %>
             <% end -%>
           </div>
         </div>
@@ -119,11 +124,11 @@ $(function() {
 
           <div id="caregiver<%= index+1 %>_profile" class="hidden">
             <!-- caregiver profile -->
-            <% fields_for "user_intake[caregiver_attributes][profile_attributes]", caregiver.profile do |caregiver_profile_form| %>
+            <% fields_for "user_intake[caregiver#{index+1}_attributes][profile_attributes]", caregiver.profile do |caregiver_profile_form| %>
             <%= render :partial => 'caregiver_profile', :locals => {:f => caregiver_profile_form} %>
             <% end -%>
             <!-- role attributes -->
-            <% fields_for "user_intake[caregiver_attributes][role_attributes]", caregiver do |caregiver_form| %>
+            <% fields_for "user_intake[caregiver#{index+1}_attributes][role_attributes]", caregiver do |caregiver_form| %>
             <%= render :partial => 'caregiver_role_options', :locals => {:f => caregiver_form} %>
             <% end -%>
           </div>

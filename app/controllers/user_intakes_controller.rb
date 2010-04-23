@@ -43,15 +43,16 @@ class UserIntakesController < ApplicationController
   # POST /user_intakes.xml
   def create
     @user_intake = UserIntake.new(params[:user_intake])
+    @groups = Group.for_user(current_user)
 
     respond_to do |format|
-      if @UserIntake.save
+      if @user_intake.save
         flash[:notice] = 'user_intake was successfully created.'
-        format.html { redirect_to(:action => 'show', :id => @UserIntake.id) }
+        format.html { redirect_to(:action => 'show', :id => @user_intake.id) }
         format.xml  { render :xml => @user_intake, :status => :created, :location => @user_intake }
       else
         format.html { render :action => "new" }
-        format.xml  { render :xml => @UserIntake.errors, :status => :unprocessable_entity }
+        format.xml  { render :xml => @user_intake.errors, :status => :unprocessable_entity }
       end
     end
   end
@@ -62,13 +63,13 @@ class UserIntakesController < ApplicationController
     @user_intake = UserIntake.find(params[:id])
 
     respond_to do |format|
-      if @UserIntake.update_attributes(params[:user_intake])
+      if @user_intake.update_attributes(params[:user_intake])
         flash[:notice] = 'user_intake was successfully updated.'
-        format.html { redirect_to(:action => 'show', :id => @UserIntake.id) }
+        format.html { redirect_to(:action => 'show', :id => @user_intake.id) }
         format.xml  { head :ok }
       else
-        format.html { render :action => "edit", :id => @UserIntake.id }
-        format.xml  { render :xml => @UserIntake.errors, :status => :unprocessable_entity }
+        format.html { render :action => "edit", :id => @user_intake.id }
+        format.xml  { render :xml => @user_intake.errors, :status => :unprocessable_entity }
       end
     end
   end
@@ -77,7 +78,7 @@ class UserIntakesController < ApplicationController
   # DELETE /user_intakes/1.xml
   def destroy
     @user_intake = UserIntake.find(params[:id])
-    @UserIntake.destroy
+    @user_intake.destroy
 
     respond_to do |format|
       format.html { redirect_to(:action => 'index') }

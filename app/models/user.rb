@@ -67,11 +67,16 @@ class User < ActiveRecord::Base
   validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
   
   # validate associations
-  # validates_associated :profile
+  # validates_associated :profile, :unless => "skip_validation" # Proc.new {|e| skip_validation }
   
   before_save :encrypt_password
   before_create :make_activation_code
-  # after_save :post_process
+  # after_save :post_process  
+  
+  def after_initialize
+    self.skip_validation = false
+  end
+  
   
   # build associated model
   def build_associations
@@ -1356,7 +1361,7 @@ class User < ActiveRecord::Base
   
   # return true if the login is not blank
   def login_not_blank?
-    return !self.login.blank?
+    return !(self.login.blank? || skip_validation)
   end
   
   

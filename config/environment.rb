@@ -238,3 +238,7 @@ HV_HV_URL = "https://platform.healthvault-ppe.com/platform/wildcat.ashx"
 #
 ENV['RECAPTCHA_PUBLIC_KEY']  = '6LeR9goAAAAAANZVo52U0AV9iwu0PoslF_FAwF-F'
 ENV['RECAPTCHA_PRIVATE_KEY'] = '6LeR9goAAAAAAP4iAFbMvp91jkxVyWegay5k-b1v'
+
+ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|
+  "<span class='error-field'>#{html_tag}</span>"
+end

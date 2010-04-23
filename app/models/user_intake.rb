@@ -8,23 +8,38 @@ class UserIntake < ActiveRecord::Base
   # has_many :seniors, :through => :user_intakes_users, :source => :senior
   # has_many :subscribers, :through => :user_intakes_users, :source => :subscriber
   # has_many :caregivers, :through => :user_intakes_users, :source => :caregiver
-  validates_numericality_of :order_id, :if => :order_present?
-  # validates_associated :seniors, :subscribers, :caregivers
+  # validates_numericality_of :order_id, :if => :order_present?
+  # validates_associated :users # :seniors, :subscribers, :caregivers
   # attr_accessor :group_id, :same_as_user, :add_as_caregiver, :monthly_or_card
   # attr_accessor :no_caregiver_1, :no_caregiver_2, :no_caregiver_3
   before_save :associations_before_save
   after_save :associations_after_save
   # hold the data temporarily
   # user type is identified by the role it has subject to this user intake and other users
-  attr_accessor :mem_senior, :mem_subscriber
+  attr_accessor :mem_senior, :mem_subscriber, :skip_validation
   (1..3).each do |index|
     attr_accessor "mem_caregiver#{index}".to_sym
     attr_accessor "mem_caregiver#{index}_options".to_sym
     attr_accessor "no_caregiver_#{index}".to_sym
   end
 
+  def validate
+    unless skip_validation
+      
+      unless senior.profile.valid?
+        errors.add_to_base("Senior: " + senior.profile.errors.full_messages.join(', '))
+      end
+      
+      unless (subscriber_is_user || subscriber.profile.valid?)
+        subscriber.profile.errors.full_messages.each {|e| errors.add_to_base("Subscriber: #{e}") }
+      end
+    end
+  end
+  
+
   # for every instance, make sure the associated objects are built
   def after_initialize
+    self.skip_validation = false
     # find(id, :include => :users) does not work due to activerecord design the way it is
     #   AR should ideally fire a find_with_associations and then initialize each object
     #   AR is not initializing the associations before it comes to this callback, in rails 2.1.0 at least
@@ -45,14 +60,14 @@ class UserIntake < ActiveRecord::Base
   # required for user form input
   def build_associations
     self.senior = User.new  if senior.nil?
-    senior.build_associations
+    senior.build_associations unless senior.nil?
     
     self.subscriber = User.new  if subscriber.nil?
-    subscriber.build_associations
+    subscriber.build_associations unless subscriber.nil?
 
     (1..3).each do |index|
-      caregiver = self.send("caregiver#{index}=".to_sym, User.new) if caregiver.nil?
-      caregiver.build_associations
+      caregiver = self.send("caregiver#{index}=".to_sym, User.new) if self.send("caregiver#{index}".to_sym).nil?
+      caregiver.build_associations unless caregiver.nil?
     end
   end
   
@@ -65,18 +80,18 @@ class UserIntake < ActiveRecord::Base
 
     unless subscriber.nil?
       subscriber.collapse_associations
-      subscriber.nothing_assigned? ? (self.subscriber = nil) : (self.subscriber.skip_validation = true)
+      (subscriber.nothing_assigned? || subscriber_is_user) ? (self.subscriber = nil) : (self.subscriber.skip_validation = true)
     end
     
     (1..3).each do |index|
       caregiver = self.send("caregiver#{index}".to_sym)
       unless caregiver.nil?
         caregiver.collapse_associations
-        if caregiver.nothing_assigned?
+        if caregiver.nothing_assigned? || (index == 1 && subscriber_is_caregiver) || (self.send("no_caregiver_#{index}".to_sym) == "1")
           self.send("caregiver#{index}=".to_sym, nil)
         else
           user = self.send("caregiver#{index}")
-          user.send("skip_validation=", true)
+          user.send("skip_validation=", true) unless user.nil?
         end
       end
     end
@@ -308,7 +323,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def all_caregivers
-    [caregiver1, caregiver2, caregiver3]
+    [caregiver1, caregiver2, caregiver3].uniq.compact
   end
   
   def senior_attributes=(attributes)

@@ -26,11 +26,13 @@ describe UserIntake do
   
   def add_senior
     @user_intake.senior = User.new(:email => "senior@example.com")
+    @user_intake.senior.skip_validation = true
     @user_intake.senior.profile = Profile.new(profile_hash("senior"))
   end
 
   def add_subscriber
     @user_intake.subscriber = User.new(:email => "subscriber@example.com")
+    @user_intake.subscriber.skip_validation = true
     @user_intake.subscriber.profile = Profile.new(profile_hash("subscriber"))
   end
 
@@ -39,6 +41,7 @@ describe UserIntake do
       @user_intake.send("no_caregiver_#{index}=".to_sym, false)
       @user_intake.send("caregiver#{index}=".to_sym, User.new(:email => "caregiver#{index}@example.com"))
       caregiver = @user_intake.send("caregiver#{index}".to_sym)
+      caregiver.skip_validation = true
       caregiver.send("profile=", Profile.new(profile_hash("caregiver#{index}")))
       caregiver.send("options_for_senior".to_sym, @user_intake.senior, {:position => index})
     end
@@ -98,6 +101,8 @@ describe UserIntake do
 
         it "should have a #{user_type}" do
           @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
+          user = @user_intake.send("#{user_type}".to_sym)
+          user.skip_validation = true
           add_senior if user_type.include?("caregiver") # business logic
           @user_intake.save
 
