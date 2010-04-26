@@ -1,0 +1,78 @@
+<head>
+  <%= stylesheet_link_tag 'style' %>
+  <%= javascript_include_tag "custom-form-elements" %>
+<script type="text/javascript">
+
+function hidetxt()
+{
+document.getElementById("big-text-box").disabled=true;
+}
+function changeVisibilityoff()
+{
+document.getElementById("box-hide").style.visibility="hidden";
+
+}
+</script>
+
+</head>
+
+<body>
+
+<div class="lightbox-wrapper">
+	 <div class="top-line"><img src="images/lft-top.gif" alt=" " align="left" />
+     	<div class="top-rt"></div>
+     </div>
+     
+     
+     <div class="mid-rep">
+     	
+     		<p>HOME: 256-867-4309</p>
+            <p><span class="shift-lft">Cell: 256-555- 1123</span></p>
+            
+            <div class="spc8"></div>
+            <div class="box-ar">
+            	<div class="box-text"> 
+                	<div id="box-hide" onclick="changeVisibilityoff()" >
+                    <p class="big-size">Click to add text</p>
+                    </div>
+                 
+               
+                    <textarea class="big-text-box">With increase result of diet. Suggested diet change
+                    </textarea>
+                     
+                </div>
+                
+              
+                <dd class="lft">
+                	<dl class="lft"> <input type="checkbox" class="styled" /></dl>
+                    <dl class="lft" style="padding-top:5px;">Include In Watch list</dl>
+                </dd>
+                <div class="clear"></div>
+                <div class="spc8"></div>
+               
+                <ul class="button">
+                <li   class="lft-fit"><a href="#"><span>Cancel</span></a></li>
+                <li  class="rt-fit"><a href="#"><span>Ok</span></a></li>
+                </ul>
+            </div>
+            
+            
+            
+             <!--<a  class="button" href="#"><span>Cancel</span></a> --> 
+             
+            
+            
+            
+        
+     </div>
+     
+     
+      <div class="bot-line"><img src="images/lft-bot.gif" alt=" " align="left" />
+     	<div class="bot-rt"></div>
+     </div>
+    
+</div>
+ <script language="javascript" type="text/javascript"  src="js/niceforms.js"></script>
+
+</body>
+</html>
