@@ -510,6 +510,14 @@ class UsersController < ApplicationController
     end
   end
   
+  def html_view
+  	@user = User.find params[:id]
+  end
+  
+  def email_view
+  	@user = User.find params[:id]
+  end
+  
   def add_device_to_user
     if valid_serial_number(params[:serial_number])
       register_user_with_serial_num(User.find(params[:user_id]),params[:serial_number].strip)

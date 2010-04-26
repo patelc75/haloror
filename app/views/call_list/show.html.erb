@@ -27,7 +27,11 @@
 	%>
 
 	<div class="content">
-	<% if @user.is_caregiver? %>
+	<%# if @user.is_caregiver? %>
+		<%#=render :partial => 'layouts/choose_patient'%>
+	<%# end %>
+
+	<% if current_user.is_caregiver? %>
 		<%=render :partial => 'layouts/choose_patient'%>
 	<% end %>
 		<p>&nbsp;</p>
