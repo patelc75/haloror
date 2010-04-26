@@ -715,12 +715,34 @@ div.red-back {
   background: url('../images/battery.jpg') left top no-repeat;
   padding: 5px;
 }
-.battery-cover .color-base {
+.battery-cover .very-low {
   height: 13px;
-  background: #008600;
+  background: #DDD url('../images/red_back.gif') repeat-x;
   float: left;
-  width: 40px;
+  width: 15%;
 }
+
+.battery-cover .low {
+  height: 13px;
+  background: #DDD url('../images/yellow_back.gif') repeat-x;
+  float: left;
+  width: 25%;
+}
+
+.battery-cover .ok {
+  height: 13px;
+  background: #DDD url('../images/green_back.gif') repeat-x;
+  float: left;
+  width: 50%;
+}
+
+.battery-cover .full {
+  height: 13px;
+  background: #DDD url('../images/green_back.gif') repeat-x;
+  float: left;
+  width: 79%;
+}
+
 .battery-cover .color-base .cut {
   position: relative;
   z-index: 9999;
