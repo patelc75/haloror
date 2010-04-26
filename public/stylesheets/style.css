@@ -1,3 +1,4 @@
+/* lightbox and list-view style */
 * {
   margin: 0px;
   padding: 0px;
@@ -17,6 +18,9 @@ a {
   font: Arial, Helvetica, sans-serif !important;
   font-size: 14px !important;
 }
+a img {
+  border: none;
+}
 .clear {
   clear: both;
 }
@@ -27,16 +31,22 @@ a {
   padding: 0px;
   margin: 0px;
 }
+.lft-fit {
+  float: left;
+}
 .gap5lft {
   padding-left: 5px;
 }
-
 .small-link {
   text-decoration: underline;
   font-size: 12px !important;
 }
 .mov-up {
   margin-top: -5px;
+}
+.mid-holder {
+  margin: 0 auto;
+  width: 954px;
 }
 
 .spc8 {
@@ -49,6 +59,22 @@ a {
   height: 11px;
   float: left;
 }
+.big-text-box {
+  height: 140px;
+  width: 270px;
+  font: Arial, Helvetica, sans-serif !important;
+  font-size: 13px !important;
+  border: #ffffff solid 1px !important;
+  overflow: hidden;
+  float: left;
+  text-align: left;
+  padding: 5px;
+}
+.big-size {
+  font: Arial, Helvetica, sans-serif;
+  font-size: 24px!important;
+  font-weight: bold !important;
+}
 #box-hide {
   position: absolute;
   z-index: 9999;
@@ -56,9 +82,9 @@ a {
   height: 100px;
   background: url(../images/hide_.png) repeat;
   visibility: visible;
-  margin-left: -287px;
   padding-top: 47px;
 }
+
 
 .lightbox-wrapper {
   width: 365px;
@@ -77,7 +103,6 @@ a {
   background: #777643 url(../images/rt-top.gif) top right;
   float: right;
 }
-
 .lightbox-wrapper .mid-rep {
   width: 305px;
   height: auto;
@@ -86,7 +111,6 @@ a {
   border-right: #777643 solid 10px;
   padding: 7px 20px 7px 20px;
 }
-
 .lightbox-wrapper .mid-rep .box-ar {
   width: 287px;
   height: auto;
@@ -100,17 +124,16 @@ a {
   width: 100%;
   margin: 0 auto;
   border: #000000 solid 1px;
-  height: 147px;
+  height: 152px;
   margin: 0px;
   padding: 0px;
 }
 .lightbox-wrapper .mid-rep .box-ar .box-text p {
-  padding-left: 15px;
+  padding-left: 0px;
+  padding-bottom: 20px;
   padding-top: 5px;
   text-align: left;
-  padding-bottom: 20px;
 }
-
 
 .lightbox-wrapper .bot-line {
   width: 365px;
@@ -125,8 +148,6 @@ a {
 }
 
 
-
-
 /*Checkbox*/
 .checkbox {
   width: 19px;
@@ -138,15 +159,11 @@ a {
   float: left;
 }
 
-
-
 /* Round Corners Button */
-
 .button {
   border: #000000 solid 0px;
   margin: 0px;
   padding: 0px;
-  float: left;
 }
 .button li {
   display: inline;
@@ -154,25 +171,132 @@ a {
   padding-right: 0px;
   border: #000000 solid 0px;
   padding-bottom: 5px;
-  padding-top: 5px;
-  margin-left: -20px;
 }
-
 
 .button li a {
-  background: transparent url(../images/buttonleft_ro.jpg) 20px 1px no-repeat ;
+  background: transparent url(../images/buttonleft_ro.jpg) no-repeat left top;
   color: #fff;
-  padding: 1px 0 7px 40px;
+  padding: 1px 0 7px 27px;
 }
-
 .button li a span {
-  background: transparent url(../images/buttonright_ro.jpg) right top no-repeat;
+  background: transparent url(../images/buttonright_ro.jpg) no-repeat right top;
   color: #fff;
   padding: 1px 35px 7px 10px;
 }
 
-
 /*strip page start*/
+.top-wrapper {
+  width: 940px;
+  height: auto;
+  overflow: hidden;
+  padding-bottom: 5px;
+  float: left;
+  padding: 4px;
+}
+.day-button {
+  border: #000000 solid 0px;
+}
+.day-button li {
+  display: inline;
+  list-style: none;
+  padding-right: 0px;
+  padding-bottom: 5px;
+}
+
+.day-button li a {
+  background: transparent url(../images/day-lft.jpg) no-repeat left;
+  color: #2e6278;
+  height: 25px;
+  font-size: 11px !important;
+  font-weight: bold;
+  padding: 7px 0 7px 0px;
+}
+.day-button li a span {
+  background: transparent url(../images/day-rt.jpg) no-repeat center right;
+  color: #2e6278;
+  padding: 7px 13px 7px 10px;
+}
+
+
+.day1-button {
+  border: #000000 solid 0px;
+}
+.day1-button li {
+  display: inline;
+  list-style: none;
+  padding-right: 0px;
+  padding-bottom: 5px;
+}
+
+.day1-button li a {
+  background: transparent url(../images/day-lft.jpg) no-repeat left;
+  color: #2e6278;
+  height: 25px;
+  font-size: 11px !important;
+  font-weight: bold;
+  padding: 7px 0 7px 0px;
+}
+.day1-button li a span {
+  background: transparent url(../images/day-rt.jpg) no-repeat center right;
+  color: #2e6278;
+  padding: 7px 13px 7px 10px;
+}
+
+
+.day2-button {
+  border: #000000 solid 0px;
+}
+.day2-button li {
+  display: inline;
+  list-style: none;
+  padding-right: 0px;
+  padding-bottom: 5px;
+}
+
+.day2-button li a {
+  background: transparent url(../images/day-lft.jpg) no-repeat left;
+  color: #2e6278;
+  height: 25px;
+  font-size: 11px !important;
+  font-weight: bold;
+  padding: 7px 0 7px 0px;
+}
+.day2-button li a span {
+  background: transparent url(../images/day-rt.jpg) no-repeat center right;
+  color: #2e6278;
+  padding: 7px 13px 7px 10px;
+}
+
+.day3-button {
+  border: #000000 solid 0px;
+}
+.day3-button li {
+  display: inline;
+  list-style: none;
+  padding-right: 0px;
+  padding-bottom: 5px;
+}
+
+.day3-button li a {
+  background: transparent url(../images/day-lft.jpg) no-repeat left;
+  color: #2e6278;
+  height: 25px;
+  font-size: 11px !important;
+  font-weight: bold;
+  padding: 7px 0 7px 0px;
+}
+.day3-button li a span {
+  background: transparent url(../images/day-rt.jpg) no-repeat center right;
+  color: #2e6278;
+  padding: 7px 13px 7px 10px;
+}
+
+
+
+
+
+
+
 
 .head-wrapper {
   float: left;
@@ -186,134 +310,97 @@ a {
   padding: 0px;
   margin: 0px;
 }
-
-
-
-
-
-
-.day-button {
-  border: #000000 solid 0px;
+.head-wrapper .head-rep {
+  float: left;
+  width: 924px;
+  height: 40px;
+  background: url(../images/head-mid-bg.gif) left top repeat-x;
 }
-.day-button li {
-  display: inline;
-  list-style: none;
-  padding-right: 0px;
-  padding-top: 5px;
-  padding-bottom: 8px;
+.head-wrapper .head-rep dl.lft-links {
+  float: left;
+  padding: 10px 10px 0px 5px;
+  color: #FFFFFF !important;
+  font-size: 16px !important;
 }
-
-
-.day-button li a {
-  background: transparent url(../images/day-lft.jpg) no-repeat left;
-  color: #2e6278;
-  height: 25px;
-  font-size: 11px !important;
-  font-weight: bold;
-  padding: 7px 0px 7px 0px;
-}
-.day-button li a span {
-  background: transparent url(../images/day-rt.jpg) no-repeat 75px 1px;
-  color: #2e6278;
-  padding: 7px 19px 7px 10px;
+.head-wrapper .head-rep dl a.rt-links {
+  float: left;
+  padding: 10px 5px 0px 5px;
+  color: #3034c9 !important;
+  font-size: 13px !important;
+  text-decoration: underline;
 }
 
-
-
-
-
-.day1-button {
-  border: #000000 solid 0px;
+.dashboard-wrapper {
+  width: 942px;
+  height: auto;
+  overflow: hidden;
+  border-left: #d4d4d4 solid 1px;
+  border-right: #d4d4d4 solid 1px;
+  padding-top: 0px;
+  padding-bottom: 10px;
+  background: #f5f5f5;
 }
-.day1-button li {
-  display: inline;
-  list-style: none;
-  padding-right: 0px;
-  padding-top: 5px;
-  padding-bottom: 8px;
+.dashboard-wrapper .dashboard-txt {
+  width: 923px;
+  height: auto;
+  overflow: hidden;
+  padding-bottom: 1px;
+  padding-top: 15px;
+  margin: 0 auto;
 }
-
-
-.day1-button li a {
-  background: transparent url(../images/day-lft.jpg) no-repeat left;
-  color: #2e6278;
-  height: 25px;
-  font-size: 11px !important;
-  font-weight: bold;
-  padding: 7px 0px 7px 10px;
+.d1 {
+  float: left;
+  font-size: 12px !important;
+  width: 150px;
 }
-.day1-button li a span {
-  background: transparent url(../images/day-rt.jpg) no-repeat 55px 1px;
-  color: #2e6278;
-  padding: 7px 22px 7px 10px;
+.d2 {
+  float: left;
+  font-size: 12px !important;
+  width: 90px;
 }
-
-
-
-.day2-button {
-  border: #000000 solid 0px;
+.d3 {
+  float: left;
+  font-size: 12px !important;
+  width: 100px;
+  padding-left: 20px;
 }
-.day2-button li {
-  display: inline;
-  list-style: none;
-  padding-right: 0px;
-  padding-top: 5px;
-  padding-bottom: 8px;
+.d4 {
+  float: left;
+  font-size: 12px !important;
+  width: 100px;
 }
-
-
-.day2-button li a {
-  background: transparent url(../images/day-lft.jpg) no-repeat left;
-  color: #2e6278;
-  height: 25px;
-  font-size: 11px !important;
-  font-weight: bold;
-  padding: 7px 0px 7px 10px;
+.d5 {
+  float: left;
+  font-size: 12px !important;
+  width: 80px;
+  padding-left: 20px;
 }
-.day2-button li a span {
-  background: transparent url(../images/day-rt.jpg) no-repeat 55px 1px;
-  color: #2e6278;
-  padding: 7px 24px 7px 10px;
+.d6 {
+  float: left;
+  font-size: 12px !important;
+  width: 50px;
 }
-
-
-
-
-
-.day3-button {
-  border: #000000 solid 0px;
+.d7 {
+  float: left;
+  font-size: 12px !important;
+  width: 70px;
 }
-.day3-button li {
-  display: inline;
-  list-style: none;
-  padding-right: 0px;
-  padding-top: 5px;
-  padding-bottom: 8px;
+.d8 {
+  float: left;
+  font-size: 12px !important;
+  width: 110px;
 }
-
-
-.day3-button li a {
-  background: transparent url(../images/day-lft.jpg) no-repeat left;
-  color: #2e6278;
-  height: 25px;
-  font-size: 11px !important;
-  font-weight: bold;
-  padding: 7px 0px 7px 10px;
+.bottom-curve-holder {
+  width: 948px;
+  float: left;
+  height: 12px;
 }
-.day3-button li a span {
-  background: transparent url(../images/day-rt.jpg) no-repeat 55px 1px;
-  color: #2e6278;
-  padding: 7px 20px 7px 10px;
+.bottom-curve-holder .mid-bot-rep {
+  height: 12px;
+  width: 944px;
+  float: left;
+  background: #f5f5f5 url(../images/bot-mid.gif) left bottom;
 }
-
-
-
-
-
-
-
-
-
 
 .strip-wrapper {
   width: 920px;
@@ -332,7 +419,6 @@ a {
   background: url(../images/strip-top-rt.gif) top right no-repeat;
   float: right;
 }
-
 
 .strip-wrapper .strip-mid-repeat {
   width: 920px;
@@ -362,42 +448,31 @@ a {
   text-align: center;
 }
 
-
-.sec2 .red-button {
+.red-button {
   border: #000000 solid 0px;
 }
-.sec2 .red-button li {
+.red-button li {
   display: inline;
   list-style: none;
   padding-right: 0px;
   padding-bottom: 6px;
 }
 
-
-.sec2 .red-button li a {
+.red-button li a {
   background: transparent url(../images/red-button-lft.gif) no-repeat left;
   color: #fff;
   font: Arial, Helvetica, sans-serif;
   font-size: 12px !important;
   font-weight: bold;
-  padding: 6px 0 7px 5px;
+  padding: 8px 0 7px 5px;
 }
-
-.sec2 .red-button li a span {
-  background: transparent url(../images/red-button-rt.gif) 80px 3px no-repeat;
+.red-button li a span {
+  background: transparent url(../images/red-button-rt.gif) 80px -0px no-repeat;
   color: #fff;
-  padding: 6px 13px 7px 10px;
+  padding: 4px 13px 7px 10px;
 }
 
-
-
-
-
-
-
-
-
-
+/**/
 .yel-button {
   border: #000000 solid 0px;
 }
@@ -408,36 +483,31 @@ a {
   padding-bottom: 6px;
 }
 
-
 .yel-button li a {
   background: transparent url(../images/yel-button-lft.gif) no-repeat left;
   color: #fff;
   font: Arial, Helvetica, sans-serif;
   font-size: 12px !important;
   font-weight: bold;
-  padding: 5px 0 7px 5px;
+  padding: 8px 0 7px 5px;
 }
-
 .yel-button li a span {
-  background: transparent url(../images/yel-button-rt.gif) 80px 4px no-repeat;
+  background: transparent url(../images/yel-button-rt.gif) 65px -0px no-repeat;
   color: #fff;
-  padding: 6px 28px 7px 10px;
+  padding: 4px 13px 7px 10px;
 }
-
-
-
-
+/**/
 
 .green-button {
   border: #000000 solid 0px;
+  list-style: none;
 }
-.green-button li {
+.greeen-button li {
   display: inline;
   list-style: none;
   padding-right: 0px;
   padding-bottom: 6px;
 }
-
 
 .green-button li a {
   background: transparent url(../images/green-button-lft.gif) no-repeat left;
@@ -445,14 +515,14 @@ a {
   font: Arial, Helvetica, sans-serif;
   font-size: 12px !important;
   font-weight: bold;
-  padding: 5px 0 7px 5px;
+  padding: 8px 0 7px 5px;
+}
+.green-button li a span {
+  background: transparent url(../images/green-button-rt.gif) 65px 1px no-repeat;
+  color: #fff;
+  padding: 5px 13px 7px 10px;
 }
 
-.green-button li a span {
-  background: transparent url(../images/green-button-rt.gif) 80px 4px no-repeat;
-  color: #fff;
-  padding: 6px 28px 7px 10px;
-}
 .sec3 {
   float: left;
   font-family: Verdana, Arial, Helvetica, sans-serif !important;
@@ -463,7 +533,6 @@ a {
   padding-right: 10px;
 }
 
-
 .sec4 {
   float: left;
   font-family: Verdana, Arial, Helvetica, sans-serif !important;
@@ -472,7 +541,6 @@ a {
   text-align: center;
   padding: 0 9px;
 }
-
 .orange-button {
   border: #000000 solid 0px;
 }
@@ -483,7 +551,6 @@ a {
   padding-bottom: 5px;
 }
 
-
 .orange-button li a {
   background: transparent url(../images/orange-btn-lft.gif) no-repeat left;
   color: #fff;
@@ -492,13 +559,11 @@ a {
   font-weight: bold;
   padding: 4px 0 7px 0px;
 }
-
 .orange-button li a span {
-  background: transparent url(../images/orange-btn-rt.gif) no-repeat 65px 7px;
+  background: transparent url(../images/orange-btn-rt.gif) no-repeat center right;
   color: #fff;
-  padding: 8px 17px 7px 10px;
+  padding: 4px 12px 7px 10px;
 }
-
 
 .sec5 {
   float: left;
@@ -508,7 +573,6 @@ a {
   padding-left: 10px;
   border: #000000 solid 0px;
 }
-
 .sec6 {
   float: left;
   font-family: Verdana, Arial, Helvetica, sans-serif !important;
@@ -516,7 +580,6 @@ a {
   width: 36px;
   text-align: left;
 }
-
 .sec7 {
   float: left;
   font-family: Verdana, Arial, Helvetica, sans-serif !important;
@@ -524,7 +587,6 @@ a {
   width: 77px;
   text-align: left;
 }
-
 
 .sec8 {
   float: left;
@@ -541,7 +603,6 @@ a {
   width: 127px;
   padding-left: 22px;
 }
-
 .strip-wrapper .strip-line-bot {
   width: 920px;
   float: left;
@@ -554,8 +615,6 @@ a {
   background: url(../images/strip-bot-rt.gif) bottom right no-repeat;
   float: right;
 }
-
-
 
 
 /*battery csss start*/
@@ -579,6 +638,4 @@ a {
 }
 /*battery csss end*/
 
-
 /*strip page end*/
-
