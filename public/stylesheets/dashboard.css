@@ -524,6 +524,13 @@ div.yellow-back {
   -webkit-border-radius: 3px;
 }
 
+div.green-back {
+  background: #DDD url('../images/green_back.gif') repeat-x;
+  padding: 2px 5px 1px 5px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+
 .yel-button {
   border: #000000 solid 0px;
 }
