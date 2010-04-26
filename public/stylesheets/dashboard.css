@@ -518,6 +518,8 @@ a img {
 
 /**/
 div.yellow-back {
+  font-size: 12px;
+  text-align: center;
   background: #DDD url('../images/yellow_back.gif') repeat-x;
   padding: 2px 5px 1px 5px;
   -moz-border-radius: 3px;
@@ -525,8 +527,21 @@ div.yellow-back {
 }
 
 div.green-back {
+  font-size: 12px;
+  text-align: center;
   background: #DDD url('../images/green_back.gif') repeat-x;
   padding: 2px 5px 1px 5px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+
+div.red-back {
+  font-size: 12px;
+  text-align: center;
+  background: #DDD url('../images/red_back.gif') repeat-x;
+  color: #FFF;
+  padding: 2px 5px 1px 5px;
+  margin-right: 5px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
 }
