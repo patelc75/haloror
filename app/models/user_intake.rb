@@ -5,13 +5,6 @@ class UserIntake < ActiveRecord::Base
   belongs_to :group
   has_and_belongs_to_many :users # replaced with has_many :through
   has_many :user_intakes_users, :dependent => :destroy
-  # has_many :seniors, :through => :user_intakes_users, :source => :senior
-  # has_many :subscribers, :through => :user_intakes_users, :source => :subscriber
-  # has_many :caregivers, :through => :user_intakes_users, :source => :caregiver
-  # validates_numericality_of :order_id, :if => :order_present?
-  # validates_associated :users # :seniors, :subscribers, :caregivers
-  # attr_accessor :group_id, :same_as_user, :add_as_caregiver, :monthly_or_card
-  # attr_accessor :no_caregiver_1, :no_caregiver_2, :no_caregiver_3
   before_save :associations_before_save
   after_save :associations_after_save
   # hold the data temporarily
@@ -24,14 +17,32 @@ class UserIntake < ActiveRecord::Base
   end
 
   def validate
-    unless skip_validation
-      
-      unless senior.profile.valid?
-        errors.add_to_base("Senior: " + senior.profile.errors.full_messages.join(', '))
+    if skip_validation
+      #
+      # skip validations for all associated records
+      [:senior, :subscriber, :caregiver1, :caregiver2, :caregiver3].each do |user_type|
+        user = self.send(user_type)
+        user.send("skip_validation=", true) unless user.blank?
       end
-      
-      unless (subscriber_is_user || subscriber.profile.valid?)
-        subscriber.profile.errors.full_messages.each {|e| errors.add_to_base("Subscriber: #{e}") }
+    else
+      #
+      # validate everything unless specific association are marked to skip
+      if senior.blank?
+        errors.add_to_base("Senior: profile is mnadatory")
+      elsif senior.profile.blank?
+        errors.add_to_base("Senior: profile details are mnadatory") unless senior.skip_validation
+      else
+        errors.add_to_base("Senior: " + senior.profile.errors.full_messages.join(', ')) unless senior.skip_validation || senior.profile.valid?
+      end
+
+      unless subscriber_is_user
+        if subscriber.blank?
+          errors.add_to_base("Ssubscriber: profile is mnadatory")
+        elsif subscriber.profile.blank?
+          errors.add_to_base("Subscriber: profile details are mnadatory") unless subscriber.skip_validation
+        else
+          errors.add_to_base("Subscriber: " + subscriber.profile.errors.full_messages.join(', ')) unless subscriber.skip_validation || subcriber.profile.valid?
+        end
       end
     end
   end
@@ -152,13 +163,12 @@ class UserIntake < ActiveRecord::Base
     if arg == nil
       self.mem_senior = nil
     else
-      attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
-      unless attributes.blank?
+      arg_user = (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
+      unless arg_user.blank?
         if self.new_record?
-          self.mem_senior = User.new(attributes)
+          self.mem_senior = arg_user
         else
-          user = (senior || User.new)
-          user.attributes = attributes
+          user = (senior || arg_user)
           user.is_halouser_of( group) # self.group
           self.mem_senior = user # keep in instance variable so that attrbutes can be saved with user_intake
         end
@@ -191,13 +201,12 @@ class UserIntake < ActiveRecord::Base
         self.mem_subscriber = self.senior = arg # assign to senior, then reference as subscriber
       else
         
-        attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
-        unless attributes.blank?
+        arg_user = (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
+        unless arg_user.blank?
           if self.new_record?
-            self.mem_subscriber = User.new(attributes)
+            self.mem_subscriber = arg_user # User.new(attributes)
           else
-            user = (subscriber || User.new)
-            user.attributes = attributes
+            user = (subscriber || arg_user)
             user.is_subscriber_of( senior) # self.senior
             self.mem_subscriber = user
           end
@@ -221,7 +230,6 @@ class UserIntake < ActiveRecord::Base
       if self.new_record?
         self.mem_caregiver1
       else
-        # self.mem_caregiver1 ||= (users.select {|user| user.is_caregiver_to?(senior)}.first) # fetch caregiver1 from users
         self.mem_caregiver1 ||= (users.select {|user| user.caregiver_position_for(senior) == 1}.first) # fetch caregiver1 from users
       end
     end
@@ -237,13 +245,12 @@ class UserIntake < ActiveRecord::Base
         self.mem_caregiver1 = self.subscriber = arg # assign to subscriber, then reference as caregiver1
       else
         
-        attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
-        unless attributes.blank?
+        arg_user = (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
+        unless arg_user.blank?
           if self.new_record?
-            self.mem_caregiver1 = User.new(attributes)
+            self.mem_caregiver1 = arg_user # User.new(attributes)
           else
-            user = (caregiver1 || User.new)
-            user.attributes = attributes
+            user = (caregiver1 || arg_user)
             user.is_caregiver_of( senior) # self.senior
             self.mem_caregiver1 = user
           end
@@ -260,7 +267,6 @@ class UserIntake < ActiveRecord::Base
     if self.new_record?
       self.mem_caregiver2
     else
-      # self.mem_caregiver2 ||= (users.select {|user| user.is_caregiver_to?(senior)}.first) # fetch caregiver2 from users
       self.mem_caregiver2 ||= (users.select {|user| user.caregiver_position_for(senior) == 2}.first) # fetch caregiver2 from users
     end
     mem_caregiver2
@@ -271,13 +277,12 @@ class UserIntake < ActiveRecord::Base
       self.mem_caregiver2 = nil
     else
 
-      attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
-      unless attributes.blank?
+      arg_user = (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
+      unless arg_user.blank?
         if self.new_record?
-          self.mem_caregiver2 = User.new(attributes)
+          self.mem_caregiver2 = arg_user
         else
-          user = (caregiver2 || User.new)
-          user.attributes = attributes
+          user = (caregiver2 || arg_user)
           user.is_caregiver_of( senior) # self.senior
           self.mem_caregiver2 = user
         end
@@ -293,7 +298,6 @@ class UserIntake < ActiveRecord::Base
     if self.new_record?
       self.mem_caregiver3
     else
-      # self.mem_caregiver3 ||= (users.select {|user| user.is_caregiver_to?(senior)}.first) # fetch caregiver3 from users
       self.mem_caregiver3 ||= (users.select {|user| user.caregiver_position_for(senior) == 3}.first) # fetch caregiver3 from users
     end
     mem_caregiver3
@@ -304,13 +308,12 @@ class UserIntake < ActiveRecord::Base
       self.mem_caregiver3 = nil
     else
 
-      attributes = (arg.is_a?(User) ? arg.attributes : (arg.is_a?(Hash) ? arg : nil))
-      unless attributes.blank?
+      arg_user = (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
+      unless arg_user.blank?
         if self.new_record?
-          self.mem_caregiver3 = User.new(attributes)
+          self.mem_caregiver3 = arg_user
         else
-          user = (caregiver3 || User.new)
-          user.attributes = attributes
+          user = (caregiver3 || arg_user)
           user.is_caregiver_of( senior) # self.senior
           self.mem_caregiver3 = user
         end
@@ -322,7 +325,7 @@ class UserIntake < ActiveRecord::Base
     self.mem_caregiver3
   end
 
-  def all_caregivers
+  def caregivers
     [caregiver1, caregiver2, caregiver3].uniq.compact
   end
   

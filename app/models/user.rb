@@ -105,10 +105,10 @@ class User < ActiveRecord::Base
   #
   def profile_attributes=(attributes)
     if profile.blank?
-      self.profile = Profile.new(attributes) # .merge("user_id" => self)
+      self.build_profile(attributes) # .merge("user_id" => self)
     else
       # keep the existing user connected. no need to re-assign
-      self.profile.attributes = attributes.reject {|k,v| k == "user_id"} # except user_id, take all attributes
+      self.profile.attributes = attributes # .reject {|k,v| k == "user_id"} # except user_id, take all attributes
     end
   end
   
@@ -151,6 +151,7 @@ class User < ActiveRecord::Base
         options = options_for_role(role) unless role.blank?
       end
     else
+      debugger
       self.is_caregiver_of(the_senior)
       role = self.roles.first(:conditions => {
         :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"

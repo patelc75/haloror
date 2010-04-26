@@ -23,26 +23,36 @@ describe UserIntake do
       :medications => "#{user_type} medications"
     }
   end
+
+  def build_user(type)
+    user = User.new(:email => "#{type}@example.com")
+    user.build_profile(profile_hash("#{type}"))
+    user.skip_validation = true
+    user
+  end
   
   def add_senior
-    @user_intake.senior = User.new(:email => "senior@example.com")
-    @user_intake.senior.skip_validation = true
-    @user_intake.senior.profile = Profile.new(profile_hash("senior"))
+    @user_intake.senior = build_user("senior")
+    # User.new(:email => "senior@example.com")
+    # @user_intake.senior.skip_validation = true
+    # @user_intake.senior.profile = Profile.new(profile_hash("senior"))
   end
 
   def add_subscriber
-    @user_intake.subscriber = User.new(:email => "subscriber@example.com")
-    @user_intake.subscriber.skip_validation = true
-    @user_intake.subscriber.profile = Profile.new(profile_hash("subscriber"))
+    @user_intake.subscriber = build_user("subscriber")
+    # User.new(:email => "subscriber@example.com")
+    # @user_intake.subscriber.skip_validation = true
+    # @user_intake.subscriber.profile = Profile.new(profile_hash("subscriber"))
   end
 
   def add_caregivers
     (1..3).each do |index| # assign caregivers
       @user_intake.send("no_caregiver_#{index}=".to_sym, false)
-      @user_intake.send("caregiver#{index}=".to_sym, User.new(:email => "caregiver#{index}@example.com"))
+      @user_intake.send("caregiver#{index}=".to_sym, build_user("caregiver1"))
+      # @user_intake.send("caregiver#{index}=".to_sym, User.new(:email => "caregiver#{index}@example.com"))
       caregiver = @user_intake.send("caregiver#{index}".to_sym)
-      caregiver.skip_validation = true
-      caregiver.send("profile=", Profile.new(profile_hash("caregiver#{index}")))
+      # caregiver.skip_validation = true
+      # caregiver.send("profile=", Profile.new(profile_hash("caregiver#{index}")))
       caregiver.send("options_for_senior".to_sym, @user_intake.senior, {:position => index})
     end
   end
@@ -84,26 +94,34 @@ describe UserIntake do
     #
     # check each user type after save
     context "associations" do
-      ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user_type|
+      ["caregiver1", "caregiver2", "caregiver3"].each do |user_type| # "senior", "subscriber", 
         it "should save the associations correctly" do
+          add_senior if user_type != "senior" # when testing, senior is mandatory
           @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
           @user_intake.save
 
-          @user_intake.new_record?.should be_false
+          @user_intake.new_record?.should be_false, "#{user_type}: senior=#{!@user_intake.senior.blank?}, subscriber=#{!@user_intake.subscriber.blank?}"
           @user_intake.send("#{user_type}".to_sym).new_record?.should be_false
-          @user_intake.users.length.should be(1)
-          @user_intake.users.first.should == @user_intake.send("#{user_type}".to_sym)
+          @user_intake.users.length.should be(1) if user_type == "senior"
+          @user_intake.users.length.should be(2) if user_type != "senior"
+          @user_intake.users.include?(@user_intake.send("#{user_type}".to_sym)).should be_true
           user =  @user_intake.send("#{user_type}".to_sym)
           user.email.should == "#{user_type}@test.com"
           user.roles.should_not be_blank
           user.roles.each { |e| e.new_record?.should be_false }
         end
 
+        it "should not validate user intake without a senior profile" do
+          @user_intake.should_not be_valid
+          @user_intake.save
+          @user_intake.errors.should_not be_blank
+        end
+        
         it "should have a #{user_type}" do
+          add_senior if user_type != "senior" # when testing, senior is mandatory
           @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
           user = @user_intake.send("#{user_type}".to_sym)
-          user.skip_validation = true
-          add_senior if user_type.include?("caregiver") # business logic
+          user.send("skip_validation=".to_sym, true)
           @user_intake.save
 
           (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
@@ -117,7 +135,7 @@ describe UserIntake do
           local_profile_hash = profile_hash(user_type)
           attributes = user_hash.merge( "profile_attributes" => Profile.new(local_profile_hash).attributes)
           @user_intake.send("#{user_type}=".to_sym, attributes)
-          add_senior if user_type.include?("caregiver") # business logic
+          add_senior if user_type != "senior" # business logic
           @user_intake.save
 
           (user_intake = UserIntake.find_by_id(@user_intake.id)).should_not be_blank
@@ -132,7 +150,7 @@ describe UserIntake do
     context "roles" do
       before(:each) do
         @user_intake.subscriber_is_user = true
-        @user_intake.senior = User.new(:email => "senior@example.com")
+        @user_intake.senior = build_user("senior")
         @user_intake.save
       end
       
@@ -200,6 +218,7 @@ describe UserIntake do
         @user_intake.save
         (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
         user_intake.users.length.should be(5) # five users
+        debugger
         ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user_type|
           user = user_intake.send("#{user_type}".to_sym)
           user.should_not be_nil
