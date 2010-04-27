@@ -4,7 +4,7 @@
 <head>
   <%= stylesheet_link_tag "style" %>
   <!--[if IE 7]>
-  <%= stylesheet_link_tag "style7" %>
+    <%= stylesheet_link_tag "style7" %>
   <![endif]-->
   <%= javascript_include_tag "custom-form-elements" %>
   <script type="text/javascript">
@@ -16,27 +16,27 @@
   {
     document.getElementById("box-hide").style.visibility="hidden";
   }
-  </script>
+  </script> 
 </head>
 <body>
   <div class="lightbox-wrapper">
-    <div class="top-line"><%= image_tag("lft-top.gif", :align => "left") %>
+    <div class="top-line"><%= image_tag("lft-top.gif", :html => {:align => "left"}) %>
       <div class="top-rt"></div>
     </div>
 
     <div class="mid-rep">
-      <p>Caregiver: Jane Helper</p>
+      <p>Caregiver: Jill Helper</p>      
       <p>Work: 410-227-4109</p>
       <br>
-      <p>Client: Martha Kohl</p>
+      <p>Client: Jerry Peterson</p>      
       <p>Home: 410-867-4309</p>
-
+      
       <div class="spc8"></div>
       <div class="box-ar">
-        <div class="box-text">
+        <div class="box-text"> 
           <div id="box-hide" onclick="changeVisibilityoff()" >
           </div>
-          <textarea class="big-text-box">Type here</textarea>
+        <textarea class="big-text-box">Type here</textarea>
         </div>
         <br />
         <dd class="lft">
@@ -44,18 +44,18 @@
           <dl class="lft" style="padding-top:5px;">Include In Watch list</dl>
         </dd>
         <div class="clear"></div>
-        <div class="spc8"></div>
-        <div style="margin-left: 60px;">
-          <div class="lft-fit">
-            <%= link_to image_tag("cancel.png") %>
-          </div>
-          <div class="lft-fit gap5lft">
-            <%= link_to image_tag("ok.png", :align => "right"), url_for(:controller => 'sandbox', :action => 'dashboard-jerry') %>
-          </div>
-        </div>
+<div class="spc8"></div>   
+<div style="width:287px;" class="lft-fit">
+<div class="lft-fit">
+ <a  class="lft-fit" href="#"><%= image_tag("cancel.png", :html => {:align => "left"}) %> </a>                          
+</div>       
+<div class="lft-fit">    
+  <li class="lft-fit"><%= link_to image_tag("ok.png", :html => {:align => "right"}), url_for(:controller => 'sandbox', :action => 'dashboard-gerald') %> </li>
+</div>
+</div>  
       </div>
     </div>
-    <div class="bot-line"><%= image_tag("lft-bot.gif", :align => "left") %>
+    <div class="bot-line"><%= image_tag("lft-bot.gif", :html => {:align => "right"}) %>
       <div class="bot-rt"></div>
     </div>
   </div>
