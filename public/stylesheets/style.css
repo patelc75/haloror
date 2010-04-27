@@ -352,7 +352,8 @@ a img {
 .d1 {
   float: left;
   font-size: 12px !important;
-  width: 150px;
+  width: 115px;
+  margin-left: 55px;
 }
 .d2 {
   float: left;
@@ -389,7 +390,7 @@ a img {
 .d8 {
   float: left;
   font-size: 12px !important;
-  width: 110px;
+  width: 100px;
 }
 .bottom-curve-holder {
   width: 948px;
