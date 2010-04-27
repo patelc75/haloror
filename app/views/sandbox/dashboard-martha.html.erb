@@ -98,7 +98,7 @@
                   <dd class="d5">Activity<%= image_tag("grey-up.gif") %></dd>
                   <dd class="d6">Falls<%= image_tag("grey-up.gif") %></dd>
 
-                  <dd class="d7">Battery<%= image_tag("grey-up.gif") %></dd>
+                <dd class="d7">Battery<%= image_tag("grey-up.gif") %></dd>
 
                   <dd class="d8">Connectivity<%= image_tag("grey-up.gif") %></dd>
                   <dd class="d8"> Last Updated<%= image_tag("grey-up.gif") %></dd>
@@ -126,14 +126,14 @@
                           <li class="lft-fit"><a href="#"><span>ABNORMAL</span></a></li>
                           </ul>-->
                           <p><a href="#"><%= image_tag("ab.gif") %></a></p>
-                        </dd>
+                        </dd> 
                         <dd class="lft"><%= image_tag("graph.jpg", :class => "gap5lft") %></dd> 
                       </dl>
                       <div class="clear"></div>
                       <dl class="lft"><%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %> </dl>
                     </dd>                                  
                     <dd class="sec3"> 63%</dd>
-                      <dd class="sec4"><div class="red-back">2 (-82%)</div></dd>                 
+                    <dd class="sec4"><div class="red-back">2 (-82%)</div></dd>                 
                     </dd>
 
                     <dd class="sec5">Average <span class="gap5lft">(-5%)</span></dd>
@@ -174,7 +174,7 @@
                         </ul>-->
                         <p><a href="#"><%= image_tag("ab.gif") %></a></p>
                       </dd>
-                      <dd class="lft"><%= image_tag("graph.jpg", :class => "gap5lft") %></dd> 
+                      <dd class="lft"><%= link_to image_tag("graph.jpg", :class => "gap5lft"), url_for(:controller => 'sandbox', :action => 'chart-jerry'), :class => "rt-links"  %></dd>                                  
                     </dl>
                     <div class="clear"></div>                    
                     <dl class="lft"><%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %> </dl>
@@ -275,7 +275,7 @@
                   <dd class="lft"><%= image_tag("graph.jpg", :class => "gap5lft") %></dd> 
                 </dl>
                 <div class="clear"></div>
-                <dl class="lft"><a class="small-link" href="#">Dismiss</a></dl>
+                <dl class="lft"><%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %> </dl>
               </dd>
 
               <dd class="sec3"><div class="yellow-back">16%</div></dd>
@@ -289,7 +289,7 @@
                 </div>
               </dd>
 
-              <dd class="sec8"><%= image_tag("icon1.jpg", :align => "top") %></dd>
+              <dd class="sec8"><%= image_tag("status_dial_up.png", :align => "top") %></dd>
               <dd class="sec9">Tue Dec 1 2009 3:52AM</dd>
 
             </dl>                                                    
@@ -321,7 +321,7 @@
                 <dd class="lft"><%= image_tag("graph.jpg", :class => "gap5lft") %></dd> 
               </dl>
               <div class="clear"></div>
-              <dl class="lft"><a class="small-link" href="#">Dismiss</a></dl>
+              <dl class="lft"><%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %> </dl>
             </dd>
 
             <dd class="sec3"> 71%</dd>
@@ -367,7 +367,7 @@
               <dd class="lft"><%= image_tag("graph.jpg", :class => "gap5lft") %></dd> 
             </dl>
             <div class="clear"></div>
-            <dl class="lft"><a class="small-link" href="#">Dismiss</a></dl>
+            <dl class="lft"><%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %> </dl>
           </dd>
 
           <dd class="sec3"> 88%</dd>
@@ -384,7 +384,7 @@
             </div>
           </dd>
                       
-          <dd class="sec8"><%= image_tag("icon1.jpg", :align => "top") %></dd>
+          <dd class="sec8"><%= image_tag("status_dial_up.png", :align => "top") %></dd>
           <dd class="sec9">Tue Dec 1 2009 2:53AM</dd>
 
         </dl>                                                    
@@ -431,7 +431,7 @@
           </div>
         </dd>
 
-        <dd class="sec8"><%= image_tag("icon1.jpg", :align => "top") %></dd>
+        <dd class="sec8"><%= image_tag("status_dial_up.png", :align => "top") %></dd>
         <dd class="sec9">Tue Dec 1 2009 4:24AM</dd>
 
       </dl>                                                    
@@ -527,7 +527,7 @@
         </div>
       </dd>
 
-      <dd class="sec8"><%= image_tag("icon1.jpg", :align => "top") %></dd>
+      <dd class="sec8"><%= image_tag("status_dial_up.png", :align => "top") %></dd>
       <dd class="sec9">Tue Dec 1 2009 1:24AM</dd>
 
     </dl>                                                    
