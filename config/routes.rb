@@ -105,7 +105,7 @@ ActionController::Routing::Routes.draw do |map|
   map.user_intake_post '/user/user_intake_form',:controller => 'users',:action => 'user_intake_form', :method => :post
   map.order '/order/:coupon_code', :controller => 'orders', :action => 'new', :coupon_code => ''
   map.alert '/alert', :controller => 'alerts', :action => "alert"      
-  map.activity '/activity', :controller => 'sandbox', :action => "list-view"
+  map.activity '/activity', :controller => 'sandbox', :action => "dashboard-martha"
   
   
   #map.resend '/resend/:id', :controller => 'installs', :action => 'resend'
