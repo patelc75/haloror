@@ -158,12 +158,12 @@ a img {
 }
 
 /* Round Corners Button */
-.button {
+.lbbutton {
   border: #000000 solid 0px;
   margin: 0px;
   padding: 0px;
 }
-.button li {
+.lbbutton li {
   display: inline;
   list-style: none;
   padding-right: 0px;
@@ -171,12 +171,12 @@ a img {
   padding-bottom: 5px;
 }
 
-.button li a {
+.lbbutton li a {
   background: transparent url(../images/buttonleft_ro.jpg) no-repeat left top;
   color: #fff;
   padding: 1px 0 7px 27px;
 }
-.button li a span {
+.lbbutton li a span {
   background: transparent url(../images/buttonright_ro.jpg) no-repeat right top;
   color: #fff;
   padding: 1px 35px 7px 10px;
