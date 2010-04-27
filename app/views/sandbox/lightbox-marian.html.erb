@@ -45,14 +45,14 @@
         </dd>
         <div class="clear"></div>
 <div class="spc8"></div>   
-<div style="width:287px;" class="lft-fit">
-<div class="lft-fit">
- <a  class="lft-fit" href="#"><%= image_tag("cancel.png", :html => {:align => "left"}) %> </a>                          
-</div>       
-<div class="lft-fit">    
-  <li class="lft-fit"><%= link_to image_tag("ok.png", :html => {:align => "right"}), url_for(:controller => 'sandbox', :action => 'dashboard-earl') %> </li>
+<div style="margin-left: 60px;">
+  <div class="lft-fit">
+    <%= link_to image_tag("cancel.png") %>
+  </div>
+  <div class="lft-fit gap5lft">
+    <%= link_to image_tag("ok.png", :align => "right"), url_for(:controller => 'sandbox', :action => 'dashboard-earl') %>
+  </div>
 </div>
-</div>  
       </div>
     </div>
     <div class="bot-line"><%= image_tag("lft-bot.gif", :html => {:align => "right"}) %>

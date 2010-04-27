@@ -64,19 +64,19 @@
           </div>
         </div>
         
-        <div class="head-wrapper">
+      <div class="head-wrapper">
           <div class="lft"><%= image_tag("head-lft.gif") %></div>
           <div class="head-rep">
             <dd class="lft">
               <dl class="lft-links">Caseload Residents</dl>
               <dl  class="lft-links">|</dl>
-              <dl class="lft-links"><span style="color:#000000;">9 remaining</span></dl>
+              <dl class="lft-links"><span style="color:#000000;">7 remaining</span></dl>
             </dd>
 
 
 
             <dd class="rt-fit">
-              <dl class="lft"><strong><%= link_to 'Dismiss All Greens', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "rt-links"  %></strong></dl>                  
+              <dl class="lft"><strong><%= link_to 'Dismiss All Greens', url_for(:controller => 'sandbox', :action => 'dashboard-none'), :class => "rt-links"  %></strong></dl>                  
               <dl class="lft-links" style="float:right"><span style="color:#000000;">Wed Dec 2 2009 8:11AM CST</span></dl>
               </dd>
             </div>
@@ -106,105 +106,7 @@
                 </dl>
               </div>
 
-
-                <div class="strip-wrapper">
-                  <div class="strip-line-top">
-                    <%= image_tag("strip-top-lft.gif") %>
-                    <div class="strip-top-rt"></div>
-                  </div>    
-
-                  <div class="strip-mid-repeat">
-                    <div class="strip-txt">
-                      <dl>
-                        <dd class="sec0"></dd>
-                        <dd class="sec1">Marian Berlin</dd>
-                        <dd class="sec2" style="border:#000000 solid 0px;">
-                          <dl>
-                            <dd class="lft"> <!--<ul class="yel-button">
-                            <li  style="float:left;"><a href="#"><span>CAUTION</span></a></li>
-                            </ul>-->
-                            <p><a href="#"><%= image_tag("ab.gif") %></a></p>
-                          </dd>
-                          <dd class="lft"><%= image_tag("graph.jpg", :class => "gap5lft") %></dd> 
-                        </dl>
-                        <div class="clear"></div>
-                        <dl class="lft"><%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox2-marian'), :class => "small-link"  %> </dl>
-                      </dd>
-
-                      <dd class="sec3">
-                        <ul class="orange-button">
-                          <li  style="float:left;"><div class="red-back">8%</span></div></li>
-                        </ul>
-                                              </dd>
-                      <dd class="sec4"> 334 (-11%)</dd>                 
-                      <dd class="sec5">Average <span class="gap5lft">(-11%)</span></dd>
-                      <dd class="sec6">0</dd>
-
-                      <dd class="sec7">
-                        <div class="battery-cover">
-                          <div class="full"><%= image_tag("battery-rt.gif", :align => "right") %></div>
-                        </div>
-                      </dd>
-
-                      <dd class="sec8"><%= image_tag("status_dial_up.png", :align => "top") %></dd>
-                      <dd class="sec9">Tue Dec 2 2009 3:52AM</dd>
-
-                    </dl>                                                    
-                  </div>    
-                </div>            
-                <div class="strip-line-bot">
-                  <%= image_tag("strip-bot-lft.gif") %>
-                  <div class="strip-bot-rt"></div>
-                </div>
-              </div>
               <div class="clear"></div>
-              <div class="strip-wrapper">
-                <div class="strip-line-top">
-                  <%= image_tag("strip-top-lft.gif") %>
-                  <div class="strip-top-rt"></div>
-                </div>    
-
-                <div class="strip-mid-repeat">
-                  <div class="strip-txt">
-                    <dl>
-                      <dd class="sec0"></dd>
-                      <dd class="sec1">Martha Kohl </dd>
-                      <dd class="sec2" >
-                        <dl>
-                          <dd class="lft"> <!--<ul class="red-button">
-                          <li class="lft-fit"><a href="#"><span>ABNORMAL</span></a></li>
-                          </ul>-->
-                          <p><a href="#"><%= image_tag("ca.gif") %></a></p>
-                        </dd> 
-                        <dd class="lft"><%= image_tag("graph.jpg", :class => "gap5lft") %></dd> 
-                      </dl>
-                      <div class="clear"></div>
-                      <dl class="lft"><%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %> </dl>
-                    </dd>                                  
-                    <dd class="sec3"> 77%</dd>
-                    <dd class="sec4"><div class="yellow-back">78 (-82%)</div></dd>                 
-                    </dd>
-
-                    <dd class="sec5">Average <span class="gap5lft">(+15%)</span></dd>
-                    <dd class="sec6">0</dd>                                                    
-                    <dd class="sec7">
-                      <div class="battery-cover">
-                        <div class="ok"><%= image_tag("battery-rt.gif", :align => "right") %></div>
-                      </div>
-                    </dd>
-
-                    <dd class="sec8"><%= image_tag("status_dial_up.png", :align => "top") %></dd>
-                    <dd class="sec9">Tue Dec 2 2009 4:45AM</dd>
-
-                  </dl>                                                    
-                </div>    
-              </div>            
-              <div class="strip-line-bot">
-                <%= image_tag("strip-bot-lft.gif") %>
-                <div class="strip-bot-rt"></div>
-              </div>
-            </div>
-
                 <div class="strip-wrapper">
                   <div class="strip-line-top">
                     <%= image_tag("strip-top-lft.gif") %>
@@ -268,7 +170,7 @@
                           </ul>-->
                           <p><a href="#"><%= image_tag("no.gif") %></a></p>
                         </dd>
-                        <dd class="lft"><%= image_tag("graph.jpg", :class => "gap5lft") %></dd> 
+                        <dd class="lft"><%= link_to image_tag("graph.jpg", :class => "gap5lft"), url_for(:controller => 'sandbox', :action => 'chart2-jerry'), :class => "rt-links"  %></dd>                                  
                       </dl>
                       <div class="clear"></div>
                       <dl class="lft"><a class="small-link" href="#">Dismiss</a></dl>
