@@ -1,0 +1,28 @@
+User Information
+Client Name: <%= @user.full_name %>
+Client Sex: <%= @user.profile.sex %>
+Client Birth Date: <%= @user.profile.birth_date %>
+Client Address: <%= @user.address %>
+Major Cross Streets For Address:     NA
+Client City: <%= @user.profile.city %>
+Client State: <%= @user.profile.state %>
+Client Zip Code: <%= @user.profile.zipcode %>
+Client Primary Phone Number:  <%= @user.profile.home_phone%>
+Client Secondary Phone Number: <%= @user.profile.work_phone%>
+Hidden Key/LockBox: <%= @user.profile.door%>
+Client Medical Info (Medical Conditions, etc.):     Has history of frequent falls, poor balance
+Medications: <%= @user.profile.medications %>
+Allergies:  <%= @user.profile.allergies%>
+Hospital of Preference:  <%= @user.profile.hospital_preference%>
+Hospital of Preference Phone: <%= @user.profile.hospital_number%>
+Prefered Doctor's Name   <%=@user.profile.doctor_name%>
+Prefered Doctor's Phone number <%= @user.profile.doctor_phone%>
+<%if @user.is_halouser?%><%i=0%><%@caregivers = @user.caregivers_sorted_by_position%><%@i = 0 %><%@caregivers.each do |position, caregiver| %><% @roles_user = @user.roles_user_by_caregiver(caregiver) %><% @opts = @roles_user.roles_users_option %><% @i += 1 %>
+<%= SERIES_HASH["#{@i}"] %> Contact Name:  <%= caregiver.name%>
+<%= SERIES_HASH["#{@i}"] %> Contact Cell Number:  <%= caregiver.profile.cell_phone%>
+<%= SERIES_HASH["#{@i}"] %> Contact Work Number:  <%= caregiver.profile.work_phone%>
+<%= SERIES_HASH["#{@i}"] %> Contact Home Number:  <%= caregiver.profile.home_phone%>
+<%= SERIES_HASH["#{@i}"] %> Contact Key-Holder:   <%= caregiver.profile.permission_to_break_door %>
+<%end%><%end%>
+Any other info that is available that would provide assistance to our dispatcher getting help to the client. (i.e. If need break throught the back kitchen door.)
+

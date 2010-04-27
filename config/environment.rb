@@ -224,7 +224,7 @@ SYSTEM_PASSWORD="Halo_p455w0rd"
 
 DEVICE_TYPES = {:H1 => 'Chest Strap', :H2 => 'Gateway', :H5 => 'Belt Clip'}
 GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT=1800  #30 minutes
-
+SERIES_HASH = {"1" => "First","2" => "Second","3" => "Third","4" => "Fourth","5" => "Fifth", "6" => "Sixth", "7" => "Seventh", "8" => "Eighth", "9" => "Ninth", "10" => "Tenth"}
 
 SAFETYCARE_HEARTBEAT_TIME = "55s"
 

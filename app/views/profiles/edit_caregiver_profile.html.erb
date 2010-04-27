@@ -50,14 +50,17 @@
 	<span style="padding-left:30px;">
 	 <% if current_user.is_admin? || current_user.is_super_admin? %>
 		 <% @kit_serial_number = KitSerialNumber.find_by_user_id(@user.id,:order => 'created_at desc') %>
-     <%= link_to('Change Password', :controller => "profiles", :action => "change_password_init", :id => @user.profile.id,:user_id => @user.id )%> | <%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id %> | <%= link_to 'Send to Call Centers',:controller => 'users',:action => 'html_view',:id => @user.id%> |
+     <%= link_to('Change Password', :controller => "profiles", :action => "change_password_init", :id => @user.profile.id,:user_id => @user.id )%> | <%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id %> |
+     <% if @user.is_halouser? %>
+      <%= link_to 'Send to SafetyCare',:controller => 'users',:action => 'email_view',:id => @user.id%> |
+      <%end%>
      <% if @kit_serial_number %>
        <%= link_to "Enter CS and GW serial numbers for #{@kit_serial_number.serial_number}",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> 
      <%else%>
-        <%= link_to "Enter CS and GW serial numbers",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> |
+        <%= link_to "Enter CS and GW serial numbers",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %>
      <%end%>
       <%if !@user.created_by.nil?%>
-	      Added By <%= @user.creator.name%>
+	     | Added By <%= @user.creator.name%>
 	    <%end%>
 	 <%end%>
 

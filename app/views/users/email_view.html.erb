@@ -1,59 +1,12 @@
 <div id="user_signup-col">
 	<div id="user_signup-col-header">
-		Printable Profile <% if @user.is_halouser? %> for Senior and Caregivers<% end %>
+		Email Preview for SaftyCare
 	</div>
-	
+	<div style="padding-left:25px;padding-bottom:10px;color:red;"><%= flash[:mail_send]%></div>
+    <div style="padding-left:25px;">
+	<%= link_to 'Send Email to SafetyCare',:controller => 'users',:action => 'send_caregiver_details',:id => @user.id%>
+	</div>
 	<div class="content" style="padding:25px">
-		<%#=debug @user.roles%>
-		<b>User Information</b><br/>
-        Client Name: <%= @user.full_name %><br/>
-        Client Sex: <%= @user.profile.sex %><br/>
-        Client Birth Date: <%= @user.profile.birth_date %><br/>
-        Client Address: <%= @user.address %><br/>
-        Major Cross Streets For Address:     NA<br/>
-        Client City: <%= @user.profile.city %><br/>
-        Client State: <%= @user.profile.state %><br/>
-        Client Zip Code: <%= @user.profile.zipcode %><br/>
-        Client Primary Phone Number:  <%= @user.profile.home_phone%><br/>
-        Client Secondary Phone Number: <%= @user.profile.work_phone%><br/>
-        Hidden Key/LockBox: <%= @user.profile.door%><br/>
-        Client Medical Info (Medical Conditions, etc.):     Has history of frequent falls, poor balance<br/>
-        Medications: <%= @user.profile.medications %><br/>
-        Allergies:  <%= @user.profile.allergies%><br/>
-        Hospital of Preference:  <%= @user.profile.hospital_preference%><br/>
-        Hospital of Preference Phone: <%= @user.profile.hospital_number%><br/>
-        Prefered Doctor's Name   <%=@user.profile.doctor_name%><br/>
-        Prefered Doctor's Phone number <%= @user.profile.doctor_phone%><br/>
-	
-	
-	<%if @user.is_halouser?%>
-	<%i=0%>
-	<%#=debug @user.roles.find_by_authorizable_type_and_authorizable_id('User',params[:id]) %>
-	<%# @role = Role.find_by_authorizable_id_and_name(params[:id],'caregiver')%>
-	<%#=debug @user.caregivers.find(:all,:conditions => "roles.authorizable_id = #{@user.id}", :include => :role) %>
-	<%@caregivers = @user.caregivers_sorted_by_position%>
-	<%@i = 0 %>
-	<%@caregivers.each do |position, caregiver|
-      @roles_user = @user.roles_user_by_caregiver(caregiver)		
-      @opts = @roles_user.roles_users_option
-      @i += 1
-     %>
-    
-	<hr>
-	<%#= debug caregiver %> 
-	
-	
-	Contact Name:  <%= caregiver.name%><br/>
-    Contact Cell Number:  <%= caregiver.profile.cell_phone%><br/>
-    Contact Work Number:  <%= caregiver.profile.work_phone%><br/>
-    Contact Home Number:  <%= caregiver.profile.home_phone%><br/>
-    Contact Key-Holder:   <%= caregiver.profile.permission_to_break_door %><br/>
-	
-    
-	
-    <%end%>
-    <%end%>
-    <hr>
-<p>    Any other info that is available that would provide assistance to our dispatcher getting help to the client. (i.e. If need break throught the back kitchen door.)</p>
-
+	<pre><%= render :partial => 'email_view'%></pre>
+    </div>
 </div>

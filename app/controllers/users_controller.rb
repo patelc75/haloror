@@ -510,12 +510,16 @@ class UsersController < ApplicationController
     end
   end
   
-  def html_view
+  def email_view
   	@user = User.find params[:id]
   end
   
-  def email_view
+  def send_caregiver_details
   	@user = User.find params[:id]
+  	CriticalMailer.deliver_senior_and_caregiver_details(@user)
+  	exit
+  	flash[:mail_send] = "Mail Send successfully"
+  	redirect_to :action => 'email_view',:id => params[:id]
   end
   
   def add_device_to_user
