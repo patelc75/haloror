@@ -9,48 +9,64 @@ class UserIntake < ActiveRecord::Base
   after_save :associations_after_save
   # hold the data temporarily
   # user type is identified by the role it has subject to this user intake and other users
-  attr_accessor :mem_senior, :mem_subscriber, :skip_validation
+  attr_accessor :mem_senior, :mem_subscriber, :need_validation
   (1..3).each do |index|
     attr_accessor "mem_caregiver#{index}".to_sym
     attr_accessor "mem_caregiver#{index}_options".to_sym
     attr_accessor "no_caregiver_#{index}".to_sym
   end
 
-  def validate
-    if skip_validation
-      #
-      # skip validations for all associated records
-      [:senior, :subscriber, :caregiver1, :caregiver2, :caregiver3].each do |user_type|
-        user = self.send(user_type)
-        user.send("skip_validation=", true) unless user.blank?
-      end
-    else
-      #
-      # validate everything unless specific association are marked to skip
-      if senior.blank?
-        errors.add_to_base("Senior: profile is mnadatory")
-      elsif senior.profile.blank?
-        errors.add_to_base("Senior: profile details are mnadatory") unless senior.skip_validation
-      else
-        errors.add_to_base("Senior: " + senior.profile.errors.full_messages.join(', ')) unless senior.skip_validation || senior.profile.valid?
-      end
-
-      unless subscriber_is_user
-        if subscriber.blank?
-          errors.add_to_base("Ssubscriber: profile is mnadatory")
-        elsif subscriber.profile.blank?
-          errors.add_to_base("Subscriber: profile details are mnadatory") unless subscriber.skip_validation
-        else
-          errors.add_to_base("Subscriber: " + subscriber.profile.errors.full_messages.join(', ')) unless subscriber.skip_validation || subcriber.profile.valid?
-        end
+  def skip_validation
+    self.need_validation = false
+  end
+  
+  def skip_validation=(value = false)
+    self.need_validation = !value
+    #
+    # skip validations for all associated records
+    [:senior, :subscriber, :caregiver1, :caregiver2, :caregiver3].each do |user_type|
+      user = self.send(user_type)
+      unless user.blank?
+        user.send("skip_validation=", true)
+        user.profile.skip_validation = true unless user.profile.blank?
       end
     end
   end
   
+  def validate
+    unless need_validation
+      #
+      # validate everything unless specific association are marked to skip
+      if senior.blank?
+        errors.add_to_base("Senior: profile is mnadatory")
+      else
+        errors.add_to_base("Senior: is not valid") unless (senior.skip_validation || senior.valid?)
+        if senior.profile.blank?
+          errors.add_to_base("Senior: profile details are mnadatory") unless senior.skip_validation
+        else
+          errors.add_to_base("Senior: " + senior.profile.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.profile.valid?)
+        end
+      end
+
+      unless subscriber_is_user
+        if subscriber.blank?
+          errors.add_to_base("Subscriber: profile is mnadatory")
+        else
+          errors.add_to_base("Subscriber: is not valid") unless (subscriber.skip_validation || subscriber.valid?)
+          if subscriber.profile.blank?
+            errors.add_to_base("Subscriber: profile details are mnadatory") unless subscriber.skip_validation
+          else
+            errors.add_to_base("Subscriber: " + subscriber.profile.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subcriber.profile.valid?)
+          end
+        end
+      end
+
+    end
+  end
 
   # for every instance, make sure the associated objects are built
   def after_initialize
-    self.skip_validation = false
+    self.need_validation = false
     # find(id, :include => :users) does not work due to activerecord design the way it is
     #   AR should ideally fire a find_with_associations and then initialize each object
     #   AR is not initializing the associations before it comes to this callback, in rails 2.1.0 at least
@@ -60,6 +76,7 @@ class UserIntake < ActiveRecord::Base
     #     initialize the associations only for new instance. we are safe
     #     call user_intake.build_associations in the code on user_intake instance
     if self.new_record?
+      debugger
       self.subscriber_is_user = true
       self.subscriber_is_caregiver = false
       (1..3).each {|e| self.send("mem_caregiver#{e}_options=".to_sym, {"position" => e}) }
@@ -330,26 +347,26 @@ class UserIntake < ActiveRecord::Base
   end
   
   def senior_attributes=(attributes)
-    senior = attributes
+    self.senior = attributes
   end
   
   def subscriber_attributes=(attributes)
     (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
-    subscriber = attributes
+    self.subscriber = attributes
   end
   
   def caregiver1_attributes=(attributes)
     (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-    caregiver1 = attributes
+    self.caregiver1 = attributes
   end
   
   def caregiver2_attributes=(attributes)
     (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-    caregiver2 = attributes
+    self.caregiver2 = attributes
   end
   
   def caregiver3_attributes=(attributes)
     (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-    caregiver3 = attributes
+    self.caregiver3 = attributes
   end
 end

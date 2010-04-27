@@ -48,12 +48,13 @@ describe UserIntake do
   def add_caregivers
     (1..3).each do |index| # assign caregivers
       @user_intake.send("no_caregiver_#{index}=".to_sym, false)
-      @user_intake.send("caregiver#{index}=".to_sym, build_user("caregiver1"))
+      @user_intake.send("caregiver#{index}=".to_sym, build_user("caregiver#{index}"))
       # @user_intake.send("caregiver#{index}=".to_sym, User.new(:email => "caregiver#{index}@example.com"))
       caregiver = @user_intake.send("caregiver#{index}".to_sym)
       # caregiver.skip_validation = true
       # caregiver.send("profile=", Profile.new(profile_hash("caregiver#{index}")))
-      caregiver.send("options_for_senior".to_sym, @user_intake.senior, {:position => index})
+      # caregiver.send("options_for_senior".to_sym, @user_intake.senior, {:position => index})
+      @user_intake.send("mem_caregiver#{index}_options=", {:position => index})
     end
   end
   
@@ -218,7 +219,6 @@ describe UserIntake do
         @user_intake.save
         (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
         user_intake.users.length.should be(5) # five users
-        debugger
         ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user_type|
           user = user_intake.send("#{user_type}".to_sym)
           user.should_not be_nil

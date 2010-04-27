@@ -7,7 +7,7 @@ class Profile < ActiveRecord::Base
   belongs_to :user
   belongs_to :carrier
   belongs_to :emergency_number
-  
+  attr_accessor :skip_validation
   
   validates_presence_of     :first_name, :if => :unless_new_caregiver
   validates_presence_of     :last_name, :if => :unless_new_caregiver
@@ -118,14 +118,14 @@ class Profile < ActiveRecord::Base
   end
 
   def unless_new_caregiver
-    if self[:is_new_caregiver]
+    if skip_validation || self[:is_new_caregiver]
       return false
     else
       return true
     end
   end
   def unless_new_halouser
-    if self[:is_halouser] # WARNING: :is_halouser is a mis-type?
+    if skip_validation || self[:is_halouser] # WARNING: :is_halouser is a mis-type?
       return true
     else
       return false
@@ -133,7 +133,7 @@ class Profile < ActiveRecord::Base
   end
   
   def cell_phone_exists?
-    if self[:is_new_caregiver]
+    if skip_validation || self[:is_new_caregiver]
       return false
     else
       if self.cell_phone.blank?

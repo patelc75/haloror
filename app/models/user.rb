@@ -58,10 +58,10 @@ class User < ActiveRecord::Base
   validates_confirmation_of :password,                   :if => :password_required?
   
   validates_length_of       :login,    :within => 3..40, :if => :password_required?
-  validates_length_of       :email,    :within => 3..100
+  validates_length_of       :email,    :within => 3..100, :unless => :skip_validation
   validates_format_of       :email,    
                             :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i,
-                            :message => 'must be valid'
+                            :message => 'must be valid', :unless => :skip_validation
   #validates_length_of       :serial_number, :is => 10
   
   validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
@@ -104,6 +104,7 @@ class User < ActiveRecord::Base
   # profile_attributes hash can be given here to create a related profile
   #
   def profile_attributes=(attributes)
+    debugger
     if profile.blank?
       self.build_profile(attributes) # .merge("user_id" => self)
     else
@@ -151,7 +152,6 @@ class User < ActiveRecord::Base
         options = options_for_role(role) unless role.blank?
       end
     else
-      debugger
       self.is_caregiver_of(the_senior)
       role = self.roles.first(:conditions => {
         :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
@@ -1362,7 +1362,7 @@ class User < ActiveRecord::Base
   
   # return true if the login is not blank
   def login_not_blank?
-    return !(self.login.blank? || skip_validation)
+    return (skip_validation ? false : !self.login.blank?)
   end
   
   

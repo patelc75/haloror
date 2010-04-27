@@ -1,4 +1,6 @@
 class UserIntakesController < ApplicationController
+  before_filter :login_required
+  
   # GET /user_intakes
   # GET /user_intakes.xml
   def index
@@ -43,6 +45,7 @@ class UserIntakesController < ApplicationController
   # POST /user_intakes.xml
   def create
     @user_intake = UserIntake.new(params[:user_intake])
+    debugger
     @groups = Group.for_user(current_user)
 
     respond_to do |format|

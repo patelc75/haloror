@@ -14,7 +14,7 @@ module NavigationHelpers
       new_bundle_processor_path
 
     when /new user_intake page/
-      user_intake_form_path
+      new_user_intake_path
       
     when /call list/
       "call_list/show/#{current_user.id}"

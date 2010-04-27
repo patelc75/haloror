@@ -3,7 +3,11 @@
 
 When /^I fill the (.+) details for user intake form$/ do |which|
   which = which.gsub(' ','_')
-  if ['user_profile', 'subscriber', 'caregiver1', 'caregiver2', 'caregiver3'].include?(which)
+  if [  'user_intake_senior_attributes__profile_attributes',
+        'user_intake_subscriber_attributes__profile_attributes',
+        'user_intake_caregiver1_attributes__profile_attributes',
+        'user_intake_caregiver2_attributes__profile_attributes',
+        'user_intake_caregiver3_attributes__profile_attributes'].include?(which)
     { "first_name"  => "#{which} first name",
       "last_name"   => "#{which} last name",
       "address"     => "#{which} address",
