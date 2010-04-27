@@ -345,6 +345,8 @@ a img {
   padding: 0px;
   margin: 0px;
 }
+.rt-fit img { float:right;}
+
 .head-wrapper .head-rep {
   float: left;
   width: 924px;
