@@ -517,7 +517,6 @@ class UsersController < ApplicationController
   def send_caregiver_details
   	@user = User.find params[:id]
   	CriticalMailer.deliver_senior_and_caregiver_details(@user)
-  	exit
   	flash[:mail_send] = "Mail Send successfully"
   	redirect_to :action => 'email_view',:id => params[:id]
   end
