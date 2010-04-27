@@ -90,7 +90,7 @@ a img {
   width: 365px;
   height: 260px;
   margin: 0 auto;
-  margin-top: 200px;
+  margin-top: 20px;
 }
 .lightbox-wrapper .top-line {
   width: 365px;
@@ -571,7 +571,7 @@ a img {
 .sec4 {
   float: left;
   font-family: Verdana, Arial, Helvetica, sans-serif !important;
-  font-size: 13px !important;
+  font-size: 11px !important;
   width: 92px;
   text-align: center;
   padding: 0 9px;
