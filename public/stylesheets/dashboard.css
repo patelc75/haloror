@@ -477,25 +477,6 @@ a img {
   float: left;
   padding: 0 10px;
 }
-.sec0 {
-  float:left;
-  width: 21px;
-  padding-top: 4px;
-}
-.sec1 {
-  float: left;
-  font-family: Verdana, Arial, Helvetica, sans-serif !important;
-  font-size: 13px !important;
-  width: 115px;
-}
-.sec2 {
-  float: left;
-  font-family: Verdana, Arial, Helvetica, sans-serif !important;
-  font-size: 13px !important;
-  width: 155px;
-  text-align: center;
-}
-
 
 .red-button {
   border: #000000 solid 0px;
@@ -612,25 +593,6 @@ div.red-back {
 
 
 
-.sec3 {
-  float: left;
-  font-family: Verdana, Arial, Helvetica, sans-serif !important;
-  font-size: 11px !important;
-  width: 32px;
-  text-align: right;
-  padding-right: 10px;
-}
-
-
-.sec4 {
-  float: left;
-  font-family: Verdana, Arial, Helvetica, sans-serif !important;
-  font-size: 11px !important;
-  width: 92px;
-  text-align: center;
-  padding: 0 9px;
-}
-
 .orange-button {
   border: #000000 solid 0px;
 }
@@ -654,6 +616,46 @@ div.red-back {
   background: transparent url('../images/orange-btn-rt.gif') no-repeat center right;
   color: #fff;
   padding: 4px 12px 7px 10px;
+}
+
+.sec0 {
+  float:left;
+  width: 20px;
+  padding-top: 4px;
+}
+
+.sec1 {
+  float: left;
+  font-family: Verdana, Arial, Helvetica, sans-serif !important;
+  font-size: 13px !important;
+  width: 115px;
+}
+
+.sec2 {
+  float: left;
+  font-family: Verdana, Arial, Helvetica, sans-serif !important;
+  font-size: 13px !important;
+  width: 155px;
+  text-align: center;
+}
+
+.sec3 {
+  float: left;
+  font-family: Verdana, Arial, Helvetica, sans-serif !important;
+  font-size: 11px !important;
+  width: 32px;
+  text-align: right;
+  padding-right: 10px;
+}
+
+
+.sec4 {
+  float: left;
+  font-family: Verdana, Arial, Helvetica, sans-serif !important;
+  font-size: 11px !important;
+  width: 92px;
+  text-align: center;
+  padding: 0 9px;
 }
 
 
@@ -692,11 +694,12 @@ div.red-back {
   margin-top: -5px;
 }
 .sec9 {
-  float: left;
   font-family: Verdana, Arial, Helvetica, sans-serif !important;
   font-size: 11px !important;
-  width: 127px;
-  padding-left: 22px;
+  width: 115px;
+  padding-left: 5px;
+  margin-right: 0px;
+  float:left;
 }
 
 .strip-wrapper .strip-line-bot {

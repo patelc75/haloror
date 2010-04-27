@@ -309,6 +309,7 @@ a img {
   font-size: 15px !important;
   padding: 0px;
   margin: 0px;
+  width: 430px;
 }
 .head-wrapper .head-rep {
   float: left;
@@ -425,27 +426,14 @@ a img {
   float: left;
   height: auto;
   overflow: hidden;
-  padding-top: 15px;
-  padding-bottom: 5px;
+  padding-top: 4px;
+  padding-bottom: 0px;
   background: url(../images/strip-txt-mid.gif) left top repeat-y;
 }
 .strip-wrapper .strip-mid-repeat .strip-txt {
   width: 899px;
   float: left;
   padding: 0 10px;
-}
-.sec1 {
-  float: left;
-  font-family: Verdana, Arial, Helvetica, sans-serif !important;
-  font-size: 13px !important;
-  width: 136px;
-}
-.sec2 {
-  float: left;
-  font-family: Verdana, Arial, Helvetica, sans-serif !important;
-  font-size: 13px !important;
-  width: 155px;
-  text-align: center;
 }
 
 .red-button {
@@ -523,24 +511,6 @@ a img {
   padding: 5px 13px 7px 10px;
 }
 
-.sec3 {
-  float: left;
-  font-family: Verdana, Arial, Helvetica, sans-serif !important;
-  font-size: 11px !important;
-  width: 32px;
-  text-align: right;
-  padding-top: 3px;
-  padding-right: 10px;
-}
-
-.sec4 {
-  float: left;
-  font-family: Verdana, Arial, Helvetica, sans-serif !important;
-  font-size: 13px !important;
-  width: 92px;
-  text-align: center;
-  padding: 0 9px;
-}
 .orange-button {
   border: #000000 solid 0px;
 }
@@ -563,6 +533,47 @@ a img {
   background: transparent url(../images/orange-btn-rt.gif) no-repeat center right;
   color: #fff;
   padding: 4px 12px 7px 10px;
+}
+
+.sec0 {
+  float:left;
+  width: 20px;
+  padding-top: 4px;
+}
+
+.sec1 {
+  float: left;
+  font-family: Verdana, Arial, Helvetica, sans-serif !important;
+  font-size: 13px !important;
+  width: 125px;
+  padding-left: 6px;
+  padding-right: 5px;
+}
+.sec2 {
+  float: left;
+  font-family: Verdana, Arial, Helvetica, sans-serif !important;
+  font-size: 13px !important;
+  width: 155px;
+  text-align: center;
+}
+
+.sec3 {
+  float: left;
+  font-family: Verdana, Arial, Helvetica, sans-serif !important;
+  font-size: 11px !important;
+  width: 32px;
+  text-align: right;
+  padding-top: 3px;
+  padding-right: 10px;
+}
+
+.sec4 {
+  float: left;
+  font-family: Verdana, Arial, Helvetica, sans-serif !important;
+  font-size: 13px !important;
+  width: 92px;
+  text-align: center;
+  padding: 0 9px;
 }
 
 .sec5 {
@@ -599,9 +610,9 @@ a img {
 .sec9 {
   float: left;
   font-family: Verdana, Arial, Helvetica, sans-serif !important;
-  font-size: 11px !important;
-  width: 127px;
-  padding-left: 22px;
+  font-size: 10px !important;
+  width: 125px;
+  padding-left: 5px;
 }
 .strip-wrapper .strip-line-bot {
   width: 920px;
