@@ -104,7 +104,6 @@ class User < ActiveRecord::Base
   # profile_attributes hash can be given here to create a related profile
   #
   def profile_attributes=(attributes)
-    debugger
     if profile.blank?
       self.build_profile(attributes) # .merge("user_id" => self)
     else
@@ -119,9 +118,10 @@ class User < ActiveRecord::Base
     debugger
   end
 
-  def before_validation
-    self.email = "no-email@halomonitoring.com" if self.email == ''
-  end
+  # TODO: why do we need this?
+  # def before_validation
+  #   self.email = "no-email@halomonitoring.com" if self.email == ''
+  # end
   
   # fetch position if "this" user assuming he/she is a caregiver to given senior
   def caregiver_position_for(senior)

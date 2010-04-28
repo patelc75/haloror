@@ -34,17 +34,17 @@ class UserIntake < ActiveRecord::Base
   end
   
   def validate
-    unless need_validation
+    if need_validation
       #
       # validate everything unless specific association are marked to skip
       if senior.blank?
         errors.add_to_base("Senior: profile is mnadatory")
       else
-        errors.add_to_base("Senior: is not valid") unless (senior.skip_validation || senior.valid?)
+        errors.add_to_base("Senior: " + senior.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.valid?)
         if senior.profile.blank?
-          errors.add_to_base("Senior: profile details are mnadatory") unless senior.skip_validation
+          errors.add_to_base("Senior profile: is mnadatory") unless senior.skip_validation
         else
-          errors.add_to_base("Senior: " + senior.profile.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.profile.valid?)
+          errors.add_to_base("Senior profile: " + senior.profile.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.profile.valid?)
         end
       end
 
@@ -52,11 +52,11 @@ class UserIntake < ActiveRecord::Base
         if subscriber.blank?
           errors.add_to_base("Subscriber: profile is mnadatory")
         else
-          errors.add_to_base("Subscriber: is not valid") unless (subscriber.skip_validation || subscriber.valid?)
+          errors.add_to_base("Subscriber profile: " + subscriber.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subscriber.valid?)
           if subscriber.profile.blank?
-            errors.add_to_base("Subscriber: profile details are mnadatory") unless subscriber.skip_validation
+            errors.add_to_base("Subscriber profile: is mnadatory") unless subscriber.skip_validation
           else
-            errors.add_to_base("Subscriber: " + subscriber.profile.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subcriber.profile.valid?)
+            errors.add_to_base("Subscriber profile: " + subscriber.profile.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subcriber.profile.valid?)
           end
         end
       end
@@ -66,7 +66,7 @@ class UserIntake < ActiveRecord::Base
 
   # for every instance, make sure the associated objects are built
   def after_initialize
-    self.need_validation = false
+    self.need_validation = true # assume, the user will not hit "save"
     # find(id, :include => :users) does not work due to activerecord design the way it is
     #   AR should ideally fire a find_with_associations and then initialize each object
     #   AR is not initializing the associations before it comes to this callback, in rails 2.1.0 at least
@@ -76,7 +76,6 @@ class UserIntake < ActiveRecord::Base
     #     initialize the associations only for new instance. we are safe
     #     call user_intake.build_associations in the code on user_intake instance
     if self.new_record?
-      debugger
       self.subscriber_is_user = true
       self.subscriber_is_caregiver = false
       (1..3).each {|e| self.send("mem_caregiver#{e}_options=".to_sym, {"position" => e}) }
@@ -128,7 +127,9 @@ class UserIntake < ActiveRecord::Base
   # collect self.users before saving self
   # we are keeping senior, subscriber, ... in attr_accessor variables
   def associations_before_save
-    collapse_associations
+    collapse_associations # make empty ones = nil
+    # for remaining, fill login, password details only when login is empty
+    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_login_details(user) }
     self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq.compact # omit nil, duplicates
   end
   
@@ -369,4 +370,20 @@ class UserIntake < ActiveRecord::Base
     (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
     self.caregiver3 = attributes
   end
+  
+  private
+  
+  def autofill_login_details(user_type = "")
+    unless user_type.blank?
+      user = self.send("#{user_type}") # local copy, to keep code clean
+      if !user.blank? && user.login.blank?
+        hex = Digest::MD5.hexdigest(Time.now.to_s)[1..20]
+        # only when user_type is not nil, but login is
+        user.send("login=".to_sym, hex)
+        user.send("password=".to_sym, hex)
+        user.send("password_confirmation=".to_sym, hex)
+      end
+    end
+  end
+  
 end

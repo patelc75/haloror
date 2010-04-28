@@ -137,6 +137,9 @@ describe UserIntake do
           attributes = user_hash.merge( "profile_attributes" => Profile.new(local_profile_hash).attributes)
           @user_intake.send("#{user_type}=".to_sym, attributes)
           add_senior if user_type != "senior" # business logic
+          
+          user = @user_intake.send("#{user_type}")
+          user.email.should == "#{user_type}@test.com"
           @user_intake.save
 
           (user_intake = UserIntake.find_by_id(@user_intake.id)).should_not be_blank

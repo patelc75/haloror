@@ -45,7 +45,6 @@ class UserIntakesController < ApplicationController
   # POST /user_intakes.xml
   def create
     @user_intake = UserIntake.new(params[:user_intake])
-    debugger
     @groups = Group.for_user(current_user)
 
     respond_to do |format|

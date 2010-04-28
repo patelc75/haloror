@@ -1,3 +1,4 @@
+@wip
 Feature: Manage user_intakes
   In order manage user intakes
   As an administrator
@@ -70,5 +71,5 @@ Feature: Manage user_intakes
      | email_active | true |
      | position     | 1    |
      | is_keyholder | true |
-	And email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
-	#And email to "cuc_sub_care@chirag.name" with subject "Please read before your installation" should be sent for delivery	
+  And email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
+  #And email to "cuc_sub_care@chirag.name" with subject "Please read before your installation" should be sent for delivery
