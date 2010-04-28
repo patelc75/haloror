@@ -19,7 +19,7 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
           if user[:weight_scale]
             xml.weight_scale do
           	  xml.weight(user[:weight_scale][:weight])
-          	  xml.unit(user[:weight_scale][:unit])
+          	  xml.unit(user[:weight_scale][:weight_unit])
           	  xml.battery(user[:weight_scale][:battery])
           	  xml.serial_number(user[:weight_scale][:serial_number])
           	  xml.timestamp(UtilityHelper.format_datetime_flex(user[:weight_scale][:timestamp], user))

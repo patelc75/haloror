@@ -5,6 +5,10 @@
   <br />
   <%= text_field_tag 'group_name' , @group.name%>
   <br>
+  <label for="email">Email</label>
+  <br />
+  <%= text_field_tag 'email', @group.email%>
+  <br>
   <label for="description">Description</label>
   <br />
   <%= text_area_tag 'description', @group.description%>
