@@ -115,7 +115,7 @@ class User < ActiveRecord::Base
   # roles_users_option attributes
   def role_attributes=(attributes)
     # create roles_users_option records here
-    debugger
+    # debugger
   end
 
   # TODO: why do we need this?

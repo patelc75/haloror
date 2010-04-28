@@ -66,13 +66,14 @@ $(function() {
     <div id="content" class="span-22 last hidden">
       <div id="senior_profile" class="colborder span-10"> <!-- colborder takes one column -->
         <% fields_for "user_intake[senior_attributes][profile_attributes]", @user_intake.senior.profile do |senior_form| %>
-        <!-- senior profile details -->
-        <%= render :partial => 'senior_profile', :locals => {:f => senior_form} %>
+          <!-- senior profile details -->
+          <%= render :partial => 'senior_profile', :locals => {:f => senior_form} %>
         <% end %>
+        
         <% fields_for "user_intake[senior_attributes]", @user_intake.senior do |senior_form| %>
-        <!-- senior user details -->
-        <div class="span-3"><%= senior_form.label :email %>:</div>
-        <div class="span-7 last"><%= senior_form.text_field :email, :class => "span-7" %></div>
+          <!-- senior user details -->
+          <div class="span-3"><%= senior_form.label :email %>:</div>
+          <div class="span-7 last"><%= senior_form.text_field :email, :class => "span-7" %></div>
         <% end %>
       </div>
 
@@ -94,9 +95,15 @@ $(function() {
           </div>
 
           <% fields_for "user_intake[subscriber_attributes][profile_attributes]", @user_intake.subscriber.profile do |subscriber_form| %>
-          <!-- subscriber profile details -->
-          <%= render :partial => 'subscriber_profile', :locals => {:f => subscriber_form} %>
+            <!-- subscriber profile details -->
+            <%= render :partial => 'subscriber_profile', :locals => {:f => subscriber_form} %>
           <% end -%>
+
+          <% fields_for "user_intake[subscriber_attributes]", @user_intake.subscriber do |subscriber_form| %>
+            <!-- subscriber user details -->
+            <div class="span-3"><%= subscriber_form.label :email %>:</div>
+            <div class="span-7 last"><%= subscriber_form.text_field :email, :class => "span-7" %></div>
+          <% end %>
 
           <div class="span-3">&nbsp;</div>
           <div class="span-7 last">
@@ -109,7 +116,7 @@ $(function() {
           <!-- role attributes -->
           <div id="caregiver_extras" class="prepend-3 span-7 hidden">
             <% fields_for "user_intake[subscriber_attributes][role_attributes]", @user_intake.subscriber do |subscriber_form| %>
-            <%= render :partial => 'caregiver_role_options', :locals => {:f => subscriber_form} %>
+              <%= render :partial => 'caregiver_role_options', :locals => {:f => subscriber_form} %>
             <% end -%>
           </div>
         </div>
@@ -129,14 +136,23 @@ $(function() {
           <hr class="space" />
 
           <div id="caregiver<%= index+1 %>_profile" class="hidden">
+            
             <!-- caregiver profile -->
             <% fields_for "user_intake[caregiver#{index+1}_attributes][profile_attributes]", caregiver.profile do |caregiver_profile_form| %>
-            <%= render :partial => 'caregiver_profile', :locals => {:f => caregiver_profile_form} %>
+              <%= render :partial => 'caregiver_profile', :locals => {:f => caregiver_profile_form} %>
             <% end -%>
+            
+            <% fields_for "user_intake[caregiver#{index+1}_attributes]", caregiver do |caregiver_form| %>
+              <!-- caregiver user details -->
+              <div class="span-2"><%= caregiver_form.label :email %>:</div>
+              <div class="span-5 last"><%= caregiver_form.text_field :email, :class => "span-5" %></div>
+            <% end %>
+            
             <!-- role attributes -->
             <% fields_for "user_intake[caregiver#{index+1}_attributes][role_attributes]", caregiver do |caregiver_form| %>
-            <%= render :partial => 'caregiver_role_options', :locals => {:f => caregiver_form} %>
+              <%= render :partial => 'caregiver_role_options', :locals => {:f => caregiver_form} %>
             <% end -%>
+            
           </div>
         </div>
         <% end -%>

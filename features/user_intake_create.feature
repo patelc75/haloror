@@ -20,9 +20,7 @@ Feature: Create user intake
     And I check "user_intake_no_caregiver_2"
     And I check "user_intake_no_caregiver_3"
 
-  @wip
   Scenario: Submit. senior profile blank
-    And I check "Same as User"
     And I press "Submit"
     Then page content should have the following:
     """
@@ -41,6 +39,7 @@ Feature: Create user intake
   Scenario: Submit. user profile ok. subscriber = user
     When I fill the senior details for user intake form
     And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
+    And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I check "Same as User"
     And I press "Submit"
-    Then page content should have "Successfully saved"
+    Then page content should have "successfully created"

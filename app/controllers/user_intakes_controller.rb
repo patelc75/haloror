@@ -49,7 +49,7 @@ class UserIntakesController < ApplicationController
 
     respond_to do |format|
       if @user_intake.save
-        flash[:notice] = 'user_intake was successfully created.'
+        flash[:notice] = 'User Intake was successfully created.'
         format.html { redirect_to(:action => 'show', :id => @user_intake.id) }
         format.xml  { render :xml => @user_intake, :status => :created, :location => @user_intake }
       else
@@ -66,7 +66,7 @@ class UserIntakesController < ApplicationController
 
     respond_to do |format|
       if @user_intake.update_attributes(params[:user_intake])
-        flash[:notice] = 'user_intake was successfully updated.'
+        flash[:notice] = 'User Intake was successfully updated.'
         format.html { redirect_to(:action => 'show', :id => @user_intake.id) }
         format.xml  { head :ok }
       else

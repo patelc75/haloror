@@ -1,4 +1,3 @@
-@wip
 Feature: Manage user_intakes
   In order keep the application user friendly
   As an authenticated user

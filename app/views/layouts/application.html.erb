@@ -111,7 +111,8 @@
         <div align="center" id="loading" style="display:none;height:0;width:0;overflow:hidden">
 			Loading... This will take a few seconds
 		</div>		
-        <%= yield %>
+        <%= flash.each {|k, v| "<p>#{k} = #{v}</p>"} %>
+      <%= yield %>
     </div>
     
     <div id="footer">

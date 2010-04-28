@@ -5,7 +5,6 @@ class UserIntake < ActiveRecord::Base
   belongs_to :group
   has_and_belongs_to_many :users # replaced with has_many :through
   has_many :user_intakes_users, :dependent => :destroy
-  before_save :associations_before_save
   after_save :associations_after_save
   # hold the data temporarily
   # user type is identified by the role it has subject to this user intake and other users
@@ -16,6 +15,29 @@ class UserIntake < ActiveRecord::Base
     attr_accessor "no_caregiver_#{index}".to_sym
   end
 
+  # for every instance, make sure the associated objects are built
+  def after_initialize
+    self.need_validation = true # assume, the user will not hit "save"
+    # find(id, :include => :users) does not work due to activerecord design the way it is
+    #   AR should ideally fire a find_with_associations and then initialize each object
+    #   AR is not initializing the associations before it comes to this callback, in rails 2.1.0 at least
+    #   this means, the associations do exist in DB, and found in query, but not loaded yet
+    # 
+    #   workaround
+    #     initialize the associations only for new instance. we are safe
+    #     call user_intake.build_associations in the code on user_intake instance
+    if self.new_record?
+      self.subscriber_is_user = true
+      self.subscriber_is_caregiver = false
+      (1..3).each {|e| self.send("mem_caregiver#{e}_options=".to_sym, {"position" => e}) }
+      build_associations
+    end
+  end
+  
+  def before_save
+    associations_before_validation_and_save
+  end
+  
   def skip_validation
     self.need_validation = false
   end
@@ -35,6 +57,7 @@ class UserIntake < ActiveRecord::Base
   
   def validate
     if need_validation
+      associations_before_validation_and_save # pre-process associations
       #
       # validate everything unless specific association are marked to skip
       if senior.blank?
@@ -64,25 +87,6 @@ class UserIntake < ActiveRecord::Base
     end
   end
 
-  # for every instance, make sure the associated objects are built
-  def after_initialize
-    self.need_validation = true # assume, the user will not hit "save"
-    # find(id, :include => :users) does not work due to activerecord design the way it is
-    #   AR should ideally fire a find_with_associations and then initialize each object
-    #   AR is not initializing the associations before it comes to this callback, in rails 2.1.0 at least
-    #   this means, the associations do exist in DB, and found in query, but not loaded yet
-    # 
-    #   workaround
-    #     initialize the associations only for new instance. we are safe
-    #     call user_intake.build_associations in the code on user_intake instance
-    if self.new_record?
-      self.subscriber_is_user = true
-      self.subscriber_is_caregiver = false
-      (1..3).each {|e| self.send("mem_caregiver#{e}_options=".to_sym, {"position" => e}) }
-      build_associations
-    end
-  end
-  
   # create blank placeholder records
   # required for user form input
   def build_associations
@@ -124,9 +128,9 @@ class UserIntake < ActiveRecord::Base
     end
   end
 
-  # collect self.users before saving self
+  # pre-process data before validating
   # we are keeping senior, subscriber, ... in attr_accessor variables
-  def associations_before_save
+  def associations_before_validation_and_save
     collapse_associations # make empty ones = nil
     # for remaining, fill login, password details only when login is empty
     ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_login_details(user) }
@@ -181,7 +185,7 @@ class UserIntake < ActiveRecord::Base
     if arg == nil
       self.mem_senior = nil
     else
-      arg_user = (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
+      arg_user = argument_to_object(arg) # (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
       unless arg_user.blank?
         if self.new_record?
           self.mem_senior = arg_user
@@ -219,7 +223,7 @@ class UserIntake < ActiveRecord::Base
         self.mem_subscriber = self.senior = arg # assign to senior, then reference as subscriber
       else
         
-        arg_user = (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
+        arg_user = argument_to_object(arg) # (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
         unless arg_user.blank?
           if self.new_record?
             self.mem_subscriber = arg_user # User.new(attributes)
@@ -263,7 +267,7 @@ class UserIntake < ActiveRecord::Base
         self.mem_caregiver1 = self.subscriber = arg # assign to subscriber, then reference as caregiver1
       else
         
-        arg_user = (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
+        arg_user = argument_to_object(arg) # (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
         unless arg_user.blank?
           if self.new_record?
             self.mem_caregiver1 = arg_user # User.new(attributes)
@@ -295,7 +299,7 @@ class UserIntake < ActiveRecord::Base
       self.mem_caregiver2 = nil
     else
 
-      arg_user = (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
+      arg_user = argument_to_object(arg) # (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
       unless arg_user.blank?
         if self.new_record?
           self.mem_caregiver2 = arg_user
@@ -326,7 +330,7 @@ class UserIntake < ActiveRecord::Base
       self.mem_caregiver3 = nil
     else
 
-      arg_user = (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
+      arg_user = argument_to_object(arg) # (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
       unless arg_user.blank?
         if self.new_record?
           self.mem_caregiver3 = arg_user
@@ -385,5 +389,16 @@ class UserIntake < ActiveRecord::Base
       end
     end
   end
-  
+
+  def argument_to_object(arg)
+    if arg.is_a?(User)
+      arg
+    else
+      if arg.is_a?(Hash)
+        User.new(arg)
+      else
+        nil
+      end
+    end
+  end
 end
