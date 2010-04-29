@@ -27,7 +27,7 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
           end
           if user[:blood_pressure]
             xml.blood_pressure do
-          	  xml.systolic(user[:blood_pressure][:systolic])
+          	  xml.systolic(user[:blood_pressure][:systolic]+user[:blood_pressure][:diastolic])
           	  xml.diastolic(user[:blood_pressure][:diastolic])
           	  xml.battery(user[:blood_pressure][:battery])
           	  xml.serial_number(user[:blood_pressure][:serial_number])
