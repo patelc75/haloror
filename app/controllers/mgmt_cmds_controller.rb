@@ -30,6 +30,9 @@ class MgmtCmdsController < RestfulAuthController
     
     # for device_id, it is searched in the device table by serial num
     if cmd.cmd_type == 'device_registration' && request[:device_id] == registration_device_id  #create device
+      if request[:serial_num].nil?
+        raise "#{cmd.cmd_type}: nil serial_num"
+      end
       unless device = Device.find_by_serial_number(request[:serial_num])
         device = Device.new
         device.serial_number = request[:serial_num]
