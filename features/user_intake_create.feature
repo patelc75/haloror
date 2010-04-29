@@ -22,19 +22,7 @@ Feature: Create user intake
 
   Scenario: Submit. senior profile blank
     And I press "Submit"
-    Then page content should have the following:
-    """
-    First name can't be blank
-    Last name can't be blank
-    Email is too short
-    Address can't be blank
-    City can't be blank
-    State can't be blank
-    Zipcode can't be blank
-    Home phone or Cell Phone is required
-    Cell phone or Home Phone is required
-    
-    """
+    Then page content should have "Invalid user intake"
 
   Scenario: Submit. user profile ok. subscriber = user
     When I fill the senior details for user intake form
@@ -43,3 +31,11 @@ Feature: Create user intake
     And I check "Same as User"
     And I press "Submit"
     Then page content should have "successfully created"
+
+  Scenario: Submit. user profile ok. subscriber not user. subscriber profile blank
+  Scenario: Submit. user profile ok. subscriber not user. subscriber profile ok
+  Scenario: Submit. user profile ok. subscriber not user. subscriber = caregiver1
+  Scenario: Submit. user profile ok. subscriber profile ok. different caregiver1 with blank profile
+  Scenario: Submit. user profile ok. subscriber profile ok. different caregiver1 with ok profile
+  Scenario: Submit. user profile ok. subscriber profile ok. different caregiver 1, 2, 3
+

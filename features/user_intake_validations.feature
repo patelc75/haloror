@@ -1,3 +1,4 @@
+@wip
 Feature: Manage user_intakes
   In order keep the application user friendly
   As an authenticated user
@@ -41,7 +42,7 @@ Feature: Manage user_intakes
     When I check "Same as User"
     And I fill the senior details for user intake form
     And I press "Submit"
-    Then page content should have "User Intake: Successfully saved"
+    Then page content should have "successfully created"
 
   Scenario: Valid user. Missing Subscriber. Subscriber is not the user.
     When I uncheck "Same as User"
@@ -55,7 +56,7 @@ Feature: Manage user_intakes
     And I fill the subscriber details for user intake form
     And I select "verizon" from "subscriber_carrier_id"
     And I press "Submit" 
-    Then page content should have "User Intake: Successfully saved" 
+    Then page content should have "successfully created" 
 
   Scenario: Valid user. Missing Subscriber/Caregiver. Subscriber is not user. Subscriber is caregiver
     When I uncheck "Same as User"
@@ -69,19 +70,19 @@ Feature: Manage user_intakes
     And I check "Add as #1 caregiver"
     And I fill the senior details for user intake form
     And I fill the subscriber details for user intake form
-    And I check "sub_roles_users_option_email_active"
-    And I select "Yes" from "sub_roles_users_option_is_keyholder"
+    And I check "user_intake_mem_caregiver1_options_email_active"
+    And I select "Yes" from "user_intake_mem_caregiver1_options_is_keyholder"
     And I press "Submit"
-    Then page content should have "User Intake: Successfully saved"
+    Then page content should have "successfully created"
 
   Scenario: Valid user. Valid Subscriber. Subscriber is not user/caregiver. Invalid Caregiver 1.
     When I uncheck "Same as User"
     And I uncheck "Add as #1 caregiver"
     And I fill the senior details for user intake form
     And I fill the subscriber details for user intake form
-    And I check "sub_roles_users_option_email_active"
-    And I select "Yes" from "sub_roles_users_option_is_keyholder"
-    And I uncheck "no_caregiver_1"
+    And I check "user_intake_mem_caregiver1_options_email_active"
+    And I select "Yes" from "user_intake_mem_caregiver1_options_is_keyholder"
+    And I uncheck "user_intake_no_caregiver_1"
     And I press "Submit"
     Then page content should have "prohibited this"
 
@@ -90,9 +91,9 @@ Feature: Manage user_intakes
     And I uncheck "Add as #1 caregiver"
     And I fill the senior details for user intake form
     And I fill the subscriber details for user intake form
-    And I check "sub_roles_users_option_email_active"
-    And I select "Yes" from "sub_roles_users_option_is_keyholder"
-    And I uncheck "no_caregiver_1"
+    And I check "user_intake_mem_caregiver1_options_email_active"
+    And I select "Yes" from "user_intake_mem_caregiver1_options_is_keyholder"
+    And I uncheck "user_intake_no_caregiver_1"
     And I fill the caregiver1 details for user intake form
     And I press "Submit"
     Then page content should have "prohibited this"

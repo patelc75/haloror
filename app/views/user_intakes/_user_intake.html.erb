@@ -115,7 +115,7 @@ $(function() {
 
           <!-- role attributes -->
           <div id="caregiver_extras" class="prepend-3 span-7 hidden">
-            <% fields_for "user_intake[subscriber_attributes][role_attributes]", @user_intake.subscriber do |subscriber_form| %>
+            <% fields_for "user_intake[mem_caregiver1_options]", @user_intake.subscriber do |subscriber_form| %>
               <%= render :partial => 'caregiver_role_options', :locals => {:f => subscriber_form} %>
             <% end -%>
           </div>
@@ -149,7 +149,7 @@ $(function() {
             <% end %>
             
             <!-- role attributes -->
-            <% fields_for "user_intake[caregiver#{index+1}_attributes][role_attributes]", caregiver do |caregiver_form| %>
+            <% fields_for "user_intake[mem_caregiver#{index+1}_options]", caregiver do |caregiver_form| %>
               <%= render :partial => 'caregiver_role_options', :locals => {:f => caregiver_form} %>
             <% end -%>
             

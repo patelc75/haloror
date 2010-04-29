@@ -1,3 +1,4 @@
+@wip
 Feature: Manage user_intakes
   In order manage user intakes
   As an administrator
@@ -16,19 +17,18 @@ Feature: Manage user_intakes
     And I am on new user_intake page
     When I select "halo_group" from "group"
     And I fill in the following:
-      | user_intake_senior_attributes__profile_attributes_first_name | myfirstname             |
-      | user_intake_senior_attributes__profile_attributes_last_name  | mylastname              |
-      | user_intake_senior_attributes__profile_attributes_address    | 110, Madison Ave, NY    |
-      | user_intake_senior_attributes__profile_attributes_cross_st   | Street 42               |
-      | user_intake_senior_attributes__profile_attributes_city       | NY                      |
-      | user_intake_senior_attributes__profile_attributes_state      | NY                      |
-      | user_intake_senior_attributes__profile_attributes_zipcode    | 12201                   |
-      | user_intake_senior_attributes__profile_attributes_home_phone | 1-517-123-4567          |
-      | user_intake_senior_attributes__profile_attributes_cell_phone | 1-917-123-4567          |
-      | user_intake_senior_attributes__profile_attributes_work_phone | 1-212-123-4567          |
-      | user_intake_senior_attributes__profile_attributes_email      | cuc_senior@chirag.name  |
-    And I select "verizon" from "user_profile_carrier_id"
-    And I select "1 Nov 2000" as the "Date of Birth" date
+      | user_intake_senior_attributes__profile_attributes_first_name | myfirstname            |
+      | user_intake_senior_attributes__profile_attributes_last_name  | mylastname             |
+      | user_intake_senior_attributes__profile_attributes_address    | 110, Madison Ave, NY   |
+      | user_intake_senior_attributes__profile_attributes_cross_st   | Street 42              |
+      | user_intake_senior_attributes__profile_attributes_city       | NY                     |
+      | user_intake_senior_attributes__profile_attributes_state      | NY                     |
+      | user_intake_senior_attributes__profile_attributes_zipcode    | 12201                  |
+      | user_intake_senior_attributes__profile_attributes_home_phone | 1-517-123-4567         |
+      | user_intake_senior_attributes__profile_attributes_cell_phone | 1-917-123-4567         |
+      | user_intake_senior_attributes__profile_attributes_work_phone | 1-212-123-4567         |
+      | user_intake_senior_attributes_email                          | cuc_senior@chirag.name |
+    And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I choose "user_profile_sex_m"
     And I check "no_caregiver_1"
     And I check "no_caregiver_2"
@@ -51,8 +51,8 @@ Feature: Manage user_intakes
   Scenario: Submit new user_intake with billing same as #1 caregiver
     When I uncheck "same_as_user"
     And I check "Add as #1 caregiver" 
-    And I check "sub_roles_users_option_email_active"
-    And I select "Yes" from "sub_roles_users_option_is_keyholder"
+    And I check "user_intake_mem_caregiver1_options_email_active"
+    And I select "Yes" from "user_intake_mem_caregiver1_options_is_keyholder"
     And I fill in the following:
       | subscriber_first_name | subscriberfirstname         |
       | subscriber_last_name  | subscriberlastname          |

@@ -35,7 +35,22 @@ class UserIntake < ActiveRecord::Base
   end
   
   def before_save
-    associations_before_validation_and_save
+    associations_before_validation_and_save # build the associations
+    validate_associations
+  end
+  # create blank placeholder records
+  # required for user form input
+  def build_associations
+    self.senior = User.new if senior.nil?
+    senior.build_associations unless senior.nil?
+    
+    self.subscriber = User.new if subscriber.nil?
+    subscriber.build_associations unless subscriber.nil?
+
+    (1..3).each do |index|
+      caregiver = self.send("caregiver#{index}=".to_sym, User.new) if self.send("caregiver#{index}".to_sym).nil?
+      caregiver.build_associations unless caregiver.nil?
+    end
   end
   
   def skip_validation
@@ -58,48 +73,37 @@ class UserIntake < ActiveRecord::Base
   def validate
     if need_validation
       associations_before_validation_and_save # pre-process associations
-      #
-      # validate everything unless specific association are marked to skip
-      if senior.blank?
-        errors.add_to_base("Senior: profile is mnadatory")
-      else
-        errors.add_to_base("Senior: " + senior.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.valid?)
-        if senior.profile.blank?
-          errors.add_to_base("Senior profile: is mnadatory") unless senior.skip_validation
-        else
-          errors.add_to_base("Senior profile: " + senior.profile.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.profile.valid?)
-        end
-      end
-
-      unless subscriber_is_user
-        if subscriber.blank?
-          errors.add_to_base("Subscriber: profile is mnadatory")
-        else
-          errors.add_to_base("Subscriber profile: " + subscriber.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subscriber.valid?)
-          if subscriber.profile.blank?
-            errors.add_to_base("Subscriber profile: is mnadatory") unless subscriber.skip_validation
-          else
-            errors.add_to_base("Subscriber profile: " + subscriber.profile.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subcriber.profile.valid?)
-          end
-        end
-      end
-
+      validate_associations
     end
   end
-
-  # create blank placeholder records
-  # required for user form input
-  def build_associations
-    self.senior = User.new  if senior.nil?
-    senior.build_associations unless senior.nil?
-    
-    self.subscriber = User.new  if subscriber.nil?
-    subscriber.build_associations unless subscriber.nil?
-
-    (1..3).each do |index|
-      caregiver = self.send("caregiver#{index}=".to_sym, User.new) if self.send("caregiver#{index}".to_sym).nil?
-      caregiver.build_associations unless caregiver.nil?
+  
+  def validate_associations
+    #
+    # validate everything unless specific association are marked to skip
+    if senior.blank?
+      errors.add_to_base("Senior: profile is mnadatory")
+    else
+      errors.add_to_base("Senior: " + senior.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.valid?)
+      if senior.profile.blank?
+        errors.add_to_base("Senior profile: is mnadatory") unless senior.skip_validation
+      else
+        errors.add_to_base("Senior profile: " + senior.profile.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.profile.valid?)
+      end
     end
+
+    unless subscriber_is_user
+      if subscriber.blank?
+        errors.add_to_base("Subscriber: profile is mnadatory")
+      else
+        errors.add_to_base("Subscriber profile: " + subscriber.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subscriber.valid?)
+        if subscriber.profile.blank?
+          errors.add_to_base("Subscriber profile: is mnadatory") unless subscriber.skip_validation
+        else
+          errors.add_to_base("Subscriber profile: " + subscriber.profile.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subcriber.profile.valid?)
+        end
+      end
+    end
+    
   end
   
   # collapse any associations to "nil" if they are just "new" (nothing assigned to them after "new")
