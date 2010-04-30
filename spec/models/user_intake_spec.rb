@@ -61,10 +61,16 @@ describe UserIntake do
   context "In memory records" do
     before(:each) do
       @user_intake = UserIntake.new
+      @user_intake.skip_validation = true # just save user_intake + associations
+      @user_intake.subscriber_is_user = false
+      @user_intake.subscriber_is_caregiver = false
+      @user_intake.no_caregiver_1 = false
+      @user_intake.no_caregiver_2 = false
+      @user_intake.no_caregiver_3 = false
     end
 
     # check each user type in memory
-    ["caregiver1"].each do |user_type| # "senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"
+    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user_type|
 
       it "should have a #{user_type}" do
         user = @user_intake.send("#{user_type}".to_sym)
@@ -97,14 +103,19 @@ describe UserIntake do
     context "associations" do
       before(:each) do
         @user_intake = UserIntake.new
+        @user_intake.skip_validation = true # just save user_intake + associations
+        @user_intake.subscriber_is_user = false
+        @user_intake.subscriber_is_caregiver = false
+        @user_intake.no_caregiver_1 = false
+        @user_intake.no_caregiver_2 = false
+        @user_intake.no_caregiver_3 = false
         @user_intake.group = Group.create(:name => "group")
       end
 
-      ["caregiver1", "caregiver2", "caregiver3"].each do |user_type| # "senior", "subscriber", 
+      ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user_type|
         it "should save the associations correctly" do
           add_senior if user_type != "senior" # when testing, senior is mandatory
           @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
-          @user_intake.skip_validation = true # validation not required. just check presence of data
           @user_intake.save
 
           @user_intake.new_record?.should be_false, "#{user_type}: senior=#{!@user_intake.senior.blank?}, subscriber=#{!@user_intake.subscriber.blank?}"
@@ -117,6 +128,8 @@ describe UserIntake do
         end
 
         it "should not validate user intake without a senior profile" do
+          @user_intake.skip_validation = false # validate
+          @user_intake.senior = nil # remove senior
           @user_intake.should_not be_valid
           @user_intake.save
           @user_intake.errors.should_not be_blank
@@ -125,7 +138,6 @@ describe UserIntake do
         it "should have a #{user_type}" do
           add_senior if user_type != "senior" # when testing, senior is mandatory
           @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
-          @user_intake.skip_validation = true # do not validate
           @user_intake.save
 
           (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
@@ -139,13 +151,7 @@ describe UserIntake do
           local_profile_hash = profile_hash(user_type)
           user_hash["profile_attributes"] = Profile.new(local_profile_hash).attributes
           @user_intake.send("#{user_type}=".to_sym, user_hash)
-          @user_intake.skip_validation = true # just save user_intake + associations
-          # we need this to avoid collapsing associations that are stale
-          @user_intake.subscriber_is_user = false
-          @user_intake.subscriber_is_caregiver = false
-          @user_intake.no_caregiver_1 = false
-          @user_intake.no_caregiver_2 = false
-          @user_intake.no_caregiver_3 = false
+          add_senior if user_type != "senior" # senior is mandatory
           
           user = @user_intake.send("#{user_type}")
           user.email.should == "#{user_type}@test.com"

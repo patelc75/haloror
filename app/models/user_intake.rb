@@ -102,7 +102,7 @@ class UserIntake < ActiveRecord::Base
           if subscriber.profile.blank?
             errors.add_to_base("Subscriber profile: is mnadatory") unless subscriber.skip_validation
           else
-            errors.add_to_base("Subscriber profile: " + subscriber.profile.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subcriber.profile.valid?)
+            errors.add_to_base("Subscriber profile: " + subscriber.profile.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subscriber.profile.valid?)
           end
         end
       end
