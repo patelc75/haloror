@@ -33,9 +33,15 @@ Feature: Create user intake
     Then page content should have "successfully created"
 
   Scenario: Submit. user profile ok. subscriber not user. subscriber profile blank
+    When I fill the senior details for user intake form
+    And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
+    And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
+    And I uncheck "Same as User"
+    And I press "Submit"
+    Then page content should have "Invalid user intake"
+
   Scenario: Submit. user profile ok. subscriber not user. subscriber profile ok
   Scenario: Submit. user profile ok. subscriber not user. subscriber = caregiver1
   Scenario: Submit. user profile ok. subscriber profile ok. different caregiver1 with blank profile
   Scenario: Submit. user profile ok. subscriber profile ok. different caregiver1 with ok profile
   Scenario: Submit. user profile ok. subscriber profile ok. different caregiver 1, 2, 3
-

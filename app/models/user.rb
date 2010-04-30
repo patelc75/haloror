@@ -39,7 +39,7 @@ class User < ActiveRecord::Base
   
   has_and_belongs_to_many :devices
   has_and_belongs_to_many :user_intakes # replaced with has_many :through on Senior, Subscriber, Caregiver
-  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :skip_validation
+  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :need_validation
   
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
@@ -61,7 +61,7 @@ class User < ActiveRecord::Base
   validates_length_of       :email,    :within => 3..100, :unless => :skip_validation
   validates_format_of       :email,    
                             :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i,
-                            :message => 'must be valid', :unless => :skip_validation
+                            :message => 'must be valid', :if => :need_validation
   #validates_length_of       :serial_number, :is => 10
   
   validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
@@ -74,10 +74,18 @@ class User < ActiveRecord::Base
   # after_save :post_process  
   
   def after_initialize
-    self.skip_validation = false
+    self.need_validation = true
+  end
+
+  def skip_validation
+    !need_validation
   end
   
-  
+  def skip_validation=(value = false)
+    self.need_validation = !value
+    skip_associations_validation
+  end
+    
   # build associated model
   def build_associations
     build_profile if profile.blank?
@@ -1365,5 +1373,10 @@ class User < ActiveRecord::Base
     return (skip_validation ? false : !self.login.blank?)
   end
   
+  private # ------------------------------ private methods
+  
+  def skip_associations_validation
+    self.profile.send("skip_validation=", skip_validation) unless profile.blank?
+  end
   
 end

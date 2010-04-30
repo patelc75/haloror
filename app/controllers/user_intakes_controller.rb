@@ -48,15 +48,10 @@ class UserIntakesController < ApplicationController
     @groups = Group.for_user(current_user)
 
     respond_to do |format|
-      if @user_intake.valid?
-        if @user_intake.save
-          flash[:notice] = 'User Intake was successfully created.'
-          format.html { redirect_to(:action => 'show', :id => @user_intake.id) }
-          format.xml  { render :xml => @user_intake, :status => :created, :location => @user_intake }
-        else
-          format.html { render :action => "new" }
-          format.xml  { render :xml => @user_intake.errors, :status => :unprocessable_entity }
-        end
+      if @user_intake.save
+        flash[:notice] = 'User Intake was successfully created.'
+        format.html { redirect_to(:action => 'show', :id => @user_intake.id) }
+        format.xml  { render :xml => @user_intake, :status => :created, :location => @user_intake }
       else
         format.html { render :action => "new" }
         format.xml  { render :xml => @user_intake.errors, :status => :unprocessable_entity }

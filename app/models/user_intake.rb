@@ -5,7 +5,7 @@ class UserIntake < ActiveRecord::Base
   belongs_to :group
   has_and_belongs_to_many :users # replaced with has_many :through
   has_many :user_intakes_users, :dependent => :destroy
-  after_save :associations_after_save
+
   # hold the data temporarily
   # user type is identified by the role it has subject to this user intake and other users
   attr_accessor :mem_senior, :mem_subscriber, :need_validation
@@ -27,9 +27,12 @@ class UserIntake < ActiveRecord::Base
     #     initialize the associations only for new instance. we are safe
     #     call user_intake.build_associations in the code on user_intake instance
     if self.new_record?
-      self.subscriber_is_user = true
-      self.subscriber_is_caregiver = false
-      (1..3).each {|e| self.send("mem_caregiver#{e}_options=".to_sym, {"position" => e}) }
+      self.subscriber_is_user = true if subscriber_is_user == nil
+      self.subscriber_is_caregiver = false if subscriber_is_caregiver == nil
+      (1..3).each do |e|
+        self.send("mem_caregiver#{e}_options=".to_sym, {"position" => e})
+        self.send("no_caregiver_#{e}=".to_sym, true) # no caregiver checkbox ON
+      end
       build_associations
     end
   end
@@ -38,6 +41,11 @@ class UserIntake < ActiveRecord::Base
     associations_before_validation_and_save # build the associations
     validate_associations
   end
+  
+  def after_save
+    associations_after_save
+  end
+  
   # create blank placeholder records
   # required for user form input
   def build_associations
@@ -54,80 +62,84 @@ class UserIntake < ActiveRecord::Base
   end
   
   def skip_validation
-    self.need_validation = false
+    !self.need_validation
   end
   
   def skip_validation=(value = false)
     self.need_validation = !value
-    #
-    # skip validations for all associated records
-    [:senior, :subscriber, :caregiver1, :caregiver2, :caregiver3].each do |user_type|
-      user = self.send(user_type)
-      unless user.blank?
-        user.send("skip_validation=", true)
-        user.profile.skip_validation = true unless user.profile.blank?
-      end
-    end
+    skip_associations_validation
   end
   
   def validate
     if need_validation
       associations_before_validation_and_save # pre-process associations
       validate_associations
+    else
+      skip_associations_validation
     end
   end
   
   def validate_associations
-    #
-    # validate everything unless specific association are marked to skip
-    if senior.blank?
-      errors.add_to_base("Senior: profile is mnadatory")
-    else
-      errors.add_to_base("Senior: " + senior.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.valid?)
-      if senior.profile.blank?
-        errors.add_to_base("Senior profile: is mnadatory") unless senior.skip_validation
+    if need_validation
+      #
+      # validate everything unless specific association are marked to skip
+      if senior.blank?
+        errors.add_to_base("Senior: profile is mnadatory")
       else
-        errors.add_to_base("Senior profile: " + senior.profile.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.profile.valid?)
-      end
-    end
-
-    unless subscriber_is_user
-      if subscriber.blank?
-        errors.add_to_base("Subscriber: profile is mnadatory")
-      else
-        errors.add_to_base("Subscriber profile: " + subscriber.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subscriber.valid?)
-        if subscriber.profile.blank?
-          errors.add_to_base("Subscriber profile: is mnadatory") unless subscriber.skip_validation
+        errors.add_to_base("Senior: " + senior.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.valid?)
+        if senior.profile.blank?
+          errors.add_to_base("Senior profile: is mnadatory") unless senior.skip_validation
         else
-          errors.add_to_base("Subscriber profile: " + subscriber.profile.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subcriber.profile.valid?)
+          errors.add_to_base("Senior profile: " + senior.profile.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.profile.valid?)
         end
       end
+
+      unless subscriber_is_user
+        if subscriber.blank?
+          errors.add_to_base("Subscriber: profile is mnadatory")
+        else
+          errors.add_to_base("Subscriber profile: " + subscriber.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subscriber.valid?)
+          if subscriber.profile.blank?
+            errors.add_to_base("Subscriber profile: is mnadatory") unless subscriber.skip_validation
+          else
+            errors.add_to_base("Subscriber profile: " + subscriber.profile.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subcriber.profile.valid?)
+          end
+        end
+      end
+
     end
-    
   end
   
   # collapse any associations to "nil" if they are just "new" (nothing assigned to them after "new")
   def collapse_associations
     unless senior.nil?
       senior.collapse_associations
-      senior.nothing_assigned? ? (self.senior = nil) : (self.senior.skip_validation = true)
+      senior.nothing_assigned? ? (self.senior = nil) : (self.senior.skip_validation = skip_validation)
     end
 
     unless subscriber.nil?
-      subscriber.collapse_associations
-      (subscriber.nothing_assigned? || subscriber_is_user) ? (self.subscriber = nil) : (self.subscriber.skip_validation = true)
+      if subscriber_is_user
+        self.subscriber = nil # we have senior. no need of subscriber
+      else
+        subscriber.collapse_associations
+        (subscriber.nothing_assigned? || subscriber_is_user) ? (self.subscriber = nil) : (self.subscriber.skip_validation = skip_validation)
+      end
     end
     
     (1..3).each do |index|
       caregiver = self.send("caregiver#{index}".to_sym)
       unless caregiver.nil?
-        caregiver.collapse_associations
-        if caregiver.nothing_assigned? || (index == 1 && subscriber_is_caregiver) || (self.send("no_caregiver_#{index}".to_sym) == "1")
-          self.send("caregiver#{index}=".to_sym, nil)
+        if self.send("no_caregiver_#{index}".to_sym)
+          self.send("caregiver#{index}=".to_sym, nil) # when marked for no_caregiver_x, just remove the data
         else
-          user = self.send("caregiver#{index}")
-          user.send("skip_validation=", true) unless user.nil?
-        end
+          caregiver.collapse_associations
+          if caregiver.nothing_assigned? || (index == 1 && subscriber_is_caregiver) || (self.send("no_caregiver_#{index}".to_sym) == "1")
+            self.send("caregiver#{index}=".to_sym, nil)
+          else
+            user = self.send("caregiver#{index}")
+            user.send("skip_validation=", skip_validation) unless user.nil?
+          end
+        end # caregiver1
       end
     end
   end
@@ -135,7 +147,7 @@ class UserIntake < ActiveRecord::Base
   # pre-process data before validating
   # we are keeping senior, subscriber, ... in attr_accessor variables
   def associations_before_validation_and_save
-    collapse_associations # make empty ones = nil
+    collapse_associations # make obsolete ones = nil
     # for remaining, fill login, password details only when login is empty
     ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_login_details(user) }
     self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq.compact # omit nil, duplicates
@@ -224,7 +236,8 @@ class UserIntake < ActiveRecord::Base
     else
       
       if subscriber_is_user
-        self.mem_subscriber = self.senior = arg # assign to senior, then reference as subscriber
+        self.senior = arg if senior.blank? # we can use this data
+        self.mem_subscriber = senior # assign to senior, then reference as subscriber
       else
         
         arg_user = argument_to_object(arg) # (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
@@ -263,12 +276,13 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver1=(arg)
-    if (arg == nil) || (!subscriber_is_caregiver && no_caregiver_1)
+    if (arg == nil) # || (!subscriber_is_caregiver && no_caregiver_1)
       self.mem_caregiver1 = nil
     else
       
       if subscriber_is_caregiver
-        self.mem_caregiver1 = self.subscriber = arg # assign to subscriber, then reference as caregiver1
+        self.subscriber = arg if subscriber.blank? # we can use this data
+        self.mem_caregiver1 = subscriber # assign to subscriber, then reference as caregiver1
       else
         
         arg_user = argument_to_object(arg) # (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
@@ -299,7 +313,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver2=(arg)
-    if (arg == nil) || no_caregiver_2
+    if (arg == nil) # || no_caregiver_2
       self.mem_caregiver2 = nil
     else
 
@@ -330,7 +344,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver3=(arg)
-    if (arg == nil) || no_caregiver_3
+    if (arg == nil) # || no_caregiver_3
       self.mem_caregiver3 = nil
     else
 
@@ -379,13 +393,23 @@ class UserIntake < ActiveRecord::Base
     self.caregiver3 = attributes
   end
   
-  private
+  private #---------------------------- private methods
+
+  def skip_associations_validation
+    #
+    # skip validations for all associated records
+    [:senior, :subscriber, :caregiver1, :caregiver2, :caregiver3].each do |user_type|
+      user = self.send(user_type)
+      user.send("skip_validation=", skip_validation) unless user.blank? # and associated records
+    end
+  end
   
   def autofill_login_details(user_type = "")
     unless user_type.blank?
       user = self.send("#{user_type}") # local copy, to keep code clean
       if !user.blank? && user.login.blank?
-        hex = Digest::MD5.hexdigest(Time.now.to_s)[1..20]
+        start = rand(20) # randomize the string within hex output
+        hex = Digest::MD5.hexdigest(Time.now.to_s)[start..(start+20)]
         # only when user_type is not nil, but login is
         user.send("login=".to_sym, hex)
         user.send("password=".to_sym, hex)
@@ -395,14 +419,6 @@ class UserIntake < ActiveRecord::Base
   end
 
   def argument_to_object(arg)
-    if arg.is_a?(User)
-      arg
-    else
-      if arg.is_a?(Hash)
-        User.new(arg)
-      else
-        nil
-      end
-    end
+    arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil)
   end
 end
