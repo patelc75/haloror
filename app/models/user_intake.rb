@@ -107,6 +107,22 @@ class UserIntake < ActiveRecord::Base
         end
       end
 
+      (1..3).each do |index|
+        unless self.send("no_caregiver_#{index}") # no caregiver #n marked? do not validate
+          caregiver = self.send("caregiver#{index}")
+          if caregiver.blank?
+            errors.add_to_base("Caregiver#{index}: profile is mnadatory")
+          else
+            errors.add_to_base("Caregiver#{index} profile: " + caregiver.errors.full_messages.join(', ')) unless (caregiver.skip_validation || caregiver.valid?)
+            if caregiver.profile.blank?
+              errors.add_to_base("Caregiver#{index} profile: is mnadatory") unless caregiver.skip_validation
+            else
+              errors.add_to_base("Caregiver#{index} profile: " + caregiver.profile.errors.full_messages.join(', ')) unless (caregiver.skip_validation || caregiver.profile.valid?)
+            end
+          end
+        end
+      end
+
     end
   end
   

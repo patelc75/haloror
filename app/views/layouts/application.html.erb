@@ -111,7 +111,9 @@
         <div align="center" id="loading" style="display:none;height:0;width:0;overflow:hidden">
 			Loading... This will take a few seconds
 		</div>		
-        <%= flash.each {|k, v| "<p>#{v}</p>"} %>
+        <% flash.each do |key, value| %>
+          <div class="<%= key %>"><%= value %></div>
+        <% end -%>
       <%= yield %>
     </div>
     
