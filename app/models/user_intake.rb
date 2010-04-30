@@ -50,21 +50,7 @@ class UserIntake < ActiveRecord::Base
   # create blank placeholder records
   # required for user form input
   def build_associations
-    build_user_type("senior")
-    # self.senior = User.new if senior.nil?
-    # senior.build_associations unless senior.nil?
-    
-    build_user_type("subscriber")
-    # self.subscriber = User.new if subscriber.nil?
-    # subscriber.build_associations unless subscriber.nil?
-
-    build_user_type("caregiver1")
-    build_user_type("caregiver2")
-    build_user_type("caregiver3")
-    # (1..3).each do |index|
-    #   caregiver = self.send("caregiver#{index}=".to_sym, User.new) if self.send("caregiver#{index}".to_sym).nil?
-    #   caregiver.build_associations unless caregiver.nil?
-    # end
+    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|type| build_user_type(type) }
   end
   
   def skip_validation
