@@ -27,11 +27,12 @@ class UserIntake < ActiveRecord::Base
     #     initialize the associations only for new instance. we are safe
     #     call user_intake.build_associations in the code on user_intake instance
     if self.new_record?
-      self.subscriber_is_user = true if subscriber_is_user == nil
-      self.subscriber_is_caregiver = false if subscriber_is_caregiver == nil
-      (1..3).each do |e|
-        self.send("mem_caregiver#{e}_options=".to_sym, {"position" => e})
-        self.send("no_caregiver_#{e}=".to_sym, true) # no caregiver checkbox ON
+      self.subscriber_is_user = (subscriber_is_user.nil? || subscriber_is_user == "1")
+      self.subscriber_is_caregiver = false if subscriber_is_caregiver.nil?
+      (1..3).each do |index|
+        self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
+        bool = self.send("no_caregiver_#{index}".to_sym)
+        self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || bool == "1"))
       end
       build_associations
     end
@@ -49,16 +50,21 @@ class UserIntake < ActiveRecord::Base
   # create blank placeholder records
   # required for user form input
   def build_associations
-    self.senior = User.new if senior.nil?
-    senior.build_associations unless senior.nil?
+    build_user_type("senior")
+    # self.senior = User.new if senior.nil?
+    # senior.build_associations unless senior.nil?
     
-    self.subscriber = User.new if subscriber.nil?
-    subscriber.build_associations unless subscriber.nil?
+    build_user_type("subscriber")
+    # self.subscriber = User.new if subscriber.nil?
+    # subscriber.build_associations unless subscriber.nil?
 
-    (1..3).each do |index|
-      caregiver = self.send("caregiver#{index}=".to_sym, User.new) if self.send("caregiver#{index}".to_sym).nil?
-      caregiver.build_associations unless caregiver.nil?
-    end
+    build_user_type("caregiver1")
+    build_user_type("caregiver2")
+    build_user_type("caregiver3")
+    # (1..3).each do |index|
+    #   caregiver = self.send("caregiver#{index}=".to_sym, User.new) if self.send("caregiver#{index}".to_sym).nil?
+    #   caregiver.build_associations unless caregiver.nil?
+    # end
   end
   
   def skip_validation
@@ -81,48 +87,11 @@ class UserIntake < ActiveRecord::Base
   
   def validate_associations
     if need_validation
-      #
-      # validate everything unless specific association are marked to skip
-      if senior.blank?
-        errors.add_to_base("Senior: profile is mnadatory")
-      else
-        errors.add_to_base("Senior: " + senior.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.valid?)
-        if senior.profile.blank?
-          errors.add_to_base("Senior profile: is mnadatory") unless senior.skip_validation
-        else
-          errors.add_to_base("Senior profile: " + senior.profile.errors.full_messages.join(', ')) unless (senior.skip_validation || senior.profile.valid?)
-        end
-      end
-
-      unless subscriber_is_user
-        if subscriber.blank?
-          errors.add_to_base("Subscriber: profile is mnadatory")
-        else
-          errors.add_to_base("Subscriber profile: " + subscriber.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subscriber.valid?)
-          if subscriber.profile.blank?
-            errors.add_to_base("Subscriber profile: is mnadatory") unless subscriber.skip_validation
-          else
-            errors.add_to_base("Subscriber profile: " + subscriber.profile.errors.full_messages.join(', ')) unless (subscriber.skip_validation || subscriber.profile.valid?)
-          end
-        end
-      end
-
-      (1..3).each do |index|
-        unless self.send("no_caregiver_#{index}") # no caregiver #n marked? do not validate
-          caregiver = self.send("caregiver#{index}")
-          if caregiver.blank?
-            errors.add_to_base("Caregiver#{index}: profile is mnadatory")
-          else
-            errors.add_to_base("Caregiver#{index} profile: " + caregiver.errors.full_messages.join(', ')) unless (caregiver.skip_validation || caregiver.valid?)
-            if caregiver.profile.blank?
-              errors.add_to_base("Caregiver#{index} profile: is mnadatory") unless caregiver.skip_validation
-            else
-              errors.add_to_base("Caregiver#{index} profile: " + caregiver.profile.errors.full_messages.join(', ')) unless (caregiver.skip_validation || caregiver.profile.valid?)
-            end
-          end
-        end
-      end
-
+      validate_user_type("senior")
+      validate_user_type("subscriber") unless subscriber_is_user
+      validate_user_type("caregiver1") unless (subscriber_is_caregiver || no_caregiver_1)
+      validate_user_type("caregiver2") unless no_caregiver_2
+      validate_user_type("caregiver3") unless no_caregiver_3
     end
   end
   
@@ -149,7 +118,7 @@ class UserIntake < ActiveRecord::Base
           self.send("caregiver#{index}=".to_sym, nil) # when marked for no_caregiver_x, just remove the data
         else
           caregiver.collapse_associations
-          if caregiver.nothing_assigned? || (index == 1 && subscriber_is_caregiver) || (self.send("no_caregiver_#{index}".to_sym) == "1")
+          if caregiver.nothing_assigned? || (index == 1 && subscriber_is_caregiver) || self.send("no_caregiver_#{index}".to_sym)
             self.send("caregiver#{index}=".to_sym, nil)
           else
             user = self.send("caregiver#{index}")
@@ -420,12 +389,30 @@ class UserIntake < ActiveRecord::Base
     end
   end
   
+  def build_user_type(user_type)
+    self.send("#{user_type}=".to_sym, User.new) if self.send("#{user_type}".to_sym).nil?
+    self.send("#{user_type}".to_sym).send("build_associations") unless self.send("#{user_type}".to_sym).nil?
+  end
+  
+  def validate_user_type(user_type)
+    user = self.send("#{user_type}".to_sym)
+    if user.blank?
+      errors.add_to_base("#{user_type}: profile is mnadatory")
+    else
+      errors.add_to_base("#{user_type} profile: " + user.errors.full_messages.join(', ')) unless (user.skip_validation || user.valid?)
+      if user.profile.blank?
+        errors.add_to_base("#{user_type} profile: is mnadatory") unless user.skip_validation
+      else
+        errors.add_to_base("#{user_type} profile: " + user.profile.errors.full_messages.join(', ')) unless (user.skip_validation || user.profile.valid?)
+      end
+    end
+  end
+  
   def autofill_login_details(user_type = "")
     unless user_type.blank?
       user = self.send("#{user_type}") # local copy, to keep code clean
       if !user.blank? && user.login.blank?
-        start = rand(20) # randomize the string within hex output
-        hex = Digest::MD5.hexdigest(Time.now.to_s)[start..(start+20)]
+        hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
         # only when user_type is not nil, but login is
         user.send("login=".to_sym, hex)
         user.send("password=".to_sym, hex)

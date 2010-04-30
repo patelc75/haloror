@@ -31,27 +31,16 @@ describe UserIntake do
   
   def add_senior
     @user_intake.senior = build_user("senior")
-    # User.new(:email => "senior@example.com")
-    # @user_intake.senior.skip_validation = true
-    # @user_intake.senior.profile = Profile.new(profile_hash("senior"))
   end
 
   def add_subscriber
     @user_intake.subscriber = build_user("subscriber")
-    # User.new(:email => "subscriber@example.com")
-    # @user_intake.subscriber.skip_validation = true
-    # @user_intake.subscriber.profile = Profile.new(profile_hash("subscriber"))
   end
 
   def add_caregivers
     (1..3).each do |index| # assign caregivers
       @user_intake.send("no_caregiver_#{index}=".to_sym, false)
       @user_intake.send("caregiver#{index}=".to_sym, build_user("caregiver#{index}"))
-      # @user_intake.send("caregiver#{index}=".to_sym, User.new(:email => "caregiver#{index}@example.com"))
-      caregiver = @user_intake.send("caregiver#{index}".to_sym)
-      # caregiver.skip_validation = true
-      # caregiver.send("profile=", Profile.new(profile_hash("caregiver#{index}")))
-      # caregiver.send("options_for_senior".to_sym, @user_intake.senior, {:position => index})
       @user_intake.send("mem_caregiver#{index}_options=", {:position => index})
     end
   end

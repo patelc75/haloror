@@ -73,8 +73,6 @@ Feature: Create user intake
     And I select "verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
     And I uncheck "Add as #1 Caregiver"
     And I uncheck "No Caregiver #1"
-    And I uncheck "No Caregiver #2"
-    And I uncheck "No Caregiver #3"
     And I press "Submit"
     Then page content should have "Invalid user intake"
     
