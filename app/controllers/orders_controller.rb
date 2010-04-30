@@ -104,7 +104,10 @@ class OrdersController < ApplicationController
                   goto = "failure"
                   # format.html { render :action => 'failure' }
                 else
-                  [@order.ship_email, @order.bill_email].each do |email|
+                  emails = []
+                  emails << @order.ship_email
+                  emails << @order.bill_email unless @order.ship_and_bill_address_match
+                  emails.each do |email|
                     UserMailer.deliver_signup_installation(email,:exclude_senior_info)
                   end
                   [@order.bill_email, "senior_signup@halomonitoring.com"].each do |email|
