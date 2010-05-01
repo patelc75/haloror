@@ -1,0 +1,2 @@
+FILENAME=$1
+pg_dump -h localhost -p 5432 -U postgres -t atp_test_results_work_orders -t device_revisions_work_orders -t work_orders -t atp_item_results -t atp_items -t atp_items_device_revisions -t atp_test_results -t atp_test_results_rmas -t atp_test_results_work_orders -t kits -t devices_kits -t pools -F c -b -v -f "$FILENAME`hostname`-`eval date +%m-%d-%Y`(`eval date +%H:%M:%S%Z`).sql" haloror
