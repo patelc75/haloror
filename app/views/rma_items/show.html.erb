@@ -23,7 +23,7 @@
         </tr>
         <tr>
           <td class="textright"><%= f.label :redmine_ticket, "Redmine Issue Ticket #" %>:</td>
-          <td><%=h @rma_item.redmine_ticket %></td>
+          <td><%= link_to @rma_item.redmine_ticket,"https://redmine.corp.halomonitor.com/issues/" + @rma_item.redmine_ticket.to_s %></td>
         </tr>
         <tr>
           <td class="textright"><%= f.label :created_at, "RMA Created Date" %>:</td>
