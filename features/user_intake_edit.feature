@@ -13,10 +13,12 @@ Feature: Edit user intake
       | name    |
       | verizon |
     And user "test-user" has "super admin, caregiver" roles
-    # And a few user intakes exist
     
-  # Scenario: Load 
-  #   Given context
-  #   When event
-  #   Then outcome
-  # 
+  Scenario: Editing a user intake should show edit view
+    Given the following user intakes:
+      | kit_serial_number |
+      | 1122334455        |
+    When I edit the 1st user intake
+    And I fill in "user_intake_kit_serial_number" with "9876543210123456789"
+    And I press "Submit"
+    Then I should see "9876543210123456789"

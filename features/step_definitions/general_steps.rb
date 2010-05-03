@@ -31,7 +31,8 @@ Given /^the following (.+):$/ do |name, table|
     name.singularize.capitalize.constantize
   end
   model.delete_all
-  model.create!(table.hashes)
+  table.hashes.each { |e| Factory.create(model.to_s.underscore.to_sym, e) }
+  # model.create!(table.hashes)
 end
 
 Given /^an? (.+) exists with the following attributes:$/ do |name, attrs_table|

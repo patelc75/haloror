@@ -30,7 +30,7 @@ $(function() {
     <p class="textright hint">* Asterisk denotes fields that are optional for Halo Monitoring but may be required by Halo partners or affiliates</p>
 
     <!-- form -->
-    <% form_for :user_intake, :url => { :controller => 'user_intakes', :action => "create", :id => @user_intake.id } do |f| %>
+    <% form_for(@user_intake) do |f| %>
 
     <!-- errors block -->
     <% unless @user_intake.errors.blank? %>

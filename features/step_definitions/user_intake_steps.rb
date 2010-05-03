@@ -1,4 +1,4 @@
-# steps for user intake form
+# steps for user intake
 #
 
 When /^I fill the (.+) details for user intake form$/ do |which|

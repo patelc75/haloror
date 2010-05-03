@@ -10,6 +10,7 @@ class User < ActiveRecord::Base
   
   belongs_to :creator, :class_name => 'User',:foreign_key => 'created_by'
   
+  has_one  :profile, :dependent => :destroy
   has_many :access_logs
   has_many :batteries
   has_many :blood_pressure
@@ -23,7 +24,6 @@ class User < ActiveRecord::Base
   has_many :orders_created, :class_name => 'Order', :foreign_key => 'created_by'
   has_many :orders_updated, :class_name => 'Order', :foreign_key => 'updated_by'
   has_many :panics
-  has_one  :profile, :dependent => :destroy
   has_many :rma_items
   has_many :roles_users,:dependent => :destroy
   has_many :roles, :through => :roles_users#, :include => [:roles_users]

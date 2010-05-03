@@ -3,6 +3,8 @@
 #
 class UserIntake < ActiveRecord::Base
   belongs_to :group
+  belongs_to :creator, :class_name => "User", :foreign_key => "created_by"
+  belongs_to :updator, :class_name => "User", :foreign_key => "updated_by"
   has_and_belongs_to_many :users # replaced with has_many :through
   has_many :user_intakes_users, :dependent => :destroy
 
@@ -151,9 +153,13 @@ class UserIntake < ActiveRecord::Base
   end
   
   def created_by_user_name
-    User.find(self.created_by).name
+    created_by.blank? ? "" : (User.exists?(created_by) ? User.find(created_by).name : "")
   end
 
+  def group_name
+    group.blank? ? "" : group.name
+  end
+  
   def order_present?
     !order_id.blank?
   end
