@@ -1,4 +1,3 @@
-@wip
 Feature: Manage user_intakes
   In order manage user intakes
   As an administrator
@@ -29,13 +28,13 @@ Feature: Manage user_intakes
       | user_intake_senior_attributes__profile_attributes_work_phone | 1-212-123-4567         |
       | user_intake_senior_attributes_email                          | cuc_senior@chirag.name |
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
-    And I choose "user_profile_sex_m"
-    And I check "no_caregiver_1"
-    And I check "no_caregiver_2"
-    And I check "no_caregiver_3"
+    And I choose "user_intake_senior_attributes__profile_attributes_sex_m"
+    And I check "user_intake_no_caregiver_1"
+    And I check "user_intake_no_caregiver_2"
+    And I check "user_intake_no_caregiver_3"
         
   Scenario: Submit new user_intake with billing same as user
-    When I check "same_as_user"
+    When I check "Same as User"
     And I uncheck "Add as #1 caregiver"
     And I press "Submit"
     Then profile "myfirstname mylastname" should have "halouser" role
@@ -49,20 +48,20 @@ Feature: Manage user_intakes
   #   3. keep using HTML element IDs
   #
   Scenario: Submit new user_intake with billing same as #1 caregiver
-    When I uncheck "same_as_user"
+    When I uncheck "Same as User"
     And I check "Add as #1 caregiver" 
     And I check "user_intake_mem_caregiver1_options_email_active"
     And I select "Yes" from "user_intake_mem_caregiver1_options_is_keyholder"
     And I fill in the following:
-      | subscriber_first_name | subscriberfirstname         |
-      | subscriber_last_name  | subscriberlastname          |
-      | subscriber_address    | 110, Madison Ave, NY        |
-      | subscriber_city       | NY                          |
-      | subscriber_state      | NY                          |
-      | subscriber_zipcode    | 12201                       |
-      | subscriber_home_phone | 1-517-123-4567              |
-      | subscriber_work_phone | 1-212-123-4567              |
-      | subscriber_email      | cuc_sub_care@chirag.name    |
+      | user_intake_subscriber_attributes__profile_attributes_first_name | subscriberfirstname      |
+      | user_intake_subscriber_attributes__profile_attributes_last_name  | subscriberlastname       |
+      | user_intake_subscriber_attributes__profile_attributes_address    | 110, Madison Ave, NY     |
+      | user_intake_subscriber_attributes__profile_attributes_city       | NY                       |
+      | user_intake_subscriber_attributes__profile_attributes_state      | NY                       |
+      | user_intake_subscriber_attributes__profile_attributes_zipcode    | 12201                    |
+      | user_intake_subscriber_attributes__profile_attributes_home_phone | 1-517-123-4567           |
+      | user_intake_subscriber_attributes__profile_attributes_work_phone | 1-212-123-4567           |
+      | user_intake_subscriber_attributes_email                          | cuc_sub_care@chirag.name |
     And I press "Submit"
     Then profile "myfirstname mylastname" should have "halouser" role
     And profile "subscriberfirstname subscriberlastname" should have "subscriber" role for profile "myfirstname mylastname"

@@ -77,6 +77,6 @@ module ApplicationHelper
   end
   
   def yes_no_options_for_select
-    [['Yes', 'Yes'], ['No', 'No']]
+    [['Yes', '1'], ['No', '0']]
   end
 end

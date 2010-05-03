@@ -1,4 +1,3 @@
-@wip
 Feature: Manage user_intakes
   In order keep the application user friendly
   As an authenticated user
@@ -25,18 +24,7 @@ Feature: Manage user_intakes
   Scenario: Validation errors for senior profile
     When I check "Same as User"
     And I press "Submit"
-    Then page content should have the following:
-    """
-    prohibited this user intake from being saved
-    First name can't be blank
-    Last name can't be blank
-    Address can't be blank
-    City can't be blank
-    State can't be blank
-    Zipcode can't be blank
-    Home phone or Cell Phone is required
-    Cell phone or Home Phone is required
-    """
+    Then page content should have "Invalid user intake"
     
   Scenario: Valid user. Subscriber is same as user
     When I check "Same as User"
@@ -48,13 +36,13 @@ Feature: Manage user_intakes
     When I uncheck "Same as User"
     And I fill the senior details for user intake form
     And I press "Submit"
-    Then page content should have "prohibited this"
+    Then page content should have "Invalid user intake"
 
   Scenario: Valid user. Valid Subscriber. Subscriber is not the user. Subscriber is not caregiver.
     When I uncheck "Same as User"
     And I fill the senior details for user intake form
     And I fill the subscriber details for user intake form
-    And I select "verizon" from "subscriber_carrier_id"
+    And I select "verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
     And I press "Submit" 
     Then page content should have "successfully created" 
 
@@ -63,13 +51,14 @@ Feature: Manage user_intakes
     And I check "Add as #1 caregiver"
     And I fill the senior details for user intake form
     And I press "Submit"
-    Then page content should have "prohibited this"
+    Then page content should have "Invalid user intake"
 
   Scenario: Valid user. Valid Subscriber/Caregiver. Subscriber is not user. Subscriber is caregiver
     When I uncheck "Same as User"
     And I check "Add as #1 caregiver"
     And I fill the senior details for user intake form
     And I fill the subscriber details for user intake form
+    And I select "verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
     And I check "user_intake_mem_caregiver1_options_email_active"
     And I select "Yes" from "user_intake_mem_caregiver1_options_is_keyholder"
     And I press "Submit"
@@ -84,16 +73,18 @@ Feature: Manage user_intakes
     And I select "Yes" from "user_intake_mem_caregiver1_options_is_keyholder"
     And I uncheck "user_intake_no_caregiver_1"
     And I press "Submit"
-    Then page content should have "prohibited this"
+    Then page content should have "Invalid user intake"
 
   Scenario: Valid user. Valid Subscriber. Valid Caregiver 1. User, Subscriber, Caregiver are separate.
     When I uncheck "Same as User"
     And I uncheck "Add as #1 caregiver"
     And I fill the senior details for user intake form
     And I fill the subscriber details for user intake form
+    And I select "verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
     And I check "user_intake_mem_caregiver1_options_email_active"
     And I select "Yes" from "user_intake_mem_caregiver1_options_is_keyholder"
     And I uncheck "user_intake_no_caregiver_1"
     And I fill the caregiver1 details for user intake form
+    And I select "verizon" from "user_intake_caregiver1_attributes__profile_attributes_carrier_id"
     And I press "Submit"
-    Then page content should have "prohibited this"
+    Then page content should have "successfully created"

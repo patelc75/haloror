@@ -42,11 +42,15 @@ class UserIntake < ActiveRecord::Base
   
   def before_save
     associations_before_validation_and_save # build the associations
-    validate_associations
+    validate_associations # check vlaidations unless "save"
   end
   
   def after_save
+    # save the assoicated records
     associations_after_save
+    # send email for installation
+    # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
+    UserMailer.deliver_signup_installation(senior)
   end
   
   # create blank placeholder records
@@ -61,15 +65,15 @@ class UserIntake < ActiveRecord::Base
   
   def skip_validation=(value = false)
     self.need_validation = !value
-    skip_associations_validation
+    skip_associations_validation # propogate it to associated records too
   end
   
   def validate
     if need_validation
       associations_before_validation_and_save # pre-process associations
-      validate_associations
+      validate_associations # validate associations and add errors to AR::Base to show on user intake form
     else
-      skip_associations_validation
+      skip_associations_validation # propogate to associated models
     end
   end
   
@@ -85,6 +89,7 @@ class UserIntake < ActiveRecord::Base
   
   # collapse any associations to "nil" if they are just "new" (nothing assigned to them after "new")
   def collapse_associations
+    # TODO: DRY this
     unless senior.nil?
       senior.collapse_associations
       senior.nothing_assigned? ? (self.senior = nil) : (self.senior.skip_validation = skip_validation)
@@ -129,6 +134,7 @@ class UserIntake < ActiveRecord::Base
   # create more data for the associations to keep them valid and associated
   # roles, options for roles
   def associations_after_save
+    # TODO: DRY this
     # add roles and options
     # senior
     unless senior.blank?
@@ -139,6 +145,8 @@ class UserIntake < ActiveRecord::Base
     unless subscriber.blank?
       subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
       self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.nil? || subscriber.profile.valid?
+      # save options
+      caregiver1.options_for_senior(senior, mem_caregiver1_options.merge({:position => 1})) if subscriber_is_caregiver
     end
     # caregivers
     (1..3).each do |index|
@@ -147,7 +155,8 @@ class UserIntake < ActiveRecord::Base
         caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
         self.errors.add_to_base("Caregiver #{index} profile needs more detail") unless caregiver.profile.nil? || caregiver.profile.valid?
         # save options
-        caregiver.options_for_senior(senior, self.send("mem_caregiver#{index}_options"))
+        options = self.send("mem_caregiver#{index}_options")
+        caregiver.options_for_senior(senior, options.merge({:position => index}))
       end
     end
   end
@@ -345,6 +354,8 @@ class UserIntake < ActiveRecord::Base
   def caregivers
     [caregiver1, caregiver2, caregiver3].uniq.compact
   end
+  
+  # TODO: DRYness required here for methods
   
   def senior_attributes=(attributes)
     self.senior = attributes
