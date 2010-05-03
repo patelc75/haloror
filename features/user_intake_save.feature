@@ -1,6 +1,6 @@
-Feature: Create, Retrieve, Update, Delete user intake
-  In order to value
-  As a role
+Feature: Save User Intake
+  In order allow users to save user intake and edit it later
+  As a 
   I want feature
 
   Background: Authenticated user with basic data
@@ -13,23 +13,27 @@ Feature: Create, Retrieve, Update, Delete user intake
       | name    |
       | verizon |
     And user "test-user" has "super admin, caregiver" roles
+
+  Scenario: New > Save. senior profile blank
     When I am creating a user intake
     And I select "halo_group" from "group"
-
-  Scenario: Save. senior profile blank
     And I press "Save"
     Then page content should have "successfully created"
 
-  Scenario: Save. user profile ok. subscriber not user. subscriber profile blank
-    When I fill the senior details for user intake form
+  Scenario: New > Save. user profile ok. subscriber not user. subscriber profile blank
+    When I am creating a user intake
+    And I select "halo_group" from "group"
+    And I fill the senior details for user intake form
     And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I uncheck "Same as User"
     And I press "Save"
     Then page content should have "successfully created"
 
-  Scenario: Save. user profile ok. subscriber profile ok. different caregiver1 with blank profile
-    When I fill the senior details for user intake form
+  Scenario: New > Save. user profile ok. subscriber profile ok. different caregiver1 with blank profile
+    When I am creating a user intake
+    And I select "halo_group" from "group"
+    And I fill the senior details for user intake form
     And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I uncheck "Same as User"

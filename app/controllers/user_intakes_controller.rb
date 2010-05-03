@@ -45,6 +45,7 @@ class UserIntakesController < ApplicationController
   # POST /user_intakes.xml
   def create
     @user_intake = UserIntake.new(params[:user_intake])
+    @user_intake.skip_validation = (params[:commit] == "Save") # just save without asking anything
     @groups = Group.for_user(current_user)
 
     respond_to do |format|
@@ -63,6 +64,8 @@ class UserIntakesController < ApplicationController
   # PUT /user_intakes/1.xml
   def update
     @user_intake = UserIntake.find(params[:id])
+    @user_intake.skip_validation = (params[:commit] == "Save") # just save without asking anything
+    @groups = Group.for_user(current_user)
 
     respond_to do |format|
       if @user_intake.update_attributes(params[:user_intake])
