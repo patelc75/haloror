@@ -51,7 +51,7 @@ class RmasController < ApplicationController
   
   def update
     @rma = Rma.find(params[:id])
-
+    @groups = current_user.group_memberships
     respond_to do |format|
       if @rma.update_attributes(params[:rma])
         flash[:notice] = 'RMA was successfully updated.'
