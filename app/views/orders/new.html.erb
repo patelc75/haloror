@@ -56,8 +56,14 @@
       
       <tr>
         <td width="33%">
-          <%= f.check_box "halouser", :disabled => @confirmation %>
-          <label>This person will be the myHalo user</label>
+          <p>
+            <%= f.label :group_id, "Group" %>
+            <%= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"} %>
+          </p>
+          <p>
+            <%= f.check_box "halouser", :disabled => @confirmation %>
+            <label>This person will be the myHalo user</label>
+          </p>
         </td>
         <td width="33%">
           <%= f.check_box "bill_address_same", :checked => @same_address, :disabled => @confirmation %>

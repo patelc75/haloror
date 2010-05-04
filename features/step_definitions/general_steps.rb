@@ -11,7 +11,7 @@ Given /^debug$/ do
 end
 
 Given /^I am (?:an )authenticated(?: user)$/ do
-  user = Factory.create(:user, {:login => 'demo', :password => '12345'})
+  user = Factory.create(:user, {:login => 'demo', :password => '12345', :password_confirmation => '12345'})
   user.activate
   authenticate("demo", "12345")
 end

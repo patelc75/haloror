@@ -1,4 +1,5 @@
 require "faker"
+require "digest/md5"
 
 Factory.define :carrier do |v|
   v.name { Faker::Company.name }
@@ -88,7 +89,7 @@ Factory.define :rma do |v|
 end
 
 Factory.define :user do |v|
-  v.login { Faker::Internet.user_name }
+  v.login { Faker::Internet.user_name + Digest::MD5.hexdigest(Time.now.to_s)[0..20] }
   v.salt { |user| Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{user.login}--") }
   v.crypted_password { |user| Digest::SHA1.hexdigest("--#{user.salt}--12345--") }
   v.email { Faker::Internet.email }

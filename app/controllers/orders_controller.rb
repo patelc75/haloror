@@ -9,6 +9,7 @@ class OrdersController < ApplicationController
   end
   
   def new
+    @groups = Group.for_user(current_user)
     @confirmation = false
     @product = session[:product]
     @order = Order.new(session[:order]) # recall if any order data was remembered
