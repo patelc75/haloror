@@ -80,6 +80,8 @@ ActionController::Routing::Routes.draw do |map|
   #deprecated models
   #map.resources :caregivers, :active_scaffold => true 
   
+  # this should be handled in root action below
+  #    redirector controller should take care of Group search, not routes
   ActiveRecord::Base::Group.find(:all).each do |group|
 	map.connect "/#{group.name}",:controller => 'users',:action => 'new'
 	#map.connect "/#{group.name.downcase}",:controller => 'users',:action => 'new'

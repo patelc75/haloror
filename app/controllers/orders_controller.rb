@@ -44,7 +44,7 @@ class OrdersController < ApplicationController
           if DeviceModel.find_complete_or_clip(params[:product]).blank?
 
       end
-      @same_address = @order.common_address
+      @same_address = @order.subscribed_for_self?
       # @same_address = ((params[:order][:bill_address_same] == "1" || @order.ship_and_bill_address_same) ? "checked" : "")
       session[:order] = order_params
       #
@@ -60,7 +60,7 @@ class OrdersController < ApplicationController
     else # store mode
       # back button needs this
       @order = (session[:order].blank? ? Order.new(:coupon_code => params[:coupon_code]) : Order.new(session[:order]))
-      @same_address = @order.common_address
+      @same_address = @order.subscribed_for_self?
       # @same_address = (session[:order].blank? ? "checked" : (session[:order][:bill_address_same] || @order.bill_address_same || @order.ship_and_bill_address_same))
     end
     
@@ -97,23 +97,30 @@ class OrdersController < ApplicationController
               
               Order.transaction do
                 # we process the card in cents, but the tariff is USD
-                @one_time_fee, @subscription = @order.charge_credit_card
-                success = (@one_time_fee.success? && @subscription.success?) \
-                  unless (@one_time_fee.blank? || @subscription.blank?)
+                # @one_time_fee, @subscription = @order.charge_credit_card
+                # success = (@one_time_fee.success? && @subscription.success?) \
+                #   unless (@one_time_fee.blank? || @subscription.blank?)
+                success = @order.charge_credit_card # more DRY now. within Order instance
 
                 if success.blank? || !success
                   goto = "failure"
                   # format.html { render :action => 'failure' }
                 else
-                  emails = []
-                  emails << @order.ship_email
-                  emails << @order.bill_email unless @order.ship_and_bill_address_match
-                  emails.each do |email|
-                    UserMailer.deliver_signup_installation(email,:exclude_senior_info)
-                  end
+                  # success
+                  #
+                  # CHANGED: No need to deliver here now. Order does that automatically through user intake
+                  #
+                  # deliver emails
+                  # emails = []
+                  # emails << @order.ship_email
+                  # emails << @order.bill_email unless @order.ship_and_bill_address_match
+                  # emails.each do |email|
+                  #   UserMailer.deliver_signup_installation(email,:exclude_senior_info)
+                  # end
                   [@order.bill_email, "senior_signup@halomonitoring.com"].each do |email|
                     UserMailer.deliver_order_summary(@order, email, (email.include?("senior_signup") ? :no_email_log : nil))
                   end
+                  # show on browser
                   flash[:notice] = 'Thank you for your order.'
                   goto = "success"
                   reset_session # start fresh               

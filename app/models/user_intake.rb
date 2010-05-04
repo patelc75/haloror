@@ -3,6 +3,7 @@
 #
 class UserIntake < ActiveRecord::Base
   belongs_to :group
+  belongs_to :order
   belongs_to :creator, :class_name => "User", :foreign_key => "created_by"
   belongs_to :updator, :class_name => "User", :foreign_key => "updated_by"
   has_and_belongs_to_many :users # replaced with has_many :through

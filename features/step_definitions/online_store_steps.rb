@@ -101,5 +101,25 @@ Then /^the payment gateway should not have log for (\d+) USD$/ do |amount|
 end
 
 Then /^last order should be associated to "([^\"]*)" group$/ do |group_name|
-  Order.last.group_name.should == group_name
+  if defined?(Spec::Rails::Matchers)
+    Order.last.group_name.should == group_name
+  else
+    assert_equal group_name, Order.last.group_name
+  end
+end
+
+Then /^last order should have associated user intake$/ do
+  if defined?(Spec::Rails::Matchers)
+    Order.last.user_intake.should_not be_nil
+  else
+    assert_not_equal nil, Order.last.user_intake
+  end
+end
+
+Then /^last order should not have associated user intake$/ do
+  if defined?(Spec::Rails::Matchers)
+    Order.last.user_intake.should be_nil
+  else
+    assert_equal nil, Order.last.user_intake
+  end
 end

@@ -1,9 +1,10 @@
 class Order < ActiveRecord::Base
-  has_many :order_items
-  has_many :payment_gateway_responses
   belongs_to :group
   belongs_to :creator, :class_name => 'User', :foreign_key => 'created_by'
   belongs_to :updater, :class_name => 'User', :foreign_key => 'updated_by'
+  has_many :order_items
+  has_many :payment_gateway_responses
+  has_one :user_intake
   attr_accessor :card_csc, :product, :bill_address_same
   
   def after_initialize
@@ -15,7 +16,7 @@ class Order < ActiveRecord::Base
   end
   
   # quick shortcut for the bill and ship address same
-  def common_address
+  def subscribed_for_self?
     ((bill_address_same == "1") || ship_and_bill_address_match)
   end
     
@@ -196,9 +197,16 @@ class Order < ActiveRecord::Base
                       :params => credit_card.errors.full_messages.join(". ")})
     end # validate_card
     
-    return @one_time_fee_response, @recurring_fee_response
+    create_user_intake if card_successfully_charged? # card successful? then create user intake data
+    
+    # return @one_time_fee_response, @recurring_fee_response # more DRY. contained in Order
+    card_successfully_charged? # return success/failure status as true/false
   end
 
+  def card_successfully_charged?
+    return (@one_time_fee_response.blank? || @recurring_fee_response.blank?) ? false : (@one_time_fee_response.success? && @recurring_fee_response.success?)
+  end
+  
   # reference from the active_merchant code
   #
   #   cc = CreditCard.new(
@@ -275,6 +283,26 @@ class Order < ActiveRecord::Base
   # private methods
   #
   private
+  
+  def create_user_intake
+    # this should only be created when
+    # => credit card transaction is successful
+    # => order is saved
+    unless self.new_record? # user intake can be created only after save
+      # TODO: DRYness required here
+      senior_profile = { :first_name => ship_first_name, :last_name => ship_last_name, :address => ship_address, :city => ship_city, :state => ship_state, :zipcode => ship_zip, :home_phone => ship_phone }
+      subscriber_profile = { :first_name => bill_first_name, :last_name => bill_last_name, :address => bill_address, :city => bill_city, :state => bill_state, :zipcode => bill_zip, :home_phone => bill_phone }
+      user_intake = UserIntake.new
+      user_intake.skip_validation = true # just save. even incomplete data
+      user_intake.senior = User.new({:email => ship_email, :profile_attributes => senior_profile})
+      if !subscribed_for_self? # when marked common or data common
+        user_intake.subscriber_is_user = false
+        user_intake.subscriber = User.new({:email => bill_email, :profile_attributes => subscriber_profile})
+      end
+      user_intake.order_id = self.id
+      user_intake.save # database
+    end
+  end
   
   def device_model_coupon_messages(device_model = nil, coupon_code = "")
     messages = []

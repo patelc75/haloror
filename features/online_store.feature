@@ -24,7 +24,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     Then page content should have "Thank you"
     And the payment gateway response should have 2 logs
-    And "1" email with subject "Please read before your installation" should be sent for delivery
+    And 1 email with subject "Please read before your installation" should be sent for delivery
 
   Scenario: Not same as shipping has separate shipping and billing data
     When I choose "product_complete"
@@ -37,7 +37,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Then I should see "Thank you"
     And the payment gateway response should have 2 logs
     And billing and shipping addresses should not be same
-    And "2" email with subject "Please read before your installation" should be sent for delivery
+    And 2 email with subject "Please read before your installation" should be sent for delivery
 
   Scenario Outline: Success and Failure for credit cards
     When I choose "product_complete"

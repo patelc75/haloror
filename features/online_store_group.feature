@@ -22,7 +22,7 @@ Feature: Online store group
     Then I should see "group1"
     And I should not see "group2"
 
-  Scenario: Order completed by authenticated user has an associated group
+  Scenario: Order has an associated group when completed by authenticated user
     Given I am an authenticated user
     And user "demo" has "sales" role for group "group1"
     When I go to the online store
