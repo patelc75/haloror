@@ -47,3 +47,23 @@ Feature: Critical Alert
   #   When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "TCP connection"
   #   Then I should have "1" count of "Fall"
   #   And I should have a "Fall" alert "pending" to the call center
+
+
+  Scenario: check battery status available and battery plugged
+    When Battery status is "available" and "BatteryPlugged" is latest
+    Then I should have "Battery Plugged"
+
+  Scenario: check battery status available battery unplugged
+    When Battery status is "available" and "BatteryUnplugged" is latest
+    Then I should have "Battery Unplugged"
+
+@wip
+  Scenario: check battery status unavailable and battery plugged
+    When Battery status is "unavailable" and "BatteryPlugged" is latest
+    Then I should have "Battery Plugged"
+
+@wip
+  Scenario: check battery status unavailable and battery unplugged
+    When Battery status is "unavailable" and "BatteryUnplugged" is latest
+    Then I should have "Battery Unplugged"
+

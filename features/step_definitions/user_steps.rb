@@ -100,3 +100,21 @@ Then /^I should have a "([^\"]*)" alert "([^\"]*)" to the call center with a "([
     assert false, "#{timestamp_status} is not a valid timestamp status"
   end  
 end
+
+When /^Battery status is "([^\"]*)" and "([^\"]*)" is latest$/ do |status, battery|
+  if status == 'available'
+    Battery.create(:user_id => 5,:timestamp => Time.now,:percentage => 5,:time_remaining => 20,:device_id => 2,:acpower_status => true) if battery == 'BatteryPlugged'
+    Battery.create(:user_id => 5,:timestamp => Time.now,:percentage => 5,:time_remaining => 20,:device_id => 2,:acpower_status => false) if battery == 'BatteryUnplugged'
+  else
+    battery_plugged_timestamp = battery == 'BatteryPlugged' ? Time.now : Time.now - 1.day
+    battery_unplugged_timestamp = battery == 'BatteryUnplugged' ? Time.now : Time.now - 1.day
+    Device.create(:id => 2,:serial_number => 'H200933345',:active => true)
+    BatteryPlugged.create(:device_id => 2,:timestamp => battery_plugged_timestamp,:percentage => 5,:time_remaining => 20,:user_id => 5)
+    BatteryUnplugged.create(:device_id => 2,:timestamp => battery_unplugged_timestamp,:percentage => 5,:time_remaining => 20,:user_id => 5)
+  end
+end
+
+Then /^I should have "([^\"]*)"$/ do |status|
+  ms = UtilityHelper.battery_status(5)
+  assert ms == status,"No Data"
+end
