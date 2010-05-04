@@ -99,3 +99,7 @@ end
 Then /^the payment gateway should not have log for (\d+) USD$/ do |amount|
   PaymentGatewayResponse.count(:conditions => {:amount => (amount.to_i*100)}).should == 0
 end
+
+Then /^last order should be associated to "([^\"]*)" group$/ do |group_name|
+  Order.last.group_name.should == group_name
+end

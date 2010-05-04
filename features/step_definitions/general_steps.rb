@@ -165,7 +165,7 @@ Then /^(?:|the )(?:|page )content should have "([^\"]*)"$/ do |array_as_text|
   end
 end
 
-Then /^(?:|page )content should not have "([^\"]*)"$/ do |array_as_text|
+Then /^(?:|the )(?:|page )content should not have "([^\"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect(&:strip)
   if defined?(Spec::Rails::Matchers)
     contents.each {|text| response.should_not contain(text)}

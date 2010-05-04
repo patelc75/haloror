@@ -4,6 +4,7 @@ class Group < ActiveRecord::Base
   has_many :recurring_charges
   has_many :rmas
   has_many :rma_items
+  has_many :orders
 
   validates_format_of :name, :with => /\A[a-z0-9_]+\z/, :message => 'Only lowercase and numeric characters are allowed'
   
@@ -17,6 +18,6 @@ class Group < ActiveRecord::Base
   # groups applicable to user
   #
   def self.for_user(user)
-    (user.class != "User") ? find(:all) : (user.is_super_admin? ? find(:all) : for_sales_or_admin_user(user))
+    user.is_a?(User) ? (user.is_super_admin? ? find(:all) : for_sales_or_admin_user(user)) : find(:all)
   end
 end

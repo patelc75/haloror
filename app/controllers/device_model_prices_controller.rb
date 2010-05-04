@@ -1,4 +1,6 @@
 class DeviceModelPricesController < ApplicationController
+  before_filter :login_required
+  
   # GET /device_model_prices
   # GET /device_model_prices.xml
   def index

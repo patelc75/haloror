@@ -56,10 +56,12 @@
       
       <tr>
         <td width="33%">
+          <% if logged_in? %>
           <p>
             <%= f.label :group_id, "Group" %>
             <%= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"} %>
           </p>
+          <% end -%>
           <p>
             <%= f.check_box "halouser", :disabled => @confirmation %>
             <label>This person will be the myHalo user</label>

@@ -1,8 +1,9 @@
 # Methods added to this helper will be available to all templates in the application.
+require 'fileutils'
 module ApplicationHelper   
   # class CriticalAlertException < RuntimeError
   # end  
-  
+
   include UtilityHelper
   include UserHelper
   #these are taken from cd /var/lib/pgsql/data/pg_hba.conf on dfw-web1
@@ -16,26 +17,26 @@ module ApplicationHelper
   #                               "65.13.94.42"]
   #  
   def google_analytics_check    
-   (request.host == 'myhalomonitor.com' or request.host == 'www.myhalomonitor.com') #and !@@google_analytics_filter.include? request.env["REMOTE_ADDR"].to_s
+    (request.host == 'myhalomonitor.com' or request.host == 'www.myhalomonitor.com') #and !@@google_analytics_filter.include? request.env["REMOTE_ADDR"].to_s
   end
- 
+
   def image_for_event(event)
-   type = event[:event_type]
-   if ['Fall', 'Panic'].include? type
-     return image_tag('/images/severe_button_82_22.png')
-   elsif ['GatewayOfflineAlert', 'DeviceUnavailbleAlert', 'BatteryCritical','DialUpStatus','StrapRemoved'].include? type
-     return image_tag('/images/caution_button_82_22.png')
-   elsif ['BatteryReminder'].include? type
-   	if event.event.reminder_num < 3
-   		return image_tag('/images/caution_button_82_22.png')
-   	elsif event.event.reminder_num == 3
-   		return image_tag('/images/severe_button_82_22.png')
-   	elsif event.event.reminder_num == 4
-   	  return image_tag('/images/normal_button_82_22.png')
-   	end
-   else 
-     return image_tag('/images/normal_button_82_22.png')
-   end
+    type = event[:event_type]
+    if ['Fall', 'Panic'].include? type
+      return image_tag('/images/severe_button_82_22.png')
+    elsif ['GatewayOfflineAlert', 'DeviceUnavailbleAlert', 'BatteryCritical','DialUpStatus','StrapRemoved'].include? type
+      return image_tag('/images/caution_button_82_22.png')
+    elsif ['BatteryReminder'].include? type
+      if event.event.reminder_num < 3
+        return image_tag('/images/caution_button_82_22.png')
+      elsif event.event.reminder_num == 3
+        return image_tag('/images/severe_button_82_22.png')
+      elsif event.event.reminder_num == 4
+        return image_tag('/images/normal_button_82_22.png')
+      end
+    else 
+      return image_tag('/images/normal_button_82_22.png')
+    end
   end
 
   # reference from active_merchant code
@@ -74,7 +75,7 @@ module ApplicationHelper
     name = name.gsub(/_/,' ') if name =~ /_/ # convert <underscore> to <space>
     name.singularize.split(/ |_/).collect(&:capitalize).join.constantize
   end
-  
+
   # CHANGED: obsolete method. Use File.makedirs("/path/to/dir") instead
   # just ensure the folder exists as specified in the full path
   # def ensure_folder(path)
@@ -83,36 +84,32 @@ module ApplicationHelper
   # end
 
   def recursively_delete_dir(dir)
-    system("rm -rf #{dir}")
-    # ["*", ".*"].each do |matcher|
-    #   dirs = Dir.glob( File.join(dir, "**", matcher)).sort!.reject {|p| [".", ".."].include?(p.split('/')[-1]) }
-    #   dirs.each do |dir_or_file|
-    #     File.directory?(dir_or_file) ? Dir.delete(dir_or_file) : File.delete(dir_or_file)
-    #   end
-    # end
-dne  
+    FileUtils.rm_rf(dir, :force => true)
+    # system("rm -rf #{dir}")
+  end
 
   # take a comma/<delimiter> separated string/text and return an array of strings.
   # no blank spaces before/after each element value
   def csv_to_array(phrase, delimiter = ',')
     phrase.split(delimiter).collect {|p| p.lstrip.rstrip }
   end
-  
+
   # recursively find value in hash
   def recursively_search_hash(hash, key)
     values = hash.collect {|k, v| v if k == key}.compact
     values << hash.collect { |k, v| recursively_search_hash(v, key) if v.is_a?(Hash) }
     values << hash.collect do |k, v|
-        v.collect {|element| recursively_search_hash(element, key) if element.is_a?(Hash) } if v.is_a?(Array)
+      v.collect {|element| recursively_search_hash(element, key) if element.is_a?(Hash) } if v.is_a?(Array)
     end
     return values.flatten.compact.uniq
   end
-  
+
   def hash_to_html(hash)
     data = hash.collect {|k,v| v.is_a?(Hash) ? "<li>#{k}#{hash_to_html(v)}</li>" : "<li>#{k} => #{v}</li>"}
     "<ul>#{data}</ul>"
+  end
 
   def yes_no_options_for_select
-    [['Yes', '1'], ['No', '0']]
+    [['Yes', '1'], ['No', '0']] # '1' and '0' will update boolean fields in tables
   end
 end

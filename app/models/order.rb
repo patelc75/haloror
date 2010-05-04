@@ -1,12 +1,17 @@
 class Order < ActiveRecord::Base
   has_many :order_items
   has_many :payment_gateway_responses
+  belongs_to :group
   belongs_to :creator, :class_name => 'User', :foreign_key => 'created_by'
   belongs_to :updater, :class_name => 'User', :foreign_key => 'updated_by'
   attr_accessor :card_csc, :product, :bill_address_same
   
   def after_initialize
     populate_billing_address # copy billing address if bill_address_same
+  end
+  
+  def group_name
+    group.blank? ? "" : group.name
   end
   
   # quick shortcut for the bill and ship address same

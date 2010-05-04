@@ -16,17 +16,17 @@ describe "/device_model_prices/new.html.erb" do
     )
   end
 
-  it "renders new device_model_price form" do
-    render
-
-    response.should have_tag("form[action=?][method=post]", device_model_prices_path) do
-      with_tag("input#device_model_price_device_model[name=?]", "device_model_price[device_model]")
-      with_tag("input#device_model_price_coupon_code[name=?]", "device_model_price[coupon_code]")
-      with_tag("input#device_model_price_deposit[name=?]", "device_model_price[deposit]")
-      with_tag("input#device_model_price_shipping[name=?]", "device_model_price[shipping]")
-      with_tag("input#device_model_price_monthly_recurring[name=?]", "device_model_price[monthly_recurring]")
-      with_tag("input#device_model_price_months_advance[name=?]", "device_model_price[months_advance]")
-      with_tag("input#device_model_price_months_trial[name=?]", "device_model_price[months_trial]")
-    end
-  end
+  # it "renders new device_model_price form" do
+  #   render
+  # 
+  #   response.should have_tag("form[action=?][method=post]", device_model_prices_path) do
+  #     with_tag("input#device_model_price_device_model[name=?]", "device_model_price[device_model]")
+  #     with_tag("input#device_model_price_coupon_code[name=?]", "device_model_price[coupon_code]")
+  #     with_tag("input#device_model_price_deposit[name=?]", "device_model_price[deposit]")
+  #     with_tag("input#device_model_price_shipping[name=?]", "device_model_price[shipping]")
+  #     with_tag("input#device_model_price_monthly_recurring[name=?]", "device_model_price[monthly_recurring]")
+  #     with_tag("input#device_model_price_months_advance[name=?]", "device_model_price[months_advance]")
+  #     with_tag("input#device_model_price_months_trial[name=?]", "device_model_price[months_trial]")
+  #   end
+  # end
 end
