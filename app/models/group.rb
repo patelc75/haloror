@@ -17,6 +17,6 @@ class Group < ActiveRecord::Base
   # groups applicable to user
   #
   def self.for_user(user)
-    user.is_super_admin? ? find(:all) : for_sales_or_admin_user(user)
+    (user.class != "User") ? find(:all) : (user.is_super_admin? ? find(:all) : for_sales_or_admin_user(user))
   end
 end
