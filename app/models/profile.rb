@@ -7,7 +7,7 @@ class Profile < ActiveRecord::Base
   belongs_to :user
   belongs_to :carrier
   belongs_to :emergency_number
-  
+  attr_accessor :need_validation
   
   validates_presence_of     :first_name, :if => :unless_new_caregiver
   validates_presence_of     :last_name, :if => :unless_new_caregiver
@@ -33,13 +33,26 @@ class Profile < ActiveRecord::Base
 
   #before_create             :check_phone_numbers
 
- #def check_phone_numbers
- #  self.home_phone = self.home_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'')
- #  self.work_phone = self.work_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'') if self.work_phone
- #  self.cell_phone = self.cell_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'')
-    
+  #def check_phone_numbers
+  #  self.home_phone = self.home_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'')
+  #  self.work_phone = self.work_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'') if self.work_phone
+  #  self.cell_phone = self.cell_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'')
+  
     #check_valid_phone_numbers
- #end
+  #end
+
+  def after_initialize
+   self.need_validation = true # default = run validations
+  end
+ 
+  def skip_validation
+    !need_validation
+  end
+  
+  def skip_validation=(value = false)
+    self.need_validation = !value
+  end
+  
   def email=(email); nil; end
   def email; self.user.email; end
 
@@ -84,6 +97,17 @@ class Profile < ActiveRecord::Base
  
  end # class methods
 
+ # instance methods
+ 
+ # checks if any attribute was assigned a value after "new"
+ # helps in user intake at least
+ # examples:
+ #    Profile.new.nothing_assigned? => true
+ #    Profile.new(:first_name => "first name").nothing_assigned? => false
+ def nothing_assigned?
+   attributes.values.compact.blank?
+ end
+
   def validate
     if self[:is_new_caregiver]
       return false
@@ -107,39 +131,47 @@ class Profile < ActiveRecord::Base
   end
 
   def unless_new_caregiver
-    if self[:is_new_caregiver]
-      return false
-    else
-      return true
-    end
+    # cannot skip validation + not is_new_caregiver = run validations
+    !(skip_validation || self[:is_new_caregiver])
+    # if (skip_validation || self[:is_new_caregiver])
+    #   return false
+    # else
+    #   return true
+    # end
   end
+
   def unless_new_halouser
-    if self[:is_halouser] # WARNING: :is_halouser is a mis-type?
-      return true
-    else
-      return false
-    end
+    # cannot skip validation? + is_halouser? = run validations
+    (skip_validation ? false : self[:is_halouser])
+    # if self[:is_halouser] # WARNING: :is_halouser is a mis-type?
+    #   return true
+    # else
+    #   return false
+    # end
   end
   
   def cell_phone_exists?
-    if self[:is_new_caregiver]
-      return false
-    else
-      if self.cell_phone.blank?
-        return false
-      else
-        return true
-      end
-    end
-      
+    # cannot skip validation? + not new caregiver = check existance of cell phone
+    ( (skip_validation || self[:is_new_caregiver]) ? false : !cell_phone.blank? )
+    # if (skip_validation || self[:is_new_caregiver])
+    #   return false
+    # else
+    #   if self.cell_phone.blank?
+    #     return false
+    #   else
+    #     return true
+    #   end
+    # end
   end
   
   def work_phone_exists?
-   if self.work_phone.blank?
-        return false
-   else
-      return true
-   end
+    # work phone is not blank?
+    !work_phone.blank?
+   # if self.work_phone.blank?
+   #      return false
+   # else
+   #    return true
+   # end
   end
   
   def phone_required?

@@ -9,24 +9,24 @@ describe BundleJob do
 		@battery = Battery.count(:conditions => ["user_id = ?",44])
 	end
 
-	it "should have 94 batteries" do
-	@battery.should == 94
-	end
-
-	it "should have 1 battery_unplugged" do
-	BatteryUnplugged.count(:conditions => ["user_id = ?",44]).should == 1
-	end
-
-	it "should have 93 vitals" do
-	Vital.count(:conditions => ["user_id = ?",44]).should == 93
-	end
-	
-	it "should have 93 steps" do
-	Step.count(:conditions => ["user_id = ?",44]).should == 93
-	end
-	
-	it "should have 93 skin_temps" do
-	SkinTemp.count(:conditions => ["user_id = ?",44]).should == 93
-	end
+  # it "should have 94 batteries" do
+  # @battery.should == 94
+  # end
+  # 
+  # it "should have 1 battery_unplugged" do
+  # BatteryUnplugged.count(:conditions => ["user_id = ?",44]).should == 1
+  # end
+  # 
+  # it "should have 93 vitals" do
+  # Vital.count(:conditions => ["user_id = ?",44]).should == 93
+  # end
+  # 
+  # it "should have 93 steps" do
+  # Step.count(:conditions => ["user_id = ?",44]).should == 93
+  # end
+  # 
+  # it "should have 93 skin_temps" do
+  # SkinTemp.count(:conditions => ["user_id = ?",44]).should == 93
+  # end
 	
 end

@@ -61,9 +61,9 @@ Factory.define :profile do |v|
   v.account_number "1234"
   v.hospital_number "0987654321"
   v.doctor_phone "1234567890"
-  v.association :carrier #, :factory => :carrier
-  v.association :emergency_number #, :factory => :emergency_number
-  v.association :user #, :factory => :user
+  v.association :carrier # , :factory => :carrier
+  v.association :emergency_number # , :factory => :emergency_number
+  # v.association :user, :factory => :user
 end
 
 Factory.define :rma do |v|
@@ -83,13 +83,30 @@ Factory.define :rma do |v|
   v.ship_zipcode rand(99999)
   v.notes { Faker::Lorem.paragraph }
   v.association :created_by, :factory => :user
-  v.association :group_id, :factory => :group
-  v.association :user_id, :factory => :user
+  v.association :group
+  v.association :user
 end
 
 Factory.define :user do |v|
   v.login { Faker::Internet.user_name }
-  v.password "12345"
-  v.password_confirmation "12345"
+  v.salt { |user| Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{user.login}--") }
+  v.crypted_password { |user| Digest::SHA1.hexdigest("--#{user.salt}--12345--") }
   v.email { Faker::Internet.email }
+  v.association :profile
+end
+
+Factory.define :user_intake do |v|
+  v.installation_date { 1.month.from_now }
+  v.association :created_by, :factory => :user
+  v.association :updated_by, :factory => :user
+  v.bill_monthly { rand(1) == 1 }
+  v.credit_debit_card_proceessed { |ui| !ui.bill_monthly } # reverse of the other field
+  v.kit_serial_number { Faker::PhoneNumber.phone_number }
+  v.association :group
+  v.subscriber_is_user { rand(1) == 1 }
+  v.subscriber_is_caregiver { rand(1) == 1 }
+  (1..3).each { |e| v.send("no_caregiver_#{e}".to_sym, false) }
+  ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user|
+    v.send("#{user}".to_sym, Factory.create(:user))
+  end
 end

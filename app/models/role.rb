@@ -10,4 +10,11 @@ class Role < ActiveRecord::Base
   belongs_to :authorizable, :polymorphic => true
   
   #has_one :roles_user
+  
+  # fetch options for specific user with this role id
+  def options_for_user(user_or_id)
+    user_id = (user_or_id.is_a?(User) ? user_or_id.id : user_or_id)
+    RolesUser.find_by_user_id_and_role_id(user_id, self.id).roles_users_option
+  end
+  
 end

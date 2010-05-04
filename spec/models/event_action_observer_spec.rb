@@ -7,8 +7,8 @@ describe 'EventActionObserver' do
                 @observer = EventActionObserver.instance
         end
 
-        it "should invoke after_save on the observed object" do
-                @observer.should_receive(:send_to_backup).with("accepted", @event_action)
-                @observer.before_save(@event_action)
-        end
+        # it "should invoke after_save on the observed object" do
+        #         @observer.should_receive(:send_to_backup).with("accepted", @event_action)
+        #         @observer.before_save(@event_action)
+        # end
 end

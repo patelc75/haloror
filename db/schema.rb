@@ -9,7 +9,11 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
+<<<<<<< HEAD:db/schema.rb
 ActiveRecord::Schema.define(:version => 20100419225033) do
+=======
+ActiveRecord::Schema.define(:version => 20100417214644) do
+>>>>>>> master-2663-restful-user-intake:db/schema.rb
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1109,6 +1113,9 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
     t.boolean  "bill_monthly"
     t.string   "kit_serial_number"
     t.integer  "order_id"
+    t.integer  "group_id"
+    t.boolean  "subscriber_is_user"
+    t.boolean  "subscriber_is_caregiver"
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|

@@ -90,7 +90,7 @@ module ApplicationHelper
     #     File.directory?(dir_or_file) ? Dir.delete(dir_or_file) : File.delete(dir_or_file)
     #   end
     # end
-  end
+dne  
 
   # take a comma/<delimiter> separated string/text and return an array of strings.
   # no blank spaces before/after each element value
@@ -111,5 +111,8 @@ module ApplicationHelper
   def hash_to_html(hash)
     data = hash.collect {|k,v| v.is_a?(Hash) ? "<li>#{k}#{hash_to_html(v)}</li>" : "<li>#{k} => #{v}</li>"}
     "<ul>#{data}</ul>"
+
+  def yes_no_options_for_select
+    [['Yes', '1'], ['No', '0']]
   end
 end

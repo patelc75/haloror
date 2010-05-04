@@ -248,3 +248,7 @@ ALERT_MESSAGES = {
   :call_tech_support => "Please call tech support 1-888-971-HALO (4256) to make this modification.",
   :new_caregiver => "If that email was in our system, the user was added to your caregiver list. If not, an email was sent to that email address."
 }
+
+ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|
+  "<span class='error-field'>#{html_tag}</span>"
+end

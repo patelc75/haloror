@@ -1,0 +1,26 @@
+<div class="span-5"><%= f.label :is_keyholder, "Do you have a key to residence" %>:</div>
+<div class="span-2 last"><%= f.select :is_keyholder, yes_no_options_for_select, :class => "span-2" %></div>
+
+<div class="span-3">&nbsp;</div>
+<div class="span-4 last">
+  <%= f.check_box :phone_active %>
+  <%= f.label :phone_active, "Call" %>
+</div>
+
+<div class="span-3">&nbsp;</div>
+<div class="span-4 last">
+  <%= f.check_box :email_active %>
+  <%= f.label :email_active, "Email" %>
+</div>
+
+<div class="span-3">&nbsp;</div>
+<div class="span-4 last">
+  <%= f.check_box :text_active %>
+  <%= f.label :text_active, "Text" %>
+</div>
+
+<div class="span-3">&nbsp;</div>
+<div class="span-4 last">
+  <%= f.check_box :active %>
+  <%= f.label :active, "All" %>
+</div>

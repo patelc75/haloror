@@ -5,7 +5,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "sco
 # Given
 
 Given /^debug$/ do
-  save_and_open_page
+  # save_and_open_page
   debugger
   #emails = Email.all(:select => 'emails.mail').map {|p| puts p.mail[0..270] + "\n" }
 end
@@ -31,7 +31,8 @@ Given /^the following (.+):$/ do |name, table|
     name.singularize.capitalize.constantize
   end
   model.delete_all
-  model.create!(table.hashes)
+  table.hashes.each { |e| Factory.create(model.to_s.underscore.to_sym, e) }
+  # model.create!(table.hashes)
 end
 
 Given /^an? (.+) exists with the following attributes:$/ do |name, attrs_table|

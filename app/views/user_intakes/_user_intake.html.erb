@@ -1,0 +1,207 @@
+<% content_for :js do %>
+<%= javascript_include_tag "jquery", "jquery-ui", :cache => true %>
+<script type="text/javascript" charset="utf-8">
+$(function() {
+  $(".datepicker").datepicker({
+    showOn: 'both',
+    buttonImage: '../../images/calendar_date_select/calendar.gif',
+    buttonImageOnly: true
+  });
+  show_when_dropdown_selected(document.getElementById('user_intake_group_id'));
+  hide_when_checked(document.getElementById('user_intake_subscriber_is_user'), 'subscriber_profile');
+});
+</script>
+<% end -%>
+<% content_for :css do %>
+<%= stylesheet_link_tag "screen", "myscreen", "jquery-ui", :media => "screen", :cache => true %>
+<%= stylesheet_link_tag "print", :media => "print", :cache => true %>
+<!--[if IE]>
+<%= stylesheet_link_tag "ie", :media => "screen", :cache => true %>
+<![endif]-->
+<% end -%>
+
+<div class="theme-body">
+  <div class="theme-header">
+    <p class="prepend-1 span-22 append-1"><%= @user_intake.new_record? ? "New" : "Edit" %> : myHalo User Intake Form</p>
+  </div>
+  <div class="span-1">&nbsp;</div>
+  <div class="span-22 last">
+
+    <p class="textright hint">* Asterisk denotes fields that are optional for Halo Monitoring but may be required by Halo partners or affiliates</p>
+
+    <!-- form -->
+    <% form_for(@user_intake) do |f| %>
+
+    <!-- errors block -->
+    <% unless @user_intake.errors.blank? %>
+    <div class="span-1">&nbsp;</div>
+    <div class="error span-22 last">
+      <%= f.error_messages :header_message => "Invalid user intake!",
+        :message => "You'll need to correct the following errors:",
+        :header_tag => :h3 %>
+    </div>
+    <br />
+    <% end -%>
+
+    <div class="span-22 last">
+      <div class="span-5">
+        <%= f.label :group_id, "Group" %>
+        <%= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"}, :onchange => "show_when_dropdown_selected(this);" %>
+      </div>
+      <div class="span-8">
+        <%= f.label :installation_date, "Installation Date:" %>
+        <%= f.text_field :installation_date, :class => "datepicker span-5" %>
+      </div>
+      <div class="span-9 last">
+        <div class="span-4 textright"><%= f.label :kit_serial_number, "Kit Serial" %> #:</div>
+        <div class="span-5 last"><%= f.text_field :kit_serial_number, :class => "span-5" %></div><br />
+
+        <div class="span-4 textright"><%= f.label :order_id, "Order ID" %> #(optional):</div>
+        <div class="span-5 last"><%= f.text_field :order_id, :class => "span-5" %></div>
+      </div>
+      <hr class="space" />
+    </div>
+    <hr />
+
+    <!-- this class is "hidden" -->
+    <div id="content" class="span-22 last hidden">
+      <div id="senior_profile" class="colborder span-10"> <!-- colborder takes one column -->
+        <% fields_for "user_intake[senior_attributes][profile_attributes]", @user_intake.senior.profile do |senior_form| %>
+          <!-- senior profile details -->
+          <%= render :partial => 'senior_profile', :locals => {:f => senior_form} %>
+        <% end %>
+        
+        <% fields_for "user_intake[senior_attributes]", @user_intake.senior do |senior_form| %>
+          <!-- senior user details -->
+          <div class="span-3"><%= senior_form.label :email %>:</div>
+          <div class="span-7 last"><%= senior_form.text_field :email, :class => "span-7" %></div>
+        <% end %>
+      </div>
+
+      <div class="span-11 last">
+        <h3 class="textcenter">Billing Information (Responsible Person)</h3>
+
+        <div class="span-3">&nbsp;</div>
+        <div class="span-7 last">
+          <%= f.check_box :subscriber_is_user, :checked => true, :onclick => "hide_when_checked(this, 'subscriber_profile');" %> <!--  -->
+          <!-- , :onchange => update_page {|page| page[:subscriber_profile].toggle } -->
+          <%= f.label :subscriber_is_user, "Same as User" %> 
+        </div>
+        <!-- hidden -->
+        <div id="subscriber_profile" class="hidden">
+          <div class="span-3">&nbsp;</div>
+          <div class="span-7 last">
+            <%= f.check_box :subscriber_is_caregiver, :onclick => "caregiver_extras_form(this, 'caregiver_extras');" %>
+            <%= f.label :subscriber_is_caregiver, "Add as #1 Caregiver" %>
+          </div>
+
+          <% fields_for "user_intake[subscriber_attributes][profile_attributes]", @user_intake.subscriber.profile do |subscriber_form| %>
+            <!-- subscriber profile details -->
+            <%= render :partial => 'subscriber_profile', :locals => {:f => subscriber_form} %>
+          <% end -%>
+
+          <% fields_for "user_intake[subscriber_attributes]", @user_intake.subscriber do |subscriber_form| %>
+            <!-- subscriber user details -->
+            <div class="span-3"><%= subscriber_form.label :email %>:</div>
+            <div class="span-7 last"><%= subscriber_form.text_field :email, :class => "span-7" %></div>
+          <% end %>
+
+          <div class="span-3">&nbsp;</div>
+          <div class="span-7 last">
+            <%= f.radio_button :bill_monthly, "Credit/Debit Card Processed" %>
+            <%= f.label :bill_monthly, "Card" %>
+            <%= f.radio_button :bill_monthly, "Monthly" %>
+            <%= f.label :bill_monthly, "Bill Monthly" %>
+          </div>
+
+          <!-- role attributes -->
+          <div id="caregiver_extras" class="prepend-3 span-7 hidden">
+            <% fields_for "user_intake[mem_caregiver1_options]", @user_intake.subscriber do |subscriber_form| %>
+              <%= render :partial => 'caregiver_role_options', :locals => {:f => subscriber_form} %>
+            <% end -%>
+          </div>
+        </div>
+      </div>
+      <hr class="space" />
+      <hr />
+
+      <div class="span-22 last">
+        <h3 class="textcenter">Caregiver Information (in order of notification)</h3>
+        <hr />
+
+        <!-- cycle for each caregiver -->
+        <% @user_intake.caregivers.each_with_index do |caregiver, index| %>
+        <div class="span-7 <%= 'border' unless caregiver == @user_intake.caregiver3 %>">
+          <%= f.check_box "no_caregiver_#{index+1}".to_sym, :checked => true, :onclick => "hide_when_checked(this, 'caregiver#{index+1}_profile')" %>
+          <%= f.label "no_caregiver_#{index+1}".to_sym, "No Caregiver \##{index+1}" %>
+          <hr class="space" />
+
+          <div id="caregiver<%= index+1 %>_profile" class="hidden">
+            
+            <!-- caregiver profile -->
+            <% fields_for "user_intake[caregiver#{index+1}_attributes][profile_attributes]", caregiver.profile do |caregiver_profile_form| %>
+              <%= render :partial => 'caregiver_profile', :locals => {:f => caregiver_profile_form} %>
+            <% end -%>
+            
+            <% fields_for "user_intake[caregiver#{index+1}_attributes]", caregiver do |caregiver_form| %>
+              <!-- caregiver user details -->
+              <div class="span-2"><%= caregiver_form.label :email %>:</div>
+              <div class="span-5 last"><%= caregiver_form.text_field :email, :class => "span-5" %></div>
+            <% end %>
+            
+            <!-- role attributes -->
+            <% fields_for "user_intake[mem_caregiver#{index+1}_options]", caregiver do |caregiver_form| %>
+              <%= render :partial => 'caregiver_role_options', :locals => {:f => caregiver_form} %>
+            <% end -%>
+            
+          </div>
+        </div>
+        <% end -%>
+      </div>
+      <hr class="space" />
+      <hr />
+
+      <div id="profile_options" class="span-22 last">
+        <% fields_for "user_intake[senior_attributes][profile_attributes]", @user_intake.senior.profile do |senior_form| %>
+        <!-- senior profile details -->
+        <%= render :partial => 'senior_profile_options', :locals => {:f => senior_form} %>
+        <% end %>
+      </div>
+      <hr class="space" />
+      <hr />
+
+      <div class="span-22 last">
+        <%= render :partial => 'signature' %>
+      </div>
+      <hr class="space" />
+      <hr />
+
+      <div class="buttons textcenter">
+        <%= f.submit "Submit" %>
+        <%= f.submit "Save" %>
+      </div>
+    </div>
+    <% end -%> <!-- form -->
+
+  </div>
+  <div style="clear:both"></div>
+  <div class="theme-footer"></div>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+function caregiver_extras_form(checkbox, form)
+{
+  if(checkbox.checked == true)
+  {
+    document.getElementById(form).style.display = 'block';
+    document.getElementById('user_intake_no_caregiver_1').checked = true;
+    document.getElementById('caregiver1_profile').style.display = 'none';
+    document.getElementById('user_intake_no_caregiver_1').disabled = true;
+  }
+  else
+  {
+    document.getElementById(form).style.display = 'none';
+    document.getElementById('user_intake_no_caregiver_1').disabled = false;
+  }
+}
+</script>

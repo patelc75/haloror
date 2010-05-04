@@ -10,6 +10,7 @@ class User < ActiveRecord::Base
   
   belongs_to :creator, :class_name => 'User',:foreign_key => 'created_by'
   
+  has_one  :profile, :dependent => :destroy
   has_many :access_logs
   has_many :batteries
   has_many :blood_pressure
@@ -23,7 +24,6 @@ class User < ActiveRecord::Base
   has_many :orders_created, :class_name => 'Order', :foreign_key => 'created_by'
   has_many :orders_updated, :class_name => 'Order', :foreign_key => 'updated_by'
   has_many :panics
-  has_one  :profile, :dependent => :destroy
   has_many :rma_items
   has_many :roles_users,:dependent => :destroy
   has_many :roles, :through => :roles_users#, :include => [:roles_users]
@@ -39,8 +39,8 @@ class User < ActiveRecord::Base
   #has_one :roles_users_option
   
   has_and_belongs_to_many :devices
-  has_and_belongs_to_many :user_intakes
-  
+  has_and_belongs_to_many :user_intakes # replaced with has_many :through on Senior, Subscriber, Caregiver
+  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :need_validation
   
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
@@ -59,19 +59,130 @@ class User < ActiveRecord::Base
   validates_confirmation_of :password,                   :if => :password_required?
   
   validates_length_of       :login,    :within => 3..40, :if => :password_required?
-  validates_length_of       :email,    :within => 3..100
+  validates_length_of       :email,    :within => 3..100, :unless => :skip_validation
   validates_format_of       :email,    
                             :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i,
-                            :message => 'must be valid'
+                            :message => 'must be valid', :if => :need_validation
   #validates_length_of       :serial_number, :is => 10
   
   validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
   
+  # validate associations
+  # validates_associated :profile, :unless => "skip_validation" # Proc.new {|e| skip_validation }
+  
   before_save :encrypt_password
   before_create :make_activation_code
-  def before_validation
-        self.email = "no-email@halomonitoring.com" if self.email == ''
+  # after_save :post_process  
+  
+  def after_initialize
+    self.need_validation = true
   end
+
+  def skip_validation
+    !need_validation
+  end
+  
+  def skip_validation=(value = false)
+    self.need_validation = !value
+    skip_associations_validation
+  end
+    
+  # build associated model
+  def build_associations
+    build_profile if profile.blank?
+  end
+  
+  # assign nil to the associated model if the record is just new with no data assigned
+  def collapse_associations
+    self.profile = nil if profile.nothing_assigned? unless profile.nil?
+  end
+  
+  # def post_process
+  #   profile.save if !profile.blank? && profile.new_record?
+  # end
+
+  # checks if any attribute was assigned a value after "new"
+  # helps in user intake at least
+  # examples:
+  #    Profile.new.nothing_assigned? => true
+  #    Profile.new(:first_name => "first name").nothing_assigned? => false
+  def nothing_assigned?
+    attributes.values.compact.blank?
+  end
+
+  # profile_attributes hash can be given here to create a related profile
+  #
+  def profile_attributes=(attributes)
+    if profile.blank?
+      self.build_profile(attributes) # .merge("user_id" => self)
+    else
+      # keep the existing user connected. no need to re-assign
+      self.profile.attributes = attributes # .reject {|k,v| k == "user_id"} # except user_id, take all attributes
+    end
+  end
+  
+  # roles_users_option attributes
+  def role_attributes=(attributes)
+    # create roles_users_option records here
+    # debugger
+  end
+
+  # TODO: why do we need this?
+  # def before_validation
+  #   self.email = "no-email@halomonitoring.com" if self.email == ''
+  # end
+  
+  # fetch position if "this" user assuming he/she is a caregiver to given senior
+  def caregiver_position_for(senior)
+    options_attribute_for_senior(senior, :position)
+  end
+  
+  # get attribute value from the roles_users_options this user has for senior
+  # return blank when not found
+  def options_attribute_for_senior(senior, attribute)
+    options = options_for_senior(senior)
+    options.blank? ? nil : options.send("#{attribute}".to_sym)
+  end
+  
+  # methods for a RESTful approach
+  # using the authorization plugin for the following methods
+  # examples:
+  #   is_halouser?, is_subscriber?, is_caregiver?
+  #   is_subscriber_for? senior_user_object
+  #   is_caregiver_to? senior_user_object
+  #   is_caregiver_to_what => get array if users I am caregiving
+  #   has_caregiver => get array of caregivers for me
+  def options_for_senior(the_senior, attributes = nil)
+    if attributes.nil?
+      if self.is_caregiver_of?( the_senior)
+        role = self.roles.first(:conditions => {
+          :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
+        })
+        options = options_for_role(role) unless role.blank?
+      end
+    else
+      self.is_caregiver_of(the_senior)
+      role = self.roles.first(:conditions => {
+        :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
+      })
+      options = self.options_for_role(role, attributes)
+    end
+    options
+  end
+  
+  def options_for_role(role, attributes = nil)
+    role_id = (role.is_a?(Role) ? role.id : role)
+    if attributes.blank?
+      role_user = RolesUser.find_by_user_id_and_role_id(self.id, role_id)
+      role_user.blank? ? nil : role_user.roles_users_option
+    else
+      role_user = RolesUser.find_or_create_by_user_id_and_role_id(self.id, role_id) # find | create
+      role_user.create_roles_users_option(attributes)
+    end
+  end
+  
+  # ramonrails: above this are methods to help self contained logic for user_intake
+  
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
   #attr_accessible :login, :email, :password, :password_confirmation
@@ -1246,7 +1357,7 @@ class User < ActiveRecord::Base
   
   # returns true if password is a required field
   def password_required?
-    if(self.is_new_caregiver || self[:is_new_user] || self[:is_new_subscriber] || self[:is_new_halouser])
+    if(skip_validation || self.is_new_caregiver || self[:is_new_user] || self[:is_new_subscriber] || self[:is_new_halouser])
       return false
     else
       crypted_password.blank? || !password.blank?
@@ -1260,8 +1371,13 @@ class User < ActiveRecord::Base
   
   # return true if the login is not blank
   def login_not_blank?
-    return !self.login.blank?
+    return (skip_validation ? false : !self.login.blank?)
   end
   
+  private # ------------------------------ private methods
+  
+  def skip_associations_validation
+    self.profile.send("skip_validation=", skip_validation) unless profile.blank?
+  end
   
 end

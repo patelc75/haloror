@@ -571,4 +571,21 @@ function toggle_device_info(id)
 
 function show_message() {
   new Ajax.Updater('show_message', '/alerts/message/', {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('show_message'); }, onLoading:function(request){RedBox.loading(); }})
+
+function hide_when_checked(checkbox, div_id)
+{
+  if(checkbox.checked == true) {
+    document.getElementById(div_id).style.display = 'none';
+  } else {
+    document.getElementById(div_id).style.display = 'block';
+  }
+}
+
+function show_when_dropdown_selected(dropdown)
+{
+  if(dropdown.value == '') {
+    document.getElementById('content').style.display = 'none';
+  } else {
+    document.getElementById('content').style.display = 'block';
+  }
 }
