@@ -16,7 +16,7 @@ Then /^(\d+) email to "([^\"]*)" with subject "([^\"]*)" should be sent for deli
     end
   end
   if defined?(Spec::Rails::Matchers)
-    found.should be_true
+    found.should == (count.to_i > 0)
     Email.all.select {|e| e.to == email && e.mail.include?(subject) }.length.should == count.to_i
   else
     assert found == true, "Email to #{email} with subject #{subject} not found"
