@@ -50,7 +50,7 @@ When /^I fill the (.+) details for online store$/ do |which|
       "city"        => Faker::Address.city,
       "zip"         => Faker::Address.zip_code,
       "phone"       => Faker::PhoneNumber.phone_number,
-      "email"       => "cuc_senior@chirag.name"
+      "email"       => "cuc_#{which}@chirag.name"
     }.each do |field, value|
       When %{I fill in "order_#{which}_#{field}" with "#{value}"}
     end

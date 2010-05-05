@@ -29,16 +29,14 @@ class UserIntake < ActiveRecord::Base
     #   workaround
     #     initialize the associations only for new instance. we are safe
     #     call user_intake.build_associations in the code on user_intake instance
-    if self.new_record?
-      self.subscriber_is_user = (subscriber_is_user.nil? || subscriber_is_user == "1")
-      self.subscriber_is_caregiver = false if subscriber_is_caregiver.nil?
-      (1..3).each do |index|
-        self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
-        bool = self.send("no_caregiver_#{index}".to_sym)
-        self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || bool == "1"))
-      end
-      build_associations
+    self.subscriber_is_user = (subscriber_is_user.nil? || subscriber_is_user == "1")
+    self.subscriber_is_caregiver = false if subscriber_is_caregiver.nil?
+    (1..3).each do |index|
+      self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
+      bool = self.send("no_caregiver_#{index}".to_sym)
+      self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || bool == "1"))
     end
+    build_associations
   end
   
   def before_save
@@ -51,12 +49,13 @@ class UserIntake < ActiveRecord::Base
     associations_after_save
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
-    UserMailer.deliver_signup_installation(senior)
+    # UserMailer.deliver_signup_installation(senior)
   end
   
   # create blank placeholder records
   # required for user form input
   def build_associations
+    # assumption: the associations will build in the order of appearance, subject to ruby behavior
     ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|type| build_user_type(type) }
   end
   
@@ -129,6 +128,14 @@ class UserIntake < ActiveRecord::Base
     collapse_associations # make obsolete ones = nil
     # for remaining, fill login, password details only when login is empty
     ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_login_details(user) }
+    # assign roles to user objects. it will auto save the roles with user record
+    # this will also trigger the email dispatch in observer
+    self.senior.lazy_roles[:halouser]        = group  unless senior.blank? # senior.is_halouser_of group
+    self.subscriber.lazy_roles[:subscriber]  = senior unless subscriber.blank?
+    self.caregiver1.lazy_roles[:caregiver]   = senior unless caregiver1.blank?
+    self.caregiver2.lazy_roles[:caregiver]   = senior unless caregiver2.blank?
+    self.caregiver3.lazy_roles[:caregiver]   = senior unless caregiver3.blank?
+    # now collect the users for save as associations
     self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq.compact # omit nil, duplicates
   end
   
@@ -139,12 +146,14 @@ class UserIntake < ActiveRecord::Base
     # add roles and options
     # senior
     unless senior.blank?
-      senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")
+      # senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")
+      self.errors.add_to_base("Senior not valid") unless senior.valid?
       self.errors.add_to_base("Senior profile needs more detail") unless senior.profile.nil? || senior.profile.valid?
     end
     # subscriber
     unless subscriber.blank?
-      subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
+      # subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
+      self.errors.add_to_base("Subscriber not valid") unless subscriber.valid?
       self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.nil? || subscriber.profile.valid?
       # save options
       caregiver1.options_for_senior(senior, mem_caregiver1_options.merge({:position => 1})) if subscriber_is_caregiver
@@ -153,7 +162,8 @@ class UserIntake < ActiveRecord::Base
     (1..3).each do |index|
       caregiver = self.send("caregiver#{index}".to_sym)
       unless caregiver.blank?
-        caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
+        # caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
+        self.errors.add_to_base("Caregiver #{index} not valid") unless caregiver.valid?
         self.errors.add_to_base("Caregiver #{index} profile needs more detail") unless caregiver.profile.nil? || caregiver.profile.valid?
         # save options
         options = self.send("mem_caregiver#{index}_options")
@@ -394,8 +404,34 @@ class UserIntake < ActiveRecord::Base
   end
   
   def build_user_type(user_type)
-    self.send("#{user_type}=".to_sym, User.new) if self.send("#{user_type}".to_sym).nil?
-    self.send("#{user_type}".to_sym).send("build_associations") unless self.send("#{user_type}".to_sym).nil?
+    # for new recordin memory, create fresh instances
+    if self.new_record?
+      self.send("#{user_type}=".to_sym, User.new) if self.send("#{user_type}".to_sym).nil?
+      self.send("#{user_type}".to_sym).send("build_associations") unless self.send("#{user_type}".to_sym).nil?
+
+    # for existing records, load the related instances appropriately yo virtual attributes
+    else
+      self.users.each do |user|
+        if user.is_halouser?
+          self.senior = user
+      
+        elsif user.is_subscriber? # we should check is_subscriber_of?(senior)
+          # conditional assignment is not required actually
+          # this would have been handled at save already
+          self.subscriber = (subscriber_is_user ? senior : user)
+      
+        elsif user.is_caregiver?
+          options = user.options_for_senior(senior)
+          (1..3).each do |index|
+            if !options.blank? && options.position == index
+              self.send("caregiver#{index}=".to_sym, user)
+              self.send("mem_caregiver#{index}_options=".to_sym, options)
+            end
+          end
+        end
+      end
+      
+    end
   end
   
   def validate_user_type(user_type)

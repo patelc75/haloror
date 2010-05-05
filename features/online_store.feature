@@ -24,7 +24,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     Then page content should have "Thank you"
     And the payment gateway response should have 2 logs
-    And 1 email with subject "Please read before your installation" should be sent for delivery
+    And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
   Scenario: Not same as shipping has separate shipping and billing data
     When I choose "product_complete"
@@ -37,7 +37,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Then I should see "Thank you"
     And the payment gateway response should have 2 logs
     And billing and shipping addresses should not be same
-    And 2 email with subject "Please read before your installation" should be sent for delivery
+    And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
   Scenario Outline: Success and Failure for credit cards
     When I choose "product_complete"
@@ -95,7 +95,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     Then page content should have "Failure"
     And the payment gateway response should have 1 logs
-    And email to "payment_gateway@halomonitoring.com" with subject "Credit Card transaction failed or declined" should be sent for delivery
+    And 1 email to "payment_gateway@halomonitoring.com" with subject "Credit Card transaction failed or declined" should be sent for delivery
 
   Scenario: Valid card, invalid data should have 2 log entries
     When I choose "product_complete"
@@ -127,8 +127,8 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Continue"
     And I press "Place Order"
     Then page content should have "Thank you"
-    And email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
-    And email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery
+    And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
+    And 1 email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery
 
   Scenario: product selection and same_as_shipping remembred in session
     When I choose "product_complete"

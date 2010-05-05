@@ -110,4 +110,11 @@ Factory.define :user_intake do |v|
   ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user|
     v.send("#{user}".to_sym, Factory.create(:user))
   end
+  v.after_create do |ui|
+    ui.senior.is_halouser_of ui.group
+    ui.subscriber.is_subscriber_of ui.senior
+    ui.caregiver1.is_caregiver_of ui.senior
+    ui.caregiver2.is_caregiver_of ui.senior
+    ui.caregiver3.is_caregiver_of ui.senior
+  end
 end

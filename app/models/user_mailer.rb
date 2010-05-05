@@ -3,7 +3,7 @@ class UserMailer < ActionMailer::ARMailer
   
   def signup_installation(recipient,senior=:exclude_senior_info)
     setup_email(recipient)
-    @subject    += 'Please read before your installation'
+    @subject    += EMAIL_SUBJECT[:installation] # 'Please read before your installation'
     @body[:host] = "http://#{ServerInstance.current_host}"
     if senior == :exclude_senior_info
       @body[:name] = nil
@@ -17,7 +17,7 @@ class UserMailer < ActionMailer::ARMailer
   
   def signup_notification(user)
     setup_email(user)
-    @subject    += 'Please activate your new myHalo account'
+    @subject    += EMAIL_SUBJECT[:activation] # 'Please activate your new myHalo account'
   
     #@body[:url]  = "http://67-207-146-58.slicehost.net/activate/#{user.activation_code}"
     #@body[:url]  = "http://localhost:3000/activate/#{user.activation_code}"
@@ -27,7 +27,7 @@ class UserMailer < ActionMailer::ARMailer
   
   def activation(user)
     setup_email(user)
-    @subject    += 'Your account has been activated!'
+    @subject    += EMAIL_SUBJECT[:activated] # 'Your account has been activated!'
     @body[:url]  = "http://#{ServerInstance.current_host}/login"
     @body[:user] = user
   end
@@ -45,7 +45,7 @@ class UserMailer < ActionMailer::ARMailer
   def kit_serial_number_register(user,kit_serial_number,current_user)
   	setup_email(user)
   	@recipients  = "senior_signup@halomonitoring.com"
-  	@subject += "New myHalo User Signed Up"
+  	@subject += EMAIL_SUBJECT[:kit_registered] # "New myHalo User Signed Up"
   	@body[:kit_serial_number] = kit_serial_number
   	@body[:current_user] = current_user
   	groups = ""
@@ -57,7 +57,7 @@ class UserMailer < ActionMailer::ARMailer
   def subscriber_email(subscriber)
   	setup_email(subscriber)
   	@bcc = "senior_signup@halomonitoring.com"
-  	@subject += "myHalo Receipt"
+  	@subject += EMAIL_SUBJECT[:receipt] # "myHalo Receipt"
   	subscription = Subscription.find_by_subscriber_user_id(subscriber.id)
   	@body[:subscription] = subscription
   	@body[:halouser] = subscriber.is_subscriber_for_what.first.name
@@ -66,7 +66,7 @@ class UserMailer < ActionMailer::ARMailer
   
   def order_summary(order, email_addr, email_log=nil)
     setup_email(email_addr, email_log)
-    @subject += "Order Summary"
+    @subject += EMAIL_SUBJECT[:order_summary] # "Order Summary"
     @body[:order] = order
   end
   

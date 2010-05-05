@@ -34,7 +34,7 @@ Feature: Critical Alert
     And I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "call center account number"
     Then I should have "1" count of "Fall"
     And I should have a "Fall" alert "not pending" to the call center with a "missing" call center delivery timestamp
-    And email to "exceptions_critical@halomonitoring.com" with subject "SafetyCareClient.alert::Missing account number!" should be sent for delivery
+    And 1 email to "exceptions_critical@halomonitoring.com" with subject "SafetyCareClient.alert::Missing account number!" should be sent for delivery
 
   Scenario: Simulate a fall for a user with an with invalid profile
     When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "profile"

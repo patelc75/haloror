@@ -83,7 +83,15 @@ class Profile < ActiveRecord::Base
        unless user.blank?
          if user.profile.blank?
            profile = Profile.new(:first_name => first_name, :last_name => last_name)
-           profile[:is_new_halouser] = false
+           # WARNING: DEPRECATED :is_new_halouser, :is_new_user, :is_new_subscriber, :is_new_caregiver
+           # CHANGED: we can now use user_intake object to create users and profiles
+           # example:
+           #  profile_attributes = Profile.new({...}).attributes
+           #  user_attributes = User.new({..., :profile_attributes => profile_attributes}).attributes
+           #  user_intake = UserIntake.new(:senior_attributes => user_attributes) # includes profile attributes
+           #    or
+           #  user_intake = UserIntake.new(:senior_attributes => User.new({:email => ..., :profile_attributes => Profile.new({...}).attributes}).attributes)
+           profile[:is_new_halouser] = false # WARNING: deprecated
            profile[:is_new_caregiver] = true
            profile[:user_id] = user.id
            profile.save!

@@ -40,7 +40,7 @@ class User < ActiveRecord::Base
   
   has_and_belongs_to_many :devices
   has_and_belongs_to_many :user_intakes # replaced with has_many :through on Senior, Subscriber, Caregiver
-  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :need_validation
+  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :need_validation, :lazy_roles
   
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
@@ -76,6 +76,10 @@ class User < ActiveRecord::Base
   
   def after_initialize
     self.need_validation = true
+    # example:
+    #   user.roles = {:halouser => @group}
+    #   user.roles[:subscriber] = @senior
+    self.lazy_roles = {} # lazy loading roles of this user
   end
 
   def skip_validation
@@ -121,11 +125,12 @@ class User < ActiveRecord::Base
     end
   end
   
-  # roles_users_option attributes
-  def role_attributes=(attributes)
-    # create roles_users_option records here
-    # debugger
-  end
+  # # OBSOLETE for now. role options are handled at user_intake
+  # # roles_users_option attributes
+  # def role_attributes=(attributes)
+  #   # create roles_users_option records here
+  #   # debugger
+  # end
 
   # TODO: why do we need this?
   # def before_validation
@@ -281,7 +286,8 @@ class User < ActiveRecord::Base
   
   # Returns true if the user has just been activated.
   def recently_activated?
-    @activated
+    @activated # this instance variable will exist when user was activated recently.
+    # existing record will have data value in table column
   end
   
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
@@ -1350,13 +1356,22 @@ class User < ActiveRecord::Base
   # before filter
   # Sets the salt and encrypts the password 
   def encrypt_password
-    return if password.blank?
-    self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
-    self.crypted_password = encrypt(password)
+    unless password.blank?
+      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
+      self.crypted_password = encrypt(password)
+    end
   end
   
   # returns true if password is a required field
   def password_required?
+    # WARNING: DEPRECATED :is_new_halouser, :is_new_user, :is_new_subscriber, :is_new_caregiver
+    # CHANGED: we can now use user_intake object to create users and profiles
+    # example:
+    #  profile_attributes = Profile.new({...}).attributes
+    #  user_attributes = User.new({..., :profile_attributes => profile_attributes}).attributes
+    #  user_intake = UserIntake.new(:senior_attributes => user_attributes) # includes profile attributes
+    #    or
+    #  user_intake = UserIntake.new(:senior_attributes => User.new({:email => ..., :profile_attributes => Profile.new({...}).attributes}).attributes)
     if(skip_validation || self.is_new_caregiver || self[:is_new_user] || self[:is_new_subscriber] || self[:is_new_halouser])
       return false
     else

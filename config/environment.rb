@@ -249,6 +249,16 @@ ALERT_MESSAGES = {
   :new_caregiver => "If that email was in our system, the user was added to your caregiver list. If not, an email was sent to that email address."
 }
 
+# used at user_mailer.rb, and user.rb
+EMAIL_SUBJECT = {
+  :installation => 'Please read before your installation',
+  :activation => 'Please activate your new myHalo account',
+  :activated => 'Your account has been activated!',
+  :kit_registered => 'New myHalo User Signed Up',
+  :receipt => 'myHalo Receipt',
+  :order_summary => 'Order Summary'
+}
+
 ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|
   "<span class='error-field'>#{html_tag}</span>"
 end

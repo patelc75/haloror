@@ -5,7 +5,15 @@ module UserHelper
   	@user = User.new
   	@user.email = email #namdatory for all cases
   	User.transaction do
-  		@user[:is_new_halouser] = true # skip validations except email
+      # WARNING: DEPRECATED :is_new_halouser, :is_new_user, :is_new_subscriber, :is_new_caregiver
+      # CHANGED: we can now use user_intake object to create users and profiles
+      # example:
+      #  profile_attributes = Profile.new({...}).attributes
+      #  user_attributes = User.new({..., :profile_attributes => profile_attributes}).attributes
+      #  user_intake = UserIntake.new(:senior_attributes => user_attributes) # includes profile attributes
+      #    or
+      #  user_intake = UserIntake.new(:senior_attributes => User.new({:email => ..., :profile_attributes => Profile.new({...}).attributes}).attributes)
+      @user.skip_validation = true # @user[:is_new_halouser] = true # skip validations except email
     	@user.created_by = (created_by_user || @user) # 2010-02-01 when not created by logged_in user, then it is direct_customer
     	if @user.save!
     	  unless profile_hash.blank? # FIXME: handle better. 2010-02-01 profile not required for direct_online_customer
