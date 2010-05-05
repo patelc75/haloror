@@ -196,7 +196,21 @@ class User < ActiveRecord::Base
   rescue
     nil
   end
-  
+
+  def battery_status
+    if @battery = Battery.find(:first,:conditions => ["user_id = ? and acpower_status is not null",self.id],:order => 'timestamp desc')
+      return @battery.acpower_status == true ? 'Battery Plugged' : 'Battery Unplugged'
+    else
+      battery_plugged = BatteryPlugged.find(:first,:conditions => ["user_id = ?",self.id],:order => 'timestamp desc')
+      battery_unplugged = BatteryUnplugged.find(:first,:conditions => ["user_id = ?",self.id],:order => 'timestamp desc')
+      if battery_plugged and battery_unplugged
+  	    return battery_plugged.timestamp > battery_unplugged.timestamp ? 'Battery Plugged' : 'Battery Unplugged'
+      else
+  	    return false
+      end
+    end
+  end
+
   def get_gateway
     gateway = nil
     self.devices.each do |device|

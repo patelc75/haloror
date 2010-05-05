@@ -94,7 +94,7 @@ class FlexController < ApplicationController
     end
     
     # get battery status
-    unless user_data[:status][:battery_outlet] = UtilityHelper.battery_status(user.id)
+    unless user_data[:status][:battery_outlet] = user.battery_status
       user_data[:status][:battery_outlet] = @default_battery_outlet_status
     end
     

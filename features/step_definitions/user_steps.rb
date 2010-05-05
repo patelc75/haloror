@@ -115,8 +115,8 @@ When /^Battery status is "([^\"]*)" and "([^\"]*)" is latest for user login "([^
   end
 end
 
-Then /^I should have "([^\"]*)"$/ do |status|
-  ms = UtilityHelper.battery_status(5)
-  debugger
+Then /^I should have "([^\"]*)" for user "([^\"]*)"$/ do |status,login|
+  user = User.find_by_login(login)
+  ms = user.battery_status
   assert ms == status,"No Data"
 end
