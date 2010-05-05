@@ -50,20 +50,18 @@ Feature: Critical Alert
 
 
   Scenario: check battery status available and battery plugged
-    When Battery status is "available" and "BatteryPlugged" is latest
-    Then I should have "Battery Plugged"
+    When Battery status is "available" and "BatteryPlugged" is latest for user login "test-user"
+    Then I should have "Battery Plugged" for user "test-user"
 
   Scenario: check battery status available battery unplugged
-    When Battery status is "available" and "BatteryUnplugged" is latest
-    Then I should have "Battery Unplugged"
+    When Battery status is "available" and "BatteryUnplugged" is latest for user login "test-user"
+    Then I should have "Battery Unplugged" for user "test-user"
 
-@wip
   Scenario: check battery status unavailable and battery plugged
-    When Battery status is "unavailable" and "BatteryPlugged" is latest
-    Then I should have "Battery Plugged"
+    When Battery status is "unavailable" and "BatteryPlugged" is latest for user login "test-user"
+    Then I should have "Battery Plugged" for user "test-user"
 
-@wip
   Scenario: check battery status unavailable and battery unplugged
-    When Battery status is "unavailable" and "BatteryUnplugged" is latest
-    Then I should have "Battery Unplugged"
+    When Battery status is "unavailable" and "BatteryUnplugged" is latest for user login "test-user"
+    Then I should have "Battery Unplugged" for user "test-user"
 
