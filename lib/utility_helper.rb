@@ -29,9 +29,9 @@ module UtilityHelper
       battery_plugged = BatteryPlugged.find(:first,:conditions => ["user_id = ?",user_id],:order => 'timestamp desc')
       battery_unplugged = BatteryUnplugged.find(:first,:conditions => ["user_id = ?",user_id],:order => 'timestamp desc')
       if battery_plugged and battery_unplugged
-  	return battery_plugged.timestamp > battery_unplugged.timestamp ? 'Battery Plugged' : 'Battery Unplugged'
+  	    return battery_plugged.timestamp > battery_unplugged.timestamp ? 'Battery Plugged' : 'Battery Unplugged'
       else
-  	return false
+  	    return false
       end
     end
   end
