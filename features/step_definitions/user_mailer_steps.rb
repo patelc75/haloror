@@ -7,19 +7,20 @@ Given /^Email dispatch queue is empty$/ do
   Email.delete_all
 end
 
-Then /^(\d+) email to "([^\"]*)" with subject "([^\"]*)" should be sent for delivery$/ do |count, email, subject|
+Then /^(.+) email to "([^\"]*)" with subject "([^\"]*)" should be sent for delivery$/ do |count, email, subject|
   #assert !Email.count(:conditions => ["`emails`.`to` = ? AND `emails`.'subject' = ?", email, subject]).blank?, "Email to #{email} with subject #{subject} not found"
-  found = false
-  Email.all(:conditions => '"to" = ' + "'#{email}'").each do |message|
-    if message.mail.include?(subject)
-      found = true
-    end
-  end
+  # found = false
+  # Email.all(:conditions => '"to" = ' + "'#{email}'").each do |message|
+  #   if message.mail.include?(subject)
+  #     found = true
+  #   end
+  # end
+  # # no need to check "found"
   if defined?(Spec::Rails::Matchers)
-    found.should == (count.to_i > 0)
+    # found.should == (count.to_i > 0) # when "zero", this is false, otherwise true
     Email.all.select {|e| e.to == email && e.mail.include?(subject) }.length.should == count.to_i
   else
-    assert found == true, "Email to #{email} with subject #{subject} not found"
+    # assert found == true, "Email to #{email} with subject #{subject} not found"
     assert_equal count.to_i, Email.all.select {|e| e.to == email && e.mail.include?(subject) }.length
   end
 end

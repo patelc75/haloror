@@ -27,4 +27,4 @@ Feature: Edit user intake
     And I fill in "user_intake_kit_serial_number" with "9876543210123456789"
     And I press "Submit"
     Then I should see "9876543210123456789"
-    And 0 email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
+    And no email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
