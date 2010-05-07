@@ -5,15 +5,14 @@
 
 When /^I simulate a "([^\"]*)" with delivery to the call center for user login "([^\"]*)" with a "([^\"]*)" "([^\"]*)"$/ do |model, login, valid, error_type|
   # user = nil
-  user = User.find_by_login(login)
+  user = User.find_by_login(login, :include => :profile)
   
   if valid == "invalid"
     case error_type
       when "call center account number" 
-        Profile.update(user.profile.id, {:account_number => nil})
+        Profile.update(user.profile.id, {:account_number => ''})
         # user.profile.account_number = ""
         # user.profile.save
-        debugger
       when "profile"
         user.profile = nil
         user.save

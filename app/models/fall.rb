@@ -29,7 +29,7 @@ class Fall < CriticalDeviceAlert
   # this logic is used to decide critical_alert.timestamp_call_center value
   #
   def call_center_number_valid?
-    !user.profile.account_number.blank? rescue false # fetch the call center account number, or, false
+    !Profile.find(user.profile.id).account_number.blank? rescue false # fetch the call center account number, or, false
   end
   
 end
