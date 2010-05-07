@@ -88,6 +88,7 @@ When /^I reload$/ do
 end
 
 When /^I (edit|delete|show) the (\d+)(?:st|nd|rd|th) (.+)$/ do |action, pos, model_name|
+  debugger
   action_text = (action == "delete" ? "Destroy" : "#{action.capitalize}")
   visit "/#{model_name.downcase.pluralize.gsub(' ','_')}" if model_name != 'row'
   within("table tr:nth-child(#{pos.to_i+1})") do
@@ -145,6 +146,13 @@ end
 
 Then /^I should see the following (.+):$/ do |model, expected_table|
   expected_table.diff!(tableish('table tr', 'td,th'))
+end
+
+Then /^the (\d+)(?:st|nd|rd|th) row should have "([^\"]*)" link$/ do |pos, label|
+  within("table tr:nth-child(#{pos.to_i+1})") do |content|
+    debugger
+    content.should have_tag("a[text=?]", label)
+  end
 end
 
 # accepts any ruby expression enclosed in ``

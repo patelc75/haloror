@@ -31,9 +31,9 @@ Feature: Edit user intake
 
   Scenario: User Intake locks on Submit
     Given the following user intakes:
-      | kit_serial_number |
-      | 1122334455        |
+      | kit_serial_number | locked |
+      | 1122334455        | false  |
     When I edit the 1st user intake
     And I press "Submit"
-    And I edit the 1st user intake
-    Then I should see 
+    And I am listing user intakes
+    Then the 1st row should have "show" link

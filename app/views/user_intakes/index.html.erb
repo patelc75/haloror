@@ -3,6 +3,7 @@
 <h2>User Intakes</h2>
 <table>
   <tr>
+    <th>&nbsp;</th>
     <th>Id</th>
     <th>Installation Date</th>	
     <th>Created By</th>
@@ -15,9 +16,10 @@
   </tr>
   <% @user_intakes.each do |user_intake| %>
   <tr>
+    <td><%= image_tag("bullet_key.png") if user_intake.locked %></td>
     <td><%= user_intake.id %></td>
     <td><%= user_intake.installation_date %></td>	
-    <td><%= user_intake.created_by_user_name %> (<%= user_intake.created_by %>)</td>	
+    <td><%= user_intake.created_by_user_name %></td>	
     <td><%= user_intake.credit_debit_card_proceessed %></td>
     <td><%= user_intake.bill_monthly %></td>
     <td><%= user_intake.kit_serial_number %></td>
@@ -29,9 +31,9 @@
     <td><%= UtilityHelper.format_datetime(user_intake.created_at,current_user) %></td>
     <td>
       <% if user_intake.locked %>
-      <%= link_to "Show", user_intake_path(user_intake) %>
+        <%= link_to "Show", user_intake_path(user_intake) %>
       <% else %>
-      <%= link_to "Edit", edit_user_intake_path(user_intake) %>
+        <%= link_to "Edit", edit_user_intake_path(user_intake) %>
       <% end -%>
     </td>
   </tr>
