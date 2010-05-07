@@ -237,6 +237,18 @@ class ProfilesController < ApplicationController
     @user = User.find(params[:user_id])
     #render :partial => 'change_password_init'
   end
+  
+  def change_username
+  	@user = current_user
+  	if request.post?
+  		if @user.update_attributes(params[:user])
+  			redirect_to :action => "edit_caregiver_profile", :id => current_user.profile.id, :user_id => current_user.id
+  		else
+  			render :action => 'change_username'
+  		end
+  	end
+  end
+  
   def change_password
     user_hash = params[:user]
     user = User.find(user_hash[:id])

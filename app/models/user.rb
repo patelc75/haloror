@@ -48,7 +48,7 @@ class User < ActiveRecord::Base
   # Virtual attribute for the unencrypted password
   cattr_accessor :current_user #stored in memory instead of table
   attr_accessor :password
-  attr_accessor :current_password
+  attr_accessor :current_password,:username_confirmation
   validates_presence_of     :login, :if => :password_required?
   #validates_presence_of     :email
   #validates_presence_of     :serial_number
@@ -84,6 +84,14 @@ class User < ActiveRecord::Base
 
   def skip_validation
     !need_validation
+  end
+  
+  def validate
+  	if self.username_confirmation
+  		if self.username_confirmation != self.login
+  			self.errors.add("user confirmation","does not match with username.")
+  		end
+  	end
   end
   
   def skip_validation=(value = false)
