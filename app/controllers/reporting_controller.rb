@@ -147,6 +147,7 @@ class ReportingController < ApplicationController
       groups = current_user.is_admin_of_what.select {|e| e.is_a?(Group)}
       @devices += groups.collect(&:has_halouser).flatten.collect(&:devices).flatten.uniq
       @devices += groups.collect(&:has_admin).flatten.collect(&:devices).flatten.uniq
+      @devices = @devices.uniq
       # @devices += current_user.is_admin_of_what.select {|e| e.is_a?(Group)}.collect(&:has_halouser).flatten.collect(&:devices).flatten.uniq
       #
       # conditions += " AND " unless conditions.blank? # https://redmine.corp.halomonitor.com/issues/2890
