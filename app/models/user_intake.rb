@@ -425,7 +425,7 @@ class UserIntake < ActiveRecord::Base
           # conditional assignment is not required actually
           # this would have been handled at save already
           self.subscriber = (subscriber_is_user ? senior : user)
-      
+
         elsif user.is_caregiver?
           options = user.options_for_senior(senior)
           (1..3).each do |index|
@@ -436,6 +436,7 @@ class UserIntake < ActiveRecord::Base
           end
         end
       end
+      self.users.each(&:build_associations) # build associations just in case
       
     end
   end

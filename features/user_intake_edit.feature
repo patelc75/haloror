@@ -12,7 +12,7 @@ Feature: Edit user intake
     And the following carriers:
       | name    |
       | verizon |
-    And user "test-user" has "super admin, caregiver" roles
+    And user "test-user" has "super_admin, caregiver" roles
     
   # 1. Editing a user intake should work exactly as any other model
   #    This includes all associated models like senior, subscriber, ... and their profiles
@@ -31,9 +31,9 @@ Feature: Edit user intake
 
   Scenario: User Intake locks on Submit
     Given the following user intakes:
-      | kit_serial_number | locked |
-      | 1122334455        | false  |
+      | kit_serial_number |
+      | 1122334455        |
     When I edit the 1st user intake
     And I press "Submit"
     And I am listing user intakes
-    Then the 1st row should have "show" link
+    Then the 1st row should contain "Show"

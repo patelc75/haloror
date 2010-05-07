@@ -88,9 +88,8 @@ When /^I reload$/ do
 end
 
 When /^I (edit|delete|show) the (\d+)(?:st|nd|rd|th) (.+)$/ do |action, pos, model_name|
-  debugger
   action_text = (action == "delete" ? "Destroy" : "#{action.capitalize}")
-  visit "/#{model_name.downcase.pluralize.gsub(' ','_')}" if model_name != 'row'
+  visit eval("#{model_name.downcase.pluralize.gsub(' ','_')}_path") unless model_name == 'row'
   within("table tr:nth-child(#{pos.to_i+1})") do
     click_link action_text
   end
@@ -148,10 +147,9 @@ Then /^I should see the following (.+):$/ do |model, expected_table|
   expected_table.diff!(tableish('table tr', 'td,th'))
 end
 
-Then /^the (\d+)(?:st|nd|rd|th) row should have "([^\"]*)" link$/ do |pos, label|
+Then /^the (\d+)(?:st|nd|rd|th) row should contain "([^\"]*)"$/ do |pos, label|
   within("table tr:nth-child(#{pos.to_i+1})") do |content|
-    debugger
-    content.should have_tag("a[text=?]", label)
+    content.should contain(label)
   end
 end
 

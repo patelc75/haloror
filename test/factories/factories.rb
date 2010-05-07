@@ -111,6 +111,8 @@ Factory.define :user_intake do |v|
     v.send("#{user}".to_sym, Factory.create(:user))
   end
   v.after_create do |ui|
+    ui.skip_validation = true # we need "edit" links in list
+    ui.update_attribute(:locked, false)
     ui.senior.is_halouser_of ui.group
     ui.subscriber.is_subscriber_of ui.senior
     ui.caregiver1.is_caregiver_of ui.senior
