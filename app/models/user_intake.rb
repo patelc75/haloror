@@ -40,6 +40,10 @@ class UserIntake < ActiveRecord::Base
   end
   
   def before_save
+    # lock if required
+    # skip_validation decides if "save" was hit instead of "submit"
+    self.locked = (!skip_validation && valid?)
+    # associations
     associations_before_validation_and_save # build the associations
     validate_associations # check vlaidations unless "save"
   end
@@ -142,8 +146,10 @@ class UserIntake < ActiveRecord::Base
   # create more data for the associations to keep them valid and associated
   # roles, options for roles
   def associations_after_save
-    # TODO: DRY this
     # add roles and options
+    #
+    # FIXME: we should not validate here. its done in "validate". just add roles etc here
+    #
     # senior
     unless senior.blank?
       # senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")

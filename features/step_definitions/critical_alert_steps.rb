@@ -10,7 +10,8 @@ When /^I simulate a "([^\"]*)" with delivery to the call center for user login "
   if valid == "invalid"
     case error_type
       when "call center account number" 
-        Profile.update(user.profile.id, {:account_number => ''})
+        # Profile.update(user.profile.id, {:account_number => ''})
+        user.profile.update_attribute(:account_number, '')
         # user.profile.account_number = ""
         # user.profile.save
       when "profile"

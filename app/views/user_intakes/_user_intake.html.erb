@@ -1,23 +1,23 @@
 <% content_for :js do %>
-<%= javascript_include_tag "jquery", "jquery-ui", :cache => true %>
-<script type="text/javascript" charset="utf-8">
-$(function() {
-  $(".datepicker").datepicker({
-    showOn: 'both',
-    buttonImage: '../../images/calendar_date_select/calendar.gif',
-    buttonImageOnly: true
+  <%= javascript_include_tag "jquery", "jquery-ui", :cache => true %>
+  <script type="text/javascript" charset="utf-8">
+  $(function() {
+    $(".datepicker").datepicker({
+      showOn: 'both',
+      buttonImage: '../../images/calendar_date_select/calendar.gif',
+      buttonImageOnly: true
+    });
   });
   show_when_dropdown_selected(document.getElementById('user_intake_group_id'));
   hide_when_checked(document.getElementById('user_intake_subscriber_is_user'), 'subscriber_profile');
-});
-</script>
+  </script>
 <% end -%>
 <% content_for :css do %>
-<%= stylesheet_link_tag "screen", "myscreen", "jquery-ui", :media => "screen", :cache => true %>
-<%= stylesheet_link_tag "print", :media => "print", :cache => true %>
-<!--[if IE]>
-<%= stylesheet_link_tag "ie", :media => "screen", :cache => true %>
-<![endif]-->
+  <%= stylesheet_link_tag "screen", "myscreen", "jquery-ui", :media => "screen", :cache => true %>
+  <%= stylesheet_link_tag "print", :media => "print", :cache => true %>
+  <!--[if IE]>
+  <%= stylesheet_link_tag "ie", :media => "screen", :cache => true %>
+  <![endif]-->
 <% end -%>
 
 <div class="theme-body">

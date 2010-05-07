@@ -27,7 +27,13 @@
       <% end %>
     </td>
     <td><%= UtilityHelper.format_datetime(user_intake.created_at,current_user) %></td>
-    <td><%= link_to "Edit", edit_user_intake_path(user_intake) %></td>
+    <td>
+      <% if user_intake.locked %>
+      <%= link_to "Show", user_intake_path(user_intake) %>
+      <% else %>
+      <%= link_to "Edit", edit_user_intake_path(user_intake) %>
+      <% end -%>
+    </td>
   </tr>
   <% end %>
 </table>

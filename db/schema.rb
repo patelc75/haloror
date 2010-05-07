@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100419225033) do
+ActiveRecord::Schema.define(:version => 20100507134616) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -153,10 +153,6 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
     t.boolean  "charge_status"
   end
 
-  add_index "batteries", ["device_id", "timestamp"], :name => "index_batteries_on_device_id_and_timestamp"
-  add_index "batteries", ["timestamp", "user_id"], :name => "index_batteries_on_user_id_and_timestamp"
-  add_index "batteries", ["percentage", "timestamp", "user_id"], :name => "index_batteries_on_user_id_and_timestamp_and_percentage"
-
   create_table "battery_charge_completes", :force => true do |t|
     t.integer  "device_id"
     t.datetime "timestamp"
@@ -223,6 +219,7 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
     t.string   "sw_rev"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "percentage"
   end
 
   create_table "call_center_deferreds", :force => true do |t|
@@ -581,6 +578,7 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
     t.datetime "updated_at"
     t.text     "description"
     t.string   "sales_type"
+    t.string   "email"
   end
 
   create_table "gw_alarm_button_timeouts", :force => true do |t|
@@ -601,25 +599,6 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
     t.datetime "timestamp_call_center"
     t.boolean  "call_center_pending"
     t.datetime "timestamp_server"
-  end
-
-  create_table "halo_debug_msgs", :force => true do |t|
-    t.integer  "source_mote_id"
-    t.datetime "timestamp"
-    t.integer  "dbg_type"
-    t.integer  "param1"
-    t.integer  "param2"
-    t.integer  "param3"
-    t.integer  "param4"
-    t.integer  "param5"
-    t.integer  "param6"
-    t.integer  "param7"
-    t.integer  "param8"
-    t.integer  "user_id"
-    t.string   "source_device_type"
-    t.integer  "device_id"
-    t.string   "dbg_level"
-    t.text     "description"
   end
 
   create_table "installation_notes", :force => true do |t|
@@ -652,12 +631,6 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
   end
 
   add_index "lost_datas", ["begin_time", "end_time", "user_id"], :name => "index_lost_datas_on_user_id_and_end_time_and_begin_time"
-
-  create_table "mgmt_acks", :force => true do |t|
-    t.integer  "mgmt_cmd_id"
-    t.datetime "timestamp_device"
-    t.datetime "timestamp_server"
-  end
 
   create_table "mgmt_cmds", :force => true do |t|
     t.integer  "device_id"
@@ -757,16 +730,7 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
     t.integer  "oscope_stop_msg_id"
   end
 
-  add_index "oscope_msgs", ["oscope_start_msg_id"], :name => "index_oscope_msgs_on_oscope_start_msg_id"
-
   create_table "oscope_start_msgs", :force => true do |t|
-    t.string   "capture_reason"
-    t.integer  "source_mote_id"
-    t.datetime "timestamp"
-    t.integer  "user_id"
-  end
-
-  create_table "oscope_stop_msgs", :force => true do |t|
     t.string   "capture_reason"
     t.integer  "source_mote_id"
     t.datetime "timestamp"
@@ -802,8 +766,6 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
     t.integer "data"
     t.integer "oscope_msg_id"
   end
-
-  add_index "points", ["oscope_msg_id"], :name => "index_points_on_oscope_msg_id"
 
   create_table "pool_mappings", :force => true do |t|
     t.string   "serail_number", :null => false
@@ -873,6 +835,15 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
   end
 
   add_index "profiles", ["user_id"], :name => "index_profiles_on_user_id"
+
+  create_table "purged_logs", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "model"
+    t.datetime "from_date"
+    t.datetime "to_date"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "raw_data_files", :force => true do |t|
     t.string   "filename"
@@ -1017,8 +988,6 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
     t.float    "skin_temp", :null => false
   end
 
-  add_index "skin_temps", ["skin_temp", "timestamp", "user_id"], :name => "index_skin_temps_on_user_id_and_timestamp_and_skin_temp"
-
   create_table "steps", :force => true do |t|
     t.integer  "user_id"
     t.datetime "begin_timestamp"
@@ -1027,6 +996,7 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
   end
 
   add_index "steps", ["begin_timestamp", "steps", "user_id"], :name => "index_steps_on_user_id_and_begin_timestamp_and_steps"
+  add_index "steps", ["id"], :name => "steps_pkey"
 
   create_table "strap_fasteneds", :force => true do |t|
     t.integer  "device_id"
@@ -1112,6 +1082,7 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
     t.integer  "group_id"
     t.boolean  "subscriber_is_user"
     t.boolean  "subscriber_is_caregiver"
+    t.boolean  "locked",                       :default => false
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|
@@ -1131,7 +1102,6 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
     t.string   "activation_code",           :limit => 40
     t.datetime "activated_at"
     t.string   "image"
-    t.string   "type"
     t.string   "serial_number"
     t.string   "time_zone"
     t.integer  "created_by"
@@ -1154,8 +1124,6 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
     t.boolean  "strap_status"
   end
 
-  add_index "vitals", ["heartrate", "timestamp", "user_id"], :name => "index_vitals_on_user_id_and_timestamp_and_heartrate"
-
   create_table "weight_scales", :force => true do |t|
     t.integer  "user_id"
     t.datetime "timestamp"
@@ -1169,6 +1137,7 @@ ActiveRecord::Schema.define(:version => 20100419225033) do
     t.string   "sw_rev"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "percentage"
   end
 
   create_table "work_orders", :force => true do |t|

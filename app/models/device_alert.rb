@@ -77,7 +77,7 @@ class DeviceAlert < ActiveRecord::Base
     # CHANGED: if the critical alert can check call_center_number validity? then check it, otherwise include it anyways
     # WARNING: this may break some logic in future
     # TODO: we should ideally have the call_center_number_validity check in all critical alert models
-    critical_alerts = critical_alerts.reject {|event| event.respond_to?(:call_center_number_valid?) ? !event.call_center_number_valid? : true }
+    critical_alerts = critical_alerts.reject {|event| event.respond_to?(:call_center_number_valid?) ? !event.call_center_number_valid? : false }
     #sort by timestamp, instead of timestamp_server in case GW sends them out of order in the alert_bundle
     critical_alerts.sort_by { |event| event[:timestamp] }.each do |crit|
       crit.call_center_pending = false

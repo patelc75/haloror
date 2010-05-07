@@ -39,6 +39,9 @@ class UserIntakesController < ApplicationController
   def edit
     @user_intake = UserIntake.find(params[:id])
     @groups = Group.for_user(current_user)
+    if @user_intake.locked
+      render :action => 'show'
+    end
   end
 
   # POST /user_intakes
