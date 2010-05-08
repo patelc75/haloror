@@ -74,16 +74,17 @@ class DeviceAlert < ActiveRecord::Base
     #not going to filter access_mode == 'dialup' because access_mode is not yet reliable according to corey
     #{}"id in (select device_id from access_mode_statuses where mode = 'dialup') " <<    
 
-    # CHANGED: if the critical alert can check call_center_number validity? then check it, otherwise include it anyways
-    # WARNING: this may break some logic in future
-    # TODO: we should ideally have the call_center_number_validity check in all critical alert models
-    critical_alerts = critical_alerts.reject {|event| event.respond_to?(:call_center_number_valid?) ? !event.call_center_number_valid? : false }
     #sort by timestamp, instead of timestamp_server in case GW sends them out of order in the alert_bundle
-    critical_alerts.sort_by { |event| event[:timestamp] }.each do |crit|
-      crit.call_center_pending = false
-      crit.timestamp_call_center = Time.now
-      crit.save
-      RAILS_DEFAULT_LOGGER.warn("DeviceAlert.job_process_crtical_alerts: Critical alert sent to call center: #{crit.class}(#{crit.id}), #{Time.now}\n")  
+    unless critical_alerts.blank?
+      critical_alerts.sort_by { |event| event[:timestamp] }.each do |crit|
+        crit.call_center_pending = false
+        #
+        # if the model respond_to? call_center_number_valid? method, then check it before timestamo
+        # otherwise just time stamp it
+        crit.timestamp_call_center = Time.now if (crit.respond_to?(:call_center_number_valid?) ? crit.call_center_number_valid? : true)
+        crit.save
+        RAILS_DEFAULT_LOGGER.warn("DeviceAlert.job_process_crtical_alerts: Critical alert sent to call center: #{crit.class}(#{crit.id}), #{Time.now}\n")  
+      end
     end
   end
 end

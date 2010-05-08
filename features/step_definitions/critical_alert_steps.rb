@@ -10,10 +10,7 @@ When /^I simulate a "([^\"]*)" with delivery to the call center for user login "
   if valid == "invalid"
     case error_type
       when "call center account number" 
-        # Profile.update(user.profile.id, {:account_number => ''})
         user.profile.update_attribute(:account_number, '')
-        # user.profile.account_number = ""
-        # user.profile.save
       when "profile"
         user.profile = nil
         user.save
@@ -24,7 +21,7 @@ When /^I simulate a "([^\"]*)" with delivery to the call center for user login "
     end
   end
   SystemTimeout.create(:mode => "dialup", :critical_event_delay_sec => 0, :gateway_offline_timeout_sec => 0, :device_unavailable_timeout_sec => 0, :strap_off_timeout_sec => 0)
-  object = model.constantize.create(:timestamp => Time.now-2.minutes, :user_id => user.id, :magnitude => 23, :device_id => 965)
+  object = model.gsub(/ /,'_').classify.constantize.create(:timestamp => Time.now-2.minutes, :user => user, :magnitude => 23, :device_id => 965)
   object.timestamp_server = Time.now-1.minute
   object.send(:update_without_callbacks)
   DeviceAlert.job_process_crtical_alerts
@@ -49,9 +46,9 @@ end
 Then /^I should have a "([^\"]*)" alert "([^\"]*)" to the call center with a "([^\"]*)" call center delivery timestamp$/ do |model, pending_string, timestamp_status|
   critical_alert =  model.constantize.first   
   if pending_string == "not pending"
-    assert critical_alert.call_center_pending == false, "#{model} should be not pending"
+    critical_alert.call_center_pending.should be false, "#{model} should be not pending"
   elsif pending_string == "pending"
-    assert critical_alert.call_center_pending == true, "#{model} should be pending"  
+    critical_alert.call_center_pending.should be true, "#{model} should be pending"  
   else
     assert false, "#{pending_string} is not a valid pending status"
   end
