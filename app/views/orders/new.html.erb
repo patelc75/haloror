@@ -1,6 +1,7 @@
+<p><a href="http://www.halomonitoring.com/products/myhalo-senior-monitoring">Learn more about myHalo</a>
 <% if logged_in? && current_user.is_super_admin? %>
-  <p><a href="/orders">DTC Orders table</a></p>
-<% end %>
+  | <a href="/orders">DTC Orders table</a>
+<% end %></p>
 <% if @confirmation %>
 <h1>Please verify your order</h1>
 <% end %>
