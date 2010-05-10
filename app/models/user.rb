@@ -25,10 +25,9 @@ class User < ActiveRecord::Base
   has_many :orders_updated, :class_name => 'Order', :foreign_key => 'updated_by'
   has_many :panics
   has_many :rma_items
-  # has_many :roles_users,:dependent => :destroy
-  # has_many :roles, :through => :roles_users#, :include => [:roles_users]
-  has_and_belongs_to_many :roles
-  has_many :roles_users
+  has_many :roles_users,:dependent => :destroy
+  has_many :roles, :through => :roles_users#, :include => [:roles_users]
+  # has_and_belongs_to_many :roles
   has_many :self_test_sessions
   has_many :skin_temps
   has_many :steps
