@@ -36,11 +36,14 @@ Feature: Critical Alert
     And I should have a "Fall" alert "not pending" to the call center with a "missing" call center delivery timestamp
     And 1 email to "exceptions_critical@halomonitoring.com" with subject "SafetyCareClient.alert::Missing account number!" should be sent for delivery
 
+  # "Missing user profile!" is a common phrase passed on to 2 methods called at CriticalDeviceEventObserver
+  # we are noe checking more specific subject
   Scenario: Simulate a fall for a user with an with invalid profile
     When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "profile"
     Then I should have "1" count of "Fall"
     And I should have a "Fall" alert "not pending" to the call center with a "missing" call center delivery timestamp
-    And 1 email to "exceptions_critical@halomonitoring.com" with subject "Missing user profile!" should be sent for delivery
+    And 2 emails to "exceptions_critical@halomonitoring.com" with subject "Missing user profile!" should be sent for delivery
+    And 1 email to "exceptions_critical@halomonitoring.com" with subject "call center monitoring failure" should be sent for delivery
 
   # Scenario: Simulate a fall with  delivery to the call center with Timeout exception
   #   When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "TCP connection"

@@ -7,7 +7,7 @@ Given /^Email dispatch queue is empty$/ do
   Email.delete_all
 end
 
-Then /^(.+) email to "([^\"]*)" with subject "([^\"]*)" should be sent for delivery$/ do |count, email, subject|
+Then /^(.+) emails? to "([^\"]*)" with subject "([^\"]*)" should be sent for delivery$/ do |count, email, subject|
   #assert !Email.count(:conditions => ["`emails`.`to` = ? AND `emails`.'subject' = ?", email, subject]).blank?, "Email to #{email} with subject #{subject} not found"
   # found = false
   # Email.all(:conditions => '"to" = ' + "'#{email}'").each do |message|

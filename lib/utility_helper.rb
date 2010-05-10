@@ -209,7 +209,7 @@ module UtilityHelper
   end
   
   def self.validate_event_user(event)
-    if event.user_id < 1 or event.user_id == nil or event.user == nil 
+    if event.user.blank? # event.user_id < 1 or event.user_id == nil or event.user == nil 
       raise "#{event.class.to_s}: user_id = #{event.user_id} is invalid"
     else
       true

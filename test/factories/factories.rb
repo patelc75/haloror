@@ -34,7 +34,7 @@ end
 Factory.define :emergency_number do |v|
   v.name { Faker::Company.name }
   v.number { Faker::PhoneNumber.phone_number }
-  v.association :group #, :factory => :group
+  v.association :group
 end
 
 Factory.define :gateway do |v|
@@ -62,9 +62,8 @@ Factory.define :profile do |v|
   v.account_number "1234"
   v.hospital_number "0987654321"
   v.doctor_phone "1234567890"
-  v.association :carrier # , :factory => :carrier
-  v.association :emergency_number # , :factory => :emergency_number
-  # v.association :user, :factory => :user
+  v.association :carrier
+  v.association :emergency_number
 end
 
 Factory.define :rma do |v|
@@ -93,7 +92,7 @@ Factory.define :user do |v|
   v.salt { |user| Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{user.login}--") }
   v.crypted_password { |user| Digest::SHA1.hexdigest("--#{user.salt}--12345--") }
   v.email { Faker::Internet.email }
-  v.association :profile
+  v.association :profile if v.profile.nil?
 end
 
 Factory.define :user_intake do |v|

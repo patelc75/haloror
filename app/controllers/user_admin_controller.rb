@@ -66,17 +66,22 @@ class UserAdminController < ApplicationController
   end
   
   def roles
-    @roles = []
-    rows = Role.connection.select_all("Select Distinct name from roles where name <> 'caregiver' AND name <> 'super_admin' order by name asc")
-    rows.collect do |row|
-      @roles << row['name']
-    end
-    @groups = []
-    rows = Group.connection.select_all("Select Distinct name from groups order by name asc")
-    rows.collect do |row|
-      @groups << row['name']
-    end
-    @users = User.find(:all, :order => 'login asc')
+    @roles = Role.all_except("caregiver", "super_admin")
+    # @roles = []
+    # rows = Role.connection.select_all("Select Distinct name from roles where name <> 'caregiver' AND name <> 'super_admin' order by name asc")
+    # rows.collect do |row|
+    #   @roles << row['name']
+    # end
+    @groups = current_user.groups_where_admin # where the user is member
+    # @groups = []
+    # rows = Group.connection.select_all("Select Distinct name from groups order by name asc")
+    # rows.collect do |row|
+    #   @groups << row['name']
+    # end
+    #
+    # all users having any role in selected groups
+    @users = @groups.collect(&:users).flatten.uniq
+    # @users = User.find(:all, :order => 'login asc')
   end
   
   def assign_super_role
