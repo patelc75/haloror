@@ -1,54 +1,54 @@
 <%=render :partial=>'/reporting/nav_config'%>
 
-<div id="assign_role">
-&nbsp;	
-</div>
+<div id="assign_role">&nbsp;</div>
 <% if current_user.is_super_admin? %>
-<h2>Assign Super Admin Role</h2>
-<% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_super_role'}, :update => 'assign_role' do |f|%>
-  <%=select_tag 'user_id', options_for_select(@users.collect {|u| [u.login, u.id]})%> is a Super Admin.
-  <br><%=submit_tag 'Assign Super Admin Role'%>
-<% end %>
+  <h2>Assign Super Admin Role</h2>
+  <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_super_role'}, :update => 'assign_role' do |f|%>
+    <%= collection_select 'user', 'id', @users, :id, :name %> is a Super Admin.
+    <br><%=submit_tag 'Assign Super Admin Role'%>
+  <% end %>
 <% end %>
 <br><br>
 <h2>Assign Roles</h2>
 <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_role'}, :update => 'assign_role' do |f|%>
-  <%=select_tag 'user_id', options_for_select(@users.collect {|u| [u.login, u.id]})%> is a(n) <%=select 'role', 'name', @roles%> of <%=select 'group', 'name', @groups%>
+  <%= collection_select 'user', 'id', @users, :id, :name %> is a(n) <%= collection_select 'role', 'name', @roles, :id, :name %> of <%= collection_select 'group', 'name', @groups, :id, :name %>
   <br>
   <%=submit_tag 'Assign Role and Group'%>
 <% end %>
 <br><br>
 <h2>Remove Role</h2>
 <% form_remote_tag :url => {:controller => 'user_admin',:action => 'remove_role'}, :update => 'assign_role' do |f|%>
-  Remove <%=select_tag 'user_id', options_for_select(@users.collect {|u| [u.login, u.id]})%> from <%=select 'role', 'name', @roles%> of <%=select 'group', 'name', @groups%>
+  Remove <%= collection_select 'user', 'id', @users, :id, :name %> from <%= collection_select 'role', 'name', @roles, :id, :name %> of <%= collection_select 'group', 'name', @groups, :id, :name %>
   <br>
   <%=submit_tag 'Remove Role and Group'%>
 <% end %>
 <br><br>
 <h2>Groups</h2>
 <div id="group"></div>
-<% form_remote_tag :url => {:controller => 'user_admin',:action => 'add_group'}, :update => 'group' do |f|%>
-	<%= error_messages_for :group %>
-  <label for="group_name">Group Name</label>
-  <%= text_field_tag 'group_name' %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <label for="sales_type">Sales Type</label>
-  <select name="sales_type">
-  	<option value="">Select</option>
-  	<option value="reseller">reseller</option>
-  	<option value="retailer">retailer</option>
-  	<option value="call_center">call_center</option>
-  </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <label for="description">Description</label>
-  <%= text_field_tag 'description'%>
-  <br>
-  <%=submit_tag 'Add Group'%>
-<% end %>
+<% if current_user.is_super_admin? %> <!-- do not show it to any other user -->
+  <% form_remote_tag :url => {:controller => 'user_admin',:action => 'add_group'}, :update => 'group' do |f|%>
+  	<%= error_messages_for :group %>
+    <label for="group_name">Group Name</label>
+    <%= text_field_tag 'group_name' %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <label for="sales_type">Sales Type</label>
+    <select name="sales_type">
+    	<option value="">Select</option>
+    	<option value="reseller">reseller</option>
+    	<option value="retailer">retailer</option>
+    	<option value="call_center">call_center</option>
+    </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <label for="description">Description</label>
+    <%= text_field_tag 'description'%>
+    <br>
+    <%=submit_tag 'Add Group'%>
+  <% end %>
+<% end -%>
 
 <br>
 <div>
 <table border="1" style="text-align:left">
 <tr><th>Group</th><th>Email</th><th>Description</th><th>Type</th><th>Actions</th></tr>
-<% @groups=Group.find(:all).each do |group|  %>
+<% @groups.each do |group|  %> <!-- groups where current_user is admin -->
   <tr>
   	<td><%= group.name %></td>
   	<td><%= group.email %></td>
