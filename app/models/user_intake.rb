@@ -150,17 +150,17 @@ class UserIntake < ActiveRecord::Base
     #
     # FIXME: we should not validate here. its done in "validate". just add roles etc here
     #
-    # senior
-    unless senior.blank?
-      # senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")
-      self.errors.add_to_base("Senior not valid") unless senior.valid?
-      self.errors.add_to_base("Senior profile needs more detail") unless senior.profile.nil? || senior.profile.valid?
-    end
+    # # senior
+    # unless senior.blank?
+    #   # senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")
+    #   self.errors.add_to_base("Senior not valid") unless senior.valid?
+    #   self.errors.add_to_base("Senior profile needs more detail") unless senior.profile.nil? || senior.profile.valid?
+    # end
     # subscriber
     unless subscriber.blank?
-      # subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
-      self.errors.add_to_base("Subscriber not valid") unless subscriber.valid?
-      self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.nil? || subscriber.profile.valid?
+      # # subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
+      # self.errors.add_to_base("Subscriber not valid") unless subscriber.valid?
+      # self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.nil? || subscriber.profile.valid?
       # save options
       caregiver1.options_for_senior(senior, mem_caregiver1_options.merge({:position => 1})) if subscriber_is_caregiver
     end
@@ -168,9 +168,9 @@ class UserIntake < ActiveRecord::Base
     (1..3).each do |index|
       caregiver = self.send("caregiver#{index}".to_sym)
       unless caregiver.blank?
-        # caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
-        self.errors.add_to_base("Caregiver #{index} not valid") unless caregiver.valid?
-        self.errors.add_to_base("Caregiver #{index} profile needs more detail") unless caregiver.profile.nil? || caregiver.profile.valid?
+        # # caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
+        # self.errors.add_to_base("Caregiver #{index} not valid") unless caregiver.valid?
+        # self.errors.add_to_base("Caregiver #{index} profile needs more detail") unless caregiver.profile.nil? || caregiver.profile.valid?
         # save options
         options = self.send("mem_caregiver#{index}_options")
         caregiver.options_for_senior(senior, options.merge({:position => index}))

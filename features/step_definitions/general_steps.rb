@@ -31,7 +31,14 @@ Given /^the following (.+):$/ do |name, table|
     name.singularize.capitalize.constantize
   end
   model.delete_all
-  table.hashes.each { |e| Factory.create(model.to_s.underscore.to_sym, e) }
+  # single line statement causes user_intake locked after_save
+  # we need to skip_validation to save it and allow "edit"
+  #   table.hashes.each {|hash| Factory.build(model.to_s.underscore.to_sym, hash) }
+  table.hashes.each do |hash|
+    model = Factory.build(model.to_s.underscore.to_sym, hash)
+    model.skip_validation = true if model.is_a?(UserIntake)
+    model.save
+  end
   # model.create!(table.hashes)
 end
 
