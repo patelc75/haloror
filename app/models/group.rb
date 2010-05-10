@@ -4,6 +4,8 @@ class Group < ActiveRecord::Base
   has_many :recurring_charges
   has_many :rmas
   has_many :rma_items
+  has_many :orders
+  has_many :roles, :as => :authorizable
 
   validates_format_of :name, :with => /\A[a-z0-9_]+\z/, :message => 'Only lowercase and numeric characters are allowed'
   
@@ -19,4 +21,26 @@ class Group < ActiveRecord::Base
   def self.for_user(user)
     user.is_super_admin? ? find(:all) : for_sales_or_admin_user(user)
   end
+  
+  def users
+    # all users having any role for this group
+    # Usage:
+    #   group.users
+    users_of_roles(roles)
+  end
+  
+  def users_with_role(role = nil)
+    # all users having specific role in the group
+    # Usage:
+    #   group.users_with_role("admin")
+    #   group.users_with_role(["admin", "sales"])
+    users_of_roles(roles(:conditions => {:name => role}))
+  end
+  
+  private # -----------------------------
+  
+  def users_of_roles(roles)
+    roles.collect(&:users).flatten.uniq unless roles.blank?
+  end
+  
 end
