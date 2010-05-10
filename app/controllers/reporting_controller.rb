@@ -118,31 +118,48 @@ class ReportingController < ApplicationController
   end
   
   def devices
-    conditions = ''
+    # FIXME: make a hash of conditions rather than SQL
+    #   if we already search by ID / serial_number, why do we need to add device_id condition?
+    @devices = []
+    # conditions = ''
     if params[:query] and !params[:query].blank?
-    	conditions = "id = #{params[:query]}" if params[:query].size < 10
-    	conditions = "serial_number = '#{params[:query].strip}'" if params[:query].size == 10
+      conditions = (params[:query].size == 10 ? {:serial_number => params[:query].strip} : {:id => params[:query].to_i})
+      @devices = Device.all(:conditions => conditions)
+      # conditions = "id = #{params[:query]}" if params[:query].size < 10
+      # conditions = "serial_number = '#{params[:query].strip}'" if params[:query].size == 10
     end
     if !current_user.is_super_admin?
-      groups = current_user.group_memberships
-      g_ids = []
-      groups.each do |group|
-        g_ids << group.id if(current_user.is_admin_of?(group))
-      end
-      group_ids = g_ids.join(', ')
-      RAILS_DEFAULT_LOGGER.warn(group_ids)
-      conditions += "and devices.id IN (Select device_id from devices_users where devices_users.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids}))))"
+      # we need this query here just for the LOGGER
+      group_ids = current_user.is_admin_of_what.select {|e| e.is_a?(Group) }.collect(&:id)
+      RAILS_DEFAULT_LOGGER.warn(group_ids.join(','))
+      # groups = current_user.group_memberships
+      # g_ids = []
+      # groups.each do |group|
+      #   g_ids << group.id if(current_user.is_admin_of?(group))
+      # end
+      # group_ids = g_ids.join(', ')
+      # RAILS_DEFAULT_LOGGER.warn(group_ids)
+      #
+      # FIXME: why do we need embedde SQL here?
+      # we can do same query in ruby (with very quick load times) like...
+      #
+      # 
+      groups = current_user.is_admin_of_what.select {|e| e.is_a?(Group)}
+      @devices += groups.collect(&:has_halouser).flatten.collect(&:devices).flatten.uniq
+      @devices += groups.collect(&:has_admin).flatten.collect(&:devices).flatten.uniq
+      @devices = @devices.uniq
+      # @devices += current_user.is_admin_of_what.select {|e| e.is_a?(Group)}.collect(&:has_halouser).flatten.collect(&:devices).flatten.uniq
+      #
+      # conditions += " AND " unless conditions.blank? # https://redmine.corp.halomonitor.com/issues/2890
+      # conditions += " devices.id IN (Select device_id from devices_users where devices_users.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids}))))"
     end
-   # if conditions.blank?
-   #   @devices = Device.find(:all, :order => "id asc")
+    # if conditions.blank?
+    #   @devices = Device.find(:all, :order => "id asc")
     #else
     #  @devices = Device.find(:all, :order => "id asc",:conditions => conditions)
     #end
-    @devices = Device.paginate :page       => params[:page],
-                               :order      => "id asc",
-                               :conditions => conditions,
-                               :per_page   => REORTING_DEVICES_PER_PAGE
-    
+    @devices = @devices.paginate :page => params[:page], :order => "id asc", :per_page => REORTING_DEVICES_PER_PAGE
+    # @devices = Device.paginate :page => params[:page], :conditions => conditions, :order => "id asc", :per_page => REORTING_DEVICES_PER_PAGE
   end
   
   def device_hidden
