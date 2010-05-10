@@ -220,7 +220,7 @@ class ProfilesController < ApplicationController
           # @alert_message = true
           # render :action => 'edit_caregiver_profile'
           redirect_to_message( 
-            :message => (current_user.is_super_admin? ? :profile_updated : :call_tech_support), 
+            :message => ((current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)) ? :profile_updated : :call_tech_support), 
             :back_url => url_for(:controller => "profiles", :action => "edit_caregiver_profile", :id => @profile.id, :user_id => user)
             )
           # redirect_to :controller => "alerts", :action => "alert"
