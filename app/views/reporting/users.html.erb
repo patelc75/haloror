@@ -2,14 +2,9 @@
 <%=render :partial => 'nav_config'%>
 <h3> Users table </h3>
 <form id="group_form_id" action="/reporting/users" method="GET">
-<% gs = ['']
-   @groups.each do |group|
-     gs << group.name
-   end
-%>
 <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
 Select Group:  
-<%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]}, @group_name), {:onchange => "$('group_form_id').submit();"}%>
+<%= select_tag 'group_name', options_from_collection_for_select(@groups, 'name', 'name', @group_name), {:onchange => "$('group_form_id').submit();"}%>
 </form>
 <div id="user-table" class="table">
 	<br>
