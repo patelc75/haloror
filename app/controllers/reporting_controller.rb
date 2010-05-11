@@ -95,7 +95,11 @@ class ReportingController < ApplicationController
     #     @user_names[user.login] = user.id
     #   end
     # end
-    @user_names = (@users.blank? ? {} : Hash[ @users.collect {|user| [user.login, user.id] } ])
+    @user_names = {}
+    @users.each {|user| @user_names[user.login] = user.id } unless @users.blank?
+    #
+    # shorthand below is causing "odd number of arguments for Hash"
+    # @user_names = (@users.blank? ? {} : Hash[ @users.collect {|user| [user.login, user.id] } ])
   end
   
   def purge_data

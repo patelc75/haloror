@@ -40,7 +40,7 @@ class Group < ActiveRecord::Base
   private # -----------------------------
   
   def users_of_roles(roles)
-    roles.collect(&:users).flatten.uniq unless roles.blank?
+    roles.blank? ? [] : roles.collect(&:users).flatten.uniq # return an array in all cases
   end
   
 end
