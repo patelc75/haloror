@@ -53,7 +53,7 @@
 			<% if current_user.is_super_admin? %>
 				<li><a href="/atp/index">ATP</a></li>
 			<% end %>
-			<% if (current_user.is_admin? || current_user.is_super_admin?) %>
+			<% if current_user.is_super_admin? %>
 				<li><%= link_to 'Healthvault', :controller => 'healthvault', :action => 'index' %></li>
 			<% end %>
 			<% if current_user.is_super_admin? %>
