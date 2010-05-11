@@ -63,7 +63,7 @@ class ReportingController < ApplicationController
     #   @groups = current_user.group_memberships
     #   @group = @groups.first
     # end
-    @groups = (current_user.is_super_admin? ? Group.all : current_user.group_memberships)
+    @groups = (current_user.is_super_admin? ? Group.distinct_by_name : current_user.group_memberships)
     
     # @group_name = ''
     # if params[:group_name].blank?
@@ -73,9 +73,8 @@ class ReportingController < ApplicationController
     #   session[:group_name] = @group_name
     #   group = Group.find_by_name(@group_name)
     # end
-    session[:group_name] = @group_name = params[:group_name]
+    session[:group_name] = @group_name = (params[:group_name] || '')
     group = (@group_name.blank? ? @groups.first : Group.find_by_name(@group_name))
-
     # if @group
     #   us = []
     #   users.each do |user|
