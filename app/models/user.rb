@@ -337,18 +337,21 @@ class User < ActiveRecord::Base
     end
     return alert_option
   end
+
   def caregivers_sorted_by_position
     cgs = {}
     caregivers.each do |caregiver|
-      roles_user = roles_user_by_caregiver(caregiver)
-      if opts = roles_user.roles_users_option
-        unless opts.removed
-          cgs[opts.position] = caregiver
+      if roles_user = roles_user_by_caregiver(caregiver)
+        if opts = roles_user.roles_users_option
+          unless opts.removed
+            cgs[opts.position] = caregiver
+          end
         end
       end
     end
     cgs = cgs.sort
   end
+
   def roles_user_by_role_name(role_name)
     if self.roles_users
       return self.roles_users.find(:first, :conditions => "roles.name = '#{role_name}' AND user_id = #{self.id}", :include => :role)

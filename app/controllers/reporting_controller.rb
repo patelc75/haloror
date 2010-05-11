@@ -65,14 +65,16 @@ class ReportingController < ApplicationController
     # end
     @groups = (current_user.is_super_admin? ? Group.all : current_user.group_memberships)
     
-    @group_name = ''
-    if params[:group_name].blank?
-      group = @groups.first
-    else
-      @group_name = params[:group_name]
-      session[:group_name] = @group_name
-      group = Group.find_by_name(@group_name)
-    end
+    # @group_name = ''
+    # if params[:group_name].blank?
+    #   group = @groups.first
+    # else
+    #   @group_name = params[:group_name]
+    #   session[:group_name] = @group_name
+    #   group = Group.find_by_name(@group_name)
+    # end
+    session[:group_name] = @group_name = params[:group_name]
+    group = (@group_name.blank? ? @groups.first : Group.find_by_name(@group_name))
 
     # if @group
     #   us = []
