@@ -71,6 +71,10 @@ class User < ActiveRecord::Base
   
   before_save :encrypt_password
   before_create :make_activation_code
+  
+  # CHANGED: commented for now. makes more sense when larger piece of code uses this
+  # named_scope :ordered, lambda {|*args| { :order => (args.flatten.first || "id ASC") } }
+  
   def before_validation
         self.email = "no-email@halomonitoring.com" if self.email == ''
   end
@@ -1293,6 +1297,10 @@ class User < ActiveRecord::Base
   # return true if the login is not blank
   def login_not_blank?
     return !self.login.blank?
+  end
+
+  def has_valid_cell_phone_and_carrier?
+    profile.blank? ? false : (profile.cell_phone_exists? && !profile.carrier.blank?)
   end
   
   

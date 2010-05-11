@@ -11,6 +11,11 @@ class CallListController < ApplicationController
     number_ext
     session[:redirect_url] = request.env['REQUEST_URI']
     if(!params[:id].blank?)
+      #
+      # WARNING: What happens if profile does not exist for a user found here?
+      #   The view file updated to conditionally block the features when profile is missing
+      #   A more appropriate business logic is required here
+      #
       @user = User.find(params[:id])
       get_caregivers(@user)
       groups = @user.group_memberships

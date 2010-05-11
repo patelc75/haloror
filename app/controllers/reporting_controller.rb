@@ -64,7 +64,6 @@ class ReportingController < ApplicationController
     #   @group = @groups.first
     # end
     @groups = (current_user.is_super_admin? ? Group.distinct_by_name : current_user.group_memberships)
-    
     # @group_name = ''
     # if params[:group_name].blank?
     #   group = @groups.first
@@ -73,8 +72,13 @@ class ReportingController < ApplicationController
     #   session[:group_name] = @group_name
     #   group = Group.find_by_name(@group_name)
     # end
+    #
+    # CHANGED: show all users when group_name search parameter is blank
+    #   This feature is introduced now. Earlier the empty option did exist in group dropdown
+    #   but that was not showing all users. maybe was broken feature
     session[:group_name] = @group_name = (params[:group_name] || '')
-    group = (@group_name.blank? ? @groups.first : Group.find_by_name(@group_name))
+    group = (@group_name.blank? ? nil : Group.find_by_name(@group_name)) # @groups.first replaced with nil
+    
     # if @group
     #   us = []
     #   users.each do |user|
@@ -87,7 +91,8 @@ class ReportingController < ApplicationController
     #   :order   => 'users.id',
     #   :per_page => REPORTING_USERS_PER_PAGE
     # end
-    @users = (group.blank? ? User.all : group.users).paginate :page => params[:page], :include => [:roles, :roles_users] ,:order => 'users.id', :per_page => REPORTING_USERS_PER_PAGE
+    @users = (group.blank? ? User.all(:order => "id ASC") : group.users.sort {|a,b| a.id <=> b.id})
+    @users = @users.paginate :page => params[:page], :include => [:roles, :roles_users] ,:order => 'users.id', :per_page => REPORTING_USERS_PER_PAGE
 
     # @users.each do |user|
     #   if user
@@ -180,24 +185,41 @@ class ReportingController < ApplicationController
     @device = Device.find(params[:device_id])
     render :partial => 'device_hidden', :layout => false
   end
+
   def sort_user_table
-    #order = "#{params[:col]} asc"
+    # WARNING: Code coverage is zero for this code. Highly recommended to cover it.
+    # this was already commented
+    #
+    # order = "#{params[:col]} asc"
+    # users = User.find(:all, :order => order)
+
+    # just create a hash of options here. search later a few lines below
+    options = (params[:col] == 'name' ? {:include => :profile, :order => 'profiles.last_name'} : {:order => "users.id"})
+    # if params[:col] == 'name'
+    #   users = User.all(:include => :profile, :order => 'profiles.last_name')
+    # else
+    #   users = User.all(:order => :id) # params[:col]
+    # end
     
-    #users = User.find(:all, :order => order)
+    session[:group_name] = @group_name = (params[:group_name] || '')
+    group = (@group_name.blank? ? nil : Group.find_by_name(@group_name)) # @groups.first replaced with nil
+    # @group_name = ''
+    # if !session[:group_name].blank?
+    #   @group_name = session[:group_name]
+    #   @group = Group.find_by_name(@group_name)
+    # end
+    # sortby = 'id'
     
-    if params[:col] == 'name'
-      users = User.find(:all, :include => :profile, :order => 'profiles.last_name')
-    else
-      users = User.find(:all, :order => params[:col])
-    end
-    @group_name = ''
-    if !session[:group_name].blank?
-      @group_name = session[:group_name]
-      @group = Group.find_by_name(@group_name)
-    end
-    sortby = 'id'
+    # * filter users that have some role for the selected group
+    # * keep all users if group is blank
+    # * options hash was created a few lines above, from the sort parameter passed
+    @users = User.all(options).select {|user| user.has_role_for?(group) } unless group.blank?
+    # * include profile, just in case we have to sort by name
+    # * make :order option dynamic, subject to parameter received
+    @users = @users.paginate :page => params[:page], :include => [:roles, :roles_users, :profile] ,:order => options[:order], :per_page => REPORTING_USERS_PER_PAGE
+    # everything else should work as earlier
     
-    render :partial => 'user_table', :locals => {:users => users, :sortby => params[:col], :reverse => false}
+    render :partial => 'user_table', :locals => {:users => @users, :sortby => params[:col], :reverse => false}
   end
   
   def search_user_table

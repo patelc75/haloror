@@ -4,11 +4,11 @@
 	</div>
 
 	<div class="col-25">
-		<%=link_to_remote "ID", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'id'}%>
+		<%= link_to_remote "ID", {:update => 'user-table', :url => {:action => 'sort_user_table', :col => 'id', :group_name => @group_name}}, {:title => "Order by User ID"} %>
 	</div>
 
 	<div class="col-125">
-		<%=link_to_remote "Name", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'name'}%>
+		<%= link_to_remote "Name", {:update => 'user-table', :url => {:action => 'sort_user_table', :col => 'name', :group_name => @group_name}}, {:title => "Order by Last Name in User Profile"} %>
 	</div>
 
 	<div class="col-300">

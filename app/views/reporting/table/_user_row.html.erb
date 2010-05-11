@@ -22,10 +22,11 @@
 		<% end %>
 		
 		<% if profile = user.profile %>
-			<%=user.name%> <span style="font-size: 80%;"><br><%=user.login%></span>
+			<%=user.name%> 
 		<% else %>	
-			&nbsp;
+			Profile missing
 		<% end %>
+		<span style="font-size: 80%;"><br><%=user.login%></span>
 		<% if caregiver and user.profile %>
 			</a>
 			(<%=user.profile[:relationship]%>)
@@ -72,7 +73,7 @@
 					    <% end %>
 				   <% end %>
 		<% else %>
-			&nbsp;
+			Profile missing for user <%= user.login %>
 		<% end %>
 	</div>
 	<!--
