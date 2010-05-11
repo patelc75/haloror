@@ -372,6 +372,22 @@ class User < ActiveRecord::Base
     self.is_admin_of_what.select {|element| element.is_a?(Group) }.uniq
   end
   
+  # includes the following groups
+  #   * where this use is a member
+  #   * where this user is caregiver of a member 
+  def extended_group_memberships
+    group_memberships + caregiving_group_memberships
+  end
+  
+  # user is_caregiver to halousers.of_these_groups
+  def caregiving_group_memberships
+    # I am the caregiver, fetch all groups of all senior whom I am caregiving
+    # admin of any group in the above list, can edit my profile (caregiver profile)
+    self.is_caregiver_of_what.collect(&:group_memberships).flatten
+    # if we only want to allow admins of "halouser-group"
+    # then change the symbol method to "is_halouser_of_what"
+  end
+  
   def group_memberships
     # CHANGED: test this
     # Groups for which current_user has roles

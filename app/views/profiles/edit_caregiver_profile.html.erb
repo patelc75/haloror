@@ -1,5 +1,5 @@
 <% content_for :js do %>
-  <% unless current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %> <!-- everything read only unless super admin -->
+  <% unless current_user.is_super_admin? || current_user.is_admin_of_any?(@user.extended_group_memberships) %> <!-- everything read only unless super admin -->
     <script type="text/javascript" charset="utf-8">
       function DisableEnableForm(xForm,xHow){
         objElems = xForm.elements;
@@ -48,7 +48,7 @@
 		<% end -%>
 	<div style="width:380px;" id="container"></div>
 	<span style="padding-left:30px;">
-	 <% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %>
+	 <% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.extended_group_memberships) %>
 		 <% @kit_serial_number = KitSerialNumber.find_by_user_id(@user.id,:order => 'created_at desc') %>
      <%= link_to('Change Password', :controller => "profiles", :action => "change_password_init", :id => @user.profile.id,:user_id => @user.id )%> | <%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id %> | 
      <% if @kit_serial_number %>
@@ -65,7 +65,7 @@
      <%= link_to "Resend Caregiver Invitation Email",:controller => 'profiles',:action => 'resend_mail',:id => @user.id,:roles_user_id => params[:roles_user_id]%>
    <%end%> 
 	    
-	    <% unless current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %>
+	    <% unless current_user.is_super_admin? || current_user.is_admin_of_any?(@user.extended_group_memberships) %>
 	      <p class="color-red" style="padding-left:30px;">Please call tech support 1-888-971-HALO (4256) to make modification to this profile.</p>
 	    <% end -%>
       <%# form_tag :action => 'create' do -%>
@@ -88,7 +88,7 @@
 		  	<%= render :partial => '/profiles/profile_halousers_only' %>
 			<br />
 			<br />
-			<% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %> <!-- super admin can update, others can just view -->
+			<% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.extended_group_memberships) %> <!-- super admin can update, others can just view -->
 			  <input name="commit" type="image" src="/images/update.gif"  />
 		  <% else %>
 		    <%= image_tag("update_grey.gif") %>
