@@ -25,8 +25,10 @@ class User < ActiveRecord::Base
   has_many :panics
   has_one  :profile, :dependent => :destroy
   has_many :rma_items
-  has_many :roles_users,:dependent => :destroy
-  has_many :roles, :through => :roles_users#, :include => [:roles_users]
+  # has_many :roles_users,:dependent => :destroy
+  # has_many :roles, :through => :roles_users#, :include => [:roles_users]
+  has_and_belongs_to_many :roles
+  has_many :roles_users
   has_many :self_test_sessions
   has_many :skin_temps
   has_many :steps
@@ -236,9 +238,13 @@ class User < ActiveRecord::Base
     
     patients
   end
-  def is_caregiver_for?(user)
-    
-  end
+
+  # not required. this is already handled exactly like this by rails-authorization plugin
+  #
+  # def is_caregiver_for?(user)
+  #   
+  # end
+
   def is_active_caregiver?(caregiver)
     roles_user = self.roles_user_by_caregiver(caregiver)
     if roles_user
@@ -254,6 +260,7 @@ class User < ActiveRecord::Base
     end
     return false
   end
+  
   def active_caregivers
     cg_array = []
     cgs = self.caregivers
@@ -269,6 +276,7 @@ class User < ActiveRecord::Base
       return []
     end
   end
+  
   def inactive_caregivers
     cg_array = []
     cgs = self.caregivers
@@ -354,6 +362,11 @@ class User < ActiveRecord::Base
     # return self.roles.find(:all, :conditions => {:authorizable_type => 'Group'}.merge(options)).uniq
     roles = self.roles.find(:all, :conditions => "authorizable_type = 'Group'")
     return roles.uniq
+  end
+
+  def groups_where_admin
+    # only fetch groups for which user has admin role
+    self.is_admin_of_what.select {|element| element.is_a?(Group) }.uniq
   end
   
   def group_memberships
