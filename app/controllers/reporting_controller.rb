@@ -95,7 +95,7 @@ class ReportingController < ApplicationController
     #     @user_names[user.login] = user.id
     #   end
     # end
-    @user_names = Hash[ @users.collect {|user| [user.login, user.id] } ]
+    @user_names = (@users.blank? ? {} : Hash[ @users.collect {|user| [user.login, user.id] } ])
   end
   
   def purge_data
