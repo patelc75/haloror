@@ -11,7 +11,7 @@
        group = Group.find(role.authorizable_id)
        names << "#{role.name} / #{group.name}"
      else
-       if (role.name == 'caregiver' or role.name == 'subscriber')
+       if (role.name == 'caregiver') || (role.name == 'subscriber')
          halouser = User.find(role.authorizable_id) unless role.authorizable_id.blank?
          
          if !halouser.nil?

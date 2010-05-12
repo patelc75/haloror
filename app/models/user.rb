@@ -253,15 +253,16 @@ class User < ActiveRecord::Base
   end
   
   def patients
-    patients = []
-    
-    RolesUser.find(:all, :conditions => "user_id = #{self.id}").each do |role_user|
-      if role_user.role and role_user.role.name == 'caregiver' and role_user.roles_users_option and !role_user.roles_users_option.removed
-        patients << User.find(role_user.role.authorizable_id, :include => [:roles, :roles_users, :access_logs, :profile])
-      end
-    end
-    
-    patients
+    # patients = []
+    # 
+    # RolesUser.find(:all, :conditions => "user_id = #{self.id}").each do |role_user|
+    #   if role_user.role and role_user.role.name == 'caregiver' and role_user.roles_users_option and !role_user.roles_users_option.removed
+    #     patients << User.find(role_user.role.authorizable_id, :include => [:roles, :roles_users, :access_logs, :profile])
+    #   end
+    # end
+    # 
+    # patients
+    self.is_caregiver_of_what # will return all seniors for whom this user is a caregiver
   end
 
   # not required. this is already handled exactly like this by rails-authorization plugin
@@ -590,14 +591,15 @@ class User < ActiveRecord::Base
     return os2
   end
   
-  def name()
-    if(profile and !profile.last_name.blank? and !profile.first_name.blank?)
-      profile.first_name + " " + profile.last_name 
-    elsif !login.blank?
-      login
-    else 
-      email
-    end
+  def name
+    (profile.blank? ? (login.blank? ? email : login) : [profile.first_name, profile.last_name].join(' '))
+    # if(profile and !profile.last_name.blank? and !profile.first_name.blank?)
+    #   profile.first_name + " " + profile.last_name 
+    # elsif !login.blank?
+    #   login
+    # else 
+    #   email
+    # end
   end
   
   def to_s()

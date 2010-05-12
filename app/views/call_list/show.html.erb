@@ -17,10 +17,7 @@
       <% else %>
 			  <%=link_to(@user.name + "`s", :controller => "profiles", :action => "edit_caregiver_profile", :id => @user.profile.id, :user_id => @user.id )%>
 			<% end -%>
-			
-			<% if @user.is_halouser? %>
-			Caregivers
-			<% end %>
+      Caregivers
 		</span>			
 	</div>
 	
@@ -33,7 +30,7 @@
 
 	<div class="content">
 	<% if @user.is_caregiver? %>
-		<%=render :partial => 'layouts/choose_patient'%>
+		<%= render :partial => 'layouts/choose_patient' %>
 	<% end %>
 		<p>&nbsp;</p>
 		<div id="call_list_header" style="display:<%=call_list_header_display%>">

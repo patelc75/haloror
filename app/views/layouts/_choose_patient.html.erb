@@ -1,16 +1,26 @@
+<!-- <% patient_ids = current_user.patients.map { |patient| patient.id } %>
+<% patient_ids << current_user.id %>
+<% if patient_ids.include?(params[:id].to_i) %> -->
+
 <% if params[:id].to_i == current_user.id %>
 <span style="margin-left: 15px;font-size:1.25em">
-	myHalo User:	
-<select onchange="if(this.value != ''){document.location = '/<%=params[:controller]%>/<%=params[:action]%>/'+this.value}">
-	<% if current_user.is_halouser? %>
-		<option value="<%=current_user.id%>"><%=@current_user.name%></option>
-		<option value="">---</option>
-	<% end %>
-	
-	<% current_user.patients.each do |patient| %>
-		<option value="<%=patient.id%>" <%='selected' if params[:id].to_i == patient.id or session[:senior].to_i == patient.id%>><%=patient.name%></option>
-	<% end %>
-</select>
+
+  myHalo User:
+  <!-- selecting any user will redirect the page to a different one, so dropdown will go away -->
+  <%= collection_select "senior", "ids", @seniors, :id, :name, {}, {:onchange => "if(this.value != ''){document.location = '/call_list/show/'+this.value}"} %>
+
+  <!-- <select onchange="if(this.value != ''){document.location = '/<%=params[:controller]%>/<%=params[:action]%>/'+this.value}">
+    <% if current_user.is_halouser? %>
+    <option value="<%=current_user.id%>"><%=@current_user.name%></option>
+    <option value="">---</option>
+    <% end %>
+
+    <% current_user.patients.each do |patient| %>
+    <option value="<%=patient.id%>" <%='selected' if params[:id].to_i == patient.id or session[:senior].to_i == patient.id%>><%=patient.name%></option>
+    <% end %>
+  </select> -->
+
 </span>
 <% end %>
 <%#=debug @user.patients%>
+<!-- <% end -%> -->
