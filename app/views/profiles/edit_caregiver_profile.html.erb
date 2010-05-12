@@ -48,7 +48,7 @@
 		<% end -%>
 	<div style="width:380px;" id="container"></div>
 	<span style="padding-left:30px;">
-	 <% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.extended_group_memberships) %>
+	 <% if current_user.is_super_admin? %>
 		 <% @kit_serial_number = KitSerialNumber.find_by_user_id(@user.id,:order => 'created_at desc') %>
      <%= link_to('Change Password', :controller => "profiles", :action => "change_password_init", :id => @user.profile.id,:user_id => @user.id )%> | <%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id %> | 
      <% if @kit_serial_number %>

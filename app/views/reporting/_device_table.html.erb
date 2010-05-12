@@ -40,7 +40,9 @@
 			<% end %>
 		</div>
 		<div class="col-200">
+		  <% if current_user.is_super_admin? %>
 			<a href="/management/?device_id=<%=device[:id]%>">Manage</a> | <a href="/devices/stats/<%=device[:id]%>">Stats</a> | <%= link_to 'ATP',:controller => 'atp',:action => 'report',:device_id => device[:id]%>
+			<% end %>
 		</div>
 	</div>
 	<div id="device_<%=device.id%>-hidden" style="display:none"></div>
