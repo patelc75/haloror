@@ -1,3 +1,7 @@
+<% if @user.is_caregiver? %>
+	<%=render :partial => 'layouts/choose_patient'%>
+<% end %>
+
 <form action="/events/user/<%= params[:id]%>">
   <table>
     <tr>
