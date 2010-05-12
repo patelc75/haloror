@@ -99,9 +99,9 @@
 	</div>
   <!-- https://redmine.corp.halomonitor.com/issues/2778 -->
 	<% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %> <!-- @user.is_halouser? || @user.is_sales? -->
-    <%= link_to image_tag('add-caregiver.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), {:controller => 'users' , :action => 'new_caregiver_options', :user_id => current_user.id, :back_url => url_for(:controller => 'call_list', :action => 'show', :id => current_user.id)} %>
+    <%= link_to image_tag('add-caregiver.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), {:controller => 'users' , :action => 'new_caregiver_options', :user_id => @user.id, :back_url => url_for(:controller => 'call_list', :action => 'show', :id => @user.id)} %>
   <% else %>
-    <%= link_to image_tag('add-caregiver-grey.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), {:controller => "alerts", :action => "alert", :message => "call_tech_support", :back_url => url_for(:controller => 'call_list', :action => 'show', :id => current_user.id)} %>
+    <%= link_to image_tag('add-caregiver-grey.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), {:controller => "alerts", :action => "alert", :message => "call_tech_support", :back_url => url_for(:controller => 'call_list', :action => 'show', :id => @user.id)} %>
 	<% end %>
 	</div>
 	<div style="clear:both"></div>
