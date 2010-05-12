@@ -10,19 +10,20 @@
 
 			<% if current_user.is_halouser? %>
 				<li><%=link_to('Configure&nbsp;Alerts', :controller => "alerts", :action => "index", :id => current_user.roles_user_by_role_name('halouser').id)%></li>
-
-				<% if !caregiver %>
-					<li><%= link_to 'My&nbsp;Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
-				<% end %>
-
-			<% end %>
-			<li><%= link_to 'My&nbsp;Events', :controller => 'events', :action => 'user', :id => current_user.id %></li>
-			<% if caregiver %>
-				<li><%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
-			<% end %>
+			<% end %>            
+			
+			<% prefix = ""%>
+			<% if caregiver %> 
+			  <% prefix = "My&nbsp;"%>
+			<% end %>  		  
+			
+			<li><%= link_to prefix+'Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
+			<li><%= link_to prefix+'Events', :controller => 'events', :action => 'user', :id => current_user.id %></li>    			
+			
 			<% if current_user.is_halouser? || current_user.is_caregiver? %>
 			  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
 			<% end %>
+			
 			<li><%= link_to 'Support', url_for(:controller => 'util', :action => 'support') %></li>
 			<li><%= link_to 'Buy Online', '/order' %></li>			
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? || current_user.is_installer? || current_user.is_operator? || current_user.is_moderator? %>
