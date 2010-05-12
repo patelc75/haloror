@@ -2,6 +2,9 @@ require 'digest/sha1'
 class User < ActiveRecord::Base
   #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
   
+  # prevents a user from submitting a crafted form that bypasses activation
+  # anything else you want your user to change should be added here.
+  attr_accessible :login, :email, :password, :password_confirmation
   attr_accessible :need_validation
   attr_accessor :need_validation
   
@@ -99,9 +102,6 @@ class User < ActiveRecord::Base
     # recommendation: use skip_validation logic in new user intake ticket 2663
     self.email = "no-email@halomonitoring.com" if self.email.blank?
   end
-  # prevents a user from submitting a crafted form that bypasses activation
-  # anything else you want your user to change should be added here.
-  #attr_accessible :login, :email, :password, :password_confirmation
   
   def username
     return self.name rescue ""

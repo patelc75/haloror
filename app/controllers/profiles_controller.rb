@@ -122,7 +122,6 @@ class ProfilesController < ApplicationController
   end
    
   def create_caregiver_profile
-  	
   	@user = User.new(params[:user])
     @profile = Profile.new(params[:profile])
   
