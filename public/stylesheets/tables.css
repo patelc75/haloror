@@ -1,6 +1,8 @@
-table.bluegrey { width: 100%; border: 1px solid #BBB; padding: 1px;}
-table.bluegrey td { border: none; }
-table.bluegrey th { background-color: #9ED3FA; border: none;}
+table.bluegrey, div.table { width: 100%; border: 1px solid #BBB; padding: 1px; overflow: auto;}
+table.bluegrey td, div.table div.row { border: none; border-top: 1px dotted #666; margin-top: 2px; overflow: auto;}
+table.bluegrey th, div.table div.header { background-color: #9ED3FA; border: none; overflow: auto;}
+div.table div.row:hover { background-color: #D4ECFF;}
+div.table div.row div { overflow: hidden; margin-left: 2px;}
 
 .aligntop { vertical-align: top;}
 

@@ -36,8 +36,14 @@ Select Group:
 	<div class="row">
 		<div class="col-75"><%=  user.id     %></div>
 		<div class="col-200"><%= user.name  %>
-			<span style="font-size: 80%;"><br><% if user.login %><%=user.login%><% else %><%= user.email %><%end%>
-				(<%=link_to('Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile.id, :frame => true,:user_id => user.id )%><%if user.subscriptions.length > 0 %>|<%= link_to('Subscription',subscription_path(user.subscriptions.first))%>)<%else%>)<%end%>
+			<span style="font-size: 80%;">(
+				<% if user.profile.blank? %>
+				  Profile?
+			  <% else %>
+			    <%=link_to('Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile.id, :frame => true,:user_id => user.id )%>
+			  <% end -%>
+				<%if user.subscriptions.length > 0 %>|<%= link_to('Subscription',subscription_path(user.subscriptions.first))%>)<%else%>)<%end%>
+        <br><%= user.login ? user.login : user.email %><br />
 			</span>
 
 		</div>
