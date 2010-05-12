@@ -6,7 +6,7 @@
 Select Group:  
 <%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| [e.name, e.name] }, @group_name), {:onchange => "$('group_form_id').submit();"}%>
 </form>
-<div id="user-table" class="table">
+<div id="user-table" class="table bluegrey">
 	<br>
 	<center><%= will_paginate @users %></center>
 	<br><br>

@@ -95,6 +95,14 @@ class ProfilesController < ApplicationController
     session[:redirect_url] = request.env['HTTP_REFERER']
   end
   
+  # = Error when adding a caregiver without email
+  # https://redmine.corp.halomonitor.com/issues/2890#note-16
+  # == we may reach here by "add new caregiver with no email"
+  # * email address is optional here
+  # * user model has a validation on email address
+  # == solution
+  # * user the new user intake object oriented code
+  # * manually make changes to override validation for caregiver record
   def new_caregiver_profile
 	@removed_caregivers = []
 	@senior = User.find params[:user_id]
@@ -109,8 +117,8 @@ class ProfilesController < ApplicationController
     end
     get_caregivers(current_user)
     @max_position = User.get_max_caregiver_position(@senior)
-    @user = User.new 
-    @profile = Profile.new    	
+    @profile = Profile.new
+    @user = User.new(:need_validation => false, :profile => @profile)
   end
    
   def create_caregiver_profile

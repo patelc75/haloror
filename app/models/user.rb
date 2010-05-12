@@ -2,6 +2,9 @@ require 'digest/sha1'
 class User < ActiveRecord::Base
   #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
   
+  attr_accessible :need_validation
+  attr_accessor :need_validation
+  
   # arranged associations alphabetically for easier traversing
   
   acts_as_authorized_user
@@ -61,10 +64,12 @@ class User < ActiveRecord::Base
   validates_confirmation_of :password,                   :if => :password_required?
   
   validates_length_of       :login,    :within => 3..40, :if => :password_required?
-  validates_length_of       :email,    :within => 3..100
+  validates_length_of       :email,    :within => 3..100, :unless => :skip_validation?
   validates_format_of       :email,    
                             :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i,
-                            :message => 'must be valid'
+                            :message => 'must be valid',
+                            :unless => :skip_validation?
+                            
   #validates_length_of       :serial_number, :is => 10
   
   validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
@@ -75,8 +80,24 @@ class User < ActiveRecord::Base
   # CHANGED: commented for now. makes more sense when larger piece of code uses this
   # named_scope :ordered, lambda {|*args| { :order => (args.flatten.first || "id ASC") } }
   
+  def after_initialize
+    self.need_validation = true if need_validation.nil? # default = need validation
+  end
+  
+  def skip_validation?
+    need_validation == false # also covers nil, blank, etc...
+  end
+  
+  def skip_validation=(skip = false) # default = need validation
+    self.need_validation = (skip == false) # also covers nil, blank, etc...
+  end
+  
+  
   def before_validation
-        self.email = "no-email@halomonitoring.com" if self.email == ''
+    # WARNING: this may break business logic
+    # this is making the application workflow dependent on data
+    # recommendation: use skip_validation logic in new user intake ticket 2663
+    self.email = "no-email@halomonitoring.com" if self.email.blank?
   end
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
