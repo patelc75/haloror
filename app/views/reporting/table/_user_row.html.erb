@@ -61,16 +61,16 @@
 					    | <%= link_to_remote "Start Range Test", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :id => user.id} %> 
 						| <a href="/events/user/<%=user[:id]%>">Events</a> | <a href="/chart/flex/<%=user[:id]%>">Chart</a>
 						| <a href="<%= url_for(:controller => 'call_center', :action => 'all_user_notes', :id => user[:id], :user_id => user[:id])%>">Notes</a>			 
-						<% if current_user.is_super_admin? or current_user.is_admin? %>
+						<% if current_user.is_super_admin? %>
 						  | <a href="/reporting/compliance_report/<%=user[:id]%>">Compliance</a> 
-						<% end %>
-						<% if device %> 
-						  | <a href="/reporting/remove_user_mapping/<%=user.id%>?device_id=<%= device.id %>">Remove</a>
-						<% end %>
-					    | <a href="/blood_pressures?id=<%=user.id%>">Vitals List</a>
+						  <% if device %> 
+						    | <a href="/reporting/remove_user_mapping/<%=user.id%>?device_id=<%= device.id %>">Remove</a>
+						  <% end %>
+					      | <a href="/blood_pressures?id=<%=user.id%>">Vitals List</a>
 					    <%if user.subscriptions.length > 0 %>
-						| <%= link_to('Subscription',subscription_path(user.subscriptions.first))%>
+						  | <%= link_to('Subscription',subscription_path(user.subscriptions.first))%>
 					    <% end %>
+  					<% end %>					    
 				   <% end %>
 		<% else %>
 			Profile missing for user <%= user.login %>

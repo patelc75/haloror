@@ -13,7 +13,7 @@
 
 	<div class="col-300">
 		Role(s) 
-		<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_sales? %>
+		<% if current_user.is_super_admin? %>
 		  <a href="/user_admin/roles">Configure</a>&nbsp;
 		<% end %>
 	</div>
