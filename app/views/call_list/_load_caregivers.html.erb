@@ -12,9 +12,11 @@
 		<% end %>
 
 	<% 
+	unless roles_user.roles_users_option.blank?
 		if roles_user.roles_users_option.active
 			position = position+1 
 		end
+	end
 	%>
 	<% i = i+1 %>
 <% end %>
