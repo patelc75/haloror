@@ -86,7 +86,6 @@ class AlertsController < ApplicationController
   # environment.rb has constant ALERT_MESSAGES
   #
   def alert
-    debugger
     if !params[:message].blank? && !params[:back_url].blank?
       @phrase = ALERT_MESSAGES[params[:message].to_sym]
       @back_url = params[:back_url]

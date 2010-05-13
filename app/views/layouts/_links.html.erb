@@ -14,14 +14,10 @@
 						
 			<% if current_user.is_halouser? || current_user.is_caregiver? %>
   			<% prefix = ""%>
-  			<% if !caregiver %> 
-  			  <% prefix = "My&nbsp;"%>
-  			<% end %>  		  
-			
+  			<% prefix = "My&nbsp;" if !caregiver %> 
 			  <li><%= link_to prefix+'Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
-			  <li><%= link_to prefix+'Events', :controller => 'events', :action => 'user', :id => current_user.id %></li>    			
-			
-			  <li><%= link_to 'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
+			  <li><%= link_to prefix+'Events', :controller => 'events', :action => 'user', :id => current_user.id %></li>    						
+			  <li><%= link_to prefix+'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
 			<% end %>
 			
 			<li><%= link_to 'Support', url_for(:controller => 'util', :action => 'support') %></li>
