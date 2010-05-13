@@ -144,11 +144,12 @@ class ReportingController < ApplicationController
     # conditions = ''
     if params[:query] and !params[:query].blank?
       conditions = (params[:query].size == 10 ? {:serial_number => params[:query].strip} : {:id => params[:query].to_i})
-      @devices = Device.all(:conditions => conditions)
       # conditions = "id = #{params[:query]}" if params[:query].size < 10
       # conditions = "serial_number = '#{params[:query].strip}'" if params[:query].size == 10
     end
-    if !current_user.is_super_admin?
+    if current_user.is_super_admin?
+      @devices = Device.all(:conditions => conditions)
+    else
       # we need this query here just for the LOGGER
       group_ids = current_user.is_admin_of_what.select {|e| e.is_a?(Group) }.collect(&:id)
       RAILS_DEFAULT_LOGGER.warn(group_ids.join(','))
@@ -165,8 +166,8 @@ class ReportingController < ApplicationController
       #
       # 
       groups = current_user.is_admin_of_what.select {|e| e.is_a?(Group)}
-      @devices += groups.collect(&:has_halouser).flatten.collect(&:devices).flatten.uniq
-      @devices += groups.collect(&:has_admin).flatten.collect(&:devices).flatten.uniq
+      @devices += groups.collect(&:has_halouser).flatten.collect {|e| e.devices(:conditions => conditions)}.flatten
+      @devices += groups.collect(&:has_admin).flatten.collect {|e| e.devices(:conditions => conditions)}.flatten
       @devices = @devices.uniq
       # @devices += current_user.is_admin_of_what.select {|e| e.is_a?(Group)}.collect(&:has_halouser).flatten.collect(&:devices).flatten.uniq
       #
