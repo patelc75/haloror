@@ -11,7 +11,6 @@
 <div id="call_list-col">
 	<div id="call_list-col-header">
 		Critical Alert Settings: <span style="color:#000;font-size:.75em">
-			<%#=link_to_remote_redbox(@user.name + "`s", :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => @user.profile.id, :frame => true,:user_id => @user.id }, :html => {:method => :get})%>
       <% if @user.profile.blank? %>
         <%= link_to "#{@user.name}'s", "#" %>
       <% else %>
@@ -29,7 +28,7 @@
 	%>
 
 	<div class="content">
-	<% if @user.is_caregiver? %>
+	<% if current_user.is_caregiver? %>
 		<%= render :partial => 'layouts/choose_patient' %>
 	<% end %>
 		<p>&nbsp;</p>
@@ -81,15 +80,6 @@
         </script>
       <% end -%>
 		  </div>
-			
-			
-
-		<!--%= sortable_element 'call_list',
-        :url => { :action => "sort" , :id => @call_list },
-		:onChange => "updatePositions",
-		 :tag => 'li'
-        %-->
-		
 	
 	<div style="float:left;margin-right:10px;margin-top:15px;margin-left:15px;font-weight:bold;background:url('/images/call_list-col-bg.gif') repeat-y;" >
 	<%= link_to '<< Back To Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %>
@@ -105,14 +95,3 @@
 	<div id="call_list-col-footer"></div>
 </div>
 
-<!-- this function shifted to application.js -->
-<!-- <script type="text/javascript">
-function show_message()
-{
-
-//<![CDATA[
-new Ajax.Updater('show_message', '/alerts/message/', {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('show_message'); }, onLoading:function(request){RedBox.loading(); }})
-//]]>
-
-}
-</script> -->

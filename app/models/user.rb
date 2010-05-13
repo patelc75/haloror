@@ -102,7 +102,7 @@ class User < ActiveRecord::Base
     # recommendation: use skip_validation logic in new user intake ticket 2663
     self.email = "no-email@halomonitoring.com" if self.email.blank?
   end
-  
+
   def username
     return self.name rescue ""
   end
