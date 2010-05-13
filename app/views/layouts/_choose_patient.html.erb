@@ -7,7 +7,7 @@
 
   myHalo User:
   <!-- selecting any user will redirect the page to a different one, so dropdown will go away -->
-  <%= collection_select "senior", "ids", @seniors, :id, :name, {}, {:onchange => "if(this.value != ''){document.location = '/call_list/show/'+this.value}"} %>
+  <%= collection_select "senior", "ids", @seniors, :id, :name, {}, {:onchange => "if(this.value != ''){document.location = '/call_list/show/'+this.value}"} unless @seniors.blank? %>
 
   <!-- <select onchange="if(this.value != ''){document.location = '/<%=params[:controller]%>/<%=params[:action]%>/'+this.value}">
     <% if current_user.is_halouser? %>
