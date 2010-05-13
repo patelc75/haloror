@@ -195,7 +195,6 @@ class ProfilesController < ApplicationController
   
   def update_caregiver_profile
     if request.post?
-      debugger
       sent = false
       user = User.find(params[:user_id])
       @profile = Profile.find(params[:id])
