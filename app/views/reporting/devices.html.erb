@@ -5,7 +5,7 @@
 </div>
 <%=render :partial => 'nav_config'%>
 <h3>Devices table</h3>
-<div id="device-table" class="table">
+<div id="device-table" class="table bluegrey">
 	<center><%= will_paginate @devices %></center>
 	<br>
 	<%=render :partial => 'device_table', :locals => {:user => @user, :devices => @devices}%>
