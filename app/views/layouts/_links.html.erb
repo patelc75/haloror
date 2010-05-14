@@ -9,7 +9,7 @@
 			</li>
 
 			<% if current_user.is_halouser? %>
-				<li><%=link_to('Configure&nbsp;Alerts', :controller => "alerts", :action => "index", :id => current_user.roles_user_by_role_name('halouser').id)%></li>
+				<li><%=link_to('Configure&nbsp;Alerts', :controller => "alerts", :action => "index", :id => current_user.roles_user_by_role_name('halouser').id, :senior_id => current_user.id) %></li>
 			<% end %>            
 						
 			<% if current_user.is_halouser? || current_user.is_caregiver? %>

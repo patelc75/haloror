@@ -9,8 +9,22 @@ class AlertsController < ApplicationController
       @alert_types << type        
     end
     roles_user = RolesUser.find(params[:id])
-    @user = User.find(roles_user.user_id)
-    if roles_user.user_id == current_user.id || current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) || current_user.caregivers.include?(@user)
+    # https://redmine.corp.halomonitor.com/issues/2923
+    # we are getting the roles_users record for caregiver
+    # and have @user
+    # so @user should hold senior record
+    @user = User.find(params[:senior_id]) # added this parameter. we need @user in view
+    caregiver = User.find(roles_user.user_id)
+    # @user = User.find(roles_user.user_id) # earlier logic was this line
+    #
+    # the business logic here is
+    #   this data is for caregiver we clicked. the data can be seen by
+    #   * caregiver itself
+    #   * the halouser (caregiven by this caregiver)
+    #   * admin of any group where @user is halouser
+    #   * super admin
+    # the logic is now => caregiver || super admin || admin || halouser
+    if caregiver.id == current_user.id || current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) || current_user.caregivers.include?(caregiver)
       @roles_user = roles_user
     else
       redirect_to :action => 'unauthorized', :controller => 'security'
