@@ -1,7 +1,7 @@
 class RmasController < ApplicationController
 
   def index
-  	@groups = current_user.group_memberships
+  	@groups = Group.all # current_user.group_memberships # https://redmine.corp.halomonitor.com/issues/2925
 
     cond = "1=1"
   	search = params[:search]
@@ -19,7 +19,7 @@ class RmasController < ApplicationController
 
   def new
   	@rma = Rma.new
-    @groups = current_user.group_memberships
+    @groups = Group.all # current_user.group_memberships
 
     respond_to do |format|
       format.html
@@ -42,7 +42,7 @@ class RmasController < ApplicationController
 
   def edit
     @rma = Rma.find(params[:id])
-    @groups = current_user.group_memberships
+    @groups = Group.all # current_user.group_memberships
     
     respond_to do |format|
       format.html
