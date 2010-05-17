@@ -44,16 +44,16 @@ window.onload = function(){
   <div style="width:380px;" id="container"></div>
   <span style="padding-left:30px;">
     <% if current_user.is_super_admin? && !@user.new_record? %>
-    <% @kit_serial_number = KitSerialNumber.find_by_user_id(@user.id,:order => 'created_at desc') %>
-    <%= link_to('Change Password', :controller => "profiles", :action => "change_password_init", :id => @user.profile.id,:user_id => @user.id )%> | <%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id %> | 
-    <% if @kit_serial_number %>
-    <%= link_to "Enter CS and GW serial numbers for #{@kit_serial_number.serial_number}",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> 
-    <%else%>
-    <%= link_to "Enter CS and GW serial numbers",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> |
-    <%end%>
-    <%if !@user.created_by.nil?%>
-    Added By <%= @user.creator.name%>
-    <%end%>
+      <% @kit_serial_number = KitSerialNumber.find_by_user_id(@user.id,:order => 'created_at desc') %>
+      <%= link_to('Change Password', :controller => "profiles", :action => "change_password_init", :id => @user.profile.id,:user_id => @user.id ) unless @user.blank? || @user.profile.blank? %> | <%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id unless @user.blank? %> | 
+      <% if @kit_serial_number %>
+        <%= link_to "Enter CS and GW serial numbers for #{@kit_serial_number.serial_number}",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> 
+      <%else%>
+}      <%= link_to "Enter CS and GW serial numbers",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> |
+      <%end%>
+      <%if !@user.created_by.nil?%>
+        Added By <%= @user.creator.name%>
+      <%end%>
     <%end%>
 
     <% if @roles_users_option %>
@@ -64,7 +64,11 @@ window.onload = function(){
     <p class="color-red" style="padding-left:30px;">Please call tech support 1-888-971-HALO (4256) to make modification to this profile.</p>
     <% end -%>
     <%# form_tag :action => 'create' do -%>
-    <form action="/profiles/update_caregiver_profile/<%= params[:id] %>/" method="post" id="profile_form">
+    <% if @user.new_record? %>
+      <form action="/profiles/create_caregiver_profile/" method="post" id="profile_form">
+    <% else %>
+      <form action="/profiles/update_caregiver_profile/<%= params[:id] %>/" method="post" id="profile_form">
+    <% end -%>
       <!-- <%# form_tag(:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]) do %> -->
       <%# form_remote_tag(:update => 'container', :url => {:controller => 'profiles', :action => 'update_caregiver_profile', :id => params[:id]}, :html => { :id => 'profile_form'}) do %>
       <div id="device-table" class="table">
@@ -83,10 +87,15 @@ window.onload = function(){
             <%= render :partial => '/profiles/profile_halousers_only' %>
             <br />
             <br />
-            <% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.extended_group_memberships) %> <!-- super admin can update, others can just view -->
-            <input name="commit" type="image" src="/images/update.gif"  />
+            <% if @user.new_record? %>
+              <%= image_submit_tag("add.gif", :id => "submit_caregiver", :title => "submit_caregiver") %>
+
             <% else %>
-            <%= image_tag("update_grey.gif") %>
+              <% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.extended_group_memberships) %> <!-- super admin can update, others can just view -->
+                <%= image_submit_tag("update.gif") %>
+              <% else %>
+                <%= image_tag("update_grey.gif") %>
+              <% end -%>
             <% end -%>
           </div>
 

@@ -1,54 +1,67 @@
-	
-	    <%if controller.action_name == 'new_caregiver_profile'%>
-	    <%= hidden_field_tag :email, 'no-email@halomonitoring.com' ,:size => '30'%>
-	    <%else%>
-	    <label for="email">Email</label>
-	    <br />
-	    <%= text_field_tag :email, @user.email ,:size => '30'%>
-	    <br />	     
-	    <br />  
-	    <%end%>
-	        
-	    <label for="first_name">First Name</label>
-	    <br />
-	    <%= text_field :profile, :first_name %>
-	    <br />
-	    <br />
-	    <label for="last_name">Last Name</label>
-	    <br />
-	    <%= text_field :profile,  :last_name %>
-	    <br />      
-	    <br />
-	    <% if @roles_users_option %>     
-	      <label for="relationship"> Relationship </label>
-	      <br />
-	  
-	               <%= text_field_tag :relationship, @roles_users_option.relationship %>
-				<% if @roles_users_option.roles_user.role.name == "caregiver" %>
-				<br />
-				<%= check_box(:roles_users_option, :is_keyholder) %> <label for"is_keyholder">Caregiver is keyholder?</label>
-				<br/>
-				<br/>
-				<% end %>
-	    <% end %>
-	   
-	   
-	    <label for="address">Address</label>
-	    <br />
-	    <%= text_field :profile, :address %>
-	    <br />
-	    <br />
-	    <%if params[:controller] == 'profiles'%>
-    <label for="cross_st">Cross St</label><br />
-	    <%= text_field :profile, :cross_st %><br><br>
-	    <%end%>
-	    <label for="city">City</label>
-	    <br />
-	    <%= text_field :profile, :city %> 
-				<br />
-	    <br />
-	    <label for="state">State</label>
-      <br />
-      <%= text_field :profile, :state, :size => 15 %>
-      <br />
-      <br />
+
+<p>
+  <label for="user_login">Username</label><br />
+  <%= text_field :user, :login %>
+</p>
+
+<p>
+  <label for="user_password">Password</label><br/>
+  <%= password_field :user, :password %>
+</p>
+
+<p>
+  <label for="user_password_confirmation">Confirm Password</label><br/>
+  <%= password_field :user, :password_confirmation %>
+  <%=hidden_field_tag :position, @max_position %>
+</p>
+
+<% if controller.action_name == 'new_caregiver_profile' %>
+  <%= hidden_field_tag :email, 'no-email@halomonitoring.com' ,:size => '30' %>
+<% else %>
+  <p>
+    <label for="email">Email</label><br />
+    <%= text_field_tag :email, @user.email ,:size => '30'%>
+  </p>
+<% end %>
+
+<p>
+  <label for="profile_first_name">First Name</label><br />
+  <%= text_field :profile, :first_name %>
+</p>
+
+<p>
+  <label for="profile_last_name">Last Name</label><br />
+  <%= text_field :profile,  :last_name %>
+</p>
+
+<% if @roles_users_option %>     
+<p>
+  <label for="relationship"> Relationship </label><br />
+  <%= text_field_tag :relationship, @roles_users_option.relationship %>
+  <% if @roles_users_option.roles_user.role.name == "caregiver" %>
+    <p><%= check_box(:roles_users_option, :is_keyholder) %> <label for"is_keyholder">Caregiver is keyholder?</label></p>
+  <% end %>
+</p>
+<% end %>
+
+<p>
+  <label for="profile_address">Address</label><br />
+  <%= text_field :profile, :address %>
+</p>
+
+<% if params[:controller] == 'profiles' %>
+  <p>
+    <label for="profile_cross_st">Cross St</label><br />
+    <%= text_field :profile, :cross_st %><br><br>
+  </p>
+<% end %>
+
+<p>
+  <label for="profile_city">City</label><br />
+  <%= text_field :profile, :city %> 
+</p>
+
+<p>
+  <label for="profile_state">State</label><br />
+  <%= text_field :profile, :state, :size => 15 %>
+</p>
