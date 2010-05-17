@@ -1,9 +1,23 @@
 require "faker"
 require "digest/md5"
 
+Factory.define :group do |v|
+  v.name { Faker::Lorem.words[0] }
+  v.description { Faker::Lorem.sentence }
+end
+
 Factory.define :carrier do |v|
   v.name { Faker::Company.name }
   v.domain { Faker::Internet.domain_name }
+end
+
+Factory.define :device_type do |v|
+  v.device_type "Chest Strap" # "myHalo Complete" product
+end
+
+Factory.define :device_model do |v|
+  v.part_number "12001002-1" # "myHalo Complete" product
+  v.association :device_type
 end
 
 Factory.define :device_model_price do |v|
@@ -15,15 +29,6 @@ Factory.define :device_model_price do |v|
   v.months_advance { rand(3) }
   v.months_trial { rand(3) }
   v.association :device_model
-end
-
-Factory.define :device_model do |v|
-  v.part_number "12001002-1" # "myHalo Complete" product
-  v.association :device_type
-end
-
-Factory.define :device_type do |v|
-  v.device_type "Chest Strap" # "myHalo Complete" product
 end
 
 Factory.define :device do |v|
@@ -42,11 +47,6 @@ Factory.define :gateway do |v|
   v.mac_address "01:23:45:67:89:ab"
   v.vendor { Faker::Company.name }
   v.model { Faker::Lorem.words[0] }
-end
-
-Factory.define :group do |v|
-  v.name { Faker::Lorem.words[0] }
-  v.description { Faker::Lorem.sentence }
 end
 
 Factory.define :profile do |v|
@@ -92,7 +92,7 @@ Factory.define :user do |v|
   v.salt { |user| Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{user.login}--") }
   v.crypted_password { |user| Digest::SHA1.hexdigest("--#{user.salt}--12345--") }
   v.email { Faker::Internet.email }
-  v.association :profile if v.profile.nil?
+  v.association :profile # if v.profile.nil? # conditions not working as expected
 end
 
 Factory.define :user_intake do |v|
@@ -107,11 +107,26 @@ Factory.define :user_intake do |v|
   v.subscriber_is_caregiver { rand(1) == 1 }
   (1..3).each { |e| v.send("no_caregiver_#{e}".to_sym, false) }
   ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user|
-    v.send("#{user}".to_sym, Factory.create(:user))
+    # v.send("#{user}".to_sym, Factory.create(:user))
+    v.association user.to_sym, :factory => :user
   end
   v.after_create do |ui|
-    ui.skip_validation = true # we need "edit" links in list
+    # ui.skip_validation = true # we need "edit" links in list
     ui.update_attribute(:locked, false)
+    ui.senior.is_halouser_of ui.group
+    ui.subscriber.is_subscriber_of ui.senior
+    ui.caregiver1.is_caregiver_of ui.senior
+    ui.caregiver2.is_caregiver_of ui.senior
+    ui.caregiver3.is_caregiver_of ui.senior
+  end
+  # v.after_build   {|ui| user_intake_users(ui) }
+  # v.after_create  {|ui| user_intake_users(ui); ui.update_attribute(:locked, false) }
+  # v.after_stub    {|ui| user_intake_users(ui) }
+end
+
+def user_intake_users(ui)
+  unless ui.nil?
+    ui.skip_validation = true # we need "edit" links in list
     ui.senior.is_halouser_of ui.group
     ui.subscriber.is_subscriber_of ui.senior
     ui.caregiver1.is_caregiver_of ui.senior

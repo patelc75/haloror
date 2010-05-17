@@ -68,6 +68,7 @@ class UserIntakesController < ApplicationController
   def update
     @user_intake = UserIntake.find(params[:id])
     @user_intake.skip_validation = (params[:commit] == "Save") # just save without asking anything
+    @user_intake.locked = (!@user_intake.skip_validation && @user_intake.valid?)
     @groups = Group.for_user(current_user)
 
     respond_to do |format|

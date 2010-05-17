@@ -1,6 +1,7 @@
 # general steps
 #
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "scopes"))
+require File.join(RAILS_ROOT, "test", "factories", "factories.rb")
 
 # Given
 
@@ -25,18 +26,25 @@ Given /^I am (guest|public user|not authenticated)$/ do |user_type|
 end
 
 Given /^the following (.+):$/ do |name, table|
-  model = if name.include?(' ')
-    name.singularize.split(' ').collect(&:capitalize).join.constantize
-  else
-    name.singularize.capitalize.constantize
-  end
-  model.delete_all
+  # model = if name.include?(' ')
+  #   name.singularize.split(' ').collect(&:capitalize).join.constantize
+  # else
+  #   name.singularize.capitalize.constantize
+  # end
+  name.gsub(/ /,'_').classify.constantize.delete_all
   # single line statement causes user_intake locked after_save
   # we need to skip_validation to save it and allow "edit"
   #   table.hashes.each {|hash| Factory.build(model.to_s.underscore.to_sym, hash) }
   table.hashes.each do |hash|
-    model = Factory.build(model.to_s.underscore.to_sym, hash)
-    model.skip_validation = true if model.is_a?(UserIntake)
+    model = Factory.build(name.gsub(/ /,'_').singularize.to_sym, hash)
+    if model.is_a?(UserIntake)
+      model.skip_validation = true
+      model.senior.is_halouser_of model.group
+      model.subscriber.is_subscriber_of model.senior
+      model.caregiver1.is_subscriber_of model.senior
+      model.caregiver2.is_subscriber_of model.senior
+      model.caregiver3.is_subscriber_of model.senior
+    end
     model.save
   end
   # model.create!(table.hashes)

@@ -21,15 +21,6 @@ class UserObserver < ActiveRecord::Observer
     # now trigger the email for installation/notification
     # business logic changed to send emails on any successful "submit"
     # "submit" vs "save" is identified here by skip_validation attribute
-    unless user.skip_validation # if use was just "saved" do not trigger emails
-      if user.is_halouser? && !user.email.blank? # WARNING: DEPRECATED user[:is_new_halouser] == true
-        UserMailer.deliver_signup_installation(user,user)
-      else
-        UserMailer.deliver_signup_notification(user) unless user.is_caregiver? || user.is_subscriber? # (user[:is_caregiver] or user[:is_new_subscriber])
-      end
-      #
-      # activation email gets delivered anyways
-      UserMailer.deliver_activation(user) if user.recently_activated?
-    end
+    user.dispatch_emails unless user.skip_validation # if use was just "saved" do not trigger emails
   end
 end

@@ -301,6 +301,10 @@ class Order < ActiveRecord::Base
       end
       user_intake.order_id = self.id
       user_intake.save # database
+      #
+      # force manual emails dispatch here
+      # Usually it will not send emails because skip_validation is "on"
+      user_intake.senior.dispatch_emails # will dispatch only when user = halouser and valid email address
     end
   end
   

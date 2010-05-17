@@ -1,4 +1,4 @@
-require File.join(RAILS_ROOT, "spec", "spec_helper")
+require File.join(File.dirname(__FILE__), "..", "..", "spec", "spec_helper")
 
 describe Order do
   before(:each) do

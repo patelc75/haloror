@@ -186,6 +186,17 @@ class User < ActiveRecord::Base
       role_user.create_roles_users_option(attributes)
     end
   end
+
+  def dispatch_emails
+    if self.is_halouser? && !email.blank? # WARNING: DEPRECATED user[:is_new_halouser] == true
+      UserMailer.deliver_signup_installation(self, self)
+    else
+      UserMailer.deliver_signup_notification(self) unless self.is_caregiver? || self.is_subscriber? # (user[:is_caregiver] or user[:is_new_subscriber])
+    end
+    #
+    # activation email gets delivered anyways
+    UserMailer.deliver_activation(self) if recently_activated?
+  end
   
   # ramonrails: above this are methods to help self contained logic for user_intake
   
