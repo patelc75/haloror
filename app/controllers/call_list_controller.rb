@@ -12,7 +12,8 @@ class CallListController < ApplicationController
     session[:redirect_url] = request.env['REQUEST_URI']
     if(!params[:id].blank?)
       # old logic back
-      @user = User.find(params[:id])
+      @user = (User.find(params[:id]) || current_user) # show caregivers of current_user when user not found
+      @user = @user.is_caregiver_for_what.first if @user.is_caregiver? && !@user.is_caregiver_for_what.blank?
       get_caregivers(@user)
       groups = @user.group_memberships
       #
