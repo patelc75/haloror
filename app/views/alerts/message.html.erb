@@ -6,7 +6,7 @@
 	</div>
 			<div style="width:200px;margin-left:auto;margin-right:auto" id="container">
 			  <% if current_user.is_super_admin? || current_user.is_admin? %> <!-- https://redmine.corp.halomonitor.com/issues/2722 -->
-          Profile Updated. Only admins can do this. All others must call tech support 1-888-971-HALO (4256) to make this modification.
+          Profile Updated. Only admins are allowed to do this. You MUST follow up with 1-888-971-HALO (4256) so this update is pushed to the call center.
         <% else %>
           Please call tech support 1-888-971-HALO (4256) to make this modification.
         <% end -%>
