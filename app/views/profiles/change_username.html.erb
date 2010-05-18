@@ -1,0 +1,32 @@
+<div id="user_signup-col">
+	<div id="user_signup-col-header">
+		Change Username
+	</div>
+	<div style="padding-left:30px">
+<br/>
+<font color="red">
+<%= error_messages_for :user %>
+</font>
+<% form_for(@user, :url => {:controller => 'profiles',:action => 'change_username'},:html => {:method => :post}) do |f| -%>
+	 <%= hidden_field :user, :id %>
+  
+   <label for="password">New Username</label>
+   <br/>
+   <%= f.text_field :login %>
+   <br />
+   <br />
+   <label for="password_confirmation">Retype New Username</label>
+   <br/>
+   <%= f.text_field :username_confirmation %>
+   <br />
+       <br/>
+        <br/>
+        <div align="left">
+          <input name="commit" type="image" src="/images/update.gif"  /> <a href="<%= request.env['HTTP_REFERER']%>"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
+        </div>
+<% end %>
+
+</div>
+<div style="clear:both"></div>
+	<div id="user_signup-col-footer"></div>
+</div>

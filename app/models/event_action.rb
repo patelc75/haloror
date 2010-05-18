@@ -4,7 +4,7 @@ class EventAction < ActiveRecord::Base
   belongs_to :event
   
   def to_s
-    "#{event.user.name if event}'s #{event.event_type if event} #{description} by Operator #{user.name if user}"
+    "#{event.user.name if event}'s <a href='/call_center/event_details/#{event.id}/'>#{event.event_type if event}</a> marked #{description} by Operator #{user.name if user}"
   end
   
   include Priority
