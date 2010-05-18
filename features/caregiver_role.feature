@@ -24,3 +24,13 @@ Feature: Caregiver role
   Scenario: I can see list of Events for seniors whom I am caregiving
     When I visit the events page for "caregiver-user"
     Then page content should have "All Events, Heartrate, Skin Temp., Body Position"
+
+  Scenario: See non-critical alerts
+    When I navigate to caregiver page for "senior-user" user
+    And I follow "Non-critical Alerts"
+    Then I should see "Non Critical Alert Type"
+
+  Scenario: Update non-critical alerts
+    When I navigate to caregiver page for "senior-user" user
+    And I follow "Non-critical Alerts"
+    And I follow ""
