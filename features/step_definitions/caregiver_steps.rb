@@ -15,3 +15,16 @@ Then /^I should see profile name for "([^\"]*)"$/ do |user_name|
   
   response.should contain(user.name)
 end
+
+Then /^I should see "([^\"]*)" link for caregiver "([^\"]*)" of senior "([^\"]*)"$/ do |link_name, caregiver_name, senior_name|
+  caregiver = User.find_by_login(caregiver_name)
+  caregiver.should_not be_blank
+  
+  senior = User.find_by_login(senior_name)
+  senior.should_not be_blank
+  
+  roles_user = senior.roles_user_by_caregiver(caregiver)
+  roles_user.should_not be_blank
+  
+  response.should have_tag("a", :href => "/alerts/index/#{roles_user.id}/?senior_id=#{senior.id}")
+end

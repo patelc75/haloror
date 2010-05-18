@@ -65,7 +65,7 @@
 			</div>
 		</div>
 		<p>&nbsp;</p>
-		  <div="call_list_div">    
+		  <div id="call_list_div">
 			<ul id="call_list">
 				<% if @user.is_halouser? || @user.is_sales? %>
 			<%= render :partial => "load_caregivers", :locals => { :caregivers => @caregivers } %>
