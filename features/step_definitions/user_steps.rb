@@ -23,12 +23,18 @@ Given /^user "([^\"]*)" has "([^\"]*)" role(?:|s)$/ do |user_name, role_name|
   roles.each {|role| user.has_role role}
 end
 
-Given /^user "([^\"]*)" has "([^\"]*)" role(?:|s) for (.+) "([^\"]*)"$/ do |user_name, role_name, model_type, model_name|
+Given /^user "([^\"]*)" has "([^\"]*)" roles? for (.+) "([^\"]*)"$/ do |user_name, role_name, model_type, model_name|
   user = User.find_by_login(user_name)
   roles = role_name.split(',').collect {|p| p.strip.gsub(/ /,'_')}
   fields_hash = {'group' => 'name', 'user' => 'login'}
   field = (fields_hash.has_key?(model_type) ? fields_hash[model_type] : 'name')
   roles.each {|role| user.has_role role, model_type.gsub(/ /,'_').classify.constantize.send("find_by_#{field}".to_sym, model_name)}
+end
+
+When /^I visit the events page for "([^\"]*)"$/ do |user_name|
+  user = User.find_by_login(user_name)
+  user.should_not be_blank
+  visit "/events/user/#{user.id}"
 end
 
 When /^I navigate to caregiver page for "([^\"]*)" user$/ do |user_name|

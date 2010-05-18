@@ -103,6 +103,57 @@ class User < ActiveRecord::Base
     self.email = "no-email@halomonitoring.com" if self.email.blank?
   end
 
+  # ---------------------- already on master
+  # fetch position if "this" user assuming he/she is a caregiver to given senior
+  def caregiver_position_for(senior)
+    options_attribute_for_senior(senior, :position)
+  end
+
+  # get attribute value from the roles_users_options this user has for senior
+  # return blank when not found
+  def options_attribute_for_senior(senior, attribute)
+    options = options_for_senior(senior)
+    options.blank? ? nil : options.send("#{attribute}".to_sym)
+  end
+
+  # methods for a RESTful approach
+  # using the authorization plugin for the following methods
+  # examples:
+  #   is_halouser?, is_subscriber?, is_caregiver?
+  #   is_subscriber_for? senior_user_object
+  #   is_caregiver_to? senior_user_object
+  #   is_caregiver_to_what => get array if users I am caregiving
+  #   has_caregiver => get array of caregivers for me
+  def options_for_senior(the_senior, attributes = nil)
+    if attributes.nil?
+      if self.is_caregiver_of?( the_senior)
+        role = self.roles.first(:conditions => {
+          :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
+        })
+        options = options_for_role(role) unless role.blank?
+      end
+    else
+      self.is_caregiver_of(the_senior)
+      role = self.roles.first(:conditions => {
+        :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
+      })
+      options = self.options_for_role(role, attributes)
+    end
+    options
+  end
+
+  def options_for_role(role, attributes = nil)
+    role_id = (role.is_a?(Role) ? role.id : role)
+    if attributes.blank?
+      role_user = RolesUser.find_by_user_id_and_role_id(self.id, role_id)
+      role_user.blank? ? nil : role_user.roles_users_option
+    else
+      role_user = RolesUser.find_or_create_by_user_id_and_role_id(self.id, role_id) # find | create
+      role_user.create_roles_users_option(attributes)
+    end
+  end
+  # ---------------------- already on master
+  
   def username
     return self.name rescue ""
   end
@@ -365,17 +416,24 @@ class User < ActiveRecord::Base
   end
 
   def caregivers_sorted_by_position
-    cgs = {}
-    caregivers.each do |caregiver|
-      if roles_user = roles_user_by_caregiver(caregiver)
-        if opts = roles_user.roles_users_option
-          unless opts.removed
-            cgs[opts.position] = caregiver
-          end
-        end
-      end
-    end
-    cgs = cgs.sort
+    # new logic
+    # * returns all caregivers whether they are positioned or not
+    # * adds a sequential integer value as position, if not already
+    # * sequential integer value is dereived from Time.now, so it is always at the bottom of the list
+    caregivers.collect {|caregiver| [(caregiver.caregiver_position_for(self) || Time.now.to_i), caregiver] }.sort
+    #
+    # old logic
+    # WARNING: major bug: if caregiver does not have a position yet, it is not included
+    # caregivers.each do |caregiver|
+    #   if roles_user = roles_user_by_caregiver(caregiver)
+    #     if opts = roles_user.roles_users_option
+    #       unless opts.removed
+    #         cgs[opts.position] = caregiver
+    #       end
+    #     end
+    #   end
+    # end
+    # cgs = cgs.sort
   end
 
   def roles_user_by_role_name(role_name)

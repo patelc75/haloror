@@ -14,9 +14,13 @@ Feature: Caregiver role
     And I am authenticated as "caregiver-user" with password "12345"
     
   Scenario: I can see list of caregivers and link to their profile
-    When I see list of caregivers for "caregiver-user"
+    When I navigate to caregiver page for "caregiver-user" user
     Then I should see profile name for "caregiver-user"
 
   Scenario: I can see link to non-critical alerts
-    When I see list of caregivers for "caregiver-user"
+    When I navigate to caregiver page for "caregiver-user" user
     Then I should see "Non-critical Alerts" link for caregiver "caregiver-user" of senior "senior-user"
+
+  Scenario: I can see list of Events for seniors whom I am caregiving
+    When I visit the events page for "caregiver-user"
+    Then page content should have "All Events, Heartrate, Skin Temp., Body Position"

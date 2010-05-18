@@ -2,14 +2,15 @@
 <% i = 1 %>
 
 <% 
-	user = @user
+  # user = @user
 	caregivers.each do |pos, caregiver|
 		
-		roles_user = user.roles_user_by_caregiver(caregiver)		
+		roles_user = @user.roles_user_by_caregiver(caregiver)		
 %>
-		<% if opts = roles_user.roles_users_option %>
-			<%= render :partial => "call_list/item", :locals => { :user => user, :caregiver => caregiver, :opts => opts, :position => position , :i => i, :role => caregiver } %>			
-		<% end %>
+		<%# if opts = roles_user.roles_users_option %>
+			<%#= render :partial => "call_list/item", :locals => { :user => user, :caregiver => caregiver, :opts => opts, :position => position , :i => i, :role => caregiver } %>			
+		<%# end %>
+		<%= render :partial => "call_list/item", :locals => { :caregiver => caregiver, :opts => (caregiver.options_for_senior(@user) || RolesUsersOption.new), :position => position , :i => i, :role => caregiver } %>			
 
 	<% 
 	unless roles_user.roles_users_option.blank?

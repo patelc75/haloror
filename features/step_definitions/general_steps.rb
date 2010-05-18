@@ -136,6 +136,10 @@ end
 
 # Then
 
+Then /^I should see "([^\"]*)" link$/ do |link_text|
+  response.should have_tag("a", :text => link_text)
+end
+
 Then /^page has the following content visible:$/ do |string|
   string.each do |row|
     assert_have_selector4
