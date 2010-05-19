@@ -420,7 +420,8 @@ class User < ActiveRecord::Base
     # * returns all caregivers whether they are positioned or not
     # * adds a sequential integer value as position, if not already
     # * sequential integer value is dereived from Time.now, so it is always at the bottom of the list
-    caregivers.collect {|caregiver| [(caregiver.caregiver_position_for(self) || Time.now.to_i), caregiver] }.sort
+    # * index of the enumeration is added to Time.now.to_i to ensure unique sequence
+    caregivers.enum_with_index.collect {|caregiver, index| [(caregiver.caregiver_position_for(self) || (Time.now.to_i + index)), caregiver] }.sort {|a,b| a[0] <=> b[0] }
     #
     # old logic
     # WARNING: major bug: if caregiver does not have a position yet, it is not included
