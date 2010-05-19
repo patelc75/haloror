@@ -104,8 +104,8 @@ class ProfilesController < ApplicationController
   # * user the new user intake object oriented code
   # * manually make changes to override validation for caregiver record
   def new_caregiver_profile
-	@removed_caregivers = []
-	@senior = User.find params[:user_id]
+    @removed_caregivers = []
+    @senior = User.find params[:user_id]
     @senior.caregivers.each do |caregiver|
       if caregiver
         caregiver.roles_users.each do |roles_user|
@@ -125,6 +125,7 @@ class ProfilesController < ApplicationController
     @user = User.new(params[:user])
     @profile = Profile.new(params[:profile])
     @user.profile = @profile
+    @senior = User.find(params[:patient_id].to_i) # senior variable is used in view
 
     User.transaction do 
       @user.email = params[:email]

@@ -10,6 +10,9 @@ Feature: Admin role
     And the following groups:
       | name   |
       | group1 |
+    And the following carriers:
+      | name    |
+      | verizon |
     And user "senior-user" has "halouser" roles for group "group1"
     And user "caregiver-user" has "caregiver" roles for user "senior-user"
     And user "admin-user" has "admin" roles for group "group1"
@@ -50,3 +53,32 @@ Feature: Admin role
     And I navigate to caregiver page for "senior-user" user
     And I follow "Non-critical Alerts"
     Then I should see email active for "non-critical-alert-1"
+
+  # shorthand: Given I am adding a new caregiver for "senior-user"
+  Scenario: Admin can create new caregiver for a new halouser
+    When I follow "Config"
+    And I follow "Caregivers"
+    And I follow "add_caregiver_button"
+    And I follow "+ Add new caregiver with no email"
+    Then I should not see "Please call tech support 1-888-971-HALO"
+    
+  Scenario: Add a new caregiver and check result
+    Given I am adding a new caregiver for "senior-user"
+    When I fill in the following:
+      | Username         | halo1-cg1  |
+      | Password         | halo1-cg1  |
+      | Confirm Password | halo1-cg1  |
+      | First Name       | halo1-cg1  |
+      | Last Name        | halo1-cg1  |
+      | Address          | halo1-cg1  |
+      | Cross St         | halo1-cg1  |
+      | City             | halo1-cg1  |
+      | State            | halo1-cg1  |
+      | Zipcode          | 11111      |
+      | Home Phone       | 1234567890 |
+      | Work Phone       | 1234567890 |
+      | Cell Phone       | 1234567890 |
+    And I select "verizon" from "profile_carrier_id"
+    And I press "submit_caregiver"
+    Then page content should have "halo1-cg1 halo1-cg1, Edit Profile"
+    And I should see profile name of "senior-user"

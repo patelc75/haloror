@@ -15,7 +15,7 @@ Feature: Caregiver profile
     And I am authenticated as "test-user" with password "12345"
     And user "test-user" has "super_admin" roles
     And user "senior-user" has "halouser" roles for group "group1"
-    And I am adding new caregiver for "senior-user"
+    And I am adding a new caregiver for "senior-user"
     When I fill in the following:
       | Username         | cg1        |
       | Password         | cg1        |
