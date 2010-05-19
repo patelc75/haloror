@@ -1,3 +1,5 @@
+<p><%= link_to '<< Back To Critical Alert Settings', :controller => 'call_list', :action => 'show', :id => params[:senior_id] %></p>
+
 <div id="call_list-col">
 	<div id="call_list-col-header">
 		Alerts
@@ -131,7 +133,7 @@
 							<img src="/images/lightbox-col-footer.gif" />
 						</div>			
 		<br>
-		<span style="padding:15px"><%= link_to '&laquo; Back to Critical Alert Settings', :controller => 'call_list', :action => 'show', :id => current_user.id %></span>	
+		<span style="padding:15px"><%= link_to '&laquo; Back to Critical Alert Settings', :controller => 'call_list', :action => 'show', :id => params[:senior_id] %></span>	
 	</div>
 	<div style="clear:both"></div>
 	<div id="call_list-col-footer"></div>
