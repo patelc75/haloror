@@ -220,12 +220,13 @@ class User < ActiveRecord::Base
   end
   
   def full_name
-    return (self.profile.blank? ? "" : \
-      ( self.profile.first_name && self.profile.last_name ? \
-          self.profile.first_name + " " + self.profile.last_name : \
-          nil
-      )
-    )
+    profile.blank? ? '' : [profile.first_name, profile.last_name].join(' ')
+    # return (self.profile.blank? ? "" : \
+    #   ( self.profile.first_name && self.profile.last_name ? \
+    #       self.profile.first_name + " " + self.profile.last_name : \
+    #       nil
+    #   )
+    # )
   end
   
   def address

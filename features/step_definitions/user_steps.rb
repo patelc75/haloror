@@ -5,11 +5,14 @@ include ApplicationHelper
 # Given
 
 Given /^a user "([^\"]*)" exists with profile$/ do |user_name|
-  profile = Factory.build(:profile)
-  profile.user = Factory.build(:user, :login => user_name)
-  #profile.home_phone = "9178178864"
-  profile.save
-  profile.user.activate
+  # profile = Factory.build(:profile)
+  # profile.user = Factory.build(:user, :login => user_name)
+  # #profile.home_phone = "9178178864"
+  # profile.save
+  # profile.user.activate
+  user = Factory.create(:user, :login => user_name)
+  user.should_not be_blank
+  user.profile.should_not be_blank
 end
 
 Given /^user "([^\"]*)" is activated$/ do |user_name|
@@ -19,8 +22,10 @@ end
 #Usage:And user "test-user" has "super admin, caregiver" roles
 Given /^user "([^\"]*)" has "([^\"]*)" role(?:|s)$/ do |user_name, role_name|
   user = User.find_by_login(user_name)
+  user.should_not be_blank
+  
   roles = role_name.split(',').collect {|p| p.strip.gsub(/ /,'_')}
-  roles.each {|role| user.has_role role}
+  roles.each {|role| user.has_role role }
 end
 
 Given /^user "([^\"]*)" has "([^\"]*)" roles? for (.+) "([^\"]*)"$/ do |user_name, role_name, model_type, model_name|
@@ -107,4 +112,18 @@ Then /^I should have a "([^\"]*)" alert "([^\"]*)" to the call center with a "([
   else
     assert false, "#{timestamp_status} is not a valid timestamp status"
   end  
+end
+
+Then /^I should see "([^\"]*)" link for user "([^\"]*)"$/ do |link_text, user_login|
+  user = User.find_by_login(user_login)
+  user.should_not be_blank
+  user.profile.should_not be_blank
+  
+  case link_text
+  when "caregiver for"
+    senior = user.is_caregiver_for_what.first
+    response.should contain("caregiver for (#{senior.id}) #{senior.full_name}")
+  when "Caregivers"
+    response.should have_tag("a[href=?]", /(.+)call_list\/show\/#{user.id}(.+)/)
+  end
 end

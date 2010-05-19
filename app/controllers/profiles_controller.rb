@@ -134,6 +134,7 @@ class ProfilesController < ApplicationController
       @user.skip_validation = true # skip validation, just save user data
 
       if @user.save
+        @user
         @user.activate #this call differentiates this method UsersController.populate_caregiver 
 
         @profile.user_id = @user.id

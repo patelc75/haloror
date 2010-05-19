@@ -3,18 +3,23 @@ Feature: Caregiver profile
   As a role
   I want feature
     
-  Scenario: Create caregiver profile
-    Given a user "test-user" exists with profile
+  Background:
+    Given I do not have any users
+    And a user "super-admin-user" exists with profile
     And a user "senior-user" exists with profile
+    And a user "caregiver-user" exists with profile
     And the following groups:
       | name   |
       | group1 |
     And the following carriers:
       | name    |
       | verizon |
-    And I am authenticated as "test-user" with password "12345"
-    And user "test-user" has "super_admin" roles
+    And user "super-admin-user" has "super_admin" roles
     And user "senior-user" has "halouser" roles for group "group1"
+    And user "caregiver-user" has "caregiver" role for user "senior-user"
+    And I am authenticated as "super-admin-user" with password "12345"
+    
+  Scenario: Create caregiver profile
     And I am adding a new caregiver for "senior-user"
     When I fill in the following:
       | Username         | cg1        |
@@ -33,3 +38,9 @@ Feature: Caregiver profile
     And I select "verizon" from "profile_carrier_id"
     And I press "submit_caregiver"
     Then I should see "cg1 cg1"
+
+  Scenario: Config > Users > Caregiver for
+    When I follow "Config"
+    Then I should see "caregiver for" link for user "caregiver-user"
+    And I should see "Caregivers" link for user "senior-user"
+    

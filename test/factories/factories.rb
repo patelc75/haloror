@@ -75,7 +75,7 @@ Factory.define :profile do |v|
   v.doctor_phone "1234567890"
   v.association :carrier #, :factory => :carrier
   v.association :emergency_number #, :factory => :emergency_number
-  v.association :user #, :factory => :user
+  # v.association :user #, :factory => :user
 end
 
 Factory.define :rma do |v|
@@ -104,4 +104,6 @@ Factory.define :user do |v|
   v.password "12345"
   v.password_confirmation "12345"
   v.email { Faker::Internet.email }
+  v.association :profile
+  v.after_create {|user| user.activate }
 end
