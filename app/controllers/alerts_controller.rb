@@ -2,12 +2,15 @@ class AlertsController < ApplicationController
   before_filter :authenticate_admin_halouser_caregiver_sales?, :except => :alert
   
   def index
-    @alert_types = []
-    #AlertGroup.find(:all, :conditions => "group_type != 'critical'").each do |group|
-    #AlertType.find(:all, :conditions => "alert_group_id = #{group.id}").each do |type|
-    AlertType.find(:all).each do |type|    
-      @alert_types << type        
-    end
+    # @alert_types = []
+    # #AlertGroup.find(:all, :conditions => "group_type != 'critical'").each do |group|
+    # #AlertType.find(:all, :conditions => "alert_group_id = #{group.id}").each do |type|
+    # AlertType.find(:all).each do |type|
+    #   @alert_types << type        
+    # end
+    # 
+    @alert_types = AlertGroup.all.reject {|e| e.group_type == "critical"}.collect(&:alert_types).flatten
+    #
     roles_user = RolesUser.find(params[:id])
     # https://redmine.corp.halomonitor.com/issues/2923
     # we are getting the roles_users record for caregiver
@@ -35,8 +38,11 @@ class AlertsController < ApplicationController
   def toggle(what) 
     
     roles_user = RolesUser.find(params[:roles_user_id])    
-    user = User.find(roles_user.user_id)
-    if roles_user.user_id == current_user.id || current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships) || current_user.caregivers.include?(user)
+    # user = User.find(roles_user.user_id) # this will be caregiver user. we need senior
+    caregiver = User.find(roles_user.user_id) # caregiver
+    senior = User.find(roles_user.role.authorizable_id) # senior
+    # if roles_user.user_id == current_user.id || current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships) || current_user.caregivers.include?(user)
+    if current_user == caregiver || current_user.is_super_admin? || current_user.is_admin_of_any?(senior.group_memberships) || current_user.caregivers.include?(caregiver)
       @roles_user = roles_user
        
     #if alert_opt = AlertOption.find(:first,:conditions => "roles_user_id = #{params[:id]} and alert_type_id = #{alert.id}")

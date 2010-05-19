@@ -43,7 +43,7 @@
 						alert[:text_active] = alert.text_active
 					end
 				%>
-				<div class="active" style="padding-left:10px;background:url('/images/call_list-item-alerts.gif') no-repeat;height:50px">
+				<div id="<%= alert.alert_type.underscore %>" class="active" style="padding-left:10px;background:url('/images/call_list-item-alerts.gif') no-repeat;height:50px">
 					<div style="float:left;padding-top:17px;width:250px">
 						<%=UtilityHelper.camelcase_to_spaced(alert.alert_type)%>
 					</div>

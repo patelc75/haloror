@@ -1,5 +1,17 @@
 require "faker"
 
+Factory.define :alert_type do |v|
+  v.alert_type { Faker::Lorem.words[0] }
+  v.phone_active { rand(1) == 1 }
+  v.email_active { rand(1) == 1 }
+  v.text_active { rand(1) == 1 }
+  v.deprecated { rand(1) == 1 }
+end
+
+Factory.define :alert_group do |v|
+  v.group_type { Faker::Lorem.words[0] }
+end
+
 Factory.define :carrier do |v|
   v.name { Faker::Company.name }
   v.domain { Faker::Internet.domain_name }
