@@ -89,6 +89,7 @@ class ProfilesController < ApplicationController
     @profile = Profile.find(params[:id], :include => :user)
     @group_id = params[:group_id]
     @user = @profile.user
+    @senior = User.find(params[:user_id]) # additional parameter passed for correct logic
     if(!params[:roles_user_id].blank?)
       @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
     end
@@ -105,7 +106,7 @@ class ProfilesController < ApplicationController
   # * manually make changes to override validation for caregiver record
   def new_caregiver_profile
     @removed_caregivers = []
-    @senior = User.find params[:user_id]
+    @senior = User.find params[:user_id] # additional parameters passed for correct logic
     @senior.caregivers.each do |caregiver|
       if caregiver
         caregiver.roles_users.each do |roles_user|
