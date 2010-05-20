@@ -1,4 +1,4 @@
-Feature: Admin role
+Feature: Admin roles
   In order to value
   As a role
   I want feature

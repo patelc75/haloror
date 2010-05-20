@@ -1,4 +1,4 @@
-Feature: Caregiver role
+Feature: Caregiver roles
   In order to value
   As a role
   I want feature
@@ -30,7 +30,20 @@ Feature: Caregiver role
     And I follow "Non-critical Alerts"
     Then I should see "Non Critical Alert Type"
 
-  Scenario: Update non-critical alerts
-    When I navigate to caregiver page for "senior-user" user
-    And I follow "Non-critical Alerts"
-    And I follow ""
+  # Scenario: Update non-critical alerts
+  #   When I navigate to caregiver page for "senior-user" user
+  #   And I follow "Non-critical Alerts"
+  #   And I follow ""
+
+  Scenario: I am caregiver, not halouser. I login. I can see caregivers of senior
+    When I navigate to caregiver page for "caregiver-user" user
+    Then I should see section header for caregivers of "senior-user"
+    And I should see profile link for all caregivers of "senior-user"
+
+  Scenario: I am caregiver + halouser. I login. I can see my caregivers
+    Given a user "caregiver-of-caregiver" exists with profile
+    And user "caregiver-user" has "halouser" role for group "group1"
+    And user "caregiver-of-caregiver" has "caregiver" role for user "caregiver-user"
+    When I navigate to caregiver page for "caregiver-user" user
+    Then I should see section header for caregivers of "caregiver-user"
+    And I should see profile link for all caregivers of "caregiver-user"

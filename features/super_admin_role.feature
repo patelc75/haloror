@@ -1,4 +1,4 @@
-Feature: Caregiver profile
+Feature: Super Admin roles
   In order to value
   As a role
   I want feature
@@ -50,8 +50,7 @@ Feature: Caregiver profile
     Then I should see section header for caregivers of "senior-user"
     And I should see profile link for all caregivers of "senior-user"
 
-  Scenario: Config > Users > caregiver for (n) senior
-    When I follow "Config"
-    And I navigate to caregiver page for "caregiver-user" user
-    Then I should see section header for caregivers of "caregiver-user"
-    And I should not see profile link for any caregivers of "senior-user"
+  Scenario: Caregivers of caregiver
+    When I navigate to caregiver page for "caregiver-user" user
+    Then I should see section header for caregivers of "senior-user"
+    And I should see profile link for all caregivers of "senior-user"
