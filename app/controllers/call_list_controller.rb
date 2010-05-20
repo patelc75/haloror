@@ -13,28 +13,13 @@ class CallListController < ApplicationController
     if(!params[:id].blank?)
       # old logic back
       @user = (User.find(params[:id]) || current_user) # show caregivers of current_user when user not found
-      @user = @user.is_caregiver_for_what.first if @user.is_caregiver? && !@user.is_caregiver_for_what.blank?
-      get_caregivers(@user)
-      groups = @user.group_memberships
       #
-      # new logic commented for now
-      # #
-      # # WARNING: What happens if profile does not exist for a user found here?
-      # #   The view file updated to conditionally block the features when profile is missing
-      # #   A more appropriate business logic is required here
-      # #
-      # @user = User.find(params[:id])
-      # if @user.is_halouser?
-      #   # when I am halouser, pick my caregivers, order them appropriately
-      #   @caregivers = @user.caregivers_sorted_by_position
-      # else
-      #   # when I am a caregiver
-      #   #   find all my halousers, pick the first one
-      #   #   fetch caregivers of my first halouser, order them appropriatelty
-      #   @seniors = @user.is_caregiver_of_what
-      #   @caregivers = (@seniors.blank? ? [] : @seniors.first.caregivers_sorted_by_position)
-      #   @user = @seniors.first unless @seniors.blank?
-      # end
+      # this row was sowing the caregivers of first senior, if the selected id was caregiver itself
+      # the business logic wanted to see caregiver or blank page for the selected id
+      # updated to behave appropriately. covered by cucumber
+      #
+      # @user = @user.is_caregiver_for_what.first if @user.is_caregiver? && !@user.is_caregiver_for_what.blank?
+      get_caregivers(@user)
       groups = @user.group_memberships
       unless((@user.id == current_user.id) || current_user.patients.include?(@user) || current_user.is_super_admin? || current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups) || current_user.is_sales_of_any?(groups) || current_user.is_installer_of_any?(groups))    
         redirect_to :action => 'unauthorized', :controller => 'security'

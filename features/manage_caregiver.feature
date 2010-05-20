@@ -43,4 +43,15 @@ Feature: Caregiver profile
     When I follow "Config"
     Then I should see "caregiver for" link for user "caregiver-user"
     And I should see "Caregivers" link for user "senior-user"
-    
+
+  Scenario: Config > Users > Caregivers
+    When I follow "Config"
+    And I navigate to caregiver page for "senior-user" user
+    Then I should see section header for caregivers of "senior-user"
+    And I should see profile link for all caregivers of "senior-user"
+
+  Scenario: Config > Users > caregiver for (n) senior
+    When I follow "Config"
+    And I navigate to caregiver page for "caregiver-user" user
+    Then I should see section header for caregivers of "caregiver-user"
+    And I should not see profile link for any caregivers of "senior-user"
