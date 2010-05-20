@@ -47,3 +47,4 @@ Feature: Caregiver roles
     When I navigate to caregiver page for "caregiver-user" user
     Then I should see section header for caregivers of "caregiver-user"
     And I should see profile link for all caregivers of "caregiver-user"
+    And I should see a dropdown having profile names of "caregiver-user, senior-user"

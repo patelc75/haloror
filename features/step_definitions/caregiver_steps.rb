@@ -39,3 +39,9 @@ Then /^I should not see (.+) link for any caregivers of "([^\"]*)"$/ do |type, u
   
   user.caregivers.each {|caregiver| response.should_not have_tag("a[href=?]", /(.+)edit_caregiver_profile\/#{caregiver.profile.id}(.+)/) }
 end
+
+Then /^I should see a dropdown having profile names of "([^\"]*)"$/ do |users_logins|
+  users = users_logins.split(',').collect(&:strip).collect {|e| User.find_by_login(e) }
+  users.each {|user| response.should have_tag("option[value=?]", user.id) }
+  # option[label] not working for some reason. used "value" attribute to verify
+end
