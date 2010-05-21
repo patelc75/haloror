@@ -19,9 +19,9 @@ class CriticalDeviceAlert < DeviceAlert
     Event.create_event(self.user_id, self.class.to_s, self.id, self.timestamp)
   end
   
-  #for rspec
-  def self.new_initialize(random=false)
-    model = self.new
-    return model    
-  end
+  # #for rspec
+  # def self.new_initialize(random=false)
+  #   model = self.new
+  #   return model    
+  # end
 end

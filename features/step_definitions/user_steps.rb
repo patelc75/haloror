@@ -5,11 +5,13 @@ include ApplicationHelper
 # Given
 
 Given /^a user "([^\"]*)" exists with profile$/ do |user_name|
-  profile = Factory.build(:profile)
-  profile.user = Factory.build(:user, :login => user_name)
-  #profile.home_phone = "9178178864"
-  profile.save
-  profile.user.activate
+  # profile = Factory.build(:profile)
+  # profile.user = Factory.build(:user, :login => user_name)
+  # #profile.home_phone = "9178178864"
+  # profile.save
+  # profile.user.activate
+  user = Factory.create(:user, :login => user_name)
+  user.activate
 end
 
 Given /^user "([^\"]*)" is activated$/ do |user_name|

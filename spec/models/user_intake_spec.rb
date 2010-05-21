@@ -41,7 +41,7 @@ describe UserIntake do
     (1..3).each do |index| # assign caregivers
       @user_intake.send("no_caregiver_#{index}=".to_sym, false)
       @user_intake.send("caregiver#{index}=".to_sym, build_user("caregiver#{index}"))
-      @user_intake.send("mem_caregiver#{index}_options=", {:position => index})
+      @user_intake.send("mem_caregiver#{index}_options=".to_sym, {:position => index})
     end
   end
   
@@ -104,14 +104,14 @@ describe UserIntake do
       ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user_type|
         it "should save the associations correctly" do
           add_senior if user_type != "senior" # when testing, senior is mandatory
-          @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
+          @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@example.com"))
           @user_intake.save
 
           @user_intake.new_record?.should be_false, "#{user_type}: senior=#{!@user_intake.senior.blank?}, subscriber=#{!@user_intake.subscriber.blank?}"
           @user_intake.send("#{user_type}".to_sym).new_record?.should be_false
           @user_intake.users.include?(@user_intake.send("#{user_type}".to_sym)).should be_true
           user =  @user_intake.send("#{user_type}".to_sym)
-          user.email.should == "#{user_type}@test.com"
+          user.email.should == "#{user_type}@example.com"
           user.roles.should_not be_blank
           user.roles.each { |e| e.new_record?.should be_false }
         end
@@ -126,31 +126,37 @@ describe UserIntake do
         
         it "should have a #{user_type}" do
           add_senior if user_type != "senior" # when testing, senior is mandatory
-          @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@test.com"))
+          @user_intake.send("#{user_type}=".to_sym, User.new(:email => "#{user_type}@example.com"))
           @user_intake.save
 
           (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
           user = user_intake.send("#{user_type}".to_sym)
           user.should_not be_blank
-          user.email.should == "#{user_type}@test.com"
+          user.email.should == "#{user_type}@example.com"
         end
 
         it "should save profile for #{user_type}" do
-          user_hash = User.new(:email => "#{user_type}@test.com").attributes
-          local_profile_hash = profile_hash(user_type)
-          user_hash["profile_attributes"] = Profile.new(local_profile_hash).attributes
-          @user_intake.send("#{user_type}=".to_sym, user_hash)
+          # user_hash = User.new(:email => "#{user_type}@example.com").attributes
+          # local_profile_hash = profile_hash(user_type)
+          # user_hash["profile_attributes"] = Profile.new(local_profile_hash).attributes
+          user = build_user(user_type) # includes profile
+          local_profile_hash = user.profile.attributes.reject {|k,v| k.include?('id') } # eliminate FKeys
+          @user_intake.subscriber_is_user = !(user_type == 'subscriber') # force save subscriber
+          @user_intake.no_caregiver_1 = !(user_type == 'caregiver1') # force save caregivers
+          @user_intake.no_caregiver_2 = !(user_type == 'caregiver2')
+          @user_intake.no_caregiver_3 = !(user_type == 'caregiver3')
+          @user_intake.send("#{user_type}=".to_sym, user)
           add_senior if user_type != "senior" # senior is mandatory
           
-          user = @user_intake.send("#{user_type}")
-          user.email.should == "#{user_type}@test.com"
+          user = @user_intake.send("#{user_type}".to_sym)
+          user.email.should == "#{user_type}@example.com"
           @user_intake.save
 
           (user_intake = UserIntake.find_by_id(@user_intake.id)).should_not be_blank, "#{@user_intake.errors.full_messages.join(',')}"
           (user = user_intake.send("#{user_type}".to_sym)).should_not be_blank
           profile = user.profile
           profile.should_not be_blank
-          local_profile_hash.each {|k,v| profile.send("#{k}").should == v }
+          local_profile_hash.each {|k,v| profile.send("#{k}".to_sym).should == v }
         end
       end # each
     end # associations
@@ -202,7 +208,7 @@ describe UserIntake do
         (user_intake = UserIntake.find(@user_intake.id)).should_not be_blank
         user_intake.subscriber.is_subscriber_of?(user_intake.senior).should be_true
         ["senior", "subscriber"].each do |user_type|
-          user = user_intake.send("#{user_type}")
+          user = user_intake.send("#{user_type}".to_sym)
           user.email.should == "#{user_type}@example.com"
         end
         [:id, :email].each do |attribute|

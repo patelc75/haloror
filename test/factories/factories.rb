@@ -92,7 +92,16 @@ Factory.define :user do |v|
   v.salt { |user| Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{user.login}--") }
   v.crypted_password { |user| Digest::SHA1.hexdigest("--#{user.salt}--12345--") }
   v.email { Faker::Internet.email }
-  v.association :profile # if v.profile.nil? # conditions not working as expected
+  v.association :profile
+  # # WARNING: do not use v.association or v.profile syntax here.
+  # # if you do, cucumber complications happen and scenarios will fail randomly for no valid visible reason
+  # v.after_build do |user|
+  #   user.profile {|e| Profile.find_by_user_id(e.id) || Factory.build(:profile) }
+  # end
+  # v.after_create do |user|
+  #   user.profile {|e| Profile.find_by_user_id(e.id) || Factory.create(:profile, :user_id => e.id) }
+  #   user.save
+  # end
 end
 
 Factory.define :user_intake do |v|

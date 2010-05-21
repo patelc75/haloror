@@ -102,12 +102,13 @@ class User < ActiveRecord::Base
     
   # build associated model
   def build_associations
-    build_profile if profile.blank?
+    # self.build_profile
+    self.profile = (Profile.find_by_user_id(self.id) || Profile.new(:user_id => self.id)) if profile.blank?
   end
   
   # assign nil to the associated model if the record is just new with no data assigned
   def collapse_associations
-    self.profile = nil if profile.nothing_assigned? unless profile.nil?
+    (self.profile = nil if profile.nothing_assigned?) unless profile.blank?
   end
   
   # def post_process
@@ -127,7 +128,13 @@ class User < ActiveRecord::Base
   #
   def profile_attributes=(attributes)
     if profile.blank?
-      self.build_profile(attributes) # .merge("user_id" => self)
+      # any_existing_profile = Profile.find_by_user_id(self.id)
+      # if any_existing_profile
+      #   self.profile = any_existing_profile
+      #   self.profile.attributes = attributes
+      # else
+        self.build_profile(attributes) # .merge("user_id" => self)
+      # end
     else
       # keep the existing user connected. no need to re-assign
       self.profile.attributes = attributes # .reject {|k,v| k == "user_id"} # except user_id, take all attributes

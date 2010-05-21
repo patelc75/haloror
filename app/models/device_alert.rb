@@ -66,17 +66,19 @@ class DeviceAlert < ActiveRecord::Base
     dialup_system_timeout   = SystemTimeout.find_by_mode('dialup')
     
     critical_alerts = []
-    
     critical_alerts += Panic.find(:all, :include => [:user => :profile], :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout.critical_event_delay_sec} seconds'", :order => "timestamp asc")
     critical_alerts += Fall.find(:all, :include => [:user => :profile], :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout.critical_event_delay_sec} seconds'", :order => "timestamp asc")
     critical_alerts += GwAlarmButton.find(:all, :include => [:user => :profile], :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{dialup_system_timeout.critical_event_delay_sec} seconds'", :order => "timestamp asc")
-    
     #not going to filter access_mode == 'dialup' because access_mode is not yet reliable according to corey
     #{}"id in (select device_id from access_mode_statuses where mode = 'dialup') " <<    
 
     #sort by timestamp, instead of timestamp_server in case GW sends them out of order in the alert_bundle
     unless critical_alerts.blank?
-      critical_alerts.sort_by { |event| event[:timestamp] }.each do |crit|
+      # WARNING: The current implementation of sort_by generates an array of tuples containing the original collection element and the mapped value
+      # critical_alerts.sort_by { |event| event[:timestamp] }.each do |crit|
+      # debugger
+      critical_alerts.sort! {|a,b| a.timestamp <=> b.timestamp } if critical_alerts.length > 1
+      critical_alerts.each do |crit|
         crit.call_center_pending = false
         #
         # if the model respond_to? call_center_number_valid? method, then check it before timestamo
