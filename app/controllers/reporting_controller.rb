@@ -63,7 +63,7 @@ class ReportingController < ApplicationController
     #   @groups = current_user.group_memberships
     #   @group = @groups.first
     # end
-    @groups = (current_user.is_super_admin? ? Group.distinct_by_name : current_user.group_memberships)
+    @groups = (current_user.is_super_admin? ? Group.all(:order => "name") : current_user.group_memberships)
     # @group_name = ''
     # if params[:group_name].blank?
     #   group = @groups.first

@@ -6,7 +6,7 @@ class Group < ActiveRecord::Base
   has_many :rma_items
   has_many :orders
   has_many :roles, :as => :authorizable
-  named_scope :distinct_by_name, :select => "DISTINCT name, *", :order => "name ASC"
+  # named_scope :distinct_by_name, :select => "DISTINCT name, *", :order => "name ASC"
 
   validates_format_of :name, :with => /\A[a-z0-9_]+\z/, :message => 'Only lowercase and numeric characters are allowed'
   
