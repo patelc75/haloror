@@ -29,6 +29,7 @@ class RmasController < ApplicationController
   def create
     @rma = Rma.new(params[:rma])
     @rma.created_by = current_user.id
+    @groups = Group.all # current_user.group_memberships
 
     respond_to do |format|
       if @rma.save
@@ -51,6 +52,7 @@ class RmasController < ApplicationController
   
   def update
     @rma = Rma.find(params[:id])
+    @groups = Group.all # current_user.group_memberships
 
     respond_to do |format|
       if @rma.update_attributes(params[:rma])
