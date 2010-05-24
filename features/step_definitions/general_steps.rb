@@ -86,6 +86,10 @@ When /^I reload$/ do
   reload
 end
 
+When /^I follow links "([^\"]*)"$/ do |links_text|
+  links_text.split('>').map(&:strip!).each {|link| click_link(link) }
+end
+
 When /^I (edit|delete|show) the (\d+)(?:st|nd|rd|th) (.+)$/ do |action, pos, model_name|
   action_text = (action == "delete" ? "Destroy" : "#{action.capitalize}")
   visit "/#{model_name.downcase.pluralize.gsub(' ','_')}" if model_name != 'row'
@@ -148,6 +152,15 @@ end
 
 Then /^I should see the following (.+):$/ do |model, expected_table|
   expected_table.diff!(tableish('table tr', 'td,th'))
+end
+
+Then /^page should have a dropdown for "([^\"]*)"$/ do |data_set|
+  case data_set
+  when "all groups"
+    Group.all.each do |group|
+      response.should have_tag("select[id=?]", 'group_name') { with_tag("option", :text => group.name) }
+    end
+  end
 end
 
 # accepts any ruby expression enclosed in ``
