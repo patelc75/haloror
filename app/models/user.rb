@@ -457,7 +457,8 @@ class User < ActiveRecord::Base
 
   def groups_where_admin
     # only fetch groups for which user has admin role
-    self.is_admin_of_what.select {|element| element.is_a?(Group) }.uniq
+    # https://redmine.corp.halomonitor.com/issues/2967. Super admin role also accounts for admin role.
+    self.is_super_admin? ? Group.all(:order => 'name') : self.is_admin_of_what.select {|element| element.is_a?(Group) }.uniq
   end
   
   # includes the following groups
