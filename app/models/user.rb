@@ -80,6 +80,8 @@ class User < ActiveRecord::Base
   before_save :encrypt_password
   before_create :make_activation_code
   
+  named_scope :search_by_login_or_profile_name, lambda {|arg| query = "%#{arg}%"; {:include => :profile, :conditions => ["users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", query, query, query]}}
+  
   # CHANGED: commented for now. makes more sense when larger piece of code uses this
   # named_scope :ordered, lambda {|*args| { :order => (args.flatten.first || "id ASC") } }
   

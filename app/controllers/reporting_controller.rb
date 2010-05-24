@@ -225,10 +225,9 @@ class ReportingController < ApplicationController
   end
   
   def search_user_table
-
-    users = User.find(:all, :conditions => "login like '%#{params[:query]}%' or profiles.first_name like '%#{params[:query]}%' or profiles.last_name like '%#{params[:query]}%'",:include => [ :profile ])
-
-    render :partial => 'user_table', :locals => {:users => users, :sortby => 'id', :reverse => false}
+    @users = User.search_by_login_or_profile_name(params[:query])
+    # @users = User.find(:all, :conditions => "login like '%#{params[:query]}%' or profiles.first_name like '%#{params[:query]}%' or profiles.last_name like '%#{params[:query]}%'",:include => [ :profile ])
+    render :partial => 'user_table', :locals => {:users => @users, :sortby => 'id', :reverse => false}
   end
   
   def summary
