@@ -38,6 +38,11 @@
         	<input type="hidden" name="group" value="<%= @groups[0].name %>">
         	<%end%>
             <span id="profile_top" <% if @groups.length > 1 %>style="display:none" <%end%>>
+
+          <p>
+            <label for="email">Email</label><br />
+            <%= text_field_tag :email, @user.email ,:size => '30'%>
+          </p>
 		    <%= render :partial => '/profiles/profile_top' %> 
 		    </span>
 		  </div>
