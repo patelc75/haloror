@@ -87,7 +87,7 @@ class UserAdminController < ApplicationController
   end
   
   def assign_super_role
-    unless (user_id = params[:user][:id]).blank?
+    unless (user_id = params[:superadmin][:user_id]).blank?
       unless (user = User.find(user_id)).blank?
         user.has_role 'super_admin', Group.find_by_name('halo') # TODO: should we find_or_create_by ?
         @success = true
@@ -101,15 +101,15 @@ class UserAdminController < ApplicationController
   end
   
   def assign_role
-    group = params[:group]
-    role = params[:role]
-    user_id = params[:user][:id] rescue nil # may error otherwise
+    group_name = params[:role][:group_name]
+    role_name = params[:role][:role_name]
+    user_id = params[:role][:user_id] rescue nil # may error otherwise
     
     unless user_id.blank?
-      unless group[:name].blank?
-        User.find(user_id).has_role role[:name], Group.find_by_name(group[:name])
+      unless group_name.blank?
+        User.find(user_id).has_role role_name, Group.find_by_name(group_name)
       else
-        User.find(user_id).has_role role[:name]
+        User.find(user_id).has_role role_name
       end
       
       @success = true
@@ -125,7 +125,7 @@ class UserAdminController < ApplicationController
   def remove_role
     group = params[:group]
     role = params[:role]
-    user_id = params[:user][:id]
+    user_id = params[:remove][:user_id]
     
     unless user_id.blank?
       unless group[:name].blank?

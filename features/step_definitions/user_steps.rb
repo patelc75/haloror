@@ -46,13 +46,24 @@ When /^I navigate to caregiver page for "([^\"]*)" user$/ do |user_name|
   visit "call_list/show/#{User.find_by_login(user_name).id}"
 end
 
+When /^I select profile name of "([^\"]*)" from "([^\"]*)"$/ do |user_login, drop_down_id|
+  user = User.find_by_login(user_login)
+  user.should_not be_blank
+  select(user.name, :from => drop_down_id)
+end
+
 # roles pattern can be: "caregiver", "caregiver, user, halouser"
 # role(s) can be used singular or plural
 #
-Then /^user "([^\"]*)" should have "([^\"]*)" role(?:|s) for user "([^\"]*)"$/ do |user_name, role_name, for_user_name|
+Then /^user "([^\"]*)" should have "([^\"]*)" role(?:|s) for (.+) "([^\"]*)"$/ do |user_name, role_name, model_name, for_model_name|
   user = User.find_by_login(user_name)
-  for_user = User.find_by_login(for_user_name)
-  assert ((role_name.split(',').collect {|p| p.strip}) - user.roles_for(for_user).map(&:name)).blank?
+  case model_name
+  when 'user'
+    for_object = User.find_by_login(for_model_name)
+  when 'group'
+    for_object = Group.find_by_name(for_model_name)
+  end
+  assert ((role_name.split(',').collect(&:strip)) - user.roles_for(for_object).map(&:name)).blank?
 end
 
 # role(s) can be used singular or plural
