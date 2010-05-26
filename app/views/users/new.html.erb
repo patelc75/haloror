@@ -17,13 +17,8 @@
 			  <li><%= flash[:warning]%></li>
 			  </ul>
 			<% end %>
-			<% if @user.errors %>
-			  <%= error_messages_for :user %>
-			  <br>
-			<% end %>
-			<% if @profile.errors %>
-			<%= error_messages_for :profile %>
-			<% end %>
+		  <%= error_messages_for :user if @user.errors unless @user.blank? %>
+			<%= error_messages_for :profile if @profile.errors unless @profile.blank? %>
 		</div>
 
       <% form_tag :action => 'create' do -%>
