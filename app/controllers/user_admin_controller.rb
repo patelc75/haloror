@@ -66,7 +66,7 @@ class UserAdminController < ApplicationController
   end
   
   def roles
-    @roles = Role.all_except("caregiver", "super_admin")
+    @roles = Role.distinct_names_only_all_except("caregiver", "super_admin") # make an array of [name, name]
     # @roles = []
     # rows = Role.connection.select_all("Select Distinct name from roles where name <> 'caregiver' AND name <> 'super_admin' order by name asc")
     # rows.collect do |row|
@@ -80,19 +80,22 @@ class UserAdminController < ApplicationController
     # end
     #
     # all users having any role in selected groups
-    @users = @groups.collect(&:users).flatten.uniq
+    users = @groups.collect(&:users).flatten # collect users from the groups
+    @users = User.all(:conditions => {:id => users.collect(&:id).compact.uniq}, :include => :profile, :order => 'profiles.first_name, profiles.last_name') # fetch uniq IDs and find again
+    # @users = @groups.collect(&:users).flatten.uniq.sort! {|x,y| x.name <=> y.name }
     # @users = User.find(:all, :order => 'login asc')
   end
   
   def assign_super_role
-    user_id = params[:user_id]
-    unless user_id.empty?
-      User.find(user_id).has_role 'super_admin', Group.find_by_name('halo')
-      @success = true
-      @message = "Super Admin Role Assigned"
-    else
-      @success = false
-      @message = "Choose a user"
+    unless (user_id = params[:user][:id]).blank?
+      unless (user = User.find(user_id)).blank?
+        user.has_role 'super_admin', Group.find_by_name('halo') # TODO: should we find_or_create_by ?
+        @success = true
+        @message = "Super Admin Role Assigned"
+      else
+        @success = false
+        @message = "Choose a user"
+      end
     end
     render :action => 'assign_role', :layout => false
   end
@@ -100,10 +103,10 @@ class UserAdminController < ApplicationController
   def assign_role
     group = params[:group]
     role = params[:role]
-    user_id = params[:user_id]
+    user_id = params[:user][:id] rescue nil # may error otherwise
     
-    unless user_id.empty?
-      unless group[:name].empty?
+    unless user_id.blank?
+      unless group[:name].blank?
         User.find(user_id).has_role role[:name], Group.find_by_name(group[:name])
       else
         User.find(user_id).has_role role[:name]
@@ -122,10 +125,10 @@ class UserAdminController < ApplicationController
   def remove_role
     group = params[:group]
     role = params[:role]
-    user_id = params[:user_id]
+    user_id = params[:user][:id]
     
-    unless user_id.empty?
-      unless group[:name].empty?
+    unless user_id.blank?
+      unless group[:name].blank?
         g = Group.find_by_name(group[:name])
         r = Role.find(:first, :conditions => "name = '#{role[:name]}' AND authorizable_type = 'Group' AND authorizable_id = #{g.id}")
         if r

@@ -11,14 +11,14 @@
 <br><br>
 <h2>Assign Roles</h2>
 <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_role'}, :update => 'assign_role' do |f|%>
-  <%= collection_select 'user', 'id', @users, :id, :name %> is a(n) <%= collection_select 'role', 'name', @roles, :id, :name %> of <%= collection_select 'group', 'name', @groups, :id, :name %>
+  <%= collection_select 'user', 'id', @users, :id, :name %> is a(n) <%= collection_select 'role', 'name', @roles, :name, :name %> of <%= collection_select 'group', 'name', @groups, :name, :name %>
   <br>
   <%=submit_tag 'Assign Role and Group'%>
 <% end %>
 <br><br>
 <h2>Remove Role</h2>
 <% form_remote_tag :url => {:controller => 'user_admin',:action => 'remove_role'}, :update => 'assign_role' do |f|%>
-  Remove <%= collection_select 'user', 'id', @users, :id, :name %> from <%= collection_select 'role', 'name', @roles, :id, :name %> of <%= collection_select 'group', 'name', @groups, :id, :name %>
+  Remove <%= collection_select 'user', 'id', @users, :id, :name %> from <%= collection_select 'role', 'name', @roles, :name, :name %> of <%= collection_select 'group', 'name', @groups, :name, :name %>
   <br>
   <%=submit_tag 'Remove Role and Group'%>
 <% end %>
