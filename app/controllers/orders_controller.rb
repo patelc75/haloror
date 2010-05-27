@@ -75,9 +75,10 @@ class OrdersController < ApplicationController
   
   def update_kit_serial
     @order = Order.find(params[:order][:id])
+    @order.kit_serial = params[:order][:kit_serial]
     
     respond_to do |format|
-      if @order.save
+      if @order.save && !@order.need_to_force_kit_serial?
         flash[:notice] = 'Order was successfully saved with Kit Serial Number.'
         format.html { render :action => 'success' }
       else
