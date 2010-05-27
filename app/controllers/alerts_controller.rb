@@ -9,7 +9,7 @@ class AlertsController < ApplicationController
     #   @alert_types << type        
     # end
     # 
-    @alert_types = AlertGroup.all.reject {|e| e.group_type == "critical"}.collect(&:alert_types).flatten
+    @alert_types = AlertGroup.all.reject {|e| e.group_type == "critical"}.collect(&:alert_types).flatten.uniq
     #
     roles_user = RolesUser.find(params[:id])
     # https://redmine.corp.halomonitor.com/issues/2923
