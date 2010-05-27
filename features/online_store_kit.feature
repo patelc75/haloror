@@ -43,10 +43,10 @@ Feature: Online Store Kit
     Then page content should have "<result>"
     
     Examples:
-      | group         | result            | kit_serial | button |
-      | resellergroup | Thank you         |            | Next   |
-      | resellergroup | Thank you         | H400000155 | Next   |
-      | resellergroup | Thank you         |            | Skip   |
-      | resellergroup | Thank you         | H400000155 | Skip   |
-      | retailergroup | Kit Serial Number |            | Next   |
-      | retailergroup | Thank you         | H400000155 | Next   |
+      | group         | result                               | kit_serial | button |
+      | resellergroup | Thank you                            |            | Next   |
+      | resellergroup | Thank you                            | H400000155 | Next   |
+      | resellergroup | Thank you                            |            | Skip   |
+      | resellergroup | Thank you                            | H400000155 | Skip   |
+      | retailergroup | Thank you                            | H400000155 | Next   |
+      | retailergroup | Please provide the Kit Serial Number |            | Next   |
