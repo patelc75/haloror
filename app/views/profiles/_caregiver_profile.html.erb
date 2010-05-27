@@ -79,6 +79,7 @@ window.onload = function(){
             <input type="hidden" name="group_id" value="<%=params[:group_id]%>" />
             <input type="hidden" name="roles_user_id" value="<%=params[:roles_user_id]%>" />
             <input type="hidden" name="operator" value="<%=params[:operator]%>"/>
+            <%= render :partial => 'login_fields' if @user.new_record? %>
             <%= render :partial => '/profiles/profile_top' %>
           </div>
 

@@ -8,12 +8,15 @@ class Role < ActiveRecord::Base
   has_many :users, :through => :roles_users, :include => [:roles_users]
   belongs_to :authorizable, :polymorphic => true
   #has_one :roles_user
+  named_scope :ordered, lambda {|*args| {:order => (args.flatten.first || "name ASC" )}}
+  named_scope :distinct_names_only, :select => "DISTINCT name", :order => "name"
+
   # class methods
   
   class << self
-    def all_except(*args)
+    def distinct_names_only_all_except(*args)
       args = args.flatten # do not use flatten!. it can return nil in some cases
-      self.all(:select => "DISTINCT name").reject {|e| args.include?(e.name) } unless args.blank? # exclude all role names given in an array
+      self.distinct_names_only.reject {|e| args.include?(e.name) }.sort {|x,y| x.name <=> y.name } unless args.blank? # exclude all role names given in an array
     end
   end
 
