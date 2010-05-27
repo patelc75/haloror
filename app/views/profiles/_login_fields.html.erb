@@ -1,0 +1,19 @@
+<p>
+  <label for="user_login">Username</label><br />
+  <%= text_field :user, :login %>
+</p>
+
+<p>
+  <label for="user_password">Password</label><br/>
+  <%= password_field :user, :password %>
+</p>
+
+<p>
+  <label for="user_password_confirmation">Confirm Password</label><br/>
+  <%= password_field :user, :password_confirmation %>
+  <%=hidden_field_tag :position, @max_position %>
+</p>
+
+<p>
+  <%= hidden_field_tag :email, 'no-email@halomonitoring.com' ,:size => '30' %>
+</p>

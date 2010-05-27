@@ -102,6 +102,10 @@ When /^I reload$/ do
   reload
 end
 
+When /^I follow links "([^\"]*)"$/ do |links_text|
+  links_text.split('>').map(&:strip!).each {|link| click_link(link) }
+end
+
 When /^I (edit|delete|show) the (\d+)(?:st|nd|rd|th) (.+)$/ do |action, pos, model_name|
   action_text = (action == "delete" ? "Destroy" : "#{action.capitalize}")
   visit eval("#{model_name.downcase.pluralize.gsub(' ','_')}_path") unless model_name == 'row'
@@ -152,6 +156,10 @@ end
 
 # Then
 
+Then /^I should see "([^\"]*)" link$/ do |link_text|
+  response.should have_tag("a", :text => link_text)
+end
+
 Then /^page has the following content visible:$/ do |string|
   string.each do |row|
     assert_have_selector4
@@ -160,6 +168,15 @@ end
 
 Then /^I should see the following (.+):$/ do |model, expected_table|
   expected_table.diff!(tableish('table tr', 'td,th'))
+end
+
+Then /^page should have a dropdown for "([^\"]*)"$/ do |data_set|
+  case data_set
+  when "all groups"
+    Group.all.each do |group|
+      response.should have_tag("select[id=?]", 'group_name') { with_tag("option", :text => group.name) }
+    end
+  end
 end
 
 Then /^the (\d+)(?:st|nd|rd|th) row should contain "([^\"]*)"$/ do |pos, label|

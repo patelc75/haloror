@@ -25,8 +25,9 @@ describe UserIntake do
   end
 
   def build_user(type)
-    User.new( :email => "#{type}@example.com", 
-      "profile_attributes" => Profile.new(profile_hash("#{type}")).attributes )
+    user = User.new( :email => "#{type}@example.com" )
+    user.profile = Profile.new(profile_hash("#{type}"))
+    user
   end
   
   def add_senior

@@ -1,38 +1,37 @@
 <div class="row header">
-	<div class="col-25">
-		&nbsp;
-	</div>
+  <div class="col-25">
+    &nbsp;
+  </div>
 
-	<div class="col-25">
-		<%=link_to_remote "ID", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'id'}%>
-	</div>
+  <div class="col-25">
+    <%= link_to_remote "ID", {:update => 'user-table', :url => {:action => 'sort_user_table', :col => 'id', :group_name => @group_name}}, {:title => "Order by User ID"} %>
+  </div>
 
-	<div class="col-125">
-		<%=link_to_remote "Name", :update => 'user-table', :url => {:action => 'sort_user_table', :col => 'name'}%>
-	</div>
+  <div class="col-125">
+    <%= link_to_remote "Name", {:update => 'user-table', :url => {:action => 'sort_user_table', :col => 'name', :group_name => @group_name}}, {:title => "Order by Last Name in User Profile"} %>
+  </div>
 
-	<div class="col-300">
-		Role(s) 
-		<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_sales? %>
-		  <a href="/user_admin/roles">Configure</a>&nbsp;
-		<% end %>
-	</div>
+  <div class="col-300">
+    Role(s) 
+    <% if current_user.is_super_admin? %>
+      <a href="/user_admin/roles">Configure</a>&nbsp;
+    <% end %>
+  </div>
 
-	<div class="col-150">
-		Last Login
-	</div>
+  <div class="col-150">
+    Last Login
+  </div>
 
-	<div class="col-200">
-		Links
-	</div>
-
+  <div class="col-200">
+    Links
+  </div>
 </div>
 
-
-
-<% users.each do |user| %>
-  <% if current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships) || current_user.is_sales? || current_user.is_moderator_of_any?(user.group_memberships) || current_user.is_installer? %>
-    <%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
-	<div id="user_<%=user.id%>-hidden" style="display:none"></div>
+<% unless @users.blank? %>
+  <% @users.each do |user| %>
+    <% if current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships) || current_user.is_sales? || current_user.is_moderator_of_any?(user.group_memberships) || current_user.is_installer? %>
+      <%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
+    <div id="user_<%=user.id%>-hidden" style="display:none"></div>
+    <% end %>
   <% end %>
 <% end %>

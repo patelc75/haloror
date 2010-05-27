@@ -6,6 +6,7 @@ class Group < ActiveRecord::Base
   has_many :rma_items
   has_many :orders
   has_many :roles, :as => :authorizable
+  # named_scope :distinct_by_name, :select => "DISTINCT name, *", :order => "name ASC"
 
   validates_format_of :name, :with => /\A[a-z0-9_]+\z/, :message => 'Only lowercase and numeric characters are allowed'
   
@@ -40,7 +41,7 @@ class Group < ActiveRecord::Base
   private # -----------------------------
   
   def users_of_roles(roles)
-    roles.collect(&:users).flatten.uniq unless roles.blank?
+    roles.blank? ? [] : roles.collect(&:users).flatten.uniq # return an array in all cases
   end
   
 end

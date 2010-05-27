@@ -244,7 +244,7 @@ ENV['RECAPTCHA_PRIVATE_KEY'] = '6LeR9goAAAAAAP4iAFbMvp91jkxVyWegay5k-b1v'
 ALERT_MESSAGES = {
   :default => "Please click the button to go back",
   :login_failed => "The login information you entered does not match an account in our records. Remember, your login and password is case-sensitive, please check your Caps Lock key.",
-  :profile_updated => "Profile Updated. All users except super_admins must call tech support 1-888-971-HALO (4256) to make this modification.",
+  :profile_updated => "Profile Updated. Only admins are allowed to do this. You MUST follow up with 1-888-971-HALO (4256) so this update is pushed to the call center.",  
   :call_tech_support => "Please call tech support 1-888-971-HALO (4256) to make this modification.",
   :new_caregiver => "If that email was in our system, the user was added to your caregiver list. If not, an email was sent to that email address."
 }

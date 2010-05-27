@@ -40,13 +40,13 @@
 	
 	<div style="padding-top:25px;float:left;width:50px">
 		<%
-			unless opts.active? && current_user.is_super_admin? # https://redmine.corp.halomonitor.com/issues/2722
+			unless opts.active? && (current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships)) # https://redmine.corp.halomonitor.com/issues/2722
 				img = '-away'
 			else
 				img = ''
 			end
 		%>
-		<% if current_user.is_super_admin? %>
+		<% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %>
 		  <a href="#" onClick="moveElementUp(<%=i%>, <%=caregiver.id%>, <%=user_id%>)">
 	  <% else %>
 	    <a href="#" onClick="show_message();">
@@ -54,7 +54,7 @@
 			<img alt="Up" src="/images/call_list-up<%=img%>.gif" border="0" id="item_up_<%=caregiver.id%>" />
 		</a>
 		<br />
-		<% if current_user.is_super_admin? %>
+		<% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %>
 		  <a href="#" onClick="moveElementDown(<%=i%>, <%=caregiver.id%>, <%=user_id%>)">
 		<% else %>
 		  <a href="#" onClick="show_message();">
@@ -123,7 +123,7 @@
 			end
 		%>
 
-    <% if current_user.is_super_admin? %>  <!-- https://redmine.corp.halomonitor.com/issues/2722 -->
+    <% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %>  <!-- https://redmine.corp.halomonitor.com/issues/2722 -->
 		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_away_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "deactivate",:id => opts.id}, :before => 'toggleCaregiver(\'disable\', '+i.to_s+', '+caregiver.id.to_s+', '+opts.phone_active.to_s+', '+opts.email_active.to_s+', '+opts.text_active.to_s+')',:complete => "show_message()")%>
 	  <% else %>
 	    <%= link_to_function image_tag(img, :alt => alt, :id => 'item_away_'+caregiver.id.to_s), "show_message();" %>
@@ -154,8 +154,8 @@
 			end
 		%>
 		<div id="show_message"></div>
-		<% if opts.active? && current_user.is_super_admin? %> <!-- https://redmine.corp.halomonitor.com/issues/2722 -->
-		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_phone_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_phone",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')', :complete => 'show_message()')%>
+		<% if opts.active? && (current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships)) %> <!-- https://redmine.corp.halomonitor.com/issues/2722 -->
+		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_phone_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_phone",:id => @user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.phone_active.to_s+', \'phone\', '+user_id+')', :complete => 'show_message()')%>
 		<% else %>
 		  <%= link_to_function image_tag(img, :alt => alt, :id => 'item_phone_'+caregiver.id.to_s), "show_message();" %>
 		<% end %>
@@ -174,7 +174,7 @@
 			end
 		%>
   	<% if opts.active? and caregiver.email != "no-email@halomonitoring.com" %>
-		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_email_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_email",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.email_active.to_s+', \'email\', '+user_id+')', :complete => 'updatePositions()')%>
+		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_email_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_email",:id => @user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.email_active.to_s+', \'email\', '+user_id+')', :complete => 'updatePositions()')%>
 		<% else %>
 		  <%= image_tag(img, :alt => alt, :id => 'item_email_'+caregiver.id.to_s) %>
 		<% end %>
@@ -194,13 +194,14 @@
 				img = 'call_list-text.gif'
 				alt = 'Text will be sent to this caregiver in the case of a fall or panic.  Click to disable.'
 			end
-			
-			unless user
-				user = current_user
-			end
+
+      @user ||= current_user
+      # unless user
+      #   user = current_user
+      # end
 		%>
     <% if opts.active? %>
-		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_text_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_text",:id => user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\', '+user_id+')', :complete => 'updatePositions()')%>
+		  <%=link_to_remote(image_tag(img, :alt => alt, :id => 'item_text_'+caregiver.id.to_s), :url => { :controller => 'call_list', :action => "toggle_text",:id => @user.roles_user_by_caregiver(caregiver).id,:user_id => caregiver.id }, :before => 'toggleContact('+i.to_s+','+caregiver.id.to_s+', '+opts.text_active.to_s+', \'text\', '+user_id+')', :complete => 'updatePositions()')%>
 		<% else %>
 		  <%= image_tag(img, :alt => alt, :id => 'item_text_'+caregiver.id.to_s) %>
 		<% end %>
@@ -218,10 +219,13 @@
 			end
 		%>
 		
-		<%=link_to_remote img, :update => "response",
-		    :url => { :controller => "users", :action => "destroy_caregiver", :id => user.roles_user_by_caregiver(caregiver).roles_users_option.id, :position => i, :caregiver_id => caregiver.id },
-			:confirm => "Are you sure?"
-		%>
+    <% if caregiver.options_for_senior(@user) %>
+      <!-- WARNING: this only destroys the position, email, etc attributes instead of removing it as caregiver -->
+      <!-- Is that the intended behavior of business logic here? -->
+  		<%=link_to_remote img, :update => "response",
+  		    :url => { :controller => "users", :action => "destroy_caregiver", :id => caregiver.options_for_senior(@user).id, :position => i, :caregiver_id => caregiver.id },
+  			:confirm => "Are you sure?" %>
+		<% end -%>
 	</div>
 
 	<!--EDIT-->
@@ -230,13 +234,13 @@
 		<!--% puts edit_user_url(caregiver)%-->
 		<% alt = "Edit caregiver's profile." %>
 		<%#=link_to_remote_redbox('Edit Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id, :frame => true, :user_id => user_id, :roles_user_id => user.roles_user_by_caregiver(caregiver).id }, :html => {:alt => alt, :method => :get, :complete => 'updatePositions()'})%>
-		<%=link_to('Edit Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id,:user_id => caregiver.id, :roles_user_id => user.roles_user_by_caregiver(caregiver).id)%>
+		<%=link_to('Edit Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => caregiver.profile.id,:user_id => caregiver.id, :roles_user_id => @user.roles_user_by_caregiver(caregiver).id)%>
 		| <% alt = 'View / Edit Alerts.' %><br>
-		<%=link_to('Non-critical Alerts', :controller => "alerts", :action => "index", :alt => alt, :id => user.roles_user_by_caregiver(caregiver).id)%>
+		<%= link_to('Non-critical Alerts', {:controller => "alerts", :action => "index", :id => @user.roles_user_by_caregiver(caregiver).id, :senior_id => @user.id}, {:alt => alt})%>
 	</div>
 	
 	<!--TOOLTIP-->
-	<% if current_user.is_super_admin? %> <!-- https://redmine.corp.halomonitor.com/issues/2722 -->
+	<% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %> <!-- https://redmine.corp.halomonitor.com/issues/2722 -->
 	<div id="item_<%=caregiver.id%>_tooltip" style="top:-65px;margin-left:-600px;position:absolute;height:73px;width:221px;background:url('/images/tooltip.gif');display:none">
 		<div style="float:right;margin-right:3px;margin-top:3px">
 			<a href="javascript:void(0)" onClick="disableTooltip(<%=caregiver.id%>)"><img src="/images/tooltip-close.gif" style="margin-right:5px;margin-top:3px" /></a>

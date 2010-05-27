@@ -89,15 +89,24 @@ class ProfilesController < ApplicationController
     @profile = Profile.find(params[:id], :include => :user)
     @group_id = params[:group_id]
     @user = @profile.user
+    @senior = User.find(params[:user_id]) # additional parameter passed for correct logic
     if(!params[:roles_user_id].blank?)
       @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
     end
     session[:redirect_url] = request.env['HTTP_REFERER']
   end
   
+  # = Error when adding a caregiver without email
+  # https://redmine.corp.halomonitor.com/issues/2890#note-16
+  # == we may reach here by "add new caregiver with no email"
+  # * email address is optional here
+  # * user model has a validation on email address
+  # == solution
+  # * user the new user intake object oriented code
+  # * manually make changes to override validation for caregiver record
   def new_caregiver_profile
-	@removed_caregivers = []
-	@senior = User.find params[:user_id]
+    @removed_caregivers = []
+    @senior = User.find params[:user_id] # additional parameters passed for correct logic
     @senior.caregivers.each do |caregiver|
       if caregiver
         caregiver.roles_users.each do |roles_user|
@@ -109,73 +118,76 @@ class ProfilesController < ApplicationController
     end
     get_caregivers(current_user)
     @max_position = User.get_max_caregiver_position(@senior)
-    @user = User.new 
-    @profile = Profile.new    	
+    @profile = Profile.new
+    @user = User.new(:need_validation => false, :profile => @profile)
   end
    
   def create_caregiver_profile
-  	
-  	@user = User.new(params[:user])
+    @user = User.new(params[:user])
     @profile = Profile.new(params[:profile])
-  
-    	User.transaction do 
-    		@user.email = params[:email]
-    		@user.is_new_caregiver = true
-    		@user[:is_caregiver] =  true
-    		if @user.save
-    			@user.activate #this call differentiates this method UsersController.populate_caregiver 
-    			
-    			@profile.user_id = @user.id
-    			@profile[:is_new_caregiver] = true
-    			if @profile.save!
-    				patient = User.find(params[:patient_id].to_i)
-    				role = @user.has_role 'caregiver', patient
-    				caregiver = @user
-    				@roles_user = patient.roles_user_by_caregiver(caregiver)
-    				update_from_position(params[:position], @roles_user.role_id, caregiver.id)
-    				if !role.nil?
-    				  RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => true,:relationship => params[:relationship],:is_keyholder => params[:key_holder][:is_keyholder])
-    				end
-    			else
-    				#render :action => 'new_caregiver_profile',:user_id => current_user
-    				raise "Invalid Profile"
-    			end
-    		else
-    			#render :action => 'new_caregiver_profile',:user_id => current_user
-    			 raise "Invalid User"
-    		end
-    	redirect_to :controller => 'call_list',:action => 'show',:id => params[:patient_id]
-    		
-		end
-		
-  rescue Exception => e
-    RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
-    render :action => 'new_caregiver_profile'
-  
-  
-    #rescue Exception => e
-    	#RAILS_DEFAULT_LOGGER.warn "#{e}"
-    	#render :action => 'new_caregiver_profile',:user_id => current_user
-=begin
-    	@removed_caregivers = []   
-    	current_user.caregivers.each do |caregiver|
-    	  if caregiver
-    	    caregiver.roles_users.each do |roles_user|
-    	      if roles_user.roles_users_option and roles_user.roles_users_option[:removed]
-    	        @removed_caregivers << caregiver
-    	      end
-    	    end 
-    	  end
-    	end
-    	get_caregivers(current_user)
-    	@max_position = @caregivers.size + 1
-     	@user = User.new 
-    	@profile = Profile.new  
-=end
-#		render :partial => '/profiles/new_caregiver_profile'
+    @user.profile = @profile
+    @senior = User.find(params[:patient_id].to_i) # senior variable is used in view
 
+    User.transaction do 
+      @user.email = params[:email]
+      @user.is_new_caregiver = true
+      @user[:is_caregiver] =  true
+      @user.skip_validation = true # skip validation, just save user data
 
+      if @user.save
+        @user
+        @user.activate #this call differentiates this method UsersController.populate_caregiver 
+
+        @profile.user_id = @user.id
+        @profile[:is_new_caregiver] = true
+        if @profile.save!
+          patient = User.find(params[:patient_id].to_i)
+          role = @user.has_role 'caregiver', patient
+          caregiver = @user
+          @roles_user = patient.roles_user_by_caregiver(caregiver)
+          update_from_position(params[:position], @roles_user.role_id, caregiver.id) unless @roles_user.blank?
+          unless role.blank? || @roles_user.blank?
+            # a few attributes were removed from the form. this was causing Exception and user data not saved
+            RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => true) # ,:relationship => params[:relationship],:is_keyholder => params[:key_holder][:is_keyholder])
+          end
+          redirect_to :controller => 'call_list',:action => 'show',:id => params[:patient_id]
+        else
+          render :action => 'new_caregiver_profile',:user_id => current_user
+          # raise "Invalid Profile"
+        end
+      else
+        render :action => 'new_caregiver_profile',:user_id => current_user
+        # raise "Invalid User"
+      end
+      # redirect_to :controller => 'call_list',:action => 'show',:id => params[:patient_id]
+
+    # rescue Exception => e
+    #   RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
+    #   render :action => 'new_caregiver_profile'
+    end
   end
+    #rescue Exception => e
+    #RAILS_DEFAULT_LOGGER.warn "#{e}"
+    #render :action => 'new_caregiver_profile',:user_id => current_user
+=begin
+@removed_caregivers = []   
+current_user.caregivers.each do |caregiver|
+  if caregiver
+    caregiver.roles_users.each do |roles_user|
+      if roles_user.roles_users_option and roles_user.roles_users_option[:removed]
+        @removed_caregivers << caregiver
+      end
+    end 
+  end
+end
+get_caregivers(current_user)
+@max_position = @caregivers.size + 1
+@user = User.new 
+@profile = Profile.new  
+=end
+    #		render :partial => '/profiles/new_caregiver_profile'
+
+
   def update_from_position(position, roles_user_id, user_id)
     caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and roles_user_id = #{roles_user_id}")
     
@@ -188,7 +200,6 @@ class ProfilesController < ApplicationController
   
   def update_caregiver_profile
     if request.post?
-      debugger
       sent = false
       user = User.find(params[:user_id])
       @profile = Profile.find(params[:id])
@@ -220,7 +231,7 @@ class ProfilesController < ApplicationController
           # @alert_message = true
           # render :action => 'edit_caregiver_profile'
           redirect_to_message( 
-            :message => (current_user.is_super_admin? ? :profile_updated : :call_tech_support), 
+            :message => ((current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)) ? :profile_updated : :call_tech_support), 
             :back_url => url_for(:controller => "profiles", :action => "edit_caregiver_profile", :id => @profile.id, :user_id => user)
             )
           # redirect_to :controller => "alerts", :action => "alert"

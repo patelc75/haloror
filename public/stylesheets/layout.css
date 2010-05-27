@@ -877,6 +877,13 @@ input.validation-failed, textarea.validation-failed {
 .error {
   color: #F00;
 }
+.fieldWithErrors {
+  color: #F00;
+  display: inline;
+}
+.fieldWithErrors input {
+  background-color: #FFCDC5;
+}
 
 .red { color: #C80000; }
 .warning {

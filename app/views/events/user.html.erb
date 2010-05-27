@@ -1,3 +1,7 @@
+<% if @user.is_caregiver? %>
+	<%=render :partial => 'layouts/choose_patient'%>
+<% end %>
+
 <form action="/events/user/<%= params[:id]%>">
   <table>
     <tr>
@@ -45,7 +49,12 @@
 		   end
 		%>
 		<%= event_display %> Events | <span style="color:#000;font-size:.75em">
-		<%= @user.name %> (<%= @user.id %>)</big>
+	  <% if @user.is_halouser? %>
+	    <%= "#{@user.name} (#{@user.id} )" -%>
+    <% elsif @user.is_caregiver? %>
+      <%= @user.patients.blank? ? "#{@user.name}?" : "#{@user.patients.first.name} (#{@user.patients.first.id} )" -%>
+    <% end -%>
+		</big>
 		<% if @user_begin_time and @user_end_time and params[:begin_time] != "" and params[:end_time] != ""%>
 		 - <%#= UtilityHelper.format_datetime(@user_begin_time.to_time, current_user) %>  <%#= UtilityHelper.format_datetime(@user_end_time.to_time, current_user) %> 
 		 <b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in

@@ -2,6 +2,12 @@ require 'digest/sha1'
 class User < ActiveRecord::Base
   #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
   
+  # prevents a user from submitting a crafted form that bypasses activation
+  # anything else you want your user to change should be added here.
+  attr_accessible :login, :email, :password, :password_confirmation
+  attr_accessible :need_validation
+  attr_accessor :need_validation
+  
   # arranged associations alphabetically for easier traversing
   
   acts_as_authorized_user
@@ -28,6 +34,7 @@ class User < ActiveRecord::Base
   has_many :roles_users,:dependent => :destroy
   has_many :roles, :through => :roles_users#, :include => [:roles_users]
   # has_and_belongs_to_many :roles
+  # has_many :roles_users
   has_many :self_test_sessions
   has_many :skin_temps
   has_many :steps
@@ -74,6 +81,8 @@ class User < ActiveRecord::Base
   before_save :encrypt_password
   before_create :make_activation_code
   # after_save :post_process  
+  
+  named_scope :search_by_login_or_profile_name, lambda {|arg| query = "%#{arg}%"; {:include => :profile, :conditions => ["users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", query, query, query]}}
   
   def after_initialize
     self.need_validation = true
@@ -299,12 +308,13 @@ class User < ActiveRecord::Base
   end
   
   def full_name
-    return (self.profile.blank? ? "" : \
-      ( self.profile.first_name && self.profile.last_name ? \
-          self.profile.first_name + " " + self.profile.last_name : \
-          nil
-      )
-    )
+    profile.blank? ? '' : [profile.first_name, profile.last_name].join(' ')
+    # return (self.profile.blank? ? "" : \
+    #   ( self.profile.first_name && self.profile.last_name ? \
+    #       self.profile.first_name + " " + self.profile.last_name : \
+    #       nil
+    #   )
+    # )
   end
   
   def address
@@ -384,15 +394,16 @@ class User < ActiveRecord::Base
   end
   
   def patients
-    patients = []
-    
-    RolesUser.find(:all, :conditions => "user_id = #{self.id}").each do |role_user|
-      if role_user.role and role_user.role.name == 'caregiver' and role_user.roles_users_option and !role_user.roles_users_option.removed
-        patients << User.find(role_user.role.authorizable_id, :include => [:roles, :roles_users, :access_logs, :profile])
-      end
-    end
-    
-    patients
+    # patients = []
+    # 
+    # RolesUser.find(:all, :conditions => "user_id = #{self.id}").each do |role_user|
+    #   if role_user.role and role_user.role.name == 'caregiver' and role_user.roles_users_option and !role_user.roles_users_option.removed
+    #     patients << User.find(role_user.role.authorizable_id, :include => [:roles, :roles_users, :access_logs, :profile])
+    #   end
+    # end
+    # 
+    # patients
+    self.is_caregiver_of_what # will return all seniors for whom this user is a caregiver
   end
 
   # not required. this is already handled exactly like this by rails-authorization plugin
@@ -493,18 +504,29 @@ class User < ActiveRecord::Base
     end
     return alert_option
   end
+
   def caregivers_sorted_by_position
-    cgs = {}
-    caregivers.each do |caregiver|
-      roles_user = roles_user_by_caregiver(caregiver)
-      if opts = roles_user.roles_users_option
-        unless opts.removed
-          cgs[opts.position] = caregiver
-        end
-      end
-    end
-    cgs = cgs.sort
+    # new logic
+    # * returns all caregivers whether they are positioned or not
+    # * adds a sequential integer value as position, if not already
+    # * sequential integer value is dereived from Time.now, so it is always at the bottom of the list
+    # * index of the enumeration is added to Time.now.to_i to ensure unique sequence
+    caregivers.enum_with_index.collect {|caregiver, index| [(caregiver.caregiver_position_for(self) || (Time.now.to_i + index)), caregiver] }.sort {|a,b| a[0] <=> b[0] }
+    #
+    # old logic
+    # WARNING: major bug: if caregiver does not have a position yet, it is not included
+    # caregivers.each do |caregiver|
+    #   if roles_user = roles_user_by_caregiver(caregiver)
+    #     if opts = roles_user.roles_users_option
+    #       unless opts.removed
+    #         cgs[opts.position] = caregiver
+    #       end
+    #     end
+    #   end
+    # end
+    # cgs = cgs.sort
   end
+
   def roles_user_by_role_name(role_name)
     if self.roles_users
       return self.roles_users.find(:first, :conditions => "roles.name = '#{role_name}' AND user_id = #{self.id}", :include => :role)
@@ -522,37 +544,54 @@ class User < ActiveRecord::Base
 
   def groups_where_admin
     # only fetch groups for which user has admin role
-    self.is_admin_of_what.select {|element| element.is_a?(Group) }.uniq
+    # https://redmine.corp.halomonitor.com/issues/2967. Super admin role also accounts for admin role.
+    self.is_super_admin? ? Group.all(:order => 'name') : self.is_admin_of_what.select {|element| element.is_a?(Group) }.uniq.sort {|x,y| x.name <=> y.name }
+  end
+  
+  # includes the following groups
+  #   * where this use is a member
+  #   * where this user is caregiver of a member 
+  def extended_group_memberships
+    group_memberships + caregiving_group_memberships
+  end
+  
+  # user is_caregiver to halousers.of_these_groups
+  def caregiving_group_memberships
+    # I am the caregiver, fetch all groups of all senior whom I am caregiving
+    # admin of any group in the above list, can edit my profile (caregiver profile)
+    self.is_caregiver_of_what.collect(&:group_memberships).flatten
+    # if we only want to allow admins of "halouser-group"
+    # then change the symbol method to "is_halouser_of_what"
   end
   
   def group_memberships
-    # # CHANGED: test this
-    # # Groups for which current_user has roles
-    # #   ths method is self-contained. does not depend on group_roles
-    # #   also has additional check for super_admin role
-    # options = ( is_super_admin? ? {} : \
-    #             {:id => roles.find_all_by_authorizable_type('Group').map(&:authorizable_id).compact.uniq})
-    # Group.all(:conditions => options, :order => 'name')
-    # #   group roles of user, uniq, sorted
-    # #   this method also works but requires "group_roles" method
-    # # return group_roles.collect {|role| Group.find(role.authorizable_id) }.uniq.sort {|a, b| a <=> b}
+    # CHANGED: test this
+    # Groups for which current_user has roles
+    #   ths method is self-contained. does not depend on group_roles
+    #   also has additional check for super_admin role
+    options = ( is_super_admin? ? {} : \
+                {:id => roles.find_all_by_authorizable_type('Group').collect(&:authorizable_id).compact.uniq})
+    Group.all(:conditions => options, :order => 'name')
+    #   group roles of user, uniq, sorted
+    #   this method also works but requires "group_roles" method
+    # return group_roles.collect {|role| Group.find(role.authorizable_id) }.uniq.sort {|a, b| a <=> b}
     # 
-    if is_super_admin?
-      groups = Group.all
-    else
-      roles = group_roles
-      groups = []
-      if !roles.blank?
-        roles.each do |role|
-          groups << Group.find(role.authorizable_id)
-        end
-      end
-      groups.sort! do |a,b|
-        a.name <=> b.name
-      end
-      groups.uniq!
-    end
-    return groups
+    # if is_super_admin?
+    #   groups = Group.all
+    # else
+    #   roles = group_roles
+    #   groups = []
+    #   if !roles.blank?
+    #     roles.each do |role|
+    #       groups << Group.find(role.authorizable_id)
+    #     end
+    #   end
+    #   groups.sort! do |a,b|
+    #     a.name <=> b.name
+    #   end
+    #   groups.uniq!
+    # end
+    # return groups
   end
   
   def group_memberships_by_role(role)
@@ -702,14 +741,15 @@ class User < ActiveRecord::Base
     return os2
   end
   
-  def name()
-    if(profile and !profile.last_name.blank? and !profile.first_name.blank?)
-      profile.first_name + " " + profile.last_name 
-    elsif !login.blank?
-      login
-    else 
-      email
-    end
+  def name
+    (profile.blank? ? (login.blank? ? email : login) : [profile.first_name, profile.last_name].join(' '))
+    # if(profile and !profile.last_name.blank? and !profile.first_name.blank?)
+    #   profile.first_name + " " + profile.last_name 
+    # elsif !login.blank?
+    #   login
+    # else 
+    #   email
+    # end
   end
   
   def to_s()
@@ -1439,6 +1479,10 @@ class User < ActiveRecord::Base
   # return true if the login is not blank
   def login_not_blank?
     return (skip_validation ? false : !self.login.blank?)
+  end
+
+  def has_valid_cell_phone_and_carrier?
+    profile.blank? ? false : (profile.cell_phone_exists? && !profile.carrier.blank?)
   end
   
   private # ------------------------------ private methods
