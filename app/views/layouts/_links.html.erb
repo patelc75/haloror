@@ -18,10 +18,12 @@
 			  <li><%= link_to prefix+'Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
 			  <li><%= link_to prefix+'Events', :controller => 'events', :action => 'user', :id => current_user.id %></li>    						
 			  <li><%= link_to prefix+'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
+  			<li><%= link_to prefix+'BP & Weight', :controller => 'vital_lists', :action => 'index',:id => current_user %></li>
 			<% end %>
 			
 			<li><%= link_to 'Support', url_for(:controller => 'util', :action => 'support') %></li>
 			<li><%= link_to 'Buy Online', '/order' %></li>			
+			
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? || current_user.is_installer? || current_user.is_operator? || current_user.is_moderator? %>
 			<hr>
 			<% end %>
@@ -34,9 +36,6 @@
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_installer? %>
 				<li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li>
 			<% end %>						
-			<% if current_user.is_super_admin? %>
-			  <li><%= link_to 'Vitals List', :controller => 'vital_lists', :action => 'index',:id => current_user %></li>
-			<% end %>
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_installer? %>
 				<li><%= link_to 'Config', :controller => 'reporting', :action => 'index' %></li>
 			<% end %>
