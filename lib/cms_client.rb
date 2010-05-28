@@ -1,15 +1,12 @@
 require 'socket'
 require 'timeout'
 
-class SafetyCareClient
+class CmsClient
   # SafetyCare addresses
   # TODO: FIXME: change this when finished testing?
   IP_ADDRESS = "74.43.4.37"
   TCP_PORT = 19925
-
-  # For use with the bin/safetycare_test_listener.rb tester
-  #SAFETYCARE_ADDRESS = "localhost"
-  #SAFETYCARE_PORT = 2000
+  TCP_PORT_HEARTBEAT = 19925
   
   # Test manually with:
   # ruby bin/safetycare_test_listener.rb &
@@ -18,9 +15,9 @@ class SafetyCareClient
   # (ideally, the heartbeat should run from the task scheduler, of course)
   
   def self.heartbeat()
-  	RAILS_DEFAULT_LOGGER.warn("SafetyCareClient.heartbeat running at #{Time.now}")  	
+  	RAILS_DEFAULT_LOGGER.warn("CmsClient.heartbeat running at #{Time.now}")  	
     Timeout::timeout(5) {
-      sock = TCPSocket.open(IP_ADDRESS, TCP_PORT)
+      sock = TCPSocket.open(IP_ADDRESS, TCP_PORT_HEARTBEAT)
       sock.write(64.chr) # 64.chr => @
       sock.close
     }
@@ -37,11 +34,11 @@ class SafetyCareClient
         response = sock.readline
         sock.close
       }
-      RAILS_DEFAULT_LOGGER.warn("SafetyCareClient::alert = " + "%s%s\r\n" % [account_num, alarm_code])
+      RAILS_DEFAULT_LOGGER.warn("CmsClient::alert = " + "%s%s\r\n" % [account_num, alarm_code])
       return true
     else
       #raise CriticalAlertException, "SafetyCareClient.alert::Missing account number! for user_id = #{user_id}"
-      UtilityHelper.log_message_critical("SafetyCareClient.alert::Missing account number! for user_id = #{user_id}")
+      UtilityHelper.log_message_critical("CmsClient.alert::Missing account number! for user_id = #{user_id}")
       return false
     end
   end
