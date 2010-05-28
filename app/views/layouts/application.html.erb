@@ -5,8 +5,15 @@
 	<%= javascript_include_tag "slider", "halo", 'redbox', 'reporting', 'swfobject', 'jsProgressBarHandler' %>
 	<%= yield :js %> <!-- on-demand javascripts. Example: facebox -->
 	
-	<%= calendar_date_select_includes 'blue' %>
-  <%= stylesheet_link_tag "layout", 'redbox', 'tables' %>
+	 <%= calendar_date_select_includes 'blue' %>
+    <%= stylesheet_link_tag "layout", 'redbox', 'tables', 'screen',:media => 'screen' %>
+    <%= stylesheet_link_tag 'button',:media => 'screen' %>
+    <%= stylesheet_link_tag 'print',:media => 'print' %>
+     <%= stylesheet_link_tag 'application',:media => 'screen' %>
+  <!--[if IE]>
+<%= stylesheet_link_tag 'ie', :media=> 'screen' %>
+<![endif]-->
+
 	<%= yield :css %> <!-- on-demand stylesheets. Example: facebox -->
 	
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
