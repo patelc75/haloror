@@ -376,6 +376,7 @@ class UserIntake < ActiveRecord::Base
   
   def senior_attributes=(attributes)
     self.senior = attributes
+    # self.senior.profile_attributes = attributes["profile_attributes"]
   end
   
   def subscriber_attributes=(attributes)
@@ -469,6 +470,16 @@ class UserIntake < ActiveRecord::Base
   end
 
   def argument_to_object(arg)
-    arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil)
+    if arg.is_a?(User)
+      arg
+    else
+      if arg.is_a?(Hash)
+        user = User.new(arg)
+        user.profile = Profile.new(arg["profile_attributes"]) if arg.has_key?("profile_attributes")
+        user
+      else
+        nil
+      end
+    end
   end
 end

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100507134616) do
+ActiveRecord::Schema.define(:version => 20100524231755) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -720,6 +720,7 @@ ActiveRecord::Schema.define(:version => 20100507134616) do
     t.string   "bill_last_name"
     t.integer  "group_id"
     t.string   "coupon_code"
+    t.string   "kit_serial"
   end
 
   create_table "oscope_msgs", :force => true do |t|

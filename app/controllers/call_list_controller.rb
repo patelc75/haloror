@@ -11,7 +11,17 @@ class CallListController < ApplicationController
     number_ext
     session[:redirect_url] = request.env['REQUEST_URI']
     if(!params[:id].blank?)
-      @user = User.find(params[:id])
+      # old logic back
+      @user = (User.find(params[:id]) || current_user) # show caregivers of current_user when user not found
+      #
+      # required business logic is (for UIQ, user-in-question = user for which caregivrs are listed here)
+      # user = caregiver, user != halouser, show caregivers of halouser
+      # user = caregiver, user = halouser, show caregivers of self (caregiver)
+      # * any user can have any number of rols
+      # * as long as UIQ has caregivers, just show them
+      # * if UIQ does not have any caregivers, then fetch caregivers of its first halouser
+      #
+      @user = @user.is_caregiver_for_what.first if @user.caregivers.blank? && @user.is_caregiver? && !@user.is_caregiver_for_what.blank?
       get_caregivers(@user)
       groups = @user.group_memberships
       unless((@user.id == current_user.id) || current_user.patients.include?(@user) || current_user.is_super_admin? || current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups) || current_user.is_sales_of_any?(groups) || current_user.is_installer_of_any?(groups))    

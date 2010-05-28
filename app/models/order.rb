@@ -6,6 +6,10 @@ class Order < ActiveRecord::Base
   has_many :payment_gateway_responses
   has_one :user_intake
   attr_accessor :card_csc, :product, :bill_address_same
+  before_update :check_kit_serial_validation
+  
+  # causing failure of order. need to force kit_serial for retailer in some other way
+  # validates_presence_of :kit_serial, :if => :retailer?
   
   def after_initialize
     populate_billing_address # copy billing address if bill_address_same
@@ -13,6 +17,22 @@ class Order < ActiveRecord::Base
   
   def group_name
     group.blank? ? "" : group.name
+  end
+
+  def reseller?
+    group.blank? ? false : (group.sales_type == "reseller")
+  end
+  
+  def retailer?
+    group.blank? ? false : (group.sales_type == "retailer")
+  end
+  
+  def check_kit_serial_validation
+    self.errors.add_to_base("Please provide the Kit Serial Number") if need_to_force_kit_serial?
+  end
+  
+  def need_to_force_kit_serial?
+    self.retailer? && self.kit_serial.blank?
   end
   
   # quick shortcut for the bill and ship address same

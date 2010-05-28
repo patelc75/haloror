@@ -9,15 +9,15 @@
 </div>
 
 <div id="call_list-col">
-	<div id="call_list-col-header">
-		Critical Alert Settings: <span style="color:#000;font-size:.75em">
-			<%#=link_to_remote_redbox(@user.name + "`s", :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => @user.profile.id, :frame => true,:user_id => @user.id }, :html => {:method => :get})%>
-			<%=link_to(@user.name + "`s", :controller => "profiles", :action => "edit_caregiver_profile", :id => @user.profile.id,:user_id => @user.id )%>
-			<% if @user.is_halouser? %>
-			Caregivers
-			<% end %>
-		</span>			
-	</div>
+  <div id="call_list-col-header">
+    Critical Alert Settings: <span style="color:#000;font-size:.75em">
+      <% if @user.profile.blank? -%>
+        <%= link_to "#{@user.name}'s", "#" -%>
+      <% else -%>
+        <%=link_to(@user.name + "'s", :controller => "profiles", :action => "edit_caregiver_profile", :id => @user.profile.id, :user_id => @user.id ) -%>
+      <% end -%> Caregivers
+    </span>
+  </div>
 	
 	<% 
 		call_list_header_display = 'block'
@@ -27,12 +27,8 @@
 	%>
 
 	<div class="content">
-	<%# if @user.is_caregiver? %>
-		<%#=render :partial => 'layouts/choose_patient'%>
-	<%# end %>
-
 	<% if current_user.is_caregiver? %>
-		<%=render :partial => 'layouts/choose_patient'%>
+		<%= render :partial => 'layouts/choose_patient' %>
 	<% end %>
 		<p>&nbsp;</p>
 		<div id="call_list_header" style="display:<%=call_list_header_display%>">
@@ -68,14 +64,14 @@
 			</div>
 		</div>
 		<p>&nbsp;</p>
-		  <div="call_list_div">    
+		  <div id="call_list_div">
 			<ul id="call_list">
 				<% if @user.is_halouser? || @user.is_sales? %>
 			<%= render :partial => "load_caregivers", :locals => { :caregivers => @caregivers } %>
 			  <% end %>
 			</ul>
 			<!-- https://redmine.corp.halomonitor.com/issues/2722 -->
-      <% if current_user.is_super_admin? %>
+      <% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %>
         <script type="text/javascript">
         //<![CDATA[
           Sortable.create("call_list", {onChange:updatePositions, onUpdate:function(){new Ajax.Request('/call_list/sort/?user_id='+<%=params[:id]%>, {asynchronous:true, evalScripts:true, parameters:serialize()});showTooltip=false}, tag:'li'})
@@ -83,38 +79,18 @@
         </script>
       <% end -%>
 		  </div>
-			
-			
-
-		<!--%= sortable_element 'call_list',
-        :url => { :action => "sort" , :id => @call_list },
-		:onChange => "updatePositions",
-		 :tag => 'li'
-        %-->
-		
 	
 	<div style="float:left;margin-right:10px;margin-top:15px;margin-left:15px;font-weight:bold;background:url('/images/call_list-col-bg.gif') repeat-y;" >
 	<%= link_to '<< Back To Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %>
 	</div>
   <!-- https://redmine.corp.halomonitor.com/issues/2778 -->
-	<% if current_user.is_super_admin? %> <!-- @user.is_halouser? || @user.is_sales? -->
-    <%= link_to image_tag('add-caregiver.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), {:controller => 'users' , :action => 'new_caregiver_options', :user_id => current_user.id, :back_url => url_for(:controller => 'call_list', :action => 'show', :id => current_user.id)} %>
+	<% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %> <!-- @user.is_halouser? || @user.is_sales? -->
+    <%= link_to image_tag('add-caregiver.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), {:controller => 'users' , :action => 'new_caregiver_options', :user_id => @user.id, :back_url => url_for(:controller => 'call_list', :action => 'show', :id => @user.id)}, {:id => 'add_caregiver_button'} %>
   <% else %>
-    <%= link_to image_tag('add-caregiver-grey.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), {:controller => "alerts", :action => "alert", :message => "call_tech_support", :back_url => url_for(:controller => 'call_list', :action => 'show', :id => current_user.id)} %>
+    <%= link_to image_tag('add-caregiver-grey.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), {:controller => "alerts", :action => "alert", :message => "call_tech_support", :back_url => url_for(:controller => 'call_list', :action => 'show', :id => @user.id)}, {:id => 'add_caregiver_button'} %>
 	<% end %>
 	</div>
 	<div style="clear:both"></div>
 	<div id="call_list-col-footer"></div>
 </div>
 
-<!-- this function shifted to application.js -->
-<!-- <script type="text/javascript">
-function show_message()
-{
-
-//<![CDATA[
-new Ajax.Updater('show_message', '/alerts/message/', {asynchronous:true, evalScripts:true, onComplete:function(request){RedBox.addHiddenContent('show_message'); }, onLoading:function(request){RedBox.loading(); }})
-//]]>
-
-}
-</script> -->

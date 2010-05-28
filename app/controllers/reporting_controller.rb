@@ -46,45 +46,65 @@ class ReportingController < ApplicationController
   end
   
   def users
-    users = User.find(:all, :include => [:roles, :roles_users], :order => 'users.id')
-    @roles = []
-    rows = Role.connection.select_all("Select Distinct name from roles order by name asc")
+    # this is not required anymore. User.all or @group.users work now
+    # users = User.find(:all, :include => [:roles, :roles_users], :order => 'users.id')
     
-    rows.collect do |row|
-      @roles << row['name']
-    end
-    if current_user.is_super_admin?
-      @groups = Group.find(:all)
-	else
-      @groups = current_user.group_memberships
-      @group = @groups.first
-    end
-    @group_name = ''
-    if !params[:group_name].blank?
-      @group_name = params[:group_name]
-      session[:group_name] = @group_name
-      @group = Group.find_by_name(@group_name)
-    end
-    @user_names = {''=>''}
+    # # @roles = []
+    # # rows = Role.connection.select_all("Select Distinct name from roles order by name asc")
+    # # 
+    # # rows.collect do |row|
+    # #   @roles << row['name']
+    # # end
+    # @roles = Role.all(:select => "DISTINCT name", :order => "name ASC").collect(&:name)
     
-     if @group
-      us = []
-      users.each do |user|
-        us << user if user.group_memberships.include? @group
-      end
-      @users = User.paginate :page => params[:page],:include => [:roles, :roles_users],:conditions => ['users.id in (?)',us] ,:order   => 'users.id',:per_page => REPORTING_USERS_PER_PAGE
-    else
-	  @users = User.paginate :page    => params[:page],
-                           :include => [:roles, :roles_users],
-                           :order   => 'users.id',
-                           :per_page => REPORTING_USERS_PER_PAGE
-    end
+    # if current_user.is_super_admin?
+    #   @groups = Group.find(:all)
+    # else
+    #   @groups = current_user.group_memberships
+    #   @group = @groups.first
+    # end
+    @groups = (current_user.is_super_admin? ? Group.all(:order => "name") : current_user.group_memberships)
+    # @group_name = ''
+    # if params[:group_name].blank?
+    #   group = @groups.first
+    # else
+    #   @group_name = params[:group_name]
+    #   session[:group_name] = @group_name
+    #   group = Group.find_by_name(@group_name)
+    # end
+    #
+    # CHANGED: show all users when group_name search parameter is blank
+    #   This feature is introduced now. Earlier the empty option did exist in group dropdown
+    #   but that was not showing all users. maybe was broken feature
+    # when user is_not_super_admin, it cannot see "All groups" option, so we need to select the first one
+    session[:group_name] = @group_name = (params[:group_name] || (current_user.is_super_admin? ? '' : @groups.first.name))
+    group = (@group_name.blank? ? nil : Group.find_by_name(@group_name)) # @groups.first replaced with nil
     
-    @users.each do |user|
-      if user
-        @user_names[user.login] = user.id
-      end
-    end
+    # if @group
+    #   us = []
+    #   users.each do |user|
+    #     us << user if user.group_memberships.include? @group
+    #   end
+    #   @users = User.paginate :page => params[:page],:include => [:roles, :roles_users],:conditions => ['users.id in (?)',us] ,:order   => 'users.id',:per_page => REPORTING_USERS_PER_PAGE
+    # else
+    #   @users = User.paginate :page    => params[:page],
+    #   :include => [:roles, :roles_users],
+    #   :order   => 'users.id',
+    #   :per_page => REPORTING_USERS_PER_PAGE
+    # end
+    @users = (group.blank? ? User.all(:order => "id ASC") : group.users.sort {|a,b| a.id <=> b.id})
+    @users = @users.paginate :page => params[:page], :include => [:roles, :roles_users] ,:order => 'users.id', :per_page => REPORTING_USERS_PER_PAGE
+
+    # @users.each do |user|
+    #   if user
+    #     @user_names[user.login] = user.id
+    #   end
+    # end
+    @user_names = {}
+    @users.each {|user| @user_names[user.login] = user.id } unless @users.blank?
+    #
+    # shorthand below is causing "odd number of arguments for Hash"
+    # @user_names = (@users.blank? ? {} : Hash[ @users.collect {|user| [user.login, user.id] } ])
   end
   
   def purge_data
@@ -124,11 +144,12 @@ class ReportingController < ApplicationController
     # conditions = ''
     if params[:query] and !params[:query].blank?
       conditions = (params[:query].size == 10 ? {:serial_number => params[:query].strip} : {:id => params[:query].to_i})
-      @devices = Device.all(:conditions => conditions)
       # conditions = "id = #{params[:query]}" if params[:query].size < 10
       # conditions = "serial_number = '#{params[:query].strip}'" if params[:query].size == 10
     end
-    if !current_user.is_super_admin?
+    if current_user.is_super_admin?
+      @devices = Device.all(:conditions => conditions)
+    else
       # we need this query here just for the LOGGER
       group_ids = current_user.is_admin_of_what.select {|e| e.is_a?(Group) }.collect(&:id)
       RAILS_DEFAULT_LOGGER.warn(group_ids.join(','))
@@ -158,7 +179,8 @@ class ReportingController < ApplicationController
     #else
     #  @devices = Device.find(:all, :order => "id asc",:conditions => conditions)
     #end
-    @devices = @devices.paginate :page => params[:page], :order => "id asc", :per_page => REORTING_DEVICES_PER_PAGE
+    @devices.sort! {|x,y| x.id <=> y.id }
+    @devices = @devices.paginate :page => params[:page], :per_page => REORTING_DEVICES_PER_PAGE
     # @devices = Device.paginate :page => params[:page], :conditions => conditions, :order => "id asc", :per_page => REORTING_DEVICES_PER_PAGE
   end
   
@@ -166,31 +188,47 @@ class ReportingController < ApplicationController
     @device = Device.find(params[:device_id])
     render :partial => 'device_hidden', :layout => false
   end
+
   def sort_user_table
-    #order = "#{params[:col]} asc"
+    # WARNING: Code coverage is zero for this code. Highly recommended to cover it.
+    # this was already commented
+    #
+    # order = "#{params[:col]} asc"
+    # users = User.find(:all, :order => order)
+
+    # just create a hash of options here. search later a few lines below
+    options = (params[:col] == 'name' ? {:include => :profile, :order => 'profiles.last_name'} : {:order => "users.id"})
+    # if params[:col] == 'name'
+    #   users = User.all(:include => :profile, :order => 'profiles.last_name')
+    # else
+    #   users = User.all(:order => :id) # params[:col]
+    # end
     
-    #users = User.find(:all, :order => order)
+    session[:group_name] = @group_name = (params[:group_name] || '')
+    group = (@group_name.blank? ? nil : Group.find_by_name(@group_name)) # @groups.first replaced with nil
+    # @group_name = ''
+    # if !session[:group_name].blank?
+    #   @group_name = session[:group_name]
+    #   @group = Group.find_by_name(@group_name)
+    # end
+    # sortby = 'id'
     
-    if params[:col] == 'name'
-      users = User.find(:all, :include => :profile, :order => 'profiles.last_name')
-    else
-      users = User.find(:all, :order => params[:col])
-    end
-    @group_name = ''
-    if !session[:group_name].blank?
-      @group_name = session[:group_name]
-      @group = Group.find_by_name(@group_name)
-    end
-    sortby = 'id'
+    # * filter users that have some role for the selected group
+    # * keep all users if group is blank
+    # * options hash was created a few lines above, from the sort parameter passed
+    @users = User.all(options).select {|user| user.has_role_for?(group) } unless group.blank?
+    # * include profile, just in case we have to sort by name
+    # * make :order option dynamic, subject to parameter received
+    @users = @users.paginate :page => params[:page], :include => [:roles, :roles_users, :profile] ,:order => options[:order], :per_page => REPORTING_USERS_PER_PAGE
+    # everything else should work as earlier
     
-    render :partial => 'user_table', :locals => {:users => users, :sortby => params[:col], :reverse => false}
+    render :partial => 'user_table', :locals => {:users => @users, :sortby => params[:col], :reverse => false}
   end
   
   def search_user_table
-
-    users = User.find(:all, :conditions => "login like '%#{params[:query]}%' or profiles.first_name like '%#{params[:query]}%' or profiles.last_name like '%#{params[:query]}%'",:include => [ :profile ])
-
-    render :partial => 'user_table', :locals => {:users => users, :sortby => 'id', :reverse => false}
+    @users = User.search_by_login_or_profile_name(params[:query])
+    # @users = User.find(:all, :conditions => "login like '%#{params[:query]}%' or profiles.first_name like '%#{params[:query]}%' or profiles.last_name like '%#{params[:query]}%'",:include => [ :profile ])
+    render :partial => 'user_table', :locals => {:users => @users, :sortby => 'id', :reverse => false}
   end
   
   def summary

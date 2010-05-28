@@ -69,6 +69,25 @@ class OrdersController < ApplicationController
     end
   end
 
+  def kit_serial
+    # render of this action will ask for kit_serial
+  end
+  
+  def update_kit_serial
+    @order = Order.find(params[:order][:id])
+    @order.kit_serial = params[:order][:kit_serial]
+    
+    respond_to do |format|
+      if @order.save && !@order.need_to_force_kit_serial?
+        flash[:notice] = 'Order was successfully saved with Kit Serial Number.'
+        format.html { render :action => 'success' }
+      else
+        flash[:notice] = 'Please provide the Kit Serial Number'
+        format.html { render :action => "kit_serial" }
+      end
+    end
+  end
+  
   # create order with products, charge card for one time fee & recurring subscription
   #
   def create
@@ -81,7 +100,7 @@ class OrdersController < ApplicationController
         unless session[:order].blank?
 
           @order = Order.new(session[:order]) # pick from session, not params
-          @order.assign_group("direct_to_consumer")
+          @order.assign_group("direct_to_consumer") unless logged_in? # only assign this group when public order
 
           if @order.valid? && @order.save! #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
             # pick any of these hard coded values for now. This will change to device_revisions on order screen
@@ -122,7 +141,7 @@ class OrdersController < ApplicationController
                   end
                   # show on browser
                   flash[:notice] = 'Thank you for your order.'
-                  goto = "success"
+                  goto = ((@order.retailer? || @order.reseller?) ? "kit_serial" : "success")
                   reset_session # start fresh               
                 end
                 # @order = nil # fixes #2564. need to check through cucumber

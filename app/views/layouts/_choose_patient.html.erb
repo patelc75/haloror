@@ -1,18 +1,21 @@
+<% patient_ids = current_user.patients.collect(&:id) %>
+<% patient_ids << current_user.id %>
+<% if patient_ids.include?(@user.id) %>
+
 <span style="margin-left: 15px;font-size:1.25em">
-	myHalo User:	
-<select onchange="if(this.value != ''){document.location = '/<%=params[:controller]%>/<%=params[:action]%>/'+this.value}">
-	<% if @user.is_halouser? %>
-		<option value="<%=@user.id%>"><%=@user.name%></option>
-	<% end %>
-	<%unless current_user.id == @user.id%>
-	<option value="<%=current_user.id%>"><%=current_user.name%></option>
-	<%end%>
-	<option value="">---</option>
-	
-	<%# @user.patients.each do |patient| %>
-	<% current_user.patients.each do |patient| %>
-		<option value="<%=patient.id%>" <%='selected' if params[:id].to_i == patient.id or session[:senior].to_i == patient.id%>><%=patient.name%></option>
-	<% end %>
-</select>
+
+  myHalo User:
+  
+  <select onchange="if(this.value != ''){document.location = '/<%=params[:controller]%>/<%=params[:action]%>/'+this.value}">
+    <% if current_user.is_halouser? %>
+    <option value="<%=current_user.id%>"><%=@current_user.name%></option>
+    <option value="">---</option>
+    <% end %>
+
+    <% current_user.patients.each do |patient| %>
+    <option value="<%=patient.id%>" <%='selected' if params[:id].to_i == patient.id or session[:senior].to_i == patient.id%>><%=patient.name%></option>
+    <% end %>
+  </select>
+
 </span>
-<%#=debug @user.patients%>
+<% end %>

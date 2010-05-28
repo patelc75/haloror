@@ -227,6 +227,7 @@ GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT=1800  #30 minutes
 SERIES_HASH = {"1" => "First","2" => "Second","3" => "Third","4" => "Fourth","5" => "Fifth", "6" => "Sixth", "7" => "Seventh", "8" => "Eighth", "9" => "Ninth", "10" => "Tenth"}
 
 SAFETYCARE_HEARTBEAT_TIME = "55s"
+CMS_HEARTBEAT_TIME = "55s"
 
 # Development settings
 HV_APP_ID = "6019e8f1-413f-4dfc-878e-62053cbb0dab"
@@ -244,7 +245,7 @@ ENV['RECAPTCHA_PRIVATE_KEY'] = '6LeR9goAAAAAAP4iAFbMvp91jkxVyWegay5k-b1v'
 ALERT_MESSAGES = {
   :default => "Please click the button to go back",
   :login_failed => "The login information you entered does not match an account in our records. Remember, your login and password is case-sensitive, please check your Caps Lock key.",
-  :profile_updated => "Profile Updated. All users except super_admins must call tech support 1-888-971-HALO (4256) to make this modification.",
+  :profile_updated => "Profile Updated. Only admins are allowed to do this. You MUST follow up with 1-888-971-HALO (4256) so this update is pushed to the call center.",  
   :call_tech_support => "Please call tech support 1-888-971-HALO (4256) to make this modification.",
   :new_caregiver => "If that email was in our system, the user was added to your caregiver list. If not, an email was sent to that email address."
 }

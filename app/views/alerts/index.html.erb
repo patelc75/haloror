@@ -1,3 +1,5 @@
+<p><%= link_to '<< Back To Critical Alert Settings', :controller => 'call_list', :action => 'show', :id => params[:senior_id] %></p>
+
 <div id="call_list-col">
 	<div id="call_list-col-header">
 		Alerts
@@ -41,7 +43,7 @@
 						alert[:text_active] = alert.text_active
 					end
 				%>
-				<div class="active" style="padding-left:10px;background:url('/images/call_list-item-alerts.gif') no-repeat;height:50px">
+				<div id="<%= alert.alert_type.underscore %>" class="active" style="padding-left:10px;background:url('/images/call_list-item-alerts.gif') no-repeat;height:50px">
 					<div style="float:left;padding-top:17px;width:250px">
 						<%=UtilityHelper.camelcase_to_spaced(alert.alert_type)%>
 					</div>
@@ -107,7 +109,8 @@
 								end
 							%>
 							
-							<%if !@user.profile.cell_phone_exists? || @user.profile.carrier_id == nil || @user.profile.carrier_id == "" %>
+              <!-- encapsulated method to check for carrier and mobile phone validity here -->
+							<% if @user.has_valid_cell_phone_and_carrier? %>   <!-- # (!@user.profile.cell_phone_exists? || @user.profile.carrier_id == nil || @user.profile.carrier_id == "") -->
 								<%=link_to image_tag(img),'javascript:;',:onclick => 'call_lightbox('+@user.id.to_s + ',"text");' %>
 							<%else%>
 							<%=link_to_remote(image_tag(img, :id => 'alert_text_'+alert.id.to_s), :url => { :action => "toggle_text",:id => alert.id, :roles_user_id => @roles_user.id,:user_id => @roles_user.user.id }, :before => 'toggleAlert('+alert.id.to_s+', '+text_active.to_s+', \'text\')')%>
@@ -130,7 +133,7 @@
 							<img src="/images/lightbox-col-footer.gif" />
 						</div>			
 		<br>
-		<span style="padding:15px"><%= link_to '&laquo; Back to Critical Alert Settings', :controller => 'call_list', :action => 'show', :id => current_user.id %></span>	
+		<span style="padding:15px"><%= link_to '&laquo; Back to Critical Alert Settings', :controller => 'call_list', :action => 'show', :id => params[:senior_id] %></span>	
 	</div>
 	<div style="clear:both"></div>
 	<div id="call_list-col-footer"></div>

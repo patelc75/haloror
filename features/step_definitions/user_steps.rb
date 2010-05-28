@@ -11,7 +11,8 @@ Given /^a user "([^\"]*)" exists with profile$/ do |user_name|
   # profile.save
   # profile.user.activate
   user = Factory.create(:user, :login => user_name)
-  user.activate
+  user.should_not be_blank
+  user.profile.should_not be_blank
 end
 
 Given /^user "([^\"]*)" is activated$/ do |user_name|
@@ -21,27 +22,48 @@ end
 #Usage:And user "test-user" has "super admin, caregiver" roles
 Given /^user "([^\"]*)" has "([^\"]*)" role(?:|s)$/ do |user_name, role_name|
   user = User.find_by_login(user_name)
+  user.should_not be_blank
+  
   roles = role_name.split(',').collect {|p| p.strip.gsub(/ /,'_')}
-  roles.each {|role| user.has_role role}
+  roles.each {|role| user.has_role role }
 end
 
-Given /^user "([^\"]*)" has "([^\"]*)" role(?:|s) for group "([^\"]*)"$/ do |user_name, role_name, group_name|
+Given /^user "([^\"]*)" has "([^\"]*)" roles? for (.+) "([^\"]*)"$/ do |user_name, role_name, model_type, model_name|
   user = User.find_by_login(user_name)
   roles = role_name.split(',').collect {|p| p.strip.gsub(/ /,'_')}
-  roles.each {|role| user.has_role role, Group.find_by_name(group_name)}
+  fields_hash = {'group' => 'name', 'user' => 'login'}
+  field = (fields_hash.has_key?(model_type) ? fields_hash[model_type] : 'name')
+  roles.each {|role| user.has_role role, model_type.gsub(/ /,'_').classify.constantize.send("find_by_#{field}".to_sym, model_name)}
+end
+
+When /^I visit the events page for "([^\"]*)"$/ do |user_name|
+  user = User.find_by_login(user_name)
+  user.should_not be_blank
+  visit "/events/user/#{user.id}"
 end
 
 When /^I navigate to caregiver page for "([^\"]*)" user$/ do |user_name|
   visit "call_list/show/#{User.find_by_login(user_name).id}"
 end
 
+When /^I select profile name of "([^\"]*)" from "([^\"]*)"$/ do |user_login, drop_down_id|
+  user = User.find_by_login(user_login)
+  user.should_not be_blank
+  select(user.name, :from => drop_down_id)
+end
+
 # roles pattern can be: "caregiver", "caregiver, user, halouser"
 # role(s) can be used singular or plural
 #
-Then /^user "([^\"]*)" should have "([^\"]*)" role(?:|s) for user "([^\"]*)"$/ do |user_name, role_name, for_user_name|
+Then /^user "([^\"]*)" should have "([^\"]*)" role(?:|s) for (.+) "([^\"]*)"$/ do |user_name, role_name, model_name, for_model_name|
   user = User.find_by_login(user_name)
-  for_user = User.find_by_login(for_user_name)
-  assert ((role_name.split(',').collect {|p| p.strip}) - user.roles_for(for_user).map(&:name)).blank?
+  case model_name
+  when 'user'
+    for_object = User.find_by_login(for_model_name)
+  when 'group'
+    for_object = Group.find_by_name(for_model_name)
+  end
+  assert ((role_name.split(',').collect(&:strip)) - user.roles_for(for_object).map(&:name)).blank?
 end
 
 # role(s) can be used singular or plural
@@ -59,4 +81,43 @@ Then /^I should have "([^\"]*)" for user "([^\"]*)"$/ do |status,login|
   user = User.find_by_login(login)
   ms = user.battery_status
   assert ms == status,"No Data"
+end
+
+# shifted to critical_alert_steps.rb when merged prod-temp to master
+# Then /^I should have "([^\"]*)" count of "([^\"]*)"$/ do |count, model| 
+#   assert model.constantize.count + Event.all.length == 2*count.to_i, "Should have #{count} #{model}"
+# end
+
+# shifted to critical_alert_steps.rb when merged prod-temp to master
+# Then /^I should have a "([^\"]*)" alert "([^\"]*)" to the call center with a "([^\"]*)" call center delivery timestamp$/ do |model, pending_string, timestamp_status|
+#   critical_alert =  model.constantize.first   
+#   if pending_string == "not pending"
+#     assert critical_alert.call_center_pending == false, "#{model} should be not pending"
+#   elsif pending_string == "pending"
+#     assert critical_alert.call_center_pending == true, "#{model} should be pending"  
+#   else
+#     assert false, "#{pending_string} is not a valid pending status"
+#   end
+# 
+#   if timestamp_status == "missing"
+#     assert critical_alert.timestamp_call_center.nil?, "#{model} should have nil timestamp"
+#   elsif timestamp_status == "valid"
+#     assert critical_alert.timestamp_call_center > critical_alert.timestamp_server, "#{model} should have timestamp_call_center later than timestamp_server"     
+#   else
+#     assert false, "#{timestamp_status} is not a valid timestamp status"
+#   end  
+# end
+
+Then /^I should see "([^\"]*)" link for user "([^\"]*)"$/ do |link_text, user_login|
+  user = User.find_by_login(user_login)
+  user.should_not be_blank
+  user.profile.should_not be_blank
+  
+  case link_text
+  when "caregiver for"
+    senior = user.is_caregiver_for_what.first
+    response.should contain("caregiver for (#{senior.id}) #{senior.full_name}")
+  when "Caregivers"
+    response.should have_tag("a[href=?]", /(.+)call_list\/show\/#{user.id}(.+)/)
+  end
 end

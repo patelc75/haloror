@@ -1,0 +1,44 @@
+<% if @order.blank? %>
+  <div class="container textcenter">
+    <h1>Are you trying to place an order?</h1>
+    <h2>You can place it here <%= order_url %></h2>
+  </div>
+<% else %>
+
+<% content_for :css do %>
+  <%= stylesheet_link_tag 'screen', 'myscreen', 'css3-buttons' %>
+<% end %>
+
+<div class="container">
+  <div class="grey-box span-24 last">
+    <div class="grey-box-header span-24 last">
+      Enter myHalo Kit Serial Number
+    </div>
+
+    <div class="prepend-1 span-5">
+      <% form_for :order, :url => {:action => 'update_kit_serial'}, :method => :post do |f| -%>
+      <p>
+        <%= f.label :kit_serial, "myHalo S/N" %><br />
+        <%= f.text_field :kit_serial, :class => "title span-5" %>
+        <%= f.hidden_field :id %>
+      </p>
+      <p>
+        <%= f.submit "Next", :class => "button blue" %>
+        <%= f.submit "Skip", :class => "button green", :name =>"skip_button" unless @order.retailer? %>
+      </p>
+      <% end -%>
+    </div>
+
+    <div class="span-17 append-1 last">
+      <p>When looking at the box as if opening it, the system level serial number is located on the left end of the box and on the left side of the end.</p>
+      <%= image_tag("side_of_box.jpg") %>
+    </div>
+
+  </div>
+
+  <div class="grey-box-footer span-24 last">
+    &nbsp;
+  </div>
+</div>
+
+<% end %>

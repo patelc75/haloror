@@ -6,6 +6,18 @@ Factory.define :group do |v|
   v.description { Faker::Lorem.sentence }
 end
 
+Factory.define :alert_type do |v|
+  v.alert_type { Faker::Lorem.words[0] }
+  v.phone_active { rand(1) == 1 }
+  v.email_active { rand(1) == 1 }
+  v.text_active { rand(1) == 1 }
+  v.deprecated { rand(1) == 1 }
+end
+
+Factory.define :alert_group do |v|
+  v.group_type { Faker::Lorem.words[0] }
+end
+
 Factory.define :carrier do |v|
   v.name { Faker::Company.name }
   v.domain { Faker::Internet.domain_name }
@@ -62,8 +74,9 @@ Factory.define :profile do |v|
   v.account_number "1234"
   v.hospital_number "0987654321"
   v.doctor_phone "1234567890"
-  v.association :carrier
-  v.association :emergency_number
+  v.association :carrier #, :factory => :carrier
+  v.association :emergency_number #, :factory => :emergency_number
+  # v.association :user #, :factory => :user
 end
 
 Factory.define :rma do |v|
@@ -102,6 +115,7 @@ Factory.define :user do |v|
   #   user.profile {|e| Profile.find_by_user_id(e.id) || Factory.create(:profile, :user_id => e.id) }
   #   user.save
   # end
+  v.after_create {|user| user.activate }
 end
 
 Factory.define :user_intake do |v|

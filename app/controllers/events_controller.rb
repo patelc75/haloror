@@ -5,7 +5,15 @@ class EventsController < ApplicationController
     @user = User.find(params[:id])
     groups = @user.group_memberships
     if(@user.id == current_user.id || @current_user.patients.include?(@user) || @current_user.is_super_admin? || @current_user.is_admin_of_any?(groups) || @current_user.is_operator_of_any?(groups)) 
-      conditions = "user_id = #{@user.id} "
+      # update -- if params[:id] is a caregiver, then events shouldbe searched for the first halouser he/she is caregiving
+      if @user.is_halouser?
+        conditions = "user_id = #{@user.id} "
+      elsif @user.is_caregiver?
+        conditions = "user_id = #{@user.patients.first.id} " unless @user.patients.blank?
+      else
+        conditions = " "
+      end
+      # -- end of update--
       @user_begin_time = params[:begin_time]
       @user_end_time = params[:end_time]
       if  @user_end_time and @user_begin_time and params[:begin_time] != "" and params[:end_time] != ""

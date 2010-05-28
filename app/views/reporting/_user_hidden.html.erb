@@ -29,6 +29,9 @@
 			<div class="col-150">
 				Device Type
 			</div>
+      <div class="col-150">
+        Serial Number
+      </div>
 			<div class="col-200">
 				Last Charge
 			</div>
@@ -46,6 +49,9 @@
 				<div class="col-150">
 					<%=device.device_type%>&nbsp;
 				</div>
+        <div class="col-150">
+          <%= device.serial_number -%>
+        </div>
 				<div class="col-200">
 					<%=render :partial => 'charge', :locals => {:device => device}%>&nbsp;
 				</div>

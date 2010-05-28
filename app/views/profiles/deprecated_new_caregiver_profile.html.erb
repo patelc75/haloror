@@ -1,0 +1,72 @@
+<div id="user_signup-col">
+	<div id="user_signup-col-header">
+		New Caregiver
+	</div>
+	<div class="content">
+	
+		<div id="errors">
+			<% if flash[:warning] %>
+			  <span style="font-size: 150%;">
+			  The following error occurred:
+			  <ul>
+			  <li><%= flash[:warning]%></li>
+			  </ul>
+			<% end %>
+			<% if @user.errors %>
+			  <%= error_messages_for :user %>
+			  <br>
+			<% end %>
+			<% if @profile.errors %>
+			<%= error_messages_for :profile %>
+			<% end %>
+		</div>
+	  <%# form_remote_tag(:update => 'container', :url => {:controller => 'profiles', :action => 'create_caregiver_profile', :id => params[:id]}, :html => { :id => 'profile_form'}) do %>
+	  <% form_tag :action => 'create_caregiver_profile' do -%>
+        <input type="hidden" name="patient_id" value="<%=@senior.id%>" />
+		<div id="device-table" class="table">
+	 		<div class="row">
+	 			<div class="col-250" style="width:400px;padding-left: 30px;">
+					<label for="login">Username</label>
+        			<br/>
+        			<%= text_field :user, :login %>
+        			<br />
+        			<br />	
+					
+        			<label for="password">Password</label>
+        			<br/>
+        			<%= password_field :user, :password %>
+        			<br />
+        			<br />
+        			<label for="password_confirmation">Confirm Password</label>
+        			<br/>
+        			<%= password_field :user, :password_confirmation %>
+        			<br />
+        			<br />
+        			<%=hidden_field_tag :position, @max_position %>
+        			<%= render :partial => '/profiles/profile_top' %>
+        		</div>
+        		<div class="col-250" style="width:400px;">
+        			<%= render :partial => '/profiles/profile_bottom' %>
+					<br><br>
+        			<label for="relationship"> Relationship </label>
+	      			<br />
+	      			<%= text_field_tag :relationship %>
+	      			<br /><br />
+					<%= check_box(:key_holder, :is_keyholder) %> <label for"is_keyholder">Caregiver is keyholder?</label>
+					<br/>
+					<br/>
+				
+        		</div>
+			</div>
+	 	</div>		
+        <br/><br/>
+        <br/><br/>
+		 <div style="margin-left:130px">
+          <input name="commit" type="image" src="/images/add.gif"  /> 
+          <a href="/call_list/show/<%= current_user.id%>"><img src="/images/cancel.gif" onClick="" /></a>
+       	</div>
+      <% end %>
+      </div>
+      <div style="clear:both"></div>
+	<div id="user_signup-col-footer"></div>
+</div>
