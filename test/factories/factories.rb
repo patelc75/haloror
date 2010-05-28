@@ -1,5 +1,6 @@
 require "faker"
 require "digest/md5"
+require "factory_girl"
 
 Factory.define :group do |v|
   v.name { Faker::Lorem.words[0] }

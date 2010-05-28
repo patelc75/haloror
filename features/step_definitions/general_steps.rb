@@ -1,7 +1,7 @@
 # general steps
 #
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "scopes"))
-require File.join(RAILS_ROOT, "test", "factories", "factories.rb")
+# require File.join(File.dirname(__FILE__), "..", "..", "test", "factories", "factories.rb")
 
 # Given
 
