@@ -117,14 +117,22 @@ class PoolsController < ApplicationController
   def is_zigbee?(pool)
     dt = DeviceType.find(:first, :include => :serial_number_prefixes, 
                         :conditions => "serial_number_prefixes.prefix = '#{pool.starting_serial_number[0,3]}'")
-    return dt.mac_address_type == 0
+    if dt.nil?
+      throw "no row in serial_number_prefixes table for prefix #{pool.starting_serial_number[0,3]}"
+    else
+      return dt.mac_address_type == 0
+    end
   end
   
   #returns true if device_type.serial_number_prefix.mac_address_type = 1
   def is_gateway?(pool)
     dt = DeviceType.find(:first, :include => :serial_number_prefixes, 
                         :conditions => "serial_number_prefixes.prefix = '#{pool.starting_serial_number[0,3]}'")
-    return dt.mac_address_type == 1    
+    if dt.nil?
+      throw "no row in serial_number_prefixes table for prefix #{pool.starting_serial_number[0,3]}"
+    else
+      return dt.mac_address_type == 1
+    end
   end
 
   #get the ending mac addr by looping through all pools with the starting_serial_number 
