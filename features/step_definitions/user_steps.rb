@@ -4,36 +4,56 @@ include ApplicationHelper
 
 # Given
 
-Given /^a user "([^\"]*)" exists with profile$/ do |user_name|
-  # profile = Factory.build(:profile)
-  # profile.user = Factory.build(:user, :login => user_name)
-  # #profile.home_phone = "9178178864"
-  # profile.save
-  # profile.user.activate
-  user = Factory.create(:user, :login => user_name)
-  user.should_not be_blank
-  user.profile.should_not be_blank
+# accept multiple comma separated names in one go
+Given /^(?:|a )user "([^\"]*)" exists with profile$/ do |user_names|
+  user_names.split(',').collect(&:strip).each do |user_name|
+    user = Factory.create(:user, :login => user_name)
+    user.should_not be_blank
+    user.id.should_not be_blank
+    user.profile.should_not be_blank
+    user.profile.id.should_not be_blank
+  end
 end
 
-Given /^user "([^\"]*)" is activated$/ do |user_name|
-  User.find_by_login(user_name).activate
+Given /^user "([^\"]*)" is activated$/ do |user_names|
+  user_names.split(',').collect(&:strip).each do |user_name|
+    User.find_by_login(user_name).activate
+  end
 end
 
 #Usage:And user "test-user" has "super admin, caregiver" roles
-Given /^user "([^\"]*)" has "([^\"]*)" role(?:|s)$/ do |user_name, role_name|
-  user = User.find_by_login(user_name)
-  user.should_not be_blank
-  
-  roles = role_name.split(',').collect {|p| p.strip.gsub(/ /,'_')}
-  roles.each {|role| user.has_role role }
+Given /^user "([^\"]*)" has "([^\"]*)" role(?:|s)$/ do |user_names, role_names|
+  users = user_names.split(',').collect(&:strip)
+  roles = role_names.split(',').collect {|p| p.strip.gsub(/ /,'_')}
+  users.each do |user_name|
+    roles.each do |role|
+      user = User.find_by_login(user_name)
+      user.should_not be_blank
+
+      roles.each {|role| user.has_role role }
+    end
+  end
 end
 
-Given /^user "([^\"]*)" has "([^\"]*)" roles? for (.+) "([^\"]*)"$/ do |user_name, role_name, model_type, model_name|
-  user = User.find_by_login(user_name)
-  roles = role_name.split(',').collect {|p| p.strip.gsub(/ /,'_')}
+# allow multiple users, multiple roles and multiple model objects
+Given /^user "([^\"]*)" has "([^\"]*)" roles? for (.+) "([^\"]*)"$/ do |user_names, role_names, model_type, model_names|
+  user_names = user_names.split(',').collect(&:strip)
+  role_names = role_names.split(',').collect {|p| p.strip.gsub(/ /,'_')}
+  model_names = model_names.split(',').collect(&:strip)
+  model_type = model_type.singularize
   fields_hash = {'group' => 'name', 'user' => 'login'}
   field = (fields_hash.has_key?(model_type) ? fields_hash[model_type] : 'name')
-  roles.each {|role| user.has_role role, model_type.gsub(/ /,'_').classify.constantize.send("find_by_#{field}".to_sym, model_name)}
+  user_names.each do |user_name|
+    user = User.find_by_login(user_name)
+    user.should_not be_blank
+    role_names.each do |role|
+      model_names.each do |model_name|
+        model_object = model_type.gsub(/ /,'_').classify.constantize.send("find_by_#{field}".to_sym, model_name)
+        user.has_role role, model_object
+        user.has_role?( role, model_object).should be_true
+      end
+    end
+  end
 end
 
 When /^I visit the events page for "([^\"]*)"$/ do |user_name|

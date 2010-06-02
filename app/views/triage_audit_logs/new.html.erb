@@ -1,0 +1,46 @@
+<% content_for :css do %>
+  <%= stylesheet_link_tag 'css3-buttons' %>
+<% end %>
+<h1><%= @triage_audit_log.is_dismissed ? '' : 'Un' %>Dismiss Triage</h1>
+
+<div class="container">
+  <div class="prepend-6 span-12">
+    <div class="lightbox span-12 last rounded">
+      
+      <% form_for :triage_audit_log, :url => { :controller => 'triage_audit_logs', :action => "create", :id => @triage_audit_log.id } do |f| %>
+        <%= f.error_messages %>
+
+      <div class="prepend-top">
+        <div class="prepend-2 span-10 last">
+          <div>
+            <%= @triage_audit_log.user.name %>
+            <%= f.hidden_field :user_id %>
+            <%= f.hidden_field :is_dismissed %>
+          </div>
+        </div>
+        
+        <div class='span-12 last'>
+          <div class="span-2 text-right">Home:</div>
+          <div class="spam-10 last"><%= @triage_audit_log.user.profile.home_phone %></div>
+        </div>
+
+        <div class="span-12 last">
+          <div class="span-2 text-right">Cell:</div>
+          <div class="span-10 last"><%= @triage_audit_log.user.profile.cell_phone %></div>
+        </div>
+        
+        <div class="prepend-2 span-10 last">
+          <%= f.text_area :description, :rows => 10, :class => "span-8" %>
+        </div>
+        
+        <div class="prepend-top prepend-2 span-10 last">
+          <%= link_to "Cancel", triage_path, :class => "buttton blue small" %>
+          <%= f.submit 'Ok', :class => "button blue small" %>
+        </div>
+      </div>
+      
+      <div class="append-bottom"><hr class="space" /></div>
+      <% end -%>
+    </div>
+  </div>
+</div>

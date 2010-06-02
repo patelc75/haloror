@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100524231755) do
+ActiveRecord::Schema.define(:version => 20100528230353) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1070,6 +1070,25 @@ ActiveRecord::Schema.define(:version => 20100524231755) do
     t.integer  "gateway_offline_offset_sec"
   end
 
+  create_table "triage_audit_logs", :force => true do |t|
+    t.integer  "user_id"
+    t.boolean  "is_dismissed"
+    t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "triage_thresholds", :force => true do |t|
+    t.integer  "group_id"
+    t.string   "status"
+    t.integer  "battery_percent"
+    t.boolean  "has_no_panic_button_test"
+    t.boolean  "has_no_strap_detected"
+    t.boolean  "has_no_call_center_account"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "user_intakes", :force => true do |t|
     t.date     "installation_date"
     t.integer  "created_by"
@@ -1094,18 +1113,25 @@ ActiveRecord::Schema.define(:version => 20100524231755) do
   create_table "users", :force => true do |t|
     t.string   "login"
     t.string   "email"
-    t.string   "crypted_password",          :limit => 40
-    t.string   "salt",                      :limit => 40
+    t.string   "crypted_password",           :limit => 40
+    t.string   "salt",                       :limit => 40
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "remember_token"
     t.datetime "remember_token_expires_at"
-    t.string   "activation_code",           :limit => 40
+    t.string   "activation_code",            :limit => 40
     t.datetime "activated_at"
     t.string   "image"
     t.string   "serial_number"
     t.string   "time_zone"
     t.integer  "created_by"
+    t.integer  "last_battery_id"
+    t.integer  "last_event_id"
+    t.integer  "last_vital_id"
+    t.integer  "last_triage_audit_log_id"
+    t.boolean  "has_no_panic_button_test"
+    t.boolean  "has_no_strap_detected"
+    t.boolean  "has_no_call_center_account"
   end
 
   create_table "vital_scans", :force => true do |t|

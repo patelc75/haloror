@@ -19,6 +19,16 @@ Factory.define :alert_group do |v|
   v.group_type { Faker::Lorem.words[0] }
 end
 
+Factory.define :battery do |v|
+  v.timestamp { Time.now.to_s }
+  v.percentage { rand(100) }
+  v.time_remaining {|e| e.percentage }
+  v.acpower_status { rand(1) == 1 }
+  v.charge_status { rand(1) == 1 }
+  v.association :user
+  v.association :device
+end
+
 Factory.define :carrier do |v|
   v.name { Faker::Company.name }
   v.domain { Faker::Internet.domain_name }

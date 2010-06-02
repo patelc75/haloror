@@ -1,0 +1,34 @@
+<% form_for(@triage_threshold) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :group_id, "Group" %><br />
+    <%= f.collection_select :group_id, @groups, :id, :name %>
+  </p>
+  <p>
+    <%= f.label :status %><br />
+    <%= f.text_field :status %>
+  </p>
+  <p>
+    <%= f.label :battery_percent %><br />
+    <%= f.text_field :battery_percent %>
+  </p>
+  <p>
+    <%= f.check_box :has_no_panic_button_test %>
+    <%= f.label :has_no_panic_button_test %>
+  </p>
+  <p>
+    <%= f.check_box :has_no_strap_detected %>
+    <%= f.label :has_no_strap_detected %>
+  </p>
+  <p>
+    <%= f.check_box :has_no_call_center_account %>
+    <%= f.label :has_no_call_center_account %>
+  </p>
+  <p>
+    <%= f.submit "Save" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @triage_threshold unless @triage_threshold.new_record? %> 
+<%= link_to 'Back', triage_thresholds_path %>

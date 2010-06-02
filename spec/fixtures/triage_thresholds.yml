@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  group_id: 1
+  type: MyString
+  last_updated: 2010-05-29 21:55:25
+  battery_percent: 1
+
+two:
+  group_id: 1
+  type: MyString
+  last_updated: 2010-05-29 21:55:25
+  battery_percent: 1

@@ -1,0 +1,37 @@
+<h1>Listing triage_thresholds</h1>
+
+<% form_tag triage_thresholds_path, :method => :get do %>
+  Group: <%= select_tag "search", options_from_collection_for_select(@groups, :id, :name, params[:search].to_i), {:onchange => "this.form.submit();"} %>
+<% end -%>
+
+<%= will_paginate %>
+<table>
+  <tr>
+    <th>Group</th>
+    <th>Status</th>
+    <th>Last updated</th>
+    <th>Battery percent</th>
+    <th>No Panic Button Test</th>
+    <th>No Strap Detected</th>
+    <th>No Call Center Account</th>
+  </tr>
+
+<% for triage_threshold in @triage_thresholds %>
+  <tr>
+    <td><%=h triage_threshold.group_name %></td>
+    <td><%=h triage_threshold.status %></td>
+    <td><%=h triage_threshold.updated_at %></td>
+    <td><%=h triage_threshold.battery_percent %></td>
+    <td><%=h triage_threshold.has_no_panic_button_test %></td>
+    <td><%= h triage_threshold.has_no_strap_detected %></td>
+    <td><%= h triage_threshold.has_no_call_center_account %></td>
+    <td><%= link_to 'Show', triage_threshold %></td>
+    <td><%= link_to 'Edit', edit_triage_threshold_path(triage_threshold) %></td>
+    <td><%= link_to 'Destroy', triage_threshold, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+<%= will_paginate %>
+<br />
+
+<%= link_to 'New triage_threshold', new_triage_threshold_path %>

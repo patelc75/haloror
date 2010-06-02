@@ -1,5 +1,16 @@
 class Vital < ActiveRecord::Base
-  belongs_to :user
+  belongs_to :user # WARNING: what is this association?
+  has_many :users, :class_name => "User", :foreign_key => "last_vital_id"
+  
+  # cache trigger
+  # saves the latest vital status in users table
+  def after_save
+    if (user = User.find(user_id))
+      user.last_vital_id = id
+      user.save
+    end
+    # User.update(user_id, {:last_vital_id => id})
+  end
   
   def self.new_initialize(random=false)
     model = self.new

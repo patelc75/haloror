@@ -91,6 +91,5 @@ Then /^I should not see profile name (?:for|of) "([^\"]*)"$/ do |user_name|
   user = User.find_by_login(user_name)
   user.should_not be_blank
   user.profile.should_not be_blank
-  
   response.should_not contain(user.name)
 end

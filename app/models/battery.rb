@@ -1,6 +1,17 @@
-class Battery < Vital
+class Battery < Vital  
   set_table_name "batteries"
   belongs_to :device
+  has_many :users, :class_name => "User", :foreign_key => "last_battery_id"
+  
+  # cache trigger
+  # saves the latest battery status in users table
+  def after_save
+    if (user = User.find(user_id))
+      user.last_battery_id = id
+      user.save
+    end
+    # User.update(user_id, {:last_battery_id => id})
+  end
   
   def self.get_average(condition)
     Battery.average(:percentage, :conditions => condition)

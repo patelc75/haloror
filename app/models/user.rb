@@ -15,6 +15,10 @@ class User < ActiveRecord::Base
   acts_as_audited :except => [:is_caregiver, :is_new_caregiver]
   
   belongs_to :creator, :class_name => 'User',:foreign_key => 'created_by'
+  belongs_to :last_battery, :class_name => "Battery", :foreign_key => "last_battery_id"
+  belongs_to :last_event, :class_name => "Event", :foreign_key => "last_event_id"
+  belongs_to :last_vital, :class_name => "Vital", :foreign_key => "last_vital_id"
+  belongs_to :last_triage_audit_log, :class_name => "TriageAuditLog", :foreign_key => "last_triage_audit_log_id"
   
   has_one  :profile, :dependent => :destroy
   has_many :access_logs
@@ -211,6 +215,40 @@ class User < ActiveRecord::Base
     end
   end
 
+  def triage_users(options = {})
+    day = options[:search_day].to_i
+    hour = options[:search_hour].to_i
+    minute = options[:search_minute].to_i
+    battery_percent = options[:search_battery_percent].to_i
+    groups = groups_where_admin # where this user is admin
+    group = Group.find_by_id(options[:search_group].to_i) || Group.find_by_name(options[:search_group]) if options[:search_group]
+    group ||= groups.first
+    users = group.users
+    users = users.select {|user| user.updated_at >= (Time.now - day.days - hour.hours - minute.minutes) } unless (day.zero? && hour.zero? && minute.zero?)
+    users = users.select {|user| user.battery_percentage <= battery_percent} unless battery_percent.zero?
+    users = users.select {|user| (options[:search_status] && options[:search_status] == 'Dismissed') ? user.dismissed_from_triage? : user.not_dismissed_from_triage? }
+    users = users.sort {|a,b| a.name <=> b.name }
+    return users
+  end
+  
+  def dismiss_all_greens_in_triage
+    triage_users.each {|user| user.dismiss_from_triage if [50,75,100].include?(user.battery_fill_width) }
+  end
+  
+  def dismiss_from_triage(message = nil)
+    self.last_triage_audit_log = TriageAuditLog.create(:user => self, :is_dismissed => true, :description => (message || "Dismissed at #{Time.now}"))
+  end
+  
+  # check and return boolean, if this user was in triage list and was dismissed today
+  def dismissed_from_triage?
+    last_log = last_triage_audit_log
+    last_log.blank? ? false : ((last_log.created_at.to_date == Date.today) && last_log.is_dismissed)
+  end
+  
+  def not_dismissed_from_triage?
+    !dismissed_from_triage?
+  end
+
   def dispatch_emails
     if self.is_halouser? && !email.blank? # WARNING: DEPRECATED user[:is_new_halouser] == true
       UserMailer.deliver_signup_installation(self, self)
@@ -221,13 +259,7 @@ class User < ActiveRecord::Base
     # activation email gets delivered anyways
     UserMailer.deliver_activation(self) if recently_activated?
   end
-  
-  # ramonrails: above this are methods to help self contained logic for user_intake
-  
-  # prevents a user from submitting a crafted form that bypasses activation
-  # anything else you want your user to change should be added here.
-  #attr_accessible :login, :email, :password, :password_confirmation
-  
+
   def username
     return self.name rescue ""
   end
@@ -238,6 +270,25 @@ class User < ActiveRecord::Base
     nil
   end
 
+  def connectivity_status_icon
+    last_event.blank? ? 'status_dial_up.png' : last_event.connectivity_status.icon
+  end
+
+  def battery_color
+    percent = battery_percentage
+    "#{(percent < 10) ? 'red' : ((percent < 25) ? 'yellow' : 'green')}-color-base"
+  end
+  
+  def battery_percentage
+    last_battery.blank? ? 100 : last_battery.percentage
+  end
+  
+  def battery_fill_width
+    percent = battery_percentage
+    [0, 10, 25, 50, 75, 100].select {|e| percent >= e }.last
+  end
+  
+  
   def battery_status
     if @battery = Battery.find(:first,:conditions => ["user_id = ? and acpower_status is not null",self.id],:order => 'timestamp desc')
       return @battery.acpower_status == true ? 'Battery Plugged' : 'Battery Unplugged'
@@ -252,6 +303,16 @@ class User < ActiveRecord::Base
     end
   end
 
+  # #dunamically define profile attributes
+  # [:home_phone, :cell_phone].each do |profile_attribute|
+  #   define_method profile_attribute do
+  #     unless profile.blank?
+  #       value = self.profile.send(profile_attribute)
+  #     end
+  #     value ||= ''
+  #   end
+  # end
+  
   def get_gateway
     gateway = nil
     self.devices.each do |device|

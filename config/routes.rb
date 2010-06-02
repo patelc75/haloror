@@ -71,11 +71,13 @@ ActionController::Routing::Routes.draw do |map|
   
   #user related models
   map.resources :profiles
-  map.resources :users, :member => { :new_caregiver_options => :get }
+  map.resources :users, :member => { :new_caregiver_options => :get, :triage => :get, :dismiss_all_greens => :get }
   map.resources :sessions,:member => {:edit_user_intake_form => :any,:user_intake_form_confirm => :get} # added automatically after running restful_authentication script
   map.resources :user_intakes
   map.resources :rmas, :has_many => :rma_items
   map.resources :purged_logs
+  map.resources :triage_thresholds
+  map.resources :triage_audit_log, :only => [:new, :create]
   
   #deprecated models
   #map.resources :caregivers, :active_scaffold => true 
@@ -108,6 +110,9 @@ ActionController::Routing::Routes.draw do |map|
   map.order '/order/:coupon_code', :controller => 'orders', :action => 'new', :coupon_code => ''
   map.alert '/alert', :controller => 'alerts', :action => "alert"      
   map.activity '/dashboard', :controller => 'sandbox', :action => "dashboard"
+  map.triage '/triage', :controller => 'users', :action => 'triage'
+  map.dismiss_triage 'triage/:user_id/dismiss', :controller => 'triage_audit_logs', :action => 'new', :is_dismissed => true
+  map.undismiss_triage 'triage/:user_id/undismiss', :controller => 'triage_audit_logs', :action => 'new', :is_dismissed => false
   
   
   #map.resend '/resend/:id', :controller => 'installs', :action => 'resend'

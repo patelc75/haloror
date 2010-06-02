@@ -1,0 +1,33 @@
+<p>
+  <b>Group:</b>
+  <%=h @triage_threshold.group_name %>
+</p>
+
+<p>
+  <b>Status:</b>
+  <%=h @triage_threshold.status %>
+</p>
+
+<p>
+  <b>Battery percent:</b>
+  <%=h @triage_threshold.battery_percent %>
+</p>
+
+<p>
+  <b>Has no panic button tested:</b>
+  <%=h @triage_threshold.has_no_panic_button_test %>
+</p>
+
+<p>
+  <b>Has no strap detected:</b>
+  <%=h @triage_threshold.has_no_strap_detected %>
+</p>
+
+<p>
+  <b>Has no call center account:</b>
+  <%=h @triage_threshold.has_no_call_center_account %>
+</p>
+
+
+<%= link_to 'Edit', edit_triage_threshold_path(@triage_threshold) %> |
+<%= link_to 'Back', triage_thresholds_path %>
