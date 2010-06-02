@@ -49,7 +49,7 @@ window.onload = function(){
       <% if @kit_serial_number %>
         <%= link_to "Enter CS and GW serial numbers for #{@kit_serial_number.serial_number}",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> 
       <%else%>
-}      <%= link_to "Enter CS and GW serial numbers",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> |
+        <%= link_to "Enter CS and GW serial numbers",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> |
       <%end%>
       <%if !@user.created_by.nil?%>
         Added By <%= @user.creator.name%>
@@ -79,7 +79,7 @@ window.onload = function(){
             <input type="hidden" name="group_id" value="<%=params[:group_id]%>" />
             <input type="hidden" name="roles_user_id" value="<%=params[:roles_user_id]%>" />
             <input type="hidden" name="operator" value="<%=params[:operator]%>"/>
-            <%= render :partial => 'login_fields' if @user.new_record? %>
+            <%= render :partial => 'caregiver_login_fields' %>
             <%= render :partial => '/profiles/profile_top' %>
           </div>
 
