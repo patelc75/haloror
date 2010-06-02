@@ -1,3 +1,4 @@
+<% if @user.new_record? %>
 <p>
   <label for="user_login">Username</label><br />
   <%= text_field :user, :login %>
@@ -17,3 +18,12 @@
 <p>
   <%= hidden_field_tag :email, 'no-email@halomonitoring.com' ,:size => '30' %>
 </p>
+
+<% else %>
+
+<p>
+  <label for="user_email">Email</label><br />
+  <%= text_field :user, :email, :size => 30 %>
+</p>
+
+<% end %>
