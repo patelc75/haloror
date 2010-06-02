@@ -23,7 +23,7 @@
 
       <li><%= link_to 'Support', url_for(:controller => 'util', :action => 'support') %></li>
       <li><%= link_to 'Buy Online', '/order' %></li>
-      <li><%= link_to 'Triage', triage_user_path(current_user) unless current_user.patients.blank? %></li>
+      <li><%= link_to 'Triage', :controller => 'users', :action => 'triage', :id => current_user.id unless current_user.patients.blank? %></li>
 
       <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? || current_user.is_installer? || current_user.is_operator? || current_user.is_moderator? %>
       <hr>
