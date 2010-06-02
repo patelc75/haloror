@@ -205,6 +205,7 @@ get_caregivers(current_user)
       @profile = Profile.find(params[:id])
       @user = user
       @group_id = params[:group_id]
+      @senior = @user # User.find(params[:user_id]) # additional parameter passed for correct logic
       #    raise params.inspect
       begin
         User.transaction do
