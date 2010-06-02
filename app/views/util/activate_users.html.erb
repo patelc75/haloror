@@ -1,37 +1,37 @@
 <h1>Activate Users</h1>
 <big><%= link_to 'Send Test Email', :action => 'send_test_email'%></big>
-<br>
-<br>
+<br />
+<br />
 <table>
   <tr>
-    <td><b>id&nbsp</b></td>
-    <td><b>login&nbsp</b></td>
-    <td><b>Activated?&nbsp</b></td>
-    <td><b>See Events&nbsp</b></td>
-    <td><b>Delete User's Panics and Falls</b><br> (and associated accept/resolve actions<br> and notes)&nbsp</td>
-		<td><b>Caregiver Activation/Signup</b></td>
+    <td><b>id&nbsp;</b></td>
+    <td><b>login&nbsp;</b></td>
+    <td><b>Activated?&nbsp;</b></td>
+    <td><b>See Events&nbsp;</b></td>
+    <td><b>Delete User's Panics and Falls</b><br /> (and associated accept/resolve actions<br /> and notes)&nbsp;</td>
+    <td><b>Caregiver Activation/Signup</b></td>
   </tr>
   <% @users.each do |user| %>
-    <tr>
-      <td><%= user.id %> </td>
-      <td><%= user.name %> </td>
-      <% if user.activation_code != nil %>
-      <td><%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %></td>
-      <% else %>
-      <td>Activated</td>
+  <tr>
+    <td><%= user.id %> </td>
+    <td><%= user.name %> </td>
+    <% if user.activation_code != nil %>
+    <td><%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %></td>
+    <% else %>
+    <td>Activated</td>
+    <% end %>
+    <td><%= link_to 'Events', :controller => 'events', :action => 'user', :id => user.id %></td>
+    <td><%= link_to 'Delete Panics & Falls, etc', :action => 'delete_panics_and_falls', :id => user.id%></td>
+    <% caregivers = [] %>
+    <% caregivers = user.caregivers %>
+    <td><% caregivers.each do |caregiver| %>
+      <% if !caregiver.activated? %>
+      <%= link_to "Signup:  " + (caregiver.email || ''), :controller => 'util', :action => 'signup_redirect', :id => caregiver.activation_code %><br />
       <% end %>
-      <td><%= link_to 'Events', :controller => 'events', :action => 'user', :id => user.id %></td>
-      <td><%= link_to 'Delete Panics & Falls, etc', :action => 'delete_panics_and_falls', :id => user.id%></td>
-			<% caregivers = [] %>
-			<% caregivers = user.caregivers %>
-			<td><% caregivers.each do |caregiver| %>
-					<% if !caregiver.activated? %>
-						<%= link_to "Signup:  " + caregiver.email, :controller => 'util', :action => 'signup_redirect', :id => caregiver.activation_code %><br />
-					<% end %>
-					<% end %>&nbsp;
-			</td>
-    </tr>
+      <% end %>&nbsp;
+    </td>
+  </tr>
   <% end %>
 </table>
-<br><br>
+<br /><br />
 <%= will_paginate @users %>
