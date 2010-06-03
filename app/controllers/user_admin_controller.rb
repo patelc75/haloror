@@ -72,7 +72,7 @@ class UserAdminController < ApplicationController
     # rows.collect do |row|
     #   @roles << row['name']
     # end
-    @groups = current_user.groups_where_admin.paginate :page => params[:page], :per_page => 10 # where the user is member
+    @groups = current_user.groups_where_admin # where the user is member
     # @groups = []
     # rows = Group.connection.select_all("Select Distinct name from groups order by name asc")
     # rows.collect do |row|
