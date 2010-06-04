@@ -39,12 +39,24 @@
 	</div>
 	
 	<div class="col-150">
-		<% last_log = AccessLog.find(:first, :conditions => "user_id = #{user.id}", :order => 'created_at desc') %>
-		<% if !last_log.blank? %>
-			<a href="/logs/user/<%=user.id%>"><%= last_log.created_at.to_formatted_s(:short) %></a>
-		<% else %>
-			&nbsp;
-		<% end %>
+	  <% @vital = Vital.find(:first,:conditions => ["user_id = ?",user.id],:order => 'timestamp DESC') %>
+  		<%if !@vital.nil?%>
+  			<%if @vital.timestamp < (Time.now - 1.day)%>
+  				<font color="red"><%= UtilityHelper.format_datetime(@vital.timestamp, current_user) %></font>
+  			<%else%>
+  				<%= UtilityHelper.format_datetime(@vital.timestamp, current_user) %>
+  			<%end%>
+  		<% else %>
+  		  No Vitals
+  		<%end%>
+  	
+    <!-- Last Login commented out  -->
+    <!-- <% last_log = AccessLog.find(:first, :conditions => "user_id = #{user.id}", :order => 'created_at desc') %>
+    <% if !last_log.blank? %>
+      <a href="/logs/user/<%=user.id%>"><%= last_log.created_at.to_formatted_s(:short) %></a>
+    <% else %>
+      &nbsp;
+    <% end %> -->
 	</div>
 	
 	<% device = nil unless device %>

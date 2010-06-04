@@ -25,10 +25,12 @@
 	  <td>&nbsp;<%#= submit_tag "Submit" %></td>
     </tr>
   </table>
-   <%= render :partial => 'event_classification_checkboxes'%>
+   <%= render :partial => 'event_classification_checkboxes'%>   
+   <% if current_user.is_super_admin? %>
    Response Time: <input type="text" name="response_time" value="<%= params[:response_time]%>">
    Server Delay: <input type="text" name="server_delay" value="<%= params[:server_delay]%>">
    Call Center Delay: <input type="text" name="call_center_delay" value="<%= params[:call_center_delay]%>"><br>
+   <% end %>
     <%= submit_tag "Submit" %>
   </form>
   <br>
@@ -39,7 +41,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       Event <br>ID
     </div>
     <div class="col-50" style="background-color:#E6E6E6;height:75px;">
-      Event <br>Type <br><sub>(Oscope Start Msg ID)</sub>
+      Event <br>Type <br> <% if current_user.is_super_admin? %><sub>(Oscope Start Msg ID)</sub> <% end %>
     </div>
 
     <div class="col-125" style="background-color:#E6E6E6;height:75px;">
@@ -61,23 +63,23 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
       Notes
     </div>
     <% end %>
+    <% if current_user.is_super_admin? %>
     <div class="col-150" style="background-color:#E6E6E6;height:75px;">
       Classification
     </div>
-    <% if current_user.is_super_admin? %>
       <div class="col-100" style="background-color:#E6E6E6;height:75px;">
         Call Center Response
       </div>
       <div class="col-75" style="background-color:#E6E6E6;height:75px;">
         Response <br>Time
       </div>
-    <% end %>
     <div class="col-75" style="background-color:#E6E6E6;height:75px;">
     	Server Delay
     </div>
     <div class="col-50" style="background-color:#E6E6E6;height:75px;">
     	Call Center Delay
     </div>
+    <% end %>    
   </div>
   <% @events.each do |event| %>
     <div class="row">
@@ -89,11 +91,11 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
         </div>
       <% else %>
       <div class="col-50">
-        <%= link_to event.event_type,:action => 'event_details',:id => event.id%>&nbsp;
+        <%= link_to event.event_type[0..6],:action => 'event_details',:id => event.id%>&nbsp;
         <% if current_user.is_super_admin? || current_user.is_admin? %>
         <% if event.event_type == 'Fall' %>
           <% oscope_start = OscopeStartMsg.find_by_timestamp_and_user_id(event.timestamp, event.user_id) %>
-          <% if oscope_start %>
+          <% if oscope_start and current_user.is_super_admin? %>
             <br>(<%= link_to ("#{oscope_start.id}", :controller => 'oscopes', :action => 'csv', :id => oscope_start.id) %>)
           <% end %>
         <% end %>
@@ -149,7 +151,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
 		<% end %>
       </div>
       <% end %>
-        
+      <% if current_user.is_super_admin? %>        
       <div class="col-150" id="false_alarm_<%=event.id%>">
       	<% if action = event.false_alarm? %>
 		  <%= render :partial => 'false_alarm',:locals => {:event => event}%>
@@ -170,7 +172,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
 		<% else %>
 		  <%= render :partial => 'mark_event',:locals => {:event => event}%>
 		<% end %>
-      </div>
+      </div>  
       <div class="col-100" id="div_<%= event.id.to_s%>">
       	<%if event.call_center_response.nil?%>
       	<%= link_to_remote (image_tag("/images/calendar_date_select/calendar.gif", :size => "17x17", :border => 0), 
@@ -195,6 +197,7 @@ All times are in <%= current_user.profile.time_zone if current_user.profile %> t
        	<%#= UtilityHelper.seconds_format(event.timestamp_server.to_time - event.call_center_response.to_time) if event.timestamp_server and event.call_center_response %>
        	<%= event.event.timestamp_call_center.nil? ? 'Not Sent' : UtilityHelper.seconds_format(event.event.timestamp_call_center.to_time - event.event.timestamp_server.to_time) %>
        </div>
+   		<% end %>
       
         </div>
         <div id="notes_<%=event.id %>">

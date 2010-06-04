@@ -93,30 +93,30 @@ end %>
 
   	    	<!-- Strap Not Worn -->
 			<td>
-				<% @strap_not_worn_array = Compliance.device_not_worn_by_user(user.id,@begin_time,@end_time) %>
-		    	<% @strap_not_worn = Compliance.compliance_sum_array(@strap_not_worn_array) %>
-				<% strap_not_worn_total += @strap_not_worn if @strap_not_worn%>
-  	    		<% @total_per = 0%>
-	    			<% @total_per = ((@strap_not_worn / (@end_time.to_time.to_f - @begin_time.to_time.to_f) ) * 100) if @strap_not_worn%>
-				<%= @total_per.round(1).to_s + '%' if @strap_not_worn%><br>
-				<a href="/reporting/strap_not_worn_data/<%=user.id%>?begin_time=<%= params[:begin_time]%>&end_time=<%=params[:end_time]%>">
-				<%= [@strap_not_worn.round/3600, @strap_not_worn.round/60 % 60, @strap_not_worn.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @strap_not_worn %></a>   		
+        <!-- <% @strap_not_worn_array = Compliance.device_not_worn_by_user(user.id,@begin_time,@end_time) %>
+          <% @strap_not_worn = Compliance.compliance_sum_array(@strap_not_worn_array) %>
+        <% strap_not_worn_total += @strap_not_worn if @strap_not_worn%>
+            <% @total_per = 0%>
+            <% @total_per = ((@strap_not_worn / (@end_time.to_time.to_f - @begin_time.to_time.to_f) ) * 100) if @strap_not_worn%>
+        <%= @total_per.round(1).to_s + '%' if @strap_not_worn%><br>
+        <a href="/reporting/strap_not_worn_data/<%=user.id%>?begin_time=<%= params[:begin_time]%>&end_time=<%=params[:end_time]%>">
+        <%= [@strap_not_worn.round/3600, @strap_not_worn.round/60 % 60, @strap_not_worn.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @strap_not_worn %></a>       -->
   	    	</td>
 
   	    	<!-- Lost Data -->
   	    	<td>
-	  	    	<% @lost_data_array = Compliance.lost_data_by_user(user.id,@begin_time.to_time,@end_time.to_time)  %>
-	  	    	<% @lost_data = Compliance.compliance_sum_array(@lost_data_array) %>
-				<% lost_data_total += @lost_data if @lost_data %>
-				<% @lost_data_per = 0%>
-	  	    	<% @lost_data_per = ((@lost_data / (@end_time.to_time.to_f - @begin_time.to_time.to_f)) * 100) if @lost_data%>
-	  	    	<%= @lost_data_per.round(1).to_s + '%' if @lost_data %><br>
-				<a href="/reporting/lost_data/<%=user.id%>?begin_time=<%= params[:begin_time]%>&end_time=<%=params[:end_time]%>"><%= [@lost_data.round/3600, @lost_data.round/60 % 60, @lost_data.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @lost_data %></a>
+            <!-- <% @lost_data_array = Compliance.lost_data_by_user(user.id,@begin_time.to_time,@end_time.to_time)  %>
+            <% @lost_data = Compliance.compliance_sum_array(@lost_data_array) %>
+        <% lost_data_total += @lost_data if @lost_data %>
+        <% @lost_data_per = 0%>
+            <% @lost_data_per = ((@lost_data / (@end_time.to_time.to_f - @begin_time.to_time.to_f)) * 100) if @lost_data%>
+            <%= @lost_data_per.round(1).to_s + '%' if @lost_data %><br>
+        <a href="/reporting/lost_data/<%=user.id%>?begin_time=<%= params[:begin_time]%>&end_time=<%=params[:end_time]%>"><%= [@lost_data.round/3600, @lost_data.round/60 % 60, @lost_data.round % 60].map{|t| t.to_s.rjust(2,'0')}.join(':') if @lost_data %></a> -->
 			</td>
 				
 	  	    <!-- Total Compliance % -->  	    	
 			<td>
-			<%= @total_compliance = (100.0 - @lost_data_per - @total_per).round(1).to_s + '%' %>
+      <!-- <%= @total_compliance = (100.0 - @lost_data_per - @total_per).round(1).to_s + '%' %> -->
   	    	</td>
   	     	
 	  	    <!-- Senior Logins -->  	    	
@@ -141,10 +141,10 @@ end %>
 			<td align ="left"><b>Total</b></td>
 			<td></td>
 			<td></td>
-			<td><%= (strap_not_worn_total_perc = (strap_not_worn_total/((@end_time.to_time.to_f - @begin_time.to_time.to_f)*users.length.to_f))*100.0).round(1).to_s %>%<br>
+			<td><!-- <%= (strap_not_worn_total_perc = (strap_not_worn_total/((@end_time.to_time.to_f - @begin_time.to_time.to_f)*users.length.to_f))*100.0).round(1).to_s %>% --><br>
 			</td>
-			<td><%= (lost_data_total_perc = (lost_data_total/((@end_time.to_time.to_f - @begin_time.to_time.to_f)*users.length.to_f))*100.0).round(1).to_s %>%<br></td> 
-			<td><%= (100.0 - lost_data_total_perc - strap_not_worn_total_perc).round(1).to_s + '%' %></td>
+			<td><!-- <%= (lost_data_total_perc = (lost_data_total/((@end_time.to_time.to_f - @begin_time.to_time.to_f)*users.length.to_f))*100.0).round(1).to_s %>%<br> --></td> 
+			<td><!-- <%= (100.0 - lost_data_total_perc - strap_not_worn_total_perc).round(1).to_s + '%' %> --></td>
 			<td><%= senior_logins_total %></td>
 			<td><%= caregiver_logins_total %></td>
 			<td><%= caregiver_logins_total + senior_logins_total %></td>			
