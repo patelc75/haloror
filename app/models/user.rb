@@ -424,7 +424,13 @@ class User < ActiveRecord::Base
     # * adds a sequential integer value as position, if not already
     # * sequential integer value is dereived from Time.now, so it is always at the bottom of the list
     # * index of the enumeration is added to Time.now.to_i to ensure unique sequence
-    caregivers.enum_with_index.collect {|caregiver, index| [(caregiver.caregiver_position_for(self) || (Time.now.to_i + index)), caregiver] }.sort {|a,b| a[0] <=> b[0] }
+    #
+    # https://redmine.corp.halomonitor.com/issues/3047
+    #   caregivers are showing up again even after we click the "trash" icon in caregivers list
+    #   "trash" icon is removing the position for caregiver and updating "removed" attribute to "true"
+    #   so, we need to eliminate "removed" caregivers from this selection
+    #
+    caregivers.reject {|user| user.options_attribute_for_senior(self, :removed) == true }.enum_with_index.collect {|caregiver, index| [(caregiver.caregiver_position_for(self) || (Time.now.to_i + index)), caregiver] }.sort {|a,b| a[0] <=> b[0] }
     #
     # old logic
     # WARNING: major bug: if caregiver does not have a position yet, it is not included
