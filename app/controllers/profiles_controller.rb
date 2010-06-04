@@ -209,7 +209,7 @@ get_caregivers(current_user)
       #    raise params.inspect
       begin
         User.transaction do
-          user.update_attribute('email', params[:email])
+          user.update_attribute('email', params[:user][:email])
           if(!params[:roles_user_id].blank?)
             @roles_users_option = RolesUsersOption.find_by_roles_user_id(params[:roles_user_id])
             @roles_users_option.update_attributes!(params[:roles_users_option])
