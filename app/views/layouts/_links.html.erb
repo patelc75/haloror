@@ -37,10 +37,10 @@
 				<li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li>
 			<% end %>						
 			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_installer? %>
-				<li><%= link_to 'Config', :controller => 'reporting', :action => 'index' %></li>
+				<li><%= link_to 'Config', :controller => 'reporting', :action => 'blank_config' %></li>
 			<% end %>
-			<% if current_user.is_super_admin? %>
-				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'fall_panic_report' %></li>
+			<% if current_user.is_admin? || current_user.is_super_admin? %>
+				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'blank_reporting' %></li>
 			<% end %>
 			<% if current_user.is_super_admin? %>
 				<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
