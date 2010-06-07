@@ -54,3 +54,20 @@ Feature: Super Admin roles
     When I navigate to caregiver page for "caregiver-user" user
     Then I should see section header for caregivers of "senior-user"
     And I should see profile link for all caregivers of "senior-user"
+
+  Scenario: Create admin user
+    Given user "super-admin-user" has "admin" roles for group "group1"
+    And I am creating admin user
+    When I select "admin" from "role"
+    And I fill in the following:
+      | Email      | admin-test@example.com |
+      | First Name | admin-first-name       |
+      | Last Name  | admin-last-name        |
+      | Address    | admin-address          |
+      | City       | admin-city             |
+      | State      | admin-state            |
+      | Zipcode    | 12345                  |
+      | Home Phone | 1234567890             |
+    And I press "subscribe"
+    Then I should see "Signup Complete!"
+    And email to "admin-test@example.com" with subject "Please activate your new myHalo account" should be sent for delivery

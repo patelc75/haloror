@@ -1,6 +1,6 @@
 class UserObserver < ActiveRecord::Observer
   def after_create(user)
-    if user[:is_new_halouser] == true
+    if user[:is_new_halouser]
       UserMailer.deliver_signup_installation(user,user)
     else
       UserMailer.deliver_signup_notification(user) unless (user[:is_caregiver] or user[:is_new_subscriber])
