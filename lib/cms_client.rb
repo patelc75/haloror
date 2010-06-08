@@ -2,10 +2,8 @@ require 'socket'
 require 'timeout'
 
 class CmsClient
-  # SafetyCare addresses
-  # TODO: FIXME: change this when finished testing?
-  IP_ADDRESS = "74.43.4.37"
-  TCP_PORT = 19925
+  IP_ADDRESS = "12.29.157.39"
+  TCP_PORT = 1025
   TCP_PORT_HEARTBEAT = 19925
   
   # Test manually with:
@@ -30,7 +28,7 @@ class CmsClient
       #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
       Timeout::timeout(2) {
         sock = TCPSocket.open(IP_ADDRESS, TCP_PORT)
-        sock.write("501001 181234E40000001" % [account_num, alarm_code])
+        sock.write("501001 181234E40000001 " % [account_num, alarm_code])
         #sock.write("%s%s\r\n" % [account_num, alarm_code])
         response = sock.readline
         sock.close
