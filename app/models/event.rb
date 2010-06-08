@@ -11,31 +11,6 @@ class Event < ActiveRecord::Base
   belongs_to :event, :polymorphic => true
   
   has_many :event_actions
-
-  CONNECTIVITY_STATUS_ICONS = {
-    # "AccessMode" => "access_mode.png",
-    # "BatteryChargeComplete" => "battery_charge_complete.png",
-    # "BatteryCritical" => "battery_critical.png",
-    "BatteryPlugged" => "battery_plugged.png",
-    # "BatteryReminder" => "battery_reminder.png",
-    # "BatteryUnplugged" => "battery_unplugged.png",
-    # "CallCenterDeferred" => "call_center_deferred.png",
-    # "CallCenterFollowUp" => "call_center_follow_up.png",
-    "DeviceAvailableAlert" => "device_available_alert.png",
-    "DeviceUnavailableAlert" => "device_unavailable_alert.png",
-    # "EventAction" => "event_action.png",
-    # "Fall" => "fall.png",
-    "GatewayOfflineAlert" => "gateway_offline_alert.png",
-    "GatewayOnlineAlert" => "gateway_online_alert.png",
-    # "GwAlarmButton" => "gw_alarm_button.png"
-    # "GwAlarmButtonTimeout" => "gw_alarm_button_timeout.png",
-    # "Panic" => "panic.png",
-    "StrapFastened" => "strap_fastened.png",
-    # "StrapOffAlert" => "strap_off_alert.png",
-    # "StrapOnAlert" => "strap_on_alert.png",
-    "StrapRemoved" => "strap_removed.png",
-    "Dialup" => "status_dial_up.png" # we are using this existing image as default value
-    }
   
   # triggers ----------------------------------
   
@@ -44,7 +19,7 @@ class Event < ActiveRecord::Base
   def after_save
     if (user = User.find(user_id))
       user.last_event_id = id
-      user.save
+      user.send(:update_without_callbacks) # quick fix to https://redmine.corp.halomonitor.com/issues/3067
     end
     # User.update(user_id, {:last_event_id => id})
   end
@@ -138,7 +113,7 @@ class Event < ActiveRecord::Base
 
   # instance methods ------------------------------
 
-  def icon
+  def icon(event_type = nil)
     # default = status_dial_up.png
     CONNECTIVITY_STATUS_ICONS.has_key?(event_type) ? CONNECTIVITY_STATUS_ICONS[event_type] : 'status_dial_up.png'
   end

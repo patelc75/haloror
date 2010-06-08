@@ -7,7 +7,7 @@ class Vital < ActiveRecord::Base
   def after_save
     if (user = User.find(user_id))
       user.last_vital_id = id
-      user.save
+      user.send(:update_without_callbacks) # quick fix to https://redmine.corp.halomonitor.com/issues/3067
     end
     # User.update(user_id, {:last_vital_id => id})
   end

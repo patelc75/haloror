@@ -11,9 +11,9 @@
     <th>Status</th>
     <th>Last updated</th>
     <th>Battery percent</th>
-    <th>No Panic Button Test</th>
-    <th>No Strap Detected</th>
-    <th>No Call Center Account</th>
+    <th>Hours without Panic Button Test</th>
+    <th>Hours without Strap Detected</th>
+    <th>Hours without Call Center Account</th>
   </tr>
 
 <% for triage_threshold in @triage_thresholds %>
@@ -22,9 +22,9 @@
     <td><%=h triage_threshold.status %></td>
     <td><%=h triage_threshold.updated_at %></td>
     <td><%=h triage_threshold.battery_percent %></td>
-    <td><%=h triage_threshold.has_no_panic_button_test %></td>
-    <td><%= h triage_threshold.has_no_strap_detected %></td>
-    <td><%= h triage_threshold.has_no_call_center_account %></td>
+    <td><%=h triage_threshold.hours_without_panic_button_test %></td>
+    <td><%= h triage_threshold.hours_without_strap_detected %></td>
+    <td><%= h triage_threshold.hours_without_call_center_account %></td>
     <td><%= link_to 'Show', triage_threshold %></td>
     <td><%= link_to 'Edit', edit_triage_threshold_path(triage_threshold) %></td>
     <td><%= link_to 'Destroy', triage_threshold, :confirm => 'Are you sure?', :method => :delete %></td>

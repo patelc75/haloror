@@ -7,6 +7,5 @@ Feature: User cache update
   Scenario: Auto update of user.last_event_id
   Scenario: Auto update of user.last_vital_id
   Scenario: Auto update of user.last_triage_audit_log_id
-  Scenario: Auto update of user.has_no_panic_button_test
-  Scenario: Auto update of user.has_no_strap_detected
-  Scenario: Auto update of user.has_no_call_center_account
+  Scenario: Auto update of user.last_panic_id
+  Scenario: Auto update of user.last_strap_fastened_id

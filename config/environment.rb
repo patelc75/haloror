@@ -263,3 +263,29 @@ EMAIL_SUBJECT = {
 ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|
   "<span class='error-field'>#{html_tag}</span>"
 end
+
+CONNECTIVITY_STATUS_ICONS = {
+  # "AccessMode" => "access_mode",
+  # "BatteryChargeComplete" => "battery_charge_complete",
+  # "BatteryCritical" => "battery_critical",
+  "BatteryPlugged" => "battery_plugged",
+  # "BatteryReminder" => "battery_reminder",
+  # "BatteryUnplugged" => "battery_unplugged",
+  # "CallCenterDeferred" => "call_center_deferred",
+  # "CallCenterFollowUp" => "call_center_follow_up",
+  "DeviceAvailableAlert" => "device_available_alert",
+  "DeviceUnavailableAlert" => "device_unavailable_alert",
+  # "EventAction" => "event_action",
+  # "Fall" => "fall",
+  "GatewayOfflineAlert" => "gateway_offline_alert",
+  "GatewayOnlineAlert" => "gateway_online_alert",
+  # "GwAlarmButton" => "gw_alarm_button"
+  # "GwAlarmButtonTimeout" => "gw_alarm_button_timeout",
+  # "Panic" => "panic",
+  "StrapFastened" => "strap_fastened",
+  # "StrapOffAlert" => "strap_off_alert",
+  # "StrapOnAlert" => "strap_on_alert",
+  "StrapRemoved" => "strap_removed",
+  "Dialup" => "status_dial_up" # we are using this existing image as default value
+  }
+
