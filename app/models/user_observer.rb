@@ -16,11 +16,14 @@ class UserObserver < ActiveRecord::Observer
     user.lazy_roles.each {|key, value| user.send("is_#{key}_of".to_sym, value) } unless user.lazy_roles.blank? || user.blank?
   end
 
-  def after_save(user)
-    #
-    # now trigger the email for installation/notification
-    # business logic changed to send emails on any successful "submit"
-    # "submit" vs "save" is identified here by skip_validation attribute
-    user.dispatch_emails unless user.skip_validation # if use was just "saved" do not trigger emails
-  end
+  # https://redmine.corp.halomonitor.com/issues/3067
+  # CHANGED: Never dispatch emails automatically on save
+  #
+  # def after_save(user)
+  #   #
+  #   # now trigger the email for installation/notification
+  #   # business logic changed to send emails on any successful "submit"
+  #   # "submit" vs "save" is identified here by skip_validation attribute
+  #   user.dispatch_emails unless user.skip_validation # if use was just "saved" do not trigger emails
+  # end
 end

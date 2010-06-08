@@ -1,10 +1,9 @@
 <h1>Listing triage_thresholds</h1>
 
 <% form_tag triage_thresholds_path, :method => :get do %>
-  Group: <%= select_tag "search", options_from_collection_for_select(@groups, :id, :name, params[:search].to_i), {:onchange => "this.form.submit();"} %>
+  Group: <%= select_tag "search", options_from_collection_for_select(@groups, :id, :name, params[:search].to_i), {:onchange => "this.form.submit();"} unless @groups.blank? %>
 <% end -%>
 
-<%= will_paginate %>
 <table>
   <tr>
     <th>Group</th>
@@ -31,7 +30,6 @@
   </tr>
 <% end %>
 </table>
-<%= will_paginate %>
 <br />
 
 <%= link_to 'New triage_threshold', new_triage_threshold_path %>

@@ -3,7 +3,7 @@
 
   <p>
     <%= f.label :group_id, "Group" %><br />
-    <%= f.collection_select :group_id, @groups, :id, :name %>
+    <%= f.collection_select :group_id, @groups, :id, :name unless @groups.blank? %>
   </p>
   <p>
     <%= f.label :status %><br />

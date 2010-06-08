@@ -127,6 +127,9 @@ class OrdersController < ApplicationController
                 else
                   # success
                   #
+                  # # CHANGED: emails are now delivered explicitly through order > create_user_intake > dispatch_emails
+                  # # https://redmine.corp.halomonitor.com/issues/3067
+                  #
                   # CHANGED: No need to deliver here now. Order does that automatically through user intake
                   #
                   # deliver emails

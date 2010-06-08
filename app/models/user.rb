@@ -307,6 +307,9 @@ class User < ActiveRecord::Base
     profile.blank? ? '' : profile.account_number
   end
   
+  # https://redmine.corp.halomonitor.com/issues/3067
+  # email must be dispatched by explicit calls now
+  #
   def dispatch_emails
     if self.is_halouser? && !email.blank? # WARNING: DEPRECATED user[:is_new_halouser] == true
       UserMailer.deliver_signup_installation(self, self)
@@ -675,7 +678,7 @@ class User < ActiveRecord::Base
   def groups_where_admin
     # only fetch groups for which user has admin role
     # https://redmine.corp.halomonitor.com/issues/2967. Super admin role also accounts for admin role.
-    self.is_super_admin? ? Group.all(:order => 'name') : (self.is_admin_of_what.select {|element| element.is_a?(Group) }.uniq.sort {|x,y| x.name <=> y.name })
+    self.is_super_admin? ? Group.all(:order => 'name') : (self.is_admin_of_what.compact.select {|element| element.is_a?(Group) }.uniq.sort {|x,y| x.name <=> y.name })
   end
   
   # includes the following groups

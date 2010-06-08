@@ -4,7 +4,7 @@ class TriageThresholdsController < ApplicationController
   # GET /triage_thresholds
   # GET /triage_thresholds.xml
   def index
-    @triage_thresholds = TriageThreshold.all(:conditions => {:group_id => params[:search]}).paginate :per_page => 10, :page => params[:page]
+    @triage_thresholds = TriageThreshold.all(:conditions => {:group_id => params[:search]}) # .paginate :per_page => 10, :page => params[:page]
     @groups = current_user.groups_where_admin
 
     respond_to do |format|

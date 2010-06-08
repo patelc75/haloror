@@ -46,6 +46,7 @@ class UserAdminController < ApplicationController
         @profile.user_id = @user.id
         @profile.save!
         @user.roles << role
+        @user.dispatch_emails # explicitly send emails
       end
     else
       @groups = []
