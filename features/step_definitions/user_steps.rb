@@ -10,8 +10,9 @@ Given /^(?:|a )user "([^\"]*)" exists with profile$/ do |user_names|
     user = Factory.create(:user, :login => user_name)
     user.should_not be_blank
     user.id.should_not be_blank
-    user.profile.should_not be_blank
-    user.profile.id.should_not be_blank
+    
+    (profile = user.profile).should_not be_blank
+    profile.id.should_not be_blank
   end
 end
 
@@ -58,6 +59,14 @@ end
 
 Given /^I am creating admin user$/ do
   visit "/user_admin/new_admin"
+end
+
+Given /^call center account number for "([^\"]*)" is "([^\"]*)"$/ do |user_login, number|
+  user = User.find_by_login(user_login)
+  user.should_not be_blank
+  
+  user.profile.account_number = number
+  user.profile.save
 end
 
 When /^I visit the events page for "([^\"]*)"$/ do |user_name|

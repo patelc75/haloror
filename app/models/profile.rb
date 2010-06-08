@@ -45,15 +45,16 @@ class Profile < ActiveRecord::Base
    self.need_validation = true # default = run validations
   end
 
-  # cache fields in user
-  def after_save
-    unless user.blank?
-      self.user.has_no_call_center_account = account_number.blank?
-      # WARNING. need to check if this might cause a recursive update
-      # update_without_callbacks should eliminate recursion
-      user.update_without_callbacks unless user.new_record? # else do not bother, user in memory has the data. it will save
-    end
-  end
+  # not required. we can check profile account number directly
+  # # cache fields in user
+  # def after_save
+  #   unless user.blank?
+  #     self.user.has_no_call_center_account = account_number.blank?
+  #     # WARNING. need to check if this might cause a recursive update
+  #     # update_without_callbacks should eliminate recursion
+  #     user.update_without_callbacks unless user.new_record? # else do not bother, user in memory has the data. it will save
+  #   end
+  # end
   
   def skip_validation
     !need_validation

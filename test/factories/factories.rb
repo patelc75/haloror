@@ -29,6 +29,13 @@ Factory.define :battery do |v|
   v.association :device
 end
 
+Factory.define :battery_plugged do |v|
+  v.percentage { rand(100) }
+  v.time_remaining { rand(500) }
+  v.association :device
+  v.association :user
+end
+
 Factory.define :carrier do |v|
   v.name { Faker::Company.name }
   v.domain { Faker::Internet.domain_name }
@@ -59,10 +66,29 @@ Factory.define :device do |v|
   v.active true
 end
 
+Factory.define :device_available_alert do |v|
+  v.association :device
+  v.priority { rand(99) }
+end
+
+Factory.define :device_unavailable_alert do |v|
+  v.association :device
+end
+
+Factory.define :dial_up do |v|
+  
+end
+
 Factory.define :emergency_number do |v|
   v.name { Faker::Company.name }
   v.number { Faker::PhoneNumber.phone_number }
   v.association :group
+end
+
+Factory.define :event do |v|
+  v.event_type { ['BatteryPlugged', 'DeviceAvailableAlert', 'DeviceUnavailableAlert',
+    'GatewayOfflineAlert', 'GatewayOnlineAlert', 'StrapFastened', 'StrapRemoved', 'Dialup'][rand(7)] }
+  v.association :user
 end
 
 Factory.define :gateway do |v|
@@ -70,6 +96,14 @@ Factory.define :gateway do |v|
   v.mac_address "01:23:45:67:89:ab"
   v.vendor { Faker::Company.name }
   v.model { Faker::Lorem.words[0] }
+end
+
+Factory.define :gateway_offline_alert do |v|
+  v.association :device
+end
+
+Factory.define :gateway_online_alert do |v|
+  v.association :device
 end
 
 Factory.define :profile do |v|
@@ -108,6 +142,16 @@ Factory.define :rma do |v|
   v.notes { Faker::Lorem.paragraph }
   v.association :created_by, :factory => :user
   v.association :group
+  v.association :user
+end
+
+Factory.define :strap_fastened do |v|
+  v.association :device
+  v.association :user
+end
+
+Factory.define :strap_removed do |v|
+  v.association :device
   v.association :user
 end
 

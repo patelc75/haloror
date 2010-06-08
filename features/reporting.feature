@@ -16,7 +16,7 @@ Feature: Reporting
     When I visit "/reporting/users"
     And I fill in "query" with "abc"
     And I press "Go"
-    Then page content should have "ID, Name, Last Login, Links"
+    Then page content should have "ID, Name, Last Vitals POST, Links"
 
   Scenario: Config > Roles & Groups. Super admin can see all Groups
     When I visit "/user_admin/roles"

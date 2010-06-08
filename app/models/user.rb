@@ -19,6 +19,8 @@ class User < ActiveRecord::Base
   belongs_to :last_event, :class_name => "Event", :foreign_key => "last_event_id"
   belongs_to :last_vital, :class_name => "Vital", :foreign_key => "last_vital_id"
   belongs_to :last_triage_audit_log, :class_name => "TriageAuditLog", :foreign_key => "last_triage_audit_log_id"
+  belongs_to :last_panic, :class_name => "Panic", :foreign_key => "last_panic_id"
+  belongs_to :last_strap_fastened, :class_name => "StrapFastened", :foreign_key => "last_strap_fastened_id"
   
   has_one  :profile, :dependent => :destroy
   has_many :access_logs
@@ -249,6 +251,62 @@ class User < ActiveRecord::Base
     !dismissed_from_triage?
   end
 
+  # TODO: rspec pending for this
+  def hours_since(what = nil)
+    time = case what
+    when :panic
+      last_panic.blank? ? created_at : last_panic.timestamp
+    when :strap_fastened
+      last_strap_fastened.blank? ? created_at : last_strap_fastened.timestamp
+    when :call_center_account
+      profile.blank? ? created_at : (profile.account_number.blank? ? created_at : Time.now)
+    else
+      Time.now # default = no time difference (well, almost)
+    end
+
+    ((Time.now - time) / 1.hour).round
+  end
+
+  # alert status. used in triage
+  # fetches triage_thresholds for the group where this user is halouser
+  # fetches the "status" from the most appropriately matched triage_threshold
+  # TODO: rspec and cucumber pending
+  def alert_status_for(what = nil)
+    group = self.is_halouser_of_what.flatten.first
+    if group.blank?
+      "normal"
+    else
+      status = case what
+      when :panic
+        group.triage_thresholds.first(:conditions => ["hours_without_panic_button_test >= ?", hours_since(:panic)], :order => :hours_without_panic_button_test).status unless group.triage_thresholds.blank?
+      when :strap_fastened
+        group.triage_thresholds.first(:conditions => ["hours_without_strap_detected >= ?", hours_since(:strap_fastened)], :order => :hours_without_strap_detected).status unless group.triage_thresholds.blank?
+      when :call_center_account
+        call_center_account.blank? ? "abnormal" : "normal"
+      end
+      # when threshold is not defined. the following hard coded logic will work
+      #   48 hours or more delayed = abnormal
+      #   24 hours, up to 48 hours delayed = caution
+      #   less than 24 hours delayed = normal
+      # when threshold defined
+      #   threshold data defines the logic
+      status.blank? ? (hours_since(what) >= 48 ? "abnormal" : (hours_since(what) >= 24 ? "caution" : "normal")) : status
+    end
+  end
+  
+  # combined alert status
+  # alert status for panic, strap_fastened, call_center_account are collected
+  # most severe status returned
+  # TODO: rspec and cucumber pending
+  def alert_status
+    [:panic, :strap_fastened, :call_center_account].collect {|e| alert_status_for(e) }.compact.uniq.sort.first
+  end
+  
+  # call center account number from profile
+  def call_center_account
+    profile.blank? ? '' : profile.account_number
+  end
+  
   def dispatch_emails
     if self.is_halouser? && !email.blank? # WARNING: DEPRECATED user[:is_new_halouser] == true
       UserMailer.deliver_signup_installation(self, self)
@@ -271,21 +329,26 @@ class User < ActiveRecord::Base
   end
 
   def connectivity_status_icon
-    last_event.blank? ? 'status_dial_up.png' : last_event.connectivity_status.icon
+    (last_event && last_event.is_a?(Event)) ? last_event.event.class.name.underscore : 'status_dial_up'
   end
 
+  # color based on calculated fill width on our scale
   def battery_color
-    percent = battery_percentage
-    "#{(percent < 10) ? 'red' : ((percent < 25) ? 'yellow' : 'green')}-color-base"
+    percent = battery_fill_width
+    "#{(percent == 10) ? 'red' : ((percent == 25) ? 'yellow' : 'green')}"
   end
   
+  # exact battery percentage
   def battery_percentage
     last_battery.blank? ? 100 : last_battery.percentage
   end
   
+  # battery fill width in fixed proportions
+  # actual percentage is converted to this scale for easy display and calculation
   def battery_fill_width
     percent = battery_percentage
-    [0, 10, 25, 50, 75, 100].select {|e| percent >= e }.last
+    fill = (([10, 25, 50, 75, 100].select {|e| e <= percent }.last) || 10) # either pick one, or be 10
+    fill = ((fill < 10) ? 10 : ((fill > 100) ? 100 : fill))
   end
   
   
@@ -612,7 +675,7 @@ class User < ActiveRecord::Base
   def groups_where_admin
     # only fetch groups for which user has admin role
     # https://redmine.corp.halomonitor.com/issues/2967. Super admin role also accounts for admin role.
-    self.is_super_admin? ? Group.all(:order => 'name') : self.is_admin_of_what.select {|element| element.is_a?(Group) }.uniq.sort {|x,y| x.name <=> y.name }
+    self.is_super_admin? ? Group.all(:order => 'name') : (self.is_admin_of_what.select {|element| element.is_a?(Group) }.uniq.sort {|x,y| x.name <=> y.name })
   end
   
   # includes the following groups

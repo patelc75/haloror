@@ -17,6 +17,7 @@ class TriageThresholdsController < ApplicationController
   # GET /triage_thresholds/1.xml
   def show
     @triage_threshold = TriageThreshold.find(params[:id].to_i)
+    @groups = current_user.groups_where_admin
 
     respond_to do |format|
       format.html # show.html.erb

@@ -4,7 +4,7 @@
   <div class="container box rounded">
     <div id="assign_role">&nbsp;</div>
     <h2>Assign Super Admin Role</h2>
-    <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_super_role'}, :update => 'assign_role' do |f|%>
+    <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_super_role'}, :update => 'assign_role' do |f| %>
       <%= collection_select 'superadmin', 'user_id', @users, :id, :name, {}, {} %> is a Super Admin.
       <br><%=submit_tag 'Assign Super Admin Role'%>
     <% end %>

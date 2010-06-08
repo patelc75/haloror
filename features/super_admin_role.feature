@@ -40,7 +40,7 @@ Feature: Super Admin roles
     Then I should see "cg1 cg1"
 
   Scenario: Config > Users > Caregiver for
-    When I follow "Config"
+    When I follow links "Config > Users"
     Then I should see "caregiver for" link for user "caregiver-user"
     And I should see "Caregivers" link for user "senior-user"
 
@@ -70,4 +70,4 @@ Feature: Super Admin roles
       | Home Phone | 1234567890             |
     And I press "subscribe"
     Then I should see "Signup Complete!"
-    And email to "admin-test@example.com" with subject "Please activate your new myHalo account" should be sent for delivery
+    And 1 email to "admin-test@example.com" with subject "Please activate your new myHalo account" should be sent for delivery

@@ -18,6 +18,21 @@ class Group < ActiveRecord::Base
       { :conditions => {:id => group_ids} }
     }
   
+  # triggers / callbacks
+  
+  # TODO: rspec done. cucumber pending for this
+  # at least one value for NORMAL must exist
+  def after_create
+    options = {
+      :status => "normal",
+      :battery_percent => 100,
+      :hours_without_panic_button_test => 48,
+      :hours_without_strap_detected => 48,
+      :hours_without_call_center_account => 48
+    }
+    triage_thresholds.create(options) if triage_thresholds.blank?
+  end
+  
   # groups applicable to user
   #
   def self.for_user(user)
