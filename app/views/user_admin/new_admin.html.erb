@@ -5,7 +5,7 @@
 		   @groups.each do |g|
 			 gs << g.name
 		   end %>
-Select Group:  
+<label for="group">Select Group</label>:  
 <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group), {:onchange => "$('group_form_id').submit();"}%>
 	</form>
 	<br>
@@ -66,7 +66,7 @@ Select Group:
 		  	<%= render :partial => '/profiles/profile_bottom' %>
 			<br />
 			<br />
-			<input name="commit" type="image" src="/images/subscribe.gif" />
+			<input name="commit" type="image" src="/images/subscribe.gif" id="subscribe"/>
 		  </div>
 		</div>
 	 </div>	

@@ -33,7 +33,7 @@ class UserAdminController < ApplicationController
 
   def create
     @user = User.new(params[:user])
-    @user.email = params[:email]
+    @user.email = params[:user][:email]
     @group = params[:group]
     @profile = Profile.new(params[:profile])
     if !params[:role].blank? && params[:role] != 'Choose a Role'

@@ -56,6 +56,10 @@ Given /^user "([^\"]*)" has "([^\"]*)" roles? for (.+) "([^\"]*)"$/ do |user_nam
   end
 end
 
+Given /^I am creating admin user$/ do
+  visit "/user_admin/new_admin"
+end
+
 When /^I visit the events page for "([^\"]*)"$/ do |user_name|
   user = User.find_by_login(user_name)
   user.should_not be_blank
