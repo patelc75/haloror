@@ -69,6 +69,13 @@ Given /^call center account number for "([^\"]*)" is "([^\"]*)"$/ do |user_login
   user.profile.save
 end
 
+When /^I get data in (.+) for user "([^\"]*)"$/ do |model_name, user_login|
+  user = User.find_by_login(user_login)
+  user.should_not be_blank
+  
+  Factory.create(model_name.singularize.gsub(/ /,'_').to_sym, :user => user)
+end
+
 When /^I visit the events page for "([^\"]*)"$/ do |user_name|
   user = User.find_by_login(user_name)
   user.should_not be_blank
@@ -83,6 +90,14 @@ When /^I select profile name of "([^\"]*)" from "([^\"]*)"$/ do |user_login, dro
   user = User.find_by_login(user_login)
   user.should_not be_blank
   select(user.name, :from => drop_down_id)
+end
+
+Then /^user "([^\"]*)" should have updated cache for (.+)$/ do |user_login, field|
+  user = User.find_by_login(user_login)
+  user.should_not be_blank
+  user.should respond_to(field.to_sym)
+  user.send(field.to_sym).should_not be_blank
+  user.send(field.to_sym).should > 0
 end
 
 # roles pattern can be: "caregiver", "caregiver, user, halouser"

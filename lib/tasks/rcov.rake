@@ -23,4 +23,6 @@ namespace :rcov do
     Rake::Task["rcov:cucumber"].invoke
     Rake::Task["rcov:rspec"].invoke
   end
+  
+  task :default => :all
 end
