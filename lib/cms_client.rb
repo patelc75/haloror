@@ -22,7 +22,7 @@ class CmsClient
   end
   
   def self.alert(event_type,user_id,account_num,timestamp=Time.now)      
-    alarm_code = event_type_numeric(event_type)                      
+    alarm_code = event_type_numeric(event_type)
     if !account_num.blank?
       #don't need to filter because safetycare filters by IP
       #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
