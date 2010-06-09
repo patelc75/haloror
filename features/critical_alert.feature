@@ -22,8 +22,7 @@ Feature: Critical Alert
 
   # @wip here will skip only this scenario, unless feature has @wip tag
   Scenario: Simulate a fall with successful delivery to the call center
-    When user "test-user" has "halouser" role for group "safety_care"
-    When user "test-user" has "halouser" role for group "cms"
+    When user "test-user" has "halouser" role for group "safety_care, cms"
     And I simulate a "Fall" with delivery to the call center for user login "test-user" with a "valid" "call center account number"
     Then I should have "1" count of "Fall"
     And I should have a "Fall" alert "not pending" to the call center with a "valid" call center delivery timestamp
