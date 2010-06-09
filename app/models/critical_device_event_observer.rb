@@ -27,6 +27,10 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
       end
     end
 
+# https://redmine.corp.halomonitor.com/issues/3076
+#   This callback method was commented out anyways
+#   Please see after_save aboev
+#
 #     def after_save(event)
 # =begin      
 #       if alert.class == Fall or alert.class == Panic
