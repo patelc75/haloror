@@ -6,6 +6,7 @@ tmp/*
 doc/api
 doc/app
 coverage
+coverage.data
 rerun.txt
 db/*.sqlite3
 config/database.yml
@@ -15,5 +16,3 @@ log/lsws
 db/schema.rb
 dialup
 webrat-*
-
-
