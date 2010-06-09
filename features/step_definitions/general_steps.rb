@@ -91,7 +91,7 @@ Given /^I am listing (.+)$/ do |model|
   visit "/#{model.downcase.pluralize.gsub(' ','_')}"
 end
 
-Given /^I do not have any (.+)$/ do |models|
+Given /^there is no data for (.+)$/ do |models|
   models.split(',').each {|e| e.strip.singularize.camelize.constantize.send(:delete_all) }
 end
 

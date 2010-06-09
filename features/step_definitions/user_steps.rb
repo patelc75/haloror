@@ -92,6 +92,14 @@ When /^I select profile name of "([^\"]*)" from "([^\"]*)"$/ do |user_login, dro
   select(user.name, :from => drop_down_id)
 end
 
+Then /^user "([^\"]*)" should have data for (.+)$/ do |user_login, method_names|
+  methods = method_names.split(',').collect(&:strip).collect(&:to_sym) # array of method names as symbols
+  user = User.find_by_login(user_login)
+  user.should_not be_blank
+  
+  methods.each {|method| user.send(method).should_not be_blank } # send each method to get not_blank value
+end
+
 Then /^user "([^\"]*)" should have updated cache for (.+)$/ do |user_login, field|
   user = User.find_by_login(user_login)
   user.should_not be_blank
