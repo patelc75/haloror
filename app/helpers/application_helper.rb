@@ -84,7 +84,7 @@ module ApplicationHelper
   # end
 
   def recursively_delete_dir(dir)
-    FileUtils.rm_rf(dir, :force => true)
+    FileUtils.rm_rf(dir) # or use FileUtils.rm_r(dir, :force => true)
     # system("rm -rf #{dir}")
   end
 
