@@ -175,7 +175,7 @@ Factory.define :user do |v|
   v.login { Faker::Internet.user_name + Digest::MD5.hexdigest(Time.now.to_s)[0..20] }
   v.salt { |user| Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{user.login}--") }
   v.crypted_password { |user| Digest::SHA1.hexdigest("--#{user.salt}--12345--") }
-  v.email { Faker::Internet.email }
+  v.email {|u| "#{u.login}@example.com" } # pre-defined domain used in some tests
   v.association :profile
   # # WARNING: do not use v.association or v.profile syntax here.
   # # if you do, cucumber complications happen and scenarios will fail randomly for no valid visible reason
