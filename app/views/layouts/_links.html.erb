@@ -3,55 +3,57 @@
   <li>
     My&nbsp;Links&nbsp;
     <ul>
-      <li><%#=link_to_remote_redbox('My&nbsp;Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%>
+      <li>
+        <%#=link_to_remote_redbox('My&nbsp;Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id, :frame => true,:user_id => current_user.id }, :html => {:method => :get})%>
         <%= link_to('My Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => current_user.profile.id ,:user_id => current_user.id ) unless current_user.profile.blank? %>
+      </li>
 
-			<% if current_user.is_halouser? %>
-				<li><%=link_to('Configure&nbsp;Alerts', :controller => "alerts", :action => "index", :id => current_user.roles_user_by_role_name('halouser').id, :senior_id => current_user.id) %></li>
-			<% end %>            
-						
-			<% if current_user.is_halouser? || current_user.is_caregiver? %>
-  			<% prefix = ""%>
-  			<% prefix = "My&nbsp;" if !caregiver %> 
-			  <li><%= link_to prefix+'Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
-			  <li><%= link_to prefix+'Events', :controller => 'events', :action => 'user', :id => current_user.id %></li>    						
-			  <li><%= link_to prefix+'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
-  			<li><%= link_to prefix+'BP & Weight', :controller => 'vital_lists', :action => 'index',:id => current_user %></li>
-			<% end %>
-			
-			<li><%= link_to 'Support', url_for(:controller => 'util', :action => 'support') %></li>
-			<li><%= link_to 'Buy Online', '/order' %></li>			
-			
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? || current_user.is_installer? || current_user.is_operator? || current_user.is_moderator? %>
-			<hr>
-			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
-				<li><%= link_to 'User&nbsp;Signup', url_for(:controller => 'users', :action => 'new') %></li>
-			<% end %>
+      <% if current_user.is_halouser? %>
+      <li><%=link_to('Configure&nbsp;Alerts', :controller => "alerts", :action => "index", :id => current_user.roles_user_by_role_name('halouser').id, :senior_id => current_user.id) %></li>
+      <% end %>            
+
+      <% if current_user.is_halouser? || current_user.is_caregiver? %>
+      <% prefix = ""%>
+      <% prefix = "My&nbsp;" if !caregiver %> 
+      <li><%= link_to prefix+'Caregivers', :controller => 'call_list', :action => 'show', :id => current_user.id %></li>
+      <li><%= link_to prefix+'Events', :controller => 'events', :action => 'user', :id => current_user.id %></li>    						
+      <li><%= link_to prefix+'Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %></li>
+      <li><%= link_to prefix+'BP & Weight', :controller => 'vital_lists', :action => 'index',:id => current_user %></li>
+      <% end %>
+
+      <li><%= link_to 'Support', url_for(:controller => 'util', :action => 'support') %></li>
+      <li><%= link_to 'Buy Online', '/order' %></li>			
+
+      <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? || current_user.is_installer? || current_user.is_operator? || current_user.is_moderator? %>
+      <hr>
+      <% end %>
       <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
-        <li><%= link_to 'User&nbsp;Intake', '/user_intakes/new' %></li>
+      <li><%= link_to 'User&nbsp;Signup', url_for(:controller => 'users', :action => 'new') %></li>
+      <% end %>
+      <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
+      <li><%= link_to 'User&nbsp;Intake', '/user_intakes/new' %></li>
       <% end %> 
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_installer? %>
-				<li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li>
-			<% end %>						
-			<% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_installer? %>
-				<li><%= link_to 'Config', :controller => 'reporting', :action => 'blank_config' %></li>
-			<% end %>
-			<% if current_user.is_admin? || current_user.is_super_admin? %>
-				<li><%= link_to 'Reporting', :controller => 'reporting', :action => 'blank_reporting' %></li>
-			<% end %>
-			<% if current_user.is_super_admin? %>
-				<li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
-			<% end %>			
-			<% if current_user.is_super_admin? %>
-				<li><a href="/atp/index">ATP</a></li>
-			<% end %>
-			<% if current_user.is_super_admin? %>
-				<li><%= link_to 'Healthvault', :controller => 'healthvault', :action => 'index' %></li>
-			<% end %>
-			<% if current_user.is_super_admin? %>
-			<li><%= link_to 'Info', url_for(:controller => 'util', :action => 'info', :my_links => 'Info') %></li>
-			<% end %>
-		</ul>
-	</li>
+      <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_installer? %>
+      <li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li>
+      <% end %>						
+      <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_installer? %>
+      <li><%= link_to 'Config', :controller => 'reporting', :action => 'blank_config' %></li>
+      <% end %>
+      <% if current_user.is_admin? || current_user.is_super_admin? %>
+      <li><%= link_to 'Reporting', :controller => 'reporting', :action => 'blank_reporting' %></li>
+      <% end %>
+      <% if current_user.is_super_admin? %>
+      <li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
+      <% end %>			
+      <% if current_user.is_super_admin? %>
+      <li><a href="/atp/index">ATP</a></li>
+      <% end %>
+      <% if current_user.is_super_admin? %>
+      <li><%= link_to 'Healthvault', :controller => 'healthvault', :action => 'index' %></li>
+      <% end %>
+      <% if current_user.is_super_admin? %>
+      <li><%= link_to 'Info', url_for(:controller => 'util', :action => 'info', :my_links => 'Info') %></li>
+      <% end %>
+    </ul>
+  </li>
 </ul>
