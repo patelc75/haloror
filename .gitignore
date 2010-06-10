@@ -15,3 +15,4 @@ log/lsws
 db/schema.rb
 dialup
 webrat-*
+coverage.data

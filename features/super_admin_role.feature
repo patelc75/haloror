@@ -40,7 +40,7 @@ Feature: Super Admin roles
     Then I should see "cg1 cg1"
 
   Scenario: Config > Users > Caregiver for
-    When I follow "Config"
+    When I follow links "Config > Users"
     Then I should see "caregiver for" link for user "caregiver-user"
     And I should see "Caregivers" link for user "senior-user"
 

@@ -19,7 +19,7 @@ Feature: Admin roles
     And I am authenticated as "admin-user" with password "12345"
     
   Scenario: I can seniors with a link to their Caregivers
-    When I follow "Config"
+    When I follow links "Config > Users"
     Then page content should have "Config:, Users table"
     And I should see "Caregivers" link
 
@@ -56,7 +56,7 @@ Feature: Admin roles
 
   # shorthand: Given I am adding a new caregiver for "senior-user"
   Scenario: Admin can create new caregiver for a new halouser
-    When I follow "Config"
+    When I follow links "Config > Users"
     And I follow "Caregivers"
     And I follow "add_caregiver_button"
     And I follow "+ Add new caregiver with no email"
