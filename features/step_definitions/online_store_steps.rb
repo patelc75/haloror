@@ -78,6 +78,16 @@ When /^I fill the test user for online store$/ do
   When %{I fill in "order_ship_email" with "test@user.me"}
 end
 
+Then /^subscription start date should be (\d+) and (\d+) months away for "([^\"]*)"$/ do |advance, free, bill_first_name|
+  order = Order.find_by_ship_first_name(bill_first_name)
+  order.should_not be_blank
+  
+  recurring = order.payment_gateway_responses.find_by_action("recurring")
+  recurring.should_not be_blank
+  
+  Date.parse(recursively_search_hash(Hash.from_xml(recurring.request_data), "startDate").first).should == (advance.to_i + free.to_i).months.from_now.to_date
+end
+
 Then /^billing and shipping addresses should not be same$/ do
   order = Order.last # just pick the last data
   ship = []; bill = []
