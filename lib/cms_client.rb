@@ -33,7 +33,7 @@ class CmsClient
       #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
       Timeout::timeout(2) {
         sock = TCPSocket.open(IP_ADDRESS, TCP_PORT)
-        sock.write("501001 181234E40000001 "+20.chr+10.chr) #1234 => account number
+        sock.write("501001 18%sE40000001 " % [account_num]+20.chr+10.chr) #1234 => account number
         #sock.write("%s%s\r\n" % [account_num, alarm_code])
         response = sock.readline
         sock.close
