@@ -160,9 +160,11 @@ class Order < ActiveRecord::Base
             # requires!(options[:duration], :start_date, :occurrences)
             # requires!(options[:billing_address], :first_name, :last_name)
             # 
+            # https://redmine.corp.halomonitor.com/issues/3068
+            # recurring start_date was immediate. ".months" was missed in last release
             @recurring_fee_response = GATEWAY.recurring(product_cost.monthly_recurring*100, credit_card, {
                 :interval => {:unit => :months, :length => 1},
-                :duration => {:start_date => product_cost.recurring_delay.from_now.to_date, :occurrences => 60},
+                :duration => {:start_date => product_cost.recurring_delay.months.from_now.to_date, :occurrences => 60},
                 :billing_address => {
                   :first_name => bill_first_name,
                   :last_name => bill_last_name,

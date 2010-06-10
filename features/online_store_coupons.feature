@@ -50,29 +50,37 @@ Feature: Online store coupons
     When I go to the online store
     And I choose "product_complete"
     And I fill the shipping details for online store
+    And I fill in "order_ship_first_name" with "my-first-name"
     And I fill the credit card details for online store
     And I check "Same as shipping"
     And I fill in "Coupon Code" with "99TRIAL"
     And I press "Continue"
     And I press "Place Order"
     Then page content should have "Thank you, Success, Billing starts `1.month.from_now.to_s(:day_date)`"
+    And subscription start date should be 0 and 1 months away for "my-first-name"
+    # 0 = advance months, 1 = free trial months
 
   # Included Scenario: Subscription begins appropriately for regular and coupon purchases
+  # advance and free trial logic
+  #   <advance> and <free> months will add the values together
+  #   business logic assumes both values cannot be given at the same time. one of them must be zero.
   Scenario Outline: Success Page - Filling in various coupon codes shows recurring start date and upfront charge
     When I go to the online store
     And I choose "product_complete"
     And I fill the shipping details for online store
+    And I fill in "order_ship_first_name" with "my-first-name"
     And I fill the credit card details for online store
     And I check "Same as shipping"
     And I fill in "Coupon Code" with "<coupon_code>"
     And I press "Continue"
     And I press "Place Order"
     Then page content should have "Thank you, Success, <upfront>, Billing starts <date>"
+    And subscription start date should be <advance> and <free> months away for "my-first-name"
     
     Examples:
-      | coupon_code | date                                | upfront |
-      |             | `3.months.from_now.to_s(:day_date)` | 441     |
-      | 99TRIAL     | `1.month.from_now.to_s(:day_date)`  | 114     |
+      | coupon_code | date                                | upfront | free | advance |
+      | 99TRIAL     | `1.month.from_now.to_s(:day_date)`  | 114     | 1    | 0       |
+      |             | `3.months.from_now.to_s(:day_date)` | 441     | 0    | 3       |
   
   Scenario Outline: Confirmation page - Invalid or expired coupon code gives error message
     When I go to the online store

@@ -15,7 +15,13 @@ class DeviceModelPrice < ActiveRecord::Base
   end
   
   def recurring_delay
-    months_advance.zero? ? months_trial : months_advance
+    # * payment taken for advance_months, or, trial_months should delay subscription by those many months
+    # * we either accept advance or give trial, never both
+    # * future compatibility
+    #   * advance "and" trial can co-exist
+    #   * this logic holds good for existing business logic of advance "or" trial
+    months_advance + months_trial # delay for advance taken + trial given
+    # months_advance.zero? ? months_trial : months_advance # old logic for advance "or" trial
   end
   
   def expired?
