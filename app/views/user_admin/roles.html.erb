@@ -1,69 +1,66 @@
-<%=render :partial=>'/reporting/nav_config'%>
+<%= render :partial=>'/reporting/nav_config' %>
 
 <% if current_user.is_super_admin? %>
-  <div class="container box rounded">
-    <div id="assign_role">&nbsp;</div>
-    <h2>Assign Super Admin Role</h2>
-    <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_super_role'}, :update => 'assign_role' do |f| %>
-      <%= collection_select 'superadmin', 'user_id', @users, :id, :name, {}, {} %> is a Super Admin.
-      <br><%=submit_tag 'Assign Super Admin Role'%>
-    <% end %>
-  </div>
-<% end %>
-
 <div class="container box rounded">
-<h2>Assign Roles</h2>
-<% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_role'}, :update => 'assign_role' do |f|%>
-  <%= collection_select 'role', 'user_id', @users, :id, :name %> is a(n) <%= collection_select 'role', 'role_name', @roles, :name, :name %> of <%= collection_select 'role', 'group_name', @groups, :name, :name %>
-  <br>
-  <%=submit_tag 'Assign Role and Group'%>
-<% end %>
-</div>
-
-<div class="container box rounded">
-<h2>Remove Role</h2>
-<% form_remote_tag :url => {:controller => 'user_admin',:action => 'remove_role'}, :update => 'assign_role' do |f|%>
-  Remove <%= collection_select 'remove', 'user_id', @users, :id, :name %> from <%= collection_select 'role', 'name', @roles, :name, :name %> of <%= collection_select 'group', 'name', @groups, :name, :name %>
-  <br>
-  <%=submit_tag 'Remove Role and Group'%>
-<% end %>
-</div>
-
-<div class="container box rounded">
-<h2>Groups</h2>
-<div id="group"></div>
-<% if current_user.is_super_admin? %> <!-- do not show it to any other user -->
-  <% form_remote_tag :url => {:controller => 'user_admin',:action => 'add_group'}, :update => 'group' do |f|%>
-  	<%= error_messages_for :group %>
-    <label for="group_name">Group Name</label>
-    <%= text_field_tag 'group_name' %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <label for="sales_type">Sales Type</label>
-    <select name="sales_type">
-    	<option value="">Select</option>
-    	<option value="reseller">reseller</option>
-    	<option value="retailer">retailer</option>
-    	<option value="call_center">call_center</option>
-    </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <label for="description">Description</label>
-    <%= text_field_tag 'description'%>
-    <br>
-    <%=submit_tag 'Add Group'%>
+  <div id="assign_role">&nbsp;</div>
+  <h2>Assign Super Admin Role</h2>
+  <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_super_role'}, :update => 'assign_role' do %>
+    <%= collection_select 'superadmin', 'user_id', @users, :id, :name, {}, {} %> is a Super Admin.
+    <br /><%= submit_tag 'Assign Super Admin Role' %>
   <% end %>
-<% end -%>
-
-<br>
-<div>
-<table border="1" style="text-align:left">
-<tr><th>Group</th><th>Email</th><th>Description</th><th>Type</th><th>Actions</th></tr>
-<% @groups.each do |group|  %> <!-- groups where current_user is admin -->
-  <tr>
-  	<td><%= group.name %></td>
-  	<td><%= group.email %></td>
-  	<td><%=group.description %></td>
-  	<td><%=group.sales_type %></td>
-  	<td><%= link_to 'Edit', '/user_admin/edit_group/' + group.id.to_s %> <%#= link_to 'Remove', '/recurring_charges/destroy/' + rc.id.to_s, :confirm => 'Are you sure?', :method => :delete%></td>
-  	</tr>
-<% end %>
-</table>
 </div>
+<% end %>
+
+<div class="container box rounded">
+  <h2>Assign Roles</h2>
+  <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_role'}, :update => 'assign_role' do %>
+    <%= collection_select 'role', 'user_id', @users, :id, :name %> is a(n) <%= collection_select 'role', 'role_name', @roles, :name, :name %> of <%= collection_select 'role', 'group_name', @groups, :name, :name %>
+    <br /><%= submit_tag 'Assign Role and Group' %>
+  <% end %>
+</div>
+
+<div class="container box rounded">
+  <h2>Remove Role</h2>
+  <% form_remote_tag :url => {:controller => 'user_admin',:action => 'remove_role'}, :update => 'assign_role' do %>
+    Remove <%= collection_select 'remove', 'user_id', @users, :id, :name %> from <%= collection_select 'role', 'name', @roles, :name, :name %> of <%= collection_select 'group', 'name', @groups, :name, :name %>
+    <br /><%= submit_tag 'Remove Role and Group' %>
+  <% end %>
+</div>
+
+<div class="container box rounded">
+  <h2>Groups</h2>
+  <div id="group"></div>
+  <% if current_user.is_super_admin? %> <!-- do not show it to any other user -->
+    <% form_remote_tag :url => {:controller => 'user_admin',:action => 'add_group'}, :update => 'group' do %>
+      <%= error_messages_for :group %>
+      <label for="group_name">Group Name</label>
+      <%= text_field_tag 'group_name' %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <label for="sales_type">Sales Type</label>
+      <select name="sales_type">
+        <option value="">Select</option>
+        <option value="reseller">reseller</option>
+        <option value="retailer">retailer</option>
+        <option value="call_center">call_center</option>
+      </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <label for="description">Description</label>
+      <%= text_field_tag 'description'%>
+      <br /><%= submit_tag 'Add Group' %>
+    <% end %>
+  <% end -%>
+
+  <br />
+  <div>
+    <table border="1" style="text-align:left">
+      <tr><th>Group</th><th>Email</th><th>Description</th><th>Type</th><th>Actions</th></tr>
+      <% @groups.each do |group|  %> <!-- groups where current_user is admin -->
+      <tr>
+        <td><%= group.name %></td>
+        <td><%= group.email %></td>
+        <td><%= group.description %></td>
+        <td><%= group.sales_type %></td>
+        <td><%= link_to 'Edit', '/user_admin/edit_group/' + group.id.to_s %> <%#= link_to 'Remove', '/recurring_charges/destroy/' + rc.id.to_s, :confirm => 'Are you sure?', :method => :delete%></td>
+      </tr>
+      <% end %>
+    </table>
+  </div>
 </div>

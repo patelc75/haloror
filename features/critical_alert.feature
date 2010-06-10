@@ -18,12 +18,11 @@ Feature: Critical Alert
       | name       | cms         |
       | sales_type | call_center |
     And user "test-user" has "halouser" role for group "halo"
-    And I do not have any falls, events
+    And there is no data for falls, events
 
   # @wip here will skip only this scenario, unless feature has @wip tag
   Scenario: Simulate a fall with successful delivery to the call center
-    When user "test-user" has "halouser" role for group "safety_care"
-    When user "test-user" has "halouser" role for group "cms"
+    When user "test-user" has "halouser" role for group "safety_care, cms"
     And I simulate a "Fall" with delivery to the call center for user login "test-user" with a "valid" "call center account number"
     Then I should have "1" count of "Fall"
     And I should have a "Fall" alert "not pending" to the call center with a "valid" call center delivery timestamp
@@ -54,20 +53,32 @@ Feature: Critical Alert
   #   Then I should have "1" count of "Fall"
   #   And I should have a "Fall" alert "pending" to the call center
 
+  Scenario Outline: check battery status available and battery plugged
+    When Battery status is "<status>" and "<event>" is latest for user login "test-user"
+    Then I should have "<message>" for user "test-user"
+    
+    Examples:
+      | status      | event            | message           |
+      | available   | BatteryPlugged   | Battery Plugged   |
+      | available   | BatteryUnplugged | Battery Unplugged |
+      | unavailable | BatteryPlugged   | Battery Plugged   |
+      | unavailable | BatteryUnplugged | Battery Unplugged |
 
-  Scenario: check battery status available and battery plugged
-    When Battery status is "available" and "BatteryPlugged" is latest for user login "test-user"
-    Then I should have "Battery Plugged" for user "test-user"
-
-  Scenario: check battery status available battery unplugged
-    When Battery status is "available" and "BatteryUnplugged" is latest for user login "test-user"
-    Then I should have "Battery Unplugged" for user "test-user"
-
-  Scenario: check battery status unavailable and battery plugged
-    When Battery status is "unavailable" and "BatteryPlugged" is latest for user login "test-user"
-    Then I should have "Battery Plugged" for user "test-user"
-
-  Scenario: check battery status unavailable and battery unplugged
-    When Battery status is "unavailable" and "BatteryUnplugged" is latest for user login "test-user"
-    Then I should have "Battery Unplugged" for user "test-user"
+  # above scenario outline covers the same situation as in these commented scenarios
+  #
+  # Scenario: check battery status available and battery plugged
+  #   When Battery status is "available" and "BatteryPlugged" is latest for user login "test-user"
+  #   Then I should have "Battery Plugged" for user "test-user"
+  # 
+  # Scenario: check battery status available battery unplugged
+  #   When Battery status is "available" and "BatteryUnplugged" is latest for user login "test-user"
+  #   Then I should have "Battery Unplugged" for user "test-user"
+  # 
+  # Scenario: check battery status unavailable and battery plugged
+  #   When Battery status is "unavailable" and "BatteryPlugged" is latest for user login "test-user"
+  #   Then I should have "Battery Plugged" for user "test-user"
+  # 
+  # Scenario: check battery status unavailable and battery unplugged
+  #   When Battery status is "unavailable" and "BatteryUnplugged" is latest for user login "test-user"
+  #   Then I should have "Battery Unplugged" for user "test-user"
 

@@ -24,7 +24,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :dial_up_statuses,:collection => {:last_successful => :get}
   map.resources :dial_up_alerts
 
-  map.resources :vitals
+  # map.resources :vitals # already mapped
   
   map.resources :oscope_start_msgs
   map.resources :oscope_stop_msgs

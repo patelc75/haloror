@@ -106,6 +106,16 @@ Factory.define :gateway_online_alert do |v|
   v.association :device
 end
 
+Factory.define :panic do |v|
+  v.timestamp { Time.now }
+  v.duration_press { rand(10) }
+  v.timestamp_call_center { [Time.now, nil][rand(1)] }
+  v.call_center_pending {|panic| panic.timestamp_call_center.blank? }
+  v.timestamp_server { Time.now }
+  v.association :user
+  v.association :device
+end
+
 Factory.define :profile do |v|
   v.first_name { Faker::Name.first_name }
   v.last_name { Faker::Name.last_name }
@@ -155,6 +165,12 @@ Factory.define :strap_removed do |v|
   v.association :user
 end
 
+Factory.define :triage_audit_log do |v|
+  v.association :user
+  v.is_dismissed { rand(1) == 1 }
+  v.description { Faker::Lorem.paragraph }
+end
+
 Factory.define :user do |v|
   v.login { Faker::Internet.user_name + Digest::MD5.hexdigest(Time.now.to_s)[0..20] }
   v.salt { |user| Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{user.login}--") }
@@ -201,6 +217,13 @@ Factory.define :user_intake do |v|
   # v.after_create  {|ui| user_intake_users(ui); ui.update_attribute(:locked, false) }
   # v.after_stub    {|ui| user_intake_users(ui) }
 end
+
+Factory.define :vital do |v|
+  v.timestamp { Time.now }
+  v.association :user
+end
+
+# methods -------------------
 
 def user_intake_users(ui)
   unless ui.nil?
