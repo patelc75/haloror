@@ -4,7 +4,7 @@ require 'timeout'
 class CmsClient
   IP_ADDRESS = "12.29.157.39"
   TCP_PORT = 1025
-  TCP_PORT_HEARTBEAT = 19925
+  TCP_PORT_HEARTBEAT = 1025
   
   # Test manually with:
   # ruby bin/safetycare_test_listener.rb &
