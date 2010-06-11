@@ -107,7 +107,8 @@ end
 
 When /^I (edit|delete|show) the (\d+)(?:st|nd|rd|th) (.+)$/ do |action, pos, model_name|
   action_text = (action == "delete" ? "Destroy" : "#{action.capitalize}")
-  visit eval("#{model_name.downcase.pluralize.gsub(' ','_')}_path") unless model_name == 'row'
+  visit url_for(:controller => model_name.gsub(' ','_').pluralize, :action => 'index') unless model_name == 'row'
+  # visit eval("#{model_name.downcase.pluralize.gsub(' ','_')}_path") unless model_name == 'row'
   within("table tr:nth-child(#{pos.to_i+1})") do
     click_link action_text
   end

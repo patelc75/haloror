@@ -111,32 +111,45 @@ end
 # roles pattern can be: "caregiver", "caregiver, user, halouser"
 # role(s) can be used singular or plural
 #
+# https://redmine.corp.halomonitor.com/issues/2755#note-17
+# enhanced to support profile model
+#
 Then /^user "([^\"]*)" should have "([^\"]*)" role(?:|s) for (.+) "([^\"]*)"$/ do |user_name, role_name, model_name, for_model_name|
-  user = User.find_by_login(user_name)
+  (user = User.find_by_login(user_name)).should_not be_blank
   case model_name
   when 'user'
     for_object = User.find_by_login(for_model_name)
   when 'group'
     for_object = Group.find_by_name(for_model_name)
+  when 'profile'
+    for_object = find_profile_user(for_model_name)
   end
-  assert ((role_name.split(',').collect(&:strip)) - user.roles_for(for_object).map(&:name)).blank?
+  role_name.split(',').collect(&:strip).each do |role|
+    user.roles_for(for_object).map(&:name).flatten.should include(role)
+  end
+  # assert ((role_name.split(',').collect(&:strip)) - user.roles_for(for_object).map(&:name)).blank?
 end
 
 # role(s) can be used singular or plural
 #
 Then /^user "([^\"]*)" should have "([^\"]*)" role(?:|s)$/ do |user_name, role_name|
-  user = User.find_by_login(user_name)
-  assert ((role_name.split(',').collect {|p| p.strip}) - user.roles.map(&:name)).blank?
+  (user = User.find_by_login(user_name)).should_not be_blank
+  
+  role_name.split(',').collect(&:strip).flatten.each do |role|
+    user.roles.collect(&:name).flatten.should include(role)
+  end
+  # assert ((role_name.split(',').collect {|p| p.strip}) - user.roles.map(&:name)).blank?
 end
 
-Then /^user "([^\"]*)" should have email switched (on|off) for "([^\"]*)" user$/ do |user_name, status, for_user_name|
-  pending # express the regexp above with the code you wish you had
-end
+# Then /^user "([^\"]*)" should have email switched (on|off) for "([^\"]*)" user$/ do |user_name, status, for_user_name|
+#   pending # express the regexp above with the code you wish you had
+# end
 
-Then /^I should have "([^\"]*)" for user "([^\"]*)"$/ do |status,login|
-  user = User.find_by_login(login)
-  ms = user.battery_status
-  assert ms == status,"No Data"
+Then /^I should have "([^\"]*)" for user "([^\"]*)"$/ do |status, login|
+  (user = User.find_by_login(login)).should_not be_blank
+  user.battery_status.should == status
+  # ms = user.battery_status
+  # assert ms == status,"No Data"
 end
 
 # shifted to critical_alert_steps.rb when merged prod-temp to master

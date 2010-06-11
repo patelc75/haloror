@@ -46,15 +46,26 @@ end
 # profile roles pattern can be: "caregiver", "caregiver, user, halouser"
 # profile role(s) can be used singular or plural
 #
-Then /^profile "([^\"]*)" should have "([^\"]*)" role? for profile "([^\"]*)"$/ do |full_name, role_name, for_full_name|
+# https://redmine.corp.halomonitor.com/issues/2755#note-17
+# enhanced this step to accommodate different models
+#
+Then /^profile "([^\"]*)" should have "([^\"]*)" role? for (.+) "([^\"]*)"$/ do |full_name, role_name, model_name, for_name|
   Then %{profile "#{full_name}" should exist}
-  Then %{profile "#{for_full_name}" should exist}
 
   user = find_profile_user(full_name)  
-  for_user = find_profile_user(for_full_name)
+  for_object = case model_name
+  when "profile"
+    Then %{profile "#{for_name}" should exist}
+    find_profile_user(for_name)
+  when "group"
+    Group.find_by_name(for_name)
+  end
+  for_object.should_not be_blank
   roles = split_phrase(role_name, ',')
   roles.each do |role|
-    assert user.roles_for( for_user).map(&:name).include?(role), "user <#{user.full_name}> does not have <#{role}> role"
+    Then %{user "#{user.login}" should have "#{role}" role for #{model_name} "#{for_name}"}
+    user.roles_for( for_object).map(&:name).flatten.should include(role), "user <#{user.full_name}> does not have <#{role}> role"
+    # assert user.roles_for( for_object).map(&:name).include?(role), "user <#{user.full_name}> does not have <#{role}> role"
   end
 end
 
