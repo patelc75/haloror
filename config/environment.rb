@@ -228,7 +228,7 @@ GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT=1800  #30 minutes
 SERIES_HASH = {"1" => "First","2" => "Second","3" => "Third","4" => "Fourth","5" => "Fifth", "6" => "Sixth", "7" => "Seventh", "8" => "Eighth", "9" => "Ninth", "10" => "Tenth"}
 
 SAFETYCARE_HEARTBEAT_TIME = "55s"
-CMS_HEARTBEAT_TIME = "55s"
+CMS_HEARTBEAT_TIME = "45s"
 
 # Development settings
 HV_APP_ID = "6019e8f1-413f-4dfc-878e-62053cbb0dab"
