@@ -560,8 +560,10 @@ class UsersController < ApplicationController
   	@user = User.find params[:id]
   end
   
+  # TODO: this needs a clean-up. too many things happing here for one simple mail dispatch
   def send_caregiver_details
   	@user = User.find params[:id]
+  	@user.build_profile unless @user.profile # avoid errors on form due to nil profile
   	CriticalMailer.deliver_senior_and_caregiver_details(@user)
   	flash[:mail_send] = "Mail Send successfully"
   	redirect_to :action => 'email_view',:id => params[:id]
