@@ -1,13 +1,14 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
 <%= render :partial => 'reporting/nav' %>
 <h2>User Intakes</h2>
-<table>
+<center><big><%= will_paginate @user_intakes %></big></center>
+<table class="bluegrey">
   <tr>
     <th>&nbsp;</th>
     <th>Id</th>
     <th>Installation Date</th>	
     <th>Created By</th>
-    <th>Credit/Debit Card <br>Processed</th>
+    <th><%= image_tag "creditcards.png", :alt => "Credit/Debit Card Processed", :title => "Credit/Debit Card Processed" %></th>
     <th>Bill Monthly</th>
     <th>Kit Serial Number</th>
     <th>Order ID</th>
@@ -18,19 +19,19 @@
   <% @user_intakes.each do |user_intake| %>
   <tr>
     <td><%= image_tag("bullet_key.png") if user_intake.locked %></td>
-    <td><%= user_intake.id %></td>
+    <td class="grey"><%= user_intake.id %></td>
     <td><%= user_intake.installation_date %></td>	
-    <td><%= user_intake.created_by_user_name %></td>	
-    <td><%= user_intake.credit_debit_card_proceessed %></td>
-    <td><%= user_intake.bill_monthly %></td>
+    <td class="grey"><%= user_intake.created_by_user_name %></td>	
+    <td><%= image_tag("tick.png") if user_intake.credit_debit_card_proceessed %></td>
+    <td class="grey"><%= image_tag("tick.png") if user_intake.bill_monthly %></td>
     <td><%= user_intake.kit_serial_number %></td>
-    <td>
+    <td class="grey">
       <% unless user_intake.order_id.blank? %>
       <%= link_to user_intake.order_id,:controller => 'orders',:action => 'index',:id => user_intake.order_id %>
       <% end %>
     </td>
     <td><%= UtilityHelper.format_datetime(user_intake.created_at,current_user) %></td>
-    <td>
+    <td class="grey">
       <% if user_intake.locked %>
         <%= link_to image_tag("user.png", :alt => "Show", :title => "Show") + " Show", user_intake_path(user_intake) %>
       <% else %>

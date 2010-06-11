@@ -1,6 +1,7 @@
 table.bluegrey, div.bluegrey { width: 100%; border: 1px solid #BBB; padding: 1px; overflow: auto;}
 table.bluegrey td, div.bluegrey div.row { border: none; border-top: 1px dotted #666; margin-top: 2px; overflow: auto;}
 table.bluegrey th, div.bluegrey div.header { background-color: #9ED3FA; border: none; overflow: auto;}
+table.bluegrey td.grey, div.bluegrey div.grey { background-color: #F9F9F9;}
 div.bluegrey div.row:hover { background-color: #D4ECFF;}
 div.bluegrey div.row div { overflow: hidden; margin-left: 2px;}
 
