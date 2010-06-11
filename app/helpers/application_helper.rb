@@ -112,4 +112,20 @@ module ApplicationHelper
   def yes_no_options_for_select
     [['Yes', '1'], ['No', '0']] # '1' and '0' will update boolean fields in tables
   end
+  
+  # config/environment.rb: config.gem "markaby"
+  # usage:
+  #   markaby do
+  #   div.class_for_this_div do
+  #     h2 "Header text"
+  #     p "Content for paragraph"
+  #     ul do
+  #       li "first list item"
+  #       li "another list item"
+  #     end
+  #   end
+  # end
+  def markaby(&block)
+    Markaby::Builder.new({}, self, &block)
+  end
 end

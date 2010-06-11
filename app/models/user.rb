@@ -1104,20 +1104,52 @@ class User < ActiveRecord::Base
     end
   end
   
-  def get_call_halo_admin()
-      info = <<-eos 
-        <div style="font-size: x-large"><font color="white">"Call Halo Admin in <a href="/call_center/faq">FAQ</a>."</div>
-        eos
-      return info
-    
+  # https://redmine.corp.halomonitor.com/issues/2581
+  # FIXME:
+  #   these are generic partials that do not require user object. These can be shifted to helpers.
+  #   Not shifting these to helpers until we have the code covered with tests (rspec or cucumber)
+  def get_call_halo_admin
+    markaby do
+      div :style => 'font-size: x-large' do
+        font :color => 'white' do
+          span { "Call Halo Admin in " }
+          a :href => '/call_center/faq' do
+            'FAQ'
+          end
+          span { '.' }
+        end
+      end
+    end
+      # info = <<-eos 
+      #   <div style="font-size: x-large"><font color="white">"Call Halo Admin in <a href="/call_center/faq">FAQ</a>."</div>
+      #   eos
+      # return info
+      #     
   end
-  def get_help_coming_soon()
-      info = <<-eos 
-        <font color="white">Recite this script:</font><br>
-        <i><div style="font-size: 150%; color: yellow;">"There will be somebody there to help you soon. If we can't reach your caregivers, we will dispatch an ambulance. Goodbye."</div></i>
-        eos
-      return info
+  
+  # https://redmine.corp.halomonitor.com/issues/2581
+  # FIXME:
+  #   these are generic partials that do not require user object. These can be shifted to helpers.
+  #   Not shifting these to helpers until we have the code covered with tests (rspec or cucumber)
+  def get_help_coming_soon
+    markaby do
+      font :color => 'white' do
+        'Recite this script:'
+      end
+      br
+      i do
+        div :style => 'font-size: 150%; color: yellow;' do
+          "There will be somebody there to help you soon. If we can't reach your caregivers, we will dispatch an ambulance. Goodbye."
+        end
+      end
+    end
+      # info = <<-eos 
+      #   <font color="white">Recite this script:</font><br>
+      #   <i><div style="font-size: 150%; color: yellow;">"There will be somebody there to help you soon. If we can't reach your caregivers, we will dispatch an ambulance. Goodbye."</div></i>
+      #   eos
+      # return info
   end
+  
   def get_user_able_to_reset()
     info = <<-eos 
     <font color="white">Recite this script:</font><br>
@@ -1503,7 +1535,9 @@ class User < ActiveRecord::Base
     end
   end
   
-  def contact_info_table()
+  # FIXME: this is not used anywhere
+  # https://redmine.corp.halomonitor.com/issues/2581
+  def contact_info_table
     info = <<-eos
       <table><tr><td colspan="2">#{name}</td></tr>
              <tr><td>Home</td><td>#{format_phone(profile.home_phone)}</td></tr>
@@ -1513,19 +1547,38 @@ class User < ActiveRecord::Base
     eos
     return info
   end
-  def contact_info()
+  
+  # https://redmine.corp.halomonitor.com/issues/2581
+  # This can stay here. It is more specific to user object, than a helper
+  def contact_info
     name + ": Home #{format_phone(profile.home_phone)} | Cell #{format_phone(profile.cell_phone)} | Work #{format_phone(profile.work_phone)}"  
   end
-  def phone_numbers()
-    info = <<-eos
-      <table>
-             <tr><td>Home</td><td>#{format_phone(profile.home_phone)}</td></tr>
-             <tr><td>Cell</td><td>#{format_phone(profile.cell_phone)}</td></tr>
-            <tr><td>Work</td><td>#{format_phone(profile.work_phone)}</td></tr>
-      </table>
-    eos
-    return info
+  
+  # FIXME: this is not used anywhere
+  # https://redmine.corp.halomonitor.com/issues/2581
+  def phone_numbers
+    # this maraby code generates the same output as HTML generated earlier in a hard coded way
+    # markaby can be used to make code more DRY
+    markaby {
+      table {
+        ['home', 'cell', 'work'].each do |phone|
+          tr {
+            td { phone.capitalize }
+            td { format_phone(profile.send("#{phone}_phone".to_sym)) }
+          }
+        end
+      }
+    }
+    # info = <<-eos
+    #   <table>
+    #          <tr><td>Home</td><td>#{format_phone(profile.home_phone)}</td></tr>
+    #          <tr><td>Cell</td><td>#{format_phone(profile.cell_phone)}</td></tr>
+    #         <tr><td>Work</td><td>#{format_phone(profile.work_phone)}</td></tr>
+    #   </table>
+    # eos
+    # return info
   end
+  
   def contact_info_by_alert_option(alert_option)
     if opts = alert_option.roles_user.roles_users_option
       unless opts.removed
