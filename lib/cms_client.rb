@@ -33,7 +33,7 @@ class CmsClient
       #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
       Timeout::timeout(2) {
         sock = TCPSocket.open(IP_ADDRESS, TCP_PORT)
-        sock.write("501001 18%sE40000001 " % [account_num]+20.chr+10.chr) #1234 => account number
+        sock.write("501001 18%s%s " % [account_num, alarm_code]+20.chr+10.chr) #1234 => account number
         #sock.write("%s%s\r\n" % [account_num, alarm_code])
         response = sock.readline
         sock.close
@@ -50,9 +50,9 @@ class CmsClient
   def self.event_type_numeric(event_type)
     # FIXME: TODO: fill out these event types properly
     case event_type
-      when "Fall" then "001"
-      when "Panic" then "002"
-      when "GwAlarmButton" then "003"
+      when "Fall" then "E15001001"
+      when "Panic" then "E15002002"
+      when "GwAlarmButton" then "R15001001"
       #when "CallCenterFollowUp" then "004"
       when "BatteryReminder" then "100"
   	  when "StrapOff" then "101"
