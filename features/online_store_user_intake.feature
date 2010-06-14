@@ -33,3 +33,26 @@ Feature: Online store user intake
       | card             | presence | status  |
       | 4111111111111111 | have     | Success |
       | 1234567812345678 | not have | Failure |
+
+  Scenario: myHalo user has role for group
+    Given the following groups:
+      | name   |
+      | group1 |
+      | group2 |
+    And the product catalog exists
+    And I am an authenticated user
+    And user "demo" has "sales" role for group "group1"
+    When I go to the online store
+    And I select "group1" from "Group"
+    And I choose "product_complete"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I fill in "order_ship_first_name" with "user_first"
+    And I fill in "order_ship_last_name" with "user_last"
+    And I check "Same as shipping"
+    And I press "Continue"
+    And I press "Place Order"
+    Then I should see "Success"
+    And profile "user_first user_last" should have "halouser" role for group "group1"
+    And profile "user_first user_last" should have "subscriber" role for profile "user_first user_last"
+    

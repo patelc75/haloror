@@ -84,7 +84,7 @@ end
 
 Then /^profile "([^\"]*)" should exist$/ do |full_name|
   user = find_profile_user(full_name)
-  assert_not_nil user
+  user.should_not be_blank
   name = split_phrase(full_name)
   assert_equal name[0], user.profile.first_name, "No profile with first name <#{name[0]}>"
   assert_equal name[-1], user.profile.last_name, "No profile with last name <#{name[-1]}>"

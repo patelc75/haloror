@@ -316,10 +316,11 @@ class Order < ActiveRecord::Base
       subscriber_profile = { :first_name => bill_first_name, :last_name => bill_last_name, :address => bill_address, :city => bill_city, :state => bill_state, :zipcode => bill_zip, :home_phone => bill_phone }
       user_intake = UserIntake.new
       user_intake.skip_validation = true # just save. even incomplete data
-      user_intake.senior = User.new({:email => ship_email, :profile_attributes => senior_profile})
+      user_intake.group = group # halouser role is for group
+      user_intake.senior_attributes = {:email => ship_email, :profile_attributes => senior_profile}
       if !subscribed_for_self? # when marked common or data common
         user_intake.subscriber_is_user = false
-        user_intake.subscriber = User.new({:email => bill_email, :profile_attributes => subscriber_profile})
+        user_intake.subscriber_attributes = {:email => bill_email, :profile_attributes => subscriber_profile}
       end
       user_intake.order_id = self.id
       user_intake.save # database

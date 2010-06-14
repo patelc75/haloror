@@ -471,11 +471,12 @@ class UserIntake < ActiveRecord::Base
 
   def argument_to_object(arg)
     if arg.is_a?(User)
+      arg.profile_attributes = arg.profile_attributes if arg.respond_to?(:profile_attributes)
       arg
     else
       if arg.is_a?(Hash)
         user = User.new(arg)
-        user.profile = Profile.new(arg["profile_attributes"]) if arg.has_key?("profile_attributes")
+        user.profile_attributes = arg[:profile_attributes] if arg.has_key?(:profile_attributes)
         user
       else
         nil
