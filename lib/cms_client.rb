@@ -26,7 +26,7 @@ class CmsClient
     # }
     # https://redmine.corp.halomonitor.com/issues/2951
     self.heartbeat_open_socket # open the docket if not already
-    RAILS_DEFAULT_LOGGER.warn("Unable to open socket for connecting to CmsClient") # log warning if cannot open socket
+    RAILS_DEFAULT_LOGGER.warn("Unable to open socket for connecting to CmsClient") unless @heartbeat_open_socket # log warning if cannot open socket
     Timeout::timeout(5) { @heartbeat_socket.write(64.chr+' '+20.chr+10.chr) if @heartbeat_socket } # write if socket available
   end
   
