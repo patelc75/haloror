@@ -24,7 +24,10 @@ ActiveRecord::Base.allow_concurrency = true
 	  ensure
 	    ActiveRecord::Base.verify_active_connections!
       # https://redmine.corp.halomonitor.com/issues/2951
-      @heartbeat_socket.close if @heartbeat_socket # close socket on exception. socket will open again in next call to write
+      if @heartbeat_socket
+        @heartbeat_socket.close # close socket on exception. socket will open again in next call to write
+        @heartbeat_socket = nil # clear the instance from variable. ready for next connection.
+      end
 	  end
 	}
 #end
