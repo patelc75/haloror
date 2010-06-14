@@ -12,18 +12,22 @@ class CmsClient
   # script/runner 'SafetyCareClient.heartbeat()' 
   # (ideally, the heartbeat should run from the task scheduler, of course)
   
-  def self.heartbeat()
+  def self.heartbeat
   	RAILS_DEFAULT_LOGGER.warn("CmsClient.heartbeat running at #{Time.now}")  	
-    Timeout::timeout(5) {
-      sock = TCPSocket.open(IP_ADDRESS, TCP_PORT_HEARTBEAT)
-      
-      # 64.chr => "@", 13.chr => "\r" (CR), 10.chr => "\r" (LF)   
-      #sock.write(64.chr+' '+13.chr) 
-      #sock.write(64.chr+20.chr)
-      #sock.write(64.chr+' '+10.chr)      
-      sock.write(64.chr+' '+20.chr+10.chr) #this was tested with larry foley on the phone     
-      sock.close
-    }
+    # Timeout::timeout(5) {
+    #   sock = TCPSocket.open(IP_ADDRESS, TCP_PORT_HEARTBEAT)
+    #   
+    #   # 64.chr => "@", 13.chr => "\r" (CR), 10.chr => "\r" (LF)   
+    #   #sock.write(64.chr+' '+13.chr) 
+    #   #sock.write(64.chr+20.chr)
+    #   #sock.write(64.chr+' '+10.chr)      
+    #   sock.write(64.chr+' '+20.chr+10.chr) #this was tested with larry foley on the phone     
+    #   sock.close
+    # }
+    # https://redmine.corp.halomonitor.com/issues/2951
+    self.heartbeat_open_socket # open the docket if not already
+    RAILS_DEFAULT_LOGGER.warn("Unable to open socket for connecting to CmsClient") # log warning if cannot open socket
+    Timeout::timeout(5) { @heartbeat_socket.write(64.chr+' '+20.chr+10.chr) if @heartbeat_socket } # write if socket available
   end
   
   def self.alert(event_type,user_id,account_num,timestamp=Time.now)      
@@ -61,5 +65,12 @@ class CmsClient
       else "000"
   	end
   end
-       
+
+  private
+  
+  def self.heartbeat_open_socket
+    Timeout::timeout(5) { @heartbeat_socket ||= TCPSocket.open(IP_ADDRESS, TCP_PORT_HEARTBEAT) }
+    @heartbeat_socket
+  end
+  
 end

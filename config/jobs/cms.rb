@@ -22,7 +22,9 @@ ActiveRecord::Base.allow_concurrency = true
 	    #CriticalMailer.deliver_monitoring_hertbeat_failure("UNKNOWN ERROR!")
 	    UtilityHelper.log_message_critical("CmsClient.heartbeat::UNKNOWN::Error")
 	  ensure
-	    ActiveRecord::Base.verify_active_connections!()         
+	    ActiveRecord::Base.verify_active_connections!
+      # https://redmine.corp.halomonitor.com/issues/2951
+      @heartbeat_socket.close if @heartbeat_socket # close socket on exception. socket will open again in next call to write
 	  end
 	}
 #end
