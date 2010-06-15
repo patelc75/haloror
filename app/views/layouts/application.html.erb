@@ -153,6 +153,7 @@
   <div id="response"></div>
 
   <div class="container">
+    
     <div align="center" id="loading" style="display:none;height:0;width:0;overflow:hidden">
       Loading... This will take a few seconds
     </div>		
@@ -160,9 +161,9 @@
     <div class="<%= key %>"><%= value %></div>
     <% end -%>
     <%= yield %>
-  </div>
-  <div id="footer">
-    <div class="container">
+
+    <hr class="space" />
+    <div id="footer">
       <p>
         &copy; Halo Monitoring <span class="divider">|</span>
         <%= link_to 'Terms of Service', :controller => 'util', :action => 'terms' %>

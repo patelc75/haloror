@@ -5,8 +5,14 @@ class UsersController < ApplicationController
 
   def triage
     @groups = current_user.groups_where_admin
-    @users = current_user.triage_users(params).paginate :per_page => 6, :page => params[:page]
-    
+    @users = current_user.triage_users(params).paginate :per_page => 7, :page => params[:page]
+    respond_to do |format|
+      format.html
+    end
+  end
+  
+  def special_status
+    @user = User.find(params[:id])
     respond_to do |format|
       format.html
     end
@@ -15,7 +21,6 @@ class UsersController < ApplicationController
   # TODO: this should ideally be a POST call. It is changing the state of data
   def dismiss_all_greens
     current_user.dismiss_all_greens_in_triage
-    
     respond_to do |format|
       format.html { redirect_to :action => 'triage' }
     end

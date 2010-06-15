@@ -4,6 +4,13 @@
 a { text-decoration: none; border-bottom: 1px dotted #30A8C3; }
 a:hover { background-color: #30A8C3; color: #FFF; }
 
+.empty-box {
+  padding: 1.5em;
+  margin-bottom: 1.5em;
+  background: #FEFEFE;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
 .grey-box { background:url('/images/call_list-col-bg.gif') repeat-y; }
 .grey-box-header {
   background:url('/images/call_list-col-header.gif') no-repeat;

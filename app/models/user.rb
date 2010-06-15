@@ -278,11 +278,18 @@ class User < ActiveRecord::Base
     else
       status = case what
       when :panic
+        # check the current delay in hours, find a triage threshold that defines such case, get the status string
         group.triage_thresholds.first(:conditions => ["hours_without_panic_button_test >= ?", hours_since(:panic)], :order => :hours_without_panic_button_test).status unless group.triage_thresholds.blank?
       when :strap_fastened
-        group.triage_thresholds.first(:conditions => ["hours_without_strap_detected >= ?", hours_since(:strap_fastened)], :order => :hours_without_strap_detected).status unless group.triage_thresholds.blank?
+        # fetch status string same as above. Except, it only applies to get_wearable_type 'Chest Strap'
+        # TODO: get_wearable_type need to be covered. Not sure if it works correctly as it is.
+        group.triage_thresholds.first(:conditions => ["hours_without_strap_detected >= ?", hours_since(:strap_fastened)], :order => :hours_without_strap_detected).status unless group.triage_thresholds.blank? || (get_wearable_type != 'Chest Strap')
       when :call_center_account
         call_center_account.blank? ? "abnormal" : "normal"
+      when :user_intake
+        user_intake_submitted_at.blank? ? 'abnormal' : 'normal'
+      when :legal_agreement
+        user_intake_legal_agreement_at.blank? ? 'abnormal' : 'normal'
       end
       # when threshold is not defined. the following hard coded logic will work
       #   48 hours or more delayed = abnormal
@@ -299,12 +306,20 @@ class User < ActiveRecord::Base
   # most severe status returned
   # TODO: rspec and cucumber pending
   def alert_status
-    [:panic, :strap_fastened, :call_center_account].collect {|e| alert_status_for(e) }.compact.uniq.sort.first
+    [:panic, :strap_fastened, :call_center_account, :user_intake, :legal_agreement].collect {|e| alert_status_for(e) }.compact.uniq.sort.first
   end
   
   # call center account number from profile
   def call_center_account
     profile.blank? ? '' : profile.account_number
+  end
+  
+  def user_intake_submitted_at
+    user_intakes.first.blank? ? '' : user_intakes.first.submitted_at
+  end
+  
+  def user_intake_legal_agreement_at
+    user_intakes.first.blank? ? '' : user_intakes.first.legal_agreement_at
   end
   
   # https://redmine.corp.halomonitor.com/issues/3067

@@ -11,10 +11,11 @@ class TriageAuditLogsController < ApplicationController
   
   def create
     @triage_audit_log = TriageAuditLog.new(params[:triage_audit_log])
+    user = User.find(params[:triage_audit_log][:user_id])
 
     respond_to do |format|
       if @triage_audit_log.save
-        flash[:notice] = "Triage row was #{@triage_audit_log.is_dismissed ? '' : 'un-'}dismissed."
+        flash[:notice] = "#{user ? user.name : 'Triage row' } was #{@triage_audit_log.is_dismissed ? '' : 'un-'}dismissed."
         format.html { redirect_to :controller => 'users', :action => 'triage' }
       else
         format.html { render :action => "new" }

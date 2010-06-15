@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100608152525) do
+ActiveRecord::Schema.define(:version => 20100614220017) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1102,7 +1102,9 @@ ActiveRecord::Schema.define(:version => 20100608152525) do
     t.integer  "group_id"
     t.boolean  "subscriber_is_user"
     t.boolean  "subscriber_is_caregiver"
-    t.boolean  "locked",                       :default => false
+    t.datetime "submitted_at"
+    t.datetime "legal_agreement_at"
+    t.datetime "paper_copy_at"
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|
