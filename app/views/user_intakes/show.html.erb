@@ -1,9 +1,24 @@
-<h2>Show: User Intake</h2>
-<p>
-  <label>Group</label>
-  <%= h @user_intake.group_name %>
-</p>
-<p>
-  <label>Kit Serial#</label>
-  <%= h @user_intake.kit_serial_number %>
-</p>
+<div id="user_intake_details">
+  <h2>User Intake: <%= @user_intake.id %></h2>
+  
+  <div class="box">
+    <% if @user_intake.submitted? %>
+      <p>Submitted at: <%= @user_intake.submitted_at %></p>
+    <% end %>
+    
+    <p>
+      <label>Group</label>
+      <%= h @user_intake.group_name %>
+    </p>
+    <p>
+      <label>Kit Serial#</label>
+      <%= h @user_intake.kit_serial_number %>
+    </p>
+  </div>
+</div>
+
+<% unless @user_intake.agreement_signed? %>
+  <div id="user_intake_legal_agreement">
+    <%= render :partial => "shared/subscriber_agreement" %>
+  </div>
+<% end %>

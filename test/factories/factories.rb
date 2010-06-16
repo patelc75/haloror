@@ -196,6 +196,9 @@ Factory.define :user_intake do |v|
   v.bill_monthly { rand(1) == 1 }
   v.credit_debit_card_proceessed { |ui| !ui.bill_monthly } # reverse of the other field
   v.kit_serial_number { Faker::PhoneNumber.phone_number }
+  v.submitted_at { Time.now }
+  v.paper_copy_at { Time.now }
+  v.legal_agreement_at { Time.now }
   v.association :group
   v.subscriber_is_user { rand(1) == 1 }
   v.subscriber_is_caregiver { rand(1) == 1 }

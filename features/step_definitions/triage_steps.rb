@@ -26,6 +26,13 @@ Given /^last event for "([^\"]*)" is (.+)$/ do |user_login, event_name|
   Factory.create(:event, :user => user, :event_type => event_name, :event_id => event.id)
 end
 
+Given /^a user intake exists with senior "([^\"]*)"$/ do |user_login|
+  user = User.find_by_login(user_login)
+  user.should_not be_blank
+  ui = Factory.create(:user_intake, :senior => user)
+  ui.senior.should == user
+end
+
 # When -------------------------
 
 When /^I (dismiss|recall) "([^\"]*)"$/ do |status, user_login|

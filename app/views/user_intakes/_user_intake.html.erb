@@ -173,9 +173,17 @@
       <hr class="space" />
       <hr />
 
-      <div class="buttons textcenter">
-        <%= f.submit "Submit" %>
-        <%= f.submit "Save" %>
+      <div class="span-22 last">
+        <div id="legal_agreement" class="span-9">
+          <% unless @user_intake.can_sign_agreement?(current_user) %>
+            <%= image_tag "pdf-icon.gif" %>
+            <%= link_to "Halo Subscriber Agreement", "/Halo_Subscriber_Agreement.pdf", :target => "_blank" %>
+          <% end %>
+        </div>
+        <div class="span-10 last">
+          <%= f.submit "Save", :class => "button blue" %>
+          <%= f.submit "Submit", :class => "button green" %>
+        </div>
       </div>
     </div>
     <% end -%> <!-- form -->

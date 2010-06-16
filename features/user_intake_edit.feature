@@ -20,8 +20,8 @@ Feature: Edit user intake
   #    These emails trigger when user intake is first created
   Scenario: Editing a user intake should show edit view. Does not trigger emails again
     Given the following user intakes:
-      | kit_serial_number |
-      | 1122334455        |
+      | kit_serial_number | submitted_at |
+      | 1122334455        |              |
     And Email dispatch queue is empty
     When I edit the 1st user intake
     And I fill in "user_intake_kit_serial_number" with "9876543210123456789"
@@ -31,8 +31,8 @@ Feature: Edit user intake
 
   Scenario: User Intake locks on Submit
     Given the following user intakes:
-      | kit_serial_number |
-      | 1122334455        |
+      | kit_serial_number | submitted_at |
+      | 1122334455        |              |
     When I edit the 1st user intake
     And I press "Submit"
     And I am listing user intakes

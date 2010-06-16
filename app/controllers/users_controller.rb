@@ -604,6 +604,8 @@ class UsersController < ApplicationController
     #redirect_back_or_default('/')
   end
   
+  # user reaches here for activation of account
+  # /activate/<activation_code>
   def init_user
     @user = User.find_by_activation_code(params[:activation_code])
     if @user
@@ -623,12 +625,14 @@ class UsersController < ApplicationController
     end
   end
   
+  # user reaches here after selecting a login/password for the new account
+  # entire logic of this action can be merged into standard REST "update" action. Needs re-factoring
   def update_user
-   @user = User.find_by_activation_code(params[:user][:activation_code])
-   
+    @user = User.find_by_activation_code(params[:user][:activation_code])
+
     user_hash = params[:user]
     if user_hash[:password] == user_hash[:password_confirmation]
-      if user_hash[:password].length >= 4
+      if user_hash[:password].length >= 4 # FIXME: Why is validation logic duplicated here? Needs DRYing
         @user.password = user_hash[:password]
         @user.password_confirmation = user_hash[:password_confirmation]
         @user.login = user_hash[:login]
@@ -639,11 +643,22 @@ class UsersController < ApplicationController
         end
         current_user.set_active()
         if current_user.is_caregiver?
-            if session[:senior]
+          if session[:senior]
             redirect_to :controller => 'call_list', :action => 'show', :id => session[:senior]
           else
-              redirect_to :controller => 'call_list', :action => 'show', :recently_activated => 'true'
+            redirect_to :controller => 'call_list', :action => 'show', :recently_activated => 'true'
           end
+          
+        # FIXME: patching the logic here for now. Needs DRYing up. Needs code coverage.
+        # redirect to user intake, if the current_user is halouser/subscriber with incomplete user intake
+        elsif (current_user.is_halouser? || current_user.is_subscriber?) && !current_user.incomplete_user_intakes.blank?
+          # WARNING: subscriber can have many user intakes. How do we identify the correct one?
+          # FIXME: For now: assuming the user just got activated, it only has one user intake
+          # Needs to be tested yet
+          redirect_to edit_user_intake_path(current_user.incomplete_user_intakes.first)
+          # once the user intake is submitted successfully, legal agreement will be shown automatically until agreed
+          # any user other than halouser/subscriber will also see the legal agreement, but can only print. cannot accept/agree/submit.
+          
         else
           redirect_to '/'
         end
@@ -652,10 +667,10 @@ class UsersController < ApplicationController
         render :action => 'init_user'
       end
     else
-        flash[:warning]= "New Password must equal Confirm Password"
-        render :action => 'init_user'
+      flash[:warning]= "New Password must equal Confirm Password"
+      render :action => 'init_user'
     end
-    
+
   rescue
     render :action => 'init_user'    
   end

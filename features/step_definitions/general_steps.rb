@@ -21,6 +21,10 @@ Given /^I am authenticated as "([^\"]*)" with password "([^\"]*)"$/ do |login, p
 end
 
 Given /^I am (guest|public user|not authenticated)$/ do |user_type|
+  Given %{I logout}
+end
+
+Given /^I logout$/ do
   visit logout_url
 end
 

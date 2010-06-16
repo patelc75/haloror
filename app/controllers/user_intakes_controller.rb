@@ -39,7 +39,7 @@ class UserIntakesController < ApplicationController
   def edit
     @user_intake = UserIntake.find(params[:id])
     @groups = Group.for_user(current_user)
-    if @user_intake.locked
+    if @user_intake.locked?
       render :action => 'show'
     end
   end
@@ -68,8 +68,8 @@ class UserIntakesController < ApplicationController
   # PUT /user_intakes/1.xml
   def update
     @user_intake = UserIntake.find(params[:id])
-    @user_intake.skip_validation = (params[:commit] == "Save") # just save without asking anything
-    @user_intake.locked = (!@user_intake.skip_validation && @user_intake.valid?)
+    @user_intake.skip_validation = ['Save', 'Print', 'I Agree'].include?(params[:commit]) # just save without asking anything
+    @user_intake.locked = @user_intake.valid? unless @user_intake.skip_validation
     @groups = Group.for_user(current_user)
 
     respond_to do |format|

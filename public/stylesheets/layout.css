@@ -784,7 +784,9 @@ label {
   padding: 10px;
   border: 1px solid #CCC;
 }
-.button {
+
+/*user css3buttons instead*/
+/*.button {
   font: normal normal bold 1.5em Arial, sans-serif;
   text-decoration: none;
   background-color: #BAD55E;
@@ -792,6 +794,7 @@ label {
   color: #000;
   padding: 3px 5px 2px 5px;
 }
+*/
 .confirm-form input, .confirm-form textarea, .confirm-form select {
   border-color: transparent;
   background-color: transparent;

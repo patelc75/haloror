@@ -27,3 +27,7 @@ blockquote {margin:1.5em;padding:1em;font-style:italic;font-size:.9em;}
 .hide {display:none;}
 a:link, a:visited {background:transparent;font-weight:700;text-decoration:underline;}
 a:link:after, a:visited:after {content:" (" attr(href) ")";font-size:90%;}
+
+/* disabled un-wanted elements */
+div#header, div#nav_links, div#user_intake_details, div.buttons { display:none; }
+div.signature { display:block; }

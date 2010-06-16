@@ -55,4 +55,6 @@ Feature: Online store user intake
     Then I should see "Success"
     And profile "user_first user_last" should have "halouser" role for group "group1"
     And profile "user_first user_last" should have "subscriber" role for profile "user_first user_last"
-    
+  
+  Scenario: User reaches legal agreement page after successful credit card charge
+  

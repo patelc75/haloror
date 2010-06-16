@@ -18,8 +18,8 @@
   </tr>
   <% @user_intakes.each do |user_intake| %>
   <tr>
-    <td><%= image_tag("bullet_key.png") if user_intake.locked %></td>
-    <td class="grey"><%= user_intake.id %></td>
+    <td><%= image_tag("bullet_key.png") if user_intake.locked? %></td>
+    <td class="grey"><%= link_to user_intake.id, user_intake_path(user_intake) %></td>
     <td><%= user_intake.installation_date %></td>	
     <td class="grey"><%= user_intake.created_by_user_name %></td>	
     <td><%= image_tag("tick.png") if user_intake.credit_debit_card_proceessed %></td>
@@ -32,7 +32,7 @@
     </td>
     <td><%= UtilityHelper.format_datetime(user_intake.created_at,current_user) %></td>
     <td class="grey">
-      <% if user_intake.locked %>
+      <% if user_intake.locked? %>
         <%= link_to image_tag("user.png", :alt => "Show", :title => "Show") + " Show", user_intake_path(user_intake) %>
       <% else %>
         <%= link_to image_tag("pencil.png", :alt => "Edit", :title => "Edit") + " Edit", edit_user_intake_path(user_intake) %>

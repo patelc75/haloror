@@ -107,6 +107,7 @@ Feature: Manage triage
   # we can change the call_center_account_number to switch the status
   Scenario Outline: Correct Alert icon
     Given call center account number for "senior1" is "<number>"
+    And a user intake exists with senior "senior1"
     When I visit "group1-admin" pending triage for group "group1"
     Then I should see <alert> alert for "senior1"
     

@@ -1686,10 +1686,14 @@ class User < ActiveRecord::Base
     profile.blank? ? false : (profile.cell_phone_exists? && !profile.carrier.blank?)
   end
   
+  def incomplete_user_intakes
+    user_intakes.reject(&:submitted?) # user intakes not yet submitted. no submission timestamp found.
+  end
+  
   private # ------------------------------ private methods
   
   def skip_associations_validation
-    self.profile.send("skip_validation=", skip_validation) unless profile.blank?
+    self.profile.skip_validation = skip_validation unless profile.blank?
   end
   
 end

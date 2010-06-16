@@ -165,12 +165,14 @@ a img {
 
 
 /* Round Corners Button */
+/*user css3buttons instead*/
 
-.button {
+/*.button {
   border: #000000 solid 0px;
   margin: 0px;
   padding: 0px;
 }
+
 .button li {
   display: inline;
   list-style: none;
@@ -191,7 +193,7 @@ a img {
   color: #fff;
   padding: 1px 35px 7px 10px;
 }
-
+*/
 
 /*strip page start*/
 

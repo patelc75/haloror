@@ -399,6 +399,29 @@ class UserIntake < ActiveRecord::Base
     self.caregiver3 = attributes
   end
   
+  def locked?
+    !submitted_at.blank?
+  end
+  
+  def locked=(status = nil)
+    self.submitted_at = Time.now if (status && status == true)
+    locked?
+  end
+  
+  def agreement_signed?
+    !self.legal_agreement_at.blank?
+  end
+  
+  def can_sign_agreement?(user = nil)
+    # sign only once
+    # sign only when current_user is senior or subscriber
+    (agreement_signed? || user.blank?) ? false : [senior, subscriber].include?(user)
+  end
+
+  def submitted?
+    !submitted_at.blank? # timestamp is required to identify as "submitted"
+  end
+
   private #---------------------------- private methods
 
   def skip_associations_validation
@@ -406,7 +429,7 @@ class UserIntake < ActiveRecord::Base
     # skip validations for all associated records
     [:senior, :subscriber, :caregiver1, :caregiver2, :caregiver3].each do |user_type|
       user = self.send(user_type)
-      user.send("skip_validation=", skip_validation) unless user.blank? # and associated records
+      user.skip_validation = !need_validation unless user.blank? # and associated records
     end
   end
   
@@ -445,9 +468,9 @@ class UserIntake < ActiveRecord::Base
   def validate_user_type(user_type)
     user = self.send("#{user_type}".to_sym)
     if user.blank?
-      errors.add_to_base("#{user_type}: profile is mnadatory")
+      errors.add_to_base("#{user_type}: is mnadatory")
     else
-      errors.add_to_base("#{user_type} profile: " + user.errors.full_messages.join(', ')) unless (user.skip_validation || user.valid?)
+      errors.add_to_base("#{user_type}: " + user.errors.full_messages.join(', ')) unless (user.skip_validation || user.valid?)
       if user.profile.blank?
         errors.add_to_base("#{user_type} profile: is mnadatory") unless user.skip_validation
       else
@@ -483,4 +506,5 @@ class UserIntake < ActiveRecord::Base
       end
     end
   end
+
 end
