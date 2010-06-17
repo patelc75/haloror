@@ -57,4 +57,4 @@ Feature: Online store user intake
     And profile "user_first user_last" should have "subscriber" role for profile "user_first user_last"
   
   Scenario: User reaches legal agreement page after successful credit card charge
-  
+ 

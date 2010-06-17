@@ -80,7 +80,45 @@ Feature: User Intake Legal Agreement
     And I press "I Agree"
     Then last user intake should have an agreement stamp
 
-  Scenario: User reaches user intake page immediately upon activation
+  # user reaches the following immediately after activation of account
+  #   user_intake form was not complete => edit user intake form
+  #   user intake was complete but legal agreement not signed yet => legal agreement with option to accept
+  Scenario Outline: User reaches legal agreement or user intake page appropriately upon activation
+    Given I have a <state> user intake
+    And I logout
+    And the "senior" of last user intake is not activated
+    And I am activating the "senior" of last user intake
+    When I fill in the following:
+      | user_login                 | senior-login |
+      | user_password              | password     |
+      | user_password_confirmation | password     |
+    And I press "subscribe_button"
+    Then I should see "<text>"
+    
+    Examples:
+      | state      | text                           |
+      | non-agreed | HALO SUBSCRIBER AGREEMENT      |
+      | saved      | Edit : myHalo User Intake Form |
+  
   Scenario: Show timestamp with user intake if already submitted
-  Scenario: Anyone other than halouser/subscriber can see link in the user intake form, to agreement PDF
+    Given I have a complete user intake
+    When I view the last user intake
+    Then I should see "Submitted at"
+
+  Scenario Outline: Anyone other than halouser/subscriber can see link in the not-yet-legally-agreed user intake form, to agreement PDF
+    Given I have a <state> user intake
+    And I edit the last user intake
+    Then I should see "<text>"
+    
+    Examples:
+      | state      | text                      |
+      | saved      | Halo Subscriber Agreement |
+      | non-agreed | HALO SUBSCRIBER AGREEMENT |
+
   Scenario: Show legal agreement after submitting user intake successfully, unless already agreed earlier
+    Given I have a saved user intake
+    When I edit the last user intake
+    And I press "Submit"
+    Then I should see "HALO SUBSCRIBER AGREEMENT"
+    And I should not see "I Agree"
+  

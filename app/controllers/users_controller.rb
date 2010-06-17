@@ -1,5 +1,6 @@
 class UsersController < ApplicationController  
   before_filter :authenticated?, :except => [:init_user, :update_user]
+  
   require 'user_helper'
   include UserHelper
 
@@ -609,18 +610,19 @@ class UsersController < ApplicationController
   def init_user
     @user = User.find_by_activation_code(params[:activation_code])
     if @user
+      # FIXME: the logic needs more coverage
       if !@user.login.nil? and !@user.crypted_password.nil?
-      @user.activation_code = nil
-      @user.activated_at = Time.now.utc
-      @user.save
-      if params[:senior]
-        senior = User.find params[:senior]
-        role_user = senior.roles_user_by_caregiver(@user)
-        RolesUsersOption.update(role_user.roles_users_option.id, {:active => 1,:position => User.get_max_caregiver_position(senior)})
+        @user.activation_code = nil
+        @user.activated_at = Time.now.utc
+        @user.save
+        if params[:senior]
+          senior = User.find params[:senior]
+          role_user = senior.roles_user_by_caregiver(@user)
+          RolesUsersOption.update(role_user.roles_users_option.id, {:active => 1,:position => User.get_max_caregiver_position(senior)})
         end
         redirect_to('/login')
       else
-        session[:senior] = params[:senior]  
+        session[:senior] = params[:senior]
       end
     end
   end
@@ -651,14 +653,26 @@ class UsersController < ApplicationController
           
         # FIXME: patching the logic here for now. Needs DRYing up. Needs code coverage.
         # redirect to user intake, if the current_user is halouser/subscriber with incomplete user intake
-        elsif (current_user.is_halouser? || current_user.is_subscriber?) && !current_user.incomplete_user_intakes.blank?
-          # WARNING: subscriber can have many user intakes. How do we identify the correct one?
-          # FIXME: For now: assuming the user just got activated, it only has one user intake
-          # Needs to be tested yet
-          redirect_to edit_user_intake_path(current_user.incomplete_user_intakes.first)
-          # once the user intake is submitted successfully, legal agreement will be shown automatically until agreed
-          # any user other than halouser/subscriber will also see the legal agreement, but can only print. cannot accept/agree/submit.
-          
+        elsif (current_user.is_halouser? || current_user.is_subscriber?)
+          # if this user has
+          #   an incomplete user intake, sk to fill it
+          #   completed user intake but legal agreement not made, ask for agreement
+          if current_user.incomplete_user_intakes.blank?
+            if current_user.legal_agreements_pending.blank?
+              redirect_to '/'
+            else
+              # paths do not work correctly. using url_for
+              redirect_to url_for(:controller => 'user_intakes', :action => 'show', :id => current_user.legal_agreements_pending.first)
+            end
+          else
+            # WARNING: subscriber can have many user intakes. How do we identify the correct one?
+            # FIXME: For now: assuming the user just got activated, it only has one user intake
+            # Needs to be tested yet
+            # paths do not work correctly. using url_for
+            redirect_to url_for(:controller => 'user_intakes', :action => 'edit', :id => current_user.incomplete_user_intakes.first)
+            # once the user intake is submitted successfully, legal agreement will be shown automatically until agreed
+            # any user other than halouser/subscriber will also see the legal agreement, but can only print. cannot accept/agree/submit.
+          end
         else
           redirect_to '/'
         end

@@ -1,11 +1,42 @@
 # steps for user intake
 #
+Given /^I have a (saved|complete|non-agreed) user intake$/ do |state|
+  ui = Factory.create(:user_intake)
+  unless state == "complete"
+    # usually nullify only submitted_at (works for non-agreed)
+    # for "saved", also nullify legal_agreement_ and print flags
+    fields = ([:legal_agreement_at, :paper_copy_at] + (state == "saved" ? [:submitted_at] : []))
+    fields.each {|field| ui.send("#{field}=", nil) }
+    ui.send(:update_without_callbacks) # cannit "save" here
+  end
+end
 
-When /^I view the last user intake$/ do
+Given /^the "([^"]*)" of last user intake is not activated$/ do |user_type|
   user_intake = UserIntake.last
   user_intake.should_not be_blank
   
-  visit url_for(:controller => 'user_intakes', :action => 'show', :id => user_intake.id)
+  user = user_intake.send(user_type.to_sym)
+  user.should_not be_blank
+  
+  user.make_activation_pending # change the state of user to "activation pending"
+  user.errors.should be_blank
+end
+
+Given /^I am activating the "([^"]*)" of last user intake$/ do |user_type|
+  user_intake = UserIntake.last
+  user_intake.should_not be_blank
+  
+  user = user_intake.send(user_type.to_sym)
+  user.should_not be_blank
+  
+  visit activate_path(:activation_code => user.activation_code, :senior => user_intake.senior.id)
+end
+
+When /^I (view|edit) the last user intake$/ do |action|
+  user_intake = UserIntake.last
+  user_intake.should_not be_blank
+  
+  visit url_for(:controller => 'user_intakes', :action => (action == 'view' ? 'show' : action), :id => user_intake.id)
 end
 
 When /^I am authenticated as "([^\"]*)" of last user intake$/ do |user_type|

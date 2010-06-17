@@ -77,6 +77,12 @@
 
       <div class="span-11 last">
         <h3 class="textcenter">Billing Information (Responsible Person)</h3>
+        <% unless @user_intake.can_sign_agreement?(current_user) %>
+          <div id="legal_agreement" class="span-11 last text-center">
+            <%= image_tag "pdf-icon-small.png" %>
+            <%= link_to "Halo Subscriber Agreement", "/Halo_Subscriber_Agreement.pdf", :target => "_blank" %>
+          </div>
+        <% end %>
 
         <div class="span-3">&nbsp;</div>
         <div class="span-7 last">
@@ -174,13 +180,7 @@
       <hr />
 
       <div class="span-22 last">
-        <div id="legal_agreement" class="span-9">
-          <% unless @user_intake.can_sign_agreement?(current_user) %>
-            <%= image_tag "pdf-icon.gif" %>
-            <%= link_to "Halo Subscriber Agreement", "/Halo_Subscriber_Agreement.pdf", :target => "_blank" %>
-          <% end %>
-        </div>
-        <div class="span-10 last">
+        <div class="text-center">
           <%= f.submit "Save", :class => "button blue" %>
           <%= f.submit "Submit", :class => "button green" %>
         </div>

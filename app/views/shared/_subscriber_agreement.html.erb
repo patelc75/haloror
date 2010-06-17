@@ -3,7 +3,7 @@
     <div>
       <h1 id="halo_subscriber_agreement"><center>HALO SUBSCRIBER AGREEMENT</center></h1>
       <p>
-        THIS SUBSCRIBER AGREEMENT, (this “Agreement”) made and entered into this <strong><%= Date.today.day %></strong> day of <strong><%= Date::MONTHNAMES[Date.today.month] %></strong>, <strong><%= Date.today.year %></strong>, between <strong><%= @user_intake ? @user_intake.subscriber.name : '______________' %></strong> (the &quot;<strong>Subscriber</strong>&quot;) and <strong>Halo Monitoring, Inc.</strong> and its subsidiaries or affiliates involved in providing the products and services described herein (&quot;<strong>Halo</strong>&quot;).
+        THIS SUBSCRIBER AGREEMENT, (this “Agreement”) made and entered into this <strong><%= Date.today.day %></strong> day of <strong><%= Date::MONTHNAMES[Date.today.month] %></strong>, <strong><%= Date.today.year %></strong>, between <strong><%= (@user_intake && @user_intake.subscriber) ? @user_intake.subscriber.name : '______________' %></strong> (the &quot;<strong>Subscriber</strong>&quot;) and <strong>Halo Monitoring, Inc.</strong> and its subsidiaries or affiliates involved in providing the products and services described herein (&quot;<strong>Halo</strong>&quot;).
       </p>
       <ol class="detailed">
         <li><strong>DEFINITIONS</strong>
@@ -136,7 +136,7 @@
         <li><strong>Caregiver Role</strong>. It is highly recommended that you have at least one family member, friend, neighbor, or professional configured as caregiver for your account. This allows Halo to contact someone you trust to be involved in the case you need assistance.</li>
       </ul>
       <p>
-        <div class="span-11">Subscriber Name: <%= @user_intake ? @user_intake.subscriber.name : '____________________' %></div>
+        <div class="span-11">Subscriber Name: <%= (@user_intake && @user_intake.subscriber) ? @user_intake.subscriber.name : '____________________' %></div>
         <div class="span-11 last">Date: <%= Date.today.to_s(:rfc822) %></div>
         <div class="clear"></div>
       </p>
@@ -149,7 +149,7 @@
       <p>This form is to be completed by the Subscriber to acknowledge that all services to be provided by Halo under the Subscriber Agreement with Halo have been, or are being terminated, at the Subscribers request, or in accordance with other termination provisions of the Subscriber agreement, on the earlier of the date and time indicated here: date__________time_______, or on the date and time when the Halo Equipment is removed or disconnected from service (the “Termination Date”).</p>
       <p>If the Subscriber has rented or leased the Equipment, the Subscriber agrees that they will return all Halo Equipment in good repair, shipping prepaid, to Provider (as identified in section 1.8) at the address indicated below within 10 days of Termination Date. The Provider will return the Equipment deposit within 30 days of receipt of the Equipment in satisfactory repair, less deduction for any missing or damaged Equipment.</p>
       <p>
-        <div class="span-11">Subscriber Name: <%= @user_intake ? @user_intake.subscriber.name : '____________________' %></div>
+        <div class="span-11">Subscriber Name: <%= (@user_intake && @user_intake.subscriber) ? @user_intake.subscriber.name : '____________________' %></div>
         <div class="span-11 last">Date: ____________________________</div>
         <div class="clear"></div>
       </p>

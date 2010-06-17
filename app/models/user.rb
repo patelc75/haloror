@@ -85,7 +85,7 @@ class User < ActiveRecord::Base
   # validates_associated :profile, :unless => "skip_validation" # Proc.new {|e| skip_validation }
   
   before_save :encrypt_password
-  before_create :make_activation_code
+  before_create :make_activation_code # FIXME: this should be part of before_save
   # after_save :post_process  
   
   named_scope :search_by_login_or_profile_name, lambda {|arg| query = "%#{arg}%"; {:include => :profile, :conditions => ["users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", query, query, query]}}
@@ -440,13 +440,22 @@ class User < ActiveRecord::Base
     self.activation_code = nil
     save(false)
   end
-  def set_active()
-    self.roles_users.each do |roles_user|
-      if roles_user.roles_users_option
-        roles_user.roles_users_option.active = true
-        roles_user.roles_users_option.save
-      end
+  
+  # FIXME: need more coverage. some coverage is 
+  # roles_users_option should have active flag "on"
+  def set_active
+    roles_users.each do |ru|
+      # update flag for each options-row. create a row if does not exist
+      ru.roles_users_option.blank? ? ru.create_roles_users_option(:active => true) : ru.roles_users_option.update_attribute(:active => true)
     end
+    #
+    # CHANGED: old logic
+    # self.roles_users.each do |roles_user|
+    #   if roles_user.roles_users_option
+    #     roles_user.roles_users_option.active = true
+    #     roles_user.roles_users_option.save
+    #   end
+    # end
   end
   
   def full_name
@@ -1644,7 +1653,26 @@ class User < ActiveRecord::Base
       user.save!    
     end
   end
-  protected
+  
+  # we need this method because we do not want to get "make_activation_code" public
+  def make_activation_pending
+    self.make_activation_code # setup an activation code
+    # blank out these fields. non-activated user intakes do not have data in any of these fields
+    [:activated_at, :login, :crypted_password].each {|field| self.send("#{field}=", nil) }
+    self.send(:update_without_callbacks) # just update. no triggers
+  end
+
+  def incomplete_user_intakes
+    user_intakes.reject(&:submitted?) # user intakes not yet submitted. no submission timestamp found.
+  end
+
+  def legal_agreements_pending
+    # user intakes that were submitted, but still have an empty flag for legal agreement
+    user_intakes.select {|ui| ui.submitted? && ui.legal_agreement_at.blank? }
+  end
+  
+  
+  protected # ---------------------------------------------
   
   # before filter
   # Sets the salt and encrypts the password 
@@ -1685,11 +1713,9 @@ class User < ActiveRecord::Base
   def has_valid_cell_phone_and_carrier?
     profile.blank? ? false : (profile.cell_phone_exists? && !profile.carrier.blank?)
   end
-  
-  def incomplete_user_intakes
-    user_intakes.reject(&:submitted?) # user intakes not yet submitted. no submission timestamp found.
-  end
-  
+
+
+
   private # ------------------------------ private methods
   
   def skip_associations_validation

@@ -14,24 +14,24 @@
 	        Please enter a username and password to create a new account for <%= @user.email %>:
 	        <br />
 	        <br />	        
-        <label for="login">Username</label>
+        <label for="user_login">Username</label>
         <br/>
         <%= text_field :user, :login %>
         <br />
         <br />	
 					
-        <label for="password">Password</label>
+        <label for="user_password">Password</label>
         <br/>
         <%= password_field :user, :password %>
         <br />
         <br />
-        <label for="password_confirmation">Confirm Password</label>
+        <label for="user_password_confirmation">Confirm Password</label>
         <br/>
         <%= password_field :user, :password_confirmation %>
         <br />
         <br />
         <div align="center">
-          <input name="commit" type="image" src="/images/subscribe.gif" />
+          <%= image_submit_tag "subscribe.gif", :id => 'subscribe_button' %>
         </div>
       <% end -%>
     </div>
