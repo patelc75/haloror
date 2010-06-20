@@ -301,7 +301,11 @@ class Order < ActiveRecord::Base
     end
     messages.flatten.join(',')
   end
-    
+
+  def need_agreement_sign?
+    user_intake.blank? ? false : user_intake.legal_agreement_at.blank?
+  end
+  
   # private methods
   #
   private

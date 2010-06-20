@@ -176,20 +176,23 @@
   </div>
 
   <div id="agreement_buttons">
-    <div class="span-16">
-      <% if @user_intake.can_sign_agreement?(current_user) %>
+    <div class="span-8">
+      <% if @user_intake && @user_intake.can_sign_agreement?(current_user) %>
         <%= check_box "userintake", "agree", :onchange => "agree_button.toggle(); return false;" %> I Agree Terms and Conditions
       <% end %>&nbsp;
     </div>
     
-    <div class="span-8 last text-right buttons">
-      <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update'} do |f| -%>
+    <div class="span-16 last text-right buttons">
+      
+      <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update', :redirect_hash => @redirect_hash} do |f| -%>
         <%= f.text_field :paper_copy_at, :value => Time.now.to_s, :class => "hidden" %>
         <%= f.submit "Print", :disable_with => 'Printing...', :class => "button blue", :onclick => "window.print();" %>
+        
+        <%= link_to 'Skip for later', url_for(@redirect_hash), :class => "button green" if @redirect_hash %>
       <% end -%>
       
-      <% if @user_intake.can_sign_agreement?(current_user) %>
-        <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update'} do |f| -%>
+      <% if @user_intake && @user_intake.can_sign_agreement?(current_user) %>
+        <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update', :redirect_url => @redirect_url} do |f| -%>
           <%= f.text_field :legal_agreement_at, :value => Time.now.to_s, :class => "hidden" %>
           <%= f.submit "I Agree", :class => "button green hidden", :onclick => "window.print();" %>
         <% end -%>

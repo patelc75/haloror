@@ -33,5 +33,6 @@ Feature: Online store group
     And I check "Same as shipping"
     And I press "Continue"
     And I press "Place Order"
+    And I follow "Skip for later"
     Then page content should have "Thank you"
     And last order should be associated to "group1" group

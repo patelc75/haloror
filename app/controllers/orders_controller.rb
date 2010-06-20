@@ -79,8 +79,10 @@ class OrdersController < ApplicationController
     
     respond_to do |format|
       if @order.save && !@order.need_to_force_kit_serial?
-        flash[:notice] = 'Order was successfully saved with Kit Serial Number.'
-        format.html { render :action => 'success' }
+        # when the business logic reaches here for kit_serial, include agreement logic
+        flash[:notice] = "Order was #{params[:commit] == 'Skip' ? 'successfully saved with' : 'skipped for'} Kit Serial Number."
+        @user_intake = @order.user_intake
+        format.html { render :action => (@order.need_agreement_sign? ? 'agreement' : 'success') }
       else
         flash[:notice] = 'Please provide the Kit Serial Number'
         format.html { render :action => "kit_serial" }
@@ -144,7 +146,11 @@ class OrdersController < ApplicationController
                   end
                   # show on browser
                   flash[:notice] = 'Thank you for your order.'
-                  goto = ((@order.retailer? || @order.reseller?) ? "kit_serial" : "success")
+                  # https://redmine.corp.halomonitor.com/issues/2901
+                  # user must see agreement before the success page
+                  @user_intake = @order.user_intake
+                  @redirect_hash = {:controller => 'orders', :action => 'success', :id => @order.id} # if the user prints agreement, we need this
+                  goto = ((@order.retailer? || @order.reseller?) ? "kit_serial" : (@order.user_intake.paper_copy_submitted? ? 'success' : 'agreement'))
                   reset_session # start fresh               
                 end
                 # @order = nil # fixes #2564. need to check through cucumber
@@ -180,5 +186,14 @@ class OrdersController < ApplicationController
   
   def comments
   	@order = Order.find_by_id(params[:order_id])
+  end
+  
+  def agreement
+    @order = Order.find_by_id(params[:order_id])
+    @user_intake = @order.user_intake # should have been created in "save" mode
+
+    respond_to do |format|
+      format.html
+    end
   end
 end

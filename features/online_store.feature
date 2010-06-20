@@ -22,6 +22,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I check "Same as shipping"
     And I press "Continue"
     And I press "Place Order"
+    And I follow "Skip for later"
     Then page content should have "Thank you"
     And the payment gateway response should have 2 logs
     And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
@@ -34,6 +35,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I uncheck "Same as shipping"
     And I press "Continue"
     And I press "Place Order"
+    And I follow "Skip for later"
     Then I should see "Thank you"
     And the payment gateway response should have 2 logs
     And billing and shipping addresses should not be same
@@ -105,6 +107,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I check "Same as shipping"
     And I press "Continue"
     And I press "Place Order"
+    And I follow "Skip for later"
     Then page content should have "Thank you"
     And the payment gateway response should have 2 logs
 
@@ -115,6 +118,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I check "Same as shipping"
     And I press "Continue"
     And I press "Place Order"
+    And I follow "Skip for later"
     Then page content should have "Thank you"
     And the payment gateway should have log for 441 USD
     And the payment gateway should have log for 59 USD
@@ -126,6 +130,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I check "Same as shipping"
     And I press "Continue"
     And I press "Place Order"
+    And I follow "Skip for later"
     Then page content should have "Thank you"
     And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
     And 1 email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery

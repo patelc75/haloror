@@ -118,7 +118,7 @@ class ApplicationController < ActionController::Base
       controller_name == 'util' && action_name == 'support' ||
       controller_name == 'healthvault' && action_name == 'redirect' ||      
       controller_name == 'security') ||
-      (controller_name == 'orders' && ['new','create','show', 'kit_serial', 'update_kit_serial'].include?(action_name)) || # we will create user here
+      (controller_name == 'orders' && ['new','create','show', 'kit_serial', 'update_kit_serial', 'agreement', 'success', 'failure'].include?(action_name)) || # we will create user here
       (controller_name == 'alerts' && action_name == 'alert')
       return authenticate
     else

@@ -422,6 +422,10 @@ class UserIntake < ActiveRecord::Base
     !submitted_at.blank? # timestamp is required to identify as "submitted"
   end
 
+  def paper_copy_submitted?
+    !paper_copy_at.blank? # paper_copy of the scubscriber agreement was submitted
+  end
+
   private #---------------------------- private methods
 
   def skip_associations_validation

@@ -56,6 +56,7 @@ Feature: Online store coupons
     And I fill in "Coupon Code" with "99TRIAL"
     And I press "Continue"
     And I press "Place Order"
+    And I follow "Skip for later"
     Then page content should have "Thank you, Success, Billing starts `1.month.from_now.to_s(:day_date)`"
     And subscription start date should be 0 and 1 months away for "my-first-name"
     # 0 = advance months, 1 = free trial months
@@ -74,6 +75,7 @@ Feature: Online store coupons
     And I fill in "Coupon Code" with "<coupon_code>"
     And I press "Continue"
     And I press "Place Order"
+    And I follow "Skip for later"
     Then page content should have "Thank you, Success, <upfront>, Billing starts <date>"
     And subscription start date should be <advance> and <free> months away for "my-first-name"
     

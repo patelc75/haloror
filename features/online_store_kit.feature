@@ -25,10 +25,10 @@ Feature: Online Store Kit
     Then page content should have "<result>"
     
     Examples:
-      | group         | result            |
-      | resellergroup | Kit Serial Number |
-      | retailergroup | Kit Serial Number |
-      | regulargroup  | Thank you         |
+      | group         | result                    |
+      | resellergroup | Kit Serial Number         |
+      | retailergroup | Kit Serial Number         |
+      | regulargroup  | HALO SUBSCRIBER AGREEMENT |
 
   Scenario Outline: Force or Optional Kit
     When I choose "product_complete"
@@ -44,9 +44,9 @@ Feature: Online Store Kit
     
     Examples:
       | group         | result                               | kit_serial | button |
-      | resellergroup | Thank you                            |            | Next   |
-      | resellergroup | Thank you                            | H400000155 | Next   |
-      | resellergroup | Thank you                            |            | Skip   |
-      | resellergroup | Thank you                            | H400000155 | Skip   |
-      | retailergroup | Thank you                            | H400000155 | Next   |
+      | resellergroup | HALO SUBSCRIBER AGREEMENT            |            | Next   |
+      | resellergroup | HALO SUBSCRIBER AGREEMENT            | H400000155 | Next   |
+      | resellergroup | HALO SUBSCRIBER AGREEMENT            |            | Skip   |
+      | resellergroup | HALO SUBSCRIBER AGREEMENT            | H400000155 | Skip   |
+      | retailergroup | HALO SUBSCRIBER AGREEMENT            | H400000155 | Next   |
       | retailergroup | Please provide the Kit Serial Number |            | Next   |
