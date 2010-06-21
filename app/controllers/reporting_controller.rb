@@ -168,6 +168,16 @@ class ReportingController < ApplicationController
       groups = current_user.is_admin_of_what.select {|e| e.is_a?(Group)}
       @devices += groups.collect(&:has_halouser).flatten.collect(&:devices).flatten.uniq
       @devices += groups.collect(&:has_admin).flatten.collect(&:devices).flatten.uniq
+      # https://redmine.corp.halomonitor.com/issues/3103
+      # anyone other than super admin was getting search results filtered
+      # we can compact this in single row, but multi-line is easy to debug
+      unless conditions.blank?
+        [:serial_number, :id].each do |field|
+          if conditions.has_key?(field)
+            @devices = @devices.select {|e| e.send("#{field}".to_sym) == conditions[field] }
+          end
+        end
+      end
       @devices = @devices.uniq
       # @devices += current_user.is_admin_of_what.select {|e| e.is_a?(Group)}.collect(&:has_halouser).flatten.collect(&:devices).flatten.uniq
       #
