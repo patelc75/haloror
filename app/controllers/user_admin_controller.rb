@@ -67,13 +67,13 @@ class UserAdminController < ApplicationController
   end
   
   def roles
-    @roles = Role.distinct_names_only_all_except("caregiver", "super_admin") # make an array of [name, name]
+    @roles = Role.all_distinct_names_except("caregiver", "super_admin") # make an array of [name, name]
     # @roles = []
     # rows = Role.connection.select_all("Select Distinct name from roles where name <> 'caregiver' AND name <> 'super_admin' order by name asc")
     # rows.collect do |row|
     #   @roles << row['name']
     # end
-    @groups = current_user.groups_where_admin # where the user is member
+    @groups = current_user.groups_where_admin # where the user is member, super user gets all groups
     # @groups = []
     # rows = Group.connection.select_all("Select Distinct name from groups order by name asc")
     # rows.collect do |row|
@@ -81,8 +81,8 @@ class UserAdminController < ApplicationController
     # end
     #
     # all users having any role in selected groups
-    users = @groups.collect(&:users).flatten # collect users from the groups
-    @users = User.all(:conditions => {:id => users.collect(&:id).compact.uniq}, :include => :profile, :order => 'profiles.first_name, profiles.last_name') # fetch uniq IDs and find again
+    user_ids = @groups.collect(&:users).flatten.compact.collect(&:id).uniq # collect users from the groups
+    @users = User.all(:conditions => {:id => user_ids}, :include => :profile, :order => 'profiles.first_name, profiles.last_name') # fetch uniq IDs and find again
     # @users = @groups.collect(&:users).flatten.uniq.sort! {|x,y| x.name <=> y.name }
     # @users = User.find(:all, :order => 'login asc')
   end

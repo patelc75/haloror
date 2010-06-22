@@ -24,20 +24,16 @@ end
 
 #Usage:And user "test-user" has "super admin, caregiver" roles
 Given /^user "([^\"]*)" has "([^\"]*)" role(?:|s)$/ do |user_names, role_names|
-  users = user_names.split(',').collect(&:strip)
-  roles = role_names.split(',').collect {|p| p.strip.gsub(/ /,'_')}
-  users.each do |user_name|
-    roles.each do |role|
-      user = User.find_by_login(user_name)
-      user.should_not be_blank
-
-      roles.each {|role| user.has_role role }
-    end
+  user_names = user_names.split(',').collect(&:strip).flatten.uniq
+  role_names = role_names.split(',').collect {|p| p.strip.gsub(/ /,'_')}.flatten.uniq
+  user_names.each do |user_name|
+    (user = User.find_by_login(user_name)).should_not be_blank
+    role_names.each {|role| user.has_role role }
   end
 end
 
 # allow multiple users, multiple roles and multiple model objects
-Given /^user "([^\"]*)" has "([^\"]*)" roles? for (.+) "([^\"]*)"$/ do |user_names, role_names, model_type, model_names|
+Given /^user "([^\"]*)" (?:|has|have) "([^\"]*)" roles? for (.+) "([^\"]*)"$/ do |user_names, role_names, model_type, model_names|
   user_names = user_names.split(',').collect(&:strip)
   role_names = role_names.split(',').collect {|p| p.strip.gsub(/ /,'_')}
   model_names = model_names.split(',').collect(&:strip)
@@ -188,5 +184,31 @@ Then /^I should see "([^\"]*)" link for user "([^\"]*)"$/ do |link_text, user_lo
     response.should contain("caregiver for (#{senior.id}) #{senior.full_name}")
   when "Caregivers"
     response.should have_tag("a[href=?]", /(.+)call_list\/show\/#{user.id}(.+)/)
+  end
+end
+
+Then /^page content should have user names for "([^"]*)" within "([^"]*)"$/ do |csv_data, scope_selector|
+  users = []
+  logins = csv_data.split(',').collect(&:strip)
+  logins.each do |login|
+    user = User.find_by_login(login)
+    user.should_not be_blank
+    users << user
+  end
+  users.flatten.compact.should_not be_blank
+  names = users.collect(&:name).join(',')
+  Then %{page content should have "#{names}" within "#{scope_selector}"}
+end
+
+# multiple values can be given comma separated in the csv_data
+# example:
+#   Then I should see "a, b, c" within "userlogin" user row
+Then /^I should see "([^"]*)" within "([^"]*)" user row$/ do |csv_data, user_login|
+  user = User.find_by_login(user_login)
+  user.should_not be_blank
+  
+  data_array = csv_data.split(',').collect(&:strip)
+  within("div#user_#{user.id}") do |scope|
+    data_array.each {|data| scope.should contain(data) }
   end
 end

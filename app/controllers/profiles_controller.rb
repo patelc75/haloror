@@ -219,14 +219,20 @@ get_caregivers(current_user)
 
           if @profile.update_attributes!(params[:profile])
             if((current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)) and user.is_halouser?)
-              group = Group.find_by_name('safety_care')
-              if(params[:opt_out_call_center].blank?)
-                user.is_halouser_of group
-              elsif(user.is_halouser_of? group)
-                role = Role.find(:first, :conditions => "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{group.id}")
-                ru = RolesUser.find(:first, :conditions => "user_id = #{user.id} AND role_id = #{role.id}")
-                RolesUser.delete(ru)
-              end
+              # https://redmine.corp.halomonitor.com/issues/3016
+              # WARNING: DRYed code. needs more testing than just this ticket
+              debugger
+              user.opt_out_call_center(!params[:opt_out_call_center].blank?) # check box is submitted only when selected
+              #
+              # CHANGED: old code
+              # # group = Group.find_by_name('safety_care')
+              # # if(params[:opt_out_call_center].blank?)
+              # #   user.is_halouser_of group
+              # # elsif(user.is_halouser_of? group)
+              # #   role = Role.find(:first, :conditions => "name = 'halouser' AND authorizable_type = 'Group' AND authorizable_id = #{group.id}")
+              # #   ru = RolesUser.find(:first, :conditions => "user_id = #{user.id} AND role_id = #{role.id}")
+              # #   RolesUser.delete(ru)
+              # # end
             end
           end
           # @alert_message = true

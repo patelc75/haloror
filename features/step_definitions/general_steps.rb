@@ -101,7 +101,7 @@ end
 
 # When
 
-When /^I reload$/ do
+When /^I reload(?:| the page)$/ do
   reload
 end
 
@@ -213,6 +213,13 @@ Then /^(?:|the )(?:|page )content should not have "([^\"]*)"$/ do |array_as_text
     contents.each {|text| response.should_not contain(text)}
   else
     contents.each {|text| assert_not_contain text}
+  end
+end
+
+Then /^page content should have "([^"]*)" within "([^"]*)"$/ do |csv_data, scope_selector|
+  data_array = csv_data.split(',').collect(&:strip)
+  within(scope_selector) do |scope|
+    data_array.each {|data| scope.should contain(data) }
   end
 end
 

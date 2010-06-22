@@ -14,9 +14,14 @@ class Role < ActiveRecord::Base
   # class methods
   
   class << self
-    def distinct_names_only_all_except(*args)
+    def all_distinct_names_except(*args)
+      # "names" must be returned in all cases
+      # distinct_names are returned if nothing is excluded
+      # names must be ordered always
       args = args.flatten # do not use flatten!. it can return nil in some cases
-      self.distinct_names_only.reject {|e| args.include?(e.name) }.sort {|x,y| x.name <=> y.name } unless args.blank? # exclude all role names given in an array
+      names = distinct_names_only.reject {|e| args.include?(e.name) } unless args.blank? # exclude all role names given in an array
+      names.sort {|x,y| x.name <=> y.name }
+      names
     end
   end
 

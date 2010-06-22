@@ -213,7 +213,12 @@ class User < ActiveRecord::Base
       role_user.blank? ? nil : role_user.roles_users_option
     else
       role_user = RolesUser.find_or_create_by_user_id_and_role_id(self.id, role_id) # find | create
-      role_user.create_roles_users_option(attributes)
+      if role_user.roles_users_option.blank?
+        role_user.create_roles_users_option(attributes) # create a row and save attributes
+      else
+        options = role_user.roles_users_option
+        options.update_attributes(attributes) # update the given attributes
+      end
     end
   end
 
@@ -1671,6 +1676,49 @@ class User < ActiveRecord::Base
     user_intakes.select {|ui| ui.submitted? && ui.legal_agreement_at.blank? }
   end
   
+  # https://redmine.corp.halomonitor.com/issues/3016
+  # default = stop getting alerts
+  #   default action and result is obvious from method name here
+  #   pass argument true/false to force specific behavior
+  def opt_out_call_center(stop_getting_alerts = true)
+    # when opt_out_call_center "off"
+    #   * make the user halouser of safety_care
+    #   * all alerts will be delivered
+    # when opt_out_call_center = "on"
+    #   * remove haluser membership from safety_care group
+    #   * stop getting alerts for events
+    # rails_authorization plugin allows the following methods. using them here
+    #   is_halouser_of(object)
+    #   is_not_halouser_of(object)
+    self.send("is_#{stop_getting_alerts ? 'not_' : ''}halouser_of".to_sym, Group.find_or_create_by_name('safety_care'))
+  end
+  
+  # default action is obvious from method name
+  def test_mode(status = true)
+    # user test mode
+    #   * user is not part of safety_care
+    #   * has all caregivers "away"
+    self.send("is_#{status ? 'not_' : ''}halouser_of".to_sym, Group.find_or_create_by_name('safety_care'))
+    self.caregivers.each {|cg| cg.set_away_for(self) }
+  end
+  
+  def test_mode?
+    # when user is not part of safety_care
+    # and all caregivers are in away mode
+    self.is_not_halouser_of?(Group.find_or_create_by_name('safety_care')) && (caregivers.all? {|cg| cg.away_for?(self) })
+  end
+  
+  def away_for?(user = nil)
+    # * is caregiver of user
+    # * has roles_users_options data
+    # * --not-- flagged active
+    self.is_caregiver_of?(user) && self.options_for_senior(user) && !self.options_for_senior(user).active?
+  end
+  
+  # set "away" the caregiver of halouser
+  def set_away_for(user = nil)
+    self.options_for_senior(user, {:active => false}) if user && self.is_caregiver_of?(user)
+  end
   
   protected # ---------------------------------------------
   
@@ -1713,9 +1761,7 @@ class User < ActiveRecord::Base
   def has_valid_cell_phone_and_carrier?
     profile.blank? ? false : (profile.cell_phone_exists? && !profile.carrier.blank?)
   end
-
-
-
+  
   private # ------------------------------ private methods
   
   def skip_associations_validation

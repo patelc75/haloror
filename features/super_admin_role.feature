@@ -55,10 +55,13 @@ Feature: Super Admin roles
     Then I should see section header for caregivers of "senior-user"
     And I should see profile link for all caregivers of "senior-user"
 
+  # FIXME: with the introduction of "group" drop down, this scenario requires AJAX runner like capybara
+  #   webrat is not capable of AJAX and "role" step will fail in this scenario
   Scenario: Create admin user
     Given user "super-admin-user" has "admin" roles for group "group1"
     And I am creating admin user
-    When I select "admin" from "role"
+    When I select "group1" from "group"
+    And I select "admin" from "role"
     And I fill in the following:
       | Email      | admin-test@example.com |
       | First Name | admin-first-name       |

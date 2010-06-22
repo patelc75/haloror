@@ -1,7 +1,7 @@
 <% if toggle %>
 	<a name="user_<%=user.id%>"></a>
 <% end %>
-<div class="row">
+<div id="user_<%= user.id %>" class="row">
 	<div class="col-25">
 		<% if toggle %>
 			<a href="javascript:void(0)" onClick="toggle_user_hidden(<%=user.id%>,<%= params[:page].nil? ? '1' : params[:page] %>)" id="user_<%=user.id%>-toggle">[+]</a>
@@ -60,30 +60,53 @@
 	</div>
 	
 	<% device = nil unless device %>
-	<div class="col-200">
+	<div class="col-300">
 		<% if user.profile %>
-			<%#=link_to_remote_redbox('Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile[:id], :frame => true }, :html => {:method => :get})%>
-			<%=link_to('Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile.id,:user_id => user.id )%>
-			        <!-- %if user.user_intakes and user.user_intakes.length > 0%-->
-					<% if false %>
-			        | <%=link_to 'Intake',edit_user_intake_form_user_path(user.user_intakes[0])%>
-			        <%end%>
-					<% if user.is_halouser? %>
-						| <%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => user.id %> 
-					    | <%= link_to_remote "Start Range Test", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :id => user.id} %> 
-						| <a href="/events/user/<%=user[:id]%>">Events</a> | <a href="/chart/flex/<%=user[:id]%>">Chart</a>
-						| <a href="<%= url_for(:controller => 'call_center', :action => 'all_user_notes', :id => user[:id], :user_id => user[:id])%>">Notes</a>			 
-						<% if current_user.is_super_admin? %>
-						  | <a href="/reporting/compliance_report/<%=user[:id]%>">Compliance</a> 
-						  <% if device %> 
-						    | <a href="/reporting/remove_user_mapping/<%=user.id%>?device_id=<%= device.id %>">Remove</a>
-						  <% end %>
-					      | <a href="/blood_pressures?id=<%=user.id%>">Vitals List</a>
-					    <%if user.subscriptions.length > 0 %>
-						  | <%= link_to('Subscription',subscription_path(user.subscriptions.first))%>
-					    <% end %>
-  					<% end %>					    
-				   <% end %>
+		  <div class="span-3">
+  			<%= image_tag('profile.png') %> <%= link_to( 'Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile.id,:user_id => user.id )%>
+  			<br />
+  			<% if user.is_halouser? %>
+  			  <%= image_tag('caregivers.png') %> <%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => user.id %> 
+  			  <br />
+  			  <%= image_tag('clock.png') %> <%= link_to_remote "Start Range Test", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :id => user.id} %>
+  			  <br />
+  			  <%= image_tag 'bell.png' %> <a href="/events/user/<%=user[:id]%>">Events</a>
+  			  <br />
+  			  <%= image_tag('chart_bar.png') %> <a href="/chart/flex/<%=user[:id]%>">Chart</a>
+  			<% end %>
+		  </div>
+		  <div class="span-4 last">
+		    <% if user.is_halouser? %>
+  			  <%= image_tag 'note.png' %> <a href="<%= url_for(:controller => 'call_center', :action => 'all_user_notes', :id => user[:id], :user_id => user[:id])%>">Notes</a>
+  			  <br />
+		      <% if current_user.is_super_admin? %>
+		        <%= image_tag 'compliance.png' %> <a href="/reporting/compliance_report/<%=user[:id]%>">Compliance</a>
+		        <br />
+					  <% if device %> 
+					    <%= image_tag 'disconnect.png' %> <a href="/reporting/remove_user_mapping/<%=user.id%>?device_id=<%= device.id %>">Remove</a>
+					    <br />
+					  <% end %>
+					  <%= image_tag 'chart_line.png' %> <a href="/blood_pressures?id=<%=user.id%>">Vitals List</a>
+					  <br />
+				    <% if user.subscriptions.length > 0 %>
+					    <%= link_to('Subscription',subscription_path(user.subscriptions.first)) %>
+					    <br />
+				    <% end %>
+				    <% if current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships) %>
+				      <%= image_tag("test_#{user.test_mode? ? 'en' : 'dis'}abled.gif") %> <%= link_to "#{user.test_mode? ? 'Dis' : 'En'}able Test Mode" %>
+				      <br />
+				    <% end %>
+		      <% end %>
+		    <% end %>
+		    &nbsp;
+
+  			<%#=link_to_remote_redbox('Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile[:id], :frame => true }, :html => {:method => :get})%>
+        <!-- %if user.user_intakes and user.user_intakes.length > 0%-->
+  			<% if false %>
+  	        | <%=link_to 'Intake',edit_user_intake_form_user_path(user.user_intakes[0])%>
+  	    <%end%>
+		  </div>
+
 		<% else %>
 			Profile missing for user <%= user.login %>
 		<% end %>
