@@ -203,12 +203,16 @@ end
 # multiple values can be given comma separated in the csv_data
 # example:
 #   Then I should see "a, b, c" within "userlogin" user row
-Then /^I should see "([^"]*)" within "([^"]*)" user row$/ do |csv_data, user_login|
+Then /^I (should|should not) see "([^"]*)" within "([^"]*)" user row$/ do |logic, csv_data, user_login|
   user = User.find_by_login(user_login)
   user.should_not be_blank
   
   data_array = csv_data.split(',').collect(&:strip)
   within("div#user_#{user.id}") do |scope|
-    data_array.each {|data| scope.should contain(data) }
+    if logic == 'should'
+      data_array.each {|data| scope.should contain(data) }
+    else
+      data_array.each {|data| scope.should_not contain(data) }
+    end
   end
 end
