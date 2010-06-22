@@ -80,7 +80,7 @@ class OrdersController < ApplicationController
     respond_to do |format|
       if @order.save && !@order.need_to_force_kit_serial?
         # when the business logic reaches here for kit_serial, include agreement logic
-        flash[:notice] = "Order was #{params[:commit] == 'Skip' ? 'successfully saved with' : 'skipped for'} Kit Serial Number."
+        flash[:notice] = "Order was #{params[:commit] == 'Skip' ? 'successfully saved with' : 'processed without'} Kit Serial Number."
         @user_intake = @order.user_intake
         format.html { render :action => (@order.need_agreement_sign? ? 'agreement' : 'success') }
       else
