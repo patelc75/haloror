@@ -3,7 +3,7 @@ module UsersHelper
   # alert button tag
   def alert_button(type = "normal", path = "#")
     # button types and colors
-    buttons = {"normal" => "green", "caution" => "orange", "abnormal" => "red", "test mode" => "blue"}
+    buttons = {"normal" => "green-gradient", "caution" => "orange-gradient", "abnormal" => "red-gradient", "test mode" => "blue-gradient"}
     type = "normal" unless buttons.keys.include?(type) # only these types allowed
     # dynamically generate HTML using markaby gem
     markaby do
