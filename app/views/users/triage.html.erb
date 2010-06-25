@@ -1,7 +1,7 @@
 <div class="span-24">
   <span class="hint">Filter: Select values from dropdowns given here, to shortlist the rows</span>
   <% form_tag triage_user_path(current_user), :method => :get do %>
-  Group: <%= select_tag "search_group", options_from_collection_for_select(@groups, :id, :name, params[:search_group].to_i), {:onchange => "this.form.submit();"} %>
+  <label for="search_group">Group</label>: <%= select_tag "search_group", options_from_collection_for_select(@groups, :id, :name, params[:search_group].to_i), {:onchange => "this.form.submit();"} %>
   <span class="prepend-1">
     Last Updated: <%= select_tag "search_day", options_for_select((1..30).collect {|e| [e, e]}.insert(0, ['All',0]), params[:search_day].to_i), {:onchange => "this.form.submit();"} %> day(s), 
     <%= select_tag "search_hour", options_for_select((1..24).collect {|e| [e, e]}.insert(0, ['All',0]), params[:search_hour].to_i), {:onchange => "this.form.submit();"} %> Hour(s), 
@@ -29,8 +29,8 @@
     </div>
 
     <div class="span-24 last">
-      <div class="span-6 text-center"><a href="#">Name</a> <%= image_tag("up_arr.gif") %></div>
-      <div class="span-3 text-center"><a href="#" >Alerts</a> <%= image_tag("up_arr.gif") %></div>
+      <div class="span-5 text-center"><a href="#">Name</a> <%= image_tag("up_arr.gif") %></div>
+      <div class="span-4 text-center"><a href="#" >Alerts</a> <%= image_tag("up_arr.gif") %></div>
       <div class="span-2"><a href="#" >Spl.</a> <%= image_tag("up_arr.gif") %></div>
       <div class="span-2"><a href="#" >Chart</a><%= image_tag("up_arr.gif") %></div>
       <div class="span-2"><a href="#">Events</a><%= image_tag("up_arr.gif") %></div>
@@ -38,43 +38,7 @@
       <div class="span-2 text-center"><a href="#">Connectivity</a><%= image_tag("up_arr.gif") %></div>
       <div class="span-5 last"><a href="#" >Last Updated</a> <%= image_tag("up_arr.gif") %></div>
       <hr class="space" />
-
-      <% @users.each do |user| -%>
-      <div class="dashboard-row push-down rounded span-24 last" id="user_<%= user.id %>">
-        <div class="span-6">
-          <%= image_tag("eye.gif", :class => 'h-padding') %>
-          <%= select_tag "user_links", options_for_select(links_for_user(user).insert(0, ['Links...', ''])), {:onchange => "window.location.href = this.value;", :class => "span-1"} %>
-          <a href="#"><%= user.name %></a>
-        </div>
-        <div class="span-3">
-          <div class="text-center" id="<%= user.alert_status %>_<%= user.id %>"><%= alert_button(user.alert_status, url_for(:controller => 'users', :action => 'special_status', :id => user.id)) %></div>
-          <div class="text-center">
-            <% if user.dismissed_from_triage? -%>
-            <%= link_to "Recall", undismiss_triage_path(:user_id => user.id) %>
-            <% else -%>
-            <%= link_to "Dismiss", dismiss_triage_path(:user_id => user.id) %>
-            <% end -%>
-          </div>
-        </div>
-        <div class="span-2">
-          <% if user.alert_status == 'abnormal' %>
-          <%= link_to image_tag("warning_32.png"), :controller => 'users', :action => "special_status", :id => user.id %>
-          <% else %>
-          <%= image_tag("warning_grey_32.png") %>
-          <% end %>
-        </div>
-        <div class="span-2"><%= image_tag("graph.jpg") %></div>
-        <div class="span-2"><%= image_tag("list.png") %></div>
-        <div class="span-2 text-center">
-          <div class="battery-cover" >
-            <div id="user_<%= user.id %>_battery_<%= user.battery_color %>_<%= user.battery_fill_width %>" class="<%= user.battery_color %>-color-base battery-width-<%= user.battery_fill_width %>"><div class="fit_right"><%= image_tag("battery-rt.gif") %></div></div>
-          </div>
-        </div>
-        <div class="span-2 text-center"><%= image_tag("#{user.connectivity_status_icon}.png", :id => "#{user.connectivity_status_icon}_#{user.id}") %></div>
-        <div class="span-5 last"><%= user.updated_at.to_s(:time_date) %></div>
-      </div>
-      <div class="clear"></div>
-      <% end -%>
+      <%= render :partial => 'triage_user', :collection => @users %>
       <div class="span-24 text-center"><%= will_paginate @users %></div>
 
     </div>

@@ -88,6 +88,15 @@ When /^I select profile name of "([^\"]*)" from "([^\"]*)"$/ do |user_login, dro
   select(user.name, :from => drop_down_id)
 end
 
+When /^I press "([^"]*)" within "([^"]*)" user row$/ do |button, user_login|
+  user = User.find_by_login(user_login)
+  user.should_not be_blank
+
+  within("div#user_#{user.id}") do
+    click_button(button)
+  end
+end
+
 Then /^user "([^\"]*)" should have data for (.+)$/ do |user_login, method_names|
   methods = method_names.split(',').collect(&:strip).collect(&:to_sym) # array of method names as symbols
   user = User.find_by_login(user_login)
@@ -110,7 +119,7 @@ end
 # https://redmine.corp.halomonitor.com/issues/2755#note-17
 # enhanced to support profile model
 #
-Then /^user "([^\"]*)" should have "([^\"]*)" role(?:|s) for (.+) "([^\"]*)"$/ do |user_name, role_name, model_name, for_model_name|
+Then /^user "([^\"]*)" (should|should not) have "([^\"]*)" role(?:|s) for (.+) "([^\"]*)"$/ do |user_name, status, role_name, model_name, for_model_name|
   (user = User.find_by_login(user_name)).should_not be_blank
   case model_name
   when 'user'
@@ -121,9 +130,14 @@ Then /^user "([^\"]*)" should have "([^\"]*)" role(?:|s) for (.+) "([^\"]*)"$/ d
     for_object = find_profile_user(for_model_name)
   end
   role_name.split(',').collect(&:strip).each do |role|
-    user.roles_for(for_object).map(&:name).flatten.should include(role)
+    # TODO: send method should work here
+    # DRY this once it is all green
+    if status == 'should'
+      user.roles_for(for_object).map(&:name).flatten.should include(role)
+    else
+      user.roles_for(for_object).map(&:name).flatten.should_not include(role)
+    end
   end
-  # assert ((role_name.split(',').collect(&:strip)) - user.roles_for(for_object).map(&:name)).blank?
 end
 
 # role(s) can be used singular or plural
@@ -206,13 +220,22 @@ end
 Then /^I (should|should not) see "([^"]*)" within "([^"]*)" user row$/ do |logic, csv_data, user_login|
   user = User.find_by_login(user_login)
   user.should_not be_blank
-  
+
   data_array = csv_data.split(',').collect(&:strip)
   within("div#user_#{user.id}") do |scope|
-    if logic == 'should'
-      data_array.each {|data| scope.should contain(data) }
-    else
-      data_array.each {|data| scope.should_not contain(data) }
+    # dynamically send should or should_not
+    data_array.each {|data| scope.send("#{logic.gsub(/ /,'_')}".to_sym, contain(data)) }
+  end
+end
+
+Then /^I (should|should not) see "([^"]*)" xpath within "([^"]*)" user row$/ do |logic, csv_data, user_login|
+  user = User.find_by_login(user_login)
+  user.should_not be_blank
+
+  data_array = csv_data.split(',').collect(&:strip)
+  data_array.each do |data|
+    within("div#user_#{user.id}") do |scope|
+      scope.send("#{logic.gsub(/ /, '_')}".to_sym, have_xpath(data))
     end
   end
 end

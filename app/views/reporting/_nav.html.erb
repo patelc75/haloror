@@ -21,6 +21,7 @@
 | <%= link_to 'Purge Data', url_for(:controller => 'reporting',:action => 'purge_data')%>
 <!--| <a href="/reporting/summary">Graphs</a> -->
 <% end %>
+<% if current_user.is_super_admin? || current_user.is_admin? %>
+| <%= link_to "Triage", triage_path %>
+<% end %>
 <br><br>
-
-

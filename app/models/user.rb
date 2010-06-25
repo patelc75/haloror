@@ -7,6 +7,11 @@ class User < ActiveRecord::Base
   attr_accessible :login, :email, :password, :password_confirmation
   attr_accessible :need_validation
   attr_accessor :need_validation
+  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :need_validation, :lazy_roles
+  # Virtual attribute for the unencrypted password
+  cattr_accessor :current_user #stored in memory instead of table
+  attr_accessor :password
+  attr_accessor :current_password,:username_confirmation
   
   # arranged associations alphabetically for easier traversing
   
@@ -17,18 +22,19 @@ class User < ActiveRecord::Base
   belongs_to :creator, :class_name => 'User',:foreign_key => 'created_by'
   belongs_to :last_battery, :class_name => "Battery", :foreign_key => "last_battery_id"
   belongs_to :last_event, :class_name => "Event", :foreign_key => "last_event_id"
-  belongs_to :last_vital, :class_name => "Vital", :foreign_key => "last_vital_id"
-  belongs_to :last_triage_audit_log, :class_name => "TriageAuditLog", :foreign_key => "last_triage_audit_log_id"
   belongs_to :last_panic, :class_name => "Panic", :foreign_key => "last_panic_id"
   belongs_to :last_strap_fastened, :class_name => "StrapFastened", :foreign_key => "last_strap_fastened_id"
+  belongs_to :last_triage_audit_log, :class_name => "TriageAuditLog", :foreign_key => "last_triage_audit_log_id"
+  belongs_to :last_vital, :class_name => "Vital", :foreign_key => "last_vital_id"
   
   has_one  :profile, :dependent => :destroy
+  
   has_many :access_logs
   has_many :batteries
   has_many :blood_pressure
   has_many :dial_ups
-  has_many :event_actions
   has_many :events
+  has_many :event_actions
   has_many :falls  
   has_many :halo_debug_msgs
   has_many :mgmt_cmds
@@ -36,53 +42,37 @@ class User < ActiveRecord::Base
   has_many :orders_created, :class_name => 'Order', :foreign_key => 'created_by'
   has_many :orders_updated, :class_name => 'Order', :foreign_key => 'updated_by'
   has_many :panics
+  has_many :purged_logs
   has_many :rma_items
-  has_many :roles_users,:dependent => :destroy
-  has_many :roles, :through => :roles_users#, :include => [:roles_users]
-  # has_and_belongs_to_many :roles
-  # has_many :roles_users
+  has_many :roles, :through => :roles_users # WARNING: do not touch this association
+  has_many :roles_users,:dependent => :delete_all # # WARNING: do not touch this association
   has_many :self_test_sessions
   has_many :skin_temps
   has_many :steps
   has_many :subscriptions, :foreign_key => "senior_user_id"
   has_many :vitals
   has_many :weight_scales
-  has_many :purged_logs
-  #belongs_to :role
-  #has_one :roles_user
-  #has_one :roles_users_option
   
   has_and_belongs_to_many :devices
   has_and_belongs_to_many :user_intakes # replaced with has_many :through on Senior, Subscriber, Caregiver
-  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :need_validation, :lazy_roles
   
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
   
-  # Virtual attribute for the unencrypted password
-  cattr_accessor :current_user #stored in memory instead of table
-  attr_accessor :password
-  attr_accessor :current_password,:username_confirmation
-  validates_presence_of     :login, :if => :password_required?
-  #validates_presence_of     :email
-  #validates_presence_of     :serial_number
-  
-  validates_presence_of     :password,                   :if => :password_required?
-  validates_presence_of     :password_confirmation,      :if => :password_required?
-  validates_length_of       :password, :within => 4..40, :if => :password_required?
-  validates_confirmation_of :password,                   :if => :password_required?
-  
-  validates_length_of       :login,    :within => 3..40, :if => :password_required?
-  validates_length_of       :email,    :within => 3..100, :unless => :skip_validation
-  validates_format_of       :email,    
-                            :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i,
-                            :message => 'must be valid', :if => :need_validation
-  #validates_length_of       :serial_number, :is => 10
-  
-  validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
-  
   # validate associations
   # validates_associated :profile, :unless => "skip_validation" # Proc.new {|e| skip_validation }
+  #validates_length_of       :serial_number, :is => 10
+  #validates_presence_of     :email
+  #validates_presence_of     :serial_number
+  validates_confirmation_of :password,                   :if => :password_required?
+  validates_format_of       :email, :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'must be valid', :if => :need_validation
+  validates_length_of       :email,    :within => 3..100, :unless => :skip_validation
+  validates_length_of       :login,    :within => 3..40, :if => :password_required?
+  validates_length_of       :password, :within => 4..40, :if => :password_required?
+  validates_presence_of     :login, :if => :password_required?
+  validates_presence_of     :password,                   :if => :password_required?
+  validates_presence_of     :password_confirmation,      :if => :password_required?
+  validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
   
   before_save :encrypt_password
   before_create :make_activation_code # FIXME: this should be part of before_save
@@ -160,7 +150,6 @@ class User < ActiveRecord::Base
   # # roles_users_option attributes
   # def role_attributes=(attributes)
   #   # create roles_users_option records here
-  #   # debugger
   # end
 
   # TODO: why do we need this?
@@ -265,6 +254,8 @@ class User < ActiveRecord::Base
       last_strap_fastened.blank? ? created_at : last_strap_fastened.timestamp
     when :call_center_account
       profile.blank? ? created_at : (profile.account_number.blank? ? created_at : Time.now)
+    when :test_mode
+      1.year.ago # force abnormal
     else
       Time.now # default = no time difference (well, almost)
     end
@@ -295,6 +286,8 @@ class User < ActiveRecord::Base
         user_intake_submitted_at.blank? ? 'abnormal' : 'normal'
       when :legal_agreement
         user_intake_legal_agreement_at.blank? ? 'abnormal' : 'normal'
+      when :test_mode
+        test_mode? ? 'test mode' : 'normal'
       end
       # when threshold is not defined. the following hard coded logic will work
       #   48 hours or more delayed = abnormal
@@ -311,7 +304,14 @@ class User < ActiveRecord::Base
   # most severe status returned
   # TODO: rspec and cucumber pending
   def alert_status
-    [:panic, :strap_fastened, :call_center_account, :user_intake, :legal_agreement].collect {|e| alert_status_for(e) }.compact.uniq.sort.first
+    # collect status for all events in an array
+    # insert 'normal' to include at least one default
+    # either pick 'test mode' , or just pick the first alphabetic one. incidentally the required order is albhabetic
+    if test_mode?
+      'test mode'
+    else
+      [:panic, :strap_fastened, :call_center_account, :user_intake, :legal_agreement, :test_mode].collect {|e| alert_status_for(e) }.insert(0, 'normal').compact.uniq.sort.first
+    end
   end
   
   # call center account number from profile
@@ -1690,7 +1690,7 @@ class User < ActiveRecord::Base
     # rails_authorization plugin allows the following methods. using them here
     #   is_halouser_of(object)
     #   is_not_halouser_of(object)
-    self.send("is_#{stop_getting_alerts ? 'not_' : ''}halouser_of".to_sym, Group.find_or_create_by_name('safety_care'))
+    self.send("is_#{stop_getting_alerts ? 'not_' : ''}halouser_of".to_sym, Group.safety_care)
   end
   
   # default action is obvious from method name
@@ -1698,26 +1698,45 @@ class User < ActiveRecord::Base
     # user test mode
     #   * user is not part of safety_care
     #   * has all caregivers "away"
-    self.send("is_#{status ? 'not_' : ''}halouser_of".to_sym, Group.find_or_create_by_name('safety_care'))
-    self.caregivers.each {|cg| cg.set_away_for(self) }
+    self.send("is_#{(status == true) ? 'not_' : ''}halouser_of".to_sym, Group.safety_care)
+    # when switching user to "normal" mode
+    # * just make it member of safety_care
+    # * do not bother switching "active" status for caregivers
+    # ** maybe, they all were not active when user was switched to "test mode"
+    self.caregivers.each {|cg| cg.set_away_for(self) } if status == true
   end
   
   def test_mode?
     # when user is not part of safety_care
     # and all caregivers are in away mode
-    self.is_not_halouser_of?(Group.find_or_create_by_name('safety_care')) && (caregivers.all? {|cg| cg.away_for?(self) })
+    self.is_not_halouser_of?(Group.safety_care) && (caregivers.all? {|cg| !cg.active_for?(self) })
+  end
+
+  def toggle_test_mode
+    self.test_mode(!test_mode?)
   end
   
-  def away_for?(user = nil)
+  def active_for?(user = nil)
     # * is caregiver of user
     # * has roles_users_options data
-    # * --not-- flagged active
-    self.is_caregiver_of?(user) && self.options_for_senior(user) && !self.options_for_senior(user).active?
+    # * flagged active
+    status = false # default
+    if self.is_caregiver_of?(user)
+      if (options = self.options_for_senior(user))
+        status = options.active
+      end
+    end
+    status
   end
   
-  # set "away" the caregiver of halouser
-  def set_away_for(user = nil)
-    self.options_for_senior(user, {:active => false}) if user && self.is_caregiver_of?(user)
+  # set the caregiver away for user
+  def set_away_for(user = nil, away = true)
+    self.set_active_for(user, !away)
+  end
+  
+  # set the caregiver "active" for halouser
+  def set_active_for(user = nil, active = true)
+    self.options_for_senior(user, {:active => active}) if user && self.is_caregiver_of?(user)
   end
   
   protected # ---------------------------------------------

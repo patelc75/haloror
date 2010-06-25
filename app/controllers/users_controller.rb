@@ -1,5 +1,6 @@
 class UsersController < ApplicationController  
   before_filter :authenticated?, :except => [:init_user, :update_user]
+  before_filter :authenticate_admin?, :only => [:triage] # admin and super_admin can see triage
   
   require 'user_helper'
   include UserHelper
@@ -10,6 +11,17 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html
     end
+  end
+  
+  def toggle_test_mode
+    @user = User.find(params[:id])
+    if request.post?
+      @user.toggle_test_mode
+      flash[:message] = "#{@user.name} is now in #{@user.test_mode? ? 'Test' : 'Normal'} mode."
+    else
+      flash[:message] = "Status not changed for #{@user.name}"
+    end
+    render :action => 'special_status' # @user variable already loaded
   end
   
   def special_status

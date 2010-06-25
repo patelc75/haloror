@@ -17,7 +17,7 @@ class Group < ActiveRecord::Base
       group_ids = user.group_memberships.collect {|group| (user.is_sales_of?(group) || user.is_admin_of?(group)) ? group.id : nil }.compact
       { :conditions => {:id => group_ids} }
     }
-  
+
   # triggers / callbacks
   
   # TODO: rspec done. cucumber pending for this
@@ -32,12 +32,22 @@ class Group < ActiveRecord::Base
     }
     triage_thresholds.create(options) if triage_thresholds.blank?
   end
+
+  # ------------ public methods
   
-  # groups applicable to user
-  #
-  def self.for_user(user)
-    user.is_a?(User) ? (user.is_super_admin? ? find(:all) : for_sales_or_admin_user(user)) : find(:all)
-  end
+  class << self # class methods
+    def safety_care
+      find_or_create_by_name('safety_care')
+    end
+
+    # groups applicable to user
+    #
+    def for_user(user)
+      user.is_a?(User) ? (user.is_super_admin? ? find(:all) : for_sales_or_admin_user(user)) : find(:all)
+    end
+  end # class methods
+
+  # ---------- instance methods
   
   def users
     # all users having any role for this group

@@ -6,9 +6,10 @@ Feature: Manage triage
   Background:
     Given a user "group1-admin" exists with profile
     And the following groups:
-      | name   |
-      | group1 |
-      | group2 |
+      | name        |
+      | group1      |
+      | group2      |
+      | safety_care |
     And user "group1-admin" has "admin" role for groups "group1, group2"
     And I am authenticated as "group1-admin" with password "12345"
     And user "senior1, senior2" exists with profile
@@ -107,14 +108,16 @@ Feature: Manage triage
   # we can change the call_center_account_number to switch the status
   Scenario Outline: Correct Alert icon
     Given call center account number for "senior1" is "<number>"
+    And user "senior1" has "halouser" role for group "<group>"
     And a user intake exists with senior "senior1"
     When I visit "group1-admin" pending triage for group "group1"
     Then I should see <alert> alert for "senior1"
     
     Examples:
-      | number     | alert    |
-      | 1234567890 | normal   |
-      |            | abnormal |
+      | number     | alert     | group       |
+      | 1234567890 | normal    | safety_care |
+      | 1234567890 | test mode | group1      |
+      |            | abnormal  | safety_care |
   
   Scenario: Order by Name
   Scenario: Order by Alert

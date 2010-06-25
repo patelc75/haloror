@@ -2,8 +2,15 @@ module UsersHelper
 
   # alert button tag
   def alert_button(type = "normal", path = "#")
-    type = "normal" unless ["normal", "caution", "abnormal"].include?(type) # only these types allowed
-    "<a href='#{path}' class='button_new_dash_2 #{type} small'><strong>#{type.upcase}</strong></a>"
+    # button types and colors
+    buttons = {"normal" => "green", "caution" => "orange", "abnormal" => "red", "test mode" => "blue"}
+    type = "normal" unless buttons.keys.include?(type) # only these types allowed
+    # dynamically generate HTML using markaby gem
+    markaby do
+      a :href => "#{path}", :class => "button #{buttons[type]} medium" do
+        strong { type.upcase }
+      end
+    end
   end
 
   def links_for_user(user = nil)

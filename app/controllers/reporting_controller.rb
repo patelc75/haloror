@@ -77,7 +77,7 @@ class ReportingController < ApplicationController
     #   This feature is introduced now. Earlier the empty option did exist in group dropdown
     #   but that was not showing all users. maybe was broken feature
     # when user is_not_super_admin, it cannot see "All groups" option, so we need to select the first one
-    session[:group_name] = @group_name = (params[:group_name] || (current_user.is_super_admin? ? '' : @groups.first.name))
+    session[:group_name] = @group_name = (params[:group_name] || ((current_user.is_super_admin? || @groups.blank?) ? '' : @groups.first.name))
     group = (@group_name.blank? ? nil : Group.find_by_name(@group_name)) # @groups.first replaced with nil
     
     # if @group
