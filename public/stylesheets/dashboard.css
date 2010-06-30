@@ -494,7 +494,7 @@ a img {
 div.yellow-back {
   font-size: 12px;
   text-align: center;
-  background: #DDD url('../images/yellow_back.gif') repeat-x;
+  background: #DDD url('../images/yellow_back.gif') repeat;
   padding: 2px 5px 1px 5px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
@@ -503,7 +503,7 @@ div.yellow-back {
 div.green-back {
   font-size: 12px;
   text-align: center;
-  background: #DDD url('../images/green_back.gif') repeat-x;
+  background: #DDD url('../images/green_back.gif') repeat;
   padding: 2px 5px 1px 5px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
@@ -512,7 +512,7 @@ div.green-back {
 div.red-back {
   font-size: 12px;
   text-align: center;
-  background: #DDD url('../images/red_back.gif') repeat-x;
+  background: #DDD url('../images/red_back.gif') repeat;
   color: #FFF;
   padding: 2px 5px 1px 5px;
   -moz-border-radius: 3px;

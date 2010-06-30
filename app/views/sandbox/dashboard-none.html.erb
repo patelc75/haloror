@@ -5,130 +5,88 @@
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
   <title>Dashboard</title>
-  <%= stylesheet_link_tag 'dashboard', "style" %>
+  <%= stylesheet_link_tag 'dashboard', "style", "screen" %>
 </head>
 <body>
 
+  <div class="span-24 last">
+    <div class="prepend-1 span-6">
+      Begin Time (Eastern)<br />
+      <input type="text"  style="height:21px; width:155px; border:#000000 solid 1px; margin-right:7px;" value="" />
+      <a href="#"><%= image_tag("calendar.gif") %></a>
+    </div>
+
+    <div class="span-6">
+      End Time (Eastern)<br />
+      <input type="text"  style="height:21px; width:155px; border:#000000 solid 1px; margin-right:7px;" value="" />
+      <a href="#"><%= image_tag("calendar.gif") %></a>
+    </div>
+
+    <div class="span-11 last">
+      <br />
+      <ul class="day-button lft">
+        <li  style="float:left;"><a href="#"><span>Yesterday</span></a></li>
+      </ul>
+      <ul class="day1-button lft">
+        <li  style="float:left;"><a href="#"><span>Today</span></a></li>
+      </ul>
+      <ul class="day2-button lft">
+        <li  style="float:left;"><a href="#"><span>Week</span></a></li>
+      </ul>
+      <ul class="day3-button lft">
+        <li  style="float:left;"><a href="#"><span>Month</span></a></li>
+      </ul>
+    </div>
+  </div>
+
   <div class="mid-holder">
-    <br>
-    <div class="top-wrapper">
-      <div class="lft" >
-        <dl class="lft" style="padding-right:10px;" >
-          <dd class="lft-fit"><p style="padding-bottom:5px;">Begin Time (Eastern)</p></dd>
-          <dl class="clear">
-            <dd class="lft-fit"><input type="text"  style="height:21px; width:155px; border:#000000 solid 1px; 
-              margin-right:7px;" value="" /></dd>
-              <dd  class="lft-fit"> <a href="#"><%= image_tag("calendar.gif") %></a></dd>
-            </dl>
-          </dl>    	
+    <br />
+
+    <div class="head-wrapper">
+      <div class="lft"><%= image_tag("head-lft.gif") %></div>
+      <div class="head-rep">
+        <dd class="lft">
+          <dl class="lft-links">Caseload Residents</dl>
+          <dl  class="lft-links">|</dl>
+          <dl class="lft-links"><span style="color:#000000;">8 remaining</span></dl>
+        </dd>
+
+        <dd class="rt-fit">
+          <dl class="lft"><strong><%= link_to 'Dismiss All Greens', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "rt-links"  %></strong></dl>
+          <dl class="lft-links" style="float:right"><span style="color:#000000;">Tue Dec 1 2009 8:14AM CST</span></dl>
+        </dd>
+      </div>
+      <div class="lft"><%= image_tag("head-rt.gif") %></div>
+    </div>
+    <div class="clear"></div>
+
+    <div class="dashboard-wrapper">
+      <div class="dashboard-txt">
+
+        <div class="prepend-1 span-22 last">
+          <div class="span-3 text-center">Name<%= image_tag("blue-up.gif") %></div>
+          <div class="span-4 text-center">Alerts <%= image_tag("grey-up.gif") %></div>
+          <div class="span-2 text-center">Compliance <%= image_tag("grey-up.gif") %></div>
+          <div class="span-2 text-center">Steps<%= image_tag("grey-up.gif") %></div>
+          <div class="span-3 text-center">Activity<%= image_tag("grey-up.gif") %></div>
+          <div class="span-1 text-center">Falls<%= image_tag("grey-up.gif") %></div>
+          <div class="span-2 text-center">Battery<%= image_tag("grey-up.gif") %></div>
+          <div class="span-2 text-center">Connectivity<%= image_tag("grey-up.gif") %></div>
+          <div class="span-3 text-center last"> Last Updated<%= image_tag("grey-up.gif") %></div>
         </div>
-
-
-        <div class="lft" >
-          <dl class="lft" style="padding-right:20px;">
-            <dd class="lft-fit"><p style="padding-bottom:5px;">End Time (Eastern)</p></dd>
-            <dl class="clear">
-              <dd class="lft-fit"><input type="text"  style="height:21px; width:155px; border:#000000 solid 1px; 
-                margin-right:7px;" value="" /></dd>
-                <dd  class="lft-fit">  <a href="#"><%= image_tag("calendar.gif") %></a></dd>
-              </dl>
-            </dl>    	
-          </div>
-
-          <div class="lft" >
-            <dl class="lft" style="padding-right:15px;">
-              <dd class="lft-fit" style="padding-top:15px; padding-right:20px;">
-                <ul class="day-button">
-                  <li  style="float:left;"><a href="#"><span>Yesterday</span></a></li>
-                </ul>
-
-              </dd>
-              <dd class="lft-fit" style="padding-top:15px; padding-right:20px;">
-                <ul class="day1-button">
-                  <li  style="float:left;"><a href="#"><span>Today</span></a></li>
-                </ul>
-              </dd>
-
-              <dd class="lft-fit" style="padding-top:15px; padding-right:20px;">
-                <ul class="day2-button">
-                  <li  style="float:left;"><a href="#"><span>Week</span></a></li>
-                </ul>
-              </dd>
-
-              <dd class="lft-fit" style="padding-top:15px; padding-right:20px;">
-                <ul class="day3-button">
-                  <li  style="float:left;"><a href="#"><span>Month</span></a></li>
-                </ul>
-              </dd>             
-            </dl>    	
-          </div>
-        </div>
-        
-        <div class="head-wrapper">
-          <div class="lft"><%= image_tag("head-lft.gif") %></div>
-          <div class="head-rep">
-            <dd class="lft">
-              <dl class="lft-links">Caseload Residents</dl>
-              <dl  class="lft-links">|</dl>
-              <dl class="lft-links"><span style="color:#000000;">0 remaining</span></dl>
-            </dd>
-
-
-
-            <dd class="rt-fit">
-              <dl class="lft"><strong><%= link_to 'Dismiss All Greens', url_for(:controller => 'sandbox', :action => 'dashboard-none'), :class => "rt-links"  %></strong></dl>                  
-              <dl class="lft-links" style="float:right"><span style="color:#000000;">Tue Dec 1 2009 8:14AM CST</span></dl>
-              </dd>
-            </div>
-            <div class="lft"><%= image_tag("head-rt.gif") %></div>
-          </div>
-          <div class="clear"></div>
-
-          <div class="dashboard-wrapper">
-            <div class="dashboard-txt">
-
-              <div class="column-headers" style="padding-left:10px;">
-                <dl class="lft" style="padding-bottom:15px;">
-                  <dd class="d1">Name<%= image_tag("blue-up.gif") %></dd>
-                  <dd class="d2">Alerts <%= image_tag("grey-up.gif") %></dd>
-                  <dd class="d3">Compliance <%= image_tag("grey-up.gif") %></dd>
-
-                  <dd class="d4">Steps<%= image_tag("grey-up.gif") %></dd>
-
-                  <dd class="d5">Activity<%= image_tag("grey-up.gif") %></dd>
-                  <dd class="d6">Falls<%= image_tag("grey-up.gif") %></dd>
-
-                <dd class="d7">Battery<%= image_tag("grey-up.gif") %></dd>
-
-                  <dd class="d8">Connectivity<%= image_tag("grey-up.gif") %></dd>
-                  <dd class="d8"> Last Updated<%= image_tag("grey-up.gif") %></dd>
-
-                </dl>
-              </div>
-
         <div class="clear"></div>
 
-
-<div class="clear"></div>
-
-
+      </div>
+    </div>
 
 
 
+    <div class="bottom-curve-holder">
+      <div class="mid-bot-rep"><div class="lft"><%= image_tag("bot-lft.gif") %></div><div class="rt-fit"><%= image_tag("bot-rt.gif") %></div> </div>
+    </div>
 
-</div>
-</div>
+    <div class="clear"></div>
 
-<div class="bottom-curve-holder">
-  <div class="mid-bot-rep"><div class="lft"><%= image_tag("bot-lft.gif") %></div><div class="rt-fit"><%= image_tag("bot-rt.gif") %></div> </div>
-
-</div>
-
-</div>
-<div class="clear"></div>
-
-
-
-
+  </div>
 </body>
 </html>
