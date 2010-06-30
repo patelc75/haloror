@@ -240,7 +240,7 @@ Validation.addAllThese([
 				return Validation.get('IsEmpty').test(v) ||  /^[\d]{15,16}$/.test(v);
 			}],
 	['validate-alpha', 'Please use letters only (a-z) in this field.', function (v) {
-				return Validation.get('IsEmpty').test(v) ||  /^[a-zA-Z]+$/.test(v)
+				return Validation.get('IsEmpty').test(v) ||  /^[a-zA-Z\s]+$/.test(v)
 			}],
 	['validate-alphanum', 'Please use only letters (a-z) or numbers (0-9) only in this field. No spaces or other characters are allowed.', function(v) {
 				return Validation.get('IsEmpty').test(v) ||  !/\W/.test(v)

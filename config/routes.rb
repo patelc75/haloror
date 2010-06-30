@@ -74,6 +74,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :users, :member => { :new_caregiver_options => :get, :triage => :get, :dismiss_all_greens => :get, :toggle_test_mode => :post }
   map.resources :sessions,:member => {:edit_user_intake_form => :any,:user_intake_form_confirm => :get} # added automatically after running restful_authentication script
   map.resources :user_intakes
+  map.resources :orders, :except => [:destroy, :edit, :update]
   map.resources :rmas, :has_many => :rma_items
   map.resources :purged_logs
   map.resources :triage_thresholds
@@ -107,7 +108,7 @@ ActionController::Routing::Routes.draw do |map|
   map.support '/support',:controller => 'util',:action => 'support'
   map.user_intake_form '/user/user_intake_form',:controller => 'users',:action => 'user_intake_form'
   map.user_intake_post '/user/user_intake_form',:controller => 'users',:action => 'user_intake_form', :method => :post
-  map.order '/order/:coupon_code', :controller => 'orders', :action => 'new', :coupon_code => ''
+  map.order '/order/:coupon_code', :controller => 'orders', :action => 'new', :coupon_code => '', :method => :get
   map.alert '/alert', :controller => 'alerts', :action => "alert"      
   map.activity '/dashboard', :controller => 'sandbox', :action => "dashboard"
   map.triage '/triage', :controller => 'users', :action => 'triage'

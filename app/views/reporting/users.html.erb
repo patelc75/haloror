@@ -1,11 +1,13 @@
 <%=render :partial => 'search'%>
 <%=render :partial => 'nav_config'%>
 <h3> Users table </h3>
+
 <form id="group_form_id" action="/reporting/users" method="GET">
 <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
 Select <label for="group_name">Group</label>:
-<%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| [e.name, e.name] }, @group_name), {:onchange => "$('group_form_id').submit();"}%>
+<%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| [e.name, e.name] }, (@group_name || @groups.first.name)), {:onchange => "$('group_form_id').submit();"}%>
 </form>
+
 <div id="user-table" class="table bluegrey">
 	<br>
 	<center><%= will_paginate @users %></center>

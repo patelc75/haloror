@@ -226,7 +226,14 @@ class Order < ActiveRecord::Base
   end
 
   def card_successfully_charged?
-    return (@one_time_fee_response.blank? || @recurring_fee_response.blank?) ? false : (@one_time_fee_response.success? && @recurring_fee_response.success?)
+    # when instance variables are blank? this mifhr be a successful saved order. check payment_gateway_responses
+    return (@one_time_fee_response.blank? || @recurring_fee_response.blank?) ? was_successful? : (@one_time_fee_response.success? && @recurring_fee_response.success?)
+  end
+  
+  def was_successful?
+    # for existing order, check the stored values from gateway responses
+    # this works for new_record? also because the responses would be blank
+    !payment_gateway_responses.blank? && payment_gateway_responses.all?(&:success)
   end
   
   # reference from the active_merchant code
@@ -327,7 +334,10 @@ class Order < ActiveRecord::Base
         user_intake.subscriber_attributes = {:email => bill_email, :profile_attributes => subscriber_profile}
       end
       user_intake.order_id = self.id
+      user_intake.creator = self.creator # https://redmine.corp.halomonitor.com/issues/3117
+      user_intake.updater = self.updater
       user_intake.save # database
+      user_intake.caregivers.each(&:activate) # https://redmine.corp.halomonitor.com/issues/3117
       #
       # force manual emails dispatch here
       # Usually it will not send emails because skip_validation is "on"

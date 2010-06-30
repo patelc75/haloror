@@ -1,0 +1,44 @@
+<tr>
+  <td><%= image_tag("bullet_key.png") if user_intake_row.locked? %></td>
+  <td class="grey"><%= link_to user_intake_row.id, user_intake_row %></td>
+  <td><%= user_intake_row.installation_date %></td>	
+  <td class="grey"><%= user_intake_row.created_by_user_name %></td>	
+  <td><%= image_tag "creditcards.png", :alt => "Credit/Debit Card Processed", :title => "Credit/Debit Card Processed" if user_intake_row.credit_debit_card_proceessed %></td>
+  <td class="grey text-center"><%= image_tag("money.png", :alt => "Bill Monthly", :title => "Bill Monthly") if user_intake_row.bill_monthly %></td>
+  <td class="text-center">
+    <% if user_intake_row.legal_agreement_at.blank? %>
+      <% if user_intake_row.paper_copy_submitted_on.blank? %>
+        <%= link_to image_tag("pencil.png"), :controller => "user_intakes", :action => "paper_copy_submission", :id => user_intake_row.id %>
+      <% else %>
+        <%= image_tag("script.png", :alt => "Paper copy on #{user_intake_row.paper_copy_submitted_on}", :title => "Paper copy at #{user_intake_row.paper_copy_submitted_on}") %>
+      <% end %>
+    <% else %>
+      <%= image_tag("tick.png", :alt => "Subscription Agreement at #{user_intake_row.legal_agreement_at}", :title => "Subscription Agreement at #{user_intake_row.legal_agreement_at}" ) %>
+    <% end %>
+  </td>
+  <td class="grey text-center">
+    <% unless user_intake_row.order_id.blank? %>
+    <%= link_to user_intake_row.order_id,:controller => 'orders',:action => 'index',:id => user_intake_row.order_id %>
+    <% end %>
+  </td>
+  <td><%= user_intake_row.kit_serial_number %></td>
+  <td class="grey timestamp text-center"><%= UtilityHelper.format_datetime(user_intake_row.created_at,current_user) %>
+    <% if user_intake_row.locked? %>
+    <br /> / <%= link_to UtilityHelper.format_datetime(user_intake_row.updated_at,current_user), user_intake_row %>
+    <% end %>
+  </td>
+  <td class="text-center">
+    <% if user_intake_row.locked? %>
+      <%= link_to image_tag("folder.png", :alt => "#{user_intake_row.updated_at}", :title => "#{user_intake_row.updated_at}"), user_intake_row %>
+    <% else %>
+      <%= link_to image_tag("pencil.png", :alt => "Edit", :title => "Edit") + " Edit", edit_user_intake_path(user_intake_row) %>
+    <% end -%>
+  </td>
+  <td class="grey text-center">
+    <% if user_intake_row.emailed_on.blank? %>
+      <%= link_to image_tag("email.png", :alt => "Send Email to SafetyCare", :title => "Send Email to SafetyCare"), :controller => 'users', :action => 'send_caregiver_details', :id => user_intake_row.senior.id unless user_intake_row.senior.blank? %>
+    <% else %>
+      <%= link_to image_tag("email.png", :alt => "Send Email to SafetyCare again. Last: #{user_intake_row.emailed_on}", :title => "Send Email to SafetyCare again. Last: #{user_intake_row.emailed_on}"), :controller => 'users', :action => 'send_caregiver_details', :id => user_intake_row.senior.id unless user_intake_row.senior.blank? %>
+    <% end %>
+  </td>
+</tr>

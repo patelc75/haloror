@@ -1,10 +1,7 @@
-<h3 class="textcenter">Signature</h3>
-
-<% ["myHalo User", "Responsible Person", "Installer"].each do |phrase| %>
-<div class="span-7">
-  <div class="span-3"><%= phrase %></div>
-  <div class="span-4 last"><%= '_'*20 %></div>            
-  <div class="span-3">Date</div>
-  <div class="span-4 last"><%= '_'*20 %></div>
+<div class="prepend-1 span-20 last">
+  <span class="timestamp">By initialing the block below you acknowledge that you are the User or Subscriber as defined by the Halo Subscriber Agreement or are authorized by the User to act on their behalf for purposes of supplying the information on the Intake Form.</span>
 </div>
-<% end -%>
+<div class="span-22 last">
+  <%= check_box_tag "user_intake_agree" %>Yes, I agree to the terms
+  <%= text_field_tag "user_intake_agree_initials" %>
+</div>

@@ -87,4 +87,5 @@ Feature: Manage user_intakes
     And I fill the caregiver1 details for user intake form
     And I select "verizon" from "user_intake_caregiver1_attributes__profile_attributes_carrier_id"
     And I press "Submit"
+    And debug
     Then page content should have "successfully created"

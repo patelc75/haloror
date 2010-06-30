@@ -583,6 +583,7 @@ class UsersController < ApplicationController
   	@user = User.find params[:id]
   	@user.build_profile unless @user.profile # avoid errors on form due to nil profile
   	CriticalMailer.deliver_senior_and_caregiver_details(@user)
+  	@user.user_intakes.first.safety_care_email_sent # update the date (today) when the email was sent
   	flash[:mail_send] = "Mail Send successfully"
   	redirect_to :action => 'email_view',:id => params[:id]
   end

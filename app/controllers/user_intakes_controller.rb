@@ -4,7 +4,13 @@ class UserIntakesController < ApplicationController
   # GET /user_intakes
   # GET /user_intakes.xml
   def index
-    @user_intakes = UserIntake.paginate :page => params[:page],:order => 'created_at desc',:per_page => 20
+    @groups = Group.for_user(current_user)
+    @group_name = params[:group_name]
+    group = Group.find_by_name(@group_name) unless @group_name.blank?
+    @user_intakes = (group.blank? ? UserIntake.find(:all) : UserIntake.find_all_by_group_id(group.id))
+    @user_intake_status = params[:user_intake_status]
+    @user_intakes = @user_intakes.select(&:locked?) if params[:user_intake_status] == "Submitted"
+    @user_intakes = @user_intakes.paginate :page => params[:page],:order => 'created_at desc',:per_page => 20
 
     respond_to do |format|
       format.html # index.html.erb
@@ -38,6 +44,7 @@ class UserIntakesController < ApplicationController
   # GET /user_intakes/1/edit
   def edit
     @user_intake = UserIntake.find(params[:id])
+    @user_intake.build_associations
     @groups = Group.for_user(current_user)
     if @user_intake.locked?
       render :action => 'show'
@@ -94,6 +101,10 @@ class UserIntakesController < ApplicationController
       format.html { redirect_to(:action => 'index') }
       format.xml  { head :ok }
     end
+  end
+
+  def paper_copy_submission
+    @user_intake = UserIntake.find(params[:id])
   end
   
 end

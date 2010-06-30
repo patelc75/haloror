@@ -7,9 +7,9 @@
       buttonImage: '../../images/calendar_date_select/calendar.gif',
       buttonImageOnly: true
     });
+    show_when_dropdown_selected(document.getElementById('user_intake_group_id'));
+    hide_when_checked(document.getElementById('user_intake_subscriber_is_user'), 'subscriber_profile');
   });
-  show_when_dropdown_selected(document.getElementById('user_intake_group_id'));
-  hide_when_checked(document.getElementById('user_intake_subscriber_is_user'), 'subscriber_profile');
   </script>
 <% end -%>
 <% content_for :css do %>
@@ -34,7 +34,10 @@
 
     <!-- errors block -->
     <% unless @user_intake.errors.blank? %>
-    <div class="span-1">&nbsp;</div>
+    <div class="span-1">
+      <%= f.hidden_field :creator %>
+      <%= f.hidden_field :updater %>
+    </div>
     <div class="error span-22 last">
       <%= f.error_messages :header_message => "Invalid user intake!",
         :message => "You'll need to correct the following errors:",
@@ -44,17 +47,32 @@
     <% end -%>
 
     <div class="span-22 last">
-      <div class="span-5">
+      <div class="span-6">
         <%= f.label :group_id, "Group" %>
         <%= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"}, :onchange => "show_when_dropdown_selected(this);" %>
       </div>
-      <div class="span-8">
-        <%= f.label :installation_date, "Installation Date:" %>
-        <%= f.text_field :installation_date, :class => "datepicker span-5" %>
-      </div>
-      <div class="span-9 last">
-        <div class="span-4 textright"><%= f.label :kit_serial_number, "Kit Serial" %> #:</div>
-        <div class="span-5 last"><%= f.text_field :kit_serial_number, :class => "span-5" %></div><br />
+
+      <div class="span-16 last">
+        <div class="span-8">
+          <div class="span-3"><%= f.label :installation_date, "Installation Date:" %></div>
+          <div class="span-5 last"><%= f.text_field :installation_date, :class => "datepicker", :class => "span-5" %></div>
+
+          <div class="span-3"><%= f.label :kit_serial_number, "Kit Serial" %> #:</div>
+          <div class="span-5 last"><%= f.text_field :kit_serial_number, :class => "span-5 last" %></div><br />
+        </div>
+
+        <div class="span-8 last">
+          <div class="span-3 text-right">Agreed at:</div>
+          <div class="span-5 last"><%= h( @user_intake.legal_agreement_at || 'Not signed yet') %></div>
+          
+          <div class="span-3 text-right">Download:</div>
+          <% unless @user_intake.can_sign_agreement?(current_user) %>
+            <div id="legal_agreement" class="span-5 last">
+              <%= image_tag "pdf-icon-small.png" %>
+              <%= link_to "Halo Subscriber Agreement", "/Halo_Subscriber_Agreement.pdf", :target => "_blank" %>
+            </div>
+          <% end %>
+        </div>
       </div>
       <hr class="space" />
     </div>
@@ -77,12 +95,6 @@
 
       <div class="span-11 last">
         <h3 class="textcenter">Billing Information (Responsible Person)</h3>
-        <% unless @user_intake.can_sign_agreement?(current_user) %>
-          <div id="legal_agreement" class="span-11 last text-center">
-            <%= image_tag "pdf-icon-small.png" %>
-            <%= link_to "Halo Subscriber Agreement", "/Halo_Subscriber_Agreement.pdf", :target => "_blank" %>
-          </div>
-        <% end %>
 
         <div class="span-3">&nbsp;</div>
         <div class="span-7 last">

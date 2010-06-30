@@ -89,4 +89,12 @@ div.fixed-height { height: 250px; min-height: 250px; overflow: auto; }
 .text-left {text-align: left;}
 .text-center {text-align: center;}
 .text-justify {text-align: justify;}
+.italic { font-style: italic;}
+.text-small { font-size: 85%;}
+.text-blue { color: #0080FF;}
+.text-grey { color: #4C4C4C;}
 
+.timestamp {
+  font: italic normal normal .85em Arial, sans-serif;
+  color: #D96C00;
+}

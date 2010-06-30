@@ -19,8 +19,10 @@
 <div class="<%= label_span %>"><%= f.label :address, "Address" %>:</div>
 <div class="<%= field_span %> last"><%= f.text_field :address, :class => field_span %></div>
 
+<% unless defined?( omit_cross_st) && omit_cross_st == true %>
 <div class="<%= label_span %>"><%= f.label :cross_st, "Cross St" %>:</div>
 <div class="<%= field_span %> last"><%= f.text_field :cross_st, :class => field_span %></div>
+<% end %>
 
 <div class="span-2"><%= f.label :city, "City" %>:</div>
 <div class="span-<%= narrow ? '5 last' : '2' %>"><%= f.text_field :city, :class => (narrow ? "span-5 last" : "span-2") %></div>

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100614220017) do
+ActiveRecord::Schema.define(:version => 20100628215436) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -833,6 +833,7 @@ ActiveRecord::Schema.define(:version => 20100614220017) do
     t.string  "police"
     t.string  "fire"
     t.string  "ambulance"
+    t.boolean "voip_phone"
   end
 
   add_index "profiles", ["user_id"], :name => "index_profiles_on_user_id"
@@ -1105,6 +1106,8 @@ ActiveRecord::Schema.define(:version => 20100614220017) do
     t.datetime "submitted_at"
     t.datetime "legal_agreement_at"
     t.datetime "paper_copy_at"
+    t.date     "paper_copy_submitted_on"
+    t.date     "emailed_on"
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|

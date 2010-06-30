@@ -5,7 +5,7 @@ class UserIntake < ActiveRecord::Base
   belongs_to :group
   belongs_to :order
   belongs_to :creator, :class_name => "User", :foreign_key => "created_by"
-  belongs_to :updator, :class_name => "User", :foreign_key => "updated_by"
+  belongs_to :updater, :class_name => "User", :foreign_key => "updated_by"
   has_and_belongs_to_many :users # replaced with has_many :through
   has_many :user_intakes_users, :dependent => :destroy
 
@@ -20,6 +20,7 @@ class UserIntake < ActiveRecord::Base
 
   # for every instance, make sure the associated objects are built
   def after_initialize
+    self.bill_monthly = (order && order.was_successful?)
     self.need_validation = true # assume, the user will not hit "save"
     # find(id, :include => :users) does not work due to activerecord design the way it is
     #   AR should ideally fire a find_with_associations and then initialize each object
@@ -34,11 +35,11 @@ class UserIntake < ActiveRecord::Base
     (1..3).each do |index|
       self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
       bool = self.send("no_caregiver_#{index}".to_sym)
-      self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || bool == "1"))
+      self.send("no_caregiver_#{index}=".to_sym, (bool.blank? || (bool == "1")))
     end
     build_associations
   end
-  
+
   def before_save
     # lock if required
     # skip_validation decides if "save" was hit instead of "submit"
@@ -47,7 +48,7 @@ class UserIntake < ActiveRecord::Base
     associations_before_validation_and_save # build the associations
     validate_associations # check vlaidations unless "save"
   end
-  
+
   def after_save
     # save the assoicated records
     associations_after_save
@@ -55,23 +56,23 @@ class UserIntake < ActiveRecord::Base
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
     # UserMailer.deliver_signup_installation(senior)
   end
-  
+
   # create blank placeholder records
   # required for user form input
   def build_associations
     # assumption: the associations will build in the order of appearance, subject to ruby behavior
-    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|type| build_user_type(type) }
+    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each { |type| build_user_type(type) }
   end
-  
+
   def skip_validation
     !self.need_validation
   end
-  
+
   def skip_validation=(value = false)
     self.need_validation = !value
     skip_associations_validation # propogate it to associated records too
   end
-  
+
   def validate
     if need_validation
       associations_before_validation_and_save # pre-process associations
@@ -80,17 +81,17 @@ class UserIntake < ActiveRecord::Base
       skip_associations_validation # propogate to associated models
     end
   end
-  
+
   def validate_associations
     if need_validation
       validate_user_type("senior")
       validate_user_type("subscriber") unless subscriber_is_user
-      validate_user_type("caregiver1") unless (subscriber_is_caregiver || no_caregiver_1)
-      validate_user_type("caregiver2") unless no_caregiver_2
-      validate_user_type("caregiver3") unless no_caregiver_3
+      validate_user_type("caregiver1") unless (subscriber_is_caregiver || (no_caregiver_1 == true))
+      validate_user_type("caregiver2") unless (no_caregiver_2 == true)
+      validate_user_type("caregiver3") unless (no_caregiver_3 == true)
     end
   end
-  
+
   # collapse any associations to "nil" if they are just "new" (nothing assigned to them after "new")
   def collapse_associations
     # TODO: DRY this
@@ -107,7 +108,7 @@ class UserIntake < ActiveRecord::Base
         (subscriber.nothing_assigned? || subscriber_is_user) ? (self.subscriber = nil) : (self.subscriber.skip_validation = skip_validation)
       end
     end
-    
+
     (1..3).each do |index|
       caregiver = self.send("caregiver#{index}".to_sym)
       unless caregiver.nil?
@@ -142,7 +143,7 @@ class UserIntake < ActiveRecord::Base
     # now collect the users for save as associations
     self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq.compact # omit nil, duplicates
   end
-  
+
   # create more data for the associations to keep them valid and associated
   # roles, options for roles
   def associations_after_save
@@ -177,7 +178,7 @@ class UserIntake < ActiveRecord::Base
       end
     end
   end
-  
+
   def created_by_user_name
     created_by.blank? ? "" : (User.exists?(created_by) ? User.find(created_by).name : "")
   end
@@ -185,11 +186,15 @@ class UserIntake < ActiveRecord::Base
   def group_name
     group.blank? ? "" : group.name
   end
-  
+
   def order_present?
     !order_id.blank?
   end
-  
+
+  def order_successful?
+    order_present? && order.was_successful?
+  end
+
   # TODO: DRYness required here
   def senior
     if self.new_record?
@@ -199,7 +204,7 @@ class UserIntake < ActiveRecord::Base
     end
     mem_senior
   end
-  
+
   def senior=(arg)
     if arg == nil
       self.mem_senior = nil
@@ -213,7 +218,7 @@ class UserIntake < ActiveRecord::Base
           user.is_halouser_of( group) # self.group
           self.mem_senior = user # keep in instance variable so that attrbutes can be saved with user_intake
         end
-        
+
         (self.mem_subscriber = mem_senior) if subscriber_is_user # link both to same data
       end
     end
@@ -232,17 +237,17 @@ class UserIntake < ActiveRecord::Base
     end
     mem_subscriber
   end
-  
+
   def subscriber=(arg)
     if arg == nil
       self.mem_subscriber = nil
     else
-      
+
       if subscriber_is_user
         self.senior = arg if senior.blank? # we can use this data
         self.mem_subscriber = senior # assign to senior, then reference as subscriber
       else
-        
+
         arg_user = argument_to_object(arg) # (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
         unless arg_user.blank?
           if self.new_record?
@@ -252,19 +257,19 @@ class UserIntake < ActiveRecord::Base
             user.is_subscriber_of( senior) # self.senior
             self.mem_subscriber = user
           end
-          
+
           # remember role option when subscriber is caregiver
           if subscriber_is_caregiver
             self.mem_caregiver1 = mem_subscriber
             (self.mem_caregiver1_options = attributes["role_options"]) if attributes.has_key?("role_options")
           end
         end
-        
+
       end
     end
     self.mem_subscriber
   end
-  
+
   def caregiver1
     if subscriber_is_caregiver
       self.mem_caregiver1 = subscriber # subscriber code handles everything
@@ -282,12 +287,12 @@ class UserIntake < ActiveRecord::Base
     if (arg == nil) # || (!subscriber_is_caregiver && no_caregiver_1)
       self.mem_caregiver1 = nil
     else
-      
+
       if subscriber_is_caregiver
         self.subscriber = arg if subscriber.blank? # we can use this data
         self.mem_caregiver1 = subscriber # assign to subscriber, then reference as caregiver1
       else
-        
+
         arg_user = argument_to_object(arg) # (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
         unless arg_user.blank?
           if self.new_record?
@@ -297,10 +302,10 @@ class UserIntake < ActiveRecord::Base
             user.is_caregiver_of( senior) # self.senior
             self.mem_caregiver1 = user
           end
-          
+
           self.mem_caregiver1_options = attributes["role_options"] if attributes.has_key?("role_options")
         end
-        
+
       end
     end
     self.mem_caregiver1
@@ -336,7 +341,7 @@ class UserIntake < ActiveRecord::Base
     end
     self.mem_caregiver2
   end
-  
+
   def caregiver3
     if self.new_record?
       self.mem_caregiver3
@@ -371,47 +376,47 @@ class UserIntake < ActiveRecord::Base
   def caregivers
     [caregiver1, caregiver2, caregiver3].uniq.compact
   end
-  
+
   # TODO: DRYness required here for methods
-  
+
   def senior_attributes=(attributes)
     self.senior = attributes
     # self.senior.profile_attributes = attributes["profile_attributes"]
   end
-  
+
   def subscriber_attributes=(attributes)
     (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
     self.subscriber = attributes
   end
-  
+
   def caregiver1_attributes=(attributes)
     (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
     self.caregiver1 = attributes
   end
-  
+
   def caregiver2_attributes=(attributes)
     (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
     self.caregiver2 = attributes
   end
-  
+
   def caregiver3_attributes=(attributes)
     (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
     self.caregiver3 = attributes
   end
-  
+
   def locked?
     !submitted_at.blank?
   end
-  
+
   def locked=(status = nil)
     self.submitted_at = Time.now if (status && status == true)
     locked?
   end
-  
+
   def agreement_signed?
     !self.legal_agreement_at.blank?
   end
-  
+
   def can_sign_agreement?(user = nil)
     # sign only once
     # sign only when current_user is senior or subscriber
@@ -426,6 +431,13 @@ class UserIntake < ActiveRecord::Base
     !paper_copy_at.blank? # paper_copy of the scubscriber agreement was submitted
   end
 
+  def safety_care_email_sent
+    # we just need to update date when email was sent to safety_care
+    # no need to validate or callback for this
+    self.emailed_on = Date.today
+    self.send(:update_without_callbacks)
+  end
+  
   private #---------------------------- private methods
 
   def skip_associations_validation
@@ -436,39 +448,25 @@ class UserIntake < ActiveRecord::Base
       user.skip_validation = !need_validation unless user.blank? # and associated records
     end
   end
-  
+
   def build_user_type(user_type)
-    # for new recordin memory, create fresh instances
-    if self.new_record?
-      self.send("#{user_type}=".to_sym, User.new) if self.send("#{user_type}".to_sym).nil?
-      self.send("#{user_type}".to_sym).send("build_associations") unless self.send("#{user_type}".to_sym).nil?
-
-    # for existing records, load the related instances appropriately yo virtual attributes
-    else
-      self.users.each do |user|
-        if user.is_halouser?
-          self.senior = user
-      
-        elsif user.is_subscriber? # we should check is_subscriber_of?(senior)
-          # conditional assignment is not required actually
-          # this would have been handled at save already
-          self.subscriber = (subscriber_is_user ? senior : user)
-
-        elsif user.is_caregiver?
-          options = user.options_for_senior(senior)
-          (1..3).each do |index|
-            if !options.blank? && options.position == index
-              self.send("caregiver#{index}=".to_sym, user)
-              self.send("mem_caregiver#{index}_options=".to_sym, options)
-            end
-          end
+    # instantiate the user type if not already exists
+    self.send("#{user_type}=".to_sym, User.new) if self.send("#{user_type}".to_sym).nil?
+    # roles_users_options for caregivers
+    # checkboxes for existence of caregivers
+    (1..3).each do |index|
+      if user_type == "caregiver#{index}"
+        if (user = self.send("#{user_type}".to_sym))
+          self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
+          bool = self.send("no_caregiver_#{index}".to_sym)
+          self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || bool == "1"))
         end
       end
-      self.users.each(&:build_associations) # build associations just in case
-      
     end
+    # build profile and other associations
+    self.send("#{user_type}".to_sym).send("build_associations".to_sym) unless self.send("#{user_type}".to_sym).nil?
   end
-  
+
   def validate_user_type(user_type)
     user = self.send("#{user_type}".to_sym)
     if user.blank?
@@ -482,7 +480,7 @@ class UserIntake < ActiveRecord::Base
       end
     end
   end
-  
+
   def autofill_login_details(user_type = "")
     unless user_type.blank?
       user = self.send("#{user_type}") # local copy, to keep code clean

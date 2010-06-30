@@ -3,7 +3,7 @@
   
   <div class="box">
     <% if @user_intake.submitted? %>
-      <p>Submitted at: <%= @user_intake.submitted_at %></p>
+      <p>Submitted at: <span class="timestamp"><%= h @user_intake.submitted_at %></span></p>
     <% end %>
     
     <p>

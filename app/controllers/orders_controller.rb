@@ -59,7 +59,7 @@ class OrdersController < ApplicationController
       
     else # store mode
       # back button needs this
-      @order = (session[:order].blank? ? Order.new(:coupon_code => params[:coupon_code]) : Order.new(session[:order]))
+      @order = (session[:order].blank? ? Order.new(:coupon_code => params[:coupon_code], :created_by => current_user, :updated_by => current_user) : Order.new(session[:order]))
       @same_address = @order.subscribed_for_self?
       # @same_address = (session[:order].blank? ? "checked" : (session[:order][:bill_address_same] || @order.bill_address_same || @order.ship_and_bill_address_same))
     end
