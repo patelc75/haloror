@@ -21,11 +21,12 @@
 			
 		<% end %>
 		
-		<% if profile = user.profile %>
-			<%=user.name%> 
-		<% else %>	
-			Profile missing
-		<% end %>
+    <span class="text-small"><%= image_tag User::STATUS_IMAGE[(user.status || 'unknown').to_sym], :alt => (user.status || 'Unknown status'), :title => (user.status || 'Unknown status') %></span>
+    <% if profile = user.profile %>
+    <%=user.name%>
+    <% else %>	
+    Profile missing
+    <% end %>
 		<span style="font-size: 80%;"><br><%=user.login%></span>
 		<% if caregiver and user.profile %>
 			</a>

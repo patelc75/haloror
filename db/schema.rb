@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100628215436) do
+ActiveRecord::Schema.define(:version => 20100701200818) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1136,6 +1136,7 @@ ActiveRecord::Schema.define(:version => 20100628215436) do
     t.integer  "last_triage_audit_log_id"
     t.integer  "last_panic_id"
     t.integer  "last_strap_fastened_id"
+    t.string   "status"
   end
 
   create_table "vital_scans", :force => true do |t|

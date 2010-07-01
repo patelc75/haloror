@@ -149,12 +149,35 @@ class ManagementController < ApplicationController
           glob_alt = DialUp.find(:first,:conditions => "dialup_type = 'Global' and order_number = '2'")
           cmd[:param4] = glob_alt.phone_number if params[:global_alt_default] and glob_alt
           cmd[:param4] = request[:global_secondary] unless request[:global_secondary].blank? and params[:global_alt_default]
+          
         elsif request[:cmd_type] == 'dial_up_num_glob_prim' and @flag == false
           @success = false
-          @message = 'Please Select at least one dialup number' 
+          @message = 'Please Select at least one dialup number'
+          
+        # https://redmine.corp.halomonitor.com/issues/398
+        #   request[:ids] can accept a mixture of range, and individual ids
+        #   examples:
+        #     id1
+        #     id1-id5
+        #     id1, id5, id7
+        #   or, just mix all the definitions
+        #     id1-id5, id6, id7-id9
+        elsif request[:cmd_type] == 'unregister'
+          # assumption: all ids are numeric values
+          # WARNING: any non-number within ids will cause id be recognized as ZERO
+          # logic is: split by ',', strip, split any range & collect arrays, keep everything as integers, flatten everything as array.
+          devices = Device.all( :conditions => { :id => request[:ids].ranges_and_integers_as_array }) # parse ranges like "1-3, 5, 7-9, 10, 17, 19"
+          devices.each do |device|
+            # actions on each user before "detaching" user from device
+            device.users.each do |user|
+              user.caregivers.each {|caregiver| UserMailer.deliver_user_unregistered( caregiver, user )} # New email notification to caregivers indicating service stopped
+              user.test_mode(true) # Call Test Mode method to make caregivers away and opt out of SafetyCare
+            end
+            device.users = [] # Unmap users from devices, keep the device in the DB as an orphan
+          end
         end
 
-        if /-/.match(request[:ids])     
+        if /-/.match(request[:ids])
           create_cmds_for_range_of_devices(request[:ids], cmd)
         elsif /,/.match(request[:ids]) 
           create_cmds_for_devices_separated_by_commas(request[:ids], cmd)

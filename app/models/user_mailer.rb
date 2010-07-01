@@ -32,6 +32,27 @@ class UserMailer < ActionMailer::ARMailer
     @body[:user] = user
   end
   
+  def user_unregistered(user, caregiver)
+    setup_email(caregiver)
+    @subject += "myHalo account of #{user.name} has been cancelled."
+    body <<-EOF
+      Dear #{caregiver.name},
+      
+      This message is the official notice that myHalo account of #{user.name} has been cancelled with immediate effect.
+      
+      Thanks, myHalo Team
+    EOF
+  end
+
+  def cancelled_user_attempted_access(user)
+    setup_email(user)
+    @subject += "Cancelled myHalo account of #{user.name} was used to attempt an access."
+    body <<-EOF
+      Cancelled myHalo account of #{user.name} was used to attempt an access at #{Time.now}.
+      Please do the needful.
+    EOF
+  end
+  
   def caregiver_email(caregiver, user)
     setup_email(caregiver)
     @subject += "#{user.name} wants you to be their caregiver"

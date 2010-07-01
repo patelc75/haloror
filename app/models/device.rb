@@ -1,35 +1,39 @@
 class Device < ActiveRecord::Base
+  # relationships ------------------
+  
   belongs_to :device_revision
   belongs_to :work_order
 
-  has_and_belongs_to_many :kits
-
+  has_one :access_mode_status
   has_one :device_info
-  has_many :mgmt_cmds
-  has_many :mgmt_queries
 
-  has_many :falls
-  has_many :panics
+  has_many :access_modes
+  has_many :batteries
   has_many :battery_charge_completes
   has_many :battery_criticals
   has_many :battery_pluggeds
   has_many :battery_unpluggeds
-  has_many :strap_fasteneds
-  has_many :strap_removeds
-  has_many :device_unavailable_alerts
   has_many :device_available_alerts
+  has_many :device_unavailable_alerts
+  has_many :falls
   has_many :gateway_offline_alerts
   has_many :gateway_online_alerts
-  has_many :batteries
-  has_many :access_modes
-  has_one :access_mode_status
+  has_many :mgmt_cmds
+  has_many :mgmt_queries
+  has_many :panics
+  has_many :strap_fasteneds
+  has_many :strap_removeds
 
+  has_and_belongs_to_many :kits
   has_and_belongs_to_many :users
 
+  # validations ----------------------
+  
   validates_presence_of :serial_number
   validates_length_of :serial_number, :is => 10
-
   validates_uniqueness_of :serial_number, :case_sensitive => false
+
+  # methods -----------------------
 
   def device_type
     if device_revision && device_revision.device_model && device_revision.device_model.device_type

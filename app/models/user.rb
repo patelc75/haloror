@@ -1,5 +1,9 @@
 require 'digest/sha1'
 class User < ActiveRecord::Base
+  # DRY pre-defined status values for user.status column
+  STATUS = { :active => "Active", :cancelled => "Cancelled", :installed => "Installed", :unknown => "Unknown" }
+  STATUS_IMAGE = { :active => "user_active.png", :cancelled => "user_cancelled.png", :installed => "user.png", :unknown => "user_placeholder.png" }
+  
   #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
   
   # prevents a user from submitting a crafted form that bypasses activation
@@ -74,11 +78,12 @@ class User < ActiveRecord::Base
   validates_presence_of     :password_confirmation,      :if => :password_required?
   validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
   
-  before_save :encrypt_password
+  # before_save :encrypt_password # shifted to a method where we can make multiple calls
   before_create :make_activation_code # FIXME: this should be part of before_save
   # after_save :post_process  
   
   named_scope :search_by_login_or_profile_name, lambda {|arg| query = "%#{arg}%"; {:include => :profile, :conditions => ["users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", query, query, query]}}
+  named_scope :with_status, lambda {|*arg| {:conditions => {:status => arg.flatten.first} }}
   
   def after_initialize
     self.need_validation = true
@@ -88,6 +93,14 @@ class User < ActiveRecord::Base
     self.lazy_roles = {} # lazy loading roles of this user
   end
 
+  def before_save
+    encrypt_password
+    # https://redmine.corp.halomonitor.com/issues/398
+    # When user is created, put in "Install" state by default
+    # User goes from "Install" to "Active" state after all the installation special status fields go green
+    status = (self.alert_status == 'normal' ? STATUS[:active] : STATUS[:installed])
+  end
+  
   def skip_validation
     !need_validation
   end
@@ -520,6 +533,11 @@ class User < ActiveRecord::Base
     # existing record will have data value in table column
   end
   
+  def self.count_with_status(status = nil)
+    status = nil if ["unknown", nil, "NULL", ""].include?(status)
+    count(:conditions => {:status => status})
+  end
+
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
   def self.authenticate(login, password)
     u = find :first, :conditions => ['login = ? and activated_at IS NOT NULL', login] # need to get the salt
