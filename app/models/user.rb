@@ -247,19 +247,31 @@ class User < ActiveRecord::Base
 
   # TODO: rspec pending for this
   def hours_since(what = nil)
+    # return blank here to default hours_since == 0
     time = case what
+    # panic button span is counted
+    #   * no panic button tested yet? count hours since installation date
+    #   * panic button was tested at least once? count hours since last panic button
     when :panic
       last_panic.blank? ? created_at : last_panic.timestamp
+
+    # strap fastened is counted
+    #   * only for 'Chest Strap' users. returning blank for non-chest-strap-users will make status normal
+    #   * every span/24hrs after installation date
     when :strap_fastened
-      last_strap_fastened.blank? ? created_at : last_strap_fastened.timestamp
+      (last_strap_fastened.blank? ? created_at : last_strap_fastened.timestamp) if (get_wearable_type == 'Chest Strap')
+
+    # when profile or call center account missing, hours are counted since 48.hours.before.installation
     when :call_center_account
-      profile.blank? ? created_at : (profile.account_number.blank? ? created_at : Time.now)
+      call_center_account.blank? ? (created_at - 48.hours) : Time.now
+
+    # test mode is always abnormal status
     when :test_mode
       1.year.ago # force abnormal
-    else
-      Time.now # default = no time difference (well, almost)
+
     end
 
+    time ||= Time.now # default = no time difference (well, almost)
     ((Time.now - time) / 1.hour).round
   end
 
@@ -272,23 +284,34 @@ class User < ActiveRecord::Base
     if group.blank?
       "normal"
     else
+      # returning blank for status will default to 48 hours for abnormal, 24 for caution
       status = case what
+      # check the current delay in hours, find a triage threshold that defines such case, get the status string
+      # return blank for status, if threshold missing
       when :panic
-        # check the current delay in hours, find a triage threshold that defines such case, get the status string
         group.triage_thresholds.first(:conditions => ["hours_without_panic_button_test >= ?", hours_since(:panic)], :order => :hours_without_panic_button_test).status unless group.triage_thresholds.blank?
+        
+      # fetch status string same as above. Except, it only applies to get_wearable_type 'Chest Strap'
+      # TODO: get_wearable_type need to be covered. Not sure if it works correctly as it is.
       when :strap_fastened
-        # fetch status string same as above. Except, it only applies to get_wearable_type 'Chest Strap'
-        # TODO: get_wearable_type need to be covered. Not sure if it works correctly as it is.
-        group.triage_thresholds.first(:conditions => ["hours_without_strap_detected >= ?", hours_since(:strap_fastened)], :order => :hours_without_strap_detected).status unless group.triage_thresholds.blank? || (get_wearable_type != 'Chest Strap')
+        if get_wearable_type == 'Chest Strap' # put if condition on seprate row for faster execution
+          group.triage_thresholds.first(:conditions => ["hours_without_strap_detected >= ?", hours_since(:strap_fastened)], :order => :hours_without_strap_detected).status unless group.triage_thresholds.blank?
+        end
+
+      # hours calculation for call center is positive value? that is abnormal
       when :call_center_account
-        call_center_account.blank? ? "abnormal" : "normal"
+        (hours_since(:call_center_account) == 0) ? "normal" : "abnormal"
+
       when :user_intake
-        user_intake_submitted_at.blank? ? 'abnormal' : 'normal'
+        user_intake_submitted_at.blank? ? 'abnormal' : 'normal' # works before or after installation date
+
       when :legal_agreement
-        user_intake_legal_agreement_at.blank? ? 'abnormal' : 'normal'
+        user_intake_legal_agreement_at.blank? ? 'abnormal' : 'normal' # works before or after installation date
+
       when :test_mode
         test_mode? ? 'test mode' : 'normal'
       end
+      
       # when threshold is not defined. the following hard coded logic will work
       #   48 hours or more delayed = abnormal
       #   24 hours, up to 48 hours delayed = caution
