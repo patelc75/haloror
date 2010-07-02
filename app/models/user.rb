@@ -41,6 +41,7 @@ class User < ActiveRecord::Base
   has_many :event_actions
   has_many :falls  
   has_many :halo_debug_msgs
+  has_many :logs, :class_name => "UserLog", :foreign_key => "user_id"
   has_many :mgmt_cmds
   has_many :notes
   has_many :orders_created, :class_name => 'Order', :foreign_key => 'created_by'
@@ -80,7 +81,7 @@ class User < ActiveRecord::Base
   
   # before_save :encrypt_password # shifted to a method where we can make multiple calls
   before_create :make_activation_code # FIXME: this should be part of before_save
-  # after_save :post_process  
+  # after_save :post_process # shifted to method instead
   
   named_scope :search_by_login_or_profile_name, lambda {|arg| query = "%#{arg}%"; {:include => :profile, :conditions => ["users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", query, query, query]}}
   named_scope :with_status, lambda {|*arg| {:conditions => {:status => arg.flatten.first} }}
@@ -99,6 +100,12 @@ class User < ActiveRecord::Base
     # When user is created, put in "Install" state by default
     # User goes from "Install" to "Active" state after all the installation special status fields go green
     status = (self.alert_status == 'normal' ? STATUS[:active] : STATUS[:installed])
+  end
+  
+  # https://redmine.corp.halomonitor.com/issues/398
+  # Create a log page of all steps above with timestamps
+  def after_save
+    log(status)
   end
   
   def skip_validation
@@ -224,6 +231,21 @@ class User < ActiveRecord::Base
     end
   end
 
+  def status_image
+    what = (['Active', 'Cancelled', 'Installed', 'Unknown'].include?(status) ? status : 'Unknown')
+    User::STATUS_IMAGE[what.downcase.to_sym]
+  end
+  
+  # Create a log page of all steps above with timestamps
+  def log(message = "")
+    logs.create( :log => message) unless message.blank?
+  end
+  
+  def last_log_when_status_changed
+    # pick most recent log when status was changed
+    logs.first( :conditions => { :log => status }, :order => "created_at DESC")
+  end
+  
   def triage_users(options = {})
     day = options[:search_day].to_i
     hour = options[:search_hour].to_i
@@ -1732,6 +1754,7 @@ class User < ActiveRecord::Base
     #   is_halouser_of(object)
     #   is_not_halouser_of(object)
     self.send("is_#{stop_getting_alerts ? 'not_' : ''}halouser_of".to_sym, Group.safety_care)
+    log("#{stop_getting_alerts ? 'Opted out of' : 'Added to'} safety_care group") # https://redmine.corp.halomonitor.com/issues/398
   end
   
   # default action is obvious from method name
@@ -1739,12 +1762,13 @@ class User < ActiveRecord::Base
     # user test mode
     #   * user is not part of safety_care
     #   * has all caregivers "away"
-    self.send("is_#{(status == true) ? 'not_' : ''}halouser_of".to_sym, Group.safety_care)
+    # self.send("is_#{(status == true) ? 'not_' : ''}halouser_of".to_sym, Group.safety_care)
+    opt_out_call_center(status) # will also log
     # when switching user to "normal" mode
     # * just make it member of safety_care
     # * do not bother switching "active" status for caregivers
     # ** maybe, they all were not active when user was switched to "test mode"
-    self.caregivers.each {|cg| cg.set_away_for(self) } if status == true
+    self.caregivers.each {|cg| cg.set_away_for(self) } if status == true # will log at set_away_for, set_active_for
   end
   
   def test_mode?
@@ -1777,7 +1801,11 @@ class User < ActiveRecord::Base
   
   # set the caregiver "active" for halouser
   def set_active_for(user = nil, active = true)
-    self.options_for_senior(user, {:active => active}) if user && self.is_caregiver_of?(user)
+    if user && self.is_caregiver_of?(user)
+      self.options_for_senior(user, {:active => active})
+      # https://redmine.corp.halomonitor.com/issues/398
+      user.log("Caregiver #{name} is #{active ? 'activated' : 'set away'} for user #{user.name}")
+    end
   end
   
   protected # ---------------------------------------------

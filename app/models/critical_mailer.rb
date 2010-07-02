@@ -164,6 +164,14 @@ class CriticalMailer < ActionMailer::ARMailer
     setup_caregivers(user, alert, :recepients)
     self.priority = alert.priority
   end
+  
+  def cancel_device( device )
+    @recipients = Group.safety_care.email
+    @from       = "no-reply@#{ServerInstance.current_host}"
+    @subject    = "Cancel device #{device.serial_number}"
+    @sent_on    = Time.now
+    body        = "Cancel device #{device.serial_number}"
+  end
 
 #=============== Utility Methods  ===================  
   protected

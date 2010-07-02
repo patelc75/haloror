@@ -21,7 +21,13 @@
 			
 		<% end %>
 		
-    <span class="text-small"><%= image_tag User::STATUS_IMAGE[(user.status || 'unknown').to_sym], :alt => (user.status || 'Unknown status'), :title => (user.status || 'Unknown status') %></span>
+    <span class="text-small">
+      <% if user.last_log_when_status_changed.blank? %>
+        <%= image_tag user.status_image, :alt => (user.status || 'Unknown'), :title => (user.status || 'Unknown') %>
+      <% else %>
+        <%= link_to image_tag(user.status_image, :alt => (user.status || 'Unknown'), :title => (user.status || 'Unknown')), user_user_log_path(user, user.last_log_when_status_changed) %>
+      <% end %>
+    </span>
     <% if profile = user.profile %>
     <%=user.name%>
     <% else %>	

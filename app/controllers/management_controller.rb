@@ -153,8 +153,9 @@ class ManagementController < ApplicationController
         elsif request[:cmd_type] == 'dial_up_num_glob_prim' and @flag == false
           @success = false
           @message = 'Please Select at least one dialup number'
-          
+
         # https://redmine.corp.halomonitor.com/issues/398
+        # WARNING: not covered by cucumber
         #   request[:ids] can accept a mixture of range, and individual ids
         #   examples:
         #     id1
@@ -162,31 +163,53 @@ class ManagementController < ApplicationController
         #     id1, id5, id7
         #   or, just mix all the definitions
         #     id1-id5, id6, id7-id9
-        elsif request[:cmd_type] == 'unregister'
+        elsif request[ :cmd_type ] == 'unregister'
           # assumption: all ids are numeric values
           # WARNING: any non-number within ids will cause id be recognized as ZERO
-          # logic is: split by ',', strip, split any range & collect arrays, keep everything as integers, flatten everything as array.
-          devices = Device.all( :conditions => { :id => request[:ids].ranges_and_integers_as_array }) # parse ranges like "1-3, 5, 7-9, 10, 17, 19"
+          devices = Device.all( :conditions => { :id => request[ :ids ].parse_integer_ranges }) # parse ranges like "1-3, 5, 7-9, 10, 17, 19"
           devices.each do |device|
-            # actions on each user before "detaching" user from device
+            # Send email to SafetyCare similar to the current email to SafetyCare except body will simple oneline with text "Cancel HM1234" 
+            CriticalMailer.deliver_cancel_device( device)
+            device.users.each {|user| user.log("Email sent to safety_care: Cancel #{device.serial_number}") } # Create a log page of all steps above with timestamps
+
             device.users.each do |user|
-              user.caregivers.each {|caregiver| UserMailer.deliver_user_unregistered( caregiver, user )} # New email notification to caregivers indicating service stopped
-              user.test_mode(true) # Call Test Mode method to make caregivers away and opt out of SafetyCare
+              user.caregivers.each do |caregiver|
+                UserMailer.deliver_user_unregistered( caregiver, user) # New email notification to caregivers indicating service stopped
+                user.log("Email sent to caregiver (#{caregiver.name}): User (#{user.name}) un-registered.")
+              end
+              # https://redmine.corp.halomonitor.com/issues/398
+              # call to test_mode automatically logs the actions for user
+              user.test_mode( true) # Call Test Mode method to make caregivers away and opt senior out of SafetyCare
+              user.log("Device (#{device.serial_number}) un-mapped from user (#{user.name})")
             end
             device.users = [] # Unmap users from devices, keep the device in the DB as an orphan
           end
         end
 
-        if /-/.match(request[:ids])
-          create_cmds_for_range_of_devices(request[:ids], cmd)
-        elsif /,/.match(request[:ids]) 
-          create_cmds_for_devices_separated_by_commas(request[:ids], cmd)
-        elsif @success == true                    
-          create_cmd_for_single_id(request[:ids], cmd)
+        # # CHANGED: Re-factored
+        # #   * used the new method "parse_integer_ranges" to parse all IDs
+        # if /-/.match(request[:ids])
+        #   create_cmds_for_range_of_devices(request[:ids], cmd)
+        # elsif /,/.match(request[:ids]) 
+        #   create_cmds_for_devices_separated_by_commas(request[:ids], cmd)
+        # elsif @success == true                    
+        #   create_cmd_for_single_id(request[:ids], cmd)
+        # end
+        #
+        # New logic: DRYed. No need of private methods
+        #   * parse ids in one call
+        #   * collect @pending_cmds and use it as a conditionin the same call
+        # WARNING: Needs code coverage
+        if ids.parse_integer_ranges.blank?
+          @success = false
+          @message = "Please provide valid device IDs in (#{ids})"
+        else
+          MgmtCmd.create( cmd ) if (@pending_cmds = MgmtCmd.pending( ids, cmd[ :cmd_type ] )).length.zero?
         end
+        
       else
         @success = false
-        @message = 'Please provide device ids.'        
+        @message = 'Please provide device ids.'
       end
     end
     render :layout => false
@@ -402,51 +425,64 @@ class ManagementController < ApplicationController
 
   private
  
-  def create_cmds_for_range_of_devices(ids, cmd)
-    arr = ids.split('-')
-    
-    min = arr[0].to_i
-    max = arr[1].to_i
-    
-    if min && max
-      count = min
-      while count <= max
-        cmd[:device_id] = count
-        
-        @pending_cmds += MgmtCmd.pending_server_cmds_by_type(count, cmd[:cmd_type])
-        if @pending_cmds.length == 0
-          MgmtCmd.create(cmd)
-        end
-        
-        count+=1
-      end
-    else
-      @success = false
-      @message = 'Please provide a min and max for the range of device ids.'
-    end
-  end
-  
-  def create_cmds_for_devices_separated_by_commas(ids, cmd)
-    ids.split(',').each do |id|          
-      if id
-        cmd[:device_id] = id
-        
-        @pending_cmds += MgmtCmd.pending_server_cmds_by_type(id, cmd[:cmd_type])
-        if @pending_cmds.length == 0
-          MgmtCmd.create(cmd)
-        end
-      end
-    end
-  end
-  
-  def create_cmd_for_single_id(id, cmd)
-    cmd[:device_id] = id
-    
-    @pending_cmds = MgmtCmd.pending_server_cmds_by_type(id, cmd[:cmd_type])
-    if @pending_cmds.length == 0
-      MgmtCmd.create(cmd)
-    end
-  end
+  # Old logic
+  #   * splitting the range into individual ids
+  #   * collecting pending commands for all ids in range
+  #   * creating the command only once, if there are no pending commands for any ids in range
+  # New logic
+  #   * Doing the same thing DRYed
+  #
+  # WARNING: Needs test coverage
+  # these private methods are now replaced by the DRYed logic above
+  #
+  # def create_cmds_for_range_of_devices(ids, cmd)
+  #   arr = ids.split('-')
+  #   
+  #   min = arr[0].to_i
+  #   max = arr[1].to_i
+  #   
+  #   if min && max
+  #     count = min
+  #     while count <= max
+  #       cmd[:device_id] = count
+  #       
+  #       @pending_cmds += MgmtCmd.pending( count, cmd[:cmd_type])
+  #       # @pending_cmds += MgmtCmd.pending_server_commands_for_device_and_type(count, cmd[:cmd_type])
+  #       if @pending_cmds.length == 0
+  #         MgmtCmd.create(cmd)
+  #       end
+  #       
+  #       count+=1
+  #     end
+  #   else
+  #     @success = false
+  #     @message = 'Please provide a min and max for the range of device ids.'
+  #   end
+  # end
+  # 
+  # def create_cmds_for_devices_separated_by_commas(ids, cmd)
+  #   ids.split(',').each do |id|          
+  #     if id
+  #       cmd[:device_id] = id
+  #       
+  #       @pending_cmds += MgmtCmd.pending( id, cmd[:cmd_type])
+  #       # @pending_cmds += MgmtCmd.pending_server_commands_for_device_and_type(id, cmd[:cmd_type])
+  #       if @pending_cmds.length == 0
+  #         MgmtCmd.create(cmd)
+  #       end
+  #     end
+  #   end
+  # end
+  # 
+  # def create_cmd_for_single_id(id, cmd)
+  #   cmd[:device_id] = id
+  #   
+  #   @pending_cmds = MgmtCmd.pending( id, cmd[:cmd_type])
+  #   # @pending_cmds = MgmtCmd.pending_server_commands_for_device_and_type(id, cmd[:cmd_type])
+  #   if @pending_cmds.length == 0
+  #     MgmtCmd.create(cmd)
+  #   end
+  # end
   
   def get_mgmt_cmds_stream(device)
     cmds = device.mgmt_cmds.find(:all, 

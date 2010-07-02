@@ -1,0 +1,16 @@
+<h1>Logs for <%= @user.name %></h1>
+
+<%= will_paginate @user_logs %>
+<table class="bluegrey">
+  <tr>
+    <th class="span-3">Created at</th>
+    <th>Message</th>
+  </tr>
+  <% @user_logs.each do |log| %>
+    <tr class="<%= cycle('', 'alt-row') %>">
+      <td><%= h log.created_at %></td>
+      <td><%= h log.log %></td>
+    </tr>
+  <% end %>
+</table>
+<%= will_paginate @user_logs %>
