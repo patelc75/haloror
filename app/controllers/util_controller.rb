@@ -5,6 +5,9 @@ class UtilController < ApplicationController
   # Monitors that the application and database connection is alive
   
   def terms
+    # https://redmine.corp.halomonitor.com/issues/3126
+    # new term of service agreement shows the subscriber agreement form from user intake
+    # nothing changed here. partial has the conditional rendering of DIV block
   end
   
   def privacy

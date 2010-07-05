@@ -175,6 +175,7 @@
 
   </div>
 
+  <% unless controller.class == UtilController && action_name == "terms" # ticket 3126 %>
   <div id="agreement_buttons">
     <div class="span-8">
       <% if @user_intake && @user_intake.can_sign_agreement?(current_user) %>
@@ -200,5 +201,6 @@
     </div>
     <div class="signature prepend-top span-12 text-right last">Signature</div>
   </div>
+  <% end %>
   
 </div>
