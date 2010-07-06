@@ -1,17 +1,18 @@
-* {
+/** {
   margin: 0px;
   padding: 0px;
   outline: none;
   font-family: Arial, Helvetica, sans-serif !important;
-}
+}*/
 p {
   color: #000000;
   font-size: 13px;
   font-family: Arial, Helvetica, sans-serif !important;
 }
-p span.shift-lft {
+/*p span.shift-lft {
   padding-left: 15px;
 }
+*/
 a {
   text-decoration: none;
   font: Arial, Helvetica, sans-serif !important;
@@ -20,9 +21,9 @@ a {
 a img {
   border: none;
 }
-.clear {
+/*.clear {
   clear: both;
-}
+}*/
 .lft {
   float: left;
   font: Arial, Helvetica, sans-serif !important;
@@ -82,7 +83,7 @@ a img {
   z-index: 9999;
   width: 287px;
   height: 100px;
-  background: url('../images/hide_.png') repeat;
+  background: url('../../images/hide_.png') repeat;
   visibility: visible;
   padding-top: 47px;
 }
@@ -101,7 +102,7 @@ a img {
 .lightbox-wrapper .top-line .top-rt {
   width: 9px;
   height: 8px;
-  background: #777643 url('../images/rt-top.gif') top right;
+  background: #777643 url('../../images/rt-top.gif') top right;
   float: right;
 }
 
@@ -147,7 +148,7 @@ a img {
 .lightbox-wrapper .bot-line .bot-rt {
   width: 9px;
   height: 8px;
-  background: #777643 url('../images/rt-bot.gif') top right;
+  background: #777643 url('../../images/rt-bot.gif') top right;
   float: right;
 }
 
@@ -156,7 +157,7 @@ a img {
   width: 19px;
   height: 25px;
   padding: 0 5px 0 0;
-  background: url('../images/checkbox.gif') no-repeat;
+  background: url('../../images/checkbox.gif') no-repeat;
   display: block;
   clear: left;
   float: left;
@@ -218,7 +219,7 @@ a img {
 
 
 .day-button li a {
-  background: transparent url('../images/day-lft.jpg') no-repeat left;
+  background: transparent url('../../images/day-lft.jpg') no-repeat left;
   color: #2e6278;
   height: 25px;
   font-size: 11px !important;
@@ -226,7 +227,7 @@ a img {
   padding: 7px 0 7px 0px;
 }
 .day-button li a span {
-  background: transparent url('../images/day-rt.jpg') no-repeat center right;
+  background: transparent url('../../images/day-rt.jpg') no-repeat center right;
   color: #2e6278;
   padding: 7px 13px 7px 10px;
 }
@@ -247,7 +248,7 @@ a img {
 
 
 .day1-button li a {
-  background: transparent url('../images/day-lft.jpg') no-repeat left;
+  background: transparent url('../../images/day-lft.jpg') no-repeat left;
   color: #2e6278;
   height: 25px;
   font-size: 11px !important;
@@ -255,7 +256,7 @@ a img {
   padding: 7px 0 7px 0px;
 }
 .day1-button li a span {
-  background: transparent url('../images/day-rt.jpg') no-repeat center right;
+  background: transparent url('../../images/day-rt.jpg') no-repeat center right;
   color: #2e6278;
   padding: 7px 13px 7px 10px;
 }
@@ -276,7 +277,7 @@ a img {
 
 
 .day2-button li a {
-  background: transparent url('../images/day-lft.jpg') no-repeat left;
+  background: transparent url('../../images/day-lft.jpg') no-repeat left;
   color: #2e6278;
   height: 25px;
   font-size: 11px !important;
@@ -284,7 +285,7 @@ a img {
   padding: 7px 0 7px 0px;
 }
 .day2-button li a span {
-  background: transparent url('../images/day-rt.jpg') no-repeat center right;
+  background: transparent url('../../images/day-rt.jpg') no-repeat center right;
   color: #2e6278;
   padding: 7px 13px 7px 10px;
 }
@@ -303,7 +304,7 @@ a img {
 
 
 .day3-button li a {
-  background: transparent url('../images/day-lft.jpg') no-repeat left;
+  background: transparent url('../../images/day-lft.jpg') no-repeat left;
   color: #2e6278;
   height: 25px;
   font-size: 11px !important;
@@ -311,7 +312,7 @@ a img {
   padding: 7px 0 7px 0px;
 }
 .day3-button li a span {
-  background: transparent url('../images/day-rt.jpg') no-repeat center right;
+  background: transparent url('../../images/day-rt.jpg') no-repeat center right;
   color: #2e6278;
   padding: 7px 13px 7px 10px;
 }
@@ -334,7 +335,7 @@ a img {
   float: left;
   width: 924px;
   height: 40px;
-  background: url('../images/head-mid-bg.gif') left top repeat-x;
+  background: url('../../images/head-mid-bg.gif') left top repeat-x;
 }
 .head-wrapper .head-rep dl.lft-links {
   float: left;
@@ -421,7 +422,7 @@ a img {
   height: 12px;
   width: 944px;
   float: left;
-  background: #f5f5f5 url('../images/bot-mid.gif') left bottom;
+  background: #f5f5f5 url('../../images/bot-mid.gif') left bottom;
 }
 
 .column-headers {
@@ -443,7 +444,7 @@ a img {
 .strip-wrapper .strip-line-top .strip-top-rt {
   width: 12px;
   height: 7px;
-  background: url('../images/strip-top-rt.gif') top right no-repeat;
+  background: url('../../images/strip-top-rt.gif') top right no-repeat;
   float: right;
 }
 
@@ -455,7 +456,7 @@ a img {
   overflow: hidden;
   padding-top: 15px;
   padding-bottom: 5px;
-  background: url('../images/strip-txt-mid.gif') left top repeat-y;
+  background: url('../../images/strip-txt-mid.gif') left top repeat-y;
 }
 .strip-wrapper .strip-mid-repeat .strip-txt {
   width: 899px;
@@ -475,7 +476,7 @@ a img {
 
 
 .red-button li a {
-  background: transparent url('../images/red-button-lft.gif') no-repeat left;
+  background: transparent url('../../images/red-button-lft.gif') no-repeat left;
   color: #fff;
   font: Arial, Helvetica, sans-serif;
   font-size: 12px !important;
@@ -484,7 +485,7 @@ a img {
 }
 
 .red-button li a span {
-  background: transparent url('../images/red-button-rt.gif') 80px -0px no-repeat;
+  background: transparent url('../../images/red-button-rt.gif') 80px -0px no-repeat;
   color: #fff;
   padding: 4px 13px 7px 10px;
 }
@@ -494,7 +495,11 @@ a img {
 div.yellow-back {
   font-size: 12px;
   text-align: center;
-  background: #DDD url('../images/yellow_back.gif') repeat;
+/*  background: #DDD url('../../images/yellow_back.gif') repeat;*/
+  background: #F7E346;
+  background: -webkit-gradient(linear, left top, left bottom, from(#CFB136), to(#EBD348));
+  background: -moz-linear-gradient(top,  #CFB136,  #EBD348);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#CFB136', endColorstr='#EBD348');
   padding: 2px 5px 1px 5px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
@@ -503,7 +508,11 @@ div.yellow-back {
 div.green-back {
   font-size: 12px;
   text-align: center;
-  background: #DDD url('../images/green_back.gif') repeat;
+/*  background: #DDD url('../../images/green_back.gif') repeat;*/
+  background: #64991e;
+  background: -webkit-gradient(linear, left top, left bottom, from(#4e7d0e), to(#7db72f));
+  background: -moz-linear-gradient(top,  #4e7d0e,  #7db72f);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#4e7d0e', endColorstr='#7db72f');
   padding: 2px 5px 1px 5px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
@@ -512,7 +521,11 @@ div.green-back {
 div.red-back {
   font-size: 12px;
   text-align: center;
-  background: #DDD url('../images/red_back.gif') repeat;
+/*  background: #DDD url('../../images/red_back.gif') repeat;*/
+  background: #d81b21;
+  background: -webkit-gradient(linear, left top, left bottom, from(#aa1317), to(#ed1c24));
+  background: -moz-linear-gradient(top,  #aa1317,  #ed1c24);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#aa1317', endColorstr='#ed1c24');
   color: #FFF;
   padding: 2px 5px 1px 5px;
   -moz-border-radius: 3px;
@@ -531,7 +544,7 @@ div.red-back {
 
 
 .yel-button li a {
-  background: transparent url('../images/yel-button-lft.gif') no-repeat left;
+  background: transparent url('../../images/yel-button-lft.gif') no-repeat left;
   color: #fff;
   font: Arial, Helvetica, sans-serif;
   font-size: 12px !important;
@@ -540,7 +553,7 @@ div.red-back {
 }
 
 .yel-button li a span {
-  background: transparent url('../images/yel-button-rt.gif') 65px -0px no-repeat;
+  background: transparent url('../../images/yel-button-rt.gif') 65px -0px no-repeat;
   color: #fff;
   padding: 4px 13px 7px 10px;
 }
@@ -561,7 +574,7 @@ div.red-back {
 
 
 .green-button li a {
-  background: transparent url('../images/green-button-lft.gif') no-repeat left;
+  background: transparent url('../../images/green-button-lft.gif') no-repeat left;
   color: #fff;
   font: Arial, Helvetica, sans-serif;
   font-size: 12px !important;
@@ -570,7 +583,7 @@ div.red-back {
 }
 
 .green-button li a span {
-  background: transparent url('../images/green-button-rt.gif') 65px 1px no-repeat;
+  background: transparent url('../../images/green-button-rt.gif') 65px 1px no-repeat;
   color: #fff;
   padding: 5px 13px 7px 10px;
 }
@@ -589,7 +602,7 @@ div.red-back {
 
 
 .orange-button li a {
-  background: transparent url('../images/orange-btn-lft.gif') no-repeat left;
+  background: transparent url('../../images/orange-btn-lft.gif') no-repeat left;
   color: #fff;
   height: 16px;
   font-size: 11px !important;
@@ -597,7 +610,7 @@ div.red-back {
   padding: 4px 0 7px 0px;
 }
 .orange-button li a span {
-  background: transparent url('../images/orange-btn-rt.gif') no-repeat center right;
+  background: transparent url('../../images/orange-btn-rt.gif') no-repeat center right;
   color: #fff;
   padding: 4px 12px 7px 10px;
 }
@@ -690,12 +703,12 @@ div.red-back {
   width: 920px;
   float: left;
   height: 7px;
-  background: #eaeaea url('../images/strip-bot-mid.gif') bottom left repeat-x;
+  background: #eaeaea url('../../images/strip-bot-mid.gif') bottom left repeat-x;
 }
 .strip-wrapper .strip-line-bot .strip-bot-rt {
   width: 12px;
   height: 7px;
-  background: url('../images/strip-bot-rt.gif') bottom right no-repeat;
+  background: url('../../images/strip-bot-rt.gif') bottom right no-repeat;
   float: right;
 }
 
@@ -707,33 +720,49 @@ div.red-back {
   width: 57px;
   height: 20px;
   float: left;
-  background: url('../images/battery.jpg') left top no-repeat;
+  background: url('../../images/battery.jpg') left top no-repeat;
   padding: 5px;
 }
 .battery-cover .very-low {
   height: 13px;
-  background: #DDD url('../images/red_back.gif') repeat-x;
+/*  background: #DDD url('../../images/red_back.gif') repeat-x;*/
+  background: #d81b21;
+  background: -webkit-gradient(linear, left top, left bottom, from(#aa1317), to(#ed1c24));
+  background: -moz-linear-gradient(top,  #aa1317,  #ed1c24);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#aa1317', endColorstr='#ed1c24');
   float: left;
   width: 15%;
 }
 
 .battery-cover .low {
   height: 13px;
-  background: #DDD url('../images/yellow_back.gif') repeat-x;
+/*  background: #DDD url('../../images/yellow_back.gif') repeat-x;*/
+  background: #F7E346;
+  background: -webkit-gradient(linear, left top, left bottom, from(#CFB136), to(#EBD348));
+  background: -moz-linear-gradient(top,  #CFB136,  #EBD348);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#CFB136', endColorstr='#EBD348');
   float: left;
   width: 25%;
 }
 
 .battery-cover .ok {
   height: 13px;
-  background: #DDD url('../images/green_back.gif') repeat-x;
+/*  background: #DDD url('../../images/green_back.gif') repeat-x;*/
+  background: #64991e;
+  background: -webkit-gradient(linear, left top, left bottom, from(#4e7d0e), to(#7db72f));
+  background: -moz-linear-gradient(top,  #4e7d0e,  #7db72f);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#4e7d0e', endColorstr='#7db72f');
   float: left;
   width: 50%;
 }
 
 .battery-cover .full {
   height: 13px;
-  background: #DDD url('../images/green_back.gif') repeat-x;
+/*  background: #DDD url('../../images/green_back.gif') repeat-x;*/
+  background: #64991e;
+  background: -webkit-gradient(linear, left top, left bottom, from(#4e7d0e), to(#7db72f));
+  background: -moz-linear-gradient(top,  #4e7d0e,  #7db72f);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#4e7d0e', endColorstr='#7db72f');
   float: left;
   width: 79%;
 }

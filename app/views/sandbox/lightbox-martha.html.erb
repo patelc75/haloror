@@ -2,21 +2,21 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-  <%= stylesheet_link_tag "style", "screen", "myscreen" %>
+  <% stylesheet "style" %>
   <!--[if IE 7]>
-  <%= stylesheet_link_tag "style7" %>
+    <%= stylesheet_link_tag "style7" %>
   <![endif]-->
-  <%= javascript_include_tag "custom-form-elements" %>
-  <script type="text/javascript">
-  function hidetxt()
-  {
-    document.getElementById("big-text-box").disabled=true;
-  }
-  function changeVisibilityoff()
-  {
-    document.getElementById("box-hide").style.visibility="hidden";
-  }
-  </script>
+  <% javascript "custom-form-elements" %>
+  <% javascript do %>
+    function hidetxt()
+    {
+      document.getElementById("big-text-box").disabled=true;
+    }
+    function changeVisibilityoff()
+    {
+      document.getElementById("box-hide").style.visibility="hidden";
+    }
+  <% end %>
 </head>
 <body>
   <div class="lightbox-wrapper">

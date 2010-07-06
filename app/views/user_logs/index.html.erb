@@ -7,7 +7,7 @@
     <th>Message</th>
   </tr>
   <% @user_logs.each do |log| %>
-    <tr class="<%= cycle('', 'alt-row') %>">
+    <tr class="<%= cycle('', 'altrow') %>">
       <td><%= h log.created_at %></td>
       <td><%= h log.log %></td>
     </tr>

@@ -6,7 +6,7 @@
 <% else %>
 
 <% content_for :css do %>
-  <%= stylesheet_link_tag 'screen', 'myscreen', 'css3-buttons' %>
+  <%= stylesheet_link_tag 'screen', 'myscreen', 'custom/buttons' %>
 <% end %>
 
 <div class="container">
@@ -23,8 +23,8 @@
         <%= f.hidden_field :id %>
       </p>
       <p>
-        <%= f.submit "Next", :class => "button blue-gradient" %>
-        <%= f.submit "Skip", :class => "button green-gradient", :name =>"skip_button" unless @order.retailer? %>
+        <%= f.submit "Next", :class => "button blue-button" %>
+        <%= f.submit "Skip", :class => "button green-button", :name =>"skip_button" unless @order.retailer? %>
       </p>
       <% end -%>
     </div>

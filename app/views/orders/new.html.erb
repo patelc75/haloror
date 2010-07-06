@@ -7,12 +7,12 @@
 <% end %>
 <% unless @confirmation %>
     <% content_for :js do %>
-      <%= javascript_include_tag "facebox/facebox.js" %>
+      <%= javascript_include_tag "custom/facebox/facebox.js" %>
       <%= javascript_include_tag "validation.js" %>
       <%= javascript_include_tag "masked-input.js" %>
     <% end -%>
     <% content_for :css do %>
-      <%= stylesheet_link_tag "facebox/facebox.css" %>
+      <%= stylesheet_link_tag "custom/facebox/facebox.css" %>
     <% end -%>
 <% end -%>
 

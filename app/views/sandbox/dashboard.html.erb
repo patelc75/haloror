@@ -1,12 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<body>   
-<font size="5" color="blue">   
-<strong><%= link_to 'Day 1', url_for(:controller => 'sandbox', :action => 'dashboard-martha') %></strong>    
-<br>
-<strong><%= link_to 'Day 2', url_for(:controller => 'sandbox', :action => 'dashboard2-marian') %></strong>
-</font>
-<br>
-</body>
-</html>
+<div class="text-center box">
+  <p><%= link_to 'Dashboard on Day 1', url_for(:controller => 'sandbox', :action => 'dashboard-martha'), :class => "button blue-button large" %></p>
+  <p><%= link_to 'Dashboard on Day 2', url_for(:controller => 'sandbox', :action => 'dashboard2-marian'), :class => "button blue-button large" %></p>
+</div>

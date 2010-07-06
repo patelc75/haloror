@@ -1,5 +1,5 @@
 <% content_for :css do %>
-  <%= stylesheet_link_tag 'css3-buttons' %>
+  <%= stylesheet_link_tag 'custom/buttons' %>
 <% end %>
 <h1><%= @triage_audit_log.is_dismissed ? '' : 'Un' %>Dismiss Triage</h1>
 
@@ -35,7 +35,7 @@
         
         <div class="prepend-top prepend-2 span-10 last">
           <%= link_to "Cancel", triage_path, :class => "buttton blue small" %>
-          <%= f.submit 'Ok', :class => "button blue-gradient small" %>
+          <%= f.submit 'Ok', :class => "button blue-button small" %>
         </div>
       </div>
       

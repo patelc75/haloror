@@ -128,4 +128,70 @@ module ApplicationHelper
   def markaby(&block)
     Markaby::Builder.new({}, self, &block)
   end
+  
+  # this makes the following possible in views
+  #   <% javascript 'some_js_file' %>
+  # or
+  #   <% javascript do %>
+  #     <script src="/javascripts/application.js" type="text/javascript"></script>
+  #     <%= javascript_include_tag "more_js", :cache => true %>
+  #   <% end %>
+  # or
+  #   <% javascript do %>
+  #     function check_it() { document.getElementById("element-id"); }
+  #   <% end %>  
+  def javascript(*file_names, &block)
+    content_for(:js) { javascript_include_tag(*file_names) }
+    if block_given?
+      captured = capture(&block)
+      if captured.include?("<script")
+        content_for(:js) { concat( captured, block.binding) }
+      else
+        content_for(:js) do
+          concat( "<script type=\"text/javascript\">", block.binding)
+          concat( captured, block.binding)
+          concat( "</script>", block.binding)
+        end
+      end
+    end
+  end
+
+  # this makes the following possible in views
+  #   <% stylesheet 'some_css_file' %>
+  # or
+  #   <% stylesheet do %>
+  #     <link href="/stylesheets/layout.css" media="screen" rel="stylesheet" type="text/css" />
+  #     <%= stylesheet_link_tag "another_css_file", :cache => true %>
+  #   <% end %>
+  # or
+  #   <% stylesheet do %>
+  #     a { color: #000; }
+  #   <% end %>  
+  def stylesheet(*file_names, &block)
+    content_for(:css) { stylesheet_link_tag(*file_names) }
+    if block_given?
+      captured = capture(&block)
+      if captured.include?("<style")
+        content_for(:css) { concat( capture(&block), block.binding) }
+      else
+        content_for(:css) do
+          concat( "<style type=\"text/css\" media=\"screen\">", block.binding)
+          concat( captured, block.binding)
+          concat( "</style>", block.binding)
+        end
+      end
+    end
+  end
+
+  # this makes the following possible in views
+  #   <% meta_tag "<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>" %>
+  # or
+  #   <% meta_tag do %>
+  #     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  #     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  #   <% end %>
+  def meta_tag(*tags, &block)
+    content_for(:meta_tags) { tags }
+    content_for(:meta_tags) { concat(capture( &block), block.binding) if block_given? }
+  end
 end

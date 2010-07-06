@@ -1,349 +1,326 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<% stylesheet 'custom/dashboard', "style" %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-  <title>Dashboard</title>
-  <%= stylesheet_link_tag 'dashboard', "style", "screen" %>
-</head>
-<body>
+<div class="span-24 last">
+  <div class="prepend-1 span-6">
+    Begin Time (Eastern)<br />
+    <input type="text"  style="height:21px; width:155px; border:#000000 solid 1px; margin-right:7px;" value="" />
+    <a href="#"><%= image_tag("calendar.gif") %></a>
+  </div>
 
-  <div class="span-24 last">
-    <div class="prepend-1 span-6">
-      Begin Time (Eastern)<br />
-      <input type="text"  style="height:21px; width:155px; border:#000000 solid 1px; margin-right:7px;" value="" />
-      <a href="#"><%= image_tag("calendar.gif") %></a>
+  <div class="span-6">
+    End Time (Eastern)<br />
+    <input type="text"  style="height:21px; width:155px; border:#000000 solid 1px; margin-right:7px;" value="" />
+    <a href="#"><%= image_tag("calendar.gif") %></a>
+  </div>
+
+  <div class="span-11 last prepend-top">
+    <div class="button blue-button medium">Yesterday</div>
+    <div class="button blue-button medium">Today</div>
+    <div class="button blue-button medium">Week</div>
+    <div class="button blue-button medium">Month</div>
+  </div>
+</div>
+
+<div class="mid-holder">
+  <br />
+
+  <div class="head-wrapper">
+    <div class="lft"><%= image_tag("head-lft.gif") %></div>
+    <div class="head-rep">
+      <dd class="lft">
+        <dl class="lft-links">Caseload Residents</dl>
+        <dl  class="lft-links">|</dl>
+        <dl class="lft-links"><span style="color:#000000;">8 remaining</span></dl>
+      </dd>
+
+      <dd class="rt-fit">
+        <dl class="lft"><strong><%= link_to 'Dismiss All Greens', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "rt-links"  %></strong></dl>
+        <dl class="lft-links" style="float:right"><span style="color:#000000;">Tue Dec 1 2009 8:14AM CST</span></dl>
+      </dd>
     </div>
+    <div class="lft"><%= image_tag("head-rt.gif") %></div>
+  </div>
+  <div class="clear"></div>
 
-    <div class="span-6">
-      End Time (Eastern)<br />
-      <input type="text"  style="height:21px; width:155px; border:#000000 solid 1px; margin-right:7px;" value="" />
-      <a href="#"><%= image_tag("calendar.gif") %></a>
-    </div>
+  <div class="dashboard-wrapper">
+    <div class="dashboard-txt">
 
-    <div class="span-11 last">
-      <br />
-      <ul class="day-button lft">
-        <li  style="float:left;"><a href="#"><span>Yesterday</span></a></li>
-      </ul>
-      <ul class="day1-button lft">
-        <li  style="float:left;"><a href="#"><span>Today</span></a></li>
-      </ul>
-      <ul class="day2-button lft">
-        <li  style="float:left;"><a href="#"><span>Week</span></a></li>
-      </ul>
-      <ul class="day3-button lft">
-        <li  style="float:left;"><a href="#"><span>Month</span></a></li>
-      </ul>
+      <div class="prepend-1 span-22 last">
+        <div class="span-3 text-center">Name<%= image_tag("blue-up.gif") %></div>
+        <div class="span-4 text-center">Alerts <%= image_tag("grey-up.gif") %></div>
+        <div class="span-2 text-center">Compliance <%= image_tag("grey-up.gif") %></div>
+        <div class="span-2 text-center">Steps<%= image_tag("grey-up.gif") %></div>
+        <div class="span-3 text-center">Activity<%= image_tag("grey-up.gif") %></div>
+        <div class="span-1 text-center">Falls<%= image_tag("grey-up.gif") %></div>
+        <div class="span-2 text-center">Battery<%= image_tag("grey-up.gif") %></div>
+        <div class="span-2 text-center">Connectivity<%= image_tag("grey-up.gif") %></div>
+        <div class="span-3 text-center last"> Last Updated<%= image_tag("grey-up.gif") %></div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="strip-wrapper">
+        <div class="strip-line-top">
+          <%= image_tag("strip-top-lft.gif") %>
+          <div class="strip-top-rt"></div>
+        </div>
+        <div class="strip-mid-repeat">
+          <div class="prepend-1 span-22 last">
+            <div class="span-3">Jerry Peterson</div>
+            <div class="span-4">
+              <%= image_tag("ab.gif") %>
+              <%= link_to image_tag("graph.jpg", :class => "gap5lft"), url_for(:controller => 'sandbox', :action => 'chart-jerry'), :class => "rt-links"  %>
+              <%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-jerry'), :class => "small-link"  %>
+            </div>
+            <div class="span-2">45%</div>
+            <div class="span-2">34 (-23%)</div>
+            <div class="span-3"><div class="red-back">Very Low (-45%)</div></div>
+            <div class="span-1">1</div>
+            <div class="span-2">
+              <div class="battery-cover">
+                <div class="full"><%= image_tag("battery-rt.gif", :align => "right") %></div>
+              </div>
+            </div>
+            <div class="span-2"><%= image_tag("router_good.png", :align => "top") %></div>
+            <div class="span-3 last">Tue Dec 1 2009 8:12AM</div>
+          </div>
+        </div>
+        <div class="strip-line-bot">
+          <%= image_tag("strip-bot-lft.gif") %>
+          <div class="strip-bot-rt"></div>
+        </div>
+      </div>
+
+      <div class="strip-wrapper">
+        <div class="strip-line-top">
+          <%= image_tag("strip-top-lft.gif") %>
+          <div class="strip-top-rt"></div>
+        </div>
+        <div class="strip-mid-repeat">
+          <div class="prepend-1 span-22 last">
+            <div class="span-3">Gerald Johnston</div>
+            <div class="span-4">
+              <%= image_tag("ab.gif") %>
+              <%= image_tag("graph.jpg", :class => "gap5lft") %>
+              <%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %>
+            </div>
+            <div class="span-2"><div class="red-back">7%</span></div></div>
+            <div class="span-2">212 (+12%)</div>
+            <div class="span-3">Average<span class="gap5lft">(+7%)</span></div>
+            <div class="span-1">1</div>
+            <div class="span-2">
+              <div class="battery-cover">
+                <div class="very-low"><%= image_tag("battery-rt.gif", :align => "right") %></div>
+              </div>
+            </div>
+            <div class="span-2"><%= image_tag("status_unhooked.png", :align => "top") %></div>
+            <div class="span-3 last"><div class="red-back">Mon Nov 30 2:45PM</div></div>
+          </div>
+        </div>
+        <div class="strip-line-bot">
+          <%= image_tag("strip-bot-lft.gif") %>
+          <div class="strip-bot-rt"></div>
+        </div>
+      </div>
+
+      <div class="strip-wrapper">
+        <div class="strip-line-top">
+          <%= image_tag("strip-top-lft.gif") %>
+          <div class="strip-top-rt"></div>
+        </div>
+        <div class="strip-mid-repeat">
+          <div class="prepend-1 span-22 last">
+            <div class="span-3">Marian Berlin</div>
+            <div class="span-4">
+              <%= image_tag("ca.gif") %>
+              <%= image_tag("graph.jpg", :class => "gap5lft") %>
+              <%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %>
+            </div>
+            <div class="span-2"><div class="yellow-back">16%</span></div></div>
+            <div class="span-2">445 (-16%)</div>
+            <div class="span-3">High <span class="gap5lft">(-12%)</span></div>
+            <div class="span-1">0</div>
+            <div class="span-2">
+              <div class="battery-cover">
+                <div class="full"><%= image_tag("battery-rt.gif", :align => "right") %></div>
+              </div>
+            </div>
+            <div class="span-2"><%= image_tag("status_dial_up.png", :align => "top") %></div>
+            <div class="span-3 last"><span class="red-back">Tue Dec 1 2009 3:52AM</span></div>
+          </div>
+        </div>
+        <div class="strip-line-bot">
+          <%= image_tag("strip-bot-lft.gif") %>
+          <div class="strip-bot-rt"></div>
+        </div>
+      </div>
+
+      <div class="strip-wrapper">
+        <div class="strip-line-top">
+          <%= image_tag("strip-top-lft.gif") %>
+          <div class="strip-top-rt"></div>
+        </div>
+        <div class="strip-mid-repeat">
+          <div class="prepend-1 span-22 last">
+            <div class="span-3">Earl Bell</div>
+            <div class="span-4">
+              <%= image_tag("ca.gif") %>
+              <%= image_tag("graph.jpg", :class => "gap5lft") %>
+              <%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %>
+            </div>
+            <div class="span-2">71%</div>
+            <div class="span-2">683 (+10%)</div>
+            <div class="span-3">Very High <span class="gap5lft">(+6%)</span></div>
+            <div class="span-1">0</div>
+            <div class="span-2">
+              <div class="battery-cover">
+                <div class="low"><%= image_tag("battery-rt.gif", :align => "right") %></div>
+              </div>
+            </div>
+            <div class="span-2"><%= image_tag("router_good.png", :align => "top") %></div>
+            <div class="span-3 last"><span class="red-back">Tue Dec 1 2009 6:21AM</span></div>
+          </div>
+        </div>
+        <div class="strip-line-bot">
+          <%= image_tag("strip-bot-lft.gif") %>
+          <div class="strip-bot-rt"></div>
+        </div>
+      </div>
+
+      <div class="strip-wrapper">
+        <div class="strip-line-top">
+          <%= image_tag("strip-top-lft.gif") %>
+          <div class="strip-top-rt"></div>
+        </div>
+        <div class="strip-mid-repeat">
+          <div class="prepend-1 span-22 last">
+            <div class="span-3">Madeline Carey</div>
+            <div class="span-4">
+              <%= image_tag("ca.gif") %>
+              <%= image_tag("graph.jpg", :class => "gap5lft") %>
+              <%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %>
+            </div>
+            <div class="span-2">88%</div>
+            <div class="span-2">105 (-100%)</div>
+            <div class="span-3"><div class="yellow-back">Low (-17%)</div></div>
+            <div class="span-1">0</div>
+            <div class="span-2">
+              <div class="battery-cover">                
+                <div class="full"><%= image_tag("battery-rt.gif", :align => "right") %></div>
+              </div>
+            </div>
+            <div class="span-2"><%= image_tag("status_dial_up.png", :align => "top") %></div>
+            <div class="span-3 last"><span class="red-back">Tue Dec 1 2009 2:53AM</span></div>
+          </div>
+        </div>
+        <div class="strip-line-bot">
+          <%= image_tag("strip-bot-lft.gif") %>
+          <div class="strip-bot-rt"></div>
+        </div>
+      </div>
+
+      <div class="strip-wrapper">
+        <div class="strip-line-top">
+          <%= image_tag("strip-top-lft.gif") %>
+          <div class="strip-top-rt"></div>
+        </div>
+        <div class="strip-mid-repeat">
+          <div class="prepend-1 span-22 last">
+            <div class="span-3">Sarah Tillman</div>
+            <div class="span-4">
+              <%= image_tag("no.gif") %>
+              <%= image_tag("graph.jpg", :class => "gap5lft") %>
+              <%= link_to 'Dismiss', "#", :class => "small-link"  %>
+            </div>
+            <div class="span-2">57%</div>
+            <div class="span-2">243 (-4%)</div>
+            <div class="span-3">Average <span class="gap5lft">(-2%)</span></div>
+            <div class="span-1">0</div>
+            <div class="span-2">
+              <div class="battery-cover">
+                <div class="full"><%= image_tag("battery-rt.gif", :align => "right") %></div>
+              </div>
+            </div>
+            <div class="span-2"><%= image_tag("status_dial_up.png", :align => "top") %></div>
+            <div class="span-3 last">Tue Dec 1 2009 4:24AM</div>
+          </div>
+        </div>
+        <div class="strip-line-bot">
+          <%= image_tag("strip-bot-lft.gif") %>
+          <div class="strip-bot-rt"></div>
+        </div>
+      </div>
+
+      <div class="strip-wrapper">
+        <div class="strip-line-top">
+          <%= image_tag("strip-top-lft.gif") %>
+          <div class="strip-top-rt"></div>
+        </div>
+        <div class="strip-mid-repeat">
+          <div class="prepend-1 span-22 last">
+            <div class="span-3">Robert Pullen</div>
+            <div class="span-4">
+              <%= image_tag("no.gif") %>
+              <%= image_tag("graph.jpg", :class => "gap5lft") %>
+              <%= link_to 'Dismiss', "#", :class => "small-link"  %>
+            </div>
+            <div class="span-2">94%</div>
+            <div class="span-2">512 (+15%)</div>
+            <div class="span-3">High <span class="gap5lft">(+12%)</span></div>
+            <div class="span-1">0</div>
+            <div class="span-2">
+              <div class="battery-cover">
+                <div class="ok"><%= image_tag("battery-rt.gif", :align => "right") %></div>
+              </div>
+            </div>
+            <div class="span-2"><%= image_tag("router_good.png", :align => "top") %></div>
+            <div class="span-3 last">Tue Dec 1 2009 7:25AM</div>
+          </div>
+        </div>
+        <div class="strip-line-bot">
+          <%= image_tag("strip-bot-lft.gif") %>
+          <div class="strip-bot-rt"></div>
+        </div>
+      </div>
+
+      <div class="strip-wrapper">
+        <div class="strip-line-top">
+          <%= image_tag("strip-top-lft.gif") %>
+          <div class="strip-top-rt"></div>
+        </div>
+        <div class="strip-mid-repeat">
+          <div class="prepend-1 span-22 last">
+            <div class="span-3">John J. Nelson</div>
+            <div class="span-4">
+              <%= image_tag("no.gif") %>
+              <%= image_tag("graph.jpg", :class => "gap5lft") %>
+              <%= link_to 'Dismiss', "#", :class => "small-link"  %>
+            </div>
+            <div class="span-2">87%</div>
+            <div class="span-2">882 (+25%)</div>
+            <div class="span-3">Very High <span class="gap5lft">(+19%)</span></div>
+            <div class="span-1">0</div>
+            <div class="span-2">
+              <div class="battery-cover">
+                <div class="full"><%= image_tag("battery-rt.gif", :align => "right") %></div>
+              </div>
+            </div>
+            <div class="span-2"><%= image_tag("status_dial_up.png", :align => "top") %></div>
+            <div class="span-3 last">Tue Dec 1 2009 1:24AM</div>
+          </div>
+        </div>
+        <div class="strip-line-bot">
+          <%= image_tag("strip-bot-lft.gif") %>
+          <div class="strip-bot-rt"></div>
+        </div>
+      </div>
+
+
     </div>
   </div>
 
-  <div class="mid-holder">
-    <br />
-
-    <div class="head-wrapper">
-      <div class="lft"><%= image_tag("head-lft.gif") %></div>
-      <div class="head-rep">
-        <dd class="lft">
-          <dl class="lft-links">Caseload Residents</dl>
-          <dl  class="lft-links">|</dl>
-          <dl class="lft-links"><span style="color:#000000;">8 remaining</span></dl>
-        </dd>
-
-        <dd class="rt-fit">
-          <dl class="lft"><strong><%= link_to 'Dismiss All Greens', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "rt-links"  %></strong></dl>
-          <dl class="lft-links" style="float:right"><span style="color:#000000;">Tue Dec 1 2009 8:14AM CST</span></dl>
-        </dd>
-      </div>
-      <div class="lft"><%= image_tag("head-rt.gif") %></div>
-    </div>
-    <div class="clear"></div>
-
-    <div class="dashboard-wrapper">
-      <div class="dashboard-txt">
-
-        <div class="prepend-1 span-22 last">
-          <div class="span-3 text-center">Name<%= image_tag("blue-up.gif") %></div>
-          <div class="span-4 text-center">Alerts <%= image_tag("grey-up.gif") %></div>
-          <div class="span-2 text-center">Compliance <%= image_tag("grey-up.gif") %></div>
-          <div class="span-2 text-center">Steps<%= image_tag("grey-up.gif") %></div>
-          <div class="span-3 text-center">Activity<%= image_tag("grey-up.gif") %></div>
-          <div class="span-1 text-center">Falls<%= image_tag("grey-up.gif") %></div>
-          <div class="span-2 text-center">Battery<%= image_tag("grey-up.gif") %></div>
-          <div class="span-2 text-center">Connectivity<%= image_tag("grey-up.gif") %></div>
-          <div class="span-3 text-center last"> Last Updated<%= image_tag("grey-up.gif") %></div>
-        </div>
-        <div class="clear"></div>
-
-        <div class="strip-wrapper">
-          <div class="strip-line-top">
-            <%= image_tag("strip-top-lft.gif") %>
-            <div class="strip-top-rt"></div>
-          </div>
-          <div class="strip-mid-repeat">
-            <div class="prepend-1 span-22 last">
-              <div class="span-3">Jerry Peterson</div>
-              <div class="span-4">
-                <%= image_tag("ab.gif") %>
-                <%= link_to image_tag("graph.jpg", :class => "gap5lft"), url_for(:controller => 'sandbox', :action => 'chart-jerry'), :class => "rt-links"  %>
-                <%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-jerry'), :class => "small-link"  %>
-              </div>
-              <div class="span-2">45%</div>
-              <div class="span-2">34 (-23%)</div>
-              <div class="span-3"><div class="red-back">Very Low (-45%)</div></div>
-              <div class="span-1">1</div>
-              <div class="span-2">
-                <div class="battery-cover">
-                  <div class="full"><%= image_tag("battery-rt.gif", :align => "right") %></div>
-                </div>
-              </div>
-              <div class="span-2"><%= image_tag("router_good.png", :align => "top") %></div>
-              <div class="span-3 last">Tue Dec 1 2009 8:12AM</div>
-            </div>
-          </div>
-          <div class="strip-line-bot">
-            <%= image_tag("strip-bot-lft.gif") %>
-            <div class="strip-bot-rt"></div>
-          </div>
-        </div>
-
-        <div class="strip-wrapper">
-          <div class="strip-line-top">
-            <%= image_tag("strip-top-lft.gif") %>
-            <div class="strip-top-rt"></div>
-          </div>
-          <div class="strip-mid-repeat">
-            <div class="prepend-1 span-22 last">
-              <div class="span-3">Gerald Johnston</div>
-              <div class="span-4">
-                <%= image_tag("ab.gif") %>
-                <%= image_tag("graph.jpg", :class => "gap5lft") %>
-                <%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %>
-              </div>
-              <div class="span-2"><div class="red-back">7%</span></div></div>
-              <div class="span-2">212 (+12%)</div>
-              <div class="span-3">Average<span class="gap5lft">(+7%)</span></div>
-              <div class="span-1">1</div>
-              <div class="span-2">
-                <div class="battery-cover">
-                  <div class="very-low"><%= image_tag("battery-rt.gif", :align => "right") %></div>
-                </div>
-              </div>
-              <div class="span-2"><%= image_tag("status_unhooked.png", :align => "top") %></div>
-              <div class="span-3 last"><div class="red-back">Mon Nov 30 2:45PM</div></div>
-            </div>
-          </div>
-          <div class="strip-line-bot">
-            <%= image_tag("strip-bot-lft.gif") %>
-            <div class="strip-bot-rt"></div>
-          </div>
-        </div>
-
-        <div class="strip-wrapper">
-          <div class="strip-line-top">
-            <%= image_tag("strip-top-lft.gif") %>
-            <div class="strip-top-rt"></div>
-          </div>
-          <div class="strip-mid-repeat">
-            <div class="prepend-1 span-22 last">
-              <div class="span-3">Marian Berlin</div>
-              <div class="span-4">
-                <%= image_tag("ca.gif") %>
-                <%= image_tag("graph.jpg", :class => "gap5lft") %>
-                <%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %>
-              </div>
-              <div class="span-2"><div class="yellow-back">16%</span></div></div>
-              <div class="span-2">445 (-16%)</div>
-              <div class="span-3">High <span class="gap5lft">(-12%)</span></div>
-              <div class="span-1">0</div>
-              <div class="span-2">
-                <div class="battery-cover">
-                  <div class="full"><%= image_tag("battery-rt.gif", :align => "right") %></div>
-                </div>
-              </div>
-              <div class="span-2"><%= image_tag("status_dial_up.png", :align => "top") %></div>
-              <div class="span-3 last"><span class="red-back">Tue Dec 1 2009 3:52AM</span></div>
-            </div>
-          </div>
-          <div class="strip-line-bot">
-            <%= image_tag("strip-bot-lft.gif") %>
-            <div class="strip-bot-rt"></div>
-          </div>
-        </div>
-
-        <div class="strip-wrapper">
-          <div class="strip-line-top">
-            <%= image_tag("strip-top-lft.gif") %>
-            <div class="strip-top-rt"></div>
-          </div>
-          <div class="strip-mid-repeat">
-            <div class="prepend-1 span-22 last">
-              <div class="span-3">Earl Bell</div>
-              <div class="span-4">
-                <%= image_tag("ca.gif") %>
-                <%= image_tag("graph.jpg", :class => "gap5lft") %>
-                <%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %>
-              </div>
-              <div class="span-2">71%</div>
-              <div class="span-2">683 (+10%)</div>
-              <div class="span-3">Very High <span class="gap5lft">(+6%)</span></div>
-              <div class="span-1">0</div>
-              <div class="span-2">
-                <div class="battery-cover">
-                  <div class="low"><%= image_tag("battery-rt.gif", :align => "right") %></div>
-                </div>
-              </div>
-              <div class="span-2"><%= image_tag("router_good.png", :align => "top") %></div>
-              <div class="span-3 last"><span class="red-back">Tue Dec 1 2009 6:21AM</span></div>
-            </div>
-          </div>
-          <div class="strip-line-bot">
-            <%= image_tag("strip-bot-lft.gif") %>
-            <div class="strip-bot-rt"></div>
-          </div>
-        </div>
-
-        <div class="strip-wrapper">
-          <div class="strip-line-top">
-            <%= image_tag("strip-top-lft.gif") %>
-            <div class="strip-top-rt"></div>
-          </div>
-          <div class="strip-mid-repeat">
-            <div class="prepend-1 span-22 last">
-              <div class="span-3">Madeline Carey</div>
-              <div class="span-4">
-                <%= image_tag("ca.gif") %>
-                <%= image_tag("graph.jpg", :class => "gap5lft") %>
-                <%= link_to 'Dismiss', url_for(:controller => 'sandbox', :action => 'lightbox-martha'), :class => "small-link"  %>
-              </div>
-              <div class="span-2">88%</div>
-              <div class="span-2">105 (-100%)</div>
-              <div class="span-3"><div class="yellow-back">Low (-17%)</div></div>
-              <div class="span-1">0</div>
-              <div class="span-2">
-                <div class="battery-cover">                
-                  <div class="full"><%= image_tag("battery-rt.gif", :align => "right") %></div>
-                </div>
-              </div>
-              <div class="span-2"><%= image_tag("status_dial_up.png", :align => "top") %></div>
-              <div class="span-3 last"><span class="red-back">Tue Dec 1 2009 2:53AM</span></div>
-            </div>
-          </div>
-          <div class="strip-line-bot">
-            <%= image_tag("strip-bot-lft.gif") %>
-            <div class="strip-bot-rt"></div>
-          </div>
-        </div>
-
-        <div class="strip-wrapper">
-          <div class="strip-line-top">
-            <%= image_tag("strip-top-lft.gif") %>
-            <div class="strip-top-rt"></div>
-          </div>
-          <div class="strip-mid-repeat">
-            <div class="prepend-1 span-22 last">
-              <div class="span-3">Sarah Tillman</div>
-              <div class="span-4">
-                <%= image_tag("no.gif") %>
-                <%= image_tag("graph.jpg", :class => "gap5lft") %>
-                <%= link_to 'Dismiss', "#", :class => "small-link"  %>
-              </div>
-              <div class="span-2">57%</div>
-              <div class="span-2">243 (-4%)</div>
-              <div class="span-3">Average <span class="gap5lft">(-2%)</span></div>
-              <div class="span-1">0</div>
-              <div class="span-2">
-                <div class="battery-cover">
-                  <div class="full"><%= image_tag("battery-rt.gif", :align => "right") %></div>
-                </div>
-              </div>
-              <div class="span-2"><%= image_tag("status_dial_up.png", :align => "top") %></div>
-              <div class="span-3 last">Tue Dec 1 2009 4:24AM</div>
-            </div>
-          </div>
-          <div class="strip-line-bot">
-            <%= image_tag("strip-bot-lft.gif") %>
-            <div class="strip-bot-rt"></div>
-          </div>
-        </div>
-
-        <div class="strip-wrapper">
-          <div class="strip-line-top">
-            <%= image_tag("strip-top-lft.gif") %>
-            <div class="strip-top-rt"></div>
-          </div>
-          <div class="strip-mid-repeat">
-            <div class="prepend-1 span-22 last">
-              <div class="span-3">Robert Pullen</div>
-              <div class="span-4">
-                <%= image_tag("no.gif") %>
-                <%= image_tag("graph.jpg", :class => "gap5lft") %>
-                <%= link_to 'Dismiss', "#", :class => "small-link"  %>
-              </div>
-              <div class="span-2">94%</div>
-              <div class="span-2">512 (+15%)</div>
-              <div class="span-3">High <span class="gap5lft">(+12%)</span></div>
-              <div class="span-1">0</div>
-              <div class="span-2">
-                <div class="battery-cover">
-                  <div class="ok"><%= image_tag("battery-rt.gif", :align => "right") %></div>
-                </div>
-              </div>
-              <div class="span-2"><%= image_tag("router_good.png", :align => "top") %></div>
-              <div class="span-3 last">Tue Dec 1 2009 7:25AM</div>
-            </div>
-          </div>
-          <div class="strip-line-bot">
-            <%= image_tag("strip-bot-lft.gif") %>
-            <div class="strip-bot-rt"></div>
-          </div>
-        </div>
-
-        <div class="strip-wrapper">
-          <div class="strip-line-top">
-            <%= image_tag("strip-top-lft.gif") %>
-            <div class="strip-top-rt"></div>
-          </div>
-          <div class="strip-mid-repeat">
-            <div class="prepend-1 span-22 last">
-              <div class="span-3">John J. Nelson</div>
-              <div class="span-4">
-                <%= image_tag("no.gif") %>
-                <%= image_tag("graph.jpg", :class => "gap5lft") %>
-                <%= link_to 'Dismiss', "#", :class => "small-link"  %>
-              </div>
-              <div class="span-2">87%</div>
-              <div class="span-2">882 (+25%)</div>
-              <div class="span-3">Very High <span class="gap5lft">(+19%)</span></div>
-              <div class="span-1">0</div>
-              <div class="span-2">
-                <div class="battery-cover">
-                  <div class="full"><%= image_tag("battery-rt.gif", :align => "right") %></div>
-                </div>
-              </div>
-              <div class="span-2"><%= image_tag("status_dial_up.png", :align => "top") %></div>
-              <div class="span-3 last">Tue Dec 1 2009 1:24AM</div>
-            </div>
-          </div>
-          <div class="strip-line-bot">
-            <%= image_tag("strip-bot-lft.gif") %>
-            <div class="strip-bot-rt"></div>
-          </div>
-        </div>
-
-
-      </div>
-    </div>
-
-
-
-    <div class="bottom-curve-holder">
-      <div class="mid-bot-rep"><div class="lft"><%= image_tag("bot-lft.gif") %></div><div class="rt-fit"><%= image_tag("bot-rt.gif") %></div> </div>
-    </div>
-
-    <div class="clear"></div>
-
+  <div class="bottom-curve-holder">
+    <div class="mid-bot-rep"><div class="lft"><%= image_tag("bot-lft.gif") %></div><div class="rt-fit"><%= image_tag("bot-rt.gif") %></div> </div>
   </div>
-</body>
-</html>
+
+  <div class="clear"></div>
+</div>

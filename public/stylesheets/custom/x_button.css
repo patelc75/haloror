@@ -1,0 +1,97 @@
+/*all styles in this file are now obsolete
+we will delete these later. After halo 1.6 release
+*/
+
+/*a { text-decoration:none !important; }*/
+/*.red-curve{background-color: #fe0000; text-align:center; color:#FFFFFF; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+.yellow-curve{background-color: #fffd02; text-align:center; color:#000000; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+.blue-curve{background-color: #fffd02; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+*/
+/*.small {
+  font-size: 11px;
+  padding: .1em 1em .275em;
+}
+*/
+
+/*.button_new {
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  vertical-align: baseline;
+  margin: 0 2px;
+  outline: none;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  font: 12px/100% Arial, Helvetica, sans-serif;
+  padding: 5px 25px 5px 25px;
+  -webkit-border-radius: .5em; 
+  -moz-border-radius: .5em;
+  border-radius: .5em;
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+*/
+/* blue */
+/*.blue {
+  color: #ffffff !important;
+  background:#45a7c4 !important;
+  background: -webkit-gradient(linear, left top, left bottom, from(#50c4e9), to(#42a3c3)) !important;
+  background: -moz-linear-gradient(top,  #50c4e9,  #42a3c3) !important;
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#50c4e9', endColorstr='#42a3c3') !important;
+}
+*/
+
+/* lightblue */
+/*.lightblue {
+  color: #436274;
+  border: solid 1px #5e5f61;
+  background:#45a7c4 !important;
+  background: -webkit-gradient(linear, left top, left bottom, from(#f5f8fa), to(#b1cdd9)) !important;
+  background: -moz-linear-gradient(top,  #f5f8fa,  #b1cdd9) !important;
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f8fa', endColorstr='#b1cdd9') !important;
+}
+*/
+ /*abnormal*/
+/*.button_new_dash_1 {
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  vertical-align: baseline;
+  margin: 0 2px;
+  outline: none;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  font: 12px/100% Arial, Helvetica, sans-serif;
+  padding: 5px;
+  -webkit-border-radius: .5em; 
+  -moz-border-radius: .5em;
+  border-radius: .5em;
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+*/
+
+/*.button_new_dash_2 {
+  display: inline-block;
+  zoom: 1; 
+  *display: inline;
+  vertical-align: baseline;
+  margin: 0 2px;
+  outline: none;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  font: 12px/100% Arial, Helvetica, sans-serif;
+  padding: 5px 14px 5px 14px;
+  -webkit-border-radius: .5em; 
+  -moz-border-radius: .5em;
+  border-radius: .5em;
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+*/
