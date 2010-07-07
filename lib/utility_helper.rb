@@ -222,4 +222,20 @@ module UtilityHelper
   def split_phrase(phrase, delimeter = ' ')
     phrase.blank? ? [""] : phrase.split(delimeter).collect {|p| p.lstrip.rstrip}
   end
+  
+  # difference between datetime values in days, hours, minutes, seconds
+  #   returns an array of [days, hours, minutes, seconds]
+  def difference_between_datetime( dt_1, dt_2)
+    difference = ((dt_1 > dt_2) ? (dt_1 - dt_2) : (dt_2 - dt_1))
+
+    seconds    =  difference % 60
+    difference = (difference - seconds) / 60
+    minutes    =  difference % 60
+    difference = (difference - minutes) / 60
+    hours      =  difference % 24
+    difference = (difference - hours)   / 24
+    days       =  difference % 7
+    
+    return [days, hours, minutes, seconds]
+  end
 end
