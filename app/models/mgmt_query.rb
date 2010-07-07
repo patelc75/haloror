@@ -14,7 +14,7 @@ class MgmtQuery < ActiveRecord::Base
   # we can also use ApplicationHelper.difference_between_datetime for more specific values
   def delay
     diff = difference_between_datetime( timestamp_server, timestamp_device)
-    "%2d days %2d hours %2d minutes %2d seconds" % diff
+    "%3d days %2d hours %2d minutes %2d seconds" % diff
     # "#{diff[0]} days #{diff[1]} hours #{diff[2]} minutes #{diff[3]} seconds"
   end
   
@@ -26,7 +26,7 @@ class MgmtQuery < ActiveRecord::Base
       ""
     else
       diff = difference_between_datetime( timestamp_server, row.timestamp_server)
-      "%2d days %2d hours %2d minutes %2d seconds" % diff
+      "%3d days %2d hours %2d minutes %2d seconds" % diff
       # "#{diff[0]} days #{diff[1]} hours #{diff[2]} minutes #{diff[3]} seconds"
     end
   end
