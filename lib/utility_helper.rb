@@ -228,13 +228,13 @@ module UtilityHelper
   def difference_between_datetime( dt_1, dt_2)
     difference = ((dt_1 > dt_2) ? (dt_1 - dt_2) : (dt_2 - dt_1))
 
-    seconds    =  difference % 60
+    seconds    = (difference % 60).to_i
     difference = (difference - seconds) / 60
-    minutes    =  difference % 60
+    minutes    =  (difference % 60).to_i
     difference = (difference - minutes) / 60
-    hours      =  difference % 24
+    hours      =  (difference % 24).to_i
     difference = (difference - hours)   / 24
-    days       =  difference % 7
+    days       =  (difference % 7).to_i
     
     return [days, hours, minutes, seconds]
   end

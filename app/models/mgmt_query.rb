@@ -13,14 +13,22 @@ class MgmtQuery < ActiveRecord::Base
   # delay between timestamp_device <=> timestamp_server
   # we can also use ApplicationHelper.difference_between_datetime for more specific values
   def delay
-    distance_of_time_in_words( timestamp_server - timestamp_device)
+    diff = difference_between_datetime( timestamp_server, timestamp_device)
+    "%2d days %2d hours %2d minutes %2d seconds" % diff
+    # "#{diff[0]} days #{diff[1]} hours #{diff[2]} minutes #{diff[3]} seconds"
   end
   
   # time elapsed since last post (device_id picked from "self")
   # we can also use ApplicationHelper.difference_between_datetime for more specific values
   def time_span_since_last
     row = MgmtQuery.find_by_id( id-1)
-    row.blank? ? "" : [distance_of_time_in_words( timestamp_device - row.timestamp_device), distance_of_time_in_words( timestamp_server - row.timestamp_server)]
+    if row.blank?
+      ""
+    else
+      diff = difference_between_datetime( timestamp_server, row.timestamp_server)
+      "%2d days %2d hours %2d minutes %2d seconds" % diff
+      # "#{diff[0]} days #{diff[1]} hours #{diff[2]} minutes #{diff[3]} seconds"
+    end
   end
 
   def self.new_initialize(random=false)
@@ -137,4 +145,23 @@ class MgmtQuery < ActiveRecord::Base
     end
   end
 =end
+
+  # TODO: this is a global method in utility_helper
+  #   kept here redundant to avoid copying multiple files to www
+  #
+  # difference between datetime values in days, hours, minutes, seconds
+  # returns an array of [days, hours, minutes, seconds]
+  def difference_between_datetime( dt_1, dt_2)
+    difference = ((dt_1 > dt_2) ? (dt_1 - dt_2) : (dt_2 - dt_1))
+
+    seconds    = (difference % 60).to_i
+    difference = (difference - seconds) / 60
+    minutes    =  (difference % 60).to_i
+    difference = (difference - minutes) / 60
+    hours      =  (difference % 24).to_i
+    difference = (difference - hours)   / 24
+    days       =  (difference % 7).to_i
+  
+    return [days, hours, minutes, seconds]
+  end
 end
