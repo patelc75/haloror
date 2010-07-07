@@ -1,4 +1,4 @@
-module MgmtQueryLib
+class MgmtQueryLib
   include ActionView::Helpers::DateHelper
   
   def self.sql_like_output( device_id)

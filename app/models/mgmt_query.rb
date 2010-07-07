@@ -1,4 +1,6 @@
 class MgmtQuery < ActiveRecord::Base
+  include ActionView::Helpers::DateHelper # needed for distance_of_time_in_words
+  
   #MINUTES_INTERVAL = 1
   belongs_to :mgmt_cmd
   belongs_to :device
