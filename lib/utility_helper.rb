@@ -220,7 +220,7 @@ module UtilityHelper
   #   trim extra spaces on both sides for every element
   #
   def split_phrase(phrase, delimeter = ' ')
-    phrase.blank? ? [""] : phrase.split(delimeter).collect {|p| p.lstrip.rstrip}
+    phrase.blank? ? [""] : phrase.split(delimeter).collect(&:strip)
   end
   
   # difference between datetime values in days, hours, minutes, seconds

@@ -17,10 +17,10 @@ class MgmtQuery < ActiveRecord::Base
   # time elapsed since last post (device_id picked from "self")
   # we can also use ApplicationHelper.difference_between_datetime for more specific values
   def time_span_since_last
-    row = MgmtQuery.find_by_id(id-1)
-    [distance_of_time_in_words(timestamp_device - row.timestamp_device), distance_of_time_in_words(timestamp_server - row.timestamp_server)]
+    row = MgmtQuery.find_by_id( id-1)
+    row.blank? ? "" : [distance_of_time_in_words( timestamp_device - row.timestamp_device), distance_of_time_in_words( timestamp_server - row.timestamp_server)]
   end
-  
+
   def self.new_initialize(random=false)
     model = self.new
     if random
