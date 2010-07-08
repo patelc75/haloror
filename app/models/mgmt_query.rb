@@ -10,24 +10,26 @@ class MgmtQuery < ActiveRecord::Base
     find_by_device_id( device_id.to_i, :order => "timestamp_server DESC") unless device_id.blank? || device_id.to_i.zero?
   end
   
+  # before latest row for device_id
+  def last
+    MgmtQuery.find_all_by_device_id( device_id.to_i, :order => "timestamp_server DESC", :limit => 2).last unless device_id.blank? || device_id.to_i.zero?
+  end
+  
   # delay between timestamp_device <=> timestamp_server
   # we can also use ApplicationHelper.difference_between_datetime for more specific values
   def delay
     diff = difference_between_datetime( timestamp_server, timestamp_device)
     "%3d days %2d hours %2d minutes %2d seconds" % diff
-    # "#{diff[0]} days #{diff[1]} hours #{diff[2]} minutes #{diff[3]} seconds"
   end
   
   # time elapsed since last post (device_id picked from "self")
   # we can also use ApplicationHelper.difference_between_datetime for more specific values
   def time_span_since_last
-    row = MgmtQuery.find_by_id( id-1)
-    if row.blank?
+    if last.blank?
       ""
     else
-      diff = difference_between_datetime( timestamp_server, row.timestamp_server)
+      diff = difference_between_datetime( timestamp_server, last.timestamp_server)
       "%3d days %2d hours %2d minutes %2d seconds" % diff
-      # "#{diff[0]} days #{diff[1]} hours #{diff[2]} minutes #{diff[3]} seconds"
     end
   end
 
