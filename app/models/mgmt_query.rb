@@ -12,7 +12,7 @@ class MgmtQuery < ActiveRecord::Base
   
   # before latest row for device_id
   def last
-    MgmtQuery.find_all_by_device_id( device_id.to_i, :order => "timestamp_server DESC", :limit => 2).last unless device_id.blank? || device_id.to_i.zero?
+    MgmtQuery.find_by_device_id( device_id.to_i, :conditions => ["id < ?", id], :order => "timestamp_server DESC", :limit => 2) unless device_id.blank? || device_id.to_i.zero?
   end
   
   # delay between timestamp_device <=> timestamp_server
