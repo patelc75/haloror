@@ -55,25 +55,37 @@ class DebugTask
   #   DebugTask.local_failures( 337)        # or any user_id
   #   DebugTask.local_failures( 337, 478)   # output only for an array of user_ids
   def self.local_failures( *user_ids)
+    user_ids.compact! # remove any "nil"
+    # pick the date if argument given
+    date = user_ids.delete(user_ids.last) if [DateTime, Time, Date].include? user_ids.last.class
     # when ids not given, select distinct user_ids after 2010-May-01
-    conditions = ["timestamp >= ?", Time.mktime(2010, 05, 01)]
+    conditions = ( date.blank? ? {} : ["timestamp >= ?", date.to_formatted_s(:db)] )
     # fetch user_ids if not given
     ( user_ids = HaloDebugMsg.all( :select => "DISTINCT user_id as user_id", :conditions => conditions).collect(&:user_id).compact.reject {|e| e == 0} ) if user_ids.blank?
     # check appropriate data for each user found
-    User.all( :conditions => { :id => user_ids.flatten}).collect do |user|
+    result = User.all( :conditions => { :id => user_ids.flatten}).collect do |user|
       # fetch objects from database
       profile = user.profile unless user.blank?
       # fetch appropriate halo_debug_msg row
-      (msg = user.halo_debug_msgs.all( :conditions => conditions, :order => "timestamp DESC").first) unless user.blank?
+      unless user.blank?
+        msgs = user.halo_debug_msgs.all( :conditions => conditions, :order => "timestamp DESC")
+        msg = msgs.first unless msgs.blank?
+      end
       # create a buffer to avoid lengthy conditions in string
       buffer = {} # define
       # collect data values in hash, for easy usage
-      [:first_name, :last_name, :city, :state].each {|column| buffer[ column] = ( profile.blank? ? "not found" : profile.send( column).ljust(25)) }
+      [:first_name, :last_name, :address, :city, :state].each {|column| buffer[ column] = ( profile.blank? ? "not found" : profile.send( column).ljust(25)) }
 
       # generate string only when approriate msg row was found
-      "#{buffer[:first_name].ljust(25)} | #{buffer[:last_name]} | #{buffer[:city].ljust(25)} | #{buffer[:state].ljust(25)} | #{msg.timestamp.to_s.ljust(25)}".gsub(/\n/,"") unless msg.blank?
+      ["#{buffer[:first_name].ljust(25)} | #{buffer[:last_name]} | #{buffer[:address].ljust(25)} | #{buffer[:city].ljust(25)} | #{buffer[:state].ljust(25)} | #{msg.timestamp.to_s.ljust(25)} | #{msgs.length.to_s.ljust(10)} | #{msg.description}".gsub(/\n/,""), msg.timestamp.to_formatted_s(:db)] unless msg.blank?
       # include a header. avoid "nil" in result if msg row was not found
-    end.insert( 0, ["First name".ljust(25), "Last name".ljust(25), "City".ljust(25), "State".ljust(25), "Timestamp".ljust(25) ].join(" | ")).compact
+    end
+    
+    unless result.blank?
+      # sort by timestamp DESC for DebugTask.local_failures
+      result = ( (result.length > 1) ? result.sort {|a,b| a[1] <=> b[1] }.reverse : result )
+      result.collect {|e| e[0] }.compact.insert( 0, ["First name".ljust(25), "Last name".ljust(25), "Address".ljust(25), "City".ljust(25), "State".ljust(25), "Timestamp".ljust(25), "Count".ljust(10), "Description" ].join(" | ") )
+    end
   end
-
+  
 end
