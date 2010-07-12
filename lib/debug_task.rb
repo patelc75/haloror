@@ -54,6 +54,9 @@ class DebugTask
   #   DebugTask.local_failures              # fetch all users with appropriate halo_debug_msgs after 1-May-2010
   #   DebugTask.local_failures( 337)        # or any user_id
   #   DebugTask.local_failures( 337, 478)   # output only for an array of user_ids
+  #   DebugTask.local_failures( 337, 478, 7.days.ago)   # output only for an array of user_ids
+  #   DebugTask.local_failures( 337, 478, Time.mktime(2010, 05, 01))   # output only for an array of user_ids
+  #   DebugTask.local_failures( 337, 478, Date.yesterday)   # output only for an array of user_ids
   def self.local_failures( *user_ids)
     user_ids.compact! # remove any "nil"
     # pick the date if argument given
