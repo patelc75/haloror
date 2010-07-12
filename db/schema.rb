@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100702184530) do
+ActiveRecord::Schema.define(:version => 20100712200833) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -471,6 +471,7 @@ ActiveRecord::Schema.define(:version => 20100702184530) do
     t.integer  "created_by"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "group_id"
   end
 
   create_table "dial_ups_gateways", :id => false, :force => true do |t|
@@ -599,6 +600,25 @@ ActiveRecord::Schema.define(:version => 20100702184530) do
     t.datetime "timestamp_call_center"
     t.boolean  "call_center_pending"
     t.datetime "timestamp_server"
+  end
+
+  create_table "halo_debug_msgs", :force => true do |t|
+    t.integer  "source_mote_id"
+    t.datetime "timestamp"
+    t.integer  "dbg_type"
+    t.integer  "param1"
+    t.integer  "param2"
+    t.integer  "param3"
+    t.integer  "param4"
+    t.integer  "param5"
+    t.integer  "param6"
+    t.integer  "param7"
+    t.integer  "param8"
+    t.integer  "user_id"
+    t.string   "source_device_type"
+    t.integer  "device_id"
+    t.string   "dbg_level"
+    t.text     "description"
   end
 
   create_table "installation_notes", :force => true do |t|
@@ -1108,6 +1128,10 @@ ActiveRecord::Schema.define(:version => 20100702184530) do
     t.datetime "paper_copy_at"
     t.date     "paper_copy_submitted_on"
     t.date     "emailed_on"
+    t.string   "local_primary"
+    t.string   "local_secondary"
+    t.string   "global_primary"
+    t.string   "global_secondary"
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|

@@ -8,10 +8,12 @@ class UserIntake < ActiveRecord::Base
   belongs_to :updater, :class_name => "User", :foreign_key => "updated_by"
   has_and_belongs_to_many :users # replaced with has_many :through
   has_many :user_intakes_users, :dependent => :destroy
+  validates_presence_of :local_primary, :global_primary # https://redmine.corp.halomonitor.com/issues/2809
 
   # hold the data temporarily
   # user type is identified by the role it has subject to this user intake and other users
-  attr_accessor :mem_senior, :mem_subscriber, :need_validation
+  # cmd_type : https://redmine.corp.halomonitor.com/issues/2809
+  attr_accessor :mem_senior, :mem_subscriber, :need_validation, :cmd_type
   (1..3).each do |index|
     attr_accessor "mem_caregiver#{index}".to_sym
     attr_accessor "mem_caregiver#{index}_options".to_sym

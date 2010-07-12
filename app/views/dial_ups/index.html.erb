@@ -2,29 +2,37 @@
 <%=render :partial => 'reporting/nav_dialup_status'%>
 <h1>Dialup Numbers</h1>
 
+<div class="span-24 last">
+  <form id="group_form_id" action="/dial_ups" method="GET">
+    <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
+    Select <label for="group_name">Group</label>:
+    <%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| ["(#{e.id}) #{e.name}", e.name] }, (@group_name || @groups.first.name)), {:onchange => "$('group_form_id').submit();"}%>
+  </form>
+</div>
+
 <table border="1">
   <tr>
-  	<th>Phone<br>Number</th>
-  	<th>Username</th>
-  	<th>Password</th>
-  	<th>City</th>
-  	<th>State</th>
-  	<th>Zip</th>
-  	<th>Type</th>
-  	<th>Default<br>Order</th>
-  	<th>Created By</th>
-  	<th>Created At</th>
-  	<th>Edit</th>
-  	<th>Delete</th>
+    <th>Phone<br>Number</th>
+    <th>Username</th>
+    <th>Password</th>
+    <th>City</th>
+    <th>State</th>
+    <th>Zip</th>
+    <th>Type</th>
+    <th>Default<br>Order</th>
+    <th>Created By</th>
+    <th>Created At</th>
+    <th>Edit</th>
+    <th>Delete</th>
   </tr>
 
-<% for dial_up in @dial_ups %>
+  <% for dial_up in @dial_ups %>
   <tr>
-  	<td><%= dial_up.phone_number%></td>
-  	<td><%= dial_up.username%></td>
-  	<td><%= dial_up.password%></td>
-  	<td><%= dial_up.city%></td>
-  	<td><%= dial_up.state%></td>
+    <td><%= dial_up.phone_number%></td>
+    <td><%= dial_up.username%></td>
+    <td><%= dial_up.password%></td>
+    <td><%= dial_up.city%></td>
+    <td><%= dial_up.state%></td>
     <td><%= dial_up.zip%></td>
     <td><%= dial_up.dialup_type%></td>
     <td><%= dial_up.order_number%></td>
@@ -33,7 +41,7 @@
     <td><%= link_to 'Edit', edit_dial_up_path(dial_up) %></td>
     <td><%= link_to 'Destroy', dial_up, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
-<% end %>
+  <% end %>
 </table>
 
 <br />

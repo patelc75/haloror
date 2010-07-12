@@ -1,7 +1,10 @@
 class DialUpsController < ApplicationController
 
   def index
-    @dial_ups = DialUp.find(:all)
+    # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/2809
+    @groups = current_user.group_memberships # fetch groups
+    @group_name ||= ( params[:group_name] || @groups.first.name || "" rescue "") # selected group
+    @dial_ups = DialUp.where_group_id( @groups.collect(&:id)) # collect IDs
   end
 
   def new

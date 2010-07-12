@@ -1,0 +1,33 @@
+<%=f.radio_button :cmd_type, 'dial_up_num_glob_prim' unless controller.controller_name == "user_intakes" %>Change All Dial Up Numbers (<%= link_to 'configure',dial_ups_path %>)<br>
+<div style="margin-left:20px;">
+  <table>
+    <tr>
+      <td>Primary (Local)</td>
+      <td><%=f.select(:local_primary,DialUp.local_for_select, :prompt => 'none')%></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Secondary (Local)</td>
+      <td><%=f.select(:local_secondary,DialUp.local_for_select, :prompt => 'none')%></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Global Primary</td>
+      <% @glob_prim = DialUp.find(:first,:conditions => "dialup_type ='Global' and order_number = '1'") %>
+      <td><%=f.select(:global_primary,DialUp.global_for_select, :prompt => 'none')%></td>
+      <% if !@glob_prim.nil? %>
+      <input type="hidden" id="global_prim_hidden" value="<%= @glob_prim.phone_number %>">
+      <td><%= check_box_tag "global_default",{},checked = false,:onclick => "set_default_number(this,'global_prim_hidden','management_cmd_device_global_primary')"%> Default (<%= link_to 'Dial Up Table',dial_ups_path %>: Default Order = 2)</td>
+      <% end %>
+    </tr>
+    <tr>
+      <td>Global Secondary</td>
+      <% @global_alt = DialUp.find(:first,:conditions => "dialup_type = 'Global' and order_number = '2'") %>
+      <td><%=f.select(:global_secondary,DialUp.global_for_select, :prompt => 'none')%></td>
+      <% if !@global_alt.nil? %>
+      <input type="hidden" id="global_alt_hidden" value="<%= @global_alt.phone_number %>">
+      <td><%= check_box_tag "global_alt_default",{},checked = false,{:onclick => "set_default_number(this,'global_alt_hidden','management_cmd_device_global_secondary')"}%> Default (<%= link_to 'Dial Up Table',dial_ups_path %>: Default Order = 2)</td>
+      <% end %>
+    </tr>
+  </table>
+</div>
