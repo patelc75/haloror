@@ -22,13 +22,15 @@ Feature: User Intake Legal Agreement
     And I check "user_intake_no_caregiver_3"
     # These checkbox steps are required for ruby 1.8.6 bug fix
 
-  Scenario: Submit to reach legal agreement page
-    When I fill the senior details for user intake form
-    And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
-    And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
-    And I check "Same as User"
-    And I press "Submit"
-    Then page content should have "successfully created, HALO SUBSCRIBER AGREEMENT"
+  # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
+  # @wip
+  # Scenario: Submit to reach legal agreement page
+  #   When I fill the senior details for user intake form
+  #   And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
+  #   And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
+  #   And I check "Same as User"
+  #   And I press "Submit"
+  #   Then page content should have "successfully created, HALO SUBSCRIBER AGREEMENT"
 
   Scenario Outline: Only senior or subscriber can see the option to sign the legal agreement
     When I fill the senior details for user intake form

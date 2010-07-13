@@ -29,11 +29,12 @@ Feature: Edit user intake
     Then I should see "9876543210123456789"
     And no email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
-  Scenario: User Intake locks on Submit
-    Given the following user intakes:
-      | kit_serial_number | submitted_at |
-      | 1122334455        |              |
-    When I edit the 1st user intake
-    And I press "Submit"
-    And I am listing user intakes
-    Then the 1st row should contain "Show"
+  # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
+  # Scenario: User Intake locks on Submit
+  #   Given the following user intakes:
+  #     | kit_serial_number | submitted_at |
+  #     | 1122334455        |              |
+  #   When I edit the 1st user intake
+  #   And I press "Submit"
+  #   And I am listing user intakes
+  #   Then the 1st row should contain "Show"

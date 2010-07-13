@@ -6,7 +6,7 @@ class UserLogsController < ApplicationController
 
   def show
     @user_log = UserLog.find(params[:id])
-    @user = @user_log.user
+    # @user = @user_log.user
   end
 
 end

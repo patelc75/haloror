@@ -5,8 +5,8 @@ describe "/user_logs/index" do
     render 'user_logs/index'
   end
 
-  #Delete this example and add some real ones or delete this file
-  it "should tell you where to find the file" do
-    response.should have_tag('p', %r[Find me in app/views/user_logs/index])
-  end
+  # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
+  # it "should tell you where to find the file" do
+  #   response.should have_tag('p', %r[Find me in app/views/user_logs/index])
+  # end
 end
