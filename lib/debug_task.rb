@@ -4,18 +4,40 @@ class DebugTask
 
   # https://redmine.corp.halomonitor.com/issues/3168
   #   fetch rows and mgmt_queries
-  def self.mgmt_query( device_id = nil)
-    if device_id.blank? # when devices not defined, show how to use
+  # Usage:
+  #   DebugTask.mgmt_query( 273)      # default: 1.week.ago
+  #   DebugTask.mgmt_query( 273, 3.days.ago)
+  #   DebugTask.mgmt_query( 273, 481 Time.mktime( 2010, 05, 01))
+  #   DebugTask.mgmt_query( 273, 481, 254, Time.parse("3rd October, 2009"))
+  def self.mgmt_query( *args)
+    date_given = [DateTime, Time, Date, ActiveSupport::TimeWithZone].include?( args.last.class)
+    date = ( date_given ? args.delete(args.last) : 1.week.ago) # last parameter can be date
+    device_ids = (date_given ? args[0..-1] : args) # remaining args (once date is removed appropriately, or not)
+    if device_ids.blank? # when devices not defined, show how to use
       puts "Please specify a device_id"
       [] # do not return any data
 
     else
       # fetch appropriate mgmt_query rows, collect in an array
-      MgmtQuery.find_all_by_device_id( device_id, :order => "timestamp_server DESC").collect do |row|
-        "#{row.timestamp_device} | #{row.timestamp_server} | #{row.last.timestamp_server unless row.last.blank?} | #{row.time_span_since_last}"
-        # include a header
-      end.insert( 0, "Timestamp Device                | Timestamp Server                | Last Timestamp Server           | Delay server from last")
+      MgmtQuery.where_device_id( device_ids).since( date).all( :order => "timestamp_server DESC").collect do |row|
+        "#{row.timestamp_device} | #{row.timestamp_server} | #{row.last.timestamp_server unless row.last.blank?} | #{row.time_span_since_last}".gsub(/\n/,"")
+      end.insert( 0, "Timestamp Device                | Timestamp Server                | Last Timestamp Server           | Delay server from last") # include a header
     end
+  end
+
+  # https://redmine.corp.halomonitor.com/issues/3168
+  # Usage:
+  #   DebugTask.mgmt_query_delays   # default: since => 1.week.ago, threshold => 6.hours + 7.minutes, count => 10
+  #   DebugTask.mgmt_query_delays( 1.week.ago, 6.hours + 7.minutes, 10)
+  def self.mgmt_query_delays( since = 1.week.ago, threshold = (6.hours + 7.minutes), count = 10)
+    MgmtQuery.since( since).all( :order => "timestamp_server DESC").reject do |e|
+      e.last.blank? # reject when this is the only row for device
+    end.reject do |row|
+      print '.'
+      ((row.timestamp_server - row.last.timestamp_server) < threshold) # reject rows that are within threshold
+    end[0..count-1].collect do |row| # only pick the "count" rows
+      "#{row.timestamp_device} | #{row.timestamp_server} | #{row.last.timestamp_server unless row.last.blank?} | #{row.time_span_since_last}".gsub(/\n/,"")
+    end.insert( 0, "Timestamp Device                | Timestamp Server                | Last Timestamp Server           | Delay server from last") # include a header
   end
 
   # https://redmine.corp.halomonitor.com/issues/3168
@@ -60,7 +82,7 @@ class DebugTask
   def self.local_failures( *user_ids)
     user_ids.compact! # remove any "nil"
     # pick the date if argument given
-    date = user_ids.delete(user_ids.last) if [DateTime, Time, Date].include? user_ids.last.class
+    date = user_ids.delete(user_ids.last) if [DateTime, Time, Date, ActiveSupport::TimeWithZone].include? user_ids.last.class
     # when ids not given, select distinct user_ids after 2010-May-01
     conditions = ( date.blank? ? {} : ["timestamp >= ?", date.to_formatted_s(:db)] )
     # fetch user_ids if not given
@@ -83,12 +105,12 @@ class DebugTask
       ["#{buffer[:first_name].ljust(25)} | #{buffer[:last_name]} | #{buffer[:address].ljust(25)} | #{buffer[:city].ljust(25)} | #{buffer[:state].ljust(25)} | #{msg.timestamp.to_s.ljust(25)} | #{msgs.length.to_s.ljust(10)} | #{msg.description}".gsub(/\n/,""), msg.timestamp.to_formatted_s(:db)] unless msg.blank?
       # include a header. avoid "nil" in result if msg row was not found
     end
-    
+
     unless result.blank?
       # sort by timestamp DESC for DebugTask.local_failures
       result = ( (result.length > 1) ? result.sort {|a,b| a[1] <=> b[1] }.reverse : result )
       result.collect {|e| e[0] }.compact.insert( 0, ["First name".ljust(25), "Last name".ljust(25), "Address".ljust(25), "City".ljust(25), "State".ljust(25), "Timestamp".ljust(25), "Count".ljust(10), "Description" ].join(" | ") )
     end
   end
-  
+
 end

@@ -1,4 +1,5 @@
 class Device < ActiveRecord::Base
+  
   # relationships ------------------
   
   belongs_to :device_revision

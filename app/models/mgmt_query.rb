@@ -1,36 +1,46 @@
 class MgmtQuery < ActiveRecord::Base
   include ActionView::Helpers::DateHelper # needed for distance_of_time_in_words
+  include UtilityHelper
   
   #MINUTES_INTERVAL = 1
   belongs_to :mgmt_cmd
   belongs_to :device
+  attr_accessor :last_mgmt_query # cache for faster access
+  
+  # Usage:
+  #   MgmtQuery.where_device_id( 273)
+  #   MgmtQuery.where_device_id( 273, 481)
+  named_scope :where_device_id, lambda {|*args| { :conditions => { :device_id => args.flatten } }}
+  # Usage:
+  #   MgmtQuery.since               # default => since 1.week.ago
+  #   MgmtQuery.since( 2.months.ago)  # can use any form of Date, Time, DateTime
+  named_scope :since, lambda {|*args| { :conditions => ["timestamp_server > ?", (args.flatten.first || 1.week.ago)] }}
 
   # latest row for device_id
   def self.latest_by_device_id( device_id)
     find_by_device_id( device_id.to_i, :order => "timestamp_server DESC") unless device_id.blank? || device_id.to_i.zero?
   end
   
-  # before latest row for device_id
+  # before latest row for device_id. cache for faster access
   def last
-    MgmtQuery.find_by_device_id( device_id.to_i, :conditions => ["id < ?", id], :order => "timestamp_server DESC", :limit => 2) unless device_id.blank? || device_id.to_i.zero?
+    last_mgmt_query ||= MgmtQuery.find_by_device_id( device_id.to_i, :conditions => ["id < ?", id], :order => "timestamp_server DESC", :limit => 2) unless device_id.blank? || device_id.to_i.zero?
+  end
+  
+  # difference of time since last row for device_id
+  def diff_since_last
+    last.blank? ? [0,0,0,0] : distance_of_time_as_array( timestamp_server, last.timestamp_server)
   end
   
   # delay between timestamp_device <=> timestamp_server
-  # we can also use ApplicationHelper.difference_between_datetime for more specific values
+  # we can also use ApplicationHelper.distance_of_time_as_array for more specific values
   def delay
-    diff = difference_between_datetime( timestamp_server, timestamp_device)
-    "%3d days %2d hours %2d minutes %2d seconds" % diff
+    "%3d days %2d hours %2d minutes %2d seconds" % distance_of_time_as_array( timestamp_device, timestamp_server)
   end
   
   # time elapsed since last post (device_id picked from "self")
-  # we can also use ApplicationHelper.difference_between_datetime for more specific values
+  # we can also use ApplicationHelper.distance_of_time_as_array for more specific values
   def time_span_since_last
-    if last.blank?
-      ""
-    else
-      diff = difference_between_datetime( timestamp_server, last.timestamp_server)
-      "%3d days %2d hours %2d minutes %2d seconds" % diff
-    end
+    last.blank? ? "" : ("%3d days %2d hours %2d minutes %2d seconds" % diff_since_last)
   end
 
   def self.new_initialize(random=false)
@@ -148,22 +158,4 @@ class MgmtQuery < ActiveRecord::Base
   end
 =end
 
-  # TODO: this is a global method in utility_helper
-  #   kept here redundant to avoid copying multiple files to www
-  #
-  # difference between datetime values in days, hours, minutes, seconds
-  # returns an array of [days, hours, minutes, seconds]
-  def difference_between_datetime( dt_1, dt_2)
-    difference = ((dt_1 > dt_2) ? (dt_1 - dt_2) : (dt_2 - dt_1))
-
-    seconds    = difference % 60
-    difference = (difference - seconds) / 60
-    minutes    =  difference % 60
-    difference = (difference - minutes) / 60
-    hours      =  difference % 24
-    difference = (difference - hours)   / 24
-    days       =  difference % 7
-  
-    return [days, hours, minutes, seconds]
-  end
 end
