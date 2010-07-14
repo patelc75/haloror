@@ -27,17 +27,24 @@ class DebugTask
 
   # https://redmine.corp.halomonitor.com/issues/3168
   # Usage:
-  #   DebugTask.mgmt_query_delays   # default: since => 1.week.ago, threshold => 6.hours + 7.minutes, count => 10
-  #   DebugTask.mgmt_query_delays( 1.week.ago, 6.hours + 7.minutes, 10)
-  def self.mgmt_query_delays( since = 1.week.ago, threshold = (6.hours + 7.minutes), count = 10)
-    MgmtQuery.since( since).all( :order => "timestamp_server DESC").reject do |e|
-      e.last.blank? # reject when this is the only row for device
-    end.reject do |row|
-      print '.'
-      ((row.timestamp_server - row.last.timestamp_server) < threshold) # reject rows that are within threshold
-    end[0..count-1].collect do |row| # only pick the "count" rows
-      "#{row.timestamp_device} | #{row.timestamp_server} | #{row.last.timestamp_server unless row.last.blank?} | #{row.time_span_since_last}".gsub(/\n/,"")
-    end.insert( 0, "Timestamp Device                | Timestamp Server                | Last Timestamp Server           | Delay server from last") # include a header
+  #   DebugTask.mgmt_query_delays   # default: since => 1.week.ago, threshold => 6.hours + 7.minutes, count => 4
+  #   DebugTask.mgmt_query_delays( 1.week.ago, 6.hours + 7.minutes, 4)
+  def self.mgmt_query_delays( since = 1.week.ago, threshold = (6.hours + 7.minutes), count = 4)
+    mgmt_queries = MgmtQuery.since( since) # just a buffer. used later in this code
+    device_ids = mgmt_queries.collect(&:device_id).compact.uniq.sort
+    data = [["Device ID".ljust(10), "Timestamp Device".ljust(35), "Timestamp Server".ljust(35), "Last Timestamp Server".ljust(35), "Delay server from last".ljust(40), "Recent Timestamp".ljust(35)].join(" | ")]
+    device_ids.each do |device_id|
+      print '*' # keep user posted
+      mgmt_queries.where_device_id( device_id).all( :order => "timestamp_server DESC").reject do |e|
+        e.last.blank? # reject when this is the only row for device
+      end.reject do |row|
+        print '.' # to keep user posted
+        ((row.timestamp_server - row.last.timestamp_server) < threshold.to_i) # reject rows that are within threshold
+      end[0..count-1].each do |row| # only pick the "count" rows
+        data << "#{row.device_id.to_s.ljust(10)} | #{row.timestamp_device.to_s.ljust(35)} | #{row.timestamp_server.to_s.ljust(35)} | #{(row.last.timestamp_server || '').to_s.ljust(35) unless row.last.blank?} | #{row.time_span_since_last.to_s.ljust(40)} | #{row.latest_timestamp_threshold_away(threshold).to_s.ljust(35)}".gsub(/\n/,"")
+      end
+    end
+    data
   end
 
   # https://redmine.corp.halomonitor.com/issues/3168

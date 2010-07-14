@@ -31,6 +31,12 @@ class MgmtQuery < ActiveRecord::Base
     last.blank? ? [0,0,0,0] : distance_of_time_as_array( timestamp_server, last.timestamp_server)
   end
   
+  # most recent timestamp with delay > threshhold
+  def latest_timestamp_threshold_away( threshold = 1.week.ago)
+    row = MgmtQuery.first( :conditions => ["device_id = ? AND timestamp_server < ?", device_id, DateTime.now - threshold], :order => "timestamp_server DESC")
+    row.blank? ? "" : row.timestamp_server.to_s
+  end
+  
   # delay between timestamp_device <=> timestamp_server
   # we can also use ApplicationHelper.distance_of_time_as_array for more specific values
   def delay
