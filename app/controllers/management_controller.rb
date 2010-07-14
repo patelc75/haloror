@@ -163,7 +163,7 @@ class ManagementController < ApplicationController
         #     id1, id5, id7
         #   or, just mix all the definitions
         #     id1-id5, id6, id7-id9
-        elsif request[ :cmd_type ] == 'unregister'
+        elsif request[ :cmd_type] == 'unregister'
           # assumption: all ids are numeric values
           # WARNING: any non-number within ids will cause id be recognized as ZERO
           devices = Device.all( :conditions => { :id => request[ :ids ].parse_integer_ranges }) # parse ranges like "1-3, 5, 7-9, 10, 17, 19"
@@ -184,6 +184,9 @@ class ManagementController < ApplicationController
             end
             device.users = [] # Unmap users from devices, keep the device in the DB as an orphan
           end
+
+        # https://redmine.corp.halomonitor.com/issues/3191
+        # nothing to add here. it will automatically post to param1, param2
         end
 
         # # CHANGED: Re-factored

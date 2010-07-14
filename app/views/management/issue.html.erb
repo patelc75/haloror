@@ -1,3 +1,4 @@
+<% javascript "validation.js", "masked-input.js" %>
 <%=render :partial=>'nav'%>
 
 <h1>Issue Commands</h1>
@@ -49,6 +50,10 @@
 	</p>
     <p>
 		<%=f.radio_button :cmd_type, 'remote_access',:disabled => 'disabled'%> Remote Access
+	</p>
+	<p>
+	  <%= f.radio_button :cmd_type, 'start_time' %>Start Time <%= calendar_date_select_tag "param1", Time.now, :time => true %>
+	  , Duration <%= f.text_field :param2, :class => "span-1 validate-number" %> minutes
 	</p>
 	<p>&nbsp;</p>
 	<p>Enter a range of device ids (min-max) -or- ids separated by commas:</p>
