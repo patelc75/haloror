@@ -104,20 +104,21 @@ Feature: Manage triage
       | StrapFastened          | strap_fastened           |
       | StrapRemoved           | strap_removed            |
 
-  # assuming all other conditions for the alert status are "normal" since we just created the user data
-  # we can change the call_center_account_number to switch the status
-  Scenario Outline: Correct Alert icon
-    Given call center account number for "senior1" is "<number>"
-    And user "senior1" has "halouser" role for group "<group>"
-    And a user intake exists with senior "senior1"
-    When I visit "group1-admin" pending triage for group "group1"
-    Then I should see <alert> alert for "senior1"
-    
-    Examples:
-      | number     | alert     | group       |
-      | 1234567890 | normal    | safety_care |
-      | 1234567890 | test mode | group1      |
-      |            | abnormal  | safety_care |
+  # https://redmine.corp.halomonitor.com/issues/3170
+  # # assuming all other conditions for the alert status are "normal" since we just created the user data
+  # # we can change the call_center_account_number to switch the status
+  # Scenario Outline: Correct Alert icon
+  #   Given call center account number for "senior1" is "<number>"
+  #   And user "senior1" has "halouser" role for group "<group>"
+  #   And a user intake exists with senior "senior1"
+  #   When I visit "group1-admin" pending triage for group "group1"
+  #   Then I should see <alert> alert for "senior1"
+  #   
+  #   Examples:
+  #     | number     | alert     | group       |
+  #     | 1234567890 | normal    | safety_care |
+  #     | 1234567890 | test mode | group1      |
+  #     |            | abnormal  | safety_care |
   
   Scenario: Order by Name
   Scenario: Order by Alert
