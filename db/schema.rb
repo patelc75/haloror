@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100713205258) do
+ActiveRecord::Schema.define(:version => 20100715140228) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -457,6 +457,10 @@ ActiveRecord::Schema.define(:version => 20100713205258) do
     t.string   "dialup_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "lowest_connect_rate"
+    t.datetime "lowest_connect_timestamp"
+    t.integer  "longest_dial_duration_sec"
+    t.datetime "longest_dial_duration_timestamp"
   end
 
   create_table "dial_ups", :force => true do |t|

@@ -46,7 +46,7 @@ class DialUpStatusesController < RestfulAuthController
     #
     # get the hashes separate for each row of AR
     # WARNING: Not tested
-    DialUpStatus.create!( params[:dial_up_status] ) rescue nil
+    DialUpStatus.create!( params[:dial_up_status] )
     
     # request = params[:dial_up_status]
     # DialUpStatus.process_xml_hash(request)

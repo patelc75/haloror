@@ -1,6 +1,16 @@
 class DialUpStatus < ActiveRecord::Base
   belongs_to :device
 
+  # --- IMPORTANT ---
+  # DialUpStatus is a special case among data POSTed by gateway
+  #   * information for multiple rows within single XML file
+  #   * fields appear once in XML but apply to all rows. For example: lowest_connect_rate
+  #   * fields for each row appear in XML with similar names with different prefixes. For example: alt_status
+  #   * when POSTed row is saved to database, 3 more rows must be parsed from XML and saved to same table
+  #     * obj.send( :create_without_callbacks) is used to overcome deep nested recursion issue
+  #     * additional row for DialUpLastSuccessful is also parsed from XML and saved to database
+  # -----------------
+  
   # instance variables to hold multiple row details from device hash, if present
   # we will use these to save separate rows of data during before_save
   attr_accessor :alternate, :global_prime, :global_alternate, :last_successful
@@ -8,15 +18,13 @@ class DialUpStatus < ActiveRecord::Base
   # define the attr_accessor for all attributes of device hash
   # this will avoid errors at initialize
   # "prime"            => "",    # not required. we are in the model and these are valid columns
-  { 
-    "alternate"        => "alt_",
+  { "alternate"        => "alt_",
     "global_prime"     => "global_prim_",
-    "global_alternate" => "global_alt_"
-  }.each do |key, value|
-    [ "status", "configured", "device_id", "num_failures", "consecutive_fails", "ever_connected",
-      "ever_connected", "phone_number", "number"].each do |hash_key|
+    "global_alternate" => "global_alt_"   }.each do |key, value|
+      [ "status", "configured", "device_id", "num_failures", "consecutive_fails", "ever_connected",
+        "phone_number", "number"].each do |hash_key|
         attr_accessor "#{value}#{hash_key}".to_sym
-      end
+    end
   end
   attr_accessor :number, :timestamp # extra columns defined in XML
   attr_accessor :last_successful_number, :last_successful_username, :last_successful_password
@@ -24,7 +32,9 @@ class DialUpStatus < ActiveRecord::Base
   # filters, scopes
 
   # dynamically generated named scope
-  #  by_dialup_type([...]), by_device_id([...]), ...
+  # Usage:
+  #   DialUpStatus.by_dialup_type( [...])
+  #   DialUpStatus.by_device_id( [...])
   # To degine more similar scopes, just add the column name symbl to the array
   [:dialup_type, :device_id].each do |which|
     named_scope "by_#{which}".to_sym, lambda { |*args|
@@ -35,6 +45,7 @@ class DialUpStatus < ActiveRecord::Base
   
   # triggers / hooks / callbacks
   
+  # works with create, create!, new, build
   # if the hash came from device, then parse it to instance variables
   def after_initialize
     self.alternate         = {}
@@ -47,15 +58,25 @@ class DialUpStatus < ActiveRecord::Base
       "global_prime"     => "global_prim_",
       "global_alternate" => "global_alt_"
     }.each do |key, value|
+      # https://redmine.corp.halomonitor.com/issues/3189
       ["status", "configured"].each do |hash_key|
         eval("self.#{key}[:#{hash_key}] = #{value}#{hash_key}")
       end
+      # https://redmine.corp.halomonitor.com/issues/3189
       ["device_id", "num_failures", "consecutive_fails", "ever_connected"].each do |hash_key|
         eval("self.#{key}[:#{hash_key}] = #{value}#{hash_key}.to_i")
       end
       # FIXME: structure is boolean, value received is integer
       eval("self.#{key}[:ever_connected] = (#{value}ever_connected.to_i > 0)")
       eval("self.#{key}[:phone_number] = #{value}number") # similar pattern for all
+      # https://redmine.corp.halomonitor.com/issues/3189
+      # common fields without prefix
+      ["lowest_connect_rate", "longest_dial_duration_sec"].each do |hash_key|
+        eval("self.#{key}[:#{hash_key}] = #{hash_key}.to_i")
+      end
+      ["lowest_connect_timestamp", "longest_dial_duration_timestamp"].each do |hash_key|
+        eval("self.#{key}[:#{hash_key}] = #{hash_key}")
+      end
     end
 
     # dialup_type
@@ -74,7 +95,7 @@ class DialUpStatus < ActiveRecord::Base
 
   # some more work after the row is saved to database
   #
-  def after_create
+  def after_save
     create_event
 
     # if we initiated this instance from a device hash, we have more work to do
@@ -108,6 +129,7 @@ class DialUpStatus < ActiveRecord::Base
       end
     end
   end
+
 # <<<<<<< HEAD
 # 
 #   # class methods
