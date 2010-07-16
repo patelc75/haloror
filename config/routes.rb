@@ -71,7 +71,7 @@ ActionController::Routing::Routes.draw do |map|
   
   #user related models
   map.resources :profiles
-  map.resources :users, :member => { :new_caregiver_options => :get, :triage => :get, :dismiss_all_greens => :get, :toggle_test_mode => :post } do |user|
+  map.resources :users, :member => { :new_caregiver_options => :get, :triage => :get, :dismiss => :post, :toggle_test_mode => :post } do |user|
     user.resources :user_logs, :only => [:index, :show]
   end
   map.resources :sessions,:member => {:edit_user_intake_form => :any,:user_intake_form_confirm => :get} # added automatically after running restful_authentication script

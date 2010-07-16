@@ -11,7 +11,7 @@ class Event < ActiveRecord::Base
   belongs_to :event, :polymorphic => true
   
   has_many :event_actions
-  
+
   # triggers ----------------------------------
   
   # cache trigger
@@ -112,6 +112,20 @@ class Event < ActiveRecord::Base
   end
 
   # instance methods ------------------------------
+
+  # returns boolean for the type of event
+  #   these names are collected from the local development database. just run the following query in console
+  #   Event.all( :select => "DISTINCT event_type").collect(&:event_type).sort.collect(&:tableize).collect(&:singularize).collect {|e| "#{e}?"}
+  # Usage:
+  #   Event.last.fall?
+  #   Event.last.panic?
+  ["access_mode?", "battery_charge_complete?", "battery_critical?", "battery_plugged?", "battery_reminder?",
+    "battery_unplugged?", "call_center_deferred?", "call_center_follow_up?", "device_available_alert?",
+    "device_unavailable_alert?", "event_action?", "fall?", "gateway_offline_alert?", "gateway_online_alert?",
+    "gw_alarm_button?", "gw_alarm_button_timeout?", "panic?", "strap_fastened?", "strap_off_alert?",
+    "strap_on_alert?", "strap_removed?"].each do |name|
+    define_method( name.to_sym) { event_type == name.chop.classify }
+  end
 
   def icon(event_type = nil)
     # default = status_dial_up.png

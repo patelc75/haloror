@@ -30,6 +30,21 @@ class UsersController < ApplicationController
       format.html
     end
   end
+
+  # dismiss users from triage
+  # Usage: POST
+  #   dismiss( ["all" | "selected" | "abnormal" | "normal" | "caution" | "test mode"], [1, 2, 3])
+  def dismiss
+    what = params[:commit].downcase
+    unless what.blank?
+      # check boxes are "selected" set. All of them are hidden "users" set
+      # we are saving query + complexity here by just fetching this data from submitted form
+      # nested HTML forms are not supported, anyways
+      users = ( (what == "selected") ? params[:selected].keys.collect(&:to_i) : params[:users].collect(&:to_i) )
+      current_user.dismiss_batch( what, users)
+    end
+    redirect_to :back # go back, where came from
+  end
   
   # TODO: this should ideally be a POST call. It is changing the state of data
   def dismiss_all_greens

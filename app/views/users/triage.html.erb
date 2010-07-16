@@ -1,17 +1,14 @@
-<div class="span-24">
-  <span class="hint">Filter: Select values from dropdowns given here, to shortlist the rows</span>
-  <% form_tag triage_user_path(current_user), :method => :get do %>
-  <label for="search_group">Group</label>: <%= select_tag "search_group", options_from_collection_for_select(@groups, :id, :name, params[:search_group].to_i), {:onchange => "this.form.submit();"} %>
-  <span class="prepend-1">
-    Last Updated: <%= select_tag "search_day", options_for_select((1..30).collect {|e| [e, e]}.insert(0, ['All',0]), params[:search_day].to_i), {:onchange => "this.form.submit();"} %> day(s), 
-    <%= select_tag "search_hour", options_for_select((1..24).collect {|e| [e, e]}.insert(0, ['All',0]), params[:search_hour].to_i), {:onchange => "this.form.submit();"} %> Hour(s), 
-    <%= select_tag "search_minute", options_for_select([['All',0], [15,15], [30,30], [45,45]], params[:search_minute].to_i), {:onchange => "this.form.submit();"} %> Minute(s)
-  </span>
-  <span class="prepend-1">
-    Battery Percent: <%= select_tag "search_battery_percent", options_for_select((0..100).step(25).collect {|e| [(e.zero? ? 'All' : e), e]}.insert(1, [10,10]), params[:search_battery_percent].to_i), {:onchange => "this.form.submit();"} %>
-    Status: <%= select_tag "search_status", options_for_select([['Pending', 'Pending'], ['Dismissed', 'Dismissed']], params[:search_status]), {:onchange => "this.form.submit();"} %>
-  </span>
-  <% end -%>
+<%= render :partial => 'triage_filter' %>
+
+<% form_tag dismiss_user_path(current_user), :method => :post do %>
+<div class="span-24 last text-right append-1 raise">
+  <strong>Dismiss:</strong>
+  <span class="fit_right"><%= submit_tag "Test Mode", {:class => "button blue-button small"} %></span>
+  <span class="fit_right"><%= submit_tag "Normal", {:class => "button green-button small"} %></span>
+  <span class="fit_right"><%= submit_tag "Caution", {:class => "button orange-button small"} %></span>
+  <span class="fit_right"><%= submit_tag "Abnormal", {:class => "button red-button small"} %></span>
+  <span class="fit_right"><%= submit_tag "Selected", {:class => "button white-button small"} %></span>
+  <span class="fit_right"><%= submit_tag "All", {:class => "button white-button small"} %></span>
 </div>
 <hr class="space" />
 
@@ -19,18 +16,16 @@
   <div class="_dashboard">
 
     <div class="dashboard-header rounded shadow">
-      <div class="prepend-1 span-11">
+      <div class="prepend-1 span-10">
         <span class="white_text">Events |</span>
         <span class="black_text">Residents</span>
-      </div>
-      <div class="span-10 last text-right push-down">
-        <%= link_to 'Dismiss All Greens', :controller => 'users', :action => 'dismiss_all_greens', :id => current_user %>
       </div>
     </div>
 
     <div class="span-24 last">
+      <div class="span-1">&nbsp;</div>
       <div class="span-5 text-center"><a href="#">Name</a> <%= image_tag("up_arr.gif") %></div>
-      <div class="span-4 text-center"><a href="#" >Alerts</a> <%= image_tag("up_arr.gif") %></div>
+      <div class="span-3 text-center"><a href="#" >Alerts</a> <%= image_tag("up_arr.gif") %></div>
       <div class="span-2"><a href="#" >Spl.</a> <%= image_tag("up_arr.gif") %></div>
       <div class="span-2"><a href="#" >Chart</a><%= image_tag("up_arr.gif") %></div>
       <div class="span-2"><a href="#">Events</a><%= image_tag("up_arr.gif") %></div>
@@ -40,7 +35,8 @@
       <hr class="space" />
       <%= render :partial => 'triage_user', :collection => @users %>
       <div class="span-24 text-center"><%= will_paginate @users %></div>
-
     </div>
+
   </div>
 </div>
+<% end %>

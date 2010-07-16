@@ -262,9 +262,31 @@ class User < ActiveRecord::Base
     return users
   end
   
-  def dismiss_all_greens_in_triage
-    triage_users.each {|user| user.dismiss_from_triage if [50,75,100].include?(user.battery_fill_width) }
+  def dismiss_batch( what = nil, users = [])
+    # when batches are defined with their string names
+    case what # take action for each string
+      # just dismiss all users in triage. Describe it appropriately in comment
+    when "all"
+      User.find( users).each {|user| user.dismiss_from_triage( "Dismissed all from triage of #{self.name} at #{Time.now}") }
+
+      # dismissal based on the alert_status
+    when "abnormal", "normal", "caution", "test mode"
+      User.find( users).each {|user| user.dismiss_from_triage( "Dismissed all #{what} from triage of #{self.name} at #{Time.now}") if user.alert_status == what }
+
+    # only dismiss selected users
+    when "selected"
+      User.find( users).each {|user| user.dismiss_from_triage( "Dismissed selected users from triage of #{self.name} at #{Time.now}") }
+      
+    else # nothing to dismiss. just refresh the page
+      # program control should never reach here
+    end
   end
+  
+  # CHANGED: obsolete now. use "dismiss_batch"
+  #
+  # def dismiss_all_greens_in_triage
+  #   triage_users.each {|user| user.dismiss_from_triage if [50,75,100].include?(user.battery_fill_width) }
+  # end
   
   def dismiss_from_triage(message = nil)
     self.last_triage_audit_log = TriageAuditLog.create(:user => self, :is_dismissed => true, :description => (message || "Dismissed at #{Time.now}"))
@@ -314,9 +336,17 @@ class User < ActiveRecord::Base
   # fetches triage_thresholds for the group where this user is halouser
   # fetches the "status" from the most appropriately matched triage_threshold
   # TODO: rspec and cucumber pending
-  def alert_status_for(what = nil)
-    group = self.is_halouser_of_what.flatten.first
-    if group.blank?
+  # Usage:
+  #   User.last.alert_status_for( :panic)                         # considers all alert types when deciding status
+  #   User.last.alert_status_for( :panic, {"user_intake" => "user_intake"})           # returns "normal". checking for panic, but check allowed only on user_intake
+  #   User.last.alert_status_for( :panic, {"user_intake" => "anything", "panic" => true})   # returns status for panic. checking panic, check allowed also on panic
+  def alert_status_for(what = nil, options = {})
+    # check allowed only on these alert types. everything else would return "normal"
+    alerts_to_check = (options.blank? ? {"call_center_account" => "call_center_account", "legal_agreement" => "legal_agreement", "panic" => "panic", "strap_fastened" => "strap_fastened", "test_mode" => "test_mode", "user_intake" => "user_intake"} : options)
+    group = self.is_halouser_of_what.flatten.first # fetch the group
+    # return 'normal' when group is missing, or, alerts_to_check does not include alert being checked
+    # for example: when checking for :panic but :panic not in allowed checks, just return "normal"
+    if group.blank? || !alerts_to_check.include?( what.to_s)
       "normal"
     else
       # returning blank for status will default to 48 hours for abnormal, 24 for caution
@@ -361,14 +391,20 @@ class User < ActiveRecord::Base
   # alert status for panic, strap_fastened, call_center_account are collected
   # most severe status returned
   # TODO: rspec and cucumber pending
-  def alert_status
+  # Usage:
+  #   User.last.alert_status( :panic, :user_intake)   # only check these 2 alerts to decide status. otherwise consider "normal"
+  def alert_status( options = {})
     # collect status for all events in an array
     # insert 'normal' to include at least one default
     # either pick 'test mode' , or just pick the first alphabetic one. incidentally the required order is albhabetic
-    if test_mode?
+    if ( (options.blank?) || (options && options.include?("test_mode")) ) && test_mode?
+      # when checking for test mode and that check is allowed to decide status
       'test mode'
     else
-      [:panic, :strap_fastened, :call_center_account, :user_intake, :legal_agreement, :test_mode].collect {|e| alert_status_for(e) }.insert(0, 'normal').compact.uniq.sort.first
+      # include "options" while checking the status for each alert type
+      #   this will check the actual status only for allowed alert types
+      #   everything else is considered "normal" since want to ignore that status
+      [:panic, :strap_fastened, :call_center_account, :user_intake, :legal_agreement, :test_mode].collect {|e| alert_status_for(e, options) }.insert(0, 'normal').compact.uniq.sort.first
     end
   end
   

@@ -1,0 +1,43 @@
+<div class="span-24">
+  <% form_tag triage_user_path(current_user), :method => :get do %>
+
+  <div class="hint"><%= link_to image_tag("magnifier.png"), "#", :onclick => "filter-group.toggle();" %> Filter: Select values from dropdowns given here, to shortlist the rows</div>
+  <div class="box span-23 last">
+    
+    <div id="filter-group">
+      
+      <div class="span-10">
+        <div class="span-3 text-right"><label for="search_group">Group</label>:</div>
+        <div class="span-7 last"><%= select_tag "search_group", options_from_collection_for_select(@groups, :id, :name, params[:search_group].to_i) %></div>
+
+        <div class="span-3 text-right">Last Updated:</div>
+        <div class="span-7 last">
+          <%= select_tag "search_day", options_for_select((1..30).collect {|e| [e, e]}.insert(0, ['All',0]), params[:search_day].to_i) %> day(s), 
+          <%= select_tag "search_hour", options_for_select((1..24).collect {|e| [e, e]}.insert(0, ['All',0]), params[:search_hour].to_i) %> Hour(s), 
+          <%= select_tag "search_minute", options_for_select([['All',0], [15,15], [30,30], [45,45]], params[:search_minute].to_i) %> Minute(s)
+        </div>
+
+        <div class="span-3 text-right">Battery Percent:</div>
+        <div class="span-7 last"><%= select_tag "search_battery_percent", options_for_select((0..100).step(25).collect {|e| [(e.zero? ? 'All' : e), e]}.insert(1, [10,10]), params[:search_battery_percent].to_i) %></div>
+
+        <div class="span-3 text-right">Status:</div>
+        <div class="span-7 last"><%= select_tag "search_status", options_for_select([['Pending', 'Pending'], ['Dismissed', 'Dismissed']], params[:search_status]) %></div>
+      </div>
+
+      <div class="span-5">
+        <dt class="no-style">
+          <% ["call_center_account", "legal_agreement", "panic", "strap_fastened", "test_mode", "user_intake"].each do |which| %>
+            <dd><%= check_box_tag "alert[#{which}]", "#{which}", (defined?(params[:alert][which.to_sym]) ? params[:alert][which.to_sym] : true) %> <%= which.split('_').collect(&:capitalize).join(' ') %></dd>
+          <% end %>
+        </dt>
+      </div>
+      
+      <div class="span-6 last prepend-top">
+        <%= submit_tag "Apply\nSelected filters\nto shortlist triage", :class => "button white-button bottom right" %>
+      </div>
+    </div>
+    
+  </div>
+
+  <% end -%>
+</div>

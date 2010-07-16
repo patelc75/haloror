@@ -3,7 +3,8 @@
 */
 /*a { text-decoration: none; } /* border-bottom: 1px dotted #30A8C3; */*/
 /*a:hover { background-color: #30A8C3; color: #FFF; }*/
-ol.detailed { list-style-type: lower-latin;}
+ol.detailed { list-style-type: lower-latin; }
+ul.no-style, ol.no-style { list-style: none; }
 
 div.fixed-height { height: 250px; min-height: 250px; overflow: auto; }
 
@@ -31,6 +32,7 @@ div.fixed-height { height: 250px; min-height: 250px; overflow: auto; }
 .menu a { text-decoration: none; }
 .push-down { padding-top: 5px;}
 .pull-half { margin-left: -20px; }
+.raise { margin-top: -1em; }
 .right-gap { padding-right: 5px; }
 
 /* round corners */
