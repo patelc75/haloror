@@ -6,11 +6,16 @@ module UsersHelper
     buttons = {"normal" => "green-button", "caution" => "orange-button", "abnormal" => "red-button", "test mode" => "blue-button"}
     type = "normal" unless buttons.keys.include?(type) # only these types allowed
     # dynamically generate HTML using markaby gem
-    markaby do
-      a :href => "#{path}", :class => "button #{buttons[type]} #{size}" do
-        strong { type.upcase.gsub(' ','.') }
-      end
-    end
+    # markaby do
+    #   a :href => "#{path}", :class => "button #{buttons[type]} #{size}" do
+    #     strong do
+    #       type.upcase.gsub(' ','.')
+    #     end
+    #   end
+    # end
+    "<a href=\"#{path}\" class=\"button #{buttons[type]} #{size}\">
+      <strong>#{type.upcase.gsub(' ','.')}</strong>
+    </a>"
   end
 
   def links_for_user(user = nil)
