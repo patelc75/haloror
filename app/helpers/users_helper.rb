@@ -1,10 +1,13 @@
 module UsersHelper
 
   # alert button tag
-  def alert_button(type = "normal", path = "#", size = "medium")
+  def alert_button(type = "normal", path = "#", size = "medium", options = {})
     # button types and colors
     buttons = {"normal" => "green-button", "caution" => "orange-button", "abnormal" => "red-button", "test mode" => "blue-button"}
     type = "normal" unless buttons.keys.include?(type) # only these types allowed
+    size = (size.blank? ? 'medium' : size)
+    # TODO: fix this properly
+    # https://redmine.corp.halomonitor.com/issues/3202
     # dynamically generate HTML using markaby gem
     # markaby do
     #   a :href => "#{path}", :class => "button #{buttons[type]} #{size}" do
@@ -13,7 +16,7 @@ module UsersHelper
     #     end
     #   end
     # end
-    "<a href=\"#{path}\" class=\"button #{buttons[type]} #{size}\">
+    "<a href=\"#{path}\" class=\"button #{buttons[type]} #{size}\" id=\"alert_#{options[:id]}\">
       <strong>#{type.upcase.gsub(' ','.')}</strong>
     </a>"
   end

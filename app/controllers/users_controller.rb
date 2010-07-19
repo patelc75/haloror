@@ -40,8 +40,8 @@ class UsersController < ApplicationController
       # check boxes are "selected" set. All of them are hidden "users" set
       # we are saving query + complexity here by just fetching this data from submitted form
       # nested HTML forms are not supported, anyways
-      users = ( (what == "selected") ? params[:selected].keys.collect(&:to_i) : params[:users].collect(&:to_i) )
-      current_user.dismiss_batch( what, users)
+      users = ( (what == "selected") ? (params[:selected] ? params[:selected].keys.collect(&:to_i) : []) : params[:users].collect(&:to_i) )
+      current_user.dismiss_batch( what, users) unless users.blank?
     end
     redirect_to :back # go back, where came from
   end

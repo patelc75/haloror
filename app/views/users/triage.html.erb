@@ -1,15 +1,15 @@
 <%= render :partial => 'triage_filter' %>
 
 <% form_tag dismiss_user_path(current_user), :method => :post do %>
-<div class="span-7 raise"><%= @users.length.zero? ? '&nbsp;' : will_paginate( @users) %></div>
-<div class="span-16 last text-right append-1 raise">
+<div class="span-6 raise"><%= will_paginate( @users) %>&nbsp;</div>
+<div class="span-18 last text-right raise">
   <span class="fit_right"><%= submit_tag "Test Mode", {:class => "button blue-button small"} %></span>
   <span class="fit_right"><%= submit_tag "Normal", {:class => "button green-button small"} %></span>
   <span class="fit_right"><%= submit_tag "Caution", {:class => "button orange-button small"} %></span>
   <span class="fit_right"><%= submit_tag "Abnormal", {:class => "button red-button small"} %></span>
   <span class="fit_right"><%= submit_tag "Selected", {:class => "button white-button small"} %></span>
   <span class="fit_right"><%= submit_tag "All", {:class => "button white-button small", :title => "All on this page"} %></span>
-  <span class="fit_right"><strong>Dismiss:</strong><br /><span class="tiny">(on this page)</span></span>
+  <span class="fit_right"><strong>Dismiss</strong><span class="tiny">(on this page)</span> :</span>
 </div>
 <hr class="space" />
 

@@ -1,3 +1,6 @@
+<% javascript 'custom/opentip' %>
+<% stylesheet 'custom/opentip' %>
+
 <div class="dashboard-row push-down rounded span-24 last" id="user_<%= triage_user.id %>">
   <div class="span-1">
     <%= check_box_tag "selected[#{triage_user.id}]" %>
@@ -9,7 +12,12 @@
     <a href="#"><%= triage_user.name %></a>
   </div>
   <div class="span-3">
-    <div class="text-center" id="<%= triage_user.alert_status %>_<%= triage_user.id %>"><%= alert_button(triage_user.alert_status( params[:alert]), url_for(:controller => 'users', :action => 'special_status', :id => triage_user.id)) %></div>
+    <div class="text-center" id="<%= triage_user.alert_status %>_<%= triage_user.id %>">
+      <%= alert_button(triage_user.alert_status( params[:alert]), url_for(:controller => 'users', :action => 'special_status', :id => triage_user.id), nil, {:id => triage_user.id}) %>
+      <script type="text/javascript" charset="utf-8">
+        $('alert_<%= triage_user.id %>').addTip('<div class="span-4">User intake submitted:</div><div class="span-4 last"><%= triage_user.user_intake_submitted_at %></div>');
+      </script>
+    </div>
     <div class="text-center">
       <% if triage_user.dismissed_from_triage? -%>
       <%= link_to "Recall", undismiss_triage_path(:user_id => triage_user.id) %>

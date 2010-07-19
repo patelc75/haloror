@@ -271,11 +271,11 @@ class User < ActiveRecord::Base
 
       # dismissal based on the alert_status
     when "abnormal", "normal", "caution", "test mode"
-      User.find( users).each {|user| user.dismiss_from_triage( "Dismissed all #{what} from triage of #{self.name} at #{Time.now}") if user.alert_status == what }
+      User.find( users).each {|user| user.dismiss_from_triage( "Dismissed all #{what} from triage of #{self.name} at #{Time.now}") if user.alert_status == what } unless users.blank?
 
     # only dismiss selected users
     when "selected"
-      User.find( users).each {|user| user.dismiss_from_triage( "Dismissed selected users from triage of #{self.name} at #{Time.now}") }
+      User.find( users).each {|user| user.dismiss_from_triage( "Dismissed selected users from triage of #{self.name} at #{Time.now}") } unless users.blank?
       
     else # nothing to dismiss. just refresh the page
       # program control should never reach here
