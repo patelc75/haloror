@@ -15,6 +15,10 @@ class MgmtQuery < ActiveRecord::Base
   #   MgmtQuery.since               # default => since 1.week.ago
   #   MgmtQuery.since( 2.months.ago)  # can use any form of Date, Time, DateTime
   named_scope :since, lambda {|*args| { :conditions => ["timestamp_server > ?", (args.flatten.first || 1.week.ago)] }}
+  # Usage:
+  #   MgmtQuery.recent_few
+  #   MgmtQuery.recent_few( 5)
+  named_scope :recent_few, lambda {|*args| { :order => "timestamp_server DESC", :limit => (args.flatten.first || 4) }}
 
   # latest row for device_id
   def self.latest_by_device_id( device_id)
@@ -24,6 +28,11 @@ class MgmtQuery < ActiveRecord::Base
   # before latest row for device_id. cache for faster access
   def last
     last_mgmt_query ||= MgmtQuery.find_by_device_id( device_id.to_i, :conditions => ["id < ?", id], :order => "timestamp_server DESC", :limit => 2) unless device_id.blank? || device_id.to_i.zero?
+  end
+  
+  # number of seconds since last
+  def seconds_since_last
+    last.blank? ? 0 : (timestamp_server - last.timestamp_server)
   end
   
   # difference of time since last row for device_id

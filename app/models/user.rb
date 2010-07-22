@@ -245,7 +245,7 @@ class User < ActiveRecord::Base
     # pick most recent log when status was changed
     logs.first( :conditions => { :log => status }, :order => "created_at DESC")
   end
-  
+
   def triage_users(options = {})
     day = options[:search_day].to_i
     hour = options[:search_hour].to_i
@@ -303,7 +303,7 @@ class User < ActiveRecord::Base
   end
 
   # TODO: rspec pending for this
-  def hours_since(what = nil)
+  def hours_since(what = nil, options = {})
     # return blank here to default hours_since == 0
     time = case what
     # panic button span is counted
@@ -325,7 +325,20 @@ class User < ActiveRecord::Base
     # test mode is always abnormal status
     when :test_mode
       1.year.ago # force abnormal
-
+      
+    when :software_version
+      devices_software_up_to_date? ? Time.now : 1.year.ago
+      
+    when :dial_up_status
+      # WARNING: Assume Ok, unless it fails
+      (gateway && gateway.last_dial_up_failed?) ? gateway.last_dial_up_status.created_at : Time.now
+      
+    when :dial_up_alert
+      (gateway && gateway.dial_up_alert_pending?) ? gateway.last_dial_up_alert.created_at : Time.now
+      
+    when :mgmt_query_delay
+      # when gateway exists, pick up the timestamp_server of last mgmt query for that gateway
+      (gateway && gateway.last_mgmt_query) ? gateway.last_mgmt_query.timestamp_server : Time.now
     end
 
     time ||= Time.now # default = no time difference (well, almost)
@@ -338,11 +351,11 @@ class User < ActiveRecord::Base
   # TODO: rspec and cucumber pending
   # Usage:
   #   User.last.alert_status_for( :panic)                         # considers all alert types when deciding status
-  #   User.last.alert_status_for( :panic, {"user_intake" => "user_intake"})           # returns "normal". checking for panic, but check allowed only on user_intake
-  #   User.last.alert_status_for( :panic, {"user_intake" => "anything", "panic" => true})   # returns status for panic. checking panic, check allowed also on panic
+  #   User.last.alert_status_for( :panic, :alert => {"user_intake" => "user_intake"})           # returns "normal". checking for panic, but check allowed only on user_intake
+  #   User.last.alert_status_for( :panic, :alert => {"user_intake" => "anything", "panic" => true})   # returns status for panic. checking panic, check allowed also on panic
   def alert_status_for(what = nil, options = {})
     # check allowed only on these alert types. everything else would return "normal"
-    alerts_to_check = (options.blank? ? {"call_center_account" => "call_center_account", "legal_agreement" => "legal_agreement", "panic" => "panic", "strap_fastened" => "strap_fastened", "test_mode" => "test_mode", "user_intake" => "user_intake"} : options)
+    alerts_to_check = (options[:alert].blank? ? {"call_center_account" => "call_center_account", "legal_agreement" => "legal_agreement", "panic" => "panic", "strap_fastened" => "strap_fastened", "test_mode" => "test_mode", "user_intake" => "user_intake"} : options[:alert])
     group = self.is_halouser_of_what.flatten.first # fetch the group
     # return 'normal' when group is missing, or, alerts_to_check does not include alert being checked
     # for example: when checking for :panic but :panic not in allowed checks, just return "normal"
@@ -375,6 +388,37 @@ class User < ActiveRecord::Base
 
       when :test_mode
         test_mode? ? 'test mode' : 'normal'
+        
+      when :software_version
+        devices_software_up_to_date? ? 'normal' : 'abnormal'
+        
+      when :dial_up_status
+        (gateway && gateway.last_dial_up_failed?) ? 'abnormal' : 'normal'
+        
+      when :dial_up_alert
+        (gateway && gateway.dial_up_alert_pending?) ? 'abnormal' : 'normal'
+        
+      when :mgmt_query_delay
+        statuses = ['normal'] # default
+        # search_group is the variable defined in triage views
+        group = ( options[:search_group].blank? ? group_memberships.first : Group.find_by_name( options[:search_group]) )
+        # pick up defined threshold values for the group, or, just defaults
+        unless ( defaults = TriageThreshold.for_group_or_defaults( group) ).blank?
+          # picking up these many rows from database will serve every "defaults"
+          max_rows = defaults.collect(&:mgmt_query_count).compact.uniq.sort.last # max rows to check
+          # search max_rows (applicable to all defaults) from database
+          #   faster: check in memory
+          if (rows = MgmtQuery.recent_few( max_rows))
+            # check each default
+            # collect its "status" in array
+            defaults.each do |default|
+              if rows.select {|e| e.seconds_since_last > default.mgmt_query_delay_span }.size >= default.mgmt_query_failed_count
+                statuses += default.status
+              end
+            end
+          end
+        end
+        statuses.compact.uniq.sort.first # alphabetical order: abnormal, caution, normal
       end
       
       # when threshold is not defined. the following hard coded logic will work
@@ -392,19 +436,21 @@ class User < ActiveRecord::Base
   # most severe status returned
   # TODO: rspec and cucumber pending
   # Usage:
-  #   User.last.alert_status( :panic, :user_intake)   # only check these 2 alerts to decide status. otherwise consider "normal"
+  #   User.last.alert_status( :alert => {:panic => :panic, :user_intake => :user_intake})   # only check these 2 alerts to decide status. otherwise consider "normal"
   def alert_status( options = {})
     # collect status for all events in an array
     # insert 'normal' to include at least one default
     # either pick 'test mode' , or just pick the first alphabetic one. incidentally the required order is albhabetic
-    if ( (options.blank?) || (options && options.include?("test_mode")) ) && test_mode?
+    if ( (options.blank?) || (options && options.include?("test_mode")) || (options && options[:alert] && options[:alert].include?("test_mode")) ) && test_mode?
       # when checking for test mode and that check is allowed to decide status
       'test mode'
     else
       # include "options" while checking the status for each alert type
       #   this will check the actual status only for allowed alert types
       #   everything else is considered "normal" since want to ignore that status
-      [:panic, :strap_fastened, :call_center_account, :user_intake, :legal_agreement, :test_mode].collect {|e| alert_status_for(e, options) }.insert(0, 'normal').compact.uniq.sort.first
+      [ :panic, :strap_fastened, :call_center_account, :user_intake, :legal_agreement,
+        :test_mode, :software_version, :dial_up_status, :dial_up_alert, :mgmt_query_delay
+        ].collect {|e| alert_status_for(e, options) }.insert(0, 'normal').compact.uniq.sort.first
     end
   end
   
@@ -421,6 +467,12 @@ class User < ActiveRecord::Base
     user_intakes.first.blank? ? '' : user_intakes.first.legal_agreement_at
   end
   
+  def devices_software_up_to_date?
+    # all devices of this user have current firmware software version?
+    #   no alert if everything up-to-date
+    #   alert when software version does not match
+    devices.reject(&:current_software_version?).blank?
+  end
   # https://redmine.corp.halomonitor.com/issues/3067
   # email must be dispatched by explicit calls now
   #
@@ -493,39 +545,59 @@ class User < ActiveRecord::Base
   #   end
   # end
   
-  def get_gateway
-    gateway = nil
-    self.devices.each do |device|
-      if device.device_type == "Gateway"
-        gateway = device
-        break
-      end
+  # WARNING: code coverage required
+  # Usage:
+  #   User.last.gateway       # => returns the "Gateway" device row for this user
+  #   User.last.chest_strap   # => returns the "Chest Strap" device row for this user
+  #   User.last.belt_clip     # => returns the "Belt Clip" device row for this user
+  [:gateway, :chest_strap, :belt_clip].each do |name|
+    define_method name do
+      # WARNING: AR finder methods cannot work here because "device_type" is a method, not attribute
+      #   devices.first( :conditions...) cannot be done here
+      devices.select {|e| e.device_type == name.to_s.split('_').collect(&:capitalize).join(' ') }.first
     end
-    gateway
   end
   
-  def get_strap
-    self.devices.each do |device|
-      if device.device_type == 'Chest Strap'
-        return device
-      end
-    end
-    return nil
-  end
+  # # CHANGED: use "user.gateway" instead of this method
+  # def get_gateway
+  #   # WARNING: code coverage required
+  #   @gateway_device ||= (devices.select {|e| e.device_type == "Gateway" }.first) # cache
+  #   #
+  #   # CHANGED: old logic
+  #   # gateway = nil
+  #   # self.devices.each do |device|
+  #   #   if device.device_type == "Gateway"
+  #   #     gateway = device
+  #   #     break
+  #   #   end
+  #   # end
+  #   # gateway
+  # end
   
-  def get_belt_clip
-    self.devices.each do |device|
-      if device.device_type == 'Belt Clip'
-        return device
-      end
-    end
-    return nil
-  end
+  # # CHANGED: use "user.chest_strap" instead of this
+  # def get_strap
+  #   self.devices.each do |device|
+  #     if device.device_type == 'Chest Strap'
+  #       return device
+  #     end
+  #   end
+  #   return nil
+  # end
+  
+  # # CHANGED: use "user.belt_clip" instead of this
+  # def get_belt_clip
+  #   self.devices.each do |device|
+  #     if device.device_type == 'Belt Clip'
+  #       return device
+  #     end
+  #   end
+  #   return nil
+  # end
   
   def get_wearable_type
-    if bc = self.get_belt_clip
+    if bc = self.belt_clip
       bc.device_type
-    elsif cs = self.get_strap
+    elsif cs = self.chest_strap
       cs.device_type
     else
       "None"
@@ -832,6 +904,7 @@ class User < ActiveRecord::Base
     #   also has additional check for super_admin role
     options = ( is_super_admin? ? {} : \
                 {:id => roles.find_all_by_authorizable_type('Group').collect(&:authorizable_id).compact.uniq})
+                # self.is_halouser_of_what will not work here. user can have more roles than halouser
     Group.all(:conditions => options, :order => 'name')
     #   group roles of user, uniq, sorted
     #   this method also works but requires "group_roles" method

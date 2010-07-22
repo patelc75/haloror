@@ -1,7 +1,8 @@
 <div>
 <p>Firmware Upgrades (<%= link_to 'Add Firmware Upgrade', :action => 'new_firmware_upgrade', :controller => 'management' %>)</p>
-<table border="1">
+<table class="bluegrey">
   <tr>
+    <th>&nbsp;</th>
     <th>Version</th>
     <th>Path</th>
     <th>File Name</th>
@@ -12,7 +13,13 @@
   </tr>
   <% @firmware_upgrades.each do |fu| %>
     <tr>
-      <td><%= fu.version %></td>
+      <td><%= fu.current_version? ? image_tag( "tick.png", :alt => "Current Version", :title => "Current Version") : '&nbsp;' %></td>
+      <td>
+        <%= fu.version %>
+        <% if fu.current_version? %>
+          <br /><span class="tiny">(Current Version)</span>
+        <% end %>
+      </td>
       <td><%= fu.path %></td>
       <td><%= fu.filename%></td>
       <td><%= fu.description %></td>

@@ -1,0 +1,11 @@
+<tr>
+	<td><%= dial_up_status.device_id %></td>
+	<td><%= dial_up_status.phone_number %></td>
+	<td><%= UtilityHelper.format_datetime(dial_up_status.created_at,current_user) %></td>
+	<td><%= dial_up_status.status %></td>
+	<td><%= dial_up_status.configured %></td>
+	<td><%= dial_up_status.num_failures %></td>
+	<td><%= dial_up_status.consecutive_fails %></td>
+	<td><%= dial_up_status.ever_connected %></td>
+	<td><%= dial_up_status.dialup_type%></td>
+</tr>

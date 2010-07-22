@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100715140228) do
+ActiveRecord::Schema.define(:version => 20100721210544) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1114,6 +1114,9 @@ ActiveRecord::Schema.define(:version => 20100715140228) do
     t.integer  "hours_without_panic_button_test"
     t.integer  "hours_without_strap_detected"
     t.integer  "hours_without_call_center_account"
+    t.integer  "mgmt_query_count"
+    t.integer  "mgmt_query_failed_count"
+    t.integer  "mgmt_query_delay_span"
   end
 
   create_table "user_intakes", :force => true do |t|

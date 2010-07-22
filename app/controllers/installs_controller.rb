@@ -333,14 +333,14 @@ class InstallsController < ApplicationController
   end
   def range_test_only
     @user = User.find(params[:user_id])
-    strap = @user.get_strap
+    strap = @user.chest_strap
     if strap
       @battery = Battery.find(:first, :conditions => "device_id = #{strap.id}", :order => 'timestamp desc')  
     end
   end
   def start_range_test_only
     @user = User.find(params[:user_id])
-    strap = @user.get_strap
+    strap = @user.chest_strap
     if strap
       create_mgmt_cmd('range_test_start', strap.id)
     end
@@ -355,7 +355,7 @@ class InstallsController < ApplicationController
   end
   def stop_range_test_only
     @user = User.find(params[:user_id])
-    strap = @user.get_strap
+    strap = @user.chest_strap
     if strap
       create_mgmt_cmd('range_test_stop', strap.id)
     end

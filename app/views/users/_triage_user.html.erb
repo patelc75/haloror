@@ -1,46 +1,45 @@
-<% javascript 'custom/opentip' %>
-<% stylesheet 'custom/opentip' %>
-
 <div class="dashboard-row push-down rounded span-24 last" id="user_<%= triage_user.id %>">
-  <div class="span-1">
+  <div class="span-1 text-right">
     <%= check_box_tag "selected[#{triage_user.id}]" %>
     <%= hidden_field_tag "users[]", triage_user.id %>
   </div>
-  <div class="span-5">
+  <div class="span-6">
     <%= image_tag("eye.gif", :class => 'h-padding') %>
-    <%= select_tag "user_links", options_for_select(links_for_user(triage_user).insert(0, ['Links...', ''])), {:onchange => "window.location.href = this.value;", :class => "span-1"} %>
+    <span class="h-padding"><%= select_tag "user_links", options_for_select(links_for_user(triage_user).insert(0, ['Links...', ''])), {:onchange => "window.location.href = this.value;", :class => "span-1"} %></span>
     <a href="#"><%= triage_user.name %></a>
   </div>
   <div class="span-3">
-    <div class="text-center" id="<%= triage_user.alert_status %>_<%= triage_user.id %>">
-      <%= alert_button(triage_user.alert_status( params[:alert]), url_for(:controller => 'users', :action => 'special_status', :id => triage_user.id), nil, {:id => triage_user.id}) %>
+    <div class="push-down text-center" id="<%= triage_user.alert_status %>_<%= triage_user.id %>">
+      <%= alert_button( :type => triage_user.alert_status( params), :path => url_for(:controller => 'users', :action => 'special_status', :id => triage_user.id), :id => triage_user.id) %>
       <script type="text/javascript" charset="utf-8">
         $('alert_<%= triage_user.id %>').addTip('<div class="span-4">User intake submitted:</div><div class="span-4 last"><%= triage_user.user_intake_submitted_at %></div>');
       </script>
     </div>
-    <div class="text-center">
-      <% if triage_user.dismissed_from_triage? -%>
-      <%= link_to "Recall", undismiss_triage_path(:user_id => triage_user.id) %>
-      <% else -%>
-      <%= link_to "Dismiss", dismiss_triage_path(:user_id => triage_user.id) %>
-      <% end -%>
-    </div>
   </div>
-  <div class="span-2">
+  <div class="span-1">
     <% if triage_user.alert_status == 'abnormal' %>
     <%= link_to image_tag("warning_32.png"), :controller => 'users', :action => "special_status", :id => triage_user.id %>
     <% else %>
     <%= image_tag("warning_grey_32.png") %>
     <% end %>
   </div>
-  <div class="span-2"><%= image_tag("graph.jpg") %></div>
-  <div class="span-2"><%= image_tag("list.png") %></div>
+  <div class="span-1 push-down"><%= image_tag("graph.jpg") %></div>
+  <div class="span-1 push down"><%= image_tag("list.png") %></div>
   <div class="span-2 text-center">
     <div class="battery-cover" >
       <div id="user_<%= triage_user.id %>_battery_<%= triage_user.battery_color %>_<%= triage_user.battery_fill_width %>" class="<%= triage_user.battery_color %>-color-base battery-width-<%= triage_user.battery_fill_width %>"><div class="fit_right"><%= image_tag("battery-rt.gif") %></div></div>
     </div>
   </div>
   <div class="span-2 text-center"><%= image_tag("#{triage_user.connectivity_status_icon}.png", :id => "#{triage_user.connectivity_status_icon}_#{triage_user.id}") %></div>
-  <div class="span-5 last"><%= triage_user.updated_at.to_s(:time_date) %></div>
+  <div class="span-5 push-down"><%= triage_user.updated_at.to_s(:time_date) %></div>
+  <div class="span-2 text-center last">
+    <div class="push-down">
+      <% if triage_user.dismissed_from_triage? -%>
+        <%= link_to "Recall", undismiss_triage_path(:user_id => triage_user.id), :class => "button white-button small" %>
+      <% else -%>
+        <%= link_to "Dismiss", dismiss_triage_path(:user_id => triage_user.id), :class => "button white-button small" %>
+      <% end -%>
+    </div>
+  </div>
 </div>
 <div class="clear"></div>

@@ -24,11 +24,11 @@
         <div class="span-7 last"><%= select_tag "search_status", options_for_select([['Pending', 'Pending'], ['Dismissed', 'Dismissed']], params[:search_status]) %></div>
       </div>
 
-      <% ["call_center_account", "legal_agreement", "panic", "strap_fastened", "test_mode", "user_intake"].each_with_index do |which, index| %>
+      <% ["call_center_account", "dial_up_alert", "dial_up_status", "legal_agreement", "mgmt_query_delay", "panic", "strap_fastened", "test_mode", "user_intake", "software_version"].each_with_index do |which, index| %>
         <div class="span-4 <%= 'last' if index == 2 %>"><%= check_box_tag "alert[#{which}]", "#{which}", (defined?(params[:alert][which.to_sym]) ? params[:alert][which.to_sym] : true) %> <%= which.split('_').collect(&:capitalize).join(' ') %></div>
       <% end %>
       <div class="span-13 last prepend-top text-right">
-        <%= submit_tag "Apply selected filters", :class => "button white-button bottom right" %>
+        <%= submit_tag "Apply selected filters", :class => "button white-button medium bottom right" %>
       </div>
       
     </div>

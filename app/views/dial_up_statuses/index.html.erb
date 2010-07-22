@@ -4,35 +4,22 @@
 <h2>Dial Up Statuses</h2>
 <br>
 <form method="get" action="/dial_up_statuses">
-<input type="text" name="device_id" value="<%= params[:device_id]%>">
-<input type="submit" value="Enter device_id">
-<%= select_tag "dialup_type", options_for_select([ "Select Type","Global", "Local"],"Select Type"),:onchange => "this.form.submit();"%>
+  <input type="text" name="device_id" value="<%= params[:device_id]%>">
+  <input type="submit" value="Enter device_id">
+  <%= select_tag "dialup_type", options_for_select([ "Select Type","Global", "Local"],"Select Type"),:onchange => "this.form.submit();"%>
 </form>
 <br><br>
-<table border="1">
-	<th>Device Id</th>
-	<th>Number</th>
-	<th>Timestamp</th>
-	<th>Status</th>
-	<th>Configured</th>
-	<th>Num Failures</th>
-	<th>Consecutive Fails</th>
-	<th>Ever Connected</th>
-	<th>Type</th>
-	
-	<% @dial_up_statuses.each do |dial_up| %>
-	  <tr>
-	  	<td><%= dial_up.device_id %></td>
-	  	<td><%= dial_up.phone_number %></td>
-	  	<td><%= UtilityHelper.format_datetime(dial_up.created_at,current_user) %></td>
-	  	<td><%= dial_up.status %></td>
-	  	<td><%= dial_up.configured %></td>
-	  	<td><%= dial_up.num_failures %></td>
-	  	<td><%= dial_up.consecutive_fails %></td>
-	  	<td><%= dial_up.ever_connected %></td>
-	  	<td><%= dial_up.dialup_type%></td>
-	  </tr>
-	<%end%>
+<table class="bluegrey">
+  <th>Device Id</th>
+  <th>Number</th>
+  <th>Timestamp</th>
+  <th>Status</th>
+  <th>Configured</th>
+  <th>Num Failures</th>
+  <th>Consecutive Fails</th>
+  <th>Ever Connected</th>
+  <th>Type</th>	
+  <%= render :partial => 'dial_up_status', :collection => @dial_up_statuses %>
 </table>
 <br>
 <center><%= will_paginate @dial_up_statuses %></center>

@@ -32,8 +32,10 @@ div.fixed-height { height: 250px; min-height: 250px; overflow: auto; }
 .menu a { text-decoration: none; }
 .push-down { padding-top: 5px;}
 .pull-half { margin-left: -20px; }
+.pull-up { margin-top: -5px; }
 .raise { margin-top: -1em; }
 .right-gap { padding-right: 5px; }
+.align-middle { vertical-align: middle; }
 
 /* round corners */
 

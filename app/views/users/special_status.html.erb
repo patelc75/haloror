@@ -1,38 +1,20 @@
-<h1 id="special_status">Special Status for <%= @user.name %> <%= alert_button(@user.alert_status) %></h1>
+<h1 id="special_status">Special Status for <%= @user.name %> <%= alert_button( :type => @user.alert_status) %></h1>
 <div class="box span-24 last">
-  
-  <div class="span-24 last prepend-top">
-    <div class="span-6 textright">User Intake Submitted</div>
-    <div class="span-4 textcenter"><%= alert_button(@user.alert_status_for(:user_intake)) %></div>
-    <div class="span-4"><%= @user.user_intake_submitted_at %>&nbsp;</div>
-    <div class="span-10 last">Suggestion to fix this..</div>
-  </div>
-  
-  <div class="span-24 last prepend-top">
-    <div class="span-6 textright">Legal Agreement Signed</div>
-    <div class="span-4 textcenter"><%= alert_button(@user.alert_status_for(:legal_agreement)) %></div>
-    <div class="span-4"><%= @user.user_intake_legal_agreement_at %>&nbsp;</div>
-    <div class="span-10 last">Suggestion to fix this..</div>
-  </div>
-  
-  <div class="span-24 last prepend-top">
-    <div class="span-6 textright">Panic Button Test</div>
-    <div class="span-4 textcenter"><%= alert_button(@user.alert_status_for(:panic)) %></div>
-    <div class="span-4"><%= distance_of_time_in_words_to_now(@user.hours_since(:panic).hours.ago) %> delayed</div>
-    <div class="span-10 last">Suggestion to fix this..</div>
-  </div>
 
-  <div class="span-24 last prepend-top">
-    <div class="span-6 textright">Strap Fastened</div>
-    <div class="span-4 textcenter"><%= alert_button(@user.alert_status_for(:strap_fastened)) %></div>
-    <div class="span-4"><%= distance_of_time_in_words_to_now(@user.hours_since(:strap_fastened).hours.ago) %> delayed</div>
-    <div class="span-10 last">Suggestion to fix this..</div>
-  </div>
+  <% [:call_center_account, :dial_up_alert, :dial_up_status, :legal_agreement, :mgmt_query_delay, :panic, :software_version, :strap_fastened, :test_mode, :user_intake].each do |what| %>
+    <div class="span-24 last">
+      <div class="span-4 textright"><%= what.to_s.split('_').collect(&:capitalize).join(' ') %></div>
+      <div class="span-4 textcenter"><%= alert_button( :type => @user.alert_status_for( what)) %></div>
+      <div class="span-4">
+        <%# if [ :dial_up_alert, :dial_up_status, :test_mode, :software_version].include?( what) %>
+          <!-- &nbsp; -->
+        <%# else %>
+          <%= distance_of_time_in_words_to_now(@user.hours_since( what).hours.ago) %> delayed
+        <%# end %>
+      </div>
+      <div class="span-12 last">Suggestion to fix this..</div>
+      <hr class="space" />
+    </div>
+  <% end %>
 
-  <div class="span-24 last prepend-top">
-    <div class="span-6 textright">Call Center Account</div>
-    <div class="span-4 textcenter"><%= alert_button(@user.alert_status_for(:call_center_account)) %></div>
-    <div class="span-4"><%= distance_of_time_in_words_to_now(@user.hours_since(:call_center_account).hours.ago) %> delayed</div>
-    <div class="span-10 last">Suggestion to fix this..</div>
-  </div>
 </div>

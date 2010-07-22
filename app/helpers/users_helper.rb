@@ -1,11 +1,16 @@
 module UsersHelper
 
   # alert button tag
-  def alert_button(type = "normal", path = "#", size = "medium", options = {})
+  # Usage: specify options, as many as possible. its a hash anyways
+  #   alert_button( :type => "caution")
+  #   alert_button( :type => "caution", :id => user.id)
+  #   alert_button( :type => "caution", :path => path_for{ :controller => 'users', :action => 'test'})
+  def alert_button( options = {})
+    options.reverse_merge( {:type => 'normal', :path => '#', :id => Time.now.to_i, :size => 'medium'})
     # button types and colors
     buttons = {"normal" => "green-button", "caution" => "orange-button", "abnormal" => "red-button", "test mode" => "blue-button"}
-    type = "normal" unless buttons.keys.include?(type) # only these types allowed
-    size = (size.blank? ? 'medium' : size)
+    options[:type] = "normal" unless buttons.keys.include?( options[:type]) # only these types allowed
+    options[:size] = ' medium' unless options[:size] =~ /medium|small|bigrounded/
     # TODO: fix this properly
     # https://redmine.corp.halomonitor.com/issues/3202
     # dynamically generate HTML using markaby gem
@@ -16,8 +21,8 @@ module UsersHelper
     #     end
     #   end
     # end
-    "<a href=\"#{path}\" class=\"button #{buttons[type]} #{size}\" id=\"alert_#{options[:id]}\">
-      <strong>#{type.upcase.gsub(' ','.')}</strong>
+    "<a href=\"#{options[:path]}\" class=\"button #{buttons[options[:type]]} #{options[:size]}\" id=\"alert_#{options[:id]}\">
+      <strong>#{options[:type].upcase.gsub(' ','.')}</strong>
     </a>"
   end
 

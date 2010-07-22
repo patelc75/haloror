@@ -35,8 +35,8 @@
         <br />
         <%#= @user.devices[0].id%>
 		<span style="font-size: 60%;">
-        <%if @user.get_gateway and @user.get_strap %>
-		<a href="/installer/installer/?gateway_id=<%= @user.get_gateway.id %>&self_test_session_id=<%= @self_test_session.id%>&strap_id=<%= @user.get_strap.id %>&user_id=<%= @user.id %>">Skip this step (phone install only)</a>
+        <%if @user.gateway and @user.chest_strap %>
+		<a href="/installer/installer/?gateway_id=<%= @user.gateway.id %>&amp;self_test_session_id=<%= @self_test_session.id%>&amp;strap_id=<%= @user.chest_strap.id %>&amp;user_id=<%= @user.id %>">Skip this step (phone install only)</a>
 		<%else%>
 		Gateway and Strap/Clip Serial Numbers are not registered.
 		<%end%>

@@ -25,14 +25,15 @@
 
     <div class="span-24 last">
       <div class="span-1">&nbsp;</div>
-      <div class="span-5 text-center"><a href="#">Name</a> <%= image_tag("up_arr.gif") %></div>
+      <div class="span-6 text-center"><a href="#">Name</a> <%= image_tag("up_arr.gif") %></div>
       <div class="span-3 text-center"><a href="#" >Alerts</a> <%= image_tag("up_arr.gif") %></div>
-      <div class="span-2"><a href="#" ><%= image_tag("warning_16.png", :alt => "Special Status", :title => "Special Status") %></a> <%= image_tag("up_arr.gif") %></div>
-      <div class="span-2"><a href="#" ><%= image_tag("chart_bar.png", :alt => "Chart", :title => "Chart") %></a><%= image_tag("up_arr.gif") %></div>
-      <div class="span-2"><a href="#"><%= image_tag "bell.png", :alt => "Events", :title => "Events" %></a><%= image_tag("up_arr.gif") %></div>
+      <div class="span-1"><a href="#" ><%= image_tag("warning_16.png", :alt => "Special Status", :title => "Special Status") %></a> <%= image_tag("up_arr.gif") %></div>
+      <div class="span-1"><a href="#" ><%= image_tag("chart_bar.png", :alt => "Chart", :title => "Chart") %></a><%= image_tag("up_arr.gif") %></div>
+      <div class="span-1"><a href="#"><%= image_tag "bell.png", :alt => "Events", :title => "Events" %></a><%= image_tag("up_arr.gif") %></div>
       <div class="span-2 text-center "><a href="#"><%= image_tag( "lightning.png", :alt => "Battery", :title => "Battery") %></a> <%= image_tag("up_arr.gif") %></div>
       <div class="span-2 text-center"><a href="#"><%= image_tag "connect.png", :alt => "Connectivity", :title => "Connectivity" %></a><%= image_tag("up_arr.gif") %></div>
-      <div class="span-5 last"><a href="#" >Last Updated</a> <%= image_tag("up_arr.gif") %></div>
+      <div class="span-5"><a href="#" >Last Updated</a> <%= image_tag("up_arr.gif") %></div>
+      <div class="span-2 text-center last">&nbsp;</div>
       <hr class="space" />
       <%= render :partial => 'triage_user', :collection => @users %>
       <div class="span-24 text-center"><%= will_paginate @users %></div>

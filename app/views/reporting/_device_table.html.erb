@@ -34,10 +34,11 @@
 			<%=device.device_type %>
 		</div>
 		<div class="col-150">&nbsp;
-			<% info = DeviceInfo.find(:first, :include => :mgmt_response, :conditions => "device_id = #{device.id}", :order => "mgmt_responses.timestamp_server desc")%>
-			<% if info %>
-			<%= info.software_version %>
-			<% end %>
+		  <%= device.software_version %>
+			<%# info = DeviceInfo.find(:first, :include => :mgmt_response, :conditions => "device_id = #{device.id}", :order => "mgmt_responses.timestamp_server desc")%>
+			<%# if info %>
+			<%#= info.software_version %>
+			<%# end %>
 		</div>
 		<div class="col-200">
 		  <% if current_user.is_super_admin? %>
