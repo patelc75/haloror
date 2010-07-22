@@ -53,7 +53,7 @@ Rails::Initializer.run do |config|
   config.gem "rufus-scheduler", :version => ">= 2.0.1", :lib => false
   config.gem "rubyhealthvault", :lib => "healthvault"
   #config.gem "ambethia-recaptcha", :lib => "recaptcha/rails"
-  config.gem "markaby"
+  configx.gem "markaby"
 end
 
 # Add new inflection rules using the following format 
@@ -289,4 +289,3 @@ CONNECTIVITY_STATUS_ICONS = {
   "StrapRemoved" => "strap_removed",
   "Dialup" => "status_dial_up" # we are using this existing image as default value
   }
-

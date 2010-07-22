@@ -3,35 +3,61 @@
 
   <div class="hint"><%= link_to image_tag("magnifier.png"), "#", :onclick => "document.getElementById('filter-group').toggle();" %> Filter: Magnifying glass icon will hide/show the filter options</div>
   <div class="box span-23 last" id="filter-group">
-    
-    <div >
-      
-      <div class="span-10">
-        <div class="span-3 text-right"><label for="search_group">Group</label>:</div>
-        <div class="span-7 last"><%= select_tag "search_group", options_from_collection_for_select(@groups, :id, :name, params[:search_group].to_i) %></div>
 
-        <div class="span-3 text-right">Last Updated:</div>
-        <div class="span-7 last">
-          <%= select_tag "search_day", options_for_select((1..30).collect {|e| [e, e]}.insert(0, ['All',0]), params[:search_day].to_i) %> day(s), 
-          <%= select_tag "search_hour", options_for_select((1..24).collect {|e| [e, e]}.insert(0, ['All',0]), params[:search_hour].to_i) %> Hour(s), 
-          <%= select_tag "search_minute", options_for_select([['All',0], [15,15], [30,30], [45,45]], params[:search_minute].to_i) %> Minute(s)
+    <div class="span-2 text-right"><label for="search_group">Group</label>:</div>
+    <div class="span-3"><%= select_tag "search_group", options_from_collection_for_select(@groups, :id, :name, params[:search_group].to_i) %></div>
+
+    <div class="span-3 text-right">Triage Status:</div>
+    <div class="span-3"><%= select_tag "search_status", options_for_select([['Not Dismissed', 'Pending'], ['Dismissed', 'Dismissed']], params[:search_status]) %></div>
+
+    <div class="span-12 last text-right">
+      <%= submit_tag "Apply selected filters", :class => "button white-button medium bottom right" %>
+    </div>
+
+    <div class="span-5">
+      <fieldset style="height:110px;">
+        <legend>Dial Up</legend>
+        <div>
+          <% ["dial_up_alert", "dial_up_status", "mgmt_query_delay"].each_with_index do |which, index| %>
+          <div class="span-4 last"><%= check_box_tag "alert[#{which}]", "#{which}", (defined?(params[:alert][which.to_sym]) ? params[:alert][which.to_sym] : true) %> <%= User::TRIAGE_ALERT[which] || which.split('_').collect(&:capitalize).join(' ') %></div>
+          <% end %>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="span-10">
+      <fieldset style="height:110px;">
+        <legend>Install</legend>
+        <div>
+          <% ["call_center_account", "legal_agreement", "panic", "strap_fastened", "test_mode", "user_intake"].each_with_index do |which, index| %>
+          <div class="span-4 <%= 'last' if index == 1 %>"><%= check_box_tag "alert[#{which}]", "#{which}", (defined?(params[:alert][which.to_sym]) ? params[:alert][which.to_sym] : true) %> <%= User::TRIAGE_ALERT[which] || which.split('_').collect(&:capitalize).join(' ') %></div>
+          <% end %>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="span-8 last">
+      <fieldset style="height:110px;">
+        <legend>Operational</legend>
+        <div class="span-3">
+          <div>Last Updated:</div>
+          <div><%= select_tag "search_day", options_for_select((1..30).collect {|e| [e, e]}.insert(0, ['All',0]), params[:search_day].to_i) %> day(s)</div>
+          <div><%= select_tag "search_hour", options_for_select((1..24).collect {|e| [e, e]}.insert(0, ['All',0]), params[:search_hour].to_i) %> Hour(s)</div>
+          <div><%= select_tag "search_minute", options_for_select([['All',0], [15,15], [30,30], [45,45]], params[:search_minute].to_i) %> Minute(s)</div>
         </div>
 
-        <div class="span-3 text-right">Battery Percent:</div>
-        <div class="span-7 last"><%= select_tag "search_battery_percent", options_for_select((0..100).step(25).collect {|e| [(e.zero? ? 'All' : e), e]}.insert(1, [10,10]), params[:search_battery_percent].to_i) %></div>
+        <div class="span-4 last">
+          <div>
+            <% ["software_version"].each_with_index do |which, index| %>
+            <div><%= check_box_tag "alert[#{which}]", "#{which}", (defined?(params[:alert][which.to_sym]) ? params[:alert][which.to_sym] : true) %> <%= User::TRIAGE_ALERT[which] || which.split('_').collect(&:capitalize).join(' ') %></div>
+            <% end %>
+          </div>
 
-        <div class="span-3 text-right">Status:</div>
-        <div class="span-7 last"><%= select_tag "search_status", options_for_select([['Pending', 'Pending'], ['Dismissed', 'Dismissed']], params[:search_status]) %></div>
-      </div>
-
-      <% ["call_center_account", "dial_up_alert", "dial_up_status", "legal_agreement", "mgmt_query_delay", "panic", "strap_fastened", "test_mode", "user_intake", "software_version"].each_with_index do |which, index| %>
-        <div class="span-4 <%= 'last' if index == 2 %>"><%= check_box_tag "alert[#{which}]", "#{which}", (defined?(params[:alert][which.to_sym]) ? params[:alert][which.to_sym] : true) %> <%= which.split('_').collect(&:capitalize).join(' ') %></div>
-      <% end %>
-      <div class="span-13 last prepend-top text-right">
-        <%= submit_tag "Apply selected filters", :class => "button white-button medium bottom right" %>
-      </div>
-      
+          <div><%= select_tag "search_battery_percent", options_for_select((0..100).step(25).collect {|e| [(e.zero? ? 'All' : e), e]}.insert(1, [10,10]), params[:search_battery_percent].to_i) %> : Battery Percent</div>
+        </div>
+      </fieldset>
     </div>
+
   </div>
 
   <% end -%>

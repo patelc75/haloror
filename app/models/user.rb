@@ -3,6 +3,14 @@ class User < ActiveRecord::Base
   # DRY pre-defined status values for user.status column
   STATUS = { :active => "Active", :cancelled => "Cancelled", :installed => "Installed", :unknown => "Unknown" }
   STATUS_IMAGE = { :active => "user_active.png", :cancelled => "user_cancelled.png", :installed => "user.png", :unknown => "user_placeholder.png" }
+  # Usage:
+  #   <%= User::TRIAGE_ALERT[which] || which.split('_').collect(&:capitalize).join(' ') %>
+  #   Custom labels/description for triage alert types
+  #   When not defined here, the sample logic above will generate capitalized text from alert_type
+  TRIAGE_ALERT = {
+    "panic" => "Panic Button Test",
+    "dial_up_alert" => "800 Abuse Alert"
+  }
   
   #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
   
