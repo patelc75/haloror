@@ -80,7 +80,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :rmas, :has_many => :rma_items
   map.resources :purged_logs
   map.resources :triage_thresholds
-  map.resources :triage_audit_log, :only => [:new, :create]
+  map.resources :triage_audit_logs, :except => [:destroy]
   
   #deprecated models
   #map.resources :caregivers, :active_scaffold => true 

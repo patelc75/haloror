@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100721210544) do
+ActiveRecord::Schema.define(:version => 20100723191405) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1103,6 +1103,8 @@ ActiveRecord::Schema.define(:version => 20100721210544) do
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "created_by"
+    t.integer  "updated_by"
   end
 
   create_table "triage_thresholds", :force => true do |t|

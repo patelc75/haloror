@@ -63,6 +63,9 @@ class User < ActiveRecord::Base
   has_many :skin_temps
   has_many :steps
   has_many :subscriptions, :foreign_key => "senior_user_id"
+  has_many :triage_audit_logs
+  has_many :triage_audit_logs_created, :class_name => "TriageAuditLog", :foreign_key => "created_by"
+  has_many :triage_audit_logs_updated, :class_name => "TriageAuditLog", :foreign_key => "updated_by"
   has_many :vitals
   has_many :weight_scales
   

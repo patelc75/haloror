@@ -31,7 +31,10 @@
     </div>
   </div>
   <div class="span-2 text-center"><%= image_tag("#{triage_user.connectivity_status_icon}.png", :id => "#{triage_user.connectivity_status_icon}_#{triage_user.id}") %></div>
-  <div class="span-5 push-down"><%= triage_user.updated_at.to_s(:time_date) %></div>
+  <div class="span-5 push-down">
+    <span><%= link_to image_tag( "note.png", :alt => "Notes", :title => "Notes"), { :controller => "triage_audit_logs", :id => triage_user.id} %></span>
+    <span><%= triage_user.updated_at.to_s(:time_date) %></span>
+  </div>
   <div class="span-2 text-center last">
     <div class="push-down">
       <% if triage_user.dismissed_from_triage? -%>

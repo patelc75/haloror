@@ -53,7 +53,7 @@ Rails::Initializer.run do |config|
   config.gem "rufus-scheduler", :version => ">= 2.0.1", :lib => false
   config.gem "rubyhealthvault", :lib => "healthvault"
   #config.gem "ambethia-recaptcha", :lib => "recaptcha/rails"
-  configx.gem "markaby"
+  config.gem "markaby"
 end
 
 # Add new inflection rules using the following format 

@@ -1,0 +1,38 @@
+<h2>Editing Triage Note</h2>
+
+<% form_for :triage_audit_log, :url => { :controller => 'triage_audit_logs', :action => "update", :id => @triage_audit_log.id }, :html => { :method => :put } do |f| %>
+  <%= f.error_messages %>
+  <%= f.hidden_field :id %>
+
+  <p>
+    <strong>User:</strong> <%= h @triage_audit_log.user.name %>
+  </p>
+  <p>
+    <%= f.check_box :is_dismissed %>
+    <strong><%= f.label :is_dismissed, "Dismissed?" %></strong>
+  </p>
+  <p>
+    <strong><%= f.label :description %></strong><br />
+    <%= f.text_area :description, :rows => 5 %>
+  </p>
+  <p>
+    <div class="span-16 last">
+    <div class="span-3"><strong>Created at:</strong></div>
+    <div class="span-5"><%= h @triage_audit_log.created_at %></div>
+    <div class="span-1"><strong>by</strong></div>
+    <div class="span-5 last"><%= h @triage_audit_log.creator.name unless @triage_audit_log.creator.blank? %></div>
+    </div>
+    
+    <div class="span-16 last">
+    <div class="span-3"><strong>Last updated at:</strong></div>
+    <div class="span-5"><%= h @triage_audit_log.updated_at %></div>
+    <div class="span-1"><strong>by</strong></div>
+    <div class="span-5 last"><%= h @triage_audit_log.updator.name unless @triage_audit_log.updator.blank? %></div>
+    </div>
+  </p>
+  <hr class="space" />
+  <p>
+    <%= link_to 'Back to Triage', triage_path, :class => "button white-button" %>
+    <%= f.submit "Update", :class => "button green-button" %>
+  </p>
+<% end %>
