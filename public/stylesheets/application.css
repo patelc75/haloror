@@ -7,6 +7,7 @@ div.signature { display:none; }
 /*.alt-row { background-color: #E6E6E6; }*/
 /*.clear {clear:both;}*/
 
+.background-red { background-color: #FFDCCD;}
 .fit_right{ float:right;}
 .battery-width-0 { width: 10%; } /*we need the right corner visible*/
 .battery-width-10 { width: 10%; }

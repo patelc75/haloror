@@ -3,6 +3,7 @@ class MgmtCmd < ActiveRecord::Base
   belongs_to :creator, :class_name => "User", :foreign_key => "created_by"
   belongs_to :device
   belongs_to :mgmt_response
+  belongs_to :user
 
   has_one :mgmt_ack
   has_one :mgmt_query
@@ -14,6 +15,12 @@ class MgmtCmd < ActiveRecord::Base
   def self.new_initialize(random=false)
     model = self.new
     return model    
+  end
+
+  def before_save
+    # ticket 3213: Add feature to populate user_id column in the mgmt_cmds table when the mgmt_cmd is issues. Apply to all types of mgmt cmds if possible
+    # assign user_id if we have a device
+    self.user_id = device.user_intake.senior.id if ( device.user_intake && device.user_intake.senior )
   end
   
   # CHANGED: should use ORM layer than direct SQL

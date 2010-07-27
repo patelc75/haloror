@@ -11,14 +11,10 @@
   	</font>
     <div class="content" style="padding-right:20px;">
       <div style="border:2px solid;width:99.6%;height:60px;padding-top:10px;">
-      	<% gs = ['Choose a Group']
-		   @groups.each do |g|
-			 gs << g.name
-		   end %>
 		<table width="100%"><tr> <!-- FIXME: DRY this up -->
-		<td><label for="group">Group</label> <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group), :onchange => "select_group(this);"%></td>
-      	<td>Installation Date:<%#= date_select :user_intake,:installation_date %>
-      		<%= calendar_date_select :user_intake,:installation_date, :popup => 'force' ,:style => "width:120px;"%>
+		<td><label for="group">Group</label> <%= select_tag 'group', options_from_collection_for_select( @groups, :name, :name, @group).insert(0, ['Choose a Group', '']), :onchange => "select_group(this);"%></td>
+      	<td>Installation Date:<%#= date_select :user_intake,:installation_datetime %>
+      		<%= calendar_date_select :user_intake,:installation_datetime, :popup => 'force' ,:style => "width:120px;"%>
       	</td>
       	<td>Kit Serial #:</td><td><%= text_field :kit, :serial_number%></td>
       	</tr>

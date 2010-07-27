@@ -1,9 +1,10 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
 <%= render :partial => 'reporting/nav' %>
-<div class="span-12">
+<div class="span-8">
   <h2>User Intakes</h2>
+  <%= will_paginate @user_intakes %>
 </div>
-<div class="span-12 last">
+<div class="span-15 last text-right box">
   <% form_tag url_for(:controller => "user_intakes", :action => "index", :group_name => @group_name), :method => :get, :id => "group_form_id" do %>
     <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
 
@@ -13,34 +14,38 @@
     and that are
     <%= select_tag "user_intake_status", options_for_select([['Saved or Submitted', ''], ['Saved', 'Saved'], ['Submitted', 'Submitted']], @user_intake_status) %>
 
-    <%= submit_tag "Search", :class => "button orange small" %>
+    <%= submit_tag "Search", :class => "button white-button medium" %>
   <% end %>
 </div>
 
 <div class="span-24 last">
-  <center><big><%= will_paginate @user_intakes %></big></center>
   <table class="bluegrey">
     <tr>
       <th>&nbsp;</th>
       <th>Id</th>
-      <th>Installation Date</th>	
+      <th>Installation at</th>
       <th>Created By</th>
-      <th><%= image_tag "creditcards.png", :alt => "Credit/Debit Card Processed", :title => "Credit/Debit Card Processed" %></th>
-      <th><%= image_tag("money.png", :alt => "Bill Monthly", :title => "Bill Monthly" ) %></th>
+      <th><%= image_tag "creditcards.png", :alt => "Payment Type", :title => "Payment Type" %><%= image_tag "calendar-month.png", :alt => "Payment Type", :title => "Payment Type" %></th>
       <th>
         <%= image_tag('tick.png', :alt => "Subscription Agreement", :title => "Subscription Agreement") %>
         <%= image_tag('script.png', :alt => "Paper copy", :title => "Paper copy") %>
       </th>
       <th>Order ID</th>
-      <th>Kit Serial Number</th>
-      <th>Created At / Updated At</th>
+      <th>CS/BC Serial</th>
+      <th>GW Serial</th>
+      <th>Call Center Acc #</th>
+      <% if current_user.is_super_admin? %>
+        <th><%= image_tag( 'telephone.png', :alt => "Dial Up Numbers", :title => "Dial Up Numbers") %></th>
+      <% end %>
+      <th class="text-center">Status</th>
       <th>&nbsp;</th>
-      <th>&nbsp;</th>
+      <th>Created At</th>
+      <th>Updated At</th>
     </tr>
     <%= render :partial => 'user_intake_row', :collection => @user_intakes %>
   </table>
-  <center><big><%= will_paginate @user_intakes %></big></center>
-  <div>
-    <%= link_to "New User Intake", new_user_intake_path, :class => "button green" %>
+  <div class="span-12">
+    <%= link_to "New User Intake", new_user_intake_path, :class => "button green-button" %>
   </div>
+  <div class="span-12 last text-right"><%= will_paginate @user_intakes %></div>
 </div>

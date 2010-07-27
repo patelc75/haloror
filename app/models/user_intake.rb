@@ -8,7 +8,27 @@ class UserIntake < ActiveRecord::Base
   belongs_to :updater, :class_name => "User", :foreign_key => "updated_by"
   has_and_belongs_to_many :users # replaced with has_many :through
   has_many :user_intakes_users, :dependent => :destroy
-  validates_presence_of :local_primary, :global_primary # https://redmine.corp.halomonitor.com/issues/2809
+
+  acts_as_audited
+  validates_presence_of :local_primary, :global_primary, :unless => :skip_validation # https://redmine.corp.halomonitor.com/issues/2809
+  named_scope :recent_on_top, :order => "updated_at DESC"
+
+  STATUS = {
+    :pending          => "",
+    :test             => "Test Mode",
+    :approval_pending => "Ready for Approval",
+    :install_pending  => "Read to Install",
+    :overdue          => "Install Overdue",
+    :installed        => "Installed"
+  }
+  STATUS_COLOR = {
+    :pending          => "red",
+    :test             => "blue",
+    :approval_pending => "yellow",
+    :install_pending  => "yellow",
+    :overdue          => "orange",
+    :installed        => "green"
+  }
 
   # hold the data temporarily
   # user type is identified by the role it has subject to this user intake and other users
@@ -19,7 +39,7 @@ class UserIntake < ActiveRecord::Base
     attr_accessor "mem_caregiver#{index}_options".to_sym
     attr_accessor "no_caregiver_#{index}".to_sym
   end
-
+  
   # for every instance, make sure the associated objects are built
   def after_initialize
     self.bill_monthly = (order && order.was_successful?)
@@ -43,9 +63,16 @@ class UserIntake < ActiveRecord::Base
   end
 
   def before_save
+    # WARNING: Need test coverage
     # lock if required
     # skip_validation decides if "save" was hit instead of "submit"
     self.locked = (!skip_validation && valid?)
+    self.status = STATUS[:approval_pending] if (locked && status.blank?)
+    # create status row in triage_audit_log
+    options = { :status => status, :is_dismissed => senior.dismissed_from_triage?,
+      :description => "Status updated to [#{status}], triggered from user intake",
+      :updated_by => updated_by }
+    senior.triage_audit_logs.create( options) unless senior.blank?
     # associations
     associations_before_validation_and_save # build the associations
     validate_associations # check vlaidations unless "save"
@@ -179,6 +206,34 @@ class UserIntake < ActiveRecord::Base
         caregiver.options_for_senior(senior, options.merge({:position => index}))
       end
     end
+  end
+
+  def self.status_color( arg = '')
+    STATUS_COLOR[ STATUS.index( arg) || :pending ]
+  end
+
+  # https://redmine.corp.halomonitor.com/issues/3213
+  # identify if any columns in the list view are "red"
+  def red_for_list_view?
+    unless ( failure = senior.blank? )
+      # check all these attributes, but save some processor time with condition within block
+      [ :installation_datetime, :created_by, :credit_debit_card_proceessed, :bill_monthly,
+        :legal_agreement_at, :paper_copy_submitted_on, :senior,
+        :created_at, :updated_at ].each {|e| failure = self.send(e).blank? unless failure }
+      # check some methods too
+      [:chest_strap, :belt_clip, :gateway,
+        :call_center_account].each {|e| failure = self.senior.send(e).blank? unless failure }
+    end
+    failure
+  end
+
+  # TODO: re-factoring required. delegate some part to user model
+  # https://redmine.corp.halomonitor.com/issues/3213
+  # * senior exist
+  # * device identified by self.kit_serial_number exists for senior
+  # * dial_up_numbers ok for senior for given device
+  def dial_up_numbers_ok?
+    senior.blank? ? false : senior.dial_up_numbers_ok_for_device?( senior.device_by_serial_number( kit_serial_number))
   end
 
   def created_by_user_name
@@ -405,9 +460,13 @@ class UserIntake < ActiveRecord::Base
     (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
     self.caregiver3 = attributes
   end
+  
+  def submitted?
+    !submitted_at.blank? # timestamp is required to identify as "submitted"
+  end
 
   def locked?
-    !submitted_at.blank?
+    submitted?
   end
 
   def locked=(status = nil)
@@ -425,10 +484,6 @@ class UserIntake < ActiveRecord::Base
     (agreement_signed? || user.blank?) ? false : [senior, subscriber].include?(user)
   end
 
-  def submitted?
-    !submitted_at.blank? # timestamp is required to identify as "submitted"
-  end
-
   def paper_copy_submitted?
     !paper_copy_at.blank? # paper_copy of the scubscriber agreement was submitted
   end
@@ -439,7 +494,7 @@ class UserIntake < ActiveRecord::Base
     self.emailed_on = Date.today
     self.send(:update_without_callbacks)
   end
-  
+    
   private #---------------------------- private methods
 
   def skip_associations_validation

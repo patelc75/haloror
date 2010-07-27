@@ -15,7 +15,11 @@
 
 <h1 id="user_intake:_">User Intake: <%= @user_intake.id %></h1>
 <% form_for @user_intake do |f| -%>
-  <%= f.label :paper_copy_submitted_on, "Paper Copy Submitted on" %><br />
-  <%= f.text_field :paper_copy_submitted_on, :class => "datepicker" %>
-  <%= f.submit "Update", :class => "button green" %>
+  <p>
+    <%= f.label :paper_copy_submitted_on, "Paper Copy Submitted on" %><br />
+    <%= f.text_field :paper_copy_submitted_on, :class => "datepicker" %>
+  </p>
+  <p>
+    <%= f.submit "Update", :class => "button green-button" %>
+  </p>
 <% end -%>

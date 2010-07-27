@@ -7,10 +7,10 @@ class UserIntakesController < ApplicationController
     @groups = Group.for_user(current_user)
     @group_name = params[:group_name]
     group = Group.find_by_name(@group_name) unless @group_name.blank?
-    @user_intakes = (group.blank? ? UserIntake.find(:all) : UserIntake.find_all_by_group_id(group.id))
+    @user_intakes = (group.blank? ? UserIntake.recent_on_top.all : UserIntake.recent_on_top.find_all_by_group_id(group.id))
     @user_intake_status = params[:user_intake_status]
     @user_intakes = @user_intakes.select(&:locked?) if params[:user_intake_status] == "Submitted"
-    @user_intakes = @user_intakes.paginate :page => params[:page],:order => 'created_at desc',:per_page => 20
+    @user_intakes = @user_intakes.paginate :page => params[:page],:order => 'created_at desc',:per_page => 10
 
     respond_to do |format|
       format.html # index.html.erb

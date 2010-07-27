@@ -1,6 +1,8 @@
 class Device < ActiveRecord::Base
   # attributes -------------------
+  
   attr_accessor :attr_last_dial_up_status, :attr_last_dial_up_alert
+  attr_accessor :cache_user_intake
   
   # relationships ------------------
   
@@ -40,6 +42,12 @@ class Device < ActiveRecord::Base
 
   # methods -----------------------
 
+  # user intake with kit_serial_number of this device
+  # cache for better performance
+  def user_intake
+    self.cache_user_intake ||= UserIntake.find_by_kit_serial_number( serial_number)
+  end
+  
   # https://redmine.corp.halomonitor.com/issues/3159
   # WARNING: needs test coverage
   def last_mgmt_query

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100723191405) do
+ActiveRecord::Schema.define(:version => 20100727200624) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1105,6 +1105,7 @@ ActiveRecord::Schema.define(:version => 20100723191405) do
     t.datetime "updated_at"
     t.integer  "created_by"
     t.integer  "updated_by"
+    t.string   "status"
   end
 
   create_table "triage_thresholds", :force => true do |t|
@@ -1122,7 +1123,6 @@ ActiveRecord::Schema.define(:version => 20100723191405) do
   end
 
   create_table "user_intakes", :force => true do |t|
-    t.date     "installation_date"
     t.integer  "created_by"
     t.integer  "updated_by"
     t.datetime "created_at"
@@ -1143,6 +1143,8 @@ ActiveRecord::Schema.define(:version => 20100723191405) do
     t.string   "local_secondary"
     t.string   "global_primary"
     t.string   "global_secondary"
+    t.datetime "installation_datetime"
+    t.string   "status"
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|

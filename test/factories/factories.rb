@@ -190,7 +190,7 @@ Factory.define :user do |v|
 end
 
 Factory.define :user_intake do |v|
-  v.installation_date { 1.month.from_now }
+  v.installation_datetime { 1.month.from_now }
   v.association :created_by, :factory => :user
   v.association :updated_by, :factory => :user
   v.bill_monthly { rand(1) == 1 }

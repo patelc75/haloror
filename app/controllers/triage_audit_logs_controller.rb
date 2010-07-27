@@ -4,6 +4,7 @@ class TriageAuditLogsController < ApplicationController
   def index
     # pick user_id, id or current_user.id
     @triage_audit_logs = TriageAuditLog.find_all_by_user_id( params[:id], :order => "updated_at DESC").paginate :page => params[:page], :per_page => 10
+    @user = User.find( params[:id])
     
     respond_to do |format|
       format.html

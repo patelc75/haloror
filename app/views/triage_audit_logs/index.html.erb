@@ -1,40 +1,21 @@
 <div class="span-18">
-  <h1 id="triage_notes">Triage Notes for: <%= @triage_audit_logs.first.user.name || '' %></h1>
+  <h1 id="triage_notes"><%= link_to 'Triage', triage_path %> Notes for: <%= @user.name %></h1>
 </div>
 <div class="span-6 last">
   <%= image_tag "warning_16.png" %> = Dismissed<br />
   <%= image_tag "tick.png" %> = Recalled / Pending / Not-Dismissed
 </div>
 <div class="span-24 last">
-  <div class="text-center"><%= will_paginate @triage_audit_logs %></div>
   <table class="bluegrey">
     <tr>
       <th>Dismissed?</th>
       <th>Description</th>
-      <th>Created</th>
-      <th>Updated</th>
+      <th>Created by/at</th>
+      <th>Updated by/at</th>
+      <th>Status</th>
     </tr>
-    <% @triage_audit_logs.each do |triage_audit_log| %>
-    <tr>
-      <td><%= image_tag (triage_audit_log.is_dismissed ? "warning_16.png" : "tick.png") %></td>
-      <td><%= link_to triage_audit_log.description, edit_triage_audit_log_path( triage_audit_log) %></td>
-      <td class="span-6">
-        <%= h triage_audit_log.created_at %>
-        <% unless triage_audit_log.creator.blank? %>
-          <br />By: <%= h triage_audit_log.creator.name %>
-        <% end %>
-      </td>
-      <td class="span-6">
-        <%= h triage_audit_log.updated_at %>
-        <% unless triage_audit_log.updator.blank? %>
-          <br />By: <%= h triage_audit_log.updator.name %>
-        <% end %>
-      </td>
-    </tr>
-    <% end %>
+    <%= render :partial => 'triage_audit_log', :collection => @triage_audit_logs %>
   </table>
-  <div class="text-center"><%= will_paginate @triage_audit_logs %></div>
 </div>
-<p>
-  <%= link_to "Triage", triage_path, :class => "button white-button" %>
-</p>
+<div class="span-8"><%= link_to 'Triage', triage_path, :class => 'button white-button' %></div>
+<div class="span-16 last text-right"><%= will_paginate @triage_audit_logs %></div>

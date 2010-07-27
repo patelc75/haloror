@@ -24,6 +24,9 @@ class User < ActiveRecord::Base
   cattr_accessor :current_user #stored in memory instead of table
   attr_accessor :password
   attr_accessor :current_password,:username_confirmation
+
+  # cache attributes
+  attr_accessor :cache_device
   
   # arranged associations alphabetically for easier traversing
   
@@ -242,6 +245,28 @@ class User < ActiveRecord::Base
     end
   end
 
+  # check if dial_up_numbers are have "Ok" status for the given device
+  # * mgmt_cmd row found for device having numbers (identified by cmd_type == dial_up_num_glob_prim)
+  # * all 4 numbers are present
+  # * local numbers cannot begin with "18"
+  def dial_up_numbers_ok_for_device?( device)
+    unless ( failure = device.blank? ) # cannot check mgmt_cmds without a device
+      # further logic is based on this mgmt_cmd row
+      mgmt_cmd ||= mgmt_cmds.first( :conditions => ["device_id = ? AND cmd_type LIKE ?", device.id, "%dial_up_num_glob_prim%"], :order => "timestamp_sent DESC")
+      unless ( failure = mgmt_cmd.blank? ) # mgmt_cmd row must exist
+        numbers = (1..4).collect {|e| mgmt_cmd.send(:"param#{e}") } # collect global/local primary/secondary
+        failure = numbers.any?(&:blank?) unless failure # the set of 4 numbers exist
+        failure = numbers[0..1].collect {|e| e[0..1] == '18'}.include?( true) unless failure # local numbers (1,2) cannot start with "18"
+      end
+    end
+    !failure
+  end
+  
+  # self.devices must have one with kit_serial_number
+  def device_by_serial_number( serial)
+    cache_device ||= devices.find_by_serial_number( serial) unless serial.blank?
+  end
+  
   def status_image
     what = (['Active', 'Cancelled', 'Installed', 'Unknown'].include?(status) ? status : 'Unknown')
     User::STATUS_IMAGE[what.downcase.to_sym]
@@ -305,7 +330,7 @@ class User < ActiveRecord::Base
   
   # check and return boolean, if this user was in triage list and was dismissed today
   def dismissed_from_triage?
-    last_log = last_triage_audit_log
+    last_log = last_triage_audit_log # cace column in table
     last_log.blank? ? false : ((last_log.created_at.to_date == Date.today) && last_log.is_dismissed)
   end
   

@@ -1,44 +1,75 @@
-<tr>
-  <td><%= image_tag("bullet_key.png") if user_intake_row.locked? %></td>
-  <td class="grey"><%= link_to user_intake_row.id, user_intake_row %></td>
-  <td><%= user_intake_row.installation_date %></td>	
-  <td class="grey"><%= user_intake_row.created_by_user_name %></td>	
-  <td><%= image_tag "creditcards.png", :alt => "Credit/Debit Card Processed", :title => "Credit/Debit Card Processed" if user_intake_row.credit_debit_card_proceessed %></td>
-  <td class="grey text-center"><%= image_tag("money.png", :alt => "Bill Monthly", :title => "Bill Monthly") if user_intake_row.bill_monthly %></td>
+<tr class="<%= 'background-red' if user_intake_row.red_for_list_view? %>">
   <td class="text-center">
-    <% if user_intake_row.legal_agreement_at.blank? %>
-      <% if user_intake_row.paper_copy_submitted_on.blank? %>
-        <%= link_to image_tag("pencil.png"), :controller => "user_intakes", :action => "paper_copy_submission", :id => user_intake_row.id %>
-      <% else %>
-        <%= image_tag("script.png", :alt => "Paper copy on #{user_intake_row.paper_copy_submitted_on}", :title => "Paper copy at #{user_intake_row.paper_copy_submitted_on}") %>
-      <% end %>
-    <% else %>
-      <%= image_tag("tick.png", :alt => "Subscription Agreement at #{user_intake_row.legal_agreement_at}", :title => "Subscription Agreement at #{user_intake_row.legal_agreement_at}" ) %>
-    <% end %>
-  </td>
-  <td class="grey text-center">
-    <% unless user_intake_row.order_id.blank? %>
-    <%= link_to user_intake_row.order_id,:controller => 'orders',:action => 'index',:id => user_intake_row.order_id %>
-    <% end %>
-  </td>
-  <td><%= user_intake_row.kit_serial_number %></td>
-  <td class="grey timestamp text-center"><%= UtilityHelper.format_datetime(user_intake_row.created_at,current_user) %>
-    <% if user_intake_row.locked? %>
-    <br /> / <%= link_to UtilityHelper.format_datetime(user_intake_row.updated_at,current_user), user_intake_row %>
-    <% end %>
-  </td>
-  <td class="text-center">
+    <%= image_tag("bullet_key.png") if user_intake_row.locked? %>
+
     <% if user_intake_row.locked? %>
       <%= link_to image_tag("folder.png", :alt => "#{user_intake_row.updated_at}", :title => "#{user_intake_row.updated_at}"), user_intake_row %>
     <% else %>
-      <%= link_to image_tag("pencil.png", :alt => "Edit", :title => "Edit") + " Edit", edit_user_intake_path(user_intake_row) %>
+      <%= link_to image_tag('pencil.png'), edit_user_intake_path(user_intake_row) %>
     <% end -%>
-  </td>
-  <td class="grey text-center">
+
     <% if user_intake_row.emailed_on.blank? %>
       <%= link_to image_tag("email.png", :alt => "Send Email to SafetyCare", :title => "Send Email to SafetyCare"), :controller => 'users', :action => 'send_caregiver_details', :id => user_intake_row.senior.id unless user_intake_row.senior.blank? %>
     <% else %>
       <%= link_to image_tag("email.png", :alt => "Send Email to SafetyCare again. Last: #{user_intake_row.emailed_on}", :title => "Send Email to SafetyCare again. Last: #{user_intake_row.emailed_on}"), :controller => 'users', :action => 'send_caregiver_details', :id => user_intake_row.senior.id unless user_intake_row.senior.blank? %>
+    <% end %>
+  </td>
+  <td><%= link_to user_intake_row.id, user_intake_row %></td>
+  <td><%= user_intake_row.installation_datetime || image_tag('exclamation.png') %></td>
+  <td><%= user_intake_row.creator ? user_intake_row.created_by_user_name : image_tag('exclamation.png') %></td>
+  <td>
+    <%= user_intake_row.credit_debit_card_proceessed ? (image_tag "creditcards.png", :alt => "Credit/Debit Card Processed", :title => "Credit/Debit Card Processed") : ( user_intake_row.bill_monthly ? image_tag("calendar-month.png", :alt => "Bill Monthly", :title => "Bill Monthly") : image_tag('exclamation.png') ) %>
+  </td>
+  <td class="text-center">
+    <% if user_intake_row.legal_agreement_at.blank? %>
+      <% if user_intake_row.paper_copy_submitted_on.blank? %>
+        <%= link_to image_tag("script_grey.png", :alt => "Update the date of paper copy submission", :title => "Update the date of paper copy submission"), :controller => "user_intakes", :action => "paper_copy_submission", :id => user_intake_row.id %>
+      <% else %>
+        <%= image_tag("script.png", :alt => "Paper copy submitted on #{user_intake_row.paper_copy_submitted_on}", :title => "Paper copy submitted at #{user_intake_row.paper_copy_submitted_on}") %>
+      <% end %>
+    <% else %>
+      <%= image_tag("tick.png", :alt => "Submitted online at #{user_intake_row.legal_agreement_at}", :title => "Submitted online at #{user_intake_row.legal_agreement_at}" ) %>
+    <% end %>
+  </td>
+  <td class="text-center">
+    <% if user_intake_row.order_id.blank? %>
+      <%= image_tag('exclamation.png') %>
+    <% else %>
+      <%= link_to user_intake_row.order_id,:controller => 'orders',:action => 'index',:id => user_intake_row.order_id %>
+    <% end %>
+  </td>
+  <td class="text-center">
+    <% if user_intake_row.senior.chest_strap %>
+      <%= "CS: "+ user_intake_row.senior.chest_strap.serial_number %>
+    <% else %>
+      <% if user_intake_row.senior.belt_clip %>
+        <%= "BC: "+ user_intake_row.senior.belt_clip.serial_number %>
+      <% else %>
+        <%= image_tag('exclamation.png') %>
+      <% end %>
+    <% end %>
+  </td>
+  <td class="text-center"><%= user_intake_row.senior.gateway ? ("GW: "+ user_intake_row.senior.gateway.serial_number) : image_tag('exclamation.png') %></td>
+  <td><%= image_tag user_intake_row.senior.call_center_account ? "tick.png" : "exclamation.png" %></td>
+  <% if current_user.is_super_admin? %>
+    <td><%= image_tag (user_intake_row.dial_up_numbers_ok? ? "tick.png" : "exclamation.png") %></td>
+  <% end %>
+  <td>
+    <div class="button small <%= UserIntake::STATUS_COLOR[ (UserIntake::STATUS.index( user_intake_row.status) || :pending) ] %>-button">
+      <%= UserIntake::STATUS.index( user_intake_row.status).blank? ? 'Not Submitted' : user_intake_row.status %>
+    </div>
+  </td>
+  <td><%= link_to image_tag( "note.png", :alt => "Notes", :title => "Notes"), { :controller => "triage_audit_logs", :id => user_intake_row.senior.id} if !user_intake_row.senior.blank? %></td>
+  <td class="timestamp span-3"><%= user_intake_row.created_at ? UtilityHelper.format_datetime(user_intake_row.created_at,current_user) : image_tag('exclamation.png') %></td>
+  <td class="timestamp span-3">
+    <% if user_intake_row.updated_at %>
+      <% if user_intake_row.locked? %>
+        <%= link_to UtilityHelper.format_datetime(user_intake_row.updated_at,current_user), user_intake_row %>
+      <% else %>
+        <%= h UtilityHelper.format_datetime(user_intake_row.updated_at,current_user) %>
+      <% end %>
+    <% else %>
+      <%= image_tag('exclamation.png') %>
     <% end %>
   </td>
 </tr>

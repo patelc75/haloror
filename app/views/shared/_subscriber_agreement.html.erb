@@ -178,12 +178,13 @@
   <% unless controller.class == UtilController && action_name == "terms" # ticket 3126 %>
   <div id="agreement_buttons">
     <div class="span-8">
+      &nbsp;
       <% if @user_intake && @user_intake.can_sign_agreement?(current_user) %>
         <%= check_box "userintake", "agree", :onchange => "agree_button.toggle(); return false;" %> I Agree Terms and Conditions
-      <% end %>&nbsp;
+      <% end %>
     </div>
     
-    <div class="span-16 last text-right buttons">
+    <div class="span-16 last text-right">
       
       <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update', :redirect_hash => @redirect_hash} do |f| -%>
         <%= f.text_field :paper_copy_at, :value => Time.now.to_s, :class => "hidden" %>
