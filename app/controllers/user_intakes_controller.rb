@@ -4,12 +4,36 @@ class UserIntakesController < ApplicationController
   # GET /user_intakes
   # GET /user_intakes.xml
   def index
+    # TODO: needs re-factoring
     @groups = Group.for_user(current_user)
+    # filter: group
     @group_name = params[:group_name]
     group = Group.find_by_name(@group_name) unless @group_name.blank?
     @user_intakes = (group.blank? ? UserIntake.recent_on_top.all : UserIntake.recent_on_top.find_all_by_group_id(group.id))
+    # filter: submission / save status
     @user_intake_status = params[:user_intake_status]
     @user_intakes = @user_intakes.select(&:locked?) if params[:user_intake_status] == "Submitted"
+    # filter: user identity. id, name, first_name, last_name, anything matches the given values
+    # can also acept comma separated values for multiple
+    @user_identity = params[:user_identity]
+    unless @user_identity.blank?
+      phrases = params[:user_identity].split(',').collect(&:strip)
+      # user intakes are selected here based on multiple criteria
+      # * given csv phrase is split into csv_array
+      # * user id, name, first_name, last_name from profile are checked against each element of csv_array
+      # * name returns email or login, if profile is missing
+      # * any given attribute of user can match at least one element of csv_array
+      @user_intakes = @user_intakes.select do |user_intake|
+        senior = user_intake.senior # fetch the senior. no worries even if it is blank. handled in next row
+        # if user is blank? do not select this user_intake
+        # if user identity matches, select, else fail
+        # senior exists && any identity column of senior matches at least one phrase (even partially)
+        senior && [senior.id.to_s, senior.name, senior.first_name, senior.last_name].compact.uniq.collect do |e|
+          found = phrases.collect {|f| e.include?( f) } # collect booleans for any phrase matching this identity column
+          found && found.include?( true) # at least one match is TRUE
+        end.include?( true) # collection must have at least one TRUE
+      end
+    end
     @user_intakes = @user_intakes.paginate :page => params[:page],:order => 'created_at desc',:per_page => 10
 
     respond_to do |format|
@@ -106,5 +130,13 @@ class UserIntakesController < ApplicationController
   def paper_copy_submission
     @user_intake = UserIntake.find(params[:id])
   end
-  
+
+  def add_notes
+    unless (ids = (params[:selected] ? params[:selected].keys.collect(&:to_i) : [])).blank?
+      user_intakes = UserIntake.find(ids)
+      user_intakes.each {|e| e.add_triage_note( :description => params[:user_intake_note], :created_by => current_user.id) }
+      flash[:notice] = "Triage note added for " + user_intakes.collect {|e| e.senior.blank? ? nil : e.senior.name }.compact.uniq.join(', ')
+    end
+    redirect_to :back # just go back to the last triage
+  end
 end

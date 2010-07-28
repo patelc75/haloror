@@ -1,4 +1,5 @@
 <tr class="<%= 'background-red' if user_intake_row.red_for_list_view? %>">
+  <td><%= check_box_tag "selected[#{user_intake_row.id}]" %></td>
   <td class="text-center">
     <%= image_tag("bullet_key.png") if user_intake_row.locked? %>
 
@@ -15,11 +16,10 @@
     <% end %>
   </td>
   <td><%= link_to user_intake_row.id, user_intake_row %></td>
+  <td>(<%= user_intake_row.senior.id %>) <%= user_intake_row.senior.name %></td>
   <td><%= user_intake_row.installation_datetime || image_tag('exclamation.png') %></td>
-  <td><%= user_intake_row.creator ? user_intake_row.created_by_user_name : image_tag('exclamation.png') %></td>
-  <td>
-    <%= user_intake_row.credit_debit_card_proceessed ? (image_tag "creditcards.png", :alt => "Credit/Debit Card Processed", :title => "Credit/Debit Card Processed") : ( user_intake_row.bill_monthly ? image_tag("calendar-month.png", :alt => "Bill Monthly", :title => "Bill Monthly") : image_tag('exclamation.png') ) %>
-  </td>
+  <td><%= user_intake_row.credit_debit_card_proceessed ? (image_tag "creditcards.png", :alt => "Credit/Debit Card Processed", :title => "Credit/Debit Card Processed") : ( user_intake_row.bill_monthly ? image_tag("calendar-month.png", :alt => "Bill Monthly", :title => "Bill Monthly") : image_tag('exclamation.png') ) %></td>
+  <% if current_user.is_super_admin? %>
   <td class="text-center">
     <% if user_intake_row.legal_agreement_at.blank? %>
       <% if user_intake_row.paper_copy_submitted_on.blank? %>
@@ -31,6 +31,7 @@
       <%= image_tag("tick.png", :alt => "Submitted online at #{user_intake_row.legal_agreement_at}", :title => "Submitted online at #{user_intake_row.legal_agreement_at}" ) %>
     <% end %>
   </td>
+  <% end %>
   <td class="text-center">
     <% if user_intake_row.order_id.blank? %>
       <%= image_tag('exclamation.png') %>
@@ -60,6 +61,7 @@
     </div>
   </td>
   <td><%= link_to image_tag( "note.png", :alt => "Notes", :title => "Notes"), { :controller => "triage_audit_logs", :id => user_intake_row.senior.id} if !user_intake_row.senior.blank? %></td>
+  <td class="text-center"><%= user_intake_row.creator ? user_intake_row.created_by_user_name : image_tag('exclamation.png') %></td>
   <td class="timestamp span-3"><%= user_intake_row.created_at ? UtilityHelper.format_datetime(user_intake_row.created_at,current_user) : image_tag('exclamation.png') %></td>
   <td class="timestamp span-3">
     <% if user_intake_row.updated_at %>

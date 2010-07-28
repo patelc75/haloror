@@ -22,8 +22,18 @@ class TriageAuditLogsController < ApplicationController
 
     respond_to do |format|
       if @triage_audit_log.save
-        flash[:notice] = "#{user ? user.name : 'Triage row' } was #{@triage_audit_log.is_dismissed ? '' : 'un-'}dismissed."
-        format.html { redirect_to :controller => 'users', :action => 'triage' }
+        if request.request_uri == '/triage_audit_logs'
+          flash[:notice] = "New note added to triage log for #{@triage_audit_log.user.name}"
+        else
+          flash[:notice] = "#{user ? user.name : 'Triage row' } was #{@triage_audit_log.is_dismissed ? '' : 'un-'}dismissed."
+        end
+        format.html do
+          if request.request_uri == '/triage_audit_logs'
+            redirect_to :controller => 'triage_audit_logs', :id => @triage_audit_log.user_id
+          else
+            redirect_to :controller => 'users', :action => 'triage'
+          end
+        end
       else
         format.html { render :action => "new" }
       end

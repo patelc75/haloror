@@ -7,7 +7,11 @@ div.signature { display:none; }
 /*.alt-row { background-color: #E6E6E6; }*/
 /*.clear {clear:both;}*/
 
-.background-red { background-color: #FFDCCD;}
+.background-red { background-color: #F7C9C7;}
+.background-blue { background-color: #DDE3FD;}
+.background-green { background-color: #DEFBDA;}
+.background-yellow { background-color: #FCFDDE;}
+.background-orange { background-color: #F8CE96;}
 .fit_right{ float:right;}
 .battery-width-0 { width: 10%; } /*we need the right corner visible*/
 .battery-width-10 { width: 10%; }

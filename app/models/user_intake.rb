@@ -13,6 +13,30 @@ class UserIntake < ActiveRecord::Base
   validates_presence_of :local_primary, :global_primary, :unless => :skip_validation # https://redmine.corp.halomonitor.com/issues/2809
   named_scope :recent_on_top, :order => "updated_at DESC"
 
+  # WARNING: HALF BAKED. DO NOT USE
+  # named_scope :identity_includes, lambda { |*args|
+  #   arg = args.flatten.first
+  #   include_this = arg.blank? # blank parameters means, include it
+  #   unless include_this # unless not alreadu included
+  #     unless senior.blank? # blank senior will not be included
+  #       phrases = arg.split(',').collect(&:strip)
+  #       # user intakes are selected here based on multiple criteria
+  #       # * given csv phrase is split into csv_array
+  #       # * user id, name, first_name, last_name from profile are checked against each element of csv_array
+  #       # * name returns email or login, if profile is missing
+  #       # * any given attribute of user can match at least one element of csv_array
+  #       # if user is blank? do not select this user_intake
+  #       # if user identity matches, select, else fail
+  #       # senior exists && any identity column of senior matches at least one phrase (even partially)
+  #       senior && [senior.id.to_s, senior.name, senior.first_name, senior.last_name].compact.uniq.collect do |e|
+  #         found = phrases.collect {|f| e.include?( f) } # collect booleans for any phrase matching this identity column
+  #         found && found.include?( true) # at least one match is TRUE
+  #       end.include?( true) # collection must have at least one TRUE
+  #     end
+  #   end
+  #   { :conditions => include_this } # return the boolean value to select/reject this row
+  # }
+
   STATUS = {
     :pending          => "",
     :test             => "Test Mode",
@@ -206,6 +230,10 @@ class UserIntake < ActiveRecord::Base
         caregiver.options_for_senior(senior, options.merge({:position => index}))
       end
     end
+  end
+
+  def add_triage_note( args = nil)
+    senior.triage_audit_logs.create( args) unless ( args.blank? || senior.blank? )
   end
 
   def self.status_color( arg = '')

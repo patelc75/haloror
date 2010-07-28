@@ -6,7 +6,7 @@ class TriageAuditLog < ActiveRecord::Base
   # WARNING: test coverage required
   def before_save
     # if the "status" is blank for this row, pick the last one
-    self.status = user.last_triage_audit_log.status if ( status.blank? && !user.blank? )
+    self.status = user.last_triage_audit_log.status if ( status.blank? && user && user.last_triage_audit_log )
   end
 
   # cache trigger

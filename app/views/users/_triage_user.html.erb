@@ -1,4 +1,4 @@
-<div class="dashboard-row push-down rounded span-24 last" id="user_<%= triage_user.id %>">
+<div class="dashboard-row half-prepend-top rounded span-24 last" id="user_<%= triage_user.id %>">
   <div class="span-1 text-right">
     <%= check_box_tag "selected[#{triage_user.id}]" %>
     <%= hidden_field_tag "users[]", triage_user.id %>
@@ -9,7 +9,7 @@
     <a href="#"><%= triage_user.name %></a>
   </div>
   <div class="span-3">
-    <div class="push-down text-center" id="<%= triage_user.alert_status %>_<%= triage_user.id %>">
+    <div class="half-prepend-top text-center" id="<%= triage_user.alert_status %>_<%= triage_user.id %>">
       <%= alert_button( :type => triage_user.alert_status( params), :path => url_for(:controller => 'users', :action => 'special_status', :id => triage_user.id), :id => triage_user.id) %>
       <script type="text/javascript" charset="utf-8">
         $('alert_<%= triage_user.id %>').addTip('<div class="span-4">User intake submitted:</div><div class="span-4 last"><%= triage_user.user_intake_submitted_at %></div>');
@@ -23,20 +23,20 @@
     <%= image_tag("warning_grey_32.png") %>
     <% end %>
   </div>
-  <div class="span-1 push-down"><%= image_tag("graph.jpg") %></div>
-  <div class="span-1 push down"><%= image_tag("list.png") %></div>
+  <div class="span-1 half-prepend-top"><%= image_tag("graph.jpg") %></div>
+  <div class="span-1 half-prepend-top"><%= image_tag("list.png") %></div>
   <div class="span-2 text-center">
     <div class="battery-cover" >
       <div id="user_<%= triage_user.id %>_battery_<%= triage_user.battery_color %>_<%= triage_user.battery_fill_width %>" class="<%= triage_user.battery_color %>-color-base battery-width-<%= triage_user.battery_fill_width %>"><div class="fit_right"><%= image_tag("battery-rt.gif") %></div></div>
     </div>
   </div>
   <div class="span-2 text-center"><%= image_tag("#{triage_user.connectivity_status_icon}.png", :id => "#{triage_user.connectivity_status_icon}_#{triage_user.id}") %></div>
-  <div class="span-5 push-down">
+  <div class="span-5 half-prepend-top">
     <span><%= link_to image_tag( "note.png", :alt => "Notes", :title => "Notes"), { :controller => "triage_audit_logs", :id => triage_user.id} %></span>
     <span><%= triage_user.updated_at.to_s(:time_date) %></span>
   </div>
   <div class="span-2 text-center last">
-    <div class="push-down">
+    <div class="half-prepend-top">
       <% if triage_user.dismissed_from_triage? -%>
         <%= link_to "Recall", undismiss_triage_path(:user_id => triage_user.id), :class => "button white-button small" %>
       <% else -%>

@@ -1121,6 +1121,16 @@ class User < ActiveRecord::Base
     #   email
     # end
   end
+
+  # Ticket: 3213 requires this
+  # defines the following methods
+  #   user.first_name
+  #   user.last_name
+  [:first_name, :last_name].each do |method_name|
+    define_method method_name do
+      profile.blank? ? '' : profile.send( method_name)
+    end
+  end
   
   def to_s()
     name

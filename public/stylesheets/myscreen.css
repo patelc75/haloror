@@ -28,14 +28,15 @@ div.fixed-height { height: 250px; min-height: 250px; overflow: auto; }
   height:12px;
 }
 
+.align-middle { vertical-align: middle; }
+.half-prepend-top {margin-top:5px !important;}
+.half-append-bottom {margin-bottom:5 !important;}
 .hidden { display: none; }
 .menu a { text-decoration: none; }
-.push-down { padding-top: 5px;}
 .pull-half { margin-left: -20px; }
 .pull-up { margin-top: -5px; }
 .raise { margin-top: -1em; }
 .right-gap { padding-right: 5px; }
-.align-middle { vertical-align: middle; }
 
 /* round corners */
 
@@ -97,6 +98,7 @@ div.fixed-height { height: 250px; min-height: 250px; overflow: auto; }
 .text-small { font-size: 85%;}
 .text-blue { color: #0080FF;}
 .text-grey { color: #4C4C4C;}
+.text-light-grey { color: #B3B3B3;}
 
 .timestamp {
   font: italic normal normal .85em Arial, sans-serif;

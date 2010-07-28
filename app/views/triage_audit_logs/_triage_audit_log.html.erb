@@ -1,17 +1,17 @@
 <tr>
-  <td><%= image_tag (triage_audit_log.is_dismissed ? "warning_16.png" : "tick.png") %></td>
-  <td><%= link_to triage_audit_log.description, edit_triage_audit_log_path( triage_audit_log) %></td>
+  <td><%= image_tag (triage_audit_log.is_dismissed ? "tick.png" : "warning_16.png") %></td>
+  <td><%= link_to truncate(triage_audit_log.description, 75), edit_triage_audit_log_path( triage_audit_log) %></td>
   <td class="span-6">
     <% unless triage_audit_log.creator.blank? %>
-      By: <%= h triage_audit_log.creator.name %><br />at 
+      <%= h triage_audit_log.creator.name %><br />
     <% end %>
-    <%= h triage_audit_log.created_at %>
+    <span class="timestamp"><%= h triage_audit_log.created_at %></span>
   </td>
   <td class="span-6">
     <% unless triage_audit_log.updator.blank? %>
-      By: <%= h triage_audit_log.updator.name %><br />at 
+      <%= h triage_audit_log.updator.name %><br />
     <% end %>
-    <%= h triage_audit_log.updated_at %>
+    <span class="timestamp"><%= h triage_audit_log.updated_at %></span>
   </td>
   <td class="span-3">
     <div class="button <%= triage_audit_log.status_color %>-button small"><%= triage_audit_log.status || 'Not Submitted' %></div>

@@ -1,21 +1,37 @@
-<div class="span-18">
-  <h1 id="triage_notes"><%= link_to 'Triage', triage_path %> Notes for: <%= @user.name %></h1>
-</div>
-<div class="span-6 last">
-  <%= image_tag "warning_16.png" %> = Dismissed<br />
-  <%= image_tag "tick.png" %> = Recalled / Pending / Not-Dismissed
-</div>
 <div class="span-24 last">
-  <table class="bluegrey">
-    <tr>
-      <th>Dismissed?</th>
-      <th>Description</th>
-      <th>Created by/at</th>
-      <th>Updated by/at</th>
-      <th>Status</th>
-    </tr>
-    <%= render :partial => 'triage_audit_log', :collection => @triage_audit_logs %>
-  </table>
+  <div class="span-12">
+    <h2 id="triage_notes"><span class="text-light-grey">Triage Notes for:</span> <%= @user.name %></h2>
+  </div>
+  <div class="span-12 last text-right">
+    <strong>Legends: </strong>
+    <%= image_tag "tick.png" %> (<span class="tiny">Dismissed</span>), 
+    <%= image_tag "warning_16.png" %> (<span class="tiny">Not-Dismissed / Needs action</span>)
+  </div>
+  <div class="span-24 last">
+    <table class="bluegrey">
+      <tr>
+        <th class="span-1">&nbsp;</th>
+        <th class="span-14">Description</th>
+        <th>Created by/at</th>
+        <th>Updated by/at</th>
+        <th>Status</th>
+      </tr>
+      <%= render :partial => 'triage_audit_log', :collection => @triage_audit_logs %>
+    </table>
+    <div class="text-center"><%= will_paginate @triage_audit_logs %></div>
+  </div>
 </div>
-<div class="span-8"><%= link_to 'Triage', triage_path, :class => 'button white-button' %></div>
-<div class="span-16 last text-right"><%= will_paginate @triage_audit_logs %></div>
+<hr class="space" />
+
+<div class="box background-green span-23 last">
+  <% form_for TriageAuditLog.new( :user => @user, :updator => current_user) do |f| -%>
+  <div class="span-19">
+    <%= f.text_area :description, :rows => 1, :class => "span-19" %>
+    <%= f.hidden_field :user_id %>
+    <%= f.hidden_field :updated_by %>
+  </div>
+  <div class="span-4 last half-prepend-top">
+    <%= f.submit "New Note for\n#{@user.name}", :class => "button green-button small span-4" %>
+  </div>
+  <% end -%>
+</div>
