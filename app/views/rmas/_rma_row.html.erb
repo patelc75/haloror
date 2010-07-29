@@ -1,0 +1,14 @@
+<tr class="<%= cycle('', 'altrow') %>">
+  <td class="span-2"><%= link_to "RMA #{rma_row.id}", rma_row %></td>
+  <td class="span-2"><%=h rma_row.created_at.to_s(:MM_DD_YYYY) %></td>
+  <td class="span-2"><%=h rma_row.serial_number %></td>
+  <td class="span-5"><%=h rma_row.user_name %></td>
+  <td class="span-2"><%=h rma_row.group_name %></td>
+  <td class="span-3"><b><%=h rma_row.phone_number %></b></td>
+  <td class="span-6"><b><%=h rma_row.computed_status %></b><span class="tiny"><br />(<%= rma_row.computed_status_detail.to_a.join(', ') %>)</span></td>
+  <td class="span-2">
+    <%= link_to image_tag('pencil.png', :alt => "Edit", :title => "Edit"), edit_rma_path( rma_row) %>&nbsp;
+    <%= link_to image_tag('copy.png', :alt => "Copy", :title => "Copy") %>&nbsp;
+    <%= link_to image_tag('trash.png', :alt => "Delete", :title => "Delete"), rma_row, :confirm => 'Are you sure?', :method => :delete %>
+  </td>
+</tr>

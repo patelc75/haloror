@@ -1,52 +1,53 @@
-<!-- <meta http-equiv="refresh" content="30"> -->
-<%= render :partial => 'atp/nav'%>
-<h2>RMAs Navigation</h2>
+<div class="span-24 last">
+  <!-- <meta http-equiv="refresh" content="30"> -->
+  <%= render :partial => 'atp/nav'%>
 
-<p>
-  <%= link_to 'Create New RMA',new_rma_path -%> | 
-  <%= link_to 'RMA Reports' %> | 
-  <%= link_to 'RMA History' %>
-</p>
+  <% form_tag rmas_path, :method => :get, :id => "rma_search" do %>
 
-<p>
-  <form name="rma_search" action="/rmas" class="textright">
-  <input type="text" name="search" size="50" value="Enter UID, Serial or Status to filter" class="outlined" style="padding:2px 5px 3px 5px;" onFocus="value=''">
-  <input type="submit" value="Search" class="outlined">
-  </form>
-  <!-- <=# collection_select(:group, :id, @groups, :id, :name, {:prompt => true}) > -->
-</p>
+  <div class="span-8">
+    <h2>RMAs Navigation</h2>
+    <%= link_to 'Create New RMA',new_rma_path -%> | 
+    <%= link_to 'RMA Reports' %> | 
+    <%= link_to 'RMA History' %>
+  </div>
 
-<p>
-  <table class="bluegrey">
-    <tr>
-    	<th>ID</th>
-    	<th>Date Created</th>
-    	<th>Serial Number</th>
-    	<th>User ID</th>
-    	<th>Group</th>
-    	<th>Phone</th>
-    	<th>RMA Status</th>
-      <th>Action</th>
-    </tr>
-    <% @rmas.each do |rma| %>
-      <tr class="<%= cycle('', 'altrow') %>">
-        <td><%= link_to "RMA #{rma.id}", rma %></td>
-        <td><%=h rma.created_at.to_s(:MM_DD_YYYY) %></td>
-        <td><%=h rma.serial_number %></td>
-        <td><%=h rma.user_name %></td>
-        <td><%=h rma.group_name %></td>
-        <td><b><%=h rma.phone_number %></b></td>
-        <td><b><%=h rma.computed_status %></b><span class="tiny"><br />(<%= rma.computed_status_detail.to_a.join(', ') %>)</span></td>
-        <td>
-          <%= link_to 'Edit', edit_rma_path(rma) %> | 
-          Copy | 
-          <%= link_to 'Destroy', rma, :confirm => 'Are you sure?', :method => :delete %>
-        </td>
+  <div class="span-16 last">
+    <div class="span-15 last text-right box">
+      <div class="span-12">
+        <%= text_area_tag "search", @search, :rows => 1, :class => "span-12" %>
+        <%= hidden_field_tag :sort %>
+      </div>
+      <div class="span-2 last prepend-top"><%= submit_tag "Search", :class => "button white-button medium" %></div>
+      <!-- <=# collection_select(:group, :id, @groups, :id, :name, {:prompt => true}) > -->
+    </div>
+  </div>
+
+  <div class="span-24 last">
+    <table class="bluegrey pull-up">
+      <tr>
+        <th class="span-2">ID</th>
+        <th class="span-2">Date created</th>
+        <th class="span-2">Serial Number</th>
+        <th class="span-5">User ID</th>
+        <th class="span-2">Group 
+          <%= link_to_function "^", nil, :id => "sort" do |page|
+            page[:sort].value = "group asc"
+            page[:rma_search].submit
+          end %>
+          <%= link_to_function "v", nil, :id => "sort" do |page|
+            page[:sort].value = "group desc"
+            page[:rma_search].submit
+          end %>
+        </th>
+        <th class="span-3">Phone</th>
+        <th class="span-6">RMA Status</th>
+        <th class="span-2">Action</th>
       </tr>
-    <% end -%>
-  </table>
-</p>
+    </table>
+  </div>
+  <% end %>
 
-<p>
-  <center><big><%= will_paginate @rmas %></big></center>
-</p>
+  <div class="span-24 last"><table><%= render :partial => 'rma_row', :collection => @rmas %></table></div>
+
+  <div class="text-center"><%= will_paginate @rmas %></div>
+</div>

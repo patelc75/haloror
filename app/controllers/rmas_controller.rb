@@ -1,16 +1,38 @@
 class RmasController < ApplicationController
 
+  # TODO: re-factoring required
   def index
-  	@groups = Group.all # current_user.group_memberships # https://redmine.corp.halomonitor.com/issues/2925
+    @groups = Group.all # current_user.group_memberships # https://redmine.corp.halomonitor.com/issues/2925
 
-    cond = "1=1"
-  	search = params[:search]
-    # cond += " and user_id = #{search} or phone_number like '%#{search}%'" if search and !search.blank?
-    # cond += " and group_id = #{params[:group][:id]}" if params[:group] and !params[:group][:id].blank?
-    cond = ["rmas.user_id = ? OR rmas.serial_number = ? OR rmas.status = ?", search.to_i, search, search] \
-      unless search.blank?
-    @rmas = Rma.paginate  :page => params[:page], \
-                          :order => 'created_at desc', :per_page => 20, :conditions => cond
+    options = {}
+    # cond = "1=1"
+    @search = params[:search]
+    # # cond += " and user_id = #{search} or phone_number like '%#{search}%'" if search and !search.blank?
+    # # cond += " and group_id = #{params[:group][:id]}" if params[:group] and !params[:group][:id].blank?
+    # options[:conditions] = if search.blank?
+    #   {}
+    # else
+    #   phrases = search.split(',').collect(&:strip).each do |phrase|
+    #     ["rmas.user_id = ? OR rmas.serial_number LIKE ? OR rmas.status LIKE ?", search.to_i, "%#{search}%", "%#{search}%"]
+    #   end
+    # end
+    #
+    # decide the column sort order
+    unless ( sort = params[:sort]).blank?
+      case sort.split(' ')[0]
+      when 'group'
+        options[:include] = [ :user, :group]
+        options[:order] = "groups.name #{params[:sort].split(' ')[1]}"
+      end
+    end
+    options.merge( :include => :user) unless options.include?( :include)
+    options.merge( :order => 'created_at DESC') unless options.include?( :order)
+    @rmas = if @search.blank?
+      Rma.all( options)
+    else
+      ["user_id", "user", "serial_number", "status"].collect {|e| Rma.send( :"#{e}_like", @search) }.flatten.uniq
+    end
+    @rmas = @rmas.paginate :page => params[:page], :per_page => 20
 
     respond_to do |format|
       format.html

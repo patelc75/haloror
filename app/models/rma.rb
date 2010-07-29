@@ -5,8 +5,62 @@ class Rma < ActiveRecord::Base
   belongs_to :user
   validates_presence_of :serial_number
   
-  ["user_id", "serial_number", "status"].each do |which|
-    named_scope "for_#{which}".to_sym, lambda { |arg| {:conditions => {"#{which}".to_sym => arg} }}
+  # WARNING: test cover required
+  # Usage:
+  #   user_id_like 123
+  #   user_id_like 123, 456
+  #     useful to get values from user input forms and put directly into named scope
+  #   user_id_like "123"
+  #   user_id_like "123, 456"
+  named_scope :user_id_like, lambda {|*args|
+    args = args.flatten if args.is_a?( Array)
+    options = if args.blank?
+      {}
+    elsif args.is_a?( Array)
+      args.flatten.collect(&:to_i)
+    elsif args.is_a?( String)
+      ids = args.split(',').collect(&:to_i).compact.uniq.reject(&:zero?) # all comma separated ids as integer array
+      ids.blank? ? {} : ids # no integer ids collected? just ignore search
+    elsif args.is_a?( Fixnum)
+      args.to_i
+    end
+    { :conditions => { :user_id => options }}
+  }
+  
+  # WARNING: test cover required
+  # Usage:
+  #   user_like       # works similar to "all"
+  #   user_like 'am'
+  #   user_like 'Carter'
+  #   user_like 'Carter, itt, drew'
+  # same for other methods...
+  #   serial_number_like ...
+  #   status_like ...
+  # console output of this usage
+  # # >> Rma.serial_number_like("12").collect(&:serial_number)
+  # #   Rma Load (0.006221)   SELECT * FROM "rmas" WHERE (serial_number LIKE E'%12%') 
+  # #   User Load (0.004867)   SELECT * FROM "users" WHERE ("users".id IN (E'123')) 
+  # # => ["1234567890"]
+  # # >> Rma.serial_number_like("12, 11").collect(&:serial_number)
+  # #   Rma Load (0.044509)   SELECT * FROM "rmas" WHERE (serial_number LIKE E'%12%' OR serial_number LIKE E'%11%') 
+  # #   User Load (0.005352)   SELECT * FROM "users" WHERE ("users".id IN (E'111',E'123')) 
+  # # => ["1234567890", "1111111", "1111111"]
+  ["user", "serial_number", "status"].each do |which|
+    named_scope :"#{which}_like", lambda { |*args|
+      substitute = {"user" => "users.name"}
+      if args.blank?
+        options = {} # just like "all"
+      else
+        # collect comma separated uniq values in array
+        phrases = (args.flatten.first || '').split(',').collect(&:strip).compact.uniq
+        # console outputof the expression statement below
+        # => ["an", "bc", "fr", "gt"]
+        # >> [ phrases.length.times.collect {|e| "users.name LIKE ?" }.join(" OR ") ] + phrases.collect {|e| "%#{e}%" }
+        # => ["users.name LIKE ? OR users.name LIKE ? OR users.name LIKE ? OR users.name LIKE ?", "%an%", "%bc%", "%fr%", "%gt%"]
+        options = [ phrases.length.times.collect {|e| "#{substitute.include?(which) ? substitute[which] : which} LIKE ?" }.join(" OR ") ] + phrases.collect {|e| "%#{e}%" }
+      end
+      { :include => :user, :conditions => options }
+    }
   end
   
   before_save :get_user_from_serial
