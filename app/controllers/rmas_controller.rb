@@ -6,7 +6,16 @@ class RmasController < ApplicationController
 
     options = {}
     # cond = "1=1"
+    #
+    # dynamically create instance variables, used to show selection on form
     @search = params[:search]
+    # status search
+    #   no status check_box "on" ? what are we searching then?
+    debugger
+    params[:status] = RmaItemStatus::STATUSES if params[:status].blank? # switch them all "on"
+    params[:status].each {|e| instance_variable_set("@rma_#{e[0].downcase.gsub(' ','_')}", e[0]) }
+    statuses = params[:status].collect(&:first) # collect status names in array. we will use it to filter later
+    sort = params[:sort] # sort parameter
     # # cond += " and user_id = #{search} or phone_number like '%#{search}%'" if search and !search.blank?
     # # cond += " and group_id = #{params[:group][:id]}" if params[:group] and !params[:group][:id].blank?
     # options[:conditions] = if search.blank?
@@ -17,20 +26,33 @@ class RmasController < ApplicationController
     #   end
     # end
     #
-    # decide the column sort order
-    unless ( sort = params[:sort]).blank?
-      case sort.split(' ')[0]
-      when 'group'
-        options[:include] = [ :user, :group]
-        options[:order] = "groups.name #{params[:sort].split(' ')[1]}"
-      end
-    end
+    # # decide the column sort order
+    # unless ( sort = params[:sort]).blank?
+    #   case sort.split(' ')[0]
+    #   when 'group'
+    #     options[:include] = [ :user, :group]
+    #     options[:order] = "groups.name #{params[:sort].split(' ')[1]}"
+    #   end
+    # end
     options.merge( :include => :user) unless options.include?( :include)
-    options.merge( :order => 'created_at DESC') unless options.include?( :order)
+    # Search:
+    # we are not using a default sort order now. we will sort the results in memory
+    # options.merge( :order => 'created_at DESC') unless options.include?( :order)
     @rmas = if @search.blank?
       Rma.all( options)
     else
-      ["user_id", "user", "serial_number", "status"].collect {|e| Rma.send( :"#{e}_like", @search) }.flatten.uniq
+      # "status" was part of this query earlier. Now we are using status checkboxes
+      ["user_id", "user", "serial_number"].collect {|e| Rma.send( :"#{e}_like", @search) }.flatten.uniq
+    end
+    # now filter by status. include RMAs with no RMA items
+    @rmas = @rmas.select {|e| e.rma_items.blank? || !( statuses & e.rma_items.collect(&:status).uniq ).blank? } # we want to see "statuses" collected above
+    # Sort:
+    # ascending or descending sort based on the supplied argument
+    unless sort.blank?
+      case sort.split(' ')[0]
+      when "group" # sort by group required
+        @rmas = @rmas.sort {|a,b| ( sort.split(' ')[1].include?("asc") ? (a.group_name <=> b.group_name) : (b.group_name <=> a.group_name)) } # sort array
+      end
     end
     @rmas = @rmas.paginate :page => params[:page], :per_page => 20
 

@@ -29,6 +29,8 @@ div.fixed-height { height: 250px; min-height: 250px; overflow: auto; }
 }
 
 .align-middle { vertical-align: middle; }
+.float-left { float: left; }
+.float-right { float: right; }
 .half-prepend-top {margin-top:5px !important;}
 .half-append-bottom {margin-bottom:5 !important;}
 .hidden { display: none; }

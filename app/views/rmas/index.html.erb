@@ -1,25 +1,24 @@
 <div class="span-24 last">
+  <div class="span-2"><h2>RMAs</h2></div>
   <!-- <meta http-equiv="refresh" content="30"> -->
-  <%= render :partial => 'atp/nav'%>
+  <div class="span-22 last text-right"><%= render :partial => 'atp/nav'%></div>
 
   <% form_tag rmas_path, :method => :get, :id => "rma_search" do %>
 
-  <div class="span-8">
-    <h2>RMAs Navigation</h2>
-    <%= link_to 'Create New RMA',new_rma_path -%> | 
-    <%= link_to 'RMA Reports' %> | 
-    <%= link_to 'RMA History' %>
-  </div>
-
-  <div class="span-16 last">
-    <div class="span-15 last text-right box">
+  <div class="span-23 box">
       <div class="span-12">
-        <%= text_area_tag "search", @search, :rows => 1, :class => "span-12" %>
-        <%= hidden_field_tag :sort %>
+        <ul class="no-style left">
+        <% RmaItemStatus::STATUSES.each do |status| %>
+          <li class="float-left"><%= check_box_tag "status[#{status[0]}]", status[1], instance_variable_get("@rma_#{status[0].downcase.gsub(' ','_')}") %> <%=h status[0] %></li>
+        <% end %>
+        </ul>
       </div>
-      <div class="span-2 last prepend-top"><%= submit_tag "Search", :class => "button white-button medium" %></div>
-      <!-- <=# collection_select(:group, :id, @groups, :id, :name, {:prompt => true}) > -->
-    </div>
+      
+      <div class="span-11 last text-right">
+        <%= text_area_tag "search", @search, :rows => 1, :class => "span-11" %>
+        <%= hidden_field_tag :sort %><br />
+        <%= submit_tag "Search", :class => "button white-button medium" %>
+      </div>
   </div>
 
   <div class="span-24 last">
@@ -49,5 +48,10 @@
 
   <div class="span-24 last"><table><%= render :partial => 'rma_row', :collection => @rmas %></table></div>
 
-  <div class="text-center"><%= will_paginate @rmas %></div>
+  <div class="span-12 text-center"><%= will_paginate @rmas %>&nbsp;</div>
+  <div class="span-12 last text-right">
+    <%= link_to 'RMA Reports', "#", :class => "button blue-button medium" %>
+    <%= link_to 'RMA History', "#", :class => "button blue-button medium" %>
+    <%= link_to 'Create New RMA',new_rma_path, :class => "button green-button medium" -%>
+  </div>
 </div>

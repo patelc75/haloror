@@ -245,6 +245,11 @@ class User < ActiveRecord::Base
     end
   end
 
+  def self.halousers
+    role_ids = Role.find_all_by_name('halouser').collect(&:id).compact.uniq
+    all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
+  end
+
   # check if dial_up_numbers are have "Ok" status for the given device
   # * mgmt_cmd row found for device having numbers (identified by cmd_type == dial_up_num_glob_prim)
   # * all 4 numbers are present

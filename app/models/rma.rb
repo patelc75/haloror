@@ -62,6 +62,19 @@ class Rma < ActiveRecord::Base
       { :include => :user, :conditions => options }
     }
   end
+
+  # # we want to chain this with other named_scopes or queries
+  # # this is a UNION type query, so we need this additional named_scope
+  # named_scope :filtered_like, lambda {|*args|
+  #   # collect comma separated uniq values in array
+  #   phrases = (args.flatten.first || '').split(',').collect(&:strip).compact.uniq
+  #   if args.blank?
+  #     options = {} # just like "all"
+  #   else
+  #     options = [ phrases.length.times.collect {|e| "users.name LIKE ? OR serial_number LIKE ?" }.join(" OR ") ] + phrases.collect {|e| ["%#{e}%", "%#{e}%"] }.flatten
+  #   end
+  #   { :include => :user, :conditions => options }
+  # }
   
   before_save :get_user_from_serial
   
@@ -82,23 +95,28 @@ class Rma < ActiveRecord::Base
   # status of RMA computed from statuses of RMA items
   #
   def computed_status
-    arr = rma_items.collect(&:status)
-    if arr.all? {|p| p == 'New'}
+    arr = rma_items.collect(&:status).compact.uniq
+    if arr.length == 1 && arr[0] == 'New'
       status = 'New'
-    elsif arr.all? {|p| p == 'Completed'}
+    elsif arr.length == 1 && arr[0] == 'Completed'
       status = 'Completed'
     else
-      status = 'Waiting'
+      status = ( arr.blank? ? '' : 'Waiting' )
     end
   end
   
   def computed_status_detail
     statuses = {}
     arr = rma_items.collect(&:status)
-    ['New', 'Completed'].each do |status|
-      statuses[status] = arr.reject {|p| p == status}.length
-    end
-    statuses['Waiting'] = arr.length
-    return statuses
+    # New Logic: Shows all status types, but only when they exist
+    #
+    arr.each {|e| statuses[e] ||= 0; statuses[e] += 1 } # instantiate if not already, increase count by one
+    # Old logic: Only show New, Completed or Waiting
+    #
+    # ['New', 'Completed'].each do |status|
+    #   statuses[status] = arr.select {|p| p == status}.length
+    # end
+    # statuses['Waiting'] = (arr - ['New', 'Completed']).length
+    return ( arr.blank? ? 'No RMA Items' : statuses )
   end
 end

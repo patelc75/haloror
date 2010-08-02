@@ -10,7 +10,7 @@
           </tr>
           <tr>
             <td class="textright"><%= f.label :user_id, "User ID" %>:</td>
-            <td><%= f.text_field :user_id %></td>
+            <td><%= f.select :user_id, User.halousers.collect {|e| ["(#{e.id}) #{e.name}", e.id]} %></td>
           </tr>
           <tr>
             <td class="textright"><span class="tiny">(required) </span><br /><%= f.label :serial_number, "Serial Number" %>:</td>
