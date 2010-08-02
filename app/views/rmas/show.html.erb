@@ -3,7 +3,7 @@
 
 <% form_for @rma do |f| -%>
   
-<table class="bluegrey">
+<table>
   <tr>
     <td class="aligntop">
       <table>
@@ -91,8 +91,8 @@
     <td>
     <table width="100%"><tr>
       <td>
-        <%= link_to 'RMA List', rmas_path %> | 
-        <%= link_to 'Edit this RMA', edit_rma_path(@rma) unless @rma.new_record? %>
+        <%= link_to 'RMA List', rmas_path, :class => "button green-button medium" %>
+        <%= link_to 'Edit this RMA', edit_rma_path(@rma), :class => "button green-button medium" unless @rma.new_record? %>
       </td>
     </tr></table>
     </td>

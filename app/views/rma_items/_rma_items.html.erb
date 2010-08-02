@@ -23,8 +23,8 @@
       <td><%=h rma_item.shipped_on %></td>
       <td><%=h rma_item.status %></td>
       <td>
-        <%= link_to 'Edit', edit_rma_rma_item_path(@rma, rma_item) %> | 
-        <%= link_to 'Destroy', rma_rma_item_path(@rma, rma_item), :confirm => 'Are you sure?', :method => :delete %>
+        <%= link_to image_tag('pencil.png'), edit_rma_rma_item_path(@rma, rma_item) %>
+        <%= link_to image_tag('trash.png'), rma_rma_item_path(@rma, rma_item), :confirm => 'Are you sure?', :method => :delete %>
       </td>
     </tr>
     <% end -%>
@@ -35,6 +35,6 @@
 <% if @rma.new_record? %>
   RMA Items can be created once the RMA is saved to database.
 <% else %>
-  <%= link_to "New RMA Item", new_rma_rma_item_path(@rma) %> for <%= link_to "RMA #{@rma.id}", @rma %> |
-  <%= link_to "Edit RMA #{@rma.id}", edit_rma_path(@rma) %>
+  <%= link_to "New RMA Item", new_rma_rma_item_path(@rma), :class => "button blue-button medium" %> for <%= link_to "RMA #{@rma.id}", @rma, :class => "button green-button medium" %>, or 
+  <%= link_to "Edit RMA #{@rma.id}", edit_rma_path(@rma), :class => "button green-button medium" %>
 <% end -%>
