@@ -4,3 +4,9 @@
     <%= @user_intake.attributes_status_messages.join(', ') %> <strong>are <span class="text-large">not found</span> for this record.</strong>
   </div>
 <% end %>
+
+<% unless @user_intake.senior.status.blank? %>
+  <div class="text-center">
+    <h3 class="background-green">Updates will be sent to SafetyCare</h3>
+  </div>
+<% end %>

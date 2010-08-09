@@ -643,6 +643,55 @@ class User < ActiveRecord::Base
   def call_center_account
     profile.blank? ? '' : profile.account_number
   end
+
+  # use TriageThreshold table to search warning status
+  def warning_status_threshold
+    threshold = TriageThreshold.for_group_or_defaults( group).select {|e| e.status.downcase == "warning" }
+    threshold = TriageThreshold.new( :status => "warning", :attribute_warning_hours => 48, :approval_warning_hours => 4) if threshold.blank? # default status, if one not found in definitions
+  end
+  
+  # warning status is based on threshold definition for it
+  # 
+  def warning_status?
+    threshold = warning_status_threshold # we can buffer this method instead of this variable, but that becomes less maintainable
+    # warning flagged if
+    #   * threshold not defined for "warning"
+    #   * all attribute statuses are good. except cell_center_account, dial_up_numbers
+    #   * test mode is also ignored since we are checking all attributes anyways
+    #   * time elapsed more than the attribute-threshold defined for "warning"
+    #   * workday or off days are all the same here
+    warning = (threshold && attributes_status_good?( :omit => [:call_center_account, :sc_account_created_on, :dial_up_numbers]) && ((Time.now - user_intakes.first.installation_datetime) / 1.hour).round > threshold.attribute_warning_hours)
+    # warning flagged if
+    #   * threshold not defined for warning
+    #   * user.status.blank means not approved. First action one can take is, approval. pending status is blank
+    #   * time elapsed more than the threshold "business hours" defined for approval status
+    #   * appropriately considers weekend, late night installations as well as weekends, while calculating workdays
+    warning = ( threshold && senior.status.blank? && ( Time.now > business_hours_later( threshold.approval_warning_hours )) ) unless warning
+  end
+
+  # https://redmine.corp.halomonitor.com/issues/3213
+  # identify if any columns in the list view are "red"
+  def attributes_status_good?( options = {})
+    # test mode does not prevent any checking. we check anyways
+    #
+    failure = user_intakes.blank?
+    #
+    # check all these attributes, but save some processor time with condition within block
+    [ :installation_datetime, :created_by, :credit_debit_card_proceessed, :bill_monthly,
+      :legal_agreement_at, :paper_copy_submitted_on, :senior, :sc_account_created_on,
+      :created_at, :updated_at ].each {|e| failure = user_intakes.first.send(e).blank? unless failure }
+    #
+    # check some methods too
+    [ :chest_strap, :belt_clip, :gateway, :call_center_account].each {|e| failure = self.send(e).blank? unless failure }
+    #
+    # call_center_account can be omitted. so we check it separately
+    failure = self.call_center_account.blank? unless failure || (options[:omit] && options[:omit].include?( :call_center_account))
+    #
+    # dial_up_numbers should also be ok
+    # omit checking this, if so requested
+    failure = !dial_up_numbers_ok_for_device?( device_by_serial_number( user_intakes.first.kit_serial_number)) unless failure || (options[:omit] && options[:omit].include?( :dial_up_numbers)) # do not bother if already failed
+    !failure
+  end
   
   def user_intake_submitted_at
     user_intakes.first.blank? ? '' : user_intakes.first.submitted_at

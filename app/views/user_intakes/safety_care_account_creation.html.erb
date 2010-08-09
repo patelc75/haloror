@@ -1,0 +1,25 @@
+<% content_for :js do %>
+  <%= javascript_include_tag 'jquery', 'jquery-ui', :cache => true %>
+<% end %>
+<% content_for :css do %>
+  <%= stylesheet_link_tag 'jquery-ui', :cache => true %>
+<% end %>
+<script type="text/javascript" charset="utf-8">
+  $(function() {
+  		$('.datepicker').datepicker({
+  			numberOfMonths: 3,
+  			showButtonPanel: true
+  		});
+  	});
+</script>
+
+<h1 id="user_intake:_">User Intake: <%= @user_intake.id %></h1>
+<% form_for @user_intake do |f| -%>
+  <p>
+    <%= f.label :sc_account_created_on, "Safety Care account created on" %><br />
+    <%= f.text_field :sc_account_created_on, :class => "datepicker" %>
+  </p>
+  <p>
+    <%= f.submit "Update", :class => "button green-button" %>
+  </p>
+<% end -%>

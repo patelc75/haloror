@@ -34,7 +34,6 @@ div.fixed-height { height: 250px; min-height: 250px; overflow: auto; }
 .half-prepend-top {margin-top:5px !important;}
 .half-append-bottom {margin-bottom:5 !important;}
 .hidden { display: none; }
-.highlight { background-color: #FFFF9F;}
 .menu a { text-decoration: none; }
 .pull-half { margin-left: -20px; }
 .pull-up { margin-top: -5px; }

@@ -1,4 +1,4 @@
-<tr class="<%= 'background-red' if !user_intake_row.attributes_status_good? %>">
+<tr class="<%= 'background-red' if !user_intake_row.senior.attributes_status_good? %>">
   <td><%= check_box_tag "selected[#{user_intake_row.id}]" %></td>
   <td><%= link_to user_intake_row.id, user_intake_row %></td>
   <td>
@@ -45,7 +45,7 @@
   </td>
   <td class="text-center"><%= user_intake_row.senior.gateway ? ("GW: "+ user_intake_row.senior.gateway.serial_number) : image_tag('exclamation.png') %></td>
   <% if current_user.is_super_admin? %>
-    <td><%= user_intake_row.senior.call_center_account.blank? ? image_tag("exclamation.png") : user_intake_row.senior.call_center_account %></td>
+    <td><%= link_to (user_intake_row.senior.call_center_account.blank? ? image_tag("exclamation.png") : user_intake_row.senior.call_center_account), {:controller => "user_intakes", :action => "safety_care_account_creation", :id => user_intake_row.id}  %></td>
     <td><%= image_tag (user_intake_row.dial_up_numbers_ok? ? "tick.png" : "exclamation.png") %></td>
   <% end %>
   <td class="text-center">

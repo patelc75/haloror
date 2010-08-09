@@ -1,0 +1,9 @@
+<h1 id="updates_to_user_intake">Updates to User Intake: <%= @user_intake.id %></h1>
+<div class="box">
+  <p><%=h @user_intake.audits.last( :order => 'created_at').changes %></p>
+  <hr />
+  <% [:senior, :subscriber, :caregiver1, :caregiver2, :caregiver3].each do |user| %>
+    <h3><%=h user.to_s.capitalize %>:</h3>
+    <p><%=h @user_intake.send( user).audits.last( :order => "created_at").changes %></p>
+  <% end %>
+</div>

@@ -1,7 +1,16 @@
 class UserMailer < ActionMailer::ARMailer
   include ServerInstance
   
-  def user_installation_alert(user)
+  def update_to_safety_care( user_intake)
+  	@recipients  = Group.safety_care.email
+  	@from        = "no-reply@#{ServerInstance.current_host}"
+    @subject     = "[" + ServerInstance.current_host_short_string + "] Update #{user_intake.senior.call_center_account}"
+    @sent_on     = Time.now
+    content_type "text/html"
+    @body[:user_intake] = user_intake
+  end
+  
+  ef user_installation_alert(user)
     recipients  "admin@halomonitoring.com"
     from        "no-reply@halomonitoring.com"
     subject     "[" + ServerInstance.current_host_short_string + "]" + "#{user.name}: Kit successfully installed"

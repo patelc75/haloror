@@ -130,6 +130,10 @@ class UserIntakesController < ApplicationController
   def paper_copy_submission
     @user_intake = UserIntake.find(params[:id])
   end
+  
+  def safety_care_account_creation
+    @user_intake = UserIntake.find(params[:id])
+  end
 
   def add_notes
     unless (ids = (params[:selected] ? params[:selected].keys.collect(&:to_i) : [])).blank?

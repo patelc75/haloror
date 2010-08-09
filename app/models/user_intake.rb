@@ -91,6 +91,7 @@ class UserIntake < ActiveRecord::Base
         :description => "Status updated from [#{status_was}] to [#{status}], triggered from user intake" }
       add_triage_note( options)
     end
+    #
     # associations
     associations_before_validation_and_save # build the associations
     validate_associations # check vlaidations unless "save"
@@ -104,6 +105,9 @@ class UserIntake < ActiveRecord::Base
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
     # UserMailer.deliver_signup_installation(senior)
+    #
+    # send email to safety_care when "Update" was hit on any status
+    
   end
 
   # create blank placeholder records
@@ -275,55 +279,6 @@ class UserIntake < ActiveRecord::Base
     STATUS_COLOR[ STATUS.index( arg) || :pending ]
   end
   
-  # use TriageThreshold table to search warning status
-  def warning_status_threshold
-    threshold = TriageThreshold.for_group_or_defaults( group).select {|e| e.status.downcase == "warning" }
-    threshold = TriageThreshold.new( :status => "warning", :attribute_warning_hours => 48, :approval_warning_hours => 4) if threshold.blank? # default status, if one not found in definitions
-  end
-  
-  # warning status is based on threshold definition for it
-  def warning_status?
-    threshold = warning_status_threshold # we can buffer this method instead of this variable, but that becomes less maintainable
-    # warning flagged if
-    #   * threshold not defined for "warning"
-    #   * all attribute statuses are good. except cell_center_account, dial_up_numbers
-    #   * test mode is also ignored since we are checking all attributes anyways
-    #   * time elapsed more than the attribute-threshold defined for "warning"
-    #   * workday or off days are all the same here
-    warning = (threshold && attributes_status_good?( :omit => [:call_center_account, :dial_up_numbers]) && ((Time.now - installation_datetime) / 1.hour).round > threshold.attribute_warning_hours)
-    # warning flagged if
-    #   * threshold not defined for warning
-    #   * user.status.blank means not approved. First action one can take is, approval. pending status is blank
-    #   * time elapsed more than the threshold "business hours" defined for approval status
-    #   * appropriately considers weekend, late night installations as well as weekends, while calculating workdays
-    warning = ( threshold && senior.status.blank? && ( Time.now > business_hours_later( threshold.approval_warning_hours )) ) unless warning
-  end
-
-  # https://redmine.corp.halomonitor.com/issues/3213
-  # identify if any columns in the list view are "red"
-  def attributes_status_good?( options = {})
-    # test mode does not prevent any checking. we check anyways
-    #
-    unless ( failure = senior.blank? )
-      #
-      # check all these attributes, but save some processor time with condition within block
-      [ :installation_datetime, :created_by, :credit_debit_card_proceessed, :bill_monthly,
-        :legal_agreement_at, :paper_copy_submitted_on, :senior,
-        :created_at, :updated_at ].each {|e| failure = self.send(e).blank? unless failure }
-      #
-      # check some methods too
-      [ :chest_strap, :belt_clip, :gateway, :call_center_account].each {|e| failure = self.senior.send(e).blank? unless failure }
-      #
-      # call_center_account can be omitted. so we check it separately
-      failure = self.senior.call_center_account.blank? unless failure || (options[:omit] && options[:omit].include?( :call_center_account))
-      #
-      # dial_up_numbers should also be ok
-      # omit checking this, if so requested
-      failure = !dial_up_numbers_ok? unless failure || (options[:omit] && options[:omit].include?( :dial_up_numbers)) # do not bother if already failed
-    end
-    !failure
-  end
-
   # https://redmine.corp.halomonitor.com/issues/3215
   # messages for attributes statuses
   # * user intake detail view displays them besides the "submit" button
@@ -332,7 +287,8 @@ class UserIntake < ActiveRecord::Base
     # messages << ( senior.blank? ? "Senior is blank" : nil)
     # # check all these attributes, but save processor time with condition within block
     messages += [ :senior, :installation_datetime, :created_by, :credit_debit_card_proceessed, :bill_monthly,
-      :legal_agreement_at, :paper_copy_submitted_on, :created_at, :updated_at ].collect {|e| e if self.send(e).blank? }
+      :legal_agreement_at, :paper_copy_submitted_on, :created_at, :updated_at,
+      :sc_account_created_on ].collect {|e| e if self.send(e).blank? }
     # messages += [ :installation_datetime, :created_by, :credit_debit_card_proceessed, :bill_monthly,
     #   :legal_agreement_at, :paper_copy_submitted_on,
     #   :created_at, :updated_at ].collect {|e| self.send(e).blank? ? "#{e.to_s.gsub('_',' ').capitalize} is blank" : nil }

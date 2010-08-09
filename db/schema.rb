@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100806143938) do
+ActiveRecord::Schema.define(:version => 20100809202030) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -772,6 +772,7 @@ ActiveRecord::Schema.define(:version => 20100806143938) do
     t.boolean  "call_center_pending"
     t.datetime "timestamp_server"
     t.datetime "gw_timestamp"
+    t.boolean  "test_mode"
   end
 
   create_table "payment_gateway_responses", :force => true do |t|
@@ -1146,6 +1147,7 @@ ActiveRecord::Schema.define(:version => 20100806143938) do
     t.string   "global_primary"
     t.string   "global_secondary"
     t.datetime "installation_datetime"
+    t.date     "sc_account_created_on"
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|
@@ -1182,6 +1184,7 @@ ActiveRecord::Schema.define(:version => 20100806143938) do
     t.integer  "last_panic_id"
     t.integer  "last_strap_fastened_id"
     t.string   "status"
+    t.boolean  "test_mode"
   end
 
   create_table "vital_scans", :force => true do |t|
