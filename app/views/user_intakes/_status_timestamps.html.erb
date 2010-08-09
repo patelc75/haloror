@@ -1,0 +1,3 @@
+<% if current_user.is_super_admin? %>
+  <%= user.status_timestamps.collect {|k,v| "<strong>#{k.to_s.gsub('_',' ').capitalize}</strong> <em>since #{v}</em>" }.join(', ') %>
+<% end %>

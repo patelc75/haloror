@@ -184,23 +184,22 @@
       </div>
       <hr class="space" />
       <hr />
-
-      <div class="span-22 last">
-        <%= render :partial => 'management/change_all_dial_up_numbers', :locals => { :f => f } %>
-      </div>
-      <hr />
       
       <div class="span-22 last">
-        <%= render :partial => 'signature' %>
+        <%= render :partial => 'signature', :locals => { :f => f } %>
       </div>
       <hr class="space" />
       <hr />
 
-      <div class="span-22 last">
-        <div class="text-center">
+      <div class="span-21 last"><%= render :partial => 'attribute_status_messages' %></div>
+      <div class="span-22 last text-center">
+        <% if current_user.is_super_admin? %>
           <%= f.submit "Save", :class => "button blue-button" %>
-          <%= f.submit "Submit", :class => "button green-button" %>
-        </div>
+          <%= f.submit @user_intake.senior.submit_button_text, :class => "button #{@user_intake.senior.status_button_color}-button" %>
+        <% end %>
+      </div>
+      <div class="span-22 last prepend-top text-center">
+        <%= render :partial => "status_timestamps", :locals => { :user => @user_intake.senior } %>
       </div>
     </div>
     <% end -%> <!-- form -->
@@ -225,5 +224,10 @@ function caregiver_extras_form(checkbox, form)
     document.getElementById(form).style.display = 'none';
     document.getElementById('user_intake_no_caregiver_1').disabled = false;
   }
+}
+
+function toggle_test_mode_check_boxes () {
+  document.getElementById('user_intake_opt_out').checked = document.getElementById('user_intake_test_mode').checked;
+  document.getElementById('user_intake_put_away').checked = document.getElementById('user_intake_test_mode').checked;
 }
 </script>

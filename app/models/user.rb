@@ -1,8 +1,45 @@
 require 'digest/sha1'
 class User < ActiveRecord::Base
-  # DRY pre-defined status values for user.status column
-  STATUS = { :active => "Active", :cancelled => "Cancelled", :installed => "Installed", :unknown => "Unknown" }
-  STATUS_IMAGE = { :active => "user_active.png", :cancelled => "user_cancelled.png", :installed => "user.png", :unknown => "user_placeholder.png" }
+  # IMPORTANT -----------------
+  #   * The order of appearance of the keys, MUST be exactly as shown from pending .. installed
+  #   * shift_to_next_status method depends on this
+  STATUS = {
+    :pending          => "",
+    :approval_pending => "Ready for Approval",
+    :install_pending  => "Ready to Install",
+    :bill_pending     => "Ready to Bill",
+    :installed        => "Installed",
+    :test             => "Test Mode",
+    :overdue          => "Install Overdue"
+  }
+  STATUS_COLOR = {
+    :pending          => "gray",
+    :approval_pending => "gray",
+    :install_pending  => "yellow",
+    :bill_pending     => "gray",
+    :installed        => "green",
+    :test             => "blue",
+    :overdue          => "orange"
+  }
+  STATUS_IMAGE = {
+    :pending          => "user_active.png",
+    :approval_pending => "user_placeholder.png",
+    :install_pending  => "user_placeholder.png",
+    :bill_pending     => "user_active.png",
+    :installed        => "user.png",
+    :test             => "user_cancelled.png",
+    :overdue          => "user_placeholder.png"
+  }
+  STATUS_BUTTON_TEXT = {
+    :pending          => "Submit",
+    :approval_pending => "Approve",
+    :install_pending  => "Install",
+    :bill_pending     => "Generate Bill",
+    :installed        => "Installed",
+    :test             => "Test Mode",
+    :overdue          => "Install Now"
+  }
+
   # Usage:
   #   <%= User::TRIAGE_ALERT[which] || which.split('_').collect(&:capitalize).join(' ') %>
   #   Custom labels/description for triage alert types
@@ -114,6 +151,9 @@ class User < ActiveRecord::Base
     # When user is created, put in "Install" state by default
     # User goes from "Install" to "Active" state after all the installation special status fields go green
     status = (self.alert_status == 'normal' ? STATUS[:active] : STATUS[:installed])
+    # Send an email to administrator if
+    #   * status column is about to change to "Installed" just now
+    UserMailer.deliver_user_installation_alert( self) if self.changed? && self.status_change && self.status_change.last == User::STATUS[:installed]
   end
   
   # https://redmine.corp.halomonitor.com/issues/398
@@ -245,6 +285,95 @@ class User < ActiveRecord::Base
     end
   end
 
+  # ------------------ more methods
+  
+  # shift status column to the next business logical status
+  def shift_to_next_status
+    # this statement works like this;
+    # * fetch status.to_s, therefore converting nil to ''
+    # * fetch array of status values STATUS[0..4] which is :pending .. :installed
+    # * get the index in the array, for the current status, switch to next
+    # * do not change status value when index is not correctly found
+    status = STATUS[ STATUS[0..4].index( status.to_s ) ] unless STATUS[0..4].index( status.to_s).blank?
+    # 
+    # logic of the block below is same as above line of statement. just a bit differently written
+    #
+    # status = case status.to_s # nil will return blank string
+    # when STATUS[:pending] ; STATUS[:approval_pending]
+    # when STATUS[:approval_pending] ; STATUS[:install_pending]
+    # when STATUS[:install_pending] ; STATUS[:installed]
+    # end
+  end
+  
+  # when was the device successfully installed for this user
+  #   * check when "Installed" status first occured for this user
+  #   * and so on...
+  # Features:
+  #   * no parameters given to search all timestamps
+  #   * optionally, one or many , separated keys can be given to fetch specific timestamps
+  #   * only returns timestamps that exist, otherwise omit them
+  #   * pass :force => true, to include '' for non-existing timestamps
+  # Usage:
+  #   status_timestamps                         => get timestamps for all statuses
+  #   status_timestamps( :installed)            => timestamp when status was changed to "Installed"
+  #   status_timestamps( :installed, :pending)  => timestamps when only these statuses happened
+  #   status_timestamps( :force)                => force a return value for all keys
+  #   status_timestamps( :installed, :force)    => fetch "Installed" timestamp, force return value for all other keys
+  # Examples:
+  # >> User.find(511).status_timestamps :force
+  # => {:test=>"", :installed=>Fri, 06 Aug 2010 17:14:05 UTC 00:00, :pending=>Tue, 22 Jun 2010 21:38:57 UTC 00:00, :overdue=>"", :approval_pending=>"", :install_pending=>"", :bill_pending=>""}
+  # >> User.find(511).status_timestamps
+  # => {:installed=>Fri, 06 Aug 2010 17:14:05 UTC 00:00, :pending=>Tue, 22 Jun 2010 21:38:57 UTC 00:00}
+  def status_timestamps( *options)
+    # we need tiemstamps for which keys/attributes
+    # * either keys are supplied
+    # * or all keys are considered
+    # * invalid keys automatically get rejected in this step
+    keys = ( options.blank? ? STATUS.keys : (STATUS.keys & options) ) # consider all keys, or a subset
+    keys = STATUS.keys if keys.blank? # consider all keys if the subset intersection was empty
+    unless keys.blank?
+      # collect array of arrays. convert to hash before returning
+      values = keys.collect do |key|
+        if key == :pending
+          # [ key, creator.blank? ? created_at.to_s : "#{created_at} by #{creator.name}" ] # when the user row was created
+          [ key, created_at ] # when the user row was created
+        else
+          unless last_triage_status.blank?
+            # search parameters hash has a different key each time
+            # log row is fetched
+            #   * first occurance for "Pending for Approval", "Installed" ...
+            #   * most recent occurance for "Test Mode", ...
+            #   * :pending was handled already before we reached here
+            hash = { :conditions => { :user_id => id, :status => User::STATUS[key] }, :order => "created_at ASC" }
+            log = TriageAuditLog.send( (STATUS.keys[1..4].include?(key) ? :first : :last), hash) # fetch row from triage audit log
+            if options.include?( :force)
+              [ key, (log.blank? ? '' : log.created_at ) ]
+              # [ key, (log.blank? ? '' : (log.creator.blank? ? log.created_at.to_s : "#{log.created_at} by #{log.creator.name}") )]
+            else
+              log.blank? ? nil : [ key, log.created_at ]
+              # log.blank? ? nil : [ key, (log.creator.blank? ? log.created_at.to_s : "#{log.created_at} by #{log.creator.name}") ]
+            end
+          end
+        end
+      end
+      Hash[ values.compact ] # convert to hash
+    end
+  end
+  
+  # check last triage_audit_log status (which is updated from user_intake)
+  # Uses:
+  #   * can help to identify if user is in "read to install" state. allows auto-transition to "installed" using panic test
+  def last_triage_status
+    last_triage_audit_log.blank? ? '' : last_triage_audit_log.status
+  end
+
+  # keep an audit trail in triage_audit_log
+  def create_triage_audit_log( args)
+    options = { :status => last_triage_status, :is_dismissed => dismissed_from_triage?,
+      :description => "Status updated to [#{status}]. Auto triggered through user model." }
+    triage_audit_logs.create( options.merge( args))
+  end
+  
   def self.halousers
     role_ids = Role.find_all_by_name('halouser').collect(&:id).compact.uniq
     all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
@@ -272,9 +401,24 @@ class User < ActiveRecord::Base
     cache_device ||= devices.find_by_serial_number( serial) unless serial.blank?
   end
   
+  def status_index
+    STATUS.index( status) || :pending # use status value to find key, or assume :pending
+  end
+  
+  def status_button_text
+    STATUS_BUTTON_TEXT[ STATUS[status_index].blank? ? :pending : STATUS[status_index] ]
+  end
+  
+  def submit_button_text
+    (status == STATUS[:approval_pending]) ? STATUS_BUTTON_TEXT[status_index] : "#{status.blank? ? 'Submit' : 'Update ('+STATUS[status_index]+')' }"
+  end
+  
+  def status_button_color
+    STATUS_COLOR[ status_index]
+  end
+  
   def status_image
-    what = (['Active', 'Cancelled', 'Installed', 'Unknown'].include?(status) ? status : 'Unknown')
-    User::STATUS_IMAGE[what.downcase.to_sym]
+    STATUS_IMAGE[ status_index]
   end
   
   # Create a log page of all steps above with timestamps

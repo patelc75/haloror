@@ -73,6 +73,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :profiles
   map.resources :users, :member => { :new_caregiver_options => :get, :triage => :get, :dismiss => :post, :toggle_test_mode => :post } do |user|
     user.resources :user_logs, :only => [:index, :show]
+    user.resources :audits, :only => [:index, :show]
   end
   map.resources :sessions,:member => {:edit_user_intake_form => :any,:user_intake_form_confirm => :get} # added automatically after running restful_authentication script
   map.resources :user_intakes, :collection => { :add_notes => :post }

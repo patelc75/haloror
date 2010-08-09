@@ -63,6 +63,15 @@ class Profile < ActiveRecord::Base
   def skip_validation=(value = false)
     self.need_validation = !value
   end
+
+  def before_save
+    # auto increment account number if it starts with "HM"
+    #   * account number is 3 places alphabets, then number
+    if self.new_record? # only for new records
+      last_account_number = last( :conditions => ["account_number LIKE ?", "HM%"], :order => "account_number" )
+      account_number = (last_account_number[0..2] + (last_account_number[3..-1].to_i +1).to_s)
+    end
+  end
   
   def email=(email); nil; end
   def email; self.user.email; end

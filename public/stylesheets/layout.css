@@ -803,7 +803,8 @@ label {
   font-size: 100%;
 }
 .hint {
-  font: 75% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+  font: italic normal 75% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+  color: #0080FF;
 }
 .largebutton, .confirm-form .largebutton {
   font: 200% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;

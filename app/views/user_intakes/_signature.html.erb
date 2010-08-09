@@ -1,7 +1,8 @@
-<div class="prepend-1 span-20 last">
-  <span class="timestamp">By initialing the block below you acknowledge that you are the User or Subscriber as defined by the Halo Subscriber Agreement or are authorized by the User to act on their behalf for purposes of supplying the information on the Intake Form.</span>
-</div>
-<div class="span-22 last">
+<div class="span-14">
+  <div class="timestamp">By initialing the block below you acknowledge that you are the User or Subscriber as defined by the Halo Subscriber Agreement or are authorized by the User to act on their behalf for purposes of supplying the information on the Intake Form.</div>
   <%= check_box_tag "user_intake_agree" %>Yes, I agree to the terms
   <%= text_field_tag "user_intake_agree_initials" %>
+</div>
+<div class="span-8 last">
+  <%= render :partial => 'test_mode_options', :locals => { :f => f } %>
 </div>

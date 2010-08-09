@@ -1,24 +1,44 @@
-<div id="user_intake_details">
-  <h2>User Intake: <%= @user_intake.id %></h2>
-  
-  <div class="box">
-    <% if @user_intake.submitted? %>
-      <p>Submitted at: <span class="timestamp"><%= h @user_intake.submitted_at %></span></p>
-    <% end %>
-    
-    <p>
-      <label>Group</label>
-      <%= h @user_intake.group_name %>
-    </p>
-    <p>
-      <label>Kit Serial#</label>
-      <%= h @user_intake.kit_serial_number %>
-    </p>
-  </div>
-</div>
-
 <% unless @user_intake.agreement_signed? %>
   <div id="user_intake_legal_agreement">
     <%= render :partial => "shared/subscriber_agreement" %>
   </div>
 <% end %>
+
+<div class="container">
+  <hr />
+  
+  <% if current_user.is_super_admin? %>
+    <div id="user_intake_details">
+      <h2>User Intake: <%= @user_intake.id %></h2>
+
+      <ul>
+        <li>
+          Submitted at
+          <% if @user_intake.submitted? %>
+            <span class="timestamp"><%= h @user_intake.submitted_at %></span>
+          <% end %>
+        </li>
+        <li>
+          <label>Group</label>
+          <%= h @user_intake.group_name %>
+        </li>
+        <li>
+          <label>Kit Serial#</label>
+          <%= h @user_intake.kit_serial_number %>
+        </li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <h2>User Intake properties</h2>
+      <%= hash_to_html( @user_intake.attributes) %>
+    </div>
+
+    <% [:group, :senior, :subscriber, :caregiver1, :caregiver2, :caregiver3].each do |attribute| %>
+    <div class="box">
+      <h2><%= attribute %></h2>
+      <%= hash_to_html( @user_intake.send( attribute).attributes) if @user_intake.send( attribute) && !@user_intake.send( attribute).new_record? %>
+    </div>
+    <% end %>
+  <% end %>
+</div>

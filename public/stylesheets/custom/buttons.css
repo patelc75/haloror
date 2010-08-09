@@ -133,6 +133,28 @@
   filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#f47a20', endColorstr='#faa51a');
 }
 
+/* yellow */
+.yellow-button {
+  color: #4C4C4C;
+  border: solid 1px #C90;
+  background: #F5E100;
+  background: -webkit-gradient(linear, left top, left bottom, from(#F5E100), to(#EDC300));
+  background: -moz-linear-gradient(top,  #F5E100,  #EDC300);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#F5E100', endColorstr='#EDC300');
+}
+.yellow-button:hover {
+  background: #E8D500;
+  background: -webkit-gradient(linear, left top, left bottom, from(#F5E100), to(#EFAA00));
+  background: -moz-linear-gradient(top,  #F5E100,  #EFAA00);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#F5E100', endColorstr='#EFAA00');
+}
+.yellow-button:active {
+  color: #4C4C4C;
+  background: -webkit-gradient(linear, left top, left bottom, from(#EDC300), to(#F5E100));
+  background: -moz-linear-gradient(top,  #EDC300,  #F5E100);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#EDC300', endColorstr='#F5E100');
+}
+
 /* red */
 .red-button {
   color: #faddde;

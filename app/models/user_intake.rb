@@ -1,7 +1,11 @@
 # WARNING: to get proper behavior from user_intake instance for the views
 #   Always call user_intake.build_associations immediately after creating an instance
 #
+require "lib/utility_helper"
+
 class UserIntake < ActiveRecord::Base
+  include UtilityHelper
+  
   belongs_to :group
   belongs_to :order
   belongs_to :creator, :class_name => "User", :foreign_key => "created_by"
@@ -10,10 +14,12 @@ class UserIntake < ActiveRecord::Base
   has_many :user_intakes_users, :dependent => :destroy
 
   acts_as_audited
-  validates_presence_of :local_primary, :global_primary, :unless => :skip_validation # https://redmine.corp.halomonitor.com/issues/2809
+  # https://redmine.corp.halomonitor.com/issues/3215
+  #   Comment out "Change All Dial Up Numbers" > update ticket #2809
+  # validates_presence_of :local_primary, :global_primary, :unless => :skip_validation # https://redmine.corp.halomonitor.com/issues/2809
   named_scope :recent_on_top, :order => "updated_at DESC"
 
-  # WARNING: HALF BAKED. DO NOT USE
+  # WARNING: HALF BAKED. DO NOT USE UNESS CODE COVERED WITH TESTS
   # named_scope :identity_includes, lambda { |*args|
   #   arg = args.flatten.first
   #   include_this = arg.blank? # blank parameters means, include it
@@ -37,23 +43,6 @@ class UserIntake < ActiveRecord::Base
   #   { :conditions => include_this } # return the boolean value to select/reject this row
   # }
 
-  STATUS = {
-    :pending          => "",
-    :test             => "Test Mode",
-    :approval_pending => "Ready for Approval",
-    :install_pending  => "Read to Install",
-    :overdue          => "Install Overdue",
-    :installed        => "Installed"
-  }
-  STATUS_COLOR = {
-    :pending          => "red",
-    :test             => "blue",
-    :approval_pending => "yellow",
-    :install_pending  => "yellow",
-    :overdue          => "orange",
-    :installed        => "green"
-  }
-
   # hold the data temporarily
   # user type is identified by the role it has subject to this user intake and other users
   # cmd_type : https://redmine.corp.halomonitor.com/issues/2809
@@ -63,7 +52,8 @@ class UserIntake < ActiveRecord::Base
     attr_accessor "mem_caregiver#{index}_options".to_sym
     attr_accessor "no_caregiver_#{index}".to_sym
   end
-  
+  attr_accessor :test_mode, :opt_out, :put_away
+
   # for every instance, make sure the associated objects are built
   def after_initialize
     self.bill_monthly = (order && order.was_successful?)
@@ -91,12 +81,16 @@ class UserIntake < ActiveRecord::Base
     # lock if required
     # skip_validation decides if "save" was hit instead of "submit"
     self.locked = (!skip_validation && valid?)
-    self.status = STATUS[:approval_pending] if (locked && status.blank?)
+    # new logic. considers all status values as defined in STATUS
+    locked and !senior.blank? and senior.shift_to_next_status
+    # old logic. just checking for approval_pending
+    # self.status = STATUS[:approval_pending] if (locked && status.blank?)
     # create status row in triage_audit_log
-    options = { :status => status, :is_dismissed => senior.dismissed_from_triage?,
-      :description => "Status updated to [#{status}], triggered from user intake",
-      :updated_by => updated_by }
-    senior.triage_audit_logs.create( options) unless senior.blank?
+    if status_changed?
+      options = { :status => status, :updated_by => updated_by,
+        :description => "Status updated from [#{status_was}] to [#{status}], triggered from user intake" }
+      add_triage_note( options)
+    end
     # associations
     associations_before_validation_and_save # build the associations
     validate_associations # check vlaidations unless "save"
@@ -105,6 +99,8 @@ class UserIntake < ActiveRecord::Base
   def after_save
     # save the assoicated records
     associations_after_save
+    # apply test mode, if applicable
+    senior.test_mode( true) if test_mode == "1" # submitted the user intake with test_mode check box "on"
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
     # UserMailer.deliver_signup_installation(senior)
@@ -232,27 +228,123 @@ class UserIntake < ActiveRecord::Base
     end
   end
 
-  def add_triage_note( args = nil)
-    senior.triage_audit_logs.create( args) unless ( args.blank? || senior.blank? )
+  # Fri Aug  6 21:29:55 IST 2010
+  # these methods are now shifted to user.rb
+  #
+  # # additional information for the status at which this user intake is
+  # # example:
+  # #   ready for approval: each red "x" column described
+  # def status_information
+  #   case STATUS.index( status)
+  #   when nil; '';
+  #   when :approval_pending
+  #     
+  #   end
+  # end
+  # 
+  # # find applicable key value from STATUS constant above
+  # #   * status column is used to identify the key
+  # #   * default = pending (blank or unknown status)
+  # def status_index
+  #   senior.status_index
+  # end
+  # 
+  # # button text subject to status_index
+  # #   :pending status will return "", so we need to cover that here
+  # #   everything else is good
+  # def status_button_text
+  #   senior.status_button_text
+  # end
+  # 
+  # def submit_button_text
+  #   senior.submit_button_text
+  # end
+  # 
+  # # button color for user_intake form
+  # #   * we need to show grey when status in not found
+  # #   * everything else is good
+  # def status_button_color
+  #   senior.status_button_color
+  # end
+
+  def add_triage_note( args = {})
+    senior.create_triage_audit_log( args) unless ( args.blank? || senior.blank? )
   end
 
   def self.status_color( arg = '')
     STATUS_COLOR[ STATUS.index( arg) || :pending ]
   end
+  
+  # use TriageThreshold table to search warning status
+  def warning_status_threshold
+    threshold = TriageThreshold.for_group_or_defaults( group).select {|e| e.status.downcase == "warning" }
+    threshold = TriageThreshold.new( :status => "warning", :attribute_warning_hours => 48, :approval_warning_hours => 4) if threshold.blank? # default status, if one not found in definitions
+  end
+  
+  # warning status is based on threshold definition for it
+  def warning_status?
+    threshold = warning_status_threshold # we can buffer this method instead of this variable, but that becomes less maintainable
+    # warning flagged if
+    #   * threshold not defined for "warning"
+    #   * all attribute statuses are good. except cell_center_account, dial_up_numbers
+    #   * test mode is also ignored since we are checking all attributes anyways
+    #   * time elapsed more than the attribute-threshold defined for "warning"
+    #   * workday or off days are all the same here
+    warning = (threshold && attributes_status_good?( :omit => [:call_center_account, :dial_up_numbers]) && ((Time.now - installation_datetime) / 1.hour).round > threshold.attribute_warning_hours)
+    # warning flagged if
+    #   * threshold not defined for warning
+    #   * user.status.blank means not approved. First action one can take is, approval. pending status is blank
+    #   * time elapsed more than the threshold "business hours" defined for approval status
+    #   * appropriately considers weekend, late night installations as well as weekends, while calculating workdays
+    warning = ( threshold && senior.status.blank? && ( Time.now > business_hours_later( threshold.approval_warning_hours )) ) unless warning
+  end
 
   # https://redmine.corp.halomonitor.com/issues/3213
   # identify if any columns in the list view are "red"
-  def red_for_list_view?
+  def attributes_status_good?( options = {})
+    # test mode does not prevent any checking. we check anyways
+    #
     unless ( failure = senior.blank? )
+      #
       # check all these attributes, but save some processor time with condition within block
       [ :installation_datetime, :created_by, :credit_debit_card_proceessed, :bill_monthly,
         :legal_agreement_at, :paper_copy_submitted_on, :senior,
         :created_at, :updated_at ].each {|e| failure = self.send(e).blank? unless failure }
+      #
       # check some methods too
-      [:chest_strap, :belt_clip, :gateway,
-        :call_center_account].each {|e| failure = self.senior.send(e).blank? unless failure }
+      [ :chest_strap, :belt_clip, :gateway, :call_center_account].each {|e| failure = self.senior.send(e).blank? unless failure }
+      #
+      # call_center_account can be omitted. so we check it separately
+      failure = self.senior.call_center_account.blank? unless failure || (options[:omit] && options[:omit].include?( :call_center_account))
+      #
+      # dial_up_numbers should also be ok
+      # omit checking this, if so requested
+      failure = !dial_up_numbers_ok? unless failure || (options[:omit] && options[:omit].include?( :dial_up_numbers)) # do not bother if already failed
     end
-    failure
+    !failure
+  end
+
+  # https://redmine.corp.halomonitor.com/issues/3215
+  # messages for attributes statuses
+  # * user intake detail view displays them besides the "submit" button
+  def attributes_status_messages
+    messages = []
+    # messages << ( senior.blank? ? "Senior is blank" : nil)
+    # # check all these attributes, but save processor time with condition within block
+    messages += [ :senior, :installation_datetime, :created_by, :credit_debit_card_proceessed, :bill_monthly,
+      :legal_agreement_at, :paper_copy_submitted_on, :created_at, :updated_at ].collect {|e| e if self.send(e).blank? }
+    # messages += [ :installation_datetime, :created_by, :credit_debit_card_proceessed, :bill_monthly,
+    #   :legal_agreement_at, :paper_copy_submitted_on,
+    #   :created_at, :updated_at ].collect {|e| self.send(e).blank? ? "#{e.to_s.gsub('_',' ').capitalize} is blank" : nil }
+    # # check some methods too
+    messages += [:chest_strap, :belt_clip, :gateway, :call_center_account].collect {|e| e if self.senior.send(e).blank? }
+    # messages += [:chest_strap, :belt_clip, :gateway,
+    #   :call_center_account].collect {|e| self.senior.send(e).blank? ? ("Senior does not have "+ e.to_s.gsub('_',' ').capitalize) : nil }
+    # # dial_up_numbers should also be ok
+    messages += :dial_up_numbers if dial_up_numbers_ok?
+    # dial_up_numbers_ok? ? nil : "Dial up numbers are not as expected" # do not bother if already failed
+    # messages.compact
+    messages.flatten.compact.uniq.collect {|e| e.to_s.gsub('_',' ').capitalize }
   end
 
   # TODO: re-factoring required. delegate some part to user model

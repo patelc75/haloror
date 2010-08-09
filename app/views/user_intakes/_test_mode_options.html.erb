@@ -1,0 +1,8 @@
+<ul class="no-style">
+  <li><%= f.check_box :test_mode, :onclick => "toggle_test_mode_check_boxes();" %> Test Mode
+    <ul class="no-style">
+      <li><%= f.check_box :opt_out , :disabled => true %> Opt out of live call center</li>
+      <li><%= f.check_box :put_away, :disabled => true %> Put in Away mode</li>
+    </ul>
+  </li>
+</ul>

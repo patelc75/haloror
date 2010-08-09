@@ -19,9 +19,65 @@ module UtilityHelper
   	u = User.find_by_login(login)
   	u.crypted_password = crypted_password
   	u.salt = salt
-  	u.save  
+  	u.save
   end
 
+  # ---------------------------------------
+  
+  # timestamp after <n> business hours from now
+  # calculated as:
+  #   business hours: monday to friday, 8am to 5pm CST (-5 hrs GMT)
+  def business_hours_later( hours)
+    now = Time.now # freeze it here for this cycle of call, or it keeps changing every second
+    wanted = (hours.to_i.hours / 1.second) # convert hours to seconds
+    available = available_work_seconds( now) # how much available today
+    # if we have enough time today, just tell the time possible today
+    # if we will run out of time today, check next working day, add run-over seconds to the start-of-day
+    (available > wanted) ? ( now + wanted.seconds) : ( next_workday(now) + (wanted - available).seconds)
+  end
+  
+  def today?( time)
+    time = Time.zone.parse( time.to_s)
+    !time.blank? and (time.year == Time.now.year && time.month == Time.now.month && time.day == Time.now.day)
+  end
+  
+  def workday?( date = Time.now)
+    time = Time.zone.parse( date.to_s )
+    !time.blank? && time.wday.between?( 1, 5) # 1 = monday, 5 = Friday
+  end
+
+  def next_workday( time = Time.now)
+    time = Time.zone.parse( time.to_s)
+    if time.blank?
+      nil
+    else
+      beginning_of_workday_on( time.wday.between?(0, 4) ? (time + 1.day) : (time + (8-time.wday).day) )
+    end
+  end
+  
+  def available_work_seconds( date = Time.now)
+    time = Time.zone.parse( date.to_s)
+    if time.blank?
+      0
+    else
+      time = Time.now if today?( time)
+      end_of_day = end_of_workday_on( time)
+      ((!end_of_day.blank? && time.wday.between?( 1, 5) && (time < end_of_day)) ? (end_of_day - time) : 0)
+    end
+  end
+
+  def end_of_workday_on( time = nil)
+    time = Time.zone.parse( time.to_s)
+    time.blank? ? nil : Time.zone.parse("#{time.year}-#{time.month}-#{time.day} 17:00:00 CST")
+  end
+
+  def beginning_of_workday_on( time = nil)
+    time = Time.zone.parse( time.to_s)
+    time.blank? ? nil : Time.zone.parse("#{time.year}-#{time.month}-#{time.day} 08:00:00 CST")
+  end
+
+  #--------------------------------
+  
   #return the offset for this time zone as a string
   def self.offset_for_time_zone(user)
     #tz = TZInfo::Timezone.get('America/Chicago')

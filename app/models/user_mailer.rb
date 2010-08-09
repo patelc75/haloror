@@ -1,6 +1,13 @@
 class UserMailer < ActionMailer::ARMailer
   include ServerInstance
   
+  def user_installation_alert(user)
+    recipients  "admin@halomonitoring.com"
+    from        "no-reply@halomonitoring.com"
+    subject     "[" + ServerInstance.current_host_short_string + "]" + "#{user.name}: Kit successfully installed"
+    body        :user => user
+  end
+  
   def signup_installation(recipient,senior=:exclude_senior_info)
     setup_email(recipient)
     @subject    += EMAIL_SUBJECT[:installation] # 'Please read before your installation'

@@ -1,22 +1,15 @@
-<tr class="<%= 'background-red' if user_intake_row.red_for_list_view? %>">
+<tr class="<%= 'background-red' if !user_intake_row.attributes_status_good? %>">
   <td><%= check_box_tag "selected[#{user_intake_row.id}]" %></td>
-  <td class="text-center">
-    <%= image_tag("bullet_key.png") if user_intake_row.locked? %>
-
-    <% if user_intake_row.locked? %>
-      <%= link_to image_tag("folder.png", :alt => "#{user_intake_row.updated_at}", :title => "#{user_intake_row.updated_at}"), user_intake_row %>
-    <% else %>
-      <%= link_to image_tag('pencil.png'), edit_user_intake_path(user_intake_row) %>
-    <% end -%>
-
+  <td><%= link_to user_intake_row.id, user_intake_row %></td>
+  <td>
     <% if user_intake_row.emailed_on.blank? %>
       <%= link_to image_tag("email.png", :alt => "Send Email to SafetyCare", :title => "Send Email to SafetyCare"), :controller => 'users', :action => 'send_caregiver_details', :id => user_intake_row.senior.id unless user_intake_row.senior.blank? %>
     <% else %>
       <%= link_to image_tag("email.png", :alt => "Send Email to SafetyCare again. Last: #{user_intake_row.emailed_on}", :title => "Send Email to SafetyCare again. Last: #{user_intake_row.emailed_on}"), :controller => 'users', :action => 'send_caregiver_details', :id => user_intake_row.senior.id unless user_intake_row.senior.blank? %>
     <% end %>
   </td>
-  <td><%= link_to user_intake_row.id, user_intake_row %></td>
-  <td>(<%= user_intake_row.senior.id %>) <%= user_intake_row.senior.name %></td>
+  <td><%= user_intake_row.senior.id %></td>
+  <td><%= user_intake_row.senior.name %></td>
   <td><%= user_intake_row.installation_datetime || image_tag('exclamation.png') %></td>
   <td><%= user_intake_row.credit_debit_card_proceessed ? (image_tag "creditcards.png", :alt => "Credit/Debit Card Processed", :title => "Credit/Debit Card Processed") : ( user_intake_row.bill_monthly ? image_tag("calendar-month.png", :alt => "Bill Monthly", :title => "Bill Monthly") : image_tag('exclamation.png') ) %></td>
   <% if current_user.is_super_admin? %>
@@ -51,16 +44,16 @@
     <% end %>
   </td>
   <td class="text-center"><%= user_intake_row.senior.gateway ? ("GW: "+ user_intake_row.senior.gateway.serial_number) : image_tag('exclamation.png') %></td>
-  <td><%= image_tag user_intake_row.senior.call_center_account ? "tick.png" : "exclamation.png" %></td>
   <% if current_user.is_super_admin? %>
+    <td><%= user_intake_row.senior.call_center_account.blank? ? image_tag("exclamation.png") : user_intake_row.senior.call_center_account %></td>
     <td><%= image_tag (user_intake_row.dial_up_numbers_ok? ? "tick.png" : "exclamation.png") %></td>
   <% end %>
-  <td>
-    <div class="button small <%= UserIntake::STATUS_COLOR[ (UserIntake::STATUS.index( user_intake_row.status) || :pending) ] %>-button">
-      <%= UserIntake::STATUS.index( user_intake_row.status).blank? ? 'Not Submitted' : user_intake_row.status %>
-    </div>
+  <td class="text-center">
+    <%= link_to ((user_intake_row.senior.status_index == :pending) ? 'Not Submitted' : user_intake_row.senior.status), ((user_intake_row.locked? && !current_user.is_super_admin?) ? user_intake_path(user_intake_row) : edit_user_intake_path(user_intake_row)), :class => "span-2 button small #{User::STATUS_COLOR[ (User::STATUS.index( user_intake_row.senior.status) || :pending) ]}-button" %>
+    <%= "<br /><span class='timestamp'>#{user_intake_row.senior.status_timestamps(:installed)}</span>" unless user_intake_row.senior.status_timestamps(:installed).blank? %>
   </td>
   <td><%= link_to image_tag( "note.png", :alt => "Notes", :title => "Notes"), { :controller => "triage_audit_logs", :id => user_intake_row.senior.id} if !user_intake_row.senior.blank? %></td>
+  <td><%= link_to image_tag( "briefcase.png", :alt => "Audit", :title => "Audit" ), user_audits_path( user_intake_row.senior) %></td>
   <td class="text-center"><%= user_intake_row.creator ? user_intake_row.created_by_user_name : image_tag('exclamation.png') %></td>
   <td class="timestamp span-3"><%= user_intake_row.created_at ? UtilityHelper.format_datetime(user_intake_row.created_at,current_user) : image_tag('exclamation.png') %></td>
   <td class="timestamp span-3">

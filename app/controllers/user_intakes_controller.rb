@@ -70,7 +70,7 @@ class UserIntakesController < ApplicationController
     @user_intake = UserIntake.find(params[:id])
     @user_intake.build_associations
     @groups = Group.for_user(current_user)
-    if @user_intake.locked?
+    if @user_intake.locked? && !current_user.is_super_admin?
       render :action => 'show'
     end
   end

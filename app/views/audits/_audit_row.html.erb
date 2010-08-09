@@ -1,0 +1,8 @@
+<tr>
+  <td><%= audit_row.version %> <%= link_to "Detail...", user_audit_path( audit_row.user.id, audit_row.id) %></td>
+  <td><%= audit_row.action %></td>
+  <td><%= audit_row.ip %></td>
+  <td><%= audit_row.referer %></td>
+  <td><span class="timestamp"><%= audit_row.created_at %></span></td>
+  <td><%= "(#{audit_row.user_id}) #{audit_row.user.name}" unless audit_row.user_id.blank? %></td>
+</tr>
