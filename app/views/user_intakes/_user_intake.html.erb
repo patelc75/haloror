@@ -47,14 +47,14 @@
     <% end -%>
 
     <div class="span-22 last">
-      <div class="span-6">
+      <div class="span-6 <%= 'hidden' if @user_intake.group_id == Group.direct_to_consumer.id %>">
         <%= f.label :group_id, "Group" %>
         <%= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"}, :onchange => "show_when_dropdown_selected(this);" %>
       </div>
 
       <div class="span-16 last">
         <div class="span-8">
-          <div class="span-3"><%= f.label :installation_datetime, "Installation at:" %></div>
+          <div class="span-3"><%= f.label :installation_datetime, "Desired Installation date:" %></div>
           <div class="span-5 last"><%= f.text_field :installation_datetime, :class => "datepicker", :class => "span-5" %></div>
 
           <div class="span-3"><%= f.label :kit_serial_number, "Kit Serial" %> #:</div>
@@ -199,7 +199,7 @@
         <% end %>
       </div>
       <div class="span-22 last prepend-top text-center">
-        <%= render :partial => "status_timestamps", :locals => { :user => @user_intake.senior } %>
+        <%= render :partial => "status_timestamps", :locals => { :user_intake => @user_intake } %>
       </div>
     </div>
     <% end -%> <!-- form -->

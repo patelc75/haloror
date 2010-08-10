@@ -7,6 +7,7 @@ class UsersController < ApplicationController
 
   def triage
     @groups = current_user.groups_where_admin
+    @params = params
     # params include name of selected group as search_group
     @users = current_user.triage_users( params).paginate :per_page => 7, :page => params[:page]
     respond_to do |format|

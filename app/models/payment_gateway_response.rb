@@ -1,8 +1,19 @@
 class PaymentGatewayResponse < ActiveRecord::Base
+  include ApplicationHelper
+
   belongs_to :order
   serialize :params # hash to string helps to save in database
+  
+  # Usage:
+  #   PaymentGatewayResponse.successful
+  #   PaymentGatewayResponse.successful.subscription
+  #   PaymentGatewayResponse.purchase.failed
+  named_scope :successful,    :conditions => { :success => true  }
+  named_scope :failed,        :conditions => { :success => false }
+  named_scope :subscription,  :conditions => { :action  => 'recurring' }
+  named_scope :purchase,      :conditions => { :action  => 'purchase'  }
+
   after_save :send_alert_email_if_failure
-  include ApplicationHelper
 
   # parse and store response details appropriately
   #

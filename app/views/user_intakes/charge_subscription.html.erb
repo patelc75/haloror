@@ -1,0 +1,4 @@
+<h1>User Intake: Subscription Charge</h1>
+<p>
+  Subcription status: <%= image_tag( (@user_intake.order and @user_intake.order.subscription_successful?) ? 'tick.png' : 'exclamation.png' ) %>
+</p>

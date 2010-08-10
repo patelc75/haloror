@@ -4,5 +4,9 @@
   <%= text_field_tag "user_intake_agree_initials" %>
 </div>
 <div class="span-8 last">
-  <%= render :partial => 'test_mode_options', :locals => { :f => f } %>
+  <% if current_user.is_super_admin? %>
+    <%= render :partial => 'test_mode_options', :locals => { :f => f } %>
+  <% else %>
+    &nbsp;
+  <% end %>
 </div>

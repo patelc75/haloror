@@ -7,6 +7,11 @@
 
 <% unless @user_intake.senior.status.blank? %>
   <div class="text-center">
-    <h3 class="background-green">Updates will be sent to SafetyCare</h3>
+    <h3 class="background-orange">
+      Updates will be sent to SafetyCare
+      <% if @user_intake.group_id == Group.direct_to_consumer.id and @user_intake.shipped_at.blank? %>
+        <em>, Not yet</em> <strong>shipped</strong>
+      <% end %>
+    </h3>
   </div>
 <% end %>

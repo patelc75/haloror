@@ -56,8 +56,9 @@ class UserIntake < ActiveRecord::Base
 
   # for every instance, make sure the associated objects are built
   def after_initialize
-    self.bill_monthly = (order && order.was_successful?)
+    self.bill_monthly = (order && order.purchase_successful?)
     self.need_validation = true # assume, the user will not hit "save"
+    self.installation_datetime = (order.created_at + 7.days) if order and (group_id == Group.direct_to_consumer.id)
     # find(id, :include => :users) does not work due to activerecord design the way it is
     #   AR should ideally fire a find_with_associations and then initialize each object
     #   AR is not initializing the associations before it comes to this callback, in rails 2.1.0 at least
@@ -101,7 +102,10 @@ class UserIntake < ActiveRecord::Base
     # save the assoicated records
     associations_after_save
     # apply test mode, if applicable
-    senior.test_mode( true) if test_mode == "1" # submitted the user intake with test_mode check box "on"
+    #
+    #   * submitted the user intake with test_mode check box "on"
+    #   * saved just now. created == updated
+    senior.test_mode( test_mode == "1" or created_at == updated_at) unless senior.test_mode?
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
     # UserMailer.deliver_signup_installation(senior)
@@ -325,7 +329,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def order_successful?
-    order_present? && order.was_successful?
+    order_present? && order.purchase_successful?
   end
 
   # TODO: DRYness required here

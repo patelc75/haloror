@@ -213,8 +213,8 @@ class Profile < ActiveRecord::Base
   # WARNING: test required
   def next_account_number
     #
-    # alphabetically arranged account_numbers would ideally have the highest number at the bottom of the list
-    if (last_profile = last( :conditions => ["account_number LIKE ?", "HM%"], :order => "account_number" ))
+    # ordered account_numbers would ideally have the list in chronological order
+    if (last_profile = Profile.first( :conditions => ["account_number LIKE ?", "HM%"], :order => "account_number DESC" ))
       call_center = last_profile.account_number
       #
       # extract SSSNNN where SSS = string, NNN = number

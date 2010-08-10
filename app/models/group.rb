@@ -38,17 +38,26 @@ class Group < ActiveRecord::Base
   # ------------ public methods
   
   class << self # class methods
+    
     # Usage:
     #   Group.safety_care     # will find or create the group and return the active_record
     def safety_care
       find_or_create_by_name('safety_care')
     end
 
+    # Usage:
+    #   Group.direct_to_consumer
+    def direct_to_consumer
+      find_or_create_by_name('direct_to_consumer')
+    end
+    
     # groups applicable to user
-    #
+    # Usage:
+    #   Group.for_user( user)
     def for_user(user)
       user.is_a?(User) ? (user.is_super_admin? ? find(:all) : for_sales_or_admin_user(user)) : find(:all)
     end
+    
   end # class methods
 
   # ---------- instance methods

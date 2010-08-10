@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100809202030) do
+ActiveRecord::Schema.define(:version => 20100810164844) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1148,6 +1148,7 @@ ActiveRecord::Schema.define(:version => 20100809202030) do
     t.string   "global_secondary"
     t.datetime "installation_datetime"
     t.date     "sc_account_created_on"
+    t.datetime "shipped_at"
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|
