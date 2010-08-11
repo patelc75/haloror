@@ -105,7 +105,7 @@ class UserIntake < ActiveRecord::Base
     #
     #   * submitted the user intake with test_mode check box "on"
     #   * saved just now. created == updated
-    senior.test_mode( test_mode == "1" or created_at == updated_at) unless senior.test_mode?
+    senior.test_mode( (test_mode == "1") || (created_at == updated_at)) unless senior.test_mode?
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
     # UserMailer.deliver_signup_installation(senior)

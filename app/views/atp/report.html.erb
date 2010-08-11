@@ -9,6 +9,7 @@
   <th>Result</th>
   <th>Device ID</th>
   <th>Operator ID</th>
+  <th>Description</th>
   <th>TimeStamp</th>
   <th>Updated At</th>
   <th>Created At</th>
@@ -36,6 +37,7 @@
     <% else %>
       <td>&nbsp;</td>
     <% end %>
+    <td><%= result.atp_item.description %></td>
     <td><%= result.timestamp %></td>
     <td><%= result.updated_at %></td>
     <td><%= result.created_at %></td>
