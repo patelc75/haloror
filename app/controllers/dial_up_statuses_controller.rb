@@ -1,4 +1,7 @@
+require "lib/dial_up_status_module"
+
 class DialUpStatusesController < RestfulAuthController
+  include DialUpStatusModule
   layout 'application'
   session :on,:except => :create
   
@@ -46,7 +49,11 @@ class DialUpStatusesController < RestfulAuthController
     #
     # get the hashes separate for each row of AR
     # WARNING: Not tested
-    DialUpStatus.create!( params[:dial_up_status] )
+    if params[:dial_up_status].keys.include?( "alt_status") # composite hash received from device
+      save_dial_up_status_hash( params[:dial_up_status])
+    else
+      DialUpStatus.create( params[:dial_up_status] )
+    end
     
     # request = params[:dial_up_status]
     # DialUpStatus.process_xml_hash(request)

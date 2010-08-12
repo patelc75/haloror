@@ -1,33 +1,35 @@
 class DialUpStatus < ActiveRecord::Base
   belongs_to :device
 
-  # --- IMPORTANT ---
-  # DialUpStatus is a special case among data POSTed by gateway
-  #   * information for multiple rows within single XML file
-  #   * fields appear once in XML but apply to all rows. For example: lowest_connect_rate
-  #   * fields for each row appear in XML with similar names with different prefixes. For example: alt_status
-  #   * when POSTed row is saved to database, 3 more rows must be parsed from XML and saved to same table
-  #     * obj.send( :create_without_callbacks) is used to overcome deep nested recursion issue
-  #     * additional row for DialUpLastSuccessful is also parsed from XML and saved to database
-  # -----------------
-  
-  # instance variables to hold multiple row details from device hash, if present
-  # we will use these to save separate rows of data during before_save
-  attr_accessor :alternate, :global_prime, :global_alternate, :last_successful
-
-  # define the attr_accessor for all attributes of device hash
-  # this will avoid errors at initialize
-  # "prime"            => "",    # not required. we are in the model and these are valid columns
-  { "alternate"        => "alt_",
-    "global_prime"     => "global_prim_",
-    "global_alternate" => "global_alt_"   }.each do |key, value|
-      [ "status", "configured", "device_id", "num_failures", "consecutive_fails", "ever_connected",
-        "phone_number", "number"].each do |hash_key|
-        attr_accessor "#{value}#{hash_key}".to_sym
-    end
-  end
-  attr_accessor :number, :timestamp # extra columns defined in XML
-  attr_accessor :last_successful_number, :last_successful_username, :last_successful_password
+  # shifted to dial_up_status_helper
+  #
+  # # --- IMPORTANT ---
+  # # DialUpStatus is a special case among data POSTed by gateway
+  # #   * information for multiple rows within single XML file
+  # #   * fields appear once in XML but apply to all rows. For example: lowest_connect_rate
+  # #   * fields for each row appear in XML with similar names with different prefixes. For example: alt_status
+  # #   * when POSTed row is saved to database, 3 more rows must be parsed from XML and saved to same table
+  # #     * obj.send( :create_without_callbacks) is used to overcome deep nested recursion issue
+  # #     * additional row for DialUpLastSuccessful is also parsed from XML and saved to database
+  # # -----------------
+  # 
+  # # instance variables to hold multiple row details from device hash, if present
+  # # we will use these to save separate rows of data during before_save
+  # attr_accessor :alternate, :global_prime, :global_alternate, :last_successful
+  # 
+  # # define the attr_accessor for all attributes of device hash
+  # # this will avoid errors at initialize
+  # # "prime"            => "",    # not required. we are in the model and these are valid columns
+  # { "alternate"        => "alt_",
+  #   "global_prime"     => "global_prim_",
+  #   "global_alternate" => "global_alt_"   }.each do |key, value|
+  #     [ "status", "configured", "device_id", "num_failures", "consecutive_fails", "ever_connected",
+  #       "phone_number", "number"].each do |hash_key|
+  #       attr_accessor "#{value}#{hash_key}".to_sym
+  #   end
+  # end
+  # attr_accessor :number, :timestamp # extra columns defined in XML
+  # attr_accessor :last_successful_number, :last_successful_username, :last_successful_password
   
   # filters, scopes
 
@@ -44,53 +46,55 @@ class DialUpStatus < ActiveRecord::Base
   end
   
   # triggers / hooks / callbacks
-  
-  # works with create, create!, new, build
-  # if the hash came from device, then parse it to instance variables
-  def after_initialize
-    self.alternate         = {}
-    self.global_prime      = {}
-    self.global_alternate  = {}
-    self.last_successful   = {}
-    # "prime"            => "",    # already assigned for this model from hash
-    { 
-      "alternate"        => "alt_",
-      "global_prime"     => "global_prim_",
-      "global_alternate" => "global_alt_"
-    }.each do |key, value|
-      # https://redmine.corp.halomonitor.com/issues/3189
-      ["status", "configured"].each do |hash_key|
-        eval("self.#{key}[:#{hash_key}] = #{value}#{hash_key}")
-      end
-      # https://redmine.corp.halomonitor.com/issues/3189
-      ["device_id", "num_failures", "consecutive_fails", "ever_connected"].each do |hash_key|
-        eval("self.#{key}[:#{hash_key}] = #{value}#{hash_key}.to_i")
-      end
-      # FIXME: structure is boolean, value received is integer
-      eval("self.#{key}[:ever_connected] = (#{value}ever_connected.to_i > 0)")
-      eval("self.#{key}[:phone_number] = #{value}number") # similar pattern for all
-      # https://redmine.corp.halomonitor.com/issues/3189
-      # common fields without prefix
-      ["lowest_connect_rate", "longest_dial_duration_sec"].each do |hash_key|
-        eval("self.#{key}[:#{hash_key}] = #{hash_key}.to_i")
-      end
-      ["lowest_connect_timestamp", "longest_dial_duration_timestamp"].each do |hash_key|
-        eval("self.#{key}[:#{hash_key}] = #{hash_key}")
-      end
-    end
 
-    # dialup_type
-    self.dialup_type = 'Local' # self
-    self.alternate[:dialup_type] = 'Local'
-    self.global_prime[:dialup_type] = 'Global'
-    self.global_alternate[:dialup_type] = 'Global'
-
-    # last successful
-    self.last_successful[:device_id]                 = device_id.to_i
-    self.last_successful[:last_successful_number]    = last_successful_number
-    self.last_successful[:last_successful_username]  = last_successful_username
-    self.last_successful[:last_successful_password]  = last_successful_password
-  end
+  # shifted to dial_up_status_helper
+  #
+  # # works with create, create!, new, build
+  # # if the hash came from device, then parse it to instance variables
+  # def after_initialize
+  #   self.alternate         = {}
+  #   self.global_prime      = {}
+  #   self.global_alternate  = {}
+  #   self.last_successful   = {}
+  #   # "prime"            => "",    # already assigned for this model from hash
+  #   { 
+  #     "alternate"        => "alt_",
+  #     "global_prime"     => "global_prim_",
+  #     "global_alternate" => "global_alt_"
+  #   }.each do |key, value|
+  #     # https://redmine.corp.halomonitor.com/issues/3189
+  #     ["status", "configured"].each do |hash_key|
+  #       eval("self.#{key}[:#{hash_key}] = #{value}#{hash_key}")
+  #     end
+  #     # https://redmine.corp.halomonitor.com/issues/3189
+  #     ["device_id", "num_failures", "consecutive_fails", "ever_connected"].each do |hash_key|
+  #       eval("self.#{key}[:#{hash_key}] = #{value}#{hash_key}.to_i")
+  #     end
+  #     # FIXME: structure is boolean, value received is integer
+  #     eval("self.#{key}[:ever_connected] = (#{value}ever_connected.to_i > 0)")
+  #     eval("self.#{key}[:phone_number] = #{value}number") # similar pattern for all
+  #     # https://redmine.corp.halomonitor.com/issues/3189
+  #     # common fields without prefix
+  #     ["lowest_connect_rate", "longest_dial_duration_sec"].each do |hash_key|
+  #       eval("self.#{key}[:#{hash_key}] = #{hash_key}.to_i")
+  #     end
+  #     ["lowest_connect_timestamp", "longest_dial_duration_timestamp"].each do |hash_key|
+  #       eval("self.#{key}[:#{hash_key}] = #{hash_key}")
+  #     end
+  #   end
+  # 
+  #   # dialup_type
+  #   self.dialup_type = 'Local' # self
+  #   self.alternate[:dialup_type] = 'Local'
+  #   self.global_prime[:dialup_type] = 'Global'
+  #   self.global_alternate[:dialup_type] = 'Global'
+  # 
+  #   # last successful
+  #   self.last_successful[:device_id]                 = device_id.to_i
+  #   self.last_successful[:last_successful_number]    = last_successful_number
+  #   self.last_successful[:last_successful_username]  = last_successful_username
+  #   self.last_successful[:last_successful_password]  = last_successful_password
+  # end
 
 
   # some more work after the row is saved to database
@@ -98,28 +102,30 @@ class DialUpStatus < ActiveRecord::Base
   def after_save
     create_event
 
-    # if we initiated this instance from a device hash, we have more work to do
+    # shifted to dial_up_status_helper
     #
-    # We save a few more rows that came in the hash
-    # We did not save them earlier to avoid data inconsistency, just in case we decide not to save this instance
-    # so the extra tuples go along "this" instance. all saved or none.
-    #
-    # WARNING: We have a drawback here
-    #   We lose the callback to the Event.create_event for all these rows saved below
-    #
-    [self.alternate, self.global_prime, self.global_alternate].each do |tuple_hash|
-      unless tuple_hash.blank?
-          obj = DialUpStatus.new( tuple_hash)
-          obj.send(:create_without_callbacks) # Otherwise endless recursion will happen
-          create_event
-      end
-    end
-    
-    unless self.last_successful.blank?
-        obj = DialUpLastSuccessful.new( self.last_successful)
-        obj.send(:create_without_callbacks)
-        create_event
-    end
+    # # if we initiated this instance from a device hash, we have more work to do
+    # #
+    # # We save a few more rows that came in the hash
+    # # We did not save them earlier to avoid data inconsistency, just in case we decide not to save this instance
+    # # so the extra tuples go along "this" instance. all saved or none.
+    # #
+    # # WARNING: We have a drawback here
+    # #   We lose the callback to the Event.create_event for all these rows saved below
+    # #
+    # [self.alternate, self.global_prime, self.global_alternate].each do |tuple_hash|
+    #   unless tuple_hash.blank?
+    #       obj = DialUpStatus.new( tuple_hash)
+    #       obj.send(:create_without_callbacks) # Otherwise endless recursion will happen
+    #       create_event
+    #   end
+    # end
+    # 
+    # unless self.last_successful.blank?
+    #     obj = DialUpLastSuccessful.new( self.last_successful)
+    #     obj.send(:create_without_callbacks)
+    #     create_event
+    # end
   end
   
   def create_event
