@@ -9,7 +9,11 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
+<<<<<<< Updated upstream
 ActiveRecord::Schema.define(:version => 20100301192847) do
+=======
+ActiveRecord::Schema.define(:version => 20100812200517) do
+>>>>>>> Stashed changes
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -927,6 +931,38 @@ ActiveRecord::Schema.define(:version => 20100301192847) do
     t.integer  "critical_event_delay_sec"
     t.integer  "battery_reminder_two_sec"
     t.integer  "battery_reminder_three_sec"
+<<<<<<< Updated upstream
+=======
+    t.integer  "gateway_offline_offset_sec"
+    t.integer  "group_id"
+  end
+
+  create_table "triage_audit_logs", :force => true do |t|
+    t.integer  "user_id"
+    t.boolean  "is_dismissed"
+    t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by"
+    t.integer  "updated_by"
+    t.string   "status"
+  end
+
+  create_table "triage_thresholds", :force => true do |t|
+    t.integer  "group_id"
+    t.string   "status"
+    t.integer  "battery_percent"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "hours_without_panic_button_test"
+    t.integer  "hours_without_strap_detected"
+    t.integer  "hours_without_call_center_account"
+    t.integer  "mgmt_query_count"
+    t.integer  "mgmt_query_failed_count"
+    t.integer  "mgmt_query_delay_span"
+    t.integer  "attribute_warning_hours"
+    t.integer  "approval_warning_hours"
+>>>>>>> Stashed changes
   end
 
   create_table "user_intakes", :force => true do |t|

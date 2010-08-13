@@ -21,17 +21,15 @@ class AccessModesController < RestfulAuthController
   end
   
   def check
-    device_id = params[:access_mode][:device_id] #device_id not being used
-    mode = params[:access_mode][:mode] 
+    # WARNING: DRYed. needs testing
+    #
+    # device_id = params[:access_mode][:device_id] #device_id not being used
+    mode = params[:access_mode][:mode]
+    #
+    # TODO: should this be?     Group.default.system_timeouts.find_by_mode( mode)
+    poll_rate = timeout.gateway_offline_timeout_sec if ( timeout = SystemTimeout.find_by_mode(mode) )
+    xml = check_poll_rate_xml(mode, poll_rate)
 
-	timeout = SystemTimeout.default_timeout(mode)
-	
-	if timeout
-	  poll_rate = timeout.gateway_offline_timeout_sec	
-	end
-	
-	xml = check_poll_rate_xml(mode, poll_rate)
-    
     respond_to do |format|
       format.xml {render :xml => xml}
     end

@@ -59,9 +59,9 @@ class DeviceAlert < ActiveRecord::Base
   end
   
   def self.job_process_crtical_alerts
-  	#group = Group.find_by_name('default')
-    #ethernet_system_timeout = SystemTimeout.find_by_mode('ethernet') #group.get_timeout('ethernet','critical_event_delay_sec')
-    #dialup_system_timeout   = SystemTimeout.find_by_mode('dialup') #group.get_timeout('dialup','critical_event_delay_sec')
+    RAILS_DEFAULT_LOGGER.warn("DeviceAlert.job_process_crtical_alerts running at #{Time.now}")
+    ethernet_system_timeout = Group.default.ethernet_system_timeout # SystemTimeout.find_by_mode('ethernet')
+    dialup_system_timeout   = Group.default.dialup_system_timeout # SystemTimeout.find_by_mode('dialup')
     
     critical_alerts = []
     
