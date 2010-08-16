@@ -12,8 +12,8 @@
   </form>
 </div>
 <div class="span-12 last text-right">
-  <% ["active", "installed", "cancelled", "unknown"].each do |status| %>
-  <%= image_tag( User::STATUS_IMAGE[status.to_sym]) %> <%= User.count_with_status(status) %> <%= User::STATUS[status.to_sym] %>
+  <% User::STATUS.keys.each do |key| %>
+    <%= image_tag( User::STATUS_IMAGE[key]) %> <%= User.count_with_status(User::STATUS[key]) %> <%= User::STATUS[key] %>
   <% end %>
 </div>
 

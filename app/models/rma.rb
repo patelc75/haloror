@@ -77,6 +77,13 @@ class Rma < ActiveRecord::Base
   # }
   
   before_save :get_user_from_serial
+
+  def validate
+    if !termination_requested_on.blank?
+      self.errors.add( "Discontinue billing from which date?") if discontinue_bill_on.blank?
+      self.errors.add( "Discontinue service from which date?") if discontinue_service_on.blank?
+    end
+  end
   
   # methods for views
   #

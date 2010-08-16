@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100810164844) do
+ActiveRecord::Schema.define(:version => 20100813164445) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -933,6 +933,10 @@ ActiveRecord::Schema.define(:version => 20100810164844) do
     t.string   "ship_zipcode"
     t.text     "ship_address"
     t.text     "notes"
+    t.date     "termination_requested_on"
+    t.date     "discontinue_bill_on"
+    t.date     "discontinue_service_on"
+    t.date     "received_verified_on"
   end
 
   create_table "roles", :force => true do |t|
@@ -1096,6 +1100,7 @@ ActiveRecord::Schema.define(:version => 20100810164844) do
     t.integer  "battery_reminder_two_sec"
     t.integer  "battery_reminder_three_sec"
     t.integer  "gateway_offline_offset_sec"
+    t.integer  "group_id"
   end
 
   create_table "triage_audit_logs", :force => true do |t|

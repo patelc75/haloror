@@ -40,6 +40,29 @@
           <td class="textright"><label for="rma_completed_on">RMA Completed Date</label>:</td>
           <td><%= calendar_date_select_tag "rma[completed_on]", @rma.completed_on.to_s, :id => "rma_completed_on", :popup => 'force' %></td>
         </tr>
+        <tr>
+          <td class="textright"><label for="rma_termination_requested_on">RMA Termination Requested on</label>:</td>
+          <td><%= calendar_date_select_tag "rma[termination_requested_on]", @rma.termination_requested_on.to_s, :id => "rma_termination_requested_on", :popup => 'force' %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_discontinue_bill_on">RMA Desired Discontinuation on</label>:</td>
+          <td>
+            <%= calendar_date_select_tag "rma[discontinue_bill_on]", @rma.discontinue_bill_on.to_s, :id => "rma_discontinue_bill_on", :popup => 'force' %>
+            <%= link_to_function "30 days" %>
+            <div><%= link_to "Discontinue Billing", "#", :class => "button green-button small", :confirm => "Are you sure you want to discontinue billing?" %></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_discontinue_service_on">RMA Discontinue Service on</label>:</td>
+          <td>
+            <%= calendar_date_select_tag "rma[discontinue_service_on]", @rma.discontinue_service_on.to_s, :id => "rma_discontinue_service_on", :popup => 'force' %>
+            <div><%= link_to "Discontinue Service", "#", :class => "button green-button small", :confirm => "Are you sure you want to discontinue billing?" %></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_received_verified_on">RMA Received and Verified on</label>:</td>
+          <td><%= calendar_date_select_tag "rma[received_verified_on]", @rma.received_verified_on.to_s, :id => "rma_received_verified_on", :popup => 'force' %></td>
+        </tr>
       </table>
     </td>
 

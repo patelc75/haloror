@@ -898,8 +898,7 @@ class User < ActiveRecord::Base
   end
   
   def self.count_with_status(status = nil)
-    status = nil if ["unknown", nil, "NULL", ""].include?(status)
-    count(:conditions => {:status => status})
+    count( :conditions => {:status => status.to_s} )
   end
 
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
@@ -2159,6 +2158,15 @@ class User < ActiveRecord::Base
       # https://redmine.corp.halomonitor.com/issues/398
       user.log("Caregiver #{name} is #{active ? 'activated' : 'set away'} for user #{user.name}")
     end
+  end
+  
+  # cancel account of this user
+  #   * this user must be a halouser
+  #   * when not halouser, this method has no effect
+  # steps taken from https://redmine.corp.halomonitor.com/issues/398
+  def cancel_account
+    # step 1
+    devices.each {|e| }
   end
   
   protected # ---------------------------------------------
