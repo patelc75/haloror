@@ -11,7 +11,6 @@ class RmasController < ApplicationController
     @search = params[:search]
     # status search
     #   no status check_box "on" ? what are we searching then?
-    debugger
     params[:status] = RmaItemStatus::STATUSES if params[:status].blank? # switch them all "on"
     params[:status].each {|e| instance_variable_set("@rma_#{e[0].downcase.gsub(' ','_')}", e[0]) }
     statuses = params[:status].collect(&:first) # collect status names in array. we will use it to filter later

@@ -36,6 +36,7 @@ class UsersController < ApplicationController
   # dismiss users from triage
   # Usage: POST
   #   dismiss( ["all" | "selected" | "abnormal" | "normal" | "caution" | "test mode"], [1, 2, 3])
+  # WARNING: Tue Aug 17 22:26:25 IST 2010 this should now be shifted to User::STATUS logic
   def dismiss
     what = params[:commit].downcase
     unless what.blank?

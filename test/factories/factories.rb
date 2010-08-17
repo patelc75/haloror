@@ -176,6 +176,7 @@ Factory.define :user do |v|
   v.salt { |user| Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{user.login}--") }
   v.crypted_password { |user| Digest::SHA1.hexdigest("--#{user.salt}--12345--") }
   v.email {|u| "#{u.login}@example.com" } # pre-defined domain used in some tests
+  v.test_mode true # default is true
   v.association :profile
   # # WARNING: do not use v.association or v.profile syntax here.
   # # if you do, cucumber complications happen and scenarios will fail randomly for no valid visible reason

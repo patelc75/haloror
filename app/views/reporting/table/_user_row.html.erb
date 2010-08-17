@@ -101,8 +101,9 @@
             <% end %>
           <% end %>
           <% if current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships) %>
-            <% form_tag url_for(:controller => 'users', :action => 'toggle_test_mode', :id => user.id), :method => :post do %>
-            <%= image_tag("test_#{user.test_mode? ? 'en' : 'dis'}abled.gif") %> <%= submit_tag "#{user.test_mode? ? 'Dis' : 'En'}able Test Mode", :class => "small #{user.test_mode? ? 'blue-button' : 'gray-button'} button", :id => "#{user.test_mode? ? 'dis' : 'en'}able_test_mode_#{user.id}" %>
+            <% form_tag url_for(:controller => 'users', :action => 'toggle_test_mode', :id => user.id), :method => :post, :id => "user_form_#{user.id}" do %>
+            <%= image_tag("test_#{user.test_mode? ? 'en' : 'dis'}abled.gif") %>
+            <%= submit_tag "#{user.test_mode? ? 'Dis' : 'En'}able Test Mode", :class => "small #{user.test_mode? ? 'blue-button' : 'gray-button'} button", :id => "#{user.test_mode? ? 'dis' : 'en'}able_test_mode_#{user.id}" %>
             <br />
             <% end %>
           <% end %>

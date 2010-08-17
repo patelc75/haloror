@@ -222,7 +222,7 @@ Then /^I (should|should not) see "([^"]*)" within "([^"]*)" user row$/ do |logic
   user.should_not be_blank
 
   data_array = csv_data.split(',').collect(&:strip)
-  within("div#user_#{user.id}") do |scope|
+  within("tr#user_#{user.id}") do |scope|
     # dynamically send should or should_not
     data_array.each {|data| scope.send("#{logic.gsub(/ /,'_')}".to_sym, contain(data)) }
   end

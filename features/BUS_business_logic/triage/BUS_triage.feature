@@ -19,7 +19,7 @@ Feature: Manage triage
 
   Scenario: Group drop down on triage page
     Then page content should have "group1, group2"
-    And page content should have "Events, Residents, Name, Alerts, Chart, Battery, Connectivity"
+    And page content should have "Events, Residents, Name, Alerts, Chart, Battery"
 
   Scenario: Seniors listed for that group only
     And I should see profile name of "senior1"
@@ -65,10 +65,12 @@ Feature: Manage triage
     And I press "Ok"
     And I visit "group1-admin" pending triage for group "group1"
     Then I should see profile name of "senior1"
-    
-  Scenario: Dismiss All Greens
-    When I follow "Dismiss All Greens"
-    Then I should not see any green battery
+
+  # WARNING: Tue Aug 17 06:08:24 IST 2010 This is deprecated now
+  #
+  # Scenario: Dismiss All Greens
+  #   When I follow "Dismiss All Greens"
+  #   Then I should not see any green battery
 
   Scenario Outline: Correct battery fill and color
     Given battery status for "senior1" is <number> percent

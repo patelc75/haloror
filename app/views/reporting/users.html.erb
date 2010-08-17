@@ -3,7 +3,7 @@
   <%=render :partial => 'nav_config'%>
 </div>
 
-<div class="span-12">
+<div class="span-8">
   <h3>Users table</h3>
   <form id="group_form_id" action="/reporting/users" method="GET">
     <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
@@ -11,7 +11,7 @@
     <%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| [e.name, e.name] }, (@group_name || @groups.first.name)), {:onchange => "$('group_form_id').submit();"}%>
   </form>
 </div>
-<div class="span-12 last text-right">
+<div class="span-16 last text-right">
   <% User::STATUS.keys.each do |key| %>
     <%= image_tag( User::STATUS_IMAGE[key]) %> <%= User.count_with_status(User::STATUS[key]) %> <%= User::STATUS[key] %>
   <% end %>

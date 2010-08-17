@@ -17,7 +17,7 @@
     </div>
   </td>
   <td>
-    <% if triage_user.alert_status == 'abnormal' %>
+    <% if triage_user.warning_status? %>
     <%= link_to image_tag("warning_32.png"), :controller => 'users', :action => "special_status", :id => triage_user.id %>
     <% else %>
     <%= image_tag("warning_grey_32.png") %>

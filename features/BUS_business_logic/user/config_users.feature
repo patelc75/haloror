@@ -80,6 +80,7 @@ Feature: Config users
     When I reload the page
     And I follow links "Reporting > Triage"
     And I select "group1" from "Group"
+    And I press "Apply selected filters"
     Then I should see "TEST MODE" within "halouser1" user row
 
   Scenario Outline: Switch between Enable / Disable Test Mode

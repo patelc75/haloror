@@ -2,14 +2,14 @@ class Panic < CriticalDeviceAlert
   set_table_name('panics')
 
   # trigger
-  
+
   # WARNING: needs testing
   def before_save
     #
     # test-mode status is cloned here to reporting etc...
     self.test_mode = user.test_mode if (user = User.find(user_id))
   end
-  
+
   # we just need it for this event. Not critical_device_alert.rb super class
   def after_save
     # https://redmine.corp.halomonitor.com/issues/3215
@@ -21,7 +21,7 @@ class Panic < CriticalDeviceAlert
       #
       # 
       # "Ready to Bill" state if panic is after "Desired Installation Date" and User.test_mode != true
-      user.status = User::STATUS[:bill_pending] if (Time.now > user.created_at) && (user.test_mode != true)
+      (user.status = User::STATUS[:bill_pending]) if ((Time.now > user.created_at) && (user.test_mode != true))
       #
       #   Ready for Install > Installed (green) is automatically transitioned
       #   Check for panic button test (must occur after the install date)

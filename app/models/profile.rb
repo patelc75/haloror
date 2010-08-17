@@ -219,7 +219,7 @@ class Profile < ActiveRecord::Base
       #
       # extract SSSNNN where SSS = string, NNN = number
       # get the next number and assign it bak
-      call_center[0..2] + (call_center[3..-1].to_i +1).to_s
+      call_center[0..2] + (call_center.to_i + 1).to_s
     else
       'HM001' # this is the first one if the last profile was not found. correct?
     end

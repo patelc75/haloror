@@ -626,9 +626,9 @@ class User < ActiveRecord::Base
     # collect status for all events in an array
     # insert 'normal' to include at least one default
     # either pick 'test mode' , or just pick the first alphabetic one. incidentally the required order is albhabetic
-    if ( (options.blank?) || (options && options.include?("test_mode")) || (options && options[:alert] && options[:alert].include?("test_mode")) ) && test_mode?
+    if test_mode? # ( (options.blank?) || (options && options.include?( User::STATUS[:test] )) || (options && options[:alert] && options[:alert].include?( User::STATUS[:test] )) ) &&
       # when checking for test mode and that check is allowed to decide status
-      'test mode'
+      STATUS[:test] # 'test mode'
     else
       # include "options" while checking the status for each alert type
       #   this will check the actual status only for allowed alert types
@@ -646,7 +646,7 @@ class User < ActiveRecord::Base
 
   # use TriageThreshold table to search warning status
   def warning_status_threshold
-    threshold = TriageThreshold.for_group_or_defaults( group).select {|e| e.status.downcase == "warning" }
+    threshold = TriageThreshold.for_group_or_defaults( self.is_halouser_of_what.first ).select {|e| e.status.downcase == "warning" }
     threshold = TriageThreshold.new( :status => "warning", :attribute_warning_hours => 48, :approval_warning_hours => 4) if threshold.blank? # default status, if one not found in definitions
   end
   
@@ -666,7 +666,7 @@ class User < ActiveRecord::Base
     #   * user.status.blank means not approved. First action one can take is, approval. pending status is blank
     #   * time elapsed more than the threshold "business hours" defined for approval status
     #   * appropriately considers weekend, late night installations as well as weekends, while calculating workdays
-    warning = ( threshold && senior.status.blank? && ( Time.now > business_hours_later( threshold.approval_warning_hours )) ) unless warning
+    warning = ( threshold && status.blank? && ( Time.now > business_hours_later( threshold.approval_warning_hours )) ) unless warning
   end
 
   # https://redmine.corp.halomonitor.com/issues/3213
@@ -2110,7 +2110,10 @@ class User < ActiveRecord::Base
   end
   
   # default action is obvious from method name
-  def test_mode(status = true)
+  def set_test_mode(status = true)
+    #
+    # test_mode column
+    self.test_mode = status
     # user test mode
     #   * user is not part of safety_care
     #   * has all caregivers "away"
@@ -2126,11 +2129,11 @@ class User < ActiveRecord::Base
   def test_mode?
     # when user is not part of safety_care
     # and all caregivers are in away mode
-    self.is_not_halouser_of?(Group.safety_care) && (caregivers.all? {|cg| !cg.active_for?(self) })
+    test_mode # self.is_not_halouser_of?(Group.safety_care) && (caregivers.all? {|cg| !cg.active_for?(self) })
   end
 
   def toggle_test_mode
-    self.test_mode(!test_mode?)
+    set_test_mode(!test_mode?)
   end
   
   def active_for?(user = nil)
