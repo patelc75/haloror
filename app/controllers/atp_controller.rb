@@ -169,7 +169,7 @@ class AtpController < ApplicationController
       @work_order = WorkOrder.create
       @work_order.work_order_num = @work_order.id
       @work_order.save!
-    end   
+    end
     redirect_to :controller => 'atp', :action => 'work_order_device_revision_init', :work_order_id => @work_order.id
   end
   

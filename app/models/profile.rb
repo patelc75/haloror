@@ -134,13 +134,17 @@ class Profile < ActiveRecord::Base
   end
 
   def validate
-    if self[:is_new_caregiver]
-      return false
+    if self.skip_validation
+      true
     else
-      # "length != 10" changed to "length < 10" for compatibility with user_intake_form
-      errors.add(:home_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.home_phone != '' and !self.home_phone.nil? and phone_strip(self.home_phone).length < 10 
-      errors.add(:work_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.work_phone != '' and !self.work_phone.nil? and phone_strip(self.work_phone).length < 10 
-      errors.add(:cell_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.cell_phone != '' and !self.cell_phone.nil? and phone_strip(self.cell_phone).length < 10
+      if self[:is_new_caregiver]
+        return false
+      else
+        # "length != 10" changed to "length < 10" for compatibility with user_intake_form
+        errors.add(:home_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.home_phone != '' and !self.home_phone.nil? and phone_strip(self.home_phone).length < 10 
+        errors.add(:work_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.work_phone != '' and !self.work_phone.nil? and phone_strip(self.work_phone).length < 10 
+        errors.add(:cell_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.cell_phone != '' and !self.cell_phone.nil? and phone_strip(self.cell_phone).length < 10
+      end
     end
   end
 

@@ -65,6 +65,13 @@ Given /^call center account number for "([^\"]*)" is "([^\"]*)"$/ do |user_login
   user.profile.save
 end
 
+Given /^user "([^"]*)" (.+) in test mode$/ do |user_login, state|
+  (user = User.find_by_login(user_login)).should_not be_blank
+  # user.update_attributes( :test_mode => (state == 'is')) # user object in memory is still not changed
+  user.test_mode = (state == 'is')
+  user.save
+end
+
 When /^I get data in (.+) for user "([^\"]*)"$/ do |model_name, user_login|
   user = User.find_by_login(user_login)
   user.should_not be_blank
@@ -221,6 +228,7 @@ Then /^I (should|should not) see "([^"]*)" within "([^"]*)" user row$/ do |logic
   user = User.find_by_login(user_login)
   user.should_not be_blank
 
+  # WARNING: DIV should be used here, not TR. HTML needs an update but it also had to be within <form>
   data_array = csv_data.split(',').collect(&:strip)
   within("tr#user_#{user.id}") do |scope|
     # dynamically send should or should_not
@@ -235,7 +243,11 @@ Then /^I (should|should not) see "([^"]*)" xpath within "([^"]*)" user row$/ do 
   data_array = csv_data.split(',').collect(&:strip)
   data_array.each do |data|
     within("div#user_#{user.id}") do |scope|
-      scope.send("#{logic.gsub(/ /, '_')}".to_sym, have_xpath(data))
+      if logic == 'should'
+        scope.should have_xpath( data)
+      else
+        scope.should_not have_xpath( data)
+      end
     end
   end
 end

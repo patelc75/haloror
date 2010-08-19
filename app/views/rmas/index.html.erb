@@ -42,11 +42,10 @@
         <th class="span-6">RMA Status</th>
         <th class="span-2">Action</th>
       </tr>
+      <%= render :partial => 'rma_row', :collection => @rmas %>
     </table>
   </div>
   <% end %>
-
-  <div class="span-24 last"><table><%= render :partial => 'rma_row', :collection => @rmas %></table></div>
 
   <div class="span-12 text-center"><%= will_paginate @rmas %>&nbsp;</div>
   <div class="span-12 last text-right">

@@ -406,7 +406,6 @@ class Order < ActiveRecord::Base
       senior_profile = { :first_name => ship_first_name, :last_name => ship_last_name, :address => ship_address, :city => ship_city, :state => ship_state, :zipcode => ship_zip, :home_phone => ship_phone }
       subscriber_profile = { :first_name => bill_first_name, :last_name => bill_last_name, :address => bill_address, :city => bill_city, :state => bill_state, :zipcode => bill_zip, :home_phone => bill_phone }
       user_intake = UserIntake.new
-      user_intake.skip_validation = true # just save. even incomplete data
       user_intake.group = group # halouser role is for group
       user_intake.senior_attributes = {:email => ship_email, :profile_attributes => senior_profile}
       if !subscribed_for_self? # when marked common or data common
@@ -416,6 +415,7 @@ class Order < ActiveRecord::Base
       user_intake.order_id = self.id
       user_intake.creator = self.creator # https://redmine.corp.halomonitor.com/issues/3117
       user_intake.updater = self.updater
+      user_intake.skip_validation = true # just save. even incomplete data
       user_intake.save # database
       user_intake.caregivers.each(&:activate) # https://redmine.corp.halomonitor.com/issues/3117
       #

@@ -9,7 +9,7 @@ module UsersHelper
     options.reverse_merge( {:type => 'normal', :path => '#', :id => Time.now.to_i, :size => 'medium'})
     # button types and colors
     buttons = {"normal" => "green-button", "caution" => "orange-button", "abnormal" => "red-button", "test mode" => "blue-button"}
-    options[:type] = "normal" unless buttons.keys.include?( options[:type]) # only these types allowed
+    options[:type] = "normal" unless buttons.keys.collect(&:downcase).include?( options[:type]) # only these types allowed
     options[:size] = ' medium' unless options[:size] =~ /medium|small|bigrounded/
     # TODO: fix this properly
     # https://redmine.corp.halomonitor.com/issues/3202
@@ -22,7 +22,7 @@ module UsersHelper
     #   end
     # end
     "<a href=\"#{options[:path]}\" class=\"button #{buttons[options[:type]]} #{options[:size]}\" id=\"alert_#{options[:id]}\">
-      <strong>#{options[:type].upcase.gsub(' ','.')}</strong>
+      <strong>#{options[:type].upcase}</strong>
     </a>"
   end
 

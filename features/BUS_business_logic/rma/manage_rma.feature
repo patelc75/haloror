@@ -50,4 +50,4 @@ Feature: Manage RMA
     When I delete the 2nd rma
     Then I should see the following rmas:
       | Serial Number |
-      | 1111111111    |
+      | 1234567890    |

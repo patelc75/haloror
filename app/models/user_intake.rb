@@ -83,15 +83,18 @@ class UserIntake < ActiveRecord::Base
     # skip_validation decides if "save" was hit instead of "submit"
     self.locked = (!skip_validation && valid?)
     # new logic. considers all status values as defined in STATUS
-    locked and !senior.blank? and senior.shift_to_next_status
+    locked? and !senior.blank? and senior.shift_to_next_status( updated_by, "user intake")
     # old logic. just checking for approval_pending
     # self.status = STATUS[:approval_pending] if (locked && status.blank?)
-    # create status row in triage_audit_log
-    if status_changed?
-      options = { :status => status, :updated_by => updated_by,
-        :description => "Status updated from [#{status_was}] to [#{status}], triggered from user intake" }
-      add_triage_note( options)
-    end
+    #
+    # CHANGED: this has now shifted to user.rb
+    #
+    # # create status row in triage_audit_log
+    # if status_changed?
+    #   options = { :status => status, :updated_by => updated_by,
+    #     :description => "Status updated from [#{status_was}] to [#{status}], triggered from user intake" }
+    #   add_triage_note( options)
+    # end
     #
     # associations
     associations_before_validation_and_save # build the associations
@@ -105,7 +108,7 @@ class UserIntake < ActiveRecord::Base
     #
     #   * submitted the user intake with test_mode check box "on"
     #   * saved just now. created == updated
-    senior.test_mode( (test_mode == "1") || (created_at == updated_at)) unless senior.test_mode?
+    senior.set_test_mode( (test_mode == "1") || (created_at == updated_at)) unless senior.test_mode?
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
     # UserMailer.deliver_signup_installation(senior)
@@ -359,6 +362,7 @@ class UserIntake < ActiveRecord::Base
         (self.mem_subscriber = mem_senior) if subscriber_is_user # link both to same data
       end
     end
+    self.mem_senior.skip_validation = self.skip_validation unless self.mem_senior.blank?
     self.mem_senior
   end
 
@@ -404,6 +408,7 @@ class UserIntake < ActiveRecord::Base
 
       end
     end
+    self.mem_subscriber.skip_validation = self.skip_validation unless self.mem_subscriber.blank?
     self.mem_subscriber
   end
 
@@ -445,6 +450,7 @@ class UserIntake < ActiveRecord::Base
 
       end
     end
+    self.mem_caregiver1.skip_validation = self.skip_validation unless self.mem_caregiver1.blank?
     self.mem_caregiver1
   end
 
@@ -476,6 +482,7 @@ class UserIntake < ActiveRecord::Base
       end
 
     end
+    self.mem_caregiver2.skip_validation = self.skip_validation unless self.mem_caregiver2.blank?
     self.mem_caregiver2
   end
 
@@ -507,6 +514,7 @@ class UserIntake < ActiveRecord::Base
       end
 
     end
+    self.mem_caregiver3.skip_validation = self.skip_validation unless self.mem_caregiver3.blank?
     self.mem_caregiver3
   end
 
@@ -518,27 +526,37 @@ class UserIntake < ActiveRecord::Base
 
   def senior_attributes=(attributes)
     self.senior = attributes
+    self.senior.skip_validation = self.skip_validation unless self.senior.blank?
     # self.senior.profile_attributes = attributes["profile_attributes"]
+    self.senior
   end
 
   def subscriber_attributes=(attributes)
     (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
     self.subscriber = attributes
+    self.subscriber.skip_validation = self.skip_validation unless self.subscriber.blank?
+    self.subscriber
   end
 
   def caregiver1_attributes=(attributes)
     (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
     self.caregiver1 = attributes
+    self.caregiver1.skip_validation = self.skip_validation unless self.caregiver1.blank?
+    self.caregiver1
   end
 
   def caregiver2_attributes=(attributes)
     (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
     self.caregiver2 = attributes
+    self.caregiver2.skip_validation = self.skip_validation unless self.caregiver2.blank?
+    self.caregiver2
   end
 
   def caregiver3_attributes=(attributes)
     (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
     self.caregiver3 = attributes
+    self.caregiver3.skip_validation = self.skip_validation unless self.caregiver3.blank?
+    self.caregiver3
   end
   
   def submitted?

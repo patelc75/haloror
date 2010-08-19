@@ -1,6 +1,10 @@
 # FIXME: this will fail for sure. bundle_processors table does not exist
 # WARNING: Need to discuss business logic here, or, get structure of the table
+require "lib/dial_up_status_module"
+
 class BundleProcessor # < ActiveRecord::Base
+  extend DialUpStatusModule
+  
   @@bundled_models = [Vital, StrapRemoved, StrapFastened, Step, 
                       SkinTemp, Battery, BatteryChargeComplete, 
                       BatteryCritical, BatteryPlugged, BatteryUnplugged, 
@@ -26,7 +30,18 @@ class BundleProcessor # < ActiveRecord::Base
           unless value.blank?
             value = (value.class == Array ? value : [value])
             value.each do |v|
-              obj = model.new(v)
+
+              # get the hashes separate for each row of AR
+              # WARNING: Not tested
+              if v.keys.include?( "alt_status") # composite hash received from device
+                # we need this conditional clause here
+                #   dial_up_status had issues in posting correct data otherwise
+                #   https://redmine.corp.halomonitor.com/issues/3255
+                save_dial_up_status_hash( v)
+              else
+                obj = model.new(v)
+              end
+
               #
               # model specific additional parsing. check model class for more details.
               # keep this here. do not remove.

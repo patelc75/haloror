@@ -1,5 +1,6 @@
 require 'digest/sha1'
 class User < ActiveRecord::Base
+  include UtilityHelper
   # IMPORTANT -----------------
   #   * The order of appearance of the keys, MUST be exactly as shown from pending .. installed
   #   * shift_to_next_status method depends on this
@@ -167,11 +168,13 @@ class User < ActiveRecord::Base
   end
   
   def validate
-  	if self.username_confirmation
-  		if self.username_confirmation != self.login
-  			self.errors.add("user confirmation","does not match with username.")
-  		end
-  	end
+    if self.skip_validation
+      true
+    else
+      if self.username_confirmation && (self.username_confirmation != self.login)
+        self.errors.add("user confirmation","does not match with username.")
+      end
+    end
   end
   
   def skip_validation=(value = false)
@@ -288,13 +291,14 @@ class User < ActiveRecord::Base
   # ------------------ more methods
   
   # shift status column to the next business logical status
-  def shift_to_next_status
+  def shift_to_next_status( who_updated = nil, message = nil)
     # this statement works like this;
     # * fetch status.to_s, therefore converting nil to ''
     # * fetch array of status values STATUS[0..4] which is :pending .. :installed
     # * get the index in the array, for the current status, switch to next
     # * do not change status value when index is not correctly found
     status = STATUS[ STATUS[0..4].index( status.to_s ) ] unless STATUS[0..4].index( status.to_s).blank?
+    updated_by = who_updated
     # 
     # logic of the block below is same as above line of statement. just a bit differently written
     #
@@ -303,6 +307,14 @@ class User < ActiveRecord::Base
     # when STATUS[:approval_pending] ; STATUS[:install_pending]
     # when STATUS[:install_pending] ; STATUS[:installed]
     # end
+    #
+    # create status row in triage_audit_log
+    if status_changed?
+      options = { :status => status, :updated_by => updated_by, 
+        :description => "Status shifted from [#{status_was}] to [#{status}]" }
+      options[:description] += ", trigger: #{message}" unless message.blank?
+      add_triage_note( options)
+    end
   end
   
   # when was the device successfully installed for this user
@@ -598,12 +610,12 @@ class User < ActiveRecord::Base
             # collect its "status" in array
             defaults.each do |default|
               if rows.select {|e| e.seconds_since_last > default.mgmt_query_delay_span }.size >= default.mgmt_query_failed_count
-                statuses += default.status
+                statuses << default.status
               end
             end
           end
         end
-        statuses.compact.uniq.sort.first # alphabetical order: abnormal, caution, normal
+        statuses.flatten.compact.uniq.sort.first # alphabetical order: abnormal, caution, normal
       end
       
       # when threshold is not defined. the following hard coded logic will work
@@ -628,7 +640,7 @@ class User < ActiveRecord::Base
     # either pick 'test mode' , or just pick the first alphabetic one. incidentally the required order is albhabetic
     if test_mode? # ( (options.blank?) || (options && options.include?( User::STATUS[:test] )) || (options && options[:alert] && options[:alert].include?( User::STATUS[:test] )) ) &&
       # when checking for test mode and that check is allowed to decide status
-      STATUS[:test] # 'test mode'
+      'test mode' # this is not same as User::STATUS
     else
       # include "options" while checking the status for each alert type
       #   this will check the actual status only for allowed alert types
@@ -2113,7 +2125,7 @@ class User < ActiveRecord::Base
   def set_test_mode(status = true)
     #
     # test_mode column
-    self.test_mode = status
+    self.test_mode = (status == true) # just make sure only boolean values are considered
     # user test mode
     #   * user is not part of safety_care
     #   * has all caregivers "away"
@@ -2129,7 +2141,7 @@ class User < ActiveRecord::Base
   def test_mode?
     # when user is not part of safety_care
     # and all caregivers are in away mode
-    test_mode # self.is_not_halouser_of?(Group.safety_care) && (caregivers.all? {|cg| !cg.active_for?(self) })
+    test_mode == true # self.is_not_halouser_of?(Group.safety_care) && (caregivers.all? {|cg| !cg.active_for?(self) })
   end
 
   def toggle_test_mode

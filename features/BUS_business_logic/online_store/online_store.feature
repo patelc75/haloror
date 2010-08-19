@@ -191,6 +191,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Continue"
     And I press "Place Order"
     And I go to the online store
+    And I choose "product_complete"
     And I fill the test user for online store
     And I fill the credit card details for online store
     And I fill in "Card number" with "4222222222222"
