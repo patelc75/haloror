@@ -23,17 +23,17 @@ Feature: Online store group
     And I should not see "group2"
 
   # https://redmine.corp.halomonitor.com/issues/3170
-  # Scenario: Order has an associated group when completed by authenticated user
-  #   Given I am an authenticated user
-  #   And user "demo" has "sales" role for group "group1"
-  #   When I go to the online store
-  #   And I select "group1" from "Group"
-  #   And I choose "product_complete"
-  #   And I fill the shipping details for online store
-  #   And I fill the credit card details for online store
-  #   And I check "Same as shipping"
-  #   And I press "Continue"
-  #   And I press "Place Order"
-  #   And I follow "Skip for later"
-  #   Then page content should have "Thank you"
-  #   And last order should be associated to "group1" group
+  Scenario: Order has an associated group when completed by authenticated user
+    Given I am an authenticated user
+    And user "demo" has "sales" role for group "group1"
+    When I go to the online store
+    And I select "group1" from "Group"
+    And I choose "product_complete"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "Same as shipping"
+    And I press "Continue"
+    And I press "Place Order"
+    And I follow "Skip for later"
+    Then page content should have "Thank you"
+    And last order should be associated to "group1" group

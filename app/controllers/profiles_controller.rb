@@ -221,7 +221,6 @@ get_caregivers(current_user)
             if((current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)) and user.is_halouser?)
               # https://redmine.corp.halomonitor.com/issues/3016
               # WARNING: DRYed code. needs more testing than just this ticket
-              debugger
               user.opt_out_call_center(!params[:opt_out_call_center].blank?) # check box is submitted only when selected
               #
               # CHANGED: old code

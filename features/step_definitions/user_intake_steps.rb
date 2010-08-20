@@ -68,6 +68,17 @@ When /^I fill the (.+) details for user intake form$/ do |which|
   end
 end
 
+When /^user intake with kit serial "([^"]*)" is not submitted$/ do |kit_serial|
+  ui = UserIntake.find_by_kit_serial_number( kit_serial)
+  ui.should_not be_blank
+  
+  ui.submitted_at = nil
+  ui.senior.status = nil
+  ui.save
+  ui.senior.save
+  ui.senior.status.should be_blank
+end
+
 Then /^last user intake should have an? (.+) stamp$/ do |which|
   (ui = UserIntake.last).should_not be_blank
   case which

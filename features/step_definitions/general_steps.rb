@@ -118,6 +118,12 @@ When /^I (edit|delete|show) the (\d+)(?:st|nd|rd|th) (.+)$/ do |action, pos, mod
   end
 end
 
+When /^I follow "([^"]*)" in the (\d+)(?:st|nd|rd|th) row$/ do |action, pos|
+  within("table tr:nth-child(#{pos.to_i+1})") do
+    click_link action
+  end
+end
+
 When /^(?:|I )visit "([^\"]*)"$/ do |path|
   visit path
 end
@@ -183,9 +189,13 @@ Then /^page should have a dropdown for "([^\"]*)"$/ do |data_set|
   end
 end
 
-Then /^the (\d+)(?:st|nd|rd|th) row should contain "([^\"]*)"$/ do |pos, label|
+Then /^the (\d+)(?:st|nd|rd|th) row (should|should not) contain "([^\"]*)"$/ do |pos, state, label|
   within("table tr:nth-child(#{pos.to_i+1})") do |content|
-    content.should contain(label)
+    if state == 'should'
+      content.should contain(label)
+    else
+      content.should_not contain(label)
+    end
   end
 end
 

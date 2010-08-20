@@ -1,4 +1,5 @@
 require 'digest/sha1'
+
 class User < ActiveRecord::Base
   include UtilityHelper
   # IMPORTANT -----------------
@@ -122,7 +123,7 @@ class User < ActiveRecord::Base
   #validates_presence_of     :email
   #validates_presence_of     :serial_number
   validates_confirmation_of :password,                   :if => :password_required?
-  validates_format_of       :email, :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'must be valid', :if => :need_validation
+  validates_format_of       :email, :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'must be valid', :unless => :skip_validation
   validates_length_of       :email,    :within => 3..100, :unless => :skip_validation
   validates_length_of       :login,    :within => 3..40, :if => :password_required?
   validates_length_of       :password, :within => 4..40, :if => :password_required?
@@ -137,7 +138,245 @@ class User < ActiveRecord::Base
   
   named_scope :search_by_login_or_profile_name, lambda {|arg| query = "%#{arg}%"; {:include => :profile, :conditions => ["users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", query, query, query]}}
   named_scope :with_status, lambda {|*arg| {:conditions => {:status => arg.flatten.first} }}
+
+  # -------------- class methods ----------------------------
   
+  # shift status column to the next business logical status
+  def self.shift_to_next_status( id, message = nil, who_updated = nil)
+    # this statement works like this;
+    # * fetch status.to_s, therefore converting nil to ''
+    # * fetch array of status values STATUS[0..4] which is :pending .. :installed
+    # * get the index in the array, for the current status, switch to next
+    # * do not change status value when index is not correctly found
+    unless ( user = User.find_by_id( id) ).blank?
+      user.status = STATUS[ user.next_status_index] # , :updated_by => who_updated
+      # status = STATUS[ next_status_index ] unless next_status_index.blank?
+      # updated_by = who_updated
+      # self.send( :update_without_callbacks) # WARNING: it may not fire certain AR events
+      # 
+      # logic of the block below is same as above line of statement. just a bit differently written
+      #
+      # status = case status.to_s # nil will return blank string
+      # when STATUS[:pending] ; STATUS[:approval_pending]
+      # when STATUS[:approval_pending] ; STATUS[:install_pending]
+      # when STATUS[:install_pending] ; STATUS[:installed]
+      # end
+      #
+      # create status row in triage_audit_log
+      options = { :status => user.status, :updated_by => who_updated,
+        :description => "Status shifted from [#{user.status_was}] to [#{user.status}]" }
+      options[:description] += ", trigger: #{message}" unless message.blank?
+      
+      user.save
+      user.create_triage_audit_log( options)
+    end
+  end
+
+  def self.halousers
+    role_ids = Role.find_all_by_name('halouser').collect(&:id).compact.uniq
+    all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
+  end
+
+  def self.count_with_status(status = nil)
+    count( :conditions => {:status => status.to_s} )
+  end
+
+  # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
+  def self.authenticate(login, password)
+    u = find :first, :conditions => ['login = ? and activated_at IS NOT NULL', login] # need to get the salt
+    u && u.authenticated?(password) ? u : nil
+  end
+  
+  # Encrypts some data with the salt.
+  def self.encrypt(password, salt)
+    Digest::SHA1.hexdigest("--#{salt}--#{password}--")
+  end
+
+  def self.halo_administrators
+    admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'administrator']
+    halo_group = Group.find_by_name('halo')
+    adms = []
+    admins.each do |admin|
+      if admin.is_admin_of? halo_group
+        adms << admin
+      end
+    end
+    admins = adms
+    return admins
+  end
+  
+  def self.super_admins
+    admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'super_admin']
+    return admins
+  end
+  def self.administrators
+    admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'administrator']
+    return admins
+  end
+  
+  def self.halousers
+    halousers = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'halouser']
+    return halousers
+  end
+  def self.active_operators
+    os = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
+    os2 = []
+    os.each do |operator|
+      role = operator.roles_user_by_role_name('operator')
+      opt = role.roles_users_option
+      if opt.blank?
+        opt = RolesUsersOption.new(:roles_user_id => role.id, :active => true, :removed => false)
+        opt.save!
+        os2 << operator
+      elsif !opt.removed && opt.active
+        os2 << operator
+      end
+    end
+    return os2
+  end
+  def self.operators
+    os = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
+    os2 = []
+    os.each do |operator|
+      role = operator.roles_user_by_role_name('operator')
+      opt = role.roles_users_option
+      if opt.blank?
+        opt = RolesUsersOption.new(:roles_user_id => role.id, :active => true, :removed => false)
+        opt.save!
+        os2 << operator
+      elsif !opt.removed
+        os2 << operator
+      end
+    end
+    return os2
+  end
+
+  def self.halo_operators
+    operators = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
+    halo_group = Group.find_by_name('halo')
+    ops = []
+    operators.each do |operator|
+      if operator.is_operator_of? halo_group
+        ops << operator
+      end
+    end
+    operators = ops
+    return operators
+  end
+  
+  # email = caregiver email
+  # seniod_id = senior id
+  # return variable = caregiver object
+  def self.populate_caregiver(email,senior_id=nil, position = nil,login = nil,profile_hash = nil)#, roles_users_hash = {})
+    existing_user = User.find_by_email(email)
+    if !login.nil? and login != ""
+      @user = User.find_by_login(login)
+      @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+    elsif !existing_user.nil? 
+      @user = existing_user
+      @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+    else
+      @user = User.new
+      @user.email = email
+    end
+    
+    if !@user.email.blank?
+      @user.is_new_caregiver = true
+      @user[:is_caregiver] = true
+      @user.save!
+
+      if @user.profile.blank?
+        if profile_hash.blank?
+          profile = Profile.new(:user_id => @user.id)
+        else
+          if profile_hash.is_a?( Profile)
+            profile = profile_hash # its Profile instance already
+          elsif profile_hash.is_a?( Hash)
+            profile = Profile.new(profile_hash)
+          end
+        end
+        profile[:is_new_caregiver] = true
+        if profile.valid? && profile.save!
+          @user.profile = profile
+        end
+      end
+      senior = User.find(senior_id)
+
+      if position.blank?
+        position = self.get_max_caregiver_position(senior)
+      end
+      
+      role = @user.has_role 'caregiver', senior #if 'caregiver' role already exists, it will return nil
+      
+      if !role.nil? #if role.nil? then the roles_user does not exist already
+        @roles_user = senior.roles_user_by_caregiver(@user)
+
+        self.update_from_position(position, @roles_user.role_id, @user.id)
+        #enable_by_default(@roles_user)      
+        RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0)#, :email_active => (roles_users_hash["email_active"] == "1"), :is_keyholder => (roles_users_hash["is_keyholder"] == "1"))
+      end
+      UserMailer.deliver_caregiver_email(@user, senior)
+    end
+    @user
+  end
+  
+  def self.resend_mail(id,senior)
+    @user = User.find(id)
+    @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+    @user.save
+    @senior = User.find(senior)
+    UserMailer.deliver_caregiver_email(@user, @senior)
+  end
+  
+  def self.get_max_caregiver_position(user)
+    #get_caregivers(user)
+    #@caregivers.size + 1  #the old method would not work if a position num was skipped
+    max_position = 1
+    user.caregivers.each do |caregiver|
+      roles_user = user.roles_user_by_caregiver(caregiver)
+      if opts = roles_user.roles_users_option
+        if opts.position >= max_position
+          max_position = opts.position + 1
+        end
+      end
+    end
+    return max_position
+  end
+  
+  def self.update_from_position(position, roles_user_id, user_id)
+    caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and roles_user_id = #{roles_user_id}")
+    
+    caregivers.each do |caregiver|
+      caregiver.position+=1
+      caregiver.save
+    end
+  end
+
+  def self.create_operator(user_params, profile_params)
+    ems_group = Group.find_by_name('EMS')
+    login = user_params[:login]
+    user = User.find_by_login(login)
+    unless user
+      user = User.new(user_params)
+      user.save!
+      profile = Profile.new(profile_params)
+      profile.user_id = user.id
+      profile.save!
+      user.activate
+      user.is_operator_of ems_group
+      user.save!    
+    end
+  end
+
+  # ---------------------------- instance methods ------------------------------
+  
+  def next_status_index
+    keys = [ :pending, :approval_pending, :install_pending, :bill_pending, :installed, :test, :overdue]
+    values = [ "", "Ready for Approval", "Ready to Install", "Ready to Bill", "Installed", "Test Mode", "Install Overdue"]
+    index = ( values.index( status.to_s) || -1 )
+    keys[ index + 1]
+  end
+
   def after_initialize
     self.need_validation = true
     # example:
@@ -289,34 +528,7 @@ class User < ActiveRecord::Base
   end
 
   # ------------------ more methods
-  
-  # shift status column to the next business logical status
-  def shift_to_next_status( who_updated = nil, message = nil)
-    # this statement works like this;
-    # * fetch status.to_s, therefore converting nil to ''
-    # * fetch array of status values STATUS[0..4] which is :pending .. :installed
-    # * get the index in the array, for the current status, switch to next
-    # * do not change status value when index is not correctly found
-    status = STATUS[ STATUS[0..4].index( status.to_s ) ] unless STATUS[0..4].index( status.to_s).blank?
-    updated_by = who_updated
-    # 
-    # logic of the block below is same as above line of statement. just a bit differently written
-    #
-    # status = case status.to_s # nil will return blank string
-    # when STATUS[:pending] ; STATUS[:approval_pending]
-    # when STATUS[:approval_pending] ; STATUS[:install_pending]
-    # when STATUS[:install_pending] ; STATUS[:installed]
-    # end
-    #
-    # create status row in triage_audit_log
-    if status_changed?
-      options = { :status => status, :updated_by => updated_by, 
-        :description => "Status shifted from [#{status_was}] to [#{status}]" }
-      options[:description] += ", trigger: #{message}" unless message.blank?
-      add_triage_note( options)
-    end
-  end
-  
+    
   # when was the device successfully installed for this user
   #   * check when "Installed" status first occured for this user
   #   * and so on...
@@ -386,11 +598,6 @@ class User < ActiveRecord::Base
     triage_audit_logs.create( options.merge( args))
   end
   
-  def self.halousers
-    role_ids = Role.find_all_by_name('halouser').collect(&:id).compact.uniq
-    all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
-  end
-
   # check if dial_up_numbers are have "Ok" status for the given device
   # * mgmt_cmd row found for device having numbers (identified by cmd_type == dial_up_num_glob_prim)
   # * all 4 numbers are present
@@ -909,21 +1116,6 @@ class User < ActiveRecord::Base
     # existing record will have data value in table column
   end
   
-  def self.count_with_status(status = nil)
-    count( :conditions => {:status => status.to_s} )
-  end
-
-  # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
-  def self.authenticate(login, password)
-    u = find :first, :conditions => ['login = ? and activated_at IS NOT NULL', login] # need to get the salt
-    u && u.authenticated?(password) ? u : nil
-  end
-  
-  # Encrypts some data with the salt.
-  def self.encrypt(password, salt)
-    Digest::SHA1.hexdigest("--#{salt}--#{password}--")
-  end
-  
   # Encrypts the password with the user salt
   def encrypt(password)
     self.class.encrypt(password, salt)
@@ -1248,78 +1440,6 @@ class User < ActiveRecord::Base
     return false
   end
   
-  def self.halo_operators
-    operators = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
-    halo_group = Group.find_by_name('halo')
-    ops = []
-    operators.each do |operator|
-      if operator.is_operator_of? halo_group
-        ops << operator
-      end
-    end
-    operators = ops
-    return operators
-  end
-  
-  def self.halo_administrators
-    admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'administrator']
-    halo_group = Group.find_by_name('halo')
-    adms = []
-    admins.each do |admin|
-      if admin.is_admin_of? halo_group
-        adms << admin
-      end
-    end
-    admins = adms
-    return admins
-  end
-  
-  def self.super_admins
-    admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'super_admin']
-    return admins
-  end
-  def self.administrators
-    admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'administrator']
-    return admins
-  end
-  
-  def self.halousers
-    halousers = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'halouser']
-    return halousers
-  end
-  def self.active_operators
-    os = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
-    os2 = []
-    os.each do |operator|
-      role = operator.roles_user_by_role_name('operator')
-      opt = role.roles_users_option
-      if opt.blank?
-        opt = RolesUsersOption.new(:roles_user_id => role.id, :active => true, :removed => false)
-        opt.save!
-        os2 << operator
-      elsif !opt.removed && opt.active
-        os2 << operator
-      end
-    end
-    return os2
-  end
-  def self.operators
-    os = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
-    os2 = []
-    os.each do |operator|
-      role = operator.roles_user_by_role_name('operator')
-      opt = role.roles_users_option
-      if opt.blank?
-        opt = RolesUsersOption.new(:roles_user_id => role.id, :active => true, :removed => false)
-        opt.save!
-        os2 << operator
-      elsif !opt.removed
-        os2 << operator
-      end
-    end
-    return os2
-  end
-  
   def name
     (profile.blank? ? (login.blank? ? email : login) : [profile.first_name, profile.last_name].join(' '))
     # if(profile and !profile.last_name.blank? and !profile.first_name.blank?)
@@ -1471,94 +1591,6 @@ class User < ActiveRecord::Base
         script = scripts[key]
         return script
   end 
-  
-  # email = caregiver email
-  # seniod_id = senior id
-  # return variable = caregiver object
-  def self.populate_caregiver(email,senior_id=nil, position = nil,login = nil,profile_hash = nil)#, roles_users_hash = {})
-    existing_user = User.find_by_email(email)
-    if !login.nil? and login != ""
-      @user = User.find_by_login(login)
-      @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
-    elsif !existing_user.nil? 
-      @user = existing_user
-      @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
-    else
-      @user = User.new
-      @user.email = email
-    end
-    
-    if !@user.email.blank?
-      @user.is_new_caregiver = true
-      @user[:is_caregiver] = true
-      @user.save!
-
-      if @user.profile.blank?
-        if profile_hash.blank?
-          profile = Profile.new(:user_id => @user.id)
-        else
-          if profile_hash.is_a?( Profile)
-            profile = profile_hash # its Profile instance already
-          elsif profile_hash.is_a?( Hash)
-            profile = Profile.new(profile_hash)
-          end
-        end
-        profile[:is_new_caregiver] = true
-        if profile.valid? && profile.save!
-          @user.profile = profile
-        end
-      end
-      senior = User.find(senior_id)
-
-      if position.blank?
-        position = self.get_max_caregiver_position(senior)
-      end
-      
-      role = @user.has_role 'caregiver', senior #if 'caregiver' role already exists, it will return nil
-      
-      if !role.nil? #if role.nil? then the roles_user does not exist already
-        @roles_user = senior.roles_user_by_caregiver(@user)
-
-        self.update_from_position(position, @roles_user.role_id, @user.id)
-        #enable_by_default(@roles_user)      
-        RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0)#, :email_active => (roles_users_hash["email_active"] == "1"), :is_keyholder => (roles_users_hash["is_keyholder"] == "1"))
-      end
-      UserMailer.deliver_caregiver_email(@user, senior)
-    end
-    @user
-  end
-  
-  def self.resend_mail(id,senior)
-    @user = User.find(id)
-    @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
-    @user.save
-    @senior = User.find(senior)
-    UserMailer.deliver_caregiver_email(@user, @senior)
-  end
-  
-  def self.get_max_caregiver_position(user)
-    #get_caregivers(user)
-    #@caregivers.size + 1  #the old method would not work if a position num was skipped
-    max_position = 1
-    user.caregivers.each do |caregiver|
-      roles_user = user.roles_user_by_caregiver(caregiver)
-      if opts = roles_user.roles_users_option
-        if opts.position >= max_position
-          max_position = opts.position + 1
-        end
-      end
-    end
-    return max_position
-  end
-  
-  def self.update_from_position(position, roles_user_id, user_id)
-    caregivers = RolesUsersOption.find(:all, :conditions => "position >= #{position} and roles_user_id = #{roles_user_id}")
-    
-    caregivers.each do |caregiver|
-      caregiver.position+=1
-      caregiver.save
-    end
-  end
   
   # https://redmine.corp.halomonitor.com/issues/2581
   # FIXME:
@@ -2070,21 +2102,6 @@ class User < ActiveRecord::Base
     end
     return ''
   end
-  def self.create_operator(user_params, profile_params)
-    ems_group = Group.find_by_name('EMS')
-    login = user_params[:login]
-    user = User.find_by_login(login)
-    unless user
-      user = User.new(user_params)
-      user.save!
-      profile = Profile.new(profile_params)
-      profile.user_id = user.id
-      profile.save!
-      user.activate
-      user.is_operator_of ems_group
-      user.save!    
-    end
-  end
   
   # we need this method because we do not want to get "make_activation_code" public
   def make_activation_pending
@@ -2184,6 +2201,7 @@ class User < ActiveRecord::Base
     devices.each {|e| }
   end
   
+
   protected # ---------------------------------------------
   
   # before filter
@@ -2226,8 +2244,9 @@ class User < ActiveRecord::Base
     profile.blank? ? false : (profile.cell_phone_exists? && !profile.carrier.blank?)
   end
   
+
   private # ------------------------------ private methods
-  
+
   def skip_associations_validation
     self.profile.skip_validation = skip_validation unless profile.blank?
   end

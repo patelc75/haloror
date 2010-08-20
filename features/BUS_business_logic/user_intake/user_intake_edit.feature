@@ -19,23 +19,25 @@ Feature: Edit user intake
   # #    This includes all associated models like senior, subscriber, ... and their profiles
   # # 2. Emails for installation or activation shouldnot be fired when user intake is updated
   # #    These emails trigger when user intake is first created
-  # Scenario: Editing a user intake should show edit view. Does not trigger emails again
-  #   Given the following user intakes:
-  #     | kit_serial_number | submitted_at |
-  #     | 1122334455        |              |
-  #   And Email dispatch queue is empty
-  #   When I edit the 1st user intake
-  #   And I fill in "user_intake_kit_serial_number" with "9876543210123456789"
-  #   And I press "Submit"
-  #   Then I should see "9876543210123456789"
-  #   And no email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
+  Scenario: Editing a user intake should show edit view. Does not trigger emails again
+    Given the following user intakes:
+      | kit_serial_number | submitted_at |
+      | 1122334455        |              |
+    And Email dispatch queue is empty
+    When I edit the 1st user intake
+    And I fill in "user_intake_kit_serial_number" with "9876543210123456789"
+    And I press "Submit"
+    Then I should see "9876543210123456789"
+    And no email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  # Scenario: User Intake locks on Submit
-  #   Given the following user intakes:
-  #     | kit_serial_number | submitted_at |
-  #     | 1122334455        |              |
-  #   When I edit the 1st user intake
-  #   And I press "Submit"
-  #   And I am listing user intakes
-  #   Then the 1st row should contain "Show"
+  Scenario: User Intake locks on Submit
+    Given the following user intakes:
+      | kit_serial_number | submitted_at |
+      | 1122334455        |              |
+    When user intake with kit serial "1122334455" is not submitted
+    And I am listing user intakes
+    And I follow "edit_link" in the 1st row
+    And I press "Approve"
+    And I am listing user intakes
+    Then the 1st row should not contain "Not Submitted"

@@ -24,55 +24,55 @@ Feature: User intake additions
     And the product catalog exists
   
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  # @wip
-  # Scenario: fields visible for senior
-  #   When I create a new user_intake
-  #   Then I should see "Cross St" for "senior_profile"
-  #   And I should not see "Cross St" for "senior_profile"
-  #   And I should see "VoIP (Voice over IP) phone?" for "senior_profile"
-  #   And page content should have "I agree to the terms, you acknowledge that you are, Halo Subscriber Agreement"
+  @wip
+  Scenario: fields visible for senior
+    When I create a new user_intake
+    Then I should see "Cross St" for "senior_profile"
+    And I should not see "Cross St" for "senior_profile"
+    And I should see "VoIP (Voice over IP) phone?" for "senior_profile"
+    And page content should have "I agree to the terms, you acknowledge that you are, Halo Subscriber Agreement"
   
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  # Scenario: Auto enable credit card radio button
-  #   When I choose "product_complete"
-  #   And I fill the shipping details for online store
-  #   And I fill the credit card details for online store
-  #   And I check "Same as shipping"
-  #   And I press "Continue"
-  #   And I press "Place Order"
-  #   And I follow "Skip for later"
-  #   And I edit the last user intake
-  #   Then "card" should be enabled for subscriber
-  #   And "created_by" for last user_intake should be assigned
+  Scenario: Auto enable credit card radio button
+    When I choose "product_complete"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "Same as shipping"
+    And I press "Continue"
+    And I press "Place Order"
+    And I follow "Skip for later"
+    And I edit the last user intake
+    Then "card" should be enabled for subscriber
+    And "created_by" for last user_intake should be assigned
   
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  # Scenario: User Intake List updates
-  #   When I am listing user intakes
-  #   Then I should see "Subscription Agreement"
+  Scenario: User Intake List updates
+    When I am listing user intakes
+    Then I should see "Subscription Agreement"
   
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  # Scenario: Group dropdown to shortlist user intake list
-  #   Given the following user intakes:
-  #     | kit_serial_number | submitted_at |
-  #     | 1122334455        |              |
-  #   When I am listing user intakes
-  #   And I select "group1" from "Group"
-  #   Then I should see "1122334455"
+  Scenario: Group dropdown to shortlist user intake list
+    Given the following user intakes:
+      | kit_serial_number | submitted_at |
+      | 1122334455        |              |
+    When I am listing user intakes
+    And I select "group1" from "Group"
+    Then I should see "1122334455"
   
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  # Scenario: Email to safety_care
-  #   When I am listing user intakes
-  #   And I press "email_safety_care"
-  #   And 1 email to "safety_care" with subject "caregiver details" should be sent for delivery
+  Scenario: Email to safety_care
+    When I am listing user intakes
+    And I press "email_safety_care"
+    And 1 email to "safety_care" with subject "caregiver details" should be sent for delivery
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  # Scenario: Caregivers are already activated from online store
-  #   When I choose "product_complete"
-  #   And I fill the shipping details for online store
-  #   And I fill the credit card details for online store
-  #   And I check "Same as shipping"
-  #   And I press "Continue"
-  #   And I press "Place Order"
-  #   And I follow "Skip for later"
-  #   Then caregivers of last order should be activated
+  Scenario: Caregivers are already activated from online store
+    When I choose "product_complete"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "Same as shipping"
+    And I press "Continue"
+    And I press "Place Order"
+    And I follow "Skip for later"
+    Then caregivers of last order should be activated
     

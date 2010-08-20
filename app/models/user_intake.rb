@@ -72,7 +72,9 @@ class UserIntake < ActiveRecord::Base
     (1..3).each do |index|
       self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
       bool = self.send("no_caregiver_#{index}".to_sym)
-      self.send("no_caregiver_#{index}=".to_sym, (bool.blank? || (bool == "1")))
+      #
+      # for any new_record in memory, no_caregiver_x must be "on"
+      self.send("no_caregiver_#{index}=".to_sym, (bool.blank? || self.new_record? || (bool == "1")))
     end
     build_associations
   end
@@ -83,7 +85,7 @@ class UserIntake < ActiveRecord::Base
     # skip_validation decides if "save" was hit instead of "submit"
     self.locked = (!skip_validation && valid?)
     # new logic. considers all status values as defined in STATUS
-    locked? and !senior.blank? and senior.shift_to_next_status( updated_by, "user intake")
+    locked? and !senior.blank? and User.shift_to_next_status( senior.id, "user intake", updated_by)
     # old logic. just checking for approval_pending
     # self.status = STATUS[:approval_pending] if (locked && status.blank?)
     #
@@ -614,7 +616,9 @@ class UserIntake < ActiveRecord::Base
         if (user = self.send("#{user_type}".to_sym))
           self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
           bool = self.send("no_caregiver_#{index}".to_sym)
-          self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || bool == "1"))
+          #
+          # for any new_record in memory, no_caregiver_x must be "on"
+          self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || self.new_record? || bool == "1"))
         end
       end
     end
@@ -639,7 +643,7 @@ class UserIntake < ActiveRecord::Base
   def autofill_login_details(user_type = "")
     unless user_type.blank?
       user = self.send("#{user_type}") # local copy, to keep code clean
-      if !user.blank? && user.login.blank?
+      if user && user.login.blank? && !user.email.blank? # !user.blank? && user.login.blank?
         hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
         # only when user_type is not nil, but login is
         user.send("login=".to_sym, hex)
