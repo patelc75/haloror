@@ -7,7 +7,7 @@ Given /^I have a (saved|complete|non-agreed) user intake$/ do |state|
     # for "saved", also nullify legal_agreement_ and print flags
     fields = ([:legal_agreement_at, :paper_copy_at] + (state == "saved" ? [:submitted_at] : []))
     fields.each {|field| ui.send("#{field}=", nil) }
-    ui.send(:update_without_callbacks) # cannit "save" here
+    ui.send(:update_without_callbacks) # cannot ui.save
   end
 end
 

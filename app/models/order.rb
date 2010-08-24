@@ -239,7 +239,7 @@ class Order < ActiveRecord::Base
   def purchase_successful?
     # for existing order, check the stored values from gateway responses
     # this works for new_record? also because the responses would be blank
-    payment_gateway_responses.purchase.successful # blank = false, when_found = true
+    !payment_gateway_responses.purchase.successful.blank? # blank = false, when_found = true
     # !payment_gateway_responses.blank? && payment_gateway_responses.all?(&:success)
   end
   
@@ -247,7 +247,7 @@ class Order < ActiveRecord::Base
   #   business logic updated to charge credit card on clicking credit_card icon in user intake list, after successful installation
   #   this will verify if recurring charges were applied?
   def subscription_successful?
-    payment_gateway_responses.subscription.successful # row found = true, nil = false
+    !payment_gateway_responses.subscription.successful.blank? # row found = true, nil = false
   end
   
   def charge_subscription

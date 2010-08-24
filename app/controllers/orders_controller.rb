@@ -54,8 +54,10 @@ class OrdersController < ApplicationController
       @confirmation = (@order.errors.count.zero? && !@product.blank? && !session[:order].blank?)
       #
       # https://redmine.corp.halomonitor.com/issues/2764
-      @complete_tariff = DeviceModel.complete_tariff(@order.coupon_code)
-      @clip_tariff = DeviceModel.clip_tariff(@order.coupon_code)
+      complete_temp = DeviceModel.complete_tariff(@order.coupon_code)
+      clip_temp = DeviceModel.clip_tariff(@order.coupon_code)
+      @complete_tariff = complete_temp unless complete_temp.blank?
+      @clip_tariff = clip_temp unless clip_temp.blank?
       
     else # store mode
       # back button needs this

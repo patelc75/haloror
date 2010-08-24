@@ -8,10 +8,15 @@ class UserAdminController < ApplicationController
     if current_user.is_super_admin?
     	@groups = Group.find(:all)
     else
-      gs = current_user.group_memberships
-      gs.each do |g|
-        @groups << g if(current_user.is_admin_of?(g))
-      end
+      # old logic
+      #
+      # gs = current_user.group_memberships
+      # gs.each do |g|
+      #   @groups << g if(current_user.is_admin_of?(g))
+      # end
+      #
+      # new logic
+      current_user.is_admin_of_what
     end
     
     

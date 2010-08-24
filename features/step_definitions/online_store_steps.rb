@@ -98,7 +98,7 @@ Then /^billing and shipping addresses should not be same$/ do
   ship.join.should_not == bill.join # just one field different will mean different address
 end
 
-Then /^the payment gateway response should have (\d+) logs$/ do |row_count|
+Then /^the payment gateway response should have (\d+) logs?$/ do |row_count|
   assert_equal row_count.to_i, PaymentGatewayResponse.count
 end
 

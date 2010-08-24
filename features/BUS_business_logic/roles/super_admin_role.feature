@@ -60,6 +60,7 @@ Feature: Super Admin roles
   Scenario: Create admin user
     Given user "super-admin-user" has "admin" roles for group "group1"
     And I am creating admin user
+    And debug
     When I select "group1" from "group"
     And I select "admin" from "role"
     And I fill in the following:

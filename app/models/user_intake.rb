@@ -72,10 +72,10 @@ class UserIntake < ActiveRecord::Base
     (1..3).each do |index|
       self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
       bool = self.send("no_caregiver_#{index}".to_sym)
-      # debugger
       #
       # for any new_record in memory, no_caregiver_x must be "on"
-      self.send("no_caregiver_#{index}=".to_sym, (bool.blank? || self.new_record? || (bool == "1")))
+      no_caregiver = (self.new_record? ? (bool != "0") : self.send("caregiver#{index}").blank?)
+      self.send("no_caregiver_#{index}=".to_sym, no_caregiver) # bool.blank? || 
     end
     build_associations
   end
@@ -179,7 +179,6 @@ class UserIntake < ActiveRecord::Base
       caregiver = self.send("caregiver#{index}".to_sym)
       unless caregiver.nil?
         if self.send("no_caregiver_#{index}".to_sym)
-          # debugger
           self.send("caregiver#{index}=".to_sym, nil) # when marked for no_caregiver_x, just remove the data
         else
           caregiver.collapse_associations
@@ -611,24 +610,34 @@ class UserIntake < ActiveRecord::Base
     end
   end
 
+  # TODO: needs refactoring. Only build the requested user type.
+  #   Optionally build all user types when no specific one is requested
   def build_user_type(user_type)
-    # instantiate the user type if not already exists
-    self.send("#{user_type}=".to_sym, User.new) if self.send("#{user_type}".to_sym).nil?
-    # roles_users_options for caregivers
-    # checkboxes for existence of caregivers
-    (1..3).each do |index|
-      if user_type == "caregiver#{index}"
-        if (user = self.send("#{user_type}".to_sym))
-          self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
-          bool = self.send("no_caregiver_#{index}".to_sym)
-          #
-          # for any new_record in memory, no_caregiver_x must be "on"
-          self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || self.new_record? || bool == "1"))
+    # * building users is only required for new_record
+    # * existing user_intake row will just load the caregiver, or set no_caregiver_x value
+    if self.new_record?
+      # instantiate the user type if not already exists
+      self.send("#{user_type}=".to_sym, User.new) if self.send("#{user_type}".to_sym).nil?
+      # roles_users_options for caregivers
+      # checkboxes for existence of caregivers
+      (1..3).each do |index|
+        if user_type == "caregiver#{index}"
+          if (user = self.send("#{user_type}".to_sym))
+            self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
+            bool = self.send("no_caregiver_#{index}".to_sym)
+            #
+            # for any new_record in memory, no_caregiver_x must be "on"
+            self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || self.new_record? || bool == "1"))
+          end
         end
       end
+      # build profile and other associations
+      self.send("#{user_type}".to_sym).send("build_associations".to_sym) unless self.send("#{user_type}".to_sym).nil?
+      
+    else
+      # existing user_intake row. just build the no_caregiver_x booleans
+      (1..3).each { |index| self.send(:"no_caregiver_#{index}=", self.send( :"caregiver#{index}").blank? ) }
     end
-    # build profile and other associations
-    self.send("#{user_type}".to_sym).send("build_associations".to_sym) unless self.send("#{user_type}".to_sym).nil?
   end
 
   def validate_user_type(user_type)

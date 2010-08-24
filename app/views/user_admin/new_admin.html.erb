@@ -1,5 +1,5 @@
-<% if @group %>
-  <% if @groups and @groups.length > 1%>
+<% if @groups %>
+  <% if @groups and @groups.length > 1 %>
 	<form id="group_form_id" action="/user_admin/new_admin" method="POST">
 		<% gs = ['Choose a Group']
 		   @groups.each do |g|

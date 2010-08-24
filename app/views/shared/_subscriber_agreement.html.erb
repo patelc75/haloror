@@ -185,7 +185,7 @@
       
       <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update', :redirect_hash => @redirect_hash} do |f| -%>
         <%= f.text_field :paper_copy_at, :value => Time.now.to_s, :class => "hidden" %>
-        <%= f.submit "Print", :disable_with => 'Printing...', :class => "button blue-button", :onclick => "window.print();" %>
+        <%= f.submit "Print", :disable_with => 'Printing...', :class => "button blue-button", :id => "user_intake_print", :onclick => "window.print();" %>
         
         <%= link_to 'Skip for later', url_for(@redirect_hash), :class => "button green-button" if @redirect_hash %>
       <% end -%>
@@ -193,7 +193,7 @@
       <% if @user_intake && @user_intake.can_sign_agreement?(current_user) %>
         <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update', :redirect_url => @redirect_url} do |f| -%>
           <%= f.text_field :legal_agreement_at, :value => Time.now.to_s, :class => "hidden" %>
-          <%= f.submit "Proceed", :class => "button green-button hidden", :onclick => "window.print();" %>
+          <%= f.submit "Proceed", :class => "button green-button hidden", :id => "user_intake_submit", :onclick => "window.print();" %>
         <% end -%>
       <% end %>
     </div>

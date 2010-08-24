@@ -16,6 +16,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Then page content should have "myHalo Complete, myHalo Clip, Pick a product, Billing and Shipping"
   
   # https://redmine.corp.halomonitor.com/issues/3170
+  # Wed Aug 25 01:27:32 IST 2010 : Subscriptions are not charged anymore at the time of purchase
   Scenario: Same as shipping copies shipping data to billing
     When I choose "product_complete"
     And I fill the shipping details for online store
@@ -25,7 +26,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     And I follow "Skip for later"
     Then page content should have "Thank you"
-    And the payment gateway response should have 2 logs
+    And the payment gateway response should have 1 log
     And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
   # https://redmine.corp.halomonitor.com/issues/3170
@@ -39,7 +40,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     And I follow "Skip for later"
     Then I should see "Thank you"
-    And the payment gateway response should have 2 logs
+    And the payment gateway response should have 1 log
     And billing and shipping addresses should not be same
     And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
@@ -113,7 +114,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     And I follow "Skip for later"
     Then page content should have "Thank you"
-    And the payment gateway response should have 2 logs
+    And the payment gateway response should have 1 log
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Upfront (one time) and recurring amounts
@@ -126,7 +127,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I follow "Skip for later"
     Then page content should have "Thank you"
     And the payment gateway should have log for 441 USD
-    And the payment gateway should have log for 59 USD
+    # And the payment gateway should have log for 59 USD
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Signup Installation and Order Summary emails delivery

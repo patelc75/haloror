@@ -82,7 +82,7 @@ Feature: User Intake Legal Agreement
     And I am authenticated as "senior" of last user intake
     And I view the last user intake
     And I check "userintake_agree"
-    And I press "I Agree"
+    And I press "user_intake_submit"
     Then last user intake should have an agreement stamp
 
   # https://redmine.corp.halomonitor.com/issues/3170
@@ -121,13 +121,16 @@ Feature: User Intake Legal Agreement
     Examples:
       | state      | text                      |
       | saved      | Halo Subscriber Agreement |
-      | non-agreed | HALO SUBSCRIBER AGREEMENT |
+      | non-agreed | Halo Subscriber Agreement |
+      | complete   | Halo Subscriber Agreement |
 
+  # TODO: Need more scenarios to cover the feature
+  Scenario: halouser, subscriber and other roles / edit and show / agreement pages
+  
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Show legal agreement after submitting user intake successfully, unless already agreed earlier
     Given I have a saved user intake
     When I edit the last user intake
-    And debug
     And I press "user_intake_submit"
     Then I should see "HALO SUBSCRIBER AGREEMENT"
     And I should not see "I Agree"

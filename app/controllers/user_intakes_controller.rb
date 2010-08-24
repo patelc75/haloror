@@ -81,7 +81,7 @@ class UserIntakesController < ApplicationController
     @user_intake = UserIntake.new(params[:user_intake])
     @user_intake.skip_validation = (params[:commit] == "Save") # just save without asking anything
     @groups = Group.for_user(current_user)
-    debugger
+
     respond_to do |format|
       if @user_intake.save
         [@user_intake.senior, @user_intake.subscriber].uniq.each(&:dispatch_emails) unless @user_intake.skip_validation # send emails
