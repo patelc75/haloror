@@ -72,6 +72,7 @@ class UserIntake < ActiveRecord::Base
     (1..3).each do |index|
       self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
       bool = self.send("no_caregiver_#{index}".to_sym)
+      # debugger
       #
       # for any new_record in memory, no_caregiver_x must be "on"
       self.send("no_caregiver_#{index}=".to_sym, (bool.blank? || self.new_record? || (bool == "1")))
@@ -171,10 +172,14 @@ class UserIntake < ActiveRecord::Base
       end
     end
 
+    # FIXME: TODO. look when other bugs are fixed
+    # association are collapsing ignoring the params
+    # need most close debugging. Not getting a clue for now.
     (1..3).each do |index|
       caregiver = self.send("caregiver#{index}".to_sym)
       unless caregiver.nil?
         if self.send("no_caregiver_#{index}".to_sym)
+          # debugger
           self.send("caregiver#{index}=".to_sym, nil) # when marked for no_caregiver_x, just remove the data
         else
           caregiver.collapse_associations

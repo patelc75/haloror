@@ -24,9 +24,11 @@ Feature: Edit user intake
       | kit_serial_number | submitted_at |
       | 1122334455        |              |
     And Email dispatch queue is empty
-    When I edit the 1st user intake
+    And user intake with kit serial "1122334455" is not submitted
+    And I am listing user intakes
+    And I follow "edit_link" in the 1st row
     And I fill in "user_intake_kit_serial_number" with "9876543210123456789"
-    And I press "Submit"
+    And I press "Approve"
     Then I should see "9876543210123456789"
     And no email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
 

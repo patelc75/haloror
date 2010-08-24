@@ -28,7 +28,7 @@ Feature: User Intake Legal Agreement
     And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I check "Same as User"
-    And I press "Submit"
+    And I press "user_intake_submit"
     Then page content should have "successfully created, HALO SUBSCRIBER AGREEMENT"
 
   # https://redmine.corp.halomonitor.com/issues/3170
@@ -40,7 +40,7 @@ Feature: User Intake Legal Agreement
     And I fill in "user_intake_subscriber_attributes_email" with "subscriber@example.com"
     And I select "verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
     And I uncheck "Same as User"
-    And I press "Submit"
+    And I press "user_intake_submit"
     And I logout
     And I am authenticated as "<user>" of last user intake
     And I view the last user intake
@@ -57,7 +57,7 @@ Feature: User Intake Legal Agreement
     And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I check "Same as User"
-    And I press "Submit"
+    And I press "user_intake_submit"
     Then page content should have "HALO SUBSCRIBER AGREEMENT"
     And I should not see "I Agree Terms and Conditions"
 
@@ -67,7 +67,7 @@ Feature: User Intake Legal Agreement
     And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I check "Same as User"
-    And I press "Submit"
+    And I press "user_intake_submit"
     And I press "Print"
     Then last user intake should have a print stamp
 
@@ -77,7 +77,7 @@ Feature: User Intake Legal Agreement
     And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I check "Same as User"
-    And I press "Submit"
+    And I press "user_intake_submit"
     And I logout
     And I am authenticated as "senior" of last user intake
     And I view the last user intake
@@ -127,7 +127,8 @@ Feature: User Intake Legal Agreement
   Scenario: Show legal agreement after submitting user intake successfully, unless already agreed earlier
     Given I have a saved user intake
     When I edit the last user intake
-    And I press "Submit"
+    And debug
+    And I press "user_intake_submit"
     Then I should see "HALO SUBSCRIBER AGREEMENT"
     And I should not see "I Agree"
   

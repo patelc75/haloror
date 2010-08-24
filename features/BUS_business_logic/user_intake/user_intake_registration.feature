@@ -37,7 +37,7 @@ Feature: Manage user_intakes
   Scenario: Submit new user_intake with billing same as user
     When I check "Same as User"
     And I uncheck "Add as #1 caregiver"
-    And I press "Submit"
+    And I press "user_intake_submit"
     Then profile "myfirstname mylastname" should have "halouser" role for group "halo_group"
     And profile "myfirstname mylastname" should have "subscriber" role for profile "myfirstname mylastname"
     And 1 email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
@@ -64,7 +64,7 @@ Feature: Manage user_intakes
       | user_intake_subscriber_attributes__profile_attributes_home_phone | 1-517-123-4567           |
       | user_intake_subscriber_attributes__profile_attributes_work_phone | 1-212-123-4567           |
       | user_intake_subscriber_attributes_email                          | cuc_sub_care@chirag.name |
-    And I press "Submit"
+    And I press "user_intake_submit"
     Then profile "myfirstname mylastname" should have "halouser" role for group "halo_group"
     And profile "subscriberfirstname subscriberlastname" should have "subscriber" role for profile "myfirstname mylastname"
     And profile "subscriberfirstname subscriberlastname" should have "caregiver" role for profile "myfirstname mylastname" with attributes:

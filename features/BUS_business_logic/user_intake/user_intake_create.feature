@@ -21,7 +21,7 @@ Feature: Create user intake
     And I check "user_intake_no_caregiver_3"
 
   Scenario: Submit. senior profile blank
-    And I press "Submit"
+    And I press "user_intake_submit"
     Then page content should have "Invalid user intake"
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
@@ -30,7 +30,7 @@ Feature: Create user intake
     And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I check "Same as User"
-    And I press "Submit"
+    And I press "user_intake_submit"
     Then page content should have "successfully created"
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
@@ -39,7 +39,7 @@ Feature: Create user intake
     And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I uncheck "Same as User"
-    And I press "Submit"
+    And I press "user_intake_submit"
     Then page content should have "Invalid user intake"
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
@@ -51,7 +51,7 @@ Feature: Create user intake
     And I fill the subscriber details for user intake form
     And I fill in "user_intake_subscriber_attributes_email" with "subscriber@example.com"
     And I select "verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
-    And I press "Submit"
+    And I press "user_intake_submit"
     Then page content should have "successfully created"
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
@@ -64,7 +64,7 @@ Feature: Create user intake
     And I fill in "user_intake_subscriber_attributes_email" with "subscriber@example.com"
     And I select "verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
     And I check "Add as #1 Caregiver"
-    And I press "Submit"
+    And I press "user_intake_submit"
     Then page content should have "successfully created"
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
@@ -78,7 +78,7 @@ Feature: Create user intake
     And I select "verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
     And I uncheck "Add as #1 Caregiver"
     And I uncheck "No Caregiver #1"
-    And I press "Submit"
+    And I press "user_intake_submit"
     Then page content should have "Invalid user intake"
     
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
@@ -95,7 +95,7 @@ Feature: Create user intake
     And I fill the caregiver1 details for user intake form
     And I fill in "user_intake_caregiver1_attributes_email" with "caregiver1@example.com"
     And I select "verizon" from "user_intake_caregiver1_attributes__profile_attributes_carrier_id"
-    And I press "Submit"
+    And I press "user_intake_submit"
     Then page content should have "successfully created"
     
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
@@ -120,5 +120,5 @@ Feature: Create user intake
     And I fill the caregiver3 details for user intake form
     And I fill in "user_intake_caregiver3_attributes_email" with "caregiver3@example.com"
     And I select "verizon" from "user_intake_caregiver3_attributes__profile_attributes_carrier_id"
-    And I press "Submit"
+    And I press "user_intake_submit"
     Then page content should have "successfully created"
