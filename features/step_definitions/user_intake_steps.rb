@@ -32,6 +32,14 @@ Given /^I am activating the "([^"]*)" of last user intake$/ do |user_type|
   visit activate_path(:activation_code => user.activation_code, :senior => user_intake.senior.id)
 end
 
+Given /^user intake "([^"]*)" belongs to group "([^"]*)"$/ do |kit_serial, group_name|
+  ui = UserIntake.find_by_kit_serial_number( kit_serial)
+  ui.should_not be_blank
+  
+  ui.group = Group.find_by_name( group_name)
+  ui.save
+end
+
 When /^I (view|edit) the last user intake$/ do |action|
   user_intake = UserIntake.last
   user_intake.should_not be_blank
@@ -87,4 +95,22 @@ Then /^last user intake should have an? (.+) stamp$/ do |which|
   when "agreement"
     ui.legal_agreement_at.should_not be_blank
   end
+end
+
+Then /^"([^"]*)" should be enabled for subscriber of user intake "([^"]*)"$/ do |col_name, kit_serial|
+  ui = UserIntake.find_by_kit_serial_number( kit_serial)
+  ui.should_not be_blank
+  
+  case col_name
+  when "card"
+    ui.subscriber.should_not be_blank
+    ui.credit_debit_card_proceessed.should_not be_blank
+  end
+end
+
+Then /^"([^"]*)" for user_intake "([^"]*)" should be assigned$/ do |col_name, kit_serial|
+  ui = UserIntake.find_by_kit_serial_number( kit_serial)
+  
+  ui.should_not be_blank
+  ui.send( col_name.to_sym).should_not be_blank
 end

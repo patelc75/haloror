@@ -207,3 +207,14 @@ Feature: Online (D)irect (T)o (C)ustomer store
 
   Scenario: Credit card is not charged at the time of online order
   
+  # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
+  Scenario: Caregivers are already activated from online store
+    When I choose "product_complete"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "Same as shipping"
+    And I press "Continue"
+    And I press "Place Order"
+    And I follow "Skip for later"
+    Then caregivers of last order should be activated
+  

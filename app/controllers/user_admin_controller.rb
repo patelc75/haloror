@@ -4,20 +4,23 @@ class UserAdminController < ApplicationController
   before_filter :authenticate_admin_sales?, :only => ['new_admin', 'create']
      
   def new_admin
-    @groups = []
-    if current_user.is_super_admin?
-    	@groups = Group.find(:all)
-    else
-      # old logic
-      #
-      # gs = current_user.group_memberships
-      # gs.each do |g|
-      #   @groups << g if(current_user.is_admin_of?(g))
-      # end
-      #
-      # new logic
-      current_user.is_admin_of_what
-    end
+    # * pick all groups for super admins
+    # * pick only selective groups for non-super-admin, where user is admin
+    @groups = ( current_user.is_super_admin? ? Group.find(:all) : current_user.is_admin_of_what )
+    # @groups = []
+    # if current_user.is_super_admin?
+    #   @groups = Group.find(:all)
+    # else
+    #   # old logic
+    #   #
+    #   # gs = current_user.group_memberships
+    #   # gs.each do |g|
+    #   #   @groups << g if(current_user.is_admin_of?(g))
+    #   # end
+    #   #
+    #   # new logic
+    #   @groups = current_user.is_admin_of_what
+    # end
     
     
     @group = nil

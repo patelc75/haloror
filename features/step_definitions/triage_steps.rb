@@ -67,7 +67,8 @@ Then /^I should see (.+) alert for "([^\"]*)"$/ do |alert, user_login|
   user = User.find_by_login(user_login)
   user.should_not be_blank
   
-  response.should have_tag("div[id=?]", "#{alert}_#{user.id}")
+  # statuses like "test mode" are also handled properly along with "normal", "abnormal" and so on
+  response.should have_tag("div[id=?]", "#{alert.downcase.gsub(' ','_')}_#{user.id}")
 end
 
 Then /^I should see (.+) icon for "([^\"]*)"$/ do |file_name, user_login|

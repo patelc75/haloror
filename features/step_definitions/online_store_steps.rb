@@ -133,3 +133,10 @@ Then /^last order should not have associated user intake$/ do
     assert_equal nil, Order.last.user_intake
   end
 end
+
+Then /^caregivers of last order should be activated$/ do
+  (order = Order.last).should_not be_blank
+  order.user_intake.should_not be_blank
+  order.user_intake.caregivers.each {|e| e.should be_activated }
+  
+end

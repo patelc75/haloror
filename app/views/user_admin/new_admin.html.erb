@@ -1,89 +1,87 @@
-<% if @groups %>
+<% if @group %>
   <% if @groups and @groups.length > 1 %>
-	<form id="group_form_id" action="/user_admin/new_admin" method="POST">
-		<% gs = ['Choose a Group']
-		   @groups.each do |g|
-			 gs << g.name
-		   end %>
-<label for="group">Select Group</label>:  
-<%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group), {:onchange => "$('group_form_id').submit();"}%>
-	</form>
-	<br>
+    <form id="group_form_id" action="/user_admin/new_admin" method="POST">
+      <% gs = ['Choose a Group']
+      @groups.each do |g|
+        gs << g.name
+      end %>
+      <label for="group">Select Group</label>:  
+      <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group), {:onchange => "$('group_form_id').submit();"}%>
+    </form>
+    <br />
+    
   <% elsif @groups and @groups.length == 1%>
-  	<input type="hidden" name="group" value="<%= @groups[0].name%>">
-<% end%>
-<div id="call_list-col">
-	<div id="call_list-col-header">
-		User Signup
-	</div>
-  <div class="content">
-	
-    	<div id="errors">
-  			<% if flash[:warning] %>
-  			  <span style="font-size: 150%;">
-  			  The following error occurred:
-  			  <ul>
-  			  <li><%= flash[:warning]%></li>
-  			  </ul>
-  			<% end %>
-  			<% if @user.errors %>
-  			  <%= error_messages_for :user %>
-  			  <br>
-  			<% end %>
-  			<% if @profile.errors %>
-  			<%= error_messages_for :profile %>
-  			<% end %>
-  		</div>
+    <input type="hidden" name="group" value="<%= @groups[0].name%>">
+  <% end%>
 
-      <% form_tag :action => 'create' do -%>
+  <div id="call_list-col">
+    <div id="call_list-col-header">
+      User Signup
+    </div>
+    <div class="content">
+
+      <div id="errors">
+        <% if flash[:warning] %>
+        <span style="font-size: 150%;">
+          The following error occurred:
+          <ul>
+            <li><%= flash[:warning]%></li>
+          </ul>
+          <% end %>
+          <p><%= error_messages_for :user %></p>
+          <p><%= error_messages_for :profile %></p>
+        </div>
+
+        <% form_tag :action => 'create' do -%>
         <input type="hidden" name="group" value="<%= @group %>">
 
-	 <div id="device-table" class="table">
-	 	<div class="row">
-	 	  <div class="col-250" style="padding-left:20px">
-	 		<label for="role">Role</label>
-  		<br />
-  		<% gr = ['Choose a Role']
-  		   @group_roles.each do |r|
-  			 gr << r.name
-  		   end %>
-  		<%#= select_tag :role, options_for_select(gr.collect {|r| [r,r]}) %>
-  		<%= select_tag :role, "<option value='Choose a Role'>Choose a Role</option>" + options_for_select(@group_roles.map {|role| [role.name,role.id]}) %>
-  		<br />
-  		<br />
-		  </div>
-		  <div class="col-250">
-		    
-		    <p>
-          <label for="user_email">Email</label><br />
-          <%= text_field :user, :email, :size => 30 %>
-        </p>
-        
-		  	<%= render :partial => '/profiles/profile_top' %>
-		  </div>
-		  
-		  <div class="col-250">
-		  	<%= render :partial => '/profiles/profile_bottom' %>
-			<br />
-			<br />
-			<input name="commit" type="image" src="/images/subscribe.gif" id="subscribe"/>
-		  </div>
-		</div>
-	 </div>	
-        
-      <% end -%>
+        <div id="device-table" class="table">
+          <div class="row">
+            <div class="col-250" style="padding-left:20px">
+              <label for="role">Role</label>
+              <br />
+              <% gr = ['Choose a Role']
+              @group_roles.each do |r|
+                gr << r.name
+              end %>
+              <%#= select_tag :role, options_for_select(gr.collect {|r| [r,r]}) %>
+              <%= select_tag :role, "<option value='Choose a Role'>Choose a Role</option>" + options_for_select(@group_roles.map {|role| [role.name,role.id]}) %>
+              <br />
+              <br />
+            </div>
+            <div class="col-250">
+
+              <p>
+                <label for="user_email">Email</label><br />
+                <%= text_field :user, :email, :size => 30 %>
+              </p>
+
+              <%= render :partial => '/profiles/profile_top' %>
+            </div>
+
+            <div class="col-250">
+              <%= render :partial => '/profiles/profile_bottom' %>
+              <br />
+              <br />
+              <input name="commit" type="image" src="/images/subscribe.gif" id="subscribe"/>
+            </div>
+          </div>
+        </div>	
+
+        <% end -%>
+      </div>
     </div>
+    <div style="clear:both"></div>
+    <div id="call_list-col-footer"></div>
   </div>
-	<div style="clear:both"></div>
-	<div id="call_list-col-footer"></div>
-</div>
+  
 <% else %>
-	<form id="group_form_id" action="/user_admin/new_admin" method="POST">
-		<% gs = ['Choose a Group']
-		   @groups.each do |g|
-			 gs << g.name
-		   end %>
-Select Group:  
-<%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group), {:onchange => "$('group_form_id').submit();"}%>
-</form>
+  <form id="group_form_id" action="/user_admin/new_admin" method="POST">
+    <% gs = ['Choose a Group']
+    @groups.each do |g|
+      gs << g.name
+    end %>
+    Select Group:  
+    <%= select_tag 'group', options_for_select(gs.collect { |g| [g, g]}, @group), {:onchange => "$('group_form_id').submit();"}%>
+  </form>
 <% end  %>

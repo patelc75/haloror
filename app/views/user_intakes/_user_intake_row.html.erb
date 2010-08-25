@@ -1,4 +1,4 @@
-<tr class="<%= 'background-red' if !user_intake_row.senior.attributes_status_good? %>">
+<tr class="<%= 'background-red' unless user_intake_row.senior && user_intake_row.senior.attributes_status_good? %>">
   <td><%= check_box_tag "selected[#{user_intake_row.id}]" %></td>
   <td><%= link_to user_intake_row.id, user_intake_row %></td>
   <td>
@@ -8,8 +8,8 @@
       <%= link_to image_tag("email.png", :alt => "Send Email to SafetyCare again. Last: #{user_intake_row.emailed_on}", :title => "Send Email to SafetyCare again. Last: #{user_intake_row.emailed_on}"), :controller => 'users', :action => 'send_caregiver_details', :id => user_intake_row.senior.id unless user_intake_row.senior.blank? %>
     <% end %>
   </td>
-  <td><%= user_intake_row.senior.id %></td>
-  <td><%= user_intake_row.senior.name %></td>
+  <td><%= user_intake_row.senior.id rescue '?' %></td>
+  <td><%= user_intake_row.senior.name rescue '?' %></td>
   <td><%= user_intake_row.installation_datetime || image_tag('exclamation.png') %></td>
   <td>
     <% if user_intake_row.credit_debit_card_proceessed %>
@@ -45,24 +45,31 @@
     <% end %>
   </td>
   <td class="text-center">
-    <% if user_intake_row.senior.chest_strap %>
-      <%= "CS: "+ user_intake_row.senior.chest_strap.serial_number %>
+    <% if user_intake_row.senior.blank? %>
+      <%= image_tag('exclamation.png') %>
     <% else %>
-      <% if user_intake_row.senior.belt_clip %>
-        <%= "BC: "+ user_intake_row.senior.belt_clip.serial_number %>
+      <% if user_intake_row.senior.chest_strap %>
+        <%= "CS: "+ user_intake_row.senior.chest_strap.serial_number %>
       <% else %>
-        <%= image_tag('exclamation.png') %>
+        <% if user_intake_row.senior.belt_clip %>
+          <%= "BC: "+ user_intake_row.senior.belt_clip.serial_number %>
+        <% else %>
+          <%= image_tag('exclamation.png') %>
+        <% end %>
       <% end %>
     <% end %>
+    <br /><span class="tiny"><%= user_intake_row.kit_serial_number %></span>
   </td>
-  <td class="text-center"><%= user_intake_row.senior.gateway ? ("GW: "+ user_intake_row.senior.gateway.serial_number) : image_tag('exclamation.png') %></td>
+  <td class="text-center"><%= (user_intake_row.senior && user_intake_row.senior.gateway) ? ("GW: "+ user_intake_row.senior.gateway.serial_number) : image_tag('exclamation.png') %></td>
   <% if current_user.is_super_admin? %>
-    <td><%= link_to (user_intake_row.senior.call_center_account.blank? ? image_tag("warning_go.png") : user_intake_row.senior.call_center_account), {:controller => "user_intakes", :action => "safety_care_account_creation", :id => user_intake_row.id}  %></td>
+    <td><%= link_to ((user_intake_row.senior.blank? || user_intake_row.senior.call_center_account.blank?) ? image_tag("warning_go.png") : user_intake_row.senior.call_center_account), {:controller => "user_intakes", :action => "safety_care_account_creation", :id => user_intake_row.id}  %></td>
     <td><%= image_tag (user_intake_row.dial_up_numbers_ok? ? "tick.png" : "exclamation.png") %></td>
   <% end %>
   <td class="text-center">
-    <%= link_to ((user_intake_row.senior.status_index == :pending) ? 'Not Submitted' : user_intake_row.senior.status), ((user_intake_row.locked? && !current_user.is_super_admin?) ? user_intake_path(user_intake_row) : edit_user_intake_path(user_intake_row)), :class => "span-2 button small #{User::STATUS_COLOR[ (User::STATUS.index( user_intake_row.senior.status) || :pending) ]}-button", :id => "edit_link" %>
-    <%= "<br /><span class='timestamp'>#{user_intake_row.senior.status_timestamps(:installed)}</span>" unless user_intake_row.senior.status_timestamps(:installed).blank? %>
+    <% unless user_intake_row.senior.blank? %>
+      <%= link_to ((user_intake_row.senior.status_index == :pending) ? 'Not Submitted' : user_intake_row.senior.status), ((user_intake_row.locked? && !current_user.is_super_admin?) ? user_intake_path(user_intake_row) : edit_user_intake_path(user_intake_row)), :class => "span-2 button small #{User::STATUS_COLOR[ (User::STATUS.index( user_intake_row.senior.status) || :pending) ]}-button", :id => "edit_link" %>
+      <%= "<br /><span class='timestamp'>#{user_intake_row.senior.status_timestamps(:installed)}</span>" unless user_intake_row.senior.status_timestamps(:installed).blank? %>
+    <% end %>
   </td>
   <td><%= link_to image_tag( "note.png", :alt => "Notes", :title => "Notes"), { :controller => "triage_audit_logs", :id => user_intake_row.senior.id} if !user_intake_row.senior.blank? %></td>
   <td><%= link_to image_tag( "briefcase.png", :alt => "Audit", :title => "Audit" ), user_audits_path( user_intake_row.senior) %></td>

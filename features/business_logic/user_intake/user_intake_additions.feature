@@ -34,45 +34,35 @@ Feature: User intake additions
   
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Auto enable credit card radio button
-    When I choose "product_complete"
-    And I fill the shipping details for online store
-    And I fill the credit card details for online store
-    And I check "Same as shipping"
-    And I press "Continue"
-    And I press "Place Order"
-    And I follow "Skip for later"
-    And I edit the last user intake
-    Then "card" should be enabled for subscriber
-    And "created_by" for last user_intake should be assigned
+    Given the following user intakes:
+      | kit_serial_number | submitted_at |
+      | 1122334455        |              |
+    Then "card" should be enabled for subscriber of user intake "1122334455"
+    And "created_by" for user_intake "1122334455" should be assigned
   
-  # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  Scenario: User Intake List updates
-    When I am listing user intakes
-    Then I should see "Subscription Agreement"
+  # # What is this supposed to cover?
+  # # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
+  # Scenario: User Intake List updates
+  #   When I am listing user intakes
+  #   Then I should see "Subscription Agreement"
   
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Group dropdown to shortlist user intake list
     Given the following user intakes:
       | kit_serial_number | submitted_at |
       | 1122334455        |              |
+    And the following groups:
+      | name   |
+      | group1 |
+    And user intake "1122334455" belongs to group "group1"
     When I am listing user intakes
     And I select "group1" from "Group"
+    And I press "user_intake_search"
     Then I should see "1122334455"
-  
-  # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  Scenario: Email to safety_care
-    When I am listing user intakes
-    And I press "email_safety_care"
-    And 1 email to "safety_care" with subject "caregiver details" should be sent for delivery
 
+  # TODO: What should be covered here?
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  Scenario: Caregivers are already activated from online store
-    When I choose "product_complete"
-    And I fill the shipping details for online store
-    And I fill the credit card details for online store
-    And I check "Same as shipping"
-    And I press "Continue"
-    And I press "Place Order"
-    And I follow "Skip for later"
-    Then caregivers of last order should be activated
-    
+  # Scenario: Email to safety_care
+  #   When I am listing user intakes
+  #   And I press "email_safety_care"
+  #   And 1 email to "safety_care" with subject "caregiver details" should be sent for delivery
