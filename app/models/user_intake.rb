@@ -178,7 +178,8 @@ class UserIntake < ActiveRecord::Base
     (1..3).each do |index|
       caregiver = self.send("caregiver#{index}".to_sym)
       unless caregiver.nil?
-        if self.send("no_caregiver_#{index}".to_sym)
+        no_caregiver = self.send("no_caregiver_#{index}".to_sym)
+        if ["0", false].include?( no_caregiver)
           self.send("caregiver#{index}=".to_sym, nil) # when marked for no_caregiver_x, just remove the data
         else
           caregiver.collapse_associations
