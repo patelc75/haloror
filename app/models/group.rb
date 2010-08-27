@@ -42,13 +42,13 @@ class Group < ActiveRecord::Base
     # Usage:
     #   Group.safety_care     # will find or create the group and return the active_record
     def safety_care
-      find_or_create_by_name('safety_care')
+      find_or_create_by_name('safety_care', { :email => "safety_care@myhalomonitor.com"})
     end
 
     # Usage:
     #   Group.direct_to_consumer
     def direct_to_consumer
-      find_or_create_by_name('direct_to_consumer')
+      find_or_create_by_name('direct_to_consumer', { :email => "direct_to_consumer@myhalomonitor.com"})
     end
     
     # groups applicable to user

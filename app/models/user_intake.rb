@@ -333,6 +333,10 @@ class UserIntake < ActiveRecord::Base
   def group_name
     group.blank? ? "" : group.name
   end
+  
+  def group_name=( name)
+    Group.find_or_create_by_name( name)
+  end
 
   def order_present?
     !order_id.blank?

@@ -40,6 +40,23 @@ Given /^user intake "([^"]*)" belongs to group "([^"]*)"$/ do |kit_serial, group
   ui.save
 end
 
+Given /^I am ready to submit a user intake$/ do
+    Given %{a user "test-user" exists with profile}
+    Given %{I am authenticated as "test-user" with password "12345"}
+    Given %{a group "halo_group" exists}
+    Given %{a carrier "verizon" exists}
+    Given %{user "test-user" has "super admin, caregiver" roles}
+    When %{I am creating a user intake}
+    When %{I select "halo_group" from "group"}
+    When %{I check "user_intake_no_caregiver_1"}
+    When %{I check "user_intake_no_caregiver_2"}
+    When %{I check "user_intake_no_caregiver_3"}
+    When %{I fill the senior details for user intake form}
+    When %{I fill in "user_intake_senior_attributes_email" with "senior@example.com"}
+    When %{I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"}
+    When %{I check "Same as User"}
+end
+
 When /^I (view|edit) the last user intake$/ do |action|
   user_intake = UserIntake.last
   user_intake.should_not be_blank

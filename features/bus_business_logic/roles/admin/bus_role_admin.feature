@@ -81,6 +81,15 @@ Feature: Admin roles
     Then page content should have "halo1-cg1 halo1-cg1, Edit Profile"
     And I should see profile name of "senior-user"
 
-    Scenario: Cannot "submit" an already submitted user
-    Scenario: Cannot "save" an already submitted user
-    Scenario: 
+    # Both scenarios covered
+    # Scenario: Cannot "save" an already submitted user
+    # Scenario: Cannot "submit" an already submitted user
+    Scenario: Cannot "submit" or "save" an already submitted user
+      Given group "bestbuy" exists
+      And user "admin-user" has "admin" role for group "bestbuy"
+      And the following user intakes:
+        | kit_serial_number | group_name |
+        | 1122334455        | bestbuy    |
+      And I am editing user intake "1122334455"
+      Then page should not have a submit button
+      Then page should not have a save button

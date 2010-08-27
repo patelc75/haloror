@@ -7,7 +7,7 @@ include ApplicationHelper
 # accept multiple comma separated names in one go
 Given /^(?:|a )user "([^\"]*)" exists with profile$/ do |user_names|
   user_names.split(',').collect(&:strip).each do |user_name|
-    user = Factory.create(:user, :login => user_name)
+    user = Factory.create(:user, :login => user_name, :email => "#{user_name.gsub(' ','_')}@test.com")
     user.should_not be_blank
     user.id.should_not be_blank
     
