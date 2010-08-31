@@ -118,7 +118,7 @@ When /^I (edit|delete|show) the (\d+)(?:st|nd|rd|th) (.+)$/ do |action, pos, mod
   end
 end
 
-When /^I follow "([^"]*)" in the (\d+)(?:st|nd|rd|th) row$/ do |action, pos|
+When /^I follow "([^"]*)" (in|for) the (\d+)(?:st|nd|rd|th) row$/ do |action, pos|
   within("table tr:nth-child(#{pos.to_i+1})") do
     click_link action
   end
@@ -202,7 +202,7 @@ end
 # accepts any ruby expression enclosed in ``
 # usage:
 #   Then page content should have "Successfully processed at `Time.now`"
-Then /^(?:|the )(?:|page )content should have "([^\"]*)"$/ do |array_as_text|
+Then /^(?:|the )(?:|page )content (should have|has) "([^\"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect do |part|
     if part.include?("`")
       part.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).strip }.join(' ')
@@ -232,6 +232,18 @@ Then /^page content should have "([^"]*)" within "([^"]*)"$/ do |csv_data, scope
     data_array.each {|data| scope.should contain(data) }
   end
 end
+
+Then /^page source (should have|has) "([^"]*)"$/ do |array_as_text|
+  contents = array_as_text.split(',').collect do |part|
+    if part.include?("`")
+      part.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).strip }.join(' ')
+    else
+      part.strip
+    end
+  end
+  contents.each {|text| response.html.should contain(text)}
+end
+
 
 Then /^I should have the following counts of data:$/ do |table|
   table.raw.each do |model_name, count|
@@ -264,6 +276,10 @@ Then /^(?:|the )page has no rails trace$/ do
   else
     contents.each {|text| assert_not_contain text}
   end
+end
+
+Then /^"([^"]*)" checkbox must be checked$/ do |identifier|
+  pending # express the regexp above with the code you wish you had
 end
 
 # General methods

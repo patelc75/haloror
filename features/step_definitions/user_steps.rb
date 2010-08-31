@@ -72,6 +72,10 @@ Given /^user "([^"]*)" (.+) in test mode$/ do |user_login, state|
   user.save
 end
 
+Given /^user "([^"]*)" status gets changed to "([^"]*)"$/ do |arg1, arg2|
+  pending # express the regexp above with the code you wish you had
+end
+
 When /^I get data in (.+) for user "([^\"]*)"$/ do |model_name, user_login|
   user = User.find_by_login(user_login)
   user.should_not be_blank
@@ -250,4 +254,8 @@ Then /^I (should|should not) see "([^"]*)" xpath within "([^"]*)" user row$/ do 
       end
     end
   end
+end
+
+Then /^user "([^"]*)" has a recent audit log for status "([^"]*)"$/ do |arg1, arg2|
+  pending # express the regexp above with the code you wish you had
 end

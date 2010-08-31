@@ -41,24 +41,52 @@ Given /^user intake "([^"]*)" belongs to group "([^"]*)"$/ do |kit_serial, group
 end
 
 Given /^I am ready to submit a user intake$/ do
-    Given %{a user "test-user" exists with profile}
-    Given %{I am authenticated as "test-user" with password "12345"}
-    Given %{a group "halo_group" exists}
-    Given %{a carrier "verizon" exists}
-    Given %{user "test-user" has "super admin, caregiver" roles}
-    When %{I am creating a user intake}
-    When %{I select "halo_group" from "group"}
-    When %{I check "user_intake_no_caregiver_1"}
-    When %{I check "user_intake_no_caregiver_2"}
-    When %{I check "user_intake_no_caregiver_3"}
-    When %{I fill the senior details for user intake form}
-    When %{I fill in "user_intake_senior_attributes_email" with "senior@example.com"}
-    When %{I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"}
-    When %{I check "Same as User"}
+  Given %{a user "test-user" exists with profile}
+  Given %{I am authenticated as "test-user" with password "12345"}
+  Given %{a group "halo_group" exists}
+  Given %{a carrier "verizon" exists}
+  Given %{user "test-user" has "super admin, caregiver" roles}
+  When %{I am creating a user intake}
+  When %{I select "halo_group" from "group"}
+  When %{I check "user_intake_no_caregiver_1"}
+  When %{I check "user_intake_no_caregiver_2"}
+  When %{I check "user_intake_no_caregiver_3"}
+  When %{I fill the senior details for user intake form}
+  When %{I fill in "user_intake_senior_attributes_email" with "senior@example.com"}
+  When %{I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"}
+  When %{I check "Same as User"}
 end
 
-When /^I (view|edit) the last user intake$/ do |action|
-  user_intake = UserIntake.last
+Given /^senior of user intake "([^"]*)" (is|is not) in test mode$/ do |kit_serial, condition|
+  ui = UserIntake.find_by_kit_serial_number( kit_serial)
+  ui.should_not be_blank
+  
+  case condition
+  when "is"
+    ui.senior.test_mode?.should be_true
+  when "is not"
+    ui.senior.test_mode?.should be_false
+  end
+end
+
+Given /^user intake "([^"]*)" does not have the product shipped yet$/ do |kit_serial|
+  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  ui.shipped_at.should be_blank
+end
+
+Given /^senior of user intake "([^"]*)" is at "([^"]*)" status$/ do |kit_serial, status|
+  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  senior.status.should == status
+end
+
+Given /^the user intake with kit serial "([^"]*)" is not submitted$/ do |arg1|
+  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  ui.submitted_at.should be_blank
+end
+
+When /^I (view|edit) user intake with kit serial (.+)$/ do |action, kit|
+  user_intake = (kit == "last" ? UserIntake.last : UserIntake.find_by_kit_serial_number(kit) )
   user_intake.should_not be_blank
   
   visit url_for(:controller => 'user_intakes', :action => (action == 'view' ? 'show' : action), :id => user_intake.id)
@@ -104,7 +132,45 @@ When /^user intake with kit serial "([^"]*)" is not submitted$/ do |kit_serial|
   ui.senior.status.should be_blank
 end
 
-Then /^last user intake should have an? (.+) stamp$/ do |which|
+When /^I bring senior of user intake "([^"]*)" into test mode$/ do |kit_serial|
+  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  
+  senior.set_test_mode( true)
+end
+
+When /^I follow "([^"]*)" for the (\d+)st user intake$/ do |identifier, nth|
+  When %{I am listing user intakes}
+  When %{I follow "#{identifier}" in the #{nth} row}
+end
+
+When /^the kit serial for user intake "([^"]*)" is updated to "([^"]*)"$/ do |kit_serial, new_kit_serial|
+  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  ui.update_attributes( :kit_serial_number => new_kit_serial)
+end
+
+When /^the senior of user intake "([^"]*)" gets the device installed$/ do |kit_serial|
+  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  
+  senior.update_attributes( :status => User::STATUS[ :install_pending]) # make it install pending
+  # This will trigger status change to "Installed"
+  # It also sends an email to admin of the group of which this user in halouser
+  Panic.create( :user => senior) # create a panic button test
+end
+
+When /^the senior of user intake "([^"]*)" gets the call center number$/ do |kit_serial|
+  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  (profile = senior.profile).should_not be_blank
+  profile.update_attributes( :account_number => "1234")
+end
+
+When /^I view the last user intake$/ do
+  visit url_for( :controller => "user_intakes", :action => "show", :id => UserIntake.last.id)
+end
+
+Then /^last user intake has an? (.+) stamp$/ do |which|
   (ui = UserIntake.last).should_not be_blank
   case which
   when "print"
@@ -114,7 +180,11 @@ Then /^last user intake should have an? (.+) stamp$/ do |which|
   end
 end
 
-Then /^"([^"]*)" should be enabled for subscriber of user intake "([^"]*)"$/ do |col_name, kit_serial|
+Then /^user intake "([^"]*)" has status "([^"]*)"$/ do |arg1, arg2|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then /^"([^"]*)" is enabled for subscriber of user intake "([^"]*)"$/ do |col_name, kit_serial|
   ui = UserIntake.find_by_kit_serial_number( kit_serial)
   ui.should_not be_blank
   
@@ -125,9 +195,92 @@ Then /^"([^"]*)" should be enabled for subscriber of user intake "([^"]*)"$/ do 
   end
 end
 
-Then /^"([^"]*)" for user_intake "([^"]*)" should be assigned$/ do |col_name, kit_serial|
+Then /^"([^"]*)" for user_intake "([^"]*)" is assigned$/ do |col_name, kit_serial|
   ui = UserIntake.find_by_kit_serial_number( kit_serial)
   
   ui.should_not be_blank
   ui.send( col_name.to_sym).should_not be_blank
+end
+
+Then /^senior of user intake "([^"]*)" (is|is not) in test mode$/ do |kit_serial, condition|
+  ui = UserIntake.find_by_kit_serial_number( kit_serial)
+  ui.should_not be_blank
+  
+  case condition
+  when "should"
+    ui.senior.test_mode?.should == true
+  when "should not"
+    ui.senior.test_mode?.should != true
+  end
+end
+
+Then /^user intake "([^"]*)" has "([^"]*)" status$/ do |arg1, arg2|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then /^I see "([^"]*)" for the user intake "([^"]*)"$/ do |arg1, arg2|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then /^"([^"]*)" for last user intake is (\d+) days after "([^"]*)"$/ do |arg1, arg2, arg3|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then /^(?:|the )last user intake (does|does not) have (.+)$/ do |condition, what|
+  if condition == "should"
+    case what
+    when "bill monthly value"
+      pending
+    when "credit card value"
+      pending
+    when "a recent audit log"
+      pending
+    end
+  else
+    case what
+    when "credit card value"
+      pending
+    end
+  end
+end
+
+Then /^senior of user intake "([^"]*)" has (.+)$/ do |kit, what|
+  case what
+  when "a status attribute"
+    pending
+  end
+  pending # express the regexp above with the code you wish you had
+end
+
+Then /^all caregivers for senior of user intake "([^"]*)" are away$/ do |arg1|
+  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  ui.caregivers.should_not be_blank
+  ui.caregivers.each {|e| e.active_for?( senior) }
+end
+
+Then /^senior of user intake "([^"]*)" is not a member of "([^"]*)" group$/ do |kit_serial, group_name|
+  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  senior.group_memberships.collect(&name).uniq.should_not include( group_name)
+end
+
+Then /^"([^"]*)" for last user intake is (\d+) hours after "([^"]*)"$/ do |arg1, arg2, arg3|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then /^(.+) emails? to "([^"]*)" with kit serial for user intake "([^"]*)" in (subject|body) should be sent for delivery$/ do |count, email, data, place|
+  Email.all.select {|e| e.to == email && e.mail.include?( data) }.length.should == count.to_i
+end
+
+Then /^attribute "([^"]*)" of user intake "([^"]*)" has value$/ do |attribute, kit_serial|
+  attribute = "credit_debit_card_proceessed" if attribute == "card"
+  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  ui.send(attribute.to_sym).should_not be_blank
+  credit_debit_card_proceessed
+end
+
+Then /^I see "([^"]*)" for user intake "([^"]*)"$/ do |arg1, arg2|
+  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  response.should contain( "Audit Log for user #{ui.senior.name}")
 end

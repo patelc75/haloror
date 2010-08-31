@@ -36,5 +36,5 @@ Feature: User status
     Given the following user intakes:
       | kit_serial_number |
       | 1122334455        |
-    Then user intake "1122334455" should not have a status attribute
-    And senior of user intake "1122334455" should have a status attribute
+    Then user intake "1122334455" does not have a status attribute
+    And senior of user intake "1122334455" has a status attribute

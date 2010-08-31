@@ -9,7 +9,7 @@ Feature: Bus user intake relations
   Scenario: All new user intakes get audit logged
     Given I am ready to submit a user intake
     When I press "user_intake_submit"
-    Then the last user intake should have a recent audit log
+    Then the last user intake has audit log
 
   Scenario: All changes to user intake get audit logged
     Given the following user intakes:
@@ -19,7 +19,7 @@ Feature: Bus user intake relations
     And I edit the 1st user intake
     And I fill in "54321" for "Kit Serial"
     And I press "user_intake_submit"
-    Then I last user intake should have a recent audit log
+    Then the last user intake should have a recent audit log
 
   Scenario: Any change to status gets logged to triage audit log
     Given a user "senior" exists with profile
@@ -35,15 +35,15 @@ Feature: Bus user intake relations
       | 22222             |
       | 33333             |
     When I am listing user intakes
-    And I follow "audit_list" for the 1st user intake
-    Then I should see "Audit List" for the user intake "11111"
+    And I follow "audit_log" for the 1st user intake
+    Then I see "Audit Log" for user intake "11111"
 
   Scenario: Audit row can be viewed detailed
     Given the following user intakes:
       | kit_serial_number |
       | 11111             |
     And I am listing audit log for user intake "11111"
-    And I follow "Details" for the first row
+    And I follow "Details" in the 1st row
     Then the page content should have "Detail, 11111"
 
   Scenario: Audit rows cannot be edited or deleted

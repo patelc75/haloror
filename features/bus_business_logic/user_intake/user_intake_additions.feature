@@ -37,8 +37,8 @@ Feature: User intake additions
     Given the following user intakes:
       | kit_serial_number | submitted_at |
       | 1122334455        |              |
-    Then "card" should be enabled for subscriber of user intake "1122334455"
-    And "created_by" for user_intake "1122334455" should be assigned
+    Then attribute "card" of user intake "1122334455" has value
+    And attribute "created_by" of user intake "1122334455" has value
   
   # # What is this supposed to cover?
   # # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170

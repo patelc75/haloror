@@ -72,7 +72,7 @@
     <% end %>
   </td>
   <td><%= link_to image_tag( "note.png", :alt => "Notes", :title => "Notes"), { :controller => "triage_audit_logs", :id => user_intake_row.senior.id} if !user_intake_row.senior.blank? %></td>
-  <td><%= link_to image_tag( "briefcase.png", :alt => "Audit", :title => "Audit" ), user_audits_path( user_intake_row.senior) %></td>
+  <td><%= link_to image_tag( "briefcase.png", :alt => "Audit", :title => "Audit" ), user_audits_path( user_intake_row.senior), {:id => "audit_log"} %></td>
   <td>
   <% if user_intake_row.group_id == Group.direct_to_consumer.id %>
     <% if user_intake_row.shipped_at.blank? %>

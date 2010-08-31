@@ -22,11 +22,11 @@ Feature: Business - user intake - events and external
 
   Scenario: Email subject contains "Update HM..." when updating
     When the kit serial for user intake "1122334455" is updated to "HM12345"
-    Then an email to "safety_care@myhalomonitor.com" with "Update HM12345" in subject should be sent for delivery
+    Then an email to "safety_care@myhalomonitor.com" with subject "Update HM12345" should be sent for delivery
 
   Scenario: Update email only contains "changes made"
     When the kit serial for user intake "1122334455" is updated to "HM12345"
-    Then an email to "safety_care@myhalomonitor.com" with "Changes made" in body should be sent for delivery
+    Then an email to "safety_care@myhalomonitor.com" with body "Changes made" should be sent for delivery
     
   Scenario: When the approve button is clicked and test mode disabled, send email to admin of group
     When I am editing user intake "1122334455"
