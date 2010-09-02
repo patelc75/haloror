@@ -6,7 +6,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "sco
 # Given
 
 Given /^debug$/ do
-  save_and_open_page
+  # save_and_open_page
   debugger
 end
 
@@ -28,6 +28,11 @@ Given /^I logout$/ do
   visit logout_url
 end
 
+Given /^I am an authenticated super_admin$/ do
+  Given %{I am an authenticated user}
+  Given %{user "demo" has "super_admin" role}
+end
+
 Given /^the following (.+):$/ do |name, table|
   # model = if name.include?(' ')
   #   name.singularize.split(' ').collect(&:capitalize).join.constantize
@@ -40,17 +45,27 @@ Given /^the following (.+):$/ do |name, table|
   #   table.hashes.each {|hash| Factory.build(model.to_s.underscore.to_sym, hash) }
   table.hashes.each do |hash|
     model = Factory.build(name.gsub(/ /,'_').singularize.to_sym, hash)
-    if model.is_a?(UserIntake)
-      model.skip_validation = true
+    model.skip_validation = true if model.is_a?( UserIntake)
+    model.save
+    if model.is_a?( UserIntake)
+      # now make relations
       model.senior.is_halouser_of model.group
       model.subscriber.is_subscriber_of model.senior
-      model.caregiver1.is_subscriber_of model.senior
-      model.caregiver2.is_subscriber_of model.senior
-      model.caregiver3.is_subscriber_of model.senior
+      model.caregiver1.is_caregiver_of model.senior unless model.caregiver1.blank?
+      model.caregiver2.is_caregiver_of model.senior unless model.caregiver2.blank?
+      model.caregiver3.is_caregiver_of model.senior unless model.caregiver3.blank?
     end
-    model.save
   end
   # model.create!(table.hashes)
+end
+
+# Assumption: the model will validate with just the "name" column
+# Usage:
+#   Given a user exists
+#   Given a 
+Given /^a (.+) "([^"]*)" exists$/ do |what, name|
+  model = Factory.create( what.gsub(' ','_').downcase.to_sym, { :name => name })
+  model.should_not be_blank
 end
 
 Given /^an? (.+) exists with the following attributes:$/ do |name, attrs_table|
@@ -189,6 +204,10 @@ Then /^page should have a dropdown for "([^\"]*)"$/ do |data_set|
   end
 end
 
+Then /^page should not have a (.+) button$/ do |which|
+  response.should_not contain( which)
+end
+
 Then /^the (\d+)(?:st|nd|rd|th) row (should|should not) contain "([^\"]*)"$/ do |pos, state, label|
   within("table tr:nth-child(#{pos.to_i+1})") do |content|
     if state == 'should'
@@ -202,7 +221,7 @@ end
 # accepts any ruby expression enclosed in ``
 # usage:
 #   Then page content should have "Successfully processed at `Time.now`"
-Then /^(?:|the )(?:|page )content (should have|has) "([^\"]*)"$/ do |array_as_text|
+Then /^page content (?:|should have|has) "([^\"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect do |part|
     if part.include?("`")
       part.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).strip }.join(' ')
@@ -279,6 +298,10 @@ Then /^(?:|the )page has no rails trace$/ do
 end
 
 Then /^"([^"]*)" checkbox must be checked$/ do |identifier|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then /^I cannot change the status of user "([^"]*)" to Anything else$/ do |arg1|
   pending # express the regexp above with the code you wish you had
 end
 

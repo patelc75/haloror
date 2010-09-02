@@ -85,11 +85,11 @@ Feature: Admin roles
     # Scenario: Cannot "save" an already submitted user
     # Scenario: Cannot "submit" an already submitted user
     Scenario: Cannot "submit" or "save" an already submitted user
-      Given group "bestbuy" exists
+      Given a group "bestbuy" exists
       And user "admin-user" has "admin" role for group "bestbuy"
       And the following user intakes:
         | kit_serial_number | group_name |
         | 1122334455        | bestbuy    |
-      And I am editing user intake "1122334455"
+      And I edit user intake with kit serial 1122334455
       Then page should not have a submit button
       Then page should not have a save button

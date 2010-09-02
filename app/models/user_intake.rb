@@ -81,12 +81,15 @@ class UserIntake < ActiveRecord::Base
   end
 
   def before_save
+    # associations
+    associations_before_validation_and_save # build the associations
+    validate_associations # check validations unless "save"
     # WARNING: Need test coverage
     # lock if required
     # skip_validation decides if "save" was hit instead of "submit"
     self.locked = (!skip_validation && valid?)
     # new logic. considers all status values as defined in STATUS
-    locked? and !senior.blank? and User.shift_to_next_status( senior.id, "user intake", updated_by)
+    User.shift_to_next_status( senior.id, "user intake", updated_by) if (locked? && !senior.blank? && !self.new_record?)
     # old logic. just checking for approval_pending
     # self.status = STATUS[:approval_pending] if (locked && status.blank?)
     #
@@ -98,10 +101,6 @@ class UserIntake < ActiveRecord::Base
     #     :description => "Status updated from [#{status_was}] to [#{status}], triggered from user intake" }
     #   add_triage_note( options)
     # end
-    #
-    # associations
-    associations_before_validation_and_save # build the associations
-    validate_associations # check vlaidations unless "save"
   end
 
   def after_save
@@ -111,13 +110,12 @@ class UserIntake < ActiveRecord::Base
     #
     #   * submitted the user intake with test_mode check box "on"
     #   * saved just now. created == updated
-    senior.set_test_mode( (test_mode == "1") || (created_at == updated_at)) unless senior.test_mode?
+    senior.set_test_mode( (test_mode == "1") || (created_at == updated_at) || self.new_record?) unless senior.test_mode?
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
     # UserMailer.deliver_signup_installation(senior)
     #
     # send email to safety_care when "Update" was hit on any status
-    
   end
 
   # create blank placeholder records

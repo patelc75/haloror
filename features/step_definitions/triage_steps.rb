@@ -89,3 +89,7 @@ Then /^I should see (\d+) wide (red|yellow|green) battery for "([^\"]*)"$/ do |w
 
   response.should have_tag("div[id=?]", "user_#{user.id}_battery_#{color}_#{width}")
 end
+
+Then /^triage has a link back to user intake "([^"]*)"$/ do |arg1|
+  pending # express the regexp above with the code you wish you had
+end

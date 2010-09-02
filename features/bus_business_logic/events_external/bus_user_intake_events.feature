@@ -29,6 +29,6 @@ Feature: Business - user intake - events and external
     Then an email to "safety_care@myhalomonitor.com" with body "Changes made" should be sent for delivery
     
   Scenario: When the approve button is clicked and test mode disabled, send email to admin of group
-    When I am editing user intake "1122334455"
-    And I press "Approve"
+    When I edit user intake with kit serial 1122334455
+    And I press "user_intake_submit"
     Then an email to "admin_of_bestbuy@test.com" with subject "Approved" should be sent for delivery

@@ -19,7 +19,7 @@ Feature: Bus user intake relations
     And I edit the 1st user intake
     And I fill in "54321" for "Kit Serial"
     And I press "user_intake_submit"
-    Then the last user intake should have a recent audit log
+    Then the last user intake has a recent audit log
 
   Scenario: Any change to status gets logged to triage audit log
     Given a user "senior" exists with profile

@@ -25,6 +25,9 @@ module NavigationHelpers
     when /the online store/
       order_path
       
+    when /the triage page/
+      triage_path
+      
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
     #

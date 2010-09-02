@@ -387,10 +387,16 @@ class User < ActiveRecord::Base
 
   def before_save
     encrypt_password
-    # https://redmine.corp.halomonitor.com/issues/398
-    # When user is created, put in "Install" state by default
-    # User goes from "Install" to "Active" state after all the installation special status fields go green
-    status = (self.alert_status == 'normal' ? STATUS[:active] : STATUS[:installed])
+    # https://redmine.corp.halomonitor.com/issues/3215
+    # WARNING: we need to confirm which logic holds true to shift user to "Installed" mode
+    #   * when alert_status == "normal"
+    #   * when panic button test happens in "Ready to Install" state
+    #
+    # # https://redmine.corp.halomonitor.com/issues/398
+    # # When user is created, put in "Install" state by default
+    # # User goes from "Install" to "Active" state after all the installation special status fields go green
+    # status = (self.alert_status == 'normal' ? STATUS[:active] : STATUS[:installed])
+
     # Send an email to administrator if
     #   * status column is about to change to "Installed" just now
     UserMailer.deliver_user_installation_alert( self) if self.changed? && self.status_change && self.status_change.last == User::STATUS[:installed]

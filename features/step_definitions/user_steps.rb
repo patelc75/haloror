@@ -259,3 +259,16 @@ end
 Then /^user "([^"]*)" has a recent audit log for status "([^"]*)"$/ do |arg1, arg2|
   pending # express the regexp above with the code you wish you had
 end
+
+Then /^I (can|cannot) change the status of user "([^"]*)" to "([^"]*)"$/ do |condition, login, status|
+  (user = User.find_by_login(login)).should_not be_blank
+  # user.update_attributes( :status => status) did not work
+  user.status = status
+  user.save
+  user.status.to_s.should == status.to_s # nil.to_s will be ""
+end
+
+Then /^user "([^"]*)" has attribute "([^"]*)"$/ do |login, attribute|
+  (user = User.find_by_login( login)).should_not be_blank
+  user.attributes.keys.should include( attribute)
+end

@@ -22,23 +22,23 @@ Feature: User intake parts
     
   Scenario: Billing date shows as "Desired" billing date
     Given I am listing user intakes
-    Then page source should have "Desired Billing Date"
+    Then page source has "Desired Billing Date"
     
   Scenario: Verify Bill Monthly is checked in the user intake form, then Credit Card column is blank
     Given I am ready to submit a user intake
     When I check "Bill Monthly"
     And I press "user_intake_submit"
-    Then last user intake should not have credit card value
-    And last user intake should have bill monthly value
+    Then last user intake does not have credit card value
+    And last user intake has bill monthly value
 
   Scenario: Validation: "Desired Installation Date" must be 48 hours after submitted_at
     Given I am ready to submit a user intake
     When I press "user_intake_submit"
-    Then "installation_date" for last user intake should be 48 hours after "submitted_at"
+    Then "installation_date" for last user intake is 48 hours after "submitted_at"
     
   Scenario: "Desired Installation Date" should auto-fill to order date + 7.days for direct_to_consumer group
     Given a group "direct_to_consumer" exists
     And I am ready to submit a user intake
     When I select "direct_to_consumer" from "Group"
     And I press "user_intake_submit"
-    Then "installation_date" for last user intake should be 7 days after "submitted_at"
+    Then "installation_date" for last user intake is 7 days after "submitted_at"

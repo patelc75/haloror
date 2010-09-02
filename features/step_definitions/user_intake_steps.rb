@@ -41,11 +41,11 @@ Given /^user intake "([^"]*)" belongs to group "([^"]*)"$/ do |kit_serial, group
 end
 
 Given /^I am ready to submit a user intake$/ do
-  Given %{a user "test-user" exists with profile}
-  Given %{I am authenticated as "test-user" with password "12345"}
+  Given %{a user "ui-test-user" exists with profile}
+  Given %{I am authenticated as "ui-test-user" with password "12345"}
   Given %{a group "halo_group" exists}
   Given %{a carrier "verizon" exists}
-  Given %{user "test-user" has "super admin, caregiver" roles}
+  Given %{user "ui-test-user" has "super admin, caregiver" roles}
   When %{I am creating a user intake}
   When %{I select "halo_group" from "group"}
   When %{I check "user_intake_no_caregiver_1"}
@@ -55,6 +55,7 @@ Given /^I am ready to submit a user intake$/ do
   When %{I fill in "user_intake_senior_attributes_email" with "senior@example.com"}
   When %{I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"}
   When %{I check "Same as User"}
+  When %{I fill in "user_intake_kit_serial_number" with "1122334455"}
 end
 
 Given /^senior of user intake "([^"]*)" (is|is not) in test mode$/ do |kit_serial, condition|
@@ -226,8 +227,8 @@ Then /^"([^"]*)" for last user intake is (\d+) days after "([^"]*)"$/ do |arg1, 
   pending # express the regexp above with the code you wish you had
 end
 
-Then /^(?:|the )last user intake (does|does not) have (.+)$/ do |condition, what|
-  if condition == "should"
+Then /^(?:|the )last user intake (has|does not have) (.+)$/ do |condition, what|
+  if condition == "has"
     case what
     when "bill monthly value"
       pending
@@ -244,12 +245,16 @@ Then /^(?:|the )last user intake (does|does not) have (.+)$/ do |condition, what
   end
 end
 
-Then /^senior of user intake "([^"]*)" has (.+)$/ do |kit, what|
+Then /^(?:|the )senior of user intake "([^"]*)" has (.+)$/ do |kit, what|
+  (ui = UserIntake.find_by_kit_serial_number(kit)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+
   case what
   when "a status attribute"
-    pending
+    senior.attributes.keys.should include( "status")
+  when "pending status"
+    senior.status.should be_blank
   end
-  pending # express the regexp above with the code you wish you had
 end
 
 Then /^all caregivers for senior of user intake "([^"]*)" are away$/ do |arg1|
@@ -283,4 +288,9 @@ end
 Then /^I see "([^"]*)" for user intake "([^"]*)"$/ do |arg1, arg2|
   (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
   response.should contain( "Audit Log for user #{ui.senior.name}")
+end
+
+Then /^user intake "([^"]*)" does not have a status attribute$/ do |kit_serial|
+  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  ui.attributes.keys.should_not include( "status")
 end
