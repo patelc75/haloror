@@ -17,7 +17,7 @@ Feature: Bus user intake relations
       | 12345             |
     When I am listing user intakes
     And I edit the 1st user intake
-    And I fill in "54321" for "Kit Serial"
+    And I fill in "Kit Serial" with "54321"
     And I press "user_intake_submit"
     Then the last user intake has a recent audit log
 
@@ -35,7 +35,7 @@ Feature: Bus user intake relations
       | 22222             |
       | 33333             |
     When I am listing user intakes
-    And I follow "audit_log" for the 1st user intake
+    And I follow "audit_log" for the 1st row
     Then I see "Audit Log" for user intake "11111"
 
   Scenario: Audit row can be viewed detailed

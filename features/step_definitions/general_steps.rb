@@ -6,7 +6,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "sco
 # Given
 
 Given /^debug$/ do
-  # save_and_open_page
+  save_and_open_page
   debugger
 end
 
@@ -64,7 +64,7 @@ end
 #   Given a user exists
 #   Given a 
 Given /^a (.+) "([^"]*)" exists$/ do |what, name|
-  model = Factory.create( what.gsub(' ','_').downcase.to_sym, { :name => name })
+  model = Factory.create( what.gsub(' ','').downcase.to_sym, { :name => name })
   model.should_not be_blank
 end
 
@@ -124,7 +124,7 @@ When /^I follow links "([^\"]*)"$/ do |links_text|
   links_text.split('>').map(&:strip!).each {|link| click_link(link) }
 end
 
-When /^I (edit|delete|show) the (\d+)(?:st|nd|rd|th) (.+)$/ do |action, pos, model_name|
+When /^I (edit|delete|show|follow) the (\d+)(?:st|nd|rd|th) (.+)$/ do |action, pos, model_name|
   action_text = (action == "delete" ? "Destroy" : "#{action.capitalize}")
   visit url_for(:controller => model_name.gsub(' ','_').pluralize, :action => 'index') unless model_name == 'row'
   # visit eval("#{model_name.downcase.pluralize.gsub(' ','_')}_path") unless model_name == 'row'
@@ -221,7 +221,7 @@ end
 # accepts any ruby expression enclosed in ``
 # usage:
 #   Then page content should have "Successfully processed at `Time.now`"
-Then /^page content (?:|should have|has) "([^\"]*)"$/ do |array_as_text|
+Then /^(?:|the )page content (?:|should have|has) "([^\"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect do |part|
     if part.include?("`")
       part.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).strip }.join(' ')
@@ -236,7 +236,7 @@ Then /^page content (?:|should have|has) "([^\"]*)"$/ do |array_as_text|
   end
 end
 
-Then /^(?:|the )(?:|page )content should not have "([^\"]*)"$/ do |array_as_text|
+Then /^(?:|the )(?:|page )content (?:should|does) not have "([^\"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect(&:strip)
   if defined?(Spec::Rails::Matchers)
     contents.each {|text| response.should_not contain(text)}
@@ -245,14 +245,14 @@ Then /^(?:|the )(?:|page )content should not have "([^\"]*)"$/ do |array_as_text
   end
 end
 
-Then /^page content should have "([^"]*)" within "([^"]*)"$/ do |csv_data, scope_selector|
+Then /^(?:|the )page content (?:should have|has) "([^"]*)" within "([^"]*)"$/ do |csv_data, scope_selector|
   data_array = csv_data.split(',').collect(&:strip)
   within(scope_selector) do |scope|
     data_array.each {|data| scope.should contain(data) }
   end
 end
 
-Then /^page source (should have|has) "([^"]*)"$/ do |array_as_text|
+Then /^(?:|the )page source (?:should have|has) xpath "([^"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect do |part|
     if part.include?("`")
       part.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).strip }.join(' ')
@@ -260,7 +260,7 @@ Then /^page source (should have|has) "([^"]*)"$/ do |array_as_text|
       part.strip
     end
   end
-  contents.each {|text| response.html.should contain(text)}
+  contents.each {|text| response.body.should have_xpath(text)}
 end
 
 
@@ -270,7 +270,7 @@ Then /^I should have the following counts of data:$/ do |table|
   end
 end
 
-Then /^(?:|the )(?:|page )content should have the following:$/ do |text|
+Then /^(?:|the )(?:|page )content (?:should have|has) the following:$/ do |text|
   contents = text.collect(&:strip)
   if defined?(Spec::Rails::Matchers)
     contents.each {|text| response.should contain(text)}
@@ -279,7 +279,7 @@ Then /^(?:|the )(?:|page )content should have the following:$/ do |text|
   end
 end
 
-Then /^(?:|the )(?:|page )content should not have the following:$/ do |text|
+Then /^(?:|the )(?:|page )content (?:should|does) not have the following:$/ do |text|
   contents = text.collect(&:strip)
   if defined?(Spec::Rails::Matchers)
     contents.each {|text| response.should_not contain(text)}
@@ -298,7 +298,7 @@ Then /^(?:|the )page has no rails trace$/ do
 end
 
 Then /^"([^"]*)" checkbox must be checked$/ do |identifier|
-  pending # express the regexp above with the code you wish you had
+  response.should have_xpath("//input[@id=#{identifier.gsub(' ','_').downcase} and @checked='checked']")
 end
 
 Then /^I cannot change the status of user "([^"]*)" to Anything else$/ do |arg1|

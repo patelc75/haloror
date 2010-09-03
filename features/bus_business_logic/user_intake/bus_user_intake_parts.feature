@@ -5,6 +5,7 @@ Feature: User intake parts
 
   Background:
     Given I am an authenticated super_admin
+    And a group "test-group" exists
   
   # Scenario: Test mode checkboxes put all caregivers away
   Scenario: Test mode checkboxes put senior in test mode, not member of safety_care
@@ -18,6 +19,7 @@ Feature: User intake parts
 
   Scenario: "Test Mode" checkbox should be checked by default
     Given I am creating a user intake
+    When I select "test-group" from "user_intake_group_id"
     Then "Test Mode" checkbox must be checked
     
   Scenario: Billing date shows as "Desired" billing date

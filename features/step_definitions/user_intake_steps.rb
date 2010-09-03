@@ -37,7 +37,7 @@ Given /^user intake "([^"]*)" belongs to group "([^"]*)"$/ do |kit_serial, group
   ui.should_not be_blank
   
   ui.group = Group.find_by_name( group_name)
-  ui.save
+  ui.save.should == true
 end
 
 Given /^I am ready to submit a user intake$/ do
@@ -86,11 +86,26 @@ Given /^the user intake with kit serial "([^"]*)" is not submitted$/ do |arg1|
   ui.submitted_at.should be_blank
 end
 
+Given /^credit card is charged in user intake "([^"]*)"$/ do |kit_serial|
+  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  ui.credit_debit_card_proceessed = true
+  ui.save.should == true
+end
+
+Given /^I edit the last user intake$/ do
+  (ui = UserIntake.last).should_not be_blank
+  visit url_for( :controller => "user_intakes", :action => "edit", :id => ui.id)
+end
+
 When /^I (view|edit) user intake with kit serial (.+)$/ do |action, kit|
   user_intake = (kit == "last" ? UserIntake.last : UserIntake.find_by_kit_serial_number(kit) )
   user_intake.should_not be_blank
   
   visit url_for(:controller => 'user_intakes', :action => (action == 'view' ? 'show' : action), :id => user_intake.id)
+end
+
+When /^I edit the last user intake$/ do
+  pending # express the regexp above with the code you wish you had
 end
 
 When /^I am authenticated as "([^\"]*)" of last user intake$/ do |user_type|
@@ -171,16 +186,6 @@ When /^I view the last user intake$/ do
   visit url_for( :controller => "user_intakes", :action => "show", :id => UserIntake.last.id)
 end
 
-Then /^last user intake has an? (.+) stamp$/ do |which|
-  (ui = UserIntake.last).should_not be_blank
-  case which
-  when "print"
-    ui.paper_copy_at.should_not be_blank
-  when "agreement"
-    ui.legal_agreement_at.should_not be_blank
-  end
-end
-
 Then /^user intake "([^"]*)" has status "([^"]*)"$/ do |arg1, arg2|
   pending # express the regexp above with the code you wish you had
 end
@@ -228,8 +233,14 @@ Then /^"([^"]*)" for last user intake is (\d+) days after "([^"]*)"$/ do |arg1, 
 end
 
 Then /^(?:|the )last user intake (has|does not have) (.+)$/ do |condition, what|
+  (ui = UserIntake.last).should_not be_blank
+  
   if condition == "has"
     case what
+    when "a print stamp"
+      ui.paper_copy_at.should_not be_blank
+    when "an agreement stamp"
+      ui.legal_agreement_at.should_not be_blank
     when "bill monthly value"
       pending
     when "credit card value"
@@ -237,6 +248,7 @@ Then /^(?:|the )last user intake (has|does not have) (.+)$/ do |condition, what|
     when "a recent audit log"
       pending
     end
+    
   else
     case what
     when "credit card value"
@@ -257,17 +269,16 @@ Then /^(?:|the )senior of user intake "([^"]*)" has (.+)$/ do |kit, what|
   end
 end
 
-Then /^all caregivers for senior of user intake "([^"]*)" are away$/ do |arg1|
+Then /^all caregivers for senior of user intake "([^"]*)" are away$/ do |kit_serial|
   (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  ui.caregivers.should_not be_blank
-  ui.caregivers.each {|e| e.active_for?( senior) }
+  ui.caregivers.compact.uniq.each {|e| e.active_for?( senior).should be_false }
 end
 
 Then /^senior of user intake "([^"]*)" is not a member of "([^"]*)" group$/ do |kit_serial, group_name|
   (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  senior.group_memberships.collect(&name).uniq.should_not include( group_name)
+  senior.group_memberships.collect(&:name).uniq.should_not include( group_name)
 end
 
 Then /^"([^"]*)" for last user intake is (\d+) hours after "([^"]*)"$/ do |arg1, arg2, arg3|

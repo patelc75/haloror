@@ -7,6 +7,9 @@
   <td>
     <span class="h-padding"><%= select_tag "user_links", options_for_select(links_for_user(triage_user).insert(0, ['Links...', ''])), {:onchange => "window.location.href = this.value;", :class => "span-1"} %></span>
     <a href="#"><%= triage_user.name %></a>
+    <% if triage_user.user_intakes.first %>
+    <br /><span class="tiny"><%= link_to "User Intake #{triage_user.user_intakes.first}", {:controller => "user_intakes", :action => "show", :id => triage_user.user_intakes.first.id}, {:id => "user_intake_#{triage_user.user_intakes.first.id}"} %></span>
+    <% end %>
   </div>
   <td>
     <div class="half-prepend-top text-center" id="<%= triage_user.alert_status.gsub(' ','_') %>_<%= triage_user.id %>">

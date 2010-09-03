@@ -2,7 +2,11 @@ class TriageAuditLog < ActiveRecord::Base
   belongs_to :user
   belongs_to :creator, :class_name => "User", :foreign_key => "created_by"
   belongs_to :updator, :class_name => "User", :foreign_key => "updated_by"
-
+  
+  def self.latest
+    first( :order => "created_at DESC")
+  end
+  
   # WARNING: test coverage required
   def before_save
     # if the "status" is blank for this row, pick the last one
