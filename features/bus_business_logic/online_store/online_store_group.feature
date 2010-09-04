@@ -41,32 +41,32 @@ Feature: Online store group
     
    Scenario: 2 subdealer orders under a MarketLink with verification of amounts on the billing page
     Given a group exists with the following attributes:
-      | name | "sub_dealer" | 
-      | price_mon_cs | 28.00 |   
-    Given a group exists with the following attributes:
-      | name | "sub_dealer2" | 
+      | name         | sub_dealer |
+      | price_mon_cs | 28.00      |
     And a group exists with the following attributes:
-      | name | "default" | 
-      | price_mon_bc | 25.00 |   
-      | price_mon_cs | 30.00 |   
+      | name | sub_dealer2 |
     And a group exists with the following attributes:
-      | name | "marketlink" |
-      | charge_kit | "invoice_advance"   | 
-      | charge_mon | "installed"  |
-      | charge_lease | "none"  |
-      | grace_lease_days |  |
-      | grace_lease_from |  |
-      | grace_mon_days |  |
-      | grace_mon_from | "never" |       
-      | price_mon_bc | 7.50 |   
-      | price_mon_cs | 8.50 |   
-      | price_lease_bc |  |   
-      | price_lease_cs |  |                             
+      | name         | default |
+      | price_mon_bc | 25.00   |
+      | price_mon_cs | 30.00   |
+    And a group exists with the following attributes:
+      | name             | marketlink      |
+      | charge_kit       | invoice_advance |
+      | charge_mon       | installed       |
+      | charge_lease     | none"           |
+      | grace_lease_days |                 |
+      | grace_lease_from |                 |
+      | grace_mon_days   |                 |
+      | grace_mon_from   | never           |
+      | price_mon_bc     | 7.50            |
+      | price_mon_cs     | 8.50            |
+      | price_lease_bc   |                 |
+      | price_lease_cs   |                 |                      
     And I am an authenticated user 
     And group "default" is a child of group "marketlink"   
     And group "sub_dealer" is a child of group "marketlink"
     And group "sub_dealer2" is a child of group "marketlink"
-    And user "demo" has "sales" role for group "sub_dealer" and "sub_dealer2" #right syntax?
+    And user "demo" has "sales" role for group "sub_dealer","sub_dealer2"
     When I go to the online store
     And I select "sub_dealer" from "Group"
     And I choose "product_complete"
