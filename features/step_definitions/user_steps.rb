@@ -260,7 +260,7 @@ end
 
 Then /^user "([^"]*)" has a recent audit log for status "([^"]*)"$/ do |login, status|
   (user = User.find_by_login( login)).should_not be_blank
-  (log = user.audit_logs.latest).should_not be_blank
+  (log = user.triage_audit_logs.latest).should_not be_blank
   log.status.should == status
 end
 

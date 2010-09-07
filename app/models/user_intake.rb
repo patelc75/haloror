@@ -52,11 +52,11 @@ class UserIntake < ActiveRecord::Base
     attr_accessor "mem_caregiver#{index}_options".to_sym
     attr_accessor "no_caregiver_#{index}".to_sym
   end
-  attr_accessor :test_mode, :opt_out, :put_away
+  attr_accessor :test_mode, :opt_out, :put_away, :card_or_bill
 
   # for every instance, make sure the associated objects are built
   def after_initialize
-    self.bill_monthly = (order && order.purchase_successful?)
+    self.bill_monthly = (!order.blank? && order.purchase_successful?) if self.new_record?
     self.need_validation = true # assume, the user will not hit "save"
     self.installation_datetime = (order.created_at + 7.days) if order and (group_id == Group.direct_to_consumer.id)
     # find(id, :include => :users) does not work due to activerecord design the way it is
@@ -81,6 +81,9 @@ class UserIntake < ActiveRecord::Base
   end
 
   def before_save
+    # card or bill
+    self.bill_monthly = (card_or_bill == "Bill")
+    self.credit_debit_card_proceessed = !bill_monthly
     # associations
     associations_before_validation_and_save # build the associations
     validate_associations # check validations unless "save"
@@ -333,7 +336,7 @@ class UserIntake < ActiveRecord::Base
   end
   
   def group_name=( name)
-    Group.find_or_create_by_name( name)
+    self.group = Group.find_or_create_by_name( name)
   end
 
   def order_present?
@@ -646,11 +649,11 @@ class UserIntake < ActiveRecord::Base
   def validate_user_type(user_type)
     user = self.send("#{user_type}".to_sym)
     if user.blank?
-      errors.add_to_base("#{user_type}: is mnadatory")
+      errors.add_to_base("#{user_type}: is mandatory")
     else
       errors.add_to_base("#{user_type}: " + user.errors.full_messages.join(', ')) unless (user.skip_validation || user.valid?)
       if user.profile.blank?
-        errors.add_to_base("#{user_type} profile: is mnadatory") unless user.skip_validation
+        errors.add_to_base("#{user_type} profile: is mandatory") unless user.skip_validation
       else
         errors.add_to_base("#{user_type} profile: " + user.profile.errors.full_messages.join(', ')) unless (user.skip_validation || user.profile.valid?)
       end

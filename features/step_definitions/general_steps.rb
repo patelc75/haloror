@@ -133,7 +133,7 @@ When /^I (edit|delete|show|follow) the (\d+)(?:st|nd|rd|th) (.+)$/ do |action, p
   end
 end
 
-When /^I follow "([^"]*)" (in|for) the (\d+)(?:st|nd|rd|th) row$/ do |action, pos|
+When /^I follow "([^"]*)" (?:in|for) the (\d+)(?:st|nd|rd|th) row$/ do |action, pos|
   within("table tr:nth-child(#{pos.to_i+1})") do
     click_link action
   end

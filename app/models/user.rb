@@ -167,6 +167,9 @@ class User < ActiveRecord::Base
         :description => "Status shifted from [#{user.status_was}] to [#{user.status}]" }
       options[:description] += ", trigger: #{message}" unless message.blank?
       
+      # test mode is removed when status changes
+      user.test_mode = false
+      #
       user.save
       user.create_triage_audit_log( options)
     end
@@ -405,6 +408,10 @@ class User < ActiveRecord::Base
   # https://redmine.corp.halomonitor.com/issues/398
   # Create a log page of all steps above with timestamps
   def after_save
+    # CHANGED: Major fix. the roles were not getting populated
+    # insert the roles for user. these roles are propogated from user intake
+    lazy_roles.each {|k,v| self.send( :"is_#{k}_of", v) } unless lazy_roles.blank?
+    #
     log(status)
   end
   

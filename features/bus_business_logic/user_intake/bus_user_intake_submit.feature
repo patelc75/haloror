@@ -18,7 +18,7 @@ Feature: Business - user intake - submit
   Scenario: Can be edited at any status
     Given I am listing user intakes
     When I edit the 1st row
-    Then page source has "user_intake_submit"
+    Then page source has xpath "//input[@id='user_intake_submit']"
     
   Scenario: When edited, goes back to approval status
     Given the following user_intakes:
@@ -79,8 +79,6 @@ Feature: Business - user intake - submit
     Given the following user intakes:
       | kit_serial_number |
       | 12345             |
-    And senior of user intake "12345" is in test mode
     And senior of user intake "12345" has "Ready for Approval" status
-    When I edit user intake with kit serial "12345"
-    And I press "user_intake_submit"
+    When user intake "12345" is submitted again
     Then senior of user intake "12345" is not in test mode

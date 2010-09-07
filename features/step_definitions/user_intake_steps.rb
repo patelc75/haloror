@@ -1,14 +1,15 @@
 # steps for user intake
 #
 Given /^I have a (saved|complete|non-agreed) user intake$/ do |state|
-  ui = Factory.create(:user_intake)
+  ui = Factory.build(:user_intake)
+  ui.skip_validation = ( state = 'saved') # skip validation means "save" state
   unless state == "complete"
     # usually nullify only submitted_at (works for non-agreed)
     # for "saved", also nullify legal_agreement_ and print flags
     fields = ([:legal_agreement_at, :paper_copy_at] + (state == "saved" ? [:submitted_at] : []))
     fields.each {|field| ui.send("#{field}=", nil) }
-    ui.send(:update_without_callbacks) # cannot ui.save
   end
+  ui.save.should be_true # send(:update_without_callbacks) # cannot ui.save
 end
 
 Given /^the "([^"]*)" of last user intake is not activated$/ do |user_type|
@@ -81,9 +82,12 @@ Given /^senior of user intake "([^"]*)" is at "([^"]*)" status$/ do |kit_serial,
   senior.status.should == status
 end
 
-Given /^the user intake with kit serial "([^"]*)" is not submitted$/ do |arg1|
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
-  ui.submitted_at.should be_blank
+Given /^(?:|the )user intake with kit serial "([^"]*)" is not submitted$/ do |kit|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  ui.submitted_at = nil
+  ui.save.should be_true
+  ui.senior.save.should be_true
+  ui.senior.status.should be_blank
 end
 
 Given /^credit card is charged in user intake "([^"]*)"$/ do |kit_serial|
@@ -98,14 +102,10 @@ Given /^I edit the last user intake$/ do
 end
 
 When /^I (view|edit) user intake with kit serial (.+)$/ do |action, kit|
-  user_intake = (kit == "last" ? UserIntake.last : UserIntake.find_by_kit_serial_number(kit) )
+  user_intake = UserIntake.find_by_kit_serial_number( kit)
   user_intake.should_not be_blank
   
   visit url_for(:controller => 'user_intakes', :action => (action == 'view' ? 'show' : action), :id => user_intake.id)
-end
-
-When /^I edit the last user intake$/ do
-  pending # express the regexp above with the code you wish you had
 end
 
 When /^I am authenticated as "([^\"]*)" of last user intake$/ do |user_type|
@@ -135,17 +135,6 @@ When /^I fill the (.+) details for user intake form$/ do |which|
     # cross_st is only for user profile. but this is not mandatory
     # When %{I fill in "user_profile_cross_st" with "street address"} if which == "senior"
   end
-end
-
-When /^user intake with kit serial "([^"]*)" is not submitted$/ do |kit_serial|
-  ui = UserIntake.find_by_kit_serial_number( kit_serial)
-  ui.should_not be_blank
-  
-  ui.submitted_at = nil
-  ui.senior.status = nil
-  ui.save
-  ui.senior.save
-  ui.senior.status.should be_blank
 end
 
 When /^I bring senior of user intake "([^"]*)" into test mode$/ do |kit_serial|
@@ -186,6 +175,18 @@ When /^I view the last user intake$/ do
   visit url_for( :controller => "user_intakes", :action => "show", :id => UserIntake.last.id)
 end
 
+When /^user intake "([^"]*)" is submitted again$/ do |kit|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  ui.skip_validation = false
+  ui.save
+end
+
+When /^I update kit serial for user intake "([^"]*)" to "([^"]*)"$/ do |kit, value|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  ui.kit_serial_number = value
+  ui.save.should be_true
+end
+
 Then /^user intake "([^"]*)" has status "([^"]*)"$/ do |arg1, arg2|
   pending # express the regexp above with the code you wish you had
 end
@@ -208,7 +209,7 @@ Then /^"([^"]*)" for user_intake "([^"]*)" is assigned$/ do |col_name, kit_seria
   ui.send( col_name.to_sym).should_not be_blank
 end
 
-Then /^senior of user intake "([^"]*)" (is|is not) in test mode$/ do |kit_serial, condition|
+Then /^senior of user intake "([^"]*)" (should|should not) be in test mode$/ do |kit_serial, condition|
   ui = UserIntake.find_by_kit_serial_number( kit_serial)
   ui.should_not be_blank
   
@@ -228,10 +229,6 @@ Then /^I see "([^"]*)" for the user intake "([^"]*)"$/ do |arg1, arg2|
   pending # express the regexp above with the code you wish you had
 end
 
-Then /^"([^"]*)" for last user intake is (\d+) days after "([^"]*)"$/ do |arg1, arg2, arg3|
-  pending # express the regexp above with the code you wish you had
-end
-
 Then /^(?:|the )last user intake (has|does not have) (.+)$/ do |condition, what|
   (ui = UserIntake.last).should_not be_blank
   
@@ -242,24 +239,26 @@ Then /^(?:|the )last user intake (has|does not have) (.+)$/ do |condition, what|
     when "an agreement stamp"
       ui.legal_agreement_at.should_not be_blank
     when "bill monthly value"
-      pending
+      ui.bill_monthly.should_not be_blank
     when "credit card value"
-      pending
+      ui.credit_debit_card_proceessed.should_not be_blank
     when "a recent audit log"
-      pending
+      ui.senior.last_triage_audit_log.should_not be_blank
     end
     
   else
     case what
     when "credit card value"
-      pending
+      ui.credit_debit_card_proceessed.should be_blank
     end
   end
 end
 
 Then /^(?:|the )senior of user intake "([^"]*)" has (.+)$/ do |kit, what|
-  (ui = UserIntake.find_by_kit_serial_number(kit)).should_not be_blank
-  (senior = ui.senior).should_not be_blank
+  ui = UserIntake.find_by_kit_serial_number(kit)
+  ui.should be_valid
+  senior = ui.senior
+  senior.should be_valid
 
   case what
   when "a status attribute"
@@ -281,8 +280,17 @@ Then /^senior of user intake "([^"]*)" is not a member of "([^"]*)" group$/ do |
   senior.group_memberships.collect(&:name).uniq.should_not include( group_name)
 end
 
-Then /^"([^"]*)" for last user intake is (\d+) hours after "([^"]*)"$/ do |arg1, arg2, arg3|
-  pending # express the regexp above with the code you wish you had
+# WARNING: we accept a blank first_attribute. This is valid in most cases. For example;
+#   Then "installation_datetime" for last user intake is 48 hours after "submitted_at"
+# * It might not work for other cases
+# * Usually the first_attrbute ought to occur "after" second_attribute
+#   This allow first_attribute.blank? to generate a valid condition
+Then /^"([^"]*)" for last user intake is (\d+) (hours|days) after "([^"]*)"$/ do |attribute, index, duration, check_attribute|
+  (ui = UserIntake.last).should_not be_blank
+  first_attribute = ui.send( attribute.to_sym)
+  second_attribute = ui.send( check_attribute.to_sym)
+  second_attribute.should_not be_blank
+  first_attribute.should >= (ui.send( check_attribute.to_sym) + index.to_i.send(duration.to_sym)) unless first_attribute.blank?
 end
 
 Then /^(.+) emails? to "([^"]*)" with kit serial for user intake "([^"]*)" in (subject|body) should be sent for delivery$/ do |count, email, data, place|
@@ -293,7 +301,6 @@ Then /^attribute "([^"]*)" of user intake "([^"]*)" has value$/ do |attribute, k
   attribute = "credit_debit_card_proceessed" if attribute == "card"
   (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
   ui.send(attribute.to_sym).should_not be_blank
-  credit_debit_card_proceessed
 end
 
 Then /^I see "([^"]*)" for user intake "([^"]*)"$/ do |arg1, arg2|

@@ -123,10 +123,14 @@
 
           <div class="span-3">&nbsp;</div>
           <div class="span-7 last">
-            <%= f.radio_button :bill_monthly, "Credit/Debit Card Processed" %>
-            <%= f.label :bill_monthly, "Card" %>
-            <%= f.radio_button :bill_monthly, "Monthly" %>
-            <%= f.label :bill_monthly, "Bill Monthly" %>
+            <div>
+              <%= f.radio_button :card_or_bill, "Card" %>
+              <%= f.label :card_or_bill_card, "Card" %>
+            </div>
+            <div>
+              <%= f.radio_button :card_or_bill, "Bill" %>
+              <%= f.label :card_or_bill_bill, "Bill Monthly" %>
+            </div>
           </div>
 
           <!-- role attributes -->
