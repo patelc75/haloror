@@ -76,10 +76,11 @@ Given /^user intake "([^"]*)" does not have the product shipped yet$/ do |kit_se
   ui.shipped_at.should be_blank
 end
 
-Given /^senior of user intake "([^"]*)" is at "([^"]*)" status$/ do |kit_serial, status|
+Given /^senior of user intake "([^"]*)" (has|is at) "([^"]*)" status$/ do |kit_serial, condition, status|
   (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  senior.status.should == status
+  senior.status = status
+  senior.save.should be_true
 end
 
 Given /^(?:|the )user intake with kit serial "([^"]*)" is not submitted$/ do |kit|
@@ -101,7 +102,7 @@ Given /^I edit the last user intake$/ do
   visit url_for( :controller => "user_intakes", :action => "edit", :id => ui.id)
 end
 
-When /^I (view|edit) user intake with kit serial (.+)$/ do |action, kit|
+When /^I (view|edit) user intake with kit serial "([^"]*)"$/ do |action, kit|
   user_intake = UserIntake.find_by_kit_serial_number( kit)
   user_intake.should_not be_blank
   
@@ -221,8 +222,9 @@ Then /^senior of user intake "([^"]*)" (should|should not) be in test mode$/ do 
   end
 end
 
-Then /^user intake "([^"]*)" has "([^"]*)" status$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
+Then /^user intake "([^"]*)" has "([^"]*)" status$/ do |kit, status|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  ui.senior.should_not be_blank
 end
 
 Then /^I see "([^"]*)" for the user intake "([^"]*)"$/ do |arg1, arg2|
@@ -254,7 +256,7 @@ Then /^(?:|the )last user intake (has|does not have) (.+)$/ do |condition, what|
   end
 end
 
-Then /^(?:|the )senior of user intake "([^"]*)" has (.+)$/ do |kit, what|
+Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |kit, what|
   ui = UserIntake.find_by_kit_serial_number(kit)
   ui.should be_valid
   senior = ui.senior

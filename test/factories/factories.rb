@@ -217,7 +217,7 @@ Factory.define :user_intake do |v|
     ui.caregiver2.is_caregiver_of ui.senior
     ui.caregiver3.is_caregiver_of ui.senior
   end
-  # v.after_build   {|ui| user_intake_users(ui) }
+  # v.after_save   {|ui| user_intake_users(ui) }
   # v.after_create  {|ui| user_intake_users(ui); ui.update_attribute(:locked, false) }
   # v.after_stub    {|ui| user_intake_users(ui) }
 end

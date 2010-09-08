@@ -90,6 +90,6 @@ Feature: Admin roles
       And the following user intakes:
         | kit_serial_number | group_name |
         | 1122334455        | bestbuy    |
-      And I edit user intake with kit serial 1122334455
+      And I edit user intake with kit serial "1122334455"
       Then page should not have a submit button
       Then page should not have a save button

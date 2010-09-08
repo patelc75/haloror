@@ -1,17 +1,17 @@
 <% if @user_intake.senior.status_index == :approval_pending %>
-  <div class="text-center box">
-    <div class="float-left right-gap"><%= image_tag "warning_32.png" %></div>
-    <%= @user_intake.attributes_status_messages.join(', ') %> <strong>are <span class="text-large">not found</span> for this record.</strong>
-  </div>
+<div class="text-center box">
+  <div class="float-left right-gap"><%= image_tag "warning_32.png" %></div>
+  <%= @user_intake.attributes_status_messages.join(', ') %> <strong>are <span class="text-large">not found</span> for this record.</strong>
+</div>
 <% end %>
 
 <% unless @user_intake.senior.status.blank? %>
-  <div class="text-center">
-    <h3 class="background-orange">
-      Updates will be sent to SafetyCare
-      <% if @user_intake.group_id == Group.direct_to_consumer.id and @user_intake.shipped_at.blank? %>
-        <em>, Not yet</em> <strong>shipped</strong>
-      <% end %>
-    </h3>
-  </div>
+<div class="text-center">
+  <h3 class="background-orange">
+    Updates will be sent to SafetyCare
+    <% if @user_intake.group_id == Group.direct_to_consumer.id and @user_intake.shipped_at.blank? %>
+    <em>, Not yet</em> <strong>shipped</strong>
+    <% end %>
+  </h3>
+</div>
 <% end %>

@@ -35,7 +35,7 @@ Feature: Business - user intake - submit
       | 12345             |
     When I edit user intake with kit serial "12345"
     And I press "user_intake_save"
-    Then I should see "Successfully saved"
+    Then I should see "Successfully updated"
     
   # merged scenarios
   # Scenario: Call center account confirmation date is part of dependencies
@@ -67,13 +67,12 @@ Feature: Business - user intake - submit
   Scenario: For only direct_to_consumer group, show warning when clicking "Approve" if there is no ship date
     Given a group "direct_to_consumer" exists
     And the following user intakes:
-      | kit_serial_number |
-      | 12345             |
-    And user intake "12345" belongs to group "direct_to_consumer"
-    And user intake "12345" does not have the product shipped yet
+      | kit_serial_number | group_name         | shipped_at |
+      | 12345             | direct_to_consumer |            |
     And senior of user intake "12345" has "Ready for Approval" status
     When I edit user intake with kit serial "12345"
-    Then page content has "Warning:, shipping date"
+    And debug
+    Then page content should have "Warning, shipping date"
 
   Scenario: When the approve button is clicked, disable test mode of user
     Given the following user intakes:
