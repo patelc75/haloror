@@ -210,7 +210,7 @@ Factory.define :user_intake do |v|
   end
   v.after_create do |ui|
     # ui.skip_validation = true # we need "edit" links in list
-    ui.update_attribute(:locked, false)
+    # ui.update_attribute(:locked, false) # 3215: do not force this attribute update
     ui.senior.is_halouser_of ui.group
     ui.subscriber.is_subscriber_of ui.senior
     ui.caregiver1.is_caregiver_of ui.senior

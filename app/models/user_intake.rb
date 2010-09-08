@@ -91,6 +91,7 @@ class UserIntake < ActiveRecord::Base
     # lock if required
     # skip_validation decides if "save" was hit instead of "submit"
     self.locked = (!skip_validation && valid?)
+    self.senior.status = User::STATUS[:approval_pending] if locked? # once submitted, get ready for approval
     # new logic. considers all status values as defined in STATUS
     User.shift_to_next_status( senior.id, "user intake", updated_by) if (locked? && !senior.blank? && !self.new_record?)
     # old logic. just checking for approval_pending
@@ -302,7 +303,7 @@ class UserIntake < ActiveRecord::Base
     # messages << ( senior.blank? ? "Senior is blank" : nil)
     # # check all these attributes, but save processor time with condition within block
     messages += [ :senior, :installation_datetime, :created_by, :credit_debit_card_proceessed, :bill_monthly,
-      :legal_agreement_at, :paper_copy_submitted_on, :created_at, :updated_at,
+      :legal_agreement_at, :paper_copy_submitted_on, :created_at, :updated_at, :shipped_at,
       :sc_account_created_on ].collect {|e| e if self.send(e).blank? }
     # messages += [ :installation_datetime, :created_by, :credit_debit_card_proceessed, :bill_monthly,
     #   :legal_agreement_at, :paper_copy_submitted_on,

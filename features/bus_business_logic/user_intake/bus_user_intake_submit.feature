@@ -62,6 +62,7 @@ Feature: Business - user intake - submit
       | kit_serial_number |
       | 12345             |
     When I edit user intake with kit serial "12345"
+    And debug
     Then page content has "Update"
     
   Scenario: For only direct_to_consumer group, show warning when clicking "Approve" if there is no ship date
@@ -71,8 +72,7 @@ Feature: Business - user intake - submit
       | 12345             | direct_to_consumer |            |
     And senior of user intake "12345" has "Ready for Approval" status
     When I edit user intake with kit serial "12345"
-    And debug
-    Then page content should have "Warning, shipping date"
+    Then page content should have "Warning, Shipped at"
 
   Scenario: When the approve button is clicked, disable test mode of user
     Given the following user intakes:

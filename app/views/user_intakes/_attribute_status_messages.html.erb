@@ -1,6 +1,6 @@
 <% if @user_intake.senior.status_index == :approval_pending %>
 <div class="text-center box">
-  <div class="float-left right-gap"><%= image_tag "warning_32.png" %></div>
+  <div class="float-left right-gap"><%= image_tag "warning_32.png" %> Warning:</div>
   <%= @user_intake.attributes_status_messages.join(', ') %> <strong>are <span class="text-large">not found</span> for this record.</strong>
 </div>
 <% end %>
