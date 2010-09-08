@@ -3,6 +3,7 @@ Feature: Online store group billing
   As a role
   I want feature
 
+  @wip
   Background:
     Given a group exists with the following attributes:
       | name         | sub_dealer |
@@ -27,7 +28,8 @@ Feature: Online store group billing
       | price_lease_bc   |                 |
       | price_lease_cs   |                 |
     And the product catalog exists     
-        
+
+   @wip        
    Scenario: 2 subdealer orders under a MarketLink with verification of amounts on the billing page                     
     And I am an authenticated user 
     And group "default" is a child of group "marketlink"   
@@ -65,7 +67,8 @@ Feature: Online store group billing
     And I should see $59 - $30 associated with "Total" for group "sub_dealer" #fix when coupon codes are fixed       
     And I should see $49 - $25 associated with "Total" for group "sub_dealer2" #fix when coupon codes are fixed         
     And I should see "16.00" associated with "Total" for group "marketlink" #price_mon_bc (sub_dealer) + price_mon_cs (sub_dealer2)
-        
+
+   @wip        
    Scenario: Senior Helpers with verification of amounts on the billing page
      Given a group exists with the following attributes:
        | name | "senior_helpers" | 
