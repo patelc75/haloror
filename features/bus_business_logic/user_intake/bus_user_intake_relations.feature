@@ -9,14 +9,14 @@ Feature: Bus user intake relations
   Scenario: All new user intakes get audit logged
     Given I am ready to submit a user intake
     When I press "user_intake_submit"
-    Then the last user intake has audit log
+    Then the last user intake should have an audit log
 
   Scenario: All changes to user intake get audit logged
     Given the following user intakes:
       | kit_serial_number |
       | 12345             |
     When I update kit serial for user intake "12345" to "54321"
-    Then the last user intake has a recent audit log
+    Then the last user intake should have a recent audit log
 
   Scenario: Any change to status gets logged to triage audit log
     Given the following user intakes:

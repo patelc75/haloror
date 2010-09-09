@@ -88,7 +88,7 @@ Given /^(?:|the )user intake with kit serial "([^"]*)" is not submitted$/ do |ki
   ui.submitted_at = nil
   ui.save.should be_true
   ui.senior.save.should be_true
-  ui.senior.status.should be_blank
+  # ui.senior.status.should be_blank # PENDING
 end
 
 Given /^credit card is charged in user intake "([^"]*)"$/ do |kit_serial|
@@ -188,10 +188,6 @@ When /^I update kit serial for user intake "([^"]*)" to "([^"]*)"$/ do |kit, val
   ui.save.should be_true
 end
 
-Then /^user intake "([^"]*)" has status "([^"]*)"$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
-end
-
 Then /^"([^"]*)" is enabled for subscriber of user intake "([^"]*)"$/ do |col_name, kit_serial|
   ui = UserIntake.find_by_kit_serial_number( kit_serial)
   ui.should_not be_blank
@@ -222,19 +218,24 @@ Then /^senior of user intake "([^"]*)" (should|should not) be in test mode$/ do 
   end
 end
 
-Then /^user intake "([^"]*)" has "([^"]*)" status$/ do |kit, status|
+Then /^user intake "([^"]*)" (should|should not) have "([^"]*)" status$/ do |kit, condition, status|
   (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
-  ui.senior.should_not be_blank
+  ( senior = ui.senior).should_not be_blank
+  if condition == "should"
+    senior.status.should == status
+  else
+    senior.status.should != status
+  end
 end
 
-Then /^I see "([^"]*)" for the user intake "([^"]*)"$/ do |arg1, arg2|
+Then /^I should see "([^"]*)" for the user intake "([^"]*)"$/ do |arg1, arg2|
   pending # express the regexp above with the code you wish you had
 end
 
-Then /^(?:|the )last user intake (has|does not have) (.+)$/ do |condition, what|
+Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, what|
   (ui = UserIntake.last).should_not be_blank
   
-  if condition == "has"
+  if condition == "should"
     case what
     when "a print stamp"
       ui.paper_copy_at.should_not be_blank
@@ -246,12 +247,16 @@ Then /^(?:|the )last user intake (has|does not have) (.+)$/ do |condition, what|
       ui.credit_debit_card_proceessed.should_not be_blank
     when "a recent audit log"
       ui.senior.last_triage_audit_log.should_not be_blank
+    when "a status attribute"
+      ui.senior.status.should_not be_blank
     end
     
   else
     case what
     when "credit card value"
       ui.credit_debit_card_proceessed.should be_blank
+    when "a status attribute"
+      ui.senior.attributes.keys.should_not have( "status")
     end
   end
 end
@@ -270,13 +275,13 @@ Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |kit, what
   end
 end
 
-Then /^all caregivers for senior of user intake "([^"]*)" are away$/ do |kit_serial|
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
-  (senior = ui.senior).should_not be_blank
-  ui.caregivers.compact.uniq.each {|e| e.active_for?( senior).should be_false }
+Then /^all caregivers for senior of user intake "([^"]*)" should be away$/ do |kit|
+  ui = user_intake_by_kit( kit)
+  ui.senior.should_not be_blank
+  ui.caregivers.compact.uniq.each {|e| e.active_for?( ui.senior).should be_false }
 end
 
-Then /^senior of user intake "([^"]*)" is not a member of "([^"]*)" group$/ do |kit_serial, group_name|
+Then /^senior of user intake "([^"]*)" should not be a member of "([^"]*)" group$/ do |kit_serial, group_name|
   (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   senior.group_memberships.collect(&:name).uniq.should_not include( group_name)
@@ -287,7 +292,7 @@ end
 # * It might not work for other cases
 # * Usually the first_attrbute ought to occur "after" second_attribute
 #   This allow first_attribute.blank? to generate a valid condition
-Then /^"([^"]*)" for last user intake is (\d+) (hours|days) after "([^"]*)"$/ do |attribute, index, duration, check_attribute|
+Then /^"([^"]*)" for last user intake should be (\d+) (hours|days) after "([^"]*)"$/ do |attribute, index, duration, check_attribute|
   (ui = UserIntake.last).should_not be_blank
   first_attribute = ui.send( attribute.to_sym)
   second_attribute = ui.send( check_attribute.to_sym)
@@ -299,18 +304,48 @@ Then /^(.+) emails? to "([^"]*)" with kit serial for user intake "([^"]*)" in (s
   Email.all.select {|e| e.to == email && e.mail.include?( data) }.length.should == count.to_i
 end
 
-Then /^attribute "([^"]*)" of user intake "([^"]*)" has value$/ do |attribute, kit_serial|
+Then /^attribute "([^"]*)" of user intake "([^"]*)" should have value$/ do |attribute, kit_serial|
   attribute = "credit_debit_card_proceessed" if attribute == "card"
   (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
   ui.send(attribute.to_sym).should_not be_blank
 end
 
-Then /^I see "([^"]*)" for user intake "([^"]*)"$/ do |arg1, arg2|
+Then /^I should see "([^"]*)" for user intake "([^"]*)"$/ do |arg1, arg2|
   (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
   response.should contain( "Audit Log for user #{ui.senior.name}")
 end
 
-Then /^user intake "([^"]*)" does not have a status attribute$/ do |kit_serial|
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+Then /^user intake "([^"]*)" should not have a status attribute$/ do |kit|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
   ui.attributes.keys.should_not include( "status")
+end
+
+Then /^senior of user intake "([^"]*)" is not a member of "([^"]*)" group$/ do |kit, group_name|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  senior.group_memberships.collect(&:name).should_not have( group_name)
+end
+
+Then /^senior of user intake "([^"]*)" has "([^"]*)" flag ON$/ do |arg1, arg2|
+  pending # express the regexp above with the code you wish you had
+end
+
+Then /^senior of user intake "([^"]*)" has a recent audit log for status "([^"]*)"$/ do |kit, status|
+  ui = user_intake_by_kit( kit)
+  ui.senior.last_triage_audit_log.status.should == status
+end
+
+Then /^user intake "([^"]*)" has "([^"]*)" status$/ do |kit, status|
+  ui = user_intake_by_kit( kit)
+  ui.senior.status.should == status
+end
+
+# ============================
+# = local methods for DRYness =
+# ============================
+
+def user_intake_by_kit( kit)
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  ui.senior.should_not be_blank
+  ui
 end

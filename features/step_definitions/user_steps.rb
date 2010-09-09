@@ -258,7 +258,7 @@ Then /^I (should|should not) see "([^"]*)" xpath within "([^"]*)" user row$/ do 
   end
 end
 
-Then /^user "([^"]*)" has a recent audit log for status "([^"]*)"$/ do |login, status|
+Then /^user "([^"]*)" should have a recent audit log for status "([^"]*)"$/ do |login, status|
   (user = User.find_by_login( login)).should_not be_blank
   (log = user.triage_audit_logs.latest).should_not be_blank
   log.status.should == status
@@ -272,7 +272,8 @@ Then /^I (can|cannot) change the status of user "([^"]*)" to "([^"]*)"$/ do |con
   user.status.to_s.should == status.to_s # nil.to_s will be ""
 end
 
-Then /^user "([^"]*)" has attribute "([^"]*)"$/ do |login, attribute|
+Then /^user "([^"]*)" should have attribute "([^"]*)"$/ do |login, attribute|
   (user = User.find_by_login( login)).should_not be_blank
   user.attributes.keys.should include( attribute)
 end
+

@@ -69,7 +69,7 @@ Feature: User Intake Legal Agreement
     And I check "Same as User"
     And I press "user_intake_submit"
     And I press "Print"
-    Then last user intake has a print stamp
+    Then last user intake should have a print stamp
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Senior can sign the agreement successfully
@@ -83,7 +83,7 @@ Feature: User Intake Legal Agreement
     And I view the last user intake
     And I check "userintake_agree"
     And I press "user_intake_submit"
-    Then last user intake has an agreement stamp
+    Then last user intake should have an agreement stamp
 
   # https://redmine.corp.halomonitor.com/issues/3170
   # # user reaches the following immediately after activation of account

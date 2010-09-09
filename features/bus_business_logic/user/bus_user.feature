@@ -25,14 +25,14 @@ Feature: User status
   Scenario: User has pending status when created
     When I am ready to submit a user intake
     And I press "user_intake_submit"
-    Then the senior of user intake "1122334455" has pending status
+    Then the senior of user intake "1122334455" should have "pending" status
 
   Scenario: Add separate column in users table for test mode to indicate that user is in test mode
-    Then user "test-user" has attribute "test_mode"
+    Then user "test-user" should have attribute "test_mode"
 
   Scenario: Keep status in users table (existing status column) and not the user_intakes table
     Given the following user intakes:
       | kit_serial_number |
       | 1122334455        |
-    Then user intake "1122334455" does not have a status attribute
-    And senior of user intake "1122334455" has a status attribute
+    Then user intake "1122334455" should not have a status attribute
+    And senior of user intake "1122334455" should have a status attribute
