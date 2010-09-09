@@ -50,13 +50,10 @@ Feature: Online store group billing
       | charge_lease | invoice_server  |
     And a group exists with the following attributes:        
       | name         | sub_dealer |
-      | price_mon_cs | 28.00      |
     And a group exists with the following attributes:
       | name | sub_dealer2 |
     And a group exists with the following attributes:
       | name         | default |
-      | price_mon_bc | 25.00   |
-      | price_mon_cs | 30.00   |
     And the product catalog exists
 
    # Need to rename Group.grace_period to Group.grace_mon_days in DB  
