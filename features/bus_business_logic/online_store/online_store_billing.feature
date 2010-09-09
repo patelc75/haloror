@@ -49,19 +49,18 @@ Feature: Online store group billing
       | charge_mon   | invoice_server  |
       | charge_lease | invoice_server  |
     And a group exists with the following attributes:        
-      | name         | sub_dealer |
+      | name | sub_dealer |
     And a group exists with the following attributes:
       | name | sub_dealer2 |
-    And a group exists with the following attributes:
-      | name         | default |
     And the product catalog exists
 
    # Need to rename Group.grace_period to Group.grace_mon_days in DB  
-   Scenario: If kit charge is configured for invoice_advance, $0.00 kit price 
+   Scenario: If kit charge is configured for invoice_advance, do not perform a credit card transaction
      And I am an authenticated user
-     And group "default" is a child of group "marketlink"
-     And user "demo" has "sales" role for group "marketlink"
-     And I select "marketlink" from "Group" #remove this if there is only 1 group and no drop down is displayed      
+     And group "sub_dealer" is a child of group "marketlink"
+     And user "demo" has "sales" role for group "sub_dealer"   
+     When I go to the online store     
+     And I select "sub_dealer" from "Group" #remove this if there is only 1 group and no drop down is displayed      
      And I choose "product_complete"
      And I fill the shipping details for online store
      And I fill the credit card details for online store     
@@ -69,13 +68,20 @@ Feature: Online store group billing
      And I press "Continue"
      And I press "Place Order"
      And I follow "Skip for later"
-     Then page content should have "Thank you"        
-     And  page content should "Kit Total" of "0.00"          
+     Then page content should have "Thank you"
+     And I am ready to submit a user intake
+     When I select "sub_dealer" from "Group"
+     And I press "user_intake_submit"        
+     And the associated one-time charge does not exist for the order #response table only includes the monitoring (both recurring & prorate)
+#     And the associated user intake goes to "Installed" state if an order exists with both prorate and recurring charges
+ 
 
-   Scenario: If monitoring charge is configured for installed, User Intake cannot enter "Ready for Approval" status without prorate and recurring credit card charge approved 
+   #See charge_mon for monitoring charge
+   Scenario: If monitoring is configured to charge when installed, User Intake must include successful prorate and recurring credit card charge to switch to "Installed" status
      And I am an authenticated user
-     And group "default" is a child of group "active_forever"
-     And user "demo" has "sales" role for group "active_forever"
+     And user "demo" has "sales" role for group "active_forever"  
+     And user "super_admin" has "super_admin" role
+     When I go to the online store
      And I select "marketlink" from "Group" #remove this if there is only 1 group and no drop down is displayed      
      And I choose "product_complete"
      And I fill the shipping details for online store
@@ -84,10 +90,19 @@ Feature: Online store group billing
      And I press "Continue"
      And I press "Place Order"
      And I follow "Skip for later"
-     Then page content should have "Thank you"        
-     And senior of user intake "12345" has "Ready for Approval" status  #need help to write this           
-     
-   Scenario: Same as previous Scenario except include 1 month free coupon code 
+     And I am editing the associated user intake form
+     When I select "marketlink" from "Group"
+     And I press "user_intake_submit"     
+     And user "super_admin" approves the associated user intake form #Ram will dry this step
+     And a panic button is delivered after the desired installation date and the user is not in test mode   
+     And user "super_admin" clicks the "Bill" button for the subscriber in the associated user intake form     
+     Then the associated user intake must include successful prorate and recurring charges  
+      
+   # See charge_kit and charge_mon to determine the invoice status
+   Scenario: If the group is invoiced for both kit and monitoring charges, then hide online store so user is forced to create a new user intake form
+   
+   
+   Scenario: Same as previous Scenario except include 1 month free coupon code which means prorate and recurring charged 1 month later (start from scanerio 80)
    
    @wip
    # this relates to the billing reports slated for 1.7.0
