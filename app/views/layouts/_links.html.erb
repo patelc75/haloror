@@ -28,7 +28,7 @@
       <hr>
       <% end %>
       <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
-      <li><%= link_to 'User&nbsp;Signup', url_for(:controller => 'users', :action => 'new') %></li>
+      <li><%= link_to 'User&nbsp;Signup', url_for(:controller => 'admin', :action => 'signup') %></li>   
       <% end %>
       <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
       <li><%= link_to 'User&nbsp;Intake', '/user_intakes/new' %></li>
