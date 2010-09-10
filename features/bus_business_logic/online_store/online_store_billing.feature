@@ -102,8 +102,9 @@ Feature: Online store group billing
    Scenario: If the group is invoiced for both kit and monitoring charges, then hide online store so user is forced to create a new user intake form
    
    
-   Scenario: Same as previous Scenario except include 1 month free coupon code which means prorate and recurring charged 1 month later (start from scanerio 80)
-   
+   Scenario: Same as previous Scenario except include 1 month free coupon code which means prorate and recurring charged 1 month later (start from scenario 80)
+      Given Scenario 80 has happened
+      
    @wip
    # this relates to the billing reports slated for 1.7.0
    Scenario: 2 subdealer orders under a MarketLink with verification of amounts on the billing page
