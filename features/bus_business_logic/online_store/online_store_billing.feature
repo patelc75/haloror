@@ -73,7 +73,7 @@ Feature: Online store group billing
      And user "super_admin" clicks the "Bill" button for the subscriber in the associated user intake form
      Then the associated user intake must include successful prorate and recurring charges
 
-   # Tests charge_kit=invoice_server or invoice_advance AND charge_mon=invoice_server or invoice_advance
+   # Tests charge_kit=invoice_server or invoice_advance AND charge_mon=invoice_server
    Scenario: If the group is invoiced for both kit and monitoring charges, then hide online store so user is forced to create a new user intake form
 
    Scenario: Same as previous Scenario except include 1 month free coupon code which means prorate and recurring charged 1 month later (start from scenario 80)
