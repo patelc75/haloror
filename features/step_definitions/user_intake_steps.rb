@@ -188,6 +188,16 @@ When /^I update kit serial for user intake "([^"]*)" to "([^"]*)"$/ do |kit, val
   ui.save.should be_true
 end
 
+When /^user "([^"]*)" clicks the "([^"]*)" button for the subscriber in the associated user intake form$/ do |arg1, arg2|
+  pending # express the regexp above with the code you wish you had
+end
+
+When /^I am editing the user intake associated to last order$/ do
+  (order = Order.last).should_not be_blank
+  (ui = order.user_intake).should_not be_blank
+  visit url_for( :controller => "user_intakes", :action => "edit", :id => ui)
+end
+
 Then /^"([^"]*)" is enabled for subscriber of user intake "([^"]*)"$/ do |col_name, kit_serial|
   ui = UserIntake.find_by_kit_serial_number( kit_serial)
   ui.should_not be_blank
@@ -340,6 +350,9 @@ Then /^user intake "([^"]*)" has "([^"]*)" status$/ do |kit, status|
   ui.senior.status.should == status
 end
 
+Then /^the associated user intake must include successful prorate and recurring charges$/ do
+  pending # express the regexp above with the code you wish you had
+end
 # ============================
 # = local methods for DRYness =
 # ============================

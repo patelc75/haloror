@@ -35,6 +35,10 @@ Given /^the payment gateway response log is empty$/ do
   PaymentGatewayResponse.delete_all
 end
 
+# Given /^Scenario (\d+) has happened$/ do |arg1|
+#   pending # express the regexp above with the code you wish you had
+# end
+
 When /^I erase the payment gateway response log$/ do
   PaymentGatewayResponse.delete_all
 end

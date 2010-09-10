@@ -580,12 +580,17 @@ ActiveRecord::Schema.define(:version => 20100827205811) do
   end
 
   create_table "groups", :force => true do |t|
-    t.string   "name",        :null => false
+    t.string   "name",           :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "description"
     t.string   "sales_type"
     t.string   "email"
+    t.string   "charge_kit"
+    t.string   "charge_mon"
+    t.string   "charge_lease"
+    t.integer  "grace_mon_days"
+    t.string   "grace_mon_from"
   end
 
   create_table "gw_alarm_button_timeouts", :force => true do |t|

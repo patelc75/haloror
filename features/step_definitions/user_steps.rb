@@ -27,6 +27,7 @@ Given /^user "([^\"]*)" has "([^\"]*)" role(?:|s)$/ do |user_names, role_names|
   user_names = user_names.split(',').collect(&:strip).flatten.uniq
   role_names = role_names.split(',').collect {|p| p.strip.gsub(/ /,'_')}.flatten.uniq
   user_names.each do |user_name|
+    find_or_create_user( user_name) # make sure this exist, if not already
     (user = User.find_by_login(user_name)).should_not be_blank
     role_names.each {|role| user.has_role role }
   end
@@ -108,6 +109,10 @@ When /^I press "([^"]*)" within "([^"]*)" user row$/ do |button, user_login|
   within("div#user_#{user.id}") do
     click_button(button)
   end
+end
+
+When /^a panic button is delivered after the desired installation date and the user is not in test mode$/ do
+  pending # express the regexp above with the code you wish you had
 end
 
 Then /^user "([^\"]*)" should have data for (.+)$/ do |user_login, method_names|
@@ -277,3 +282,12 @@ Then /^user "([^"]*)" should have attribute "([^"]*)"$/ do |login, attribute|
   user.attributes.keys.should include( attribute)
 end
 
+# ===================================
+# = local methods to simplify steps =
+# ===================================
+
+def find_or_create_user( login)
+  if User.find_by_login( login).blank?
+    Factory.create( :user, :login => login) # password would be "12345"
+  end
+end
