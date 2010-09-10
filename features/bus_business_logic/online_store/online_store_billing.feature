@@ -32,7 +32,7 @@ Feature: Online store group billing
    # Need to rename Group.grace_period to Group.grace_mon_days in DB
    Scenario: If monitoring is configured to charge when installed, User Intake must include successful prorate and recurring credit card charge to switch to "Installed" status
      And I am an authenticated user
-     And user "demo" has "sales" role for group "active_forever, marketlink"
+     And user "demo" has "sales" role for group "marketlink"
      And user "super_admin" has "super_admin" role
      When I go to the online store
      And I select "marketlink" from "Group"
@@ -56,7 +56,7 @@ Feature: Online store group billing
    # Tests charge_kit=invoice_server or invoice_advance AND charge_mon=invoice_server
    Scenario: If the group is invoiced for both kit and monitoring charges, then hide online store so user is forced to create a new user intake form
 
-   Scenario: Same as previous Scenario except include 1 month free coupon code which means prorate and recurring charged 1 month later (start from scenario 80)
+   Scenario: Same as previous Scenario except include 1 month free coupon code which means prorate and recurring charged 1 month later (start from scenario 33)
 
   # this relates to the billing reports slated for 1.7.0
    @wip
