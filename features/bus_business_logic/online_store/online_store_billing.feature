@@ -28,30 +28,8 @@ Feature: Online store group billing
       | sub_dealer         |                 |                |                |                |                |
       | sub_dealer2        |                 |                |                |                |                |
 
-   # Tests charge_kit = invoice_advance
+   # Tests charge_mon = installed and charge_kit = invoice_advance   
    # Need to rename Group.grace_period to Group.grace_mon_days in DB
-   Scenario: If kit charge is configured for invoice_advance, do not perform a credit card transaction
-     And I am an authenticated user
-     And group "sub_dealer" is a child of group "marketlink"
-     And user "demo" has "sales" role for group "sub_dealer"
-     When I go to the online store
-     And I select "sub_dealer" from "Group"
-     And I choose "product_complete"
-     And I fill the shipping details for online store
-     And I fill the credit card details for online store
-     And I check "Same as shipping"
-     And I press "Continue"
-     And I press "Place Order"
-     And I follow "Skip for later"
-     And I am editing the user intake associated to last order
-     When I select "sub_dealer" from "Group"
-     And I press "user_intake_submit"
-      #response table only includes the monitoring (both recurring & prorate)
-     And the associated one time charge does not exist for the order
-#     And the associated user intake goes to "Installed" state if an order exists with both prorate and recurring charges
-
-   #Tests charge_mon = installed
-   #See charge_mon for monitoring charge
    Scenario: If monitoring is configured to charge when installed, User Intake must include successful prorate and recurring credit card charge to switch to "Installed" status
      And I am an authenticated user
      And user "demo" has "sales" role for group "active_forever, marketlink"
@@ -72,6 +50,8 @@ Feature: Online store group billing
      And a panic button is delivered after the desired installation date and the user is not in test mode
      And user "super_admin" clicks the "Bill" button for the subscriber in the associated user intake form
      Then the associated user intake must include successful prorate and recurring charges
+     And the associated one time charge does not exist for the order  #response table only includes the monitoring (both recurring & prorate)    
+     And the associated user intake goes to "Installed" state
 
    # Tests charge_kit=invoice_server or invoice_advance AND charge_mon=invoice_server
    Scenario: If the group is invoiced for both kit and monitoring charges, then hide online store so user is forced to create a new user intake form
