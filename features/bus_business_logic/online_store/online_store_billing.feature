@@ -28,6 +28,7 @@ Feature: Online store group billing
       | sub_dealer         |                 |                |                |                |                |
       | sub_dealer2        |                 |                |                |                |                |
 
+   # Tests charge_kit = invoice_advance
    # Need to rename Group.grace_period to Group.grace_mon_days in DB
    Scenario: If kit charge is configured for invoice_advance, do not perform a credit card transaction
      And I am an authenticated user
@@ -49,7 +50,7 @@ Feature: Online store group billing
      And the associated one time charge does not exist for the order
 #     And the associated user intake goes to "Installed" state if an order exists with both prorate and recurring charges
 
-
+   #Tests charge_mon = installed
    #See charge_mon for monitoring charge
    Scenario: If monitoring is configured to charge when installed, User Intake must include successful prorate and recurring credit card charge to switch to "Installed" status
      And I am an authenticated user
@@ -72,12 +73,10 @@ Feature: Online store group billing
      And user "super_admin" clicks the "Bill" button for the subscriber in the associated user intake form
      Then the associated user intake must include successful prorate and recurring charges
 
-   # See charge_kit and charge_mon to determine the invoice status
+   # Tests charge_kit=invoice_server or invoice_advance AND charge_mon=invoice_server or invoice_advance
    Scenario: If the group is invoiced for both kit and monitoring charges, then hide online store so user is forced to create a new user intake form
 
-
    Scenario: Same as previous Scenario except include 1 month free coupon code which means prorate and recurring charged 1 month later (start from scenario 80)
-      # Given Scenario 80 has happened
 
   # this relates to the billing reports slated for 1.7.0
    @wip
