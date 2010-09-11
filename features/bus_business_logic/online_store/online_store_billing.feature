@@ -48,12 +48,12 @@ Feature: Online store group billing
      When I select "marketlink" from "Group"
      And I press "user_intake_submit"
      And user "super_admin" approves the user intake form associated to last order
-     And a panic button is delivered after the desired installation date and the user is not in test mode
-     And user "super_admin" clicks the "Bill" button for the subscriber in the associated user intake form
-     Then the associated user intake must include successful prorate and recurring charges
-     #response table only includes the monitoring (both recurring & prorate)    
-     And the associated one time charge does not exist for the order
-     And the associated user intake goes to "Installed" state
+     # And a panic button is delivered after the desired installation date and the user is not in test mode
+     # And user "super_admin" clicks the "Bill" button for the subscriber in the associated user intake form
+     # Then the associated user intake must include successful prorate and recurring charges
+     # #response table only includes the monitoring (both recurring & prorate)    
+     # And the associated one time charge does not exist for the order
+     # And the associated user intake goes to "Installed" state
 
    # Tests charge_kit=invoice_server or invoice_advance AND charge_mon=invoice_server
    Scenario: If the group is invoiced for both kit and monitoring charges, then hide online store so user is forced to create a new user intake form
@@ -62,74 +62,74 @@ Feature: Online store group billing
 
   # this relates to the billing reports slated for 1.7.0
    @wip
-   Scenario: 2 subdealer orders under a MarketLink with verification of amounts on the billing page
-    And I am an authenticated user
-    And group "default" is a child of group "marketlink"
-    And group "sub_dealer" is a child of group "marketlink"
-    And group "sub_dealer2" is a child of group "marketlink"
-    And user "demo" has "sales" role for group "sub_dealer","sub_dealer2"
-    When I go to the online store
-    And I select "sub_dealer" from "Group"
-    And I choose "product_complete"
-    And I fill the shipping details for online store
-    And I fill the credit card details for online store
-    And I check "Same as shipping"
-    And I press "Continue"
-    And I press "Place Order"
-    And I follow "Skip for later"
-    And page content should have "Thank you"
-    And last order should be associated to "sub_dealer" group
-    When I go to the online store
-    And I select "sub_dealer2" from "Group"
-    And I choose "product_clip"
-    And I fill the shipping details for online store
-    And I fill the credit card details for online store
-    And I check "Same as shipping"
-    And I press "Continue"
-    And I press "Place Order"
-    And I follow "Skip for later"
-    Then page content should have "Thank you"
-     #put in exact amount when coupon codes are rewritten
-    And monitoring fee should be charged on the credit card
-    And kit fee should not be charged on the credit card
-    # Write feature so billing shows up in triage (after panic button press) and somebody clicks it
-    And I follow "My Links > Billing"
-    And I select "marketlink" from "Group"
-    And I select Time.now.strftime("%B") from "Month"
-    Then I should see the heading "Receipt"
-     #fix when coupon codes are fixed
-    And I should see $59 - $30 associated with "Total" for group "sub_dealer"
-     #fix when coupon codes are fixed
-    And I should see $49 - $25 associated with "Total" for group "sub_dealer2"
-    #price_mon_bc (sub_dealer) + price_mon_cs (sub_dealer2)
-    And I should see "16.00" associated with "Total" for group "marketlink"
+   # Scenario: 2 subdealer orders under a MarketLink with verification of amounts on the billing page
+   #  And I am an authenticated user
+   #  And group "default" is a child of group "marketlink"
+   #  And group "sub_dealer" is a child of group "marketlink"
+   #  And group "sub_dealer2" is a child of group "marketlink"
+   #  And user "demo" has "sales" role for group "sub_dealer","sub_dealer2"
+   #  When I go to the online store
+   #  And I select "sub_dealer" from "Group"
+   #  And I choose "product_complete"
+   #  And I fill the shipping details for online store
+   #  And I fill the credit card details for online store
+   #  And I check "Same as shipping"
+   #  And I press "Continue"
+   #  And I press "Place Order"
+   #  And I follow "Skip for later"
+   #  And page content should have "Thank you"
+   #  And last order should be associated to "sub_dealer" group
+   #  When I go to the online store
+   #  And I select "sub_dealer2" from "Group"
+   #  And I choose "product_clip"
+   #  And I fill the shipping details for online store
+   #  And I fill the credit card details for online store
+   #  And I check "Same as shipping"
+   #  And I press "Continue"
+   #  And I press "Place Order"
+   #  And I follow "Skip for later"
+   #  Then page content should have "Thank you"
+   #   #put in exact amount when coupon codes are rewritten
+   #  And monitoring fee should be charged on the credit card
+   #  And kit fee should not be charged on the credit card
+   #  # Write feature so billing shows up in triage (after panic button press) and somebody clicks it
+   #  And I follow "My Links > Billing"
+   #  And I select "marketlink" from "Group"
+   #  And I select Time.now.strftime("%B") from "Month"
+   #  Then I should see the heading "Receipt"
+   #   #fix when coupon codes are fixed
+   #  And I should see $59 - $30 associated with "Total" for group "sub_dealer"
+   #   #fix when coupon codes are fixed
+   #  And I should see $49 - $25 associated with "Total" for group "sub_dealer2"
+   #  #price_mon_bc (sub_dealer) + price_mon_cs (sub_dealer2)
+   #  And I should see "16.00" associated with "Total" for group "marketlink"
 
    @wip
-   Scenario: Senior Helpers with verification of amounts on the billing page
-     Given a group exists with the following attributes:
-       | name                  | "senior_helpers"  |
-       | kit_charge            | "invoice_advance" |
-       | lease_fee_separate    | "true"            |
-       | lease_grace_days      | 7                 |
-       | lease_grace_from      | "ship"            |
-       | monitoring_grace_days |                   |
-       | monitoring_grace_from | "never"           |
-       | monitoring_charge     | "invoice_web"     |
-       | commission_mon_bc     | 9.00              |
-       | commission_mon_cs     | 14.00             |
-       | commission_lease_bc   | 15.00             |
-       | commission_lease_cs   | 15.00             |
-     And I am an authenticated user
-     And user "demo" has "sales" role for group "senior_helpers"
-     When I go to the online store
-     And I select "senior_helpers" from "Group"
-     And I choose "product_complete"
-     And I fill the shipping details for online store
-     And the credit card details should not be present
-     Then page content should have "Thank you"
-     And monitoring fee should be not charged on the credit card
-     And I follow "My Links > Billing"
-     And I select "senior_helpers" from "Group"
-     And I select Time.now.strftime("%B") from "Month"
-     Then I should see the heading "Invoice"
-     Then I should see $99 + $30 associated with "Total" for group "senior_helpers"
+   # Scenario: Senior Helpers with verification of amounts on the billing page
+   #   Given a group exists with the following attributes:
+   #     | name                  | "senior_helpers"  |
+   #     | kit_charge            | "invoice_advance" |
+   #     | lease_fee_separate    | "true"            |
+   #     | lease_grace_days      | 7                 |
+   #     | lease_grace_from      | "ship"            |
+   #     | monitoring_grace_days |                   |
+   #     | monitoring_grace_from | "never"           |
+   #     | monitoring_charge     | "invoice_web"     |
+   #     | commission_mon_bc     | 9.00              |
+   #     | commission_mon_cs     | 14.00             |
+   #     | commission_lease_bc   | 15.00             |
+   #     | commission_lease_cs   | 15.00             |
+   #   And I am an authenticated user
+   #   And user "demo" has "sales" role for group "senior_helpers"
+   #   When I go to the online store
+   #   And I select "senior_helpers" from "Group"
+   #   And I choose "product_complete"
+   #   And I fill the shipping details for online store
+   #   And the credit card details should not be present
+   #   Then page content should have "Thank you"
+   #   And monitoring fee should be not charged on the credit card
+   #   And I follow "My Links > Billing"
+   #   And I select "senior_helpers" from "Group"
+   #   And I select Time.now.strftime("%B") from "Month"
+   #   Then I should see the heading "Invoice"
+   #   Then I should see $99 + $30 associated with "Total" for group "senior_helpers"
