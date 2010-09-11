@@ -593,7 +593,7 @@ class User < ActiveRecord::Base
           end
         end
       end
-      Hash[ values.compact ] # convert to hash
+      Hash[ values ] # convert to hash. WARNING: DO NOT COMPACT
     end
   end
   
