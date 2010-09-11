@@ -11,8 +11,9 @@ Given /^debug$/ do
 end
 
 Given /^I am (?:an )authenticated(?: user)$/ do
-  user = Factory.create(:user, {:login => 'demo', :password => '12345', :password_confirmation => '12345'})
-  user.activate
+  user = User.find_by_login( "demo")
+  user = Factory.create(:user, {:login => 'demo', :password => '12345', :password_confirmation => '12345'}) unless user
+  user.activate unless user.activated?
   authenticate("demo", "12345")
 end
 

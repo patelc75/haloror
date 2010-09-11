@@ -195,7 +195,7 @@ end
 When /^I am editing the user intake associated to last order$/ do
   (order = Order.last).should_not be_blank
   (ui = order.user_intake).should_not be_blank
-  visit url_for( :controller => "user_intakes", :action => "edit", :id => ui)
+  visit url_for( :controller => "user_intakes", :action => "edit", :id => ui.id)
 end
 
 Then /^"([^"]*)" is enabled for subscriber of user intake "([^"]*)"$/ do |col_name, kit_serial|

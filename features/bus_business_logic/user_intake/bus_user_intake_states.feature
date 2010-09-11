@@ -35,7 +35,7 @@ Feature: Bus user intake states
   # reason: 48 hours before desired installation date
   # action: email to admin
   # triage: abnormal
-  Scenario: User Intake - Abnormal - Not yet submitted
+  Scenario Outline: User Intake - Abnormal - Not yet submitted
     Given desired installation date for user intake "12345" is in <hours_away> hours
     Then I should see triage status "abnormal" for senior of user intake "12345"
     And action button for user intake "12345" should be colored red
@@ -48,20 +48,19 @@ Feature: Bus user intake states
   # status: grey
   # reason: submitted
   # action: send email to safety care. user intake read-only (except super_admin)
-  # triage: abnormal
+  # triage: 
   Scenario: User Intake - Ready for approval
     Given I am ready to submit a user intake
     And I press "user_intake_submit"
     Then an email to safety care should be sent for delivery
     And last user intake should be read only
-    And I should see triage status "abnormal" for senior of user intake "12345"
     And action button for user intake "12345" should be colored grey
   
   # status: yellow
   # reason: 8 hours before desired installation date
   # action:
   # triage: caution
-  Scenario: User Intake - Caution - Ready for approval
+  Scenario Outline: User Intake - Caution - Ready for approval
     Given desired installation date for user intake "12345" is in <hours_away> hours
     Then I should see triage status "caution" for senior of user intake "12345"
     And action button for user intake "12345" should be colored yellow
@@ -75,7 +74,7 @@ Feature: Bus user intake states
   # reason: 4 hours before desired installation date
   # action: 
   # triage: abnormal
-  Scenario: User Intake - Abnormal - Ready for approval
+  Scenario Outline: User Intake - Abnormal - Ready for approval
     Given desired installation date for user intake "12345" is in <hours_away> hours
     Then I should see triage status "abnormal" for senior of user intake "12345"
     And action button for user intake "12345" should be colored red

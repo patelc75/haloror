@@ -31,7 +31,7 @@ Feature: Online store group billing
    # Tests charge_mon = installed and charge_kit = invoice_advance   
    # Need to rename Group.grace_period to Group.grace_mon_days in DB
    Scenario: If monitoring is configured to charge when installed, User Intake must include successful prorate and recurring credit card charge to switch to "Installed" status
-     And I am an authenticated user
+     Given I am an authenticated super_admin
      And user "demo" has "sales" role for group "marketlink"
      And user "super_admin" has "super_admin" role
      When I go to the online store
@@ -43,14 +43,16 @@ Feature: Online store group billing
      And I press "Continue"
      And I press "Place Order"
      And I follow "Skip for later"
+     And I am an authenticated super_admin
      And I am editing the user intake associated to last order
      When I select "marketlink" from "Group"
      And I press "user_intake_submit"
-     And user "super_admin" approves the associated user intake form
+     And user "super_admin" approves the user intake form associated to last order
      And a panic button is delivered after the desired installation date and the user is not in test mode
      And user "super_admin" clicks the "Bill" button for the subscriber in the associated user intake form
      Then the associated user intake must include successful prorate and recurring charges
-     And the associated one time charge does not exist for the order  #response table only includes the monitoring (both recurring & prorate)    
+     #response table only includes the monitoring (both recurring & prorate)    
+     And the associated one time charge does not exist for the order
      And the associated user intake goes to "Installed" state
 
    # Tests charge_kit=invoice_server or invoice_advance AND charge_mon=invoice_server
