@@ -281,7 +281,7 @@ class UserIntake < ActiveRecord::Base
   # end
   # 
   # # button color for user_intake form
-  # #   * we need to show grey when status in not found
+  # #   * we need to show gray when status in not found
   # #   * everything else is good
   # def status_button_color
   #   senior.status_button_color

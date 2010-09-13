@@ -59,15 +59,15 @@ Given /^I am ready to submit a user intake$/ do
   When %{I fill in "user_intake_kit_serial_number" with "1122334455"}
 end
 
-Given /^senior of user intake "([^"]*)" (is|is not) in test mode$/ do |kit_serial, condition|
+Given /^(?:|the )senior of user intake "([^"]*)" (is|is not) in test mode$/ do |kit_serial, condition|
   ui = UserIntake.find_by_kit_serial_number( kit_serial)
   ui.should_not be_blank
   
   case condition
   when "is"
-    ui.senior.test_mode?.should be_true
+    ui.senior.set_test_mode( true)
   when "is not"
-    ui.senior.test_mode?.should be_false
+    ui.senior.set_test_mode( false)
   end
 end
 
@@ -76,7 +76,7 @@ Given /^user intake "([^"]*)" does not have the product shipped yet$/ do |kit_se
   ui.shipped_at.should be_blank
 end
 
-Given /^senior of user intake "([^"]*)" (has|is at) "([^"]*)" status$/ do |kit_serial, condition, status|
+Given /^(?:|the )senior of user intake "([^"]*)" (has|is at) "([^"]*)" status$/ do |kit_serial, condition, status|
   (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   senior.status = status
@@ -100,6 +100,69 @@ end
 Given /^I edit the last user intake$/ do
   (ui = UserIntake.last).should_not be_blank
   visit url_for( :controller => "user_intakes", :action => "edit", :id => ui.id)
+end
+
+Given /^desired installation date for user intake "([^"]*)" is in (\d+) hours$/ do |kit, value|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  ui.installation_datetime = (Time.now + value.to_i.hours)
+  ui.save.should be_true
+end
+
+Given /^(.+) for user intake "([^"]*)" was (\d+) days ago$/ do |what, kit, span|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  
+  case what
+  when 'desired installation date'
+    ui.installation_datetime = Time.now - span.to_i.days
+  when 'monitoring grace period with ship date'
+    (group = ui.group).should_not be_blank
+    group.grace_mon_days = 2
+    group.save.should be_true
+    ui.shipped_at = Time.now - span.to_i - 2
+  end
+  ui.save.should be_true
+end
+
+Given /^the user intake "([^"]*)" status is "([^"]*)" since past (\d+) day(?:|s)$/ do |kit, status, count|
+  the_date = Time.now - count.to_i.days
+  (ui = UserIntake.find_by_kit_serial_numner(kit)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  ui.senior.create_triage_audit_log( :status => status, :created_at => the_date, :updated_at => the_date)
+end
+
+# credit card value must be checked in a separate step definition
+Given /^bill monthly or credit card value are acceptable for user intake "([^"]*)"$/ do |kit|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  ui.bill_monthly = true
+  ui.save.should be_true
+end
+
+# Given /^I am editing the RMA for user intake "([^"]*)"$/ do |kit|
+#   (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+#   (rma = ui.senior.rmas.create( :serial_number => "12345")).should be_true
+#   visit url_for( :controller => "rmas", :action => "edit", :id => rma.id)
+# end
+
+Given /^RMA for user intake "([^"]*)" discontinues service (?:|in )(\d+) (day|day ago)$/ do |kit, span, condition|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  the_date = if (condition == "day")
+    Time.now + span.to_i.days
+  else
+    Time.now - span.to_i.days
+  end
+  ui.senior.rmas.create( :serial_number => "12345", :discontinue_service_on => the_date)
+end
+
+When /^an email to admin, halouser and caregivers of user intake "([^"]*)" should be sent for delivery$/ do |kit|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  pending # express the regexp above with the code you wish you had
+end
+
+When /^panic button test data is received for user intake "([^"]*)"$/ do |kit|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  Panic.create( :user => senior).should be_true
 end
 
 When /^I (view|edit) user intake with kit serial "([^"]*)"$/ do |action, kit|
@@ -353,6 +416,35 @@ end
 Then /^the associated user intake must include successful prorate and recurring charges$/ do
   pending # express the regexp above with the code you wish you had
 end
+
+Then /^senior of last user intake should have "([^"]*)" status$/ do |status|
+  (ui = UserIntake.last).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  if status.blank?
+    senior.status.should be_blank
+  else
+    senior.status.should == status
+  end
+end
+
+Then /^action button for user intake "([^"]*)" should be colored (.+)$/ do |kit, color|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  senior.status_button_color.should == color
+end
+
+Then /^I should see triage status "([^"]*)" for senior of user intake "([^"]*)"$/ do |status, kit|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  result = senior.alert_status
+  senior.alert_status_for(:desired_installation_date).should == status
+end
+
+Then /^last user intake should be read only$/ do
+  (ui = UserIntake.last).should_not be_blank
+  ui.locked?.should be_true
+end
+
 # ============================
 # = local methods for DRYness =
 # ============================

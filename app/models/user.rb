@@ -14,15 +14,19 @@ class User < ActiveRecord::Base
     :test             => "Test Mode",
     :overdue          => "Install Overdue"
   }
-  STATUS_COLOR = {
-    :pending          => "gray",
-    :approval_pending => "gray",
-    :install_pending  => "yellow",
-    :bill_pending     => "gray",
-    :installed        => "green",
-    :test             => "blue",
-    :overdue          => "orange"
-  }
+
+  # WARNING:
+  #   Cannot use this color table. Colors are subject to status + time span away/ago
+  # STATUS_COLOR = {
+  #   :pending          => "gray",
+  #   :approval_pending => "gray",
+  #   :install_pending  => "yellow",
+  #   :bill_pending     => "gray",
+  #   :installed        => "green",
+  #   :test             => "blue",
+  #   :overdue          => "orange"
+  # }
+
   STATUS_IMAGE = {
     :pending          => "user_active.png",
     :approval_pending => "user_placeholder.png",
@@ -41,6 +45,16 @@ class User < ActiveRecord::Base
     :test             => "Test Mode",
     :overdue          => "Install Now"
   }
+
+  # DEFAULT_ALERT_CHECKS = {
+  #   "call_center_account" => "call_center_account",
+  #   "legal_agreement" => "legal_agreement",
+  #   "panic" => "panic",
+  #   "strap_fastened" => "strap_fastened",
+  #   "test_mode" => "test_mode",
+  #   "user_intake" => "user_intake",
+  #   "desired_installation_date" => "desired_installation_date"
+  # }
 
   # Usage:
   #   <%= User::TRIAGE_ALERT[which] || which.split('_').collect(&:capitalize).join(' ') %>
@@ -98,6 +112,7 @@ class User < ActiveRecord::Base
   has_many :orders_updated, :class_name => 'Order', :foreign_key => 'updated_by'
   has_many :panics
   has_many :purged_logs
+  has_many :rmas
   has_many :rma_items
   has_many :roles, :through => :roles_users # WARNING: do not touch this association
   has_many :roles_users,:dependent => :delete_all # # WARNING: do not touch this association
@@ -570,10 +585,11 @@ class User < ActiveRecord::Base
     keys = STATUS.keys if keys.blank? # consider all keys if the subset intersection was empty
     unless keys.blank?
       # collect array of arrays. convert to hash before returning
-      values = keys.collect do |key|
+      values = []
+      keys.each do |key|
         if key == :pending
           # [ key, creator.blank? ? created_at.to_s : "#{created_at} by #{creator.name}" ] # when the user row was created
-          [ key, created_at ] # when the user row was created
+          values += [ key, created_at ] # when the user row was created
         else
           unless last_triage_status.blank?
             # search parameters hash has a different key each time
@@ -584,18 +600,18 @@ class User < ActiveRecord::Base
             hash = { :conditions => { :user_id => id, :status => User::STATUS[key] }, :order => "created_at ASC" }
             log = TriageAuditLog.send( (STATUS.keys[1..4].include?(key) ? :first : :last), hash) # fetch row from triage audit log
             if options.include?( :force)
-              [ key, (log.blank? ? '' : log.created_at ) ]
+              values += [ key, (log.blank? ? '' : log.created_at ) ]
               # [ key, (log.blank? ? '' : (log.creator.blank? ? log.created_at.to_s : "#{log.created_at} by #{log.creator.name}") )]
             else
-              log.blank? ? nil : [ key, log.created_at ]
+              values += [ key, log.created_at ] unless log.blank?
               # log.blank? ? nil : [ key, (log.creator.blank? ? log.created_at.to_s : "#{log.created_at} by #{log.creator.name}") ]
             end
           end
         end
       end
       # WARNING: DO NOT COMPACT the array. The elements must be in the form [ [], [], ...]
-      values.to_hash # uses class extension for Array defined in config/initializers/array_extensions.rb
-      # Hash[ *values ] # convert to hash.
+      # values.to_hash # uses class extension for Array defined in config/initializers/array_extensions.rb
+      values.blank? ? {} : Hash[ *values ] # convert to hash
     end
   end
   
@@ -648,7 +664,13 @@ class User < ActiveRecord::Base
   end
   
   def status_button_color
-    STATUS_COLOR[ status_index]
+    _status = alert_status
+    case _status
+    when 'abnormal'; 'red'
+    when 'caution' ; 'yellow'
+    else             'gray';
+    end
+    # STATUS_COLOR[ status_index]
   end
   
   def status_image
@@ -773,12 +795,12 @@ class User < ActiveRecord::Base
   #   User.last.alert_status_for( :panic, :alert => {"user_intake" => "user_intake"})           # returns "normal". checking for panic, but check allowed only on user_intake
   #   User.last.alert_status_for( :panic, :alert => {"user_intake" => "anything", "panic" => true})   # returns status for panic. checking panic, check allowed also on panic
   def alert_status_for(what = nil, options = {})
-    # check allowed only on these alert types. everything else would return "normal"
-    alerts_to_check = (options[:alert].blank? ? {"call_center_account" => "call_center_account", "legal_agreement" => "legal_agreement", "panic" => "panic", "strap_fastened" => "strap_fastened", "test_mode" => "test_mode", "user_intake" => "user_intake"} : options[:alert])
+    # # check allowed only on these alert types. everything else would return "normal"
+    # alerts_to_check = (options[:alert].blank? ? DEFAULT_ALERT_CHECKS : options[:alert])
     group = self.is_halouser_of_what.flatten.first # fetch the group
     # return 'normal' when group is missing, or, alerts_to_check does not include alert being checked
     # for example: when checking for :panic but :panic not in allowed checks, just return "normal"
-    if group.blank? || !alerts_to_check.include?( what.to_s)
+    if group.blank? # || !alerts_to_check.include?( what.to_s)
       "normal"
     else
       # returning blank for status will default to 48 hours for abnormal, 24 for caution
@@ -831,13 +853,43 @@ class User < ActiveRecord::Base
             # check each default
             # collect its "status" in array
             defaults.each do |default|
-              if rows.select {|e| e.seconds_since_last > default.mgmt_query_delay_span }.size >= default.mgmt_query_failed_count
+              if rows.select {|e| e.seconds_since_last > default.mgmt_query_delay_span }.size >= (default.mgmt_query_failed_count || 0)
                 statuses << default.status
               end
             end
           end
         end
         statuses.flatten.compact.uniq.sort.first # alphabetical order: abnormal, caution, normal
+
+      # UserIntake.installation_datetime
+      when :desired_installation_date
+        if !user_intakes.blank? && !user_intakes.first.installation_datetime.blank?
+          time_span = ((user_intakes.first.installation_datetime - Time.now) / 1.hour).round.hours
+          result = if time_span > 60.hours
+            'normal'
+          elsif (time_span <= 60.hours) && (time_span > 48.hours)
+            'caution'
+          else # if (time_span <= 48.hours)
+            'abnormal'
+          end
+        end
+        result.blank? ? 'abnormal' : result
+
+
+      when :discontinue_service
+        dated = rmas.first( :order => "created_at DESC").discontinue_service_on
+        unless dated.blank?
+          if dated == Date.yesterday
+            'abnormal'
+          elsif dated == Date.tomorrow
+            'caution'
+          else
+            'normal'
+          end
+        end
+        
+      else
+        'normal' # anything that does not fit above, must count as normal
       end
       
       # when threshold is not defined. the following hard coded logic will work
@@ -853,7 +905,7 @@ class User < ActiveRecord::Base
   # combined alert status
   # alert status for panic, strap_fastened, call_center_account are collected
   # most severe status returned
-  # TODO: rspec and cucumber pending
+  # TODO: rspec and cucumber pending. cache this? check while performance tuning
   # Usage:
   #   User.last.alert_status( :alert => {:panic => :panic, :user_intake => :user_intake})   # only check these 2 alerts to decide status. otherwise consider "normal"
   def alert_status( options = {})
@@ -868,7 +920,8 @@ class User < ActiveRecord::Base
       #   this will check the actual status only for allowed alert types
       #   everything else is considered "normal" since want to ignore that status
       [ :panic, :strap_fastened, :call_center_account, :user_intake, :legal_agreement,
-        :test_mode, :software_version, :dial_up_status, :dial_up_alert, :mgmt_query_delay
+        :test_mode, :software_version, :dial_up_status, :dial_up_alert, :mgmt_query_delay,
+        :desired_installation_date
         ].collect {|e| alert_status_for(e, options) }.insert(0, 'normal').compact.uniq.sort.first
     end
   end
