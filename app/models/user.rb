@@ -593,7 +593,9 @@ class User < ActiveRecord::Base
           end
         end
       end
-      Hash[ values ] # convert to hash. WARNING: DO NOT COMPACT
+      # WARNING: DO NOT COMPACT the array. The elements must be in the form [ [], [], ...]
+      values.to_hash # uses class extension for Array defined in config/initializers/array_extensions.rb
+      # Hash[ *values ] # convert to hash.
     end
   end
   
