@@ -566,14 +566,15 @@ class User < ActiveRecord::Base
     # * either keys are supplied
     # * or all keys are considered
     # * invalid keys automatically get rejected in this step
+    values = []
     keys = ( options.blank? ? STATUS.keys : (STATUS.keys & options) ) # consider all keys, or a subset
     keys = STATUS.keys if keys.blank? # consider all keys if the subset intersection was empty
     unless keys.blank?
       # collect array of arrays. convert to hash before returning
-      values = keys.collect do |key|
+      keys.each do |key|
         if key == :pending
           # [ key, creator.blank? ? created_at.to_s : "#{created_at} by #{creator.name}" ] # when the user row was created
-          [ key, created_at ] # when the user row was created
+          values += [ key, created_at ] # when the user row was created
         else
           unless last_triage_status.blank?
             # search parameters hash has a different key each time
@@ -584,18 +585,18 @@ class User < ActiveRecord::Base
             hash = { :conditions => { :user_id => id, :status => User::STATUS[key] }, :order => "created_at ASC" }
             log = TriageAuditLog.send( (STATUS.keys[1..4].include?(key) ? :first : :last), hash) # fetch row from triage audit log
             if options.include?( :force)
-              [ key, (log.blank? ? '' : log.created_at ) ]
+              values += [ key, (log.blank? ? '' : log.created_at ) ]
               # [ key, (log.blank? ? '' : (log.creator.blank? ? log.created_at.to_s : "#{log.created_at} by #{log.creator.name}") )]
             else
-              log.blank? ? nil : [ key, log.created_at ]
+              values += [ key, log.created_at ] unless log.blank?
               # log.blank? ? nil : [ key, (log.creator.blank? ? log.created_at.to_s : "#{log.created_at} by #{log.creator.name}") ]
             end
           end
         end
       end
       # WARNING: DO NOT COMPACT the array. The elements must be in the form [ [], [], ...]
-      values.to_hash # uses class extension for Array defined in config/initializers/array_extensions.rb
-      # Hash[ *values ] # convert to hash.
+      # values.to_hash # uses class extension for Array defined in config/initializers/array_extensions.rb
+      Hash[ *values ] # convert to hash.
     end
   end
   
