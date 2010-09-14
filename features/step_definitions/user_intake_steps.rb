@@ -143,7 +143,7 @@ end
 #   visit url_for( :controller => "rmas", :action => "edit", :id => rma.id)
 # end
 
-Given /^RMA for user intake "([^"]*)" discontinues service (?:|in )(\d+) (day|day ago)$/ do |kit, span, condition|
+Given /^RMA for user intake "([^"]*)" discontinues (service|billing) (?:|in )(\d+) (day|day ago)$/ do |kit, what, span, condition|
   (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   the_date = if (condition == "day")
@@ -151,7 +151,11 @@ Given /^RMA for user intake "([^"]*)" discontinues service (?:|in )(\d+) (day|da
   else
     Time.now - span.to_i.days
   end
-  ui.senior.rmas.create( :serial_number => "12345", :discontinue_service_on => the_date)
+  if what == 'service'
+    ui.senior.rmas.create( :serial_number => "12345", :discontinue_service_on => the_date).should be_true
+  else
+    ui.senior.rmas.create( :serial_number => "12345", :discontinue_bill_on => the_date).should be_true
+  end
 end
 
 When /^an email to admin, halouser and caregivers of user intake "([^"]*)" should be sent for delivery$/ do |kit|

@@ -664,11 +664,12 @@ class User < ActiveRecord::Base
   end
   
   def status_button_color
-    _status = alert_status
+    _status = (status == STATUS[:installed] ? 'installed' : alert_status)
     case _status
-    when 'abnormal'; 'red'
-    when 'caution' ; 'yellow'
-    else             'gray';
+    when 'installed'; 'green'
+    when 'abnormal' ; 'red'
+    when 'caution'  ; 'yellow'
+    else              'gray';
     end
     # STATUS_COLOR[ status_index]
   end
@@ -875,9 +876,9 @@ class User < ActiveRecord::Base
         end
         result.blank? ? 'abnormal' : result
 
-
-      when :discontinue_service
-        dated = rmas.first( :order => "created_at DESC").discontinue_service_on
+      when :discontinue_service, :discontinue_billing
+        rma = rmas.first( :order => "created_at DESC")
+        dated = ( what == :discontinue_service ? rma.discontinue_service_on : rma.discontinue_bill_on ) unless rma.blank?
         unless dated.blank?
           if dated == Date.yesterday
             'abnormal'
@@ -887,7 +888,7 @@ class User < ActiveRecord::Base
             'normal'
           end
         end
-        
+
       else
         'normal' # anything that does not fit above, must count as normal
       end
@@ -921,7 +922,7 @@ class User < ActiveRecord::Base
       #   everything else is considered "normal" since want to ignore that status
       [ :panic, :strap_fastened, :call_center_account, :user_intake, :legal_agreement,
         :test_mode, :software_version, :dial_up_status, :dial_up_alert, :mgmt_query_delay,
-        :desired_installation_date
+        :desired_installation_date, :discontinue_billing, :discontinue_service
         ].collect {|e| alert_status_for(e, options) }.insert(0, 'normal').compact.uniq.sort.first
     end
   end

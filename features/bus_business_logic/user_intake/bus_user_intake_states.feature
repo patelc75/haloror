@@ -53,7 +53,7 @@ Feature: Bus user intake states
   Scenario: User Intake - Ready for approval
     Given I am ready to submit a user intake
     And I press "user_intake_submit"
-    Then an email to safety care should be sent for delivery
+    Then an email to "safety care" should be sent for delivery
     And last user intake should be read only
     And action button for user intake "12345" should be colored gray
   
