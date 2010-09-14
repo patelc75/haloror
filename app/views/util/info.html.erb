@@ -1,19 +1,23 @@
 <!-- See http://corelib.rubyonrails.org/classes/CGI.html for more environment variables -->
+<b>Server</b><br>
 UNIX hostname: <code><%= `hostname` %></code><br>
 Unix time: <code><%= `date` %></code><br>
+Server Instance: <code><%= ServerInstance.current_host_short_string() %></code><br>
+Health Server S/W version (via <code>git describe</code>): <code><%= `cd ~/haloror; /usr/bin/git describe` %></code><br>
+Rails Environment: <code><%= ENV['RAILS_ENV'] %></code><br>  
+<br>
+<b>Current User</b><br>
 Current user: <%= @current_user.name if @current_user %><br>
 <code>Time.zone.name: <%= Time.zone.name %></code><br>
 Current time: <%= Time.zone.now.inspect %><br>
 Current user's time zone: <%= current_user.profile.time_zone %><br>
-<code>Health Server S/W version (via git describe): <%= `cd ~/haloror; /usr/bin/git describe` %></code><br>
-<code>ENV['RAILS_ENV'] = <%= ENV['RAILS_ENV'] %></code><br>
 <br>
 <b>Network</b><br>
 SERVER_ADDR: <code><%= request.env["SERVER_ADDR"].to_s %></code> <br>
 HOST_NAME : <code><%= request.host %></code> <br>
 REMOTE_ADDR: <code><%= request.env["REMOTE_ADDR"].to_s %></code> <br>
 <br>
-<b>Software</b><br>
+<b>Software Versions</b><br>
 OS: <code><%= `cat /etc/redhat-release` %></code><br>
 Database: <code><%= ActiveRecord::Base.connection.select_value("SELECT  VERSION()") %></code><br>
 Email delivery method: <code><%= ActionMailer::Base.delivery_method %></code><br>
@@ -35,15 +39,6 @@ BATTERY_REMINDER_POLL_RATE=<%= BATTERY_REMINDER_POLL_RATE %><br>
 </code>
 <br>
 
-<b>Install Wizard (seconds)</b><br>
-<code>
-INSTALL_WIZ_TIMEOUT_REGISTRATION=<%= INSTALL_WIZ_TIMEOUT_REGISTRATION %><br>
-INSTALL_WIZ_TIMEOUT_GATEWAY=<%= INSTALL_WIZ_TIMEOUT_GATEWAY %><br>
-INSTALL_WIZ_TIMEOUT_CS=<%= INSTALL_WIZ_TIMEOUT_CS %><br>
-INSTALL_WIZ_TIMEOUT_PHONE=<%= INSTALL_WIZ_TIMEOUT_PHONE %><br>
-INSTALL_WIZ_TIMEOUT_HEARTRATE=<%= INSTALL_WIZ_TIMEOUT_HEARTRATE %><br>
-</code>
-<br>
 
 <b>GW Alarm Reset button timeout</b><br>
 <code>
@@ -55,14 +50,12 @@ GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT=<%= GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT/60 %> mi
 <code>
 LOST_DATA_GAP = <%= LOST_DATA_GAP %>s<br>
 </code>
-
 <br>
 <b>Events</b><br>
 <code>
 EVENTS_PER_PAGE = <%= EVENTS_PER_PAGE %><br>
 </code>
-<br><br>
-
+<br>
 <b>ADL-related Constants </b><br>
 <code>
 MIN_ADL_RESTING_ORIENTATION=<%= MIN_ADL_RESTING_ORIENTATION %><br>
@@ -91,7 +84,15 @@ MGMT_CMD_ATTEMPTS_WITHOUT_ACK=<%= MGMT_CMD_ATTEMPTS_WITHOUT_ACK %><br>
     <tr>
   <% end %>
 </table>
-
-
 <br>
+<!-->
+<b>Install Wizard (seconds)</b><br>
+<code>
+INSTALL_WIZ_TIMEOUT_REGISTRATION=<%= INSTALL_WIZ_TIMEOUT_REGISTRATION %><br>
+INSTALL_WIZ_TIMEOUT_GATEWAY=<%= INSTALL_WIZ_TIMEOUT_GATEWAY %><br>
+INSTALL_WIZ_TIMEOUT_CS=<%= INSTALL_WIZ_TIMEOUT_CS %><br>
+INSTALL_WIZ_TIMEOUT_PHONE=<%= INSTALL_WIZ_TIMEOUT_PHONE %><br>
+INSTALL_WIZ_TIMEOUT_HEARTRATE=<%= INSTALL_WIZ_TIMEOUT_HEARTRATE %><br>
+</code>
 <br>
+-->
