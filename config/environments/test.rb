@@ -56,7 +56,7 @@ config.gem "factory_girl"
 config.after_initialize do
   ActiveMerchant::Billing::Base.mode = :test
   # ::GATEWAY = ActiveMerchant::Billing::BogusGateway.new # -- see comment above
-  ::GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
+  ::PAYMENT_GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
     :login => AUTH_NET_LOGIN,
     :password => AUTH_NET_TXN_KEY,
     :test => true

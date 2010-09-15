@@ -37,7 +37,7 @@ AUTH_NET_URL="https://apitest.authorize.net/xml/v1/request.api" # test
 config.after_initialize do
   ActiveMerchant::Billing::Base.mode = :test
   # ::GATEWAY = ActiveMerchant::Billing::BogusGateway.new
-  ::GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
+  ::PAYMENT_GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
     :login => AUTH_NET_LOGIN,
     :password => AUTH_NET_TXN_KEY
   )
