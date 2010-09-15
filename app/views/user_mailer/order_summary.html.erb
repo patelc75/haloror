@@ -11,7 +11,7 @@ Fax 866.275.1904
 
 ORDER SUMMARY
 Order number: <%= @order.full_number %>
-Order date: <%= @order.created_at.to_s(:day_date) %>
+Order date: <%= @order.created_at.to_s(:date_time_timezone) %>
 
 Order items:
 <% @order.order_items.each do |item| %><%= item.product_model %>
