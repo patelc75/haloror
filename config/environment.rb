@@ -54,7 +54,7 @@ Rails::Initializer.run do |config|
   config.gem "rubyhealthvault", :lib => "healthvault"
   #config.gem "ambethia-recaptcha", :lib => "recaptcha/rails"
   config.gem "markaby"
-  config.gem "ezcrypto"
+  config.gem "ezcrypto" # Thu Sep 16 00:15:34 IST 2010
 end
 
 # Add new inflection rules using the following format 
