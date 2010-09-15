@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100915010206) do
+ActiveRecord::Schema.define(:version => 20100915160356) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -464,6 +464,14 @@ ActiveRecord::Schema.define(:version => 20100915010206) do
     t.datetime "lowest_connect_timestamp"
     t.integer  "longest_dial_duration_sec"
     t.datetime "longest_dial_duration_timestamp"
+    t.string   "username"
+    t.string   "password"
+    t.string   "alt_username"
+    t.string   "alt_password"
+    t.string   "global_alt_username"
+    t.string   "global_alt_password"
+    t.string   "global_prim_username"
+    t.string   "global_prim_password"
   end
 
   create_table "dial_ups", :force => true do |t|
@@ -755,6 +763,7 @@ ActiveRecord::Schema.define(:version => 20100915010206) do
     t.integer  "group_id"
     t.string   "coupon_code"
     t.string   "kit_serial"
+    t.string   "salt"
   end
 
   create_table "oscope_msgs", :force => true do |t|

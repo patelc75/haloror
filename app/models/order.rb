@@ -11,10 +11,27 @@ class Order < ActiveRecord::Base
   # causing failure of order. need to force kit_serial for retailer in some other way
   # validates_presence_of :kit_serial, :if => :retailer?
   
+  # ===================================
+  # = triggers / active record events =
+  # ===================================
+  
   def after_initialize
     populate_billing_address # copy billing address if bill_address_same
+    #
+    # WARNING: some error happening. switched off for now. needs testing
+    decrypt_credit_card_number # Will decrypt only if encrypted?
+  end
+
+  def before_save
+    #
+    # WARNING: some error happening. switched off for now. needs testing
+    encrypt_credit_card_number # Will encrypt only if not already encrypted?
   end
   
+  # =============================
+  # = public : instance methods =
+  # =============================
+
   def group_name
     group.blank? ? "" : group.name
   end
@@ -393,8 +410,10 @@ class Order < ActiveRecord::Base
     user_intake.blank? ? false : user_intake.legal_agreement_at.blank?
   end
   
-  # private methods
-  #
+  # ===================
+  # = private methods =
+  # ===================
+
   private
   
   def create_user_intake
@@ -442,5 +461,42 @@ class Order < ActiveRecord::Base
   
   def coupon_code_message(product_name = "myHalo product", status = "invalid")
     ["#{product_name}: This coupon is ", status, ". Regular pricing is applied."].join
+  end
+
+  def encrypt_credit_card_number
+    #
+    # TODO: WARNING: We need to cover this with cucumber before release
+    #   All required steps are already taken to make sure data is not lost
+    #   BUT, we still need to test it before releasing
+    #
+    # Keep data Base64 encoded to prevent any loss during conversion process
+    self.card_number = Base64.encode64( encryption_key.encrypt( card_number)) unless encrypted?
+  end
+  
+  def decrypt_credit_card_number
+    #
+    # TODO: WARNING: We need to cover this with cucumber before release
+    #   All required steps are already taken to make sure data is not lost
+    #   BUT, we still need to test it before releasing
+    #
+    # Keep data Base64 encoded to prevent any loss during conversion process
+    self.card_number = encryption_key.decrypt( Base64.decode64( card_number)) if encrypted?
+  end
+  
+  def encryption_key
+    #
+    # generate random salt for each credit card
+    # takes Time.now and adds random amount of seconds to it, up to 10 place values
+    self.salt = Base64.encode64( (Time.now + rand(9999999999).seconds).to_s )[0..56] if salt.blank?
+    #
+    # generate key from the salt
+    EzCrypto::Key.with_password "HaloROR-Encryption", salt, :algorithm => "blowfish" # this generates the key
+  end
+
+  def encrypted?
+    # To identify if the card number is encrypted
+    # * salt exists
+    # * card number is not just plain all digits
+    !salt.blank? && (card_number.to_i.to_s != card_number.gsub(' ',''))
   end
 end

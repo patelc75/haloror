@@ -103,7 +103,9 @@ class UserMailer < ActionMailer::ARMailer
 
   def order_summary(order, email_addr, email_log=nil)
     setup_email(email_addr, email_log)
-    @subject += EMAIL_SUBJECT[:order_summary] # "Order Summary"
+    #
+    # https://redmine.corp.halomonitor.com/issues/3419
+    @subject += ("#{order.created_at.to_s(:utc)}: " + EMAIL_SUBJECT[:order_summary]) # "Order Summary"
     @body[:order] = order
   end
 
