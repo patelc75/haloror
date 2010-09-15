@@ -25,7 +25,7 @@ function getConfig() {
 
     config.ChartFile = -1; //change this value to 0 if you want to run file-based tests
 
-    config.TimerInterval = 10000; //milliseconds
+    config.TimerInterval = 60000; //milliseconds
 	config.Timeout = 60; // seconds
 	config.MinutesLive = 30; //minutes
 
@@ -100,8 +100,8 @@ function getConfig() {
     	//alert(config.dataServiceURL);
     }
 
-	//config.dataServiceURL = "https://idev.myhalomonitor.com/flex/chart";
-	//config.environmentUrl = "https://idev.myhalomonitor.com/";
+	config.dataServiceURL = "https://sdev.myhalomonitor.com/flex/chart";
+	config.environmentUrl = "https://sdev.myhalomonitor.com/";
 
     return config;
 
