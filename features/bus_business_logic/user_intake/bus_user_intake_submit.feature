@@ -27,7 +27,7 @@ Feature: Business - user intake - submit
     And senior of user intake "12345" has "Ready to Bill" status
     And I edit user intake with kit serial "12345"
     And I press "user_intake_submit"
-    Then user intake "12345" has "Installed" status
+    Then user intake "12345" has "Ready to Bill" status
 
   # Scenario: Can be "saved" at any status
   #   Given the following user_intakes:

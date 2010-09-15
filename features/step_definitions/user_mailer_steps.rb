@@ -27,6 +27,23 @@ Then /^(.+) emails? to "([^\"]*)" with (subject|body|content) "([^\"]*)" should 
   end
 end
 
+Then /^(.+) email(?:|s) to group admins of user intake "([^\"]*)" should be sent for delivery$/ do |count, kit|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  (group = ui.group).should_not be_blank
+  (admins = group.has_admins).should_not be_blank
+  #
+  # collects emails of all admins
+  # check: an email each should be delivered to every admin of the selected group
+  admins.collect(&:email).each {|e| Email.count( :conditions => {:to => e}).should > 0 }
+end
+
+Then /^(.+) email(?:|s) to "([^\"]*)" should be sent for delivery$/ do |count, email|
+  #
+  # either provide an email address, or, write "safety care" or "safety_care" to get "safety_care@myhalomonitor.com"
+  email = "safety_care@myhalomonitor.com" if ["safety care", "safety_care"].include?( email)
+  Email.count( :conditions => { :to => email} ).should == count.to_i
+end
+
 # merged into step definition above
 #
 # And 1 email with subject "Please read before you installation" should be sent for delivery
@@ -37,6 +54,5 @@ end
 #       total += 1
 #     end
 #   end
-#   debugger
 #   assert_equal count.to_i, total, "#{total} emails with subject #{subject} found"
 # end

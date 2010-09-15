@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100827205811) do
+ActiveRecord::Schema.define(:version => 20100915010206) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -194,6 +194,9 @@ ActiveRecord::Schema.define(:version => 20100827205811) do
     t.datetime "stopped_at"
     t.integer  "time_remaining"
     t.integer  "battery_critical_id"
+    t.datetime "timestamp_call_center"
+    t.boolean  "call_center_pending"
+    t.datetime "timestamp_server"
   end
 
   create_table "battery_unpluggeds", :force => true do |t|
@@ -1197,6 +1200,7 @@ ActiveRecord::Schema.define(:version => 20100827205811) do
     t.integer  "last_strap_fastened_id"
     t.string   "status"
     t.boolean  "test_mode"
+    t.datetime "status_changed_at"
   end
 
   create_table "vital_scans", :force => true do |t|

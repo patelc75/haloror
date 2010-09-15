@@ -14,6 +14,7 @@
   <td>
     <div class="half-prepend-top text-center" id="<%= triage_user.alert_status.gsub(' ','_') %>_<%= triage_user.id %>">
       <%= alert_button( :type => triage_user.alert_status( @params), :path => url_for(:controller => 'users', :action => 'special_status', :id => triage_user.id), :id => triage_user.id) %>
+      <%= '<br /> (Test Mode)' if triage_user.test_mode? %>
       <script type="text/javascript" charset="utf-8">
       $('alert_<%= triage_user.id %>').addTip('<div class="span-4">User intake submitted:</div><div class="span-4 last"><%= triage_user.user_intake_submitted_at %></div>');
       </script>

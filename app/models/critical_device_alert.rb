@@ -4,7 +4,7 @@ class CriticalDeviceAlert < DeviceAlert
   end
   
   def before_create 
-    #debugger
+    # debugger
     self.timestamp_server = Time.now.utc
     self.call_center_pending = false
     groups = user.is_halouser_for_what
@@ -16,6 +16,7 @@ class CriticalDeviceAlert < DeviceAlert
   end
 
   def after_create 
+    # debugger
     Event.create_event(self.user_id, self.class.to_s, self.id, self.timestamp)
   end
   
