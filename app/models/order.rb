@@ -241,13 +241,13 @@ class Order < ActiveRecord::Base
                       :params => credit_card.errors.full_messages.join(". ")})
     end # validate_card
     
-    create_user_intake if card_successfully_charged? # card successful? then create user intake data
+    create_user_intake if card_successful? # card successful? then create user intake data
     
     # return @one_time_fee_response, @recurring_fee_response # more DRY. contained in Order
-    card_successfully_charged? # return success/failure status as true/false
+    card_successful? # return success/failure status as true/false
   end
 
-  def card_successfully_charged?
+  def card_successful?
     # when instance variables are blank? this might be a successful saved order. check payment_gateway_responses
     return (@one_time_fee_response.blank?) ? purchase_successful? : (@one_time_fee_response.success?)
     # return (@one_time_fee_response.blank? || @recurring_fee_response.blank?) ? purchase_successful? : (@one_time_fee_response.success? && @recurring_fee_response.success?)
@@ -348,6 +348,12 @@ class Order < ActiveRecord::Base
   # run validation on the passed in value if it is supplied
   #
   def credit_card
+    #
+    # Thu Sep 16 20:06:15 IST 2010 > https://redmine.corp.halomonitor.com/issues/3419#note-7
+    #   card number was accessed before the initialization completed
+    #   this step ensures card_number in plain text state
+    decrypt_credit_card_number # does not harm if run more than once
+    #
     @card ||= ActiveMerchant::Billing::CreditCard.new(
       :first_name => bill_first_name,
       :last_name => bill_last_name,
@@ -495,8 +501,9 @@ class Order < ActiveRecord::Base
 
   def encrypted?
     # To identify if the card number is encrypted
-    # * salt exists
     # * card number is not just plain all digits
-    !salt.blank? && (card_number.to_i.to_s != card_number.gsub(' ',''))
+    # * salt exists (not a robust idea. this can be removed by external factors also)
+    # !salt.blank?
+    !card_number.blank? && (card_number.gsub(' ','').to_i.to_s != card_number.gsub(' ',''))
   end
 end

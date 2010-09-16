@@ -26,5 +26,5 @@ Feature: User cache update
       | event            | last_event_id            |
       | vital            | last_vital_id            |
       | triage_audit_log | last_triage_audit_log_id |
-      | panic            | last_panic_id            |
       | strap_fastened   | last_strap_fastened_id   |
+#      | panic            | last_panic_id            |

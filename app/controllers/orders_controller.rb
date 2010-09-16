@@ -124,7 +124,7 @@ class OrdersController < ApplicationController
                 # success = (@one_time_fee.success? && @subscription.success?) \
                 #   unless (@one_time_fee.blank? || @subscription.blank?)
                 success = @order.charge_credit_card # more DRY now. within Order instance
-
+                
                 if success.blank? || !success
                   goto = "failure"
                   # format.html { render :action => 'failure' }
