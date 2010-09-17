@@ -9,12 +9,15 @@ class OrdersController < ApplicationController
   end
   
   def new
-    @groups = Group.for_user(current_user)
+    #
+    # https://redmine.corp.halomonitor.com/issues/3335
+    # there always is a group applicable to user
+    @groups = (logged_in? ? Group.for_user(current_user) : [Group.direct_to_consumer])
     @confirmation = false
     @product = session[:product]
     @order = Order.new(session[:order]) # recall if any order data was remembered
-    @complete_tariff = DeviceModel.complete_tariff(params[:coupon_code])
-    @clip_tariff = DeviceModel.clip_tariff(params[:coupon_code])
+    @complete_tariff = DeviceModel.complete_tariff( @groups.first, params[:coupon_code])
+    @clip_tariff = DeviceModel.clip_tariff( @groups.first, params[:coupon_code])
     
     if request.post? # confirmation mode
       @product = params[:product]
@@ -25,10 +28,11 @@ class OrdersController < ApplicationController
         @order.errors.add_to_base "Please select a product to order" if session[:product].blank?
         
       else
+        @order.group = @groups.first if @order.group.blank?
         order_params.merge!(
             "cost" => (@product == 'complete' ? \
-              DeviceModel.complete_tariff(@order.coupon_code).upfront_charge.to_s : \
-              DeviceModel.clip_tariff(@order.coupon_code).upfront_charge.to_s),
+              DeviceModel.complete_tariff(@order.group, @order.coupon_code).upfront_charge.to_s : \
+              DeviceModel.clip_tariff(@order.group, @order.coupon_code).upfront_charge.to_s),
             "product" => @product
             )
         session[:product] = @product # same as params[:product]. Will be used later in create
@@ -54,8 +58,8 @@ class OrdersController < ApplicationController
       @confirmation = (@order.errors.count.zero? && !@product.blank? && !session[:order].blank?)
       #
       # https://redmine.corp.halomonitor.com/issues/2764
-      complete_temp = DeviceModel.complete_tariff(@order.coupon_code)
-      clip_temp = DeviceModel.clip_tariff(@order.coupon_code)
+      complete_temp = DeviceModel.complete_tariff(@order.group, @order.coupon_code)
+      clip_temp = DeviceModel.clip_tariff(@order.group, @order.coupon_code)
       @complete_tariff = complete_temp unless complete_temp.blank?
       @clip_tariff = clip_temp unless clip_temp.blank?
       

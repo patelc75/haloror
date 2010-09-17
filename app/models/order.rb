@@ -16,6 +16,7 @@ class Order < ActiveRecord::Base
   # ===================================
   
   def after_initialize
+    self.coupon_code = "default" if coupon_code.blank?
     populate_billing_address # copy billing address if bill_address_same
     #
     # WARNING: some error happening. switched off for now. needs testing
@@ -64,7 +65,7 @@ class Order < ActiveRecord::Base
   
   # tariff card for the product found in catalog
   def product_cost
-    @product_tariff ||= product_from_catalog.tariff(:coupon_code => coupon_code)    
+    product_from_catalog.tariff( :group => (group || Group.direct_to_consumer), :coupon_code => coupon_code)
   end
   
   # create order_item enteries for this order
@@ -91,7 +92,7 @@ class Order < ActiveRecord::Base
   def total_value
     value = 0
     order_items.each do |order_item|
-      tariff = order_item.device_model.tariff(:coupon_code => coupon_code) unless order_item.device_model.blank?
+      tariff = order_item.device_model.tariff( :group => group, :coupon_code => coupon_code) unless order_item.device_model.blank?
       value += (tariff.deposit + tariff.shipping + tariff.upfront_charge) unless tariff.blank?
     end
     value
@@ -135,8 +136,10 @@ class Order < ActiveRecord::Base
   def charge_credit_card
     # mode is set (in environment config files) to :test for development and test, :production when production
     if validate_card
-      if product_cost.upfront_charge.zero?
-        errors.add_to_base "One time fee: #{product_cose.upfront_charge}"
+      if product_cost.blank?
+        errors.add_to_base "Product cost cannot be identified in the database"
+      elsif product_cost.upfront_charge.zero?
+        errors.add_to_base "One time fee: #{product_cost.upfront_charge}"
       else
         # one time charge as presented in the product detail box
         # charge_amount = (cost * 100) # cents
@@ -404,7 +407,7 @@ class Order < ActiveRecord::Base
   #  optionally pass "complete" or "clip" to skip order_items and check directly in table
   def message_for_coupon_code(which_code = coupon_code, product_type = "")
     messages = []
-    if product_type.blank?      
+    if product_type.blank?
       order_items.each {|order_item| messages << device_model_coupon_messages( order_item.device_model, which_code) }
     else
       messages << device_model_coupon_messages( DeviceModel.find_complete_or_clip(product_type), which_code)
@@ -454,7 +457,7 @@ class Order < ActiveRecord::Base
     messages = []
     unless device_model.blank? || !device_model.is_a?( DeviceModel)
       price = device_model.prices.find_by_coupon_code(coupon_code)
-      if price.blank?
+      if price.blank? || (price.coupon_code != coupon_code) || (group.coupon_codes.find_by_coupon_code(coupon_code).blank?)
         messages << coupon_code_message( device_model.model_type, "invalid")
       elsif price.expired?
         messages << coupon_code_message( device_model.model_type, "expired")

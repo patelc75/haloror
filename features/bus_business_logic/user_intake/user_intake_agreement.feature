@@ -29,7 +29,7 @@ Feature: User Intake Legal Agreement
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I check "Same as User"
     And I press "user_intake_submit"
-    Then page content has "successfully created, HALO SUBSCRIBER AGREEMENT"
+    Then page content should have "successfully created, HALO SUBSCRIBER AGREEMENT"
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario Outline: Only senior or subscriber can see the option to sign the legal agreement
@@ -58,7 +58,7 @@ Feature: User Intake Legal Agreement
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I check "Same as User"
     And I press "user_intake_submit"
-    Then page content has "HALO SUBSCRIBER AGREEMENT"
+    Then page content should have "HALO SUBSCRIBER AGREEMENT"
     And I should not see "I Agree Terms and Conditions"
 
   # https://redmine.corp.halomonitor.com/issues/3170

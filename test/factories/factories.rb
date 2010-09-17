@@ -3,7 +3,7 @@ require "digest/md5"
 require "factory_girl"
 
 Factory.define :group do |v|
-  v.name { Faker::Lorem.words[0] }
+  v.name { Faker::Lorem.words[0] + (Time.now.to_i + rand(9999999999)).to_s }
   v.description { Faker::Lorem.sentence }
 end
 
@@ -59,6 +59,7 @@ Factory.define :device_model_price do |v|
   v.months_advance { rand(3) }
   v.months_trial { rand(3) }
   v.association :device_model
+  v.association :group
 end
 
 Factory.define :device do |v|

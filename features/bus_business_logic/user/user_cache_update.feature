@@ -28,3 +28,4 @@ Feature: User cache update
       | triage_audit_log | last_triage_audit_log_id |
       | strap_fastened   | last_strap_fastened_id   |
 #      | panic            | last_panic_id            |
+# TODO: Thu Sep 16 23:21:31 IST 2010 > need to visit this at the first opportunity
