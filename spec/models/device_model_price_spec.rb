@@ -7,10 +7,11 @@ describe DeviceModelPrice do
       @coupon = Factory.build( :device_model_price)
     end
 
-    context "coupon code validity" do
+    context "general and coupon code validity" do
       subject { @coupon }
       it { should be_valid }
       specify { @coupon.coupon_code.should_not be_blank }
+      specify { @coupon.device_model.should_not be_blank}
     end
 
     # Every coupon code is associated to a group

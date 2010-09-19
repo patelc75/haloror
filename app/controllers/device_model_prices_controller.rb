@@ -16,6 +16,7 @@ class DeviceModelPricesController < ApplicationController
   # GET /device_model_prices/1.xml
   def show
     @device_model_price = DeviceModelPrice.find(params[:id])
+    @groups = Group.all( :order => :name)
 
     respond_to do |format|
       format.html # show.html.erb
@@ -27,6 +28,7 @@ class DeviceModelPricesController < ApplicationController
   # GET /device_model_prices/new.xml
   def new
     @device_model_price = DeviceModelPrice.new
+    @groups = Group.all( :order => :name)
 
     respond_to do |format|
       format.html # new.html.erb
@@ -37,6 +39,7 @@ class DeviceModelPricesController < ApplicationController
   # GET /device_model_prices/1/edit
   def edit
     @device_model_price = DeviceModelPrice.find(params[:id])
+    @groups = Group.all( :order => :name)
   end
 
   # POST /device_model_prices

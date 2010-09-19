@@ -69,3 +69,7 @@ Feature: Online store group coupons
     And I press "Continue"
     Then page content should have "This coupon is invalid. Regular pricing is applied."
   
+  Scenario: Group required when creating coupon code
+    Given I am an authenticated user
+    When I am creating a coupon code
+    Then I should see "Group"

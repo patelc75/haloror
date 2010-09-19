@@ -6,7 +6,7 @@ class UserAdminController < ApplicationController
   def new_admin
     # * pick all groups for super admins
     # * pick only selective groups for non-super-admin, where user is admin
-    @groups = ( current_user.is_super_admin? ? Group.find(:all) : current_user.is_admin_of_what )
+    @groups = ( current_user.is_super_admin? ? Group.ordered : current_user.is_admin_of_what )
     # @groups = []
     # if current_user.is_super_admin?
     #   @groups = Group.find(:all)

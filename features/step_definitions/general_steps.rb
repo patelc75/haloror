@@ -95,6 +95,7 @@ Given /^(?:|a |an )existing (.+) with (.+) as "([^\"]*)"$/ do |name, col, value|
 end
 
 Given /^I am (creating|editing) (?:|a|an) (.+)$/ do |action, model|
+  model = "device model price" if model == "coupon code"
   list_path = model.downcase.pluralize.gsub(' ','_')
   model_sym = model.downcase.singularize.gsub(' ', '_').to_sym
   action_path = case action

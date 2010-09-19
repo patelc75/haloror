@@ -22,6 +22,7 @@ class Group < ActiveRecord::Base
     group_ids = user.group_memberships.collect {|group| (user.is_sales_of?(group) || user.is_admin_of?(group)) ? group.id : nil }.compact
     { :conditions => {:id => group_ids} }
   }
+  named_scope :ordered, lambda {|*args| {:order => (args.flatten.first || :name)}}
 
   # --------------- triggers / callbacks (never called directly in code)
 
