@@ -176,7 +176,7 @@ class UserAdminController < ApplicationController
   end
   
   def add_group
-    group_name = params[:group_name]
+    group_name = params[:new_group_name]
     if(!group_name.blank?)
       if(Group.find_by_name(group_name).blank?)
       	if params[:sales_type] != ""
@@ -203,7 +203,9 @@ class UserAdminController < ApplicationController
        @success = false
        @message = "Choose a user"
     end
-    render :action => 'assign_role', :layout => false
+    flash[:notice] = @message
+    redirect_to :controller => "user_admin", :action => "roles"
+    # render :action => 'assign_role', :layout => false
   end
   
   def edit_group

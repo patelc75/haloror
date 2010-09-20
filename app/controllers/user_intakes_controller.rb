@@ -107,7 +107,13 @@ class UserIntakesController < ApplicationController
     respond_to do |format|
       if @user_intake.update_attributes(params[:user_intake])
         flash[:notice] = 'User Intake was successfully updated.'
-        format.html { redirect_to(:action => 'show', :id => @user_intake.id) }
+        format.html do
+          if params[:redirect_hash].blank?
+            redirect_to :action => 'show', :id => @user_intake.id
+          else
+            redirect_to redirect_hash # this comes from online order form
+          end
+        end
         format.xml  { head :ok }
       else
         format.html { render :action => "edit", :id => @user_intake.id }

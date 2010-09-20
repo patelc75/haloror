@@ -33,12 +33,13 @@
     <h2>Groups</h2>
     <div id="group"></div>
     <% if current_user.is_super_admin? %> <!-- do not show it to any other user -->
-      <% form_remote_tag :url => {:controller => 'user_admin',:action => 'add_group'}, :update => 'group' do %>
+      <!-- <%# form_remote_tag :url => {:controller => 'user_admin',:action => 'add_group'}, :update => 'group' do %> -->
+      <% form_tag :controller => 'user_admin',:action => 'add_group' do %>
         <%= error_messages_for :group %>
-        <label for="group_name">Group Name</label>
-        <%= text_field_tag 'group_name' %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <label for="new_group_name">Group Name</label>
+        <%= text_field_tag 'new_group_name' %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <label for="sales_type">Sales Type</label>
-        <select name="sales_type">
+        <select name="sales_type" id="sales_type">
           <option value="">Select</option>
           <option value="reseller">reseller</option>
           <option value="retailer">retailer</option>

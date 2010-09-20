@@ -14,6 +14,10 @@ class DeviceModelPrice < ActiveRecord::Base
     self.group = Group.find_by_name( name)
   end
   
+  def device_model_type=( name)
+    self.device_model = DeviceModel.find_complete_or_clip( name)
+  end
+  
   def advance_charge
     monthly_recurring * months_advance
   end

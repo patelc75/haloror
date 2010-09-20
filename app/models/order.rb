@@ -5,6 +5,7 @@ class Order < ActiveRecord::Base
   has_many :order_items
   has_many :payment_gateway_responses
   has_one :user_intake
+  validates_presence_of :group
   attr_accessor :card_csc, :product, :bill_address_same
   before_update :check_kit_serial_validation
   
@@ -50,7 +51,10 @@ class Order < ActiveRecord::Base
   end
   
   def need_to_force_kit_serial?
-    self.retailer? && self.kit_serial.blank?
+    # WARNING: need to confirm this business logic
+    #   At other places in the code, kit_serial is forced for both retailer & reseller
+    #   so, this was updated on Mon Sep 20 23:23:44 IST 2010
+    (retailer? || reseller?) && self.kit_serial.blank?
   end
   
   # quick shortcut for the bill and ship address same
@@ -399,9 +403,12 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def assign_group(name)
-    group_id = Group.find_or_create_by_name(name) # usually in a new order, so no need to check nil? zero?
-  end
+  # CHANGED: Mon Sep 20 22:53:40 IST 2010
+  #   Now user: Group.direct_to_consumer
+  #
+  # def assign_group(name)
+  #   group_id = Group.find_or_create_by_name(name) # usually in a new order, so no need to check nil? zero?
+  # end
 
   # get invalid or expired warning messages for coupon code
   #  optionally pass "complete" or "clip" to skip order_items and check directly in table
@@ -440,6 +447,7 @@ class Order < ActiveRecord::Base
         user_intake.subscriber_is_user = false
         user_intake.subscriber_attributes = {:email => bill_email, :profile_attributes => subscriber_profile}
       end
+      user_intake.kit_serial_number = self.kit_serial
       user_intake.order_id = self.id
       user_intake.creator = self.creator # https://redmine.corp.halomonitor.com/issues/3117
       user_intake.updater = self.updater

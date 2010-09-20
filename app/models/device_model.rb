@@ -13,7 +13,7 @@ class DeviceModel < ActiveRecord::Base
   # WARNING: this is a very risky method. static values should not be used.
   def self.find_complete_or_clip(name = "complete")
     product_string = (name == "clip") ? "myHalo Clip": "myHalo Complete" # default = myHaloComplete
-    DeviceModel.recent_on_top.find_by_part_number(OrderItem::PRODUCT_HASH[product_string])
+    DeviceModel.find_by_part_number(OrderItem::PRODUCT_HASH[product_string])
   end
 
   # dynamically define self.complete_tariff, self.clip_traiff

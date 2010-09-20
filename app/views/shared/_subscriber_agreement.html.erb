@@ -183,7 +183,7 @@
         <%= check_box "userintake", "agree", :onchange => "agree_button.toggle(); return false;" %> I Agree Terms and Conditions
       <% end %>
       
-      <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update', :redirect_hash => @redirect_hash} do |f| -%>
+      <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update', :id => @user_intake.id, :redirect_hash => @redirect_hash} do |f| -%>
         <%= f.text_field :paper_copy_at, :value => Time.now.to_s, :class => "hidden" %>
         <%= f.submit "Print", :disable_with => 'Printing...', :class => "button blue-button", :id => "user_intake_print", :onclick => "window.print();" %>
         

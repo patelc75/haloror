@@ -183,6 +183,13 @@ end
 
 # Then
 
+Then /^a (.+) should exist with (.+) "([^"]*)"$/ do |what, column, data|
+  what = 'device model price' if what.downcase == 'coupon code'
+  row = what.gsub(' ','_').classify.constantize.send( "find_by_#{column}".to_sym, data)
+  row.should_not be_blank
+  row.send( column.to_sym).should == data
+end
+
 Then /^I should see "([^\"]*)" link$/ do |link_text|
   response.should have_tag("a", :text => link_text)
 end

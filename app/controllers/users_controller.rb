@@ -642,7 +642,7 @@ class UsersController < ApplicationController
     @user = User.find_by_activation_code(params[:activation_code])
     if @user
       # FIXME: the logic needs more coverage
-      if !@user.login.nil? and !@user.crypted_password.nil?
+      if !@user.login.nil? && !@user.crypted_password.nil?
         @user.activation_code = nil
         @user.activated_at = Time.now.utc
         @user.save
