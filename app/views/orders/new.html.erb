@@ -57,15 +57,17 @@
       
       <tr>
         <td width="33%">
-          <% if logged_in? %>
           <p>
+          <% if logged_in? %>
             <%= f.label :group_id, "Group" %>
             <%= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"} %>
-          </p>
+          <% else %>
+            <%= @groups.collect {|e| e.name.gsub('_',' ').capitalize }.join(', ') %>
           <% end -%>
+          </p>
           <p>
             <%= f.check_box "halouser", :disabled => @confirmation %>
-            <label>This person will be the myHalo user</label>
+            <%= f.label "halouser", "This person will be the myHalo user" %>
           </p>
         </td>
         <td width="33%">
@@ -182,7 +184,7 @@
           <label>Comments and special shipping instructions</label><br />
           <%= f.text_area "comments", :rows => 5, :disabled => @confirmation %>
         </p>
-        <p>
+        <p id="coupon_code">
           <%= f.label :coupon_code, "Coupon Code" %> (if any)
           <%= f.text_field :coupon_code %>
         </p>

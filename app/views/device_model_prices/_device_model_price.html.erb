@@ -2,7 +2,11 @@
   <%= f.error_messages %>
 
   <p>
-    <%= f.label :device_model %><br />
+    <%= f.label :group_id, "Group" %>
+    <%= f.select :group_id, @groups.collect {|e| [e.name, e.id]} %>
+  </p>
+  <p>
+    <%= f.label :device_model_id, "Device model" %><br />
     <%= f.select :device_model_id, DeviceModel.all.collect {|p| [p.model_type, p.id]} %>
   </p>
   <p>

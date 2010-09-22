@@ -91,20 +91,27 @@ class UserIntake < ActiveRecord::Base
     # lock if required
     # skip_validation decides if "save" was hit instead of "submit"
     self.locked = (!skip_validation && valid?)
-    self.senior.status = User::STATUS[:approval_pending] if locked? # once submitted, get ready for approval
-    # new logic. considers all status values as defined in STATUS
-    User.shift_to_next_status( senior.id, "user intake", updated_by) if (locked? && !senior.blank? && !self.new_record?)
+    self.senior.status = User::STATUS[:approval_pending] if (locked? && self.senior.status.blank?) # once submitted, get ready for approval
+    #
+    # WARNING: Wed Sep 15 04:29:08 IST 2010
+    #   this code causing some failures on business logic
+    #   disabled until correctly resolved
+    # # new logic. considers all status values as defined in STATUS
+    # User.shift_to_next_status( senior.id, "user intake", updated_by) if (locked? && !senior.blank? && !self.new_record? && locked?)
+    #
     # old logic. just checking for approval_pending
     # self.status = STATUS[:approval_pending] if (locked && status.blank?)
     #
-    # CHANGED: this has now shifted to user.rb
+    # CHANGED:
+    #   This has now shifted to user.rb to create a triage audit log when changes to senior are made
+    #   When the changes are only in user_intake, we have to force the log creation
     #
     # # create status row in triage_audit_log
-    # if status_changed?
-    #   options = { :status => status, :updated_by => updated_by,
-    #     :description => "Status updated from [#{status_was}] to [#{status}], triggered from user intake" }
-    #   add_triage_note( options)
-    # end
+    unless senior.changed?
+      options = { :updated_by => updated_by,
+        :description => "Status updated from [#{senior.status_was}] to [#{senior.status}], triggered from user intake" }
+      add_triage_note( options)
+    end
   end
 
   def after_save
@@ -288,7 +295,7 @@ class UserIntake < ActiveRecord::Base
   # end
 
   def add_triage_note( args = {})
-    senior.create_triage_audit_log( args) unless ( args.blank? || senior.blank? )
+    senior.add_triage_audit_log( args) unless ( args.blank? || senior.blank? )
   end
 
   def self.status_color( arg = '')

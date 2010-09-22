@@ -14,7 +14,7 @@
   <% form_tag url_for(:controller => "user_intakes", :action => "index", :group_name => @group_name), :method => :get, :id => "group_form_id" do %>
   <div class="span-9">
     For <label for="group_name">Group</label>
-    <%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| [e.name, e.name] }, (@group_name || @groups.first.name)) %>
+    <%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| [e.name, e.name] }, @group_name) %>
     <%= select_tag "user_intake_status", options_for_select([['Saved or Submitted', ''], ['Saved', 'Saved'], ['Submitted', 'Submitted']], @user_intake_status) %>
 
     <br />with user identity matching <%= text_field_tag "user_identity", @user_identity %>

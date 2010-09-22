@@ -38,7 +38,7 @@ AUTH_NET_SUBSCRIPTION_BILL_AMOUNT_PER_INTERVAL=65.00
 #   Otherwise, perform transactions against the production server.
 config.after_initialize do
   ActiveMerchant::Billing::Base.mode = :test
-  ::GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
+  ::PAYMENT_GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
     :login => AUTH_NET_LOGIN,
     :password => AUTH_NET_TXN_KEY,
     :test => true

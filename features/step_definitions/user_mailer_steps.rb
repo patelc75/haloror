@@ -54,6 +54,5 @@ end
 #       total += 1
 #     end
 #   end
-#   debugger
 #   assert_equal count.to_i, total, "#{total} emails with subject #{subject} found"
 # end

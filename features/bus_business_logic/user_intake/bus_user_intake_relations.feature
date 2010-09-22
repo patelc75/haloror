@@ -23,7 +23,7 @@ Feature: Bus user intake relations
       | kit_serial_number |
       | 11111             |
     When user intake "11111" is submitted again
-    Then senior of user intake "11111" has a recent audit log for status "Ready for Approval"
+    Then the last user intake should have a recent audit log
 
   Scenario: Auto increment call center account number for "HM" accounts
 

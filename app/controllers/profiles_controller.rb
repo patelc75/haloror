@@ -256,7 +256,9 @@ get_caregivers(current_user)
   end
   
   def change_username
-  	@user = current_user
+    #
+    # Thu Sep 16 02:10:08 IST 2010 > https://redmine.corp.halomonitor.com/issues/3437
+  	@user = User.find(params[:id]) # the selected user, not current_user
   	if request.post?
   		if @user.update_attributes(params[:user])
   			redirect_to :action => "edit_caregiver_profile", :id => current_user.profile.id, :user_id => current_user.id

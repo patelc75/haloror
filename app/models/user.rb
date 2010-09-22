@@ -186,7 +186,7 @@ class User < ActiveRecord::Base
       user.test_mode = false
       #
       user.save
-      user.create_triage_audit_log( options)
+      user.add_triage_audit_log( options)
     end
   end
 
@@ -415,9 +415,24 @@ class User < ActiveRecord::Base
     # # User goes from "Install" to "Active" state after all the installation special status fields go green
     # status = (self.alert_status == 'normal' ? STATUS[:active] : STATUS[:installed])
 
-    # Send an email to administrator if
-    #   * status column is about to change to "Installed" just now
-    UserMailer.deliver_user_installation_alert( self) if self.changed? && self.status_change && self.status_change.last == User::STATUS[:installed]
+    # status column is about to change
+    if self.changed?
+      #
+      add_triage_audit_log # create a log at least
+      #
+      # more actions for changes made to status
+      if !self.status_change.blank?
+        #
+        # Send an email to administrator if
+        #   * status column is about to change to "Installed" just now
+        if self.status_change.last == User::STATUS[:installed]
+          UserMailer.deliver_user_installation_alert( self)
+        end
+        #
+        # do not update the status_changed_at timestamp if that itself is updated during the change
+        self.status_changed_at = Time.now if self.status_changed_at_change.blank?
+      end
+    end
   end
   
   # https://redmine.corp.halomonitor.com/issues/398
@@ -581,11 +596,11 @@ class User < ActiveRecord::Base
     # * either keys are supplied
     # * or all keys are considered
     # * invalid keys automatically get rejected in this step
+    values = []
     keys = ( options.blank? ? STATUS.keys : (STATUS.keys & options) ) # consider all keys, or a subset
     keys = STATUS.keys if keys.blank? # consider all keys if the subset intersection was empty
     unless keys.blank?
       # collect array of arrays. convert to hash before returning
-      values = []
       keys.each do |key|
         if key == :pending
           # [ key, creator.blank? ? created_at.to_s : "#{created_at} by #{creator.name}" ] # when the user row was created
@@ -623,10 +638,12 @@ class User < ActiveRecord::Base
   end
 
   # keep an audit trail in triage_audit_log
-  def create_triage_audit_log( args)
+  def add_triage_audit_log( args = {})
     options = { :status => last_triage_status, :is_dismissed => dismissed_from_triage?,
       :description => "Status updated to [#{status}]. Auto triggered through user model." }
-    triage_audit_logs.create( options.merge( args))
+    log = TriageAuditLog.new( options.merge( args).merge( :user => self))
+    log.send( :create_without_callbacks)
+    self.last_triage_audit_log = log # link it, since we do not have callbacks
   end
   
   # check if dial_up_numbers are have "Ok" status for the given device
@@ -664,13 +681,22 @@ class User < ActiveRecord::Base
   end
   
   def status_button_color
-    _status = (status == STATUS[:installed] ? 'installed' : alert_status)
-    case _status
-    when 'installed'; 'green'
-    when 'abnormal' ; 'red'
-    when 'caution'  ; 'yellow'
-    else              'gray';
-    end
+    colors = { 'abnormal' => 'red', 'caution' => 'yellow'}
+    _status = alert_status # (status == STATUS[:installed] ? 'installed' : alert_status)
+    #
+    # # only for "Installed" status, special "green" color is applied
+    # # everything else works as per business logic
+    # status == 'Installed' ? 'green' : (colors.keys.include?( _status) ? colors[ _status] : 'gray')
+    colors.keys.include?( _status) ? colors[ _status] : 'gray'
+    # case _status
+    # # when 'installed'; 'green'
+    # when 'abnormal' ; 'red'
+    # when 'caution'  ; 'yellow'
+    # else              'gray';
+    # end
+    #
+    # CHANGED: Old method of selecting color. Does not fit for date-relative status colors
+    #   The valid logic now: Call "alert_status" to check status and color based on that
     # STATUS_COLOR[ status_index]
   end
   
@@ -684,8 +710,29 @@ class User < ActiveRecord::Base
   end
   
   def last_log_when_status_changed
-    # pick most recent log when status was changed
-    logs.first( :conditions => { :log => status }, :order => "created_at DESC")
+    # pick the log from ascending order, when status was changed
+    logs.first( :conditions => { :log => status }, :order => "created_at") # this was DESC
+  end
+
+  # for the business logic, we only need to check 1 and 7 days
+  # no need to fetch all data and get entire details
+  def days_since_status_changed
+    status_changed_at.blank? ? 30 : ((Time.now - status_changed_at) / 1.day).round
+    # debugger
+    # span = 0
+    # check_days = [1, 7]
+    # check_days.each do |n|
+    #   if span.zero?
+    #     logs = triage_audit_logs.all( :conditions => ["created_at <= ?", n.days.ago], :select => "status")
+    #     if (logs.collect(&:status).uniq.compact.length > 1)
+    #       span = n
+    #     end
+    #   end
+    # end
+    # #
+    # # Assumption: status changed earlier than the longest span we want to check
+    # #   so the change is very old for any recent business logic
+    # span.zero? ? (check_days[-1] + 1) : span # the oldest point beyond which we do not bother
   end
 
   def triage_users(options = {})
@@ -737,7 +784,7 @@ class User < ActiveRecord::Base
   # check and return boolean, if this user was in triage list and was dismissed today
   def dismissed_from_triage?
     last_log = last_triage_audit_log # cace column in table
-    last_log.blank? ? false : ((last_log.created_at.to_date == Date.today) && last_log.is_dismissed)
+    (!last_log.blank? && !last_log.created_at.blank?) ? ((last_log.created_at.to_date == Date.today) && last_log.is_dismissed) : false
   end
   
   def not_dismissed_from_triage?
@@ -805,7 +852,7 @@ class User < ActiveRecord::Base
       "normal"
     else
       # returning blank for status will default to 48 hours for abnormal, 24 for caution
-      status = case what
+      _status = case what
       # check the current delay in hours, find a triage threshold that defines such case, get the status string
       # return blank for status, if threshold missing
       when :panic
@@ -863,8 +910,9 @@ class User < ActiveRecord::Base
         statuses.flatten.compact.uniq.sort.first # alphabetical order: abnormal, caution, normal
 
       # UserIntake.installation_datetime
-      when :desired_installation_date
-        if !user_intakes.blank? && !user_intakes.first.installation_datetime.blank?
+      when :not_submitted
+        # when user intake has desired installation date, but user not yet installed
+        if !user_intakes.blank? && !user_intakes.first.installation_datetime.blank? && status.blank?
           time_span = ((user_intakes.first.installation_datetime - Time.now) / 1.hour).round.hours
           result = if time_span > 60.hours
             'normal'
@@ -874,19 +922,80 @@ class User < ActiveRecord::Base
             'abnormal'
           end
         end
-        result.blank? ? 'abnormal' : result
+        result.blank? ? 'normal' : result
 
-      when :discontinue_service, :discontinue_billing
-        rma = rmas.first( :order => "created_at DESC")
-        dated = ( what == :discontinue_service ? rma.discontinue_service_on : rma.discontinue_bill_on ) unless rma.blank?
-        unless dated.blank?
-          if dated == Date.yesterday
+      when :ready_for_approval
+        # when user intake has desired installation date, but user not yet installed
+        if !user_intakes.blank? && !user_intakes.first.installation_datetime.blank? && (status == STATUS[:approval_pending])
+          time_span = ((user_intakes.first.installation_datetime - Time.now) / 1.hour).round.hours
+          result = if time_span > 8.hours
+            'normal'
+          elsif (time_span <= 8.hours) && (time_span > 4.hours)
+            'caution'
+          else
             'abnormal'
-          elsif dated == Date.tomorrow
+          end
+        end
+        result.blank? ? 'normal' : result
+
+      when :ready_to_install
+        if !user_intakes.blank? && !user_intakes.first.installation_datetime.blank? && (status == STATUS[:install_pending])
+          #
+          # days after, desired installation date
+          time_span1 = if (!user_intakes.first.blank? && !user_intakes.first.installation_datetime.blank?)
+            (( user_intakes.first.installation_datetime - Time.now ) / 1.day).abs.round.days
+          else
+            5.days # force abnormal status
+          end
+          #
+          # days after, ship date + group.grace_mon_days
+          time_span2 = if (!user_intakes.first.blank? && !user_intakes.first.shipped_at.blank?)
+            (( (user_intakes.first.shipped_at + group.grace_mon_days.to_i.days) - Time.now ) / 1.day).abs.round.days
+          else
+            5.days # force abnormal status
+          end
+          # take the higher values
+          time_span = ((time_span1 > time_span2) ? time_span1 : time_span2)
+          # debugger
+          result = if time_span >= 2.days
+            'abnormal'
+          elsif time_span >= 1.day
             'caution'
           else
             'normal'
           end
+        end
+        result.blank? ? 'normal' : result
+
+      when :ready_to_bill
+        if status == STATUS[:bill_pending]
+          span = days_since_status_changed
+          if span >= 7
+            'abnormal'
+          elsif (span >= 1) && (span < 7)
+            'caution'
+          else
+            'normal'
+          end
+        else
+          'normal'
+        end
+
+      when :discontinue_service, :discontinue_billing
+        if status == STATUS[:installed]
+          rma = rmas.first( :order => "created_at DESC")
+          dated = ( what == :discontinue_service ? rma.discontinue_service_on : rma.discontinue_bill_on ) unless rma.blank?
+          unless dated.blank?
+            if dated == Date.yesterday
+              'abnormal'
+            elsif dated == Date.tomorrow
+              'caution'
+            else
+              'normal'
+            end
+          end
+        else
+          'normal'
         end
 
       else
@@ -899,7 +1008,7 @@ class User < ActiveRecord::Base
       #   less than 24 hours delayed = normal
       # when threshold defined
       #   threshold data defines the logic
-      status.blank? ? (hours_since(what) >= 48 ? "abnormal" : (hours_since(what) >= 24 ? "caution" : "normal")) : status
+      _status.blank? ? (hours_since(what) >= 48 ? "abnormal" : (hours_since(what) >= 24 ? "caution" : "normal")) : _status
     end
   end
   
@@ -913,18 +1022,31 @@ class User < ActiveRecord::Base
     # collect status for all events in an array
     # insert 'normal' to include at least one default
     # either pick 'test mode' , or just pick the first alphabetic one. incidentally the required order is albhabetic
-    if test_mode? # ( (options.blank?) || (options && options.include?( User::STATUS[:test] )) || (options && options[:alert] && options[:alert].include?( User::STATUS[:test] )) ) &&
-      # when checking for test mode and that check is allowed to decide status
-      'test mode' # this is not same as User::STATUS
-    else
+    #
+    # test_mode? is no more a special color. Color is always subject to other properties
+    #
+    # if test_mode? # ( (options.blank?) || (options && options.include?( User::STATUS[:test] )) || (options && options[:alert] && options[:alert].include?( User::STATUS[:test] )) ) &&
+    #   # when checking for test mode and that check is allowed to decide status
+    #   'test mode' # this is not same as User::STATUS
+    #
+    # if installed?
+    #   'installed'
+    #   
+    # else
       # include "options" while checking the status for each alert type
       #   this will check the actual status only for allowed alert types
       #   everything else is considered "normal" since want to ignore that status
-      [ :panic, :strap_fastened, :call_center_account, :user_intake, :legal_agreement,
+      values = [ :panic, :strap_fastened, :call_center_account, :user_intake, :legal_agreement,
         :test_mode, :software_version, :dial_up_status, :dial_up_alert, :mgmt_query_delay,
-        :desired_installation_date, :discontinue_billing, :discontinue_service
-        ].collect {|e| alert_status_for(e, options) }.insert(0, 'normal').compact.uniq.sort.first
-    end
+        :not_submitted, :ready_for_approval, :discontinue_billing, :discontinue_service,
+        :ready_to_bill, :ready_to_install
+        ].collect {|e| alert_status_for(e, options) }.insert(0, 'normal')
+      values.compact.uniq.sort.first
+    # end
+  end
+  
+  def installed?
+    status == STATUS[:installed]
   end
   
   # call center account number from profile
@@ -2212,6 +2334,7 @@ class User < ActiveRecord::Base
     #
     # test_mode column
     self.test_mode = (status == true) # just make sure only boolean values are considered
+    self.send(:update_without_callbacks) # WARNING: This works, but is not best. A better method needs to be here
     # user test mode
     #   * user is not part of safety_care
     #   * has all caregivers "away"

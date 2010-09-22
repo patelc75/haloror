@@ -22,7 +22,7 @@
        <br/>
         <br/>
         <div align="left">
-          <input name="commit" type="image" src="/images/update.gif"  /> <a href="<%= request.env['HTTP_REFERER']%>"><img src="/images/cancel.gif" onClick="RedBox.close()" /></a>
+          <input name="commit" type="image" src="/images/update.gif"  /> <a href="<%= request.env['HTTP_REFERER']%>"><img src="/images/cancel.gif" onClick="history.back();" /></a>
         </div>
 <% end %>
 

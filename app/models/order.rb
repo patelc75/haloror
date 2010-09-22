@@ -5,16 +5,35 @@ class Order < ActiveRecord::Base
   has_many :order_items
   has_many :payment_gateway_responses
   has_one :user_intake
+  validates_presence_of :group
   attr_accessor :card_csc, :product, :bill_address_same
   before_update :check_kit_serial_validation
   
   # causing failure of order. need to force kit_serial for retailer in some other way
   # validates_presence_of :kit_serial, :if => :retailer?
   
+  # ===================================
+  # = triggers / active record events =
+  # ===================================
+  
   def after_initialize
+    self.coupon_code = "default" if coupon_code.blank?
     populate_billing_address # copy billing address if bill_address_same
+    #
+    # WARNING: some error happening. switched off for now. needs testing
+    decrypt_credit_card_number # Will decrypt only if encrypted?
+  end
+
+  def before_save
+    #
+    # WARNING: some error happening. switched off for now. needs testing
+    encrypt_credit_card_number # Will encrypt only if not already encrypted?
   end
   
+  # =============================
+  # = public : instance methods =
+  # =============================
+
   def group_name
     group.blank? ? "" : group.name
   end
@@ -32,7 +51,10 @@ class Order < ActiveRecord::Base
   end
   
   def need_to_force_kit_serial?
-    self.retailer? && self.kit_serial.blank?
+    # WARNING: need to confirm this business logic
+    #   At other places in the code, kit_serial is forced for both retailer & reseller
+    #   so, this was updated on Mon Sep 20 23:23:44 IST 2010
+    (retailer? || reseller?) && self.kit_serial.blank?
   end
   
   # quick shortcut for the bill and ship address same
@@ -47,7 +69,7 @@ class Order < ActiveRecord::Base
   
   # tariff card for the product found in catalog
   def product_cost
-    @product_tariff ||= product_from_catalog.tariff(:coupon_code => coupon_code)    
+    product_from_catalog.tariff( :group => (group || Group.direct_to_consumer), :coupon_code => coupon_code)
   end
   
   # create order_item enteries for this order
@@ -74,7 +96,7 @@ class Order < ActiveRecord::Base
   def total_value
     value = 0
     order_items.each do |order_item|
-      tariff = order_item.device_model.tariff(:coupon_code => coupon_code) unless order_item.device_model.blank?
+      tariff = order_item.device_model.tariff( :group => group, :coupon_code => coupon_code) unless order_item.device_model.blank?
       value += (tariff.deposit + tariff.shipping + tariff.upfront_charge) unless tariff.blank?
     end
     value
@@ -118,8 +140,10 @@ class Order < ActiveRecord::Base
   def charge_credit_card
     # mode is set (in environment config files) to :test for development and test, :production when production
     if validate_card
-      if product_cost.upfront_charge.zero?
-        errors.add_to_base "One time fee: #{product_cose.upfront_charge}"
+      if product_cost.blank?
+        errors.add_to_base "Product cost cannot be identified in the database"
+      elsif product_cost.upfront_charge.zero?
+        errors.add_to_base "One time fee: #{product_cost.upfront_charge}"
       else
         # one time charge as presented in the product detail box
         # charge_amount = (cost * 100) # cents
@@ -130,7 +154,7 @@ class Order < ActiveRecord::Base
         # * <tt>money</tt> -- The amount to be purchased as an Integer value in cents.
         # * <tt>creditcard</tt> -- The CreditCard details for the transaction.
         # * <tt>options</tt> -- A hash of optional parameters.
-        @one_time_fee_response = GATEWAY.purchase( product_cost.upfront_charge*100, credit_card,
+        @one_time_fee_response = PAYMENT_GATEWAY.purchase( product_cost.upfront_charge*100, credit_card,
           :billing_address => {
             :first_name => bill_first_name,
             :last_name => bill_last_name,
@@ -193,7 +217,7 @@ class Order < ActiveRecord::Base
         #   #   # https://redmine.corp.halomonitor.com/issues/3068
         #   #   # recurring start_date was immediate. ".months" was missed in last release
         #   #   
-        #   #   @recurring_fee_response = GATEWAY.recurring(product_cost.monthly_recurring*100, credit_card, {
+        #   #   @recurring_fee_response = PAYMENT_GATEWAY.recurring(product_cost.monthly_recurring*100, credit_card, {
         #   #       :interval => {:unit => :months, :length => 1},
         #   #       :duration => {:start_date => product_cost.recurring_delay.months.from_now.to_date, :occurrences => 60},
         #   #       :billing_address => {
@@ -224,13 +248,13 @@ class Order < ActiveRecord::Base
                       :params => credit_card.errors.full_messages.join(". ")})
     end # validate_card
     
-    create_user_intake if card_successfully_charged? # card successful? then create user intake data
+    create_user_intake if card_successful? # card successful? then create user intake data
     
     # return @one_time_fee_response, @recurring_fee_response # more DRY. contained in Order
-    card_successfully_charged? # return success/failure status as true/false
+    card_successful? # return success/failure status as true/false
   end
 
-  def card_successfully_charged?
+  def card_successful?
     # when instance variables are blank? this might be a successful saved order. check payment_gateway_responses
     return (@one_time_fee_response.blank?) ? purchase_successful? : (@one_time_fee_response.success?)
     # return (@one_time_fee_response.blank? || @recurring_fee_response.blank?) ? purchase_successful? : (@one_time_fee_response.success? && @recurring_fee_response.success?)
@@ -294,7 +318,7 @@ class Order < ActiveRecord::Base
         # https://redmine.corp.halomonitor.com/issues/3068
         # recurring start_date was immediate. ".months" was missed in last release
         
-        @recurring_fee_response = GATEWAY.recurring(product_cost.monthly_recurring*100, credit_card, {
+        @recurring_fee_response = PAYMENT_GATEWAY.recurring(product_cost.monthly_recurring*100, credit_card, {
             :interval => {:unit => :months, :length => 1},
             :duration => {:start_date => product_cost.recurring_delay.months.from_now.to_date, :occurrences => 60},
             :billing_address => {
@@ -331,6 +355,12 @@ class Order < ActiveRecord::Base
   # run validation on the passed in value if it is supplied
   #
   def credit_card
+    #
+    # Thu Sep 16 20:06:15 IST 2010 > https://redmine.corp.halomonitor.com/issues/3419#note-7
+    #   card number was accessed before the initialization completed
+    #   this step ensures card_number in plain text state
+    decrypt_credit_card_number # does not harm if run more than once
+    #
     @card ||= ActiveMerchant::Billing::CreditCard.new(
       :first_name => bill_first_name,
       :last_name => bill_last_name,
@@ -373,15 +403,18 @@ class Order < ActiveRecord::Base
     end
   end
 
-  def assign_group(name)
-    group_id = Group.find_or_create_by_name(name) # usually in a new order, so no need to check nil? zero?
-  end
+  # CHANGED: Mon Sep 20 22:53:40 IST 2010
+  #   Now user: Group.direct_to_consumer
+  #
+  # def assign_group(name)
+  #   group_id = Group.find_or_create_by_name(name) # usually in a new order, so no need to check nil? zero?
+  # end
 
   # get invalid or expired warning messages for coupon code
   #  optionally pass "complete" or "clip" to skip order_items and check directly in table
   def message_for_coupon_code(which_code = coupon_code, product_type = "")
     messages = []
-    if product_type.blank?      
+    if product_type.blank?
       order_items.each {|order_item| messages << device_model_coupon_messages( order_item.device_model, which_code) }
     else
       messages << device_model_coupon_messages( DeviceModel.find_complete_or_clip(product_type), which_code)
@@ -393,8 +426,10 @@ class Order < ActiveRecord::Base
     user_intake.blank? ? false : user_intake.legal_agreement_at.blank?
   end
   
-  # private methods
-  #
+  # ===================
+  # = private methods =
+  # ===================
+
   private
   
   def create_user_intake
@@ -412,6 +447,7 @@ class Order < ActiveRecord::Base
         user_intake.subscriber_is_user = false
         user_intake.subscriber_attributes = {:email => bill_email, :profile_attributes => subscriber_profile}
       end
+      user_intake.kit_serial_number = self.kit_serial
       user_intake.order_id = self.id
       user_intake.creator = self.creator # https://redmine.corp.halomonitor.com/issues/3117
       user_intake.updater = self.updater
@@ -429,7 +465,7 @@ class Order < ActiveRecord::Base
     messages = []
     unless device_model.blank? || !device_model.is_a?( DeviceModel)
       price = device_model.prices.find_by_coupon_code(coupon_code)
-      if price.blank?
+      if price.blank? || (price.coupon_code != coupon_code) || (group.coupon_codes.find_by_coupon_code(coupon_code).blank?)
         messages << coupon_code_message( device_model.model_type, "invalid")
       elsif price.expired?
         messages << coupon_code_message( device_model.model_type, "expired")
@@ -442,5 +478,43 @@ class Order < ActiveRecord::Base
   
   def coupon_code_message(product_name = "myHalo product", status = "invalid")
     ["#{product_name}: This coupon is ", status, ". Regular pricing is applied."].join
+  end
+
+  def encrypt_credit_card_number
+    #
+    # TODO: WARNING: We need to cover this with cucumber before release
+    #   All required steps are already taken to make sure data is not lost
+    #   BUT, we still need to test it before releasing
+    #
+    # Keep data Base64 encoded to prevent any loss during conversion process
+    self.card_number = Base64.encode64( encryption_key.encrypt( card_number)) unless encrypted?
+  end
+  
+  def decrypt_credit_card_number
+    #
+    # TODO: WARNING: We need to cover this with cucumber before release
+    #   All required steps are already taken to make sure data is not lost
+    #   BUT, we still need to test it before releasing
+    #
+    # Keep data Base64 encoded to prevent any loss during conversion process
+    self.card_number = encryption_key.decrypt( Base64.decode64( card_number)) if encrypted?
+  end
+  
+  def encryption_key
+    #
+    # generate random salt for each credit card
+    # takes Time.now and adds random amount of seconds to it, up to 10 place values
+    self.salt = Base64.encode64( (Time.now + rand(9999999999).seconds).to_s )[0..56] if salt.blank?
+    #
+    # generate key from the salt
+    EzCrypto::Key.with_password "HaloROR-Encryption", salt, :algorithm => "blowfish" # this generates the key
+  end
+
+  def encrypted?
+    # To identify if the card number is encrypted
+    # * card number is not just plain all digits
+    # * salt exists (not a robust idea. this can be removed by external factors also)
+    # !salt.blank?
+    !card_number.blank? && (card_number.gsub(' ','').to_i.to_s != card_number.gsub(' ',''))
   end
 end

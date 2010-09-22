@@ -12,7 +12,7 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
               DeviceAlert.notify_call_center_and_partners(event)
               DeviceAlert.notify_operators(event)    
           else
-            if(ServerInstance.current_host_short_string() != "ATL-WEB1")
+            if(ServerInstance.current_host_short_string() != "ATL-WEB1" and ServerInstance.current_host_short_string() != "CRIT2")
               DeviceAlert.notify_caregivers(event)
             end
           end

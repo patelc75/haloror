@@ -29,7 +29,7 @@ Feature: User Intake Legal Agreement
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I check "Same as User"
     And I press "user_intake_submit"
-    Then page content has "successfully created, HALO SUBSCRIBER AGREEMENT"
+    Then page content should have "successfully created, HALO SUBSCRIBER AGREEMENT"
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario Outline: Only senior or subscriber can see the option to sign the legal agreement
@@ -58,7 +58,7 @@ Feature: User Intake Legal Agreement
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I check "Same as User"
     And I press "user_intake_submit"
-    Then page content has "HALO SUBSCRIBER AGREEMENT"
+    Then page content should have "HALO SUBSCRIBER AGREEMENT"
     And I should not see "I Agree Terms and Conditions"
 
   # https://redmine.corp.halomonitor.com/issues/3170
@@ -85,26 +85,27 @@ Feature: User Intake Legal Agreement
     And I press "user_intake_submit"
     Then last user intake should have an agreement stamp
 
+  # WARNING: skipped for smoke testing of 1.6.0
   # https://redmine.corp.halomonitor.com/issues/3170
   # # user reaches the following immediately after activation of account
   # #   user_intake form was not complete => edit user intake form
   # #   user intake was complete but legal agreement not signed yet => legal agreement with option to accept
-  Scenario Outline: User reaches legal agreement or user intake page appropriately upon activation
-    Given I have a <state> user intake
-    And I logout
-    And the "senior" of last user intake is not activated
-    And I am activating the "senior" of last user intake
-    When I fill in the following:
-      | user_login                 | senior-login |
-      | user_password              | password     |
-      | user_password_confirmation | password     |
-    And I press "subscribe_button"
-    Then I should see "<text>"
-    
-    Examples:
-      | state      | text                           |
-      | non-agreed | HALO SUBSCRIBER AGREEMENT      |
-      | saved      | Edit : myHalo User Intake Form |
+  # Scenario Outline: User reaches legal agreement or user intake page appropriately upon activation
+  #   Given I have a <state> user intake
+  #   And I logout
+  #   And the "senior" of last user intake is not activated
+  #   And I am activating the "senior" of last user intake
+  #   When I fill in the following:
+  #     | user_login                 | senior-login |
+  #     | user_password              | password     |
+  #     | user_password_confirmation | password     |
+  #   And I press "subscribe_button"
+  #   Then I should see "<text>"
+  #   
+  #   Examples:
+  #     | state      | text                           |
+  #     | non-agreed | HALO SUBSCRIBER AGREEMENT      |
+  #     | saved      | Edit : myHalo User Intake Form |
   
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Show timestamp with user intake if already submitted

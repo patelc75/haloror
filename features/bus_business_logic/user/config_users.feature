@@ -86,7 +86,7 @@ Feature: Config users
     And I follow links "Reporting > Triage"
     And I select "group1" from "Group"
     And I press "Apply selected filters"
-    Then I should see "TEST MODE" within "halouser1" user row
+    Then I should see "Test Mode" within "halouser1" user row
 
   Scenario Outline: Switch between Enable / Disable Test Mode
     Given user "demo" has "super admin" role
@@ -98,7 +98,7 @@ Feature: Config users
     And I follow links "Config > Users"
     And I select "group1" from "Group"
     And I press "<action> Test Mode" within "halouser1" user row
-    Then I <test_mode_status> see "TEST MODE"
+    Then I <test_mode_status> see "Test Mode"
     And user "halouser1" <safety_care_membership> have "halouser" role for group "safety_care"
     
     Examples:

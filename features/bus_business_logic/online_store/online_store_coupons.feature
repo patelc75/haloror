@@ -19,7 +19,11 @@ Feature: Online store coupons
       | 12345             |
       # | QUALITY-1.5.0-RC3 |
 
+  # Sat Sep 18 01:46:00 IST 2010
+  # DEPRECATED. coupon codes are now for groups
+  #
   Scenario Outline: Order page - referral link for various coupon codes should show correct deposit, shipping, total, recurring, trial/advance
+    Given a group "mygroup" exists
     When I visit "/order/<coupon_code>"
     And I choose "product_<product>"
     And I fill the shipping details for online store
@@ -28,13 +32,13 @@ Feature: Online store coupons
     Then page content should have "<deposit>, <shipping>, <phrase>, <total>, <recurring>"
   
     Examples:
-      | product  | coupon_code | deposit | shipping | months | free | recurring | total | phrase           |
-      | complete |             | 249     | 15       | 3      | 0    | 59        | 441   | 3 months advance |
-      | complete | BOGUS_CODE  | 249     | 15       | 3      | 0    | 59        | 441   | 3 months advance |
-      | complete | 99TRIAL     | 99      | 15       | 0      | 1    | 59        | 114   | 1 month trial    |
-      | clip     |             | 249     | 15       | 3      | 0    | 49        | 411   | 3 months advance |
-      | clip     | BOGUS_CODE  | 249     | 15       | 3      | 0    | 49        | 411   | 3 months advance |
-      | clip     | 99TRIAL     | 99      | 15       | 0      | 1    | 49        | 114   | 1 month trial    |
+      | product  | coupon_code | group   | deposit | shipping | months | free | recurring | total | phrase           |
+      | complete |             | mygroup | 249     | 15       | 3      | 0    | 59        | 441   | 3 months advance |
+      | complete | BOGUS_CODE  | mygroup | 249     | 15       | 3      | 0    | 59        | 441   | 3 months advance |
+      | complete | 99TRIAL     | mygroup | 99      | 15       | 0      | 1    | 59        | 114   | 1 month trial    |
+      | clip     |             | mygroup | 249     | 15       | 3      | 0    | 49        | 411   | 3 months advance |
+      | clip     | BOGUS_CODE  | mygroup | 249     | 15       | 3      | 0    | 49        | 411   | 3 months advance |
+      | clip     | 99TRIAL     | mygroup | 99      | 15       | 0      | 1    | 49        | 114   | 1 month trial    |
 
   Scenario: Confirmation page - Filling in valid 99TRIAL shows correct deposit, trial period, total upfront
     When I go to the online store

@@ -83,7 +83,8 @@ When /^I get data in (.+) for user "([^\"]*)"$/ do |model_name, user_login|
   user = User.find_by_login(user_login)
   user.should_not be_blank
   
-  Factory.create(model_name.singularize.gsub(/ /,'_').to_sym, :user => user)
+  model = Factory.build(model_name.singularize.gsub(/ /,'_').to_sym, :user => user)
+  model.save.should be_true
 end
 
 When /^I visit the events page for "([^\"]*)"$/ do |user_name|

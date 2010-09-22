@@ -10,9 +10,9 @@ Given /^debug$/ do
   debugger
 end
 
-Given /^I am (?:an )authenticated(?: user)$/ do
+Given /^I am (?:|an )authenticated(?: user)$/ do
   user = User.find_by_login( "demo")
-  user = Factory.create(:user, {:login => 'demo', :password => '12345', :password_confirmation => '12345'}) unless user
+  user = Factory.create(:user, {:login => 'demo', :password => '12345', :password_confirmation => '12345'}) if user.blank?
   user.activate unless user.activated?
   authenticate("demo", "12345")
 end
@@ -95,6 +95,7 @@ Given /^(?:|a |an )existing (.+) with (.+) as "([^\"]*)"$/ do |name, col, value|
 end
 
 Given /^I am (creating|editing) (?:|a|an) (.+)$/ do |action, model|
+  model = "device model price" if model == "coupon code"
   list_path = model.downcase.pluralize.gsub(' ','_')
   model_sym = model.downcase.singularize.gsub(' ', '_').to_sym
   action_path = case action
@@ -182,6 +183,13 @@ end
 
 # Then
 
+Then /^a (.+) should exist with (.+) "([^"]*)"$/ do |what, column, data|
+  what = 'device model price' if what.downcase == 'coupon code'
+  row = what.gsub(' ','_').classify.constantize.send( "find_by_#{column}".to_sym, data)
+  row.should_not be_blank
+  row.send( column.to_sym).should == data
+end
+
 Then /^I should see "([^\"]*)" link$/ do |link_text|
   response.should have_tag("a", :text => link_text)
 end
@@ -222,7 +230,7 @@ end
 # accepts any ruby expression enclosed in ``
 # usage:
 #   Then page content should have "Successfully processed at `Time.now`"
-Then /^(?:|the )page content (?:|should have|has) "([^\"]*)"$/ do |array_as_text|
+Then /^(?:|the )page content (?:|should have) "([^\"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect do |part|
     if part.include?("`")
       part.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).strip }.join(' ')

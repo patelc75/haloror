@@ -27,7 +27,7 @@ class BatteryReminder < DeviceAlert
   
   def after_create
   	if self.reminder_num == 3
-  	  DeviceAlert.notify_call_center_and_partners(self)
+  	  #DeviceAlert.notify_call_center_and_partners(self)      #do not send to call center until they are ready
 		  DeviceAlert.notify_operators(self)
 		  DeviceAlert.notify_caregivers(self)
 	  else

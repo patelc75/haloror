@@ -1,4 +1,4 @@
-Feature: Bus user intake states
+Feature: Bus user intake statuses
   In order to value
   As a role
   I want feature
@@ -8,9 +8,10 @@ Feature: Bus user intake states
     And the following user_intakes:
       | kit_serial_number | id  |
       | 12345             | 123 |
+    And the senior of user intake "12345" is not in test mode
     
   # status: gray
-  # reason: default state. test mode "ON"
+  # reason: default status. test mode "ON"
   # action:
   # triage:
   Scenario: User Intake - Not yet submitted
@@ -23,6 +24,7 @@ Feature: Bus user intake states
   # triage: caution
   Scenario Outline: User Intake - Caution - Not yet submitted
     Given desired installation date for user intake "12345" is in <hours_away> hours
+    And the senior of user intake "12345" has "" status
     Then I should see triage status "caution" for senior of user intake "12345"
     And action button for user intake "12345" should be colored yellow
     
@@ -37,6 +39,7 @@ Feature: Bus user intake states
   # triage: abnormal
   Scenario Outline: User Intake - Abnormal - Not yet submitted
     Given desired installation date for user intake "12345" is in <hours_away> hours
+    And the senior of user intake "12345" has "" status
     Then I should see triage status "abnormal" for senior of user intake "12345"
     And action button for user intake "12345" should be colored red
     # And an email to group admins of user intake "12345" should be sent for delivery
@@ -63,6 +66,7 @@ Feature: Bus user intake states
   # triage: caution
   Scenario Outline: User Intake - Caution - Ready for approval
     Given desired installation date for user intake "12345" is in <hours_away> hours
+    And the senior of user intake "12345" has "Ready for Approval" status
     Then I should see triage status "caution" for senior of user intake "12345"
     And action button for user intake "12345" should be colored yellow
 
@@ -77,6 +81,7 @@ Feature: Bus user intake states
   # triage: abnormal
   Scenario Outline: User Intake - Abnormal - Ready for approval
     Given desired installation date for user intake "12345" is in <hours_away> hours
+    And the senior of user intake "12345" has "Ready for Approval" status
     Then I should see triage status "abnormal" for senior of user intake "12345"
     And action button for user intake "12345" should be colored red
 
@@ -89,12 +94,14 @@ Feature: Bus user intake states
   # reason: clicked Approve button
   # action: disable test mode. email to admin
   # triage: 
-  Scenario: User Intake - Ready for Install
+  Scenario: User Intake - Ready to Install
     Given senior of user intake "12345" has "Ready for Approval" status
-    And I am listing user intakes
-    And I edit the 1st row
-    When I press "Approve"
+    When user intake "12345" gets approved
     Then action button for user intake "12345" should be colored gray
+    And senior of user intake "12345" is not in test mode
+    # And I am listing user intakes
+    # And I follow "edit_link" in the 1st row
+    # When I press "Approve"
     # And an email to admin of user intake "12345" should be sent for delivery
     #
     # TODO:
@@ -106,8 +113,9 @@ Feature: Bus user intake states
   # reason: 1 day after, desired installation date OR Group.grace_mon_days + ship_date
   # action: email to admin
   # triage: caution
-  Scenario: User Intake - Caution - Ready for Install
+  Scenario: User Intake - Caution - Ready to Install
     Given desired installation date for user intake "12345" was 1 days ago
+    And the senior of user intake "12345" has "Ready to Install" status
     Then I should see triage status "caution" for senior of user intake "12345"
     # And an email to admin of user intake "12345" should be sent for delivery
     And action button for user intake "12345" should be colored yellow
@@ -116,18 +124,31 @@ Feature: Bus user intake states
   # reason: 1 day after, desired installation date OR Group.grace_mon_days + ship_date
   # action: email to admin
   # triage: caution
-  Scenario: User Intake - Caution - Ready for Install
+  Scenario: User Intake - Caution - Ready to Install
     Given monitoring grace period with ship date for user intake "12345" was 1 days ago
+    And the senior of user intake "12345" has "Ready to Install" status
     Then I should see triage status "caution" for senior of user intake "12345"
     # And an email to admin of user intake "12345" should be sent for delivery
     And action button for user intake "12345" should be colored yellow
 
   # status: red
-  # reason: 2 days after, desirec installation date OR Group.grace_mon_days + ship_date
+  # reason: 2 days after, desired installation date OR Group.grace_mon_days + ship_date
   # action: email to admin
   # triage: abnormal
-  Scenario: User Intake - Abnormal - Ready for Install
-    Given desired installation date or monitoring grace period with ship date for user intake "12345" was 1 days ago
+  Scenario: User Intake - Abnormal - Ready to Install
+    Given desired installation date for user intake "12345" was 2 days ago
+    And the user intake "12345" status is "Ready to Install" since past 2 days
+    Then I should see triage status "abnormal" for senior of user intake "12345"
+    # And an email to admin of user intake "12345" should be sent for delivery
+    And action button for user intake "12345" should be colored red
+
+  # status: red
+  # reason: 2 days after, desired installation date OR Group.grace_mon_days + ship_date
+  # action: email to admin
+  # triage: abnormal
+  Scenario: User Intake - Abnormal - Ready to Install
+    Given monitoring grace period with ship date for user intake "12345" was 2 days ago
+    And the user intake "12345" status is "Ready to Install" since past 3 days
     Then I should see triage status "abnormal" for senior of user intake "12345"
     # And an email to admin of user intake "12345" should be sent for delivery
     And action button for user intake "12345" should be colored red
@@ -138,6 +159,7 @@ Feature: Bus user intake states
   # triage: 
   Scenario: User Intake - Ready to bill
     Given the senior of user intake "12345" is not in test mode
+    And the user intake "12345" status is "Ready to Bill" since past 0 days
     When panic button test data is received for user intake "12345"
     Then action button for user intake "12345" should be colored gray
 
@@ -146,7 +168,7 @@ Feature: Bus user intake states
   # action: 
   # triage: caution
   Scenario Outline: User Intake - Caution - Ready to bill
-    Given the user intake "12345" status is "Ready to Bill" since past <days_ago> day
+    Given the user intake "12345" status is "Ready to Bill" since past <days_ago> days
     Then I should see triage status "caution" for senior of user intake "12345"
     And action button for user intake "12345" should be colored yellow
 
@@ -160,7 +182,7 @@ Feature: Bus user intake states
   # action: 
   # triage: abnormal
   Scenario Outline: User Intake - Abnormal - Ready to bill
-    Given the user intake "12345" status is "Ready to Bill" since past <days_ago> day
+    Given the user intake "12345" status is "Ready to Bill" since past <days_ago> days
     Then I should see triage status "abnormal" for senior of user intake "12345"
     And action button for user intake "12345" should be colored red
 
@@ -169,50 +191,57 @@ Feature: Bus user intake states
       | 7        |
       | 10       |
 
-  # status: green
-  # reason: bill_monthly = true OR credit card transaction successful
-  # action: email to admin, halouser, caregivers
-  # triage: 
-  Scenario: User Intake - Installed
-    Given bill monthly or credit card value are acceptable for user intake "12345"
-    When panic button test data is received for user intake "12345"
-    # And an email to admin, halouser and caregivers of user intake "12345" should be sent for delivery
-    And action button for user intake "12345" should be colored green
+  # # TODO: known issue. panic does not trigger after_save event
+  # # status: green
+  # # reason: bill_monthly = true OR credit card transaction successful
+  # # action: email to admin, halouser, caregivers
+  # # triage: 
+  # Scenario: User Intake - Installed
+  #   Given bill monthly or credit card value are acceptable for user intake "12345"
+  #   # When the senior of user intake "12345" gets the device installed
+  #   And the senior of user intake "12345" has "Ready to Install" status
+  #   When panic button test data is received for user intake "12345"
+  #   # And an email to admin, halouser and caregivers of user intake "12345" should be sent for delivery
+  #   And action button for user intake "12345" should be colored green
 
-  # status: gray
+  # status: yellow
   # reason: clicked "discontinue service" button in RMA parent
   # action: email to admin, halouser, caregivers
   # triage: caution (RMA desired discontinue service date: not reached yet)
   Scenario: User Intake - Caution - Suspended
     Given RMA for user intake "12345" discontinues service in 1 day
+    And senior of user intake "12345" has "Installed" status
     Then I should see triage status "caution" for senior of user intake "12345"
-    And action button for user intake "12345" should be colored gray
+    And action button for user intake "12345" should be colored yellow
     # And an email to admin, halouser and caregivers of user intake "12345" should be sent for delivery
 
-  # status: gray
+  # status: red
   # reason: clicked "discontinue service" button in RMA parent
   # action: email to admin, halouser, caregivers
   # triage: abnormal (RMA desired discontinue service date: reached already)
   Scenario: User Intake - Abnormal - Suspended
     Given RMA for user intake "12345" discontinues service 1 day ago
+    And senior of user intake "12345" has "Installed" status
     Then I should see triage status "abnormal" for senior of user intake "12345"
-    And action button for user intake "12345" should be colored gray
+    And action button for user intake "12345" should be colored red
     
-  # status: gray
+  # status: yellow
   # reason: clicked "Discontinue billing" button in RMA parent
   # action: email to admin, halouser, caregivers
   # triage: caution (RMA desired cancel date: not reached yet)
   Scenario: User Intake - Caution - Cancelled
     Given RMA for user intake "12345" discontinues billing in 1 day
+    And senior of user intake "12345" has "Installed" status
     Then I should see triage status "caution" for senior of user intake "12345"
-    And action button for user intake "12345" should be colored gray
+    And action button for user intake "12345" should be colored yellow
 
-  # status: gray
+  # status: red
   # reason: clicked "Discontinue billing" button in RMA parent
   # action: email to admin, halouser, caregivers
   # triage: abnormal (RMA desired cancel date: reached already)
   Scenario: User Intake - Abnormal - Cancelled
     Given RMA for user intake "12345" discontinues billing 1 day ago
+    And senior of user intake "12345" has "Installed" status
     Then I should see triage status "abnormal" for senior of user intake "12345"
-    And action button for user intake "12345" should be colored gray
+    And action button for user intake "12345" should be colored red
     

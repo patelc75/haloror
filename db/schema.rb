@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100827205811) do
+ActiveRecord::Schema.define(:version => 20100916211246) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -194,6 +194,9 @@ ActiveRecord::Schema.define(:version => 20100827205811) do
     t.datetime "stopped_at"
     t.integer  "time_remaining"
     t.integer  "battery_critical_id"
+    t.datetime "timestamp_call_center"
+    t.boolean  "call_center_pending"
+    t.datetime "timestamp_server"
   end
 
   create_table "battery_unpluggeds", :force => true do |t|
@@ -337,6 +340,7 @@ ActiveRecord::Schema.define(:version => 20100827205811) do
     t.integer  "months_trial"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "group_id"
   end
 
   create_table "device_models", :force => true do |t|
@@ -461,6 +465,14 @@ ActiveRecord::Schema.define(:version => 20100827205811) do
     t.datetime "lowest_connect_timestamp"
     t.integer  "longest_dial_duration_sec"
     t.datetime "longest_dial_duration_timestamp"
+    t.string   "username"
+    t.string   "password"
+    t.string   "alt_username"
+    t.string   "alt_password"
+    t.string   "global_alt_username"
+    t.string   "global_alt_password"
+    t.string   "global_prim_username"
+    t.string   "global_prim_password"
   end
 
   create_table "dial_ups", :force => true do |t|
@@ -752,6 +764,7 @@ ActiveRecord::Schema.define(:version => 20100827205811) do
     t.integer  "group_id"
     t.string   "coupon_code"
     t.string   "kit_serial"
+    t.string   "salt"
   end
 
   create_table "oscope_msgs", :force => true do |t|
@@ -1197,6 +1210,7 @@ ActiveRecord::Schema.define(:version => 20100827205811) do
     t.integer  "last_strap_fastened_id"
     t.string   "status"
     t.boolean  "test_mode"
+    t.datetime "status_changed_at"
   end
 
   create_table "vital_scans", :force => true do |t|

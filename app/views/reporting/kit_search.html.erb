@@ -1,0 +1,17 @@
+<%=render :partial => 'nav_config'%>
+<h3>Device Kit Search</h3>
+<p>
+  <form action="/reporting/kit_search" method="POST">
+    <%= text_field_tag :device_serial_number %>
+    <br/>
+    <input type="submit" value="Submit" />
+  </form>
+</p>
+<hr />
+<div>
+  <% @devices.each do |device| %>
+    <div class="box">
+      <%= hash_to_html( device.attributes) %>
+    </div>
+  <% end %>
+</div>

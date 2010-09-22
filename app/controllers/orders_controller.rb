@@ -9,12 +9,15 @@ class OrdersController < ApplicationController
   end
   
   def new
-    @groups = Group.for_user(current_user)
+    #
+    # https://redmine.corp.halomonitor.com/issues/3335
+    # there always is a group applicable to user
+    @groups = (logged_in? ? Group.for_user(current_user) : [Group.direct_to_consumer])
     @confirmation = false
     @product = session[:product]
     @order = Order.new(session[:order]) # recall if any order data was remembered
-    @complete_tariff = DeviceModel.complete_tariff(params[:coupon_code])
-    @clip_tariff = DeviceModel.clip_tariff(params[:coupon_code])
+    @complete_tariff = DeviceModel.complete_tariff( @groups.first, params[:coupon_code])
+    @clip_tariff = DeviceModel.clip_tariff( @groups.first, params[:coupon_code])
     
     if request.post? # confirmation mode
       @product = params[:product]
@@ -25,10 +28,14 @@ class OrdersController < ApplicationController
         @order.errors.add_to_base "Please select a product to order" if session[:product].blank?
         
       else
+        @order.group = @groups.first if @order.group.blank?
+        #
+        # TODO: order_params need some cleanup. Revisit when appropriate.
+        #   This can probably be obsolete and attributes can go directly to session[:order]
         order_params.merge!(
             "cost" => (@product == 'complete' ? \
-              DeviceModel.complete_tariff(@order.coupon_code).upfront_charge.to_s : \
-              DeviceModel.clip_tariff(@order.coupon_code).upfront_charge.to_s),
+              DeviceModel.complete_tariff(@order.group, @order.coupon_code).upfront_charge.to_s : \
+              DeviceModel.clip_tariff(@order.group, @order.coupon_code).upfront_charge.to_s),
             "product" => @product
             )
         session[:product] = @product # same as params[:product]. Will be used later in create
@@ -54,8 +61,8 @@ class OrdersController < ApplicationController
       @confirmation = (@order.errors.count.zero? && !@product.blank? && !session[:order].blank?)
       #
       # https://redmine.corp.halomonitor.com/issues/2764
-      complete_temp = DeviceModel.complete_tariff(@order.coupon_code)
-      clip_temp = DeviceModel.clip_tariff(@order.coupon_code)
+      complete_temp = DeviceModel.complete_tariff(@order.group, @order.coupon_code)
+      clip_temp = DeviceModel.clip_tariff(@order.group, @order.coupon_code)
       @complete_tariff = complete_temp unless complete_temp.blank?
       @clip_tariff = clip_temp unless clip_temp.blank?
       
@@ -79,16 +86,18 @@ class OrdersController < ApplicationController
     @order = Order.find(params[:order][:id])
     @order.kit_serial = params[:order][:kit_serial]
     
+    if @order.save && !@order.need_to_force_kit_serial?
+      # when the business logic reaches here for kit_serial, include agreement logic
+      flash[:notice] = "Order was #{ params[:commit] == 'Skip' ? 'processed without' : 'successfully saved with' } Kit Serial Number."
+      @user_intake = @order.user_intake
+      action = (@order.need_agreement_sign? ? 'agreement' : 'success')
+    else
+      flash[:notice] = 'Please provide the Kit Serial Number'
+      action = 'kit_serial'
+    end
+    
     respond_to do |format|
-      if @order.save && !@order.need_to_force_kit_serial?
-        # when the business logic reaches here for kit_serial, include agreement logic
-        flash[:notice] = "Order was #{params[:commit] == 'Skip' ? 'successfully saved with' : 'processed without'} Kit Serial Number."
-        @user_intake = @order.user_intake
-        format.html { render :action => (@order.need_agreement_sign? ? 'agreement' : 'success') }
-      else
-        flash[:notice] = 'Please provide the Kit Serial Number'
-        format.html { render :action => "kit_serial" }
-      end
+      format.html { render :action => action }
     end
   end
   
@@ -100,69 +109,72 @@ class OrdersController < ApplicationController
       
     else
       goto = "new"
-      respond_to do |format|
-        unless session[:order].blank?
+      unless session[:order].blank?
 
-          @order = Order.new(session[:order]) # pick from session, not params
-          @order.assign_group("direct_to_consumer") unless logged_in? # only assign this group when public order
+        @order = Order.new(session[:order]) # pick from session, not params
+        @order.group = Group.direct_to_consumer unless logged_in? # only assign this group when public order
 
-          if @order.valid? && @order.save! #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
-            # pick any of these hard coded values for now. This will change to device_revisions on order screen
-            @order.product = session[:product] # used at many places in this code
+        if @order.valid? && @order.save! #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
+          # pick any of these hard coded values for now. This will change to device_revisions on order screen
+          @order.product = session[:product] # used at many places in this code
+          
+          if @order.product_from_catalog.blank?
+            # this should have been caught on first page though
+            @order.errors.add_to_base "Link to product catalog is broken. Please inform webmaster @ halomonitoring.com about this"
             
-            if @order.product_from_catalog.blank?
-              # this should have been caught on first page though
-              @order.errors.add_to_base "Link to product catalog is broken. Please inform webmaster @ halomonitoring.com about this"
+          else
+            # create order_items. @order has everything in it to create these
+            @order.create_order_items
+            
+            Order.transaction do
+              # we process the card in cents, but the tariff is USD
+              # @one_time_fee, @subscription = @order.charge_credit_card
+              # success = (@one_time_fee.success? && @subscription.success?) \
+              #   unless (@one_time_fee.blank? || @subscription.blank?)
+              success = @order.charge_credit_card # more DRY now. within Order instance
               
-            else
-              # create order_items. @order has everything in it to create these
-              @order.create_order_items
-              
-              Order.transaction do
-                # we process the card in cents, but the tariff is USD
-                # @one_time_fee, @subscription = @order.charge_credit_card
-                # success = (@one_time_fee.success? && @subscription.success?) \
-                #   unless (@one_time_fee.blank? || @subscription.blank?)
-                success = @order.charge_credit_card # more DRY now. within Order instance
-
-                if success.blank? || !success
-                  goto = "failure"
-                  # format.html { render :action => 'failure' }
-                else
-                  # success
-                  #
-                  # # CHANGED: emails are now delivered explicitly through order > create_user_intake > dispatch_emails
-                  # # https://redmine.corp.halomonitor.com/issues/3067
-                  #
-                  # CHANGED: No need to deliver here now. Order does that automatically through user intake
-                  #
-                  # deliver emails
-                  # emails = []
-                  # emails << @order.ship_email
-                  # emails << @order.bill_email unless @order.ship_and_bill_address_match
-                  # emails.each do |email|
-                  #   UserMailer.deliver_signup_installation(email,:exclude_senior_info)
-                  # end
-                  [@order.bill_email, "senior_signup@halomonitoring.com"].each do |email|
-                    UserMailer.deliver_order_summary(@order, email, (email.include?("senior_signup") ? :no_email_log : nil))
-                  end
-                  # show on browser
-                  flash[:notice] = 'Thank you for your order.'
-                  # https://redmine.corp.halomonitor.com/issues/2901
-                  # user must see agreement before the success page
-                  @user_intake = @order.user_intake
-                  @redirect_hash = {:controller => 'orders', :action => 'success', :id => @order.id} # if the user prints agreement, we need this
-                  goto = ((@order.retailer? || @order.reseller?) ? "kit_serial" : (@order.user_intake.paper_copy_submitted? ? 'success' : 'agreement'))
-                  reset_session # start fresh               
+              if success.blank? || !success
+                goto = "failure"
+                # format.html { render :action => 'failure' }
+              else
+                # success
+                #
+                # # CHANGED: emails are now delivered explicitly through order > create_user_intake > dispatch_emails
+                # # https://redmine.corp.halomonitor.com/issues/3067
+                #
+                # CHANGED: No need to deliver here now. Order does that automatically through user intake
+                #
+                # deliver emails
+                # emails = []
+                # emails << @order.ship_email
+                # emails << @order.bill_email unless @order.ship_and_bill_address_match
+                # emails.each do |email|
+                #   UserMailer.deliver_signup_installation(email,:exclude_senior_info)
+                # end
+                [@order.bill_email, "senior_signup@halomonitoring.com"].each do |email|
+                  UserMailer.deliver_order_summary(@order, email, (email.include?("senior_signup") ? :no_email_log : nil))
                 end
-                # @order = nil # fixes #2564. need to check through cucumber
-            
-              end # order
-            end # revision
-        
-          end # save
-        end # session[:order]
-
+                # show on browser
+                flash[:notice] = 'Thank you for your order.'
+                # https://redmine.corp.halomonitor.com/issues/2901
+                # user must see agreement before the success page
+                @user_intake = @order.user_intake
+                @redirect_hash = {:controller => 'orders', :action => 'success', :id => @order.id} # if the user prints agreement, we need this
+                goto = ((@order.retailer? || @order.reseller?) ? "kit_serial" : (@order.user_intake.paper_copy_submitted? ? 'success' : 'agreement'))
+                #
+                # WARNING: do not reset the session. just clear the variables that are no more required
+                # # reset_session # start fresh
+                [:order, :product].each {|e| session[e] = nil } # just remove order related stuff from session
+              end
+              # @order = nil # fixes #2564. need to check through cucumber
+          
+            end # order
+          end # revision
+      
+        end # save
+      end # session[:order]
+      
+      respond_to do |format|
         format.html { render :action => goto }
       end
     end # redirect_to new

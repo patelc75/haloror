@@ -4,7 +4,7 @@
 <table border="1">
   <tr>
     <th>Part Num</th>
-    <th>Part Num</th>
+    <th>Model</th>
     <th>Coupon<br> Code</th>
     <th>Expiry<br> Date</th>
     <th>Deposit</th>
@@ -15,6 +15,7 @@
   </tr>
 
 <% for device_model_price in @device_model_prices %>
+  <% unless device_model_price.device_model.blank? %>
   <tr>
     <td><%=h device_model_price.device_model.part_number %></td>
     <td><%=h device_model_price.device_model.model %></td>    
@@ -29,6 +30,7 @@
     <td><%= link_to 'Edit', edit_device_model_price_path(device_model_price) %></td>
     <td><%= link_to 'Destroy', device_model_price, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
+  <% end %>
 <% end %>
 </table>
 

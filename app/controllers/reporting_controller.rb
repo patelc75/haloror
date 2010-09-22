@@ -137,6 +137,19 @@ class ReportingController < ApplicationController
     render :partial => 'user_hidden', :layout => false
   end
   
+  def kit_search
+    @devices = []
+    if request.post?
+      unless (phrase = params[:device_serial_number].strip).blank?
+        device = Device.first( :conditions => ["serial_number LIKE ?", "%#{phrase}%"])
+        flash[:message] = "Cannot find device matching #{phrase}" if device.blank?
+        device_ids = device.kits.collect(&:devices).flatten.collect(&:id).uniq.compact unless device.blank?
+        flash[:message] = "No kits found" if device.kits.blank?
+        @devices = Device.find( device_ids) unless device_ids.blank?
+      end
+    end
+  end
+  
   def devices
     # FIXME: make a hash of conditions rather than SQL
     #   if we already search by ID / serial_number, why do we need to add device_id condition?
