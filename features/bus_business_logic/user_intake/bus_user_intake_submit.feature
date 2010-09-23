@@ -15,27 +15,33 @@ Feature: Business - user intake - submit
   #   And I press "user_intake_submit"
   #   Then user intake "12345" has "Ready for Approval" status
 
-  Scenario: Can be edited at any status
-    Given I am listing user intakes
-    When I edit the 1st row
-    Then page source should have xpath "//input[@id='user_intake_submit']"
+  # CHANGED : OBSOLETE
+  #
+  # Scenario: Can be edited at any status
+  #   Given I am listing user intakes
+  #   When I edit the 1st row
+  #   Then page source should have xpath "//input[@id='user_intake_submit']"
     
-  Scenario: When edited, goes back to approval status
-    Given the following user_intakes:
-      | kit_serial_number |
-      | 12345             |
-    And senior of user intake "12345" has "Ready to Bill" status
-    And I edit user intake with kit serial "12345"
-    And I press "user_intake_submit"
-    Then user intake "12345" has "Ready to Bill" status
+  # CHANGED : OBSOLETE
+  #
+  # Scenario: When edited, goes back to approval status
+  #   Given the following user_intakes:
+  #     | kit_serial_number |
+  #     | 12345             |
+  #   And senior of user intake "12345" has "Ready to Bill" status
+  #   And I edit user intake with kit serial "12345"
+  #   And I press "user_intake_submit"
+  #   Then user intake "12345" has "Ready to Bill" status
 
-  Scenario: Can be "saved" at any status
-    Given the following user_intakes:
-      | kit_serial_number |
-      | 12345             |
-    When I edit user intake with kit serial "12345"
-    And I press "user_intake_save"
-    Then I should see "Successfully updated"
+  # # @priority-low
+  # #
+  # Scenario: Can be "saved" at any status
+  #   Given the following user_intakes:
+  #     | kit_serial_number |
+  #     | 12345             |
+  #   When I edit user intake with kit serial "12345"
+  #   And I press "user_intake_save"
+  #   Then I should see "Successfully updated"
     
   # PENDING
   # # merged scenarios

@@ -4,7 +4,6 @@ Feature: Bus user intake statuses
   I want feature
 
   * subject and body of emails
-  * updated "followed action"
 
   Background:
     Given I am an authenticated user
@@ -26,6 +25,7 @@ Feature: Bus user intake statuses
   # reason: 60 hours before desired installation date
   # action: email to admin
   # triage: caution
+  # ref   : Intake + Install States google doc : row 3
   Scenario Outline: User Intake - Caution - Not yet submitted
     Given desired installation date for user intake "12345" is in <hours_away> hours
     And the senior of user intake "12345" has "" status
@@ -41,6 +41,7 @@ Feature: Bus user intake statuses
   # reason: 48 hours before desired installation date
   # action: email to admin
   # triage: abnormal
+  # ref   : Intake + Install States google doc : row 3
   Scenario Outline: User Intake - Abnormal - Not yet submitted
     Given desired installation date for user intake "12345" is in <hours_away> hours
     And the senior of user intake "12345" has "" status
@@ -57,6 +58,10 @@ Feature: Bus user intake statuses
   # reason: submitted
   # action: send email to safety care, halouser, subscriber, admin. user intake read-only (except super_admin)
   # triage: 
+  # ref   : Intake + Install States google doc : row 4
+  # email
+  # Subject: "Joe Smith's user intake form has been submitted."
+  # Body of email: "Joe Smith's user intake form has been submitted. Halo is now in process of approving the form. Once approved, you will be emailed and the myHalo system will be ready to install"
   Scenario: User Intake - Ready for approval
     Given I am ready to submit a user intake
     And I press "user_intake_submit"
@@ -68,6 +73,7 @@ Feature: Bus user intake statuses
   # reason: 8 hours before desired installation date
   # action:
   # triage: caution
+  # ref   : Intake + Install States google doc : row 5
   Scenario Outline: User Intake - Caution - Ready for approval
     Given desired installation date for user intake "12345" is in <hours_away> hours
     And the senior of user intake "12345" has "Ready for Approval" status
@@ -83,6 +89,7 @@ Feature: Bus user intake statuses
   # reason: 4 hours before desired installation date
   # action: 
   # triage: abnormal
+  # ref   : Intake + Install States google doc : row 5
   Scenario Outline: User Intake - Abnormal - Ready for approval
     Given desired installation date for user intake "12345" is in <hours_away> hours
     And the senior of user intake "12345" has "Ready for Approval" status
@@ -96,27 +103,34 @@ Feature: Bus user intake statuses
   
   # status: gray
   # reason: clicked Approve button
-  # action: disable test mode. email to admin, subscriber, halouser
+  # action: opt in to call center. caregivers away. email to admin, subscriber, halouser
   # triage: 
+  # ref   : Intake + Install States google doc : row 6
+  # email
+  # Subject: "Joe Smith's myHalo system is ready to install"
+  # Body: "Joe Smith's myHalo system is ready to install. Please follow the instructions in the myHalo box."
   Scenario: User Intake - Ready to Install
     Given senior of user intake "12345" has "Ready for Approval" status
     When user intake "12345" gets approved
     Then action button for user intake "12345" should be colored gray
-    And senior of user intake "12345" is not in test mode
-    And I am listing user intakes
-    And I follow "edit_link" in the 1st row
-    When I press "Approve"
-    And an email to admin of user intake "12345" should be sent for delivery
-    #
-    # TODO:
-    #   skipped for the sake of time for 1.6.0 release
-    #   steps similar to these (above) need a pre-condition setup in rspec
-    #   these may be working correctly in the code. just the rspec needs a pre-condition setup
+    And senior of user intake "12345" is opted in to call center
+    And caregivers are away for user intake "12345"
+
+    # And I am listing user intakes
+    # And I follow "edit_link" in the 1st row
+    # When I press "Approve"
+    # And an email to admin of user intake "12345" should be sent for delivery
+    # #
+    # # TODO:
+    # #   skipped for the sake of time for 1.6.0 release
+    # #   steps similar to these (above) need a pre-condition setup in rspec
+    # #   these may be working correctly in the code. just the rspec needs a pre-condition setup
 
   # status: yellow
   # reason: 1 day after, desired installation date OR Group.grace_mon_days + ship_date
   # action: email to admin
   # triage: caution
+  # ref   : Intake + Install States google doc : row 7
   Scenario: User Intake - Caution - Ready to Install
     Given desired installation date for user intake "12345" was 1 days ago
     And the senior of user intake "12345" has "Ready to Install" status
@@ -128,6 +142,7 @@ Feature: Bus user intake statuses
   # reason: 2 days after, desired installation date OR Group.grace_mon_days + ship_date
   # action: email to admin
   # triage: abnormal
+  # ref   : Intake + Install States google doc : row 7
   Scenario: User Intake - Abnormal - Ready to Install
     Given desired installation date for user intake "12345" was 2 days ago
     And the user intake "12345" status is "Ready to Install" since past 2 days
@@ -139,6 +154,7 @@ Feature: Bus user intake statuses
   # reason: panic button test after desired installation date. not in test mode.
   # action: 
   # triage: 
+  # ref   : Intake + Install States google doc : row 8
   Scenario: User Intake - Ready to bill
     Given the senior of user intake "12345" is not in test mode
     And the user intake "12345" status is "Ready to Bill" since past 0 days
@@ -149,6 +165,7 @@ Feature: Bus user intake statuses
   # reason: 1 day old "Ready to bill"
   # action: 
   # triage: caution
+  # ref   : Intake + Install States google doc : row 9
   Scenario Outline: User Intake - Caution - Ready to bill
     Given the user intake "12345" status is "Ready to Bill" since past <days_ago> days
     Then I should see triage status "caution" for senior of user intake "12345"
@@ -163,6 +180,7 @@ Feature: Bus user intake statuses
   # reason: 7 days old "Ready to bill"
   # action: 
   # triage: abnormal
+  # ref   : Intake + Install States google doc : row 9
   Scenario Outline: User Intake - Abnormal - Ready to bill
     Given the user intake "12345" status is "Ready to Bill" since past <days_ago> days
     Then I should see triage status "abnormal" for senior of user intake "12345"
@@ -178,14 +196,20 @@ Feature: Bus user intake statuses
   # reason: bill_monthly checked OR credit card transaction successful
   # action: email to admin, halouser, caregivers
   # triage: 
+  # ref   : Intake + Install States google doc : row 10
+  # email
+  # Subject: "Joe Smith's myHalo system is officially active"
+  # Body: "Joe Smith's myHalo system is officially active. Please log into http://www.myhalomonitor.com to configure your alerts"
   Scenario: User Intake - Installed
     Given bill monthly or credit card value are acceptable for user intake "12345"
     And we are on or past the desired installation date for senior of user intake "12345"
     And the senior of user intake "12345" has "Ready to Install" status
     When panic button test data is received for user intake "12345"
-    And an email to admin, halouser and caregivers of user intake "12345" should be sent for delivery
-    And action button for user intake "12345" should be colored green   
-    And the senior of user intake "12345" should be "Ready to Bill" status   
+    Then an email to admin, halouser and caregivers of user intake "12345" should be sent for delivery
+    And action button for user intake "12345" should be colored green
+    And the senior of user intake "12345" should be "Ready to Bill" status
+    And senior of user intake "12345" is opted in to call center
+    And caregivers are not away for user intake "12345"
 
   # release 1.7.0
   #
