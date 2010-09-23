@@ -67,6 +67,7 @@ Feature: Create user intake
     And I press "user_intake_submit"
     Then page content should have "successfully created"
 
+  # # @priority-low
   # # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
   # #   This saves with a blank caregiver! Need to fix
   # Scenario: Submit. user profile ok. subscriber profile ok. different caregiver1 with blank profile

@@ -17,11 +17,16 @@ Feature: User intake parts
     And all caregivers for senior of user intake "1122334455" should be away
     And senior of user intake "1122334455" should have "test_mode" flag ON
 
+  # Thu Sep 23 23:03:40 IST 2010
+  # DEPRECTAED
+  #   https://redmine.corp.halomonitor.com/issues/3461#note-18
+  #   This scenario is not required
   # Scenario: "Test Mode" checkbox should be checked by default
   #   Given I am creating a user intake
   #   When I select "mygroup" from "user_intake_group_id"
   #   Then "Test Mode" checkbox must be checked
-    
+  
+  # @priority-low
   # Scenario: Billing date shows as "Desired" billing date
   #   Given I am listing user intakes
   #   Then page content has "Desired Billing Date"
