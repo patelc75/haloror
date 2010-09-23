@@ -180,11 +180,12 @@ Feature: Bus user intake statuses
   # triage: 
   Scenario: User Intake - Installed
     Given bill monthly or credit card value are acceptable for user intake "12345"
-    And we are past the desired installation date for senior of user intake "12345"
+    And we are on or past the desired installation date for senior of user intake "12345"
     And the senior of user intake "12345" has "Ready to Install" status
     When panic button test data is received for user intake "12345"
     And an email to admin, halouser and caregivers of user intake "12345" should be sent for delivery
-    And action button for user intake "12345" should be colored green
+    And action button for user intake "12345" should be colored green   
+    And the senior of user intake "12345" should be "Ready to Bill" status   
 
   # release 1.7.0
   #
