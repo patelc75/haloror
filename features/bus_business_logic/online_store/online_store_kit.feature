@@ -45,10 +45,12 @@ Feature: Online Store Kit
     Then page content should have "<result>"
     
     Examples:
-      | group         | result                               | kit_serial | button |
-      | resellergroup | HALO SUBSCRIBER AGREEMENT            |            | Next   |
-      | resellergroup | HALO SUBSCRIBER AGREEMENT            | H400000155 | Next   |
-      | resellergroup | HALO SUBSCRIBER AGREEMENT            |            | Skip   |
-      | resellergroup | HALO SUBSCRIBER AGREEMENT            | H400000155 | Skip   |
-      | retailergroup | HALO SUBSCRIBER AGREEMENT            | H400000155 | Next   |
-      | retailergroup | Please provide the Kit Serial Number |            | Next   |
+      | group         | result                                    | kit_serial | button |
+      | resellergroup | HALO SUBSCRIBER AGREEMENT                 |            | Next   |
+      | resellergroup | HALO SUBSCRIBER AGREEMENT                 | H400000155 | Next   |
+      | resellergroup | HALO SUBSCRIBER AGREEMENT                 |            | Skip   |
+      | resellergroup | HALO SUBSCRIBER AGREEMENT                 | H400000155 | Skip   |
+      | retailergroup | HALO SUBSCRIBER AGREEMENT                 | H400000155 | Next   |
+      | retailergroup | successfully saved with Kit Serial Number |            | Next   |
+      # Thu Sep 23 02:42:22 IST 2010
+      # The business logic changed to "allow everyone to skip kit serial number step"

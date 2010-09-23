@@ -11,7 +11,7 @@ When /^I post the following for user "([^\"]*)":$/ do |user_login, table|
   xml_string = File.read(File.join(Rails.root, "spec", "data", "curl", options[:file_name]))
   xml_string.should_not be_blank
   xml_string.gsub!("meta_user_id", user.id.to_s) # replace user ID with our user
-  path = "#{options[:path]}?gateway_id=0&auth=#{options[:auth_key]}"
+  path = "#{options[:path]}?gateway_id=#{Device.find_by_serial_number("0123456789").id}&auth=#{options[:auth_key]}"
   
   post( path, xml_string, {"Content-type" => "text/xml"}) # POST XML content
 end

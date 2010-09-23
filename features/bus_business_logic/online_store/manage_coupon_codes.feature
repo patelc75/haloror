@@ -7,8 +7,8 @@ Feature: Manage coupon codes
     Given I am an authenticated user
     And a group "group1" exists
     And the following device_models:
-      | part_number |
-      | 12001002-1  |
+      | part_number | device_type_name |
+      | 12001002-1  | Chest Strap      |
     And no coupon codes exist
       
   Scenario: Add a new coupon code

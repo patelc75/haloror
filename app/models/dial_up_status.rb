@@ -129,7 +129,7 @@ class DialUpStatus < ActiveRecord::Base
   end
   
   def create_event
-    if (status == "fail" && consecutive_fails > 3 && configured == "old") or (status == "fail" && configured == "new") 
+    if !device.blank? and (status == "fail" && consecutive_fails > 3 && configured == "old") or (status == "fail" && configured == "new") 
       device.users.each do |user|
         Event.create_event(user.id, self.class.name, id, created_at)
       end

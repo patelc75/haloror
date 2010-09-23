@@ -207,8 +207,11 @@ class UserIntake < ActiveRecord::Base
   # we are keeping senior, subscriber, ... in attr_accessor variables
   def associations_before_validation_and_save
     collapse_associations # make obsolete ones = nil
+    #
+    # TODO: conflicting with 1.6.0 pre-quality. removed to check compatiblity or related errors
     # for remaining, fill login, password details only when login is empty
     ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_login_details(user) }
+    #
     # assign roles to user objects. it will auto save the roles with user record
     # this will also trigger the email dispatch in observer
     self.senior.lazy_roles[:halouser]        = group  unless senior.blank? # senior.is_halouser_of group
@@ -668,6 +671,12 @@ class UserIntake < ActiveRecord::Base
     end
   end
 
+  # WARNING: This is conflicting with the 1.6.0 Pre-Quality
+  #   Order from online store should create a user intake with blank login & password for all associated users
+  #   This does not suit well wil existing user intake scenarios
+  # Proposed action:
+  #   comment out this method to see the affects in cucumber
+  #   this can help to idenitfy all the issue quickly
   def autofill_login_details(user_type = "")
     unless user_type.blank?
       user = self.send("#{user_type}") # local copy, to keep code clean

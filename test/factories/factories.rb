@@ -42,11 +42,11 @@ Factory.define :carrier do |v|
 end
 
 Factory.define :device_type do |v|
-  v.device_type "Chest Strap" # "myHalo Complete" product
+  v.device_type "Chest Strap" # { Faker::Lorem.words[0] } # "Chest Strap"
 end
 
 Factory.define :device_model do |v|
-  v.part_number "12001002-1" # "myHalo Complete" product
+  v.part_number "12001002-1" # { Faker::PhoneNumber.phone_number.to_i.to_s } # "12001002-1"
   v.association :device_type
 end
 
@@ -63,7 +63,9 @@ Factory.define :device_model_price do |v|
 end
 
 Factory.define :device do |v|
-  v.serial_number '1234567890'
+  #
+  # Need a 10 digit serial_number
+  v.serial_number "1234567890" # { Faker::PhoneNumber.phone_number.to_i.to_s }
   v.active true
 end
 
@@ -94,7 +96,7 @@ end
 
 Factory.define :gateway do |v|
   v.serial_number { Time.now.to_i }
-  v.mac_address "01:23:45:67:89:ab"
+  v.mac_address "rand(99):rand(99):rand(99):rand(99):rand(99):ab"
   v.vendor { Faker::Company.name }
   v.model { Faker::Lorem.words[0] }
 end

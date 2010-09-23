@@ -86,7 +86,7 @@ class OrdersController < ApplicationController
     @order = Order.find(params[:order][:id])
     @order.kit_serial = params[:order][:kit_serial]
     
-    if @order.save && !@order.need_to_force_kit_serial?
+    if @order.save # && !@order.need_to_force_kit_serial?
       # when the business logic reaches here for kit_serial, include agreement logic
       flash[:notice] = "Order was #{ params[:commit] == 'Skip' ? 'processed without' : 'successfully saved with' } Kit Serial Number."
       @user_intake = @order.user_intake

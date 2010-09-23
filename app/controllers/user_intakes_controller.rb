@@ -86,7 +86,7 @@ class UserIntakesController < ApplicationController
     respond_to do |format|
       if @user_intake.save
         [@user_intake.senior, @user_intake.subscriber].uniq.each(&:dispatch_emails) unless @user_intake.skip_validation # send emails
-        flash[:notice] = 'User Intake was successfully created.'
+        flash[:notice] = "User Intake was successfully #{params[:commit] == 'Save' ? 'saved' : 'created'}."
         format.html { redirect_to(:action => 'show', :id => @user_intake.id) }
         format.xml  { render :xml => @user_intake, :status => :created, :location => @user_intake }
       else

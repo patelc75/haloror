@@ -3,6 +3,11 @@
 require "faker"
 
 Given /^the product catalog exists$/ do
+  #
+  # remove any existing data for product catalog
+  [DeviceType, DeviceModel, DeviceModelPrice].each {|e| e.delete_all }
+  #
+  # Now create what we need
   {
     "Chest Strap" => {
       :part_number => "12001002-1", :tariff => {
@@ -25,8 +30,12 @@ Given /^the product catalog exists$/ do
   }.each do |type, values|
     #
     # we assume the test database blank at all times. We therefore create the data for each scenario
-    device_type = Factory.create(:device_type, :device_type => type)
-    device_model = Factory.create(:device_model, :device_type => device_type, :part_number => values[:part_number])
+    if ( device_type = DeviceType.find_by_device_type( type) ).blank?
+      device_type = Factory.create(:device_type, :device_type => type)
+    end
+    if ( device_model = DeviceModel.first( :conditions => {:device_type_id => device_type.id, :part_number => values[:part_number]}) ).blank?
+      device_model = Factory.create(:device_model, :device_type => device_type, :part_number => values[:part_number])
+    end
     ["direct_to_consumer", "bestbuy"].each do |group_name|
       group = (Group.find_by_name( group_name) || Factory.create( :group, :name => group_name))
       values[:tariff].each do |key, prices_hash|

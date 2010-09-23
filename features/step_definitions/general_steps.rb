@@ -45,7 +45,8 @@ Given /^the following (.+):$/ do |name, table|
   # we need to skip_validation to save it and allow "edit"
   #   table.hashes.each {|hash| Factory.build(model.to_s.underscore.to_sym, hash) }
   table.hashes.each do |hash|
-    model = Factory.build(name.gsub(/ /,'_').singularize.to_sym, hash)
+    model = Factory.build(name.gsub(/ /,'_').singularize.to_sym)
+    model.attributes = hash # apply attributes in memory. helps to apply virtual attributes correctly
     model.skip_validation = true if model.is_a?( UserIntake)
     model.save
     if model.is_a?( UserIntake)
@@ -73,6 +74,9 @@ Given /^an? (.+) exists with the following attributes:$/ do |name, attrs_table|
   attrs = {}
   attrs_table.raw.each do |(attr, value)|
     sanitized_attr = attr.gsub(/\s+/, "-").underscore
+    #
+    # if a dynamic expression is included, evaluate that and get the result
+    value = (value.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).to_s }.join(' ').strip) if value.include?("`")
     attrs[sanitized_attr.to_sym] = value
   end
   if attrs.has_key?(:id)
@@ -82,7 +86,12 @@ Given /^an? (.+) exists with the following attributes:$/ do |name, attrs_table|
   id = attrs[:id].to_i # fetch ID as integer
   model_const = model_name_to_constant(name)
   model_const.delete(id) if model_const.count(:conditions => {:id => id}) # remove any existing with same ID
-  Factory.create(name.downcase.gsub(/ /,'_'), attrs) # create now
+  #
+  # Factory better be built in memory, attributes applied, then saved. This keep data as intended.
+  # Virtual attributes get applied correctly
+  model = Factory.build(name.downcase.gsub(/ /,'_').to_sym)
+  model.attributes = attrs # apply the attributes
+  model.save.should be_true
 end
 
 Given /^(?:|a |an )existing (.+) with (.+) as "([^\"]*)"$/ do |name, col, value|
@@ -233,7 +242,7 @@ end
 Then /^(?:|the )page content (?:|should have) "([^\"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect do |part|
     if part.include?("`")
-      part.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).strip }.join(' ')
+      part.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).to_s }.join(' ').strip
     else
       part.strip
     end
@@ -264,7 +273,7 @@ end
 Then /^(?:|the )page source (?:should have|has) xpath "([^"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect do |part|
     if part.include?("`")
-      part.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).strip }.join(' ')
+      part.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).to_s }.join(' ').strip
     else
       part.strip
     end

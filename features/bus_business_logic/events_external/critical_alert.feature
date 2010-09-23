@@ -8,9 +8,9 @@ Feature: Critical Alert
   Background:
     Given a user "test-user" exists with profile
     And a device exists with the following attributes:
-      | id | 965 |
+      | serial_number | 1234567890 |
     And a group exists with the following attributes:
-      | name       | halo        |
+      | name | halo |
     And a group exists with the following attributes:
       | name       | safety_care |
       | sales_type | call_center |

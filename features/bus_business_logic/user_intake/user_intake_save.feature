@@ -19,7 +19,7 @@ Feature: Save User Intake
     When I am creating a user intake
     And I select "halo_group" from "group"
     And I press "Save"
-    Then page content should have "successfully created"
+    Then page content should have "successfully saved"
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: New > Save. user profile ok. subscriber not user. subscriber profile blank
@@ -30,7 +30,7 @@ Feature: Save User Intake
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I uncheck "Same as User"
     And I press "Save"
-    Then page content should have "successfully created"
+    Then page content should have "successfully saved"
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: New > Save. user profile ok. subscriber profile ok. different caregiver1 with blank profile
@@ -46,4 +46,4 @@ Feature: Save User Intake
     And I uncheck "Add as #1 Caregiver"
     And I uncheck "No Caregiver #1"
     And I press "Save"
-    Then page content should have "successfully created"
+    Then page content should have "successfully saved"

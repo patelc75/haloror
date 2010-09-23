@@ -13,7 +13,10 @@ end
 # process single XML file by offset path
 #
 When /^I process the xml file "([^\"]*)"$/ do |file_offset_path|
-  BundleJob.process_xml_file(file_offset_path)
+  temp_file = File.new( "temp", "w")
+  temp_file.write( File.read( file_offset_path).gsub('965', Device.find_by_serial_number("1234567890").id.to_s) )
+  temp_file.close
+  BundleJob.process_xml_file( temp_file.path) # can be full or offset
 end
 
 When /^I process the curl text file "([^\"]*)"$/ do |text_file|

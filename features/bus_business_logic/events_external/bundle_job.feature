@@ -7,7 +7,7 @@ Feature: Bundle job
     Given a user exists with the following attributes:
       | id | 44 |
     And a device exists with the following attributes:
-      | id | 965 |
+      | serial_number | 1234567890 |
   
   # FIXME: some error, but not in scope for now. will fix after user intake
   @wip

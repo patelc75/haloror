@@ -20,10 +20,10 @@ Feature: Online store coupons
       # | QUALITY-1.5.0-RC3 |
 
   # Sat Sep 18 01:46:00 IST 2010
-  # DEPRECATED. coupon codes are now for groups
+  # CHANGED. coupon codes are now for groups
+  #   For public user (not logged in) "direct_to_consumer" group applies
   #
   Scenario Outline: Order page - referral link for various coupon codes should show correct deposit, shipping, total, recurring, trial/advance
-    Given a group "mygroup" exists
     When I visit "/order/<coupon_code>"
     And I choose "product_<product>"
     And I fill the shipping details for online store
@@ -51,7 +51,7 @@ Feature: Online store coupons
     Then page content should have "99, 1 month trial, 114"
 
   # # Wed Aug 25 03:16:11 IST 2010
-  # # TODO: how should this cenario look now?
+  # # TODO: how should this scenario look now?
   # # https://redmine.corp.halomonitor.com/issues/3170
   # Scenario: Success page - Filling in 99TRIAL shows correct recurring start date
   #   When I go to the online store

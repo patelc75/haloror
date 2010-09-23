@@ -47,14 +47,14 @@ class Order < ActiveRecord::Base
   end
   
   def check_kit_serial_validation
-    self.errors.add_to_base("Please provide the Kit Serial Number") if need_to_force_kit_serial?
+    # self.errors.add_to_base("Please provide the Kit Serial Number") if need_to_force_kit_serial?
   end
   
   def need_to_force_kit_serial?
     # WARNING: need to confirm this business logic
     #   At other places in the code, kit_serial is forced for both retailer & reseller
     #   so, this was updated on Mon Sep 20 23:23:44 IST 2010
-    (retailer? || reseller?) && self.kit_serial.blank?
+    false # (retailer? || reseller?) && self.kit_serial.blank?
   end
   
   # quick shortcut for the bill and ship address same

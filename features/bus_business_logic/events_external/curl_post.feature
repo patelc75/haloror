@@ -12,8 +12,8 @@ Feature: POST XML to simulate gateway
     And user "test-user" has "super admin" roles
     And user "senior1" has "halouser" role for group "group1"
     And the following devices:
-      | id | serial_number |
-      | 0  | 0123456789    |
+      | serial_number |
+      | 0123456789    |
   
   # IMPORTANT
   #   * key *must* be any of the following *only*
@@ -30,7 +30,7 @@ Feature: POST XML to simulate gateway
     When I post the following for user "senior1":
       | file name | vital.xml                                                        |
       | path      | /vitals                                                          |
-      | auth key  | 9ad3cad0f0e130653ec377a47289eaf7f22f83edb81e406c7bd7919ea725e024 |
+      | auth_key  | 9ad3cad0f0e130653ec377a47289eaf7f22f83edb81e406c7bd7919ea725e024 |
     Then user "senior1" should have data for vitals
     # "vitals" can be described as comma separated strings that can be sent to the user object as a method
     # example: Then user "senior1" should have vitals, id, name, panics

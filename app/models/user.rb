@@ -856,7 +856,8 @@ class User < ActiveRecord::Base
       # check the current delay in hours, find a triage threshold that defines such case, get the status string
       # return blank for status, if threshold missing
       when :panic
-        group.triage_thresholds.first(:conditions => ["hours_without_panic_button_test >= ?", hours_since(:panic)], :order => :hours_without_panic_button_test).status unless group.triage_thresholds.blank?
+        threshold = group.triage_thresholds.first(:conditions => ["hours_without_panic_button_test >= ?", hours_since(:panic)], :order => :hours_without_panic_button_test) unless group.triage_thresholds.blank?
+        threshold.status unless threshold.blank?
         
       # fetch status string same as above. Except, it only applies to get_wearable_type 'Chest Strap'
       # TODO: get_wearable_type need to be covered. Not sure if it works correctly as it is.
@@ -901,7 +902,7 @@ class User < ActiveRecord::Base
             # check each default
             # collect its "status" in array
             defaults.each do |default|
-              if rows.select {|e| e.seconds_since_last > default.mgmt_query_delay_span }.size >= (default.mgmt_query_failed_count || 0)
+              if rows.select {|e| e.seconds_since_last > default.mgmt_query_delay_span.to_i }.size >= default.mgmt_query_failed_count.to_i
                 statuses << default.status
               end
             end
