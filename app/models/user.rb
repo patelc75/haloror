@@ -679,7 +679,8 @@ class User < ActiveRecord::Base
   end
   
   def add_device_by_serial_number( serial)
-    self.devices << device unless ( device = Device.find_or_create_by_serial_number( serial) ).blank?
+    device = Device.find_or_create_by_serial_number( serial.to_s)
+    self.devices << device unless device.blank?
     device # return
     #
     # Old logic. DEPRECATED

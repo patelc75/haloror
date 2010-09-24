@@ -157,7 +157,7 @@ class UserIntake < ActiveRecord::Base
     # send email to safety_care when "Update" was hit on any status
     #
     # attach devices to user/senior
-    [gateway_serial, transmitter_serial].each {|device| senior.add_device_by_serial_number( device) }
+    [gateway_serial, transmitter_serial].collect {|e| !e.blank? }.each {|device| senior.add_device_by_serial_number( device) }
   end
 
   # create blank placeholder records

@@ -21,7 +21,6 @@ describe DeviceModel do
     group = Group.find_by_name("bestbuy")
     ["complete", "clip"].each do |what|
       specify { DeviceModel.find_complete_or_clip( what).tariff.should be_blank }
-      debugger
       specify { DeviceModel.find_complete_or_clip( what).tariff( :group => group).should_not be_blank }
       specify { DeviceModel.find_complete_or_clip( what).tariff( :group => group).coupon_code.should == "default" }
     end
@@ -62,7 +61,6 @@ def product_catalog
     @device_model = Factory.create(:device_model, :device_type => @device_type, :part_number => values[:part_number]) if @device_model.blank?
     @device_model.should_not be_blank
     ["direct_to_consumer", "bestbuy"].each do |group_name|
-      debugger
       (group = (Group.find_by_name( group_name) || Factory.create( :group, :name => group_name))).should_not be_blank
       values[:tariff].each do |key, prices_hash|
         prices_hash[:coupon_code] = group_name.upcase if key == :custom

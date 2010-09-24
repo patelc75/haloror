@@ -49,9 +49,9 @@ Feature: Pre quality
     And I press "Save"
     Then a coupon code should exist with coupon_code "coupon_160_pq1"
     
-  # smoke tested for now
+  # smoke tested. we do not want to check trivial steps through cucumber
   Scenario: admin > online store has single group
-
+    
   # Pre-conditions: the following exist
   #   Group:        mygroup_160_pq, reseller
   #     * online order will ask for kit serial after "Place Order"

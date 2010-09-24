@@ -199,7 +199,9 @@ Factory.define :user_intake do |v|
   v.association :updated_by, :factory => :user
   v.bill_monthly { rand(1) == 1 }
   v.credit_debit_card_proceessed { |ui| !ui.bill_monthly } # reverse of the other field
-  v.kit_serial_number { Faker::PhoneNumber.phone_number }
+  v.kit_serial_number "1234567890" # { Faker::PhoneNumber.phone_number }
+  v.gateway_serial "1234567890" # { Faker::PhoneNumber.phone_number }
+  v.transmitter_serial "1234567890" # { Faker::PhoneNumber.phone_number }
   v.submitted_at { Time.now }
   v.paper_copy_at { Time.now }
   v.legal_agreement_at { Time.now }

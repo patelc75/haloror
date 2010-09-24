@@ -160,7 +160,10 @@ class OrdersController < ApplicationController
                 # user must see agreement before the success page
                 @user_intake = @order.user_intake
                 @redirect_hash = {:controller => 'orders', :action => 'success', :id => @order.id} # if the user prints agreement, we need this
-                goto = ((@order.retailer? || @order.reseller?) ? "kit_serial" : (@order.user_intake.paper_copy_submitted? ? 'success' : 'agreement'))
+                #
+                # revisit during 1.7.0
+                # goto = ((@order.retailer? || @order.reseller?) ? "kit_serial" : (@order.user_intake.paper_copy_submitted? ? 'success' : 'agreement'))
+                goto = (@order.user_intake.paper_copy_submitted? ? 'success' : 'agreement')
                 #
                 # WARNING: do not reset the session. just clear the variables that are no more required
                 # # reset_session # start fresh
