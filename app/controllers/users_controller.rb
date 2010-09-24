@@ -962,28 +962,35 @@ class UsersController < ApplicationController
   def random_password
     Digest::SHA1.hexdigest("--#{Time.now.to_s}--")[0,6]
   end
-    
-  def register_user_with_serial_num(user, serial_number)
-    unless device = Device.find_by_serial_number(serial_number)
-      device = Device.new
-      device.serial_number = serial_number
-      # if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
-      #         device.set_chest_strap_type
-      #       elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
-      #         device.set_gateway_type
-      #       end
-      device.save!
-    end
 
-    if device.device_type.blank?
-      if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
-        device.set_chest_strap_type
-      elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
-        device.set_gateway_type
-      end   
-    end
-    device.users << user
-    device.save!
+  # https://redmine.corp.halomonitor.com/issues/3475
+  #   Refactor UsersController:register_user_with_serial_num so you can reuse
+  #
+  def register_user_with_serial_num(user, serial_number)
+    @device = user.add_device_by_serial_number( serial_number)
+    #
+    # Sat Sep 25 03:14:36 IST 2010 Old logic
+    #
+    # unless device = Device.find_by_serial_number(serial_number)
+    #   device = Device.new
+    #   device.serial_number = serial_number
+    #   # if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
+    #   #         device.set_chest_strap_type
+    #   #       elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
+    #   #         device.set_gateway_type
+    #   #       end
+    #   device.save!
+    # end
+    # 
+    # if device.device_type.blank?
+    #   if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
+    #     device.set_chest_strap_type
+    #   elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
+    #     device.set_gateway_type
+    #   end   
+    # end
+    # device.users << user
+    # device.save!
   end
     
 

@@ -13,6 +13,14 @@ class UserIntake < ActiveRecord::Base
   has_and_belongs_to_many :users # replaced with has_many :through
   has_many :user_intakes_users, :dependent => :destroy
 
+  # https://redmine.corp.halomonitor.com/issues/3475
+  #   Add two new fields in user intake form (Transmitter Serial # and Gateway Serial #)
+  #   Add validation for transmitter(CS H1xxxxxxxx/BC H5xxxxxxxx) and gateway(H2xxxxxxxx)
+  validates_length_of :gateway_serial, :is => 10, :unless => :gateway_blank?
+  validates_length_of :transmitter_serial, :is => 10, :unless => :transmitter_blank?
+  validates_format_of :gateway_serial, :with => /^H2[\d]+$/, :unless => :gateway_blank?
+  validates_format_of :transmitter_serial, :with => /^H[15][\d]+$/, :unless => :transmitter_blank?
+  
   acts_as_audited
   # https://redmine.corp.halomonitor.com/issues/3215
   #   Comment out "Change All Dial Up Numbers" > update ticket #2809
@@ -54,6 +62,26 @@ class UserIntake < ActiveRecord::Base
   end
   attr_accessor :test_mode, :opt_out, :put_away, :card_or_bill
 
+  # =============================
+  # = dynamic generated methods =
+  # =============================
+  
+  [:gateway, :transmitter].each do |device|
+    # Usage:
+    #   user_intake.gateway
+    #   user_intake.transmitter
+    define_method device do
+      self.senior.send(device) if (!senior.blank? && !senior.send(device).blank?)
+    end
+    
+    # Usage:
+    #   user_intake.gateway_blank?
+    #   user_intake.transmitter_blank?
+    define_method :"#{device}_blank?" do
+      self.send( device).blank?
+    end
+  end
+  
   # for every instance, make sure the associated objects are built
   def after_initialize
     self.bill_monthly = (!order.blank? && order.purchase_successful?) if self.new_record?
@@ -127,6 +155,9 @@ class UserIntake < ActiveRecord::Base
     # UserMailer.deliver_signup_installation(senior)
     #
     # send email to safety_care when "Update" was hit on any status
+    #
+    # attach devices to user/senior
+    [gateway_serial, transmitter_serial].each {|device| senior.add_device_by_serial_number( device) }
   end
 
   # create blank placeholder records
@@ -334,8 +365,17 @@ class UserIntake < ActiveRecord::Base
   # * senior exist
   # * device identified by self.kit_serial_number exists for senior
   # * dial_up_numbers ok for senior for given device
+  #
+  # Sat Sep 25 00:45:06 IST 2010
+  # CHANGED: logic changed to user.devices only. No user_intake.kit_serial_number
+  
   def dial_up_numbers_ok?
-    senior.blank? ? false : senior.dial_up_numbers_ok_for_device?( senior.device_by_serial_number( kit_serial_number))
+    senior.blank? ? false : senior.gateway.dial_up_numbers_ok?
+    #
+    # Fri Sep 24 04:26:03 IST 2010
+    # logic updated to check user.devices by type of device
+    #
+    # senior.blank? ? false : senior.dial_up_numbers_ok_for_device?( senior.device_by_serial_number( kit_serial_number))
   end
 
   def created_by_user_name

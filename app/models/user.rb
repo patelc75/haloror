@@ -78,9 +78,6 @@ class User < ActiveRecord::Base
   attr_accessor :password
   attr_accessor :current_password,:username_confirmation
 
-  # cache attributes
-  attr_accessor :cache_device
-  
   # arranged associations alphabetically for easier traversing
   
   acts_as_authorized_user
@@ -190,6 +187,19 @@ class User < ActiveRecord::Base
     end
   end
 
+  [:gateway, :transmitter].each do |device|
+    #
+    # Fri Sep 24 04:47:01 IST 2010
+    # WARNING: we do not stop user from getting more than one gateway
+    #
+    # Usage:
+    #   user.gateway
+    #   user.transmitter
+    define_method device do
+      devices.send( device.to_s.pluralize.to_s).first
+    end
+  end
+  
   def self.halousers
     role_ids = Role.find_all_by_name('halouser').collect(&:id).compact.uniq
     all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
@@ -646,26 +656,54 @@ class User < ActiveRecord::Base
     self.last_triage_audit_log = log # link it, since we do not have callbacks
   end
   
-  # check if dial_up_numbers are have "Ok" status for the given device
-  # * mgmt_cmd row found for device having numbers (identified by cmd_type == dial_up_num_glob_prim)
-  # * all 4 numbers are present
-  # * local numbers cannot begin with "18"
-  def dial_up_numbers_ok_for_device?( device)
-    unless ( failure = device.blank? ) # cannot check mgmt_cmds without a device
-      # further logic is based on this mgmt_cmd row
-      mgmt_cmd ||= mgmt_cmds.first( :conditions => ["device_id = ? AND cmd_type LIKE ?", device.id, "%dial_up_num_glob_prim%"], :order => "timestamp_sent DESC")
-      unless ( failure = mgmt_cmd.blank? ) # mgmt_cmd row must exist
-        numbers = (1..4).collect {|e| mgmt_cmd.send(:"param#{e}") } # collect global/local primary/secondary
-        failure = numbers.any?(&:blank?) unless failure # the set of 4 numbers exist
-        failure = numbers[0..1].collect {|e| e[0..1] == '18'}.include?( true) unless failure # local numbers (1,2) cannot start with "18"
-      end
-    end
-    !failure
-  end
+  # # check if dial_up_numbers are have "Ok" status for the given device
+  # # * mgmt_cmd row found for device having numbers (identified by cmd_type == dial_up_num_glob_prim)
+  # # * all 4 numbers are present
+  # # * local numbers cannot begin with "18"
+  # def dial_up_numbers_ok_for_device?( device)
+  #   unless ( failure = device.blank? ) # cannot check mgmt_cmds without a device
+  #     # further logic is based on this mgmt_cmd row
+  #     mgmt_cmd ||= mgmt_cmds.first( :conditions => ["device_id = ? AND cmd_type LIKE ?", device.id, "%dial_up_num_glob_prim%"], :order => "timestamp_sent DESC")
+  #     unless ( failure = mgmt_cmd.blank? ) # mgmt_cmd row must exist
+  #       numbers = (1..4).collect {|e| mgmt_cmd.send(:"param#{e}") } # collect global/local primary/secondary
+  #       failure = numbers.any?(&:blank?) unless failure # the set of 4 numbers exist
+  #       failure = numbers[0..1].collect {|e| e[0..1] == '18'}.include?( true) unless failure # local numbers (1,2) cannot start with "18"
+  #     end
+  #   end
+  #   !failure
+  # end
   
   # self.devices must have one with kit_serial_number
   def device_by_serial_number( serial)
-    cache_device ||= devices.find_by_serial_number( serial) unless serial.blank?
+    devices.find_by_serial_number( serial.to_s) # unless serial.blank?
+  end
+  
+  def add_device_by_serial_number( serial)
+    self.devices << device unless ( device = Device.find_or_create_by_serial_number( serial) ).blank?
+    device # return
+    #
+    # Old logic. DEPRECATED
+    #
+    # unless device = Device.find_or_create_by_serial_number( serial  )
+    #   device = Device.new
+    #   device.serial_number = serial_number
+    #   # if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
+    #   #         device.set_chest_strap_type
+    #   #       elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
+    #   #         device.set_gateway_type
+    #   #       end
+    #   device.save!
+    # end
+    # 
+    # if device.device_type.blank?
+    #   if(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '1')
+    #     device.set_chest_strap_type
+    #   elsif(device.serial_number[0].chr == 'H' and device.serial_number[1].chr == '2')
+    #     device.set_gateway_type
+    #   end   
+    # end
+    # device.users << user
+    # device.save!
   end
   
   def status_index
@@ -1100,7 +1138,8 @@ class User < ActiveRecord::Base
     #
     # dial_up_numbers should also be ok
     # omit checking this, if so requested
-    failure = !dial_up_numbers_ok_for_device?( device_by_serial_number( user_intakes.first.kit_serial_number)) unless failure || (options[:omit] && options[:omit].include?( :dial_up_numbers)) # do not bother if already failed
+    failure = !gateway.dial_up_numbers_ok? unless failure || (options[:omit] && options[:omit].include?( :dial_up_numbers)) # do not bother if already failed
+    # failure = !dial_up_numbers_ok_for_device?( device_by_serial_number( user_intakes.first.kit_serial_number)) unless failure || (options[:omit] && options[:omit].include?( :dial_up_numbers)) # do not bother if already failed
     !failure
   end
   

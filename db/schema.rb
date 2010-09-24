@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100916211246) do
+ActiveRecord::Schema.define(:version => 20100924171646) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1173,6 +1173,8 @@ ActiveRecord::Schema.define(:version => 20100916211246) do
     t.datetime "installation_datetime"
     t.date     "sc_account_created_on"
     t.datetime "shipped_at"
+    t.string   "transmitter_serial"
+    t.string   "gateway_serial"
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|

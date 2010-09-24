@@ -1,10 +1,13 @@
 class Device < ActiveRecord::Base
-  # attributes -------------------
+  # ====================================
+  # = # attributes ------------------- =
+  # ====================================
   
   attr_accessor :attr_last_dial_up_status, :attr_last_dial_up_alert
-  attr_accessor :cache_user_intake
   
-  # relationships ------------------
+  # ======================================
+  # = # relationships ------------------ =
+  # ======================================
   
   belongs_to :device_revision
   belongs_to :work_order
@@ -34,24 +37,86 @@ class Device < ActiveRecord::Base
   has_and_belongs_to_many :kits
   has_and_belongs_to_many :users
 
-  # validations ----------------------
+  # ========================================
+  # = # validations ---------------------- =
+  # ========================================
   
   validates_presence_of :serial_number
   validates_length_of :serial_number, :is => 10
   validates_uniqueness_of :serial_number, :case_sensitive => false
 
-  # methods -----------------------
+  # ===================================
+  # = named scopes, searches, filters =
+  # ===================================
+
+  # Usage:
+  #   Device.gateways
+  #   Device.gateways( "442")
+  #   Device.transmitters
+  #   User.last.devices.gateways.first
+  # WARNING: test coverage required
+  { :gateways => "H1", :transmitters => "H5", :kits => "H2" }.each do |key, value|
+    named_scope key, lambda {|*args| { :conditions => ["serial_number LIKE ? AND serial_number LIKE ?", "#{value}%", "%#{args.flatten.first}%"] }}
+  end
+
+  # =============
+  # = callbacks =
+  # =============
+  
+  # assign device_type if not already assigned
+  def before_save
+    if device_type.blank?
+      case serial_number[0..1]
+      when "H1"; set_chest_strap_type
+      when "H2"; set_gateway_type
+      when "H5"; set_chest_strap_type
+      end
+    end
+  end
+
+  # ===========
+  # = methods =
+  # ===========
 
   # user intake with kit_serial_number of this device
-  # cache for better performance
   def user_intake
-    self.cache_user_intake ||= UserIntake.find_by_kit_serial_number( serial_number)
+    # CHANGED: Sat Sep 25 00:56:19 IST 2010
+    #   New logic is to fetch device.users.first.user_intakes.first_or_where_user_is_halouser
+    # Assumption:
+    #   user.devices count == 2
+    #   user.gateways count == 1
+    #   user.transmitters count == 1
+    #
+    if !users.blank? && !users.first.user_intakes.blank?
+      user = users.first # we need this variable in next line of code
+      user.user_intakes.select {|e| user.is_halouser_of?( e) }.first # only pick halouser
+    end
+    #
+    # CHANGED: Sat Sep 25 00:55:46 IST 2010
+    #   Old logic was to find user intake by kit_serial_number
+    #
+    # UserIntake.find_by_kit_serial_number( serial_number)
   end
   
   # https://redmine.corp.halomonitor.com/issues/3159
   # WARNING: needs test coverage
   def last_mgmt_query
     mgmt_queries.first( :order => "timestamp_server DESC") # fetch latest mgmt_query for this device
+  end
+
+  # check if dial_up_numbers are have "Ok" status for the given device
+  # * mgmt_cmd row found for device having numbers (identified by cmd_type == dial_up_num_glob_prim)
+  # * all 4 numbers are present
+  # * local numbers cannot begin with "18"
+  def dial_up_numbers_ok?
+    # further logic is based on this mgmt_cmd row
+    mgmt_cmd ||= mgmt_cmds.first( :conditions => ["device_id = ? AND cmd_type LIKE ?", self.id, "%dial_up_num_glob_prim%"], :order => "timestamp_sent DESC")
+    unless ( failure = mgmt_cmd.blank? ) # mgmt_cmd row must exist
+      numbers = (1..4).collect {|e| mgmt_cmd.send(:"param#{e}") } # collect global/local primary/secondary
+      failure = numbers.any?(&:blank?) unless failure # the set of 4 numbers exist
+      failure = numbers[0..1].collect {|e| e[0..1] == '18'}.include?( true) unless failure # local numbers (1,2) cannot start with "18"
+    end
+    failure.blank? ? false : !failure
   end
 
   # https://redmine.corp.halomonitor.com/issues/3159
