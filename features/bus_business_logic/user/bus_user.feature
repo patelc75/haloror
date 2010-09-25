@@ -25,7 +25,7 @@ Feature: User status
   Scenario: User has pending status when created
     When I am ready to submit a user intake
     And I press "user_intake_submit"
-    Then the senior of user intake "1122334455" should have "pending" status
+    Then the senior of user intake "1122334455" should have "Ready for Approval" status
 
   Scenario: Add separate column in users table for test mode to indicate that user is in test mode
     Then user "test-user" should have attribute "test_mode"

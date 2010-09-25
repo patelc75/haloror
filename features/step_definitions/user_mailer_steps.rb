@@ -27,14 +27,22 @@ Then /^(.+) emails? to "([^\"]*)" with (subject|body|content) "([^\"]*)" should 
   end
 end
 
-Then /^(.+) email(?:|s) to (?:|group )admins? of user intake "([^\"]*)" should be sent for delivery$/ do |count, kit|
+Then /^(.+) email(?:|s) to (.+) of user intake "([^\"]*)" should be sent for delivery$/ do |count, whom, kit|
   (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
   (group = ui.group).should_not be_blank
   (admins = group.has_admins).should_not be_blank
   #
   # collects emails of all admins
   # check: an email each should be delivered to every admin of the selected group
-  admins.collect(&:email).each {|e| Email.count( :conditions => {:to => e}).should > 0 }
+  users = case whom
+  when 'admin', 'admins', 'group admin', 'group admins'
+    admins
+  when 'caregiver', 'caregivers'
+    caregivers
+  when 'halouser'
+    [senior]
+  end
+  users.collect(&:email).each {|e| Email.count( :conditions => {:to => e}).should > 0 }
 end
 
 Then /^(.+) email(?:|s) to "([^\"]*)" should be sent for delivery$/ do |count, email|

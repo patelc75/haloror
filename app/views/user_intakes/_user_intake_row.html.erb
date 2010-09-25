@@ -63,7 +63,7 @@
   <td class="text-center"><%= (user_intake_row.senior && user_intake_row.senior.gateway) ? ("GW: "+ user_intake_row.senior.gateway.serial_number) : image_tag('exclamation.png') %></td>
   <% if current_user.is_super_admin? %>
     <td><%= link_to ((user_intake_row.senior.blank? || user_intake_row.senior.call_center_account.blank?) ? image_tag("warning_go.png") : user_intake_row.senior.call_center_account), {:controller => "user_intakes", :action => "safety_care_account_creation", :id => user_intake_row.id}  %></td>
-    <td><%= image_tag (user_intake_row.dial_up_numbers_ok? ? "tick.png" : "exclamation.png") %></td>
+    <td><%= image_tag( user_intake_row.dial_up_numbers_ok? ? "tick.png" : "exclamation.png") %></td>
   <% end %>
   <td class="text-center">
     <% unless user_intake_row.senior.blank? %>

@@ -27,9 +27,9 @@ Feature: Edit user intake
     And user intake with kit serial "1122334455" is not submitted
     And I am listing user intakes
     And I follow "edit_link" in the 1st row
-    And I fill in "user_intake_kit_serial_number" with "9876543210123456789"
+    And I fill in "user_intake_gateway_serial" with "1234567890"
     And I press "Approve"
-    Then I should see "9876543210123456789"
+    Then I should see "1234567890"
     And no email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170

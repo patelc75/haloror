@@ -47,8 +47,15 @@ class Panic < CriticalDeviceAlert
         }
         TriageAuditLog.create( attributes)
         #
-        # explicitly send email to admin. tables are saved without callbacks
-        UserMailer.deliver_user_installation_alert( user)
+        # explicitly send email to group admins, halouser, caregivers. tables are saved without callbacks
+        debugger
+        [ user,
+          user.user_intakes.collect(&:caregivers),
+          user.user_intakes.collect(&:group).flatten.uniq.collect(&:admins)
+        ].flatten.uniq.each do |_user|
+          debugger
+          UserMailer.deliver_user_installation_alert( _user)
+        end
       end
     end
   end

@@ -1,5 +1,8 @@
-# steps for user intake
-#
+
+  # ==========
+  # = givens =
+  # ==========
+  
 Given /^I have a (saved|complete|non-agreed) user intake$/ do |state|
   ui = Factory.build(:user_intake)
   ui.skip_validation = ( state = 'saved') # skip validation means "save" state
@@ -56,7 +59,7 @@ Given /^I am ready to submit a user intake$/ do
   When %{I fill in "user_intake_senior_attributes_email" with "senior@example.com"}
   When %{I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"}
   When %{I check "Same as User"}
-  When %{I fill in "user_intake_kit_serial_number" with "1122334455"}
+  When %{I fill in "user_intake_gateway_serial" with "1122334455"}
 end
 
 Given /^(?:|the )senior of user intake "([^"]*)" (is|is not) in test mode$/ do |kit_serial, condition|
@@ -71,7 +74,7 @@ Given /^user intake "([^"]*)" does not have the product shipped yet$/ do |kit_se
   ui.shipped_at.should be_blank
 end
 
-Given /^(?:|the )senior of user intake "([^"]*)" (has|is at) "([^"]*)" status$/ do |kit_serial, condition, status|
+Given /^(?:|the )senior of user intake "([^"]*)" (has|is at|should be) "([^"]*)" status$/ do |kit_serial, condition, status|
   (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   # debugger
@@ -160,23 +163,31 @@ Given /^RMA for user intake "([^"]*)" discontinues (service|billing) (?:|in )(\d
   end
 end
 
+Given /^we are on or past the desired installation date for senior of user intake "([^"]*)"$/ do |kit|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  ui.installation_datetime = Date.today
+  ui.save.should be_true
+end
+
+  # =========
+  # = whens =
+  # =========
+  
 When /^user intake "([^"]*)" gets approved$/ do |kit|
   (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
   ui.skip_validation = false
   ui.save.should be_true
 end
 
-When /^an email to admin, halouser and caregivers of user intake "([^"]*)" should be sent for delivery$/ do |kit|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
-  pending # express the regexp above with the code you wish you had
-end
-
 When /^panic button test data is received for user intake "([^"]*)"$/ do |kit|
   (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  panic = Panic.create( :user => senior).should be_true
-  # debugger
-  # panic
+  panic = Factory.build( :panic, :user => senior)
+  # panic.user = senior
+  debugger # needs debugging
+  #
+  # save fails here. requires a linked device? investigate further
+  panic.save.should be_true
 end
 
 When /^I (view|edit) user intake with kit serial "([^"]*)"$/ do |action, kit|
@@ -279,6 +290,10 @@ When /^I am editing the user intake associated to last order$/ do
   visit url_for( :controller => "user_intakes", :action => "edit", :id => ui.id)
 end
 
+  # =========
+  # = thens =
+  # =========
+  
 Then /^"([^"]*)" is enabled for subscriber of user intake "([^"]*)"$/ do |col_name, kit_serial|
   ui = UserIntake.find_by_kit_serial_number( kit_serial)
   ui.should_not be_blank
@@ -464,6 +479,22 @@ end
 Then /^last user intake should be read only$/ do
   (ui = UserIntake.last).should_not be_blank
   ui.locked?.should be_true
+end
+
+Then /^senior of user intake "([^"]*)" is opted in to call center$/ do |kit|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  senior.group_memberships.should include( Group.safety_care)
+end
+
+Then /^caregivers (are|are not) away for user intake "([^"]*)"$/ do |condition, kit|
+  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  if condition == "are"
+    ui.caregivers.each {|e| e.should be_away_for( senior) }
+  else
+    ui.caregivers.each {|e| e.should be_active_for( senior) }
+  end
 end
 
 # ============================

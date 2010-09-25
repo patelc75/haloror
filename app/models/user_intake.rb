@@ -16,10 +16,10 @@ class UserIntake < ActiveRecord::Base
   # https://redmine.corp.halomonitor.com/issues/3475
   #   Add two new fields in user intake form (Transmitter Serial # and Gateway Serial #)
   #   Add validation for transmitter(CS H1xxxxxxxx/BC H5xxxxxxxx) and gateway(H2xxxxxxxx)
-  validates_length_of :gateway_serial, :is => 10, :unless => :gateway_blank?
-  validates_length_of :transmitter_serial, :is => 10, :unless => :transmitter_blank?
-  validates_format_of :gateway_serial, :with => /^H2[\d]+$/, :unless => :gateway_blank?
-  validates_format_of :transmitter_serial, :with => /^H[15][\d]+$/, :unless => :transmitter_blank?
+  # validates_length_of :gateway_serial, :is => 10, :unless => :gateway_blank?
+  # validates_length_of :transmitter_serial, :is => 10, :unless => :transmitter_blank?
+  validates_format_of :gateway_serial, :with => /^H2[\d]{8}$/, :unless => :gateway_blank?
+  validates_format_of :transmitter_serial, :with => /^H[15][\d]{8}$/, :unless => :transmitter_blank?
   
   acts_as_audited
   # https://redmine.corp.halomonitor.com/issues/3215
@@ -157,7 +157,7 @@ class UserIntake < ActiveRecord::Base
     # send email to safety_care when "Update" was hit on any status
     #
     # attach devices to user/senior
-    [gateway_serial, transmitter_serial].collect {|e| !e.blank? }.each {|device| senior.add_device_by_serial_number( device) }
+    [gateway_serial, transmitter_serial].select {|e| !e.blank? }.each {|device| senior.add_device_by_serial_number( device) }
   end
 
   # create blank placeholder records
@@ -370,7 +370,7 @@ class UserIntake < ActiveRecord::Base
   # CHANGED: logic changed to user.devices only. No user_intake.kit_serial_number
   
   def dial_up_numbers_ok?
-    senior.blank? ? false : senior.gateway.dial_up_numbers_ok?
+    (!senior.blank? && !senior.gateway.blank?) ? senior.gateway.dial_up_numbers_ok? : false
     #
     # Fri Sep 24 04:26:03 IST 2010
     # logic updated to check user.devices by type of device
@@ -396,6 +396,15 @@ class UserIntake < ActiveRecord::Base
 
   def order_successful?
     order_present? && order.purchase_successful?
+  end
+
+  # Usage:
+  #   user_intake.caregivers_active
+  #   user_intake.caregivers_away
+  ['active', 'away']. each do |_what|
+    define_method "caregivers_#{_what}".to_sym do
+      caregivers.select {|e| e.send("#{_what}_for?", senior) }.flatten.uniq
+    end
   end
 
   # TODO: DRYness required here

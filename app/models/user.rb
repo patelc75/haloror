@@ -2398,6 +2398,15 @@ class User < ActiveRecord::Base
     set_test_mode(!test_mode?)
   end
   
+  # Usage:
+  #   user.caregivers_active
+  #   user.caregivers_away
+  ['active', 'away']. each do |_what|
+    define_method "caregivers_#{_what}".to_sym do
+      user_intakes.collect(&"caregivers_#{_what}").flatten.uniq
+    end
+  end
+
   def active_for?(user = nil)
     # * is caregiver of user
     # * has roles_users_options data
@@ -2409,6 +2418,10 @@ class User < ActiveRecord::Base
       end
     end
     status
+  end
+  
+  def away_for?( user = nil)
+    !active_for?( user)
   end
   
   # set the caregiver away for user

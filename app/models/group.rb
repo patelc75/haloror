@@ -107,6 +107,10 @@ class Group < ActiveRecord::Base
     #   group.users_with_role(["admin", "sales"])
     users_of_roles(roles(:conditions => {:name => role}))
   end
+  
+  def admins
+    users_with_role( "admin")
+  end
 
   # ===================
   # = private methods =

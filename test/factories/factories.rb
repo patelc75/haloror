@@ -65,7 +65,7 @@ end
 Factory.define :device do |v|
   #
   # Need a 10 digit serial_number
-  v.serial_number "1234567890" # { Faker::PhoneNumber.phone_number.to_i.to_s }
+  v.serial_number "1122334455" # { Faker::PhoneNumber.phone_number.to_i.to_s }
   v.active true
 end
 
@@ -95,7 +95,7 @@ Factory.define :event do |v|
 end
 
 Factory.define :gateway do |v|
-  v.serial_number { Time.now.to_i }
+  v.serial_number "2233445566" # { Time.now.to_i }
   v.mac_address "rand(99):rand(99):rand(99):rand(99):rand(99):ab"
   v.vendor { Faker::Company.name }
   v.model { Faker::Lorem.words[0] }
@@ -200,8 +200,8 @@ Factory.define :user_intake do |v|
   v.bill_monthly { rand(1) == 1 }
   v.credit_debit_card_proceessed { |ui| !ui.bill_monthly } # reverse of the other field
   v.kit_serial_number "1234567890" # { Faker::PhoneNumber.phone_number }
-  v.gateway_serial "1234567890" # { Faker::PhoneNumber.phone_number }
-  v.transmitter_serial "1234567890" # { Faker::PhoneNumber.phone_number }
+  v.gateway_serial "9876543210" # { Faker::PhoneNumber.phone_number }
+  v.transmitter_serial "3344556677" # { Faker::PhoneNumber.phone_number }
   v.submitted_at { Time.now }
   v.paper_copy_at { Time.now }
   v.legal_agreement_at { Time.now }

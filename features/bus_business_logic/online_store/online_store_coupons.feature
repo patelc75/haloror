@@ -33,12 +33,12 @@ Feature: Online store coupons
   
     Examples:
       | product  | coupon_code | group   | deposit | shipping | months | free | recurring | total | phrase           |
-      | complete |             | mygroup | 249     | 15       | 3      | 0    | 59        | 441   | 3 months advance |
-      | complete | BOGUS_CODE  | mygroup | 249     | 15       | 3      | 0    | 59        | 441   | 3 months advance |
-      | complete | 99TRIAL     | mygroup | 99      | 15       | 0      | 1    | 59        | 114   | 1 month trial    |
-      | clip     |             | mygroup | 249     | 15       | 3      | 0    | 49        | 411   | 3 months advance |
-      | clip     | BOGUS_CODE  | mygroup | 249     | 15       | 3      | 0    | 49        | 411   | 3 months advance |
-      | clip     | 99TRIAL     | mygroup | 99      | 15       | 0      | 1    | 49        | 114   | 1 month trial    |
+      | complete |             | bestbuy | 249     | 15       | 3      | 0    | 59        | 441   | 3 months advance |
+      | complete | BOGUS_CODE  | bestbuy | 249     | 15       | 3      | 0    | 59        | 441   | 3 months advance |
+      | complete | 99TRIAL     | bestbuy | 99      | 15       | 0      | 1    | 59        | 114   | 1 month trial    |
+      | clip     |             | bestbuy | 249     | 15       | 3      | 0    | 49        | 411   | 3 months advance |
+      | clip     | BOGUS_CODE  | bestbuy | 249     | 15       | 3      | 0    | 49        | 411   | 3 months advance |
+      | clip     | 99TRIAL     | bestbuy | 99      | 15       | 0      | 1    | 49        | 114   | 1 month trial    |
 
   Scenario: Confirmation page - Filling in valid 99TRIAL shows correct deposit, trial period, total upfront
     When I go to the online store
