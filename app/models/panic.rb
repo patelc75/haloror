@@ -5,11 +5,10 @@ class Panic < CriticalDeviceAlert
 
   # WARNING: needs testing
   def before_save
-    # debugger
     #
     # test-mode status is cloned here to reporting etc...
     user = User.find(user_id)
-    self.test_mode = user.test_mode unless user.blank?
+    self.test_mode = (user.test_mode == true) unless user.blank?
   end
 
   # we just need it for this event. Not critical_device_alert.rb super class
@@ -48,12 +47,10 @@ class Panic < CriticalDeviceAlert
         TriageAuditLog.create( attributes)
         #
         # explicitly send email to group admins, halouser, caregivers. tables are saved without callbacks
-        debugger
         [ user,
           user.user_intakes.collect(&:caregivers),
           user.user_intakes.collect(&:group).flatten.uniq.collect(&:admins)
         ].flatten.uniq.each do |_user|
-          debugger
           UserMailer.deliver_user_installation_alert( _user)
         end
       end

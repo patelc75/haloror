@@ -182,11 +182,11 @@ end
 When /^panic button test data is received for user intake "([^"]*)"$/ do |kit|
   (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  panic = Factory.build( :panic, :user => senior)
-  # panic.user = senior
-  debugger # needs debugging
+  panic = Factory.build( :panic)
+  panic.user = senior
   #
   # save fails here. requires a linked device? investigate further
+  # debugger
   panic.save.should be_true
 end
 
@@ -367,8 +367,8 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
   end
 end
 
-Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |kit, what|
-  ui = UserIntake.find_by_kit_serial_number(kit)
+Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |_kit, what|
+  ui = UserIntake.find_by_gateway_serial(_kit)
   ui.should be_valid
   senior = ui.senior
   senior.should be_valid

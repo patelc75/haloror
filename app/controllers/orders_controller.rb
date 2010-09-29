@@ -162,8 +162,9 @@ class OrdersController < ApplicationController
                 @redirect_hash = {:controller => 'orders', :action => 'success', :id => @order.id} # if the user prints agreement, we need this
                 #
                 # revisit during 1.7.0
-                # goto = ((@order.retailer? || @order.reseller?) ? "kit_serial" : (@order.user_intake.paper_copy_submitted? ? 'success' : 'agreement'))
-                goto = (@order.user_intake.paper_copy_submitted? ? 'success' : 'agreement')
+                # ref: google doc "billing" sheet
+                #   show kit_serial page only to retailers. nobody else sees it.
+                goto = ( @order.retailer? ? "kit_serial" : (@order.user_intake.paper_copy_submitted? ? 'success' : 'agreement'))
                 #
                 # WARNING: do not reset the session. just clear the variables that are no more required
                 # # reset_session # start fresh

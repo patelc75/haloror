@@ -52,7 +52,7 @@ class Device < ActiveRecord::Base
   # Usage:
   #   Device.gateways
   #   Device.gateways( "442")
-  #   Device.transmitters
+  #   Device.chest_straps
   #   User.last.devices.gateways.first
   # WARNING: TODO: re-confirm the device identifications here
   { :gateways => "H2", :chest_straps => "H1", :belt_clips => "H5", :kits => "H4" }.each do |key, value|

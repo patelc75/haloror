@@ -39,11 +39,11 @@ class Order < ActiveRecord::Base
   end
 
   def reseller?
-    group.blank? ? false : (group.sales_type == "reseller")
+    group.blank? ? false : group.is_reseller?
   end
   
   def retailer?
-    group.blank? ? false : (group.sales_type == "retailer")
+    group.blank? ? false : group.is_retailer?
   end
   
   def check_kit_serial_validation

@@ -190,8 +190,8 @@ class User < ActiveRecord::Base
 
   # Usage:
   #   user.gateway
-  #   user.transmitter
-  [:gateway, :transmitter].each do |device|
+  #   user.chest_strap
+  [:gateway, :chest_strap, :belt_clip, :kit].each do |device|
     #
     # Fri Sep 24 04:47:01 IST 2010
     # WARNING: we do not stop user from getting more than one gateway

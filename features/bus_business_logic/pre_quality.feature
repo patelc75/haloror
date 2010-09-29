@@ -51,7 +51,7 @@ Feature: Pre quality
     
   # smoke tested. we do not want to check trivial steps through cucumber
   Scenario: admin > online store has single group
-    
+  
   # Pre-conditions: the following exist
   #   Group:        mygroup_160_pq, reseller
   #     * online order will ask for kit serial after "Place Order"
@@ -59,7 +59,7 @@ Feature: Pre quality
   #   Admin:        admin_160_pq1 with profile, activated
   #   Coupon code:  coupon_160_pq1
   #   current user = admin_160_pq1
-  Scenario: admin > place an order
+  Scenario: admin > coupon applies correctly
     Given the following groups:
       | name           | sales_type | description                |
       | mygroup_160_pq | reseller   | mygroup_160_pq description |
@@ -88,6 +88,43 @@ Feature: Pre quality
     And I press "Continue"
     Then I should see "$72"
     And I should see "2 months trial"
+
+  # Pre-conditions: the following exist
+  #   Group:        mygroup_160_pq, reseller
+  #     * online order will ask for kit serial after "Place Order"
+  #     * subscriber sgreement will be presented after kit_serial number
+  #   Admin:        admin_160_pq1 with profile, activated
+  #   Coupon code:  coupon_160_pq1
+  #   current user = admin_160_pq1
+  Scenario: admin > place order
+    Given the following groups:
+      | name           | sales_type | description                |
+      | mygroup_160_pq | reseller   | mygroup_160_pq description |
+    And a device_model_price exists with the following attributes:
+      | coupon_code       | coupon_160_pq1    |
+      | group_name        | mygroup_160_pq    |
+      | device_model_type | complete          |
+      | expiry_date       | `1.year.from_now` |
+      | deposit           | 66                |
+      | shipping          | 6                 |
+      | monthly_recurring | 77                |
+      | months_advance    | 0                 |
+      | months_trial      | 2                 |
+    And a user "admin_160_pq1" exists with profile
+    And user "admin_160_pq1" has "admin" role for group "mygroup_160_pq"
+    And I am authenticated as "admin_160_pq1" with password "12345"
+    When I go to the online store
+    And I choose "product_complete"
+    And I fill the shipping details for online store
+    And I fill the billing details for online store
+    And I fill the credit card details for online store
+    And I select "mygroup_160_pq" from "Group"
+    And I uncheck "This person will be the myHalo user"
+    And I uncheck "Same as shipping info"
+    And I fill in "Coupon Code" with "coupon_160_pq1"
+    And I press "Continue"
+    And I press "Place Order"
+    Then an email to "cuc_senior@chirag.name" with subject "activation" should be sent for delivery
 
   Scenario: admin > assign login from email to halouser
   Scenario: admin > add a new caregiver with no email

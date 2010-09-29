@@ -93,6 +93,12 @@ class Group < ActiveRecord::Base
   # = public : instance methods =
   # =============================
 
+  ["reseller", "retailer", "call_center"].each do |_what|
+    define_method "is_#{_what}?".to_sym do
+      sales_type == _what
+    end
+  end
+
   def users
     # all users having any role for this group
     # Usage:

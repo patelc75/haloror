@@ -66,20 +66,24 @@ class UserIntake < ActiveRecord::Base
   # = dynamic generated methods =
   # =============================
   
-  [:gateway, :transmitter].each do |device|
+  [:gateway, :chest_strap, :belt_clip].each do |device|
     # Usage:
     #   user_intake.gateway
-    #   user_intake.transmitter
+    #   user_intake.chest_strap     # returns a chest_strap or a belt_clip
     define_method device do
       self.senior.send(device) if (!senior.blank? && !senior.send(device).blank?)
     end
     
     # Usage:
     #   user_intake.gateway_blank?
-    #   user_intake.transmitter_blank?
+    #   user_intake.chest_strap_blank?
     define_method :"#{device}_blank?" do
       self.send( device).blank?
     end
+  end
+  
+  def transmitter_blank?
+    chest_strap.blank? && belt_clip.blank?
   end
   
   # for every instance, make sure the associated objects are built
@@ -150,6 +154,7 @@ class UserIntake < ActiveRecord::Base
     #   * submitted the user intake with test_mode check box "on"
     #   * saved just now. created == updated
     senior.set_test_mode( (test_mode == "1") || (created_at == updated_at) || self.new_record?) unless senior.test_mode?
+    self.senior.send( :update_without_callbacks)
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
     # UserMailer.deliver_signup_installation(senior)
@@ -732,7 +737,7 @@ class UserIntake < ActiveRecord::Base
       if user && user.login.blank? && !user.email.blank? # !user.blank? && user.login.blank?
         hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
         # only when user_type is not nil, but login is
-        user.send("login=".to_sym, hex)
+        user.send("login=".to_sym, "_AUTO_#{hex}") # _AUTO_xxx is treated as blank
         user.send("password=".to_sym, hex)
         user.send("password_confirmation=".to_sym, hex)
       end
