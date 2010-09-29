@@ -148,6 +148,7 @@ class User < ActiveRecord::Base
   before_create :make_activation_code # FIXME: this should be part of before_save
   # after_save :post_process # shifted to method instead
   
+  named_scope :all_except_demo, :conditions => { :demo_mode => [false, nil] } # https://redmine.corp.halomonitor.com/issues/3274
   named_scope :search_by_login_or_profile_name, lambda {|arg| query = "%#{arg}%"; {:include => :profile, :conditions => ["users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", query, query, query]}}
   named_scope :with_status, lambda {|*arg| {:conditions => {:status => arg.flatten.first} }}
 
@@ -187,14 +188,14 @@ class User < ActiveRecord::Base
     end
   end
 
+  # Usage:
+  #   user.gateway
+  #   user.transmitter
   [:gateway, :transmitter].each do |device|
     #
     # Fri Sep 24 04:47:01 IST 2010
     # WARNING: we do not stop user from getting more than one gateway
     #
-    # Usage:
-    #   user.gateway
-    #   user.transmitter
     define_method device do
       devices.send( device.to_s.pluralize.to_s).first
     end
@@ -205,8 +206,9 @@ class User < ActiveRecord::Base
     all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
   end
 
-  def self.count_with_status(status = nil)
-    count( :conditions => {:status => status.to_s} )
+  def self.count_with_status( _status = nil)
+    _status = ( _status.blank? ? ['', nil] : _status.to_s.strip )
+    count( :conditions => { :status => _status } )
   end
 
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
@@ -396,7 +398,9 @@ class User < ActiveRecord::Base
     end
   end
 
-  # ---------------------------- instance methods ------------------------------
+  # ====================
+  # = instance methods =
+  # ====================
   
   def next_status_index
     keys = [ :pending, :approval_pending, :install_pending, :bill_pending, :installed, :test, :overdue]
@@ -2370,12 +2374,22 @@ class User < ActiveRecord::Base
     log("#{stop_getting_alerts ? 'Opted out of' : 'Added to'} safety_care group") # https://redmine.corp.halomonitor.com/issues/398
   end
   
+  def test_mode?
+    # when user is not part of safety_care
+    # and all caregivers are in away mode
+    test_mode == true # self.is_not_halouser_of?(Group.safety_care) && (caregivers.all? {|cg| !cg.active_for?(self) })
+  end
+
+  def toggle_test_mode
+    set_test_mode(!test_mode?)
+  end
+  
   # default action is obvious from method name
   def set_test_mode(status = true)
     #
     # test_mode column
     self.test_mode = (status == true) # just make sure only boolean values are considered
-    self.send(:update_without_callbacks) # WARNING: This works, but is not best. A better method needs to be here
+    self.send(:update_without_callbacks) unless self.new_record? # WARNING: This works, but is not best. A better method needs to be here
     # user test mode
     #   * user is not part of safety_care
     #   * has all caregivers "away"
@@ -2388,14 +2402,17 @@ class User < ActiveRecord::Base
     self.caregivers.each {|cg| cg.set_away_for(self) } if status == true # will log at set_away_for, set_active_for
   end
   
-  def test_mode?
-    # when user is not part of safety_care
-    # and all caregivers are in away mode
-    test_mode == true # self.is_not_halouser_of?(Group.safety_care) && (caregivers.all? {|cg| !cg.active_for?(self) })
+  def demo_mode?
+    demo_mode == true
   end
-
-  def toggle_test_mode
-    set_test_mode(!test_mode?)
+  
+  def toggle_demo_mode
+    set_demo_mode( !demo_mode)
+  end
+  
+  def set_demo_mode( status = false)
+    self.demo_mode = ( status == true)
+    self.send( :update_without_callbacks) unless self.new_record?
   end
   
   # Usage:

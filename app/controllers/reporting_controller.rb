@@ -92,7 +92,9 @@ class ReportingController < ApplicationController
     #   :order   => 'users.id',
     #   :per_page => REPORTING_USERS_PER_PAGE
     # end
-    @users = (group.blank? ? User.all(:order => "id ASC") : group.users.sort {|a,b| a.id <=> b.id})
+    #
+    # exclude demo users. https://redmine.corp.halomonitor.com/issues/3274
+    @users = (group.blank? ? User.all_except_demo(:order => "id ASC") : group.users.all_except_demo.sort {|a,b| a.id <=> b.id})
     @users = @users.paginate :page => params[:page], :include => [:roles, :roles_users] ,:order => 'users.id', :per_page => REPORTING_USERS_PER_PAGE
 
     # @users.each do |user|

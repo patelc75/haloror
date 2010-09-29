@@ -5,7 +5,7 @@ class DeviceType < ActiveRecord::Base
   # validates_uniqueness_of :device_type
   
   named_scope :find_all_names, lambda { |phrase| 
-    names = phrase.split(',').collect {|p| p.lstrip.rstrip };
+    names = phrase.split(',').collect(&:strip);
     {
       :conditions => {:device_type => names}
     }
@@ -19,7 +19,7 @@ class DeviceType < ActiveRecord::Base
     #
     def find_product_by_any_name(phrase)
       device = nil
-      names = phrase.split(',').collect {|p| p.lstrip.rstrip }
+      names = phrase.split(',').collect(&:strip)
       names.each do |name|
         unless count(:conditions => {:device_type => name}).zero?
           device = find_by_device_type(name)

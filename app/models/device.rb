@@ -12,7 +12,7 @@ class Device < ActiveRecord::Base
   belongs_to :device_revision
   belongs_to :work_order
 
-  has_one :access_mode_status
+  has_one :access_mode_status # most recent status?
   has_one :device_info
 
   has_many :access_modes
@@ -54,9 +54,25 @@ class Device < ActiveRecord::Base
   #   Device.gateways( "442")
   #   Device.transmitters
   #   User.last.devices.gateways.first
-  # WARNING: test coverage required
-  { :gateways => "H1", :transmitters => "H5", :kits => "H2" }.each do |key, value|
-    named_scope key, lambda {|*args| { :conditions => ["serial_number LIKE ? AND serial_number LIKE ?", "#{value}%", "%#{args.flatten.first}%"] }}
+  # WARNING: TODO: re-confirm the device identifications here
+  { :gateways => "H2", :chest_straps => "H1", :belt_clips => "H5", :kits => "H4" }.each do |key, value|
+    #
+    # scopes
+    named_scope key, lambda {|*args| { :conditions => ["devices.serial_number LIKE ? AND devices.serial_number LIKE ?", "#{value}%", "%#{args.flatten.first}%"] }}
+  end
+  
+  # Usage:
+  #   Device.with_status "Installed"
+  named_scope :with_status, lambda {|*_args| { :include => :users, :conditions => ["users.status = ?", _args.flatten.first.to_s] }}
+  # def self.with_status( *_args)
+  #   !users.blank? && users.collect(&:status).include?( _args.flatten.first.to_s.strip)
+  # end
+
+  # Usage:
+  #   Device.dialups
+  #   Device.ethernets
+  [:dialups, :ethernets].each do |_mode|
+    named_scope _mode, :include => :access_mode_status, :conditions => ["access_mode_statuses.mode = ?", "#{_mode.to_s.singularize}"]
   end
 
   # =============
@@ -74,10 +90,29 @@ class Device < ActiveRecord::Base
     end
   end
 
-  # ===========
-  # = methods =
-  # ===========
+  # =================
+  # = class methods =
+  # =================
 
+  # class << self
+  #   # Usage
+  #   #   Device.chest_straps_with_status                   # chest_straps with status blank
+  #   #   Device.gateways_with_status                       # gateways with status blank
+  #   #   Device.gateways_with_status( "Installed")         # gateways with status == "Installed"
+  #   #   Device.gateways_with_status( "Installed", "23")   # gateways with status == "Installed", device_serial LIKE "%22%"
+  #   [:gateways, :chest_straps, :belt_clips, :kits].each do |_device|
+  #     define_method "#{_device}_with_status".to_sym do |*_args|
+  #       _args = _args.flatten # we need flattened _args in this method
+  #       _status = _args.first unless _args.blank? # extract _status
+  #       self.send( _device, ((_args.length > 1) ? _args[1] : nil)).select {|e| !e.users.blank? && e.users.first.status == _status.to_s.strip }
+  #     end
+  #   end
+  # end
+
+  # ====================
+  # = instance methods =
+  # ====================
+  
   # user intake with kit_serial_number of this device
   def user_intake
     # CHANGED: Sat Sep 25 00:56:19 IST 2010
@@ -85,7 +120,7 @@ class Device < ActiveRecord::Base
     # Assumption:
     #   user.devices count == 2
     #   user.gateways count == 1
-    #   user.transmitters count == 1
+    #   user.chest_straps count == 1
     #
     if !users.blank? && !users.first.user_intakes.blank?
       user = users.first # we need this variable in next line of code
