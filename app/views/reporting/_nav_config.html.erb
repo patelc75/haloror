@@ -4,7 +4,6 @@
   <% end %>
   <% if current_user.is_admin? || current_user.is_super_admin? %>
   | <a href="/reporting/devices">Devices</a>
-  | <a href="/reporting/kit_search">Device Kit Search</a>
   <% end %>
   <% if current_user.is_super_admin? %>
   | <a href="/user_admin/roles">Roles &amp; Groups</a> 
