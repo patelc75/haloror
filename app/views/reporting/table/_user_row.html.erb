@@ -43,8 +43,8 @@
         <span class="tiny"><%= _device_type.to_s.singularize.split('_').collect(&:capitalize).join(' ') %>: <%= user.devices.send( _device_type).first.serial_number.blank? ? "Unknown" : user.devices.send( _device_type).first.serial_number.to_s %></span>
       <% end %>
     <% end %>
-    <% unless user.gateway.blank? %>
-      Gateway mode: <%= user.gateway.access_mode_status %>
+    <% unless user.devices.gateways.blank? %>
+      <span class="tiny">Gateway mode: <%= user.devices.gateways.first.access_mode_status.mode rescue ''  %></span>
     <% end %>
 
 	</div>
