@@ -12,7 +12,8 @@ class User < ActiveRecord::Base
     :bill_pending     => "Ready to Bill",
     :installed        => "Installed",
     :test             => "Test Mode",
-    :overdue          => "Install Overdue"
+    :overdue          => "Install Overdue",
+    :cancelled        => "Cancelled"
   }
 
   # WARNING:
@@ -34,7 +35,8 @@ class User < ActiveRecord::Base
     :bill_pending     => "user_active.png",
     :installed        => "user.png",
     :test             => "user_cancelled.png",
-    :overdue          => "user_placeholder.png"
+    :overdue          => "user_placeholder.png",
+    :cancelled        => "user_placeholder.png"
   }
   STATUS_BUTTON_TEXT = {
     :pending          => "Submit",
@@ -43,7 +45,8 @@ class User < ActiveRecord::Base
     :bill_pending     => "Generate Bill",
     :installed        => "Installed",
     :test             => "Test Mode",
-    :overdue          => "Install Now"
+    :overdue          => "Install Now",
+    :cancelled        => "Submit"
   }
 
   # DEFAULT_ALERT_CHECKS = {
@@ -150,7 +153,7 @@ class User < ActiveRecord::Base
   
   named_scope :all_except_demo, :conditions => { :demo_mode => [false, nil] } # https://redmine.corp.halomonitor.com/issues/3274
   named_scope :search_by_login_or_profile_name, lambda {|arg| query = "%#{arg}%"; {:include => :profile, :conditions => ["users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", query, query, query]}}
-  named_scope :with_status, lambda {|*arg| {:conditions => {:status => arg.flatten.first} }}
+  named_scope :where_status, lambda {|*arg| {:conditions => {:status => arg.flatten.first} }}
 
   # -------------- class methods ----------------------------
   
@@ -191,13 +194,13 @@ class User < ActiveRecord::Base
   # Usage:
   #   user.gateway
   #   user.chest_strap
-  [:gateway, :chest_strap, :belt_clip, :kit].each do |device|
+  [:gateway, :chest_strap, :belt_clip, :kit].each do |_device|
     #
     # Fri Sep 24 04:47:01 IST 2010
     # WARNING: we do not stop user from getting more than one gateway
     #
-    define_method device do
-      devices.send( device.to_s.pluralize.to_s).first
+    define_method _device do
+      self.devices.send( _device.to_s.pluralize.to_sym).first
     end
   end
   
@@ -206,10 +209,13 @@ class User < ActiveRecord::Base
     all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
   end
 
-  def self.count_with_status( _status = nil)
-    _status = ( _status.blank? ? ['', nil] : _status.to_s.strip )
-    count( :conditions => { :status => _status } )
-  end
+  # DEPRECATED: use query where_status
+  #
+  # def self.count_where_status( _status = nil)
+  #   where_status( _status).length
+  #   # _status = ( _status.blank? ? ['', nil] : _status.to_s.strip )
+  #   # count( :conditions => { :status => _status } )
+  # end
 
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
   def self.authenticate(login, password)
@@ -2460,8 +2466,25 @@ class User < ActiveRecord::Base
   #   * when not halouser, this method has no effect
   # steps taken from https://redmine.corp.halomonitor.com/issues/398
   def cancel_account
-    # step 1
-    devices.each {|e| }
+    #
+    # https://redmine.corp.halomonitor.com/issues/398
+    #
+    # Send email to SafetyCare similar to the current email to SafetyCare except body will simple oneline with text "Cancel HM1234" 
+    devices.each do |_device|
+      CriticalMailer.deliver_cancel_device( _device)
+      _device.users.each {|user| user.log("Email sent to safety_care: Cancel #{device.serial_number}") } # Create a log page of all steps above with timestamps
+    end
+    # Unmap users from devices, keep the device in the DB as an orphan (ie. not mapped to any user)
+    #   DISPATCH EMAILS before detaching devices
+    devices = []
+    # Call Test Mode method to make caregivers away and opt out of SafetyCare
+    set_test_mode( true)
+    # Sends unregister command to both devices 
+    Device.unregister( devices.collect(&:id).flatten.compact.uniq )
+    # Send email to caregivers informing de-activation of device
+    caregivers.each {|e| UserMailer.user_unregistered( self, e) }
+    # Create link to log on the cancel status field specified above
+    triage_audit_logs.create( :status => User::STATUS[:cancelled], :description => "MyHalo account of #{name} is now cancelled.")
   end
   
 

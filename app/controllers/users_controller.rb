@@ -5,6 +5,11 @@ class UsersController < ApplicationController
   require 'user_helper'
   include UserHelper
 
+  def cancel_account
+    @user = User.find(params[:id])
+    @user.cancel_account unless @user.blank?
+  end
+
   def triage
     @groups = current_user.groups_where_admin
     @params = params

@@ -78,7 +78,9 @@ class ReportingController < ApplicationController
     #   but that was not showing all users. maybe was broken feature
     # when user is_not_super_admin, it cannot see "All groups" option, so we need to select the first one
     session[:group_name] = @group_name = (params[:group_name] || ((current_user.is_super_admin? || @groups.blank?) ? '' : @groups.first.name))
-    group = (@group_name.blank? ? nil : Group.find_by_name(@group_name)) # @groups.first replaced with nil
+    #
+    # @groups.first replaced with nil
+    @group = (@group_name.blank? ? nil : Group.find_by_name(@group_name))
     
     # if @group
     #   us = []
@@ -94,7 +96,7 @@ class ReportingController < ApplicationController
     # end
     #
     # exclude demo users. https://redmine.corp.halomonitor.com/issues/3274
-    @users = (group.blank? ? User.all_except_demo(:order => "id ASC") : group.users.all_except_demo.sort {|a,b| a.id <=> b.id})
+    @users = (@group.blank? ? User.all_except_demo(:order => "id ASC") : @group.users.select {|e| !e.demo_mode? }.sort {|a,b| a.id <=> b.id})
     @users = @users.paginate :page => params[:page], :include => [:roles, :roles_users] ,:order => 'users.id', :per_page => REPORTING_USERS_PER_PAGE
 
     # @users.each do |user|

@@ -99,11 +99,16 @@ class Group < ActiveRecord::Base
     end
   end
 
-  def users
-    # all users having any role for this group
-    # Usage:
-    #   group.users
-    users_of_roles(roles)
+  # def users
+  #   # all users having any role for this group
+  #   # Usage:
+  #   #   group.users
+  #   users_of_roles(roles)
+  # end
+  
+  # ids of all users that have any role in this group
+  def user_ids
+    users.collect(&:id).flatten.compact.uniq
   end
 
   def users_with_role(role = nil)

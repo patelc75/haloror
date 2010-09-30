@@ -8,26 +8,26 @@
   <form id="group_form_id" action="/reporting/users" method="GET">
     <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
     Select <label for="group_name">Group</label>:
-    <%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| [e.name, e.name] }, (@group_name || @groups.first.name)), {:onchange => "$('group_form_id').submit();"}%>
+    <%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| [e.name, e.name] }, (@group.blank? ? @groups.first.name : @group.name)), {:onchange => "$('group_form_id').submit();"}%>
   </form>
 </div>
 <div class="span-5">
   <% [User::STATUS[ :installed], User::STATUS[ :install_pending]].each do |_status| %>
     <% [:chest_straps, :belt_clips].each do |_device| %>
-      <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send( "with_status".to_sym, _status).length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
+      <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.where_status(_status).where_user_ids( (@group.blank? ? nil : @group.user_ids) ).length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
     <% end %>
   <% end %>
 </div>
 <div class="span-5">
   <% [User::STATUS[ :installed], User::STATUS[ :install_pending]].each do |_status| %>
     <% [:dialups, :ethernets].each do |_mode| %>
-      <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.gateways.send( "#{_mode}".to_sym).send( "with_status".to_sym, _status).length %> <%= _status %> <%= _mode.to_s.capitalize %></div>
+      <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.gateways.send( "#{_mode}".to_sym).where_status(_status).where_user_ids( (@group.blank? ? nil : @group.user_ids) ).length %> <%= _status %> <%= _mode.to_s.capitalize %></div>
     <% end %>
   <% end %>
 </div>
 <div class="span-6 last">
   <% User::STATUS.keys.each do |key| %>
-    <div style="display: inline-block;"><%= image_tag( User::STATUS_IMAGE[key]) %> <%= User.count_with_status(User::STATUS[key]) %> <%= User::STATUS[key].blank? ? 'Pending' : User::STATUS[key] %></div>
+    <div style="display: inline-block;"><%= image_tag( User::STATUS_IMAGE[key]) %> <%= @group.blank? ? User.where_status(User::STATUS[key]).length : @group.users.select {|e| e.status == User::STATUS[key] }.length %> <%= User::STATUS[key].blank? ? 'Pending' : User::STATUS[key] %></div>
   <% end %>
 </div>
 

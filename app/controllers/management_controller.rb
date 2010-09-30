@@ -164,27 +164,8 @@ class ManagementController < ApplicationController
         #   or, just mix all the definitions
         #     id1-id5, id6, id7-id9
         elsif request[ :cmd_type] == 'unregister'
-          # assumption: all ids are numeric values
-          # WARNING: any non-number within ids will cause id be recognized as ZERO
-          devices = Device.all( :conditions => { :id => request[ :ids ].parse_integer_ranges }) # parse ranges like "1-3, 5, 7-9, 10, 17, 19"
-          devices.each do |device|
-            # Send email to SafetyCare similar to the current email to SafetyCare except body will simple oneline with text "Cancel HM1234" 
-            CriticalMailer.deliver_cancel_device( device)
-            device.users.each {|user| user.log("Email sent to safety_care: Cancel #{device.serial_number}") } # Create a log page of all steps above with timestamps
-
-            device.users.each do |user|
-              user.caregivers.each do |caregiver|
-                UserMailer.deliver_user_unregistered( caregiver, user) # New email notification to caregivers indicating service stopped
-                user.log("Email sent to caregiver (#{caregiver.name}): User (#{user.name}) un-registered.")
-              end
-              # https://redmine.corp.halomonitor.com/issues/398
-              # call to test_mode automatically logs the actions for user
-              user.test_mode( true) # Call Test Mode method to make caregivers away and opt senior out of SafetyCare
-              user.log("Device (#{device.serial_number}) un-mapped from user (#{user.name})")
-            end
-            device.users = [] # Unmap users from devices, keep the device in the DB as an orphan
-          end
-
+          Device.unregister( request[ :ids ] ) # will be parsed within method call
+          
         # https://redmine.corp.halomonitor.com/issues/3191
         # nothing to add here. it will automatically post to param1, param2
         end

@@ -1,0 +1,8 @@
+<h1 id="user_account_cancellation">User account cancellation</h1>
+<p>
+  <% if @user.blank? %>
+    No changes to user account of <%= @user.name %>.
+  <% else %>
+    Account of user <%= @user.name %> is now cancelled.
+  <% end %>
+</p>

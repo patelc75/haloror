@@ -60,13 +60,14 @@ class Device < ActiveRecord::Base
     # scopes
     named_scope key, lambda {|*args| { :conditions => ["devices.serial_number LIKE ? AND devices.serial_number LIKE ?", "#{value}%", "%#{args.flatten.first}%"] }}
   end
+    
+  # Usage:
+  #   Device.where_status "Installed"
+  named_scope :where_status, lambda {|*_args| { :include => :users, :conditions => ["users.status = ?", _args.flatten.first.to_s] }}
   
   # Usage:
-  #   Device.with_status "Installed"
-  named_scope :with_status, lambda {|*_args| { :include => :users, :conditions => ["users.status = ?", _args.flatten.first.to_s] }}
-  # def self.with_status( *_args)
-  #   !users.blank? && users.collect(&:status).include?( _args.flatten.first.to_s.strip)
-  # end
+  #   Device.of_users( [])
+  named_scope :where_user_ids, lambda {|*_args| {:include => :users, :conditions => { :id => _args.flatten } }}
 
   # Usage:
   #   Device.dialups
@@ -93,22 +94,34 @@ class Device < ActiveRecord::Base
   # =================
   # = class methods =
   # =================
+  
+  def unregister( _ids = "")
+    # assumption: all ids are numeric values
+    # WARNING: any non-number within ids will cause id be recognized as ZERO
+    _ids = if _ids.is_a?( String)
+      _ids.parse_integer_ranges
+    elsif _ids.is_a?( Array)
+      _ids.flatten
+    elsif _ids.to_i > 0
+      _ids
+    end
+    devices = Device.all( :conditions => { :id => _ids }) # parse ranges like "1-3, 5, 7-9, 10, 17, 19"
+    devices.each do |device|
 
-  # class << self
-  #   # Usage
-  #   #   Device.chest_straps_with_status                   # chest_straps with status blank
-  #   #   Device.gateways_with_status                       # gateways with status blank
-  #   #   Device.gateways_with_status( "Installed")         # gateways with status == "Installed"
-  #   #   Device.gateways_with_status( "Installed", "23")   # gateways with status == "Installed", device_serial LIKE "%22%"
-  #   [:gateways, :chest_straps, :belt_clips, :kits].each do |_device|
-  #     define_method "#{_device}_with_status".to_sym do |*_args|
-  #       _args = _args.flatten # we need flattened _args in this method
-  #       _status = _args.first unless _args.blank? # extract _status
-  #       self.send( _device, ((_args.length > 1) ? _args[1] : nil)).select {|e| !e.users.blank? && e.users.first.status == _status.to_s.strip }
-  #     end
-  #   end
-  # end
-
+      device.users.each do |user|
+        user.caregivers.each do |caregiver|
+          UserMailer.deliver_user_unregistered( caregiver, user) # New email notification to caregivers indicating service stopped
+          user.log("Email sent to caregiver (#{caregiver.name}): User (#{user.name}) un-registered.")
+        end
+        # https://redmine.corp.halomonitor.com/issues/398
+        # call to test_mode automatically logs the actions for user
+        user.test_mode( true) # Call Test Mode method to make caregivers away and opt senior out of SafetyCare
+        user.log("Device (#{device.serial_number}) un-mapped from user (#{user.name})")
+      end
+      device.users = [] # Unmap users from devices, keep the device in the DB as an orphan
+    end
+  end
+  
   # ====================
   # = instance methods =
   # ====================

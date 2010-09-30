@@ -19,16 +19,6 @@
 			<a href="#user_<%=user.id%>">
 		<% end %>
     
-    <% [:chest_strap, :belt_clip].each do |_device_type| %>
-      <% unless user.send( _device_type).blank? %>
-        <br />
-        <%= _device_type.to_s.split('_').collect(&:capitalize).join(' ') %>: <%= _device.serial_number.blank? ? "Unknown" : _device.serial.to_s %>
-      <% end %>
-    <% end %>
-    <% unless user.gateway.blank? %>
-      Gateway mode: <%= user.gateway.access_mode_status %>
-    <% end %>
-    
     <span class="text-small">
       <% if user.last_log_when_status_changed.blank? %>
         <%= image_tag user.status_image, :alt => (user.status || 'Unknown'), :title => (user.status || 'Unknown') %>
@@ -46,6 +36,17 @@
 			</a>
 			(<%=user.profile[:relationship]%>)
 		<% end %>
+
+    <% [:chest_straps, :belt_clips].each do |_device_type| %>
+      <% unless user.devices.send( _device_type).blank? %>
+        <br />
+        <span class="tiny"><%= _device_type.to_s.singularize.split('_').collect(&:capitalize).join(' ') %>: <%= user.devices.send( _device_type).first.serial_number.blank? ? "Unknown" : user.devices.send( _device_type).first.serial_number.to_s %></span>
+      <% end %>
+    <% end %>
+    <% unless user.gateway.blank? %>
+      Gateway mode: <%= user.gateway.access_mode_status %>
+    <% end %>
+
 	</div>
 				
 	<div class="col-300">
@@ -107,7 +108,11 @@
               <%= link_to('Subscription',subscription_path(user.subscriptions.first)) %>
               <br />
             <% end %>
-            <%= image_tag "user_placeholder.png" %> <%= link_to "Cancel", "#", :class => "button small gray-button" %>
+            <% unless user.status == User::STATUS[:cancelled] %>
+              <%= image_tag "user_placeholder.png" %>
+              <%= button_to "Cancel", { :controller => "users", :action => "cancel_account", :id => user}, :method => :post, :class => "button small gray-button" %>
+              <br />
+            <% end %>
           <% end %>
           <% if current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships) %>
             <% form_tag url_for(:controller => 'users', :action => 'toggle_test_mode', :id => user.id), :method => :post, :id => "user_form_#{user.id}" do %>
