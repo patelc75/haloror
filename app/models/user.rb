@@ -191,6 +191,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  # Fri Oct  1 05:27:06 IST 2010
+  #   user.devices.gateways.first works
+  #   user.gateway does not? needs investigation
+  #
   # Usage:
   #   user.gateway
   #   user.chest_strap
