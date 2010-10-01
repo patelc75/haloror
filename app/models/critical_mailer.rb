@@ -136,7 +136,7 @@ class CriticalMailer < ActionMailer::ARMailer
   end
 
   def senior_and_caregiver_details(user)
-  	group = Group.find_by_name('safety_care')
+  	group = Group.safety_care # find_by_name('safety_care')
   	@recipients  = group.email
   	@from        = "no-reply@#{ServerInstance.current_host}"
     @subject     = "[" + ServerInstance.current_host_short_string + "] "

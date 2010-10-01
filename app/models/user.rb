@@ -49,6 +49,22 @@ class User < ActiveRecord::Base
     :cancelled        => "Submit"
   }
 
+  # Fri Oct  1 22:56:06 IST 2010
+  # https://redmine.corp.halomonitor.com/projects/haloror/wiki/Intake_Install_and_Billing#Other-notes
+  # https://redmine.corp.halomonitor.com/issues/3274
+  # https://redmine.corp.halomonitor.com/issues/398
+  #   aggregated_status of the user is calculated as
+  #   * Installed = user.status == "Installed"
+  #                 Legacy halousers will be assigned "installed" state if user is halouser of safety_care
+  #                 All other halousers, demo boolean is set to true
+  #   * Pending   = user.status == "Not Submitted" or "Ready for Approval" or "Ready for Install" or "Ready to Bill"
+  #   * Demo      = user.demo_mode == true
+  AGGREGATE_STATUS = {
+    :installed    =>  "Installed",
+    :pending      =>  "Pending",
+    :demo         =>  "Demo"
+  }
+  
   # DEFAULT_ALERT_CHECKS = {
   #   "call_center_account" => "call_center_account",
   #   "legal_agreement" => "legal_agreement",
@@ -114,8 +130,8 @@ class User < ActiveRecord::Base
   has_many :purged_logs
   has_many :rmas
   has_many :rma_items
+  has_many :roles_users, :dependent => :delete_all # # WARNING: do not touch this association
   has_many :roles, :through => :roles_users # WARNING: do not touch this association
-  has_many :roles_users,:dependent => :delete_all # # WARNING: do not touch this association
   has_many :self_test_sessions
   has_many :skin_temps
   has_many :steps
@@ -462,6 +478,7 @@ class User < ActiveRecord::Base
   # https://redmine.corp.halomonitor.com/issues/398
   # Create a log page of all steps above with timestamps
   def after_save
+    #
     # CHANGED: Major fix. the roles were not getting populated
     # insert the roles for user. these roles are propogated from user intake
     lazy_roles.each {|k,v| self.send( :"is_#{k}_of", v) } unless lazy_roles.blank?
@@ -721,6 +738,40 @@ class User < ActiveRecord::Base
     # device.save!
   end
   
+  # Fri Oct  1 22:56:06 IST 2010
+  # https://redmine.corp.halomonitor.com/projects/haloror/wiki/Intake_Install_and_Billing#Other-notes
+  # https://redmine.corp.halomonitor.com/issues/3274
+  # https://redmine.corp.halomonitor.com/issues/398
+  #   aggregated_status of the user is calculated as
+  #   * Installed = user.status == "Installed"
+  #                 Legacy halousers will be assigned "installed" state if user is halouser of safety_care
+  #                 All other halousers, demo boolean is set to true
+  #   * Pending   = user.status == "Not Submitted" or "Ready for Approval" or "Ready for Install" or "Ready to Bill"
+  #   * Demo      = user.demo_mode == true
+  def aggregated_status
+    if demo_mode?
+      AGGREGATE_STATUS[ :demo]
+    else
+      #
+      # legacy?
+      if user_intakes.blank? # legacy?
+        AGGREGATE_STATUS[ (self.is_halouser_of?( Group.safety_care) ? :installed : :demo) ]
+        
+      else # user_intake? not legacy
+        if status == STATUS[ :installed]
+          AGGREGATE_STATUS[ :installed]
+          #
+          # pending, ready for approval / install / bill, install overdue
+        elsif [:pending, :approval_pending, :install_pending, :bill_pending, :overdue].collect {|e| STATUS[e]}.include?( status)
+          AGGREGATE_STATUS[ :pending]
+
+          # QUESTION: what happens for test_mode?
+        end
+
+      end # not legacy?
+    end # demo?
+  end #--
+
   def status_index
     STATUS.index( status) || :pending # use status value to find key, or assume :pending
   end
@@ -1477,9 +1528,14 @@ class User < ActiveRecord::Base
   def roles_user_by_role(role)
     self.roles_users.find(:first, :conditions => "role_id = #{role.id}", :include => :role)
   end
+
+  # FIXME: use authorization plugin methods described here, instead of custom methods
+  # Can also use:
+  #   caregiver.is_caregiver_of_what
   def roles_user_by_caregiver(caregiver)
     caregiver.roles_users.find(:first, :conditions => "roles.name = 'caregiver' and roles.authorizable_id = #{self.id}", :include => :role)
   end
+  
   def roles_user_by_subscriber(subscriber)
     subscriber.roles_users.find(:first, :conditions => "roles.name = 'subscriber' and roles.authorizable_id = #{self.id}", :include => :role)
   end
@@ -2391,11 +2447,12 @@ class User < ActiveRecord::Base
   end
 
   def toggle_test_mode
-    set_test_mode(!test_mode?)
+    set_test_mode!( !test_mode? )
   end
   
   # default action is obvious from method name
-  def set_test_mode(status = true)
+  # "!" added to signify the data change and save/update
+  def set_test_mode!(status = true)
     #
     # test_mode column
     self.test_mode = (status == true) # just make sure only boolean values are considered
@@ -2482,7 +2539,7 @@ class User < ActiveRecord::Base
     #   DISPATCH EMAILS before detaching devices
     devices = []
     # Call Test Mode method to make caregivers away and opt out of SafetyCare
-    set_test_mode( true)
+    set_test_mode!( true)
     # Sends unregister command to both devices 
     Device.unregister( devices.collect(&:id).flatten.compact.uniq )
     # Send email to caregivers informing de-activation of device

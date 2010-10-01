@@ -153,13 +153,25 @@ class UserIntake < ActiveRecord::Base
     #
     #   * submitted the user intake with test_mode check box "on"
     #   * saved just now. created == updated
-    senior.set_test_mode( (test_mode == "1") || (created_at == updated_at) || self.new_record?) unless senior.test_mode?
-    self.senior.send( :update_without_callbacks)
+    senior.set_test_mode!( (test_mode == "1") || (created_at == updated_at) || self.new_record?) unless senior.test_mode?
+    # self.senior.send( :update_without_callbacks) # not required. set_test_mode! has "shebang"
+    #
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
     # UserMailer.deliver_signup_installation(senior)
     #
+    # https://redmine.corp.halomonitor.com/projects/haloror/wiki/Intake_Install_and_Billing#Other-notes
+    # https://redmine.corp.halomonitor.com/issues/3274
+    # When the user intake is submitted
+    #    1. For the first time, an email with entire profile is emailed to safetycare (CriticalMailer.senior_and_caregiver_details)
+    #    2. Each subsequent time (super_admin only), only modified fields are emailed to safetycare (UserMailer.update_to_safety_care)
     # send email to safety_care when "Update" was hit on any status
+    #   this should be ideally at user.after_save but we want this trigger at user_intake, not user
+    if self.senior.status == User::STATUS[:approval_pending]
+      CriticalMailer.deliver_senior_and_caregiver_details( self.senior)
+    else
+      UserMailer.deliver_update_to_safety_care( self)
+    end
     #
     # attach devices to user/senior
     [gateway_serial, transmitter_serial].select {|e| !e.blank? }.each {|device| senior.add_device_by_serial_number( device) }

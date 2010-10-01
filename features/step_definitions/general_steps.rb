@@ -21,6 +21,13 @@ Given /^I am authenticated as "([^\"]*)" with password "([^\"]*)"$/ do |login, p
   authenticate(login, password)
 end
 
+Given /^I login as "([^\"]*)" with password "([^\"]*)"$/ do |login, password|
+  When %{I go to the login page}
+  When %{I fill in "Username" with "#{login}"}
+  When %{I fill in "Password" with "#{password}"}
+  When %{I press "login_submit"}
+end
+
 Given /^I am (guest|public user|not authenticated)$/ do |user_type|
   Given %{I logout}
 end

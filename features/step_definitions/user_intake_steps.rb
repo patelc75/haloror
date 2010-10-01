@@ -66,7 +66,7 @@ Given /^(?:|the )senior of user intake "([^"]*)" (is|is not) in test mode$/ do |
   ui = UserIntake.find_by_kit_serial_number( kit_serial)
   ui.should_not be_blank
   
-  ui.senior.set_test_mode( condition == "is")
+  ui.senior.set_test_mode!( condition == "is")
 end
 
 Given /^user intake "([^"]*)" does not have the product shipped yet$/ do |kit_serial|
@@ -230,7 +230,7 @@ When /^I bring senior of user intake "([^"]*)" into test mode$/ do |kit_serial|
   (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   
-  senior.set_test_mode( true)
+  senior.set_test_mode!( true)
 end
 
 When /^I follow "([^"]*)" for the (\d+)st user intake$/ do |identifier, nth|

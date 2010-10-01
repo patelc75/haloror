@@ -79,7 +79,13 @@ Feature: User Intake Legal Agreement
     And I check "Same as User"
     And I press "user_intake_submit"
     And I logout
-    And I am authenticated as "senior" of last user intake
+    And I am activating the "senior" of last user intake
+    And I fill in the following:
+      | user_login                 | myhalouser |
+      | user_password              | 12345      |
+      | user_password_confirmation | 12345      |
+    And I press "subscribe_button"
+    And I login as "myhalouser" with password "12345"
     And I view the last user intake
     And I check "userintake_agree"
     And I press "user_intake_submit"

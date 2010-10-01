@@ -29,7 +29,7 @@ module UserHelper
         # role = @user.has_role 'halouser'
         @user.is_halouser_of @group unless @group.blank? # 2010-02-01 !@group.nil? will have errors later
         # if opt_out_call_center.blank?
-        @group = Group.find_or_create_by_name('safety_care') #FIXME: just create if it does not exist
+        @group = Group.safety_care # find_or_create_by_name('safety_care') #FIXME: just create if it does not exist
         # raise "safety_care group missing!" if @group.nil? 
         @user.is_halouser_of @group if !@group.nil?
         # end
