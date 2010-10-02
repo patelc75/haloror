@@ -4,7 +4,7 @@ Feature: User experience - triage
   I want feature
 
   Background:
-    Given I am an authenticated super_admin
+    Given I am an authenticated super admin
     And a group "bestbuy" exists
 
   Scenario: Audit column visible

@@ -4,7 +4,7 @@ Feature: Pre quality
   I want feature
 
   Scenario: super admin > create a group
-    Given I am an authenticated super_admin
+    Given I am an authenticated super admin
     When I go to the home page
     And I follow links "Config > Roles & Groups"
     And I fill in "mygroup_160_pq" for "Group Name"
@@ -17,7 +17,7 @@ Feature: Pre quality
   #
   # creating user and activating
   Scenario: super admin > create an admin
-    # Given I am an authenticated super_admin
+    # Given I am an authenticated super admin
     # And the following groups:
     #   | name           | sales_type | description                |
     #   | mygroup_160_pq | reseller   | mygroup_160_pq description |
@@ -28,7 +28,7 @@ Feature: Pre quality
   #   Group: mygroup_160_pq
   #   Admin: admin_160_pq1 with profile, activated
   Scenario: super admin > create an coupon code
-    Given I am an authenticated super_admin
+    Given I am an authenticated super admin
     And the following groups:
       | name           | sales_type | description                |
       | mygroup_160_pq | reseller   | mygroup_160_pq description |

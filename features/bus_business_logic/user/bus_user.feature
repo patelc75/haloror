@@ -4,7 +4,7 @@ Feature: User status
   I want feature
 
   Background:
-    Given I am an authenticated super_admin
+    Given I am an authenticated super admin
     And a user "test-user" exists with profile
     
   Scenario Outline: User can have specific statuses

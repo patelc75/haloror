@@ -4,9 +4,7 @@ Feature: Business - user intake - events and external
   I want feature
 
   Background: Authenticated user
-    Given a user "test-user" exists with profile
-    And user "test-user" has "super admin" roles
-    And I am authenticated as "test-user" with password "12345"
+    Given I am an authenticated super admin
     And a group "bestbuy" exists with group admin
     And the following user intakes:
       | kit_serial_number | group_name |

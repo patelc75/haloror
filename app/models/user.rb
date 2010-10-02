@@ -59,10 +59,12 @@ class User < ActiveRecord::Base
   #                 All other halousers, demo boolean is set to true
   #   * Pending   = user.status == "Not Submitted" or "Ready for Approval" or "Ready for Install" or "Ready to Bill"
   #   * Demo      = user.demo_mode == true
+  #   * Cancelled = user.status == "Cancelled"
   AGGREGATE_STATUS = {
     :installed    =>  "Installed",
     :pending      =>  "Pending",
-    :demo         =>  "Demo"
+    :demo         =>  "Demo",
+    :cancelled    =>  "Cancelled"
   }
   
   # DEFAULT_ALERT_CHECKS = {
@@ -240,7 +242,7 @@ class User < ActiveRecord::Base
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
   def self.authenticate(login, password)
     u = find :first, :conditions => ['login = ? and activated_at IS NOT NULL', login] # need to get the salt
-    u && u.authenticated?(password) ? u : nil
+    (u && u.authenticated?(password)) ? u : nil
   end
   
   # Encrypts some data with the salt.
@@ -748,6 +750,7 @@ class User < ActiveRecord::Base
   #                 All other halousers, demo boolean is set to true
   #   * Pending   = user.status == "Not Submitted" or "Ready for Approval" or "Ready for Install" or "Ready to Bill"
   #   * Demo      = user.demo_mode == true
+  #   * Cancelled = status == "Cancelled"
   def aggregated_status
     if demo_mode?
       AGGREGATE_STATUS[ :demo]
@@ -765,7 +768,11 @@ class User < ActiveRecord::Base
         elsif [:pending, :approval_pending, :install_pending, :bill_pending, :overdue].collect {|e| STATUS[e]}.include?( status)
           AGGREGATE_STATUS[ :pending]
 
-          # QUESTION: what happens for test_mode?
+          # Sat Oct  2 23:17:10 IST 2010 Discussed with Chirag
+          # Cancelled show as one of the aggregate status
+          # test mode is ignored for aggregate status
+        elsif status == STATUS[ :cancelled]
+          AGGREGATE_STATUS[ :cancelled]
         end
 
       end # not legacy?

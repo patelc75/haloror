@@ -12,8 +12,8 @@ describe DeviceModel do
   end
   
   context "can find complete or clip by the phrase" do
-    ["complete", "clip"].each do |what|
-      specify { DeviceModel.find_complete_or_clip( what).should_not be_blank }
+    ["complete", "clip"].each do |_what|
+      specify { DeviceModel.find_complete_or_clip( _what).should_not be_blank }
     end
   end
 

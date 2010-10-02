@@ -11,10 +11,12 @@ Given /^debug$/ do
 end
 
 Given /^I am (?:|an )authenticated(?: user)$/ do
-  user = User.find_by_login( "demo")
-  user = Factory.create(:user, {:login => 'demo', :password => '12345', :password_confirmation => '12345'}) if user.blank?
+  _login = "demo"
+  debugger
+  user = User.find_by_login( _login)
+  user = Factory.create(:user, {:login => _login, :password => '12345', :password_confirmation => '12345'}) if user.blank?
   user.activate unless user.activated?
-  authenticate("demo", "12345")
+  authenticate( _login, "12345")
 end
 
 Given /^I am authenticated as "([^\"]*)" with password "([^\"]*)"$/ do |login, password|
@@ -36,7 +38,7 @@ Given /^I logout$/ do
   visit logout_url
 end
 
-Given /^I am an authenticated super_admin$/ do
+Given /^I am an authenticated super admin$/ do
   Given %{I am an authenticated user}
   Given %{user "demo" has "super_admin" role}
 end
@@ -334,7 +336,7 @@ end
 
 def authenticate(login, password)
   visit login_path
-  fill_in "username", :with => login
-  fill_in "password", :with => password
-  click_button "login"
+  fill_in "Username", :with => login
+  fill_in "Password", :with => password
+  click_button "login_button"
 end

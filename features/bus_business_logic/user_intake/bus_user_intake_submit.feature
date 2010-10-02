@@ -4,7 +4,7 @@ Feature: Business - user intake - submit
   I want feature
 
   Background:
-    Given I am an authenticated super_admin
+    Given I am an authenticated super admin
 
   # Scenario: User Intake gets next status when submitted on current status
   #   Given the following user intakes:

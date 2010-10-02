@@ -4,7 +4,7 @@ Feature: User intake parts
   I want all individual sections and parts of user intake tested
 
   Background:
-    Given I am an authenticated super_admin
+    Given I am an authenticated super admin
     And a group "mygroup" exists
   
   # Scenario: Test mode checkboxes put all caregivers away
