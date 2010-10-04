@@ -12,11 +12,12 @@ end
 
 Given /^I am (?:|an )authenticated(?: user)$/ do
   _login = "demo"
-  debugger
+  # debugger
   user = User.find_by_login( _login)
   user = Factory.create(:user, {:login => _login, :password => '12345', :password_confirmation => '12345'}) if user.blank?
   user.activate unless user.activated?
   authenticate( _login, "12345")
+  ['Welcome', user.profile.name].each {|e| response.should contain( e) } # successful login?
 end
 
 Given /^I am authenticated as "([^\"]*)" with password "([^\"]*)"$/ do |login, password|
@@ -27,7 +28,7 @@ Given /^I login as "([^\"]*)" with password "([^\"]*)"$/ do |login, password|
   When %{I go to the login page}
   When %{I fill in "Username" with "#{login}"}
   When %{I fill in "Password" with "#{password}"}
-  When %{I press "login_submit"}
+  When %{I press "login_button"}
 end
 
 Given /^I am (guest|public user|not authenticated)$/ do |user_type|
@@ -36,6 +37,7 @@ end
 
 Given /^I logout$/ do
   visit logout_url
+  response.should_not contain('Welcome')
 end
 
 Given /^I am an authenticated super admin$/ do

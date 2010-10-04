@@ -5,15 +5,16 @@ class Panic < CriticalDeviceAlert
 
   # WARNING: needs testing
   def before_save
+    debugger
     #
     # test-mode status is cloned here to reporting etc...
     user = User.find(user_id)
-    self.test_mode = (user.test_mode == true) unless user.blank?
+    self.test_mode = user.test_mode? unless user.blank?
   end
 
   # we just need it for this event. Not critical_device_alert.rb super class
-  def after_save
-    # debugger
+  def more_after_save
+    debugger
     # https://redmine.corp.halomonitor.com/issues/3215
     #
     unless user.blank?

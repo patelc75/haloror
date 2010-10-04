@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
     :cancelled        => "Cancelled"
   }
 
-  # WARNING:
+  # DEPRECATED:
   #   Cannot use this color table. Colors are subject to status + time span away/ago
   # STATUS_COLOR = {
   #   :pending          => "gray",
@@ -166,7 +166,11 @@ class User < ActiveRecord::Base
   validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
   
   # before_save :encrypt_password # shifted to a method where we can make multiple calls
-  before_create :make_activation_code # FIXME: this should be part of before_save
+  #
+  #   Mon Oct  4 19:26:12 IST 2010 v1.6.0
+  #   CHANGED: this should be part of before_save, not before_create
+  # before_create :make_activation_code # FIXME: this should be part of before_save
+  #
   # after_save :post_process # shifted to method instead
   
   named_scope :all_except_demo, :conditions => { :demo_mode => [false, nil] } # https://redmine.corp.halomonitor.com/issues/3274
@@ -446,6 +450,11 @@ class User < ActiveRecord::Base
   end
 
   def before_save
+    #
+    # Mon Oct  4 19:27:23 IST 2010, v1.6.0
+    # activation code should be created for .create as well as .save
+    make_activation_code # generate activation code as appropriate
+    #
     encrypt_password
     # https://redmine.corp.halomonitor.com/issues/3215
     # WARNING: we need to confirm which logic holds true to shift user to "Installed" mode
@@ -1750,7 +1759,7 @@ class User < ActiveRecord::Base
   end
   
   def name
-    (profile.blank? ? (login.blank? ? email : login) : [profile.first_name, profile.last_name].join(' '))
+    (profile.blank? ? (login.blank? ? email : login) : profile.name)
     # if(profile and !profile.last_name.blank? and !profile.first_name.blank?)
     #   profile.first_name + " " + profile.last_name 
     # elsif !login.blank?
@@ -2586,6 +2595,10 @@ class User < ActiveRecord::Base
   
   # generates activation code
   def make_activation_code
+    #
+    # TODO: should this only be for new_record?
+    #   does not harm this way either because activated? will ignore any new created activation_code
+    #   but this is not error proof
     self.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
   end 
   

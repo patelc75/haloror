@@ -368,7 +368,7 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
 end
 
 Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |_kit, what|
-  ui = UserIntake.find_by_gateway_serial(_kit)
+  ui = UserIntake.find_by_kit_serial_number(_kit)
   ui.should be_valid
   senior = ui.senior
   senior.should be_valid

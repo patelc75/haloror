@@ -42,7 +42,7 @@ Feature: User Intake Legal Agreement
     And I uncheck "Same as User"
     And I press "user_intake_submit"
     And I logout
-    And I am authenticated as "<user>" of last user intake
+    And I activate and login as the senior of last user intake
     And I view the last user intake
     Then I <status> see "I Agree Terms and Conditions"
     

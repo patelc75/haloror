@@ -70,6 +70,10 @@ class Profile < ActiveRecord::Base
     self.account_number = next_account_number if self.new_record? # only for new records
   end
 
+  def name
+    [first_name, last_name].join(' ')
+  end
+  
   def email=(email); nil; end
   def email; self.user.email; end
 

@@ -25,6 +25,9 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
           event.send(:update_without_callbacks)
         end
       end
+      #
+      debugger
+      event.more_after_save if event.class == Panic # run more after_save actions for panic
     end
 
 # https://redmine.corp.halomonitor.com/issues/3076

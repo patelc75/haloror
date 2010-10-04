@@ -79,6 +79,15 @@ Given /^user "([^"]*)" status gets changed to "([^"]*)"$/ do |login, status|
   user.save.should == true
 end
 
+When /^I activate and login as the senior of last user intake$/ do
+  When %{I am activating the "senior" of last user intake}
+  When %{I fill in "user_login" with "myhalouser"}
+  When %{I fill in "user_password" with "12345"}
+  When %{I fill in "user_password_confirmation" with "12345"}
+  When %{I press "subscribe_button"}
+  When %{I login as "myhalouser" with password "12345"}
+end
+
 When /^I get data in (.+) for user "([^\"]*)"$/ do |model_name, user_login|
   user = User.find_by_login(user_login)
   user.should_not be_blank
