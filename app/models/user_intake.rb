@@ -688,6 +688,29 @@ class UserIntake < ActiveRecord::Base
   
   private
 
+  # WARNING: This is conflicting with the 1.6.0 Pre-Quality
+  #   Order from online store should create a user intake with blank login & password for all associated users
+  #   This does not suit well wil existing user intake scenarios
+  # Proposed action:
+  #   comment out this method to see the affects in cucumber
+  #   this can help to idenitfy all the issue quickly
+  def autofill_user_login(user_type = "")
+    unless user_type.blank?
+      user = self.send("#{user_type}") # local copy, to keep code clean
+      user.autofill_login unless user.blank?
+      #
+      # shifted to user.rb
+      #
+      # if user && user.login.blank? && !user.email.blank? # !user.blank? && user.login.blank?
+      #   hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
+      #   # only when user_type is not nil, but login is
+      #   user.send("login=".to_sym, "_AUTO_#{hex}") # _AUTO_xxx is treated as blank
+      #   user.send("password=".to_sym, hex)
+      #   user.send("password_confirmation=".to_sym, hex)
+      # end
+    end
+  end
+
   def skip_associations_validation
     #
     # skip validations for all associated records
@@ -738,29 +761,6 @@ class UserIntake < ActiveRecord::Base
       else
         errors.add_to_base("#{user_type} profile: " + user.profile.errors.full_messages.join(', ')) unless (user.skip_validation || user.profile.valid?)
       end
-    end
-  end
-
-  # WARNING: This is conflicting with the 1.6.0 Pre-Quality
-  #   Order from online store should create a user intake with blank login & password for all associated users
-  #   This does not suit well wil existing user intake scenarios
-  # Proposed action:
-  #   comment out this method to see the affects in cucumber
-  #   this can help to idenitfy all the issue quickly
-  def autofill_user_login(user_type = "")
-    unless user_type.blank?
-      user = self.send("#{user_type}") # local copy, to keep code clean
-      user.autofill_login unless user.blank?
-      #
-      # shifted to user.rb
-      #
-      # if user && user.login.blank? && !user.email.blank? # !user.blank? && user.login.blank?
-      #   hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
-      #   # only when user_type is not nil, but login is
-      #   user.send("login=".to_sym, "_AUTO_#{hex}") # _AUTO_xxx is treated as blank
-      #   user.send("password=".to_sym, hex)
-      #   user.send("password_confirmation=".to_sym, hex)
-      # end
     end
   end
 

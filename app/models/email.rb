@@ -9,6 +9,6 @@ class Email < ActiveRecord::Base
   
   def debug_it
    emails = Email.all(:select => 'emails.mail').map {|p| puts p.mail[0..170] + "\n" }  
-   debugger
+   debugger # permanent. required here
   end
 end

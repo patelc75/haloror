@@ -4,7 +4,7 @@ class GatewayEventObserver < ActiveRecord::Observer
   
   #change this code to loop through all uses associated with device, write new method to come up array of users mapped to GW
   def before_save(event)
-    debugger
+    # debugger
     if event.device_id < 0 or event.device == nil
       raise "#{event.class.to_s}: device_id = #{event.device_id} is invalid"
     else
@@ -19,7 +19,7 @@ class GatewayEventObserver < ActiveRecord::Observer
   
   #change this code to loop through all uses associated with device
   def after_save(alert)
-    debugger
+    # debugger
   	users = alert.device.users
   	users.each do |u|
   	  alert[:user_id] = u.id

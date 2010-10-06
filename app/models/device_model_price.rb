@@ -3,6 +3,7 @@ class DeviceModelPrice < ActiveRecord::Base
   belongs_to :group
   validates_presence_of :coupon_code
   validates_presence_of :group
+  # validates_uniqueness_of :coupon_code, :device_model_id
   named_scope :recent_on_top, :order => "created_at DESC"
   named_scope :for_group, lambda {|group| { :conditions => { :group_id => group.id } }}
   named_scope :for_coupon_code, lambda {|arg| { :conditions => { :coupon_code => arg } }}
