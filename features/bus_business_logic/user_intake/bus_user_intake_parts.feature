@@ -10,8 +10,8 @@ Feature: User intake parts
   # Scenario: Test mode checkboxes put all caregivers away
   Scenario: Test mode checkboxes put senior in test mode, not member of safety_care
     Given the following user intakes:
-      | kit_serial_number |
-      | 1122334455        |
+      | gateway_serial |
+      | 1122334455     |
     When I bring senior of user intake "1122334455" into test mode
     Then senior of user intake "1122334455" should not be a member of "safety_care" group
     And all caregivers for senior of user intake "1122334455" should be away

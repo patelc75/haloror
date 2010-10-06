@@ -2611,8 +2611,28 @@ class User < ActiveRecord::Base
     profile.blank? ? false : (profile.cell_phone_exists? && !profile.carrier.blank?)
   end
   
+  # WARNING: This is conflicting with the 1.6.0 Pre-Quality
+  #   Order from online store should create a user intake with blank login & password for all associated users
+  #   This does not suit well wil existing user intake scenarios
+  # Proposed action:
+  #   comment out this method to see the affects in cucumber
+  #   this can help to idenitfy all the issue quickly
+  # WARNING: (Wed Oct  6 05:12:20 IST 2010) Needs code coverage. smoke tested for now
+  def autofill_login
+    if login.blank? && !email.blank? # !user.blank? && user.login.blank?
+      hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
+      # only when user_type is not nil, but login is
+      self.login = "_AUTO_#{hex}" # _AUTO_xxx is treated as blank
+      self.password = hex
+      self.password_confirmation = hex
+    end
+  end
 
-  private # ------------------------------ private methods
+  # ===================
+  # = private methods =
+  # ===================
+  
+  private
 
   def skip_associations_validation
     self.profile.skip_validation = skip_validation unless profile.blank?

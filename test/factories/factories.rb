@@ -65,7 +65,7 @@ end
 Factory.define :device do |v|
   #
   # Need a 10 digit serial_number
-  v.serial_number { Faker::PhoneNumber.phone_number.to_i.to_s.ljust( 10, "0") }
+  v.serial_number { Time.now.to_i.to_s.ljust( 10, "0") }
   v.active true
 end
 

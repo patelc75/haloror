@@ -21,7 +21,9 @@ Given /^I am (?:|an )authenticated(?: user)$/ do
 end
 
 Given /^I am authenticated as "([^\"]*)" with password "([^\"]*)"$/ do |login, password|
+  user = User.find_by_login( login)
   authenticate(login, password)
+  ['Welcome', user.profile.name].each {|e| response.should contain( e) } # successful login?
 end
 
 Given /^I login as "([^\"]*)" with password "([^\"]*)"$/ do |login, password|
@@ -143,7 +145,7 @@ When /^I reload(?:| the page)$/ do
 end
 
 When /^I follow links "([^\"]*)"$/ do |links_text|
-  links_text.split('>').map(&:strip!).each {|link| click_link(link) }
+  links_text.split('>').collect(&:strip).each {|link| click_link(link) }
 end
 
 When /^I (edit|delete|show|follow) the (\d+)(?:st|nd|rd|th) (.+)$/ do |action, pos, model_name|

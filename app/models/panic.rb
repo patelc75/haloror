@@ -5,7 +5,7 @@ class Panic < CriticalDeviceAlert
 
   # WARNING: needs testing
   def before_save
-    debugger
+    # debugger
     #
     # test-mode status is cloned here to reporting etc...
     user = User.find(user_id)
@@ -14,7 +14,7 @@ class Panic < CriticalDeviceAlert
 
   # we just need it for this event. Not critical_device_alert.rb super class
   def more_after_save
-    debugger
+    # debugger
     # https://redmine.corp.halomonitor.com/issues/3215
     #
     unless user.blank?

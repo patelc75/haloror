@@ -32,7 +32,7 @@ Feature: User status
 
   Scenario: Keep status in users table (existing status column) and not the user_intakes table
     Given the following user intakes:
-      | kit_serial_number |
-      | 1122334455        |
+      | gateway_serial |
+      | 1122334455     |
     Then user intake "1122334455" should not have a status attribute
     And senior of user intake "1122334455" should have a status attribute

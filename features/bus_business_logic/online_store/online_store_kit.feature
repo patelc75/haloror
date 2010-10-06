@@ -27,11 +27,16 @@ Feature: Online Store Kit
     
     Examples:
       | group         | result                    |
-      | resellergroup | Kit Serial Number         |
       | retailergroup | Kit Serial Number         |
-      | regulargroup  | HALO SUBSCRIBER AGREEMENT |
+      # (Tue Oct  5 21:36:41 IST 2010)
+      #   business logic changed. Only retailer can see kit serial page
+      #   http://spreadsheets.google.com/a/halomonitoring.com/ccc?key=0AnT533LvuYHydENwbW9sT0NWWktOY2VoMVdtbnJqTWc&hl=en#gid=2
+      # | resellergroup | Kit Serial Number         |
+      # | regulargroup  | HALO SUBSCRIBER AGREEMENT |
 
   # https://redmine.corp.halomonitor.com/issues/3170
+  # (Tue Oct  5 20:48:31 IST 2010) Only retailers can see online store kit entry page
+  #   http://spreadsheets.google.com/a/halomonitoring.com/ccc?key=0AnT533LvuYHydENwbW9sT0NWWktOY2VoMVdtbnJqTWc&hl=en#gid=2
   Scenario Outline: Force or Optional Kit
     When I choose "product_complete"
     And I fill the shipping details for online store
@@ -40,16 +45,13 @@ Feature: Online Store Kit
     And I select "<group>" from "Group"
     And I press "Continue"
     And I press "Place Order"
-    And I fill in "myHalo S/N" with "<kit_serial>"
+    And I fill in "order_kit_serial" with "<kit_serial>"
     And I press "<button>"
     Then page content should have "<result>"
     
     Examples:
       | group         | result                                    | kit_serial | button |
-      | resellergroup | HALO SUBSCRIBER AGREEMENT                 |            | Next   |
-      | resellergroup | HALO SUBSCRIBER AGREEMENT                 | H400000155 | Next   |
-      | resellergroup | HALO SUBSCRIBER AGREEMENT                 |            | Skip   |
-      | resellergroup | HALO SUBSCRIBER AGREEMENT                 | H400000155 | Skip   |
+      | retailergroup | HALO SUBSCRIBER AGREEMENT                 | H400000155 | Skip   |
       | retailergroup | HALO SUBSCRIBER AGREEMENT                 | H400000155 | Next   |
       | retailergroup | successfully saved with Kit Serial Number |            | Next   |
       # Thu Sep 23 02:42:22 IST 2010

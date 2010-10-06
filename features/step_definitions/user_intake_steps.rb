@@ -36,8 +36,8 @@ Given /^I am activating the "([^"]*)" of last user intake$/ do |user_type|
   visit activate_path(:activation_code => user.activation_code, :senior => user_intake.senior.id)
 end
 
-Given /^user intake "([^"]*)" belongs to group "([^"]*)"$/ do |kit_serial, group_name|
-  ui = UserIntake.find_by_kit_serial_number( kit_serial)
+Given /^user intake "([^"]*)" belongs to group "([^"]*)"$/ do |_serial, group_name|
+  ui = UserIntake.find_by_gateway_serial( _serial)
   ui.should_not be_blank
   
   ui.group = Group.find_by_name( group_name)
@@ -62,20 +62,20 @@ Given /^I am ready to submit a user intake$/ do
   When %{I fill in "user_intake_gateway_serial" with "1122334455"}
 end
 
-Given /^(?:|the )senior of user intake "([^"]*)" (is|is not) in test mode$/ do |kit_serial, condition|
-  ui = UserIntake.find_by_kit_serial_number( kit_serial)
+Given /^(?:|the )senior of user intake "([^"]*)" (is|is not) in test mode$/ do |_serial, condition|
+  ui = UserIntake.find_by_gateway_serial( _serial)
   ui.should_not be_blank
   
   ui.senior.set_test_mode!( condition == "is")
 end
 
-Given /^user intake "([^"]*)" does not have the product shipped yet$/ do |kit_serial|
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+Given /^user intake "([^"]*)" does not have the product shipped yet$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.shipped_at.should be_blank
 end
 
-Given /^(?:|the )senior of user intake "([^"]*)" (has|is at|should be) "([^"]*)" status$/ do |kit_serial, condition, status|
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+Given /^(?:|the )senior of user intake "([^"]*)" (has|is at|should be) "([^"]*)" status$/ do |_serial, condition, status|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   # debugger
   ui.submitted_at = (status.blank? ? nil : Time.now)
@@ -84,16 +84,16 @@ Given /^(?:|the )senior of user intake "([^"]*)" (has|is at|should be) "([^"]*)"
   senior.save.should be_true
 end
 
-Given /^(?:|the )user intake with kit serial "([^"]*)" is not submitted$/ do |kit|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Given /^(?:|the )user intake with gateway serial "([^"]*)" is not submitted$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.submitted_at = nil
   ui.save.should be_true
   ui.senior.save.should be_true
   # ui.senior.status.should be_blank # PENDING
 end
 
-Given /^credit card is charged in user intake "([^"]*)"$/ do |kit_serial|
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+Given /^credit card is charged in user intake "([^"]*)"$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.credit_debit_card_proceessed = true
   ui.save.should == true
 end
@@ -103,15 +103,15 @@ Given /^I edit the last user intake$/ do
   visit url_for( :controller => "user_intakes", :action => "edit", :id => ui.id)
 end
 
-Given /^desired installation date for user intake "([^"]*)" is in (\d+) hours$/ do |kit, value|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Given /^desired installation date for user intake "([^"]*)" is in (\d+) hours$/ do |_serial, value|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.installation_datetime = (Time.now + value.to_i.hours)
   # debugger
   ui.save.should be_true
 end
 
-Given /^(.+) for user intake "([^"]*)" was (\d+) days ago$/ do |what, kit, span|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Given /^(.+) for user intake "([^"]*)" was (\d+) days ago$/ do |what, _serial, span|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   
   case what
   when 'desired installation date', 'monitoring grace period with ship date'
@@ -125,9 +125,9 @@ Given /^(.+) for user intake "([^"]*)" was (\d+) days ago$/ do |what, kit, span|
   ui.save.should be_true
 end
 
-Given /^the user intake "([^"]*)" status is "([^"]*)" since past (\d+) day(?:|s)$/ do |kit, status, count|
+Given /^the user intake "([^"]*)" status is "([^"]*)" since past (\d+) day(?:|s)$/ do |_serial, status, count|
   the_date = Time.now - count.to_i.days
-  (ui = UserIntake.find_by_kit_serial_number(kit)).should_not be_blank
+  (ui = UserIntake.find_by_gateway_serial(_serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   ui.senior.status = status
   ui.senior.status_changed_at = the_date
@@ -136,20 +136,20 @@ Given /^the user intake "([^"]*)" status is "([^"]*)" since past (\d+) day(?:|s)
 end
 
 # credit card value must be checked in a separate step definition
-Given /^bill monthly or credit card value are acceptable for user intake "([^"]*)"$/ do |kit|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Given /^bill monthly or credit card value are acceptable for user intake "([^"]*)"$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.bill_monthly = true
   ui.save.should be_true
 end
 
-# Given /^I am editing the RMA for user intake "([^"]*)"$/ do |kit|
-#   (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+# Given /^I am editing the RMA for user intake "([^"]*)"$/ do |_serial|
+#   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
 #   (rma = ui.senior.rmas.create( :serial_number => "12345")).should be_true
 #   visit url_for( :controller => "rmas", :action => "edit", :id => rma.id)
 # end
 
-Given /^RMA for user intake "([^"]*)" discontinues (service|billing) (?:|in )(\d+) (day|day ago)$/ do |kit, what, span, condition|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Given /^RMA for user intake "([^"]*)" discontinues (service|billing) (?:|in )(\d+) (day|day ago)$/ do |_serial, what, span, condition|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   the_date = if (condition == "day")
     Time.now + span.to_i.days
@@ -163,8 +163,8 @@ Given /^RMA for user intake "([^"]*)" discontinues (service|billing) (?:|in )(\d
   end
 end
 
-Given /^we are on or past the desired installation date for senior of user intake "([^"]*)"$/ do |kit|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Given /^we are on or past the desired installation date for senior of user intake "([^"]*)"$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.installation_datetime = Date.today
   ui.save.should be_true
 end
@@ -173,14 +173,14 @@ end
   # = whens =
   # =========
   
-When /^user intake "([^"]*)" gets approved$/ do |kit|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+When /^user intake "([^"]*)" gets approved$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.skip_validation = false
   ui.save.should be_true
 end
 
-When /^panic button test data is received for user intake "([^"]*)"$/ do |kit|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+When /^panic button test data is received for user intake "([^"]*)"$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   panic = Factory.build( :panic)
   panic.user = senior
@@ -190,8 +190,8 @@ When /^panic button test data is received for user intake "([^"]*)"$/ do |kit|
   panic.save.should be_true
 end
 
-When /^I (view|edit) user intake with kit serial "([^"]*)"$/ do |action, kit|
-  user_intake = UserIntake.find_by_kit_serial_number( kit)
+When /^I (view|edit) user intake with gateway serial "([^"]*)"$/ do |action, _serial|
+  user_intake = UserIntake.find_by_gateway_serial( _serial)
   user_intake.should_not be_blank
   
   visit url_for(:controller => 'user_intakes', :action => (action == 'view' ? 'show' : action), :id => user_intake.id)
@@ -226,8 +226,8 @@ When /^I fill the (.+) details for user intake form$/ do |which|
   end
 end
 
-When /^I bring senior of user intake "([^"]*)" into test mode$/ do |kit_serial|
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+When /^I bring senior of user intake "([^"]*)" into test mode$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   
   senior.set_test_mode!( true)
@@ -238,15 +238,15 @@ When /^I follow "([^"]*)" for the (\d+)st user intake$/ do |identifier, nth|
   When %{I follow "#{identifier}" in the #{nth} row}
 end
 
-When /^the kit serial for user intake "([^"]*)" is updated to "([^"]*)"$/ do |kit_serial, new_kit_serial|
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
-  ui.update_attributes( :kit_serial_number => new_kit_serial)
+When /^the gateway serial for user intake "([^"]*)" is updated to "([^"]*)"$/ do |_serial, new_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  ui.update_attributes( :gateway_serial => new_serial)
 end
 
 # WARNING: known to fail at panic.save
 #   debugging could not reveal any logical reason while 1.6.0 QA. fix pending
-When /^the senior of user intake "([^"]*)" gets the device installed$/ do |kit_serial|
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+When /^the senior of user intake "([^"]*)" gets the device installed$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   
   senior.status = User::STATUS[ :install_pending] # make it install pending
@@ -257,8 +257,8 @@ When /^the senior of user intake "([^"]*)" gets the device installed$/ do |kit_s
   panic.save.should be_true # create a panic button test
 end
 
-When /^the senior of user intake "([^"]*)" gets the call center number$/ do |kit_serial|
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+When /^the senior of user intake "([^"]*)" gets the call center number$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   (profile = senior.profile).should_not be_blank
   profile.update_attributes( :account_number => "1234")
@@ -268,15 +268,15 @@ When /^I view the last user intake$/ do
   visit url_for( :controller => "user_intakes", :action => "show", :id => UserIntake.last.id)
 end
 
-When /^user intake "([^"]*)" is submitted again$/ do |kit|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+When /^user intake "([^"]*)" is submitted again$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.skip_validation = false
   ui.save
 end
 
-When /^I update kit serial for user intake "([^"]*)" to "([^"]*)"$/ do |kit, value|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
-  ui.kit_serial_number = value
+When /^I update gateway serial for user intake "([^"]*)" to "([^"]*)"$/ do |_serial, value|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  ui.gateway_serial = value
   ui.save.should be_true
 end
 
@@ -294,8 +294,8 @@ end
   # = thens =
   # =========
   
-Then /^"([^"]*)" is enabled for subscriber of user intake "([^"]*)"$/ do |col_name, kit_serial|
-  ui = UserIntake.find_by_kit_serial_number( kit_serial)
+Then /^"([^"]*)" is enabled for subscriber of user intake "([^"]*)"$/ do |col_name, _serial|
+  ui = UserIntake.find_by_gateway_serial( _serial)
   ui.should_not be_blank
   
   case col_name
@@ -305,15 +305,15 @@ Then /^"([^"]*)" is enabled for subscriber of user intake "([^"]*)"$/ do |col_na
   end
 end
 
-Then /^"([^"]*)" for user_intake "([^"]*)" is assigned$/ do |col_name, kit_serial|
-  ui = UserIntake.find_by_kit_serial_number( kit_serial)
+Then /^"([^"]*)" for user_intake "([^"]*)" is assigned$/ do |col_name, _serial|
+  ui = UserIntake.find_by_gateway_serial( _serial)
   
   ui.should_not be_blank
   ui.send( col_name.to_sym).should_not be_blank
 end
 
-Then /^senior of user intake "([^"]*)" (should|should not) be in test mode$/ do |kit_serial, condition|
-  ui = UserIntake.find_by_kit_serial_number( kit_serial)
+Then /^senior of user intake "([^"]*)" (should|should not) be in test mode$/ do |_serial, condition|
+  ui = UserIntake.find_by_gateway_serial( _serial)
   ui.should_not be_blank
   
   case condition
@@ -324,8 +324,8 @@ Then /^senior of user intake "([^"]*)" (should|should not) be in test mode$/ do 
   end
 end
 
-Then /^user intake "([^"]*)" (should|should not) have "([^"]*)" status$/ do |kit, condition, status|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Then /^user intake "([^"]*)" (should|should not) have "([^"]*)" status$/ do |_serial, condition, status|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ( senior = ui.senior).should_not be_blank
   if condition == "should"
     senior.status.should == status
@@ -367,8 +367,8 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
   end
 end
 
-Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |_kit, what|
-  ui = UserIntake.find_by_kit_serial_number(_kit)
+Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |_serial, what|
+  ui = UserIntake.find_by_gateway_serial(_serial)
   ui.should be_valid
   senior = ui.senior
   senior.should be_valid
@@ -381,14 +381,14 @@ Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |_kit, wha
   end
 end
 
-Then /^all caregivers for senior of user intake "([^"]*)" should be away$/ do |kit|
-  ui = user_intake_by_kit( kit)
+Then /^all caregivers for senior of user intake "([^"]*)" should be away$/ do |_serial|
+  ui = user_intake_by_gateway( _serial)
   ui.senior.should_not be_blank
   ui.caregivers.compact.uniq.each {|e| e.active_for?( ui.senior).should be_false }
 end
 
-Then /^senior of user intake "([^"]*)" should not be a member of "([^"]*)" group$/ do |kit_serial, group_name|
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+Then /^senior of user intake "([^"]*)" should not be a member of "([^"]*)" group$/ do |_serial, group_name|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   senior.group_memberships.collect(&:name).uniq.should_not include( group_name)
 end
@@ -406,28 +406,28 @@ Then /^"([^"]*)" for last user intake should be (\d+) (hours|days) after "([^"]*
   first_attribute.should >= (ui.send( check_attribute.to_sym) + index.to_i.send(duration.to_sym)) unless first_attribute.blank?
 end
 
-Then /^(.+) emails? to "([^"]*)" with kit serial for user intake "([^"]*)" in (subject|body) should be sent for delivery$/ do |count, email, data, place|
+Then /^(.+) emails? to "([^"]*)" with gateway serial for user intake "([^"]*)" in (subject|body) should be sent for delivery$/ do |count, email, data, place|
   Email.all.select {|e| e.to == email && e.mail.include?( data) }.length.should == count.to_i
 end
 
-Then /^attribute "([^"]*)" of user intake "([^"]*)" should have value$/ do |attribute, kit_serial|
+Then /^attribute "([^"]*)" of user intake "([^"]*)" should have value$/ do |attribute, _serial|
   attribute = "credit_debit_card_proceessed" if attribute == "card"
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.send(attribute.to_sym).should_not be_blank
 end
 
 Then /^I should see "([^"]*)" for user intake "([^"]*)"$/ do |arg1, arg2|
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   response.should contain( "Audit Log for user #{ui.senior.name}")
 end
 
-Then /^user intake "([^"]*)" should not have a status attribute$/ do |kit|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Then /^user intake "([^"]*)" should not have a status attribute$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.attributes.keys.should_not include( "status")
 end
 
-Then /^senior of user intake "([^"]*)" is not a member of "([^"]*)" group$/ do |kit, group_name|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Then /^senior of user intake "([^"]*)" is not a member of "([^"]*)" group$/ do |_serial, group_name|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   senior.group_memberships.collect(&:name).should_not have( group_name)
 end
@@ -436,15 +436,15 @@ Then /^senior of user intake "([^"]*)" has "([^"]*)" flag ON$/ do |arg1, arg2|
   pending # express the regexp above with the code you wish you had
 end
 
-Then /^senior of user intake "([^"]*)" has a recent audit log for status "([^"]*)"$/ do |kit, status|
-  (ui = user_intake_by_kit( kit)).should_not be_blank
+Then /^senior of user intake "([^"]*)" has a recent audit log for status "([^"]*)"$/ do |_serial, status|
+  (ui = user_intake_by_gateway( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   (log = senior.last_triage_audit_log).should_not be_blank
   log.status.should == status
 end
 
-Then /^user intake "([^"]*)" has "([^"]*)" status$/ do |kit, status|
-  ui = user_intake_by_kit( kit)
+Then /^user intake "([^"]*)" has "([^"]*)" status$/ do |_serial, status|
+  ui = user_intake_by_gateway( _serial)
   ui.senior.status.should == status
 end
 
@@ -462,15 +462,15 @@ Then /^senior of last user intake should have "([^"]*)" status$/ do |status|
   end
 end
 
-Then /^action button for user intake "([^"]*)" should be colored (.+)$/ do |kit, color|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Then /^action button for user intake "([^"]*)" should be colored (.+)$/ do |_serial, color|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   # debugger
   senior.status_button_color.should == color
 end
 
-Then /^I should see triage status "([^"]*)" for senior of user intake "([^"]*)"$/ do |status, kit|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Then /^I should see triage status "([^"]*)" for senior of user intake "([^"]*)"$/ do |status, _serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   # debugger
   senior.alert_status.should == status
@@ -481,14 +481,14 @@ Then /^last user intake should be read only$/ do
   ui.locked?.should be_true
 end
 
-Then /^senior of user intake "([^"]*)" is opted in to call center$/ do |kit|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Then /^senior of user intake "([^"]*)" is opted in to call center$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   senior.group_memberships.should include( Group.safety_care)
 end
 
-Then /^caregivers (are|are not) away for user intake "([^"]*)"$/ do |condition, kit|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Then /^caregivers (are|are not) away for user intake "([^"]*)"$/ do |condition, _serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   if condition == "are"
     ui.caregivers.each {|e| e.should be_away_for( senior) }
@@ -501,8 +501,10 @@ end
 # = local methods for DRYness =
 # ============================
 
-def user_intake_by_kit( kit)
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+# TODO: use this at all places now
+#
+def user_intake_by_gateway( _serial)
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.senior.should_not be_blank
   ui
 end

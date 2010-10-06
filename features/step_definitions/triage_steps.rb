@@ -90,7 +90,7 @@ Then /^I should see (\d+) wide (red|yellow|green) battery for "([^\"]*)"$/ do |w
   response.should have_tag("div[id=?]", "user_#{user.id}_battery_#{color}_#{width}")
 end
 
-Then /^page has a link to user intake "([^"]*)"$/ do |kit_serial|
-  (ui = UserIntake.find_by_kit_serial_number( kit_serial)).should_not be_blank
+Then /^page has a link to user intake "([^"]*)"$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   response.body.should have_xpath("//a[@href='user_intake_#{ui.id}']")
 end

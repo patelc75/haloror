@@ -57,7 +57,7 @@ Feature: Admin roles
   # shorthand: Given I am adding a new caregiver for "senior-user"
   Scenario: Admin can create new caregiver for a new halouser
     When I follow links "Config > Users > Caregivers > add_caregiver_button"
-    And I follow "+ Add new caregiver with no email"
+    And I follow "Add new caregiver with no email"
     Then I should not see "Please call tech support 1-888-971-HALO"
     
   Scenario: Add a new caregiver and check result
@@ -88,8 +88,8 @@ Feature: Admin roles
       Given a group "bestbuy" exists
       And user "admin-user" has "admin" role for group "bestbuy"
       And the following user intakes:
-        | kit_serial_number | group_name |
-        | 1122334455        | bestbuy    |
-      And I edit user intake with kit serial "1122334455"
+        | gateway_serial | group_name |
+        | 1122334455     | bestbuy    |
+      And I edit user intake with gateway serial "1122334455"
       Then page should not have a submit button
       Then page should not have a save button

@@ -258,7 +258,7 @@ class UserIntake < ActiveRecord::Base
     #
     # TODO: conflicting with 1.6.0 pre-quality. removed to check compatiblity or related errors
     # for remaining, fill login, password details only when login is empty
-    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_login_details(user) }
+    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_user_login( user) }
     #
     # assign roles to user objects. it will auto save the roles with user record
     # this will also trigger the email dispatch in observer
@@ -681,8 +681,12 @@ class UserIntake < ActiveRecord::Base
     self.emailed_on = Date.today
     self.send(:update_without_callbacks)
   end
-    
-  private #---------------------------- private methods
+
+  # ===================
+  # = private methods =
+  # ===================
+  
+  private
 
   def skip_associations_validation
     #
@@ -743,16 +747,20 @@ class UserIntake < ActiveRecord::Base
   # Proposed action:
   #   comment out this method to see the affects in cucumber
   #   this can help to idenitfy all the issue quickly
-  def autofill_login_details(user_type = "")
+  def autofill_user_login(user_type = "")
     unless user_type.blank?
       user = self.send("#{user_type}") # local copy, to keep code clean
-      if user && user.login.blank? && !user.email.blank? # !user.blank? && user.login.blank?
-        hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
-        # only when user_type is not nil, but login is
-        user.send("login=".to_sym, "_AUTO_#{hex}") # _AUTO_xxx is treated as blank
-        user.send("password=".to_sym, hex)
-        user.send("password_confirmation=".to_sym, hex)
-      end
+      user.autofill_login unless user.blank?
+      #
+      # shifted to user.rb
+      #
+      # if user && user.login.blank? && !user.email.blank? # !user.blank? && user.login.blank?
+      #   hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
+      #   # only when user_type is not nil, but login is
+      #   user.send("login=".to_sym, "_AUTO_#{hex}") # _AUTO_xxx is treated as blank
+      #   user.send("password=".to_sym, hex)
+      #   user.send("password_confirmation=".to_sym, hex)
+      # end
     end
   end
 

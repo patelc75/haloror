@@ -35,8 +35,8 @@ Feature: User intake additions
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Auto enable credit card radio button
     Given the following user intakes:
-      | kit_serial_number | submitted_at |
-      | 1122334455        |              |
+      | gateway_serial | submitted_at |
+      | 1122334455     |              |
     Then attribute "card" of user intake "1122334455" should have value
     And attribute "created_by" of user intake "1122334455" should have value
   
@@ -45,20 +45,22 @@ Feature: User intake additions
   # Scenario: User Intake List updates
   #   When I am listing user intakes
   #   Then I should see "Subscription Agreement"
-  
-  # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  Scenario: Group dropdown to shortlist user intake list
-    Given the following user intakes:
-      | kit_serial_number | submitted_at |
-      | 1122334455        |              |
-    And the following groups:
-      | name   |
-      | group1 |
-    And user intake "1122334455" belongs to group "group1"
-    When I am listing user intakes
-    And I select "group1" from "Group"
-    And I press "user_intake_search"
-    Then I should see "1122334455"
+
+  # TODO: 1.6.0: UI features skipped
+  #
+  # # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
+  # Scenario: Group dropdown to shortlist user intake list
+  #   Given the following user intakes:
+  #     | gateway_serial | submitted_at |
+  #     | 1122334455     |              |
+  #   And the following groups:
+  #     | name   |
+  #     | group1 |
+  #   And user intake "1122334455" belongs to group "group1"
+  #   When I am listing user intakes
+  #   And I select "group1" from "Group"
+  #   And I press "user_intake_search"
+  #   Then I should see "1122334455"
 
   # TODO: What should be covered here?
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170

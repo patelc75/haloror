@@ -21,10 +21,10 @@ Feature: Edit user intake
   # #    These emails trigger when user intake is first created
   Scenario: Editing a user intake should show edit view. Does not trigger emails again
     Given the following user intakes:
-      | kit_serial_number | submitted_at |
-      | 1122334455        |              |
+      | gateway_serial | submitted_at |
+      | 1122334455     |              |
     And Email dispatch queue is empty
-    And user intake with kit serial "1122334455" is not submitted
+    And user intake with gateway serial "1122334455" is not submitted
     And I am listing user intakes
     And I follow "edit_link" in the 1st row
     And I fill in "user_intake_gateway_serial" with "1234567890"
@@ -35,9 +35,9 @@ Feature: Edit user intake
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
   Scenario: User Intake locks on Submit
     Given the following user intakes:
-      | kit_serial_number | submitted_at |
-      | 1122334455        |              |
-    When user intake with kit serial "1122334455" is not submitted
+      | gateway_serial | submitted_at |
+      | 1122334455     |              |
+    When user intake with gateway serial "1122334455" is not submitted
     And I am listing user intakes
     And I follow "edit_link" in the 1st row
     And I press "Approve"

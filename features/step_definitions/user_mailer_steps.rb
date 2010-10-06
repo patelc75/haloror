@@ -27,8 +27,8 @@ Then /^(.+) emails? to "([^\"]*)" with (subject|body|content) "([^\"]*)" should 
   end
 end
 
-Then /^(.+) email(?:|s) to (.+) of user intake "([^\"]*)" should be sent for delivery$/ do |count, whom, kit|
-  (ui = UserIntake.find_by_kit_serial_number( kit)).should_not be_blank
+Then /^(.+) email(?:|s) to (.+) of user intake "([^\"]*)" should be sent for delivery$/ do |count, whom, _serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (group = ui.group).should_not be_blank
   (admins = group.has_admins).should_not be_blank
   #

@@ -26,7 +26,7 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
         end
       end
       #
-      debugger
+      # debugger
       event.more_after_save if event.class == Panic # run more after_save actions for panic
     end
 

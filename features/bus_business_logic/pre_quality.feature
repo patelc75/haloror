@@ -127,6 +127,34 @@ Feature: Pre quality
     Then an email to "cuc_senior@chirag.name" with subject "activation" should be sent for delivery
 
   Scenario: admin > assign login from email to halouser
+
   Scenario: admin > add a new caregiver with no email
+    Given the following groups:
+      | name           | sales_type | description                |
+      | mygroup_160_pq | reseller   | mygroup_160_pq description |
+    And a user "admin_160_pq1" exists with profile
+    And user "admin_160_pq1" has "admin" role for group "mygroup_160_pq"
+    And a user "myhalouser" exists with profile
+    And user "myhalouser" has "halouser" role for group "mygroup_160_pq"
+    And I am authenticated as "admin_160_pq1" with password "12345"
+    When I visit "/reporting/users/"
+    And I select "mygroup_160_pq" from "group_name"
+    And I follow links "Caregivers > add_caregiver_button > Add new caregiver with no email"
+    And I fill in the following:
+      | Username         | caregiver1 |
+      | Password         | abc123     |
+      | Confirm Password | abc123     |
+      | First Name       | care_1     |
+      | Last Name        | giver_1    |
+      | Address          | chicago    |
+      | Cross St         | chicago    |
+      | City             | chicago    |
+      | State            | IL         |
+      | Zipcode          | 12345      |
+      | Home Phone       | 1234567890 |
+      | Work Phone       | 1234567890 |
+    And I press "submit_caregiver"
+    Then I should see "care_1 giver_1"
+
   Scenario: halouser > approve subscription agreement
   Scenario: halouser > submit user intake form

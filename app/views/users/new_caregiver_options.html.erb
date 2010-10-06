@@ -17,7 +17,7 @@
         <p>OR</p>
         <p><a href="#" onClick="$('removed_caregivers').style.display='none';$('caregiver_form').style.display='block'">+ Invite caregiver by email</a></p>
         <p>OR</p>
-        <p><%= link_to "+ Add new caregiver with no email" , new_caregiver_profile_path(@senior) %></p>
+        <p>+ <%= link_to "Add new caregiver with no email" , new_caregiver_profile_path(@senior) %></p>
         <p>OR</p>
         <p><%= link_to image_tag("cancel.gif"), @back_url %></p>
       </div>
