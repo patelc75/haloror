@@ -454,6 +454,7 @@ class User < ActiveRecord::Base
     # Mon Oct  4 19:27:23 IST 2010, v1.6.0
     # activation code should be created for .create as well as .save
     make_activation_code # generate activation code as appropriate
+    autofill_login # pre-fill login and password with _AUTO_xxx login, unless already
     #
     encrypt_password
     # https://redmine.corp.halomonitor.com/issues/3215

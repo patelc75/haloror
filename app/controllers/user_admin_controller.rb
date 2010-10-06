@@ -21,8 +21,7 @@ class UserAdminController < ApplicationController
     #   # new logic
     #   @groups = current_user.is_admin_of_what
     # end
-    
-    
+
     @group = nil
     if params[:group].blank? || params[:group] == 'Choose a Group'
       if @groups.size == 1
