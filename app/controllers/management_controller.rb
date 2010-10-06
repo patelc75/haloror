@@ -184,7 +184,7 @@ class ManagementController < ApplicationController
         #   * parse ids in one call
         #   * collect @pending_cmds and use it as a conditionin the same call
         # WARNING: Needs code coverage
-        if request[:ids].parse_integer_ranges.blank?
+        if request[:ids].to_s.parse_integer_ranges.blank? # use to_s to make sure of string data type
           @success = false
           @message = "Please provide valid device IDs in (#{ids})"
         else
