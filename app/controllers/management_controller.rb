@@ -1,3 +1,8 @@
+# Wed Oct  6 23:58:40 IST 2010
+#   "parse_integer_ranges" method was not recognized during deployment on sdev
+#   this is a quick fix. just smoke tested
+require "#{RAILS_ROOT}/config/initializers/string_extensions"
+
 class ManagementController < ApplicationController
   
   before_filter :authenticate_admin?, :except => 'issue'

@@ -9,7 +9,7 @@ class MgmtCmd < ActiveRecord::Base
   has_one :mgmt_query
     
   named_scope :for_device_ids, lambda {|arg| { :conditions => { :device_id => arg } }}
-  named_scope :of_types, lambda {|arg| { :conditions => { :type => arg } }}
+  named_scope :of_types, lambda {|arg| { :conditions => { :cmd_type => arg } }}
   named_scope :pending_server_commands, :conditions => { :pending => true, :originator => "server" }
   
   def self.new_initialize(random=false)
