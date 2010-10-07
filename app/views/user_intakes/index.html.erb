@@ -1,16 +1,7 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
-<div class="span-4">
-  <h2>User Intakes</h2>
-</div>
-<div class="span-20 last">
-  <%= render :partial => 'reporting/nav' %>
-</div>
-
-<div class="span-11 box background-blue">
-  <div class="span-7"><%= text_area_tag "user_intake_note", nil, :rows => 1, :class => "span-7" %></div>
-  <div><%= submit_tag "Add Note\nfor selected users", {:class => "button blue-button medium"} %></div>
-</div>
-<div class="span-11 last box text-right background-yellow">
+  <h3>User Intakes</h3> 
+<br/>
+<div class="span-11 box text-right background-yellow">
   <% form_tag url_for(:controller => "user_intakes", :action => "index", :group_name => @group_name), :method => :get, :id => "group_form_id" do %>
   <div class="span-9">
     For <label for="group_name">Group</label>
@@ -22,6 +13,10 @@
 
   <div class="span-2 last prepend-top"><%= submit_tag "Search", :id => "user_intake_search", :class => "button white-button medium" %></div>
   <% end %>
+</div>
+<div class="span-11 last box background-blue">
+  <div class="span-7"><%= text_area_tag "user_intake_note", nil, :rows => 1, :class => "span-7" %></div>
+  <div><%= submit_tag "Add Note\nfor selected users", {:class => "button blue-button medium"} %></div>
 </div>
 
 <div class="span-24 last">

@@ -1,3 +1,4 @@
+<div class="box">
 <div id="nav_links">
   <b>Config:</b><% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
   <a href="/reporting/users">Users</a> 
@@ -11,28 +12,22 @@
   <% if current_user.is_super_admin? %>
   | <a href="/system_timeouts">System Timeouts</a>
   <% end %>
-  <% if current_user.is_super_admin? %>
-  | <a href="/recurring_charges">Recurring Charges</a>
-  <% end %>
+  <!--a href="/recurring_charges">Recurring Charges</a-->
   <% if current_user.is_super_admin? %>
   | <a href="/carriers/">Cell Carriers</a>
-  <% end %>
-  <% halo_group = Group.find_by_name('halo') %>
-  <% if current_user.is_super_admin? || current_user.is_admin_of?(halo_group) %>
-  | <%= link_to "Emergency #s", :action => 'index', :controller => 'emergency_numbers' %>
-  <% end %>
-  <% if current_user.is_super_admin? || current_user.is_operator? %>
-  | <%= link_to 'Operators', :controller => 'call_center', :action => 'show' %>
   <% end %>
   <% if current_user.is_super_admin? %>
   | <%= link_to 'Send Test Email', :controller => 'util', :action => 'send_test_email'%>
   <% end %>
   <% if current_user.is_super_admin? %>
   | <%= link_to 'Activate Users', :controller => 'util', :action => 'activate_users'%>
-  | <%= link_to 'Dialup Num Table', dial_ups_path%>
   | <%= link_to 'Coupon Codes', device_model_prices_path%>
+  <% end %>
+  <% if current_user.is_super_admin? || current_user.is_operator? %>
+  | <%= link_to 'Operators', :controller => 'call_center', :action => 'show' %>
   <% end %>
   <% if(current_user.is_super_admin?) and params[:action] == 'roles' %>
   | <a href="/admin/signup">Sign up users with other roles</a>
   <% end %>
+</div>
 </div>

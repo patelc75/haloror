@@ -9,10 +9,8 @@
 	Call Center Operators
 	</div>
 	<div class="content">
-		<div><%= link_to "Configure Emergency Dispatch Phone Numbers", :action => 'index', :controller => 'emergency_numbers' %>
-</div>
-Please hold the control key and click <a href="/call_center/faq">here</a> to launch the <b>FAQ</b> in a separate tab.
-<br>
+		<!--div><%= link_to "Configure Emergency Dispatch Phone Numbers", :action => 'index', :controller => 'emergency_numbers' %></div-->
+<!--Please hold the control key and click <a href="/call_center/faq">here</a> to launch the <b>FAQ</b> in a separate tab.-->
 		<br>Group <select onchange="if(this.value != ''){document.location = '/call_center/show/?group_id=' + this.value}"/>
 		<% @groups.each do |group| %>
 		<option value="<%=group.id%>" <%='selected' if params[:group_id].to_i == group.id %>><%=group.name%></option>
