@@ -661,6 +661,9 @@ class UsersController < ApplicationController
         # activate the user now
         @user.activation_code = nil
         @user.activated_at = Time.now.utc
+        #
+        # QUESTION: Can we afford to skip validation here in business logic?
+        @user.skip_validation = true
         @user.save
         #
         # after save, just remove the login if it was auto generated
