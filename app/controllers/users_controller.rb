@@ -665,7 +665,7 @@ class UsersController < ApplicationController
         #
         # after save, just remove the login if it was auto generated
         # user will select a new login now
-        @user.login = "" if @user.login.include?( '_AUTO_')
+        @user.login = "" if @user.login =~ /_AUTO_/m
         #
         # Sat Oct  2 02:21:20 IST 2010
         # https://redmine.corp.halomonitor.com/wiki/haloror/Dev_Testing 1.6.0 PQ
