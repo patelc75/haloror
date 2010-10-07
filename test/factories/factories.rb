@@ -158,6 +158,10 @@ Factory.define :rma do |v|
   v.association :user
 end
 
+Factory.define :role do |v|
+  v.name { Faker::Lorem.words[0] }
+end
+
 Factory.define :strap_fastened do |v|
   v.association :device
   v.association :user

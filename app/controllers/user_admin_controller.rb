@@ -6,7 +6,7 @@ class UserAdminController < ApplicationController
   def new_admin
     # * pick all groups for super admins
     # * pick only selective groups for non-super-admin, where user is admin
-    @groups = ( current_user.is_super_admin? ? Group.ordered : current_user.is_admin_of_what )
+    @groups = current_user.group_memberships # ( current_user.is_super_admin? ? Group.ordered : current_user.is_admin_of_what )
     # @groups = []
     # if current_user.is_super_admin?
     #   @groups = Group.find(:all)
@@ -22,54 +22,92 @@ class UserAdminController < ApplicationController
     #   @groups = current_user.is_admin_of_what
     # end
 
-    @group = nil
-    if params[:group].blank? || params[:group] == 'Choose a Group'
-      if @groups.size == 1
-        @group = @groups[0].name
-      end
-    else
-      @group = params[:group]
-    end
-    if @group
-      @user = User.new
-      @profile = Profile.new
-      g = Group.find_by_name(@group)
-      @group_roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
-    end
+    @group_name = (params[:group_name] || @groups.first.name)
+    # @group = nil
+    # if params[:group].blank? || params[:group] == 'Choose a Group'
+    #   if @groups.size == 1
+    #     @group = @groups[0].name
+    #   end
+    # else
+    #   @group = params[:group]
+    # end
+    
+    # if @group
+      @user = User.new # will also instantiate a profile object
+      #
+      # TODO: DRY: use "profile_attributes" in the partial instead of separate profile object
+      @profile = @user.profile # Profile.new. Why do we need it at all?
+      # g = Group.find_by_name(@group)
+      # @group_roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
+      @roles = Role.distinct_by_name.ordered
+    # end
   end
 
   def create
     @user = User.new(params[:user])
     @user.email = params[:user][:email]
-    @group = params[:group]
+    @group_name = params[:group_name]
     @profile = Profile.new(params[:profile])
-    if !params[:role].blank? && params[:role] != 'Choose a Role'
-      role_id = params[:role]
-      role = Role.find_by_id(role_id)
-      User.transaction do
-        @user[:is_new_user] = true
-        @user.created_by = current_user.id
-        @user.save!        
-        @profile.user_id = @user.id
-        @profile.save!
-        @user.roles << role
-        @user.dispatch_emails # explicitly send emails
-      end
-    else
-      @groups = []
-      gs = current_user.group_memberships
-      gs.each do |g|
-        @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g) || current_user.is_super_admin?)
-      end
-      g = Group.find_by_name(@group)
-      @group_roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
+    @roles = Role.distinct_by_name.ordered
+    #
+    # We need group specific code before the "if" condition
+    @groups = current_user.group_memberships
+    _group = (Group.find_by_name(@group_name) || @groups.first)
+    #
+    # if role was not properly selected for some reason
+    if params[:role].blank? # && params[:role] != 'Choose a Role'
+      # DEPRECATED: user.group_memberships take care of all this logic now
+      # @groups = []
+      # gs = current_user.group_memberships
+      # gs.each do |g|
+      #   @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g) || current_user.is_super_admin?)
+      # end
+      #
+      # @roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', _group.id, :conditions => "name <> 'halouser'", :order => 'name')
       flash[:warning] = 'Role Required.'
       render :action => 'new_admin'
+
+    else
+      #
+      # DEPRECATED: we do not need to find the ID for role
+      #   This user should simply have the role for the group
+      # role_id = params[:role]
+      # role = Role.find_by_id(role_id)
+      User.transaction do
+        # @user[:is_new_user] = true # DEPRECATED: this logic is not used anymore
+        @user.created_by = current_user.id # TODO: DRY: include this in partial. no need to assign here
+        #
+        # TODO: these are quick fix. need better implementation
+        @user.autofill_login # just place some random login for now. user will activate later
+        @user.profile.need_validation = false # do not validate profile. just capture the form
+        #
+        if @user.save # "!" is not recommended here
+          # TODO: render or redirect is not explicit when "save" fails
+          #
+          # TODO: DRY: profile can auto assign if we use profile_attributes in partial
+          @profile.user_id = @user.id
+          @profile.save # "!" is not recommended here
+          #
+          # DEPRECATED: why assign a role like this. use authorization plugin methods instead
+          #   # @user.roles << role
+          #   user.is_admin_of( group) uses authorization methods
+          @user.send( "is_#{params[:role].gsub(' ','_').downcase}_of".to_sym, _group)
+          @user.dispatch_emails # explicitly send emails
+
+        else # save failed?
+          render :action => 'new_admin'
+        end
+      end
     end
+  
+  # TODO: DRY: this will not be required once we use appropriate attributes in partials
+  #   This can be a simple respond_to action block without exceptions
+  #   profile_top partial is used at many places. Can only DRY once code is fully covered
   rescue Exception => e
     RAILS_DEFAULT_LOGGER.warn("ERROR signing up, #{e}")
-    g = Group.find_by_name(@group)
-    @group_roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
+    #
+    # g = Group.find_by_name(@group_name)
+    # @roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
     render :action => 'new_admin'
   end
   

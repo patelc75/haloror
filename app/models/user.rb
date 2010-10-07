@@ -442,7 +442,13 @@ class User < ActiveRecord::Base
   end
 
   def after_initialize
+    #
+    # default: assume we need a validation
+    # features like user intake that do not want validation can switch it off
     self.need_validation = true
+    #
+    # instantiate a profile object if not already
+    self.build_profile if profile.blank?
     # example:
     #   user.roles = {:halouser => @group}
     #   user.roles[:subscriber] = @senior
@@ -2618,10 +2624,10 @@ class User < ActiveRecord::Base
   # generates activation code
   def make_activation_code
     #
-    # TODO: should this only be for new_record?
+    # CHANGED: should this only be for new_record?
     #   does not harm this way either because activated? will ignore any new created activation_code
     #   but this is not error proof
-    self.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+    self.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join ) if self.new_record?
   end 
   
   # return true if the login is not blank

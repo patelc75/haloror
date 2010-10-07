@@ -42,7 +42,7 @@ Given /^user "([^\"]*)" (?:|has|have) "([^\"]*)" roles? for (.+) "([^\"]*)"$/ do
   fields_hash = {'group' => 'name', 'user' => 'login'}
   field = (fields_hash.has_key?(model_type) ? fields_hash[model_type] : 'name')
   user_names.each do |user_name|
-    user = User.find_by_login(user_name)
+    user = ( User.find_by_login(user_name) || User.find_by_email( user_name) )
     user.should_not be_blank
     role_names.each do |role|
       model_names.each do |model_name|

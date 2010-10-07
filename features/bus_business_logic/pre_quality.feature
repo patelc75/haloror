@@ -127,6 +127,7 @@ Feature: Pre quality
     Then an email to "cuc_senior@chirag.name" with subject "activation" should be sent for delivery
 
   Scenario: admin > assign login from email to halouser
+    
 
   Scenario: admin > add a new caregiver with no email
     Given the following groups:
