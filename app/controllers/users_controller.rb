@@ -735,7 +735,7 @@ class UsersController < ApplicationController
     end
 
   rescue
-    render :action => 'init_user'    
+    render :action => 'init_user'
   end
   
   def update

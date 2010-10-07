@@ -442,6 +442,8 @@ class User < ActiveRecord::Base
   end
 
   def after_initialize
+    # just make the login blank in memory, if this is _AUTO_xxx login
+    self.login = "" if (login =~ /_AUTO_/)
     #
     # default: assume we need a validation
     # features like user intake that do not want validation can switch it off
