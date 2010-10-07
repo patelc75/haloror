@@ -1,13 +1,13 @@
-<b>Other Dialup:</b>
+<div class="box">
+<b>Dialup:</b>
   <%= link_to 'Status Table', dial_up_statuses_path %>
 | <%= link_to 'Successfuls', '/dial_up_statuses/last_successful'%>
 | <%= link_to '800 Abuse Alerts', dial_up_alerts_path%>
 <%# if current_user.is_super_admin? %>
-|| <%= link_to 'Config: Dialup Num Table', dial_ups_path%>
-| <%= link_to "Issue: Dialup Mgmt Cmd",:controller => "management",:action => "issue" %>
+|| <%= link_to 'Master Dialup Num Table', dial_ups_path%>
+| <%= link_to "Issue Dialup Mgmt Cmd",:controller => "management",:action => "issue" %>
 || <%=link_to 'Alabama Access #s',"http://www.hiwaay.net/support/accessnumbers.html",:target => "_blank"%>
 | <%=link_to 'National Access #s',"https://myaccount.earthlink.net/cam/accessnumber.jsp",:target => "_blank"%>
 <%# end %>
-<br><br>
-
+</div>
 
