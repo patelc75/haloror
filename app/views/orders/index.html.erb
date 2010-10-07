@@ -1,10 +1,10 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
 <%=render :partial => 'reporting/nav'%>
-<h2>DTC Orders </h2>
+<h2>Online Store Orders </h2>
 Purchased from <%= link_to 'http://'+ServerInstance.current_host+'/order' %>
 <br>
 <br>
-<table border="1">
+<table class="bluegrey">
 	<th>Id</th>
 	<th>Created At</th>
 	<th>Order #</th>
@@ -16,7 +16,7 @@ Purchased from <%= link_to 'http://'+ServerInstance.current_host+'/order' %>
 	<th>Notes</th>
 	<% if @orders %>
 	<% @orders.each do |order| %>
-	  <tr>
+  <tr class="<%= cycle('', 'altrow') %>">
 	  	<td><%= order.id %></td>
 	  	<td><%= UtilityHelper.format_datetime(order.created_at,current_user) %></td>	
 	  	<td><%= order.full_number %></td>

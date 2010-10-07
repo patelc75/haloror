@@ -1,4 +1,4 @@
-<tr>
+<tr class="<%= cycle('', 'altrow') %>">
 	<td><%= dial_up_status.device_id %></td>
 	<td><%= dial_up_status.phone_number %></td>
 	<td><%= UtilityHelper.format_datetime(dial_up_status.created_at,current_user) %></td>

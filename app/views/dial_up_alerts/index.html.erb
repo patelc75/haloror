@@ -7,7 +7,7 @@
 <input type="submit" value="Enter device_id">
 </form>
 <br><br>
-<table border="1">
+<table class="bluegrey">
 	<th>Device Id</th>
 	<th>Number</th>
 	<th>Username</th>
@@ -21,7 +21,7 @@
 	<th>Timestamp</th>
 	
 	<% @dial_up_alerts.each do |dial_alert| %>
-	  <tr>
+  <tr class="<%= cycle('', 'altrow') %>">
 	  	<td><%= dial_alert.device_id %></td>
 	  	<td><%= dial_alert.phone_number %></td>
 	  	<td><%= dial_alert.username %></td>

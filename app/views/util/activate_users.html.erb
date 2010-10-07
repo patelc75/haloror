@@ -1,8 +1,10 @@
-<h1>Activate Users</h1>
+<%=render :partial=>'/reporting/nav_config'%>
+
+<h2>Activate Users</h2>
 <big><%= link_to 'Send Test Email', :action => 'send_test_email'%></big>
 <br />
 <br />
-<table>
+<table class="bluegrey">
   <tr>
     <td><b>id&nbsp;</b></td>
     <td><b>login&nbsp;</b></td>
@@ -12,7 +14,7 @@
     <td><b>Caregiver Activation/Signup</b></td>
   </tr>
   <% @users.each do |user| %>
-  <tr>
+  <tr class="<%= cycle('', 'altrow') %>">
     <td><%= user.id %> </td>
     <td><%= user.name %> </td>
     <% if user.activation_code != nil %>
@@ -32,6 +34,5 @@
     </td>
   </tr>
   <% end %>
-</table>
-<br /><br />
+</table>   
 <%= will_paginate @users %>

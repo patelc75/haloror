@@ -1,13 +1,13 @@
 <%=render :partial=>'/reporting/nav_config'%>
 
 <h3>Cell phone carriers</h3>
-<table border="1">
+<table class="bluegrey">
   <tr>
-    <th>ID</th><th>Name</th><th>Domain</th>
+    <th>ID</th><th>Name</th><th>Domain</th><th/><th/><th/>  
   </tr>
 
 <% for carrier in @carriers %>
-  <tr>
+<tr class="<%= cycle('', 'altrow') %>">
     <td><%= h carrier.id %></td>
     <td><%= h carrier.name %></td>
     <td><%= h carrier.domain %></td>

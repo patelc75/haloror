@@ -9,7 +9,7 @@
   </form>
 </div>
 
-<table border="1">
+<table class="bluegrey">
   <tr>
     <th>Phone<br>Number</th>
     <th>Username</th>
@@ -26,7 +26,7 @@
   </tr>
 
   <% for dial_up in @dial_ups %>
-  <tr>
+  <tr class="<%= cycle('', 'altrow') %>">
     <td><%= dial_up.phone_number%></td>
     <td><%= dial_up.username%></td>
     <td><%= dial_up.password%></td>
