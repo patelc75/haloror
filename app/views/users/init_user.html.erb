@@ -9,25 +9,25 @@
 		</div>
 
     <div style="width:200px;margin-left:auto;margin-right:auto">
-      <% form_tag :action => 'update_user' do -%>
-				<%= hidden_field :user, :activation_code %>
+      <% form_for @user, :action => 'update_user' do |f| -%>
+				<%= f.hidden_field :activation_code %>
 	        Please enter a username and password to create a new account for <%= @user.email %>:
 	        <br />
 	        <br />	        
         <label for="user_login">Username</label>
         <br/>
-        <%= text_field :user, :login %>
+        <%= f.text_field :login %>
         <br />
         <br />	
 					
         <label for="user_password">Password</label>
         <br/>
-        <%= password_field :user, :password %>
+        <%= f.password_field :password %>
         <br />
         <br />
         <label for="user_password_confirmation">Confirm Password</label>
         <br/>
-        <%= password_field :user, :password_confirmation %>
+        <%= f.password_field :password_confirmation %>
         <br />
         <br />
         <div align="center">

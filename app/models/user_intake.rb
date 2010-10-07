@@ -473,7 +473,7 @@ class UserIntake < ActiveRecord::Base
       self.mem_subscriber = nil
     else
 
-      if subscriber_is_user
+        if subscriber_is_user
         self.senior = arg if senior.blank? # we can use this data
         self.mem_subscriber = senior # assign to senior, then reference as subscriber
       else
@@ -508,7 +508,7 @@ class UserIntake < ActiveRecord::Base
       if self.new_record?
         self.mem_caregiver1
       else
-        self.mem_caregiver1 ||= (users.select {|user| user.caregiver_position_for(senior) == 1}.first) # fetch caregiver1 from users
+        self.mem_caregiver1 ||= (users.select {|user| user.caregiver_position_for(senior) == 1}.first || User.new) # fetch caregiver1 from users
       end
     end
     mem_caregiver1
@@ -547,7 +547,7 @@ class UserIntake < ActiveRecord::Base
     if self.new_record?
       self.mem_caregiver2
     else
-      self.mem_caregiver2 ||= (users.select {|user| user.caregiver_position_for(senior) == 2}.first) # fetch caregiver2 from users
+      self.mem_caregiver2 ||= (users.select {|user| user.caregiver_position_for(senior) == 2}.first || User.new) # fetch caregiver2 from users
     end
     mem_caregiver2
   end
@@ -579,7 +579,7 @@ class UserIntake < ActiveRecord::Base
     if self.new_record?
       self.mem_caregiver3
     else
-      self.mem_caregiver3 ||= (users.select {|user| user.caregiver_position_for(senior) == 3}.first) # fetch caregiver3 from users
+      self.mem_caregiver3 ||= (users.select {|user| user.caregiver_position_for(senior) == 3}.first || User.new) # fetch caregiver3 from users
     end
     mem_caregiver3
   end

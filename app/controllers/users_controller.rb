@@ -657,10 +657,7 @@ class UsersController < ApplicationController
         redirect_to login_url
         
       else
-        #
-        # QUESTION: Can we afford to skip validation here in business logic?
-        @user.skip_validation = true # skip profile validations also
-        @user.save # we can save( false) if we do not need to skip profile validations
+        # just show user's attributes on form
         #
         # Sat Oct  2 02:21:20 IST 2010
         # https://redmine.corp.halomonitor.com/wiki/haloror/Dev_Testing 1.6.0 PQ

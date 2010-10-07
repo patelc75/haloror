@@ -24,8 +24,10 @@
     <table class="bluegrey">
       <tr>
         <th></th>
+        <% if current_user.is_super_admin? %>
         <th>Id</th>
         <th></th>
+        <% end %>
         <th></th>
         <th><%= image_tag "profile.png", :alt => "Senior", :title => "Senior" %></th>
         <th><%= image_tag "calendar_day.png", :alt => "Desired Installation/Billing Start Date", :title => "Desired Installation/Billing Start Date" %></th>

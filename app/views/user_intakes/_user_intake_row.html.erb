@@ -1,5 +1,6 @@
 <tr class="<%= 'background-red' unless user_intake_row.senior && user_intake_row.senior.attributes_status_good? %>">
   <td><%= check_box_tag "selected[#{user_intake_row.id}]" %></td>
+  <% if current_user.is_super_admin? %>
   <td><%= link_to user_intake_row.id, user_intake_row %></td>
   <td>
     <% if user_intake_row.emailed_on.blank? %>
@@ -8,6 +9,7 @@
       <%= link_to image_tag("email.png", :alt => "Send Email to SafetyCare again. Last: #{user_intake_row.emailed_on}", :title => "Send Email to SafetyCare again. Last: #{user_intake_row.emailed_on}"), :controller => 'users', :action => 'send_caregiver_details', :id => user_intake_row.senior.id unless user_intake_row.senior.blank? %>
     <% end %>
   </td>
+  <% end %>
   <td><%= user_intake_row.senior.id rescue '?' %></td>
   <td><%= user_intake_row.senior.name rescue '?' %></td>
   <td><%= user_intake_row.installation_datetime || image_tag('exclamation.png') %></td>

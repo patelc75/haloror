@@ -78,8 +78,8 @@ class UserAdminController < ApplicationController
         @user.created_by = current_user.id # TODO: DRY: include this in partial. no need to assign here
         #
         # TODO: these are quick fix. need better implementation
-        @user.autofill_login # just place some random login for now. user will activate later
-        @user.profile.need_validation = false # do not validate profile. just capture the form
+        # @user.autofill_login # just place some random login for now. user will activate later
+        @user.need_validation = false # do not validate profile. just capture the form
         #
         if @user.save # "!" is not recommended here
           # TODO: render or redirect is not explicit when "save" fails
