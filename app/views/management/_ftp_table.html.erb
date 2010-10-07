@@ -1,6 +1,7 @@
 <div>
-<p>FTP Sites (<%= link_to 'Add FTP site', :action => 'new_ftp', :controller => 'management' %>)</p>
-<table border="1">
+<h3>FTP Sites</h3>
+<%= link_to 'Add FTP site', :action => 'new_ftp', :controller => 'management' %>
+<table class="bluegrey">
   <tr>
     <th>Server Name</th>
     <th>Login</th>
@@ -8,7 +9,7 @@
   </tr>
   <% if !@ftps.blank? %>
   <% @ftps.each do |ftp| %>
-    <tr>
+  <tr class="<%= cycle('', 'altrow') %>">
       <td><%= ftp.server_name %></td>
       <td><%= ftp.login %></td>
       <td><%= link_to 'Edit', :id => ftp.id, :action => 'edit_ftp', :controller => 'management' %></td>

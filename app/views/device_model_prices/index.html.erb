@@ -1,7 +1,7 @@
 <%=render :partial => 'reporting/nav_config'%>
 
 <h1>Coupon Codes</h1>
-<table border="1">
+<table class="bluegrey">
   <tr>
     <th>Part Num</th>
     <th>Model</th>
@@ -11,12 +11,13 @@
     <th>Shipping</th>
     <th>Monthly<br> recurring</th>
     <th>Months<br> advance</th>
-    <th>Months<br> trial</th>
+    <th>Months<br> trial</th> 
+    <th/><th/><th/>
   </tr>
 
 <% for device_model_price in @device_model_prices %>
   <% unless device_model_price.device_model.blank? %>
-  <tr>
+  <tr class="<%= cycle('', 'altrow') %>">
     <td><%=h device_model_price.device_model.part_number %></td>
     <td><%=h device_model_price.device_model.model %></td>    
     <td><%=h device_model_price.coupon_code %></td>

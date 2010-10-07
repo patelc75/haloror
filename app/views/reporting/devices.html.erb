@@ -6,9 +6,8 @@
 	</form>
 </div>
 <h3>Devices table</h3>
+<div align="center"><%= will_paginate @devices %></div><br/>
 <div id="device-table" class="table bluegrey">
-	<center><%= will_paginate @devices %></center>
-	<br>
 	<%=render :partial => 'device_table', :locals => {:user => @user, :devices => @devices}%>
 	<br>
     <br>

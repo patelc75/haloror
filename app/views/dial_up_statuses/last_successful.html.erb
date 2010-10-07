@@ -6,14 +6,14 @@
 <input type="submit" value="Enter device_id">
 </form>
 <br><br>
-<table border="1">
+<table class="bluegrey">
 	<th>Device Id</th>
 	<th>last_successful_number</th>
 	<th>last_successful_username </th>
 	<th>last_successful_password</th>
 	
 	<%@dial_up_last_successfuls.each do |dial_up_last_successful|%>
-	  <tr>
+  <tr class="<%= cycle('', 'altrow') %>">
 	  	<td><%= dial_up_last_successful.device_id %></td>
 	  	<td><%= dial_up_last_successful.last_successful_number %></td>
 	  	<td><%= dial_up_last_successful.last_successful_username %></td>
