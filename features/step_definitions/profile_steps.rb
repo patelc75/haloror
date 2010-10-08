@@ -52,7 +52,7 @@ end
 Then /^profile "([^\"]*)" should have "([^\"]*)" role? for (.+) "([^\"]*)"$/ do |full_name, role_name, model_name, for_name|
   Then %{profile "#{full_name}" should exist}
 
-  user = find_profile_user(full_name)  
+  user = find_profile_user(full_name)
   for_object = case model_name
   when "profile"
     Then %{profile "#{for_name}" should exist}
@@ -63,7 +63,7 @@ Then /^profile "([^\"]*)" should have "([^\"]*)" role? for (.+) "([^\"]*)"$/ do 
   for_object.should_not be_blank
   roles = split_phrase(role_name, ',')
   roles.each do |role|
-    Then %{user "#{user.login}" should have "#{role}" role for #{model_name} "#{for_name}"}
+    Then %{user "#{user.email}" should have "#{role}" role for #{model_name} "#{for_name}"}
     user.roles_for( for_object).map(&:name).flatten.should include(role), "user <#{user.full_name}> does not have <#{role}> role"
     # assert user.roles_for( for_object).map(&:name).include?(role), "user <#{user.full_name}> does not have <#{role}> role"
   end

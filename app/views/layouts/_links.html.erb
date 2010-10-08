@@ -22,7 +22,7 @@
       <% end %>
 
       <li><%= link_to 'Support', url_for(:controller => 'util', :action => 'support') %></li>
-      <li><%= link_to 'Buy Online', '/order' %></li>			
+      <li><%= link_to 'Buy Online', '/order' %></li>
 
       <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? || current_user.is_installer? || current_user.is_operator? || current_user.is_moderator? %>
       <hr>
@@ -31,11 +31,11 @@
       <li><%= link_to 'User&nbsp;Intakes', '/user_intakes/' %></li>
       <% end %> 
       <% if current_user.is_halouser? && !current_user.user_intakes.blank? %>
-        <li><%= link_to 'User&nbsp;Intake', edit_user_intake_url( current_user.user_intakes.first) %></li>
+      <li><%= link_to 'User&nbsp;Intake', edit_user_intake_url( current_user.user_intakes.first) %></li>
       <% end %> 
       <% if current_user.is_super_admin? || current_user.is_admin? %>
-        <li><%= link_to "Triage", triage_path %>
-        <!--li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li-->
+      <li><%= link_to "Triage", triage_path %></li>
+      <!--li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li-->
       <% end %>
       <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_installer? %>
       <li><%= link_to 'Config', :controller => 'reporting', :action => 'blank_config' %></li>

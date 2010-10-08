@@ -8,3 +8,6 @@ require 'rake/testtask'
 require 'rake/rdoctask'
 
 require 'tasks/rails'
+
+require 'hydra' # require the hydra codebase
+require 'hydra/tasks' # require the hydra rake task helpers

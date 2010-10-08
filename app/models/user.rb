@@ -434,6 +434,10 @@ class User < ActiveRecord::Base
   # = instance methods =
   # ====================
   
+  def need_validation?
+    need_validation
+  end
+  
   def next_status_index
     keys = [ :pending, :approval_pending, :install_pending, :bill_pending, :installed, :test, :overdue]
     values = [ "", "Ready for Approval", "Ready to Install", "Ready to Bill", "Installed", "Test Mode", "Install Overdue"]
@@ -499,6 +503,8 @@ class User < ActiveRecord::Base
   # Create a log page of all steps above with timestamps
   def after_save
     #
+    dispatch_emails # send emails as appropriate
+    #
     # CHANGED: Major fix. the roles were not getting populated
     # insert the roles for user. these roles are propogated from user intake
     lazy_roles.each {|k,v| self.send( :"is_#{k}_of", v) } unless lazy_roles.blank?
@@ -506,6 +512,7 @@ class User < ActiveRecord::Base
     log(status)
   end
   
+  # TODO: make this method skip_validation? for more appropriate convention
   def skip_validation
     !need_validation
   end
@@ -514,9 +521,8 @@ class User < ActiveRecord::Base
     if self.skip_validation
       true
     else
-      if self.username_confirmation && (self.username_confirmation != self.login)
-        self.errors.add("user confirmation","does not match with username.")
-      end
+      self.errors.add("user confirmation","does not match with username.") if self.username_confirmation && (self.username_confirmation != self.login)
+      self.errors.add( "Profile: ", profile.errors.full_messages.join(', ')) unless profile.blank? || profile.valid?
     end
   end
   
@@ -552,18 +558,18 @@ class User < ActiveRecord::Base
   # profile_attributes hash can be given here to create a related profile
   #
   def profile_attributes=(attributes)
-    if profile.blank?
-      # any_existing_profile = Profile.find_by_user_id(self.id)
-      # if any_existing_profile
-      #   self.profile = any_existing_profile
-      #   self.profile.attributes = attributes
-      # else
-        self.build_profile(attributes) # .merge("user_id" => self)
-      # end
-    else
-      # keep the existing user connected. no need to re-assign
-      self.profile.attributes = attributes # .reject {|k,v| k == "user_id"} # except user_id, take all attributes
-    end
+    # if !profile.blank? && profile.is_a?( Profile)
+    #   # keep the existing user connected. no need to re-assign
+    #   self.profile.attributes = attributes # .reject {|k,v| k == "user_id"} # except user_id, take all attributes
+    # else
+    #   # any_existing_profile = Profile.find_by_user_id(self.id)
+    #   # if any_existing_profile
+    #   #   self.profile = any_existing_profile
+    #   #   self.profile.attributes = attributes
+    #   # else
+    self.build_profile(attributes) # .merge("user_id" => self)
+    #   # end
+    # end
   end
   
   # # OBSOLETE for now. role options are handled at user_intake
@@ -2582,7 +2588,7 @@ class User < ActiveRecord::Base
   #   this can help to idenitfy all the issue quickly
   # WARNING: (Wed Oct  6 05:12:20 IST 2010) Needs code coverage. smoke tested for now
   def autofill_login
-    if login.blank? && !email.blank? # !user.blank? && user.login.blank?
+    if login.blank? # && !email.blank? # !user.blank? && user.login.blank?
       hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
       # only when user_type is not nil, but login is
       self.login = "_AUTO_#{hex}" # _AUTO_xxx is treated as blank

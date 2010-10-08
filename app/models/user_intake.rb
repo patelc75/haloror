@@ -85,6 +85,10 @@ class UserIntake < ActiveRecord::Base
   def transmitter_blank?
     chest_strap.blank? && belt_clip.blank?
   end
+
+  def need_validation?
+    need_validation
+  end
   
   # for every instance, make sure the associated objects are built
   def after_initialize
@@ -113,6 +117,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def before_save
+    # debugger
     # card or bill
     self.bill_monthly = (card_or_bill == "Bill")
     self.credit_debit_card_proceessed = !bill_monthly
@@ -147,6 +152,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def after_save
+    # debugger
     # save the assoicated records
     associations_after_save
     # apply test mode, if applicable
@@ -194,7 +200,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def validate
-    if need_validation
+    if need_validation?
       associations_before_validation_and_save # pre-process associations
       validate_associations # validate associations and add errors to AR::Base to show on user intake form
     else
@@ -203,12 +209,12 @@ class UserIntake < ActiveRecord::Base
   end
 
   def validate_associations
-    if need_validation
-      validate_user_type("senior")
+    if need_validation?
+      validate_user_type("senior", true)
       validate_user_type("subscriber") unless subscriber_is_user
-      validate_user_type("caregiver1") unless (subscriber_is_caregiver || (no_caregiver_1 == true))
-      validate_user_type("caregiver2") unless (no_caregiver_2 == true)
-      validate_user_type("caregiver3") unless (no_caregiver_3 == true)
+      validate_user_type("caregiver1") unless (subscriber_is_caregiver || ["1", true].include?( no_caregiver_1))
+      validate_user_type("caregiver2") unless ["1", true].include?( no_caregiver_2)
+      validate_user_type("caregiver3") unless ["1", true].include?( no_caregiver_3)
     end
   end
 
@@ -234,9 +240,9 @@ class UserIntake < ActiveRecord::Base
     # need most close debugging. Not getting a clue for now.
     (1..3).each do |index|
       caregiver = self.send("caregiver#{index}".to_sym)
-      unless caregiver.nil?
+      unless caregiver.blank?
         no_caregiver = self.send("no_caregiver_#{index}".to_sym)
-        if ["0", false].include?( no_caregiver)
+        if ["1", true].include?( no_caregiver)
           self.send("caregiver#{index}=".to_sym, nil) # when marked for no_caregiver_x, just remove the data
         else
           caregiver.collapse_associations
@@ -261,48 +267,68 @@ class UserIntake < ActiveRecord::Base
     ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_user_login( user) }
     #
     # assign roles to user objects. it will auto save the roles with user record
-    # this will also trigger the email dispatch in observer
+    # DEPRECATED: this will also trigger the email dispatch in observer
     self.senior.lazy_roles[:halouser]        = group  unless senior.blank? # senior.is_halouser_of group
     self.subscriber.lazy_roles[:subscriber]  = senior unless subscriber.blank?
     self.caregiver1.lazy_roles[:caregiver]   = senior unless caregiver1.blank?
     self.caregiver2.lazy_roles[:caregiver]   = senior unless caregiver2.blank?
     self.caregiver3.lazy_roles[:caregiver]   = senior unless caregiver3.blank?
-    # now collect the users for save as associations
-    self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq.compact # omit nil, duplicates
+    # # now collect the users for save as associations
+    # self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq.compact # omit nil, duplicates
   end
 
   # create more data for the associations to keep them valid and associated
   # roles, options for roles
   def associations_after_save
+    # WARNING: the associations here are not using active_record, so they are not auto saved with user intake
+    #   we are saving the associations manually here
+    collapse_associations # make obsolete ones = nil
+    #
+    # TODO: conflicting with 1.6.0 pre-quality. removed to check compatiblity or related errors
+    # for remaining, fill login, password details only when login is empty
+    # This is a 3 step process
+    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |_what|
+      _user = self.send( _what) # fetch the associated user
+      _user.skip_validation = true # TODO: patch for 1.6.0 release. fix later with business logic, if required
+      
+      _user.autofill_login # Step 1: make them valid
+      _user.save # Step 2: save them to database
+      self.users << _user # Step 3: link them to user intake
+    end
+    # debugger
+    #
     # add roles and options
     #
     # FIXME: we should not validate here. its done in "validate". just add roles etc here
     #
     # # senior
-    unless senior.blank?
-      senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")
-    #   self.errors.add_to_base("Senior not valid") unless senior.valid?
-    #   self.errors.add_to_base("Senior profile needs more detail") unless senior.profile.nil? || senior.profile.valid?
-    end
+    senior.is_halouser_of( group)
+    # unless senior.blank?
+    #   senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")
+    # #   self.errors.add_to_base("Senior not valid") unless senior.valid?
+    # #   self.errors.add_to_base("Senior profile needs more detail") unless senior.profile.nil? || senior.profile.valid?
+    # end
     # subscriber
-    unless subscriber.blank?
-      subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
+    subscriber.is_subscriber_of( senior)
+    # unless subscriber.blank?
+      # subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
       # self.errors.add_to_base("Subscriber not valid") unless subscriber.valid?
       # self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.nil? || subscriber.profile.valid?
       # save options
       caregiver1.options_for_senior(senior, mem_caregiver1_options.merge({:position => 1})) if subscriber_is_caregiver
-    end
+    # end
     # caregivers
     (1..3).each do |index|
       caregiver = self.send("caregiver#{index}".to_sym)
-      unless caregiver.blank?
-        caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
+      # unless caregiver.blank?
+      caregiver.is_caregiver_to( senior)
+        # caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
         # self.errors.add_to_base("Caregiver #{index} not valid") unless caregiver.valid?
         # self.errors.add_to_base("Caregiver #{index} profile needs more detail") unless caregiver.profile.nil? || caregiver.profile.valid?
         # save options
         options = self.send("mem_caregiver#{index}_options")
         caregiver.options_for_senior(senior, options.merge({:position => index}))
-      end
+      # end
     end
   end
 
@@ -614,36 +640,40 @@ class UserIntake < ActiveRecord::Base
   # TODO: DRYness required here for methods
 
   def senior_attributes=(attributes)
-    self.senior = attributes
+    self.senior = User.new(attributes) # includes profile_attributes hash
+    self.senior.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
     self.senior.skip_validation = self.skip_validation unless self.senior.blank?
-    # self.senior.profile_attributes = attributes["profile_attributes"]
     self.senior
   end
 
   def subscriber_attributes=(attributes)
     (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
-    self.subscriber = attributes
+    self.subscriber = User.new( attributes) # includes profile_attributes hash
+    self.subscriber.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
     self.subscriber.skip_validation = self.skip_validation unless self.subscriber.blank?
     self.subscriber
   end
 
   def caregiver1_attributes=(attributes)
     (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-    self.caregiver1 = attributes
+    self.caregiver1 = User.new( attributes) # includes profile_attributes hash
+    self.caregiver1.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
     self.caregiver1.skip_validation = self.skip_validation unless self.caregiver1.blank?
     self.caregiver1
   end
 
   def caregiver2_attributes=(attributes)
     (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-    self.caregiver2 = attributes
+    self.caregiver2 = User.new( attributes) # includes profile_attributes hash
+    self.caregiver2.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
     self.caregiver2.skip_validation = self.skip_validation unless self.caregiver2.blank?
     self.caregiver2
   end
 
   def caregiver3_attributes=(attributes)
     (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-    self.caregiver3 = attributes
+    self.caregiver3 = User.new( attributes) # includes profile_attributes hash
+    self.caregiver3.profile_attributes = attributes["profile_attributes"] # profile_attributes explicitly built
     self.caregiver3.skip_validation = self.skip_validation unless self.caregiver3.blank?
     self.caregiver3
   end
@@ -750,18 +780,30 @@ class UserIntake < ActiveRecord::Base
     end
   end
 
-  def validate_user_type(user_type)
+  def validate_user_type(user_type, _force = false)
+    #
+    # user object should have its own validations. just use them instead of imposing here
     user = self.send("#{user_type}".to_sym)
     if user.blank?
-      errors.add_to_base("#{user_type}: is mandatory")
+      errors.add_to_base( "#{user_type} cannot be blank") if _force == true
     else
-      errors.add_to_base("#{user_type}: " + user.errors.full_messages.join(', ')) unless (user.skip_validation || user.valid?)
-      if user.profile.blank?
-        errors.add_to_base("#{user_type} profile: is mandatory") unless user.skip_validation
-      else
-        errors.add_to_base("#{user_type} profile: " + user.profile.errors.full_messages.join(', ')) unless (user.skip_validation || user.profile.valid?)
-      end
+      errors.add_to_base( "#{user_type}: " + user.errors.full_messages.join(', ')) unless user.valid? || user.skip_validation
     end
+    #
+    # if user.blank?
+    #   errors.add_to_base("#{user_type}: is mandatory")
+    # else
+    # 
+    #   if user.need_validation?
+    #     errors.add_to_base("#{user_type}: " + user.errors.full_messages.join(', ')) unless (user.skip_validation || user.valid?)
+    #     if user.profile.blank?
+    #       errors.add_to_base("#{user_type} profile: is mandatory") unless user.skip_validation
+    #     else
+    #       errors.add_to_base("#{user_type} profile: " + user.profile.errors.full_messages.join(', ')) unless (user.skip_validation || user.profile.valid?)
+    #     end
+    #   end
+    # 
+    # end
   end
 
   def argument_to_object(arg)

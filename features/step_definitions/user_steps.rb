@@ -150,7 +150,8 @@ end
 # enhanced to support profile model
 #
 Then /^user "([^\"]*)" (should|should not) have "([^\"]*)" role(?:|s) for (.+) "([^\"]*)"$/ do |user_name, status, role_name, model_name, for_model_name|
-  (user = User.find_by_login(user_name)).should_not be_blank
+  user = ( User.find_by_login(user_name) || User.find_by_email(user_name) )
+  user.should_not be_blank
   case model_name
   when 'user'
     for_object = User.find_by_login(for_model_name)

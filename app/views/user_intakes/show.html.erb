@@ -4,10 +4,10 @@
   </div>
 <% end %>
 
+<% if current_user.is_super_admin? %>
 <div class="container">
   <hr />
   
-  <% if current_user.is_super_admin? %>
     <div id="user_intake_details">
       <h2>User Intake: <%= @user_intake.id %></h2>
 
@@ -34,11 +34,27 @@
       <%= hash_to_html( @user_intake.attributes) %>
     </div>
 
-    <% [:group, :senior, :subscriber, :caregiver1, :caregiver2, :caregiver3].each do |attribute| %>
-    <div class="box">
-      <h2><%= attribute %></h2>
-      <%= hash_to_html( @user_intake.send( attribute).attributes) if @user_intake.send( attribute) && !@user_intake.send( attribute).new_record? %>
-    </div>
-    <% end %>
-  <% end %>
+    <table>
+      <% [:group, :senior, :subscriber, :caregiver1, :caregiver2, :caregiver3].each do |attribute| %>
+      <tr>
+        <td>
+          <div class="box">
+            <h2><%= attribute %></h2>
+            <%= hash_to_html( @user_intake.send( attribute).attributes) if @user_intake.send( attribute) && !@user_intake.send( attribute).new_record? %>
+          </div>
+        </td>
+        
+        <td>
+          <% unless attribute == :group %>
+          <div class="box">
+            <h3><%= attribute %> Profile:</h3>
+            <%= hash_to_html( @user_intake.send( attribute).profile.attributes) if !@user_intake.send( attribute).blank? && !@user_intake.send( attribute).new_record? && !@user_intake.send( attribute).profile.blank? %>
+          </div>
+          <% end %>
+        </td>
+      </tr>
+      <% end %>
+    </table>
+    
 </div>
+<% end %>

@@ -56,7 +56,7 @@ class UserIntakesController < ApplicationController
   # GET /user_intakes/new
   # GET /user_intakes/new.xml
   def new
-    @user_intake = UserIntake.new
+    @user_intake = UserIntake.new( :creator => current_user, :updater => current_user)
     @groups = Group.for_user(current_user)
 
     respond_to do |format|
@@ -85,7 +85,6 @@ class UserIntakesController < ApplicationController
 
     respond_to do |format|
       if @user_intake.save
-        [@user_intake.senior, @user_intake.subscriber].uniq.each(&:dispatch_emails) unless @user_intake.skip_validation # send emails
         flash[:notice] = "User Intake was successfully #{params[:commit] == 'Save' ? 'saved' : 'created'}."
         format.html { redirect_to(:action => 'show', :id => @user_intake.id) }
         format.xml  { render :xml => @user_intake, :status => :created, :location => @user_intake }
@@ -105,7 +104,11 @@ class UserIntakesController < ApplicationController
     @groups = Group.for_user(current_user)
 
     respond_to do |format|
-      if @user_intake.update_attributes(params[:user_intake])
+      # _attributes = params[:user_intake].reject {|k,v| v.is_a?(Hash) || k.include?( "attributes") }
+      # _hashes = params[:user_intake].select {|k,v| v.is_a?(Hash) || k.include?( "attributes") }
+      # debugger
+      if @user_intake.update_attributes( params[:user_intake])
+        # _hashes.each {|k, v| @user_intake.send( "#{k}".to_sym, v) } # for example: senior_attributes
         flash[:notice] = 'User Intake was successfully updated.'
         format.html do
           if params[:redirect_hash].blank?

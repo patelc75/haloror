@@ -240,7 +240,8 @@ end
 
 When /^the gateway serial for user intake "([^"]*)" is updated to "([^"]*)"$/ do |_serial, new_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
-  ui.update_attributes( :gateway_serial => new_serial)
+  ui.gateway_serial = new_serial
+  ui.save( false)
 end
 
 # WARNING: known to fail at panic.save
@@ -369,15 +370,21 @@ end
 
 Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |_serial, what|
   ui = UserIntake.find_by_gateway_serial(_serial)
-  ui.should be_valid
+  ui.should_not be_blank
   senior = ui.senior
   senior.should be_valid
 
-  case what
-  when "a status attribute"
+  if what == "a status attribute"
     senior.attributes.keys.should include( "status")
-  when "pending status"
-    senior.status.should be_blank
+  elsif what =~ /status$/
+    _status = what.gsub('status','').gsub('"','').strip.downcase
+    if _status == 'pending'
+      senior.status.should be_blank
+    else
+      senior.status.should == _status
+    end
+  else
+    assert false # otherwise, any new step would pass without technically getting covered
   end
 end
 
