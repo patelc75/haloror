@@ -77,9 +77,12 @@ class UserAdminController < ApplicationController
         # @user[:is_new_user] = true # DEPRECATED: this logic is not used anymore
         @user.created_by = current_user.id # TODO: DRY: include this in partial. no need to assign here
         #
+        # assign the profile association
+        @user.build_profile( params[:profile])
+        #
         # TODO: these are quick fix. need better implementation
         # @user.autofill_login # just place some random login for now. user will activate later
-        @user.need_validation = false # do not validate profile. just capture the form
+        @user.skip_validation = true # do not validate profile. just capture the form
         #
         if @user.save # "!" is not recommended here
           # TODO: render or redirect is not explicit when "save" fails
