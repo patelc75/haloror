@@ -399,4 +399,18 @@ namespace :halo do
       end
     end
   end
+
+  desc 'list all step definitions' 
+  task :step_definitions do
+    root_test_folder = "../haloror/features"
+
+    Dir.glob(File.join(root_test_folder,'**/*.rb')).each do |support_file|
+      File.new(support_file).read.each_line do |line|
+        next unless line =~ /^\s*(?:Given|When|Then)\s+\//
+        matches = /(?:Given|When|Then)\s*\/(.*)\/([imxo]*)\s*do\s*(?:$|\|(.*)\|)/.match(line).captures
+        matches[0] = Regexp.new(matches[0])
+        puts matches.inspect
+      end
+    end  
+  end
 end
