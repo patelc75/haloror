@@ -1,5 +1,4 @@
 <%= render :partial => 'triage_filter' %>
-
 <% form_tag dismiss_user_path(current_user), :method => :post do %>
 <div class="span-6"><%= will_paginate( @users) %>&nbsp;</div>
 <div class="span-18 last text-right raise">
@@ -45,4 +44,7 @@
 
   </div>
 </div>
-<% end %>
+<% end %>  
+<div class="span-12 last text-left">
+  <%= link_to "Thresholds", 'triage_thresholds', :class => "button blue-button" %>  
+</div>

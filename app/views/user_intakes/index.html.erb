@@ -28,27 +28,25 @@
         <th>Id</th>
         <th></th>
         <% end %>
-        <th></th>
-        <th><%= image_tag "profile.png", :alt => "Senior", :title => "Senior" %></th>
-        <th><%= image_tag "calendar_day.png", :alt => "Desired Installation/Billing Start Date", :title => "Desired Installation/Billing Start Date" %></th>
-        <th><%= image_tag "creditcards.png", :alt => "Payment Type", :title => "Payment Type" %></th>
+        <th>UID</th>
+        <th><%= image_tag "profile.png", :alt => "Senior", :title => "Senior" %>&nbsp;Name</th>
+        <th class="text-center"><%= image_tag "calendar_day.png", :alt => "Desired Installation/Billing Start Date", :title => "Desired Installation/Billing Start Date" %>&nbsp;Desired Install </th>
+        <th class="text-center"><%= image_tag "creditcards.png", :alt => "Payment Type", :title => "Payment Type" %></th>
         <% if current_user.is_super_admin? %>
           <th><%= image_tag('script.png', :alt => "Paper copy", :title => "Paper copy") %></th>
         <% end %>
-        <th>Order ID</th>
-        <th>CS/BC Serial</th>
+        <th class="text-center">Order ID</th>
+        <th class="text-center">CS/BC Serial</th>
         <th><%= image_tag "router.png", :alt => "GW Serial", :title => "GW Serial" %></th>
         <% if current_user.is_super_admin? %>
-          <th><%= image_tag "telephone_mouthpiece.png", :alt => "Call Center Acc #", :title => "Call Center Acc #" %></th>
-          <th><%= image_tag( 'telephone.png', :alt => "Dial Up Numbers", :title => "Dial Up Numbers") %></th>
+          <th class="text-center"><%= image_tag "telephone_mouthpiece.png", :alt => "Call Center Acc #", :title => "Call Center Acc #" %></th>
+          <th class="text-center"><%= image_tag( 'telephone.png', :alt => "Dial Up Numbers", :title => "Dial Up Numbers") %></th>
         <% end %>
         <th class="text-center span-3">Status</th>
-        <th></th>
-        <th></th>
-        <th class="text-center"><%= image_tag('truck.png', :alt => 'Shipped on', :title => 'Shipped on') %></th>
+        <th class="text-center"><%= image_tag('truck.png', :alt => 'Ship Date', :title => 'Shipped on') %>&nbsp;Shipped On</th>
         <th class="text-center"><%= image_tag "user_placeholder.png", :alt => "Created by", :title => "Created by" %></th>
-        <th>Created At</th>
-        <th>Updated At</th>
+        <th></th>
+        <th></th>        
       </tr>
       <%= render :partial => 'user_intake_row', :collection => @user_intakes %>
     </table>

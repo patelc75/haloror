@@ -113,6 +113,10 @@ div.fixed-height { height: 250px; min-height: 250px; overflow: auto; }
   color: #666;
 }
 
+.call_center_id {
+	font: normal normal normal .80em Arial, sans-serif;
+}
+
 .pagination {
   background: white;
   /* self-clearing method: */ }

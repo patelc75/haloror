@@ -193,31 +193,6 @@ Then /^I should have "([^\"]*)" for user "([^\"]*)"$/ do |status, login|
   # assert ms == status,"No Data"
 end
 
-# shifted to critical_alert_steps.rb when merged prod-temp to master
-# Then /^I should have "([^\"]*)" count of "([^\"]*)"$/ do |count, model| 
-#   assert model.constantize.count + Event.all.length == 2*count.to_i, "Should have #{count} #{model}"
-# end
-
-# shifted to critical_alert_steps.rb when merged prod-temp to master
-# Then /^I should have a "([^\"]*)" alert "([^\"]*)" to the call center with a "([^\"]*)" call center delivery timestamp$/ do |model, pending_string, timestamp_status|
-#   critical_alert =  model.constantize.first   
-#   if pending_string == "not pending"
-#     assert critical_alert.call_center_pending == false, "#{model} should be not pending"
-#   elsif pending_string == "pending"
-#     assert critical_alert.call_center_pending == true, "#{model} should be pending"  
-#   else
-#     assert false, "#{pending_string} is not a valid pending status"
-#   end
-# 
-#   if timestamp_status == "missing"
-#     assert critical_alert.timestamp_call_center.nil?, "#{model} should have nil timestamp"
-#   elsif timestamp_status == "valid"
-#     assert critical_alert.timestamp_call_center > critical_alert.timestamp_server, "#{model} should have timestamp_call_center later than timestamp_server"     
-#   else
-#     assert false, "#{timestamp_status} is not a valid timestamp status"
-#   end  
-# end
-
 Then /^I should see "([^\"]*)" link for user "([^\"]*)"$/ do |link_text, user_login|
   user = User.find_by_login(user_login)
   user.should_not be_blank
