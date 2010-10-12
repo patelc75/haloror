@@ -504,11 +504,15 @@ class User < ActiveRecord::Base
   # Create a log page of all steps above with timestamps
   def after_save
     #
-    dispatch_emails # send emails as appropriate
-    #
-    # CHANGED: Major fix. the roles were not getting populated
-    # insert the roles for user. these roles are propogated from user intake
-    lazy_roles.each {|k,v| self.send( :"is_#{k}_of", v) } unless lazy_roles.blank?
+    # Wed Oct 13 04:05:20 IST 2010
+    #   CHANGED: created_at == updated_at only when it is saved for the very first time
+    if (created_at == updated_at)
+      dispatch_emails # send emails as appropriate
+      #
+      # CHANGED: Major fix. the roles were not getting populated
+      # insert the roles for user. these roles are propogated from user intake
+      lazy_roles.each {|k,v| self.send( :"is_#{k}_of", v) } unless lazy_roles.blank?
+    end
     #
     log(status)
   end
