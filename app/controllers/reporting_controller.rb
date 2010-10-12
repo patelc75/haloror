@@ -113,13 +113,15 @@ class ReportingController < ApplicationController
     #   end
     # end
     #
-    # Wed Oct 13 02:59:29 IST 2010 generates hash out of login => id of users
-    # @user_names = {}
-    # @users.each {|user| @user_names[user.login] = user.id } unless @users.blank?
-    @user_names = Hash[ @users.collect(&:login).zip( @users.collect(&:id) )]
+    # CHANGED: ** do not use ** Hash[]. keeps giving error
+    # # @user_names = Hash[ @users.collect(&:login).zip( @users.collect(&:id) )]
     #
-    # shorthand below is causing "odd number of arguments for Hash"
-    # @user_names = (@users.blank? ? {} : Hash[ @users.collect {|user| [user.login, user.id] } ])
+    # CHANGED: shorthand below is causing "odd number of arguments for Hash"
+    # # @user_names = (@users.blank? ? {} : Hash[ @users.collect {|user| [user.login, user.id] } ])
+    #
+    # Wed Oct 13 02:59:29 IST 2010 generates hash out of login => id of users
+    @user_names = {}
+    @users.each {|user| @user_names[user.login] = user.id } unless @users.blank?
   end
   
   def purge_data
