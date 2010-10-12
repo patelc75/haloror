@@ -654,7 +654,7 @@ class UsersController < ApplicationController
         #
         # ask for login. this user is activated already
         session[:senior] = params[:senior]
-        redirect_to login_url
+        redirect_to login_path # use ***_path instead of ***_url
         
       else
         # just show user's attributes on form
@@ -742,7 +742,7 @@ class UsersController < ApplicationController
         puts "look closer"
   
         flash[:notice] = 'User was successfully updated.'
-        format.html { redirect_to user_url(@user) }
+        format.html { redirect_to  :controller => "users", :action => "show", :id => @user) } # user_url does not fit
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -827,58 +827,60 @@ class UsersController < ApplicationController
     @user = User.find(params[:user_id])
     refresh_caregivers(@user)
   end
-=begin  
-  def populate_caregiver(email,patient_id=nil, position = nil,login = nil,profile_hash = nil)
-    existing_user = User.find_by_email(email)
-    if !login.nil? and login != ""
-      @user = User.find_by_login(login)
-    elsif !existing_user.nil? 
-      @user = existing_user
-    else
-      @user = User.new
-      @user.email = email
-    end
-    
-    if !@user.email.blank?
-      @user.is_new_caregiver = true
-      @user[:is_caregiver] =  true
-      @user.save!
-
-      if @user.profile.nil?
-        if profile_hash.nil?
-          profile = Profile.new(:user_id => @user.id)
-        else
-          profile = Profile.new(profile_hash)
-        end
-        profile[:is_new_caregiver] = true
-        profile.save!
-        @user.profile = profile
-      end
-      
-      patient = User.find(patient_id)
-
-      if position.nil?
-        position = User.get_max_caregiver_position(patient)
-      end
-      
-      role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return nil
-      caregiver = @user
-      @roles_user = patient.roles_user_by_caregiver(caregiver)
-
-      update_from_position(position, @roles_user.role_id, caregiver.id)
-
-      #enable_by_default(@roles_user)      
-      #redirect_to  "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
-  
-      #if role.nil? then the roles_user does not exist already
-      RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0) if !role.nil?
-  
-      if existing_user.nil?
-        UserMailer.deliver_caregiver_email(caregiver, patient)
-      end
-    end
-  end
-=end  
+  #
+  # block comments confuse during ackmate search.
+  # 
+  # def populate_caregiver(email,patient_id=nil, position = nil,login = nil,profile_hash = nil)
+  #   existing_user = User.find_by_email(email)
+  #   if !login.nil? and login != ""
+  #     @user = User.find_by_login(login)
+  #   elsif !existing_user.nil? 
+  #     @user = existing_user
+  #   else
+  #     @user = User.new
+  #     @user.email = email
+  #   end
+  #   
+  #   if !@user.email.blank?
+  #     @user.is_new_caregiver = true
+  #     @user[:is_caregiver] =  true
+  #     @user.save!
+  # 
+  #     if @user.profile.nil?
+  #       if profile_hash.nil?
+  #         profile = Profile.new(:user_id => @user.id)
+  #       else
+  #         profile = Profile.new(profile_hash)
+  #       end
+  #       profile[:is_new_caregiver] = true
+  #       profile.save!
+  #       @user.profile = profile
+  #     end
+  #     
+  #     patient = User.find(patient_id)
+  # 
+  #     if position.nil?
+  #       position = User.get_max_caregiver_position(patient)
+  #     end
+  #     
+  #     role = @user.has_role 'caregiver', patient #if 'caregiver' role already exists, it will return nil
+  #     caregiver = @user
+  #     @roles_user = patient.roles_user_by_caregiver(caregiver)
+  # 
+  #     update_from_position(position, @roles_user.role_id, caregiver.id)
+  # 
+  #     #enable_by_default(@roles_user)      
+  #     #redirect_to  "/profiles/edit_caregiver_profile/#{profile.id}/?user_id=#{params[:user_id]}&roles_user_id=#{@roles_user.id}"
+  # 
+  #     #if role.nil? then the roles_user does not exist already
+  #     RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0) if !role.nil?
+  # 
+  #     if existing_user.nil?
+  #       UserMailer.deliver_caregiver_email(caregiver, patient)
+  #     end
+  #   end
+  # end
+  # 
 
   def create_caregiver
     @back_url = params[:back_url] # non ajax
