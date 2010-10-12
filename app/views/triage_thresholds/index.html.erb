@@ -1,10 +1,10 @@
-<h1>Listing triage_thresholds</h1>
+<h3>Triage Thresholds</h3>
 
 <% form_tag triage_thresholds_path, :method => :get do %>
   Group: <%= select_tag "search", options_from_collection_for_select(@groups, :id, :name, params[:search].to_i), {:onchange => "this.form.submit();"} unless @groups.blank? %>
 <% end -%>
-
-<table>
+<br>
+<table class="bluegrey">
   <tr>
     <th>Group</th>
     <th>Status</th>
@@ -16,7 +16,7 @@
   </tr>
 
 <% for triage_threshold in @triage_thresholds %>
-  <tr>
+<tr class="<%= cycle('', 'altrow') %>">
     <td><%=h triage_threshold.group_name %></td>
     <td><%=h triage_threshold.status %></td>
     <td><%=h triage_threshold.updated_at %></td>
