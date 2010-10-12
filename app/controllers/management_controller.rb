@@ -190,10 +190,29 @@ class ManagementController < ApplicationController
         #   * collect @pending_cmds and use it as a conditionin the same call
         # WARNING: Needs code coverage
         if request[:ids].to_s.parse_integer_ranges.blank? # use to_s to make sure of string data type
+          #
+          # If given string does not yeild any integer values, complain
           @success = false
           @message = "Please provide valid device IDs in (#{ids})"
         else
-          MgmtCmd.create( cmd ) if (@pending_cmds = MgmtCmd.pending( request[:ids], cmd[ :cmd_type ] )).length.zero?
+          #
+          # QUESTION: Please confirm the business logic.
+          #   * If we issue a firmware upgrade to 1-5, 7-10 IDs
+          #   * At least one pending command exist for even one of these IDs
+          #   * Then firmware upgrade for all of these IDs are skipped
+          if (@pending_cmds = MgmtCmd.pending( request[:ids], cmd[ :cmd_type ] )).length.zero?
+            #
+            # If any earlier command is pending, just error out. Un-conditionally.
+            # QUESTION: Should we show error for each ID?
+            request[:ids].to_s.parse_integer_ranges.each {|_id| MgmtCmd.create( cmd.merge( :device_id => _id)) }
+            @success = true
+          else
+            #
+            # We have some pending commands in the queue.
+            # Business logic does not allow to fill the queue any further.
+            @success = false
+            @message = "Command not Queued up. Already have #{@pending_cmds.length} pending commands."
+          end
         end
         
       else

@@ -31,7 +31,7 @@ class MgmtCmd < ActiveRecord::Base
   #   * provide an array of ids, or a string that defines the ranges and arrays
   def self.pending( ids, types )
     # arrays can be accepted without further processing.
-    ( ids = ids.to_s.parse_integer_ranges ) if ids.is_a?( String ) # parse if string was provided. use to_s to ensure string
+    ids = ids.to_s.parse_integer_ranges # parse if string was provided. use to_s to ensure string
     MgmtCmd.pending_server_commands.for_device_ids( ids ).of_types( types ) # search pending commands
     #
     # Old method call. Buggy and unsecure. Changed to new call above
