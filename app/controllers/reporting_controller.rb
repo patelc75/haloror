@@ -45,6 +45,12 @@ class ReportingController < ApplicationController
     end
   end
   
+  # Wed Oct 13 02:42:47 IST 2010 requirement updated
+  #   https://redmine.corp.halomonitor.com/issues/3516#note-11
+  # 1.  Group drop down
+  #   1. If multiple groups, default to All Groups\
+  #   2. If only 1 group
+  # 2. Show all users (including demo users)
   def users
     # this is not required anymore. User.all or @group.users work now
     # users = User.find(:all, :include => [:roles, :roles_users], :order => 'users.id')
@@ -76,8 +82,10 @@ class ReportingController < ApplicationController
     # CHANGED: show all users when group_name search parameter is blank
     #   This feature is introduced now. Earlier the empty option did exist in group dropdown
     #   but that was not showing all users. maybe was broken feature
-    # when user is_not_super_admin, it cannot see "All groups" option, so we need to select the first one
-    session[:group_name] = @group_name = (params[:group_name] || ((current_user.is_super_admin? || @groups.blank?) ? '' : @groups.first.name))
+    # * when user is_not_super_admin, it cannot see "All groups" option, so we need to select the first one
+    # Wed Oct 13 03:14:13 IST 2010
+    #   We do not select the first available now. Just show "all groups"
+    @group_name = params[:group_name] # (params[:group_name] || ((current_user.is_super_admin? || @groups.blank?) ? '' : @groups.first.name))
     #
     # @groups.first replaced with nil
     @group = (@group_name.blank? ? nil : Group.find_by_name(@group_name))
@@ -96,16 +104,19 @@ class ReportingController < ApplicationController
     # end
     #
     # exclude demo users. https://redmine.corp.halomonitor.com/issues/3274
-    @users = (@group.blank? ? User.all_except_demo(:order => "id ASC") : @group.users.select {|e| !e.demo_mode? }.sort {|a,b| a.id <=> b.id})
-    @users = @users.paginate :page => params[:page], :include => [:roles, :roles_users] ,:order => 'users.id', :per_page => REPORTING_USERS_PER_PAGE
+    @users = ( @group.blank? ? User.ordered : User.all( :conditions => {:id => @group.user_ids }, :order => "id ASC") )
+    @users = @users.paginate :page => params[:page], :include => [:roles, :roles_users], :per_page => REPORTING_USERS_PER_PAGE
 
     # @users.each do |user|
     #   if user
     #     @user_names[user.login] = user.id
     #   end
     # end
-    @user_names = {}
-    @users.each {|user| @user_names[user.login] = user.id } unless @users.blank?
+    #
+    # Wed Oct 13 02:59:29 IST 2010 generates hash out of login => id of users
+    # @user_names = {}
+    # @users.each {|user| @user_names[user.login] = user.id } unless @users.blank?
+    @user_names = Hash[ @users.collect(&:login).zip( @users.collect(&:id) )]
     #
     # shorthand below is causing "odd number of arguments for Hash"
     # @user_names = (@users.blank? ? {} : Hash[ @users.collect {|user| [user.login, user.id] } ])
@@ -224,7 +235,7 @@ class ReportingController < ApplicationController
     #   users = User.all(:order => :id) # params[:col]
     # end
     
-    session[:group_name] = @group_name = (params[:group_name] || '')
+    @group_name = params[:group_name]
     group = (@group_name.blank? ? nil : Group.find_by_name(@group_name)) # @groups.first replaced with nil
     # @group_name = ''
     # if !session[:group_name].blank?

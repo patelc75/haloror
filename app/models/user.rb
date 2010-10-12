@@ -175,7 +175,8 @@ class User < ActiveRecord::Base
   
   named_scope :all_except_demo, :conditions => { :demo_mode => [false, nil] } # https://redmine.corp.halomonitor.com/issues/3274
   named_scope :search_by_login_or_profile_name, lambda {|arg| query = "%#{arg}%"; {:include => :profile, :conditions => ["users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", query, query, query]}}
-  named_scope :where_status, lambda {|*arg| {:conditions => {:status => arg.flatten.first} }}
+  named_scope :where_status, lambda {|*arg| {:conditions => {:status => arg.flatten.first.to_s} }}
+  named_scope :ordered, lambda {|*args| { :include => :profile, :order => ( args.flatten.first || "id ASC" ) }} # Wed Oct 13 02:52:36 IST 2010 ramonrails
 
   # -------------- class methods ----------------------------
   
