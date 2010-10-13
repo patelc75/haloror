@@ -14,6 +14,8 @@ Feature: POST XML to simulate gateway
     And the following devices:
       | serial_number |
       | 0123456789    |
+      | 2567053101    |
+    And there is no data for vitals, dial_up_alerts
   
   # IMPORTANT
   #   * key *must* be any of the following *only*
@@ -26,7 +28,6 @@ Feature: POST XML to simulate gateway
   #   * only specify the file name, for example "vital.xml"
   #       path for this file is assumed at Rails.root/specs/data/curl/
   Scenario: POST to vitals
-    Given there is no data for vitals
     When I post the following for user "senior1":
       | file name | vital.xml                                                        |
       | path      | /vitals                                                          |
@@ -34,3 +35,13 @@ Feature: POST XML to simulate gateway
     Then user "senior1" should have data for vitals
     # "vitals" can be described as comma separated strings that can be sent to the user object as a method
     # example: Then user "senior1" should have vitals, id, name, panics
+
+  # https://redmine.corp.halomonitor.com/issues/3528
+  Scenario: dial_up_alert should save correctly
+    When I post the following for user "senior1":
+      | file name | dial_up_alert.xml                                                |
+      | path      | /dial_up_alerts                                                  |
+      | auth_key  | f784568fc099809aece4b53444a1dc2e13db5406dbacff2ae04104ff98c5f167 |
+      | device    | 2567053101                                                       |
+    Then device "2567053101" should have data for dial_up_alerts
+    

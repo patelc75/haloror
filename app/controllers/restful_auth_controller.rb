@@ -71,7 +71,7 @@ class RestfulAuthController < ApplicationController
   end
   
   def is_hash_valid?(string, hash)
-    puts hash
+    # debugger
     #return true if hash == Digest::SHA256.hexdigest(DEFAULT_HASH_KEY + string)
     return true if hash == Digest::SHA256.hexdigest(string)
     #Digest::SHA256.hexdigest(226f3834726d5531683d4f4b5a2d202729695853662543375c226c6447 + "Mon Dec 25 15:52:55 -0600 2007")

@@ -7,8 +7,10 @@ layout 'application'
   end
 
   def create
-  	@dial_up_alert = DialUpAlert.new(params[:dial_up_alert])
-  	@dial_up_alert.save
+    # debugger
+    DialUpAlert.create( params[:dial_up_alert] )
+    # @dial_up_alert = DialUpAlert.new(params[:dial_up_alert])
+    # @dial_up_alert.save
   	render :nothing => true
   end
 
