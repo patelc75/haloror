@@ -192,26 +192,26 @@ Feature: Bus user intake statuses
       | 7        |
       | 10       |
 
-  # # TODO: known issue. panic does not trigger after_save event
-  # # status: green
-  # # reason: bill_monthly checked OR credit card transaction successful
-  # # action: email to admin, halouser, caregivers
-  # # triage: 
-  # # ref   : Intake + Install States google doc : row 10
-  # # email
-  # # Subject: "Joe Smith's myHalo system is officially active"
-  # # Body: "Joe Smith's myHalo system is officially active. Please log into http://www.myhalomonitor.com to configure your alerts"
-  # # TODO: 1.6.0 panic error
-  # Scenario: User Intake - Installed
-  #   Given bill monthly or credit card value are acceptable for user intake "1234567890"
-  #   And we are on or past the desired installation date for senior of user intake "1234567890"
-  #   And the senior of user intake "1234567890" has "Ready to Install" status
-  #   When panic button test data is received for user intake "1234567890"
-  #   Then an email to admin, halouser and caregivers of user intake "1234567890" should be sent for delivery
-  #   And action button for user intake "1234567890" should be colored green
-  #   And the senior of user intake "1234567890" should be "Ready to Bill" status
-  #   And senior of user intake "1234567890" is opted in to call center
-  #   And caregivers are not away for user intake "1234567890"
+  # TODO: known issue. panic does not trigger after_save event
+  # status: green
+  # reason: bill_monthly checked OR credit card transaction successful
+  # action: email to admin, halouser, caregivers
+  # triage: 
+  # ref   : Intake + Install States google doc : row 10
+  # email
+  # Subject: "Joe Smith's myHalo system is officially active"
+  # Body: "Joe Smith's myHalo system is officially active. Please log into http://www.myhalomonitor.com to configure your alerts"
+  # TODO: 1.6.0 panic error
+  Scenario: User Intake - Installed
+    Given bill monthly or credit card value are acceptable for user intake "1234567890"
+    And we are on or past the desired installation date for senior of user intake "1234567890"
+    And the senior of user intake "1234567890" has "Ready to Install" status
+    When panic button test data is received for user intake "1234567890"
+    Then an email to admin, halouser and caregivers of user intake "1234567890" should be sent for delivery
+    And action button for user intake "1234567890" should be colored green
+    And the senior of user intake "1234567890" should be "Ready to Bill" status
+    And senior of user intake "1234567890" is opted in to call center
+    And caregivers are not away for user intake "1234567890"
 
   # release 1.7.0
   #

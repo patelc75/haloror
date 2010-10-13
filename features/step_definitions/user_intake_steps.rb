@@ -182,12 +182,14 @@ end
 When /^panic button test data is received for user intake "([^"]*)"$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  panic = Factory.build( :panic)
-  panic.user = senior
-  #
-  # save fails here. requires a linked device? investigate further
+  Factory.create( :panic, {:user => senior}).should be_true
+  # panic = Factory.build( :panic)
+  # panic.user = senior
+  # #
+  # # save fails here. requires a linked device? investigate further
   # debugger
-  panic.save.should be_true
+  # result = panic.save!
+  # result.should be_true
 end
 
 When /^I (view|edit) user intake with gateway serial "([^"]*)"$/ do |action, _serial|

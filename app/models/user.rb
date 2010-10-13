@@ -503,6 +503,7 @@ class User < ActiveRecord::Base
   # https://redmine.corp.halomonitor.com/issues/398
   # Create a log page of all steps above with timestamps
   def after_save
+    # debugger
     #
     # Wed Oct 13 04:05:20 IST 2010
     #   CHANGED: created_at == updated_at only when it is saved for the very first time

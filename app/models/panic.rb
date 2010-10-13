@@ -8,12 +8,19 @@ class Panic < CriticalDeviceAlert
     # debugger
     #
     # test-mode status is cloned here to reporting etc...
-    user = User.find(user_id)
+    # user = User.find(user_id) # not required. user is already assigned here
     self.test_mode = user.test_mode? unless user.blank?
+    #
+    # ramonrails: Thu Oct 14 01:56:19 IST 2010
+    # CHANGED: ** do not ** return a false
+    #   returning false will abort any further execution of calbacks, or this save
+    #   above code was un-intentionally returning false in some cases
+    true # continue execution. returning false would not save the record
   end
 
   # we just need it for this event. Not critical_device_alert.rb super class
-  def more_after_save
+  # * runs after the CriticalDeviceAlert.after_save
+  def after_save
     # debugger
     # https://redmine.corp.halomonitor.com/issues/3215
     #
@@ -56,6 +63,10 @@ class Panic < CriticalDeviceAlert
         end
       end
     end
+    #
+    # ramonrails: Thu Oct 14 02:05:21 IST 2010
+    #   return TRUE to continue executing further callbacks, if any
+    true
   end
 
   def to_s
