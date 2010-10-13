@@ -7,7 +7,14 @@ class Panic < CriticalDeviceAlert
   def before_save
     # debugger
     #
-    # test-mode status is cloned here to reporting etc...
+    # test-mode status is redundant here for the purpose reporting etc...
+    #
+    # ramonrails Thu Oct 14 05:14:06 IST 2010
+    #   lately, we have test_mode working as follows
+    #   * user is considered in test mode when user.test_mode == true
+    #   * when user goes into test mode
+    #     * membership of safety_care is opted
+    #     * caregivers are set away
     # user = User.find(user_id) # not required. user is already assigned here
     self.test_mode = user.test_mode? unless user.blank?
     #

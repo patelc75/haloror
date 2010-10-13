@@ -742,7 +742,7 @@ class UsersController < ApplicationController
         puts "look closer"
   
         flash[:notice] = 'User was successfully updated.'
-        format.html { redirect_to  :controller => "users", :action => "show", :id => @user) } # user_url does not fit
+        format.html { redirect_to  :controller => "users", :action => "show", :id => @user } # user_url does not fit
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
