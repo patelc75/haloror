@@ -207,7 +207,7 @@ Feature: Bus user intake statuses
     And we are on or past the desired installation date for senior of user intake "1234567890"
     And the senior of user intake "1234567890" has "Ready to Install" status
     When panic button test data is received for user intake "1234567890"
-    Then an email to admin, halouser and caregivers of user intake "1234567890" should be sent for delivery
+    # Then an email to admin, halouser and caregivers of user intake "1234567890" should be sent for delivery
     And action button for user intake "1234567890" should be colored green
     And the senior of user intake "1234567890" should be "Ready to Bill" status
     And senior of user intake "1234567890" is opted in to call center

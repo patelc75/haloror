@@ -110,9 +110,9 @@ class UsersController < ApplicationController
     if params[:user_id]
       @senior_user = User.find(params[:user_id])
     end
-  @user = User.new
+    @user = User.new
     @profile = Profile.new
-  render :action => 'credit_card_authorization'
+    render :action => 'credit_card_authorization' # QUESTION: even for admin account?
   end
   
   def credit_card_authorization
@@ -136,18 +136,18 @@ class UsersController < ApplicationController
         same_as_senior = params[:users][:same_as_senior]
         add_caregiver = params[:users][:add_caregiver] 
         populate_subscriber(params[:user_id],same_as_senior,add_caregiver,params[:email],params[:profile])  
- 
+
         #Credit Card auth needs to be in a transaction so subscriber/caregiver data can be rolled back
 
         Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_card],flash)             
       end
       #this following does not need to be in the transaction because the lines above this do not need to be rolled back if the below lines fail
-     # role = @user.has_role 'subscriber', halouser #@user set up in populate_caregiver when subscriber is also a caregiver
+      # role = @user.has_role 'subscriber', halouser #@user set up in populate_caregiver when subscriber is also a caregiver
       UserMailer.deliver_subscriber_email(@user)
       UserMailer.deliver_signup_installation(@user,@senior) # @user = subscriber
     end
-#=begin
-    rescue Exception => e
+    #=begin
+  rescue Exception => e
     RAILS_DEFAULT_LOGGER.warn("ERROR in create_subscriber, #{e}")
     RAILS_DEFAULT_LOGGER.debug(e.backtrace.join("\n"))
     if request.post?
@@ -156,7 +156,7 @@ class UsersController < ApplicationController
     else
       @senior = User.find(params[:id])
     end
-#=end    
+    #=end    
   end
 
   def add_kit_number(kit_serial_number,user)
@@ -656,7 +656,7 @@ class UsersController < ApplicationController
         # ask for login. this user is activated already
         session[:senior] = params[:senior]
         redirect_to login_path # use ***_path instead of ***_url
-        
+
       else
         # just show user's attributes on form
         #
@@ -669,7 +669,7 @@ class UsersController < ApplicationController
             RolesUsersOption.update(role_user.roles_users_option.id, {:active => 1,:position => User.get_max_caregiver_position(senior)}) unless role_user.blank?
           end
         end
-        
+
       end # activated?
     end # @user ?
   end
@@ -677,6 +677,7 @@ class UsersController < ApplicationController
   # user reaches here after selecting a login/password for the new account
   # entire logic of this action can be merged into standard REST "update" action. Needs re-factoring
   def update_user
+    debugger
     @user = User.find_by_activation_code(params[:user][:activation_code])
 
     user_hash = params[:user]
@@ -732,11 +733,12 @@ class UsersController < ApplicationController
       render :action => 'init_user'
     end
 
-  rescue
-    render :action => 'init_user'
+  # rescue
+  #   render :action => 'init_user'
   end
   
   def update
+    debugger
     @user = User.find(params[:id])
     respond_to do |format|
       if @user.update_attributes!(params[:user])

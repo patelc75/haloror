@@ -1711,11 +1711,24 @@ class User < ActiveRecord::Base
     groups << Group.find(@role.authorizable_id)
   end
   
-  def group_sales_type
-    self.is_halouser_for_what.each do |group|
-      if !group.nil? and group.sales_type != 'call_center'
-        return group.sales_type
-      end
+  # ramonrails: Fri Oct 15 03:06:51 IST 2010
+  #   returns an array of sales_type for all groups this user is member
+  def group_sales_types
+    self.group_memberships.collect(&:sales_type).compact.uniq # all types of memberships. not just halouser
+    #
+    # self.is_halouser_for_what.each do |group|
+    #   if !group.nil? and group.sales_type != 'call_center'
+    #     return group.sales_type
+    #   end
+    # end
+  end
+  
+  # ramonrails: Fri Oct 15 03:14:33 IST 2010
+  # Usage:
+  #   user.is_reseller? # checks all group memberships of this user. any reseller group, make this return true
+  ["reseller", "retailer", "call_center"].each do |_what|
+    define_method "is_#{_what}?".to_sym do
+      group_sales_types.include?( _what)
     end
   end
   

@@ -32,7 +32,7 @@ Given /^I am activating the "([^"]*)" of last user intake$/ do |user_type|
   
   user = user_intake.send(user_type.to_sym)
   user.should_not be_blank
-  
+
   visit activate_path(:activation_code => user.activation_code, :senior => user_intake.senior.id)
 end
 

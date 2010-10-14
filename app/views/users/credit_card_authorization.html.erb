@@ -59,15 +59,15 @@
 			<br /><br />
 	        <label for="credit_card_notes">Special Notes</label>
 	        <br /><br/>
-	        <%= text_area("credit_card", "special_notes", :size => "20x10")%>
+	        <%= text_area("credit_card", "special_notes", :rows => 10)%>
 
 <br/><br/><br/>
 			<%= image_submit_tag("/images/subscribe.gif", :id => "submit_button", :onclick => "this.disabled=true;this.form.submit();")%>
 			<br/><br/>
 		<%#if @senior_user.is_halouser_for_what.first.sales_type != 'retailer'%>
-		  <%if @senior_user.group_sales_type != 'retailer' %>
+		  <% if @user.is_retailer? %>
 			<a href="/users/create_subscriber/<%= params[:user_id]%>">Skip this Step</a>
-			<%end%>
+			<% end %>
 	        <%#<input name="commit" type="image" src="/images/subscribe.gif" />%>
 	      </div>
         </div>

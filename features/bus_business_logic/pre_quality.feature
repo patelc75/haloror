@@ -13,16 +13,32 @@ Feature: Pre quality
     And I press "Add Group"
     Then a group should exist with name "mygroup_160_pq"
 
-  # TODO: capybara required to accomplish this
+  # CHANGED: capybara was required to accomplish this
+  #   this is now shifted to non-ajax implementation. no capybara required
   #
   # creating user and activating
   Scenario: super admin > create an admin
-    # Given I am an authenticated super admin
-    # And the following groups:
-    #   | name           | sales_type | description                |
-    #   | mygroup_160_pq | reseller   | mygroup_160_pq description |
-    # When I go to the home page
-    # And I follow links "User Signup"
+    Given I am an authenticated super admin
+    And the following groups:
+      | name           | sales_type | description                |
+      | mygroup_160_pq | reseller   | mygroup_160_pq description |
+    When I go to the home page
+    And I follow links "User Signup"
+    And I select "mygroup_160_pq" from "Group"
+    And I select "admin" from "Role"
+    And I fill in the following:
+      | Email      | halosarvasv@gmail.com |
+      | First Name | admin                 |
+      | Last Name  | pq160                 |
+      | Address    | admin address         |
+      | City       | admin_city            |
+      | State      | admin_state           |
+      | Zipcode    | 12345                 |
+      | Home Phone | 1234567890            |
+      | Work Phone | 1234567890            |
+    And I press "subscribe"
+    Then I should see "for activation of account"
+    And an email with body "/activate/" should be dispatched
       
   # Pre-conditions: the following exist
   #   Group: mygroup_160_pq
