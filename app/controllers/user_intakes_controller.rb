@@ -79,7 +79,12 @@ class UserIntakesController < ApplicationController
   # POST /user_intakes
   # POST /user_intakes.xml
   def create
-    @user_intake = UserIntake.new(params[:user_intake])
+    #
+    # ramonrails: Fri Oct 14 10:40:54 IST 2010
+    #   creator, updater introduced an error anytime when validation failed
+    #   the values are not oerwritten here
+    #   https://redmine.corp.halomonitor.com/issues/3497
+    @user_intake = UserIntake.new(params[:user_intake].merge( :creator => current_user, :updater => current_user))
     @user_intake.skip_validation = (params[:commit] == "Save") # just save without asking anything
     @groups = Group.for_user(current_user)
 
@@ -89,6 +94,9 @@ class UserIntakesController < ApplicationController
         format.html { redirect_to(:action => 'show', :id => @user_intake.id) }
         format.xml  { render :xml => @user_intake, :status => :created, :location => @user_intake }
       else
+        # this is required since we are maintaining the relational links to users, in user_intake object, not ORM
+        # caregiver block will show blank, unless we do this
+        @user_intake.build_associations # associated objects were removed just before the save. build them again
         format.html { render :action => "new" }
         format.xml  { render :xml => @user_intake.errors, :status => :unprocessable_entity }
       end
@@ -107,7 +115,10 @@ class UserIntakesController < ApplicationController
       # _attributes = params[:user_intake].reject {|k,v| v.is_a?(Hash) || k.include?( "attributes") }
       # _hashes = params[:user_intake].select {|k,v| v.is_a?(Hash) || k.include?( "attributes") }
       # debugger
-      if @user_intake.update_attributes( params[:user_intake])
+      #
+      # ramonrails: Fri Oct 14 10:40:54 IST 2010
+      #   we have the current_user available at this moment, not inside the model
+      if @user_intake.update_attributes( params[:user_intake].merge( :updater => current_user ))
         # _hashes.each {|k, v| @user_intake.send( "#{k}".to_sym, v) } # for example: senior_attributes
         flash[:notice] = 'User Intake was successfully updated.'
         format.html do

@@ -24,6 +24,14 @@ Feature: Create user intake
     And I press "user_intake_submit"
     Then page content should have "Invalid user intake"
 
+  # https://redmine.corp.halomonitor.com/issues/3497
+  Scenario: Submit with validation error, then re-submit
+    When I fill in "user_intake_senior_attributes_email" with ""
+    And I press "user_intake_submit"
+    And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
+    And I press "user_intake_submit"
+    Then page content should have "Invalid user intake"
+  
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Submit. user profile ok. subscriber = user
     When I fill the senior details for user intake form

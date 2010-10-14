@@ -14,6 +14,19 @@ class ApplicationController < ActionController::Base
   session :session_key => '_HaloRoR2_session_id'  
 
   filter_parameter_logging :card_number
+
+  # ==================
+  # = public methods =
+  # ==================
+
+  # TODO: need some work before it can run flawless
+  # # ramonrails: auto-assign created_by, updated_by only if the columns exist
+  # before_filter :set_current_user
+  # 
+  # # ramonrails: auto-assign created_by, updated_by only if the columns exist
+  # def set_current_user
+  #   Thread.current['user'] = session[:user]
+  # end
   
   #This method is needed because of the way attachment_fu stores the files 
   #uploaded on the file system.  attachment_fu stores the files in a folder with 
@@ -54,7 +67,12 @@ class ApplicationController < ActionController::Base
     @num_ref[9] = 'th'
   end
   
+  # ===================
+  # = private methods =
+  # ===================
+  
   private
+
   def refresh_operators(group_id=nil)
     @user = current_user
     @groups = []
@@ -94,8 +112,6 @@ class ApplicationController < ActionController::Base
     @caregivers = user.caregivers_sorted_by_position
   end
 
-  private
-
   def set_user_time_zone
     if logged_in? && !current_user.profile.blank?
       Time.zone = current_user.profile.time_zone
@@ -104,7 +120,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # =====================
+  # = protected methods =
+  # =====================
+
   protected
+
   def authenticated?
     unless (controller_name == 'users' && (action_name == 'init_caregiver' || action_name == 'update_caregiver' || action_name == 'activate') || 
       controller_name == 'sessions' ||

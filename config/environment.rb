@@ -110,6 +110,12 @@ require 'server_instance'
 require 'rexml-expansion-fix'
 require 'active_merchant_extensions'
 
+# TODO: need some work before it can run flawless
+# require 'user_monitor' # auto assign created_by, updated_by only if the column exists
+# 
+# # auto assign created_by, updated_by only if the column exists
+# ActiveRecord::Base.class_eval { include ActiveRecord::UserMonitor }
+
 ExceptionNotifier.exception_recipients = %w(exceptions@halomonitoring.com)  
 # defaults to exception.notifier@default.com
 ExceptionNotifier.sender_address = %("HaloRoR Error" <	no-reply@halomonitoring.com>)
