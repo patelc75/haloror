@@ -40,6 +40,9 @@
 
 <div class="<%= label_span %>"><%= f.label :work_phone, "Work #{phone_string}" %>:</div>
 <div class="<%= field_span %> last"><%= f.text_field :work_phone, :class => field_span %></div>
+                                                                                               
+<div class="<%= label_span %>"><%= f.label :other_phone, "Other #{phone_string}" %>:</div>
+<div class="<%= field_span %> last"><%= f.text_field :other_phone, :class => field_span %></div>
 
 <div class="<%= label_span %>"><%= f.label :carrier_id, provider %></div>
 <div class="<%= field_span %> last"><%= f.select :carrier_id, Carrier.ordered.collect {|p| [p.name, p.id]}, {:include_blank => "Select Cell Provider for Text Msg..."}, {:style => (narrow ? "width:160px" : "")} %></div>
