@@ -21,7 +21,7 @@
         <%= link_to image_tag('warning_go.png', :alt => "Click to charge subscription on credit card", :title => "Click to charge subscription on credit card"), {:controller => 'user_intakes', :action => 'charge_subscription', :id => user_intake_row.id} %>
       <% end %>
     <% elsif user_intake_row.bill_monthly %>
-      <%= image_tag("calendar-month.png", :alt => "Bill Monthly", :title => "Bill Monthly") %>
+      <%= image_tag("calendar-month.png", :alt => "Manual Billing", :title => "Manual Billing") %>
     <% else %>
       <%= image_tag('exclamation.png') %>
     <% end %>

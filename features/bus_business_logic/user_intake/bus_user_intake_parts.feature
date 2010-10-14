@@ -31,9 +31,9 @@ Feature: User intake parts
   #   Given I am listing user intakes
   #   Then page content has "Desired Billing Date"
     
-  Scenario: Verify Bill Monthly is checked in the user intake form, then Credit Card column is blank
+  Scenario: Verify Manual Billing is checked in the user intake form, then Credit Card column is blank
     Given I am ready to submit a user intake
-    When I choose "Bill Monthly"
+    When I choose "Manual Billing"
     And I press "user_intake_submit"
     Then last user intake should not have credit card value
     And last user intake should have bill monthly value
