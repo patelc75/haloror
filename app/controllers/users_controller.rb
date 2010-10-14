@@ -28,7 +28,8 @@ class UsersController < ApplicationController
     else
       flash[:message] = "Status not changed for #{@user.name}"
     end
-    render :action => 'special_status' # @user variable already loaded
+    #render :action => 'special_status' # @user variable already loaded
+    #redirect_to :action => 'users'
   end
   
   def special_status
