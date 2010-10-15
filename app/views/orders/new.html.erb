@@ -65,10 +65,10 @@
             <%= @groups.collect {|e| e.name.gsub('_',' ').capitalize }.join(', ') %>
           <% end -%>
           </p>
-          <p>
-            <%= f.check_box "halouser", :disabled => @confirmation %>
-            <%= f.label "halouser", "This person will be the myHalo user" %>
-          </p>
+          <!-- <p>
+            <%#= f.check_box "halouser", :disabled => @confirmation %>
+            <%#= f.label "halouser", "This person will be the myHalo user" %>
+          </p> -->
         </td>
         <td width="33%">
           <%= f.check_box "bill_address_same", :checked => @same_address, :disabled => @confirmation %>
