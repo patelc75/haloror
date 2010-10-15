@@ -4,6 +4,7 @@
 <%= will_paginate %>
 <table class="bluegrey">
   <tr>
+    <th>Group</th>
     <th>Part Num</th>
     <th>Model</th>
     <th>Coupon<br> Code</th>
@@ -19,6 +20,7 @@
 <% for device_model_price in @device_model_prices %>
   <% unless device_model_price.device_model.blank? %>
   <tr class="<%= cycle('', 'altrow') %>">
+    <td><%=h device_model_price.group_name %></td>
     <td><%=h device_model_price.device_model.part_number %></td>
     <td><%=h device_model_price.device_model.device_type.device_type %></td>
     <td><%=h device_model_price.coupon_code %></td>

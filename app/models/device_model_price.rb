@@ -9,7 +9,7 @@ class DeviceModelPrice < ActiveRecord::Base
   named_scope :for_coupon_code, lambda {|arg| { :conditions => { :coupon_code => arg } }}
   
   def group_name
-    group.blank? ? '' : group.name
+    group.blank? ? Group.direct_to_consumer.name : group.name
   end
 
   def group_name=(name)
