@@ -13,7 +13,7 @@
       <td>&nbsp;&nbsp;</td>
       <td>Alert Group</td>
     </tr>
-    <% at = AlertType.types_as_array %>
+    <% at = @alert_types %>
     <% ag = AlertGroup.types_as_array %>
     <tr>
       <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
