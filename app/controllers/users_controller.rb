@@ -738,7 +738,6 @@ class UsersController < ApplicationController
   end
   
   def update
-    debugger
     @user = User.find(params[:id])
     respond_to do |format|
       if @user.update_attributes!(params[:user])

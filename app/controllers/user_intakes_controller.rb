@@ -118,7 +118,7 @@ class UserIntakesController < ApplicationController
       #
       # ramonrails: Fri Oct 14 10:40:54 IST 2010
       #   we have the current_user available at this moment, not inside the model
-      if @user_intake.update_attributes( params[:user_intake].merge( :updater => current_user ))
+      if @user_intake.update_attributes( params[:user_intake].reject {|e| e == "creator" }.merge( :updater => current_user ))
         # _hashes.each {|k, v| @user_intake.send( "#{k}".to_sym, v) } # for example: senior_attributes
         flash[:notice] = 'User Intake was successfully updated.'
         format.html do

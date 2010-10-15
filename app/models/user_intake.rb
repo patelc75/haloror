@@ -118,9 +118,12 @@ class UserIntake < ActiveRecord::Base
 
   def before_save
     # debugger
+    #
     # card or bill
-    self.bill_monthly = (card_or_bill == "Bill")
-    self.credit_debit_card_proceessed = !bill_monthly
+    self.credit_debit_card_proceessed = (card_or_bill == "Card")
+    self.bill_monthly = !credit_debit_card_proceessed
+    # self.bill_monthly = (card_or_bill == "Bill")
+    # self.credit_debit_card_proceessed = !bill_monthly
     # associations
     associations_before_validation_and_save # build the associations
     validate_associations # check validations unless "save"
