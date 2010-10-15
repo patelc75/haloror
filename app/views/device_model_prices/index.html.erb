@@ -18,7 +18,6 @@
   </tr>
 
 <% for device_model_price in @device_model_prices %>
-  <% unless device_model_price.device_model.blank? %>
   <tr class="<%= cycle('', 'altrow') %>">
     <td><%=h device_model_price.group_name %></td>
     <td><%=h device_model_price.device_model.part_number %></td>
@@ -34,7 +33,6 @@
     <td><%= link_to 'Edit', edit_device_model_price_path(device_model_price) %></td>
     <td><%= link_to 'Destroy', device_model_price, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
-  <% end %>
 <% end %>
 </table>
 <%= will_paginate %>
