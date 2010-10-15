@@ -1,5 +1,9 @@
 <div style="float:right">
-	<%=form_remote_tag :url => '/reporting/search_user_table', :update => 'user-table'%>
-		Search: <input type="text" name="query" /> <input type="submit" value="Go" />
-	</form>
+  <%= form_remote_tag :url => '/reporting/search_user_table', :update => 'user-table'%>
+    Search: <input type="text" name="query" /> <input type="submit" value="Go" />
+  </form>
+  <span class="tiny">
+    Find any rows contianing this search string in ID, Login, or First / Last name.<br />
+    For example, searching for '2' will also find row with login 'user2'.
+  </span>
 </div>
