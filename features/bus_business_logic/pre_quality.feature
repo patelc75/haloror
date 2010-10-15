@@ -7,52 +7,50 @@ Feature: Pre quality
     Given I am an authenticated super admin
     When I go to the home page
     And I follow links "Config > Roles & Groups"
-    And I fill in "mygroup_160_pq" for "Group Name"
+    And I fill in "reseller_group" for "Group Name"
     And I select "reseller" from "Sales Type"
-    And I fill in "mygroup_160_pq description" for "Description"
+    And I fill in "reseller_group description" for "Description"
     And I press "Add Group"
-    Then a group should exist with name "mygroup_160_pq"
+    Then a group should exist with name "reseller_group"
 
   # CHANGED: capybara was required to accomplish this
   #   this is now shifted to non-ajax implementation. no capybara required
   #
-  # creating user and activating
+  # creating admin. consolidated step added to get ready to submit admin details
   Scenario: super admin > create an admin
     Given I am an authenticated super admin
-    And the following groups:
-      | name           | sales_type | description                |
-      | mygroup_160_pq | reseller   | mygroup_160_pq description |
-    When I go to the home page
-    And I follow links "User Signup"
-    And I select "mygroup_160_pq" from "Group"
-    And I select "admin" from "Role"
-    And I fill in the following:
-      | Email      | halosarvasv@gmail.com |
-      | First Name | admin                 |
-      | Last Name  | pq160                 |
-      | Address    | admin address         |
-      | City       | admin_city            |
-      | State      | admin_state           |
-      | Zipcode    | 12345                 |
-      | Home Phone | 1234567890            |
-      | Work Phone | 1234567890            |
+    And I am ready to create an admin
     And I press "subscribe"
     Then I should see "for activation of account"
-    And an email with body "/activate/" should be dispatched
-      
+    And email with activation code of last user should be sent for delivery
+    # count of emails is ignored here to accommodate within timeline of 1.6.0 release
+    # we must check the count also, or, users may get multiple similar emails
+
+  Scenario: Activate an admin
+    Given I am an authenticated super admin
+    And I am ready to create an admin
+    And I press "subscribe"
+    And I am activating the last user
+    And I fill in the following:
+      | Username         | reseller_admin |
+      | Password         | admin          |
+      | Confirm Password | admin          |
+    And I press "subscribe_button"
+    Then last user should be activated
+    
   # Pre-conditions: the following exist
-  #   Group: mygroup_160_pq
-  #   Admin: admin_160_pq1 with profile, activated
+  #   Group: reseller_group
+  #   Admin: reseller_admin with profile, activated
   Scenario: super admin > create an coupon code
     Given I am an authenticated super admin
     And the following groups:
       | name           | sales_type | description                |
-      | mygroup_160_pq | reseller   | mygroup_160_pq description |
-    And a user "admin_160_pq1" exists with profile
+      | reseller_group | reseller   | reseller_group description |
+    And a user "reseller_admin" exists with profile
     When I go to the home page
     And I follow links "Config > Coupon Codes > New coupon code"
     And I select the following:
-      | Group                             | mygroup_160_pq            |
+      | Group                             | reseller_group            |
       | Device model                      | 12001002-1 -- Chest Strap |
       | device_model_price_expiry_date_1i | 2011                      |
     And I fill in the following:
@@ -69,19 +67,19 @@ Feature: Pre quality
   Scenario: admin > online store has single group
   
   # Pre-conditions: the following exist
-  #   Group:        mygroup_160_pq, reseller
+  #   Group:        reseller_group, reseller
   #     * online order will ask for kit serial after "Place Order"
   #     * subscriber sgreement will be presented after kit_serial number
-  #   Admin:        admin_160_pq1 with profile, activated
+  #   Admin:        reseller_admin with profile, activated
   #   Coupon code:  coupon_160_pq1
-  #   current user = admin_160_pq1
+  #   current user = reseller_admin
   Scenario: admin > coupon applies correctly
     Given the following groups:
       | name           | sales_type | description                |
-      | mygroup_160_pq | reseller   | mygroup_160_pq description |
+      | reseller_group | reseller   | reseller_group description |
     And a device_model_price exists with the following attributes:
       | coupon_code       | coupon_160_pq1    |
-      | group_name        | mygroup_160_pq    |
+      | group_name        | reseller_group    |
       | device_model_type | complete          |
       | expiry_date       | `1.year.from_now` |
       | deposit           | 66                |
@@ -89,36 +87,36 @@ Feature: Pre quality
       | monthly_recurring | 77                |
       | months_advance    | 0                 |
       | months_trial      | 2                 |
-    And a user "admin_160_pq1" exists with profile
-    And user "admin_160_pq1" has "admin" role for group "mygroup_160_pq"
-    And I am authenticated as "admin_160_pq1" with password "12345"
+    And a user "reseller_admin" exists with profile
+    And user "reseller_admin" has "admin" role for group "reseller_group"
+    And I am authenticated as "reseller_admin" with password "12345"
     When I go to the online store
     And I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the billing details for online store
     And I fill the credit card details for online store
-    And I select "mygroup_160_pq" from "Group"
-    And I uncheck "This person will be the myHalo user"
-    And I uncheck "Same as shipping info"
+    And I select "reseller_group" from "Group"
+    # And I uncheck "This person will be the myHalo user"
+    And I uncheck "order_bill_address_same"
     And I fill in "Coupon Code" with "coupon_160_pq1"
     And I press "Continue"
     Then I should see "$72"
     And I should see "2 months trial"
 
   # Pre-conditions: the following exist
-  #   Group:        mygroup_160_pq, reseller
+  #   Group:        reseller_group, reseller
   #     * online order will ask for kit serial after "Place Order"
   #     * subscriber sgreement will be presented after kit_serial number
-  #   Admin:        admin_160_pq1 with profile, activated
+  #   Admin:        reseller_admin with profile, activated
   #   Coupon code:  coupon_160_pq1
-  #   current user = admin_160_pq1
+  #   current user = reseller_admin
   Scenario: admin > place order
     Given the following groups:
       | name           | sales_type | description                |
-      | mygroup_160_pq | reseller   | mygroup_160_pq description |
+      | reseller_group | reseller   | reseller_group description |
     And a device_model_price exists with the following attributes:
       | coupon_code       | coupon_160_pq1    |
-      | group_name        | mygroup_160_pq    |
+      | group_name        | reseller_group    |
       | device_model_type | complete          |
       | expiry_date       | `1.year.from_now` |
       | deposit           | 66                |
@@ -126,36 +124,32 @@ Feature: Pre quality
       | monthly_recurring | 77                |
       | months_advance    | 0                 |
       | months_trial      | 2                 |
-    And a user "admin_160_pq1" exists with profile
-    And user "admin_160_pq1" has "admin" role for group "mygroup_160_pq"
-    And I am authenticated as "admin_160_pq1" with password "12345"
+    And a user "reseller_admin" exists with profile
+    And user "reseller_admin" has "admin" role for group "reseller_group"
+    And I am authenticated as "reseller_admin" with password "12345"
     When I go to the online store
     And I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the billing details for online store
     And I fill the credit card details for online store
-    And I select "mygroup_160_pq" from "Group"
-    And I uncheck "This person will be the myHalo user"
-    And I uncheck "Same as shipping info"
+    And I select "reseller_group" from "Group"
+    # And I uncheck "This person will be the myHalo user"
+    And I uncheck "order_bill_address_same"
     And I fill in "Coupon Code" with "coupon_160_pq1"
     And I press "Continue"
     And I press "Place Order"
     Then an email to "cuc_senior@chirag.name" with subject "activation" should be sent for delivery
 
-  Scenario: admin > assign login from email to halouser
-    
-
   Scenario: admin > add a new caregiver with no email
     Given the following groups:
       | name           | sales_type | description                |
-      | mygroup_160_pq | reseller   | mygroup_160_pq description |
-    And a user "admin_160_pq1" exists with profile
-    And user "admin_160_pq1" has "admin" role for group "mygroup_160_pq"
+      | reseller_group | reseller   | reseller_group description |
+    And a user "reseller_admin" exists with profile
+    And user "reseller_admin" has "admin" role for group "reseller_group"
     And a user "myhalouser" exists with profile
-    And user "myhalouser" has "halouser" role for group "mygroup_160_pq"
-    And I am authenticated as "admin_160_pq1" with password "12345"
+    And user "myhalouser" has "halouser" role for group "reseller_group"
+    And I am authenticated as "reseller_admin" with password "12345"
     When I visit "/reporting/users/"
-    And I select "mygroup_160_pq" from "group_name"
     And I follow links "Caregivers > add_caregiver_button > Add new caregiver with no email"
     And I fill in the following:
       | Username         | caregiver1 |

@@ -673,83 +673,83 @@ class UsersController < ApplicationController
       end # activated?
     end # @user ?
   end
-  
-  # user reaches here after selecting a login/password for the new account
-  # entire logic of this action can be merged into standard REST "update" action. Needs re-factoring
-  def update_user
-    debugger
-    @user = User.find_by_activation_code(params[:user][:activation_code])
+    
+  def update
+    if params[:user][:activation_code].blank?
+      #
+      # just a reguar update
+      @user = User.find(params[:id])
+      respond_to do |format|
+        if @user.update_attributes!(params[:user])
+          puts "look closer"
 
-    user_hash = params[:user]
-    if user_hash[:password] == user_hash[:password_confirmation]
-      if user_hash[:password].length >= 4 # FIXME: Why is validation logic duplicated here? Needs DRYing
-        @user.password = user_hash[:password]
-        @user.password_confirmation = user_hash[:password_confirmation]
-        @user.login = user_hash[:login]
-        @user.save!
-        self.current_user = @user
-        if logged_in? && !current_user.activated?
-          current_user.activate
+          flash[:notice] = 'User was successfully updated.'
+          format.html { redirect_to  :controller => "users", :action => "show", :id => @user } # user_url does not fit
+          format.xml  { head :ok }
+        else
+          format.html { render :action => "edit" }
+          format.xml  { render :xml => @user.errors.to_xml }
         end
-        current_user.set_active()
-        if current_user.is_caregiver?
-          if session[:senior]
-            redirect_to :controller => 'call_list', :action => 'show', :id => session[:senior]
-          else
-            redirect_to :controller => 'call_list', :action => 'show', :recently_activated => 'true'
+      end
+
+    else
+      @user = User.find_by_activation_code(params[:user][:activation_code])
+
+      user_hash = params[:user]
+      if user_hash[:password] == user_hash[:password_confirmation]
+        if user_hash[:password].length >= 4 # FIXME: Why is validation logic duplicated here? Needs DRYing
+          @user.password = user_hash[:password]
+          @user.password_confirmation = user_hash[:password_confirmation]
+          @user.login = user_hash[:login]
+          @user.save!
+          self.current_user = @user
+          if logged_in? && !current_user.activated?
+            current_user.activate
           end
-          
-        # FIXME: patching the logic here for now. Needs DRYing up. Needs code coverage.
-        # redirect to user intake, if the current_user is halouser/subscriber with incomplete user intake
-        elsif (current_user.is_halouser? || current_user.is_subscriber?)
-          # if this user has
-          #   an incomplete user intake, sk to fill it
-          #   completed user intake but legal agreement not made, ask for agreement
-          if current_user.incomplete_user_intakes.blank?
-            if current_user.legal_agreements_pending.blank?
-              redirect_to '/'
+          current_user.set_active()
+          if current_user.is_caregiver?
+            if session[:senior]
+              redirect_to :controller => 'call_list', :action => 'show', :id => session[:senior]
             else
+              redirect_to :controller => 'call_list', :action => 'show', :recently_activated => 'true'
+            end
+
+          # FIXME: patching the logic here for now. Needs DRYing up. Needs code coverage.
+          # redirect to user intake, if the current_user is halouser/subscriber with incomplete user intake
+          elsif (current_user.is_halouser? || current_user.is_subscriber?)
+            # if this user has
+            #   an incomplete user intake, sk to fill it
+            #   completed user intake but legal agreement not made, ask for agreement
+            if current_user.incomplete_user_intakes.blank?
+              if current_user.legal_agreements_pending.blank?
+                redirect_to '/'
+              else
+                # paths do not work correctly. using url_for
+                redirect_to url_for(:controller => 'user_intakes', :action => 'show', :id => current_user.legal_agreements_pending.first)
+              end
+            else
+              # WARNING: subscriber can have many user intakes. How do we identify the correct one?
+              # FIXME: For now: assuming the user just got activated, it only has one user intake
+              # Needs to be tested yet
               # paths do not work correctly. using url_for
-              redirect_to url_for(:controller => 'user_intakes', :action => 'show', :id => current_user.legal_agreements_pending.first)
+              redirect_to url_for(:controller => 'user_intakes', :action => 'edit', :id => current_user.incomplete_user_intakes.first)
+              # once the user intake is submitted successfully, legal agreement will be shown automatically until agreed
+              # any user other than halouser/subscriber will also see the legal agreement, but can only print. cannot accept/agree/submit.
             end
           else
-            # WARNING: subscriber can have many user intakes. How do we identify the correct one?
-            # FIXME: For now: assuming the user just got activated, it only has one user intake
-            # Needs to be tested yet
-            # paths do not work correctly. using url_for
-            redirect_to url_for(:controller => 'user_intakes', :action => 'edit', :id => current_user.incomplete_user_intakes.first)
-            # once the user intake is submitted successfully, legal agreement will be shown automatically until agreed
-            # any user other than halouser/subscriber will also see the legal agreement, but can only print. cannot accept/agree/submit.
+            redirect_to '/'
           end
         else
-          redirect_to '/'
+          flash[:warning] = "Password must be at least 4 characters"
+          render :action => 'init_user'
         end
       else
-        flash[:warning] = "Password must be at least 4 characters"
+        flash[:warning]= "New Password must equal Confirm Password"
         render :action => 'init_user'
       end
-    else
-      flash[:warning]= "New Password must equal Confirm Password"
-      render :action => 'init_user'
-    end
 
-  # rescue
-  #   render :action => 'init_user'
-  end
-  
-  def update
-    @user = User.find(params[:id])
-    respond_to do |format|
-      if @user.update_attributes!(params[:user])
-        puts "look closer"
-  
-        flash[:notice] = 'User was successfully updated.'
-        format.html { redirect_to  :controller => "users", :action => "show", :id => @user } # user_url does not fit
-        format.xml  { head :ok }
-      else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @user.errors.to_xml }
-      end
+    # rescue
+    #   render :action => 'init_user'
     end
   end
   

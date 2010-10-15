@@ -2,7 +2,9 @@
 #
 include ApplicationHelper
 
-# Given
+# ==========
+# = givens =
+# ==========
 
 # accept multiple comma separated names in one go
 Given /^(?:|a )user "([^\"]*)" exists with profile$/ do |user_names|
@@ -80,6 +82,39 @@ Given /^user "([^"]*)" status gets changed to "([^"]*)"$/ do |login, status|
   user.save.should == true
 end
 
+Given /^I am ready to create an admin$/ do
+  Given "the following groups:", table(%{
+    | name           | sales_type | description                |
+    | reseller_group | reseller   | reseller_group description |
+    | retailer_group | reseller   | retailer_group description |
+  })
+  Given %{a role "admin" exists}
+  When "I go to the home page"
+  When %{I follow links "User Signup"}
+  When %{I select "reseller_group" from "Group"}
+  When %{I select "admin" from "Role"}
+  When "I fill in the following:", table(%{
+    | Email      | halosarvasv@gmail.com |
+    | First Name | admin                 |
+    | Last Name  | pq160                 |
+    | Address    | admin address         |
+    | City       | admin_city            |
+    | State      | admin_state           |
+    | Zipcode    | 12345                 |
+    | Home Phone | 1234567890            |
+    | Work Phone | 1234567890            |
+  })
+end
+
+Given /^I am activating the last user$/ do
+  (_user = User.last).should_not be_blank
+  visit "/activate/#{User.last.activation_code}"
+end
+
+# =========
+# = whens =
+# =========
+
 When /^I activate and login as the senior of last user intake$/ do
   When %{I am activating the "senior" of last user intake}
   When %{I fill in "user_login" with "myhalouser"}
@@ -125,6 +160,15 @@ end
 
 When /^a panic button is delivered after the desired installation date and the user is not in test mode$/ do
   pending # express the regexp above with the code you wish you had
+end
+
+# =========
+# = thens =
+# =========
+
+Then /^last user should be activated$/ do
+  (_user = User.last).should_not be_blank
+  _user.should be_activated
 end
 
 Then /^user "([^\"]*)" should have data for (.+)$/ do |user_login, method_names|

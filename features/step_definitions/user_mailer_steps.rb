@@ -64,3 +64,8 @@ end
 #   end
 #   assert_equal count.to_i, total, "#{total} emails with subject #{subject} found"
 # end
+
+Then /^email with activation code of last user should be sent for delivery$/ do
+  (_user = User.last).should_not be_blank
+  Email.all.select {|e| e.mail.include?( _user.activation_code) }.length.should > 0
+end

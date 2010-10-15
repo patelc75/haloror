@@ -30,7 +30,7 @@
 <% unless @users.blank? %>
   <% @users.each do |user| %>
     <% if current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships) || current_user.is_sales? || current_user.is_moderator_of_any?(user.group_memberships) || current_user.is_installer? %>
-      <%=render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false}%>
+      <%= render :partial => 'reporting/table/user_row', :locals => {:user => user, :toggle => true, :caregiver => false} %>
     <div id="user_<%=user.id%>-hidden" style="display:none"></div>
     <% end %>
   <% end %>

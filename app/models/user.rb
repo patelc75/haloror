@@ -173,12 +173,14 @@ class User < ActiveRecord::Base
   #
   # after_save :post_process # shifted to method instead
   
-  named_scope :all_except_demo, :conditions => { :demo_mode => [false, nil] } # https://redmine.corp.halomonitor.com/issues/3274
+  named_scope :all_except_demo, :conditions => ["demo_mode <> ?", true] # https://redmine.corp.halomonitor.com/issues/3274
   named_scope :filtered, lambda {|arg| query = "%#{arg}%"; {:include => :profile, :conditions => ["users.id = ? OR users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", query.to_i, query, query, query]}}
   named_scope :where_status, lambda {|*arg| {:conditions => {:status => arg.flatten.first.to_s} }}
   named_scope :ordered, lambda {|*args| { :include => :profile, :order => ( args.flatten.first || "id ASC" ) }} # Wed Oct 13 02:52:36 IST 2010 ramonrails
 
-  # -------------- class methods ----------------------------
+  # =================
+  # = class methods =
+  # =================
   
   # shift status column to the next business logical status
   def self.shift_to_next_status( id, message = nil, who_updated = nil)
@@ -467,6 +469,9 @@ class User < ActiveRecord::Base
   end
 
   def after_initialize
+    #
+    # assume not in demo mode
+    self.demo_mode = false
     # just make the login blank in memory, if this is _AUTO_xxx login
     self.login = "" if (login =~ /_AUTO_/)
     #
@@ -523,7 +528,6 @@ class User < ActiveRecord::Base
   # https://redmine.corp.halomonitor.com/issues/398
   # Create a log page of all steps above with timestamps
   def after_save
-    # debugger
     #
     # Wed Oct 13 04:05:20 IST 2010
     #   CHANGED: created_at == updated_at only when it is saved for the very first time
@@ -879,7 +883,6 @@ class User < ActiveRecord::Base
   # no need to fetch all data and get entire details
   def days_since_status_changed
     status_changed_at.blank? ? 30 : ((Time.now - status_changed_at) / 1.day).round
-    # debugger
     # span = 0
     # check_days = [1, 7]
     # check_days.each do |n|
@@ -1118,7 +1121,6 @@ class User < ActiveRecord::Base
           end
           # take the higher values
           time_span = ((time_span1 > time_span2) ? time_span1 : time_span2)
-          # debugger
           result = if time_span >= 2.days
             'abnormal'
           elsif time_span >= 1.day
