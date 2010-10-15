@@ -150,17 +150,17 @@ Feature: Bus user intake statuses
     # And an email to admin of user intake "1234567890" should be sent for delivery
     And action button for user intake "1234567890" should be colored red
 
-  # # status: gray
-  # # reason: panic button test after desired installation date. not in test mode.
-  # # action: 
-  # # triage: 
-  # # ref   : Intake + Install States google doc : row 8
-  # # TODO: 1.6.0 panic error
-  # Scenario: User Intake - Ready to bill
-  #   Given the senior of user intake "1234567890" is not in test mode
-  #   And the user intake "1234567890" status is "Ready to Bill" since past 0 days
-  #   When panic button test data is received for user intake "1234567890"
-  #   Then action button for user intake "1234567890" should be colored gray
+  # status: gray
+  # reason: panic button test after desired installation date. not in test mode.
+  # action: 
+  # triage: 
+  # ref   : Intake + Install States google doc : row 8
+  # TODO: 1.6.0 panic error
+  Scenario: User Intake - Ready to bill
+    Given the senior of user intake "1234567890" is not in test mode
+    And the user intake "1234567890" status is "Ready to Bill" since past 0 days
+    When panic button test data is received for user intake "1234567890"
+    Then action button for user intake "1234567890" should be colored gray
 
   # status: yellow
   # reason: 1 day old "Ready to bill"
@@ -208,10 +208,11 @@ Feature: Bus user intake statuses
     And the senior of user intake "1234567890" has "Ready to Install" status
     When panic button test data is received for user intake "1234567890"
     # Then an email to admin, halouser and caregivers of user intake "1234567890" should be sent for delivery
-    And action button for user intake "1234567890" should be colored green
     And the senior of user intake "1234567890" should be "Ready to Bill" status
+    And action button for user intake "1234567890" should be colored gray
     And senior of user intake "1234567890" is opted in to call center
-    And caregivers are not away for user intake "1234567890"
+    #   * this business logic was changed. caregivers are active after admin clicks "Bill" and user then gets into "Installed" state
+    # And caregivers are not away for user intake "1234567890"
 
   # release 1.7.0
   #

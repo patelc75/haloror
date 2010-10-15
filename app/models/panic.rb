@@ -47,8 +47,6 @@ class Panic < CriticalDeviceAlert
         # debugger
         user.status = User::STATUS[:installed]
         #
-        user.send(:update_without_callbacks) # quick fix to https://redmine.corp.halomonitor.com/issues/3067
-        #
         # add a row to triage audit log
         #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log
         attributes = {
@@ -69,6 +67,8 @@ class Panic < CriticalDeviceAlert
           UserMailer.deliver_user_installation_alert( _user)
         end
       end
+      #
+      user.send(:update_without_callbacks) # quick fix to https://redmine.corp.halomonitor.com/issues/3067
     end
     #
     # ramonrails: Thu Oct 14 02:05:21 IST 2010
