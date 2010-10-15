@@ -16,6 +16,10 @@ class DeviceModelPrice < ActiveRecord::Base
     self.group = Group.find_by_name( name)
   end
   
+  def device_model_part_number=( _number)
+    self.device_model = DeviceModel.find_by_part_number( _number)
+  end
+  
   def device_model_type=( name)
     self.device_model = DeviceModel.find_complete_or_clip( name)
   end
