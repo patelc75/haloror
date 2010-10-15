@@ -274,6 +274,9 @@ class Order < ActiveRecord::Base
     !payment_gateway_responses.subscription.successful.blank? # row found = true, nil = false
   end
   
+  # http://spreadsheets.google.com/a/halomonitoring.com/ccc?key=0AnT533LvuYHydENwbW9sT0NWWktOY2VoMVdtbnJqTWc&hl=en#gid=2
+  # * subscrition for DTC is now charged from 1st of next month
+  # * pro-rata chargeed since installed date or, 7 calendar days from shipped
   def charge_subscription
     # recurring attempted only when one-time is success
     if purchase_successful? and !subscription_successful?

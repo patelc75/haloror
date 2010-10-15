@@ -16,6 +16,9 @@ module NavigationHelpers
     when /new user_intake page/
       new_user_intake_path
       
+    when /the user intake overview/
+      user_intakes_path
+      
     when /call list/
       "call_list/show/#{current_user.id}"
 

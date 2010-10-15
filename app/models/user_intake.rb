@@ -165,6 +165,15 @@ class UserIntake < ActiveRecord::Base
     senior.set_test_mode!( (test_mode == "1") || (created_at == updated_at) || self.new_record?) unless senior.test_mode?
     # self.senior.send( :update_without_callbacks) # not required. set_test_mode! has "shebang"
     #
+    # Switch user to installed state, if user is "Ready to Bill"
+    senior.status = User::STATUS[:installed] if senior.status == User::STATUS[:bill_pending]
+    senior.send(:update_without_callbacks)
+    #
+    # charge the credit card subscription now
+    order.charge_subscription unless order.blank?
+    #
+    # pro-rata for subscription should also be charged
+    #
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
     # UserMailer.deliver_signup_installation(senior)

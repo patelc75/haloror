@@ -42,7 +42,7 @@ class User < ActiveRecord::Base
     :pending          => "Submit",
     :approval_pending => "Approve",
     :install_pending  => "Install",
-    :bill_pending     => "Generate Bill",
+    :bill_pending     => "Bill",
     :installed        => "Installed",
     :test             => "Test Mode",
     :overdue          => "Install Now",
@@ -838,7 +838,7 @@ class User < ActiveRecord::Base
   end
   
   def submit_button_text
-    (status == STATUS[:approval_pending]) ? STATUS_BUTTON_TEXT[status_index] : "#{status.blank? ? 'Submit' : 'Update ('+STATUS[status_index]+')' }"
+    (status == STATUS[:approval_pending]) ? STATUS_BUTTON_TEXT[status_index] : "#{status.blank? ? 'Submit' : STATUS_BUTTON_TEXT[status_index] }"
   end
   
   def status_button_color

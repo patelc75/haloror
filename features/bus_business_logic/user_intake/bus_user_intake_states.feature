@@ -201,18 +201,25 @@ Feature: Bus user intake statuses
   # email
   # Subject: "Joe Smith's myHalo system is officially active"
   # Body: "Joe Smith's myHalo system is officially active. Please log into http://www.myhalomonitor.com to configure your alerts"
-  # TODO: 1.6.0 panic error
   Scenario: User Intake - Installed
     Given bill monthly or credit card value are acceptable for user intake "1234567890"
     And we are on or past the desired installation date for senior of user intake "1234567890"
     And the senior of user intake "1234567890" has "Ready to Install" status
     When panic button test data is received for user intake "1234567890"
-    # Then an email to admin, halouser and caregivers of user intake "1234567890" should be sent for delivery
-    And the senior of user intake "1234567890" should be "Ready to Bill" status
+    Then the senior of user intake "1234567890" should be "Ready to Bill" status
     And action button for user intake "1234567890" should be colored gray
     And senior of user intake "1234567890" is opted in to call center
-    #   * this business logic was changed. caregivers are active after admin clicks "Bill" and user then gets into "Installed" state
-    # And caregivers are not away for user intake "1234567890"
+    # And an email to admin, halouser and caregivers of user intake "1234567890" should be sent for delivery
+
+  Scenario: User Intake - Bill
+    Given bill monthly or credit card value are acceptable for user intake "1234567890"
+    And we are on or past the desired installation date for senior of user intake "1234567890"
+    And the senior of user intake "1234567890" has "Ready to Install" status
+    When panic button test data is received for user intake "1234567890"
+    And I go to the user intake overview
+    And I follow "Ready to Bill"
+    And I press "user_intake_submit"
+    Then the senior of user intake "1234567890" should be "Installed" status
 
   # release 1.7.0
   #
