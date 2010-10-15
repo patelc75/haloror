@@ -26,11 +26,7 @@
         <%= link_to image_tag(user.status_image, :alt => (user.status || 'Unknown'), :title => (user.status || 'Unknown')), user_user_log_path(user, user.last_log_when_status_changed) %>
         <% end %>
       </span>
-      <% if profile = user.profile %>
-      <%=user.name%>
-      <% else %>	
-      Profile missing
-      <% end %>
+      <%= user.full_name %>
       <span style="font-size: 80%;">
         <br /><%= user.login %>
         <% if user.demo_mode? %>
@@ -43,14 +39,17 @@
     <% end %>
 
     <% [:chest_straps, :belt_clips].each do |_device_type| %>
-    <% unless user.devices.send( _device_type).blank? %>
-    <br />
-    <span class="tiny"><%= _device_type.to_s.singularize.split('_').collect(&:capitalize).join(' ') %>: <%= user.devices.send( _device_type).first.serial_number.blank? ? "Unknown" : user.devices.send( _device_type).first.serial_number.to_s %></span>
-    <% end %>
+      <% unless user.devices.send( _device_type).blank? %>
+        <br />
+        <span class="tiny"><%= _device_type.to_s.singularize.split('_').collect(&:capitalize).join(' ') %>: <%= user.devices.send( _device_type).first.serial_number.blank? ? "Unknown" : user.devices.send( _device_type).first.serial_number.to_s %></span>
+      <% end %>
     <% end %>
     <% unless user.devices.gateways.blank? %>
-    <span class="tiny">Gateway mode: <%= user.devices.gateways.first.access_mode_status.mode rescue ''  %></span>
+      <br />
+      <span class="tiny">Gateway mode: <%= user.devices.gateways.first.access_mode_status.mode rescue ''  %></span>
     <% end %>
+    <br />
+    <span><%= image_tag('creditcards.png', :alt => 'Card or Billed', :title => 'Card or Billed') %> <%= user.card_processed? ? 'Card charged' : 'Billed monthly' %></span>
 
   </div>
 

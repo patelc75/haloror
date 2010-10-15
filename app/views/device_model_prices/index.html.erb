@@ -1,6 +1,7 @@
 <%=render :partial => 'reporting/nav_config'%>
 
 <h1>Coupon Codes</h1>
+<%= will_paginate %>
 <table class="bluegrey">
   <tr>
     <th>Part Num</th>
@@ -19,7 +20,7 @@
   <% unless device_model_price.device_model.blank? %>
   <tr class="<%= cycle('', 'altrow') %>">
     <td><%=h device_model_price.device_model.part_number %></td>
-    <td><%=h device_model_price.device_model.model %></td>    
+    <td><%=h device_model_price.device_model.device_type.device_type %></td>
     <td><%=h device_model_price.coupon_code %></td>
     <td><%=h device_model_price.expiry_date %></td>
     <td><%=h device_model_price.deposit %></td>
@@ -34,7 +35,7 @@
   <% end %>
 <% end %>
 </table>
-
+<%= will_paginate %>
 <br />
 
 <%= link_to 'New coupon code', new_device_model_price_path %>

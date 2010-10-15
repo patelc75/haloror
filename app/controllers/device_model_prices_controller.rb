@@ -4,7 +4,7 @@ class DeviceModelPricesController < ApplicationController
   # GET /device_model_prices
   # GET /device_model_prices.xml
   def index
-    @device_model_prices = DeviceModelPrice.find(:all)
+    @device_model_prices = DeviceModelPrice.all.paginate :per_page => 10, :page => params[:page]
 
     respond_to do |format|
       format.html # index.html.erb

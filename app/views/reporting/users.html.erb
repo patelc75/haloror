@@ -1,59 +1,78 @@
-  <%=render :partial => 'nav_config'%>
-  <%=render :partial => 'search'%>      
-  <br><br>
+<%= render :partial => 'nav_config' %>
 
-<div class="span-8">
-  <h3>Users table</h3>
+<div class="span-24 last">
+<div class="span-12">
+  <div class="span-3"><h3>Users table</h3></div>
+  <div class="span-9 last">
   <form id="group_form_id" action="/reporting/users" method="GET">
     <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
     Select <label for="group_name">Group</label>:
     <%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| [e.name, e.name] }, (@group.name unless @group.blank?)), {:onchange => "$('group_form_id').submit();"}%>
   </form>
+  </div>
 </div>
-<div class="span-5">
+<div class="span-12 last">
+  <%= render :partial => 'search' %>
+</div>
+</div>
+
+<hr />
+<div class="span-6">
+  <strong>Credit card:</strong><br />
   <% [ User::AGGREGATE_STATUS[ :pending], User::AGGREGATE_STATUS[ :installed], User::AGGREGATE_STATUS[ :cancelled]].each do |_status| %>
-    <% [:chest_straps, :belt_clips].each do |_device| %>
-      <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? nil : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
-    <% end %>
+  <% [:chest_straps, :belt_clips].each do |_device| %>
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? nil : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status && e.users.first.card_charged?}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
+  <% end %>
   <% end %>
 </div>
-<div class="span-5">
+<div class="span-6">
+  <strong>Billed monthly:</strong><br />
+  <% [ User::AGGREGATE_STATUS[ :pending], User::AGGREGATE_STATUS[ :installed], User::AGGREGATE_STATUS[ :cancelled]].each do |_status| %>
+  <% [:chest_straps, :belt_clips].each do |_device| %>
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? nil : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status && e.users.first.billed_monthly?}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
+  <% end %>
+  <% end %>
+</div>
+<div class="span-6">
   <% [ User::AGGREGATE_STATUS[ :pending], User::AGGREGATE_STATUS[ :installed]].each do |_status| %>
-    <% [:dialups, :ethernets].each do |_mode| %>
-      <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.gateways.send( "#{_mode}".to_sym).where_user_ids( (@group.blank? ? nil : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _mode.to_s.capitalize %></div>
-    <% end %>
+  <% [:dialups, :ethernets].each do |_mode| %>
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.gateways.send( "#{_mode}".to_sym).where_user_ids( (@group.blank? ? nil : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _mode.to_s.capitalize %></div>
+  <% end %>
   <% end %>
 </div>
 <div class="span-6 last">
   <% User::STATUS.keys.each do |key| %>
-    <div style="display: inline-block;"><%= image_tag( User::STATUS_IMAGE[key]) %> <%= @group.blank? ? User.where_status(User::STATUS[key]).length : @group.users.select {|e| e.status == User::STATUS[key] }.length %> <%= User::STATUS[key].blank? ? 'Pending' : User::STATUS[key] %></div>
+  <div style="display: inline-block;"><%= image_tag( User::STATUS_IMAGE[key]) %> <%= @group.blank? ? User.where_status(User::STATUS[key]).length : @group.users.select {|e| e.status == User::STATUS[key] }.length %> <%= User::STATUS[key].blank? ? 'Pending' : User::STATUS[key] %></div>
   <% end %>
 </div>
 
 
 <div id="user-table" class="table bluegrey">
-	<br>
-	<center><%= will_paginate @users %></center>
-	<br><br>
-	<%=render :partial => 'user_table', :locals => {:users => @users, :sortby => 'id', :reverse => false}%>
-	<br>
-    <br>
-    
-
+  <br>
+  <center><%= will_paginate @users %></center>
+  <br><br>
+  <%=render :partial => 'user_table', :locals => {:users => @users, :sortby => 'id', :reverse => false}%>
+  <br>
+  <br>
 </div>
+
 <div style="clear:both;"></div>
 <br><br>
 <center><%= will_paginate @users %></center>
 <div id="range_test_launcher"></div>
+
 <script language="javascript">
+
 function start_range_test(user_id){
-	url = "/installs/start_range_test_only/?user_id=" + user_id
-	new Ajax.Request(url, {
-			method: 'get'});
-}
+  url = "/installs/start_range_test_only/?user_id=" + user_id
+  new Ajax.Request(url, {
+    method: 'get'});
+  }
+
 function stop_range_test(user_id){
-	url = "/installs/stop_range_test_only/?user_id=" + user_id
-	new Ajax.Request(url, {
-			method: 'get'});
-}
+  url = "/installs/stop_range_test_only/?user_id=" + user_id
+  new Ajax.Request(url, {
+    method: 'get'});
+  }
+
 </script>

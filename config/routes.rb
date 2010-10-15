@@ -103,7 +103,7 @@ ActionController::Routing::Routes.draw do |map|
   map.login  '/login', :controller => 'sessions', :action => 'new'
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
   map.activate '/activate/:activation_code', :controller => 'users', :action => 'init_user'
-  map.connect '/reporting', :controller => 'reporting', :action => 'users'
+  map.reporting '/reporting', :controller => 'reporting', :action => 'users'
   map.terms '/terms', :controller => 'util', :action => 'terms'
   map.terms '/privacy', :controller => 'util', :action => 'privacy'
   map.new_caregiver_profile '/profiles/new_caregiver_profile/:user_id', :controller => 'profiles', :action => 'new_caregiver_profile'

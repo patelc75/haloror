@@ -435,6 +435,26 @@ class User < ActiveRecord::Base
   # = instance methods =
   # ====================
   
+  # default: card processed
+  def card_processed?
+    #
+    # TODO: we should ideally have the credit card information stored with user details, along with order
+    #   currently it is saved only in order
+    # Business logic:
+    #   * user_intakes missing? == card charged
+    #   * at least one associated user intake has credit_debit_card_proceessed == true
+    #   * billed_monthly? == false
+    user_intakes.blank? ? true : (user_intakes.collect(&:credit_debit_card_proceessed).compact.uniq.include?( true) || !billed_monthly?)
+  end
+  
+  # default: card processed
+  # Business logic:
+  #   * user_intakes missing? == card charged
+  #   * at least one associated user intake has bill_monthly == true
+  def billed_monthly?
+    user_intakes.blank? ? false : user_intakes.collect(&:bill_monthly).compact.uniq.include?( true)
+  end
+  
   def need_validation?
     need_validation
   end
