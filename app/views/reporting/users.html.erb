@@ -34,7 +34,7 @@
   <% end %>
 </div>
 <div class="span-6">
-  <% [ User::AGGREGATE_STATUS[ :pending], User::AGGREGATE_STATUS[ :installed]].each do |_status| %>
+  <% [ User::AGGREGATE_STATUS[ :installed]].each do |_status| %>
   <% [:dialups, :ethernets].each do |_mode| %>
   <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.gateways.send( "#{_mode}".to_sym).where_user_ids( (@group.blank? ? nil : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _mode.to_s.capitalize %></div>
   <% end %>
