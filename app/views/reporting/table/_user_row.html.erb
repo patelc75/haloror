@@ -46,11 +46,11 @@
     <% end %>
     <% unless user.devices.gateways.blank? %>
       <br />
-      <span class="tiny">Gateway mode: <%= user.devices.gateways.first.access_mode_status.mode rescue ''  %></span>
+      <span class="tiny">Access mode: <%= user.devices.gateways.first.access_mode_status.mode rescue ''  %></span>
     <% end %>
     <br />
-    <span><%= image_tag('creditcards.png', :alt => 'Card or Billed', :title => 'Card or Billed') %> <%= user.card_processed? ? 'Card charged' : 'Billed monthly' %></span>
-
+    <!--span><%= image_tag('creditcards.png', :alt => 'Card or Billed', :title => 'Card or Billed') %> <%= user.card_processed? ? 'Card charged' : 'Billed monthly' %></span-->
+    <span class="tiny">Status: <%= user.status %></span>
   </div>
 
   <div class="col-300">
