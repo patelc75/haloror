@@ -11,7 +11,6 @@ class User < ActiveRecord::Base
     :install_pending  => "Ready to Install",
     :bill_pending     => "Ready to Bill",
     :installed        => "Installed",
-    :test             => "Test Mode",
     :overdue          => "Install Overdue",
     :cancelled        => "Cancelled"
   }
@@ -34,7 +33,6 @@ class User < ActiveRecord::Base
     :install_pending  => "user_placeholder.png",
     :bill_pending     => "user_active.png",
     :installed        => "user.png",
-    :test             => "user_cancelled.png",
     :overdue          => "user_placeholder.png",
     :cancelled        => "user_placeholder.png"
   }
@@ -44,7 +42,6 @@ class User < ActiveRecord::Base
     :install_pending  => "Install",
     :bill_pending     => "Bill",
     :installed        => "Installed",
-    :test             => "Test Mode",
     :overdue          => "Install Now",
     :cancelled        => "Submit"
   }
