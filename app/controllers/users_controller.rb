@@ -692,6 +692,7 @@ class UsersController < ApplicationController
         end
       end
 
+    # we reach here when user is activating its account
     else
       @user = User.find_by_activation_code(params[:user][:activation_code])
 
@@ -701,6 +702,8 @@ class UsersController < ApplicationController
           @user.password = user_hash[:password]
           @user.password_confirmation = user_hash[:password_confirmation]
           @user.login = user_hash[:login]
+          # https://redmine.corp.halomonitor.com/issues/3554 point 3 fixed by this
+          @user.skip_validation = true # this object could have been "saved" earlier
           @user.save!
           self.current_user = @user
           if logged_in? && !current_user.activated?

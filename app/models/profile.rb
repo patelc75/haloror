@@ -134,7 +134,13 @@ class Profile < ActiveRecord::Base
   #    Profile.new.nothing_assigned? => true
   #    Profile.new(:first_name => "first name").nothing_assigned? => false
   def nothing_assigned?
-    attributes.values.compact.blank?
+    # we just check the absolute mandatory attributes to decide a blank or filled record
+    #   some of these attributes have conditional validations
+    #   at least one of them should have some value to call this record filled
+    #   so, if all these attributes are blank, we consider nothing is assigned
+    [:first_name, :last_name, :address, :city, :state, :zipcode, :time_zone, :home_phone,
+      :cell_phone, :carrier_id, :emergency_number_id, :account_number,
+      :hospital_number, :doctor_phone].collect {|e| self.send(e).blank? }.compact.uniq.include?( false) == false
   end
 
   def validate
