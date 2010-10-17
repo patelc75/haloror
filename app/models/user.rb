@@ -811,10 +811,10 @@ class User < ActiveRecord::Base
     else
       #
       # legacy?
-      if user_intakes.blank? # legacy?
-        AGGREGATE_STATUS[ (self.is_halouser_of?( Group.safety_care) ? :installed : :demo) ]
-        
-      else # user_intake? not legacy
+      # if user_intakes.blank? # legacy?
+      #   AGGREGATE_STATUS[ (self.is_halouser_of?( Group.safety_care) ? :installed : :demo) ]
+      #   
+      # else # user_intake? not legacy
         if status == STATUS[ :installed]
           AGGREGATE_STATUS[ :installed]
           #
@@ -829,7 +829,7 @@ class User < ActiveRecord::Base
           AGGREGATE_STATUS[ :cancelled]
         end
 
-      end # not legacy?
+      # end # not legacy?
     end # demo?
   end #--
 

@@ -67,7 +67,7 @@ class Device < ActiveRecord::Base
   
   # Usage:
   #   Device.of_users( [])
-  named_scope :where_user_ids, lambda {|*_args| {:include => :users, :conditions => { :id => _args.flatten } }}
+  named_scope :where_user_ids, lambda {|*_args| {:include => :users, :conditions => ["users.id IN (?)", _args.flatten ] }}
 
   # Usage:
   #   Device.dialups
