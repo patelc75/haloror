@@ -2608,7 +2608,7 @@ class User < ActiveRecord::Base
     # Send email to SafetyCare similar to the current email to SafetyCare except body will simple oneline with text "Cancel HM1234" 
     devices.each do |_device|
       CriticalMailer.deliver_cancel_device( _device)
-      _device.users.each {|user| user.log("Email sent to safety_care: Cancel #{device.serial_number}") } # Create a log page of all steps above with timestamps
+      _device.users.each {|user| user.log("Email sent to safety_care: Cancel #{_device.serial_number}") } # Create a log page of all steps above with timestamps
     end
     # Unmap users from devices, keep the device in the DB as an orphan (ie. not mapped to any user)
     #   DISPATCH EMAILS before detaching devices

@@ -95,7 +95,7 @@ class Device < ActiveRecord::Base
   # = class methods =
   # =================
   
-  def unregister( _ids = "")
+  def self.unregister( _ids = "")
     # assumption: all ids are numeric values
     # WARNING: any non-number within ids will cause id be recognized as ZERO
     _ids = if _ids.is_a?( String)
