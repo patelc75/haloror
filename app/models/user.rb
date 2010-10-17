@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
   #   * The order of appearance of the keys, MUST be exactly as shown from pending .. installed
   #   * shift_to_next_status method depends on this
   STATUS = {
-    :pending          => "Not Submitted",
+    :pending          => "",
     :approval_pending => "Ready for Approval",
     :install_pending  => "Ready to Install",
     :bill_pending     => "Ready to Bill",

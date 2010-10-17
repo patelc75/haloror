@@ -33,7 +33,7 @@
 </div>
 <div class="span-6 last">
   <% User::STATUS.keys.each do |key| %>
-  <div style="display: inline-block;"><%= image_tag( User::STATUS_IMAGE[key]) %> <%= @group.blank? ? User.where_status(User::STATUS[key]).length : @group.users.select {|e| e.status == User::STATUS[key] }.length %> <%= User::STATUS[key].blank? ? 'Pending' : User::STATUS[key] %></div>
+  <div style="display: inline-block;"><%= image_tag( User::STATUS_IMAGE[key]) %> <%= @group.blank? ? User.where_status(User::STATUS[key]).length : @group.users.select {|e| e.status == User::STATUS[key] }.length %> <%= User::STATUS[key].blank? ? 'Not Submitted' : User::STATUS[key] %></div>
   <% end %>
 </div>
 
