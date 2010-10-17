@@ -5,7 +5,7 @@ require "lib/utility_helper"
 
 class UserIntake < ActiveRecord::Base
   include UtilityHelper
-  
+
   belongs_to :group
   belongs_to :order
   belongs_to :creator, :class_name => "User", :foreign_key => "created_by"
@@ -20,7 +20,7 @@ class UserIntake < ActiveRecord::Base
   # validates_length_of :transmitter_serial, :is => 10, :unless => :transmitter_blank?
   validates_format_of :gateway_serial, :with => /^H2[\d]{8}$/, :unless => :gateway_blank?
   validates_format_of :transmitter_serial, :with => /^H[15][\d]{8}$/, :unless => :transmitter_blank?
-  
+
   acts_as_audited
   # https://redmine.corp.halomonitor.com/issues/3215
   #   Comment out "Change All Dial Up Numbers" > update ticket #2809
@@ -65,7 +65,7 @@ class UserIntake < ActiveRecord::Base
   # =============================
   # = dynamic generated methods =
   # =============================
-  
+
   [:gateway, :chest_strap, :belt_clip].each do |device|
     # Usage:
     #   user_intake.gateway
@@ -73,7 +73,7 @@ class UserIntake < ActiveRecord::Base
     define_method device do
       self.senior.send(device) if (!senior.blank? && !senior.send(device).blank?)
     end
-    
+
     # Usage:
     #   user_intake.gateway_blank?
     #   user_intake.chest_strap_blank?
@@ -81,7 +81,7 @@ class UserIntake < ActiveRecord::Base
       self.send( device).blank?
     end
   end
-  
+
   def transmitter_blank?
     chest_strap.blank? && belt_clip.blank?
   end
@@ -89,7 +89,7 @@ class UserIntake < ActiveRecord::Base
   def need_validation?
     need_validation
   end
-  
+
   # for every instance, make sure the associated objects are built
   def after_initialize
     self.bill_monthly = (!order.blank? && order.purchase_successful?) if self.new_record?
@@ -148,8 +148,7 @@ class UserIntake < ActiveRecord::Base
     #
     # # create status row in triage_audit_log
     unless senior.changed?
-      options = { :updated_by => updated_by,
-        :description => "Status updated from [#{senior.status_was}] to [#{senior.status}], triggered from user intake" }
+      options = { :updated_by => updated_by, :description => "Status updated from [#{senior.status_was}] to [#{senior.status}], triggered from user intake" }
       add_triage_note( options)
     end
   end
@@ -247,32 +246,54 @@ class UserIntake < ActiveRecord::Base
       end
     end
 
-    # FIXME: TODO. look when other bugs are fixed
-    # association are collapsing ignoring the params
-    # need most close debugging. Not getting a clue for now.
-    (1..3).each do |index|
-      caregiver = self.send("caregiver#{index}".to_sym)
-      unless caregiver.blank?
-        no_caregiver = self.send("no_caregiver_#{index}".to_sym)
-        if ["1", true].include?( no_caregiver)
-          self.send("caregiver#{index}=".to_sym, nil) # when marked for no_caregiver_x, just remove the data
-        else
-          caregiver.collapse_associations
-          if caregiver.nothing_assigned? || (index == 1 && subscriber_is_caregiver) || self.send("no_caregiver_#{index}".to_sym)
-            self.send("caregiver#{index}=".to_sym, nil)
-          else
-            user = self.send("caregiver#{index}")
-            user.send("skip_validation=", skip_validation) unless user.nil?
-          end
-        end # caregiver1
-      end
+    if !caregiver1.blank? && !["1", true].include?( no_caregiver_1) && !caregiver1.nothing_assigned? && !subscriber_is_caregiver
+      self.caregiver1.skip_validation = true
+    else
+      self.caregiver1 = nil
     end
+
+    if !caregiver2.blank? && !["1", true].include?( no_caregiver_1) && !caregiver2.nothing_assigned?
+      self.caregiver2.skip_validation = true
+    else
+      self.caregiver2 = nil
+    end
+
+    if !caregiver3.blank? && !["1", true].include?( no_caregiver_1) && !caregiver3.nothing_assigned?
+      self.caregiver3.skip_validation = true
+    else
+      self.caregiver3 = nil
+    end
+
+    # # FIXME: TODO. look when other bugs are fixed
+    # # association are collapsing ignoring the params
+    # # need most close debugging. Not getting a clue for now.
+    # debugger
+    # (1..3).each do |index|
+    #   caregiver = self.send("caregiver#{index}".to_sym)
+    #   unless caregiver.blank?
+    #     no_caregiver = self.send("no_caregiver_#{index}".to_sym)
+    #     if ["1", true].include?( no_caregiver)
+    #       self.send("caregiver#{index}=".to_sym, nil) # when marked for no_caregiver_x, just remove the data
+    #     else
+    #       caregiver.collapse_associations
+    #       if caregiver.nothing_assigned? || (index == 1 && subscriber_is_caregiver) || self.send("no_caregiver_#{index}".to_sym)
+    #         self.send("caregiver#{index}=".to_sym, nil)
+    #       else
+    #         user = self.send("caregiver#{index}")
+    #         unless user.nil?
+    #           user.send("skip_validation=", skip_validation)
+    #         end
+    #       end
+    #     end # caregiver1
+    #   end
+    # end
   end
 
   # pre-process data before validating
   # we are keeping senior, subscriber, ... in attr_accessor variables
   def associations_before_validation_and_save
     collapse_associations # make obsolete ones = nil
+    # debugger
     #
     # TODO: conflicting with 1.6.0 pre-quality. removed to check compatiblity or related errors
     # for remaining, fill login, password details only when login is empty
@@ -295,17 +316,20 @@ class UserIntake < ActiveRecord::Base
     # WARNING: the associations here are not using active_record, so they are not auto saved with user intake
     #   we are saving the associations manually here
     collapse_associations # make obsolete ones = nil
+    # debugger
     #
     # TODO: conflicting with 1.6.0 pre-quality. removed to check compatiblity or related errors
     # for remaining, fill login, password details only when login is empty
     # This is a 3 step process
     ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |_what|
       _user = self.send( _what) # fetch the associated user
-      _user.skip_validation = true # TODO: patch for 1.6.0 release. fix later with business logic, if required
-      
-      _user.autofill_login # Step 1: make them valid
-      _user.save # Step 2: save them to database
-      self.users << _user # Step 3: link them to user intake
+      unless _user.blank? || _user.nothing_assigned?
+        _user.skip_validation = true # TODO: patch for 1.6.0 release. fix later with business logic, if required
+
+        _user.autofill_login # Step 1: make them valid
+        _user.save # Step 2: save them to database
+        self.users << _user # Step 3: link them to user intake
+      end
     end
     # debugger
     #
@@ -323,24 +347,24 @@ class UserIntake < ActiveRecord::Base
     # subscriber
     subscriber.is_subscriber_of( senior)
     # unless subscriber.blank?
-      # subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
-      # self.errors.add_to_base("Subscriber not valid") unless subscriber.valid?
-      # self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.nil? || subscriber.profile.valid?
-      # save options
-      caregiver1.options_for_senior(senior, mem_caregiver1_options.merge({:position => 1})) if subscriber_is_caregiver
+    # subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
+    # self.errors.add_to_base("Subscriber not valid") unless subscriber.valid?
+    # self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.nil? || subscriber.profile.valid?
+    # save options
+    caregiver1.options_for_senior(senior, mem_caregiver1_options.merge({:position => 1})) if subscriber_is_caregiver
     # end
     # caregivers
     (1..3).each do |index|
       caregiver = self.send("caregiver#{index}".to_sym)
-      # unless caregiver.blank?
-      caregiver.is_caregiver_to( senior)
+      unless caregiver.blank? || caregiver.nothing_assigned?
+        caregiver.is_caregiver_to( senior)
         # caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
         # self.errors.add_to_base("Caregiver #{index} not valid") unless caregiver.valid?
         # self.errors.add_to_base("Caregiver #{index} profile needs more detail") unless caregiver.profile.nil? || caregiver.profile.valid?
         # save options
         options = self.send("mem_caregiver#{index}_options")
         caregiver.options_for_senior(senior, options.merge({:position => index}))
-      # end
+      end
     end
   end
 
@@ -390,7 +414,7 @@ class UserIntake < ActiveRecord::Base
   def self.status_color( arg = '')
     STATUS_COLOR[ STATUS.index( arg) || :pending ]
   end
-  
+
   # https://redmine.corp.halomonitor.com/issues/3215
   # messages for attributes statuses
   # * user intake detail view displays them besides the "submit" button
@@ -423,7 +447,7 @@ class UserIntake < ActiveRecord::Base
   #
   # Sat Sep 25 00:45:06 IST 2010
   # CHANGED: logic changed to user.devices only. No user_intake.kit_serial_number
-  
+
   def dial_up_numbers_ok?
     (!senior.blank? && !senior.gateway.blank?) ? senior.gateway.dial_up_numbers_ok? : false
     #
@@ -440,7 +464,7 @@ class UserIntake < ActiveRecord::Base
   def group_name
     group.blank? ? "" : group.name
   end
-  
+
   def group_name=( name)
     self.group = Group.find_or_create_by_name( name)
   end
@@ -511,7 +535,7 @@ class UserIntake < ActiveRecord::Base
       self.mem_subscriber = nil
     else
 
-        if subscriber_is_user
+      if subscriber_is_user
         self.senior = arg if senior.blank? # we can use this data
         self.mem_subscriber = senior # assign to senior, then reference as subscriber
       else
@@ -689,7 +713,7 @@ class UserIntake < ActiveRecord::Base
     self.caregiver3.skip_validation = self.skip_validation unless self.caregiver3.blank?
     self.caregiver3
   end
-  
+
   def submitted?
     !submitted_at.blank? # timestamp is required to identify as "submitted"
   end
@@ -727,7 +751,7 @@ class UserIntake < ActiveRecord::Base
   # ===================
   # = private methods =
   # ===================
-  
+
   private
 
   # WARNING: This is conflicting with the 1.6.0 Pre-Quality
@@ -739,7 +763,7 @@ class UserIntake < ActiveRecord::Base
   def autofill_user_login(user_type = "")
     unless user_type.blank?
       user = self.send("#{user_type}") # local copy, to keep code clean
-      user.autofill_login unless user.blank?
+      user.autofill_login if (!user.blank? && !user.nothing_assigned?)
       #
       # shifted to user.rb
       #
@@ -785,7 +809,7 @@ class UserIntake < ActiveRecord::Base
       end
       # build profile and other associations
       self.send("#{user_type}".to_sym).send("build_associations".to_sym) unless self.send("#{user_type}".to_sym).nil?
-      
+
     else
       # existing user_intake row. just build the no_caregiver_x booleans
       (1..3).each { |index| self.send(:"no_caregiver_#{index}=", self.send( :"caregiver#{index}").blank? ) }

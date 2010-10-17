@@ -36,7 +36,11 @@ Given /^the product catalog exists$/ do
     if ( device_model = DeviceModel.first( :conditions => {:device_type_id => device_type.id, :part_number => values[:part_number]}) ).blank?
       device_model = Factory.create(:device_model, :device_type => device_type, :part_number => values[:part_number])
     end
-    ["direct_to_consumer", "bestbuy"].each do |group_name|
+    # Sun Oct 17 03:55:29 IST 2010
+    #   * 'default' Group now has 'default' coupon_code
+    #   * when any coupon code is invalid for a group, it will return 'default' coupon_code of 'default' group
+    Factory.create( :group, :name => 'default') if Group.default.blank? # create 'default' group unless exists
+    ["direct_to_consumer", "bestbuy", 'default'].each do |group_name|
       group = (Group.find_by_name( group_name) || Factory.create( :group, :name => group_name))
       values[:tariff].each do |key, prices_hash|
         prices_hash[:coupon_code] = group_name.upcase if key == :custom

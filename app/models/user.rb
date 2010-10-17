@@ -582,7 +582,10 @@ class User < ActiveRecord::Base
   #    Profile.new.nothing_assigned? => true
   #    Profile.new(:first_name => "first name").nothing_assigned? => false
   def nothing_assigned?
-    attributes.values.compact.blank?
+    # instead of checking for all attributes, we will only check the mandatory ones
+    #   non-mandatory attributes cannot anyways exist without the mandatory ones
+    [:login, :email, :crypted_password,
+      :activation_code, :activated_at].collect {|e| self.send(e).blank? }.compact.uniq.include?( false) == false
   end
 
   # profile_attributes hash can be given here to create a related profile

@@ -25,6 +25,14 @@ class DeviceModelPrice < ActiveRecord::Base
     self.device_model = DeviceModel.find_complete_or_clip( name)
   end
   
+  def part_number
+    device_model.blank? ? '' : device_model.part_number
+  end
+  
+  def device_type
+    (device_model.blank? || device_model.device_type.blank?) ? '' : device_model.device_type.device_type
+  end
+  
   def advance_charge
     monthly_recurring * months_advance
   end

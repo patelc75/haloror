@@ -40,6 +40,7 @@ Feature: Create user intake
     And I check "Same as User"
     And I press "user_intake_submit"
     Then page content should have "successfully created"
+    And last user intake should not have caregivers
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Submit. user profile ok. subscriber not user. subscriber profile blank

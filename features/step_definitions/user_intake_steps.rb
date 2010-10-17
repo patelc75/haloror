@@ -358,6 +358,8 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
       ui.senior.last_triage_audit_log.should_not be_blank
     when "a status attribute"
       ui.senior.status.should_not be_blank
+    else
+      assert false, 'add this condition'
     end
     
   else
@@ -366,6 +368,13 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
       ui.credit_debit_card_proceessed.should be_blank
     when "a status attribute"
       ui.senior.attributes.keys.should_not have( "status")
+    when 'caregivers'
+      # CHANGED: we cannot check ui.caregivers
+      #   because caregivers are instantiated in memory for user_intake UI bug
+      #   so we check the total number of users (connected in active record)
+      ui.users.length.should == 2 # just senior and subscriber
+    else
+      assert false, 'add this condition'
     end
   end
 end
