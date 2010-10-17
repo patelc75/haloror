@@ -109,10 +109,10 @@ class Device < ActiveRecord::Base
     devices.each do |device|
 
       device.users.each do |user|
-        user.caregivers.each do |caregiver|
-          UserMailer.deliver_user_unregistered( caregiver, user) # New email notification to caregivers indicating service stopped
-          user.log("Email sent to caregiver (#{caregiver.name}): User (#{user.name}) un-registered.")
-        end
+        #user.caregivers.each do |caregiver|
+          #UserMailer.deliver_user_unregistered( caregiver, user) # New email notification to caregivers indicating service stopped
+          #user.log("Email sent to caregiver (#{caregiver.name}): User (#{user.name}) un-registered.")
+        #end
         # https://redmine.corp.halomonitor.com/issues/398
         # call to test_mode automatically logs the actions for user
         user.test_mode( true) # Call Test Mode method to make caregivers away and opt senior out of SafetyCare

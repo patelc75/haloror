@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
   #   * The order of appearance of the keys, MUST be exactly as shown from pending .. installed
   #   * shift_to_next_status method depends on this
   STATUS = {
-    :pending          => "",
+    :pending          => "Not Submitted",
     :approval_pending => "Ready for Approval",
     :install_pending  => "Ready to Install",
     :bill_pending     => "Ready to Bill",
@@ -2615,7 +2615,7 @@ class User < ActiveRecord::Base
     # Sends unregister command to both devices 
     Device.unregister( devices.collect(&:id).flatten.compact.uniq )
     # Send email to caregivers informing de-activation of device
-    caregivers.each {|e| UserMailer.user_unregistered( self, e) }
+    # caregivers.each {|e| UserMailer.user_unregistered( self, e) }
     # Create link to log on the cancel status field specified above
     triage_audit_logs.create( :status => User::STATUS[:cancelled], :description => "MyHalo account of #{name} is now cancelled.")
   end
