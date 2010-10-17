@@ -107,7 +107,7 @@ class ReportingController < ApplicationController
     if params[:id].to_s == "all"
       @users = ( @group.blank? ? User.ordered : User.all( :conditions => {:id => @group.user_ids }, :order => "id ASC") )
     else
-      @users = ( @group.blank? ? User.all_except_demo.ordered : User.all( :conditions => {:id => @group.user_ids }.reject(&:demo_mode?), :order => "id ASC") )
+      @users = ( @group.blank? ? User.all_except_demo.ordered : User.all( :conditions => {:id => @group.user_ids }, :order => "id ASC") ).reject(&:demo_mode?)
     end
     @users = @users.paginate :page => params[:page], :include => [:roles, :roles_users], :per_page => REPORTING_USERS_PER_PAGE
 
