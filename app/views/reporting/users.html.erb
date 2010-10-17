@@ -17,17 +17,6 @@
 </div>
 
 <hr /> 
-<%
-=begin %>
-<div class="span-6">
-  <strong>Credit card:</strong><br />
-  <% [ User::AGGREGATE_STATUS[ :pending], User::AGGREGATE_STATUS[ :installed], User::AGGREGATE_STATUS[ :cancelled]].each do |_status| %>
-  <% [:chest_straps, :belt_clips].each do |_device| %>
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? nil : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status && e.users.first.card_charged?}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
-  <% end %>
-  <% end %>
-</div><%  
-=end %>
 <div class="span-6">
   <% [ User::AGGREGATE_STATUS[ :pending], User::AGGREGATE_STATUS[ :installed], User::AGGREGATE_STATUS[ :cancelled]].each do |_status| %>
   <% [:chest_straps, :belt_clips].each do |_device| %>
