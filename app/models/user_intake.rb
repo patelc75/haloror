@@ -168,10 +168,15 @@ class UserIntake < ActiveRecord::Base
     senior.status = User::STATUS[:installed] if senior.status == User::STATUS[:bill_pending]
     senior.send(:update_without_callbacks)
     #
-    # charge the credit card subscription now
-    order.charge_subscription unless order.blank?
-    #
-    # pro-rata for subscription should also be charged
+    # charge subscription and pro-rata recurring charges (including today), only when installed
+    if (senior.status = User::STATUS[:installed]) && !order.blank?
+      #
+      # charge the credit card subscription now
+      order.charge_subscription
+      #
+      # pro-rata for subscription should also be charged
+      order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
+    end
     #
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios

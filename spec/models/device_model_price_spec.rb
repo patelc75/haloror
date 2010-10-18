@@ -30,4 +30,5 @@ describe DeviceModelPrice do
     it { should_not be_valid }
     specify { @groupless_coupon.group.should be_blank }
   end
+  
 end
