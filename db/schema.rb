@@ -675,6 +675,12 @@ ActiveRecord::Schema.define(:version => 20101006210232) do
 
   add_index "lost_datas", ["begin_time", "end_time", "user_id"], :name => "index_lost_datas_on_user_id_and_end_time_and_begin_time"
 
+  create_table "mgmt_acks", :force => true do |t|
+    t.integer  "mgmt_cmd_id"
+    t.datetime "timestamp_device"
+    t.datetime "timestamp_server"
+  end
+
   create_table "mgmt_cmds", :force => true do |t|
     t.integer  "device_id"
     t.integer  "user_id"

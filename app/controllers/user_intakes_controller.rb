@@ -91,7 +91,7 @@ class UserIntakesController < ApplicationController
     respond_to do |format|
       if @user_intake.save
         flash[:notice] = "User Intake was successfully #{params[:commit] == 'Save' ? 'saved' : 'created'}."
-        format.html { redirect_to(:action => 'show', :id => @user_intake.id) }
+        format.html { redirect_to( :action => 'index') }
         format.xml  { render :xml => @user_intake, :status => :created, :location => @user_intake }
       else
         # this is required since we are maintaining the relational links to users, in user_intake object, not ORM
@@ -125,7 +125,7 @@ class UserIntakesController < ApplicationController
         flash[:notice] = 'User Intake was successfully updated.'
         format.html do
           if params[:redirect_hash].blank?
-            redirect_to :action => 'show', :id => @user_intake.id
+            redirect_to :action => 'index'
           else
             redirect_to redirect_hash # this comes from online order form
           end

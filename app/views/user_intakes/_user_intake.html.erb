@@ -5,7 +5,8 @@
     $(".datepicker").datepicker({
       showOn: 'both',
       buttonImage: '../../images/calendar_date_select/calendar.gif',
-      buttonImageOnly: true
+      buttonImageOnly: true,
+      numberOfMonths: 3
     });
     show_when_dropdown_selected(document.getElementById('user_intake_group_id'));
     hide_when_checked(document.getElementById('user_intake_subscriber_is_user'), 'subscriber_profile');
@@ -57,7 +58,7 @@
           <table>
             <tr>
               <td><%= f.label :installation_datetime, "Desired Installation date:" %></td>
-              <td><%= f.text_field :installation_datetime, :class => "datepicker", :class => "span-5" %></td>
+              <td><%= f.text_field :installation_datetime, :class => "span-5 datepicker" %></td>
             </tr>
             <tr>
               <td><%= f.label :gateway_serial, "Gateway Serial" %>:</td>
