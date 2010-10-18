@@ -1,4 +1,7 @@
 class AtpController < ApplicationController
+  # TODO: this entire controller needs code coverage
+  #   changes were made to "report" action
+  
   before_filter :authenticate_super_admin?
   def index
     
