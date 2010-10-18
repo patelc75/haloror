@@ -89,7 +89,7 @@
     <hr />
 
     <!-- this class is "hidden" -->
-    <div id="content" class="span-22 last hidden">
+    <div id="content" class="span-22 last">
       <div id="senior_profile" class="colborder span-10"> <!-- colborder takes one column -->      
         <% if !@user_intake.senior.blank? %>
           <% if !@user_intake.senior.profile.blank? %>
@@ -222,7 +222,7 @@
 
       <div class="span-22 last"><%= render :partial => 'attribute_status_messages' %></div>
       <div class="span-22 last text-center">
-        <% if current_user.is_super_admin? %>
+        <% if current_user.is_super_admin? || @user_intake.users.include?( current_user) %>
           <%= f.submit "Save", :class => "button blue-button", :id => "user_intake_save" %>
           <%= f.submit @user_intake.senior.submit_button_text , :class => "button #{@user_intake.senior.status_button_color}-button", :id => "user_intake_submit" %>
         <% end %>
@@ -253,10 +253,5 @@ function caregiver_extras_form(checkbox, form)
     document.getElementById(form).style.display = 'none';
     document.getElementById('user_intake_no_caregiver_1').disabled = false;
   }
-}
-
-function toggle_test_mode_check_boxes () {
-  document.getElementById('user_intake_opt_out').checked = document.getElementById('user_intake_test_mode').checked;
-  document.getElementById('user_intake_put_away').checked = document.getElementById('user_intake_test_mode').checked;
 }
 </script>

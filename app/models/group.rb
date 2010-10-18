@@ -1,14 +1,15 @@
 class Group < ActiveRecord::Base
   acts_as_authorizable
-  has_many :emergency_numbers
   has_many :coupon_codes, :class_name => "DeviceModelPrice", :foreign_key => "group_id"
   has_many :dial_ups # WARNING: Code cover required : https://redmine.corp.halomonitor.com/issues/2809
+  has_many :emergency_numbers
+  has_many :orders
   has_many :recurring_charges
   has_many :rmas
   has_many :rma_items
-  has_many :orders
   has_many :roles, :as => :authorizable
   has_many :triage_thresholds
+  has_many :user_intakes
   # named_scope :distinct_by_name, :select => "DISTINCT name, *", :order => "name ASC"
 
   validates_presence_of :name
@@ -95,6 +96,7 @@ class Group < ActiveRecord::Base
   # groups applicable to user
   # Usage:
   #   Group.for_user( user)
+  # QUESTION: how is user.group_memberships different from this?
   def self.for_user(user)
     user.is_a?(User) ? (user.is_super_admin? ? find(:all) : for_sales_or_admin_user(user)) : find(:all)
   end

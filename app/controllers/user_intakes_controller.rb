@@ -5,11 +5,11 @@ class UserIntakesController < ApplicationController
   # GET /user_intakes.xml
   def index
     # TODO: needs re-factoring
-    @groups = Group.for_user(current_user)
-    # filter: group
-    @group_name = params[:group_name]
-    group = Group.find_by_name(@group_name) unless @group_name.blank?
-    @user_intakes = (group.blank? ? UserIntake.recent_on_top.all : UserIntake.recent_on_top.find_all_by_group_id(group.id))
+    @groups = current_user.group_memberships # this will be a drop-down on user intake list
+    _group = Group.find_by_name( @group_name = params[:group_name])
+    #
+    # show for the selected group, or, show all from current_user group_memberships
+    @user_intakes = (_group.blank? ? @groups.collect(&:user_intakes).flatten.compact.uniq : _group.user_intakes)
     # filter: submission / save status
     @user_intake_status = params[:user_intake_status]
     @user_intakes = @user_intakes.select(&:locked?) if params[:user_intake_status] == "Submitted"
@@ -69,10 +69,20 @@ class UserIntakesController < ApplicationController
   def edit
     @user_intake = UserIntake.find(params[:id])
     @user_intake.build_associations
-    @groups = Group.for_user(current_user)
+    @groups = current_user.group_memberships
 
-    if @user_intake.locked? && !current_user.is_super_admin?
+    # * only allow editing user intakes that are submitted (not just saved)
+    # * only super_admin can edit submitted ones
+    # CHANGED: halouser or subscriber can edit its user intake
+    if @user_intake.users.include?( current_user)
+      respond_to do |format|
+        format.html
+        format.xml { render :xml => @user_intake }
+      end
+    elsif @user_intake.locked? && !current_user.is_super_admin?
       render :action => 'show'
+    else
+      render :nothing => true
     end
   end
 
@@ -107,7 +117,7 @@ class UserIntakesController < ApplicationController
   # PUT /user_intakes/1.xml
   def update
     @user_intake = UserIntake.find(params[:id])
-    @user_intake.skip_validation = ['Save', 'Print', 'I Agree'].include?(params[:commit]) # just save without asking anything
+    @user_intake.skip_validation = (['Save', 'Print', 'I Agree'].include?(params[:commit])) # just save without asking anything
     @user_intake.locked = @user_intake.valid? unless @user_intake.skip_validation
     @groups = Group.for_user(current_user)
 
@@ -118,7 +128,7 @@ class UserIntakesController < ApplicationController
       #
       # ramonrails: Fri Oct 14 10:40:54 IST 2010
       #   we have the current_user available at this moment, not inside the model
-      params[:user_intake].delete!( "creator")
+      params[:user_intake] = params[:user_intake].reject {|k,v| k == "creator"}
       params[:user_intake]["updater"] = current_user
       if @user_intake.update_attributes( params[:user_intake])
         # _hashes.each {|k, v| @user_intake.send( "#{k}".to_sym, v) } # for example: senior_attributes

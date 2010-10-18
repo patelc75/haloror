@@ -691,6 +691,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver1_attributes=(attributes)
+    debugger
     (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
     self.caregiver1 = User.new( attributes) # includes profile_attributes hash
     self.caregiver1.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
@@ -718,10 +719,12 @@ class UserIntake < ActiveRecord::Base
     !submitted_at.blank? # timestamp is required to identify as "submitted"
   end
 
+  # FIXME: DEPRECATED: QUESTION: this logic needs immediate attention. what to do here?
   def locked?
     submitted?
   end
 
+  # FIXME: DEPRECATED: QUESTION: this logic needs immediate attention. what to do here?
   def locked=(status = nil)
     self.submitted_at = Time.now if (status && status == true)
     locked?

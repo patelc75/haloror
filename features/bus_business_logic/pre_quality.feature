@@ -168,5 +168,21 @@ Feature: Pre quality
     And I press "submit_caregiver"
     Then I should see "care_1 giver_1"
 
-  Scenario: halouser > approve subscription agreement
+  # TODO: smoke tested for now. cuke coverage later
+  #
+  # Scenario: halouser > approve subscription agreement
+  #   Given the following groups:
+  #     | name           | sales_type | description                |
+  #     | reseller_group | reseller   | reseller_group description |
+  #   And a user "reseller_admin" exists with profile
+  #   And user "reseller_admin" has "admin" role for group "reseller_group"
+  #   And a user "myhalouser" exists with profile
+  #   And user "myhalouser" has "halouser" role for group "reseller_group"
+  #   And user intake for "myhalouser" exists
+  #   And I am authenticated as "myhalouser" with password "12345"
+  #   When I view the last user intake
+  #   And I check "userintake_agree"
+  #   And I press "Proceed"
+  #   Then I should see "User Intake was successfully updated"
+    
   Scenario: halouser > submit user intake form
