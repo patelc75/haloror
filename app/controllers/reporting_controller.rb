@@ -104,10 +104,11 @@ class ReportingController < ApplicationController
     # end
     #
     # exclude demo users. https://redmine.corp.halomonitor.com/issues/3274
+    _user_ids = (@group.blank? ? @groups.collect(&:user_ids) : @group.user_ids).flatten.compact.uniq
     if params[:id].to_s == "all"
-      @users = ( @group.blank? ? User.ordered : User.all( :conditions => {:id => @group.user_ids }, :order => "id ASC") )
+      @users = User.all( :conditions => {:id => _user_ids }, :order => "id ASC")
     else
-      @users = ( @group.blank? ? User.all_except_demo.ordered : User.all( :conditions => {:id => @group.user_ids }, :order => "id ASC") ).reject(&:demo_mode?)
+      @users = User.all( :conditions => {:id => _user_ids }, :order => "id ASC").reject(&:demo_mode?)
     end
     @users = @users.paginate :page => params[:page], :include => [:roles, :roles_users], :per_page => REPORTING_USERS_PER_PAGE
 
