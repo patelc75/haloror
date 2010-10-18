@@ -23,6 +23,7 @@ Feature: Pre quality
     And I press "subscribe"
     Then I should see "for activation of account"
     And email with activation code of last user should be sent for delivery
+    And user "last" should have "admin" role for group "reseller_group"
     # count of emails is ignored here to accommodate within timeline of 1.6.0 release
     # we must check the count also, or, users may get multiple similar emails
 

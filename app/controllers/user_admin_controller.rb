@@ -94,7 +94,9 @@ class UserAdminController < ApplicationController
           # DEPRECATED: why assign a role like this. use authorization plugin methods instead
           #   # @user.roles << role
           #   user.is_admin_of( group) uses authorization methods
-          @user.send( "is_#{params[:role].gsub(' ','_').downcase}_of".to_sym, _group)
+          #   CHANGED: not working correctly sometimes. better to use simpler syntax
+          @user.has_role params[:role], _group # more technical syntax but works better
+          # @user.send( "is_#{params[:role].gsub(' ','_').downcase}_of".to_sym, _group)
           @user.dispatch_emails # explicitly send emails
 
         else # save failed?
