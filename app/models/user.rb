@@ -377,7 +377,7 @@ class User < ActiveRecord::Base
         #enable_by_default(@roles_user)      
         RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => position, :active => 0)#, :email_active => (roles_users_hash["email_active"] == "1"), :is_keyholder => (roles_users_hash["is_keyholder"] == "1"))
       end
-      UserMailer.deliver_caregiver_email(@user, senior)
+      UserMailer.deliver_caregiver_invitation(@user, senior)
     end
     @user
   end
@@ -387,7 +387,7 @@ class User < ActiveRecord::Base
     @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
     @user.save
     @senior = User.find(senior)
-    UserMailer.deliver_caregiver_email(@user, @senior)
+    UserMailer.deliver_caregiver_invitation(@user, @senior)
   end
   
   def self.get_max_caregiver_position(user)
@@ -2602,10 +2602,10 @@ class User < ActiveRecord::Base
     # Send email to SafetyCare similar to the current email to SafetyCare except body will simple oneline with text "Cancel HM1234" 
     CriticalMailer.deliver_cancel_call_center_acct(self.profile.account_number)
     self.log("Email sent to safety_care: Cancel #{self.profile.account_number}")  
-    devices = []    
     set_test_mode!( true)  # Call Test Mode method to make caregivers away and opt out of SafetyCare    
-    Device.unregister( devices.collect(&:id).flatten.compact.uniq ) # Sends unregister command to both devices 
-    # caregivers.each {|e| UserMailer.user_unregistered( self, e) } # Send email to caregivers informing de-activation of device  
+    # devices = []    
+    #Device.unregister( devices.collect(&:id).flatten.compact.uniq ) # Sends unregister command to both devices 
+    caregivers.each {|e| UserMailer.deliver_user_cancelled( self, e) } # Send email to caregivers informing de-activation of device  
     self.status = User::STATUS[:cancelled] 
     self.send(:update_without_callbacks)
     triage_audit_logs.create( :status => User::STATUS[:cancelled], :description => "MyHalo account of #{name} is now cancelled.") 

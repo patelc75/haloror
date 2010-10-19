@@ -189,7 +189,7 @@ class UserIntake < ActiveRecord::Base
     # send email to safety_care when "Update" was hit on any status
     #   this should be ideally at user.after_save but we want this trigger at user_intake, not user
     if self.senior.status == User::STATUS[:approval_pending]
-      CriticalMailer.deliver_senior_and_caregiver_details( self.senior)
+      UserMailer.deliver_senior_and_caregiver_details( self.senior)
     else
       UserMailer.deliver_update_to_safety_care( self)
     end

@@ -4,7 +4,7 @@
 	</div>
 	<div style="padding-left:25px;padding-bottom:10px;color:red;"><%= flash[:mail_send]%></div>
     <div style="padding-left:25px;">
-	<%= link_to 'Send Email to SafetyCare',:controller => 'users',:action => 'send_caregiver_details',:id => @user.id%>
+	<%= link_to 'Re-send Email to SafetyCare',:controller => 'users',:action => 'send_caregiver_details',:id => @user.id%>
 	</div>
 	<div class="content" style="padding:25px">
 	<pre><%= render :partial => 'email_view'%></pre>

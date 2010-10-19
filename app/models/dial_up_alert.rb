@@ -6,7 +6,7 @@ class DialUpAlert < ActiveRecord::Base
   # triggers ------------
   
   def after_create
-    CriticalMailer.deliver_dialup_800_abuse(self)
+    #CriticalMailer.deliver_dialup_800_abuse(self)
   end
   
   # instance methods ---------------

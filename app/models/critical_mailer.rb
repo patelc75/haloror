@@ -51,7 +51,7 @@ class CriticalMailer < ActionMailer::ARMailer
 
 #=============== Call Center Operator ======================     
   def call_center_caregiver(event_action)
-    setup_message(event_action.to_s, event_action.email_body + "\n\nYou received this email because you’re a myHalo user or a scaregiver of #{event_action.event.user.name}")
+    setup_message(event_action.to_s, event_action.email_body + "\n\nYou received this email because you’re a myHalo user or a caregiver of #{event_action.event.user.name}")
     setup_caregivers(event_action.event.user, event_action.event.event, :recepients)
     self.priority  = event_action.priority
   end
@@ -70,17 +70,6 @@ class CriticalMailer < ActionMailer::ARMailer
     end
     @recipients << ["reports@halomonitoring.com"] 
     self.priority = Priority::IMMEDIATE
-  end
-
-  #CP 05/13/09 this method is deperecated, use this for from event observer when the call center wizard is being used
-  def device_event_operator_wizard(event)
-    setup_caregivers(event.user, event, :caregiver_info)
-    link = get_link_to_call_center()
-    @caregiver_info << '\n\n(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
-    setup_message('URGENT:  ' + event.to_s, "You received this email because you’re an operator.\n\n#{link}\n" + @caregiver_info)
-    setup_operators(event, :recepients, :include_phone_call) 
-    #setup_emergency_group(event, :recepients)
-    self.priority  = event.priority
   end
 
 #=============== Reporting  ========================    
@@ -116,37 +105,19 @@ class CriticalMailer < ActionMailer::ARMailer
   def password_confirmation(user)
     @recipients = [user.email]
     msg_body = <<-EOF
-  	Hello #{user.name},
+       Hello #{user.name},
+      
+       This message is to let you know that your password has been successfully changed.
+      
+       Thank You,
 
-  	This message is to let you know that your password has been successfully changed.
-
-  	Thank You,
-
-  	Halo Staff
-  	EOF
+       Halo Staff
+       EOF
     subject     = "Password Changed"
-    setup_message(subject, msg_body)
-  end
-
-  def dialup_800_abuse(dial_up_alert)
-    @from        = "alerts@halomonitoring.com"
-    @subject     = "800 Abuse Alert"
-    @sent_on     = Time.now
-    body dial_up_alert.email_body
-  end
-
-  def senior_and_caregiver_details(user)
-  	group = Group.safety_care # find_by_name('safety_care')
-  	@recipients  = group.email
-  	@from        = "no-reply@#{ServerInstance.current_host}"
-    @subject     = "[" + ServerInstance.current_host_short_string + "] "
-    @subject     += "#{user.name}" + " and caregiver details"
-    @sent_on     = Time.now
-    content_type "text/html"
-    @body[:user] = user
+    setup_message(subject, msg_body)         
   end
   
-#============ Safetycare Monitoring ================
+#============ Safetycare related ===================
   def monitoring_failure(message, event)
     setup_message("call center monitoring failure: #{message}", "The following event triggered, but an error was encountered.\n\nTime: #{Time.now}\n\nError: #{message}\n\nEvent: #{event.to_s}\n\n#{event.inspect}\n\n", :no_email_log)
     @recipients = ["exceptions_critical@halomonitoring.com"]
@@ -168,10 +139,12 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def cancel_call_center_acct( acct_num )
     @recipients = Group.safety_care.email
-    @from       = "no-reply@#{ServerInstance.current_host}"
-    @subject    = "Cancel acct #{acct_num}"
-    @sent_on    = Time.now 
-    @body[:acct_num] = acct_num
+    subject     = "Cancel Acct #{acct_num}"
+    #@body[:acct_num] = acct_num
+    msg_body = <<-EOF
+    Cancel Halo Monitoring Acct# #{acct_num}
+    EOF
+    setup_message(subject, msg_body)     
   end
 
 #=============== Utility Methods  ===================  

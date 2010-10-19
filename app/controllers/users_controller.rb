@@ -143,7 +143,7 @@ class UsersController < ApplicationController
       end
       #this following does not need to be in the transaction because the lines above this do not need to be rolled back if the below lines fail
       # role = @user.has_role 'subscriber', halouser #@user set up in populate_caregiver when subscriber is also a caregiver
-      UserMailer.deliver_subscriber_email(@user)
+      UserMailer.deliver_order_receipt(@user)
       UserMailer.deliver_signup_installation(@user,@senior) # @user = subscriber
     end
     #=begin
@@ -206,7 +206,7 @@ class UsersController < ApplicationController
         params[:strap_serial_number] = @bc.serial_number if @bc != false
         map_serial_numbers
       end
-      UserMailer.deliver_kit_serial_number_register(@user, kit_serial_number, current_user)
+      UserMailer.deliver_order_complete(@user, kit_serial_number, current_user)
       @subscription = Subscription.find_by_subscriber_user_id(params[:user_id])
     end
 
@@ -606,7 +606,7 @@ class UsersController < ApplicationController
   def send_caregiver_details
   	@user = User.find params[:id]
   	@user.build_profile unless @user.profile # avoid errors on form due to nil profile
-  	CriticalMailer.deliver_senior_and_caregiver_details(@user)
+  	UserMailer.deliver_senior_and_caregiver_details(@user)
   	@user.user_intakes.first.safety_care_email_sent # update the date (today) when the email was sent
   	flash[:mail_send] = "Mail Send successfully"
   	redirect_to :action => 'email_view',:id => params[:id]

@@ -2,18 +2,21 @@ class UserMailer < ActionMailer::ARMailer
   include ServerInstance
 
   def update_to_safety_care( user_intake)
-    @recipients  = Group.safety_care.email
-    @from        = "no-reply@#{ServerInstance.current_host}"
-    @subject     = "[" + ServerInstance.current_host_short_string + "] Update #{user_intake.senior.call_center_account}"
-    @sent_on     = Time.now
-    content_type "text/html"
+    setup_email(Group.safety_care.email) 
+    @subject     += "Update #{user_intake.senior.call_center_account}"
     @body[:user_intake] = user_intake
   end
-
+  
+  def senior_and_caregiver_details(user)
+    setup_email(Group.safety_care.email) 
+    @subject     += "#{user.profile.account_number}"
+    #content_type "text/html"
+    @body[:user] = user
+  end
+  
   def user_installation_alert(user)
-    recipients  "admin@halomonitoring.com"
-    from        "no-reply@halomonitoring.com"
-    subject     "[" + ServerInstance.current_host_short_string + "]" + "#{user.name}: Kit successfully installed"
+    setup_email("senior_signup@halomonitoring.com")       
+    @subject += "#{user.name} installed"
     body        :user => user
   end
 
@@ -48,18 +51,19 @@ class UserMailer < ActionMailer::ARMailer
     @body[:user] = user
   end
 
-  def user_unregistered(user, caregiver)
+  def user_cancelled(user, caregiver)
     setup_email(caregiver)
-    @subject += "myHalo account of #{user.name} has been cancelled."
+    @subject += "myHalo account #{user.id} #{user.name} has been cancelled."
     body <<-EOF
     Dear #{caregiver.name},
 
-    This message is the official notice that myHalo account of #{user.name} has been cancelled with immediate effect.
+    This message is the official notice that myHalo account #{user.id} #{user.name} has been cancelled.
 
-    Thanks, myHalo Team
+    Thanks, 
+    myHalo Staff
     EOF
   end
-
+  
   def cancelled_user_attempted_access(user)
     setup_email(user)
     @subject += "Cancelled myHalo account of #{user.name} was used to attempt an access."
@@ -69,7 +73,7 @@ class UserMailer < ActionMailer::ARMailer
     EOF
   end
 
-  def caregiver_email(caregiver, user)
+  def caregiver_invitation(caregiver, user)
     setup_email(caregiver)
     @subject += "#{user.name} wants you to be their caregiver"
     body <<-EOF
@@ -79,7 +83,7 @@ class UserMailer < ActionMailer::ARMailer
     EOF
   end
 
-  def kit_serial_number_register(user,kit_serial_number,current_user)
+  def order_complete(user,kit_serial_number,current_user)
     setup_email(user)
     @recipients  = "senior_signup@halomonitoring.com"
     @subject += EMAIL_SUBJECT[:kit_registered] # "New myHalo User Signed Up"
@@ -91,7 +95,7 @@ class UserMailer < ActionMailer::ARMailer
     @body[:user] = user
   end
 
-  def subscriber_email(subscriber)
+  def order_receipt(subscriber)
     setup_email(subscriber)
     @bcc = "senior_signup@halomonitoring.com"
     @subject += EMAIL_SUBJECT[:receipt] # "myHalo Receipt"
@@ -112,7 +116,10 @@ class UserMailer < ActionMailer::ARMailer
   protected
 
   def setup_email(user_obj_or_email_addr, email_log=nil)
-    if user_obj_or_email_addr.is_a?(User)
+    if user_obj_or_email_addr.nil?
+      @recipients  = ""
+        
+    elsif user_obj_or_email_addr.is_a?(User)
       @recipients  = "#{user_obj_or_email_addr.email}"
     elsif user_obj_or_email_addr.is_a?(String)
       @recipients  = user_obj_or_email_addr
@@ -123,6 +130,6 @@ class UserMailer < ActionMailer::ARMailer
     @subject     = "[" + ServerInstance.current_host_short_string + "] "
     @bcc         = "email_log@halomonitoring.com" if email_log != :no_email_log
     @sent_on     = Time.now
-    self.priority = Priority::IMMEDIATE
+    #self.priority = Priority::IMMEDIATE  #This was taken out on 10/19/2010 because of fear of SMTP delays. Not sure why this was there in the first place
   end
 end

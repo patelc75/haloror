@@ -115,7 +115,7 @@ class Device < ActiveRecord::Base
         #end
         # https://redmine.corp.halomonitor.com/issues/398
         # call to test_mode automatically logs the actions for user
-        user.test_mode( true) # Call Test Mode method to make caregivers away and opt senior out of SafetyCare
+        #user.test_mode( true) # Call Test Mode method to make caregivers away and opt senior out of SafetyCare
         user.log("Device (#{device.serial_number}) un-mapped from user (#{user.name})")
       end
       device.users = [] # Unmap users from devices, keep the device in the DB as an orphan
