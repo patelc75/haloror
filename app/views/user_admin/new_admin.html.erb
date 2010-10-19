@@ -1,16 +1,17 @@
-<% if @groups and @groups.length > 1 %>
-  <form id="group_form_id" action="/user_admin/new_admin" method="POST">
-    <% gs = ['Choose a Group']
-    @groups.each do |g|
-      gs << g.name
-    end %>
-    Select <label for="group_name">Group</label>:  
-    <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]}, @group_name) %>
-  </form>
-  <br />
-<% elsif @groups and @groups.length == 1%>
-  <input type="hidden" name="group_name" value="<%= @groups[0].name%>">
-<% end%>
+<% form_tag :action => 'create' do -%>
+
+<% unless @groups.blank? %>
+  <% if @groups.length > 1 %>
+      <% gs = ['Choose a Group']
+      @groups.each do |g|
+        gs << g.name
+      end %>
+      Select <label for="group_name">Group</label>:  
+      <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]}, @group_name) %>
+  <% else %>
+    <input type="hidden" name="group_name" value="<%= @groups[0].name%>">
+  <% end %>
+<% end %>
 
 <div id="call_list-col">
   <div id="call_list-col-header">
@@ -30,8 +31,6 @@
         <p><%= error_messages_for :profile %></p>
       </div>
 
-      <% form_tag :action => 'create' do -%>
-      <input type="hidden" name="group_name" value="<%= @group_name %>">
 
       <div id="device-table" class="table">
         <div class="row">
@@ -60,9 +59,9 @@
         </div>
       </div>	
 
-      <% end -%>
     </div>
   </div>
   <div style="clear:both"></div>
   <div id="call_list-col-footer"></div>
 </div>
+<% end -%>

@@ -117,7 +117,6 @@ class UserIntake < ActiveRecord::Base
   end
 
   def before_save
-    # debugger
     #
     # card or bill
     self.credit_debit_card_proceessed = (card_or_bill == "Card")
@@ -131,7 +130,7 @@ class UserIntake < ActiveRecord::Base
     # lock if required
     # skip_validation decides if "save" was hit instead of "submit"
     self.locked = (!skip_validation && valid?)
-    self.senior.status = User::STATUS[:approval_pending] if (locked? && self.senior.status.blank?) # once submitted, get ready for approval
+    self.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:approval_pending]) if (locked? && self.senior.status.blank?) # once submitted, get ready for approval
     #
     # WARNING: Wed Sep 15 04:29:08 IST 2010
     #   this code causing some failures on business logic
@@ -154,7 +153,6 @@ class UserIntake < ActiveRecord::Base
   end
 
   def after_save
-    # debugger
     # save the assoicated records
     associations_after_save
     # apply test mode, if applicable
@@ -165,11 +163,12 @@ class UserIntake < ActiveRecord::Base
     # self.senior.send( :update_without_callbacks) # not required. set_test_mode! has "shebang"
     #
     # Switch user to installed state, if user is "Ready to Bill"
-    senior.status = User::STATUS[:installed] if senior.status == User::STATUS[:bill_pending]
-    senior.send(:update_without_callbacks)
+    if senior.status == User::STATUS[:bill_pending]
+      self.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:installed])
+    end
     #
     # charge subscription and pro-rata recurring charges (including today), only when installed
-    if (senior.status = User::STATUS[:installed]) && !order.blank?
+    if (senior.status == User::STATUS[:installed]) && !order.blank?
       #
       # charge the credit card subscription now
       order.charge_subscription
@@ -197,6 +196,11 @@ class UserIntake < ActiveRecord::Base
     #
     # attach devices to user/senior
     [gateway_serial, transmitter_serial].select {|e| !e.blank? }.each {|device| senior.add_device_by_serial_number( device) }
+  end
+
+  # when billing starts, the monthly recurring amount is charged pro-rated since this date
+  def pro_rata_start_date
+    installation_datetime || shipped_at || created_at
   end
 
   # create blank placeholder records
@@ -272,7 +276,6 @@ class UserIntake < ActiveRecord::Base
     # # FIXME: TODO. look when other bugs are fixed
     # # association are collapsing ignoring the params
     # # need most close debugging. Not getting a clue for now.
-    # debugger
     # (1..3).each do |index|
     #   caregiver = self.send("caregiver#{index}".to_sym)
     #   unless caregiver.blank?
@@ -298,7 +301,6 @@ class UserIntake < ActiveRecord::Base
   # we are keeping senior, subscriber, ... in attr_accessor variables
   def associations_before_validation_and_save
     collapse_associations # make obsolete ones = nil
-    # debugger
     #
     # TODO: conflicting with 1.6.0 pre-quality. removed to check compatiblity or related errors
     # for remaining, fill login, password details only when login is empty
@@ -321,7 +323,6 @@ class UserIntake < ActiveRecord::Base
     # WARNING: the associations here are not using active_record, so they are not auto saved with user intake
     #   we are saving the associations manually here
     collapse_associations # make obsolete ones = nil
-    # debugger
     #
     # TODO: conflicting with 1.6.0 pre-quality. removed to check compatiblity or related errors
     # for remaining, fill login, password details only when login is empty
@@ -336,7 +337,6 @@ class UserIntake < ActiveRecord::Base
         self.users << _user # Step 3: link them to user intake
       end
     end
-    # debugger
     #
     # add roles and options
     #
@@ -679,9 +679,18 @@ class UserIntake < ActiveRecord::Base
   end
 
   # TODO: DRYness required here for methods
+  
+  # TODO: WARNING: needs more testing and code coverage
+  def apply_attributes_from_hash( _hash)
+    self.senior_attributes = _hash[:senior_attributes] unless _hash[:senior_attributes].blank?
+    self.subscriber_attributes = _hash[:subscriber_attributes] unless (_hash[:subscriber_attributes].blank? || (_hash[:subscriber_is_user] == "1"))
+    self.caregiver1_attributes = _hash[:caregiver1_attributes] unless (_hash[:caregiver1_attributes].blank? || (_hash[:subscriber_is_caregiver] == "1"))
+    self.caregiver2_attributes = _hash[:caregiver2_attributes] unless _hash[:caregiver2_attributes].blank?
+    self.caregiver3_attributes = _hash[:caregiver3_attributes] unless _hash[:caregiver3_attributes].blank?
+  end
 
   def senior_attributes=(attributes)
-    self.senior = User.new(attributes) # includes profile_attributes hash
+    self.senior = (senior.blank? ? User.new(attributes) : self.senior.update_attributes(attributes)) # includes profile_attributes hash
     self.senior.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
     self.senior.skip_validation = self.skip_validation unless self.senior.blank?
     self.senior
@@ -689,16 +698,15 @@ class UserIntake < ActiveRecord::Base
 
   def subscriber_attributes=(attributes)
     (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
-    self.subscriber = User.new( attributes) # includes profile_attributes hash
+    self.subscriber = (subscriber.blank? ? User.new( attributes) : self.subscriber.update_attributes(attributes)) # includes profile_attributes hash
     self.subscriber.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
     self.subscriber.skip_validation = self.skip_validation unless self.subscriber.blank?
     self.subscriber
   end
 
   def caregiver1_attributes=(attributes)
-    # debugger
     (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-    self.caregiver1 = User.new( attributes) # includes profile_attributes hash
+    self.caregiver1 = (caregiver1.blank? ? User.new( attributes) : self.caregiver1.update_attributes(attributes)) # includes profile_attributes hash
     self.caregiver1.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
     self.caregiver1.skip_validation = self.skip_validation unless self.caregiver1.blank?
     self.caregiver1
@@ -706,7 +714,7 @@ class UserIntake < ActiveRecord::Base
 
   def caregiver2_attributes=(attributes)
     (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-    self.caregiver2 = User.new( attributes) # includes profile_attributes hash
+    self.caregiver2 = (caregiver2.blank? ? User.new( attributes) : self.caregiver2.update_attributes(attributes)) # includes profile_attributes hash
     self.caregiver2.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
     self.caregiver2.skip_validation = self.skip_validation unless self.caregiver2.blank?
     self.caregiver2
@@ -714,7 +722,7 @@ class UserIntake < ActiveRecord::Base
 
   def caregiver3_attributes=(attributes)
     (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-    self.caregiver3 = User.new( attributes) # includes profile_attributes hash
+    self.caregiver3 = (caregiver3.blank? ? User.new( attributes) : self.caregiver3.update_attributes(attributes)) # includes profile_attributes hash
     self.caregiver3.profile_attributes = attributes["profile_attributes"] # profile_attributes explicitly built
     self.caregiver3.skip_validation = self.skip_validation unless self.caregiver3.blank?
     self.caregiver3
@@ -820,7 +828,7 @@ class UserIntake < ActiveRecord::Base
 
     else
       # existing user_intake row. just build the no_caregiver_x booleans
-      (1..3).each { |index| self.send(:"no_caregiver_#{index}=", self.send( :"caregiver#{index}").blank? ) }
+      (1..3).each { |index| self.send("no_caregiver_#{index}=".to_sym, self.send( "caregiver#{index}".to_sym).blank? ) }
     end
   end
 

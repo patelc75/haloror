@@ -85,6 +85,7 @@ end
 Given /^I am ready to create an admin$/ do
   Given "the following groups:", table(%{
     | name           | sales_type | description                |
+    | bogus_group    | reseller   | bogus reseller             |
     | reseller_group | reseller   | reseller_group description |
     | retailer_group | reseller   | retailer_group description |
   })

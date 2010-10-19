@@ -74,7 +74,7 @@ class UserIntakesController < ApplicationController
     # * only allow editing user intakes that are submitted (not just saved)
     # * only super_admin can edit submitted ones
     # CHANGED: halouser or subscriber can edit its user intake
-    if @user_intake.users.include?( current_user)
+    if @user_intake.users.include?( current_user) || current_user.is_super_admin?
       respond_to do |format|
         format.html
         format.xml { render :xml => @user_intake }
@@ -128,17 +128,34 @@ class UserIntakesController < ApplicationController
       #
       # ramonrails: Fri Oct 14 10:40:54 IST 2010
       #   we have the current_user available at this moment, not inside the model
+      #   TODO: need a better fix. this is a rough patch
       params[:user_intake] = params[:user_intake].reject {|k,v| k == "creator"}
       params[:user_intake]["updater"] = current_user
+      #
+      # apply all attributes to associations
+      @user_intake.apply_attributes_from_hash( params[:user_intake]) # apply user attributes
+      #
+      # Now save the user intake object. Should pass validation
       if @user_intake.update_attributes( params[:user_intake])
-        # _hashes.each {|k, v| @user_intake.send( "#{k}".to_sym, v) } # for example: senior_attributes
+        #
+        # if approval was pending and this time "Approve" button is submitted
+        #   then mark the senior "Ready to Install"
+        if (@user_intake.senior.status == User::STATUS[:approval_pending]) && (params[:commit] == "Approve")
+          @user_intake.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:install_pending])
+        end
+        #
+        # proceed as usual
         flash[:notice] = 'User Intake was successfully updated.'
         format.html do
-          if params[:redirect_hash].blank?
-            redirect_to :action => 'index'
-          else
-            redirect_to redirect_hash # this comes from online order form
-          end
+          #
+          # QUESTION: Is this correct?
+          #   We were showing successful order here but the busoness logic changed later
+          #
+          # if params[:redirect_hash].blank?
+            redirect_to :action => 'index' # just show user_intakes
+          # else
+          #   redirect_to redirect_hash # this comes from online order form
+          # end
         end
         format.xml  { head :ok }
       else

@@ -10,6 +10,10 @@
     });
     show_when_dropdown_selected(document.getElementById('user_intake_group_id'));
     hide_when_checked(document.getElementById('user_intake_subscriber_is_user'), 'subscriber_profile');
+    // TODO: DRY this
+    hide_when_checked(document.getElementById('user_intake_no_caregiver_1'), 'caregiver1_profile');
+    hide_when_checked(document.getElementById('user_intake_no_caregiver_2'), 'caregiver2_profile');
+    hide_when_checked(document.getElementById('user_intake_no_caregiver_3'), 'caregiver3_profile');
   });
   </script>
 <% end -%>
@@ -225,7 +229,7 @@
         <% if current_user.is_super_admin? || @user_intake.users.include?( current_user) || current_user.is_admin_of?( @user_intake.group) %>
           <%= f.submit "Save", :class => "button blue-button", :id => "user_intake_save" %>
           <% if @user_intake.senior.submit_button_text != User::STATUS_BUTTON_TEXT[:bill_pending] || current_user.is_super_admin? %>
-            <%= f.submit @user_intake.senior.submit_button_text , :class => "button #{@user_intake.senior.status_button_color}-button", :id => "user_intake_submit" %>
+            <%= f.submit @user_intake.senior.submit_button_text , :class => "button #{@user_intake.senior.status_button_color}-button", :id => "user_intake_submit", :disabled => !current_user.is_super_admin? %>
           <% end %>
         <% end %>
       </div>

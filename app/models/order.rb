@@ -334,7 +334,7 @@ class Order < ActiveRecord::Base
         # product_cost.recurring_delay.months.from_now.to_date
         @recurring_fee_response = PAYMENT_GATEWAY.recurring(product_cost.monthly_recurring*100, credit_card, {
             :interval => {:unit => :months, :length => 1},
-            :duration => {:start_date => (Time.now + 1.month).beginning_of_month, :occurrences => 60},
+            :duration => {:start_date => (Time.now + 1.month).beginning_of_month.to_date, :occurrences => 60},
             :billing_address => {
               :first_name => bill_first_name,
               :last_name => bill_last_name,
@@ -360,7 +360,7 @@ class Order < ActiveRecord::Base
     _per_day_cost = (product_cost.monthly_recurring / 30)
     #
     # difference of days since desired installation date and now
-    _number_of_days_including_today = ((Time.now.end_of_month - user_intake.installation_datetime) / 1.day).round
+    _number_of_days_including_today = ((Time.now.end_of_month - user_intake.pro_rata_start_date) / 1.day).to_i
     #
     # charge pro-rata for the period
     charge_credit_card( _per_day_cost * _number_of_days_including_today )

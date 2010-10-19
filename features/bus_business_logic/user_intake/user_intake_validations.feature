@@ -31,7 +31,8 @@ Feature: Manage user_intakes
     When I check "Same as User"
     And I fill the senior details for user intake form
     And I press "user_intake_submit"
-    Then page content should have "HALO SUBSCRIBER AGREEMENT"
+    Then page content should have "User Intake was successfully created"
+    # business logic changed to show user intake overview instead of just created user intake
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Valid user. Missing Subscriber. Subscriber is not the user.
@@ -47,7 +48,8 @@ Feature: Manage user_intakes
     And I fill the subscriber details for user intake form
     And I select "verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
     And I press "user_intake_submit" 
-    Then page content should have "HALO SUBSCRIBER AGREEMENT" 
+    Then page content should have "User Intake was successfully created"
+    # business logic changed to show user intake overview instead of just created user intake
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Valid user. Missing Subscriber/Caregiver. Subscriber is not user. Subscriber is caregiver
@@ -67,7 +69,8 @@ Feature: Manage user_intakes
     And I check "user_intake_mem_caregiver1_options_email_active"
     And I select "Yes" from "user_intake_mem_caregiver1_options_is_keyholder"
     And I press "user_intake_submit"
-    Then page content should have "HALO SUBSCRIBER AGREEMENT"
+    Then page content should have "User Intake was successfully created"
+    # business logic changed to show user intake overview instead of just created user intake
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Valid user. Valid Subscriber. Subscriber is not user/caregiver. Invalid Caregiver 1.
@@ -94,4 +97,5 @@ Feature: Manage user_intakes
     And I fill the caregiver1 details for user intake form
     And I select "verizon" from "user_intake_caregiver1_attributes__profile_attributes_carrier_id"
     And I press "user_intake_submit"
-    Then page content should have "HALO SUBSCRIBER AGREEMENT"
+    Then page content should have "User Intake was successfully created"
+    # business logic changed to show user intake overview instead of just created user intake

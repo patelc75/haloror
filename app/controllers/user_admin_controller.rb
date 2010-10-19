@@ -52,7 +52,7 @@ class UserAdminController < ApplicationController
     #
     # We need group specific code before the "if" condition
     @groups = current_user.group_memberships
-    _group = (Group.find_by_name(@group_name) || @groups.first)
+    _group = Group.find_by_name(@group_name) # || @groups.first) # Group.first causing issues in manual test. cuke runs green
     #
     # if role was not properly selected for some reason
     if params[:role].blank? # && params[:role] != 'Choose a Role'
