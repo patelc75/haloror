@@ -10,11 +10,11 @@
     <% end %>
   </div>
 
-  <div class="col-25">
+  <div class="col-35">
     <%=user[:id]%>
   </div>
 
-  <div class="col-125">
+  <div class="col-150">
     <% if caregiver %>
     <a href="#user_<%=user.id%>">
       <% end %>
@@ -53,7 +53,7 @@
     <span class="tiny">Status: <%= user.status %></span>
   </div>
 
-  <div class="col-300">
+  <div class="col-250">
     <%=render :partial => 'reporting/table/user_roles', :locals => {:user => user}%>
     &nbsp;
   </div>

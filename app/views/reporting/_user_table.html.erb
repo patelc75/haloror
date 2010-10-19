@@ -3,15 +3,15 @@
     &nbsp;
   </div>
 
-  <div class="col-25">
+  <div class="col-35">
     <%= link_to_remote "ID", {:update => 'user-table', :url => {:action => 'sort_user_table', :col => 'id', :group_name => @group_name}}, {:title => "Order by User ID"} %>
   </div>
 
-  <div class="col-125">
+  <div class="col-150">
     <%= link_to_remote "Name", {:update => 'user-table', :url => {:action => 'sort_user_table', :col => 'name', :group_name => @group_name}}, {:title => "Order by Last Name in User Profile"} %>
   </div>
 
-  <div class="col-300">
+  <div class="col-250">
     Role(s) 
     <% if current_user.is_super_admin? %>
       <a href="/user_admin/roles">Configure</a>&nbsp;
