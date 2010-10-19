@@ -17,21 +17,23 @@
 </div>
 
 <hr /> 
-<div class="span-6">
+<div class="span-5">
   <% [ User::AGGREGATE_STATUS[ :pending], User::AGGREGATE_STATUS[ :installed], User::AGGREGATE_STATUS[ :cancelled]].each do |_status| %>
   <% [:chest_straps, :belt_clips].each do |_device| %>
   <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? User.halousers.collect(&:id) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
   <% end %>
   <% end %>
 </div>
-<div class="span-6">
+<div class="span-5">
   <% [ User::AGGREGATE_STATUS[ :installed]].each do |_status| %>
   <% [:dialups, :ethernets].each do |_mode| %>
   <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.gateways.send( "#{_mode}".to_sym).where_user_ids( (@group.blank? ? User.halousers.collect(&:id) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.collect(&:aggregated_status).flatten.compact.uniq.include?( _status)}.length %> <%= _status %> <%= _mode.to_s.capitalize %></div>
   <% end %>
-  <% end %>
+  <% end %>    
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? User.halousers.collect(&:id) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :demo] }.length %> Demo HaloUsers</div>
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? User.halousers.collect(&:id) : @group.has_halousers.collect(&:id)).length %> Total Users</div>
 </div>
-<div class="span-6 last">
+<div class="span-4">
   <% User::STATUS.keys.each do |key| %>
   <div style="display: inline-block;"><%= image_tag( User::STATUS_IMAGE[key]) %> <%= @group.blank? ? User.where_status(User::STATUS[key]).length : @group.users.select {|e| e.status == User::STATUS[key] }.length %> <%= User::STATUS[key].blank? ? 'Not Submitted' : User::STATUS[key] %></div>
   <% end %>

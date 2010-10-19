@@ -28,13 +28,13 @@ class User < ActiveRecord::Base
   # }
 
   STATUS_IMAGE = {
-    :pending          => "user_active.png",
-    :approval_pending => "user_placeholder.png",
-    :install_pending  => "user_placeholder.png",
-    :bill_pending     => "user_active.png",
+    :pending          => "user.png",  
+    :approval_pending => "user.png",  
+    :install_pending  => "user.png",  
+    :bill_pending     => "user.png",  
     :installed        => "user.png",
-    :overdue          => "user_placeholder.png",
-    :cancelled        => "user_placeholder.png"
+    :overdue          => "user.png",  
+    :cancelled        => "user.png",  
   }
   STATUS_BUTTON_TEXT = {
     :pending          => "Submit",
@@ -468,7 +468,7 @@ class User < ActiveRecord::Base
   def after_initialize
     #
     # assume not in demo mode
-    self.demo_mode = false
+    self.demo_mode = false if new_record?
     # just make the login blank in memory, if this is _AUTO_xxx login
     self.login = "" if (login =~ /_AUTO_/)
     #
@@ -2609,6 +2609,7 @@ class User < ActiveRecord::Base
     end
     # Unmap users from devices, keep the device in the DB as an orphan (ie. not mapped to any user)
     #   DISPATCH EMAILS before detaching devices
+    #debugger
     devices = []
     # Call Test Mode method to make caregivers away and opt out of SafetyCare
     set_test_mode!( true)
@@ -2617,7 +2618,9 @@ class User < ActiveRecord::Base
     # Send email to caregivers informing de-activation of device
     # caregivers.each {|e| UserMailer.user_unregistered( self, e) }
     # Create link to log on the cancel status field specified above
-    triage_audit_logs.create( :status => User::STATUS[:cancelled], :description => "MyHalo account of #{name} is now cancelled.")
+    triage_audit_logs.create( :status => User::STATUS[:cancelled], :description => "MyHalo account of #{name} is now cancelled.") 
+    self.status = User::STATUS[:cancelled] 
+    self.send(:update_without_callbacks)
   end
   
 
