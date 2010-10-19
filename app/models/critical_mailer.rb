@@ -166,12 +166,12 @@ class CriticalMailer < ActionMailer::ARMailer
     self.priority = alert.priority
   end
   
-  def cancel_device( device )
+  def cancel_call_center_acct( acct_num )
     @recipients = Group.safety_care.email
     @from       = "no-reply@#{ServerInstance.current_host}"
-    @subject    = "Cancel device #{device.serial_number}"
-    @sent_on    = Time.now
-    body        = "Cancel device #{device.serial_number}"
+    @subject    = "Cancel acct #{acct_num}"
+    @sent_on    = Time.now 
+    @body[:acct_num] = acct_num
   end
 
 #=============== Utility Methods  ===================  

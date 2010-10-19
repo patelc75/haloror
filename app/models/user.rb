@@ -2599,28 +2599,16 @@ class User < ActiveRecord::Base
   #   * when not halouser, this method has no effect
   # steps taken from https://redmine.corp.halomonitor.com/issues/398
   def cancel_account
-    #
-    # https://redmine.corp.halomonitor.com/issues/398
-    #
     # Send email to SafetyCare similar to the current email to SafetyCare except body will simple oneline with text "Cancel HM1234" 
-    devices.each do |_device|
-      CriticalMailer.deliver_cancel_device( _device)
-      _device.users.each {|user| user.log("Email sent to safety_care: Cancel #{_device.serial_number}") } # Create a log page of all steps above with timestamps
-    end
-    # Unmap users from devices, keep the device in the DB as an orphan (ie. not mapped to any user)
-    #   DISPATCH EMAILS before detaching devices
-    #debugger
-    devices = []
-    # Call Test Mode method to make caregivers away and opt out of SafetyCare
-    set_test_mode!( true)
-    # Sends unregister command to both devices 
-    Device.unregister( devices.collect(&:id).flatten.compact.uniq )
-    # Send email to caregivers informing de-activation of device
-    # caregivers.each {|e| UserMailer.user_unregistered( self, e) }
-    # Create link to log on the cancel status field specified above
-    triage_audit_logs.create( :status => User::STATUS[:cancelled], :description => "MyHalo account of #{name} is now cancelled.") 
+    CriticalMailer.deliver_cancel_call_center_acct(self.profile.account_number)
+    self.log("Email sent to safety_care: Cancel #{self.profile.account_number}")  
+    devices = []    
+    set_test_mode!( true)  # Call Test Mode method to make caregivers away and opt out of SafetyCare    
+    Device.unregister( devices.collect(&:id).flatten.compact.uniq ) # Sends unregister command to both devices 
+    # caregivers.each {|e| UserMailer.user_unregistered( self, e) } # Send email to caregivers informing de-activation of device  
     self.status = User::STATUS[:cancelled] 
     self.send(:update_without_callbacks)
+    triage_audit_logs.create( :status => User::STATUS[:cancelled], :description => "MyHalo account of #{name} is now cancelled.") 
   end
   
 
