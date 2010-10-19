@@ -9,10 +9,10 @@ class DeviceModelPrice < ActiveRecord::Base
   # = validations =
   # ===============
   
-  validates_presence_of :device_model # https://redmine.corp.halomonitor.com/issues/3542
-  validates_presence_of :coupon_code
-  validates_presence_of :group
-  validates_uniqueness_of :coupon_code, :device_model_id, :group_id # all three makes code unique
+  validates_presence_of :group, :coupon_code, :device_model # https://redmine.corp.halomonitor.com/issues/3542
+  # https://redmine.corp.halomonitor.com/issues/3562
+  # one coupon_code per device_model per group
+  validates_uniqueness_of :coupon_code, :scope => [:device_model_id, :group_id]
   
   # ======================
   # = filters and scopes =

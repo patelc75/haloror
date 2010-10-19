@@ -64,7 +64,8 @@ def product_catalog
       (group = (Group.find_by_name( group_name) || Factory.create( :group, :name => group_name))).should_not be_blank
       values[:tariff].each do |key, prices_hash|
         prices_hash[:coupon_code] = group_name.upcase if key == :custom
-        (Factory.create(:device_model_price, prices_hash.merge(:device_model => @device_model, :group => group))).should_not be_blank
+        coupon_code = ( DeviceModelPrice.first( :conditions => {:coupon_code => prices_hash[:coupon_code], :device_model_id => @device_model, :group_id => group}) || Factory.create(:device_model_price, prices_hash.merge(:device_model => @device_model, :group => group)) )
+        coupon_code.should_not be_blank
       end
     end
   end

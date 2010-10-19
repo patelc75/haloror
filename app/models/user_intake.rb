@@ -696,7 +696,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver1_attributes=(attributes)
-    debugger
+    # debugger
     (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
     self.caregiver1 = User.new( attributes) # includes profile_attributes hash
     self.caregiver1.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built

@@ -1,3 +1,4 @@
+# https://redmine.corp.halomonitor.com/issues/3562
 require 'spec_helper'
 
 describe DeviceModelPrice do
@@ -21,14 +22,35 @@ describe DeviceModelPrice do
       it { should_not be_blank }
       it { should be_valid }
     end
+    
+    context "device_model exists for each coupon code" do
+      subject { @coupon.device_model }
+      it { should_not be_blank }
+      it { should be_valid }
+    end
   end
   
   context "when group is missing" do
-    before( :each) { @groupless_coupon = Factory.build( :device_model_price, :group => nil) }
+    before( :each) { @invalid_coupon = Factory.build( :device_model_price, :group => nil) }
     
-    subject { @groupless_coupon }
-    it { should_not be_valid }
-    specify { @groupless_coupon.group.should be_blank }
+    specify { @invalid_coupon.should_not be_valid }
+    specify { @invalid_coupon.group.should be_blank }
+  end
+
+  context "when device_model is missing" do
+    before( :each) { @invalid_coupon = Factory.build( :device_model_price, :device_model => nil) }
+    
+    specify { @invalid_coupon.should_not be_valid }
+    specify { @invalid_coupon.device_model.should be_blank }
   end
   
+  context "one coupon code per device model per group" do
+    before(:each) { @coupon = Factory.create( :device_model_price) }
+
+    specify { Factory.build( :device_model_price, :coupon_code => @coupon.coupon_code, :group => @coupon.group ).should be_valid }
+    specify { Factory.build( :device_model_price, :coupon_code => @coupon.coupon_code, :device_model => @coupon.device_model ).should be_valid }
+    specify { Factory.create( :device_model_price).should be_valid }
+    
+    specify { Factory.build( :device_model_price, :coupon_code => @coupon.coupon_code, :group => @coupon.group, :device_model => @coupon.device_model ).should_not be_valid }
+  end
 end

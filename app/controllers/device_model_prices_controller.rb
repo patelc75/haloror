@@ -46,6 +46,7 @@ class DeviceModelPricesController < ApplicationController
   # POST /device_model_prices.xml
   def create
     @device_model_price = DeviceModelPrice.new(params[:device_model_price])
+    @groups = Group.all( :order => :name)
 
     respond_to do |format|
       if @device_model_price.save
@@ -63,6 +64,7 @@ class DeviceModelPricesController < ApplicationController
   # PUT /device_model_prices/1.xml
   def update
     @device_model_price = DeviceModelPrice.find(params[:id])
+    @groups = Group.all( :order => :name)
 
     respond_to do |format|
       if @device_model_price.update_attributes(params[:device_model_price])
