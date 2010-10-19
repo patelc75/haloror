@@ -229,7 +229,7 @@
         <% if current_user.is_super_admin? || @user_intake.users.include?( current_user) || current_user.is_admin_of?( @user_intake.group) %>
           <%= f.submit "Save", :class => "button blue-button", :id => "user_intake_save" %>
           <% if @user_intake.senior.submit_button_text != User::STATUS_BUTTON_TEXT[:bill_pending] || current_user.is_super_admin? %>
-            <%= f.submit @user_intake.senior.submit_button_text , :class => "button #{@user_intake.senior.status_button_color}-button", :id => "user_intake_submit", :disabled => !current_user.is_super_admin? %>
+            <%= f.submit @user_intake.senior.submit_button_text , :class => "button #{@user_intake.senior.status_button_color}-button", :id => "user_intake_submit", :disabled => (!current_user.is_super_admin? && current_user != @user_intake.senior) %>
           <% end %>
         <% end %>
       </div>

@@ -165,16 +165,22 @@ class UserIntake < ActiveRecord::Base
     # Switch user to installed state, if user is "Ready to Bill"
     if senior.status == User::STATUS[:bill_pending]
       self.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:installed])
+      #
+      # charge subscription and pro-rata recurring charges (including today), only when installed
+      unless order.blank?
+        #
+        # charge the credit card subscription now
+        order.charge_subscription
+        #
+        # pro-rata for subscription should also be charged
+        order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
+      end
     end
     #
-    # charge subscription and pro-rata recurring charges (including today), only when installed
-    if (senior.status == User::STATUS[:installed]) && !order.blank?
-      #
-      # charge the credit card subscription now
-      order.charge_subscription
-      #
-      # pro-rata for subscription should also be charged
-      order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
+    # connect devices to senior if they are free to use
+    [transmitter_serial, gateway_serial].each do |_serial|
+      device = Device.find_by_serial_number( _serial)
+      self.senior.devices << device if device.is_only_associated_to?( self.senior) # future proof? multiple devices?
     end
     #
     # send email for installation

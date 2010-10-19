@@ -336,6 +336,10 @@ class ReportingController < ApplicationController
   def remove_user_mapping
     user_id = params[:id]
     device_id = params[:device_id]
+    # 
+    # TODO: user ORM instead of SQL here
+    #   device = Device.find_by_id( params[:device_id])
+    #   device.users = [] # this will disconnect all users from this device
     Device.connection.delete "delete from devices_users where device_id = #{device_id} and user_id = #{user_id} "
     if params[:users].blank?
       redirect_to '/reporting/devices'
