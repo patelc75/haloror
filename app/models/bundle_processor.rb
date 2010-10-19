@@ -10,7 +10,7 @@ class BundleProcessor # < ActiveRecord::Base
                       BatteryCritical, BatteryPlugged, BatteryUnplugged, 
                       Fall, Panic, WeightScale, BloodPressure, 
                       HaloDebugMsg, OscopeStartMsg, OscopeStopMsg, OscopeMsg,
-                      GwAlarmButton, DialUpStatus, DialUpLastSuccessful]
+                      GwAlarmButton, DialUpStatus, DialUpLastSuccessful, DialUpAlert]
 
   # process the bundle
   #
