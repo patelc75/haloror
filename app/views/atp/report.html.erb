@@ -37,7 +37,7 @@
     <% else %>
       <td>&nbsp;</td>
     <% end %>
-    <td><%= result.atp_item.description %></td>
+    <td><%= result.atp_item_results.collect(&:result_value).join(', ') %></td>
     <td><%= result.timestamp %></td>
     <td><%= result.updated_at %></td>
     <td><%= result.created_at %></td>

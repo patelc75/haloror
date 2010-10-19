@@ -137,8 +137,18 @@ class Order < ActiveRecord::Base
   # * <tt>:phone</tt> - The phone number of the customer.
   #
   # 439 recurring error fix
-  def charge_credit_card
+  def charge_credit_card( pro_rata = 0)
     # mode is set (in environment config files) to :test for development and test, :production when production
+    #
+    # charges pro-rata or upfront
+    if pro_rata.to_i == 0
+      _cost = (product_cost.blank? ? 0 : product_cost.upfront_charge)
+      _action = "purchase"
+    else
+      _cost = pro_rata.to_i
+      _action = "pro-rata"
+    end
+    #
     if validate_card
       if product_cost.blank?
         errors.add_to_base "Product cost cannot be identified in the database"
@@ -154,7 +164,7 @@ class Order < ActiveRecord::Base
         # * <tt>money</tt> -- The amount to be purchased as an Integer value in cents.
         # * <tt>creditcard</tt> -- The CreditCard details for the transaction.
         # * <tt>options</tt> -- A hash of optional parameters.
-        @one_time_fee_response = ::PAYMENT_GATEWAY.purchase( product_cost.upfront_charge*100, credit_card,
+        @one_time_fee_response = ::PAYMENT_GATEWAY.purchase( _cost*100, credit_card,
           :billing_address => {
             :first_name => bill_first_name,
             :last_name => bill_last_name,
@@ -167,7 +177,7 @@ class Order < ActiveRecord::Base
             }
           ) # GATEWAY in environment files
         # store response in database
-        payment_gateway_responses.create!(:action => "purchase", :amount => product_cost.upfront_charge*100, :response => @one_time_fee_response)
+        payment_gateway_responses.create!(:action => _action, :amount => _cost*100, :response => @one_time_fee_response)
         errors.add_to_base @one_time_fee_response.message unless @one_time_fee_response.success?
 
         # ticket 3215: Credit card will no longer be charged recurring monthly at the point of sale (when order is taken)
@@ -241,14 +251,14 @@ class Order < ActiveRecord::Base
       end # one time charge
     else
       # invalid card
-      payment_gateway_responses.create!(:action => "validate_card", :amount => product_cost.upfront_charge*100, \
+      payment_gateway_responses.create!(:action => "validate_card", :amount => _cost*100, \
         :response => {:success => false, \
                       :authorization => "Authorization not attempted", \
                       :message => "Invalid card #{credit_card.display_number}", \
                       :params => credit_card.errors.full_messages.join(". ")})
     end # validate_card
     
-    create_user_intake if card_successful? # card successful? then create user intake data
+    create_user_intake if card_successful? && (pro_rata.to_i == 0) # card successful? then create user intake data
     
     # return @one_time_fee_response, @recurring_fee_response # more DRY. contained in Order
     card_successful? # return success/failure status as true/false
@@ -277,7 +287,7 @@ class Order < ActiveRecord::Base
   # http://spreadsheets.google.com/a/halomonitoring.com/ccc?key=0AnT533LvuYHydENwbW9sT0NWWktOY2VoMVdtbnJqTWc&hl=en#gid=2
   # * subscrition for DTC is now charged from 1st of next month
   # * pro-rata chargeed since installed date or, 7 calendar days from shipped
-  def charge_subscription
+  def charge_subscription( days = nil)
     # recurring attempted only when one-time is success
     if purchase_successful? and !subscription_successful?
       if product_cost.monthly_recurring.zero?
@@ -320,10 +330,11 @@ class Order < ActiveRecord::Base
         # 
         # https://redmine.corp.halomonitor.com/issues/3068
         # recurring start_date was immediate. ".months" was missed in last release
-        
+        #
+        # product_cost.recurring_delay.months.from_now.to_date
         @recurring_fee_response = ::PAYMENT_GATEWAY.recurring(product_cost.monthly_recurring*100, credit_card, {
             :interval => {:unit => :months, :length => 1},
-            :duration => {:start_date => product_cost.recurring_delay.months.from_now.to_date, :occurrences => 60},
+            :duration => {:start_date => (Time.now + 1.month).beginning_of_month, :occurrences => 60},
             :billing_address => {
               :first_name => bill_first_name,
               :last_name => bill_last_name,
@@ -343,6 +354,18 @@ class Order < ActiveRecord::Base
     end
   end
   
+  def charge_pro_rata
+    #
+    # assuming the cost is for 30 days (one month)
+    _per_day_cost = (product_cost.monthly_recurring / 30)
+    #
+    # difference of days since desired installation date and now
+    _number_of_days_including_today = ((Time.now.end_of_month - user_intake.installation_datetime) / 1.day).round
+    #
+    # charge pro-rata for the period
+    charge_credit_card( _per_day_cost * _number_of_days_including_today )
+  end
+
   # reference from the active_merchant code
   #
   #   cc = CreditCard.new(
@@ -439,7 +462,7 @@ class Order < ActiveRecord::Base
     # this should only be created when
     # => credit card transaction is successful
     # => order is saved
-    unless self.new_record? # user intake can be created only after save
+    unless self.new_record? && user_intake.blank? # user intake can be created only after save
       # TODO: DRYness required here
       senior_profile = { :first_name => ship_first_name, :last_name => ship_last_name, :address => ship_address, :city => ship_city, :state => ship_state, :zipcode => ship_zip, :home_phone => ship_phone }
       subscriber_profile = { :first_name => bill_first_name, :last_name => bill_last_name, :address => bill_address, :city => bill_city, :state => bill_state, :zipcode => bill_zip, :home_phone => bill_phone }

@@ -169,6 +169,14 @@ Given /^we are on or past the desired installation date for senior of user intak
   ui.save.should be_true
 end
 
+Given /^user intake for "([^"]*)" exists$/ do |login|
+  (ui = Factory.create( :user_intake)).should_not be_blank
+  (user = User.find_by_login(login)).should_not be_blank
+  ui.senior = user
+  ui.skip_validation = true # when created from order, this might not be fully valid
+  ui.save.should be_true
+end
+
   # =========
   # = whens =
   # =========

@@ -1,13 +1,30 @@
 class DeviceModelPrice < ActiveRecord::Base
+  # =============
+  # = relations =
+  # =============
   belongs_to :device_model
   belongs_to :group
+  
+  # ===============
+  # = validations =
+  # ===============
+  
   validates_presence_of :device_model # https://redmine.corp.halomonitor.com/issues/3542
   validates_presence_of :coupon_code
   validates_presence_of :group
-  # validates_uniqueness_of :coupon_code, :device_model_id
+  validates_uniqueness_of :coupon_code, :device_model_id, :group_id # all three makes code unique
+  
+  # ======================
+  # = filters and scopes =
+  # ======================
+  
   named_scope :recent_on_top, :order => "created_at DESC"
   named_scope :for_group, lambda {|group| { :conditions => { :group_id => group.id } }}
   named_scope :for_coupon_code, lambda {|arg| { :conditions => { :coupon_code => arg } }}
+  
+  # ====================
+  # = instance methods =
+  # ====================
   
   def group_name
     group.blank? ? Group.direct_to_consumer.name : group.name

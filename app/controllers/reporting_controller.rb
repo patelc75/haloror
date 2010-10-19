@@ -104,11 +104,18 @@ class ReportingController < ApplicationController
     # end
     #
     # exclude demo users. https://redmine.corp.halomonitor.com/issues/3274
-    if params[:id].to_s == "all"
-      @users = ( @group.blank? ? User.ordered : User.all( :conditions => {:id => @group.user_ids }, :order => "id ASC") )
-    else
-      @users = ( @group.blank? ? User.all_except_demo.ordered : User.all( :conditions => {:id => @group.user_ids }, :order => "id ASC") ).reject(&:demo_mode?)
-    end
+    # users only from current_user.group_memberships should be visible. https://redmine.corp.halomonitor.com/issues/3550
+    #
+    # only these users are visible to current_user
+    _user_ids = (@group.blank? ? @groups.collect(&:user_ids) : @group.user_ids).flatten.compact.uniq
+    #
+    # fetch users based on collected ids
+    @users = User.all( :conditions => {:id => _user_ids }, :order => "id ASC")
+    #
+    # show non-demo users, unless "/all" given in URL
+    @users.reject(&:demo_mode?) if params[:id].to_s != "all"
+    #
+    # paginate the list of users
     @users = @users.paginate :page => params[:page], :include => [:roles, :roles_users], :per_page => REPORTING_USERS_PER_PAGE
 
     # @users.each do |user|

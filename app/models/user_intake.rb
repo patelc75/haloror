@@ -168,10 +168,15 @@ class UserIntake < ActiveRecord::Base
     senior.status = User::STATUS[:installed] if senior.status == User::STATUS[:bill_pending]
     senior.send(:update_without_callbacks)
     #
-    # charge the credit card subscription now
-    order.charge_subscription unless order.blank?
-    #
-    # pro-rata for subscription should also be charged
+    # charge subscription and pro-rata recurring charges (including today), only when installed
+    if (senior.status = User::STATUS[:installed]) && !order.blank?
+      #
+      # charge the credit card subscription now
+      order.charge_subscription
+      #
+      # pro-rata for subscription should also be charged
+      order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
+    end
     #
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
@@ -691,6 +696,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver1_attributes=(attributes)
+    debugger
     (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
     self.caregiver1 = User.new( attributes) # includes profile_attributes hash
     self.caregiver1.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
@@ -718,10 +724,12 @@ class UserIntake < ActiveRecord::Base
     !submitted_at.blank? # timestamp is required to identify as "submitted"
   end
 
+  # FIXME: DEPRECATED: QUESTION: this logic needs immediate attention. what to do here?
   def locked?
     submitted?
   end
 
+  # FIXME: DEPRECATED: QUESTION: this logic needs immediate attention. what to do here?
   def locked=(status = nil)
     self.submitted_at = Time.now if (status && status == true)
     locked?
