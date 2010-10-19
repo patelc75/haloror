@@ -5,10 +5,10 @@
   <table width="100%" class="colored">
     <tr><th>Shopping cart items</th><th style="text-align:right;">Price</th></tr>
     <tr><td>Deposit</td><td style="text-align:right;"><%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.deposit) %></td></tr>
-    <% unless @complete_tariff.blank? || @complete_tariff.months_advance.zero? %>
+    <% unless @complete_tariff.blank? || @complete_tariff.months_advance.to_i.zero? %>
       <tr class="altrow"><td><%= pluralize(@complete_tariff.months_advance, "month") %> advance (<%= USD_value(@complete_tariff.monthly_recurring) %> x <%= @complete_tariff.months_advance %>)</td><td style="text-align:right;"><%= USD_value(@complete_tariff.advance_charge) %></td></tr>
     <% end -%>
-    <% unless @complete_tariff.blank? || @complete_tariff.months_trial.zero? %>
+    <% unless @complete_tariff.blank? || @complete_tariff.months_trial.to_i.zero? %>
       <tr class="altrow red"><td><%= pluralize(@complete_tariff.months_trial, "month") %> trial (Free <%= USD_value(@complete_tariff.monthly_recurring) %> x <%= @complete_tariff.months_trial %>)</td><td style="text-align:right;"><%= USD_value(0) %></td></tr>
     <% end -%>
     <tr><td>Shipping</td><td style="text-align:right;"><%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.shipping) %></td></tr>
@@ -20,7 +20,7 @@
     </td></tr>
   </table>
   <p>
-    *Note: Recurring monthly charge of <b><%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.monthly_recurring) %>/mo</b> will begin <%= @complete_tariff.blank? ? '?' : @complete_tariff.recurring_delay.months.from_now.to_s(:day_date) %>
+    *Note: Recurring monthly charge of <b><%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.monthly_recurring.to_i) %>/mo</b> will begin <%= @complete_tariff.blank? ? '?' : @complete_tariff.recurring_delay.to_i.months.from_now.to_s(:day_date) %>
   </p>
 </div>
 <% end -%>
@@ -31,10 +31,10 @@
   <table width="100%" class="colored">
     <tr><th>Shopping cart items</th><th style="text-align:right;">Price</th></tr>
     <tr><td>Deposit</td><td style="text-align:right;"><%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.deposit) %></td></tr>
-    <% unless @clip_tariff.blank? || @clip_tariff.months_advance.zero? %>
+    <% unless @clip_tariff.blank? || @clip_tariff.months_advance.to_i.zero? %>
       <tr class="altrow"><td><%= @clip_tariff.blank? ? '?' : pluralize(@clip_tariff.months_advance, "month") %> advance (<%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %> x <%= @clip_tariff.blank? ? '?' : @clip_tariff.months_advance %>)</td><td style="text-align:right;"><%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.advance_charge) %></td></tr>
     <% end -%>
-    <% unless @clip_tariff.blank? || @clip_tariff.months_trial.zero? %>
+    <% unless @clip_tariff.blank? || @clip_tariff.months_trial.to_i.zero? %>
       <tr class="altrow red"><td><%= @clip_tariff.blank? ? '?' : pluralize(@clip_tariff.months_trial, "month") %> trial (Free <%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %> x <%= @clip_tariff.blank? ? '?' : @clip_tariff.months_trial %>)</td><td style="text-align:right;"><%= USD_value(0) %></td></tr>
     <% end -%>
     <tr><td>Shipping</td><td style="text-align:right;"><%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.shipping) %></td></tr>

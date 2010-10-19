@@ -68,7 +68,7 @@ class DeviceModelPrice < ActiveRecord::Base
     # * future compatibility
     #   * advance "and" trial can co-exist
     #   * this logic holds good for existing business logic of advance "or" trial
-    months_advance + months_trial # delay for advance taken + trial given
+    months_advance.to_i + months_trial.to_i # delay for advance taken + trial given
     # months_advance.zero? ? months_trial : months_advance # old logic for advance "or" trial
   end
   

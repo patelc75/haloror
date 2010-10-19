@@ -734,7 +734,7 @@ class UsersController < ApplicationController
                 redirect_to '/'
               else
                 # paths do not work correctly. using url_for
-                redirect_to url_for(:controller => 'user_intakes', :action => 'show', :id => current_user.legal_agreements_pending.first)
+                redirect_to :controller => 'user_intakes', :action => 'show', :id => current_user.user_intakes.first
               end
               #
               # do not ask edit right away. let the senior/subscriber agree to subscriber's agreement first
