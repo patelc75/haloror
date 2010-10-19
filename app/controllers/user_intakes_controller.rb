@@ -142,6 +142,7 @@ class UserIntakesController < ApplicationController
         #   then mark the senior "Ready to Install"
         if (@user_intake.senior.status == User::STATUS[:approval_pending]) && (params[:commit] == "Approve")
           @user_intake.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:install_pending])
+          @user_intake.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
         end
         #
         # proceed as usual

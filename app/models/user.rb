@@ -2494,6 +2494,16 @@ class User < ActiveRecord::Base
     user_intakes.select {|ui| ui.submitted? && ui.legal_agreement_at.blank? }
   end
   
+  # TODO: needs some more testing
+  #   http://spreadsheets.google.com/a/halomonitoring.com/ccc?key=0AnT533LvuYHydENwbW9sT0NWWktOY2VoMVdtbnJqTWc&hl=en#gid=3
+  #   When "Approve" button is hit on user intake
+  #   * senior becomes member of safety care
+  #   * senior is still in test mode
+  #   * caregivers are still away
+  def opt_in_call_center
+    self.is_halouser_of Group.safety_care
+  end
+  
   # https://redmine.corp.halomonitor.com/issues/3016
   # default = stop getting alerts
   #   default action and result is obvious from method name here
