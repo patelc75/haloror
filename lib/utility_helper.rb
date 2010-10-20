@@ -7,15 +7,15 @@ module UtilityHelper
   #   this method can be used to resolve the issue, if not
   #
   def payment_gateway_server
-    if ::PAYMENT_GATEWAY.blank?
+    if defined?(::PAYMENT_GATEWAY)
+      ::PAYMENT_GATEWAY
+    else
       ActiveMerchant::Billing::Base.mode = (ENV['RAILS_ENV'] == 'production' ? :production : :test)
       ActiveMerchant::Billing::AuthorizeNetGateway.new(
         :login => AUTH_NET_LOGIN, # global constants from environment file
         :password => AUTH_NET_TXN_KEY,
         :test => (ENV['RAILS_ENV'] != 'production')
       )
-    else
-      ::PAYMENT_GATEWAY
     end
   end
 
