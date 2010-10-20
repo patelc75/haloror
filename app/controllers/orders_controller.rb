@@ -154,6 +154,14 @@ class OrdersController < ApplicationController
                 [@order.bill_email, "senior_signup@halomonitoring.com"].each do |email|
                   UserMailer.deliver_order_summary(@order, email, (email.include?("senior_signup") ? :no_email_log : nil))
                 end
+                
+                if (!o.group.name.blank?)   #old matching code: !(o.group.name.match /^ml_/).nil?      
+                   master_group = Group.find_by_name(o.group.name[0..2] + 'master')  #eg. find ml_master group
+                   if !master_group.nil? and !master_group.email.blank? 
+                     UserMailer.deliver_order_summary(@order, master_group.email) 
+                   end
+                end 
+                                    
                 # show on browser
                 flash[:notice] = 'Thank you for your order.'
                 # https://redmine.corp.halomonitor.com/issues/2901
