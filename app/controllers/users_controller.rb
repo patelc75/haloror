@@ -608,7 +608,7 @@ class UsersController < ApplicationController
   	@user.build_profile unless @user.profile # avoid errors on form due to nil profile
   	UserMailer.deliver_senior_and_caregiver_details(@user)
   	@user.user_intakes.first.safety_care_email_sent # update the date (today) when the email was sent
-  	flash[:mail_send] = "Mail Send successfully"
+  	flash[:mail_send] = "Email Sent."
   	redirect_to :action => 'email_view',:id => params[:id]
   end
   
@@ -617,12 +617,13 @@ class UsersController < ApplicationController
       register_user_with_serial_num(User.find(params[:user_id]),params[:serial_number].strip)
     else
       flash[:notice] = "Not Valid Serial Number, Serial number must be exactly 10 digits."
-    end
-      unless params[:page] == '1'
-        redirect_to :controller => 'reporting', :action => 'users',:page => params[:page]
-      else
-      	redirect_to :controller => 'reporting', :action => 'users'
-      end
+    end 
+     
+    unless params[:page] == '1'
+      redirect_to :controller => 'reporting', :action => 'users',:page => params[:page]
+    else
+    	redirect_to :controller => 'reporting', :action => 'users'
+    end   
   end
   
   def valid_serial_number(serial_number)
