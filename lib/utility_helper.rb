@@ -1,5 +1,24 @@
 module UtilityHelper
   include ServerInstance
+
+  # ::PAYMENT_GATEWAY constant was causing issues at sdev
+  #   :: must always be used to make sure the constant is accessible
+  #
+  #   this method can be used to resolve the issue, if not
+  #
+  def payment_gateway_server
+    if ::PAYMENT_GATEWAY.blank?
+      ActiveMerchant::Billing::Base.mode = (ENV['RAILS_ENV'] == 'production' ? :production : :test)
+      ActiveMerchant::Billing::AuthorizeNetGateway.new(
+        :login => AUTH_NET_LOGIN, # global constants from environment file
+        :password => AUTH_NET_TXN_KEY,
+        :test => (ENV['RAILS_ENV'] != 'production')
+      )
+    else
+      ::PAYMENT_GATEWAY
+    end
+  end
+
   def self.change_password_by_user_id(user_id, password)
   	salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{User.find(user_id).login}--")
 
