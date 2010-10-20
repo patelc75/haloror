@@ -19,6 +19,20 @@ class ApplicationController < ActionController::Base
   # = public methods =
   # ==================
 
+  # # ::PAYMENT_GATEWAY constant was causing issues at sdev
+  # #   :: must always be used to make sure the constant is accessible
+  # #
+  # #   this method can be used to resolve the issue, if not
+  # #
+  # def payment_gateway_server
+  #   ActiveMerchant::Billing::Base.mode = (ENV['RAILS_ENV'] == 'production' ? :production : :test)
+  #   ActiveMerchant::Billing::AuthorizeNetGateway.new(
+  #     :login => AUTH_NET_LOGIN,
+  #     :password => AUTH_NET_TXN_KEY,
+  #     :test => (ENV['RAILS_ENV'] != 'production')
+  #   )
+  # end
+  
   # TODO: need some work before it can run flawless
   # # ramonrails: auto-assign created_by, updated_by only if the columns exist
   # before_filter :set_current_user

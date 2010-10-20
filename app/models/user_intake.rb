@@ -180,7 +180,7 @@ class UserIntake < ActiveRecord::Base
     # connect devices to senior if they are free to use
     [transmitter_serial, gateway_serial].each do |_serial|
       device = Device.find_by_serial_number( _serial)
-      self.senior.devices << device if device.is_only_associated_to?( self.senior) # future proof? multiple devices?
+      self.senior.devices << device if !device.blank? && device.is_only_associated_to?( self.senior) # future proof? multiple devices?
     end
     #
     # send email for installation

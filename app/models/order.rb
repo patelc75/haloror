@@ -164,7 +164,7 @@ class Order < ActiveRecord::Base
         # * <tt>money</tt> -- The amount to be purchased as an Integer value in cents.
         # * <tt>creditcard</tt> -- The CreditCard details for the transaction.
         # * <tt>options</tt> -- A hash of optional parameters.
-        @one_time_fee_response = PAYMENT_GATEWAY.purchase( _cost*100, credit_card,
+        @one_time_fee_response = ::PAYMENT_GATEWAY.purchase( _cost*100, credit_card,
           :billing_address => {
             :first_name => bill_first_name,
             :last_name => bill_last_name,
@@ -227,7 +227,7 @@ class Order < ActiveRecord::Base
         #   #   # https://redmine.corp.halomonitor.com/issues/3068
         #   #   # recurring start_date was immediate. ".months" was missed in last release
         #   #   
-        #   #   @recurring_fee_response = PAYMENT_GATEWAY.recurring(product_cost.monthly_recurring*100, credit_card, {
+        #   #   @recurring_fee_response = ::PAYMENT_GATEWAY.recurring(product_cost.monthly_recurring*100, credit_card, {
         #   #       :interval => {:unit => :months, :length => 1},
         #   #       :duration => {:start_date => product_cost.recurring_delay.months.from_now.to_date, :occurrences => 60},
         #   #       :billing_address => {
@@ -332,7 +332,7 @@ class Order < ActiveRecord::Base
         # recurring start_date was immediate. ".months" was missed in last release
         #
         # product_cost.recurring_delay.months.from_now.to_date
-        @recurring_fee_response = PAYMENT_GATEWAY.recurring(product_cost.monthly_recurring*100, credit_card, {
+        @recurring_fee_response = ::PAYMENT_GATEWAY.recurring(product_cost.monthly_recurring*100, credit_card, {
             :interval => {:unit => :months, :length => 1},
             :duration => {:start_date => (Time.now + 1.month).beginning_of_month.to_date, :occurrences => 60},
             :billing_address => {
