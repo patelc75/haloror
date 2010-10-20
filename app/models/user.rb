@@ -171,7 +171,7 @@ class User < ActiveRecord::Base
   # after_save :post_process # shifted to method instead
   
   named_scope :all_except_demo, :conditions => ["demo_mode <> ?", true] # https://redmine.corp.halomonitor.com/issues/3274
-  named_scope :filtered, lambda {|arg| query = "%#{arg}%"; {:include => :profile, :conditions => ["users.id = ? OR users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", arg, query, query, query]}}
+  named_scope :filtered, lambda {|arg| query = "%#{arg}%"; {:include => :profile, :conditions => ["users.id = ? OR users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", arg.to_i, query, query, query]}}
   named_scope :where_status, lambda {|*arg| {:conditions => {:status => arg.flatten.first.to_s} }}
   named_scope :ordered, lambda {|*args| { :include => :profile, :order => ( args.flatten.first || "id ASC" ) }} # Wed Oct 13 02:52:36 IST 2010 ramonrails
 
