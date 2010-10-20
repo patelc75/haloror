@@ -1,56 +1,30 @@
-<%= render :partial => 'vital_lists/nav'%>
+<div class="span-12"><%= render :partial => 'vital_lists/nav' %></div>
+<div class="span-12 last text-right">
+  <%= form_tag '/weight_scales', :method => :get %>
+  MyHalo Users: 
+  <%= select_tag "id", options_from_collection_for_select( @seniors, "id", "name", @senior.id), :onchange => "this.form.submit();" %>
+</form>
+</div>
+
 <div id="call_list-col">
-	<div id="call_list-col-header">
-		Weight Scale | <span style="color:#000;font-size:.75em">
-		<%if @weight_scales and @weight_scales.first and @weight_scales.first.user %>	
-		<%= @weight_scales.first.user.name %> (<%= @weight_scales.first.user.id %>)</big> - all times are in <%= @weight_scales.first.user.profile.time_zone if @weight_scales.first.user.profile %> timezone <br>
-		<%end%>
-		</span>
-	</div>
-<div class="content">
-  <div id="call_list_header">
-  	<div style="float:left;width:450px;padding-left:10px">
-  	  Timestamp
-	</div>
-   	<div style="float:left;width:150px">
-      Weight
-    </div>
-  	<div style="float:left;width:100px">
-      BMI
-    </div>
-  	<div style="float:left;width:100px">
-      Hydration
-    </div>
-  	<div style="float:left;width:100px">
-      Battery
-    </div>
+
+  <div id="call_list-col-header">
+    Weight Scale | <span style="color:#000;font-size:.75em">
+      <%= @weight_scales.first.user_summary unless @weight_scales.blank? %><br />
+    </span>
   </div>
-  <p>&nbsp;</p>
-  <%if @weight_scales%>
-  <% @weight_scales.each do |weight_scale| %>
-     <div id="event_event_<%= weight_scale.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px;cursor:pointer">
-	<div class="row">
-      <div style="float:left;padding-top:25px;width:450px">
-        <%= UtilityHelper.format_datetime(weight_scale.timestamp,weight_scale.user) %>&nbsp
-      </div>
-          <div style="float:left;padding-top:25px;width:150px">
-          	<%= (weight_scale.weight.to_f/1000.0).round(1)%>&nbsp <%= weight_scale.weight_unit%>
-        </div>
-		<div style="float:left;padding-top:25px;width:100px">
-		<%= weight_scale.bmi %>
-	    </div>
-		<div style="float:left;padding-top:25px;width:100px">
-		<%=weight_scale.hydration%>
-	    </div>
-		<div style="float:left;padding-top:25px;width:100px">
-		<%= (weight_scale.battery.to_f/1000.0).round(1)%>
-	    </div>
-      </div>
-	</div>
-    <% end %>
-    <br>
-    <br>
-    <center><big><%#= will_paginate @events %></big></center>
-    <%end%>
+
+  <div class="content">
+    <div id="call_list_header">
+      <div style="float:left;width:450px;padding-left:10px">Timestamp</div>
+      <div style="float:left;width:150px">Weight</div>
+      <div style="float:left;width:100px">BMI</div>
+      <div style="float:left;width:100px">Hydration</div>
+      <div style="float:left;width:100px">Battery</div>
+    </div>
+    <p>&nbsp;</p>
+    <%= render :partial => 'weight_scale', :collection => @weight_scales %>
+    <div><%= will_paginate @weight_scales %></div>
   </div>
   <div id="call_list-col-footer"></div>
+</div>

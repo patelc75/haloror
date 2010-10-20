@@ -13,6 +13,7 @@ div.signature { display:none; }
 .highlight { background-color: #FFFF9F;}
 .background-yellow { background-color: #FCFDDE;}
 .background-orange { background-color: #F8CE96;}
+.background-gray { background-color: #DDD;}
 .fit_right{ float:right;}
 .battery-width-0 { width: 10%; } /*we need the right corner visible*/
 .battery-width-10 { width: 10%; }
