@@ -14,7 +14,7 @@ module UtilityHelper
       ActiveMerchant::Billing::AuthorizeNetGateway.new(
         :login => AUTH_NET_LOGIN, # global constants from environment file
         :password => AUTH_NET_TXN_KEY,
-        :test => (['production', 'staging'].include?(ENV['RAILS_ENV'])
+        :test => ['production', 'staging'].include?(ENV['RAILS_ENV'])
       )
     end
   end
