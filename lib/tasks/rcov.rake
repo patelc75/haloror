@@ -1,6 +1,7 @@
+if ENV['RAILS_ENV'] == 'development'
 require 'cucumber/rake/task' #I have to add this
 require 'spec/rake/spectask'
- 
+
 namespace :rcov do
   Cucumber::Rake::Task.new(:cucumber) do |t|    
     t.rcov = true
@@ -25,4 +26,6 @@ namespace :rcov do
   end
   
   task :default => :all
+end
+
 end
