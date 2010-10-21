@@ -146,7 +146,7 @@ class UserIntake < ActiveRecord::Base
     #   When the changes are only in user_intake, we have to force the log creation
     #
     # # create status row in triage_audit_log
-    unless senior.changed?
+    if !senior.blank? && senior.changed?
       options = { :updated_by => updated_by, :description => "Status updated from [#{senior.status_was}] to [#{senior.status}], triggered from user intake" }
       add_triage_note( options)
     end
@@ -159,7 +159,7 @@ class UserIntake < ActiveRecord::Base
     #
     #   * submitted the user intake with test_mode check box "on"
     #   * saved just now. created == updated
-    senior.set_test_mode!( (test_mode == "1") || (created_at == updated_at) || self.new_record?) unless senior.test_mode?
+    senior.set_test_mode!( (test_mode == "1") || (created_at == updated_at) || self.new_record?) unless senior.blank? || senior.test_mode?
     # self.senior.send( :update_without_callbacks) # not required. set_test_mode! has "shebang"
     #
     # Switch user to installed state, if user is "Ready to Bill"
@@ -351,20 +351,20 @@ class UserIntake < ActiveRecord::Base
     # FIXME: we should not validate here. its done in "validate". just add roles etc here
     #
     # # senior
-    senior.is_halouser_of( group)
+    senior.is_halouser_of( group) unless senior.blank?
     # unless senior.blank?
     #   senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")
     # #   self.errors.add_to_base("Senior not valid") unless senior.valid?
     # #   self.errors.add_to_base("Senior profile needs more detail") unless senior.profile.nil? || senior.profile.valid?
     # end
     # subscriber
-    subscriber.is_subscriber_of( senior)
+    subscriber.is_subscriber_of( senior) unless senior.blank? || subscriber.blank?
     # unless subscriber.blank?
     # subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
     # self.errors.add_to_base("Subscriber not valid") unless subscriber.valid?
     # self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.nil? || subscriber.profile.valid?
     # save options
-    caregiver1.options_for_senior(senior, mem_caregiver1_options.merge({:position => 1})) if subscriber_is_caregiver
+    caregiver1.options_for_senior(senior, mem_caregiver1_options.merge({:position => 1})) if subscriber_is_caregiver && !(caregiver1.blank? || subscriber.blank?)
     # end
     # caregivers
     (1..3).each do |index|
@@ -690,11 +690,13 @@ class UserIntake < ActiveRecord::Base
   
   # TODO: WARNING: needs more testing and code coverage
   def apply_attributes_from_hash( _hash)
-    self.senior_attributes = _hash[:senior_attributes] unless _hash[:senior_attributes].blank?
-    self.subscriber_attributes = _hash[:subscriber_attributes] unless (_hash[:subscriber_attributes].blank? || (_hash[:subscriber_is_user] == "1"))
-    self.caregiver1_attributes = _hash[:caregiver1_attributes] unless (_hash[:caregiver1_attributes].blank? || (_hash[:subscriber_is_caregiver] == "1"))
-    self.caregiver2_attributes = _hash[:caregiver2_attributes] unless _hash[:caregiver2_attributes].blank?
-    self.caregiver3_attributes = _hash[:caregiver3_attributes] unless _hash[:caregiver3_attributes].blank?
+    unless _hash.blank?
+      self.senior_attributes = _hash[:senior_attributes] unless _hash[:senior_attributes].blank?
+      self.subscriber_attributes = _hash[:subscriber_attributes] unless (_hash[:subscriber_attributes].blank? || (_hash[:subscriber_is_user] == "1"))
+      self.caregiver1_attributes = _hash[:caregiver1_attributes] unless (_hash[:caregiver1_attributes].blank? || (_hash[:subscriber_is_caregiver] == "1"))
+      self.caregiver2_attributes = _hash[:caregiver2_attributes] unless _hash[:caregiver2_attributes].blank?
+      self.caregiver3_attributes = _hash[:caregiver3_attributes] unless _hash[:caregiver3_attributes].blank?
+    end
   end
 
   def senior_attributes=(attributes)

@@ -38,11 +38,12 @@
     <% form_for(@user_intake) do |f| %>
 
     <!-- errors block -->
-    <% unless @user_intake.errors.blank? %>
     <div class="span-1">
-      <%= f.hidden_field :creator %>
-      <%= f.hidden_field :updater %>
+      <%= f.hidden_field :created_by %>
+      <%= f.hidden_field :updated_by %>
+      <%= hidden_field_tag "user_intake_form_view" %>
     </div>
+    <% unless @user_intake.errors.blank? %>
     <div class="error span-22 last">
       <%= f.error_messages :header_message => "Invalid user intake!",
         :message => "You'll need to correct the following errors:",

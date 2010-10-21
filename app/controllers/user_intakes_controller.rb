@@ -56,7 +56,7 @@ class UserIntakesController < ApplicationController
   # GET /user_intakes/new
   # GET /user_intakes/new.xml
   def new
-    @user_intake = UserIntake.new( :creator => current_user, :updater => current_user)
+    @user_intake = UserIntake.new # ( :creator => current_user, :updater => current_user)
     @groups = Group.for_user(current_user)
 
     respond_to do |format|
@@ -94,7 +94,7 @@ class UserIntakesController < ApplicationController
     #   creator, updater introduced an error anytime when validation failed
     #   the values are not oerwritten here
     #   https://redmine.corp.halomonitor.com/issues/3497
-    @user_intake = UserIntake.new(params[:user_intake].merge( :creator => current_user, :updater => current_user))
+    @user_intake = UserIntake.new(params[:user_intake]) # .merge( :creator => current_user, :updater => current_user))
     @user_intake.skip_validation = (params[:commit] == "Save") # just save without asking anything
     @groups = Group.for_user(current_user)
 
@@ -126,43 +126,63 @@ class UserIntakesController < ApplicationController
       # _hashes = params[:user_intake].select {|k,v| v.is_a?(Hash) || k.include?( "attributes") }
       # debugger
       #
-      # ramonrails: Fri Oct 14 10:40:54 IST 2010
-      #   we have the current_user available at this moment, not inside the model
-      #   TODO: need a better fix. this is a rough patch
-      params[:user_intake] = params[:user_intake].reject {|k,v| k == "creator"}
-      params[:user_intake]["updater"] = current_user
-      #
-      # apply all attributes to associations
-      @user_intake.apply_attributes_from_hash( params[:user_intake]) # apply user attributes
-      #
-      # Now save the user intake object. Should pass validation
-      if @user_intake.update_attributes( params[:user_intake])
+      # Thu Oct 21 23:58:40 IST 2010 : the fields were replaced by raw user intake columns
+      # # ramonrails: Fri Oct 14 10:40:54 IST 2010
+      # #   we have the current_user available at this moment, not inside the model
+      # #   TODO: need a better fix. this is a rough patch
+      # unless params[:user_intake].blank?
+      #   params[:user_intake] = params[:user_intake].reject {|k,v| k == "creator"}
+      #   params[:user_intake]["updater"] = current_user
+      # end
+
+      # user intake form submission
+      # Thu Oct 21 23:42:41 IST 2010
+      #   user intake form now has a new hidden field 'user_intake_form_view'
+      #   this will identify if the submission is coming from user intake form or any other interface
+      #   we are updating user intake from many other places like update of 'shipping date' from overview
+      if !params[:user_intake_form_view].blank?
         #
-        # if approval was pending and this time "Approve" button is submitted
-        #   then mark the senior "Ready to Install"
-        if (@user_intake.senior.status == User::STATUS[:approval_pending]) && (params[:commit] == "Approve")
-          @user_intake.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:install_pending])
-          @user_intake.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
-        end
+        # apply all attributes to associations
+        @user_intake.apply_attributes_from_hash( params[:user_intake]) # apply user attributes
         #
-        # proceed as usual
-        flash[:notice] = 'User Intake was successfully updated.'
-        format.html do
+        # Now save the user intake object. Should pass validation
+        if @user_intake.update_attributes( params[:user_intake])
           #
-          # QUESTION: Is this correct?
-          #   We were showing successful order here but the busoness logic changed later
+          # if approval was pending and this time "Approve" button is submitted
+          #   then mark the senior "Ready to Install"
+          if (@user_intake.senior.status == User::STATUS[:approval_pending]) && (params[:commit] == "Approve")
+            @user_intake.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:install_pending])
+            @user_intake.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
+          end
           #
-          # if params[:redirect_hash].blank?
+          # proceed as usual
+          flash[:notice] = 'User Intake was successfully updated.'
+          format.html do
+            #
+            # QUESTION: Is this correct?
+            #   We were showing successful order here but the busoness logic changed later
+            #
+            # if params[:redirect_hash].blank?
             redirect_to :action => 'index' # just show user_intakes
-          # else
-          #   redirect_to redirect_hash # this comes from online order form
-          # end
+            # else
+            #   redirect_to redirect_hash # this comes from online order form
+            # end
+          end
+          format.xml  { head :ok }
+        else
+          format.html { render :action => "edit", :id => @user_intake.id }
+          format.xml  { render :xml => @user_intake.errors, :status => :unprocessable_entity }
         end
-        format.xml  { head :ok }
+
+      # single column/attribute updates from different interfaces like user intake overview
+      #   * just a silent update of user intake attributes. no questions asked. no validations. no checking.
+      #   * we need this for interfaces like 'shipping date update' from user intake overview
       else
-        format.html { render :action => "edit", :id => @user_intake.id }
-        format.xml  { render :xml => @user_intake.errors, :status => :unprocessable_entity }
-      end
+        params[:user_intake].each {|k,v| @user_intake.send( "#{k}=".to_sym, v) }
+        @user_intake.send( :update_without_callbacks) # just save it. no questions asked.
+        flash[:notice] = "Successfully updated the user intake"
+        format.html { redirect_to :action => 'index' }
+      end # just one column updates
     end
   end
 
