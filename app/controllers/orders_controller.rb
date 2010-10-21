@@ -155,8 +155,8 @@ class OrdersController < ApplicationController
                   UserMailer.deliver_order_summary(@order, email, (email.include?("senior_signup") ? :no_email_log : nil))
                 end
                 
-                if (!o.group.name.blank?)   #old matching code: !(o.group.name.match /^ml_/).nil?      
-                   master_group = Group.find_by_name(o.group.name[0..2] + 'master')  #eg. find ml_master group
+                if (!@order.group.name.blank?)   #old matching code: !(o.group.name.match /^ml_/).nil?      
+                   master_group = Group.find_by_name(@order.group.name[0..2] + 'master')  #eg. find ml_master group
                    if !master_group.nil? and !master_group.email.blank? 
                      UserMailer.deliver_order_summary(@order, master_group.email) 
                    end
