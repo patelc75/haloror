@@ -24,7 +24,7 @@
   <%= stylesheet_link_tag "ie", :media => "screen", :cache => true %>
   <![endif]-->
 <% end -%>
-<%= link_to 'All User Intake forms', user_intakes_path %><br><br>
+<%= link_to '<< Return to all User Intake forms', user_intakes_path %><br><br>
 <div class="theme-body">
   <div class="theme-header">
     <p class="prepend-1 span-22 append-1"><%= @user_intake.new_record? ? "New" : "Edit" %> : myHalo User Intake Form</p>
@@ -173,7 +173,6 @@
 
       <div class="span-22 last">
         <h3 class="textcenter">Caregiver Information (in order of notification)</h3>
-        <hr />
 
         <!-- cycle for each caregiver -->
         <% @user_intake.caregivers.each_with_index do |caregiver, index| %>

@@ -194,11 +194,13 @@ class UserIntake < ActiveRecord::Base
     #    2. Each subsequent time (super_admin only), only modified fields are emailed to safetycare (UserMailer.update_to_safety_care)
     # send email to safety_care when "Update" was hit on any status
     #   this should be ideally at user.after_save but we want this trigger at user_intake, not user
-    if self.senior.status == User::STATUS[:approval_pending]
+    
+    # TODO: audit log is not in readable format for SafetyCare, redo in future release
+    #if self.senior.status == User::STATUS[:approval_pending]
       UserMailer.deliver_senior_and_caregiver_details( self.senior)
-    else
-      UserMailer.deliver_update_to_safety_care( self)
-    end
+    #else
+      #UserMailer.deliver_update_to_safety_care( self)  #acts_as_audited is not a good format to send to SafetyCare, defer for next release
+    #end
     #
     # attach devices to user/senior
     [gateway_serial, transmitter_serial].select {|e| !e.blank? }.each {|device| senior.add_device_by_serial_number( device) }

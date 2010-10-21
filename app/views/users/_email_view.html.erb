@@ -28,12 +28,11 @@ Allergies: <%= @user.profile.allergies%>
 Conditions: <%= "Diabetes" if @user.profile.diabetes %> <%= " Cancer" if @user.profile.cancer %> <%= " Seizures" if @user.profile.seizures %> <%= " Stroke/CVA/TIA" if @user.profile.stroke_cva_tia %> <%= " Cardiac History" if @user.profile.cardiac_history %> <%= " Pacemaker" if @user.profile.pacemaker %> 
 Hospital of Preference: <%= @user.profile.hospital_preference%>
 Hospital of Preference Phone: <%= @user.profile.hospital_number%>
-Preferred Doctor's Name: <%=@user.profile.doctor_name%>
+Preferred Doctor's Name: <%=@user.profile.doctor_name%> 
+Preferred Doctor's Phone: <%=@user.profile.doctor_phone%>
 Additional Info: <%= @user.profile.additional_info%> 
 
-
-CONTACTS
-<%if @user.is_halouser?%><%i=0%><%@caregivers = @user.caregivers_sorted_by_position%><%@i = 0 %><%@caregivers.each do |position, caregiver| %><% @roles_user = @user.roles_user_by_caregiver(caregiver) %><% @opts = @roles_user.roles_users_option %><% @i += 1 %>
+CONTACTS<%if @user.is_halouser?%><%i=0%><%@caregivers = @user.caregivers_sorted_by_position%><%@i = 0 %><%@caregivers.each do |position, caregiver| %><% @roles_user = @user.roles_user_by_caregiver(caregiver) %><% @opts = @roles_user.roles_users_option %><% @i += 1 %>
 <%= SERIES_HASH["#{@i}"] %> Contact Name:  <%= caregiver.name%>
 <%= SERIES_HASH["#{@i}"] %> Contact Home Number:  <%= caregiver.profile.home_phone%>
 <%= SERIES_HASH["#{@i}"] %> Contact Cell Number:  <%= caregiver.profile.cell_phone%>
