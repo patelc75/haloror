@@ -140,7 +140,7 @@ class UserIntakesController < ApplicationController
       #   user intake form now has a new hidden field 'user_intake_form_view'
       #   this will identify if the submission is coming from user intake form or any other interface
       #   we are updating user intake from many other places like update of 'shipping date' from overview
-      if !params[:user_intake][:user_intake_form_view].blank?
+      if !params[:user_intake_form_view].blank?
         #
         # apply all attributes to associations
         @user_intake.apply_attributes_from_hash( params[:user_intake]) # apply user attributes

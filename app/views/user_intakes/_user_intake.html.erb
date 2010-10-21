@@ -41,7 +41,7 @@
     <div class="span-1">
       <%= f.hidden_field :created_by %>
       <%= f.hidden_field :updated_by %>
-      <%= f.hidden_field :user_intake_form_view %>
+      <%= hidden_field_tag "user_intake_form_view" %>
     </div>
     <% unless @user_intake.errors.blank? %>
     <div class="error span-22 last">
