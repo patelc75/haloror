@@ -8,11 +8,12 @@ ActionController::Routing::Routes.draw do |map|
   #     device_models.resources :device_model_prices # prices based on coupon codes
   #   end
   # end  
-  map.resources :device_model_prices
-  map.resources :installation_in_progress
-  map.resources :time_zones
   map.resources :access_modes
   map.resources :carriers
+  map.resources :device_model_prices
+  map.resources :groups
+  map.resources :installation_in_progress
+  map.resources :time_zones
 
   map.resources :pools
   map.resources :gw_alarm_buttons

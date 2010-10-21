@@ -1,0 +1,13 @@
+<tr class="<%= cycle('', 'altrow') %>">
+  <td><%= h group_row.id %></td>
+  <td><%= h group_row.sales_type %></td>
+  <td>
+    <%= link_to group_row.name, edit_group_path(group_row) %><span class="tiny"><%= h( " (#{group_row.email})") unless group_row.email.blank? %></span><br />
+    <span class="tiny"><%= h group_row.description %></span>
+  </td>
+  <td><%= h group_row.charge_kit %></td>
+  <td><%= h group_row.charge_mon %></td>
+  <td><%= h group_row.charge_lease %></td>
+  <td><%= h group_row.grace_mon_days %></td>
+  <td><%= h group_row.grace_mon_from %></td>
+</tr>
