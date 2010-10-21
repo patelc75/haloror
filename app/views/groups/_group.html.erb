@@ -1,0 +1,25 @@
+<% form_for @group do |f| %>
+  <%= f.error_messages %>
+  <%= f.hidden_field :id %>
+
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.label :sales_type, "Sales Type" %><br />
+    <%= f.select :sales_type, [['reseller', 'reseller'], ['retailer', 'retailer'], ['call_center', 'call_center']] %>
+  </p>
+  <p>
+    <%= f.label :description %><br />
+    <%= f.text_field :description %>
+  </p>
+  <p>
+    <%= f.label :email %><br />
+    <%= f.text_field :email %>
+  </p>
+
+  <p>
+    <%= f.submit "Save" %>
+  </p>
+<% end %>

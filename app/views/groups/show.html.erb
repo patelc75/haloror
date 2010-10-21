@@ -1,0 +1,8 @@
+<p><strong>ID</strong> : <%= h @group.id %></p>
+<p><strong>Name</strong> : <%= h @group.name %></p>
+<p><strong>Description</strong> : <%= h @group.description %></p>
+<p><strong>Email</strong> : <%= h @group.email %></p>
+<p>
+  <%= link_to 'Edit', edit_group_path(@group) %> |
+  <%= link_to 'Back', groups_path %>
+</p>

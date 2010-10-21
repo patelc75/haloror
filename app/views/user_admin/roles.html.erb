@@ -29,43 +29,4 @@
     <% end %>
   </div>
 
-  <div id="add-group" class="container box rounded">
-    <h2>Groups</h2>
-    <div id="group"></div>
-    <% if current_user.is_super_admin? %> <!-- do not show it to any other user -->
-      <!-- <%# form_remote_tag :url => {:controller => 'user_admin',:action => 'add_group'}, :update => 'group' do %> -->
-      <% form_tag :controller => 'user_admin',:action => 'add_group' do %>
-        <%= error_messages_for :group %>
-        <label for="new_group_name">Group Name</label>
-        <%= text_field_tag 'new_group_name' %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <label for="sales_type">Sales Type</label>
-        <select name="sales_type" id="sales_type">
-          <option value="">Select</option>
-          <option value="reseller">reseller</option>
-          <option value="retailer">retailer</option>
-          <option value="call_center">call_center</option>
-        </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <label for="description">Description</label>
-        <%= text_field_tag 'description'%>
-        <br /><%= submit_tag 'Add Group' %>
-      <% end %>
-    <% end -%>
-
-    <br />
-    <div id="group-list">
-      <table border="1" style="text-align:left">
-        <tr><th>Group</th><th>Email</th><th>Description</th><th>Type</th><th>Actions</th></tr>
-        <% @groups.each do |group|  %> <!-- groups where current_user is admin -->
-        <tr>
-          <td><%= group.name %></td>
-          <td><%= group.email %></td>
-          <td><%= group.description %></td>
-          <td><%= group.sales_type %></td>
-          <td><%= link_to 'Edit', '/user_admin/edit_group/' + group.id.to_s %> <%#= link_to 'Remove', '/recurring_charges/destroy/' + rc.id.to_s, :confirm => 'Are you sure?', :method => :delete%></td>
-        </tr>
-        <% end %>
-      </table>
-    </div>
-  </div>
-
 </div>
