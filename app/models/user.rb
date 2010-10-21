@@ -39,10 +39,10 @@ class User < ActiveRecord::Base
   STATUS_BUTTON_TEXT = {
     :pending          => "Submit",
     :approval_pending => "Approve",
-    :install_pending  => "Install",
+    :install_pending  => "Re-Submit", # Install is not an action until panic test data is received
     :bill_pending     => "Bill",
     :installed        => "Installed",
-    :overdue          => "Install Now",
+    :overdue          => "Re-Submit", # Install is not an action until panic test data is received
     :cancelled        => "Submit"
   }
 
