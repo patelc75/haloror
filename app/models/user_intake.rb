@@ -474,6 +474,15 @@ class UserIntake < ActiveRecord::Base
     created_by.blank? ? "" : (User.exists?(created_by) ? User.find(created_by).name : "")
   end
 
+  # fetch all the admins for this group
+  #   we are using authorization library calls here
+  #   has_admins will return all objects that are defined
+  #   * is_admin_of( this_group)
+  #   * has_role( "admin", this_group) # same thing, different syntax
+  def group_admins
+    group.blank? ? [] : group.has_admins
+  end
+
   def group_name
     group.blank? ? "" : group.name
   end

@@ -74,7 +74,7 @@ class UserIntakesController < ApplicationController
     # * only allow editing user intakes that are submitted (not just saved)
     # * only super_admin can edit submitted ones
     # CHANGED: halouser or subscriber can edit its user intake
-    if @user_intake.users.include?( current_user) || current_user.is_super_admin?
+    if @user_intake.users.include?( current_user) || @user_intake.group_admins.include?( current_user) || current_user.is_super_admin?
       respond_to do |format|
         format.html
         format.xml { render :xml => @user_intake }
@@ -142,18 +142,24 @@ class UserIntakesController < ApplicationController
       #   we are updating user intake from many other places like update of 'shipping date' from overview
       if !params[:user_intake_form_view].blank?
         #
+        # Fri Oct 22 00:36:11 IST 2010
+        #   * distributed logic in controller and model was causing issues like "Bill" button never visible
+        #   * shifted the logic to model
+        #   * lazy_action attribute holds the text of last button pushed
+        #   * action will be perfoemed within model
+        # # if approval was pending and this time "Approve" button is submitted
+        # #   then mark the senior "Ready to Install"
+        # if (@user_intake.senior.status == User::STATUS[:approval_pending]) && (params[:commit] == "Approve")
+        #   @user_intake.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:install_pending])
+        #   @user_intake.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
+        # end
+        params[:user_intake][:lazy_action] = params[:commit] # commit button text
+        #
         # apply all attributes to associations
         @user_intake.apply_attributes_from_hash( params[:user_intake]) # apply user attributes
         #
         # Now save the user intake object. Should pass validation
         if @user_intake.update_attributes( params[:user_intake])
-          #
-          # if approval was pending and this time "Approve" button is submitted
-          #   then mark the senior "Ready to Install"
-          if (@user_intake.senior.status == User::STATUS[:approval_pending]) && (params[:commit] == "Approve")
-            @user_intake.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:install_pending])
-            @user_intake.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
-          end
           #
           # proceed as usual
           flash[:notice] = 'User Intake was successfully updated.'
