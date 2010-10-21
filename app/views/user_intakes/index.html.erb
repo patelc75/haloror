@@ -1,9 +1,8 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
   <h3>User Intakes</h3> 
-<br/>
 <div class="span-11 box text-right background-yellow">
   <% form_tag url_for(:controller => "user_intakes", :action => "index", :group_name => @group_name), :method => :get, :id => "group_form_id" do %>
-  <div class="span-9">
+  <div class="span-7">
     For <label for="group_name">Group</label>
     <%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| [e.name, e.name] }, @group_name) %>
     

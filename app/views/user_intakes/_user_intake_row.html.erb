@@ -1,4 +1,5 @@
-<tr class="<%= 'background-red' unless user_intake_row.senior && user_intake_row.senior.status == User::STATUS[:install_pending] %>">
+<!--tr class="<%= 'background-red' unless user_intake_row.senior && user_intake_row.senior.status == User::STATUS[:install_pending] %>"-->
+<tr>
   <td><%= check_box_tag "selected[#{user_intake_row.id}]" %></td>
   <% if current_user.is_super_admin? %>
   <td><%= link_to user_intake_row.id, user_intake_row %></td>
