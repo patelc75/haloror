@@ -104,6 +104,7 @@ class OrdersController < ApplicationController
   # create order with products, charge card for one time fee & recurring subscription
   #
   def create
+    # debugger
     if session[:order].blank?
       redirect_to :action => 'new'
       
@@ -114,7 +115,7 @@ class OrdersController < ApplicationController
         @order = Order.new(session[:order]) # pick from session, not params
         @order.group = Group.direct_to_consumer unless logged_in? # only assign this group when public order
 
-        if @order.valid? && @order.save! #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
+        if @order.valid? && @order.save #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
           # pick any of these hard coded values for now. This will change to device_revisions on order screen
           @order.product = session[:product] # used at many places in this code
           
@@ -183,6 +184,10 @@ class OrdersController < ApplicationController
             end # order
           end # revision
       
+        else
+          # valid? or save will put errors in @order object
+          flash[:notice] = "Order may be missing some required information. Please check."
+          goto = "new"
         end # save
       end # session[:order]
       

@@ -376,6 +376,9 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
     when "a senior profile"
       ui.senior.should_not be_blank
       ui.senior.profile.should_not be_blank
+    when 'separate senior and subscriber'
+      [:senior, :subscriber].each {|e| ui.send( e).should_not be_blank }
+      ui.senior.should_not == ui.subscriber
     else
       assert false, 'add this condition'
     end
@@ -415,6 +418,13 @@ Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |_serial, 
   else
     assert false # otherwise, any new step would pass without technically getting covered
   end
+end
+
+Then /^subscriber of last user intake is also the caregiver$/ do
+  (ui = UserIntake.last).should_not be_blank
+  (subs = ui.subscriber).should_not be_blank
+  subs.should == ui.caregiver1
+  lambda { subs.is_caregiver_of?( ui.senior) }.should be_true
 end
 
 Then /^all caregivers for senior of user intake "([^"]*)" should be away$/ do |_serial|
