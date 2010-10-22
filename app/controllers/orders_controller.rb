@@ -173,7 +173,7 @@ class OrdersController < ApplicationController
                 # revisit during 1.7.0
                 # ref: google doc "billing" sheet
                 #   show kit_serial page only to retailers. nobody else sees it.
-                goto = ( @order.retailer? ? "kit_serial" : (@order.user_intake.paper_copy_submitted? ? 'success' : 'agreement'))
+                goto = ( @order.retailer? ? "kit_serial" : 'success' ) # (@order.user_intake.paper_copy_submitted? ? 'success' : 'agreement'))
                 #
                 # WARNING: do not reset the session. just clear the variables that are no more required
                 # # reset_session # start fresh
