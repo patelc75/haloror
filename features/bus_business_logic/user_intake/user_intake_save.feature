@@ -21,8 +21,18 @@ Feature: Save User Intake
     And I press "Save"
     Then page content should have "successfully saved"
 
+  # https://redmine.corp.halomonitor.com/issues/3598
+  Scenario: Edit and save a user intake
+    Given the following user_intakes:
+      | gateway_serial |
+      | 1234567890     |
+    When I edit the last user intake
+    And I press "Save"
+    Then I should see "successfully updated"
+    And last user intake should have a senior profile
+
   # https://redmine.corp.halomonitor.com/issues/3170
-  Scenario: New > Save. user profile ok. subscriber not user. subscriber profile blank
+  Scenario: New > Save. user profile ok. subscriber profile blank
     When I am creating a user intake
     And I select "halo_group" from "group"
     And I fill the senior details for user intake form
@@ -31,6 +41,7 @@ Feature: Save User Intake
     And I uncheck "Same as User"
     And I press "Save"
     Then page content should have "successfully saved"
+    And last user intake should have a senior profile
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: New > Save. user profile ok. subscriber profile ok. different caregiver1 with blank profile

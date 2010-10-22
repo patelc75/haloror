@@ -373,6 +373,9 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
       ui.senior.last_triage_audit_log.should_not be_blank
     when "a status attribute"
       ui.senior.status.should_not be_blank
+    when "a senior profile"
+      ui.senior.should_not be_blank
+      ui.senior.profile.should_not be_blank
     else
       assert false, 'add this condition'
     end
