@@ -123,6 +123,7 @@ class ReportingController < ApplicationController
     #
     # show non-demo users, unless "/all" given in URL
     @users.reject(&:demo_mode?) if params[:id].to_s != "all"
+    debugger
     #
     # paginate the list of users
     @users = @users.paginate :page => params[:page], :per_page => REPORTING_USERS_PER_PAGE
