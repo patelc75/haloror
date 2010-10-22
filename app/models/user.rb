@@ -15,18 +15,6 @@ class User < ActiveRecord::Base
     :cancelled        => "Cancelled"
   }
 
-  # DEPRECATED:
-  #   Cannot use this color table. Colors are subject to status + time span away/ago
-  # STATUS_COLOR = {
-  #   :pending          => "gray",
-  #   :approval_pending => "gray",
-  #   :install_pending  => "yellow",
-  #   :bill_pending     => "gray",
-  #   :installed        => "green",
-  #   :test             => "blue",
-  #   :overdue          => "orange"
-  # }
-
   STATUS_IMAGE = {
     :pending          => "user.png",  
     :approval_pending => "user.png",  
@@ -64,16 +52,6 @@ class User < ActiveRecord::Base
     :cancelled    =>  "Cancelled"
   }
   
-  # DEFAULT_ALERT_CHECKS = {
-  #   "call_center_account" => "call_center_account",
-  #   "legal_agreement" => "legal_agreement",
-  #   "panic" => "panic",
-  #   "strap_fastened" => "strap_fastened",
-  #   "test_mode" => "test_mode",
-  #   "user_intake" => "user_intake",
-  #   "desired_installation_date" => "desired_installation_date"
-  # }
-
   # Usage:
   #   <%= User::TRIAGE_ALERT[which] || which.split('_').collect(&:capitalize).join(' ') %>
   #   Custom labels/description for triage alert types

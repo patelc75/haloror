@@ -2,37 +2,37 @@
 <div id="secondary-col">
   <div id="secondary-col-header"></div>
   <div class="content">
-	
+
     <%= error_messages_for :user %>
-		<div id="errors">
-			<%= flash[:warning]%>
-		</div>
+    <div id="errors">
+      <%= flash[:warning]%>
+    </div>
 
     <div style="width:200px;margin-left:auto;margin-right:auto">
-      <% form_for @user do |f| -%>
-				<%= f.hidden_field :activation_code %>
-	        Please enter a username and password to create a new account for <%= @user.email %>:
-	        <br />
-	        <br />	        
-        <label for="user_login">Username</label>
-        <br/>
-        <%= f.text_field :login %>
-        <br />
-        <br />	
-					
-        <label for="user_password">Password</label>
-        <br/>
-        <%= f.password_field :password %>
-        <br />
-        <br />
-        <label for="user_password_confirmation">Confirm Password</label>
-        <br/>
-        <%= f.password_field :password_confirmation %>
-        <br />
-        <br />
-        <div align="center">
-          <%= image_submit_tag "subscribe.gif", :id => 'subscribe_button' %>
-        </div>
+      <% form_for :user, @user, :url => { :action => "update" } do |f| -%>
+      <%= f.hidden_field :activation_code %>
+      Please enter a username and password to create a new account for <%= @user.email %>:
+      <br />
+      <br />	        
+      <label for="user_login">Username</label>
+      <br/>
+      <%= f.text_field :login %>
+      <br />
+      <br />	
+
+      <label for="user_password">Password</label>
+      <br/>
+      <%= f.password_field :password %>
+      <br />
+      <br />
+      <label for="user_password_confirmation">Confirm Password</label>
+      <br/>
+      <%= f.password_field :password_confirmation %>
+      <br />
+      <br />
+      <div align="center">
+        <%= image_submit_tag "subscribe.gif", :id => 'subscribe_button' %>
+      </div>
       <% end -%>
     </div>
   </div>
@@ -40,20 +40,20 @@
 </div>
 <% else %>
 <div id="call_list-col">
-	<div id="call_list-col-header">
-		Activation
-	</div>
-	
-	<div class="content">
-		<p>
-			User was already activated. You can now <%= link_to 'login.', :controller => 'sessions', :action => 'new'%>
-		</p>	
-	</div>
+  <div id="call_list-col-header">
+    Activation
+  </div>
 
-	<div style="clear:both"></div>
-	<div id="call_list-col-footer"></div>
+  <div class="content">
+    <p>
+      User was already activated. You can now <%= link_to 'login.', :controller => 'sessions', :action => 'new'%>
+    </p>	
+  </div>
+
+  <div style="clear:both"></div>
+  <div id="call_list-col-footer"></div>
 </div>
-  <script>
-    //window.location = "/login"
-  </script>
+<script>
+//window.location = "/login"
+</script>
 <% end %>

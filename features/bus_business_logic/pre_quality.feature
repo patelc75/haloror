@@ -33,6 +33,7 @@ Feature: Pre quality
     Given I am an authenticated super admin
     And I am ready to create an admin
     And I press "subscribe"
+    And I logout
     And I am activating the last user
     And I fill in the following:
       | Username         | reseller_admin |
@@ -40,6 +41,7 @@ Feature: Pre quality
       | Confirm Password | admin          |
     And I press "subscribe_button"
     Then last user should be activated
+    And I should see "reseller_admin"
     
   # Pre-conditions: the following exist
   #   Group: reseller_group
