@@ -624,6 +624,9 @@ class UsersController < ApplicationController
         redirect_to '/'
 
       else
+        # Fri Oct 22 02:32:01 IST 2010
+        #   FIXME: we need to optimize the redirection mechanism to more appropriate common method
+        #   Here should just be activation. That too, more DRY
         user_hash = params[:user]
         if user_hash[:password] == user_hash[:password_confirmation]
           if user_hash[:password].length >= 4 # FIXME: Why is validation logic duplicated here? Needs DRYing
@@ -669,6 +672,12 @@ class UsersController < ApplicationController
               #   # once the user intake is submitted successfully, legal agreement will be shown automatically until agreed
               #   # any user other than halouser/subscriber will also see the legal agreement, but can only print. cannot accept/agree/submit.
               # end
+            
+            # Fri Oct 22 02:31:18 IST 2010
+            #   TODO: DRY: This logic should be elsewhere in a common method, not here
+            elsif current_user.is_admin?
+              redirect_to reporting_path
+              
             else
               redirect_to '/'
             end

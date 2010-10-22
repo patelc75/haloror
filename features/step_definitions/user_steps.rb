@@ -112,6 +112,7 @@ Given /^I am activating the last user$/ do
   visit "/activate/#{User.last.activation_code}"
 end
 
+
 # =========
 # = whens =
 # =========

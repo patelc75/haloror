@@ -69,6 +69,13 @@ Given /^(?:|the )senior of user intake "([^"]*)" (is|is not) in test mode$/ do |
   ui.senior.set_test_mode!( condition == "is")
 end
 
+Given /^senior of user intake "([^"]*)" has profile$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  Factory.create( :profile, :user_id => senior.id).should be_true
+  ui.senior.profile.should_not be_blank
+end
+
 Given /^user intake "([^"]*)" does not have the product shipped yet$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.shipped_at.should be_blank

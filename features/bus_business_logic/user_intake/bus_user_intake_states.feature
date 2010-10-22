@@ -19,7 +19,8 @@ Feature: Bus user intake statuses
   # ref   : Intake + Install States google doc : row 2
   Scenario: User Intake - Not yet submitted
     Then senior of last user intake should have "" status
-    And action button for user intake "1234567890" should be colored gray
+    # TODO: we will worry about colors in 1.7.0
+    # And action button for user intake "1234567890" should be colored gray
   
   # status: yellow
   # reason: 60 hours before desired installation date
@@ -67,7 +68,8 @@ Feature: Bus user intake statuses
     And I press "user_intake_submit"
     Then an email to "safety care" should be sent for delivery
     And last user intake should be read only
-    And action button for user intake "1234567890" should be colored gray
+    # TODO: we will worry about colors in 1.7.0
+    # And action button for user intake "1234567890" should be colored gray
   
   # status: yellow
   # reason: 8 hours before desired installation date
@@ -160,7 +162,8 @@ Feature: Bus user intake statuses
     Given the senior of user intake "1234567890" is not in test mode
     And the user intake "1234567890" status is "Ready to Bill" since past 0 days
     When panic button test data is received for user intake "1234567890"
-    Then action button for user intake "1234567890" should be colored gray
+    # TODO: we will worry about colors in 1.7.0
+    # Then action button for user intake "1234567890" should be colored gray
 
   # status: yellow
   # reason: 1 day old "Ready to bill"
@@ -211,8 +214,13 @@ Feature: Bus user intake statuses
     And senior of user intake "1234567890" is opted in to call center
     # And an email to admin, halouser and caregivers of user intake "1234567890" should be sent for delivery
 
+  # current user can see the user intakes of its own groups only
   Scenario: User Intake - Bill
-    Given bill monthly or credit card value are acceptable for user intake "1234567890"
+    Given a group "mygroup" exists
+    And user "demo" has "admin" role for group "mygroup"
+    And user intake "1234567890" belongs to group "mygroup"
+    And senior of user intake "1234567890" has profile
+    And bill monthly or credit card value are acceptable for user intake "1234567890"
     And we are on or past the desired installation date for senior of user intake "1234567890"
     And the senior of user intake "1234567890" has "Ready to Install" status
     When panic button test data is received for user intake "1234567890"

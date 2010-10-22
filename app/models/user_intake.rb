@@ -60,7 +60,7 @@ class UserIntake < ActiveRecord::Base
     attr_accessor "mem_caregiver#{index}_options".to_sym
     attr_accessor "no_caregiver_#{index}".to_sym
   end
-  attr_accessor :test_mode, :opt_out, :put_away, :card_or_bill
+  attr_accessor :test_mode, :opt_out, :put_away, :card_or_bill, :lazy_action
 
   # =============================
   # = dynamic generated methods =
@@ -92,6 +92,7 @@ class UserIntake < ActiveRecord::Base
 
   # for every instance, make sure the associated objects are built
   def after_initialize
+    self.lazy_action = '' # keep it text. we need it for Approve, Bill actions
     self.bill_monthly = (!order.blank? && order.purchase_successful?) if self.new_record?
     self.need_validation = true # assume, the user will not hit "save"
     self.installation_datetime = (order.created_at + 7.days) if order and (group_id == Group.direct_to_consumer.id)
@@ -162,8 +163,18 @@ class UserIntake < ActiveRecord::Base
     senior.set_test_mode!( (test_mode == "1") || (created_at == updated_at) || self.new_record?) unless senior.blank? || senior.test_mode?
     # self.senior.send( :update_without_callbacks) # not required. set_test_mode! has "shebang"
     #
-    # Switch user to installed state, if user is "Ready to Bill"
-    if senior.status == User::STATUS[:bill_pending]
+    # QUESTION: Should we consider a case here for panic test already received before "Approve"?
+    # Switch user to installed state, if
+    #   * user is "Ready to Install"
+    #   * last user action was "Approve"
+    if lazy_action == "Approve" && senior.status == User::STATUS[:approval_pending]
+        self.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:install_pending])
+        self.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
+
+    # Switch user to installed state, if
+    #   * user is "Ready to Bill"
+    #   * last user action was "Bill"
+    elsif lazy_action == 'Bill' && senior.status == User::STATUS[:bill_pending]
       self.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:installed])
       #
       # charge subscription and pro-rata recurring charges (including today), only when installed
@@ -179,8 +190,22 @@ class UserIntake < ActiveRecord::Base
     #
     # connect devices to senior if they are free to use
     [transmitter_serial, gateway_serial].each do |_serial|
-      device = Device.find_by_serial_number( _serial)
-      self.senior.devices << device if !device.blank? && device.is_only_associated_to?( self.senior) # future proof? multiple devices?
+      #
+      # fetch the existing device serial numbers
+      _current_device_serials ||= self.senior.devices.collect(&:serial_number).collect(&:strip)
+      #
+      # do not re-attach if this serial is already attached
+      unless _current_device_serials.include?( _serial) # do not bother if already linked
+        #
+        # fetch the device
+        unless (device = Device.find_by_serial_number( _serial)).blank?
+          #
+          # attach it to the senior, only if
+          #   * this device is exclusively attached to this senior
+          #   * and of course, we can find this device in database :)
+          self.senior.devices << device if device.is_associated_exclusively_to?( self.senior) # future proof? multiple devices?
+        end
+      end
     end
     #
     # send email for installation

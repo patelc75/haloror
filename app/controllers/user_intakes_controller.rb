@@ -71,18 +71,25 @@ class UserIntakesController < ApplicationController
     @user_intake.build_associations
     @groups = current_user.group_memberships
 
+    # QUESTION: Should we have some logic here to allow editing subject to state?
+    #
     # * only allow editing user intakes that are submitted (not just saved)
     # * only super_admin can edit submitted ones
     # CHANGED: halouser or subscriber can edit its user intake
-    if @user_intake.users.include?( current_user) || @user_intake.group_admins.include?( current_user) || current_user.is_super_admin?
+    if [@user_intake.senior, @user_intake.subscriber].include?( current_user) || @user_intake.group_admins.include?( current_user) || current_user.is_super_admin?
       respond_to do |format|
         format.html
         format.xml { render :xml => @user_intake }
       end
+
+    # only super admin can edit a locked user intake
     elsif @user_intake.locked? && !current_user.is_super_admin?
       render :action => 'show'
+
+    # at least redirect the user to some page and show a friendly message
     else
-      render :nothing => true
+      flash[:notice] = "You are not authorized to edit this user intake form. Please contact the Administrator or MyHalo support."
+      redirect_to :action => "index"
     end
   end
 
