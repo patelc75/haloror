@@ -43,7 +43,7 @@
     <table width="100%">
       <tr align="left">
         <th width="33%">
-          Shipping address
+          <%= @groups.include?( Group.direct_to_consumer) ? 'Shipping Address' : 'Users Home Address' %>
         </th>
         
         <th width="33%">
@@ -72,7 +72,7 @@
         </td>
         <td width="33%">
           <%= f.check_box "bill_address_same", :checked => @same_address, :disabled => @confirmation %>
-          <label for="order_bill_address_same"><%= @groups.include?( Group.direct_to_consumer) ? 'Same as Shipping info' : 'Same as User Home Address' %></label>
+          <label for="order_bill_address_same"><%= @groups.include?( Group.direct_to_consumer) ? 'Same as Shipping info' : 'Same as Users Home Address' %></label>
           <%= observe_field(:order_bill_address_same,
                             :on => :click,
                             :function => "if (document.getElementById('order_bill_address_same').checked) { hideDiv('billing_block'); } else { showDiv('billing_block'); }"
@@ -90,7 +90,7 @@
           <%= f.text_field "ship_last_name", :class => "required validate-alpha", :disabled => @confirmation %>
         </p>
         <p>
-          <label for="order_ship_address"><%= @groups.include?( Group.direct_to_consumer) ? 'Shipping address' : 'User Home Address' %></label><br />
+          <label for="order_ship_address">Address</label><br />
           <%= f.text_field "ship_address", :class => "required", :disabled => @confirmation %>
         </p>
         <p>

@@ -1,6 +1,7 @@
 # @wip will tell cucumber to skip this feature
 #@wip
 Feature: Critical Alert
+  # TODO: Add Panic to critical_alert.feature and make sure it is run every time
   In order to process a fall, panic, or gw_alarm_button from the gateway
   As a system user
   I want verify the delivery of the critical alert

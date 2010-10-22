@@ -15,6 +15,6 @@ class EventAction < ActiveRecord::Base
   def email_body
     "#{event.event_type} #{description} on #{UtilityHelper.format_datetime(Time.now, event.user)}\n\n" +
       "Event ID:#{event.id} User:#{event.user.name} (#{event.user_id})\n\n" +
-      "Sincerely, Halo Staff\n\n"
+      "Sincerely, Halo Staff"
   end
 end

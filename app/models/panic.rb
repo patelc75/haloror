@@ -83,6 +83,6 @@ class Panic < CriticalDeviceAlert
   def email_body
     "Hello,\nWe detected that #{user.name} pressed the panic button on #{UtilityHelper.format_datetime(timestamp, user)}" +
     "\n\nA Halo operator will be handling the event immediately.\n\n" +
-    "Sincerely, Halo Staff"
+    "- Halo Staff"
   end
 end

@@ -13,7 +13,7 @@ class GwAlarmButtonTimeout < DeviceAlert
   
   def email_body
     "It has been #{GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT / 60} minutes and we have detected that the Gateway Alarm button has not been pushed for #{user.name}'s #{event.class.class_name} on #{UtilityHelper.format_datetime(timestamp, user)}\n\n" +
-      "Sincerely, Halo Staff"
+      "- Halo Staff"
   end
 
   #for rspec
