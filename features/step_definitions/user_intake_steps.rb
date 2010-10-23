@@ -415,6 +415,8 @@ Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |_serial, 
     else
       senior.status.should == _status
     end
+  elsif what =~ /^(\d+) devices$/
+    senior.devices.length.should == what.split(' ')[0].to_i
   else
     assert false # otherwise, any new step would pass without technically getting covered
   end

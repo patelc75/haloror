@@ -946,7 +946,7 @@ class UsersController < ApplicationController
   #   Refactor UsersController:register_user_with_serial_num so you can reuse
   #
   def register_user_with_serial_num(user, serial_number)
-    @device = user.add_device_by_serial_number( serial_number)
+    @device = user.add_devices_by_serial_number( serial_number)
     #
     # Sat Sep 25 03:14:36 IST 2010 Old logic
     #

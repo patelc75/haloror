@@ -88,5 +88,20 @@ Feature: Business - user intake - submit
       | gateway_serial |
       | 1234567890     |
     And senior of user intake "1234567890" has "Ready for Approval" status
-    When user intake "1234567890" is submitted again
-    Then senior of user intake "1234567890" is not in test mode
+    And I am editing user intake "1234567890"
+    When I click "Approve"
+    Then senior of user intake "1234567890" is in test mode
+    And senior of user intake "1234567890" is halouser of safety care group
+    And caregivers of user intake "1234567890" are away
+
+  Scenario: When creating a user intake with device serials, devices are attached once only
+    Given the following devices:
+      | serial_number |
+      | H200000060    |
+      | H100000040    |
+    And I am ready to submit a user intake
+    And I fill in the following:
+      | user_intake_gateway_serial     | H200000060 |
+      | user_intake_transmitter_serial | H100000040 |
+    And I press "Submit"
+    Then senior of user intake "H200000060" should have 2 devices
