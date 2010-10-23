@@ -472,11 +472,16 @@ class Order < ActiveRecord::Base
       subscriber_profile = { :first_name => bill_first_name, :last_name => bill_last_name, :address => bill_address, :city => bill_city, :state => bill_state, :zipcode => bill_zip, :home_phone => bill_phone }
       user_intake = UserIntake.new
       user_intake.group = group # halouser role is for group
+      # debugger
       user_intake.senior_attributes = {:email => ship_email, :profile_attributes => senior_profile}
+      #
+      # when senior and subscriber are different, then subscriber is also the caregiver
       if !subscribed_for_self? # when marked common or data common
         user_intake.subscriber_is_user = false
+        user_intake.subscriber_is_caregiver = true
         user_intake.subscriber_attributes = {:email => bill_email, :profile_attributes => subscriber_profile}
       end
+      # FIXME: should we have gateway and transmitter serials derived from kit serial here?
       user_intake.kit_serial_number = self.kit_serial
       user_intake.order_id = self.id
       user_intake.creator = self.creator # https://redmine.corp.halomonitor.com/issues/3117

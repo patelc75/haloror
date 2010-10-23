@@ -69,6 +69,13 @@ Given /^(?:|the )senior of user intake "([^"]*)" (is|is not) in test mode$/ do |
   ui.senior.set_test_mode!( condition == "is")
 end
 
+Given /^senior of user intake "([^"]*)" has profile$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  Factory.create( :profile, :user_id => senior.id).should be_true
+  ui.senior.profile.should_not be_blank
+end
+
 Given /^user intake "([^"]*)" does not have the product shipped yet$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.shipped_at.should be_blank
@@ -366,6 +373,12 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
       ui.senior.last_triage_audit_log.should_not be_blank
     when "a status attribute"
       ui.senior.status.should_not be_blank
+    when "a senior profile"
+      ui.senior.should_not be_blank
+      ui.senior.profile.should_not be_blank
+    when 'separate senior and subscriber'
+      [:senior, :subscriber].each {|e| ui.send( e).should_not be_blank }
+      ui.senior.should_not == ui.subscriber
     else
       assert false, 'add this condition'
     end
@@ -405,6 +418,13 @@ Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |_serial, 
   else
     assert false # otherwise, any new step would pass without technically getting covered
   end
+end
+
+Then /^subscriber of last user intake is also the caregiver$/ do
+  (ui = UserIntake.last).should_not be_blank
+  (subs = ui.subscriber).should_not be_blank
+  subs.should == ui.caregiver1
+  lambda { subs.is_caregiver_of?( ui.senior) }.should be_true
 end
 
 Then /^all caregivers for senior of user intake "([^"]*)" should be away$/ do |_serial|

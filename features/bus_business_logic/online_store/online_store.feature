@@ -42,6 +42,8 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Then I should see "Thank you"
     And the payment gateway response should have 1 log
     And billing and shipping addresses should not be same
+    And last user intake should have separate senior and subscriber
+    And subscriber of last user intake is also the caregiver
     # TODO: 1.6.0. skipped for QA
     # And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
 

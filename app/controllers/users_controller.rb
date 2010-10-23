@@ -1,10 +1,19 @@
 class UsersController < ApplicationController  
-  before_filter :authenticated?, :except => [:init_user, :update_user]
+  before_filter :authenticated?, :except => [:init_user, :update]
   before_filter :authenticate_admin?, :only => [:triage] # admin and super_admin can see triage
   
   require 'user_helper'
   include UserHelper
 
+  # def index
+  #   debugger
+  #   @users = current_user.group_memberships.collect(&:users)
+  #   respond_to do |format|
+  #     format.html
+  #     format.xml { render :xml => @users }
+  #   end
+  # end
+  
   def cancel_account
     @user = User.find(params[:id])
     @user.cancel_account unless @user.blank?
@@ -313,7 +322,8 @@ class UsersController < ApplicationController
   end
   end
 
-  def create    
+  def create
+    debugger
     @group = params[:group]
     if !@group.blank? && @group != 'Choose a Group'
       User.transaction do
@@ -355,166 +365,170 @@ class UsersController < ApplicationController
       end
     end
   end
-  
-  def user_intake_form_confirm
-  	edit_user_intake_info(params[:id])
-  end
 
-  def update_user_profile(id,params,senior=nil,roles_users_option=nil,position=nil)
-    @user = Profile.find_by_id(id.to_i)
-    unless @user
-      caregiver1_email = params[:email]
-      @user = User.populate_caregiver(caregiver1_email,senior.id,position,nil,params)
-      @user_intake.users.push(@user)
-      @user = @user.profile
-    else
-      @user.update_attributes(params)
-    end
-    set_roles_users_option(@user.user,roles_users_option,senior) if roles_users_option != nil
-    @user
-  end
+  # DEPRECATED: we now have user_intakes
+  # def user_intake_form_confirm
+  #   edit_user_intake_info(params[:id])
+  # end
 
-  def edit_user_intake_form
-    if request.post? #comes here if the form is resubmitted
-      @user_intake = UserIntake.find(params[:user_intake_id].to_i)
-      @user = update_user_profile(params[:halo_user],params[:user]) unless params[:halo_user].empty?
-      @senior = @user.user if params[:halo_user]
-      
-      if params[:same_as_user] and params[:same_as_user] == 'on' and !params[:sub].empty?
-        # remove the subscriber and set senior user as subscriber
-        @sub_profile = Profile.find_by_id(params[:sub].to_i)
-        User.destroy(@sub_profile.user_id)
-        populate_subscriber(@senior.id,"1","1",params[:user][:email],params[:user])
-      else
-        unless params[:sub].empty?
-          #any changes in subscriber profile will be updated here
-          @subscriber = update_user_profile(params[:sub],params[:subscriber])
-          if params[:add_caregiver] and params[:add_caregiver] == 'on'
-            @caregiver_1 = "1"
-            unless @subscriber.user.is_caregiver?
-              #add caregiver role to the subscriber
-              role = @subscriber.user.has_role 'caregiver', @senior
-              @roles_user = @senior.roles_user_by_caregiver(@subscriber.user)
-              params[:sub_roles_users_option][:roles_user_id] = @roles_user.id
-              params[:sub_roles_users_option][:position] = 1
-              RolesUsersOption.create(params[:sub_roles_users_option])
-              #remove previously added caregiver
-              if !params[:car1].empty?
-                @caregiver_1 = Profile.find(params[:car1])
-                User.destroy(@caregiver_1.user_id)
-              end
-            else
-              @subscriber = update_user_profile(params[:sub],params[:subscriber],@senior,params[:sub_roles_users_option])
-            end
-          else
-          if @subscriber.user.is_caregiver?
-            #remove caregiver role from subscriber
-              @subscriber.user.roles_users.each do |role_type|
-                if role_type.role.name == 'caregiver'
-                  RolesUser.destroy(role_type.id)
-                end
-              end
-          end
-          end
-        else
-          #create new subscriber and remove subscriber role from senior user   
-          @senior.roles_users.each do |role_type|
-            if role_type.role.name == 'subscriber'
-              RolesUser.destroy(role_type.id)
-            end
-          end
-          subscriber_email = params[:subscriber][:email]
-          if subscriber_email != ""
-          populate_subscriber(@senior.id,"0","1",subscriber_email,params[:subscriber]) 
-          @user_intake.users.push(@user) # @user will came from users_helper file
-          end
-        end
-      end
-        
-      if !params[:no_caregiver_1] and !@caregiver_1
-        @caregiver1 = update_user_profile(params[:car1],params[:caregiver1],@senior,params[:car1_roles_users_option],1)
-      elsif !params[:car1].empty? and params[:no_caregiver_1]
-        @profile = Profile.find_by_id(params[:car1].to_i)
-        User.destroy(@profile.user_id)
-      end
-        
-      if !params[:no_caregiver_2]
-        @caregiver2 = update_user_profile(params[:car2],params[:caregiver2],@senior,params[:car2_roles_users_option],2)
-      elsif !params[:car2].empty? and params[:no_caregiver_2]
-        @profile = Profile.find_by_id(params[:car2].to_i)
-        User.destroy(@profile.user_id)
-      end
-        
-      if !params[:no_caregiver_3]
-        @caregiver3 = update_user_profile(params[:car3],params[:caregiver3],@senior,params[:car3_roles_users_option],3)
-      elsif !params[:car3].empty? and params[:no_caregiver_3]
-        @profile = Profile.find_by_id(params[:car3].to_i)
-        User.destroy(@profile.user_id)
-      end
-        
-      redirect_to :controller => 'users',:action =>'edit_user_intake_form' ,:id => @user_intake.id
-    else #comes here if the form is being loaded
-      edit_user_intake_info(params[:id])
-      
-      @group = @halo_user.group_memberships.first.name if @halo_user.group_memberships.first
-      @groups = []
-      
-      if current_user.is_super_admin?
-        @groups = Group.find(:all)
-      else
-        gs = current_user.group_memberships
-        gs.each do |g|
-          @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
-        end
-      end  
-    end
-  end
+  # DEPRECATED: we now have user_intakes
+  # def update_user_profile(id,params,senior=nil,roles_users_option=nil,position=nil)
+  #   @user = Profile.find_by_id(id.to_i)
+  #   unless @user
+  #     caregiver1_email = params[:email]
+  #     @user = User.populate_caregiver(caregiver1_email,senior.id,position,nil,params)
+  #     @user_intake.users.push(@user)
+  #     @user = @user.profile
+  #   else
+  #     @user.update_attributes(params)
+  #   end
+  #   set_roles_users_option(@user.user,roles_users_option,senior) if roles_users_option != nil
+  #   @user
+  # end
+
+  # DEPRECATED: we now have user_intakes
+  # def edit_user_intake_form
+  #   if request.post? #comes here if the form is resubmitted
+  #     @user_intake = UserIntake.find(params[:user_intake_id].to_i)
+  #     @user = update_user_profile(params[:halo_user],params[:user]) unless params[:halo_user].empty?
+  #     @senior = @user.user if params[:halo_user]
+  #     
+  #     if params[:same_as_user] and params[:same_as_user] == 'on' and !params[:sub].empty?
+  #       # remove the subscriber and set senior user as subscriber
+  #       @sub_profile = Profile.find_by_id(params[:sub].to_i)
+  #       User.destroy(@sub_profile.user_id)
+  #       populate_subscriber(@senior.id,"1","1",params[:user][:email],params[:user])
+  #     else
+  #       unless params[:sub].empty?
+  #         #any changes in subscriber profile will be updated here
+  #         @subscriber = update_user_profile(params[:sub],params[:subscriber])
+  #         if params[:add_caregiver] and params[:add_caregiver] == 'on'
+  #           @caregiver_1 = "1"
+  #           unless @subscriber.user.is_caregiver?
+  #             #add caregiver role to the subscriber
+  #             role = @subscriber.user.has_role 'caregiver', @senior
+  #             @roles_user = @senior.roles_user_by_caregiver(@subscriber.user)
+  #             params[:sub_roles_users_option][:roles_user_id] = @roles_user.id
+  #             params[:sub_roles_users_option][:position] = 1
+  #             RolesUsersOption.create(params[:sub_roles_users_option])
+  #             #remove previously added caregiver
+  #             if !params[:car1].empty?
+  #               @caregiver_1 = Profile.find(params[:car1])
+  #               User.destroy(@caregiver_1.user_id)
+  #             end
+  #           else
+  #             @subscriber = update_user_profile(params[:sub],params[:subscriber],@senior,params[:sub_roles_users_option])
+  #           end
+  #         else
+  #         if @subscriber.user.is_caregiver?
+  #           #remove caregiver role from subscriber
+  #             @subscriber.user.roles_users.each do |role_type|
+  #               if role_type.role.name == 'caregiver'
+  #                 RolesUser.destroy(role_type.id)
+  #               end
+  #             end
+  #         end
+  #         end
+  #       else
+  #         #create new subscriber and remove subscriber role from senior user   
+  #         @senior.roles_users.each do |role_type|
+  #           if role_type.role.name == 'subscriber'
+  #             RolesUser.destroy(role_type.id)
+  #           end
+  #         end
+  #         subscriber_email = params[:subscriber][:email]
+  #         if subscriber_email != ""
+  #         populate_subscriber(@senior.id,"0","1",subscriber_email,params[:subscriber]) 
+  #         @user_intake.users.push(@user) # @user will came from users_helper file
+  #         end
+  #       end
+  #     end
+  #       
+  #     if !params[:no_caregiver_1] and !@caregiver_1
+  #       @caregiver1 = update_user_profile(params[:car1],params[:caregiver1],@senior,params[:car1_roles_users_option],1)
+  #     elsif !params[:car1].empty? and params[:no_caregiver_1]
+  #       @profile = Profile.find_by_id(params[:car1].to_i)
+  #       User.destroy(@profile.user_id)
+  #     end
+  #       
+  #     if !params[:no_caregiver_2]
+  #       @caregiver2 = update_user_profile(params[:car2],params[:caregiver2],@senior,params[:car2_roles_users_option],2)
+  #     elsif !params[:car2].empty? and params[:no_caregiver_2]
+  #       @profile = Profile.find_by_id(params[:car2].to_i)
+  #       User.destroy(@profile.user_id)
+  #     end
+  #       
+  #     if !params[:no_caregiver_3]
+  #       @caregiver3 = update_user_profile(params[:car3],params[:caregiver3],@senior,params[:car3_roles_users_option],3)
+  #     elsif !params[:car3].empty? and params[:no_caregiver_3]
+  #       @profile = Profile.find_by_id(params[:car3].to_i)
+  #       User.destroy(@profile.user_id)
+  #     end
+  #       
+  #     redirect_to :controller => 'users',:action =>'edit_user_intake_form' ,:id => @user_intake.id
+  #   else #comes here if the form is being loaded
+  #     edit_user_intake_info(params[:id])
+  #     
+  #     @group = @halo_user.group_memberships.first.name if @halo_user.group_memberships.first
+  #     @groups = []
+  #     
+  #     if current_user.is_super_admin?
+  #       @groups = Group.find(:all)
+  #     else
+  #       gs = current_user.group_memberships
+  #       gs.each do |g|
+  #         @groups << g if(current_user.is_sales_of?(g) || current_user.is_admin_of?(g))
+  #       end
+  #     end  
+  #   end
+  # end
   
-  def edit_user_intake_info(user_intake_id)
-      @user_intake = UserIntake.find_by_id(user_intake_id)
-      @caregivers = []
-      
-      #loop through all users associated with user intake form and extract user and subscriber
-      if @user_intake.users.size > 0
-        @user_intake.users.each do |user|
-          @intake_user = User.find(user)
-          @halo_user = @intake_user if @intake_user.is_halouser?
-          @subscriber_user = @intake_user if @intake_user.is_subscriber?
-        end
-      end
-      
-      @user = @halo_user.profile if @halo_user 
-      @subscriber = @subscriber_user.profile if @subscriber_user and @subscriber_user != @halo_user
-      
-      @halo_user.caregivers_sorted_by_position.each do |car|
-        @caregivers[0] = car[1] if car[1].user_intakes and car[0] == 1
-        @caregivers[1] = car[1] if car[1].user_intakes and car[0] == 2
-        @caregivers[2] = car[1] if car[1].user_intakes and car[0] == 3
-      end
-      
-      @caregiver1 = @caregivers[0].profile if @caregivers[0]
-      @caregiver2 = @caregivers[1].profile if @caregivers[1]
-      @caregiver3 = @caregivers[2].profile if @caregivers[2]
-      
-      if @halo_user
-        if @subscriber == @caregiver1 #subscriber as #1 caregiver
-          @caregiver1 = @caregivers[0] = nil
-          
-          if @subscriber != nil
-            @add_as_caregiver = '1'
-          @sub_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@subscriber_user).id)
-          end
-        end
-        @car1_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[0]).id) if @caregivers[0]
-        @car2_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[1]).id) if @caregivers[1]
-        @car3_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[2]).id) if @caregivers[2]
-      end
-  end
+  # DEPRECATED: we now have user_intakes
+  # def edit_user_intake_info(user_intake_id)
+  #     @user_intake = UserIntake.find_by_id(user_intake_id)
+  #     @caregivers = []
+  #     
+  #     #loop through all users associated with user intake form and extract user and subscriber
+  #     if @user_intake.users.size > 0
+  #       @user_intake.users.each do |user|
+  #         @intake_user = User.find(user)
+  #         @halo_user = @intake_user if @intake_user.is_halouser?
+  #         @subscriber_user = @intake_user if @intake_user.is_subscriber?
+  #       end
+  #     end
+  #     
+  #     @user = @halo_user.profile if @halo_user 
+  #     @subscriber = @subscriber_user.profile if @subscriber_user and @subscriber_user != @halo_user
+  #     
+  #     @halo_user.caregivers_sorted_by_position.each do |car|
+  #       @caregivers[0] = car[1] if car[1].user_intakes and car[0] == 1
+  #       @caregivers[1] = car[1] if car[1].user_intakes and car[0] == 2
+  #       @caregivers[2] = car[1] if car[1].user_intakes and car[0] == 3
+  #     end
+  #     
+  #     @caregiver1 = @caregivers[0].profile if @caregivers[0]
+  #     @caregiver2 = @caregivers[1].profile if @caregivers[1]
+  #     @caregiver3 = @caregivers[2].profile if @caregivers[2]
+  #     
+  #     if @halo_user
+  #       if @subscriber == @caregiver1 #subscriber as #1 caregiver
+  #         @caregiver1 = @caregivers[0] = nil
+  #         
+  #         if @subscriber != nil
+  #           @add_as_caregiver = '1'
+  #         @sub_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@subscriber_user).id)
+  #         end
+  #       end
+  #       @car1_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[0]).id) if @caregivers[0]
+  #       @car2_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[1]).id) if @caregivers[1]
+  #       @car3_roles_users_option = RolesUsersOption.find_by_roles_user_id(@halo_user.roles_user_by_caregiver(@caregivers[2]).id) if @caregivers[2]
+  #     end
+  # end
   
   def signup_details
     @user = User.find params[:id]
     @alert_types = []
-    AlertType.find(:all).each do |type|    
+    AlertType.find(:all).each do |type|
       @alert_types << type        
     end
   end
@@ -597,6 +611,8 @@ class UsersController < ApplicationController
   end
     
   def update
+    # debugger
+    #  check if this is an activation request or regular update
     if params[:user][:activation_code].blank?
       #
       # just a reguar update
@@ -615,6 +631,7 @@ class UsersController < ApplicationController
       end
 
     # we reach here when user is activating its account
+    #   identified by params[:user][:activation_code] in request
     else
       @user = User.find_by_activation_code(params[:user][:activation_code])
 
@@ -624,6 +641,9 @@ class UsersController < ApplicationController
         redirect_to '/'
 
       else
+        # Fri Oct 22 02:32:01 IST 2010
+        #   FIXME: we need to optimize the redirection mechanism to more appropriate common method
+        #   Here should just be activation. That too, more DRY
         user_hash = params[:user]
         if user_hash[:password] == user_hash[:password_confirmation]
           if user_hash[:password].length >= 4 # FIXME: Why is validation logic duplicated here? Needs DRYing
@@ -669,6 +689,12 @@ class UsersController < ApplicationController
               #   # once the user intake is submitted successfully, legal agreement will be shown automatically until agreed
               #   # any user other than halouser/subscriber will also see the legal agreement, but can only print. cannot accept/agree/submit.
               # end
+            
+            # Fri Oct 22 02:31:18 IST 2010
+            #   TODO: DRY: This logic should be elsewhere in a common method, not here
+            elsif current_user.is_admin?
+              redirect_to :controller => 'reporting', :action => 'users'
+              
             else
               redirect_to '/'
             end

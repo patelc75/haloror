@@ -1,6 +1,6 @@
 class UserIntakesController < ApplicationController
   before_filter :login_required
-  
+
   # GET /user_intakes
   # GET /user_intakes.xml
   def index
@@ -41,7 +41,7 @@ class UserIntakesController < ApplicationController
       format.xml  { render :xml => @user_intakes }
     end
   end
-  
+
   # GET /user_intakes/1
   # GET /user_intakes/1.xml
   def show
@@ -71,18 +71,25 @@ class UserIntakesController < ApplicationController
     @user_intake.build_associations
     @groups = current_user.group_memberships
 
+    # QUESTION: Should we have some logic here to allow editing subject to state?
+    #
     # * only allow editing user intakes that are submitted (not just saved)
     # * only super_admin can edit submitted ones
     # CHANGED: halouser or subscriber can edit its user intake
-    if @user_intake.users.include?( current_user) || @user_intake.group_admins.include?( current_user) || current_user.is_super_admin?
+    if [@user_intake.senior, @user_intake.subscriber].include?( current_user) || @user_intake.group_admins.include?( current_user) || current_user.is_super_admin?
       respond_to do |format|
         format.html
         format.xml { render :xml => @user_intake }
       end
+
+      # only super admin can edit a locked user intake
     elsif @user_intake.locked? && !current_user.is_super_admin?
       render :action => 'show'
+
+      # at least redirect the user to some page and show a friendly message
     else
-      render :nothing => true
+      flash[:notice] = "You are not authorized to edit this user intake form. Please contact the Administrator or MyHalo support."
+      redirect_to :action => "index"
     end
   end
 
@@ -97,6 +104,18 @@ class UserIntakesController < ApplicationController
     @user_intake = UserIntake.new(params[:user_intake]) # .merge( :creator => current_user, :updater => current_user))
     @user_intake.skip_validation = (params[:commit] == "Save") # just save without asking anything
     @groups = Group.for_user(current_user)
+
+    # debugger
+    # user intake form submission
+    # Thu Oct 21 23:42:41 IST 2010
+    #   user intake form now has a new hidden field 'user_intake_form_view'
+    #   this will identify if the submission is coming from user intake form or any other interface
+    #   we are updating user intake from many other places like update of 'shipping date' from overview
+    if params.keys.include?( "user_intake_form_view")
+      #
+      # apply all attributes to associations
+      @user_intake.apply_attributes_from_hash( params[:user_intake]) # apply user attributes
+    end
 
     respond_to do |format|
       if @user_intake.save
@@ -140,7 +159,7 @@ class UserIntakesController < ApplicationController
       #   user intake form now has a new hidden field 'user_intake_form_view'
       #   this will identify if the submission is coming from user intake form or any other interface
       #   we are updating user intake from many other places like update of 'shipping date' from overview
-      if !params[:user_intake_form_view].blank?
+      if params.keys.include?( "user_intake_form_view")
         #
         # Fri Oct 22 00:36:11 IST 2010
         #   * distributed logic in controller and model was causing issues like "Bill" button never visible
@@ -180,9 +199,9 @@ class UserIntakesController < ApplicationController
           format.xml  { render :xml => @user_intake.errors, :status => :unprocessable_entity }
         end
 
-      # single column/attribute updates from different interfaces like user intake overview
-      #   * just a silent update of user intake attributes. no questions asked. no validations. no checking.
-      #   * we need this for interfaces like 'shipping date update' from user intake overview
+        # single column/attribute updates from different interfaces like user intake overview
+        #   * just a silent update of user intake attributes. no questions asked. no validations. no checking.
+        #   * we need this for interfaces like 'shipping date update' from user intake overview
       else
         params[:user_intake].each {|k,v| @user_intake.send( "#{k}=".to_sym, v) }
         @user_intake.send( :update_without_callbacks) # just save it. no questions asked.
@@ -208,15 +227,15 @@ class UserIntakesController < ApplicationController
     @user_intake = UserIntake.find( params[:id])
     @user_intake.order and @user_intake.order.charge_subscription # begin charge for subscription
   end
-  
+
   def paper_copy_submission
     @user_intake = UserIntake.find(params[:id])
   end
-  
+
   def safety_care_account_creation
     @user_intake = UserIntake.find(params[:id])
   end
-  
+
   def shipped
     @user_intake = UserIntake.find(params[:id])
   end

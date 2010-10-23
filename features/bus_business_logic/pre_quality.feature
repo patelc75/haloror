@@ -5,12 +5,14 @@ Feature: Pre quality
 
   Scenario: super admin > create a group
     Given I am an authenticated super admin
-    When I go to the home page
-    And I follow links "Config > Roles & Groups"
-    And I fill in "reseller_group" for "Group Name"
+    When I am listing groups
+    And I follow "New group"
+    And I fill in the following:
+      |Name| reseller_group |
+      |Description | reseller_group|
+      |Email | reseller_group@test.com |
     And I select "reseller" from "Sales Type"
-    And I fill in "reseller_group description" for "Description"
-    And I press "Add Group"
+    And I press "Save"
     Then a group should exist with name "reseller_group"
 
   # CHANGED: capybara was required to accomplish this
@@ -31,6 +33,7 @@ Feature: Pre quality
     Given I am an authenticated super admin
     And I am ready to create an admin
     And I press "subscribe"
+    And I logout
     And I am activating the last user
     And I fill in the following:
       | Username         | reseller_admin |
@@ -38,6 +41,7 @@ Feature: Pre quality
       | Confirm Password | admin          |
     And I press "subscribe_button"
     Then last user should be activated
+    And I should see "reseller_admin"
     
   # Pre-conditions: the following exist
   #   Group: reseller_group

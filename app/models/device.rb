@@ -126,7 +126,7 @@ class Device < ActiveRecord::Base
   # = instance methods =
   # ====================
 
-  def is_only_associated_to?( _user = nil)
+  def is_associated_exclusively_to?( _user = nil)
     # * user is not blank
     # * user is a User object
     if !_user.blank? && _user.is_a?(User)

@@ -106,17 +106,27 @@ class ReportingController < ApplicationController
     # exclude demo users. https://redmine.corp.halomonitor.com/issues/3274
     # users only from current_user.group_memberships should be visible. https://redmine.corp.halomonitor.com/issues/3550
     #
-    # only these users are visible to current_user
-    _user_ids = (@group.blank? ? @groups.collect(&:user_ids) : @group.user_ids).flatten.compact.uniq
+    # # only these users are visible to current_user
+    # _user_ids = (@group.blank? ? @groups.collect(&:user_ids) : @group.user_ids).flatten.compact.uniq
+    # Sat Oct 23 03:21:54 IST 2010
+    #   * show admins, halousers, subscribers and caregivers
+    _groups = (@group.blank? ? @groups : [@group]) # fetch groups, or make the single group an array
+    _halousers = _groups.collect(&:has_halousers).flatten.compact # fetch halousers for groups
+    #   * fetch admins of groups, [subscirbers & caregivers] of halousers
+    #   * keep everyone in a single array, not multi-level arrays
+    #   * collect ID of these users and 
+    @users = [ _groups.collect(&:has_admins), _halousers, _halousers.collect(&:has_subscribers), _halousers.collect(&:has_caregivers) ].flatten.compact
     #
-    # fetch users based on collected ids
-    @users = User.all( :conditions => {:id => _user_ids }, :order => "id ASC")
+    # Sat Oct 23 03:30:46 IST 2010 : save another query. we already have these objects loaded in memory
+    # # fetch users based on collected ids
+    # @users = User.all( :conditions => {:id => _user_ids }, :order => "id ASC")
     #
     # show non-demo users, unless "/all" given in URL
     @users.reject(&:demo_mode?) if params[:id].to_s != "all"
+    debugger
     #
     # paginate the list of users
-    @users = @users.paginate :page => params[:page], :include => [:roles, :roles_users], :per_page => REPORTING_USERS_PER_PAGE
+    @users = @users.paginate :page => params[:page], :per_page => REPORTING_USERS_PER_PAGE
 
     # @users.each do |user|
     #   if user

@@ -132,7 +132,7 @@
         <% if logged_in? %>
         <%= render :partial => '/layouts/links' -%>
 
-        Welcome, <%= current_user.full_name -%> <!--% if ENV['RAILS_ENV'] == "development"%--> (#<%= current_user.id -%>) <!--% end %-->
+        Welcome, <%= current_user.full_name -%> <!--% if ENV['RAILS_ENV'] == "development"%--> (#<%= current_user.id -%> <%= current_user.login %>) <!--% end %-->
         <span class="divider">|</span>
         <span id="logout"><a href="/logout">Logout</a></span>
         <span class="divider">|</span>				
