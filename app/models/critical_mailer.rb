@@ -4,18 +4,44 @@ class CriticalMailer < ActionMailer::ARMailer
   NO_REPLY = "no-reply@halomonitoring.com"
 
 #=============== General Methods for Alerts ======================       
-  def device_event_admin(event)
+  def device_event_admin_email(event)
     setup_caregivers(event.user, event, :recepients)
     setup_operators(event, :recepients, :include_phone_call, :halo_only) 
     setup_message(event.to_s, "It has been #{GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT / 60} minutes and we have detected that the GW Alarm button has not been pushed for #{event.user.name} #{event.event.event_type} on #{event.timestamp}")
     self.priority = Priority::IMMEDIATE
   end
   
-  def device_event_caregiver(event)
-    setup_message(event.to_s, event.email_body + "\n\nYou received this email because you’re a myHalo user or a caregiver of #{event.user.name}")
-    setup_caregivers(event.user, event, :recepients)
-    self.priority  = event.priority
+  def non_critical_caregiver_email(model, user=nil)
+    user = model.user if user.nil?
+    setup_message(model.to_s, model.email_body + "\n\nYou received this email because you’re either a myHalo user or a caregiver of #{user.name}")
+    setup_caregivers(user, model, :recepients)
+    self.priority  = model.priority
   end
+  
+  def non_critical_caregiver_text(model, user=nil)
+    user = model.user if user.nil?    
+    setup_message(model.to_s, "")
+    setup_caregivers(user, model, :recepients)
+    @recipients = @text_recipients
+    @from        = "myHalo"
+    self.priority  = model.priority
+  end  
+   
+#  def non_critical_bkgd_caregiver_email(alert, user)
+#    body = "User #{user.name} (#{user.id})\n" +
+#      "Detected at #{UtilityHelper.format_datetime(alert.created_at, user)}\n" +
+#      "Device ID: #{alert.device.id}  Alert ID: #{alert.id}\n"
+#    setup_message(alert.to_s, body)
+#    setup_caregivers(user, alert, :recepients)
+#    self.priority = alert.priority
+#  end
+#  
+#  def non_critical_bkgd_caregiver_text(alert, user)
+#    setup_message(alert.to_s, "")
+#    setup_caregivers(user, alert, :recepients)
+#    @recipients = @text_recipients    
+#    self.priority = alert.priority
+#  end
   
   def device_event_operator(event)
     # refs #864, New non-wizard email for call center agents
@@ -49,13 +75,7 @@ class CriticalMailer < ActionMailer::ARMailer
     self.priority  = event.priority
   end
 
-#=============== Call Center Operator ======================     
-  def call_center_caregiver(event_action)
-    setup_message(event_action.to_s, event_action.email_body + "\n\nYou received this email because you’re a myHalo user or a caregiver of #{event_action.event.user.name}")
-    setup_caregivers(event_action.event.user, event_action.event.event, :recepients)
-    self.priority  = event_action.priority
-  end
-  
+#=============== Call Center Operator ======================       
   def call_center_operator(event_action)
     setup_message(event_action.to_s, event_action.email_body + event_action.event.notes_string + "\n\nYou received this email because you’re an operator.")
     setup_operators(event_action.event.event, :recepients)
@@ -127,15 +147,6 @@ class CriticalMailer < ActionMailer::ARMailer
     setup_message("safety_care HEARTBEAT failure", "There was a HEARTBEAT failure!\n\nTime: #{Time.now}\n\n  Exception: #{exception}\nError: #{message}\n\n", :no_email_log)
     @recipients = ["exceptions@halomonitoring.com"]
   end
-
-  def background_task_notification(alert, user)
-    body = "User #{user.name} (#{user.id})\n" +
-      "Detected at #{UtilityHelper.format_datetime(alert.created_at, user)}\n" +
-      "Device ID: #{alert.device.id}  Alert ID: #{alert.id}\n"
-    setup_message(alert.to_s, body)
-    setup_caregivers(user, alert, :recepients)
-    self.priority = alert.priority
-  end
   
   def cancel_call_center_acct( acct_num )
     @recipients = Group.safety_care.email
@@ -177,7 +188,7 @@ class CriticalMailer < ActionMailer::ARMailer
     user.active_caregivers.each do |caregiver|
       recipients_setup(caregiver, user.alert_option_by_type(caregiver, alert), mode)  
     end
-    @recipients = @recipients + @text_recipients
+    
   end
   
   #if group = :halo_only, only set up operators for the 'halo' group

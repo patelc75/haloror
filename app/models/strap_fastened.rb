@@ -11,7 +11,7 @@ class StrapFastened < DeviceAlert
   end
   
   def to_s
-    "Strap fastened on at #{UtilityHelper.format_datetime(timestamp, user)}"
+    "Strap fastened"
   end
   
   def self.new_initialize(random=false)

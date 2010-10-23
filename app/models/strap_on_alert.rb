@@ -1,15 +1,23 @@
-class StrapOnAlert < DeviceAlert
-  set_table_name "strap_on_alerts"
-  belongs_to :device
+class StrapOnAlert < ActiveRecord::Base
+  belongs_to :device 
+  belongs_to :user
+  
   include Priority
+  def before_save
+    self.user_id = device.users.first.id                  
+  end  
   def after_save
-    device.users.each do |user|
-      Event.create_event(user.id, StrapOnAlert.class_name, id, created_at)
-      CriticalMailer.deliver_background_task_notification(self, user)
-    end
+    Event.create_event(user_id, StrapOnAlert.class_name, id, created_at)
+    CriticalMailer.deliver_non_critical_caregiver_email(self)  
+    CriticalMailer.deliver_non_critical_caregiver_text(self)    
   end
   
   def to_s
     "Strap back on"
   end
+           
+  def email_body    
+    "Hello,\n\nOn #{UtilityHelper.format_datetime(created_at,user)}, we have detected that #{user.name} put their chest strap back \n\n" +
+    "- Halo Staff"  
+  end  
 end

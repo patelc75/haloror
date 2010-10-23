@@ -1,5 +1,8 @@
-class StrapOffAlert < DeviceAlert
-  set_table_name "strap_off_alerts"
+class StrapOffAlert < ActiveRecord::Base
+  belongs_to :device      
+  belongs_to :user
+  include Priority    
+  
   DEVICE_CHEST_STRAP_TYPE = 'Halo Chest Strap'
   def self.job_detect_straps_off
     RAILS_DEFAULT_LOGGER.warn("StrapOffAlert.job_detect_straps_off running at #{Time.now}")
@@ -50,18 +53,26 @@ class StrapOffAlert < DeviceAlert
     
     true
   end
-  
+
+  def before_save
+    self.user_id = device.users.first.id                  
+  end
+    
   def after_save
     if number_attempts == MAX_ATTEMPTS_BEFORE_NOTIFICATION_STRAP_OFF
-      device.users.each do |user|
-        Event.create_event(user.id, StrapOffAlert.class_name, id, created_at)
-        CriticalMailer.deliver_background_task_notification(self, user)
-      end
+      Event.create_event(user.id, StrapOffAlert.class_name, id, created_at)
+      CriticalMailer.deliver_non_critical_caregiver_email(self, user)  
+      CriticalMailer.deliver_non_critical_caregiver_text(self, user)        
     end
   end
-  
+
+  def email_body    
+    "Hello,\n\nOn #{UtilityHelper.format_datetime(created_at,user)}, we detected that #{user.name} has had their chest strap off\n\n" +
+    "- Halo Staff"  
+  end
+    
   def to_s
-    "Strap has been off for at least #{STRAP_OFF_TIMEOUT} minutes"
+    "Strap has been off"
   end
   
   private

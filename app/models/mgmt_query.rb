@@ -75,24 +75,6 @@ class MgmtQuery < ActiveRecord::Base
     ethernet_system_timeout = SystemTimeout.find_by_mode('ethernet')
     dialup_system_timeout   = SystemTimeout.find_by_mode('dialup')
 
-=begin
-    #GWOnline check moved to MgmtQueriesController::create to cut down on Rufus load    
-    MgmtQuery.gw_online_check(ethernet_system_timeout)
-    MgmtQuery.gw_online_check(dialup_system_timeout)
- 
-    #not sure why would want to send GW Offline alerts for devices with no existing GW Offline alerts
-    devices = Device.find(:all, 
-                          :conditions => "id in (select dlq.id from device_latest_queries dlq where dlq.id not in (select device_id from gateway_offline_alerts group by device_id))")
-    devices.each do |device|
-      begin
-        MgmtQuery.gw_offline_process(device)
-      rescue Exception => e
-        logger.fatal("Error processing outage alert for device #{device.inspect}: #{e}")
-        raise e if ENV['RAILS_ENV'] == "development" || ENV['RAILS_ENV'] == "test"
-      end
-    end
-=end
-
     MgmtQuery.gw_offline_check(ethernet_system_timeout)    
     MgmtQuery.gw_offline_check(dialup_system_timeout) #this could be done less frequently potentially since timeout is greater
   end
@@ -133,44 +115,4 @@ class MgmtQuery < ActiveRecord::Base
       conds = []
     end
   end
-  
-=begin
-  # Find devices that were previously offline but have come back online. Trigger a "Reconnect" event for these
-  # devices. In practice, there should be very few of these alerts so we process them one by one as the devices come back online.
-  def MgmtQuery.gw_online_check(access_mode_system_timeout = nil)    
-    conds = MgmtQuery.access_mode_conds(access_mode_system_timeout) #conds to find ethernet or dialup devices
-    #conds << ("id in (select device_id from gateway_offline_alerts where reconnected_at is null and " << 
-    #            "device_id in (select id from device_latest_queries where updated_at > now() - interval '#{access_mode_system_timeout.gateway_offline_timeout_sec*(1+GATEWAY_OFFLINE_TIMEOUT_MARGIN)} seconds'))")
-    conds << "reconnected_at is NULL"
-    conds << "updated_at > now() - interval '#{access_mode_system_timeout.gateway_offline_timeout_sec*(1+GATEWAY_OFFLINE_TIMEOUT_MARGIN)} seconds'"
-    
-    dlqs = DeviceLatestQuery.find(:all, :conditions => conds.join(' and '))           
-    #reconnected = Device.find(:all, :conditions => conds.join(' and '))
-    dlqs.each do |dlq|
-      Device.transaction do
-        GatewayOnlineAlert.create(:device => Device.find(dlq.id))
-#       GatewayOfflineAlert.find(:all, 
-#                                 :conditions => ['device_id = ? and reconnected_at is null', device.id]).each do |alert|
-        dlq.reconnected_at = Time.now
-        dlq.save!
-#       end          
-      end
-    end
-  end
-  
-  def MgmtQuery.gw_offline_process(device)
-    alert = GatewayOfflineAlert.find(:first, :order => 'created_at desc',
-                                     :conditions => ['reconnected_at is null and device_id = ?', device.id])
-    
-    if alert
-      alert.number_attempts += 1
-      alert.save!
-    else
-      alert = GatewayOfflineAlert.new
-      alert.device = device
-      alert.save!
-    end
-  end
-=end
-
 end

@@ -12,7 +12,7 @@ class GatewayEventObserver < ActiveRecord::Observer
       users.each do |u|
   		#spoof the user_id so the email will be sent properly      
       	event[:user_id] = u.id
-  		CriticalMailer.deliver_device_event_caregiver(event)
+  		CriticalMailer.deliver_non_critical_caregiver_email(event)
       end
     end
   end

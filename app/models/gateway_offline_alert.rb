@@ -3,7 +3,7 @@
 # of an outage from the actual processing of it to ensure we can
 # quickly detect and then process in parallel.
 
-class GatewayOfflineAlert < ActiveRecord::Base
+class GatewayOfflineAlert < ActiveRecord::Base 
   include Priority
   belongs_to :device
 
@@ -15,12 +15,18 @@ class GatewayOfflineAlert < ActiveRecord::Base
       
       device.users.each do |user|
         Event.create_event(user.id, GatewayOfflineAlert.class_name, id, created_at)        
-        CriticalMailer.deliver_background_task_notification(self, user)
+        CriticalMailer.deliver_non_critical_caregiver_email(self, user)
+        CriticalMailer.deliver_non_critical_caregiver_text(self, user)        
       end
     end
   end
   
   def to_s
     "Gateway offline for at least #{GATEWAY_OFFLINE_TIMEOUT} minutes"
+  end
+  
+  def email_body
+    "Hello,\n\nWe have detected that the gateway went online\n\n" +
+      "- Halo Staff"
   end
 end 

@@ -15,13 +15,14 @@ class DeviceAlert < ActiveRecord::Base
     event
   end
   
-  def email_body
+  def email_body    
     alert_name = UtilityHelper.camelcase_to_spaced(self.class.to_s)
-    "We have detected a #{alert_name} event for #{user.name} (#{user_id}) at #{UtilityHelper.format_datetime(timestamp,user)} "
+    "We have detected a #{alert_name} event for #{user.name} (#{user_id}) at #{UtilityHelper.format_datetime(timestamp,user)} "  
   end
   
   def self.notify_caregivers(event)
-    CriticalMailer.deliver_device_event_caregiver(event)
+    CriticalMailer.deliver_non_critical_caregiver_email(event)
+    CriticalMailer.deliver_non_critical_caregiver_text(event)
   end
 
   def self.notify_call_center_and_partners(event)
@@ -52,12 +53,8 @@ class DeviceAlert < ActiveRecord::Base
   end  
   
   def self.notify_operators(event)
-    if event.class == CallCenterFollowUp
-      CriticalMailer.deliver_device_event_admin(event)
-    else
-      CriticalMailer.deliver_device_event_operator_text(event)
-      CriticalMailer.deliver_device_event_operator(event)
-    end
+    CriticalMailer.deliver_device_event_operator_text(event)
+    CriticalMailer.deliver_device_event_operator(event)
   end
   
   def self.job_process_crtical_alerts

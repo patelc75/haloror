@@ -2,12 +2,12 @@ class GwAlarmButton < CriticalDeviceAlert
   set_table_name "gw_alarm_buttons"
 
   def to_s
-  	"Gateway RESET button has been pushed for #{user.name} on #{UtilityHelper.format_datetime(timestamp, user)}"
+  	"Alarm cleared for #{user.name} on #{UtilityHelper.format_datetime(timestamp, user)}"
   end
   
   def email_body
-    "We have detected that the Gateway RESET button has been pushed for #{user.name} on #{UtilityHelper.format_datetime(timestamp, user)}\n\n" +
-      "Sincerely, Halo Staff"
+    "Hello,\n\nWe have detected that the alarm has been cleared (Gateway RESET button has been pushed) for #{user.name} on #{UtilityHelper.format_datetime(timestamp, user)}\n\n" +
+      "- Halo Staff"
   end
 
 =begin  
