@@ -6,7 +6,7 @@ class GwAlarmButton < CriticalDeviceAlert
   end
   
   def email_body
-    "Hello,\n\nWe have detected that the alarm has been cleared (Gateway RESET button has been pushed) for #{user.name} on #{UtilityHelper.format_datetime(timestamp, user, Time::DATE_FORMATS[:time_date_text])}\n\n" +
+    "Hello,\n\nWe have detected that the alarm has been cleared (Gateway RESET button has been pushed) for #{user.name} on #{UtilityHelper.format_datetime(timestamp, user)}\n\n" +
       "- Halo Staff"
   end
 

@@ -2,7 +2,7 @@ class Fall < CriticalDeviceAlert
   set_table_name("falls")
 
   def to_s
-    "#{user.name}(#{user.id}) fell at #{UtilityHelper.format_datetime(timestamp, user, Time::DATE_FORMATS[:time_date_text])}"
+    "#{user.name}(#{user.id}) fell at #{UtilityHelper.format_datetime(timestamp, user)}"
   end
 
   def email_body
@@ -17,5 +17,4 @@ class Fall < CriticalDeviceAlert
   def call_center_number_valid?
     !user.call_center_account.blank? #rescue false # fetch the call center account number, or, false
   end
-  
 end
