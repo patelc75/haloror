@@ -2,7 +2,7 @@ class GwAlarmButton < CriticalDeviceAlert
   set_table_name "gw_alarm_buttons"
 
   def to_s
-  	"Alarm cleared for #{user.name} on #{UtilityHelper.format_datetime(timestamp, user, Time::DATE_FORMATS[:time_date_text])}"
+  	"Alarm cleared for #{user.name} on #{UtilityHelper.format_datetime(timestamp, user)}"
   end
   
   def email_body
