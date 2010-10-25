@@ -80,7 +80,7 @@ class DeviceAlert < ActiveRecord::Base
         #
         # if the model respond_to? call_center_number_valid? method, then check it before timestamo
         # otherwise just time stamp it
-        crit.timestamp_call_center = Time.now if (crit.respond_to?(:call_center_number_valid?) ? crit.call_center_number_valid? : true)
+        crit.timestamp_call_center = Time.now #if (crit.respond_to?(:call_center_number_valid?) ? crit.call_center_number_valid? : true)
         # https://redmine.corp.halomonitor.com/issues/3076
         # crit.send(:update_without_callbacks) # save
         crit.save
