@@ -131,6 +131,7 @@ Time::DATE_FORMATS[:date_time_seconds] = "%a %b %d, %Y at %I:%M:%S%p" #Tue Dec 2
 Time::DATE_FORMATS[:date_time_seconds_2] = "%m/%d/%y %I:%M%p" #12/25/07 03:52PM
 Time::DATE_FORMATS[:date_time_timezone] = Time::DATE_FORMATS[:date_time] + " %Z" #Tue Dec 25, 2007 at 03:52PM CST
 Time::DATE_FORMATS[:time_date] = "%I:%M%p on %a %b %d,%Y" #03:52PM on Tue Dec 25,2007
+Time::DATE_FORMATS[:time_date_text] = "%I:%M%p %a %b %d" #03:52PM Tue Dec 25
 Time::DATE_FORMATS[:time_date_timezone] = "%I:%M%p %Z on %a %b %d, %Y" #03:52PM CST on Tue Dec 25, 2007
 Time::DATE_FORMATS[:timezone] = "%Z" #CST
 Time::DATE_FORMATS[:day_date] = "%A, %B %d, %Y" # Wednesday, May 10, 2010

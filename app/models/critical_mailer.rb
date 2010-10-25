@@ -20,10 +20,11 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def non_critical_caregiver_text(model, user=nil)
     user = model.user if user.nil?    
-    setup_message(model.to_s, "")
+    setup_message("", "")
     setup_caregivers(user, model, :recepients)
+    @subject =  model.to_s
     @recipients = @text_recipients
-    @from        = "myHalo"
+    @from        = "myHalo@HaloMonitoring.com"
     self.priority  = model.priority
   end  
    

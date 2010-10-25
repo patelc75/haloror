@@ -2,7 +2,7 @@ class Fall < CriticalDeviceAlert
   set_table_name("falls")
 
   def to_s
-    "#{user.name}(#{user.id}) fell at #{UtilityHelper.format_datetime(timestamp, user)}"
+    "#{user.name}(#{user.id}) fell at #{UtilityHelper.format_datetime(timestamp, user, Time::DATE_FORMATS[:time_date_text])}"
   end
 
   def email_body

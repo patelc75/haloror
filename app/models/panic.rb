@@ -77,7 +77,7 @@ class Panic < CriticalDeviceAlert
   end
 
   def to_s
-    "#{user.name} panicked at #{UtilityHelper.format_datetime(timestamp, user)}"
+    "#{user.name} panicked on #{UtilityHelper.format_datetime(timestamp, user, Time::DATE_FORMATS[:time_date_text])}"
   end
 
   def email_body
