@@ -146,10 +146,9 @@ module UtilityHelper
       #tz = TZInfo::Timezone.get('America/Chicago')    #deprecated tzinfo
       tz = Time.zone
     end
-    debugger
 
     #see environment.rb for examples of formats
-    datetime.in_time_zone(tz).strftime(format) if datetime != nil  
+    datetime.in_time_zone(tz).to_s(format) if datetime != nil  
     
     #datetime = tz.utc_to_local(datetime) 
   end
