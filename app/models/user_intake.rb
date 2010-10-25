@@ -190,25 +190,8 @@ class UserIntake < ActiveRecord::Base
       end
     end
     #
-    # connect devices to senior if they are free to use
-    [transmitter_serial, gateway_serial].each do |_serial|
-      #
-      # fetch the existing device serial numbers
-      _current_device_serials ||= self.senior.devices.collect(&:serial_number).collect(&:strip)
-      #
-      # do not re-attach if this serial is already attached
-      unless _current_device_serials.include?( _serial) # do not bother if already linked
-        #
-        # fetch the device
-        unless (device = Device.find_by_serial_number( _serial)).blank?
-          #
-          # attach it to the senior, only if
-          #   * this device is exclusively attached to this senior
-          #   * and of course, we can find this device in database :)
-          self.senior.devices << device if device.is_associated_exclusively_to?( self.senior) # future proof? multiple devices?
-        end
-      end
-    end
+    # attach devices to user/senior
+    senior.add_devices_by_serial_number( gateway_serial, transmitter_serial )
     #
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
@@ -228,9 +211,6 @@ class UserIntake < ActiveRecord::Base
     #else
       #UserMailer.deliver_update_to_safety_care( self)  #acts_as_audited is not a good format to send to SafetyCare, defer for next release
     #end
-    #
-    # attach devices to user/senior
-    [gateway_serial, transmitter_serial].select {|e| !e.blank? }.each {|device| senior.add_device_by_serial_number( device) }
   end
 
   # when billing starts, the monthly recurring amount is charged pro-rated since this date

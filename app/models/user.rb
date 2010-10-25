@@ -743,10 +743,19 @@ class User < ActiveRecord::Base
     devices.find_by_serial_number( serial.to_s) # unless serial.blank?
   end
   
-  def add_device_by_serial_number( serial)
-    device = Device.find_or_create_by_serial_number( serial.to_s)
-    self.devices << device unless device.blank?
-    device # return
+  # Sun Oct 24 01:20:01 IST 2010
+  #   now accepts an array
+  def add_devices_by_serial_number( *_serial)
+    unless ( _device_numbers = _serial.flatten.compact - devices.collect(&:serial_number) ).blank? # required - existing = devices to attach
+      _device_numbers.each do |_device_serial|
+        unless (_device = Device.find_by_serial_number( _device_serial)).blank? # fetch device
+          # attach it to the senior, only if
+          #   * this device is not attached to anyone
+          #   * and of course, we can find this device in database :)
+          self.devices << _device if _device.users.blank? # future proof? multiple devices?
+        end
+      end
+    end
     #
     # Old logic. DEPRECATED
     #

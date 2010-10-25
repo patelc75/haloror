@@ -125,17 +125,6 @@ class Device < ActiveRecord::Base
   # ====================
   # = instance methods =
   # ====================
-
-  def is_associated_exclusively_to?( _user = nil)
-    # * user is not blank
-    # * user is a User object
-    if !_user.blank? && _user.is_a?(User)
-      # if device is associated to different user than _user, this will return FALSE
-      ( users.reject {|e| e.id == _user.id }.blank? ) # reject _user and see if anyone remains
-    else
-      false
-    end
-  end
   
   # user intake with kit_serial_number of this device
   def user_intake
