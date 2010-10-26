@@ -20,9 +20,9 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def non_critical_caregiver_text(model, user=nil)
     user = model.user if user.nil?    
-    setup_message("", "")
+    setup_message("", model.to_s)
     setup_caregivers(user, model, :recepients)
-    @subject =  model.to_s
+    @subject =  ""
     @recipients = @text_recipients
     @from        = "myHalo@HaloMonitoring.com"
     self.priority  = model.priority
@@ -57,7 +57,7 @@ class CriticalMailer < ActionMailer::ARMailer
     message_text << "ADDRESS + LOCK\n%s\n%s\n%s, %s %s\n%s\n\n" % [user.name, user.profile.address, user.profile.city, user.profile.state, user.profile.zipcode, user.profile.access_information.blank? ? "(No access information)" : user.profile.access_information]
     message_text << "MEDICAL\n%s\n\n" % [user.profile.allergies.blank? ? "(No medical / allergy information)" : user.profile.allergies]
     message_text << "PET\n%s\n\n" % [user.profile.pet_information.blank? ? "(No pet information)" : user.profile.pet_information]
-    setup_message('URGENT:  ' + event.to_s, message_text)
+    setup_message(event.to_s, message_text)
     setup_operators(event, :recepients, :include_phone_call) 
     #setup_emergency_group(event, :recepients)
     self.priority  = event.priority
@@ -69,7 +69,7 @@ class CriticalMailer < ActionMailer::ARMailer
     link = get_link_to_call_center_text()
 
     #setup_message(event.to_s, "Go here: " + link + " If site down, use paper scripts with this info:" + @caregiver_info)
-    setup_message(event.to_s, @caregiver_info + "\n" + (event.user.address.nil? ? "(No address)" : event.user.address))
+    setup_message(event.to_s, @caregiver_info + "\n" + ([user.profile.account_number.blank? ? "(No acct num)" : user.profile.account_number]) + (event.user.address.nil? ? "(No address)" : event.user.address))
     setup_operators(event, :recepients, :include_phone_call) 
     # setup_emergency_group(event, :recepients)
     @recipients = @text_recipients

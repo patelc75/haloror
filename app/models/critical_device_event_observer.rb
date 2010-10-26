@@ -6,7 +6,6 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
     # https://redmine.corp.halomonitor.com/issues/3076
     # this ws before_save but it caused the data loss due to reload of record
     def after_save(event)
-      # debugger
       if UtilityHelper.validate_event_user(event) == true #only validating user because GW does not use the device_id
         if event.user.profile         
           if event.call_center_pending == false
