@@ -28,7 +28,7 @@ Feature: Online store coupons
     And I choose "product_<product>"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     Then page content should have "<deposit>, <shipping>, <phrase>, <total>, <recurring>"
   
     Examples:
@@ -48,7 +48,7 @@ Feature: Online store coupons
     And I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I fill in "Coupon Code" with "99TRIAL"
     And I press "Continue"
     Then page content should have "99, 1 month trial, 114"
@@ -103,7 +103,7 @@ Feature: Online store coupons
     And I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I fill in "Coupon Code" with "<coupon_code>"
     And I press "Continue"
     Then page content should have "This coupon is <message>. Regular pricing is applied."

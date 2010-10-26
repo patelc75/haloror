@@ -63,7 +63,7 @@ Feature: Config users
     And user "halouser1" <mode> in test mode
     When I reload the page
     And I follow "Config"
-    And I follow "Users"
+    And I follow "users_all"
     And I select "<group>" from "Group"
     Then I <visible> see ".//input[@value='<status> Test Mode']" xpath within "halouser1" user row
     

@@ -25,7 +25,7 @@ Feature: Online store user intake
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I fill in "Card number" with "<card>"
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
     Then I should see "<status>"
@@ -61,7 +61,7 @@ Feature: Online store user intake
     And I fill the credit card details for online store
     And I fill in "order_ship_first_name" with "user_first"
     And I fill in "order_ship_last_name" with "user_last"
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
     Then I should see "Thank you for placing the order with us"
@@ -75,7 +75,7 @@ Feature: Online store user intake
     And I fill the credit card details for online store
     And I fill in "order_ship_first_name" with "user_first"
     And I fill in "order_ship_last_name" with "user_last"
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
     Then I should see "Success"

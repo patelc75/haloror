@@ -95,21 +95,26 @@ Given /^(?:|the )senior of user intake "([^"]*)" (has|is at|should be) "([^"]*)"
   senior.status.should == status
 end
 
-Given /^(?:|the )user intake with gateway serial "([^"]*)" is not submitted$/ do |_serial|
+Given /^(?:|the )user intake "([^"]*)" (is|is not) submitted$/ do |_serial, _is|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.skip_validation = true
-  ui.submitted_at = nil
+  ui.submitted_at = (_is == "is" ? 2.days.ago : nil)
   ui.save.should be_true # send( :update_without_callbacks)
   ui.senior.status = "" # make it pending
   ui.senior.save.should be_true # send( :update_without_callbacks)
   ui.reload
-  ui.submitted_at.should be_blank
+  if _is == "is"
+    ui.submitted_at.should_not be_blank
+  else
+    ui.submitted_at.should be_blank
+  end
   ui.senior.status.should be_blank
 end
 
 Given /^credit card is charged in user intake "([^"]*)"$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.credit_debit_card_proceessed = true
+  ui.skip_validation = true
   ui.save.should == true
 end
 
@@ -121,6 +126,7 @@ end
 Given /^desired installation date for user intake "([^"]*)" is in (\d+) hours$/ do |_serial, value|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.installation_datetime = (Time.now + value.to_i.hours)
+  ui.skip_validation = true
   # debugger
   ui.save.should be_true
 end
@@ -147,6 +153,7 @@ Given /^the user intake "([^"]*)" status is "([^"]*)" since past (\d+) day(?:|s)
   (senior = ui.senior).should_not be_blank
   ui.senior.status = status
   ui.senior.status_changed_at = the_date
+  ui.skip_validation = true
   ui.senior.save.should be_true
   ui.senior.add_triage_audit_log( :status => status, :created_at => the_date, :updated_at => the_date).should_not be_blank
 end
@@ -270,6 +277,7 @@ end
 When /^the gateway serial for user intake "([^"]*)" is updated to "([^"]*)"$/ do |_serial, new_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.gateway_serial = new_serial
+  ui.skip_validation = true
   ui.save( false)
 end
 

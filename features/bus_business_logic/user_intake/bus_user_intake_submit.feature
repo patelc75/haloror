@@ -59,7 +59,7 @@ Feature: Business - user intake - submit
   #   Given the following user_intakes:
   #     | gateway_serial |
   #     | 1234567890             |
-  #   And the user intake with gateway serial "1234567890" is not submitted
+  #   And the user intake "1234567890" is not submitted
   #   When I edit user intake with gateway serial "1234567890"
   #   Then page source should have xpath "input[@id='user_intake_submit']"
 
