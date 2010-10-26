@@ -25,6 +25,10 @@ class DeviceAlert < ActiveRecord::Base
     CriticalMailer.deliver_non_critical_caregiver_text(event)
   end
 
+  # Wed Oct 27 01:14:31 IST 2010
+  #   * Exception found in mail.halomonitoring.com
+  #     dfw-web1.halomonitor.com.Message = [HALO]BatteryReminder.send_reminders::Exception:: undefined method `timestamp_call_center=' for #<BatteryReminder:0x2aaaafc299d8>
+  #   * Added condition to the assignment expression
   def self.notify_call_center_and_partners(event)
     groups = event.user.is_halouser_for_what
     #all_call_centers_successful = false
@@ -33,20 +37,20 @@ class DeviceAlert < ActiveRecord::Base
         model_string = (group.name.camelcase + "Client")
         begin
           if model_string.constantize.alert(event.class.name, event.user.id, event.user.profile.account_number, event.timestamp) == false
-            event.timestamp_call_center = nil
+            event.timestamp_call_center = nil if event.respond_to?( :timestamp_call_center)
           end
         rescue Exception => e
           CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
           UtilityHelper.log_message_critical("DeviceAlert.notify_call_center_and_partners::Exception:: #{e} : #{event.to_s}", e)
-          event.timestamp_call_center = nil
+          event.timestamp_call_center = nil if event.respond_to?( :timestamp_call_center)
         rescue Timeout::Error => e
           CriticalMailer.deliver_monitoring_failure("Timeout: #{e}", event)
           UtilityHelper.log_message_critical("DeviceAlert.notify_call_center_and_partners::Timeout::Error:: #{e} : #{event.to_s}", e)
-          event.timestamp_call_center = nil
+          event.timestamp_call_center = nil if event.respond_to?( :timestamp_call_center)
         rescue
           CriticalMailer.deliver_monitoring_failure("UNKNOWN error", event)
           UtilityHelper.log_message_critical("DeviceAlert.notify_call_center_and_partners::UNKNOWN::Error: #{event.to_s}")
-          event.timestamp_call_center = nil
+          event.timestamp_call_center = nil if event.respond_to?( :timestamp_call_center)
         end
       end          
     end
