@@ -15,7 +15,7 @@ Feature: Online store group coupons
     And I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I fill in "Coupon Code" with "<code>"
     And I press "Continue"
     Then I should see "Please verify your order"
@@ -33,7 +33,7 @@ Feature: Online store group coupons
     And I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I fill in "Coupon Code" with "<code>"
     And I press "Continue"
     Then page content should have "This coupon is invalid. Regular pricing is applied."
@@ -50,7 +50,7 @@ Feature: Online store group coupons
     And I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I fill in "Coupon Code" with "BESTBUY"
     And I press "Continue"
     Then I should see "Please verify your order"
@@ -64,7 +64,7 @@ Feature: Online store group coupons
     And I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I fill in "Coupon Code" with "DIRECT_TO_CONSUMER"
     And I press "Continue"
     Then page content should have "This coupon is invalid. Regular pricing is applied."

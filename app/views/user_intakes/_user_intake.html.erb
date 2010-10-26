@@ -1,28 +1,28 @@
 <% content_for :js do %>
-  <%= javascript_include_tag "jquery", "jquery-ui", :cache => true %>
-  <script type="text/javascript" charset="utf-8">
-  $(function() {
-    $(".datepicker").datepicker({
-      showOn: 'both',
-      buttonImage: '../../images/calendar_date_select/calendar.gif',
-      buttonImageOnly: true,
-      numberOfMonths: 3
-    });
-    show_when_dropdown_selected(document.getElementById('user_intake_group_id'));
-    hide_when_checked(document.getElementById('user_intake_subscriber_is_user'), 'subscriber_profile');
-    // TODO: DRY this
-    hide_when_checked(document.getElementById('user_intake_no_caregiver_1'), 'caregiver1_profile');
-    hide_when_checked(document.getElementById('user_intake_no_caregiver_2'), 'caregiver2_profile');
-    hide_when_checked(document.getElementById('user_intake_no_caregiver_3'), 'caregiver3_profile');
+<%= javascript_include_tag "jquery", "jquery-ui", :cache => true %>
+<script type="text/javascript" charset="utf-8">
+$(function() {
+  $(".datepicker").datepicker({
+    showOn: 'both',
+    buttonImage: '../../images/calendar_date_select/calendar.gif',
+    buttonImageOnly: true,
+    numberOfMonths: 3
   });
-  </script>
+  show_when_dropdown_selected(document.getElementById('user_intake_group_id'));
+  hide_when_checked(document.getElementById('user_intake_subscriber_is_user'), 'subscriber_profile');
+  // TODO: DRY this
+  hide_when_checked(document.getElementById('user_intake_no_caregiver_1'), 'caregiver1_profile');
+  hide_when_checked(document.getElementById('user_intake_no_caregiver_2'), 'caregiver2_profile');
+  hide_when_checked(document.getElementById('user_intake_no_caregiver_3'), 'caregiver3_profile');
+});
+</script>
 <% end -%>
 <% content_for :css do %>
-  <%= stylesheet_link_tag "screen", "myscreen", "jquery-ui", :media => "screen", :cache => true %>
-  <%= stylesheet_link_tag "print", :media => "print", :cache => true %>
-  <!--[if IE]>
-  <%= stylesheet_link_tag "ie", :media => "screen", :cache => true %>
-  <![endif]-->
+<%= stylesheet_link_tag "screen", "myscreen", "jquery-ui", :media => "screen", :cache => true %>
+<%= stylesheet_link_tag "print", :media => "print", :cache => true %>
+<!--[if IE]>
+<%= stylesheet_link_tag "ie", :media => "screen", :cache => true %>
+<![endif]-->
 <% end -%>
 <%= link_to '<< Return to all User Intake forms', user_intakes_path %><br><br>
 <div class="theme-body">
@@ -46,8 +46,8 @@
     <% unless @user_intake.errors.blank? %>
     <div class="error span-22 last">
       <%= f.error_messages :header_message => "Invalid user intake!",
-        :message => "You'll need to correct the following errors:",
-        :header_tag => :h3 %>
+      :message => "You'll need to correct the following errors:",
+      :header_tag => :h3 %>
     </div>
     <br />
     <% end -%>
@@ -79,13 +79,13 @@
         <div class="span-8 last">
           <div class="span-3 text-right">Agreed at:</div>
           <div class="span-5 last"><%= h( @user_intake.legal_agreement_at || 'Not signed yet') %></div>
-          
+
           <div class="span-3 text-right">Download:</div>
           <% unless @user_intake.can_sign_agreement?(current_user) %>
-            <div id="legal_agreement" class="span-5 last">
-              <%= image_tag "pdf-icon-small.png" %>
-              <%= link_to "Halo Subscriber Agreement", "/Halo_Subscriber_Agreement.pdf", :target => "_blank" %>
-            </div>
+          <div id="legal_agreement" class="span-5 last">
+            <%= image_tag "pdf-icon-small.png" %>
+            <%= link_to "Halo Subscriber Agreement", "/Halo_Subscriber_Agreement.pdf", :target => "_blank" %>
+          </div>
           <% end %>
         </div>
       </div>
@@ -97,20 +97,20 @@
     <div id="content" class="span-22 last">
       <div id="senior_profile" class="colborder span-10"> <!-- colborder takes one column -->      
         <% if !@user_intake.senior.blank? %>
-          <% if !@user_intake.senior.profile.blank? %>
-            <% fields_for "user_intake[senior_attributes][profile_attributes]", @user_intake.senior.profile do |senior_form| %>
-              <!-- senior profile details -->
-              <%= render :partial => 'senior_profile', :locals => {:f => senior_form} %>
-            <% end %>
-          <% end %>
-        
-          <% fields_for "user_intake[senior_attributes]", @user_intake.senior do |senior_form| %>
-            <!-- senior user details -->
-            <div class="span-3">Demo User?</div>
-            <div class="span-7 last"><%= senior_form.check_box :demo_mode %> <%= senior_form.label :demo_mode, "Check if user is demo only" %></div>
-            <div class="span-3"><%= senior_form.label :email %>:</div>
-            <div class="span-7 last"><%= senior_form.text_field :email, :class => "span-7" %></div>
-          <% end %>
+        <% if !@user_intake.senior.profile.blank? %>
+        <% fields_for "user_intake[senior_attributes][profile_attributes]", @user_intake.senior.profile do |senior_form| %>
+        <!-- senior profile details -->
+        <%= render :partial => 'senior_profile', :locals => {:f => senior_form} %>
+        <% end %>
+        <% end %>
+
+        <% fields_for "user_intake[senior_attributes]", @user_intake.senior do |senior_form| %>
+        <!-- senior user details -->
+        <div class="span-3">Demo User?</div>
+        <div class="span-7 last"><%= senior_form.check_box :demo_mode %> <%= senior_form.label :demo_mode, "Check if user is demo only" %></div>
+        <div class="span-3"><%= senior_form.label :email %>:</div>
+        <div class="span-7 last"><%= senior_form.text_field :email, :class => "span-7" %></div>
+        <% end %>
         <% end %>
       </div>
 
@@ -131,18 +131,16 @@
             <%= f.label :subscriber_is_caregiver, "Add as #1 Caregiver" %>
           </div>
 
-          <% if !@user_intake.subscriber.blank? %>
-          <% if !@user_intake.subscriber.profile.blank? %>
+          <% if !@user_intake.subscriber.blank? && !@user_intake.subscriber.profile.blank? %>
           <% fields_for "user_intake[subscriber_attributes][profile_attributes]", @user_intake.subscriber.profile do |subscriber_form| %>
-            <!-- subscriber profile details -->
-            <%= render :partial => 'subscriber_profile', :locals => {:f => subscriber_form} %>
+          <!-- subscriber profile details -->
+          <%= render :partial => 'subscriber_profile', :locals => {:f => subscriber_form} %>
           <% end -%>
-          <% end %>
 
           <% fields_for "user_intake[subscriber_attributes]", @user_intake.subscriber do |subscriber_form| %>
-            <!-- subscriber user details -->
-            <div class="span-3"><%= subscriber_form.label :email %>:</div>
-            <div class="span-7 last"><%= subscriber_form.text_field :email, :class => "span-7" %></div>
+          <!-- subscriber user details -->
+          <div class="span-3"><%= subscriber_form.label :email %>:</div>
+          <div class="span-7 last"><%= subscriber_form.text_field :email, :class => "span-7" %></div>
           <% end %>
           <% end %>
 
@@ -164,7 +162,7 @@
           <!-- role attributes -->
           <div id="caregiver_extras" class="prepend-3 span-7 hidden">
             <% fields_for "user_intake[mem_caregiver1_options]", @user_intake.subscriber do |subscriber_form| %>
-              <%= render :partial => 'caregiver_role_options', :locals => {:f => subscriber_form} %>
+            <%= render :partial => 'caregiver_role_options', :locals => {:f => subscriber_form} %>
             <% end -%>
           </div>
         </div>
@@ -183,23 +181,23 @@
           <hr class="space" />
 
           <div id="caregiver<%= index+1 %>_profile" class="hidden">
-            
+
             <!-- caregiver profile -->
             <% fields_for "user_intake[caregiver#{index+1}_attributes][profile_attributes]", caregiver.profile do |caregiver_profile_form| %>
-              <%= render :partial => 'caregiver_profile', :locals => {:f => caregiver_profile_form} %>
+            <%= render :partial => 'caregiver_profile', :locals => {:f => caregiver_profile_form} %>
             <% end -%>
-            
+
             <% fields_for "user_intake[caregiver#{index+1}_attributes]", caregiver do |caregiver_form| %>
-              <!-- caregiver user details -->
-              <div class="span-2"><%= caregiver_form.label :email %>:</div>
-              <div class="span-5 last"><%= caregiver_form.text_field :email, :class => "span-5" %></div>
+            <!-- caregiver user details -->
+            <div class="span-2"><%= caregiver_form.label :email %>:</div>
+            <div class="span-5 last"><%= caregiver_form.text_field :email, :class => "span-5" %></div>
             <% end %>
-            
+
             <!-- role attributes -->
             <% fields_for "user_intake[mem_caregiver#{index+1}_options]", caregiver do |caregiver_form| %>
-              <%= render :partial => 'caregiver_role_options', :locals => {:f => caregiver_form} %>
+            <%= render :partial => 'caregiver_role_options', :locals => {:f => caregiver_form} %>
             <% end -%>
-            
+
           </div>
         </div>
         <% end -%>
@@ -217,7 +215,7 @@
       </div>
       <hr class="space" />
       <hr />
-      
+
       <div class="span-22 last">
         <%= render :partial => 'signature', :locals => { :f => f } %>
       </div>
@@ -227,8 +225,8 @@
       <div class="span-22 last"><%= render :partial => 'attribute_status_messages' %></div>
       <div class="span-22 last text-center">
         <% if current_user.is_super_admin? || @user_intake.users.include?( current_user) || current_user.is_admin_of?( @user_intake.group) %>
-          <%= f.submit "Save", :class => "button blue-button", :id => "user_intake_save" %>
-          <%= f.submit @user_intake.senior.submit_button_text , :class => "button #{@user_intake.senior.status_button_color}-button", :id => "user_intake_submit" %>
+        <%= f.submit "Save", :class => "button blue-button", :id => "user_intake_save" %>
+        <%= f.submit @user_intake.senior.submit_button_text , :class => "button #{@user_intake.senior.status_button_color}-button", :id => "user_intake_submit" %>
         <% end %>
       </div>
       <div class="span-22 last prepend-top text-center">

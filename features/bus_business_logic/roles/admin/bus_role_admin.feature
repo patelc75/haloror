@@ -19,7 +19,7 @@ Feature: Admin roles
     And I am authenticated as "admin-user" with password "12345"
     
   Scenario: I can seniors with a link to their Caregivers
-    When I follow links "Config > Users"
+    When I follow links "Config > users_all"
     Then page content should have "Config:, Users table"
     And I should see "Caregivers" link
 
@@ -56,7 +56,7 @@ Feature: Admin roles
 
   # shorthand: Given I am adding a new caregiver for "senior-user"
   Scenario: Admin can create new caregiver for a new halouser
-    When I follow links "Config > Users > Caregivers > add_caregiver_button"
+    When I follow links "Config > users_all > Caregivers > add_caregiver_button"
     And I follow "Add new caregiver with no email"
     Then I should not see "Please call tech support 1-888-971-HALO"
     

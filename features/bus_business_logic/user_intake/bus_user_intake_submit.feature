@@ -89,7 +89,7 @@ Feature: Business - user intake - submit
       | 1234567890     |
     And senior of user intake "1234567890" has "Ready for Approval" status
     And I am editing user intake "1234567890"
-    When I click "Approve"
+    When I press "Approve"
     Then senior of user intake "1234567890" is in test mode
     And senior of user intake "1234567890" is halouser of safety care group
     And caregivers of user intake "1234567890" are away

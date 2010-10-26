@@ -30,7 +30,7 @@ Feature: Reporting
       | group1 |
     And user "admin-of-group1" has "admin" role for group "group1"
     And user "new-admin-of-group1" has "halouser" role for group "group1"
-    When I follow links "Config > Roles & Groups"
+    When I follow links "Config > Roles"
     And I select profile name of "new-admin-of-group1" from "role_user_id"
     And I select "admin" from "role_role_name"
     And I select "group1" from "role_group_name"

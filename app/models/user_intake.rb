@@ -20,6 +20,7 @@ class UserIntake < ActiveRecord::Base
   # validates_length_of :transmitter_serial, :is => 10, :unless => :transmitter_blank?
   validates_format_of :gateway_serial, :with => /^H2[\d]{8}$/, :unless => :gateway_blank?
   validates_format_of :transmitter_serial, :with => /^H[15][\d]{8}$/, :unless => :transmitter_blank?
+  validates_presence_of :subscriber, :unless => :subscribed_for_self?
 
   acts_as_audited
   # https://redmine.corp.halomonitor.com/issues/3215
@@ -82,6 +83,10 @@ class UserIntake < ActiveRecord::Base
     end
   end
 
+  def subscribed_for_self?
+    ["1", true].include?( subscriber_is_user) # subscriber is marked as user as well
+  end
+  
   def transmitter_blank?
     chest_strap.blank? && belt_clip.blank?
   end
@@ -191,7 +196,7 @@ class UserIntake < ActiveRecord::Base
     end
     #
     # attach devices to user/senior
-    senior.add_devices_by_serial_number( gateway_serial, transmitter_serial )
+    senior.add_devices_by_serial_number( gateway_serial, transmitter_serial ) unless senior.blank?
     #
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
@@ -536,6 +541,8 @@ class UserIntake < ActiveRecord::Base
           self.mem_senior = arg_user
         else
           user = (senior || arg_user)
+          #
+          # FIXME: WARNING: This might cause a bug. We cannot handle roles here. after-save does it already
           user.is_halouser_of( group) # self.group
           self.mem_senior = user # keep in instance variable so that attrbutes can be saved with user_intake
         end

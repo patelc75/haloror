@@ -31,14 +31,15 @@ Feature: User intake additions
     And I should not see "Cross St" for "senior_profile"
     And I should see "VoIP (Voice over IP) phone?" for "senior_profile"
     And page content should have "I agree to the terms, you acknowledge that you are, Halo Subscriber Agreement"
-  
-  # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  Scenario: Auto enable credit card radio button
-    Given the following user intakes:
-      | gateway_serial | submitted_at |
-      | 1122334455     |              |
-    Then attribute "card" of user intake "1122334455" should have value
-    And attribute "created_by" of user intake "1122334455" should have value
+
+  # skipped in 1.6.0
+  # # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
+  # Scenario: Auto enable credit card radio button
+  #   Given the following user intakes:
+  #     | gateway_serial | submitted_at |
+  #     | 1122334455     |              |
+  #   Then attribute "card" of user intake "1122334455" should have value
+  #   And attribute "created_by" of user intake "1122334455" should have value
   
   # # What is this supposed to cover?
   # # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170

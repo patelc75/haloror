@@ -21,13 +21,12 @@ Feature: Online (D)irect (T)o (C)ustomer store
     When I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
-    And I follow "Skip for later"
     Then page content should have "Thank you"
     And the payment gateway response should have 1 log
-    And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
+    # And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Not same as shipping has separate shipping and billing data
@@ -35,10 +34,9 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I fill the shipping details for online store
     And I fill the billing details for online store
     And I fill the credit card details for online store
-    And I uncheck "Same as shipping"
+    And I uncheck "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
-    And I follow "Skip for later"
     Then I should see "Thank you"
     And the payment gateway response should have 1 log
     And billing and shipping addresses should not be same
@@ -99,7 +97,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I fill in "order_card_number" with "1234567890123456"
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
     Then page content should have "Failure"
@@ -112,10 +110,9 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I fill in "order_ship_first_name" with "123"
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
-    And I follow "Skip for later"
     Then page content should have "Thank you"
     And the payment gateway response should have 1 log
 
@@ -124,10 +121,9 @@ Feature: Online (D)irect (T)o (C)ustomer store
     When I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
-    And I follow "Skip for later"
     Then page content should have "Thank you"
     And the payment gateway should have log for 441 USD
     # And the payment gateway should have log for 59 USD
@@ -137,19 +133,18 @@ Feature: Online (D)irect (T)o (C)ustomer store
     When I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
-    And I follow "Skip for later"
     Then page content should have "Thank you"
-    And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
+    # skipped for 1.6.0: And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
     And 1 email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery
 
   Scenario: product selection and same_as_shipping remembred in session
     When I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I press "Continue"
     And I follow "back_link"
     Then the "myHalo Complete" checkbox should be checked
@@ -162,7 +157,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I fill the credit card details for online store
     And I fill in "order_card_number" with "4111111111111111"
     And I select "MasterCard" from "order_card_type"
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
     And I follow "order_again"
@@ -191,7 +186,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I fill the credit card details for online store
     And I fill in "Card number" with "4222222222222"
     And I fill in "Coupon Code" with "DECLINED"
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
     And I go to the online store
@@ -200,7 +195,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I fill the credit card details for online store
     And I fill in "Card number" with "4222222222222"
     And I fill in "Coupon Code" with "DECLINED"
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I erase the payment gateway response log
     And I press "Continue"
     And I press "Place Order"
@@ -215,9 +210,8 @@ Feature: Online (D)irect (T)o (C)ustomer store
     When I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
-    And I follow "Skip for later"
     Then caregivers of last order should be activated
   
