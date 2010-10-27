@@ -28,38 +28,14 @@ class UserIntake < ActiveRecord::Base
   # validates_presence_of :local_primary, :global_primary, :unless => :skip_validation # https://redmine.corp.halomonitor.com/issues/2809
   named_scope :recent_on_top, :order => "updated_at DESC"
 
-  # WARNING: HALF BAKED. DO NOT USE UNESS CODE COVERED WITH TESTS
-  # named_scope :identity_includes, lambda { |*args|
-  #   arg = args.flatten.first
-  #   include_this = arg.blank? # blank parameters means, include it
-  #   unless include_this # unless not alreadu included
-  #     unless senior.blank? # blank senior will not be included
-  #       phrases = arg.split(',').collect(&:strip)
-  #       # user intakes are selected here based on multiple criteria
-  #       # * given csv phrase is split into csv_array
-  #       # * user id, name, first_name, last_name from profile are checked against each element of csv_array
-  #       # * name returns email or login, if profile is missing
-  #       # * any given attribute of user can match at least one element of csv_array
-  #       # if user is blank? do not select this user_intake
-  #       # if user identity matches, select, else fail
-  #       # senior exists && any identity column of senior matches at least one phrase (even partially)
-  #       senior && [senior.id.to_s, senior.name, senior.first_name, senior.last_name].compact.uniq.collect do |e|
-  #         found = phrases.collect {|f| e.include?( f) } # collect booleans for any phrase matching this identity column
-  #         found && found.include?( true) # at least one match is TRUE
-  #       end.include?( true) # collection must have at least one TRUE
-  #     end
-  #   end
-  #   { :conditions => include_this } # return the boolean value to select/reject this row
-  # }
-
   # hold the data temporarily
   # user type is identified by the role it has subject to this user intake and other users
   # cmd_type : https://redmine.corp.halomonitor.com/issues/2809
   attr_accessor :mem_senior, :mem_subscriber, :need_validation, :cmd_type
-  (1..3).each do |index|
-    attr_accessor "mem_caregiver#{index}".to_sym
-    attr_accessor "mem_caregiver#{index}_options".to_sym
-    attr_accessor "no_caregiver_#{index}".to_sym
+  3.times do |index|
+    attr_accessor "mem_caregiver#{index+1}".to_sym
+    attr_accessor "mem_caregiver#{index+1}_options".to_sym
+    attr_accessor "no_caregiver_#{index+1}".to_sym
   end
   attr_accessor :test_mode, :opt_out, :put_away, :card_or_bill, :lazy_action
 
@@ -83,10 +59,14 @@ class UserIntake < ActiveRecord::Base
     end
   end
 
+  # ==================
+  # = public methods =
+  # ==================
+
   def subscribed_for_self?
     ["1", true].include?( subscriber_is_user) # subscriber is marked as user as well
   end
-  
+
   def transmitter_blank?
     chest_strap.blank? && belt_clip.blank?
   end
@@ -175,12 +155,12 @@ class UserIntake < ActiveRecord::Base
     #   * user is "Ready to Install"
     #   * last user action was "Approve"
     if lazy_action == "Approve" && senior.status == User::STATUS[:approval_pending]
-        self.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:install_pending])
-        self.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
+      self.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:install_pending])
+      self.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
 
-    # Switch user to installed state, if
-    #   * user is "Ready to Bill"
-    #   * last user action was "Bill"
+      # Switch user to installed state, if
+      #   * user is "Ready to Bill"
+      #   * last user action was "Bill"
     elsif lazy_action == 'Bill' && senior.status == User::STATUS[:bill_pending]
       self.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:installed])
       #
@@ -209,12 +189,12 @@ class UserIntake < ActiveRecord::Base
     #    2. Each subsequent time (super_admin only), only modified fields are emailed to safetycare (UserMailer.update_to_safety_care)
     # send email to safety_care when "Update" was hit on any status
     #   this should be ideally at user.after_save but we want this trigger at user_intake, not user
-    
+
     # TODO: audit log is not in readable format for SafetyCare, redo in future release
     #if self.senior.status == User::STATUS[:approval_pending]
-      UserMailer.deliver_senior_and_caregiver_details( self.senior)
+    UserMailer.deliver_senior_and_caregiver_details( self.senior)
     #else
-      #UserMailer.deliver_update_to_safety_care( self)  #acts_as_audited is not a good format to send to SafetyCare, defer for next release
+    #UserMailer.deliver_update_to_safety_care( self)  #acts_as_audited is not a good format to send to SafetyCare, defer for next release
     #end
   end
 
@@ -448,9 +428,7 @@ class UserIntake < ActiveRecord::Base
     messages = []
     # messages << ( senior.blank? ? "Senior is blank" : nil)
     # # check all these attributes, but save processor time with condition within block
-    messages += [ :senior, :installation_datetime, :created_by, :credit_debit_card_proceessed, :bill_monthly,
-      :legal_agreement_at, :paper_copy_submitted_on, :created_at, :updated_at, :shipped_at,
-      :sc_account_created_on ].collect {|e| e if self.send(e).blank? }
+    messages += [ :senior, :installation_datetime, :created_by, :credit_debit_card_proceessed, :bill_monthly, :legal_agreement_at, :paper_copy_submitted_on, :created_at, :updated_at, :shipped_at, :sc_account_created_on ].collect {|e| e if self.send(e).blank? }
     # messages += [ :installation_datetime, :created_by, :credit_debit_card_proceessed, :bill_monthly,
     #   :legal_agreement_at, :paper_copy_submitted_on,
     #   :created_at, :updated_at ].collect {|e| self.send(e).blank? ? "#{e.to_s.gsub('_',' ').capitalize} is blank" : nil }
@@ -557,7 +535,7 @@ class UserIntake < ActiveRecord::Base
 
   def subscriber
     if subscriber_is_user
-      senior # return senior. do not assign here. this is READ mode method
+      self.mem_subscriber = senior # return senior. do not assign here. this is READ mode method
       # self.mem_subscriber = senior # pick senior, if self subscribed
     else
       if self.new_record?
@@ -714,7 +692,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   # TODO: DRYness required here for methods
-  
+
   # TODO: WARNING: needs more testing and code coverage
   def apply_attributes_from_hash( _hash)
     unless _hash.blank?
@@ -728,42 +706,62 @@ class UserIntake < ActiveRecord::Base
 
   def senior_attributes=(attributes)
     # debugger
-    self.senior = ((senior.blank? || senior.new_record?) ? User.new(attributes) : self.senior.update_attributes(attributes)) # includes profile_attributes hash
-    self.senior.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
-    self.senior.skip_validation = self.skip_validation unless self.senior.blank?
+    unless attributes.blank?
+      _profile_attributes = attributes[:profile_attributes]
+      attributes = attributes.reject {|k,v| k == "profile_attributes" }
+      self.senior = ((senior.blank? || senior.new_record?) ? User.new(attributes) : self.senior.update_attributes(attributes)) # includes profile_attributes hash
+      self.senior.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
+      self.senior.skip_validation = self.skip_validation unless self.senior.blank?
+    end
     self.senior
   end
 
   def subscriber_attributes=(attributes)
     # debugger
-    (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
-    self.subscriber = ((subscriber.blank? || subscriber.new_record?) ? User.new( attributes) : self.subscriber.update_attributes(attributes)) # includes profile_attributes hash
-    self.subscriber.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
-    self.subscriber.skip_validation = self.skip_validation unless self.subscriber.blank?
+    unless attributes.blank?
+      _profile_attributes = attributes[:profile_attributes]
+      attributes = attributes.reject {|k,v| k == "profile_attributes" }
+      (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
+      self.subscriber = ((subscriber.blank? || subscriber.new_record?) ? User.new( attributes) : self.subscriber.update_attributes(attributes)) # includes profile_attributes hash
+      self.subscriber.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
+      self.subscriber.skip_validation = self.skip_validation unless self.subscriber.blank?
+    end
     self.subscriber
   end
 
   def caregiver1_attributes=(attributes)
-    (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-    self.caregiver1 = ((caregiver1.blank? || caregiver1.new_record?) ? User.new( attributes) : self.caregiver1.update_attributes(attributes)) # includes profile_attributes hash
-    self.caregiver1.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
-    self.caregiver1.skip_validation = self.skip_validation unless self.caregiver1.blank?
+    unless attributes.blank?
+      _profile_attributes = attributes[:profile_attributes]
+      attributes = attributes.reject {|k,v| k == "profile_attributes" }
+      (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
+      self.caregiver1 = ((caregiver1.blank? || caregiver1.new_record?) ? User.new( attributes) : self.caregiver1.update_attributes(attributes)) # includes profile_attributes hash
+      self.caregiver1.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
+      self.caregiver1.skip_validation = self.skip_validation unless self.caregiver1.blank?
+    end
     self.caregiver1
   end
 
   def caregiver2_attributes=(attributes)
-    (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-    self.caregiver2 = ((caregiver2.blank? || caregiver2.new_record?) ? User.new( attributes) : self.caregiver2.update_attributes(attributes)) # includes profile_attributes hash
-    self.caregiver2.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
-    self.caregiver2.skip_validation = self.skip_validation unless self.caregiver2.blank?
+    unless attributes.blank?
+      _profile_attributes = attributes[:profile_attributes]
+      attributes = attributes.reject {|k,v| k == "profile_attributes" }
+      (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
+      self.caregiver2 = ((caregiver2.blank? || caregiver2.new_record?) ? User.new( attributes) : self.caregiver2.update_attributes(attributes)) # includes profile_attributes hash
+      self.caregiver2.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
+      self.caregiver2.skip_validation = self.skip_validation unless self.caregiver2.blank?
+    end
     self.caregiver2
   end
 
   def caregiver3_attributes=(attributes)
-    (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-    self.caregiver3 = ((caregiver3.blank? || caregiver3.new_record?) ? User.new( attributes) : self.caregiver3.update_attributes(attributes)) # includes profile_attributes hash
-    self.caregiver3.profile_attributes = attributes["profile_attributes"] # profile_attributes explicitly built
-    self.caregiver3.skip_validation = self.skip_validation unless self.caregiver3.blank?
+    unless attributes.blank?
+      _profile_attributes = attributes[:profile_attributes]
+      attributes = attributes.reject {|k,v| k == "profile_attributes" }
+      (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
+      self.caregiver3 = ((caregiver3.blank? || caregiver3.new_record?) ? User.new( attributes) : self.caregiver3.update_attributes(attributes)) # includes profile_attributes hash
+      self.caregiver3.profile_attributes = attributes["profile_attributes"] # profile_attributes explicitly built
+      self.caregiver3.skip_validation = self.skip_validation unless self.caregiver3.blank?
+    end
     self.caregiver3
   end
 
@@ -820,15 +818,14 @@ class UserIntake < ActiveRecord::Base
       user = self.send("#{user_type}") # local copy, to keep code clean
       user.autofill_login if (!user.blank? && !user.nothing_assigned?)
       #
-      # shifted to user.rb
-      #
-      # if user && user.login.blank? && !user.email.blank? # !user.blank? && user.login.blank?
-      #   hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
-      #   # only when user_type is not nil, but login is
-      #   user.send("login=".to_sym, "_AUTO_#{hex}") # _AUTO_xxx is treated as blank
-      #   user.send("password=".to_sym, hex)
-      #   user.send("password_confirmation=".to_sym, hex)
-      # end
+      # user_intake validation will fail if this is removed from here
+      if user && user.login.blank? && !user.email.blank? # !user.blank? && user.login.blank?
+        hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
+        # only when user_type is not nil, but login is
+        user.send("login=".to_sym, "_AUTO_#{hex}") # _AUTO_xxx is treated as blank
+        user.send("password=".to_sym, hex)
+        user.send("password_confirmation=".to_sym, hex)
+      end
     end
   end
 
