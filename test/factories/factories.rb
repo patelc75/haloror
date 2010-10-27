@@ -214,8 +214,8 @@ Factory.define :user_intake do |v|
   v.subscriber_is_caregiver { rand(1) == 1 }
   (1..3).each { |e| v.send("no_caregiver_#{e}".to_sym, false) }
   ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user|
-    # v.send("#{user}".to_sym, Factory.create(:user))
-    v.association user.to_sym, :factory => :user
+    v.send("#{user}=".to_sym, Factory.build(:user))
+    # v.association user.to_sym, :factory => :user
   end
   v.after_create do |ui|
     # ui.skip_validation = true # we need "edit" links in list
