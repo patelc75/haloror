@@ -1187,7 +1187,11 @@ class User < ActiveRecord::Base
       # include "options" while checking the status for each alert type
       #   this will check the actual status only for allowed alert types
       #   everything else is considered "normal" since want to ignore that status
-      values = [ :panic, :strap_fastened, :call_center_account, :user_intake, :legal_agreement,
+      # Tue Oct 26 22:17:53 IST 2010
+      #   refer to bus_user_intake_states.feature:30 for taking out user_intake from array here
+      # FIXME: DRY: optimize this to run unless highest severity is registered
+      #   ignore further checks if "abnormal" state is received anywhere
+      values = [ :panic, :strap_fastened, :call_center_account, :legal_agreement, # , :user_intake
         :test_mode, :software_version, :dial_up_status, :dial_up_alert, :mgmt_query_delay,
         :not_submitted, :ready_for_approval, :discontinue_billing, :discontinue_service,
         :ready_to_bill, :ready_to_install

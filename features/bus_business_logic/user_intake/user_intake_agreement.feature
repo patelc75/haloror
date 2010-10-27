@@ -22,14 +22,16 @@ Feature: User Intake Legal Agreement
     And I check "user_intake_no_caregiver_3"
     # These checkbox steps are required for ruby 1.8.6 bug fix
 
-  # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  Scenario: Submit to reach legal agreement page
-    When I fill the senior details for user intake form
-    And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
-    And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
-    And I check "Same as User"
-    And I press "user_intake_submit"
-    Then page content should have "successfully created, HALO SUBSCRIBER AGREEMENT"
+  # Tue Oct 26 03:39:28 IST 2010
+  #   Logic has been changed to show success / failure page after order
+  # # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
+  # Scenario: Submit to reach legal agreement page
+  #   When I fill the senior details for user intake form
+  #   And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
+  #   And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
+  #   And I check "Same as User"
+  #   And I press "user_intake_submit"
+  #   Then page content should have "successfully created, HALO SUBSCRIBER AGREEMENT"
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario Outline: Only senior or subscriber can see the option to sign the legal agreement
@@ -51,25 +53,29 @@ Feature: User Intake Legal Agreement
       | senior     | should     |
       | subscriber | should     |
 
-  # https://redmine.corp.halomonitor.com/issues/3170
-  Scenario: Users other than senior or subscriber cannot accept the legal agreement
-    When I fill the senior details for user intake form
-    And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
-    And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
-    And I check "Same as User"
-    And I press "user_intake_submit"
-    Then page content should have "HALO SUBSCRIBER AGREEMENT"
-    And I should not see "I Agree Terms and Conditions"
+  # Tue Oct 26 03:39:28 IST 2010
+  #   Logic has been changed to show success / failure page after order
+  # # https://redmine.corp.halomonitor.com/issues/3170
+  # Scenario: Users other than senior or subscriber cannot accept the legal agreement
+  #   When I fill the senior details for user intake form
+  #   And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
+  #   And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
+  #   And I check "Same as User"
+  #   And I press "user_intake_submit"
+  #   Then page content should have "HALO SUBSCRIBER AGREEMENT"
+  #   And I should not see "I Agree Terms and Conditions"
 
-  # https://redmine.corp.halomonitor.com/issues/3170
-  Scenario: Agreement can be printed
-    When I fill the senior details for user intake form
-    And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
-    And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
-    And I check "Same as User"
-    And I press "user_intake_submit"
-    And I press "Print"
-    Then last user intake should have a print stamp
+  # Tue Oct 26 03:39:28 IST 2010
+  #   Logic has been changed to show success / failure page after order
+  # # https://redmine.corp.halomonitor.com/issues/3170
+  # Scenario: Agreement can be printed
+  #   When I fill the senior details for user intake form
+  #   And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
+  #   And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
+  #   And I check "Same as User"
+  #   And I press "user_intake_submit"
+  #   And I press "Print"
+  #   Then last user intake should have a print stamp
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Senior can sign the agreement successfully
@@ -139,6 +145,5 @@ Feature: User Intake Legal Agreement
     Given I have a saved user intake
     When I edit the last user intake
     And I press "user_intake_submit"
-    Then I should see "HALO SUBSCRIBER AGREEMENT"
-    And I should not see "I Agree"
+    Then I should see "successfully updated"
   

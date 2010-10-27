@@ -3,7 +3,7 @@ class CriticalMailer < ActionMailer::ARMailer
   include ServerInstance
   NO_REPLY = "no-reply@halomonitoring.com"
 
-#=============== General Methods for Alerts ======================       
+#=============== General Methods for Alerts ======================
   def device_event_admin_email(event)
     setup_caregivers(event.user, event, :recepients)
     setup_operators(event, :recepients, :include_phone_call, :halo_only) 
@@ -69,14 +69,14 @@ class CriticalMailer < ActionMailer::ARMailer
     link = get_link_to_call_center_text()
 
     #setup_message(event.to_s, "Go here: " + link + " If site down, use paper scripts with this info:" + @caregiver_info)
-    setup_message(event.to_s, @caregiver_info + "\n" + ([user.profile.account_number.blank? ? "(No acct num)" : user.profile.account_number]) + (event.user.address.nil? ? "(No address)" : event.user.address))
+    setup_message(event.to_s, @caregiver_info + "\n" + (event.user.profile.account_number.blank? ? "(No acct num)" : event.user.profile.account_number) + (event.user.address.nil? ? "(No address)" : event.user.address))
     setup_operators(event, :recepients, :include_phone_call) 
     # setup_emergency_group(event, :recepients)
     @recipients = @text_recipients
     self.priority  = event.priority
   end
 
-#=============== Call Center Operator ======================       
+#=============== Call Center Operator ======================
   def call_center_operator(event_action)
     setup_message(event_action.to_s, event_action.email_body + event_action.event.notes_string + "\n\nYou received this email because you’re an operator.")
     setup_operators(event_action.event.event, :recepients)

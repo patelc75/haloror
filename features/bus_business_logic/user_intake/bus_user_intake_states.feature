@@ -114,9 +114,9 @@ Feature: Bus user intake statuses
   Scenario: User Intake - Ready to Install
     Given senior of user intake "1234567890" has "Ready for Approval" status
     When user intake "1234567890" gets approved
-    Then action button for user intake "1234567890" should be colored gray
-    And senior of user intake "1234567890" is opted in to call center
-    And caregivers are away for user intake "1234567890"
+    # Then action button for user intake "1234567890" should be colored gray
+    Then senior of user intake "1234567890" should be opted in to call center
+    And caregivers should be away for user intake "1234567890"
 
     # And I am listing user intakes
     # And I follow "edit_link" in the 1st row
@@ -212,7 +212,7 @@ Feature: Bus user intake statuses
     When panic button test data is received for user intake "1234567890"
     Then the senior of user intake "1234567890" should be "Ready to Bill" status
     And action button for user intake "1234567890" should be colored gray
-    And senior of user intake "1234567890" is opted in to call center
+    And senior of user intake "1234567890" should be opted in to call center
     # And an email to admin, halouser and caregivers of user intake "1234567890" should be sent for delivery
 
   # current user can see the user intakes of its own groups only

@@ -38,8 +38,7 @@ Feature: Manage user_intakes
     When I check "Same as User"
     And I uncheck "Add as #1 caregiver"
     And I press "user_intake_submit"
-    Then profile "myfirstname mylastname" should have "halouser" role for group "halo_group"
-    And profile "myfirstname mylastname" should have "subscriber" role for profile "myfirstname mylastname"
+    Then users of last user intake should have appropriate roles
     And 1 email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
@@ -49,6 +48,7 @@ Feature: Manage user_intakes
   # #   2. use capybara. requires rails 2.3. is the server compatible? can we shift to apache/mod_rails?
   # #   3. keep using HTML element IDs
   # #
+  @wip
   Scenario: Submit new user_intake with billing same as #1 caregiver
     When I uncheck "Same as User"
     And I check "Add as #1 caregiver" 

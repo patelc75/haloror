@@ -1,7 +1,7 @@
 <div class="box">
 <div id="nav_links">
   <b>Config:</b><% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
-  Users (<%= link_to 'All', '/reporting/users/all' %> | <%= link_to 'Except Demo', '/reporting/users' %>)
+  Users (<%= link_to 'All', '/reporting/users/all', :id => 'users_all' %> | <%= link_to 'Except Demo', '/reporting/users', :id => 'users_except_demo' %>)
   | <%= link_to 'User Stats', '/reporting/user_stats' %>
   <% end %>
   <% if current_user.is_admin? || current_user.is_super_admin? %>

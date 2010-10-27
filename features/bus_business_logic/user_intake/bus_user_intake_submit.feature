@@ -59,7 +59,7 @@ Feature: Business - user intake - submit
   #   Given the following user_intakes:
   #     | gateway_serial |
   #     | 1234567890             |
-  #   And the user intake with gateway serial "1234567890" is not submitted
+  #   And the user intake "1234567890" is not submitted
   #   When I edit user intake with gateway serial "1234567890"
   #   Then page source should have xpath "input[@id='user_intake_submit']"
 
@@ -89,7 +89,7 @@ Feature: Business - user intake - submit
       | 1234567890     |
     And senior of user intake "1234567890" has "Ready for Approval" status
     And I am editing user intake "1234567890"
-    When I click "Approve"
+    When I press "Approve"
     Then senior of user intake "1234567890" is in test mode
     And senior of user intake "1234567890" is halouser of safety care group
     And caregivers of user intake "1234567890" are away

@@ -19,7 +19,7 @@ Feature: Online Store Kit
     When I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I select "<group>" from "Group"
     And I press "Continue"
     And I press "Place Order"
@@ -41,7 +41,7 @@ Feature: Online Store Kit
     When I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
-    And I check "Same as shipping"
+    And I check "order_bill_address_same"
     And I select "<group>" from "Group"
     And I press "Continue"
     And I press "Place Order"

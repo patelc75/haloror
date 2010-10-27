@@ -96,8 +96,11 @@ class UserAdminController < ApplicationController
           #   user.is_admin_of( group) uses authorization methods
           #   CHANGED: not working correctly sometimes. better to use simpler syntax
           @user.has_role params[:role], _group # more technical syntax but works better
-          # @user.send( "is_#{params[:role].gsub(' ','_').downcase}_of".to_sym, _group)
-          @user.dispatch_emails # explicitly send emails
+          #
+          # Tue Oct 26 04:32:30 IST 2010
+          #   email is triggered from user model
+          # # @user.send( "is_#{params[:role].gsub(' ','_').downcase}_of".to_sym, _group)
+          # @user.dispatch_emails # explicitly send emails
 
         else # save failed?
           render :action => 'new_admin'

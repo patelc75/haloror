@@ -47,7 +47,7 @@ Feature: Config roles and groups
     Given user "demo" has "<role>" role for group "group1"
     When I reload the page
     And I visit "/user_admin/roles"
-    Then page content <status> have "Assign Roles, Remove Role, Groups"
+    Then page content <status> have "Assign Roles, Remove Role"
     
     Examples:
       | role        | status     |

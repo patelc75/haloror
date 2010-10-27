@@ -40,8 +40,9 @@ Given /^user intake "([^"]*)" belongs to group "([^"]*)"$/ do |_serial, group_na
   ui = UserIntake.find_by_gateway_serial( _serial)
   ui.should_not be_blank
   
+  ui.skip_validation = true
   ui.group = Group.find_by_name( group_name)
-  ui.save.should == true
+  ui.save.should be_true
 end
 
 Given /^I am ready to submit a user intake$/ do
@@ -85,23 +86,35 @@ Given /^(?:|the )senior of user intake "([^"]*)" (has|is at|should be) "([^"]*)"
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   # debugger
+  ui.skip_validation = true
   ui.submitted_at = (status.blank? ? nil : Time.now)
-  ui.save.should be_true
+  ui.save.should be_true # send( :update_without_callbacks)
   senior.status = status
-  senior.save.should be_true
+  senior.save.should be_true # send( :update_without_callbacks)
+  senior.reload
+  senior.status.should == status
 end
 
-Given /^(?:|the )user intake with gateway serial "([^"]*)" is not submitted$/ do |_serial|
+Given /^(?:|the )user intake "([^"]*)" (is|is not) submitted$/ do |_serial, _is|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
-  ui.submitted_at = nil
-  ui.save.should be_true
-  ui.senior.save.should be_true
-  # ui.senior.status.should be_blank # PENDING
+  ui.skip_validation = true
+  ui.submitted_at = (_is == "is" ? 2.days.ago : nil)
+  ui.save.should be_true # send( :update_without_callbacks)
+  ui.senior.status = "" # make it pending
+  ui.senior.save.should be_true # send( :update_without_callbacks)
+  ui.reload
+  if _is == "is"
+    ui.submitted_at.should_not be_blank
+  else
+    ui.submitted_at.should be_blank
+  end
+  ui.senior.status.should be_blank
 end
 
 Given /^credit card is charged in user intake "([^"]*)"$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.credit_debit_card_proceessed = true
+  ui.skip_validation = true
   ui.save.should == true
 end
 
@@ -113,6 +126,7 @@ end
 Given /^desired installation date for user intake "([^"]*)" is in (\d+) hours$/ do |_serial, value|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.installation_datetime = (Time.now + value.to_i.hours)
+  ui.skip_validation = true
   # debugger
   ui.save.should be_true
 end
@@ -129,7 +143,8 @@ Given /^(.+) for user intake "([^"]*)" was (\d+) days ago$/ do |what, _serial, s
     group.save.should be_true
     ui.shipped_at = span.to_i.days.ago
   end
-  ui.save.should be_true
+  ui.skip_validation = true
+  ui.save.should be_true # send( :update_without_callbacks)
 end
 
 Given /^the user intake "([^"]*)" status is "([^"]*)" since past (\d+) day(?:|s)$/ do |_serial, status, count|
@@ -138,6 +153,7 @@ Given /^the user intake "([^"]*)" status is "([^"]*)" since past (\d+) day(?:|s)
   (senior = ui.senior).should_not be_blank
   ui.senior.status = status
   ui.senior.status_changed_at = the_date
+  ui.skip_validation = true
   ui.senior.save.should be_true
   ui.senior.add_triage_audit_log( :status => status, :created_at => the_date, :updated_at => the_date).should_not be_blank
 end
@@ -145,6 +161,7 @@ end
 # credit card value must be checked in a separate step definition
 Given /^bill monthly or credit card value are acceptable for user intake "([^"]*)"$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  ui.skip_validation = true
   ui.bill_monthly = true
   ui.save.should be_true
 end
@@ -172,6 +189,7 @@ end
 
 Given /^we are on or past the desired installation date for senior of user intake "([^"]*)"$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  ui.skip_validation = true
   ui.installation_datetime = Date.today
   ui.save.should be_true
 end
@@ -190,7 +208,8 @@ end
   
 When /^user intake "([^"]*)" gets approved$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
-  ui.skip_validation = false
+  ui.skip_validation = true
+  ui.senior.status = User::STATUS[ :install_pending]
   ui.save.should be_true
 end
 
@@ -258,6 +277,7 @@ end
 When /^the gateway serial for user intake "([^"]*)" is updated to "([^"]*)"$/ do |_serial, new_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.gateway_serial = new_serial
+  ui.skip_validation = true
   ui.save( false)
 end
 
@@ -294,6 +314,7 @@ end
 
 When /^I update gateway serial for user intake "([^"]*)" to "([^"]*)"$/ do |_serial, value|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  ui.skip_validation = true
   ui.gateway_serial = value
   ui.save.should be_true
 end
@@ -369,7 +390,7 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
       ui.bill_monthly.should_not be_blank
     when "credit card value"
       ui.credit_debit_card_proceessed.should_not be_blank
-    when "a recent audit log"
+    when "a recent audit log", "an audit log"
       ui.senior.last_triage_audit_log.should_not be_blank
     when "a status attribute"
       ui.senior.status.should_not be_blank
@@ -409,7 +430,7 @@ Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |_serial, 
   if what == "a status attribute"
     senior.attributes.keys.should include( "status")
   elsif what =~ /status$/
-    _status = what.gsub('status','').gsub('"','').strip.downcase
+    _status = what.gsub('status','').gsub('"','').strip # .downcase
     if _status == 'pending'
       senior.status.should be_blank
     else
@@ -480,8 +501,10 @@ Then /^senior of user intake "([^"]*)" is not a member of "([^"]*)" group$/ do |
   senior.group_memberships.collect(&:name).should_not have( group_name)
 end
 
-Then /^senior of user intake "([^"]*)" has "([^"]*)" flag ON$/ do |arg1, arg2|
-  pending # express the regexp above with the code you wish you had
+Then /^user intake "([^"]*)" senior should have "([^"]*)" flag ON$/ do |_serial, _attribute|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should be_true
+  (senior = ui.senior).should_not be_blank
+  senior.send( _attribute.to_sym).should be_true
 end
 
 Then /^senior of user intake "([^"]*)" has a recent audit log for status "([^"]*)"$/ do |_serial, status|
@@ -529,20 +552,47 @@ Then /^last user intake should be read only$/ do
   ui.locked?.should be_true
 end
 
-Then /^senior of user intake "([^"]*)" is opted in to call center$/ do |_serial|
+Then /^senior of user intake "([^"]*)" should be opted in to call center$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   senior.group_memberships.should include( Group.safety_care)
 end
 
-Then /^caregivers (are|are not) away for user intake "([^"]*)"$/ do |condition, _serial|
+Then /^caregivers (should|should not) be away for user intake "([^"]*)"$/ do |condition, _serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  if condition == "are"
+  if condition == "should"
     ui.caregivers.each {|e| e.should be_away_for( senior) }
   else
     ui.caregivers.each {|e| e.should be_active_for( senior) }
   end
+end
+
+Given /^I am editing user intake "([^"]*)"$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  visit url_for( :controller => 'user_intakes', :action => 'edit', :id => ui)
+end
+
+Then /^senior of user intake "([^"]*)" is halouser of safety care group$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  lambda { senior.is_halouser_of?( Group.safety_care) }.should be_true
+end
+
+Then /^caregivers of user intake "([^"]*)" are away$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  ui.caregivers.each {|e| e.away_for?( senior).should be_true }
+end
+
+Then /^users of last user intake should have appropriate roles$/ do
+  (ui = UserIntake.last).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  subscriber = ui.subscriber
+  (caregivers = ui.caregivers) # can be blank
+  lambda { senior.is_halouser_of?( ui.group) }.should be_true
+  lambda { subscriber.is_subscriber_of?( senior) }.should be_true unless ui.subscriber.blank?
+  caregivers.each {|cg| lambda { cg.is_caregiver_of?( senior) }.should be_true }
 end
 
 # ============================

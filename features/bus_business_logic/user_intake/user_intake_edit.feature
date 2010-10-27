@@ -24,12 +24,12 @@ Feature: Edit user intake
       | gateway_serial | submitted_at |
       | 1122334455     |              |
     And Email dispatch queue is empty
-    And user intake with gateway serial "1122334455" is not submitted
+    And user intake "1122334455" is not submitted
     And I am listing user intakes
     And I follow "edit_link" in the 1st row
     And I fill in "user_intake_gateway_serial" with "1234567890"
-    And I press "Approve"
-    Then I should see "1234567890"
+    And I press "user_intake_submit"
+    Then I should see "successfully updated"
     And no email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
@@ -37,9 +37,9 @@ Feature: Edit user intake
     Given the following user intakes:
       | gateway_serial | submitted_at |
       | 1122334455     |              |
-    When user intake with gateway serial "1122334455" is not submitted
+    When user intake "1122334455" is not submitted
     And I am listing user intakes
     And I follow "edit_link" in the 1st row
-    And I press "Approve"
+    And I press "user_intake_submit"
     And I am listing user intakes
     Then the 1st row should not contain "Not Submitted"
