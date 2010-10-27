@@ -13,11 +13,11 @@ class StrapOnAlert < ActiveRecord::Base
   end
   
   def to_s
-    "Strap back on"
+    "Strap back on for #{user.name} (#{user.id})"
   end
            
   def email_body    
-    "Hello,\n\nOn #{UtilityHelper.format_datetime(created_at,user)}, we have detected that #{user.name} put their chest strap back \n\n" +
+    "Hello,\n\nOn #{UtilityHelper.format_datetime(created_at,user)}, we have detected that #{user.name} (#{user.id}) put their chest strap back \n\n" +
     "- Halo Staff"  
   end  
 end

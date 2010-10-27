@@ -32,11 +32,11 @@ class DeviceUnavailableAlert < ActiveRecord::Base
   end
   
   def to_s
-    "Device Unavailable (out of range or battery dead)"
+    "Device Unavailable (out of range or battery dead) for #{user.name} (#{user.id})"
   end
   
   def email_body    
-    "Hello,\n\nOn #{UtilityHelper.format_datetime(created_at,user)}, we have detected that #{user.name}'s device is unvailable becuase of either out of range or dead battery.\n\n" +
+    "Hello,\n\nOn #{UtilityHelper.format_datetime(created_at,user)}, we have detected that (#{user.id}) #{user.name}'s device is unvailable becuase of either out of range or dead battery.\n\n" +
     "- Halo Staff"  
   end
 end 

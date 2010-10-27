@@ -11,7 +11,7 @@ class StrapFastened < DeviceAlert
   end
   
   def to_s
-    "Strap fastened"
+    "Strap fastened for #{user.name} (#{user.id})"
   end
   
   def self.new_initialize(random=false)

@@ -67,12 +67,12 @@ class StrapOffAlert < ActiveRecord::Base
   end
 
   def email_body    
-    "Hello,\n\nOn #{UtilityHelper.format_datetime(created_at,user)}, we detected that #{user.name} has had their chest strap off\n\n" +
+    "Hello,\n\nOn #{UtilityHelper.format_datetime(created_at,user)}, we detected that #{user.name} (#{user.id}) has had their chest strap off\n\n" +
     "- Halo Staff"  
   end
     
   def to_s
-    "Strap has been off"
+    "Strap has been off for #{user.name} (#{user.id})"
   end
   
   private

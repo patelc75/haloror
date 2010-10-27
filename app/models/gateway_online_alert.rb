@@ -13,11 +13,11 @@ class GatewayOnlineAlert < ActiveRecord::Base
   end
   
   def to_s
-    "Gateway back online"
+    "Gateway back online for #{user.name} (#{user.id})"
   end 
   
   def email_body
-    "Hello,\n\nWe have detected that the gateway is back online\n\n" +
+    "Hello,\n\nWe have detected that the gateway is back online for #{user.name} (#{user.id})\n\n" +
       "- Halo Staff"
   end
 end 

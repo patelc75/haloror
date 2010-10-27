@@ -1,3 +1,4 @@
+<div class="box">
 <% if @user.is_caregiver? %>
 <%=render :partial => 'layouts/choose_patient'%>
 <% end %>
@@ -25,12 +26,9 @@
       </td>
       <td>&nbsp;<%= submit_tag "Submit" %></td>
     </tr>
-    <tr>
-      <td>&nbsp;</td>
-    </tr>
   </table>
-
-</form> 
+</form>   
+</div>
 <div id="call_list-col">
   <div id="call_list-col-header">
     <% if params[:event_type] and params[:event_type] != ""
@@ -59,7 +57,7 @@
 </div>
 <div class="content">
   <div id="call_list_header" style="height:25px">
-    <div style="float:left;width:150px;padding-left:10px;">
+    <div style="float:left;width:140px;padding-left:10px;">
       <b>Date/Time</b>
     </div>
     <div style="float:left;width:100px;padding-left:25px;">
@@ -87,10 +85,10 @@
   <% end %>
   <div id="event_event_<%= event.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:80px">
     <div class="row">
-      <div style="float:left;padding-top:5px;width:150px">
+      <div style="float:left;padding-top:5px;width:140px">
         <%= event[:timestamp].in_time_zone.to_s(:date_time_timezone) %>
         <% if (current_user.is_admin? || current_user.is_super_admin?) && (event.fall? || event.panic?) %>
-          <br /><span class="tiny">(gateway: <%= event.event.gw_timestamp %> )</span>
+          <br /><span class="tiny">(gw_timestamp: <%= event.event.gw_timestamp if event.event and event.event.gw_timestamp %> )</span>
         <% end %>
       </div>
       <div style="float:left;padding-top:5px;width:125px">

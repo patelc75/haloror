@@ -19,11 +19,11 @@ class DeviceAvailableAlert < ActiveRecord::Base
   end
   
   def to_s
-    "Device Available (back in range or battery alive again)"
+    "Device Available (back in range or battery alive again) for #{user.name} (#{user.id})"
   end
 
   def email_body    
-    "Hello,\n\nOn #{UtilityHelper.format_datetime(created_at,user)}, we detected that #{user.name}'s device is available again. The device is either back in range or the battery is alive again.\n\n" +
+    "Hello,\n\nOn #{UtilityHelper.format_datetime(created_at,user)}, we detected that (#{user.id}) #{user.name}'s device is available again. The device is either back in range or the battery is alive again.\n\n" +
     "- Halo Staff"  
   end  
 end 

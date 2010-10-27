@@ -22,11 +22,11 @@ class GatewayOfflineAlert < ActiveRecord::Base
   end
   
   def to_s
-    "Gateway offline for at least #{GATEWAY_OFFLINE_TIMEOUT} minutes"
+    "Gateway offline for #{user.name} (#{user.id})"
   end
   
   def email_body
-    "Hello,\n\nWe have detected that the gateway went online\n\n" +
+    "Hello,\n\nWe have detected that the gateway went offline for #{user.name} (#{user.id})\n\n" +
       "- Halo Staff"
   end
 end 

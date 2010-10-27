@@ -2,7 +2,7 @@ class BatteryPlugged < DeviceAlert
   set_table_name "battery_pluggeds"
   
   def to_s
-    "Battery plugged"
+    "Battery plugged for #{user.name} (#{user.id})"
   end
   
   def self.new_initialize(random=false)

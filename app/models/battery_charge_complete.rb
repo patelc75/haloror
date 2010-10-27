@@ -2,7 +2,7 @@ class BatteryChargeComplete < DeviceAlert
   set_table_name "battery_charge_completes"
   
   def to_s
-    "Battery fully charged"
+    "Battery fully charged for #{user.name} (#{user.id})"
   end
   
   def self.new_initialize(random=false)
