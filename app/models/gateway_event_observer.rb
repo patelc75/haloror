@@ -10,17 +10,18 @@ class GatewayEventObserver < ActiveRecord::Observer
     else
       users = event.device.users
       users.each do |u|
-  		#spoof the user_id so the email will be sent properly      
-      	event[:user_id] = u.id
-  		CriticalMailer.deliver_non_critical_caregiver_email(event)
+  		  #spoof the user_id so the email will be sent properly      
+        event[:user_id] = u.id
+  		  CriticalMailer.deliver_non_critical_caregiver_email(event)
+        CriticalMailer.deliver_non_critical_caregiver_text(event)    		
       end
     end
   end
   
   #change this code to loop through all uses associated with device
   def after_save(alert)
-    # debugger
   	users = alert.device.users
+  	debugger
   	users.each do |u|
   	  alert[:user_id] = u.id
   	  Event.create_event(alert.user_id, alert.class.to_s, alert.id, alert.timestamp)		
