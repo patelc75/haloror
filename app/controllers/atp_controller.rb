@@ -206,5 +206,18 @@ class AtpController < ApplicationController
       flash[:warning] = "Error Retrieving Gateway Password:  #{e.to_s}"
       redirect_to :action => 'gateway_password_init'
     end 
+  end    
+  
+  def kit_search
+    @devices = []
+    if request.post?
+      unless (phrase = params[:device_serial_number].strip).blank?
+        device = Device.first( :conditions => ["serial_number LIKE ?", "%#{phrase}%"])
+        flash[:message] = "Cannot find device matching #{phrase}" if device.blank?
+        device_ids = device.kits.collect(&:devices).flatten.collect(&:id).uniq.compact unless device.blank?
+        flash[:message] = "No kits found" if device.kits.blank?
+        @devices = Device.find( device_ids) unless device_ids.blank?
+      end
+    end
   end
 end

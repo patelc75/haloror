@@ -1,7 +1,7 @@
 <%= render :partial => 'atp/nav'%>
-<h3>Listing pools</h3>
+<h3>Pools</h3>
 
-<table>
+<table class="bluegrey">
 <tr>
   <th>ID</th>
   <th>Size</th>
@@ -12,7 +12,7 @@
 </tr>
 <% for pool in @pools %>
 
-  <tr>
+<tr class="<%= cycle('', 'altrow') %>">
     <td><%= pool.id %></td>
     <td><%= pool.size %></td>
     <td><%= pool.starting_serial_number %></td>

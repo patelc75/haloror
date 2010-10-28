@@ -1,12 +1,13 @@
-<%=render :partial => 'nav_config'%>
-<br><h3>Kit Lookup</h3>
+<%=render :partial => 'nav'%>
+<div class="box">
+<h3>Kit Lookup</h3>
 <p>    Enter kit or device serial number:
   <form action="/reporting/kit_search" method="POST">
     <%= text_field_tag :device_serial_number %>
     <input type="submit" value="Submit" />
   </form>
-</p>
-<hr />
+</p> 
+</div>
 <div>
   <% @devices.each do |device| %>
     <div class="box">
