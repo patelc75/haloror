@@ -61,7 +61,6 @@ Feature: Online (D)irect (T)o (C)ustomer store
     
     Examples: pass and failed cards
       | card             | csc  | type             | result  |
-      | 4222222222222    | 111  | VISA             | Failure |
       | 1234567812345678 | 111  | VISA             | Failure |
       | 4111111111111111 | 111  | VISA             | Success |
       | 4012888888881881 | 111  | VISA             | Success |
@@ -71,12 +70,10 @@ Feature: Online (D)irect (T)o (C)ustomer store
       | 378282246310005  | 1111 | American Express | Success |
       | 371449635398431  | 1111 | American Express | Success |
       | 6011000000000012 | 111  | Discover         | Success |
-      | 6011111111111117 | 111  | Discover         | Success |
       | 6011000990139424 | 111  | Discover         | Success |
       | 5424000000000015 | 111  | MasterCard       | Success |
       | 5555555555554444 | 111  | MasterCard       | Success |
       | 5105105105105100 | 111  | MasterCard       | Success |
-      | 4222222222222    | 123  | VISA             | Failure |
       | 1234567812345678 | 123  | VISA             | Failure |
       | 4111111111111111 | 123  | VISA             | Success |
       | 4012888888881881 | 123  | VISA             | Success |
@@ -86,11 +83,14 @@ Feature: Online (D)irect (T)o (C)ustomer store
       | 378282246310005  | 1234 | American Express | Success |
       | 371449635398431  | 1234 | American Express | Success |
       | 6011000000000012 | 123  | Discover         | Success |
-      | 6011111111111117 | 123  | Discover         | Success |
       | 6011000990139424 | 123  | Discover         | Success |
       | 5424000000000015 | 123  | MasterCard       | Success |
       | 5555555555554444 | 123  | MasterCard       | Success |
       | 5105105105105100 | 123  | MasterCard       | Success |
+      # | 4222222222222    | 111  | VISA             | Failure |
+      # | 4222222222222    | 123  | VISA             | Failure |
+      # | 6011111111111117 | 111  | Discover         | Success |
+      # | 6011111111111117 | 123  | Discover         | Success |
 
   Scenario: Invalid card should log one payment gateway failure
     When I choose "product_complete"

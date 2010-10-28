@@ -213,11 +213,13 @@ Factory.define :user_intake do |v|
   v.subscriber_is_user { rand(1) == 1 }
   v.subscriber_is_caregiver { rand(1) == 1 }
   (1..3).each { |e| v.send("no_caregiver_#{e}".to_sym, false) }
-  ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user|
-    v.send("#{user}=".to_sym, Factory.build(:user))
-    # v.association user.to_sym, :factory => :user
-  end
+  #
+  # valid callbacks for factory_girl are
+  #   :after_build, :after_create, :after_stub
   v.after_create do |ui|
+    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user|
+      ui.send("#{user}=".to_sym, Factory.build(:user, :email => "#{user}@test.com"))
+    end
     # ui.skip_validation = true # we need "edit" links in list
     # ui.update_attribute(:locked, false) # 3215: do not force this attribute update
     ui.senior.is_halouser_of ui.group
@@ -226,25 +228,19 @@ Factory.define :user_intake do |v|
     ui.caregiver2.is_caregiver_of ui.senior
     ui.caregiver3.is_caregiver_of ui.senior
   end
-  # v.after_save   {|ui| user_intake_users(ui) }
-  # v.after_create  {|ui| user_intake_users(ui); ui.update_attribute(:locked, false) }
-  # v.after_stub    {|ui| user_intake_users(ui) }
+  v.after_build do |ui|
+    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user|
+      ui.send("#{user}=".to_sym, Factory.build(:user, :email => "#{user}@test.com"))
+    end
+  end
+  v.after_stub do |ui|
+    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |user|
+      ui.send("#{user}=".to_sym, Factory.build(:user, :email => "#{user}@test.com"))
+    end
+  end
 end
 
 Factory.define :vital do |v|
   v.timestamp { Time.now }
   v.association :user
-end
-
-# methods -------------------
-
-def user_intake_users(ui)
-  unless ui.nil?
-    ui.skip_validation = true # we need "edit" links in list
-    ui.senior.is_halouser_of ui.group
-    ui.subscriber.is_subscriber_of ui.senior
-    ui.caregiver1.is_caregiver_of ui.senior
-    ui.caregiver2.is_caregiver_of ui.senior
-    ui.caregiver3.is_caregiver_of ui.senior
-  end
 end

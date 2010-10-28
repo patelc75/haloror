@@ -355,23 +355,35 @@ class UserIntake < ActiveRecord::Base
     # subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
     # self.errors.add_to_base("Subscriber not valid") unless subscriber.valid?
     # self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.nil? || subscriber.profile.valid?
-    # save options
-    caregiver1.options_for_senior(senior, mem_caregiver1_options.merge({:position => 1})) if subscriber_is_caregiver && !(caregiver1.blank? || subscriber.blank?)
-    # end
-    # caregivers
-    3.times do |index| # will run 0..2
-      # debugger
-      caregiver = self.send("caregiver#{index+1}".to_sym)
-      unless (caregiver.blank? || caregiver.nothing_assigned?)
-        caregiver.is_caregiver_to( senior)
-        # caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
-        # self.errors.add_to_base("Caregiver #{index} not valid") unless caregiver.valid?
-        # self.errors.add_to_base("Caregiver #{index} profile needs more detail") unless caregiver.profile.nil? || caregiver.profile.valid?
-        # save options
-        options = self.send("mem_caregiver#{index+1}_options")
-        caregiver.options_for_senior(senior, options.merge({:position => index}))
+    
+    # Wed Oct 27 23:55:22 IST 2010
+    #   * no need to check subscriber_is_caregiver here. that is done in caregiver1 method
+    #   * just call for each caregiver and assign position and other options
+    (1..3).each do |index|
+      _caregiver = self.send("caregiver#{index}".to_sym)
+      unless (_caregiver.blank? || _caregiver.nothing_assigned?)
+        _caregiver.is_caregiver_to( senior) # assign role
+        _caregiver.options_for_senior( senior, self.send("mem_caregiver#{index}_options").merge( :position => index ))
       end
     end
+    # #
+    # # save options
+    # caregiver1.options_for_senior(senior, mem_caregiver1_options.merge({:position => 1})) if subscriber_is_caregiver && !(caregiver1.blank? || subscriber.blank?)
+    # # end
+    # # caregivers
+    # 3.times do |index| # will run 0..2
+    #   # debugger
+    #   caregiver = self.send("caregiver#{index+1}".to_sym)
+    #   unless (caregiver.blank? || caregiver.nothing_assigned?)
+    #     caregiver.is_caregiver_to( senior)
+    #     # caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
+    #     # self.errors.add_to_base("Caregiver #{index} not valid") unless caregiver.valid?
+    #     # self.errors.add_to_base("Caregiver #{index} profile needs more detail") unless caregiver.profile.nil? || caregiver.profile.valid?
+    #     # save options
+    #     options = self.send("mem_caregiver#{index+1}_options")
+    #     caregiver.options_for_senior(senior, options.merge({:position => (index+1)}))
+    #   end
+    # end
   end
 
   # Fri Aug  6 21:29:55 IST 2010
@@ -705,12 +717,11 @@ class UserIntake < ActiveRecord::Base
   end
 
   def senior_attributes=(attributes)
-    # debugger
     unless attributes.blank?
-      _profile_attributes = attributes[:profile_attributes]
-      attributes = attributes.reject {|k,v| k == "profile_attributes" }
+      _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
+      attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
       self.senior = ((senior.blank? || senior.new_record?) ? User.new(attributes) : self.senior.update_attributes(attributes)) # includes profile_attributes hash
-      self.senior.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
+      self.senior.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.senior.skip_validation = self.skip_validation unless self.senior.blank?
     end
     self.senior
@@ -719,11 +730,11 @@ class UserIntake < ActiveRecord::Base
   def subscriber_attributes=(attributes)
     # debugger
     unless attributes.blank?
-      _profile_attributes = attributes[:profile_attributes]
-      attributes = attributes.reject {|k,v| k == "profile_attributes" }
+      _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
+      attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
       (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
       self.subscriber = ((subscriber.blank? || subscriber.new_record?) ? User.new( attributes) : self.subscriber.update_attributes(attributes)) # includes profile_attributes hash
-      self.subscriber.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
+      self.subscriber.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.subscriber.skip_validation = self.skip_validation unless self.subscriber.blank?
     end
     self.subscriber
@@ -731,11 +742,11 @@ class UserIntake < ActiveRecord::Base
 
   def caregiver1_attributes=(attributes)
     unless attributes.blank?
-      _profile_attributes = attributes[:profile_attributes]
-      attributes = attributes.reject {|k,v| k == "profile_attributes" }
+      _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
+      attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
       (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
       self.caregiver1 = ((caregiver1.blank? || caregiver1.new_record?) ? User.new( attributes) : self.caregiver1.update_attributes(attributes)) # includes profile_attributes hash
-      self.caregiver1.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
+      self.caregiver1.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.caregiver1.skip_validation = self.skip_validation unless self.caregiver1.blank?
     end
     self.caregiver1
@@ -743,11 +754,11 @@ class UserIntake < ActiveRecord::Base
 
   def caregiver2_attributes=(attributes)
     unless attributes.blank?
-      _profile_attributes = attributes[:profile_attributes]
-      attributes = attributes.reject {|k,v| k == "profile_attributes" }
+      _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
+      attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
       (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
       self.caregiver2 = ((caregiver2.blank? || caregiver2.new_record?) ? User.new( attributes) : self.caregiver2.update_attributes(attributes)) # includes profile_attributes hash
-      self.caregiver2.profile_attributes = attributes[:profile_attributes] # profile_attributes explicitly built
+      self.caregiver2.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.caregiver2.skip_validation = self.skip_validation unless self.caregiver2.blank?
     end
     self.caregiver2
@@ -755,11 +766,11 @@ class UserIntake < ActiveRecord::Base
 
   def caregiver3_attributes=(attributes)
     unless attributes.blank?
-      _profile_attributes = attributes[:profile_attributes]
-      attributes = attributes.reject {|k,v| k == "profile_attributes" }
+      _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
+      attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
       (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
       self.caregiver3 = ((caregiver3.blank? || caregiver3.new_record?) ? User.new( attributes) : self.caregiver3.update_attributes(attributes)) # includes profile_attributes hash
-      self.caregiver3.profile_attributes = attributes["profile_attributes"] # profile_attributes explicitly built
+      self.caregiver3.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.caregiver3.skip_validation = self.skip_validation unless self.caregiver3.blank?
     end
     self.caregiver3
@@ -848,17 +859,18 @@ class UserIntake < ActiveRecord::Base
       self.send("#{user_type}=".to_sym, User.new) if self.send("#{user_type}".to_sym).nil?
       # roles_users_options for caregivers
       # checkboxes for existence of caregivers
-      (1..3).each do |index|
-        if user_type == "caregiver#{index}"
-          if (user = self.send("#{user_type}".to_sym))
-            self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
-            bool = self.send("no_caregiver_#{index}".to_sym)
-            #
-            # for any new_record in memory, no_caregiver_x must be "on"
-            self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || self.new_record? || bool == "1"))
-          end
+      # (1..3).each do |index|
+      index = user_type.to_i
+      if user_type == "caregiver#{index}"
+        if (user = self.send("#{user_type}".to_sym))
+          self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
+          bool = self.send("no_caregiver_#{index}".to_sym)
+          #
+          # for any new_record in memory, no_caregiver_x must be "on"
+          self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || self.new_record? || bool == "1"))
         end
       end
+      # end
       # build profile and other associations
       self.send("#{user_type}".to_sym).send("build_associations".to_sym) unless self.send("#{user_type}".to_sym).nil?
 

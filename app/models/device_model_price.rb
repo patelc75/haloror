@@ -21,6 +21,7 @@ class DeviceModelPrice < ActiveRecord::Base
   named_scope :recent_on_top, :order => "created_at DESC"
   named_scope :for_group, lambda {|group| { :conditions => { :group_id => group.id } }}
   named_scope :for_coupon_code, lambda {|arg| { :conditions => { :coupon_code => arg } }}
+  named_scope :for_device_model, lambda {|_device| { :conditions => { :device_model_id => _device.id } }}
   
   # ====================
   # = instance methods =

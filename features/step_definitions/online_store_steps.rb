@@ -60,6 +60,42 @@ end
 #   pending # express the regexp above with the code you wish you had
 # end
 
+# =========
+# = whens =
+# =========
+
+When /^I am placing an online order$/ do
+  When %{I go to the online store}
+  When %{I choose "product_complete"}
+  When %{I fill the shipping details for online store}
+  When %{I fill the billing details for online store}
+  When %{I fill the credit card details for online store}
+  When %{I uncheck "order_bill_address_same"}
+end
+
+When /^I create a coupon code for "([^\"]*)" group$/ do |_name|
+  When %{I am ready to create a coupon code for "#{_name}" group}
+  When %{I press "Save"}
+end
+
+When /^I am ready to create a coupon code for "([^\"]*)" group$/ do |_name|
+  When %{I go to the home page}
+  When %{I follow links "Config > Coupon Codes > New coupon code"}
+  When "I select the following:", table(%{
+    | Group                             | #{_name}_group            |
+    | Device model                      | 12001002-1 -- Chest Strap |
+    | device_model_price_expiry_date_1i | 2012                      |
+  })
+  When "I fill in the following:", table(%{
+    | Coupon code       | #{_name}_coupon |
+    | Deposit           | 77              |
+    | Shipping          | 7               |
+    | Monthly recurring | 77              |
+    | Months advance    | 0               |
+    | Months trial      | 2               |
+  })
+end
+
 When /^I erase the payment gateway response log$/ do
   PaymentGatewayResponse.delete_all
 end
@@ -102,6 +138,10 @@ When /^I fill the test user for online store$/ do
   When %{I fill in "order_ship_phone" with "1234567890"}
   When %{I fill in "order_ship_email" with "test@user.me"}
 end
+
+# =========
+# = thens =
+# =========
 
 Then /^subscription start date should be (\d+) and (\d+) months away for "([^\"]*)"$/ do |advance, free, bill_first_name|
   order = Order.find_by_ship_first_name(bill_first_name)
