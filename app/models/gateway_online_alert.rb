@@ -4,6 +4,7 @@
 class GatewayOnlineAlert < ActiveRecord::Base
   belongs_to :device
   include Priority
+  
   def after_save
     device.users.each do |user|
       Event.create_event(user.id, GatewayOnlineAlert.class_name, id, created_at)
@@ -13,11 +14,11 @@ class GatewayOnlineAlert < ActiveRecord::Base
   end
   
   def to_s
-    "Gateway back online for #{user.name} (#{user.id})"
+    "Gateway back online"
   end 
   
   def email_body
-    "Hello,\n\nWe have detected that the gateway is back online for #{user.name} (#{user.id})\n\n" +
-      "- Halo Staff"
+    "Hello,\n\nWe have detected that the gateway is back online" +
+      "\n\n- Halo Staff"
   end
 end 

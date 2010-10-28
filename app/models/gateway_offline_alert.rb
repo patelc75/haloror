@@ -6,14 +6,14 @@
 class GatewayOfflineAlert < ActiveRecord::Base 
   include Priority
   belongs_to :device
-
+                  
   # If we have detected an outage after our retry period, notify the
   # user immediately
   def after_save
     if number_attempts == MAX_ATTEMPTS_BEFORE_NOTIFICATION
       logger.debug("[GatewayOfflineAlert] Detected an outage for device #{device_id}. Alert ID #{id}. Number attempts: #{number_attempts}")
       
-      device.users.each do |user|
+      device.users.each do |user|    
         Event.create_event(user.id, GatewayOfflineAlert.class_name, id, created_at)        
         CriticalMailer.deliver_non_critical_caregiver_email(self, user)
         CriticalMailer.deliver_non_critical_caregiver_text(self, user)        
@@ -22,11 +22,11 @@ class GatewayOfflineAlert < ActiveRecord::Base
   end
   
   def to_s
-    "Gateway offline for #{user.name} (#{user.id})"
+    "Gateway back online"
   end
   
   def email_body
-    "Hello,\n\nWe have detected that the gateway went offline for #{user.name} (#{user.id})\n\n" +
-      "- Halo Staff"
+    "Hello,\n\nWe have detected that the gateway went offline" +
+      "\n\n- Halo Staff"
   end
 end 

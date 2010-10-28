@@ -4,7 +4,7 @@ class AccessMode < DeviceAlert
   belongs_to :device
   
   def to_s
-    "Gateway now in #{mode} mode for #{user.name} (#{user.id})"
+    "Gateway now in #{mode} mode"
   end
   
   def self.new_initialize(random=false)
