@@ -1,12 +1,12 @@
 <%= render :partial => 'nav'%>
 <h3>Work Orders</h3>
-<table> 
+<table class="bluegrey"> 
   <tr><th>ID</th><th>Work Orders (<%= link_to 'Add Work Order', :controller => 'atp', :action => 'work_order_init' %>)</th></tr>
   
   <% if !@work_orders.blank? %>
   <% @work_orders.each do |work_order| %>
-  <tr>
-    <td><%= work_order.id %></td>
+  <tr class="<%= cycle('', 'altrow') %>">    
+  <td><%= work_order.id %></td>
   	<td><%= link_to(work_order.work_order_num, :work_order_id => work_order.id, :controller => 'atp', :action => 'work_order_device_revision_init') %></td>
   </tr> 
   <% end %>

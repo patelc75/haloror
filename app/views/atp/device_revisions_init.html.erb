@@ -1,6 +1,6 @@
 <%= render :partial => 'nav'%>
 <h3>Device Revisions</h3>
-<table> 
+<table class="bluegrey"> 
   <tr><th>ID</th>
   <th>Device Model</th>
   <th>Revision</th>
@@ -9,7 +9,7 @@
   
   <% if !@device_revisions.blank? %>
   <% @device_revisions.each do |device_revision| %>
-  <tr>
+  <tr class="<%= cycle('', 'altrow') %>">
     <td><%= device_revision.id %></td>
     <td><%= device_revision.device_model.model_type %></td>
     <td><%= device_revision.revision %></td>

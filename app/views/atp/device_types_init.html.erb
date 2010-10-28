@@ -1,6 +1,6 @@
 <%= render :partial => 'nav'%>
 <h3>Device Types</h3>
-<table> 
+<table class="bluegrey"> 
   <tr><th>ID</th>
   <th>Device Type</th>
   <th>Mac Address Type</th>
@@ -9,7 +9,7 @@
   
   <% if !@device_types.blank? %>
   <% @device_types.each do |device_type| %>
-  <tr>
+  <tr class="<%= cycle('', 'altrow') %>">
     <td><%= device_type.id %></td>
     <td><%= device_type.device_type %></td>
     <td><%= device_type.mac_address_type %></td>
