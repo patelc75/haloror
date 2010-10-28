@@ -6,7 +6,8 @@ xml.management_cmd_server do
   if more
     xml.version more[:version]
     xml.filename more[:filename]
-    
+    xml.instantaneous cmd[:instantaneous]
+
     #use first entry in ftp table instead of mapping from Firmware upgrade table
     #(because ExtJS table doesn't support mapping
     # ftp =  Ftp.find(:first)

@@ -97,7 +97,8 @@ class MgmtQueriesController < RestfulAuthController
     if cmd
       @more = nil
       if cmd.cmd_type == 'firmware_upgrade' && cmd.cmd_id
-        @more = FirmwareUpgrade.find(cmd.cmd_id)
+        @more = FirmwareUpgrade.find(cmd.cmd_id) 
+        @more[:instantaneous] = cmd.instantaneous
       elsif cmd.cmd_type == 'mgmt_poll_rate' && cmd.param1
         @more = {'poll_rate' => cmd.param1,'instantaneous' => cmd.instantaneous }
       elsif cmd.cmd_type == 'dial_up_num' && cmd.param1 && cmd.param2 && cmd.param3
@@ -111,13 +112,13 @@ class MgmtQueriesController < RestfulAuthController
         @global_alt = DialUp.find_by_phone_number(cmd.param4)   
         
         @more = {'instantaneous' => cmd.instantaneous }
-        @more = @more.merge({'number' => cmd.param1,'username' => @local_pri.username,'password' => @local_pri.password}) if @local_pri
+        @more = @more.merge({'number' => cmd.param1,'username' => @local_pri.username,'password' => @local_pri.password}) if @local_pri        
         @more = @more.merge({'alt_number' => cmd.param2,'alt_username' => @local_alt.username,'alt_password' => @local_alt.password}) if @local_alt
         @more = @more.merge({'global_prim_number' => cmd.param3,'global_prim_username' => @global_pri.username,'global_prim_password' => @global_pri.password}) if @global_pri
         @more = @more.merge({'global_alt_number' => cmd.param4,'global_alt_username' => @global_alt.username,'global_alt_password' => @global_alt.password}) if @global_alt
         
       elsif cmd.cmd_type == 'remote_access'
-      	
+      	@more = {'instantaneous' => cmd.instantaneous }                
       end
       
       query.mgmt_cmd_id = cmd.id

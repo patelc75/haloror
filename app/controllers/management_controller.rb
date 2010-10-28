@@ -131,8 +131,8 @@ class ManagementController < ApplicationController
         cmd[:attempts_no_ack] = 0
         cmd[:pending_on_ack] = true
         cmd[:created_by] = current_user.id if current_user
-        cmd[:instantaneous] = true if request[:instantaneous] == "1"
-        
+        cmd[:instantaneous] = request[:instantaneous] == "1" ? true : false
+
         #command specific parameter (such as <poll_rate> for the mgmt_poll_rate cmd)
         cmd[:param1] = request[:param1] if !request[:param1].blank? and request[:cmd_type] == 'mgmt_poll_rate'
         cmd[:param1] = request[:param2] if !request[:param2].blank? and request[:cmd_type] == 'dial_up_num'
