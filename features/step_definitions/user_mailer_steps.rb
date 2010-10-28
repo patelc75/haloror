@@ -2,10 +2,13 @@
 #
 
 # Given
-#And email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be queued
-Given /^Email dispatch queue is empty$/ do
-  Email.delete_all
-end
+
+# CHANGED:
+#   Given there are no emails
+# #And email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be queued
+# Given /^Email dispatch queue is empty$/ do
+#   Email.delete_all
+# end
 
 # subject|body|content does not matter. we will just check entire email content anyways
 #

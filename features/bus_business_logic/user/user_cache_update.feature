@@ -13,7 +13,7 @@ Feature: User cache update
       | group1 |
     And a user "senior1" exists with profile
     And user "senior1" has "halouser" role for group "group1"
-    And there is no data for emails
+    And there are no emails
     When I get data in <event> for user "senior1"
     Then user "senior1" should have updated cache for <field>
     And no email to "senior1@example.com" with subject "Please read before your installation" should be sent for delivery

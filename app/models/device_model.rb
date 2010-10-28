@@ -11,9 +11,19 @@ class DeviceModel < ActiveRecord::Base
   # = class methods =
   # =================
 
-  #
   # fetch device_model for the product type "complete" or "clip"
   # no parameters = myHalo complete product
+  # WARNING: this is a very risky method. static values should not be used.
+  # Usage:
+  #   DeviceModel.myhalo_clip, DeviceModel.myhalo_complete
+  class << self # dynamic class methods
+    ["clip", "complete"].each do |_which|
+      define_method "myhalo_#{_which}".to_sym do
+        DeviceModel.find_by_part_number(OrderItem::PRODUCT_HASH[ "myHalo #{_which.capitalize}" ])
+      end
+    end
+  end # dynaic class methods
+
   # WARNING: this is a very risky method. static values should not be used.
   def self.find_complete_or_clip(name = "complete")
     product_string = (name == "clip") ? "myHalo Clip": "myHalo Complete" # default = myHaloComplete
@@ -21,13 +31,13 @@ class DeviceModel < ActiveRecord::Base
   end
 
   def self.complete_tariff( group, coupon_code)
-    debugger
-    tariff( :device_model => find_complete_or_clip( 'complete'), :group => group, :coupon_code => coupon_code)
+    _product = DeviceModel.myhalo_complete # find_complete_or_clip( 'complete')
+    _product.tariff( :device_model => _product, :group => group, :coupon_code => coupon_code)
   end
 
   def self.clip_tariff( group, coupon_code)
-    debugger
-    tariff( :device_model => find_complete_or_clip( 'clip'), :group => group, :coupon_code => coupon_code)
+    _product = DeviceModel.myhalo_clip # find_complete_or_clip( 'clip')
+    _product.tariff( :device_model => _product, :group => group, :coupon_code => coupon_code)
   end
   
   # # dynamically define self.complete_tariff, self.clip_traiff
@@ -64,7 +74,6 @@ class DeviceModel < ActiveRecord::Base
   # fetch related device_model_price record for "this" record, subject to coupon_code
   def tariff(args = {})
     unless args[:group].blank?
-      debugger
       options = {:coupon_code => "default"}.merge(args)
       unless prices.blank?
         #

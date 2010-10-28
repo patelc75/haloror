@@ -1,6 +1,8 @@
-Given /^no coupon codes exist$/ do
-  DeviceModelPrice.delete_all
-end
+# CHANGED: Given there are no coupon codes
+#
+# Given /^no coupon codes exist$/ do
+#   DeviceModelPrice.delete_all
+# end
 
 Then /^coupon code "([^"]*)" should have a related (.+)$/ do |coupon, phrase|
   (coupon = DeviceModelPrice.find_by_coupon_code( coupon)).should_not be_blank

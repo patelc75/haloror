@@ -19,8 +19,11 @@ end
 # =========
 
 When /^I create a "([^"]*)" group$/ do |_type|
-  When %{I am ready to create a "#{_type}" group}
-  When %{I press "Save"}
+  # do not create again if this is a part of larger test case
+  if Group.find_by_name( "#{_type}_group").blank?
+    When %{I am ready to create a "#{_type}" group}
+    When %{I press "Save"}
+  end
 end
 
 When /^I am ready to create a "([^"]*)" group$/ do |_type|

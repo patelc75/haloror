@@ -4,6 +4,7 @@ require "factory_girl"
 
 Factory.define :group do |v|
   v.name { Faker::Lorem.words[0] + (Time.now.to_i + rand(9999999999)).to_s }
+  v.email { Faker::Internet.email }
   v.description { Faker::Lorem.sentence }
 end
 

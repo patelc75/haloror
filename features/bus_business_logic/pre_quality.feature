@@ -63,16 +63,21 @@ Feature: Pre quality
 
   Scenario: admin > place order
     Given the product catalog exists
-    When I create a "reseller" group
-    And I create a coupon code for "reseller" group
-    And I create admin of "reseller" group
-    And I activate the last user as "reseller_admin"
-    And I am placing online order
-    And I select "reseller_group" from "Group"
-    And I fill in "Coupon Code" with "reseller_coupon"
+    And the following groups:
+      | name              | sales_type |
+      | re_reseller_group | reseller   |
+    When I create a coupon code for "re_reseller" group
+    And I create admin of "re_reseller" group
+    And I activate the last user as "re_reseller_admin"
+    And I am placing an online order
+    And I select "re_reseller_group" from "Group"
+    And I fill in "Coupon Code" with "re_reseller_coupon"
     And I press "Continue"
     And I press "Place Order"
-    Then an email to "cuc_senior@chirag.name" with subject "activation" should be sent for delivery
+    # Then 1 email to "cuc_senior@chirag.name" with subject "activation" should be sent for delivery
+    Then 1 email to "cuc_subscriber@chirag.name" with subject "activation" should be sent for delivery
+    And 1 email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery
+    And 1 email to "re_master@halomonitoring.com" with subject "Order Summary" should be sent for delivery
 
   Scenario: admin > add a new caregiver with no email
     Given the product catalog exists
@@ -80,42 +85,48 @@ Feature: Pre quality
     And I create a coupon code for "reseller" group
     And I create admin of "reseller" group
     And I activate the last user as "reseller_admin"
-    And I am placing online order
-    And I select "reseller_group" from "Group"
-    And I fill in "Coupon Code" with "reseller_coupon"
-    And I press "Continue"
-    And I press "Place Order"
-    When I visit "/reporting/users/"
+    And I place an online order for "reseller" group
+    And I visit "/reporting/users/"
     And I follow links "Caregivers > add_caregiver_button > Add new caregiver with no email"
     And I fill in the following:
-      | Username         | caregiver1 |
-      | Password         | abc123     |
-      | Confirm Password | abc123     |
-      | First Name       | care_1     |
-      | Last Name        | giver_1    |
-      | Address          | chicago    |
-      | Cross St         | chicago    |
-      | City             | chicago    |
-      | State            | IL         |
-      | Zipcode          | 12345      |
-      | Home Phone       | 1234567890 |
-      | Work Phone       | 1234567890 |
+      | Username         | caregiver1    |
+      | Password         | abc123        |
+      | Confirm Password | abc123        |
+      | First Name       | cg first name |
+      | Last Name        | cg last name  |
+      | Address          | chicago       |
+      | Cross St         | chicago       |
+      | City             | chicago       |
+      | State            | IL            |
+      | Zipcode          | 12345         |
+      | Home Phone       | 1234567890    |
+      | Work Phone       | 1234567890    |
     And I press "submit_caregiver"
-    Then I should see "care_1 giver_1"
+    Then I should see "cg first name cg last name"
 
   Scenario: halouser > approve subscription agreement
-    Given the following groups:
-      | name           | sales_type | description                |
-      | reseller_group | reseller   | reseller_group description |
-    And a user "reseller_admin" exists with profile
-    And user "reseller_admin" has "admin" role for group "reseller_group"
-    And a user "myhalouser" exists with profile
-    And user "myhalouser" has "halouser" role for group "reseller_group"
-    And user intake for "myhalouser" exists
-    And I am authenticated as "myhalouser" with password "12345"
-    When I view the last user intake
+    Given the product catalog exists
+    When I create a "reseller" group
+    And I create a coupon code for "reseller" group
+    And I create admin of "reseller" group
+    And I activate the last user as "reseller_admin"
+    And I place an online order for "reseller" group
+    And I logout
+    And I activate the "reseller_senior" senior of last order
     And I check "userintake_agree"
     And I press "Proceed"
-    Then I should see "User Intake was successfully updated"
+    Then I should see "Successfully updated"
 
   Scenario: halouser > submit user intake form
+    Given the product catalog exists
+    When I create a "reseller" group
+    And I create a coupon code for "reseller" group
+    And I create admin of "reseller" group
+    And I activate the last user as "reseller_admin"
+    And I place an online order for "reseller" group
+    And I am listing user intakes
+    And I follow "edit_link"
+    And I fill the caregiver1 details for user intake form
+    And I fill the caregiver2 details for user intake form
+    And I press "user_intake_submit"
+    Then I should see "successfully updated"

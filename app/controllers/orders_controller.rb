@@ -33,7 +33,6 @@ class OrdersController < ApplicationController
         #
         # TODO: order_params need some cleanup. Revisit when appropriate.
         #   This can probably be obsolete and attributes can go directly to session[:order]
-        debugger
         order_params.merge!(
             "cost" => (@product == 'complete' ? \
               DeviceModel.complete_tariff(@order.group, @order.coupon_code).upfront_charge.to_s : \
@@ -50,7 +49,7 @@ class OrdersController < ApplicationController
         # TODO: send an email to administrator or webmaster
         @order.errors.add_to_base \
           "Link to product catalog is broken. Please inform webmaster @ halomonitoring.com about this" \
-          if DeviceModel.find_complete_or_clip(params[:product]).blank?
+          if DeviceModel.find_complete_or_clip( params[:product] ).blank?
 
       end
       @same_address = @order.subscribed_for_self?
@@ -78,7 +77,7 @@ class OrdersController < ApplicationController
     # Thu Oct 28 07:03:01 IST 2010
     #   if we do not have default coupon codes, we need to migrate the database
     #   without these, the online store might crash
-    if Group.has_deault_coupon_codes?
+    if Group.has_default_coupon_codes?
       #
       # usually, this block executes
       respond_to do |format|
@@ -177,12 +176,15 @@ class OrdersController < ApplicationController
                   UserMailer.deliver_order_summary(@order, email, (email.include?("senior_signup") ? :no_email_log : nil))
                 end
                 
-                if (!@order.group.name.blank?)   #old matching code: !(o.group.name.match /^ml_/).nil?      
-                   master_group = Group.find_by_name(@order.group.name[0..2] + 'master')  #eg. find ml_master group
-                   if !master_group.nil? and !master_group.email.blank? 
-                     UserMailer.deliver_order_summary(@order, master_group.email) 
-                   end
-                end 
+                # Thu Oct 28 23:56:18 IST 2010
+                #   CHANGED: DRYed into order and group model
+                @order.send_summary_to_master_group
+                # if (!@order.group.name.blank?)   #old matching code: !(o.group.name.match /^ml_/).nil?
+                #    master_group = Group.find_by_name(@order.group.name[0..2] + 'master')  #eg. find ml_master group
+                #    if !master_group.nil? and !master_group.email.blank? 
+                #      UserMailer.deliver_order_summary(@order, master_group.email) 
+                #    end
+                # end 
                                     
                 # show on browser
                 flash[:notice] = 'Thank you for your order.'

@@ -48,12 +48,10 @@ Given /^I am an authenticated super admin$/ do
 end
 
 Given /^the following (.+):$/ do |name, table|
-  # model = if name.include?(' ')
-  #   name.singularize.split(' ').collect(&:capitalize).join.constantize
-  # else
-  #   name.singularize.capitalize.constantize
-  # end
-  name.gsub(/ /,'_').classify.constantize.delete_all
+  # # Thu Oct 28 22:47:21 IST 2010
+  # # complex steps in pre-quality require the existing data
+  # name.gsub(/ /,'_').classify.constantize.delete_all
+  #
   # single line statement causes user_intake locked after_save
   # we need to skip_validation to save it and allow "edit"
   #   table.hashes.each {|hash| Factory.build(model.to_s.underscore.to_sym, hash) }
@@ -131,12 +129,19 @@ Given /^I am (creating|editing) (?:|a|an) (.+)$/ do |action, model|
 end
 
 Given /^I am listing (.+)$/ do |model|
-  visit "/#{model.downcase.pluralize.gsub(' ','_')}"
+  visit url_for( :controller => model.gsub(' ','_').tableize, :action => 'index') # "/#{model.downcase.pluralize.gsub(' ','_')}"
 end
 
-Given /^there is no data for (.+)$/ do |models|
-  models.split(',').each {|e| e.strip.singularize.camelize.constantize.send(:delete_all) }
+# Usage:
+#   Given there are no panics, Email, user, user intakes, Device Type, Device Models
+Given /^there are no (.+)$/ do |_models|
+  _models.split(',').each {|e| e.strip.gsub(' ','_').classify.constantize.send(:delete_all) }
 end
+
+# # CHANGED: merge into "there are no ___"
+# Given /^there is no data for (.+)$/ do |models|
+#   models.split(',').each {|e| e.strip.singularize.camelize.constantize.send(:delete_all) }
+# end
 
 # When
 
