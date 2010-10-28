@@ -1,6 +1,7 @@
 <h3>ATP Item Results for ATP Test Result <%= "#{@atp_test_result.id} (Device ID: #{@atp_test_result.device_id})" %> </h3>
 <table class="bluegrey"> 
   <tr><th>ID</th>
+  <th>ATP Item<br> description</th>  
   <th>Result</th>
   <th>Result Value</th>
   <th>ATP Item<br> Range Low</th>  
@@ -9,13 +10,12 @@
   <th>Operator ID</th>
   <th>TimeStamp</th>
   <th>Created By</th>
-  <th>Comments</th> 
-  <th>ATP Item<br> description</th>  
-  
+  <th>Comments</th>   
   <% if !@atp_test_result.blank? && !@atp_test_result.atp_item_results.blank? %>
   <% @atp_test_result.atp_item_results.each do |result| %>
 <tr class="<%= cycle('', 'altrow') %>">
     <td><%= result.id %></td>
+    <td><%= result.atp_item.description if !result.atp_item.blank? %></td>
     <td><%= result.result %></td>
     <td><%= result.result_value %></td>
     <td><%= result.atp_item.range_low   if !result.atp_item.blank? %></td>      
@@ -24,8 +24,7 @@
     <td><%= result.operator_id %></td>
     <td><%= result.timestamp %></td>
     <td><%= result.created_by %></td>
-    <td><%= result.comments %></td>
-    <td><%= result.atp_item.description if !result.atp_item.blank? %></td>      
+    <td><%= result.comments %></td>      
   </tr> 
   <% end %>
  <% end %>
