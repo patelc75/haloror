@@ -3,7 +3,7 @@
 <input type="text" name="device_id" value="<%= params[:device_id]%>">
 <input type="submit" value="Enter device_id">
 </form>
-<h3>ATP Test Results</h3>
+<h3>ATP Test Result</h3>
 <div class="span-21 last"><%= will_paginate @atp_test_results %></div> 
 <br><br>
 <table class="bluegrey"> 
@@ -14,8 +14,8 @@
   <th>Description</th>
   <th>TimeStamp</th>
   <th>Created By</th>
-  <th>Comments</th>
-  <th>&nbsp;</th></tr>
+  <th>&nbsp;</th>
+  <th>Comments</th></tr>
   
   <% if !@atp_test_results.blank? %>
   <% @atp_test_results.each do |result| %>
@@ -40,8 +40,8 @@
     <td><%= result.atp_item_results.collect(&:result_value).join(', ') %></td>
     <td><%= result.timestamp %></td>
     <td><%= result.created_by %></td>
-    <td><%= result.comments %></td>
-  	<td><%= link_to('View Items', :id => result.id, :controller => 'atp', :action => 'atp_test_result_view') %></td>
+  	<td><%= link_to('ATP Items', :id => result.id, :controller => 'atp', :action => 'atp_test_result_view') %></td>
+  	<td><%= result.comments %></td>
   </tr> 
   <% end %>
  <% end %>
