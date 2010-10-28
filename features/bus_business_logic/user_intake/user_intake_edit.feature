@@ -23,7 +23,7 @@ Feature: Edit user intake
     Given the following user intakes:
       | gateway_serial | submitted_at |
       | 1122334455     |              |
-    And Email dispatch queue is empty
+    And there are no emails
     And user intake "1122334455" is not submitted
     And I am listing user intakes
     And I follow "edit_link" in the 1st row

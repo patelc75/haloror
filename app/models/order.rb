@@ -38,6 +38,16 @@ class Order < ActiveRecord::Base
   # = public : instance methods =
   # =============================
 
+  # send order summary email to the master group, only when applicable
+  def send_summary_to_master_group
+    # group must be present
+    # master group must be present
+    #   * group name should be xx_...
+    #   * master group with name xx_master must exist
+    _master_group = group.master_group unless group.blank?
+    UserMailer.deliver_order_summary( self, _master_group.email ) if !_master_group.blank? && _master_group.valid?
+  end
+
   def group_name
     group.blank? ? "" : group.name
   end

@@ -69,14 +69,14 @@ Given /^call center account number for "([^\"]*)" is "([^\"]*)"$/ do |user_login
   user.profile.save
 end
 
-Given /^user "([^"]*)" (.+) in test mode$/ do |user_login, state|
+Given /^user "([^\"]*)" (.+) in test mode$/ do |user_login, state|
   (user = User.find_by_login(user_login)).should_not be_blank
   # user.update_attributes( :test_mode => (state == 'is')) # user object in memory is still not changed
   user.test_mode = (state == 'is')
   user.save
 end
 
-Given /^user "([^"]*)" status gets changed to "([^"]*)"$/ do |login, status|
+Given /^user "([^\"]*)" status gets changed to "([^\"]*)"$/ do |login, status|
   (user = User.find_by_login( login)).should_not be_blank
   user.status = status
   user.save.should == true
@@ -87,14 +87,27 @@ end
 # = whens =
 # =========
 
-When /^I activate the last user as "([^"]*)"$/ do |_name|
+When /^I activate the "([^\"]*)" senior of last order$/ do |_name|
+  (_order = Order.last).should_not be_blank
+  (_ui = _order.user_intake).should_not be_blank
+  (_user = _ui.senior).should_not be_blank
+  visit "/activate/#{_user.activation_code}"
+  When "I fill in the following:", table(%{
+    | Username         | #{_name} |
+    | Password         | #{_name} |
+    | Confirm Password | #{_name} |
+  })
+  When %{I press "subscribe_button"}
+end
+
+When /^I activate the last user as "([^\"]*)"$/ do |_name|
   When %{I am activating the last user as "_name"}
   When %{I press "subscribe_button"}
 end
 
-When /^I am activating the last user as "([^"]*)"$/ do |_name|
+When /^I am activating the last user as "([^\"]*)"$/ do |_name|
   (_user = User.last).should_not be_blank
-  visit "/activate/#{User.last.activation_code}"
+  visit "/activate/#{_user.activation_code}"
   When "I fill in the following:", table(%{
     | Username         | #{_name} |
     | Password         | #{_name} |
@@ -102,27 +115,27 @@ When /^I am activating the last user as "([^"]*)"$/ do |_name|
   })
 end
 
-When /^I create admin of "([^"]*)" group$/ do |_name|
+When /^I create admin of "([^\"]*)" group$/ do |_name|
   When %{I am creating admin of "#{_name}" group}
   When %{I press "subscribe"}
 end
 
-When /^I am creating admin of "([^"]*)" group$/ do |_name|
+When /^I am creating admin of "([^\"]*)" group$/ do |_name|
+  # just random groups to check concurrent existance
   Given "the following groups:", table(%{
-    | name           | sales_type | description                |
-    | bogus_group    | reseller   | bogus reseller             |
-    | retailer_group | retailer   | retailer_group description |
+    | name            | sales_type | description                |
+    | bogus1_group    | reseller   | bogus reseller             |
+    | retailer1_group | retailer   | retailer_group description |
   })
   Given %{a role "admin" exists}
-  When %{I create a "#{_name}" group}
   When "I go to the home page"
   When %{I follow links "User Signup"}
   When %{I select "#{_name}_group" from "Group"}
   When %{I select "admin" from "Role"}
   When "I fill in the following:", table(%{
     | Email      | #{_name}_admin@text.com |
-    | First Name | #{_name}admin           |
-    | Last Name  | #{_name}admin           |
+    | First Name | #{_name}_admin          |
+    | Last Name  | #{_name}_admin          |
     | Address    | admin address           |
     | City       | admin_city              |
     | State      | admin_state             |
@@ -166,7 +179,7 @@ When /^I select profile name of "([^\"]*)" from "([^\"]*)"$/ do |user_login, dro
   select(user.name, :from => drop_down_id)
 end
 
-When /^I press "([^"]*)" within "([^"]*)" user row$/ do |button, user_login|
+When /^I press "([^\"]*)" within "([^\"]*)" user row$/ do |button, user_login|
   user = User.find_by_login(user_login)
   user.should_not be_blank
 
@@ -268,7 +281,7 @@ Then /^I should see "([^\"]*)" link for user "([^\"]*)"$/ do |link_text, user_lo
   end
 end
 
-Then /^page content should have user names for "([^"]*)" within "([^"]*)"$/ do |csv_data, scope_selector|
+Then /^page content should have user names for "([^\"]*)" within "([^\"]*)"$/ do |csv_data, scope_selector|
   users = []
   logins = csv_data.split(',').collect(&:strip)
   logins.each do |login|
@@ -284,7 +297,7 @@ end
 # multiple values can be given comma separated in the csv_data
 # example:
 #   Then I should see "a, b, c" within "userlogin" user row
-Then /^I (should|should not) see "([^"]*)" within "([^"]*)" user row$/ do |logic, csv_data, user_login|
+Then /^I (should|should not) see "([^\"]*)" within "([^\"]*)" user row$/ do |logic, csv_data, user_login|
   user = User.find_by_login(user_login)
   user.should_not be_blank
 
@@ -296,7 +309,7 @@ Then /^I (should|should not) see "([^"]*)" within "([^"]*)" user row$/ do |logic
   end
 end
 
-Then /^I (should|should not) see "([^"]*)" xpath within "([^"]*)" user row$/ do |logic, csv_data, user_login|
+Then /^I (should|should not) see "([^\"]*)" xpath within "([^\"]*)" user row$/ do |logic, csv_data, user_login|
   user = User.find_by_login(user_login)
   user.should_not be_blank
 
@@ -312,13 +325,13 @@ Then /^I (should|should not) see "([^"]*)" xpath within "([^"]*)" user row$/ do 
   end
 end
 
-Then /^user "([^"]*)" should have a recent audit log for status "([^"]*)"$/ do |login, status|
+Then /^user "([^\"]*)" should have a recent audit log for status "([^\"]*)"$/ do |login, status|
   (user = User.find_by_login( login)).should_not be_blank
   (log = user.triage_audit_logs.latest).should_not be_blank
   log.status.should == status
 end
 
-Then /^I (can|cannot) change the status of user "([^"]*)" to "([^"]*)"$/ do |condition, login, status|
+Then /^I (can|cannot) change the status of user "([^\"]*)" to "([^\"]*)"$/ do |condition, login, status|
   (user = User.find_by_login(login)).should_not be_blank
   # user.update_attributes( :status => status) did not work
   user.status = status
@@ -326,7 +339,7 @@ Then /^I (can|cannot) change the status of user "([^"]*)" to "([^"]*)"$/ do |con
   user.status.to_s.should == status.to_s # nil.to_s will be ""
 end
 
-Then /^user "([^"]*)" should have attribute "([^"]*)"$/ do |login, attribute|
+Then /^user "([^\"]*)" should have attribute "([^\"]*)"$/ do |login, attribute|
   (user = User.find_by_login( login)).should_not be_blank
   user.attributes.keys.should include( attribute)
 end

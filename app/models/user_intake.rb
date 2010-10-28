@@ -89,7 +89,6 @@ class UserIntake < ActiveRecord::Base
     #   workaround
     #     initialize the associations only for new instance. we are safe
     #     call user_intake.build_associations in the code on user_intake instance
-    # debugger
     self.subscriber_is_user = (subscriber_is_user.nil? || subscriber_is_user == "1")
     self.subscriber_is_caregiver = false if subscriber_is_caregiver.nil?
     (1..3).each do |index|
@@ -104,7 +103,6 @@ class UserIntake < ActiveRecord::Base
   end
 
   def before_save
-    # debugger
     #
     # card or bill
     self.credit_debit_card_proceessed = (card_or_bill == "Card")
@@ -154,7 +152,8 @@ class UserIntake < ActiveRecord::Base
     # Switch user to installed state, if
     #   * user is "Ready to Install"
     #   * last user action was "Approve"
-    if lazy_action == "Approve" && senior.status == User::STATUS[:approval_pending]
+    # QUESTION: admin can approve?
+    if lazy_action == "Approve" && senior.status == User::STATUS[:approval_pending] # && !self.updater.blank? && self.updater.is_super_admin?
       self.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:install_pending])
       self.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
 
@@ -306,13 +305,14 @@ class UserIntake < ActiveRecord::Base
     # for remaining, fill login, password details only when login is empty
     ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_user_login( user) }
     #
-    # assign roles to user objects. it will auto save the roles with user record
-    # DEPRECATED: this will also trigger the email dispatch in observer
-    self.senior.lazy_roles[:halouser]        = group  unless senior.blank? # senior.is_halouser_of group
-    self.subscriber.lazy_roles[:subscriber]  = senior unless subscriber.blank?
-    self.caregiver1.lazy_roles[:caregiver]   = senior unless caregiver1.blank?
-    self.caregiver2.lazy_roles[:caregiver]   = senior unless caregiver2.blank?
-    self.caregiver3.lazy_roles[:caregiver]   = senior unless caregiver3.blank?
+    # # assign roles to user objects. it will auto save the roles with user record
+    # # TODO: use this instead of association_after_save that is assigning roles
+    # self.senior.lazy_roles[:halouser]        = group  unless senior.blank? # senior.is_halouser_of group
+    # self.subscriber.lazy_roles[:subscriber]  = senior unless subscriber.blank?
+    # self.caregiver1.lazy_roles[:caregiver]   = senior unless caregiver1.blank?
+    # self.caregiver2.lazy_roles[:caregiver]   = senior unless caregiver2.blank?
+    # self.caregiver3.lazy_roles[:caregiver]   = senior unless caregiver3.blank?
+    #
     # # now collect the users for save as associations
     # self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq.compact # omit nil, duplicates
   end
@@ -339,23 +339,15 @@ class UserIntake < ActiveRecord::Base
     end
     #
     # add roles and options
-    #
-    # FIXME: we should not validate here. its done in "validate". just add roles etc here
-    #
-    # # senior
+    # TODO:
+    #   * the roles are associated using user.lazy_roles.
+    #   * We should avoid this block below and keep it in user model
+    #   * just delegate the task to user model and let it handle
+    # ----------------------- shift to user.rb - start -------------------------------
+    # senior
     senior.is_halouser_of( group) unless senior.blank?
-    # unless senior.blank?
-    #   senior.valid? ? senior.is_halouser_of( group) : self.errors.add_to_base("Senior not valid")
-    # #   self.errors.add_to_base("Senior not valid") unless senior.valid?
-    # #   self.errors.add_to_base("Senior profile needs more detail") unless senior.profile.nil? || senior.profile.valid?
-    # end
     # subscriber
-    subscriber.is_subscriber_of( senior) unless senior.blank? || subscriber.blank?
-    # unless subscriber.blank?
-    # subscriber.valid? ? subscriber.is_subscriber_of(senior) : self.errors.add_to_base("Subscriber not valid")
-    # self.errors.add_to_base("Subscriber not valid") unless subscriber.valid?
-    # self.errors.add_to_base("Subscriber profile needs more detail") unless subscriber.profile.nil? || subscriber.profile.valid?
-    
+    subscriber.is_subscriber_of( senior) unless senior.blank? || subscriber.blank?    
     # Wed Oct 27 23:55:22 IST 2010
     #   * no need to check subscriber_is_caregiver here. that is done in caregiver1 method
     #   * just call for each caregiver and assign position and other options
@@ -366,64 +358,8 @@ class UserIntake < ActiveRecord::Base
         _caregiver.options_for_senior( senior, self.send("mem_caregiver#{index}_options").merge( :position => index ))
       end
     end
-    # #
-    # # save options
-    # caregiver1.options_for_senior(senior, mem_caregiver1_options.merge({:position => 1})) if subscriber_is_caregiver && !(caregiver1.blank? || subscriber.blank?)
-    # # end
-    # # caregivers
-    # 3.times do |index| # will run 0..2
-    #   # debugger
-    #   caregiver = self.send("caregiver#{index+1}".to_sym)
-    #   unless (caregiver.blank? || caregiver.nothing_assigned?)
-    #     caregiver.is_caregiver_to( senior)
-    #     # caregiver.valid? ? caregiver.is_caregiver_to(senior) : self.errors.add_to_base("Caregiver #{index} not valid")
-    #     # self.errors.add_to_base("Caregiver #{index} not valid") unless caregiver.valid?
-    #     # self.errors.add_to_base("Caregiver #{index} profile needs more detail") unless caregiver.profile.nil? || caregiver.profile.valid?
-    #     # save options
-    #     options = self.send("mem_caregiver#{index+1}_options")
-    #     caregiver.options_for_senior(senior, options.merge({:position => (index+1)}))
-    #   end
-    # end
+    # ----------------------- shift to user.rb - end -------------------------------
   end
-
-  # Fri Aug  6 21:29:55 IST 2010
-  # these methods are now shifted to user.rb
-  #
-  # # additional information for the status at which this user intake is
-  # # example:
-  # #   ready for approval: each red "x" column described
-  # def status_information
-  #   case STATUS.index( status)
-  #   when nil; '';
-  #   when :approval_pending
-  #     
-  #   end
-  # end
-  # 
-  # # find applicable key value from STATUS constant above
-  # #   * status column is used to identify the key
-  # #   * default = pending (blank or unknown status)
-  # def status_index
-  #   senior.status_index
-  # end
-  # 
-  # # button text subject to status_index
-  # #   :pending status will return "", so we need to cover that here
-  # #   everything else is good
-  # def status_button_text
-  #   senior.status_button_text
-  # end
-  # 
-  # def submit_button_text
-  #   senior.submit_button_text
-  # end
-  # 
-  # # button color for user_intake form
-  # #   * we need to show gray when status in not found
-  # #   * everything else is good
-  # def status_button_color
-  #   senior.status_button_color
-  # end
 
   def add_triage_note( args = {})
     senior.add_triage_audit_log( args) unless ( args.blank? || senior.blank? )
@@ -537,7 +473,6 @@ class UserIntake < ActiveRecord::Base
           self.mem_senior = user # keep in instance variable so that attrbutes can be saved with user_intake
         end
 
-        # debugger
         (self.mem_subscriber = User.new( mem_senior.attributes)) if subscriber_is_user # same data, but clone
       end
     end
@@ -564,7 +499,6 @@ class UserIntake < ActiveRecord::Base
       self.mem_subscriber = nil
     else
 
-      # debugger
       if subscriber_is_user
         self.senior = User.new( arg.attributes) if senior.blank? # we can use this data
         self.mem_subscriber = senior # assign to senior, then reference as subscriber
@@ -621,9 +555,7 @@ class UserIntake < ActiveRecord::Base
           if self.new_record?
             self.mem_caregiver1 = arg_user # User.new(attributes)
           else
-            user = (caregiver1 || arg_user)
-            user.is_caregiver_of( senior) # self.senior
-            self.mem_caregiver1 = user
+            self.mem_caregiver1 = arg_user
           end
 
           self.mem_caregiver1_options = attributes["role_options"] if attributes.has_key?("role_options")
@@ -654,9 +586,7 @@ class UserIntake < ActiveRecord::Base
         if self.new_record?
           self.mem_caregiver2 = arg_user
         else
-          user = (caregiver2 || arg_user)
-          user.is_caregiver_of( senior) # self.senior
-          self.mem_caregiver2 = user
+          self.mem_caregiver2 = arg_user
         end
 
         self.mem_caregiver2_options = attributes["role_options"] if attributes.has_key?("role_options")
@@ -686,9 +616,7 @@ class UserIntake < ActiveRecord::Base
         if self.new_record?
           self.mem_caregiver3 = arg_user
         else
-          user = (caregiver3 || arg_user)
-          user.is_caregiver_of( senior) # self.senior
-          self.mem_caregiver3 = user
+          self.mem_caregiver3 = arg_user
         end
 
         self.mem_caregiver3_options = attributes["role_options"] if attributes.has_key?("role_options")
@@ -728,7 +656,6 @@ class UserIntake < ActiveRecord::Base
   end
 
   def subscriber_attributes=(attributes)
-    # debugger
     unless attributes.blank?
       _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
       attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }

@@ -15,6 +15,10 @@ class Group < ActiveRecord::Base
   validates_presence_of :name
   # validates_uniqueness_of :name
   validates_format_of :name, :with => /\A[a-z0-9_]+\z/, :message => 'Only lowercase and numeric characters are allowed'
+  # http://api.rubyonrails.org/classes/ActiveModel/Validations/HelperMethods.html#method-i-validates_format_of
+  # email validation taken from rails api
+  # check email validity for master group. others exempted
+  validates_format_of :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :if => :is_master_group?
 
   # groups where user has "sales" or "admin" role
   # Usage:
@@ -44,6 +48,22 @@ class Group < ActiveRecord::Base
   # = public : class methods =
   # ==========================
 
+  # is this a master group? name should have last 6 characters "master"
+  def is_master_group?
+    name.to_s =~ /^.._master$/
+  end
+  
+  # find master group of itself
+  #   * master group is only available to a group with name pattern ??_(.+) which means 2 letters and '_'
+  #   * master group will have a name pattern ??_master where ?? is picked from child group name
+  def master_group
+    # for example
+    #   ml_master for "ml_the_dealer_name"
+    #   de_master for "de_ any name suits here"
+    #   nothing for bestbuy
+    Group.find_by_name( name[0..2] + 'master') if name =~ /^.._(.+)$/
+  end
+
   # Usage:
   #   Group.safety_care     # will find or create the group and return the active_record
   def self.safety_care
@@ -63,7 +83,7 @@ class Group < ActiveRecord::Base
   end
 
   def self.has_default_coupon_codes?
-    _devices = ['complete', 'clip'].collect {|e| DeviceModel.find_complete_or_clip(e) }
+    _devices = [ DeviceModel.myhalo_complete, DeviceModel.myhalo_clip ] # ['complete', 'clip'].collect {|e| DeviceModel.find_complete_or_clip(e) }
     Group.default.coupon_codes.all( :conditions => { :device_model_id => _devices, :coupon_code => 'default'}).length == 2
   end
   # WARNING: Sat Sep 18 00:11:16 IST 2010
@@ -77,7 +97,7 @@ class Group < ActiveRecord::Base
   # t.integer  "monthly_recurring"
   # t.integer  "months_advance"
   # t.integer  "months_trial" 
-  def default_coupon_code( device_type)
+  def default_coupon_code( device_type = 'Chest Strap' )
     device_model = DeviceType.find_by_device_type( device_type).device_models.first
     Group.default.coupon_codes.first( :conditions => { :coupon_code => "default", :device_model_id => device_model.id })
   end

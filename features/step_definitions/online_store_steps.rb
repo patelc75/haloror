@@ -5,7 +5,8 @@ require "faker"
 Given /^the product catalog exists$/ do
   #
   # remove any existing data for product catalog
-  [DeviceType, DeviceModel, DeviceModelPrice].each {|e| e.delete_all }
+  Given "there are no device types, device models, device model prices"
+  # [DeviceType, DeviceModel, DeviceModelPrice].each {|e| e.delete_all }
   #
   # Now create what we need
   {
@@ -52,9 +53,11 @@ Given /^the product catalog exists$/ do
   end
 end
 
-Given /^the payment gateway response log is empty$/ do
-  PaymentGatewayResponse.delete_all
-end
+# CHANGED:
+#   Given there are no payment gateway responses
+# Given /^the payment gateway response log is empty$/ do
+#   PaymentGatewayResponse.delete_all
+# end
 
 # Given /^Scenario (\d+) has happened$/ do |arg1|
 #   pending # express the regexp above with the code you wish you had
@@ -63,6 +66,14 @@ end
 # =========
 # = whens =
 # =========
+
+When /^I place an online order for "([^\"]*)" group$/ do |_name|
+  When %{I am placing an online order}
+  When %{I select "#{_name}_group" from "Group"}
+  When %{I fill in "Coupon Code" with "#{_name}_coupon"}
+  When %{I press "Continue"}
+  When %{I press "Place Order"}
+end
 
 When /^I am placing an online order$/ do
   When %{I go to the online store}

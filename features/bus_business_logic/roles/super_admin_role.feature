@@ -4,7 +4,7 @@ Feature: Super Admin roles
   I want feature
     
   Background:
-    Given there is no data for users
+    Given there are no users
     And a user "super-admin-user" exists with profile
     And a user "senior-user" exists with profile
     And a user "caregiver-user" exists with profile

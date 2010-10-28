@@ -105,7 +105,6 @@ class UserIntakesController < ApplicationController
     @user_intake.skip_validation = (params[:commit] == "Save") # just save without asking anything
     @groups = Group.for_user(current_user)
 
-    # debugger
     # user intake form submission
     # Thu Oct 21 23:42:41 IST 2010
     #   user intake form now has a new hidden field 'user_intake_form_view'
@@ -143,7 +142,6 @@ class UserIntakesController < ApplicationController
     respond_to do |format|
       # _attributes = params[:user_intake].reject {|k,v| v.is_a?(Hash) || k.include?( "attributes") }
       # _hashes = params[:user_intake].select {|k,v| v.is_a?(Hash) || k.include?( "attributes") }
-      # debugger
       #
       # Thu Oct 21 23:58:40 IST 2010 : the fields were replaced by raw user intake columns
       # # ramonrails: Fri Oct 14 10:40:54 IST 2010

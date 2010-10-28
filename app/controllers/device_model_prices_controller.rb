@@ -45,7 +45,6 @@ class DeviceModelPricesController < ApplicationController
   # POST /device_model_prices
   # POST /device_model_prices.xml
   def create
-    debugger
     @device_model_price = DeviceModelPrice.new(params[:device_model_price])
     @groups = Group.all( :order => :name)
 

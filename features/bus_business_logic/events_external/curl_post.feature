@@ -15,7 +15,7 @@ Feature: POST XML to simulate gateway
       | serial_number |
       | 0123456789    |
       | 2567053101    |
-    And there is no data for vitals, dial_up_alerts
+    And there are no vitals, dial_up_alerts
   
   # IMPORTANT
   #   * key *must* be any of the following *only*
