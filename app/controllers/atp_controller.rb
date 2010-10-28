@@ -9,9 +9,9 @@ class AtpController < ApplicationController
   
   def report
   	if params[:device_id] and params[:device_id] != ""
-  	  @atp_test_results = AtpTestResult.find_all_by_device_id(params[:device_id])
+  	  @atp_test_results = AtpTestResult.find_all_by_device_id(params[:device_id]).paginate :page => params[:page], :per_page => 2
   	else
-      @atp_test_results = AtpTestResult.find(:all)
+      @atp_test_results = AtpTestResult.find(:all).paginate :page => params[:page], :per_page => 2
     end
   end
   def atp_test_result_view

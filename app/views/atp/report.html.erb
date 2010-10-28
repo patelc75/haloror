@@ -4,6 +4,8 @@
 <input type="submit" value="Enter device_id">
 </form>
 <h3>Reports</h3>
+<div class="span-21 last"><%= will_paginate @atp_test_results %></div> 
+<br><br>
 <table class="bluegrey"> 
   <tr><th>ID</th>
   <th>Result</th>
@@ -47,4 +49,5 @@
   </tr> 
   <% end %>
  <% end %>
-</table>
+</table>  
+<%= will_paginate @atp_test_results %>
