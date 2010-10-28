@@ -82,40 +82,55 @@ Given /^user "([^"]*)" status gets changed to "([^"]*)"$/ do |login, status|
   user.save.should == true
 end
 
-Given /^I am ready to create an admin$/ do
-  Given "the following groups:", table(%{
-    | name           | sales_type | description                |
-    | bogus_group    | reseller   | bogus reseller             |
-    | reseller_group | reseller   | reseller_group description |
-    | retailer_group | reseller   | retailer_group description |
-  })
-  Given %{a role "admin" exists}
-  When "I go to the home page"
-  When %{I follow links "User Signup"}
-  When %{I select "reseller_group" from "Group"}
-  When %{I select "admin" from "Role"}
-  When "I fill in the following:", table(%{
-    | Email      | halosarvasv@gmail.com |
-    | First Name | admin                 |
-    | Last Name  | pq160                 |
-    | Address    | admin address         |
-    | City       | admin_city            |
-    | State      | admin_state           |
-    | Zipcode    | 12345                 |
-    | Home Phone | 1234567890            |
-    | Work Phone | 1234567890            |
-  })
-end
-
-Given /^I am activating the last user$/ do
-  (_user = User.last).should_not be_blank
-  visit "/activate/#{User.last.activation_code}"
-end
-
 
 # =========
 # = whens =
 # =========
+
+When /^I activate the last user as "([^"]*)"$/ do |_name|
+  When %{I am activating the last user as "_name"}
+  When %{I press "subscribe_button"}
+end
+
+When /^I am activating the last user as "([^"]*)"$/ do |_name|
+  (_user = User.last).should_not be_blank
+  visit "/activate/#{User.last.activation_code}"
+  When "I fill in the following:", table(%{
+    | Username         | #{_name} |
+    | Password         | #{_name} |
+    | Confirm Password | #{_name} |
+  })
+end
+
+When /^I create admin of "([^"]*)" group$/ do |_name|
+  When %{I am creating admin of "#{_name}" group}
+  When %{I press "subscribe"}
+end
+
+When /^I am creating admin of "([^"]*)" group$/ do |_name|
+  Given "the following groups:", table(%{
+    | name           | sales_type | description                |
+    | bogus_group    | reseller   | bogus reseller             |
+    | retailer_group | retailer   | retailer_group description |
+  })
+  Given %{a role "admin" exists}
+  When %{I create a "#{_name}" group}
+  When "I go to the home page"
+  When %{I follow links "User Signup"}
+  When %{I select "#{_name}_group" from "Group"}
+  When %{I select "admin" from "Role"}
+  When "I fill in the following:", table(%{
+    | Email      | #{_name}_admin@text.com |
+    | First Name | #{_name}admin           |
+    | Last Name  | #{_name}admin           |
+    | Address    | admin address           |
+    | City       | admin_city              |
+    | State      | admin_state             |
+    | Zipcode    | 12345                   |
+    | Home Phone | 1234567890              |
+    | Work Phone | 1234567890              |
+  })
+end
 
 When /^I activate and login as the senior of last user intake$/ do
   When %{I am activating the "senior" of last user intake}

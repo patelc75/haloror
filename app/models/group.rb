@@ -62,6 +62,10 @@ class Group < ActiveRecord::Base
     find_or_create_by_name('default', { :email => "admin@myhalomonitor.com"})
   end
 
+  def self.has_default_coupon_codes?
+    _devices = ['complete', 'clip'].collect {|e| DeviceModel.find_complete_or_clip(e) }
+    Group.default.coupon_codes.all( :conditions => { :device_model_id => _devices, :coupon_code => 'default'}).length == 2
+  end
   # WARNING: Sat Sep 18 00:11:16 IST 2010
   #   * Double check the default values
   # CHANGED: business logic changed. default group now has default coupon codes
@@ -73,24 +77,9 @@ class Group < ActiveRecord::Base
   # t.integer  "monthly_recurring"
   # t.integer  "months_advance"
   # t.integer  "months_trial" 
-  def default_coupon_code( device_type = 'Chest Strap')
-    device_type = 'Chest Strap' unless device_type == 'Belt Clip'
+  def default_coupon_code( device_type)
     device_model = DeviceType.find_by_device_type( device_type).device_models.first
-    if ( coupon = Group.default.coupon_codes.first( :conditions => { :coupon_code => "default", :device_model_id => device_model.id }) ).blank?
-      #
-      # expiry_date.blank? means it never expires
-      attributes = {
-        :coupon_code => "default",
-        :deposit => 199,
-        :shipping => 0,
-        :monthly_recurring => 99,
-        :months_advance => 0,
-        :months_trial => 0,
-        :device_model_id => device_model.id
-      }
-      coupon = self.coupon_codes.create( attributes)
-    end
-    coupon
+    Group.default.coupon_codes.first( :conditions => { :coupon_code => "default", :device_model_id => device_model.id })
   end
 
   # groups applicable to user
