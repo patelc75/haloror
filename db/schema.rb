@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101006210232) do
+ActiveRecord::Schema.define(:version => 20101029002305) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -72,7 +72,7 @@ ActiveRecord::Schema.define(:version => 20101006210232) do
     t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
-    t.string   "comments"
+    t.text     "comments"
     t.string   "result_value",       :limit => 1024
     t.integer  "atp_test_result_id"
   end
@@ -84,7 +84,7 @@ ActiveRecord::Schema.define(:version => 20101006210232) do
     t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
-    t.string   "comments"
+    t.text     "comments"
     t.string   "atp_key"
   end
 
@@ -101,7 +101,7 @@ ActiveRecord::Schema.define(:version => 20101006210232) do
     t.datetime "updated_at"
     t.datetime "created_at"
     t.integer  "created_by"
-    t.string   "comments"
+    t.text     "comments"
   end
 
   create_table "atp_test_results_rmas", :id => false, :force => true do |t|
@@ -222,7 +222,7 @@ ActiveRecord::Schema.define(:version => 20101006210232) do
     t.string   "sw_rev"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "percentage"
+    t.integer  "battery_percentage"
   end
 
   create_table "call_center_deferreds", :force => true do |t|
@@ -291,6 +291,7 @@ ActiveRecord::Schema.define(:version => 20101006210232) do
     t.integer  "device_id",  :null => false
     t.datetime "created_at", :null => false
     t.integer  "priority"
+    t.integer  "user_id"
   end
 
   add_index "device_available_alerts", ["device_id"], :name => "device_available_alerts_device_id_idx"
@@ -393,6 +394,7 @@ ActiveRecord::Schema.define(:version => 20101006210232) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "priority"
+    t.integer  "user_id"
   end
 
   add_index "device_unavailable_alerts", ["device_id"], :name => "device_unavailable_alerts_device_id_idx"
@@ -1084,6 +1086,7 @@ ActiveRecord::Schema.define(:version => 20101006210232) do
     t.datetime "update_at"
     t.integer  "number_attempts", :default => 1, :null => false
     t.datetime "reconnected_at"
+    t.integer  "user_id"
   end
 
   add_index "strap_off_alerts", ["device_id"], :name => "index_strap_off_alerts_on_device_id"
@@ -1091,6 +1094,7 @@ ActiveRecord::Schema.define(:version => 20101006210232) do
   create_table "strap_on_alerts", :force => true do |t|
     t.integer  "device_id",  :null => false
     t.datetime "created_at", :null => false
+    t.integer  "user_id"
   end
 
   add_index "strap_on_alerts", ["device_id"], :name => "index_strap_on_alerts_on_device_id"
@@ -1253,7 +1257,7 @@ ActiveRecord::Schema.define(:version => 20101006210232) do
     t.string   "sw_rev"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "percentage"
+    t.integer  "battery_percentage"
   end
 
   create_table "work_orders", :force => true do |t|

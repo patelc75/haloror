@@ -5,6 +5,7 @@ class OrderItem < ActiveRecord::Base
   belongs_to :device_model
   
   # FIXME: this should not be static!  but while it is, this should be in device class. Why here?
+  # WARNING: do not change anything in this hash. lot of code is depenent on this
   PRODUCT_HASH = Hash[
    "myHalo Complete" => "12001002-1",
    "myHalo Clip"     => "12001008-1"
