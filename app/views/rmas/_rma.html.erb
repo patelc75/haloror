@@ -109,7 +109,7 @@
 </div>
 <%= link_to 'Back to RMA List', rmas_path, :class => "button blue-button medium" %>
 <%= f.submit "Submit", :class => 'button green-button medium' %>
-<%= link_to 'Cancel', (rma_path(@rma) unless @rma.new_record?), :class => "button green-button medium" %>
+<%= link_to 'Cancel', rma_path(@rma), :class => "button green-button medium" %>
 <br><br>     
 <p>
   <%= render :partial => "rma_items/rma_items", :locals => {:rma => @rma} %>

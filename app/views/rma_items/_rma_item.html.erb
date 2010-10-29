@@ -93,5 +93,5 @@
     </div> 
     <%= link_to "All items for RMA #{@rma_item.rma.id}", rma_path(@rma_item.rma), :class => "button blue-button medium" %> 
     <%= f.submit "Submit", :class => 'button green-button medium' %>    
-    <%= link_to 'Cancel', (rma_rma_item_path(@rma_item.rma, @rma_item) unless @rma_item.new_record?), :class => 'button green-button medium'  %>
+    <%= link_to 'Cancel', (rma_rma_item_path(@rma_item.rma, @rma_item)), :class => 'button green-button medium'  %>
 <% end -%>
