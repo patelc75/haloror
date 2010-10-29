@@ -1,8 +1,13 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
 <%=render :partial => 'atp/nav'%>
-
+<table width="100%"><tr>
+  <td>
+    <%= link_to 'Back to all RMAs', rmas_path, :class => "button green-button medium" %>
+    <%= link_to 'Edit this RMA', edit_rma_path(@rma), :class => "button green-button medium" unless @rma.new_record? %>
+  </td>
+</tr></table>
+<div class = "box">
 <% form_for @rma do |f| -%>
-  
 <table>
   <tr>
     <td class="aligntop">
@@ -86,19 +91,9 @@
       </table>
     </td>
   </tr>
-      
-  <tr>
-    <td>
-    <table width="100%"><tr>
-      <td>
-        <%= link_to 'RMA List', rmas_path, :class => "button green-button medium" %>
-        <%= link_to 'Edit this RMA', edit_rma_path(@rma), :class => "button green-button medium" unless @rma.new_record? %>
-      </td>
-    </tr></table>
-    </td>
-  </tr>
-</table>
 
+</table>
+</div>
 
 <p>
   <%= render :partial => "rma_items/rma_items", :locals => {:rma => @rma} %>

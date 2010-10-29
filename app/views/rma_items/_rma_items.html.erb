@@ -1,4 +1,4 @@
-<table><tr><td><h4>RMA Items for RMA <%= "#{@rma.id}" %></h4></td></tr></table>
+<h4>RMA Items for RMA <%= "#{@rma.id}" %> &nbsp; <%= link_to "New RMA Item", new_rma_rma_item_path(@rma), :class => "button blue-button medium" %></h4>
 <table class="bluegrey">
   <tr>
     <th>ID</th>
@@ -35,6 +35,6 @@
 <% if @rma.new_record? %>
   RMA Items can be created once the RMA is saved to database.
 <% else %>
-  <%= link_to "New RMA Item", new_rma_rma_item_path(@rma), :class => "button blue-button medium" %> for <%= link_to "RMA #{@rma.id}", @rma, :class => "button green-button medium" %>, or 
-  <%= link_to "Edit RMA #{@rma.id}", edit_rma_path(@rma), :class => "button green-button medium" %>
+  <!--%= link_to "RMA #{@rma.id}", @rma, :class => "button green-button medium" %--> 
+  <!--%= link_to "Edit RMA #{@rma.id}", edit_rma_path(@rma), :class => "button green-button medium" %-->
 <% end -%>
