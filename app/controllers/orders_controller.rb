@@ -73,25 +73,27 @@ class OrdersController < ApplicationController
       @same_address = @order.subscribed_for_self?
       # @same_address = (session[:order].blank? ? "checked" : (session[:order][:bill_address_same] || @order.bill_address_same || @order.ship_and_bill_address_same))
     end
-    
-    # Thu Oct 28 07:03:01 IST 2010
-    #   if we do not have default coupon codes, we need to migrate the database
-    #   without these, the online store might crash
-    if Group.has_default_coupon_codes?
+
+    # Fri Oct 29 05:34:34 IST 2010
+    # WARNING: switched off for sometime. migraton must be run on servers
+    # # Thu Oct 28 07:03:01 IST 2010
+    # #   if we do not have default coupon codes, we need to migrate the database
+    # #   without these, the online store might crash
+    # if Group.has_default_coupon_codes?
       #
       # usually, this block executes
       respond_to do |format|
         format.html # new.html.erb
       end
-    else
-      # Thu Oct 28 07:04:47 IST 2010
-      #   we should never reach here, but if we did;
-      #   * something is seriously wrong with the database
-      #   * the data is lost accidentally?
-      #
-      # send some email to admin or super admin?
-      redirect_to :action => "store_failure"
-    end
+    # else
+    #   # Thu Oct 28 07:04:47 IST 2010
+    #   #   we should never reach here, but if we did;
+    #   #   * something is seriously wrong with the database
+    #   #   * the data is lost accidentally?
+    #   #
+    #   # send some email to admin or super admin?
+    #   redirect_to :action => "store_failure"
+    # end
   end
 
   def store_failure
