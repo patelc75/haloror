@@ -1,7 +1,7 @@
 <% form_for( [@rma, @rma_item]) do |f| -%>
   <%= f.error_messages %>
-  
-  <table width="100%" class="bluegrey">
+  <div class="box">
+  <table width="100%">
     <tr><td>
       <table>
         <tr>
@@ -89,18 +89,9 @@
       </table>
     </td>
     </tr>
-    
-    <tr>
-      <td>
-      <table width="100%"><tr>
-        <td>
-          <%= link_to "Show Items for RMA #{@rma_item.rma.id}", rma_path(@rma_item.rma) %> | 
-          <%= link_to 'Show this RMA Item', rma_rma_item_path(@rma_item.rma, @rma_item) unless @rma_item.new_record? %> | 
-          <%= f.submit "Submit", :class => 'button' %>
-        </td>
-      </tr></table>
-      </td>
-    </tr>
   </table>
-
+    </div> 
+    <%= link_to "All items for RMA #{@rma_item.rma.id}", rma_path(@rma_item.rma), :class => "button blue-button medium" %> 
+    <%= f.submit "Submit", :class => 'button green-button medium' %>    
+    <%= link_to 'Cancel', (rma_rma_item_path(@rma_item.rma, @rma_item) unless @rma_item.new_record?), :class => 'button green-button medium'  %>
 <% end -%>

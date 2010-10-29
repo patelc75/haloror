@@ -1,10 +1,5 @@
 <% form_for(@rma) do |f| %>   
-Back to <%= link_to 'RMA List', rmas_path, :class => "button blue-button medium" %>
-<% unless @rma.new_record? %>
-, view this <%= link_to 'Read Only', rma_path(@rma), :class => "button blue-button medium" %>
-<% end -%>
-, or <%= f.submit "Submit", :class => 'button green-button medium' %> changes.
-<%= f.error_messages %><br><br  > 
+<%= f.error_messages %>
 <div class="box">
 <table>
   <tr>
@@ -112,7 +107,10 @@ Back to <%= link_to 'RMA List', rmas_path, :class => "button blue-button medium"
     </td>
 </table> 
 </div>
-<br />
+<%= link_to 'Back to RMA List', rmas_path, :class => "button blue-button medium" %>
+<%= f.submit "Submit", :class => 'button green-button medium' %>
+<%= link_to 'Cancel', (rma_path(@rma) unless @rma.new_record?), :class => "button green-button medium" %>
+<br><br>     
 <p>
   <%= render :partial => "rma_items/rma_items", :locals => {:rma => @rma} %>
 </p>
