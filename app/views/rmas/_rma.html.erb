@@ -69,18 +69,17 @@ Back to <%= link_to 'RMA List', rmas_path, :class => "button blue-button medium"
           <td class="textright"><label for="rma_received_verified_on">RMA Received & Verified:</label>:</td>
           <td><%= calendar_date_select_tag "rma[received_verified_on]", @rma.received_verified_on.to_s, :id => "rma_received_verified_on", :popup => 'force' %></td>
         </tr>
+        <tr>
+          <td class="textright"><%= f.label :service_outage, "Service Outage" %>:</td>
+          <td><%= f.select :service_outage, [['Yes', 'Yes'], ['No', 'No']] %></td>
+        </tr>        
       </table>
     </td>
 
     <td width="15px"></td>
-
     <td class="aligntop">
       <table>
-        <tr>
-          <td class="textright"><%= f.label :service_outage, "Service Outage" %>:</td>
-          <td><%= f.select :service_outage, [['Yes', 'Yes'], ['No', 'No']] %></td>
-        </tr>
-        <tr><td><h3>RMA Shipping</h3></td></tr>
+        <tr><td></td><td><h3>Shipping Info</h3></td></tr>
         <tr>
           <td class="textright"><%= f.label :ship_name, "Name" %>:</td>
           <td><%= f.text_field :ship_name %></td>

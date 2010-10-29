@@ -47,45 +47,61 @@
         <tr>
           <td class="textright"><label for="rma_completed_on">RMA Completed Date</label>:</td>
           <td><%=h @rma.completed_on unless @rma.completed_on.blank? %></td>
+        </tr> 
+        <tr>
+          <td class="textright"><label for="rma_termination_requested_on">RMA Termination Requested</label>:</td>
+          <td><%=h @rma.termination_requested_on unless @rma.termination_requested_on.blank? %></td>
         </tr>
+        <tr>
+          <td class="textright"><label for="rma_discontinue_bill_on">RMA Desired Discontinuation</label>:</td>
+          <td><%=h @rma.discontinue_bill_on unless @rma.discontinue_bill_on.blank? %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_discontinue_service_on">RMA Discontinue Service:</label>:</td>
+          <td><%=h @rma.discontinue_service_on unless @rma.discontinue_service_on.blank? %></td>
+        </tr>
+        <tr>
+          <td class="textright"><label for="rma_received_verified_on">RMA Received & Verified:</label>:</td>
+          <td><%=h @rma.received_verified_on unless @rma.received_verified_on.blank? %></td>          
+        </tr> 
+        <tr>
+          <td class="textright"><%= f.label :service_outage, "Service Outage" %>:</td>
+          <td><%=h @rma.service_outage %></td>
+        </tr>               
       </table>
     </td>
     
     <td width="15px"></td>
     
     <td class="aligntop">
-      <table>
+      <table class="span-5">
+        <tr><td><h3>Shipping Info</h3></td></tr>
         <tr>
-          <td class="textright"><%= f.label :service_outage, "Service Outage" %>:</td>
-          <td><%=h @rma.service_outage %></td>
-        </tr>
-        <tr><td><h3>RMA Shipping</h3></td></tr>
-        <tr>
-          <td class="textright"><%= f.label :ship_name, "Name" %>:</td>
+          <td><%= f.label :ship_name, "Name" %>:</td>
           <td><%=h @rma.ship_name %></td>
         </tr>
         <tr>
-          <td class="textright"><%= f.label :ship_address, "Address" %>:</td>
+          <td><%= f.label :ship_address, "Address" %>:</td>
           <td><%=h @rma.ship_address %></td>
         </tr>
         <tr>
-          <td class="textright"><%= f.label :ship_city, "City" %>:</td>
+          <td><%= f.label :ship_city, "City" %>:</td>
           <td><%=h @rma.ship_city %></td>
         </tr>
         <tr>
-          <td class="textright"><%= f.label :ship_state, "State" %>:</td>
+          <td><%= f.label :ship_state, "State" %>:</td>
           <td><%=h @rma.ship_state %></td>
         </tr>
         <tr>
-          <td class="textright"><%= f.label :ship_zipcode, "Zip Code" %>:</td>
+          <td><%= f.label :ship_zipcode, "Zip Code" %>:</td>
           <td><%=h @rma.ship_zipcode %></td>
         </tr>
         <tr>
-          <td class="textright"><%= f.label :phone_number, "Phone Number" %>:</td>
+          <td><%= f.label :phone_number, "Phone Number" %>:</td>
           <td><%=h @rma.phone_number %></td>
         </tr>
         <tr>
-          <td class="textright"><%= f.label :notes, "Notes" %>:</td>
+          <td><%= f.label :notes, "Notes" %>:</td>
           <td><%=h @rma.notes %></td>
         </tr>
       </table>
