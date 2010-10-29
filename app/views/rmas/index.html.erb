@@ -4,15 +4,19 @@
   <div class="span-22 last text-right"><%= render :partial => 'atp/nav'%></div>
 
   <% form_tag rmas_path, :method => :get, :id => "rma_search" do %>
-
+  
+  <% rma_statuses_1 = (rma_statuses_2 = RmaItemStatus::STATUSES).slice!(0, RmaItemStatus::STATUSES.size/2) %>
   <div class="span-23 box">
-      <div class="span-12">
-        <ul class="no-style left">
-        <% RmaItemStatus::STATUSES.each do |status| %>
-          <li class="float-left"><%= check_box_tag "status[#{status[0]}]", status[1], instance_variable_get("@rma_#{status[0].downcase.gsub(' ','_')}") %> <%=h status[0] %></li>
+      <div class="span-4">
+        <% rma_statuses_1.each do |status| %>
+          <div style="display: inline-block;"><%= check_box_tag "status[#{status[0]}]", status[1], instance_variable_get("@rma_#{status[0].downcase.gsub(' ','_')}") %> <%=h status[0] %></div>
         <% end %>
-        </ul>
       </div>
+      <div class="span-5">
+        <% rma_statuses_2.each do |status| %>
+          <div style="display: inline-block;"><%= check_box_tag "status[#{status[0]}]", status[1], instance_variable_get("@rma_#{status[0].downcase.gsub(' ','_')}") %> <%=h status[0] %></div>
+        <% end %>
+      </div>      
       
       <div class="span-11 last text-right">
         <%= text_area_tag "search", @search, :rows => 1, :class => "span-11" %>
