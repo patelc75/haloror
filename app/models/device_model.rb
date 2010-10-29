@@ -19,7 +19,7 @@ class DeviceModel < ActiveRecord::Base
   class << self # dynamic class methods
     ["clip", "complete"].each do |_which|
       define_method "myhalo_#{_which}".to_sym do
-        DeviceModel.find_by_part_number(OrderItem::PRODUCT_HASH[ "myHalo #{_which.capitalize}" ])
+        DeviceModel.find_by_part_number( OrderItem::PRODUCT_HASH[ "myHalo #{_which.capitalize}" ])
       end
     end
   end # dynaic class methods
@@ -27,7 +27,7 @@ class DeviceModel < ActiveRecord::Base
   # WARNING: this is a very risky method. static values should not be used.
   def self.find_complete_or_clip(name = "complete")
     product_string = (name == "clip") ? "myHalo Clip": "myHalo Complete" # default = myHaloComplete
-    DeviceModel.find_by_part_number(OrderItem::PRODUCT_HASH[product_string])
+    DeviceModel.find_by_part_number( OrderItem::PRODUCT_HASH[product_string ])
   end
 
   def self.complete_tariff( group, coupon_code)
