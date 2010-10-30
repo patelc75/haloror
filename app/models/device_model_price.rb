@@ -19,9 +19,36 @@ class DeviceModelPrice < ActiveRecord::Base
   # ======================
   
   named_scope :recent_on_top, :order => "created_at DESC"
-  named_scope :for_group, lambda {|group| { :conditions => { :group_id => group.id } }}
-  named_scope :for_coupon_code, lambda {|arg| { :conditions => { :coupon_code => arg } }}
-  named_scope :for_device_model, lambda {|_device| { :conditions => { :device_model_id => _device.id } }}
+  named_scope :for_group, lambda {|_group| { :conditions => { :group_id => _group.id } }} # used in device_model.rb
+  named_scope :for_coupon_code, lambda {|arg| { :conditions => { :coupon_code => arg.to_s } }}
+  named_scope :for_device_model, lambda {|_device| { :conditions => { :device_model_id => _device.id } }} # used in group.rb
+
+  # =================
+  # = class methods =
+  # =================
+  
+  # WARNING: Sat Sep 18 00:11:16 IST 2010
+  #   * Double check the default values
+  # CHANGED: business logic changed. default group now has default coupon codes
+  #   * now searches by part number instead of product phrase
+  # Usage: returns default coupon code for...
+  #   default( DeviceModel.myhalo_clip.part_number )     => myhalo_clip
+  #   default( DeviceModel.myhalo_complete.part_number ) => myhalo_complete
+  #   default( DeviceModel.myhalo_clip )                 => myhalo_clip
+  #   default( DeviceModel.myhalo_complete )             => myhalo_complete
+  #   default( DeviceModel.first.part_number )           => myhalo_complete, unless this row is a valid myhalo_clip
+  #   default                                            => myhalo_complete
+  #   default( "bogus-part-number")                      => myhalo_complete
+  def self.default( arg = nil)
+    _model = if arg.blank?
+      DeviceModel.myhalo_complete
+    elsif arg.is_a?( DeviceModel)
+      arg == DeviceModel.myhalo_clip ? DeviceModel.myhalo_clip : DeviceModel.myhalo_complete
+    else
+      arg.to_s == DeviceModel.myhalo_clip.part_number ? DeviceModel.myhalo_clip : DeviceModel.myhalo_complete
+    end
+    _model.coupon_codes.first( :conditions => { :coupon_code => 'default', :group_id => Group.default! })
+  end
   
   # ====================
   # = instance methods =

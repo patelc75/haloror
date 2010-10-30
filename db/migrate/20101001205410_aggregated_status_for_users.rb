@@ -15,7 +15,7 @@ class AggregatedStatusForUsers < ActiveRecord::Migration
           #
           # Legacy halousers will be assigned "installed" state if user is halouser of safety_care.
           # All other halousers, demo boolean is set to true
-          if user.is_halouser_of?( Group.safety_care)
+          if user.is_halouser_of?( Group.safety_care!)
             user.status = User::STATUS[ :installed] # "Installed" if already member of safety_care
           else
             user.demo_mode = true # otherwise just demo_mode account

@@ -18,7 +18,7 @@
      
 	      <div>
         </div>
-	    <input type="checkbox" name="opt_out_call_center" <%= 'checked' if !@user.is_halouser_of?(Group.safety_care) %> />
+	    <input type="checkbox" name="opt_out_call_center" <%= 'checked' if !@user.is_halouser_of?(Group.safety_care!) %> />
 	    <label for"opt_out_call_center">Opt out of live call center</label>
 	    
 	    <br /><br />

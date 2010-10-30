@@ -1,6 +1,6 @@
 class Group < ActiveRecord::Base
   acts_as_authorizable
-  has_many :coupon_codes, :class_name => "DeviceModelPrice", :foreign_key => "group_id"
+  has_many :coupon_codes, :class_name => "DeviceModelPrice" # , :foreign_key => "group_id"
   has_many :dial_ups # WARNING: Code cover required : https://redmine.corp.halomonitor.com/issues/2809
   has_many :emergency_numbers
   has_many :orders
@@ -48,6 +48,16 @@ class Group < ActiveRecord::Base
   # = public : class methods =
   # ==========================
 
+  # Usage:
+  #   Group.default!
+  #   Exclamation sign means this method call is doing anything required to "ensure" results
+  def self.default!
+    _email = "senior_signup@halomonitoring.com" # default email address
+    _group = Group.find_or_create_by_name('default', { :email => _email} ) # find or create default group
+    _group.update_attributes( :email => _email) unless _group.email == _email # ensure default email address
+    _group # return the default group
+  end
+
   # is this a master group? name should have last 6 characters "master"
   def is_master_group?
     name.to_s =~ /^.._master$/
@@ -65,9 +75,13 @@ class Group < ActiveRecord::Base
   end
 
   # Usage:
-  #   Group.safety_care     # will find or create the group and return the active_record
-  def self.safety_care
-    find_or_create_by_name('safety_care', { :email => "safety_care@myhalomonitor.com"})
+  #   Group.safety_care!     # will find or create the group and return the active_record
+  # Exclamation mark means, this method will do anything required to "ensure" results
+  def self.safety_care!
+    _email = "safety_care@myhalomonitor.com"
+    _group = Group.find_or_create_by_name( 'safety_care', { :email => _email })
+    _group.update_attributes( :email => _email) unless _group.email == _email
+    _group
   end
 
   # Usage:
@@ -76,30 +90,26 @@ class Group < ActiveRecord::Base
     find_or_create_by_name('direct_to_consumer', { :email => "direct_to_consumer@myhalomonitor.com"})
   end
 
-  # Usage:
-  #   Group.default
-  def self.default
-    find_or_create_by_name('default', { :email => "admin@myhalomonitor.com"})
-  end
-
   def self.has_default_coupon_codes?
     _devices = [ DeviceModel.myhalo_complete, DeviceModel.myhalo_clip ] # ['complete', 'clip'].collect {|e| DeviceModel.find_complete_or_clip(e) }
-    Group.default.coupon_codes.all( :conditions => { :device_model_id => _devices, :coupon_code => 'default'}).length == 2
+    Group.default!.coupon_codes.all( :conditions => { :device_model_id => _devices, :coupon_code => 'default'}).length == 2
   end
-  # WARNING: Sat Sep 18 00:11:16 IST 2010
-  #   * Double check the default values
-  # CHANGED: business logic changed. default group now has default coupon codes
-  #
-  # deault_coupon_code
-  # t.date     "expiry_date"
-  # t.integer  "deposit"
-  # t.integer  "shipping"
-  # t.integer  "monthly_recurring"
-  # t.integer  "months_advance"
-  # t.integer  "months_trial" 
-  def default_coupon_code( device_type = 'Chest Strap' )
-    device_model = DeviceType.find_by_device_type( device_type).device_models.first
-    Group.default.coupon_codes.first( :conditions => { :coupon_code => "default", :device_model_id => device_model.id })
+
+  # Usage:
+  #   get_coupon_code( :device_model => <AR_object_here>, :coupon_code => '99TRIAL', :part_number => '<here>')
+  def coupon( options = {})
+    # valid options structure with a coupon code
+    if !options.blank? && options.is_a?(Hash) && !options[:coupon_code].blank?
+      # AR object given?
+      _model = options[:device_model] unless options[:device_model].blank?
+      # part_number given? not found yet?
+      _model = DeviceModel.find_by_part_number( options[:part_number]) if _model.blank? && !options[:part_number].blank?
+      # find amoung counpon_codes for this group
+      _coupon = self.coupon_codes.first( :conditions => { :coupon_code => options[:coupon_code], :device_model_id => _model})
+    end
+    # not found so far? get default for options[:device_model] or myhalo_complete
+    _coupon = DeviceModelPrice.default( options[:device_model]) if !defined?(_coupon) || _coupon.blank?
+    _coupon
   end
 
   # groups applicable to user

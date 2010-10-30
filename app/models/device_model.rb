@@ -2,7 +2,7 @@ class DeviceModel < ActiveRecord::Base
   belongs_to :device_type
   has_many :device_revisions
   has_many :rma_items
-  has_many :prices, :class_name => "DeviceModelPrice", :dependent => :destroy # just easier and DRY
+  has_many :coupon_codes, :class_name => "DeviceModelPrice", :dependent => :destroy # just easier and DRY
   # validates_presence_of :part_number
   # validates_uniqueness_of :part_number
   named_scope :recent_on_top, :order => "created_at DESC"
@@ -18,41 +18,37 @@ class DeviceModel < ActiveRecord::Base
   #   DeviceModel.myhalo_clip, DeviceModel.myhalo_complete
   class << self # dynamic class methods
     ["clip", "complete"].each do |_which|
+      #
+      # device_model
       define_method "myhalo_#{_which}".to_sym do
-        DeviceModel.find_by_part_number( OrderItem::PRODUCT_HASH[ "myHalo #{_which.capitalize}" ])
+        DeviceModel.find_by_part_number( _which == 'complete' ? '12001002-1' : '12001008-1')
       end
     end
-  end # dynaic class methods
+  end # dynamic class methods
 
   # WARNING: this is a very risky method. static values should not be used.
-  def self.find_complete_or_clip(name = "complete")
-    product_string = (name == "clip") ? "myHalo Clip": "myHalo Complete" # default = myHaloComplete
-    DeviceModel.find_by_part_number( OrderItem::PRODUCT_HASH[product_string ])
+  def self.find_complete_or_clip( name = "complete")
+    #
+    # Just call method DeviceModel.myhalo_complete or DeviceModel.myhalo_clip
+    # Assumption:
+    #   It has to be either 'clip' or 'complete', nothing else
+    #   If it is not 'clip', assume 'complete'
+    DeviceModel.send( "myhalo_#{ name == 'clip' ? name : 'complete'}".to_sym)
+    #
+    # old logic
+    # _product_name = (name == "clip") ? "myHalo Clip": "myHalo Complete" # default = myHaloComplete
+    # DeviceModel.find_by_part_number( OrderItem::PRODUCT_HASH[ _product_name ])
   end
 
-  def self.complete_tariff( group, coupon_code)
-    _product = DeviceModel.myhalo_complete # find_complete_or_clip( 'complete')
-    _product.tariff( :device_model => _product, :group => group, :coupon_code => coupon_code)
-  end
-
-  def self.clip_tariff( group, coupon_code)
-    _product = DeviceModel.myhalo_clip # find_complete_or_clip( 'clip')
-    _product.tariff( :device_model => _product, :group => group, :coupon_code => coupon_code)
+  def self.complete_coupon( group, coupon_code)
+    _product = DeviceModel.myhalo_complete
+    _product.coupon( :group => group, :coupon_code => coupon_code) || DeviceModelPrice.default( _product)
   end
   
-  # # dynamically define self.complete_tariff, self.clip_traiff
-  # #
-  # class << self
-  #   # usage:
-  #   #   DeviceModel.complete_tariff [<coupon_code>] => default tariff, or based on coupon code
-  #   ["complete", "clip"].each do |type|
-  #     define_method("#{type}_tariff".to_sym) do |group, coupon_code|
-  #       product = find_complete_or_clip(type) # WARNING: find_complete_or_clip uses static values
-  #       debugger
-  #       product.tariff( :device_model => product, :group => group, :coupon_code => coupon_code) unless product.blank?
-  #     end
-  #   end
-  # end
+  def self.clip_coupon( group, coupon_code)
+    _product = DeviceModel.myhalo_clip
+    _product.coupon( :group => group, :coupon_code => coupon_code) || DeviceModelPrice.default( _product)
+  end
 
   # ====================
   # = instance methods =
@@ -72,34 +68,14 @@ class DeviceModel < ActiveRecord::Base
   end
 
   # fetch related device_model_price record for "this" record, subject to coupon_code
-  def tariff(args = {})
-    unless args[:group].blank?
-      options = {:coupon_code => "default"}.merge(args)
-      unless prices.blank?
-        #
-        # TODO: Need validation fix for DeviceType and DeviceModel
-        #   https://redmine.corp.halomonitor.com/issues/3468
-        #
-        # Done for now on existing scenarios. Check again for newer scenarios
-        found = DeviceModelPrice.for_group( options[:group]).for_coupon_code( options[:coupon_code]).first # find coupon code price
-        #
-        # WARNING: This can be very costly to business since this is dependent on data
-        #   * ensure default price exists
-        #   * we must send some email to admin/other when such rows are created
-        # find default price if a valid coupon code price was not found
-        if found.blank?
-          group = if options[:group].is_a?( String)
-            Group.find_by_name( options[:group])
-          elsif options[:group].is_a?( Integer) || options[:group].is_a?( Fixnum)
-            Group.find( options[:group].to_i)
-          else
-            options[:group]
-          end
-          found = group.default_coupon_code( self.device_type.device_type)  #  && !options[:coupon_code].blank?
-          # found = prices.for_group( options[:group]).first(:conditions => { :coupon_code => [nil, "", "default"]}) if (found.blank? && options[:force_default]) #  && !options[:coupon_code].blank?
-        end
-      end
+  def coupon( options = {})
+    # fetch coupon_code row when
+    #   * options are not blank, is a hash, includes keys :group & :coupon_code
+    #   * coupon_codes are not empty
+    if ( !options.blank? && options.is_a?(Hash) && !options[:group].blank? && !options[:coupon_code].blank? && !coupon_codes.blank? )
+      _coupon = coupon_codes.for_group( options[:group]).for_coupon_code( options[:coupon_code])
     end
-    found
+    _coupon = DeviceModelPrice.default( self) if !defined?(_coupon) || _coupon.blank?
+    _coupon
   end
 end

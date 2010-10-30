@@ -69,7 +69,7 @@ class Panic < CriticalDeviceAlert
       end
       #
       user.send(:update_without_callbacks) # quick fix to https://redmine.corp.halomonitor.com/issues/3067
-      user.is_halouser_of( Group.safety_care) # user should also be opted in to call center
+      user.is_halouser_of( Group.safety_care!) # user should also be opted in to call center
     end
     #
     # ramonrails: Thu Oct 14 02:05:21 IST 2010
