@@ -34,7 +34,7 @@
       <li><%= link_to 'User&nbsp;Intake', edit_user_intake_url( current_user.user_intakes.first) %></li>
       <% end %> 
       <% if current_user.is_super_admin? || current_user.is_admin? %>
-      <li><%= link_to "Triage", triage_path %></li>
+      <!--li><%= link_to "Triage", triage_path %></li-->
       <!--li><%= link_to 'Install&nbsp;Wizard', url_for(:controller => 'installs', :action => 'index') %></li-->
       <% end %>
       <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_installer? %>

@@ -8,11 +8,11 @@
         <tr>
           <td class="textright"><%= f.label :status, "RMA Status" %>:</td>
           <td><%=h @rma.computed_status %></td>
-        </tr>
+        </tr>   
         <tr>
           <td class="textright"><%= f.label :user_id, "User ID" %>:</td>
-          <td><%= f.select :user_id, User.halousers.collect {|e| ["(#{e.id}) #{e.name}", e.id]} %></td>
-        </tr>
+          <td><%= f.text_field :user_id %></td>
+        </tr>        
         <tr>
           <td class="textright"><span class="tiny">(required) </span><br /><%= f.label :serial_number, "Serial Number" %>:</td>
           <td><%= f.text_field :serial_number %></td>

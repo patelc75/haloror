@@ -44,7 +44,11 @@ class RmasController < ApplicationController
       ["user_id", "user", "serial_number"].collect {|e| Rma.send( :"#{e}_like", @search) }.flatten.uniq
     end
     # now filter by status. include RMAs with no RMA items
-    @rmas = @rmas.select {|e| e.rma_items.blank? || !( statuses & e.rma_items.collect(&:status).uniq ).blank? } # we want to see "statuses" collected above
+    if statuses.length == RmaItemStatus::STATUSES.length
+      @rmas = Rma.all
+    else
+      @rmas = @rmas.select {|e| !(statuses & e.rma_items.collect(&:status).uniq ).blank? } # we want to see "statuses" collected above
+    end
     # Sort:
     # ascending or descending sort based on the supplied argument
     unless sort.blank?
