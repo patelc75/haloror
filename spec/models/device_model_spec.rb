@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe DeviceModel do
-  before(:all) { product_catalog }
+  before(:all) { product_catalog } # direct_to_consumer, bestbuy, default
 
   context "validity" do
     before(:each) { @device_model = Factory.create( :device_model) }
@@ -17,13 +17,19 @@ describe DeviceModel do
     end
   end
 
-  context "should pick default tarriff / coupon code with complete/clip phrase" do
+  context "should pick default tariff / coupon code with complete/clip phrase" do
     group = Group.find_by_name("bestbuy")
     ["complete", "clip"].each do |what|
-      specify { DeviceModel.find_complete_or_clip( what).tariff.should be_blank }
-      specify { DeviceModel.find_complete_or_clip( what).tariff( :group => group).should_not be_blank }
-      specify { DeviceModel.find_complete_or_clip( what).tariff( :group => group).coupon_code.should == "default" }
+      specify { DeviceModel.find_complete_or_clip( what).coupon.should_not be_blank } # always return a default
+      specify { DeviceModel.find_complete_or_clip( what).coupon( :group => group).should_not be_blank }
+      specify { DeviceModel.find_complete_or_clip( what).coupon( :group => group).coupon_code.should == "default" }
     end
+  end
+  
+  context "return default_coupon_code for device_model when the any coupon code is not found" do
+    bestbuy = Group.find_by_name('bestbuy')
+    
+    specify { DeviceModel.myhalo_clip.coupon( :group => bestbuy, :coupon => "99TRIAL").should_not be_blank }
   end
   
   # after(:all) do
@@ -60,7 +66,7 @@ def product_catalog
     @device_model = DeviceModel.first( :conditions => { :device_type_id => @device_type.id, :part_number => values[:part_number]})
     @device_model = Factory.create(:device_model, :device_type => @device_type, :part_number => values[:part_number]) if @device_model.blank?
     @device_model.should_not be_blank
-    ["direct_to_consumer", "bestbuy"].each do |group_name|
+    ["direct_to_consumer", "bestbuy", "default"].each do |group_name|
       (group = (Group.find_by_name( group_name) || Factory.create( :group, :name => group_name))).should_not be_blank
       values[:tariff].each do |key, prices_hash|
         prices_hash[:coupon_code] = group_name.upcase if key == :custom

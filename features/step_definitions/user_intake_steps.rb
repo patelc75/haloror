@@ -555,7 +555,7 @@ end
 Then /^senior of user intake "([^"]*)" should be opted in to call center$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  senior.group_memberships.should include( Group.safety_care)
+  senior.group_memberships.should include( Group.safety_care!)
 end
 
 Then /^caregivers (should|should not) be away for user intake "([^"]*)"$/ do |condition, _serial|
@@ -576,7 +576,7 @@ end
 Then /^senior of user intake "([^"]*)" is halouser of safety care group$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  lambda { senior.is_halouser_of?( Group.safety_care) }.should be_true
+  lambda { senior.is_halouser_of?( Group.safety_care!) }.should be_true
 end
 
 Then /^caregivers of user intake "([^"]*)" are away$/ do |_serial|

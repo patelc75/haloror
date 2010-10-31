@@ -16,8 +16,8 @@ class OrdersController < ApplicationController
     @confirmation = false
     @product = session[:product]
     @order = Order.new(session[:order]) # recall if any order data was remembered
-    @complete_tariff = DeviceModel.complete_tariff( @groups.first, params[:coupon_code])
-    @clip_tariff = DeviceModel.clip_tariff( @groups.first, params[:coupon_code])
+    @complete_tariff = DeviceModel.complete_coupon( @groups.first, params[:coupon_code])
+    @clip_tariff = DeviceModel.clip_coupon( @groups.first, params[:coupon_code])
     
     if request.post? # confirmation mode
       @product = params[:product]
@@ -35,8 +35,8 @@ class OrdersController < ApplicationController
         #   This can probably be obsolete and attributes can go directly to session[:order]
         order_params.merge!(
             "cost" => (@product == 'complete' ? \
-              DeviceModel.complete_tariff(@order.group, @order.coupon_code).upfront_charge.to_s : \
-              DeviceModel.clip_tariff(@order.group, @order.coupon_code).upfront_charge.to_s),
+              DeviceModel.complete_coupon(@order.group, @order.coupon_code).upfront_charge.to_s : \
+              DeviceModel.clip_coupon(@order.group, @order.coupon_code).upfront_charge.to_s),
             "product" => @product
             )
         session[:product] = @product # same as params[:product]. Will be used later in create
@@ -62,8 +62,8 @@ class OrdersController < ApplicationController
       @confirmation = (@order.errors.count.zero? && !@product.blank? && !session[:order].blank?)
       #
       # https://redmine.corp.halomonitor.com/issues/2764
-      complete_temp = DeviceModel.complete_tariff(@order.group, @order.coupon_code)
-      clip_temp = DeviceModel.clip_tariff(@order.group, @order.coupon_code)
+      complete_temp = DeviceModel.complete_coupon(@order.group, @order.coupon_code)
+      clip_temp = DeviceModel.clip_coupon(@order.group, @order.coupon_code)
       @complete_tariff = complete_temp unless complete_temp.blank?
       @clip_tariff = clip_temp unless clip_temp.blank?
       

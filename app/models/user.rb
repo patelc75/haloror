@@ -799,7 +799,7 @@ class User < ActiveRecord::Base
       #
       # legacy?
       # if user_intakes.blank? # legacy?
-      #   AGGREGATE_STATUS[ (self.is_halouser_of?( Group.safety_care) ? :installed : :demo) ]
+      #   AGGREGATE_STATUS[ (self.is_halouser_of?( Group.safety_care!) ? :installed : :demo) ]
       #   
       # else # user_intake? not legacy
         if status == STATUS[ :installed]
@@ -2492,7 +2492,7 @@ class User < ActiveRecord::Base
   #   * senior is still in test mode
   #   * caregivers are still away
   def opt_in_call_center
-    self.is_halouser_of Group.safety_care
+    self.is_halouser_of Group.safety_care!
   end
   
   # https://redmine.corp.halomonitor.com/issues/3016
@@ -2509,14 +2509,14 @@ class User < ActiveRecord::Base
     # rails_authorization plugin allows the following methods. using them here
     #   is_halouser_of(object)
     #   is_not_halouser_of(object)
-    self.send("is_#{stop_getting_alerts ? 'not_' : ''}halouser_of".to_sym, Group.safety_care)
+    self.send("is_#{stop_getting_alerts ? 'not_' : ''}halouser_of".to_sym, Group.safety_care!)
     log("#{stop_getting_alerts ? 'Opted out of' : 'Added to'} safety_care group") # https://redmine.corp.halomonitor.com/issues/398
   end
   
   def test_mode?
     # when user is not part of safety_care
     # and all caregivers are in away mode
-    test_mode == true # self.is_not_halouser_of?(Group.safety_care) && (caregivers.all? {|cg| !cg.active_for?(self) })
+    test_mode == true # self.is_not_halouser_of?(Group.safety_care!) && (caregivers.all? {|cg| !cg.active_for?(self) })
   end
 
   def toggle_test_mode
@@ -2533,7 +2533,7 @@ class User < ActiveRecord::Base
     # user test mode
     #   * user is not part of safety_care
     #   * has all caregivers "away"
-    # self.send("is_#{(status == true) ? 'not_' : ''}halouser_of".to_sym, Group.safety_care)
+    # self.send("is_#{(status == true) ? 'not_' : ''}halouser_of".to_sym, Group.safety_care!)
     opt_out_call_center(status) # will also log
     # when switching user to "normal" mode
     # * just make it member of safety_care

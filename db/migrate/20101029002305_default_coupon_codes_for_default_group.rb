@@ -1,20 +1,16 @@
 class DefaultCouponCodesForDefaultGroup < ActiveRecord::Migration
   def self.up
     # find or create group
-    _group = Group.find_or_create_by_name( "default")
-    # ensure email address
-    _group.update_attributes( :email => "senior_signup@halomonitoring.com") if _group.email != "senior_signup@halomonitoring.com"
-    # device model price row = coupon code
-    
+    _group = Group.default!
+
     # find myhalo_complete if exists
-    _coupon = DeviceModelPrice.first( :conditions => {
-      :device_model_id => DeviceModel.myhalo_complete, :coupon_code => "default", :group_id => _group })
+    _coupon = _group.coupon_codes.first( :conditions => { 
+      :device_model_id => DeviceModel.myhalo_complete.id, :coupon_code => "default" })
       # create when not found
       # use defaults
-    DeviceModelPrice.create( {
+    _group.coupon_codes.create( {
       :coupon_code => "default",
-      :group_id => _group,
-      :device_model_id => DeviceModel.myhalo_complete,
+      :device_model_id => DeviceModel.myhalo_complete.id,
       :expiry_date => "2015-07-23",
       :deposit => 99,
       :shipping => 16,
@@ -24,14 +20,13 @@ class DefaultCouponCodesForDefaultGroup < ActiveRecord::Migration
     } ) if _coupon.blank?
     
     # myhalo_clip, find if exists
-    _coupon = DeviceModelPrice.first( :conditions => {
-      :device_model_id => DeviceModel.myhalo_clip, :coupon_code => "default", :group_id => _group })
+    _coupon = _group.coupon_codes.first( :conditions => {
+      :device_model_id => DeviceModel.myhalo_clip.id, :coupon_code => "default" })
     # create when not found
     # use defaults
-    DeviceModelPrice.create( {
+    _group.coupon_codes.create( {
       :coupon_code => "default",
-      :group_id => _group,
-      :device_model_id => DeviceModel.myhalo_clip,
+      :device_model_id => DeviceModel.myhalo_clip.id,
       :expiry_date => "2015-07-23",
       :deposit => 99,
       :shipping => 16,

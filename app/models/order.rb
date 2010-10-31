@@ -83,7 +83,7 @@ class Order < ActiveRecord::Base
   
   # tariff card for the product found in catalog
   def product_cost
-    product_from_catalog.tariff( :group => (group || Group.direct_to_consumer), :coupon_code => coupon_code)
+    product_from_catalog.coupon( :group => (group || Group.direct_to_consumer), :coupon_code => coupon_code)
   end
   
   # create order_item enteries for this order
@@ -110,7 +110,7 @@ class Order < ActiveRecord::Base
   def total_value
     value = 0
     order_items.each do |order_item|
-      tariff = order_item.device_model.tariff( :group => group, :coupon_code => coupon_code) unless order_item.device_model.blank?
+      tariff = order_item.device_model.coupon( :group => group, :coupon_code => coupon_code) unless order_item.device_model.blank?
       value += (tariff.deposit + tariff.shipping + tariff.upfront_charge) unless tariff.blank?
     end
     value

@@ -150,7 +150,7 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   def cancel_call_center_acct( acct_num )
-    @recipients = Group.safety_care.email
+    @recipients = Group.safety_care!.email
     subject     = "Cancel Acct #{acct_num}"
     #@body[:acct_num] = acct_num
     msg_body = <<-EOF

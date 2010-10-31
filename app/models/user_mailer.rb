@@ -2,13 +2,13 @@ class UserMailer < ActionMailer::ARMailer
   include ServerInstance
 
   def update_to_safety_care( user_intake)
-    setup_email(Group.safety_care.email) 
+    setup_email(Group.safety_care!.email) 
     @subject     += "Update #{user_intake.senior.call_center_account}"
     @body[:user_intake] = user_intake
   end
   
   def senior_and_caregiver_details(user)
-    setup_email(Group.safety_care.email) 
+    setup_email(Group.safety_care!.email) 
     @subject     += "#{user.profile.account_number}" unless user.profile.blank?
     #content_type "text/html"
     @body[:user] = user
