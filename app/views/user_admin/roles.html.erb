@@ -4,7 +4,7 @@
   
   <% if current_user.is_super_admin? %>
   <div id="assign-super-admin" class="container box rounded">
-    <div id="assign_role">&nbsp;</div>
+    <div id="assign_role"></div>
     <h2>Assign Super Admin Role</h2>
     <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_super_role'}, :update => 'assign_role' do %>
       <%= collection_select 'superadmin', 'user_id', @users, :id, :name, {}, {} %> is a Super Admin.

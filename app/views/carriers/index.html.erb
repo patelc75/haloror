@@ -1,6 +1,8 @@
 <%=render :partial=>'/reporting/nav_config'%>
 
-<h3>Cell phone carriers</h3>
+<div class="span-5"><h3>Cell phone carriers</h3></div>
+<%= link_to 'New Carrier', new_carrier_path, :class => "button green-button medium" %>
+
 <table class="bluegrey">
   <tr>
     <th>ID</th><th>Name</th><th>Domain</th><th/><th/><th/>  
@@ -17,7 +19,3 @@
   </tr>
 <% end %>
 </table>
-
-<br />
-
-<%= link_to 'New carrier', new_carrier_path %>
