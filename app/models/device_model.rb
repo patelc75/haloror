@@ -73,9 +73,9 @@ class DeviceModel < ActiveRecord::Base
     #   * options are not blank, is a hash, includes keys :group & :coupon_code
     #   * coupon_codes are not empty
     if ( !options.blank? && options.is_a?(Hash) && !options[:group].blank? && !options[:coupon_code].blank? && !coupon_codes.blank? )
-      _coupon = coupon_codes.for_group( options[:group]).for_coupon_code( options[:coupon_code])
+      _coupon = coupon_codes.for_group( options[:group]).for_coupon_code( options[:coupon_code]).first
     end
-    _coupon = DeviceModelPrice.default( self) if !defined?(_coupon) || _coupon.blank?
+    _coupon = DeviceModelPrice.default( self) if ( !defined?(_coupon) || _coupon.blank? )
     _coupon
   end
 end

@@ -512,7 +512,7 @@ class Order < ActiveRecord::Base
   def device_model_coupon_messages(device_model = nil, coupon_code = "")
     messages = []
     unless device_model.blank? || !device_model.is_a?( DeviceModel)
-      price = device_model.prices.find_by_coupon_code(coupon_code)
+      price = device_model.coupon_codes.find_by_coupon_code(coupon_code)
       if price.blank? || (price.coupon_code != coupon_code) || (group.coupon_codes.find_by_coupon_code(coupon_code).blank?)
         messages << coupon_code_message( device_model.model_type, "invalid")
       elsif price.expired?

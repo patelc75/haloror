@@ -27,9 +27,9 @@ describe DeviceModel do
   end
   
   context "return default_coupon_code for device_model when the any coupon code is not found" do
-    bestbuy = Group.find_by_name('bestbuy')
-    
-    specify { DeviceModel.myhalo_clip.coupon( :group => bestbuy, :coupon => "99TRIAL").should_not be_blank }
+    specify { DeviceModel.myhalo_clip.coupon( :group => Group.find_by_name('bestbuy'), :coupon_code => "99TRIAL").should_not be_blank }
+    specify { DeviceModel.myhalo_clip.coupon( :group => Group.find_by_name('bestbuy'), :coupon_code => "99TRIAL").group.should == Group.find_by_name('bestbuy') }
+    specify { DeviceModel.myhalo_clip.coupon( :group => Group.find_by_name('bestbuy'), :coupon_code => "99TRIAL").coupon_code.should == "99TRIAL" }
   end
   
   # after(:all) do
