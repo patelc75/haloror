@@ -11,6 +11,9 @@
   | <a href="/user_admin/roles">Roles</a>
   | <%= link_to 'Groups', groups_path %>
   <% end %>
+  <% if(current_user.is_super_admin?) %>
+  | <a href="/admin/signup">Sign up users with other roles</a>
+  <% end %>
   <% if current_user.is_super_admin? %>
   | <a href="/system_timeouts">System Timeouts</a>
   <% end %>
@@ -28,8 +31,9 @@
   <% if current_user.is_super_admin? || current_user.is_operator? %>
   | <%= link_to 'Operators', :controller => 'call_center', :action => 'show' %>
   <% end %>
-  <% if(current_user.is_super_admin?) and params[:action] == 'roles' %>
-  | <a href="/admin/signup">Sign up users with other roles</a>
+  <!-- % if(current_user.is_super_admin?) and params[:action] == 'roles' % -->
+  <% if current_user.is_super_admin? %>
+  | <%= link_to 'Healthvault', :controller => 'healthvault', :action => 'index' %></li>
   <% end %>
 </div>
 </div>

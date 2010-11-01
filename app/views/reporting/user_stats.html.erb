@@ -8,8 +8,7 @@
     <%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| [e.name, e.name] }, (@group.name unless @group.blank?)), {:onchange => "$('group_form_id').submit();"}%>
   </form>
 </div>
-
-<hr /> 
+<br/><br/>
 <div class="span-5">
   <% [ User::AGGREGATE_STATUS[ :pending], User::AGGREGATE_STATUS[ :installed], User::AGGREGATE_STATUS[ :cancelled]].each do |_status| %>
   <% [:chest_straps, :belt_clips].each do |_device| %>
@@ -31,4 +30,5 @@
   <div style="display: inline-block;"><%= image_tag( User::STATUS_IMAGE[key]) %> <%= @group.blank? ? (current_user.is_super_admin? ? User.where_status(User::STATUS[key]).length : 0) : @group.users.select {|e| e.status == User::STATUS[key] }.length %> <%= User::STATUS[key].blank? ? 'Not Submitted' : User::STATUS[key] %></div>
   <% end %>
 </div>
-<hr />
+<br/><br/>
+

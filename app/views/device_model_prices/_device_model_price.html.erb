@@ -38,9 +38,10 @@
     <%= f.text_field :months_trial %>
   </p>
   <p>
-    <%= f.submit "Save" %>
+    <%= link_to 'Back', device_model_prices_path, :class => "button blue-button medium"  %>
+    <%= f.submit "Save", :class => "button green-button medium"  %>
   </p>
 <% end %>
 
-<%= link_to 'Show', @device_model_price unless @device_model_price.new_record? %> |
-<%= link_to 'Back', device_model_prices_path %>
+
+
