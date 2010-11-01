@@ -16,10 +16,17 @@ module ApplicationHelper
   #       chicago_users = User.all_in_chicago
   #       chicago_users.collect(&:login).uniq.join(', ')
   #   <% end %>
-  # TODO: need testing before it can be used
-  def developer( &block)
-    debugger
-    (RAILS_ENV == "production") ? "" : ( block_given? ? capture( &block).to_s : "<!-- #{str} -->" )
+  # TODO: test before using
+  def developer( *args, &block)
+    if ENV['RAILS_ENV'] == "production"
+      ''
+    else
+      if block_given?
+        concat( " #{args.flatten.first}, #{capture(&block)} ", block.binding)
+      else
+        "<!-- #{args.flatten.first} -->"
+      end
+    end
   end
 
   #these are taken from cd /var/lib/pgsql/data/pg_hba.conf on dfw-web1

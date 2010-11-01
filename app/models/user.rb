@@ -416,13 +416,16 @@ class User < ActiveRecord::Base
   #   * split the config > users display logic to optimize speed
   #   * only checks next condition if not succeded already
   # FIXME: optimize the view that use this method
-  def can_see_this_config_user?( user = nil)
+  def can_see_config_user?( user = nil)
     _yes = self.is_super_admin?
     _yes = self.is_sales? unless _yes
     _yes = self.is_installer? unless _yes
     #
     # skip considering user conditions if not given
     unless user.blank?
+      # special checks for caregivers. they are not members of group
+      # FIXME: WARNING: this is very very expensive query!
+      _yes = self.is_admin_of_what.collect(&:has_halousers).flatten.uniq.collect(&:has_caregivers).flatten.uniq.include?( user) if user.is_caregiver? && !_yes
       _yes = self.is_admin_of_any?( user.group_memberships) unless _yes
       _yes = self.is_moderator_of_any?( user.group_memberships) unless _yes
     end
