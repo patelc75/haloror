@@ -135,6 +135,8 @@ class UsersController < ApplicationController
   end
   
   #handles 3 scanerios (1) new subscriber (1)subscriber same as senior (2)new subscriber also caregiver
+  # QUESITON: Can we deprecate this?
+  #   * Used by credit_card_authorization.html.erb
   def create_subscriber
     senior_user_id = params[:user_id]
     @senior = User.find senior_user_id
@@ -153,6 +155,9 @@ class UsersController < ApplicationController
       #this following does not need to be in the transaction because the lines above this do not need to be rolled back if the below lines fail
       # role = @user.has_role 'subscriber', halouser #@user set up in populate_caregiver when subscriber is also a caregiver
       UserMailer.deliver_order_receipt(@user)
+      # Mon Nov  1 22:27:56 IST 2010
+      #   This might send duplicate emails
+      #   The email logic is now in user model
       UserMailer.deliver_signup_installation(@user,@senior) # @user = subscriber
     end
     #=begin

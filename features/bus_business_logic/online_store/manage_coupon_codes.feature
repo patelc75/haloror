@@ -14,7 +14,7 @@ Feature: Manage coupon codes
       | part_number | device_type_name |
       | 12001002-1  | Chest Strap      |
       | 12001008-1  | Belt Clip        |
-    And there are no coupon codes
+    And there are no device model prices
   
   # https://redmine.corp.halomonitor.com/issues/3542
   Scenario: Listing all coupon codes

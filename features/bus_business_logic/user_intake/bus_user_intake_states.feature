@@ -65,6 +65,7 @@ Feature: Bus user intake statuses
   # Body of email: "Joe Smith's user intake form has been submitted. Halo is now in process of approving the form. Once approved, you will be emailed and the myHalo system will be ready to install"
   Scenario: User Intake - Ready for approval
     Given I am ready to submit a user intake
+    And there are no emails
     And I press "user_intake_submit"
     Then an email to "safety care" should be sent for delivery
     And last user intake should be read only

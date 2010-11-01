@@ -49,10 +49,11 @@ Then /^(.+) email(?:|s) to (.+) of user intake "([^\"]*)" should be sent for del
 end
 
 Then /^(.+) email(?:|s) to "([^\"]*)" should be sent for delivery$/ do |count, email|
-  #
+  _count = ( count == 'an' ? 1 : count.to_i)
   # either provide an email address, or, write "safety care" or "safety_care" to get "safety_care@myhalomonitor.com"
+  # TODO: fix this to check database for the email address
   email = "safety_care@myhalomonitor.com" if ["safety care", "safety_care"].include?( email)
-  Email.count( :conditions => { :to => email} ).should == count.to_i
+  Email.count( :conditions => { :to => email} ).should == _count
 end
 
 # merged into step definition above
