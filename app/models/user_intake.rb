@@ -193,7 +193,12 @@ class UserIntake < ActiveRecord::Base
     #if self.senior.status == User::STATUS[:approval_pending]
     UserMailer.deliver_senior_and_caregiver_details( self.senior)
     #else
-    #UserMailer.deliver_update_to_safety_care( self)  #acts_as_audited is not a good format to send to SafetyCare, defer for next release
+    # Mon Nov  1 22:08:10 IST 2010
+    #   Send update to safety care only when submitted for the first time
+    #   * lazy_action is the button.text of user intake form, submitted by user
+    #   * senior.status.blank? means the form is not yet "submitted", only "saved" so far, or created from online order
+    #   * user intake can be submitted by "Submit" or "Approve" action, so they are checked
+    UserMailer.deliver_update_to_safety_care( self) if ( ["Submit", "Approve"].include?( lazy_action) && senior.status.blank? ) #acts_as_audited is not a good format to send to SafetyCare, defer for next release
     #end
   end
 

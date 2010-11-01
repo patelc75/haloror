@@ -88,14 +88,16 @@ Feature: Config users
       #
       # v1.6.0 UI specific checks skipped for now
 
-  Scenario: Triage shows Test Mode status
-    Given user "demo" has "admin" role for group "group1"
-    And user "halouser1" has "halouser" role for group "group1"
-    When I reload the page
-    And I follow links "Reporting > Triage"
-    And I select "group1" from "Group"
-    And I press "Apply selected filters"
-    Then I should see "Test Mode" within "halouser1" user row
+  # Mon Nov  1 21:53:49 IST 2010
+  #   not included in 1.6.0 release
+  # Scenario: Triage shows Test Mode status
+  #   Given user "demo" has "admin" role for group "group1"
+  #   And user "halouser1" has "halouser" role for group "group1"
+  #   When I reload the page
+  #   And I follow links "Reporting > Triage"
+  #   And I select "group1" from "Group"
+  #   And I press "Apply selected filters"
+  #   Then I should see "Test Mode" within "halouser1" user row
 
   # TODO: 1.6.0.: UI features skipped
   #

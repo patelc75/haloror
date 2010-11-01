@@ -8,7 +8,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
   Background:
     Given I am guest
     And the product catalog exists
-    And the payment gateway response log is empty
+    And there are no payment gateway responses
     And there are no emails
     When I go to the online store
 

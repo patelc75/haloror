@@ -411,6 +411,26 @@ class User < ActiveRecord::Base
   # ====================
   # = instance methods =
   # ====================
+
+  # Tue Nov  2 00:57:37 IST 2010
+  #   * split the config > users display logic to optimize speed
+  #   * only checks next condition if not succeded already
+  # FIXME: optimize the view that use this method
+  def can_see_config_user?( user = nil)
+    _yes = self.is_super_admin?
+    _yes = self.is_sales? unless _yes
+    _yes = self.is_installer? unless _yes
+    #
+    # skip considering user conditions if not given
+    unless user.blank?
+      # special checks for caregivers. they are not members of group
+      # FIXME: WARNING: this is very very expensive query!
+      _yes = self.is_admin_of_what.collect(&:has_halousers).flatten.uniq.collect(&:has_caregivers).flatten.uniq.include?( user) if user.is_caregiver? && !_yes
+      _yes = self.is_admin_of_any?( user.group_memberships) unless _yes
+      _yes = self.is_moderator_of_any?( user.group_memberships) unless _yes
+    end
+    _yes
+  end
   
   # default: card processed
   def card_processed?
@@ -1014,8 +1034,9 @@ class User < ActiveRecord::Base
       # TODO: get_wearable_type need to be covered. Not sure if it works correctly as it is.
       when :strap_fastened
         if get_wearable_type == 'Chest Strap' # put if condition on seprate row for faster execution
-          group.triage_thresholds.first(:conditions => ["hours_without_strap_detected >= ?", hours_since(:strap_fastened)], :order => :hours_without_strap_detected).status unless group.triage_thresholds.blank?
+          _threshold_log = group.triage_thresholds.first(:conditions => ["hours_without_strap_detected >= ?", hours_since(:strap_fastened)], :order => :hours_without_strap_detected)
         end
+        _threshold_log.blank? ? 'normal' : _threshold_log.status # consider "normal" if no log created yet
 
       # hours calculation for call center is positive value? that is abnormal
       when :call_center_account
@@ -1258,6 +1279,11 @@ class User < ActiveRecord::Base
     # failure = !dial_up_numbers_ok_for_device?( device_by_serial_number( user_intakes.first.kit_serial_number)) unless failure || (options[:omit] && options[:omit].include?( :dial_up_numbers)) # do not bother if already failed
     !failure
   end
+
+  def desired_installation_date
+    _intake = user_intakes.first
+    _intake.blank? ? nil : (_intake.installation_datetime || _intake.created_at)
+  end
   
   def user_intake_submitted_at
     user_intakes.first.blank? ? '' : user_intakes.first.submitted_at
@@ -1278,6 +1304,8 @@ class User < ActiveRecord::Base
   #
   def dispatch_emails
     if self.is_halouser? && !email.blank? # WARNING: DEPRECATED user[:is_new_halouser] == true
+      # Mon Nov  1 22:29:21 IST 2010
+      # QUESTION: Should this go out only during certain "states"?
       UserMailer.deliver_signup_installation(self, self)
     else
       UserMailer.deliver_signup_notification(self) unless self.is_caregiver? || self.is_subscriber? # (user[:is_caregiver] or user[:is_new_subscriber])
@@ -2511,6 +2539,10 @@ class User < ActiveRecord::Base
     #   is_not_halouser_of(object)
     self.send("is_#{stop_getting_alerts ? 'not_' : ''}halouser_of".to_sym, Group.safety_care!)
     log("#{stop_getting_alerts ? 'Opted out of' : 'Added to'} safety_care group") # https://redmine.corp.halomonitor.com/issues/398
+  end
+
+  def partial_test_mode?
+    self.is_halouser_of?( Group.safety_care!) # other parameters need not be checked
   end
   
   def test_mode?

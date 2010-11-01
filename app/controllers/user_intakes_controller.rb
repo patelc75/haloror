@@ -71,7 +71,7 @@ class UserIntakesController < ApplicationController
     @user_intake.build_associations
     @groups = current_user.group_memberships
 
-    # QUESTION: Should we have some logic here to allow editing subject to state?
+    # QUESTION: Should we have some logic here to allow editing, subject to state?
     #
     # * only allow editing user intakes that are submitted (not just saved)
     # * only super_admin can edit submitted ones

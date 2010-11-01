@@ -39,7 +39,7 @@ Feature: Manage user_intakes
     And I uncheck "Add as #1 caregiver"
     And I press "user_intake_submit"
     Then users of last user intake should have appropriate roles
-    And 1 email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
+    And an email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
   # # This has a few HTML element IDs instead of visible text, due to a bug in webrat
