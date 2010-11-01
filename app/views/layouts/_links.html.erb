@@ -43,7 +43,7 @@
       <% if current_user.is_admin? || current_user.is_super_admin? %>
       <li><%= link_to 'Reporting', :controller => 'reporting', :action => 'blank_reporting' %></li>
       <% end %>
-      <% if current_user.is_admin? || current_user.is_super_admin? %>
+      <% if current_user.is_super_admin? %>
       <li><%= link_to 'Dial Up', :controller => 'dial_up_statuses', :action => 'index' %></li>
       <% end %>      
       <% if current_user.is_super_admin? %>
