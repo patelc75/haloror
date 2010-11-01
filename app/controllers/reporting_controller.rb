@@ -126,7 +126,7 @@ class ReportingController < ApplicationController
     # debugger
     #
     # paginate the list of users
-    @users = @users.paginate :page => params[:page], :per_page => REPORTING_USERS_PER_PAGE
+    @users = @users.uniq.paginate :page => params[:page], :per_page => REPORTING_USERS_PER_PAGE
 
     # @users.each do |user|
     #   if user

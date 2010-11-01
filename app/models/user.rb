@@ -411,6 +411,23 @@ class User < ActiveRecord::Base
   # ====================
   # = instance methods =
   # ====================
+
+  # Tue Nov  2 00:57:37 IST 2010
+  #   * split the config > users display logic to optimize speed
+  #   * only checks next condition if not succeded already
+  # FIXME: optimize the view that use this method
+  def can_see_this_config_user?( user = nil)
+    _yes = self.is_super_admin?
+    _yes = self.is_sales? unless _yes
+    _yes = self.is_installer? unless _yes
+    #
+    # skip considering user conditions if not given
+    unless user.blank?
+      _yes = self.is_admin_of_any?( user.group_memberships) unless _yes
+      _yes = self.is_moderator_of_any?( user.group_memberships) unless _yes
+    end
+    _yes
+  end
   
   # default: card processed
   def card_processed?

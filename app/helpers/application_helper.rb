@@ -6,6 +6,22 @@ module ApplicationHelper
 
   include UtilityHelper
   include UserHelper
+
+  # Method used for inserting developer comments in views
+  # Usage:
+  #   <%= developer { "This is a sample comment" } %>
+  #   <%= developer { @users.collect(&:id).flatten.uniq } %>
+  #   <%= developer { 'Users are: " + "@users.collect(&:login).join(', ') } %>
+  #   <%= developer do %>
+  #       chicago_users = User.all_in_chicago
+  #       chicago_users.collect(&:login).uniq.join(', ')
+  #   <% end %>
+  # TODO: need testing before it can be used
+  def developer( &block)
+    debugger
+    (RAILS_ENV == "production") ? "" : ( block_given? ? capture( &block).to_s : "<!-- #{str} -->" )
+  end
+
   #these are taken from cd /var/lib/pgsql/data/pg_hba.conf on dfw-web1
   #don't need this because we're filter on Google Analytics site (Edit Settings)
   #  @@google_analytics_filter = ["74.138.221.245", 

@@ -40,7 +40,12 @@ class Panic < CriticalDeviceAlert
       # "Ready to Bill" state if panic is
       #   * after "Desired Installation Date"
       #   * senior is member of safety care, but in test mode (partial test mode)
-      (user.status = User::STATUS[:bill_pending]) if ((Time.now > user.desired_installation_date) && user.partial_test_mode?)
+      #   * only apply "ready to bill" state when current state is any of
+      #     * Ready to Install, Installed or Install Overdue
+      if ((Time.now > user.desired_installation_date) && user.partial_test_mode?) && \
+        [User::STATUS[:install_pending], User::STATUS[:installed], User::STATUS[:overdue]].include?( user.status)
+        (user.status = User::STATUS[:bill_pending])
+      end
       #
       #   Ready for Install > Installed (green) is automatically transitioned
       #   Check for panic button test (must occur after the install date)
