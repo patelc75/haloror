@@ -1014,8 +1014,9 @@ class User < ActiveRecord::Base
       # TODO: get_wearable_type need to be covered. Not sure if it works correctly as it is.
       when :strap_fastened
         if get_wearable_type == 'Chest Strap' # put if condition on seprate row for faster execution
-          group.triage_thresholds.first(:conditions => ["hours_without_strap_detected >= ?", hours_since(:strap_fastened)], :order => :hours_without_strap_detected).status unless group.triage_thresholds.blank?
+          _threshold_log = group.triage_thresholds.first(:conditions => ["hours_without_strap_detected >= ?", hours_since(:strap_fastened)], :order => :hours_without_strap_detected)
         end
+        _threshold_log.blank? ? 'normal' : _threshold_log.status # consider "normal" if no log created yet
 
       # hours calculation for call center is positive value? that is abnormal
       when :call_center_account
