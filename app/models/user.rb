@@ -1259,6 +1259,11 @@ class User < ActiveRecord::Base
     # failure = !dial_up_numbers_ok_for_device?( device_by_serial_number( user_intakes.first.kit_serial_number)) unless failure || (options[:omit] && options[:omit].include?( :dial_up_numbers)) # do not bother if already failed
     !failure
   end
+
+  def desired_installation_date
+    _intake = user_intakes.first
+    _intake.blank? ? nil : (_intake.installation_datetime || _intake.created_at)
+  end
   
   def user_intake_submitted_at
     user_intakes.first.blank? ? '' : user_intakes.first.submitted_at
@@ -2514,6 +2519,10 @@ class User < ActiveRecord::Base
     #   is_not_halouser_of(object)
     self.send("is_#{stop_getting_alerts ? 'not_' : ''}halouser_of".to_sym, Group.safety_care!)
     log("#{stop_getting_alerts ? 'Opted out of' : 'Added to'} safety_care group") # https://redmine.corp.halomonitor.com/issues/398
+  end
+
+  def partial_test_mode?
+    self.is_halouser_of?( Group.safety_care!) # other parameters need not be checked
   end
   
   def test_mode?
