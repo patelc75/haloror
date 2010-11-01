@@ -1,6 +1,7 @@
 <%=render :partial => 'reporting/nav_config'%>
 
-<h1>Coupon Codes</h1>
+<div class="span-4"><h3>Coupon Codes</h3></div> <%= link_to 'New coupon code', new_device_model_price_path, :class => "button green-button medium" %>
+<br><br>
 <%= will_paginate %>
 <table class="bluegrey">
   <tr>
@@ -38,4 +39,3 @@
 <%= will_paginate %>
 <br />
 
-<%= link_to 'New coupon code', new_device_model_price_path %>

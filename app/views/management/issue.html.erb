@@ -6,8 +6,8 @@
 <% remote_form_for :management_cmd_device, :url => {:action => 'create_many'}, :update => 'issue_cmd' do |f|%>
 Enter a range of device ids (min-max) -or- ids separated by commas:<br/> 
 <%=f.text_field 'ids'%> 
-<div id="issue_cmd"> </div>  
-<%=f.submit 'Queue up Command'%>&nbsp;&nbsp;<%= f.check_box :instantaneous %>Instantaneous<br/><br/>  
+<div id="issue_cmd"> </div><br>  
+<%=f.submit 'Queue up Command', :class => "button green-button" %>&nbsp;&nbsp;<%= f.check_box :instantaneous %>Instantaneous<br/><br/>  
 		<%=f.radio_button :cmd_type, 'info'%> Info Request<br>
 		<%=f.radio_button :cmd_type, 'reset'%> Reset<br> 
 		<%=f.radio_button :cmd_type, 'firmware_upgrade'%> Firmware Upgrade <%=render :partial => 'firmware_upgrade'%><br> 
