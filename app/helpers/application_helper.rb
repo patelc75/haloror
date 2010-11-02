@@ -128,7 +128,7 @@ module ApplicationHelper
   end
 
   def hash_to_html(hash)
-    data = hash.collect {|k,v| v.is_a?(Hash) ? "<li>#{k}#{hash_to_html(v)}</li>" : "<li>#{k} => #{v}</li>"}
+    data = hash.sort.collect {|k,v| v.is_a?(Hash) ? "<li>#{k}#{hash_to_html(v)}</li>" : "<li>#{k} => #{v}</li>"}
     "<ul>#{data}</ul>"
   end
 

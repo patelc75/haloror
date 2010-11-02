@@ -1,50 +1,68 @@
 <% unless @user_intake.agreement_signed? %>
-  <div id="user_intake_legal_agreement">
-    <%= render :partial => "shared/subscriber_agreement" %>
-  </div>
+<div id="user_intake_legal_agreement">
+  <%= render :partial => "shared/subscriber_agreement" %>
+</div>
 <% end %>
 
-<% if current_user.is_super_admin? %> <% #|| @user_intake.users.include?( current_user) %>
+<% if current_user.is_super_admin? || current_user.is_halouser? %> <% #|| @user_intake.users.include?( current_user) %>
 <div class="container">
   <hr />
-  
-    <div id="user_intake_details">
-      <h2>User Intake: <%= @user_intake.id %></h2>
 
-      <ul>
-        <li>
-          Submitted at
-          <% if @user_intake.submitted? %>
-            <span class="timestamp"><%= h @user_intake.submitted_at %></span>
-          <% end %>
-        </li>
-        <li>
-          <label>Group</label>
-          <%= h @user_intake.group_name %>
-        </li>
-        <li>
-          <label>Kit Serial#</label>
-          <%= h @user_intake.kit_serial_number %>
-        </li>
-      </ul>
-    </div>
+  <div id="user_intake_details">
+    <h2>User Intake: <%= @user_intake.id %></h2>
 
-    <div class="box">
-      <h2>User Intake properties</h2>
-      <%= hash_to_html( @user_intake.attributes) %>
-    </div>
+    <ul>
+      <% [:group_name, :submitted_at, :kit_serial_number, :gateway_serial, :transmitter_serial].each do |_attribute| %>
+      <li>
+        <div class="span-3"><%= _attribute.to_s.humanize %></div>
+        <div class="span-10 last">: <%= h @user_intake.send( _attribute) %></div>
+      </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="prepend-1 span-24">
 
     <table>
-      <% [:group, :senior, :subscriber, :caregiver1, :caregiver2, :caregiver3].each do |attribute| %>
       <tr>
-        <td>
+        <td style="vertical-align:top;">
+          <div class="box">
+          <h2>User Intake properties</h2>
+          <%= hash_to_html( @user_intake.attributes) %>
+          </div>
+        </td>
+        <td style="vertical-align:top;">
+          <div class="box">
+          <h2>Group</h2>
+          <%= hash_to_html( @user_intake.group.attributes) if @user_intake.group && !@user_intake.group.new_record? %>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <% [:senior, :subscriber].each do |attribute| %>
+        <td style="vertical-align:top;">
           <div class="box">
             <h2><%= attribute %></h2>
             <%= hash_to_html( @user_intake.send( attribute).attributes) if @user_intake.send( attribute) && !@user_intake.send( attribute).new_record? %>
           </div>
+
+          <div class="box">
+            <h3><%= attribute %> Profile:</h3>
+            <%= hash_to_html( @user_intake.send( attribute).profile.attributes) if !@user_intake.send( attribute).blank? && !@user_intake.send( attribute).new_record? && !@user_intake.send( attribute).profile.blank? %>
+          </div>
         </td>
-        
-        <td>
+        <% end %>
+      </tr>
+
+      <tr>
+        <% [:caregiver1, :caregiver2, :caregiver3].each do |attribute| %>
+        <td style="vertical-align:top;">
+          <div class="box">
+            <h2><%= attribute %></h2>
+            <%= hash_to_html( @user_intake.send( attribute).attributes) if @user_intake.send( attribute) && !@user_intake.send( attribute).new_record? %>
+          </div>
+
           <% unless attribute == :group %>
           <div class="box">
             <h3><%= attribute %> Profile:</h3>
@@ -52,9 +70,11 @@
           </div>
           <% end %>
         </td>
+        <% end %>
       </tr>
-      <% end %>
+
     </table>
-    
+  </div>
+
 </div>
 <% end %>
