@@ -21,7 +21,7 @@ class GatewayEventObserver < ActiveRecord::Observer
   #change this code to loop through all uses associated with device
   def after_save(alert)
   	users = alert.device.users
-  	debugger
+  	# debugger
   	users.each do |u|
   	  alert[:user_id] = u.id
   	  Event.create_event(alert.user_id, alert.class.to_s, alert.id, alert.timestamp)		

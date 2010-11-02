@@ -135,9 +135,9 @@ class User < ActiveRecord::Base
   validates_length_of       :email,    :within => 3..100, :unless => :skip_validation
   validates_length_of       :login,    :within => 3..40, :if => :password_required?
   validates_length_of       :password, :within => 4..40, :if => :password_required?
-  validates_presence_of     :login, :if => :password_required?
   validates_presence_of     :password,                   :if => :password_required?
   validates_presence_of     :password_confirmation,      :if => :password_required?
+  validates_presence_of     :login, :if => :password_required?
   validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
   
   # before_save :encrypt_password # shifted to a method where we can make multiple calls
@@ -2706,7 +2706,7 @@ class User < ActiveRecord::Base
   
   # return true if the login is not blank
   def login_not_blank?
-    return (skip_validation ? false : !self.login.blank?)
+    return (skip_validation ? false : !login.blank?)
   end
 
   def has_valid_cell_phone_and_carrier?
