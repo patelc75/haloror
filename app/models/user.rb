@@ -595,7 +595,8 @@ class User < ActiveRecord::Base
     #   #   self.profile = any_existing_profile
     #   #   self.profile.attributes = attributes
     #   # else
-    self.build_profile(attributes) # .merge("user_id" => self)
+    # debugger
+    (profile.blank? || profile.new_record?) ? self.build_profile( attributes) : self.profile.update_attributes( attributes) # .merge("user_id" => self)
     #   # end
     # end
   end

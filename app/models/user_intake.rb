@@ -470,6 +470,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def senior=(arg)
+    # debugger
     if arg == nil
       self.mem_senior = nil
     else
@@ -664,10 +665,11 @@ class UserIntake < ActiveRecord::Base
   end
 
   def senior_attributes=(attributes)
+    # debugger
     unless attributes.blank?
       _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
       attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
-      self.senior = ((senior.blank? || senior.new_record?) ? User.new(attributes) : self.senior.update_attributes(attributes)) # includes profile_attributes hash
+      self.senior = ((senior.blank? || self.new_record?) ? User.new(attributes) : self.senior.update_attributes(attributes)) # includes profile_attributes hash
       self.senior.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.senior.skip_validation = self.skip_validation unless self.senior.blank?
     end
@@ -679,7 +681,7 @@ class UserIntake < ActiveRecord::Base
       _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
       attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
       (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
-      self.subscriber = ((subscriber.blank? || subscriber.new_record?) ? User.new( attributes) : self.subscriber.update_attributes(attributes)) # includes profile_attributes hash
+      self.subscriber = ((subscriber.blank? || self.new_record?) ? User.new( attributes) : self.subscriber.update_attributes(attributes)) # includes profile_attributes hash
       self.subscriber.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.subscriber.skip_validation = self.skip_validation unless self.subscriber.blank?
     end
@@ -691,7 +693,7 @@ class UserIntake < ActiveRecord::Base
       _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
       attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
       (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-      self.caregiver1 = ((caregiver1.blank? || caregiver1.new_record?) ? User.new( attributes) : self.caregiver1.update_attributes(attributes)) # includes profile_attributes hash
+      self.caregiver1 = ((caregiver1.blank? || self.new_record?) ? User.new( attributes) : self.caregiver1.update_attributes(attributes)) # includes profile_attributes hash
       self.caregiver1.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.caregiver1.skip_validation = self.skip_validation unless self.caregiver1.blank?
     end
@@ -703,7 +705,7 @@ class UserIntake < ActiveRecord::Base
       _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
       attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
       (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-      self.caregiver2 = ((caregiver2.blank? || caregiver2.new_record?) ? User.new( attributes) : self.caregiver2.update_attributes(attributes)) # includes profile_attributes hash
+      self.caregiver2 = ((caregiver2.blank? || self.new_record?) ? User.new( attributes) : self.caregiver2.update_attributes(attributes)) # includes profile_attributes hash
       self.caregiver2.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.caregiver2.skip_validation = self.skip_validation unless self.caregiver2.blank?
     end
@@ -715,7 +717,7 @@ class UserIntake < ActiveRecord::Base
       _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
       attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
       (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-      self.caregiver3 = ((caregiver3.blank? || caregiver3.new_record?) ? User.new( attributes) : self.caregiver3.update_attributes(attributes)) # includes profile_attributes hash
+      self.caregiver3 = ((caregiver3.blank? || self.new_record?) ? User.new( attributes) : self.caregiver3.update_attributes(attributes)) # includes profile_attributes hash
       self.caregiver3.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.caregiver3.skip_validation = self.skip_validation unless self.caregiver3.blank?
     end

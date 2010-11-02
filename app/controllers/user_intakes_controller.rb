@@ -134,6 +134,7 @@ class UserIntakesController < ApplicationController
   # PUT /user_intakes/1
   # PUT /user_intakes/1.xml
   def update
+    # debugger
     @user_intake = UserIntake.find(params[:id])
     @user_intake.skip_validation = (['Save', 'Print', 'Proceed'].include?(params[:commit])) # just save without asking anything
     @user_intake.locked = @user_intake.valid? unless @user_intake.skip_validation

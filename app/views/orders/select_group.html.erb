@@ -4,7 +4,7 @@
   <fieldset>
     <legend>Please select a group</legend>
     <div class="span-6">
-      <%= label_tag "group_id", "Group name" %> : 
+      <%= label_tag "group_id", "Group" %> : 
       <%= select_tag "group_id", options_from_collection_for_select( @groups, "id", "name", session[:order_group_id]).insert( 0, "<option value=''>Please select a group...</option>") %>
     </div>
     <div class="span-6 last">

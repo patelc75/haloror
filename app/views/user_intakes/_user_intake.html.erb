@@ -234,11 +234,9 @@
 
       <div class="span-22 last"><%= render :partial => 'attribute_status_messages' %></div>
       <div class="span-22 last text-center">
-        <% if current_user.is_super_admin? || @user_intake.users.include?( current_user) || current_user.is_admin_of?( @user_intake.group) %>
-        <% if !current_user.is_halouser? %>
+        <% if current_user.is_super_admin? || @user_intake.users.include?( current_user) || current_user.is_admin_of?( @user_intake.group) || !current_user.is_halouser? %>
         <%= f.submit "Save", :class => "button blue-button", :id => "user_intake_save" %>
         <%= f.submit @user_intake.senior.submit_button_text , :class => "button #{@user_intake.senior.status_button_color}-button", :id => "user_intake_submit" %>
-        <% end %>
         <% end %>
       </div>
       <div class="span-22 last prepend-top text-center">

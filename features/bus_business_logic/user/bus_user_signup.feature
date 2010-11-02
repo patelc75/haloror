@@ -10,7 +10,7 @@ Feature: Bus user signup
 
   Scenario: User signup for admin
     When I go to the home page
-    And I follow links "User Signup"
+    And I follow links "Config > Sign up users with other roles"
     And I select "mygroup" from "Group"
     And I select "admin" from "Role"
     And I fill in the following:

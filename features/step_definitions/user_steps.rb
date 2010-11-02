@@ -129,7 +129,7 @@ When /^I am creating admin of "([^\"]*)" group$/ do |_name|
   })
   Given %{a role "admin" exists}
   When "I go to the home page"
-  When %{I follow links "User Signup"}
+  When %{I follow links "Config > Sign up users with other roles"}
   When %{I select "#{_name}_group" from "Group"}
   When %{I select "admin" from "Role"}
   When "I fill in the following:", table(%{

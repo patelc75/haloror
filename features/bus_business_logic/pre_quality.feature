@@ -128,7 +128,9 @@ Feature: Pre quality
     And I place an online order for "reseller" group
     And I am listing user intakes
     And I follow "edit_link"
-    And I fill the caregiver1 details for user intake form
+    And I uncheck "user_intake_subscriber_is_user"
+    And I check "user_intake_subscriber_is_caregiver"
+    And I fill the subscriber details for user intake form
     And I fill the caregiver2 details for user intake form
     And I press "user_intake_submit"
     Then I should see "successfully updated"
