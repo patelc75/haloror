@@ -72,7 +72,7 @@
         <div class="span-8">
           <table>
             <tr>
-              <td><%= f.label :installation_datetime, "Desired Installation date:" %></td>
+              <td><%= f.label :installation_datetime, "Desired Installation Date:" %></td>
               <td><%= f.text_field :installation_datetime, :class => "span-5 datepicker" %></td>
             </tr>
             <tr>
@@ -87,9 +87,9 @@
         </div>
 
         <div class="span-8 last">
-          <div class="span-3 text-right">Agreed at:</div>
-          <div class="span-5 last"><%= h( @user_intake.legal_agreement_at || 'Not signed yet') %></div>
-
+          <div class="span-3 text-right">Subscription Agreement:</div>
+          <div class="span-5 last"><%= h( @user_intake.legal_agreement_at || 'Not agreed to online yet') %></div>
+          <br><br>
           <div class="span-3 text-right">Download:</div>
           <% unless @user_intake.can_sign_agreement?(current_user) %>
           <div id="legal_agreement" class="span-5 last">
@@ -116,7 +116,7 @@
 
         <% fields_for "user_intake[senior_attributes]", @user_intake.senior do |senior_form| %>
         <!-- senior user details -->
-        <% if current_user.is_super_admin? %>
+        <% if current_user.is_super_admin? or current_user.is_admin? %>
         <div class="span-3">Demo User?</div>
         <div class="span-7 last"><%= senior_form.check_box :demo_mode %> <%= senior_form.label :demo_mode, "Check if user is demo only" %></div>
         <% end %> 
