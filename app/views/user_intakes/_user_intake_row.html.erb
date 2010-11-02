@@ -80,7 +80,7 @@
     <% if user_intake_row.shipped_at.blank? %>
       <%= link_to image_tag('warning_go.png'), :controller => "user_intakes", :action => "shipped", :id => user_intake_row.id %>
     <% else %>
-      <span class="timestamp"><%= h user_intake_row.shipped_at %></span>
+      <span class="timestamp"><%= h user_intake_row.shipped_at.strftime(Time::DATE_FORMATS[:day_MM_DD_YYYY]) %></span>
     <% end %>
   <!--% end %-->
   </td>
