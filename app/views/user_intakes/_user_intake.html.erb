@@ -1,21 +1,29 @@
 <% content_for :js do %>
-<%= javascript_include_tag "jquery", "jquery-ui", :cache => true %>
-<script type="text/javascript" charset="utf-8">
-$(function() {
-  $(".datepicker").datepicker({
-    showOn: 'both',
-    buttonImage: '../../images/calendar_date_select/calendar.gif',
-    buttonImageOnly: true,
-    numberOfMonths: 3
+  <%= javascript_include_tag "jquery", "jquery-ui", :cache => true %>
+  <script type="text/javascript" charset="utf-8">
+  $(function() {
+    $(".datepicker").datepicker({
+      showOn: 'both',
+      buttonImage: '../../images/calendar_date_select/calendar.gif',
+      buttonImageOnly: true,
+      numberOfMonths: 3
+    });
+    show_when_dropdown_selected(document.getElementById('user_intake_group_id'));
+    hide_when_checked(document.getElementById('user_intake_subscriber_is_user'), 'subscriber_profile');
+    // TODO: DRY this
+    hide_when_checked(document.getElementById('user_intake_no_caregiver_1'), 'caregiver1_profile');
+    hide_when_checked(document.getElementById('user_intake_no_caregiver_2'), 'caregiver2_profile');
+    hide_when_checked(document.getElementById('user_intake_no_caregiver_3'), 'caregiver3_profile');
   });
-  show_when_dropdown_selected(document.getElementById('user_intake_group_id'));
-  hide_when_checked(document.getElementById('user_intake_subscriber_is_user'), 'subscriber_profile');
-  // TODO: DRY this
-  hide_when_checked(document.getElementById('user_intake_no_caregiver_1'), 'caregiver1_profile');
-  hide_when_checked(document.getElementById('user_intake_no_caregiver_2'), 'caregiver2_profile');
-  hide_when_checked(document.getElementById('user_intake_no_caregiver_3'), 'caregiver3_profile');
-});
-</script>
+  </script>
+
+  <% if current_user.is_halouser? %>
+    <script type="text/javascript" charset="utf-8">
+      $(function() {
+        $('input select textarea').attr('disabled', 'disabled');
+      })
+    </script>
+  <% end %>
 <% end -%>
 <% content_for :css do %>
 <%= stylesheet_link_tag "screen", "myscreen", "jquery-ui", :media => "screen", :cache => true %>
@@ -227,8 +235,10 @@ $(function() {
       <div class="span-22 last"><%= render :partial => 'attribute_status_messages' %></div>
       <div class="span-22 last text-center">
         <% if current_user.is_super_admin? || @user_intake.users.include?( current_user) || current_user.is_admin_of?( @user_intake.group) %>
+        <% if !current_user.is_halouser? %>
         <%= f.submit "Save", :class => "button blue-button", :id => "user_intake_save" %>
         <%= f.submit @user_intake.senior.submit_button_text , :class => "button #{@user_intake.senior.status_button_color}-button", :id => "user_intake_submit" %>
+        <% end %>
         <% end %>
       </div>
       <div class="span-22 last prepend-top text-center">
