@@ -13,7 +13,7 @@
   <% end %>
   <td><%= user_intake_row.senior.id rescue '?' %></td>
   <td><%= user_intake_row.senior.name rescue '?' %></td>
-  <td class="text-center"><span class="timestamp"><%= user_intake_row.installation_datetime || image_tag('exclamation.png') %></span></td>
+  <td class="text-center"><span class="timestamp"><%= (user_intake_row.installation_datetime.strftime(Time::DATE_FORMATS[:day_MM_DD_YYYY]) if user_intake_row.installation_datetime) || image_tag('exclamation.png') %></span></td>
   <td>
     <% if user_intake_row.credit_debit_card_proceessed %>
       <% if user_intake_row.order && user_intake_row.order.subscription_successful? %>
@@ -86,7 +86,7 @@
     <% if user_intake_row.shipped_at.blank? %>
       <%= link_to image_tag('warning_go.png'), :controller => "user_intakes", :action => "shipped", :id => user_intake_row.id %>
     <% else %>
-      <span class="timestamp"><%= h user_intake_row.shipped_at %></span>
+      <span class="timestamp"><%= h user_intake_row.shipped_at.strftime(Time::DATE_FORMATS[:day_MM_DD_YYYY]) %></span>
     <% end %>
   <!--% end %-->
   </td>

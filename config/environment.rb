@@ -136,6 +136,8 @@ Time::DATE_FORMATS[:time_date_timezone] = "%I:%M%p %Z on %a %b %d, %Y" #03:52PM 
 Time::DATE_FORMATS[:timezone] = "%Z" #CST
 Time::DATE_FORMATS[:day_date] = "%A, %B %d, %Y" # Wednesday, May 10, 2010
 Time::DATE_FORMATS[:MM_DD_YYYY] = "%m-%d-%Y" # 12-25-2010
+Time::DATE_FORMATS[:day_MM_DD_YYYY] = "%a %m-%d-%Y" # 12-25-2010
+
 #
 # set the default display format. no need to explicitly specify the format now.
 Time::DATE_FORMATS[:default] = Time::DATE_FORMATS[:date_time_timezone]
