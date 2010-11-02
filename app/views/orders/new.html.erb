@@ -16,10 +16,6 @@
     <% end -%>
 <% end -%>
 
-<% flash.each do |type, message| %>
-  <div class="<%= type %>"><%= message %></div>
-<% end %>
-
 <% unless @order.errors.blank? %>  <!-- show validation errors -->
   <div id="errors" class="box error">
     <%= error_messages_for :order %>
@@ -58,12 +54,13 @@
       <tr>
         <td width="33%">
           <p>
-          <% if logged_in? %>
-            <%= f.label :group_id, "Group" %>
-            <%= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"} %>
-          <% else %>
-            <%= @groups.collect {|e| e.name.gsub('_',' ').capitalize }.join(', ') %>
-          <% end -%>
+          <%# if logged_in? %>
+            <%#= f.label :group_id, "Group" %>
+            <%#= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"} %>
+          <%# else %>
+            <%#= @groups.collect {|e| e.name.gsub('_',' ').capitalize }.join(', ') %>
+          <%# end -%>
+          Group: <span class="large"><%= @order.group.blank? ? '?' : @order.group.name %></span> <span class="tiny">(<%= link_to 'Switch Group', :controller => 'orders', :action => 'switch_group' %>)</span>
           </p>
           <!-- <p>
             <%#= f.check_box "halouser", :disabled => @confirmation %>
