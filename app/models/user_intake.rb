@@ -48,7 +48,13 @@ class UserIntake < ActiveRecord::Base
     #   user_intake.gateway
     #   user_intake.chest_strap     # returns a chest_strap or a belt_clip
     define_method device do
-      self.senior.send(device) if (!senior.blank? && !senior.send(device).blank?)
+      # Wed Nov  3 03:07:02 IST 2010, ramonrails
+      # https://redmine.corp.halomonitor.com/issues/3657
+      # device should be fetched by serial number first, then through user
+      # WARNING: this can be fatal. devices_users table is used elsewhere
+      _device = Device.find_by_serial_number( device == :gateway ? gateway_serial : transmitter_serial )
+      _device = self.senior.send(device) if (_device.blank? && !senior.blank? && !senior.send(device).blank?)
+      _device
     end
 
     # Usage:
@@ -67,8 +73,12 @@ class UserIntake < ActiveRecord::Base
     ["1", true].include?( subscriber_is_user) # subscriber is marked as user as well
   end
 
+  def transmitter
+    Device.find_by_serial_number( transmitter_serial) || chest_strap || belt_clip
+  end
+
   def transmitter_blank?
-    chest_strap.blank? && belt_clip.blank?
+    transmitter.blank? && chest_strap.blank? && belt_clip.blank?
   end
 
   def need_validation?
@@ -235,11 +245,20 @@ class UserIntake < ActiveRecord::Base
 
   def validate_associations
     if need_validation?
+      validate_devices # validate the serial_numbers
       validate_user_type("senior", true)
       validate_user_type("subscriber") unless subscribed_for_self? || senior_and_subscriber_match?
       validate_user_type("caregiver1") unless (subscriber_is_caregiver || ["1", true].include?( no_caregiver_1))
       validate_user_type("caregiver2") unless ["1", true].include?( no_caregiver_2)
       validate_user_type("caregiver3") unless ["1", true].include?( no_caregiver_3)
+    end
+  end
+
+  # Wed Nov  3 02:47:19 IST 2010, ramonrails
+  # validate the given serial numbers for devices present and available
+  def validate_devices
+    [gateway_serial, transmitter_serial].each do |_serial|
+      errors.add_to_base("Device #{_serial} is not available. Please verify the serial number.") unless (_serial.blank? || Device.available?( _serial))
     end
   end
 

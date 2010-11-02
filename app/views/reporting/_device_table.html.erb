@@ -28,7 +28,7 @@
 		</div>
 		
 		<div class="col-150">
-			<%=device[:serial_number]%>
+			<%=device[:serial_number]%> <%= image_tag("user.png") unless device.users.blank? %>
 		</div>
 		<div class="col-150">
 			<%=device.device_type %>

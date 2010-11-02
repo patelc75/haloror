@@ -60,7 +60,10 @@
           <%# else %>
             <%#= @groups.collect {|e| e.name.gsub('_',' ').capitalize }.join(', ') %>
           <%# end -%>
-          Group: <span class="large"><%= @order.group.blank? ? '?' : @order.group.name %></span> <span class="tiny">(<%= link_to 'Switch Group', :controller => 'orders', :action => 'switch_group' %>)</span>
+          Group: <span class="large"><%= @order.group.blank? ? '?' : @order.group.name %></span>&nbsp;
+          <% if @groups.length > 1 %>
+            <span class="tiny">(<%= link_to 'Switch Group', :controller => 'orders', :action => 'switch_group' %>)</span>
+          <% end %>
           </p>
           <!-- <p>
             <%#= f.check_box "halouser", :disabled => @confirmation %>

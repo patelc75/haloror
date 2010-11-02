@@ -128,11 +128,25 @@ class OrdersController < ApplicationController
       end
     end
   end
-  
+
+  # Wed Nov  3 03:21:52 IST 2010, ramonrails
+  #   only allow switching when enough groups available
   def switch_group
-    session[:order_group_id] = nil
-    store_location
-    redirect_to :controller => 'orders', :action => "select_group"
+    #
+    # check how many grops are available
+    _groups = Group.for_user( current_user)
+    #
+    # single? just select it and get back to order
+    if _groups.length == 1
+      session[:order_group_id] = _groups.first.id
+      redirect_to :controller => 'orders', :action => 'new'
+    #
+    # we do have many, allow user to select
+    else
+      session[:order_group_id] = nil
+      store_location
+      redirect_to :controller => 'orders', :action => "select_group"
+    end
   end
 
   def kit_serial

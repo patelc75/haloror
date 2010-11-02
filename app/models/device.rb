@@ -95,6 +95,26 @@ class Device < ActiveRecord::Base
   # = class methods =
   # =================
   
+  # find if a device is available and ready to get linked to a user
+  # Usage:
+  #   Device.available?( 243)
+  #   Device.available?( "H1000000442")
+  #   Device.available?( device_object)
+  def self.available?( _serial)
+    _device = if _serial.is_a?( Device)
+      _serial
+    elsif _serial.is_a?( String)
+      Device.find_by_serial_number( _serial.strip)
+    elsif _serial.to_i > 0
+      Device.find_by_id( _serial.to_i)
+    end
+    #
+    # * device was found in database
+    # * device is not assigned to any user yet
+    # * QUESTION: do we want to check "active"?
+    !_device.blank? && _device.users.blank? # && _device.active
+  end
+  
   def self.unregister( _ids = "")
     # assumption: all ids are numeric values
     # WARNING: any non-number within ids will cause id be recognized as ZERO
