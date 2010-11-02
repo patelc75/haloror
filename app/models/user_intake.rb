@@ -96,7 +96,8 @@ class UserIntake < ActiveRecord::Base
       bool = self.send("no_caregiver_#{index}".to_sym)
       #
       # for any new_record in memory, no_caregiver_x must be "on"
-      no_caregiver = (self.new_record? ? (bool != "0") : self.send("caregiver#{index}").blank?)
+      _caregiver = self.send("caregiver#{index}")
+      no_caregiver = ( (self.new_record? ? (bool != "0") : _caregiver.blank?) || _caregiver.nothing_assigned? )
       self.send("no_caregiver_#{index}=".to_sym, no_caregiver) # bool.blank? || 
     end
     build_associations
@@ -235,7 +236,7 @@ class UserIntake < ActiveRecord::Base
   def validate_associations
     if need_validation?
       validate_user_type("senior", true)
-      validate_user_type("subscriber") unless subscriber_is_user
+      validate_user_type("subscriber") unless subscribed_for_self? || senior_and_subscriber_match?
       validate_user_type("caregiver1") unless (subscriber_is_caregiver || ["1", true].include?( no_caregiver_1))
       validate_user_type("caregiver2") unless ["1", true].include?( no_caregiver_2)
       validate_user_type("caregiver3") unless ["1", true].include?( no_caregiver_3)
@@ -251,11 +252,11 @@ class UserIntake < ActiveRecord::Base
     end
 
     unless subscriber.nil?
-      if subscriber_is_user
+      if subscribed_for_self? || senior_and_subscriber_match?
         self.subscriber = nil # we have senior. no need of subscriber
       else
         subscriber.collapse_associations
-        (subscriber.nothing_assigned? || subscriber_is_user) ? (self.subscriber = nil) : (self.subscriber.skip_validation = skip_validation)
+        (subscriber.nothing_assigned? || subscribed_for_self? || senior_and_subscriber_match?) ? (self.subscriber = nil) : (self.subscriber.skip_validation = skip_validation)
       end
     end
 
@@ -452,6 +453,12 @@ class UserIntake < ActiveRecord::Base
     end
   end
 
+  # either the boolean is "on", or, the attributes have same values
+  # FIXME: optimize after 1.6.0 release
+  def senior_and_subscriber_match?
+    senior.attributes.merge( senior.profile.attributes).values.compact == subscriber.attributes.merge( subscriber.profile.attributes).values.compact
+  end
+
   # TODO: DRYness required here
   def senior
     if self.new_record?
@@ -478,7 +485,7 @@ class UserIntake < ActiveRecord::Base
           self.mem_senior = user # keep in instance variable so that attrbutes can be saved with user_intake
         end
 
-        (self.mem_subscriber = User.new( mem_senior.attributes)) if subscriber_is_user # same data, but clone
+        (self.mem_subscriber = User.new( mem_senior.attributes)) if subscribed_for_self? # same data, but clone
       end
     end
     self.mem_senior.skip_validation = self.skip_validation unless self.mem_senior.blank?
@@ -486,7 +493,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def subscriber
-    if subscriber_is_user
+    if subscribed_for_self?
       self.mem_subscriber = senior # return senior. do not assign here. this is READ mode method
       # self.mem_subscriber = senior # pick senior, if self subscribed
     else
@@ -504,7 +511,7 @@ class UserIntake < ActiveRecord::Base
       self.mem_subscriber = nil
     else
 
-      if subscriber_is_user
+      if subscribed_for_self?
         self.senior = User.new( arg.attributes) if senior.blank? # we can use this data
         self.mem_subscriber = senior # assign to senior, then reference as subscriber
       else
@@ -646,6 +653,13 @@ class UserIntake < ActiveRecord::Base
       self.caregiver1_attributes = _hash[:caregiver1_attributes] unless (_hash[:caregiver1_attributes].blank? || (_hash[:subscriber_is_caregiver] == "1"))
       self.caregiver2_attributes = _hash[:caregiver2_attributes] unless _hash[:caregiver2_attributes].blank?
       self.caregiver3_attributes = _hash[:caregiver3_attributes] unless _hash[:caregiver3_attributes].blank?
+      #
+      # hide profiles on view, as appropriate
+      self.subscriber_is_user = (subscribed_for_self? || senior_and_subscriber_match?)
+      (1..3).each do |index|
+        _caregiver = self.send("caregiver#{index}".to_sym)
+        self.send("no_caregiver_#{index}=".to_sym, (_caregiver.blank? || _caregiver.nothing_assigned?))
+      end
     end
   end
 
@@ -799,7 +813,7 @@ class UserIntake < ActiveRecord::Base
           bool = self.send("no_caregiver_#{index}".to_sym)
           #
           # for any new_record in memory, no_caregiver_x must be "on"
-          self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || self.new_record? || bool == "1"))
+          self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || self.new_record? || bool == "1") || user.nothing_assigned? )
         end
       end
       # end
@@ -808,7 +822,10 @@ class UserIntake < ActiveRecord::Base
 
     else
       # existing user_intake row. just build the no_caregiver_x booleans
-      (1..3).each { |index| self.send("no_caregiver_#{index}=".to_sym, self.send( "caregiver#{index}".to_sym).blank? ) }
+      (1..3).each do |index|
+        _caregiver = self.send( "caregiver#{index}".to_sym)
+        self.send("no_caregiver_#{index}=".to_sym, _caregiver.blank? || _caregiver.nothing_assigned? )
+      end
     end
   end
 
