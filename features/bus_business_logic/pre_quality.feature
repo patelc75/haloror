@@ -116,7 +116,7 @@ Feature: Pre quality
     And I logout
     And I activate the "reseller_senior" senior of last order
     And I check "userintake_agree"
-    And I press "Proceed"
+    And I press "Agree"
     Then I should see "Successfully updated"
 
   Scenario: halouser > submit user intake form
