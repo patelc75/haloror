@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
   # def set_current_user
   #   Thread.current['user'] = session[:user]
   # end
-  
+
   #This method is needed because of the way attachment_fu stores the files 
   #uploaded on the file system.  attachment_fu stores the files in a folder with 
   #the same name as the model within the public folder.  This causes issues 

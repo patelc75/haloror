@@ -1,5 +1,8 @@
 ActionController::Routing::Routes.draw do |map|
 
+  map.order_group 'orders/select_group', :controller => 'orders', :action => 'select_group'
+  map.order_group 'orders/switch_group', :controller => 'orders', :action => 'switch_group'
+  
   # nested device resources
   # map.resources :device_types do |device_types|
   #   device_types.resources :device_models do |device_models|
@@ -78,7 +81,7 @@ ActionController::Routing::Routes.draw do |map|
   end
   map.resources :sessions,:member => {:edit_user_intake_form => :any,:user_intake_form_confirm => :get} # added automatically after running restful_authentication script
   map.resources :user_intakes, :collection => { :add_notes => :post }
-  map.resources :orders, :member => { :store_failure => :get }, :except => [:destroy, :edit, :update]
+  map.resources :orders, :except => [:destroy, :edit, :update]
   map.resources :rmas, :has_many => :rma_items
   map.resources :purged_logs
   map.resources :triage_thresholds

@@ -72,10 +72,27 @@ class DeviceModel < ActiveRecord::Base
     # fetch coupon_code row when
     #   * options are not blank, is a hash, includes keys :group & :coupon_code
     #   * coupon_codes are not empty
-    if ( !options.blank? && options.is_a?(Hash) && !options[:group].blank? && !options[:coupon_code].blank? && !coupon_codes.blank? )
-      _coupon = coupon_codes.for_group( options[:group]).for_coupon_code( options[:coupon_code]).first
+    # Tue Nov  2 06:23:48 IST 2010
+    #   logic updated:
+    #   * first search for 'default' coupon code for the given group
+    #   * next search for 'default' coupon code for 'default' group
+    #   * none of the above found, return nil
+    if ( !options.blank? && options.is_a?(Hash) && !options[:group].blank? && !coupon_codes.blank? )
+      #
+      # we do have coupon_codes available for this device_model
+      _coupon = if options[:coupon_code].blank?
+        #
+        # 'default' coupon code for this group exists?
+        coupon_codes.for_group( options[:group]).for_coupon_code( 'default').first
+      else
+        #
+        # fetch given coupon code for 'default' group. we may find it
+        coupon_codes.for_group( options[:group]).for_coupon_code( options[:coupon_code]).first
+      end
     end
-    _coupon = DeviceModelPrice.default( self) if ( !defined?(_coupon) || _coupon.blank? )
+    #
+    # nothing found, we must look for 'default' coupon code of 'default' group
+    _coupon = DeviceModelPrice.default( self) if _coupon.blank?
     _coupon
   end
 end

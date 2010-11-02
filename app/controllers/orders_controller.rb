@@ -1,4 +1,6 @@
 class OrdersController < ApplicationController
+  before_filter :group_selected?, :only => :new
+  
   # keeping RESTful
   include UserHelper
   
@@ -12,24 +14,30 @@ class OrdersController < ApplicationController
     #
     # https://redmine.corp.halomonitor.com/issues/3335
     # there always is a group applicable to user
+    # Tue Nov  2 04:24:51 IST 2010
+    #   https://redmine.corp.halomonitor.com/issues/3653#note-7
     @groups = (logged_in? ? Group.for_user(current_user) : [Group.direct_to_consumer])
     @confirmation = false
     @product = session[:product]
     @order = Order.new(session[:order]) # recall if any order data was remembered
-    @complete_tariff = DeviceModel.complete_coupon( @groups.first, params[:coupon_code])
-    @clip_tariff = DeviceModel.clip_coupon( @groups.first, params[:coupon_code])
+    @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
+    @complete_tariff = DeviceModel.complete_coupon( @order.group, params[:coupon_code])
+    @clip_tariff = DeviceModel.clip_coupon( @order.group, params[:coupon_code])
     
     if request.post? # confirmation mode
       @product = params[:product]
       order_params = params[:order] # we need to remember these
       
       @order = Order.new(order_params) # the rendering does not loop another time. we need @order set here
+      @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
       # debugger
       if @product.blank?
         @order.errors.add_to_base "Please select a product to order" if session[:product].blank?
         
       else
-        @order.group = @groups.first if @order.group.blank?
+        # https://redmine.corp.halomonitor.com/issues/3653#note-7
+        # already assigned above
+        # @order.group = Group.find( session[:order_group_id]) # @groups.first if @order.group.blank?
         #
         # TODO: order_params need some cleanup. Revisit when appropriate.
         #   This can probably be obsolete and attributes can go directly to session[:order]
@@ -70,6 +78,7 @@ class OrdersController < ApplicationController
     else # store mode
       # back button needs this
       @order = (session[:order].blank? ? Order.new(:coupon_code => params[:coupon_code], :created_by => current_user, :updated_by => current_user) : Order.new(session[:order]))
+      @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
       @same_address = @order.subscribed_for_self?
       # @same_address = (session[:order].blank? ? "checked" : (session[:order][:bill_address_same] || @order.bill_address_same || @order.ship_and_bill_address_same))
     end
@@ -96,8 +105,34 @@ class OrdersController < ApplicationController
     # end
   end
 
-  def store_failure
-    # show the user some message about store not available
+  # selects and assigns the group into session
+  def select_group
+    @groups = Group.for_user( current_user) # QUESTION: can we use user.group_memberships ?
+
+    # POST: select the group, redirect back to calling action
+    if request.post?
+      group = Group.find( params[:group_id])
+      if group.blank?
+        flash[:notice] = "Selecting a group is mandatory before placing the order"
+      else
+        session[:order_group_id] = group.id
+        redirect_to :controller => 'orders', :action => 'new'
+        flash[:notice] = "Placing order within group #{group.name}..."
+      end
+      # otherwise, keep asking to select a group
+    
+    # GET: show selection page
+    else
+      respond_to do |format|
+        format.html # render page to select group
+      end
+    end
+  end
+  
+  def switch_group
+    session[:order_group_id] = nil
+    store_location
+    redirect_to :controller => 'orders', :action => "select_group"
   end
 
   def kit_serial
@@ -112,7 +147,10 @@ class OrdersController < ApplicationController
       # when the business logic reaches here for kit_serial, include agreement logic
       flash[:notice] = "Order was #{ params[:commit] == 'Skip' ? 'processed without' : 'successfully saved with' } Kit Serial Number."
       @user_intake = @order.user_intake
-      action = (@order.need_agreement_sign? ? 'agreement' : 'success')
+      # Tue Nov  2 06:50:59 IST 2010
+      #   logic was updated to just show a successful order
+      #   senior/subscriber will sign the agreement later from email links
+      action = 'success' # (@order.need_agreement_sign? ? 'agreement' : 'success')
     else
       flash[:notice] = 'Please provide the Kit Serial Number'
       action = 'kit_serial'
@@ -127,6 +165,7 @@ class OrdersController < ApplicationController
   #
   def create
     # debugger
+    @groups = (logged_in? ? Group.for_user(current_user) : [Group.direct_to_consumer])
     if session[:order].blank?
       redirect_to :action => 'new'
       
@@ -135,7 +174,8 @@ class OrdersController < ApplicationController
       unless session[:order].blank?
 
         @order = Order.new(session[:order]) # pick from session, not params
-        @order.group = Group.direct_to_consumer unless logged_in? # only assign this group when public order
+        @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
+        # @order.group = Group.direct_to_consumer unless logged_in? # only assign this group when public order
 
         if @order.valid? && @order.save #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
           # pick any of these hard coded values for now. This will change to device_revisions on order screen
@@ -252,4 +292,35 @@ class OrdersController < ApplicationController
       format.html
     end
   end
+  
+  # =========================================
+  # = private only. no rendering or calling =
+  # =========================================
+  
+  private
+  
+  def group_selected?
+    if logged_in?
+      if session[:order_group_id].blank? # no group selected?
+
+        groups = Group.for_user( current_user) # check applicable groups
+        if groups.length == 1 # just one group? select it
+          session[:order_group_id] = groups.first.id
+          
+        else # more than one group for user? ask to select
+          respond_to do |format|
+            format.html do
+              store_location # remember wher we came from
+              redirect_to :controller => 'orders', :action => 'select_group' # ask the group
+            end
+          end
+        end
+
+      end
+    else # public user?
+      session[:order_group_id] = Group.direct_to_consumer.id
+    end # logged_in? or public user?
+    true # if we reach here, we have group in session
+  end
+
 end

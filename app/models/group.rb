@@ -13,20 +13,23 @@ class Group < ActiveRecord::Base
   # named_scope :distinct_by_name, :select => "DISTINCT name, *", :order => "name ASC"
 
   validates_presence_of :name
-  # validates_uniqueness_of :name
+  # FIXME: validates_uniqueness_of :name
   validates_format_of :name, :with => /\A[a-z0-9_]+\z/, :message => 'Only lowercase and numeric characters are allowed'
   # http://api.rubyonrails.org/classes/ActiveModel/Validations/HelperMethods.html#method-i-validates_format_of
   # email validation taken from rails api
   # check email validity for master group. others exempted
   validates_format_of :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :if => :is_master_group?
 
-  # groups where user has "sales" or "admin" role
-  # Usage:
-  #   Group.for_sales_or_admin_user( User.first)
-  named_scope :for_sales_or_admin_user, lambda { |user| 
-    group_ids = user.group_memberships.collect {|group| (user.is_sales_of?(group) || user.is_admin_of?(group)) ? group.id : nil }.compact
-    { :conditions => {:id => group_ids} }
-  }
+  # Tue Nov  2 06:35:33 IST 2010
+  #   no need of this. user [user.is_admin_of_what, user.is_sales_of_what].flatten.uniq
+  # # groups where user has "sales" or "admin" role
+  # # Usage:
+  # #   Group.for_sales_or_admin_user( User.first)
+  # named_scope :for_sales_or_admin_user, lambda { |user| 
+  #   group_ids = user.group_memberships.collect {|group| (user.is_sales_of?(group) || user.is_admin_of?(group)) ? group.id : nil }.compact
+  #   { :conditions => {:id => group_ids} }
+  # }
+  
   named_scope :ordered, lambda {|*args| {:order => (args.flatten.first || :name)}}
 
   # --------------- triggers / callbacks (never called directly in code)
@@ -112,12 +115,28 @@ class Group < ActiveRecord::Base
     _coupon
   end
 
+  # QUESTION: how is user.group_memberships different from this?
+  #   Tue Nov  2 06:44:15 IST 2010 : updated the logic above now. should be faster
   # groups applicable to user
   # Usage:
   #   Group.for_user( user)
-  # QUESTION: how is user.group_memberships different from this?
-  def self.for_user(user)
-    user.is_a?(User) ? (user.is_super_admin? ? find(:all) : for_sales_or_admin_user(user)) : find(:all)
+  #   Group.for_user( 'chirag')
+  #   Group.for_user( 545)
+  def self.for_user( user)
+    _user = if user.is_a?( User)
+      user
+    elsif user.is_a?( String)
+      User.find_by_login( user.strip)
+    elsif user.to_i > 0
+      User.find_by_id( user.to_i)
+    end
+
+    if _user.is_super_admin?
+      Group.ordered
+    else
+      [_user.is_admin_of_what, _user.is_sales_of_what].flatten.uniq.sort {|a,b| a.name <=> b.name }
+    end
+    # # user.is_a?(User) ? (user.is_super_admin? ? find(:all) : for_sales_or_admin_user(user)) : find(:all)
   end
 
   # =============================
