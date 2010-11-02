@@ -1,62 +1,35 @@
 <h3 class="textcenter">Medical Information</h3>
 
-<div class="span-7">
-  <div class="span-3"><%= f.label :access_information, "Premises Access" %> (Combination, Lockbox Code, Key Location)</div>
-  <div class="span-4 last"><%= f.text_field :access_information, :class => "span-4" %></div>
+<table> <tr> <td>
 
-  <div class="span-6"><%= f.label :permission_to_break_door, "Permission to break the door" %></div>
-  <div class="span-1 last"><%= f.check_box :permission_to_break_door %></div>
+ <div> <%= f.label :access_information, "Premises Access" %> (Combination, Lockbox Code, Key Location) <%= f.text_field :access_information %> </div>
 
-  <div class="span-3"><%= f.label :pet_information, "Pet Information" %></div>
-  <div class="span-4 last"><%= f.text_field :pet_information, :class => "span-4" %></div>
+ <div> <%= f.label :permission_to_break_door, "Permission to break the door" %> <%= f.check_box :permission_to_break_door %> </div>
 
-  <div class="span-3"><%= f.label :hospital_preference, "Hospital Preference" %></div>
-  <div class="span-4 last"><%= f.text_field :hospital_preference, :class => "span-4" %></div>
+ <div> <%= f.label :pet_information, "Pet Information" %> <%= f.text_field :pet_information %> </div>
 
-  <div class="span-3"><%= f.label :hospital_number, "Hospital Phone" %></div>
-  <div class="span-4 last"><%= f.text_field :hospital_number, :class => "span-4" %></div>
+ <div> <%= f.label :hospital_preference, "Hospital Preference" %> <%= f.text_field :hospital_preference %> </div>
 
-  <div class="span-3"><%= f.label :doctor_name, "Doctor Name*" %></div>
-  <div class="span-4 last"><%= f.text_field :doctor_name, :class => "span-4" %></div>
+ <div> <%= f.label :hospital_number, "Hospital Phone" %> <%= f.text_field :hospital_number %> </div>
 
-  <div class="span-3"><%= f.label :doctor_phone, "Doctor Phone*" %></div>
-  <div class="span-4 last"><%= f.text_field :doctor_phone, :class => "span-4" %></div>
-<%
-=begin %>
-  <div class="span-3"><%= f.label :police, "Police Phone*" %></div>
-  <div class="span-4 last"><%= f.text_field :police, :class => "span-4" %></div>
+ <div> <%= f.label :doctor_name, "Doctor Name*" %> <%= f.text_field :doctor_name %> </div>
 
-  <div class="span-3"><%= f.label :fire, "Fire Phone*" %></div>
-  <div class="span-4 last"><%= f.text_field :fire, :class => "span-4" %></div>
+ <div> <%= f.label :doctor_phone, "Doctor Phone*" %> <%= f.text_field :doctor_phone %> </div>
 
-  <div class="span-3"><%= f.label :ambulance, "Ambulance Phone*" %></div>
-  <div class="span-4 last"><%= f.text_field :ambulance, :class => "span-4" %></div>
-<%
-=end %>
-</div>
+ </td>
 
-<div class="span-7">
-  <div class="span-3"><%= f.label :medical_equipment_in_the_home, "Medical equipment in the home*" %></div>
-  <div class="span-4 last"><%= f.text_field :medical_equipment_in_the_home, :class => "span-4" %></div>
-  <hr class="space /">
-  
-  <div class="span-3 last"><%= f.label :medications, "Medications*" %></div>
-  <div class="span-7 last"><%= f.text_area :medications, :class => "span-7", :rows => 5 %></div>
+ <td>
 
-  <div class="span-3 last"><%= f.label :allergies, "Drug Allergies*" %></div>
-  <div class="span-7 last"><%= f.text_area :allergies, :class => "span-7", :rows => 5 %></div>
-</div>
+ <div> <%= f.label :medical_equipment_in_the_home, "Medical equipment in the home*" %> <%= f.text_field :medical_equipment_in_the_home %> </div>
 
-<div class="span-7 last">
-  <ul class="no-style">
-    <li><%= f.check_box :diabetes %><%= f.label :diabetes, "Diabetes" %></li>
-    <li><%= f.check_box :cancer %><%= f.label :cancer, "Cancer" %></li>
-    <li><%= f.check_box :seizures %><%= f.label :seizures, "Seizures" %></li>
-    <li><%= f.check_box :stroke_cva_tia %><%= f.label :stroke_cva_tia, "Stroke/CVA/TIA" %></li>
-    <li><%= f.check_box :cardiac_history %><%= f.label :cardiac_history, "Cardiac history" %></li>
-    <li><%= f.check_box :pacemaker %><%= f.label :pacemaker, "Pacemaker" %> <a href="/Pacemaker_Release_Waiver.pdf" target="_blank">(Release Waiver pdf)</a></li>
-  </ul>
+ <div> <%= f.label :medications, "Medications*" %> <%= f.text_area :medications, :rows => 5 %> </div> <div> <%= f.label :allergies, "Drug Allergies*" %> <%= f.text_area :allergies, :rows => 5 %> </div>
 
-  <div class="span-3 last"><%= f.label :additional_info, "Additional Info" %></div>
-  <div class="span-7 last"><%= f.text_area :additional_info, :class => "span-7", :rows => 5 %></div>
-</div>
+ </td>
+
+ <td>
+
+ <div> <ul class="no-style"> <li><%= f.check_box :diabetes %><%= f.label :diabetes, "Diabetes" %></li> <li><%= f.check_box :cancer %><%= f.label :cancer, "Cancer" %></li> <li><%= f.check_box :seizures %><%= f.label :seizures, "Seizures" %></li> <li><%= f.check_box :stroke_cva_tia %><%= f.label :stroke_cva_tia, "Stroke/CVA/TIA" %></li> <li><%= f.check_box :cardiac_history %><%= f.label :cardiac_history, "Cardiac history" %></li> <li><%= f.check_box :pacemaker %><%= f.label :pacemaker, "Pacemaker" %> <a href="/Pacemaker_Release_Waiver.pdf" target="_blank">(Release Waiver pdf)</a></li> </ul> </div>
+
+ <div> <%= f.label :additional_info, "Additional Info" %> <%= f.text_area :additional_info, :rows => 5 %> </div>
+
+ </td> </tr> </table>
