@@ -40,23 +40,17 @@
       <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? || current_user.is_installer? %>
       <li><%= link_to 'Config', :controller => 'reporting', :action => 'blank_config' %></li>
       <% end %>
-      <% if current_user.is_admin? || current_user.is_super_admin? %>
+      <% if current_user.is_super_admin? %>
       <li><%= link_to 'Reporting', :controller => 'reporting', :action => 'blank_reporting' %></li>
       <% end %>
-      <% if current_user.is_admin? || current_user.is_super_admin? %>
+      <% if current_user.is_super_admin? %>
       <li><%= link_to 'Dial Up', :controller => 'dial_up_statuses', :action => 'index' %></li>
       <% end %>      
-      <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
-      <li><%= link_to 'User&nbsp;Signup', url_for(:controller => 'admin', :action => 'signup') %></li>   
-      <% end %>			      
       <% if current_user.is_super_admin? %>
       <li><%= link_to 'Management', :controller => 'management', :action => 'index' %></li>
       <% end %>
       <% if current_user.is_super_admin? %>
       <li><a href="/atp/index">ATP + RMA</a></li>
-      <% end %>
-      <% if current_user.is_super_admin? %>
-      <li><%= link_to 'Healthvault', :controller => 'healthvault', :action => 'index' %></li>
       <% end %>
       <% if current_user.is_super_admin? %>
       <li><%= link_to 'Info', url_for(:controller => 'util', :action => 'info', :my_links => 'Info') %></li>
