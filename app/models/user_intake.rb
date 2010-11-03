@@ -234,7 +234,10 @@ class UserIntake < ActiveRecord::Base
       #   * lazy_action is the button.text of user intake form, submitted by user
       #   * senior.status.blank? means the form is not yet "submitted", only "saved" so far, or created from online order
       #   * user intake can be submitted by "Submit" or "Approve" action, so they are checked
-      UserMailer.deliver_update_to_safety_care( self) if senior.status.blank? #acts_as_audited is not a good format to send to SafetyCare, defer for next release
+      #  
+      #  Thu Nov  4 00:29:10 IST 2010, ramonrails 
+      #   Emails to safety_care are never sent on any update to user intake
+      # UserMailer.deliver_update_to_safety_care( self) if senior.status.blank? #acts_as_audited is not a good format to send to SafetyCare, defer for next release
     end
   end
 
