@@ -225,14 +225,11 @@
         <% end %>
         <% end %>
       </div>
-      <hr class="space" />
       <hr />
 
       <div class="span-22 last">
         <%= render :partial => 'signature', :locals => { :f => f } %>
       </div>
-      <hr class="space" />
-      <hr />
 
       <div class="span-22 last text-center">
         <% if current_user.is_super_admin? || @user_intake.users.include?( current_user) || current_user.is_admin_of?( @user_intake.group) || !current_user.is_halouser? %>
