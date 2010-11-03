@@ -1,8 +1,8 @@
 <div><%= flash[:notice] %></div>
 
 <% form_tag :action => "select_group" do %>
-  <fieldset>
-    <legend>Please select a group</legend>
+  <fieldset style="border: 2px solid ; padding: 10px;">    
+    <legend><span style="color:#008040;font-size:150%"><b>Please select a group</b></span></legend>
     <div class="span-6">
       <%= label_tag "group_id", "Group" %> : 
       <%= select_tag "group_id", options_from_collection_for_select( @groups, "id", "name", session[:order_group_id]).insert( 0, "<option value=''>Please select a group...</option>") %>
