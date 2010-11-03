@@ -759,10 +759,13 @@ class User < ActiveRecord::Base
   #   !failure
   # end
   
-  # self.devices must have one with kit_serial_number
-  def device_by_serial_number( serial)
-    devices.find_by_serial_number( serial.to_s) # unless serial.blank?
-  end
+  #  Wed Nov  3 06:11:22 IST 2010, ramonrails 
+  #   this is not used anymore 
+  #
+  # # self.devices must have one with kit_serial_number
+  # def device_by_serial_number( serial)
+  #   devices.find_by_serial_number( serial.to_s) # unless serial.blank?
+  # end
   
   # Sun Oct 24 01:20:01 IST 2010
   #   now accepts an array
@@ -773,7 +776,7 @@ class User < ActiveRecord::Base
           # attach it to the senior, only if
           #   * this device is not attached to anyone
           #   * and of course, we can find this device in database :)
-          self.devices << _device if _device.users.blank? # future proof? multiple devices?
+          self.devices << _device if Device.available?( device.serial_number, self) # future proof? multiple devices?
         end
       end
     end

@@ -14,16 +14,16 @@
     hide_when_checked(document.getElementById('user_intake_no_caregiver_1'), 'caregiver1_profile');
     hide_when_checked(document.getElementById('user_intake_no_caregiver_2'), 'caregiver2_profile');
     hide_when_checked(document.getElementById('user_intake_no_caregiver_3'), 'caregiver3_profile');
-  });
-  </script>
 
-  <% if current_user.is_halouser? %>
-    <script type="text/javascript" charset="utf-8">
-      $(function() {
-        $('input select textarea').attr('disabled', 'disabled');
-      })
-    </script>
-  <% end %>
+    <% if !current_user.is_super_admin? && @user_intake.submitted? %>
+      $(".theme-body").find("input").attr('disabled','disabled');
+      $(".theme-body").find("select").attr('disabled','disabled');
+      $(".theme-body").find("textarea").attr('disabled','disabled');
+    <% end %>
+  });
+
+  </script>
+  
 <% end -%>
 <% content_for :css do %>
 <%= stylesheet_link_tag "screen", "myscreen", "jquery-ui", :media => "screen", :cache => true %>
@@ -234,7 +234,6 @@
       <hr class="space" />
       <hr />
 
-      <div class="span-22 last"><%= render :partial => 'attribute_status_messages' %></div>
       <div class="span-22 last text-center">
         <% if current_user.is_super_admin? || @user_intake.users.include?( current_user) || current_user.is_admin_of?( @user_intake.group) || !current_user.is_halouser? %>
         <%= f.submit "Save", :class => "button blue-button", :id => "user_intake_save" %>
