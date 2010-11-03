@@ -29,7 +29,6 @@
       <%= image_tag('exclamation.png') %>
     <% end %>
   </td>
-  <% if current_user.is_super_admin? %>
   <td class="text-center">
     <% if user_intake_row.legal_agreement_at.blank? %>
       <% if user_intake_row.paper_copy_submitted_on.blank? %>
@@ -41,7 +40,6 @@
       <%= image_tag("tick.png", :alt => "Submitted online at #{user_intake_row.legal_agreement_at}", :title => "Submitted online at #{user_intake_row.legal_agreement_at}" ) %>
     <% end %>
   </td>
-  <% end %>
   <td class="text-center">
     <% if user_intake_row.order_id.blank? %>
       <%= image_tag('exclamation.png') %>
@@ -51,7 +49,7 @@
   </td>
   <td class="text-center">
     <% if user_intake_row.senior.blank? %>
-      <%= user_intake_row.transmitter_blank? ? image_tag('exclamation.png') : user_intake_row.transmitter.serial_number %>
+      <%= image_tag('exclamation.png') %>
     <% else %>
       <% if user_intake_row.senior.chest_strap %>
         <%= "CS: "+ user_intake_row.senior.chest_strap.serial_number %>
@@ -59,18 +57,12 @@
         <% if user_intake_row.senior.belt_clip %>
           <%= "BC: "+ user_intake_row.senior.belt_clip.serial_number %>
         <% else %>
-          <%= user_intake_row.transmitter_blank? ? image_tag('exclamation.png') : user_intake_row.transmitter.serial_number %>
+          <%= image_tag('exclamation.png') %>
         <% end %>
       <% end %>
     <% end %>
   </td>
-  <td class="text-center">
-    <% if user_intake_row.gateway_blank? %>
-      <%= image_tag('exclamation.png') %>
-    <% else %>
-      GW: <%= user_intake_row.gateway.serial_number %>
-    <% end %>
-  </td>
+  <td class="text-center"><%= (user_intake_row.senior && user_intake_row.senior.gateway) ? ("GW: "+ user_intake_row.senior.gateway.serial_number) : image_tag('exclamation.png') %></td>
   <% if current_user.is_super_admin? %>
     <td><span class="call_center_id"><%= link_to ((user_intake_row.senior.blank? || user_intake_row.senior.call_center_account.blank?) ? image_tag("warning_go.png") : user_intake_row.senior.call_center_account), {:controller => "user_intakes", :action => "safety_care_account_creation", :id => user_intake_row.id}  %></span></td>
     <td><%= image_tag( user_intake_row.dial_up_numbers_ok? ? "tick.png" : "exclamation.png") %></td>
