@@ -34,9 +34,7 @@
       <th><%= image_tag "profile.png", :alt => "Senior", :title => "Senior" %>&nbsp;Name</th>
       <th class="text-center"><%= image_tag "calendar_day.png", :alt => "Desired Installation/Billing Start Date", :title => "Desired Installation/Billing Start Date" %>&nbsp;Desired Install </th>
       <th class="text-center"><%= image_tag "creditcards.png", :alt => "Payment Type", :title => "Payment Type" %></th>
-      <% if current_user.is_super_admin? %>
       <th><%= image_tag('script.png', :alt => "Paper copy", :title => "Paper copy") %></th>
-      <% end %>
       <th class="text-center">Order ID</th>
       <th class="text-center">CS/BC Serial</th>
       <th><%= image_tag "router.png", :alt => "GW Serial", :title => "GW Serial" %></th>
