@@ -776,7 +776,7 @@ class User < ActiveRecord::Base
           # attach it to the senior, only if
           #   * this device is not attached to anyone
           #   * and of course, we can find this device in database :)
-          self.devices << _device if Device.available?( device.serial_number, self) # future proof? multiple devices?
+          self.devices << _device if Device.available?( _device.serial_number, self) # future proof? multiple devices?
         end
       end
     end

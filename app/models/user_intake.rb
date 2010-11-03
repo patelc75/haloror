@@ -18,9 +18,9 @@ class UserIntake < ActiveRecord::Base
   #   Add validation for transmitter(CS H1xxxxxxxx/BC H5xxxxxxxx) and gateway(H2xxxxxxxx)
   # validates_length_of :gateway_serial, :is => 10, :unless => :gateway_blank?
   # validates_length_of :transmitter_serial, :is => 10, :unless => :transmitter_blank?
-  validates_format_of :gateway_serial, :with => /^H2[\d]{8}$/, :unless => :gateway_blank?
-  validates_format_of :transmitter_serial, :with => /^H[15][\d]{8}$/, :unless => :transmitter_blank?
-  validates_presence_of :subscriber, :unless => :subscribed_for_self?
+  validates_format_of :gateway_serial, :with => /^H2.{8}$/, :unless => :gateway_blank?, :message => "is not formatted correctly"
+  validates_format_of :transmitter_serial, :with => /^H[15].{8}$/, :unless => :transmitter_blank?, :message => "is not formatted correctly"
+  validates_presence_of :subscriber, :unless => :subscribed_for_self?, :message => "is mandatory unless user is subscribing for itself"
 
   acts_as_audited
   # https://redmine.corp.halomonitor.com/issues/3215

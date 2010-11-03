@@ -41,9 +41,9 @@ class Device < ActiveRecord::Base
   # = # validations ---------------------- =
   # ========================================
   
-  validates_presence_of :serial_number
-  validates_length_of :serial_number, :is => 10
-  validates_uniqueness_of :serial_number, :case_sensitive => false
+  validates_presence_of :serial_number, :message => "Serial number must be present for device"
+  validates_length_of :serial_number, :is => 10, :message => "Length must be 10 characters"
+  validates_uniqueness_of :serial_number, :case_sensitive => false, :on => :create, :message => "Serial number is not unique"
 
   # ===================================
   # = named scopes, searches, filters =
@@ -89,6 +89,7 @@ class Device < ActiveRecord::Base
       when "H5"; set_chest_strap_type
       end
     end
+    true
   end
 
   # =================
