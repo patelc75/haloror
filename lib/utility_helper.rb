@@ -19,6 +19,8 @@ module UtilityHelper
     end
   end
 
+  #  Wed Nov  3 04:41:09 IST 2010, ramonrails 
+  #   FIXME: stop using this method. User model can handle this more RESTfully
   def self.change_password_by_user_id(user_id, password)
   	salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{User.find(user_id).login}--")
 

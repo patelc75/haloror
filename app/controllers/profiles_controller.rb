@@ -250,6 +250,8 @@ get_caregivers(current_user)
     end
   end
   
+  #  Wed Nov  3 04:07:13 IST 2010, ramonrails 
+  #    FIXME: this should just be a simple REST form for profile update
   def change_password_init
     @user = User.find(params[:user_id])
     #render :partial => 'change_password_init'
@@ -268,7 +270,11 @@ get_caregivers(current_user)
   	end
   end
   
+  # Wed Nov  3 03:50:24 IST 2010, ramonrails
+  # FIXME: this is a confused logic, actually here we have;
+  #   params[:user][:id] == selected_user.id
   def change_password
+    # debugger
     user_hash = params[:user]
     user = User.find(user_hash[:id])
     unless current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)
@@ -290,15 +296,23 @@ get_caregivers(current_user)
         end
       end
     else
-      if user_hash[:password] == user_hash[:password_confirmation]
-        if user_hash[:password].length >= 4
-          UtilityHelper.change_password_by_user_id(user.id, user_hash[:password])
-        else
-          @message = "Password must be at least 4 characters"
-        end
-      else
-        @message = "New Password must equal Confirm Password"
-      end
+      #  Wed Nov  3 04:40:07 IST 2010, ramonrails 
+      #   FIXME: why are we validating here? this should be done in model
+      [:password, :password_confirmation].each {|e| user.send("#{e}=", user_hash[e]) } # apply password
+      #
+      # save and collect errors for failures
+      @message = user.errors.each_full(&:collect).join(', ') unless user.save
+      #
+      # old logic
+      # if user_hash[:password] == user_hash[:password_confirmation]
+      #   if user_hash[:password].length >= 4
+      #     UtilityHelper.change_password_by_user_id(user.id, user_hash[:password])
+      #   else
+      #     @message = "Password must be at least 4 characters"
+      #   end
+      # else
+      #   @message = "New Password must equal Confirm Password"
+      # end
     end
     if @message.nil?
       @success_message = true

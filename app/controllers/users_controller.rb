@@ -328,7 +328,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    debugger
+    # debugger
     @group = params[:group]
     if !@group.blank? && @group != 'Choose a Group'
       User.transaction do

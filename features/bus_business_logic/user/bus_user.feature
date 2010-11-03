@@ -37,3 +37,14 @@ Feature: User status
       | 1122334455     |
     Then user intake "1122334455" should not have a status attribute
     And senior of user intake "1122334455" should have a status attribute
+
+  Scenario: Super admin can change password for any config > user
+    When I am changing the password for "test-user"
+    And I fill in the following:
+     | New Password        | abc123 |
+     | Retype New Password | abc123 |
+    And I press "update"
+    Then I should see "Password Changed"
+    Given I am authenticated as "test-user" with password "abc123"
+    Then page content should have "Welcome, test-user"
+    
