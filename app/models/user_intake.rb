@@ -147,6 +147,9 @@ class UserIntake < ActiveRecord::Base
       options = { :updated_by => updated_by, :description => "Status updated from [#{senior.status_was}] to [#{senior.status}], triggered from user intake" }
       add_triage_note( options)
     end
+    #  Wed Nov  3 05:00:46 IST 2010, ramonrails 
+    #   anyways validate devices 
+    validate_devices # validate the serial_numbers
   end
 
   def after_save
@@ -245,7 +248,6 @@ class UserIntake < ActiveRecord::Base
 
   def validate_associations
     if need_validation?
-      validate_devices # validate the serial_numbers
       validate_user_type("senior", true)
       validate_user_type("subscriber") unless subscribed_for_self? || senior_and_subscriber_match?
       validate_user_type("caregiver1") unless (subscriber_is_caregiver || ["1", true].include?( no_caregiver_1))
