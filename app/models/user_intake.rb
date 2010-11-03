@@ -260,7 +260,7 @@ class UserIntake < ActiveRecord::Base
   # validate the given serial numbers for devices present and available
   def validate_devices
     [gateway_serial, transmitter_serial].each do |_serial|
-      errors.add_to_base("Device #{_serial} is not available. Please verify the serial number.") unless (_serial.blank? || Device.available?( _serial))
+      errors.add_to_base("Device #{_serial} is not available. Please verify the serial number.") unless (_serial.blank? || Device.available?( _serial, senior))
     end
   end
 
@@ -746,7 +746,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def submitted?
-    !submitted_at.blank? # timestamp is required to identify as "submitted"
+    !submitted_at.blank? || !senior.status.blank? # timestamp is required to identify as "submitted"
   end
 
   # FIXME: DEPRECATED: QUESTION: this logic needs immediate attention. what to do here?

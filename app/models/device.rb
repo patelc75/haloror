@@ -100,7 +100,8 @@ class Device < ActiveRecord::Base
   #   Device.available?( 243)
   #   Device.available?( "H1000000442")
   #   Device.available?( device_object)
-  def self.available?( _serial)
+  #   Device.available?( device_object, User.last) => Device is either assigned to given user, or free to assign
+  def self.available?( _serial, _user = nil)
     _device = if _serial.is_a?( Device)
       _serial
     elsif _serial.is_a?( String)
@@ -112,7 +113,7 @@ class Device < ActiveRecord::Base
     # * device was found in database
     # * device is not assigned to any user yet
     # * QUESTION: do we want to check "active"?
-    !_device.blank? && _device.users.blank? # && _device.active
+    !_device.blank? && (_device.users - [_user]).blank? # && _device.active
   end
   
   def self.unregister( _ids = "")
