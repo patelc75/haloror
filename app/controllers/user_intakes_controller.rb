@@ -168,7 +168,7 @@ class UserIntakesController < ApplicationController
         # # if approval was pending and this time "Approve" button is submitted
         # #   then mark the senior "Ready to Install"
         # if (@user_intake.senior.status == User::STATUS[:approval_pending]) && (params[:commit] == "Approve")
-        #   @user_intake.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:install_pending])
+        #   @user_intake.senior.update_attribute( :status, User::STATUS[:install_pending])
         #   @user_intake.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
         # end
         params[:user_intake][:lazy_action] = params[:commit] # commit button text

@@ -170,7 +170,10 @@ class Group < ActiveRecord::Base
   end
   
   def admins
-    users_with_role( "admin")
+    self.has_admins # use authorization gem
+    #  Thu Nov  4 00:03:19 IST 2010, ramonrails 
+    #   Old logic 
+    # users_with_role( "admin")
   end
 
   # ===================

@@ -127,7 +127,7 @@ class UserIntake < ActiveRecord::Base
     # lock if required
     # skip_validation decides if "save" was hit instead of "submit"
     self.locked = (!skip_validation && valid?)
-    self.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:approval_pending]) if (locked? && self.senior.status.blank?) # once submitted, get ready for approval
+    self.senior.update_attribute( :status, User::STATUS[:approval_pending]) if (locked? && self.senior.status.blank?) # once submitted, get ready for approval
     #
     # WARNING: Wed Sep 15 04:29:08 IST 2010
     #   this code causing some failures on business logic
@@ -168,23 +168,44 @@ class UserIntake < ActiveRecord::Base
     #   * last user action was "Approve"
     # QUESTION: admin can approve?
     if lazy_action == "Approve" && senior.status == User::STATUS[:approval_pending] # && !self.updater.blank? && self.updater.is_super_admin?
-      self.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:install_pending])
+      self.senior.update_attribute( :status, User::STATUS[:install_pending])
       self.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
 
       # Switch user to installed state, if
       #   * user is "Ready to Bill"
       #   * last user action was "Bill"
     elsif lazy_action == 'Bill' && senior.status == User::STATUS[:bill_pending]
-      self.senior.update_attribute_with_validation_skipping( :status, User::STATUS[:installed])
       #
       # charge subscription and pro-rata recurring charges (including today), only when installed
       unless order.blank?
         #
         # charge the credit card subscription now
-        order.charge_subscription
-        #
-        # pro-rata for subscription should also be charged
-        order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
+        if order.charge_subscription
+          #
+          # pro-rata for subscription should also be charged
+          order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
+          #
+          # now make user "Installed"
+          self.senior.update_attribute( :status, User::STATUS[:installed])
+          #
+          # add a row to triage audit log
+          #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log
+          attributes = {
+            :user         => senior,
+            :is_dismissed => senior.last_triage_status,
+            :status       => senior.status,
+            :created_by   => senior.id,
+            :updated_by   => senior.id,
+            :description  => "Transitioned from 'Ready to Bill' state to 'Installed'. Billed. Subscription charged. Pro-rata charged."
+          }
+          TriageAuditLog.create( attributes)
+          #
+          # explicitly send email to group admins, halouser, caregivers. tables are saved without callbacks
+          [ senior, senior.has_caregivers, senior.group_admins ].flatten.uniq.each do |_user|
+            UserMailer.deliver_user_installation_alert( _user)
+          end
+        end
+      
       end
     end
     #
@@ -205,15 +226,16 @@ class UserIntake < ActiveRecord::Base
 
     # TODO: audit log is not in readable format for SafetyCare, redo in future release
     #if self.senior.status == User::STATUS[:approval_pending]
-    UserMailer.deliver_senior_and_caregiver_details( self.senior)
-    #else
-    # Mon Nov  1 22:08:10 IST 2010
-    #   Send update to safety care only when submitted for the first time
-    #   * lazy_action is the button.text of user intake form, submitted by user
-    #   * senior.status.blank? means the form is not yet "submitted", only "saved" so far, or created from online order
-    #   * user intake can be submitted by "Submit" or "Approve" action, so they are checked
-    UserMailer.deliver_update_to_safety_care( self) if ( ["Submit", "Approve"].include?( lazy_action) && senior.status.blank? ) #acts_as_audited is not a good format to send to SafetyCare, defer for next release
-    #end
+    if ["Submit", "Approve"].include?( lazy_action)
+      UserMailer.deliver_senior_and_caregiver_details( self.senior)
+      #else
+      # Mon Nov  1 22:08:10 IST 2010
+      #   Send update to safety care only when submitted for the first time
+      #   * lazy_action is the button.text of user intake form, submitted by user
+      #   * senior.status.blank? means the form is not yet "submitted", only "saved" so far, or created from online order
+      #   * user intake can be submitted by "Submit" or "Approve" action, so they are checked
+      UserMailer.deliver_update_to_safety_care( self) if senior.status.blank? #acts_as_audited is not a good format to send to SafetyCare, defer for next release
+    end
   end
 
   # when billing starts, the monthly recurring amount is charged pro-rated since this date

@@ -34,25 +34,20 @@ class Panic < CriticalDeviceAlert
     unless user.blank?
       #
       # buffer for last panic row related to this user
-      user.last_panic_id = id
+      user.update_attribute( :last_panic_id, id) # no validations
       #
       # 
       # "Ready to Bill" state if panic is
       #   * after "Desired Installation Date"
       #   * senior is member of safety care, but in test mode (partial test mode)
       #   * only apply "ready to bill" state when current state is any of
-      #     * Ready to Install, Installed or Install Overdue
-      if ((Time.now > user.desired_installation_date) && user.partial_test_mode?) && \
-        [User::STATUS[:install_pending], User::STATUS[:installed], User::STATUS[:overdue]].include?( user.status)
-        (user.status = User::STATUS[:bill_pending])
-      end
-      #
-      #   Ready for Install > Installed (green) is automatically transitioned
-      #   Check for panic button test (must occur after the install date)
-      auto_install = ((user.status == User::STATUS[:install_pending]) && (Time.now > user.updated_at))
-      if auto_install
-        # debugger
-        user.status = User::STATUS[:installed]
+      #     * Ready to Install or Install Overdue
+      #   * "Installed" means, panic button was ok. user was "Bill"ed by human action
+      _allowed_states = [User::STATUS[:install_pending], User::STATUS[:overdue]]
+      if !user.desired_installation_date.blank? && (Time.now > user.desired_installation_date) && _allowed_states.include?( user.status.to_s)
+        #
+        # transition the user from "Ready to Install" => "Ready to Bill"
+        user.update_attribute( :status, User::STATUS[:bill_pending]) # "Ready to bill". no validations
         #
         # add a row to triage audit log
         #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log
@@ -62,21 +57,38 @@ class Panic < CriticalDeviceAlert
           :status       => user.status,
           :created_by   => user.id,
           :updated_by   => user.id,
-          :description  => "Automatically transitioned from 'Ready to Insall' state to 'Installed' state by 'Panic button test'"
+          :description  => "Automatically transitioned from 'Ready to Insall' to 'Ready to Bill' state at 'Panic button'"
         }
         TriageAuditLog.create( attributes)
-        #
-        # explicitly send email to group admins, halouser, caregivers. tables are saved without callbacks
-        [ user,
-          user.user_intakes.collect(&:caregivers),
-          user.user_intakes.collect(&:group).flatten.uniq.collect(&:admins)
-        ].flatten.uniq.each do |_user|
-          UserMailer.deliver_user_installation_alert( _user)
-        end
       end
+
+      #  Wed Nov  3 23:33:00 IST 2010, ramonrails 
+      #   Old logic: "Installed" state can only be achieved by manual human action by clicking "Bill" in user intake
+      #   shifted now to user_intake.rb
+      # #  
+      # #   Ready for Install > Installed (green) is automatically transitioned
+      # #   Check for panic button test (must occur after the install date)
+      # auto_install = ((user.status == User::STATUS[:install_pending]) && (Time.now > user.desired_installation_date))
+      # if auto_install
+      #   # debugger
+      #   user.status = User::STATUS[:installed]
+      #   #
+      #   # explicitly send email to group admins, halouser, caregivers. tables are saved without callbacks
+      #   [ user,
+      #     user.user_intakes.collect(&:caregivers),
+      #     user.user_intakes.collect(&:group).flatten.uniq.collect(&:admins)
+      #   ].flatten.uniq.each do |_user|
+      #     UserMailer.deliver_user_installation_alert( _user)
+      #   end
+      # end
       #
-      user.send(:update_without_callbacks) # quick fix to https://redmine.corp.halomonitor.com/issues/3067
-      user.is_halouser_of( Group.safety_care!) # user should also be opted in to call center
+      #  Wed Nov  3 23:34:26 IST 2010, ramonrails 
+      #   used update_attribute with validation skipping instead
+      # user.send(:update_without_callbacks) # quick fix to https://redmine.corp.halomonitor.com/issues/3067
+      #  
+      #  Wed Nov  3 23:37:05 IST 2010, ramonrails 
+      #   user is already a member when partial test mode was activated
+      # user.is_halouser_of( Group.safety_care!) # user should also be opted in to call center
     end
     #
     # ramonrails: Thu Oct 14 02:05:21 IST 2010

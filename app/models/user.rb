@@ -1602,11 +1602,15 @@ class User < ActiveRecord::Base
       return []
     end
   end
+  
   def caregivers
-    caregivers = []
-    caregivers = self.has_caregivers
-    caregivers
+    self.has_caregivers
   end
+  
+  def group_admins
+    self.user_intakes.collect(&:group).flatten.collect(&:admins).flatten
+  end
+  
   def roles_user_by_role(role)
     self.roles_users.find(:first, :conditions => "role_id = #{role.id}", :include => :role)
   end
