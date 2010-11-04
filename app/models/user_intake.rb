@@ -452,8 +452,8 @@ class UserIntake < ActiveRecord::Base
   # Sat Sep 25 00:45:06 IST 2010
   # CHANGED: logic changed to user.devices only. No user_intake.kit_serial_number
 
-  def dial_up_numbers_ok?
-    (!senior.blank? && !senior.gateway.blank?) ? senior.gateway.dial_up_numbers_ok? : false
+  def dial_up_numbers_ok?    
+    (!senior.blank? && !senior.devices.gateways.first.blank?) ? senior.devices.gateways.first.dial_up_numbers_ok? : false
     #
     # Fri Sep 24 04:26:03 IST 2010
     # logic updated to check user.devices by type of device
