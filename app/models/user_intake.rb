@@ -565,7 +565,11 @@ class UserIntake < ActiveRecord::Base
   # either the boolean is "on", or, the attributes have same values
   # FIXME: optimize after 1.6.0 release
   def senior_and_subscriber_match?
-    senior.attributes.merge( senior.profile.attributes).values.compact == subscriber.attributes.merge( subscriber.profile.attributes).values.compact
+    _senior_attributes = senior.attributes
+    _senior_attributes.merge( senior.profile.attributes) unless senior.profile.blank?
+    _subscriber_attributes = subscriber.attributes
+    _subscriber_attributes.merge( subscriber.profile.attributes) unless subscriber.profile.blank?
+    _senior_attributes.values.compact == _subscriber_attributes.values.compact
   end
 
   # TODO: DRYness required here
