@@ -5,6 +5,10 @@ Feature: Pre quality
 
   Background:
     Given I am an authenticated super admin
+    And only the following carriers:
+      | name    |
+      | Alltel  |
+      | Verizon |
     
   Scenario: super admin > create a group
     When I am ready to create a "reseller" group
@@ -132,5 +136,10 @@ Feature: Pre quality
     And I check "user_intake_subscriber_is_caregiver"
     And I fill the subscriber details for user intake form
     And I fill the caregiver2 details for user intake form
+    And I select "Verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
+    And I select "Verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
+    And I select "Verizon" from "user_intake_caregiver2_attributes__profile_attributes_carrier_id"
     And I press "user_intake_submit"
     Then I should see "successfully updated"
+    And caregiver1 of last user intake should have email_active opted
+    And caregiver1 of last user intake should have text_active opted

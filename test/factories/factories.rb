@@ -163,6 +163,17 @@ Factory.define :role do |v|
   v.name { Faker::Lorem.words[0] }
 end
 
+Factory.define :roles_users_option do |v|
+  v.removed { rand(1) == 1 }
+  v.active { rand(1) == 1 }
+  v.phone_active { rand(1) == 1 }
+  v.text_active { rand(1) == 1 }
+  v.email_active { rand(1) == 1 }
+  v.is_keyholder { rand(1) == 1 }
+  v.position { rand(3) }
+  v.relationship { Faker::Name.name }
+end
+
 Factory.define :strap_fastened do |v|
   v.association :device
   v.association :user

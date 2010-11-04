@@ -47,10 +47,15 @@ Given /^I am an authenticated super admin$/ do
   Given %{user "demo" has "super_admin" role}
 end
 
-Given /^the following (.+):$/ do |name, table|
-  # # Thu Oct 28 22:47:21 IST 2010
-  # # complex steps in pre-quality require the existing data
-  # name.gsub(/ /,'_').classify.constantize.delete_all
+# TODO: fix scenarios to use "only" where required
+#   even better, use DatabaseCleaner strategy
+Given /^(the|only the) following (.+):$/ do |_condition, name, table|
+  # Thu Oct 28 22:47:21 IST 2010
+  # complex steps in pre-quality require the existing data
+  #  
+  #  Thu Nov  4 02:15:53 IST 2010, ramonrails 
+  #   We can conditionally remove the existing ones
+  name.gsub(/ /,'_').classify.constantize.delete_all if _condition == "only the"
   #
   # single line statement causes user_intake locked after_save
   # we need to skip_validation to save it and allow "edit"
