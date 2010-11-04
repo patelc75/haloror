@@ -39,6 +39,6 @@ CONTACTS<%if @user.is_halouser?%><%i=0%><%@caregivers = @user.caregivers_sorted_
 <%= SERIES_HASH["#{@i}"] %> Contact Cell Number:  <%= caregiver.profile.cell_phone%>
 <%= SERIES_HASH["#{@i}"] %> Contact Work Number:  <%= caregiver.profile.work_phone%>
 <%= SERIES_HASH["#{@i}"] %> Contact Other Number:  <%= caregiver.profile.other_phone%>
-<%= SERIES_HASH["#{@i}"] %> Contact is Key-Holder?:   <%= @opts.is_keyholder %>
+<%= SERIES_HASH["#{@i}"] %> Contact is Key-Holder?:   <%= @opts.is_keyholder if defined?(@opts) && !@opts.blank? %>
 <%end%><%end%>
 

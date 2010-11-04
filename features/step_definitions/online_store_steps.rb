@@ -75,7 +75,7 @@ When /^I place an online order for "([^\"]*)" group$/ do |_name|
 end
 
 When /^I am placing an online order for "([^\"]*)" group$/ do |_name|
-  When %{I am switching "#{_name}" group for online store}
+  When %{I switch "#{_name}" group for online store}
   When %{I choose "product_complete"}
   When %{I fill the shipping details for online store}
   When %{I fill the billing details for online store}
@@ -106,10 +106,12 @@ When /^I am ready to create a coupon code for "([^\"]*)" group$/ do |_name|
   })
 end
 
-When /^I am switching "([^\"]*)" group for online store$/ do |_name|
+When /^I switch "([^\"]*)" group for online store$/ do |_name|
   When %{I visit "/orders/switch_group"}
-  When %{I select "#{_name}_group" from "Group"}
-  When %{I press "Continue"}
+  if response.body.include? "Please select a group"
+    When %{I select "#{_name}_group" from "Group"}
+    When %{I press "Continue"}
+  end
 end
 
 When /^I erase the payment gateway response log$/ do

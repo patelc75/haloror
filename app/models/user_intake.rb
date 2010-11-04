@@ -34,6 +34,9 @@ class UserIntake < ActiveRecord::Base
   attr_accessor :mem_senior, :mem_subscriber, :need_validation, :cmd_type
   3.times do |index|
     attr_accessor "mem_caregiver#{index+1}".to_sym
+    # 
+    # Thu Nov  4 05:55:00 IST 2010, ramonrails
+    # now use caregiver1_role_options instead of directly accessing this
     attr_accessor "mem_caregiver#{index+1}_options".to_sym
     attr_accessor "no_caregiver_#{index+1}".to_sym
   end
@@ -69,6 +72,56 @@ class UserIntake < ActiveRecord::Base
   # = public methods =
   # ==================
 
+  #  TODO: FIXME: this should ideally go to user.rb but for the sake of time on 1.6.0 we kept it here
+  #   * user object should hold the role_options if they are applicable
+  #   * user should be able to identify "senior" through roles
+  #
+  #  Thu Nov  4 05:13:46 IST 2010, ramonrails 
+  #   dynamic methods to fetch and assign roles_users_options for 3 caregivers 
+  (1..3).each do |_index|
+    # Usage:
+    #   caregiver1_role_options
+    #   caregiver2_role_options
+    #   caregiver3_role_options
+    define_method "caregiver#{_index}_role_options" do
+      _options = self.send( "mem_caregiver#{_index}_options")
+      if _options.blank?
+        _caregiver = self.send("caregiver#{_index}")
+        _options = ( self.new_record? ? RolesUsersOption.new( :position => _index) : _caregiver.options_for_senior( senior) ) if _options.blank?
+        self.send("mem_caregiver#{_index}_options=", _options) # assign to mem
+      end
+      _options
+    end
+    
+    # Usage
+    #   caregiver1_role_options( _hash)
+    #   caregiver1_role_options( RolesUsersOption.new( ... ) )
+    #   caregiver1_role_options( roles_users_option_object )
+    #   and similarly for other caregivers...
+    define_method "caregiver#{_index}_role_options=" do |_given_options|
+      _options = self.send( "mem_caregiver#{_index}_options")
+      _caregiver = self.send("caregiver#{_index}")
+      _options = ( self.new_record? ? RolesUsersOption.new( :position => _index) : _caregiver.options_for_senior( senior) ) if _options.blank?
+      if _given_options.is_a?( RolesUsersOption)
+        #  
+        #   we have a roles_users_option object 
+        _options = _given_options
+      elsif _given_options.is_a?( Hash)
+        #  
+        #   we have a hash. apply attributes to which _options will respond 
+        _given_options.each {|k,v| _options.send( "#{k}=", v) if _options.respond_to?( k) } # apply applicable hash values
+      else
+        #  
+        #  Thu Nov  4 05:07:28 IST 2010, ramonrails 
+        #    
+        # If you have reached here, check your code. Please call the methods correctly
+        # we can raise an exception here, but the user does not have to see that
+      end
+      self.send("mem_caregiver#{_index}_options=", _options) # assign to mem
+      _options
+    end
+  end
+
   def subscribed_for_self?
     ["1", true].include?( subscriber_is_user) # subscriber is marked as user as well
   end
@@ -102,11 +155,11 @@ class UserIntake < ActiveRecord::Base
     self.subscriber_is_user = (subscriber_is_user.nil? || subscriber_is_user == "1")
     self.subscriber_is_caregiver = false if subscriber_is_caregiver.nil?
     (1..3).each do |index|
-      self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
-      bool = self.send("no_caregiver_#{index}".to_sym)
       #
       # for any new_record in memory, no_caregiver_x must be "on"
       _caregiver = self.send("caregiver#{index}")
+      self.send("caregiver#{index}_role_options=".to_sym, ( self.new_record? ? { "position" => index } : _caregiver.options_for_senior( senior) ) )
+      bool = self.send("no_caregiver_#{index}".to_sym)
       no_caregiver = ( (self.new_record? ? (bool != "0") : _caregiver.blank?) || _caregiver.nothing_assigned? )
       self.send("no_caregiver_#{index}=".to_sym, no_caregiver) # bool.blank? || 
     end
@@ -407,7 +460,17 @@ class UserIntake < ActiveRecord::Base
       _caregiver = self.send("caregiver#{index}".to_sym)
       unless (_caregiver.blank? || _caregiver.nothing_assigned?)
         _caregiver.is_caregiver_to( senior) # assign role
-        _caregiver.options_for_senior( senior, self.send("mem_caregiver#{index}_options").merge( :position => index ))
+        # 
+        # Thu Nov  4 05:57:16 IST 2010, ramonrails
+        #   user values were stored with apply_attributes_from_hash
+        #   now we persist them into database
+        # debugger
+        _options = self.send("caregiver#{index}_role_options")
+        if RolesUsersOption.exists?( _options) # we are already at the record
+          _options.save # just save it
+        else # maybe this is a new association and options
+          _caregiver.options_for_senior( senior, _options) # create appropriate data
+        end
       end
     end
     # ----------------------- shift to user.rb - end -------------------------------
@@ -576,7 +639,8 @@ class UserIntake < ActiveRecord::Base
           # remember role option when subscriber is caregiver
           if subscriber_is_caregiver
             self.mem_caregiver1 = User.new( mem_subscriber.attributes) # clone
-            (self.mem_caregiver1_options = attributes["role_options"]) if attributes.has_key?("role_options")
+            # debugger
+            # (self.mem_caregiver1_options = attributes["role_options"]) if attributes.has_key?("role_options")
           end
         end
 
@@ -617,7 +681,8 @@ class UserIntake < ActiveRecord::Base
             self.mem_caregiver1 = arg_user
           end
 
-          self.mem_caregiver1_options = attributes["role_options"] if attributes.has_key?("role_options")
+          # debugger
+          # self.mem_caregiver1_options = attributes["role_options"] if attributes.has_key?("role_options")
         end
 
       end
@@ -648,7 +713,7 @@ class UserIntake < ActiveRecord::Base
           self.mem_caregiver2 = arg_user
         end
 
-        self.mem_caregiver2_options = attributes["role_options"] if attributes.has_key?("role_options")
+        # self.mem_caregiver2_options = attributes["role_options"] if attributes.has_key?("role_options")
       end
 
     end
@@ -678,7 +743,7 @@ class UserIntake < ActiveRecord::Base
           self.mem_caregiver3 = arg_user
         end
 
-        self.mem_caregiver3_options = attributes["role_options"] if attributes.has_key?("role_options")
+        # self.mem_caregiver3_options = attributes["role_options"] if attributes.has_key?("role_options")
       end
 
     end
@@ -695,6 +760,10 @@ class UserIntake < ActiveRecord::Base
   # TODO: WARNING: needs more testing and code coverage
   def apply_attributes_from_hash( _hash)
     unless _hash.blank?
+      #  
+      #  Thu Nov  4 02:54:35 IST 2010, ramonrails 
+      #   We can also do this, but no time for testing before 1.6.0 release
+      #   _hash.each {|k,v| self.send("#{k}=", v) if self.respond_to?( k) }
       self.senior_attributes = _hash[:senior_attributes] unless _hash[:senior_attributes].blank?
       self.subscriber_attributes = _hash[:subscriber_attributes] unless (_hash[:subscriber_attributes].blank? || (_hash[:subscriber_is_user] == "1"))
       self.caregiver1_attributes = _hash[:caregiver1_attributes] unless (_hash[:caregiver1_attributes].blank? || (_hash[:subscriber_is_caregiver] == "1"))
@@ -706,6 +775,13 @@ class UserIntake < ActiveRecord::Base
       (1..3).each do |index|
         _caregiver = self.send("caregiver#{index}".to_sym)
         self.send("no_caregiver_#{index}=".to_sym, (_caregiver.blank? || _caregiver.nothing_assigned?))
+        #  
+        #  Thu Nov  4 02:52:39 IST 2010, ramonrails 
+        #   Store the options into virtual attribute in user intake
+        #   We will persist it to database during associations_after_save
+        #   We need this because during the update_attributes, these virtual attributes do not get assigned
+        # debugger
+        self.send("caregiver#{index}_role_options=", _hash["caregiver#{index}_role_options"])
       end
     end
   end
@@ -726,7 +802,7 @@ class UserIntake < ActiveRecord::Base
     unless attributes.blank?
       _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
       attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
-      (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
+      # (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
       self.subscriber = ((subscriber.blank? || self.new_record?) ? User.new( attributes) : self.subscriber.update_attributes(attributes)) # includes profile_attributes hash
       self.subscriber.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.subscriber.skip_validation = self.skip_validation unless self.subscriber.blank?
@@ -738,7 +814,7 @@ class UserIntake < ActiveRecord::Base
     unless attributes.blank?
       _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
       attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
-      (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
+      # (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
       self.caregiver1 = ((caregiver1.blank? || self.new_record?) ? User.new( attributes) : self.caregiver1.update_attributes(attributes)) # includes profile_attributes hash
       self.caregiver1.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.caregiver1.skip_validation = self.skip_validation unless self.caregiver1.blank?
@@ -750,7 +826,7 @@ class UserIntake < ActiveRecord::Base
     unless attributes.blank?
       _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
       attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
-      (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
+      # (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
       self.caregiver2 = ((caregiver2.blank? || self.new_record?) ? User.new( attributes) : self.caregiver2.update_attributes(attributes)) # includes profile_attributes hash
       self.caregiver2.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.caregiver2.skip_validation = self.skip_validation unless self.caregiver2.blank?
@@ -762,7 +838,7 @@ class UserIntake < ActiveRecord::Base
     unless attributes.blank?
       _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
       attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
-      (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
+      # (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
       self.caregiver3 = ((caregiver3.blank? || self.new_record?) ? User.new( attributes) : self.caregiver3.update_attributes(attributes)) # includes profile_attributes hash
       self.caregiver3.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.caregiver3.skip_validation = self.skip_validation unless self.caregiver3.blank?
@@ -857,8 +933,8 @@ class UserIntake < ActiveRecord::Base
       index = user_type.to_i
       if user_type == "caregiver#{index}"
         if (user = self.send("#{user_type}".to_sym))
-          self.send("mem_caregiver#{index}_options=".to_sym, {"position" => index}) if self.send("mem_caregiver#{index}_options".to_sym).nil?
-          bool = self.send("no_caregiver_#{index}".to_sym)
+          self.send("caregiver#{index}_role_options=", {"position" => index}) if self.send("caregiver#{index}_role_options").blank?
+          bool = self.send("no_caregiver_#{index}")
           #
           # for any new_record in memory, no_caregiver_x must be "on"
           self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || self.new_record? || bool == "1") || user.nothing_assigned? )

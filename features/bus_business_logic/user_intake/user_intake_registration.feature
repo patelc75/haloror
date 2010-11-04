@@ -52,8 +52,8 @@ Feature: Manage user_intakes
   Scenario: Submit new user_intake with billing same as #1 caregiver
     When I uncheck "Same as User"
     And I check "Add as #1 caregiver" 
-    And I check "user_intake_mem_caregiver1_options_email_active"
-    And I select "Yes" from "user_intake_mem_caregiver1_options_is_keyholder"
+    And I check "user_intake_caregiver1_role_options_email_active"
+    And I select "Yes" from "user_intake_caregiver1_role_options_is_keyholder"
     And I fill in the following:
       | user_intake_subscriber_attributes__profile_attributes_first_name | subscriberfirstname      |
       | user_intake_subscriber_attributes__profile_attributes_last_name  | subscriberlastname       |

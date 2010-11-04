@@ -632,8 +632,11 @@ class User < ActiveRecord::Base
   #   is_caregiver_to? senior_user_object
   #   is_caregiver_to_what => get array if users I am caregiving
   #   has_caregiver => get array of caregivers for me
+  # 
+  # Thu Nov  4 06:13:47 IST 2010, ramonrails
+  # TODO: FIXME: this should handle the roles_users_options directly, without user_intake
   def options_for_senior(the_senior, attributes = nil)
-    if attributes.nil?
+    if attributes.blank?
       if self.is_caregiver_of?( the_senior)
         role = self.roles.first(:conditions => {
           :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
@@ -641,7 +644,7 @@ class User < ActiveRecord::Base
         options = options_for_role(role) unless role.blank?
       end
     else
-      self.is_caregiver_of(the_senior)
+      self.is_caregiver_of(the_senior) # FIXME: should it not be already assigned?. do we want to force?
       role = self.roles.first(:conditions => {
         :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
       })
@@ -650,20 +653,24 @@ class User < ActiveRecord::Base
     options
   end
   
+  # 
+  # Thu Nov  4 06:13:47 IST 2010, ramonrails
+  # TODO: FIXME: this should handle the roles_users_options directly, without user_intake
   def options_for_role(role, attributes = nil)
     role_id = (role.is_a?(Role) ? role.id : role)
     if attributes.blank?
       role_user = RolesUser.find_by_user_id_and_role_id(self.id, role_id)
-      role_user.blank? ? nil : role_user.roles_users_option
+      options = (role_user.blank? ? nil : role_user.roles_users_option)
     else
       role_user = RolesUser.find_or_create_by_user_id_and_role_id(self.id, role_id) # find | create
       if role_user.roles_users_option.blank?
-        role_user.create_roles_users_option(attributes) # create a row and save attributes
+        role_user.create_roles_users_option( attributes.is_a?(RolesUsersOption) ? attributes.attributes : attributes) # create a row and save attributes
       else
         options = role_user.roles_users_option
-        options.update_attributes(attributes) # update the given attributes
+        options.update_attributes( attributes.is_a?(RolesUsersOption) ? attributes.attributes : attributes) # update the given attributes
       end
     end
+    options
   end
 
   # ------------------ more methods
@@ -1610,14 +1617,24 @@ class User < ActiveRecord::Base
   def group_admins
     self.user_intakes.collect(&:group).flatten.collect(&:admins).flatten
   end
+
+  # 
+  #  Thu Nov  4 06:25:03 IST 2010, ramonrails
+  #  * fetch first applicable roles_users_options
+  def role_options
+    # the user can return multiple IDs here. are we interested in most recent?
+    _id = self.is_caregiver_of_what.compact.collect(&:id).compact.sort.last # pick most recent
+    _role_id = self.roles.find_by_name_and_authorizable_id( 'caregiver', _id)
+    _roles_user = self.is_caregiver? ? self.roles_users.find_by_role_id( _role_id) : nil
+    _roles_user.blank? ? nil : _roles_user.roles_users_option
+  end
   
   def roles_user_by_role(role)
     self.roles_users.find(:first, :conditions => "role_id = #{role.id}", :include => :role)
   end
 
   # FIXME: use authorization plugin methods described here, instead of custom methods
-  # Can also use:
-  #   caregiver.is_caregiver_of_what
+  # OBSOLETE: role_options method make this an obsolete now
   def roles_user_by_caregiver(caregiver)
     caregiver.roles_users.find(:first, :conditions => "roles.name = 'caregiver' and roles.authorizable_id = #{self.id}", :include => :role)
   end

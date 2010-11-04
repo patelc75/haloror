@@ -259,6 +259,14 @@ When /^I fill the (.+) details for user intake form$/ do |which|
     #
     # cross_st is only for user profile. but this is not mandatory
     # When %{I fill in "user_profile_cross_st" with "street address"} if which == "senior"
+    #  
+    #  Thu Nov  4 01:37:57 IST 2010, ramonrails 
+    #   caregiver options
+    if which =~ /^caregiver/
+      When %{I check "user_intake_caregiver1_role_options_phone_active"}
+      When %{I check "user_intake_caregiver1_role_options_email_active"}
+      When %{I check "user_intake_caregiver1_role_options_text_active"}
+    end
   end
 end
 
@@ -332,7 +340,13 @@ end
   # =========
   # = thens =
   # =========
-  
+
+Then /^caregiver(\d+) of last user intake should have (.+) opted$/ do |_index, _attribute|
+  (ui = UserIntake.last).should_not be_blank
+  (_options = ui.send("caregiver#{_index}_role_options")).should_not be_blank
+  _options.send(_attribute.to_s).should be_true
+end
+
 Then /^"([^"]*)" is enabled for subscriber of user intake "([^"]*)"$/ do |col_name, _serial|
   ui = UserIntake.find_by_gateway_serial( _serial)
   ui.should_not be_blank
