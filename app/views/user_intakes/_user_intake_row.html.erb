@@ -53,10 +53,10 @@
       <%= user_intake_row.transmitter_blank? ? image_tag('exclamation.png') : user_intake_row.transmitter.serial_number %>
     <% else %>
       <% if user_intake_row.senior.chest_strap %>
-        <%= "CS: "+ user_intake_row.senior.chest_strap.serial_number %>
+        <%= user_intake_row.senior.chest_strap.serial_number %>
       <% else %>
         <% if user_intake_row.senior.belt_clip %>
-          <%= "BC: "+ user_intake_row.senior.belt_clip.serial_number %>
+          <%= user_intake_row.senior.belt_clip.serial_number %>
         <% else %>
           <%= user_intake_row.transmitter_blank? ? image_tag('exclamation.png') : user_intake_row.transmitter.serial_number %>
         <% end %>
