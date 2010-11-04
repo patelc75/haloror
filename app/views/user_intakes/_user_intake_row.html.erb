@@ -66,7 +66,7 @@
     <% if user_intake_row.gateway_blank? %>
       <%= image_tag('exclamation.png') %>
     <% else %>
-      GW: <%= user_intake_row.gateway.serial_number %>
+      <%= user_intake_row.gateway.serial_number %>
     <% end %>
   </td>
   <% if current_user.is_super_admin? %>
