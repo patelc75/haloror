@@ -14,6 +14,7 @@ Purchased from <%= link_to 'http://'+ServerInstance.current_host+'/order' %>
 	<th>Order Items</th>
 	<th>Total<br>Charged</th>
 	<th>Notes</th>
+	<th>Payments</th>
 	<% if @orders %>
 	<% @orders.each do |order| %>
   <tr class="<%= cycle('', 'altrow') %>">
@@ -40,6 +41,7 @@ Purchased from <%= link_to 'http://'+ServerInstance.current_host+'/order' %>
 		</td>
 		<td><%= number_to_currency(order.cost, :precision => 2, :unit => '$') %></td>
 		<td><%unless order.comments.nil?%><%= link_to truncate(order.comments, 10, "..."),:controller => 'orders',:action => 'comments',:order_id => order.id  %><%end%></td>
+		<td><%= link_to "Payments", :controller => 'payment_gateway_responses', :action => 'index', :order_id => order.id %></td>           
 	  </tr>
 	<%end%>
 	<%end%>
