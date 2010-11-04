@@ -58,7 +58,7 @@ describe UserIntake do
       #   @user_intake.caregiver2_role_options.should == @cg2_options
       #   @user_intake.caregiver3_role_options.should == @cg3_options
       (1..3).each do |_index|
-        specify { @user_intake.send("caregiver#{_index}_role_options").should == instance_variable_get("@cg#{_index}_options") }
+        specify { @user_intake.send("caregiver#{_index}_role_options").attributes.should == instance_variable_get("@cg#{_index}_options").attributes }
       end
     end
 
@@ -73,7 +73,7 @@ describe UserIntake do
         #  same as:
         #   @user_intake.caregiver1_role_options = @cg1_options
         #   @user_intake.caregiver2_role_options = @cg2_options
-        #   @user_intake.caregiver3_role_options = @cg3_options
+        #    @user_intake.caregiver3_role_options = @cg3_options
         (1..3).each {|_index| @user_intake.send("caregiver#{_index}_role_options=", instance_variable_get("@cg#{_index}_options")) }
       end
       
@@ -85,6 +85,35 @@ describe UserIntake do
         specify { @user_intake.send("caregiver#{_index}_role_options").attributes.should == instance_variable_get("@cg#{_index}_options") }
       end
     end
+
+    context "saved - object" do
+      before(:each) do
+        user_intake = Factory.create( :user_intake)
+        #  same as: 
+        #   @cg1_options = Factory.build( :roles_users_option, { :position => 1, :text_active => true })
+        #   @cg2_options = Factory.build( :roles_users_option, { :position => 2, :text_active => true })
+        #   @cg3_options = Factory.build( :roles_users_option, { :position => 3, :text_active => true })         
+        (1..3).each {|_index| instance_variable_set("@cg#{_index}_options", Factory.build( :roles_users_option, { :position => _index, :text_active => true })) }
+        #  same as:
+        #   @user_intake.caregiver1_role_options = @cg1_options
+        #   @user_intake.caregiver2_role_options = @cg2_options
+        #   @user_intake.caregiver3_role_options = @cg3_options
+        (1..3).each do |_index|
+          user_intake.send("caregiver#{_index}_role_options=", instance_variable_get("@cg#{_index}_options"))
+        end
+        user_intake.save
+        @user_intake = UserIntake.find( user_intake.id)
+      end
+      
+      #  same as:
+      #   @user_intake.caregiver1_role_options.should == @cg1_options
+      #   @user_intake.caregiver2_role_options.should == @cg2_options
+      #   @user_intake.caregiver3_role_options.should == @cg3_options
+      (1..1).each do |_index|
+        specify { @user_intake.send("caregiver#{_index}_role_options").should == instance_variable_get("@cg#{_index}_options") }
+      end
+    end
+
   end
 
   # =================

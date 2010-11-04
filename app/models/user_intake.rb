@@ -84,12 +84,11 @@ class UserIntake < ActiveRecord::Base
     #   caregiver2_role_options
     #   caregiver3_role_options
     define_method "caregiver#{_index}_role_options" do
-      _options = self.send( "mem_caregiver#{_index}_options")
-      if _options.blank?
-        _caregiver = self.send("caregiver#{_index}")
-        _options = ( self.new_record? ? RolesUsersOption.new( :position => _index) : _caregiver.options_for_senior( senior) ) if _options.blank?
-        self.send("mem_caregiver#{_index}_options=", _options) # assign to mem
-      end
+      _caregiver = self.send("caregiver#{_index}")
+      # _options = self.send( "mem_caregiver#{_index}_options")
+      _options = _caregiver.options_for_senior( senior) unless _caregiver.blank?
+      _options =  RolesUsersOption.new( :position => _index) if _options.blank?
+      self.send("mem_caregiver#{_index}_options=", _options) # remember what we have
       _options
     end
     
@@ -99,17 +98,15 @@ class UserIntake < ActiveRecord::Base
     #   caregiver1_role_options( roles_users_option_object )
     #   and similarly for other caregivers...
     define_method "caregiver#{_index}_role_options=" do |_given_options|
-      _options = self.send( "mem_caregiver#{_index}_options")
-      _caregiver = self.send("caregiver#{_index}")
-      _options = ( self.new_record? ? RolesUsersOption.new( :position => _index) : _caregiver.options_for_senior( senior) ) if _options.blank?
+      _options = self.send( "caregiver#{_index}_role_options") # call GET method
       if _given_options.is_a?( RolesUsersOption)
         #  
         #   we have a roles_users_option object 
-        _options = _given_options
+        _given_options.attributes.each {|k,v| _options.send( "#{k}=", v) if _options.respond_to?( k) && k == 'id' || (k[-1..-3] == '_id') } # apply applicable hash values
       elsif _given_options.is_a?( Hash)
         #  
         #   we have a hash. apply attributes to which _options will respond 
-        _given_options.each {|k,v| _options.send( "#{k}=", v) if _options.respond_to?( k) } # apply applicable hash values
+        _given_options.each {|k,v| _options.send( "#{k}=", v) if _options.respond_to?( k) && k == 'id' || (k[-1..-3] == '_id') } # apply applicable hash values
       else
         #  
         #  Thu Nov  4 05:07:28 IST 2010, ramonrails 
@@ -464,13 +461,16 @@ class UserIntake < ActiveRecord::Base
         # Thu Nov  4 05:57:16 IST 2010, ramonrails
         #   user values were stored with apply_attributes_from_hash
         #   now we persist them into database
-        # debugger
         _options = self.send("caregiver#{index}_role_options")
-        if RolesUsersOption.exists?( _options) # we are already at the record
-          _options.save # just save it
-        else # maybe this is a new association and options
-          _caregiver.options_for_senior( senior, _options) # create appropriate data
-        end
+        debug = created_at != updated_at
+        debugger if debug
+        # if RolesUsersOption.exists?( _options) # we are already at the record
+        #   _options.save # just save it
+        # else # maybe this is a new association and options
+        self.send("caregiver#{index}_role_options=", _caregiver.options_for_senior( senior, _options, debug )) # create appropriate data
+        # end
+        # debugger
+        # caregiver1_role_options
       end
     end
     # ----------------------- shift to user.rb - end -------------------------------

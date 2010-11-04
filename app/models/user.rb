@@ -635,7 +635,8 @@ class User < ActiveRecord::Base
   # 
   # Thu Nov  4 06:13:47 IST 2010, ramonrails
   # TODO: FIXME: this should handle the roles_users_options directly, without user_intake
-  def options_for_senior(the_senior, attributes = nil)
+  def options_for_senior(the_senior, attributes = nil, debug = false)
+    # debugger
     if attributes.blank?
       if self.is_caregiver_of?( the_senior)
         role = self.roles.first(:conditions => {
@@ -648,7 +649,8 @@ class User < ActiveRecord::Base
       role = self.roles.first(:conditions => {
         :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
       })
-      options = self.options_for_role(role, attributes)
+      debugger if debug
+      options = self.options_for_role(role, attributes, debug)
     end
     options
   end
@@ -656,21 +658,26 @@ class User < ActiveRecord::Base
   # 
   # Thu Nov  4 06:13:47 IST 2010, ramonrails
   # TODO: FIXME: this should handle the roles_users_options directly, without user_intake
-  def options_for_role(role, attributes = nil)
+  def options_for_role(role, attributes = nil, debug = false)
     role_id = (role.is_a?(Role) ? role.id : role)
+    # debugger
     if attributes.blank?
-      role_user = RolesUser.find_by_user_id_and_role_id(self.id, role_id)
+      role_user = RolesUser.first( :conditions => { :user_id => self.id, :role_id => role_id })
       options = (role_user.blank? ? nil : role_user.roles_users_option)
     else
-      role_user = RolesUser.find_or_create_by_user_id_and_role_id(self.id, role_id) # find | create
-      if role_user.roles_users_option.blank?
-        role_user.create_roles_users_option( attributes.is_a?(RolesUsersOption) ? attributes.attributes : attributes) # create a row and save attributes
+      debugger if debug
+      role_user = RolesUser.first(:conditions => { :user_id => self.id, :role_id => role_id })
+      role_user = RolesUser.create( :user_id => self.id, :role_id => role_id) if role_user.blank?
+      _attributes = (attributes.is_a?(RolesUsersOption) ? attributes.attributes : attributes).reject {|k,v| k.to_s == 'id' || (k.to_s[-1..-3] == '_id') }
+      options = if role_user.roles_users_option.blank?
+        role_user.create_roles_users_option( _attributes) # create a row and save attributes
       else
         options = role_user.roles_users_option
-        options.update_attributes( attributes.is_a?(RolesUsersOption) ? attributes.attributes : attributes) # update the given attributes
+        options.update_attributes( _attributes) # update the given attributes
+        options
       end
     end
-    options
+    options # explicitly return options row
   end
 
   # ------------------ more methods
