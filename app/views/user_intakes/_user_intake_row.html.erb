@@ -14,21 +14,22 @@
   <td><%= user_intake_row.senior.id rescue '?' %></td>
   <td><%= user_intake_row.senior.name rescue '?' %></td>
   <td class="text-center"><span class="timestamp"><%= (user_intake_row.installation_datetime.strftime(Time::DATE_FORMATS[:day_MM_DD_YYYY]) if user_intake_row.installation_datetime) || image_tag('exclamation.png') %></span></td>
+  <% if current_user.is_super_admin? %>  
   <td>
     <% if user_intake_row.credit_debit_card_proceessed %>
       <% if user_intake_row.order && user_intake_row.order.subscription_successful? %>
         <%= image_tag "tick.png", :alt => "Credit/Debit Card Processed", :title => "Credit/Debit Card Processed" %>
       <% else %>
-        <% if !user_intake_row.senior.blank? && user_intake_row.senior.submit_button_text != User::STATUS_BUTTON_TEXT[:bill_pending] || current_user.is_super_admin? %>
-          <%= link_to image_tag('warning_go.png', :alt => "Click to charge subscription on credit card", :title => "Click to charge subscription on credit card"), {:controller => 'user_intakes', :action => 'charge_subscription', :id => user_intake_row.id} %>
-        <% end %>
+        <%= image_tag('exclamation.png', :alt => "Credit card failed", :title => "Credit card failed") %>
+        <!--%= link_to image_tag('warning_go.png', :alt => "Click to charge subscription on credit card", :title => "Click to charge subscription on credit card"), {:controller => 'user_intakes', :action => 'charge_subscription', :id => user_intake_row.id} %-->
       <% end %>
     <% elsif user_intake_row.bill_monthly %>
       <%= image_tag("calendar-month.png", :alt => "Manual Billing", :title => "Manual Billing") %>
     <% else %>
       <%= image_tag('exclamation.png') %>
     <% end %>
-  </td>
+  </td> 
+  <% end %>
   <td class="text-center">
     <% if user_intake_row.legal_agreement_at.blank? %>
       <% if user_intake_row.paper_copy_submitted_on.blank? %>
@@ -52,10 +53,10 @@
       <%= user_intake_row.transmitter_blank? ? image_tag('exclamation.png') : user_intake_row.transmitter.serial_number %>
     <% else %>
       <% if user_intake_row.senior.chest_strap %>
-        <%= "CS: "+ user_intake_row.senior.chest_strap.serial_number %>
+        <%= user_intake_row.senior.chest_strap.serial_number %>
       <% else %>
         <% if user_intake_row.senior.belt_clip %>
-          <%= "BC: "+ user_intake_row.senior.belt_clip.serial_number %>
+          <%= user_intake_row.senior.belt_clip.serial_number %>
         <% else %>
           <%= user_intake_row.transmitter_blank? ? image_tag('exclamation.png') : user_intake_row.transmitter.serial_number %>
         <% end %>
