@@ -1,4 +1,3 @@
-<!-- <meta http-equiv="refresh" content="30"> -->
 <h3>User Intakes</h3> 
 <div class="span-11 box text-right background-yellow">
   <% form_tag url_for(:controller => "user_intakes", :action => "index", :group_name => @group_name), :method => :get, :id => "group_form_id" do %>
@@ -21,44 +20,11 @@
   <div><%= submit_tag "Add Note\nfor selected users", {:class => "button blue-button medium"} %></div>
 </div>
 
-<div class="span-24 last">
-  <% form_tag add_notes_user_intakes_path, :method => :post do %>
-  <table class="bluegrey">
-    <tr>
-      <th></th>
-      <% if current_user.is_super_admin? %>
-      <th>Id</th>
-      <th></th>
-      <% end %>
-      <th>UID</th>
-      <th><%= image_tag "profile.png", :alt => "Senior", :title => "Senior" %>&nbsp;Name</th>
-      <th class="text-center"><%= image_tag "calendar_day.png", :alt => "Desired Installation/Billing Start Date", :title => "Desired Installation/Billing Start Date" %>&nbsp;Desired Install </th>
-      <% if current_user.is_super_admin? %>        
-      <th class="text-center"><%= image_tag "creditcards.png", :alt => "Payment Type", :title => "Payment Type" %></th>
-      <% end %>      
-      <th><%= image_tag('script.png', :alt => "Paper copy", :title => "Paper copy") %></th>
-      <th class="text-center">Order ID</th>
-      <th class="text-center">CS/BC Serial</th>
-      <th class="text-center"><%= image_tag "router.png", :alt => "GW Serial", :title => "GW Serial" %></th>
-      <% if current_user.is_super_admin? %>
-      <th class="text-center"><%= image_tag "telephone_mouthpiece.png", :alt => "Call Center Acc #", :title => "Call Center Acc #" %></th>
-      <th class="text-center"><%= image_tag( 'telephone.png', :alt => "Dial Up Numbers", :title => "Dial Up Numbers") %></th>
-      <% end %>
-      <th class="text-center span-3">Status</th>
-      <th class="text-center"><%= image_tag('truck.png', :alt => 'Ship Date', :title => 'Shipped on') %>&nbsp;Shipped On</th>
-      <th class="text-center"><%= image_tag "user_placeholder.png", :alt => "Created by", :title => "Created by" %></th>
-      <th></th>
-      <th></th>        
-    </tr>
-    <%= render :partial => 'user_intake_row', :collection => @user_intakes %>
-  </table>
+<%= render :partial => 'user_intake_overview' %>
 
-  <div class="span-12"><%= will_paginate @user_intakes %></div>
-  <div class="span-12 last text-right">
-    <% if current_user.is_super_admin? %>
-    <%= link_to "New User Intake", new_user_intake_path, :class => "button blue-button" %>
-    <% end %>
-  </div>
-
+<div class="span-12"><%= will_paginate @user_intakes %></div>
+<div class="span-12 last text-right">
+  <% if current_user.is_super_admin? %>
+  <%= link_to "New User Intake", new_user_intake_path, :class => "button blue-button" %>
   <% end %>
 </div>

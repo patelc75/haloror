@@ -42,6 +42,23 @@ class UserIntakesController < ApplicationController
     end
   end
 
+  def index_fast
+    @user_intakes = UserIntake.paginate :page => params[:page],:order => 'created_at desc',:per_page => 10
+    respond_to do |format|
+      format.html 
+      format.xml  { render :xml => @user_intakes }
+    end    
+  end
+  
+  def single_row 
+    @user_intakes = [UserIntake.find_by_id(params[:id])]
+    #@user_intakes = @user_intakes.paginate :page => params[:page],:order => 'created_at desc',:per_page => 10    
+    respond_to do |format|
+      format.html 
+      format.xml  { render :xml => @user_intakes }
+    end
+  end
+
   # GET /user_intakes/1
   # GET /user_intakes/1.xml
   def show
@@ -89,7 +106,7 @@ class UserIntakesController < ApplicationController
       # at least redirect the user to some page and show a friendly message
     else
       flash[:notice] = "You are not authorized to edit this user intake form. Please contact the Administrator or MyHalo support."
-      redirect_to :action => "index"
+      redirect_to :controller => :user_intakes, :action => "single_row", :id => @user_intake.id
     end
   end
 
@@ -119,7 +136,7 @@ class UserIntakesController < ApplicationController
     respond_to do |format|
       if @user_intake.save
         flash[:notice] = "User Intake was successfully #{params[:commit] == 'Save' ? 'saved' : 'created'}."
-        format.html { redirect_to( :action => 'index') }
+        format.html { redirect_to( :action => 'single_row', :id => @user_intake.id) }
         format.xml  { render :xml => @user_intake, :status => :created, :location => @user_intake }
       else
         # this is required since we are maintaining the relational links to users, in user_intake object, not ORM
@@ -187,7 +204,7 @@ class UserIntakesController < ApplicationController
             #   We were showing successful order here but the busoness logic changed later
             #
             # if params[:redirect_hash].blank?
-            redirect_to :action => 'index' # just show user_intakes
+            redirect_to :action => 'single_row', :id => @user_intake.id # just show user_intakes
             # else
             #   redirect_to redirect_hash # this comes from online order form
             # end
@@ -205,7 +222,7 @@ class UserIntakesController < ApplicationController
         params[:user_intake].each {|k,v| @user_intake.send( "#{k}=".to_sym, v) }
         @user_intake.send( :update_without_callbacks) # just save it. no questions asked.
         flash[:notice] = "Successfully updated the user intake"
-        format.html { redirect_to :action => 'index' }
+        format.html { redirect_to :action => 'single_row', :id => @user_intake.id }
       end # just one column updates
     end
   end
