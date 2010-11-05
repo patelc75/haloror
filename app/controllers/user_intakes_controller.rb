@@ -45,7 +45,23 @@ class UserIntakesController < ApplicationController
   end
 
   def index_fast
-    @user_intakes = UserIntake.paginate :page => params[:page],:order => 'created_at desc',:per_page => 10
+    @groups = (current_user.is_super_admin? ? Group.all(:order => "name") : current_user.group_memberships) 
+    if !params[:group_name].blank? 
+      @group = Group.find_by_name(params[:group_name])
+      @user_intakes = UserIntake.paginate :page => params[:page],:order => 'created_at desc',:per_page => 10, :conditions => "group_id = #{@group.id}"
+    else
+      if current_user.is_super_admin?
+        @user_intakes = UserIntake.paginate :page => params[:page],:order => 'created_at desc',:per_page => 10   
+      else
+        @groups = current_user.group_memberships
+        conditions = "group_id IN (0,"
+      	for group in @groups
+      		conditions += "#{group.id},"
+      	end
+      	conditions += "0)"
+        @user_intakes = UserIntake.paginate :page => params[:page],:order => 'created_at desc',:per_page => 10, :conditions => "#{conditions}"  
+      end
+    end
     respond_to do |format|
       format.html 
       format.xml  { render :xml => @user_intakes }
