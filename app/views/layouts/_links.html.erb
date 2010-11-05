@@ -28,7 +28,7 @@
       <hr>
       <% end %>
       <% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_sales? %>
-      <li><%= link_to 'User&nbsp;Intakes', '/user_intakes/index_fast/1' %></li>
+      <li><%= link_to 'User&nbsp;Intakes', '/user_intakes/index_fast' %></li>
       <% end %> 
       <% if !current_user.user_intakes.blank? %>
       <li><%= link_to 'User&nbsp;Intake', edit_user_intake_url( current_user.user_intakes.first) %></li>
