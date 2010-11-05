@@ -8,20 +8,20 @@
       <th class="span-1">Id</th>
       <% end %>
       <th class="span-1">UID</th>
-      <th class="span-6"><%= image_tag "profile.png", :alt => "Senior", :title => "Senior" %>&nbsp;Name</th>
+      <th class="span-4"><%= image_tag "profile.png", :alt => "Senior", :title => "Senior" %>&nbsp;Name</th>
       <th>Group</th>      
     </tr>
     <% @user_intakes.each do |user_intake_row| %>     
     <tr>
       <% if current_user.is_super_admin? %>
-      <td><%= link_to user_intake_row.id, :action => :single_row, :id => user_intake_row.id %></td>
+      <td><%= user_intake_row.id %></td>
       <% end %>        
       <td><%= user_intake_row.senior.id rescue '?' %></td>
-      <td><%= user_intake_row.senior.name rescue '?' %></td> 
+      <td><%= link_to (user_intake_row.senior.name), :action => :single_row, :id => user_intake_row.id %></td> 
       <td><%= user_intake_row.group.name rescue '?' %></td>      
     </tr>
     <% end %>  
   </table>
   <% end %>
 </div>
-<div class="span-12"><%= will_paginate @user_intakes %></div>  
+<div class="span-12"><%= will_paginate @user_intakes %></div>        
