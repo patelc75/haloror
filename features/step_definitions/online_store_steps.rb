@@ -100,7 +100,7 @@ When /^I am ready to create a coupon code for "([^\"]*)" group$/ do |_name|
     | Coupon code       | #{_name}_coupon |
     | Deposit           | 77              |
     | Shipping          | 7               |
-    | Monthly recurring | 77              |
+    | Monthly recurring | 45              |
     | Months advance    | 0               |
     | Months trial      | 2               |
   })

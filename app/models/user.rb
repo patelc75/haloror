@@ -635,7 +635,7 @@ class User < ActiveRecord::Base
   # 
   # Thu Nov  4 06:13:47 IST 2010, ramonrails
   # TODO: FIXME: this should handle the roles_users_options directly, without user_intake
-  def options_for_senior(the_senior, attributes = nil, debug = false)
+  def options_for_senior(the_senior, attributes = nil)
     # debugger
     if attributes.blank?
       if self.is_caregiver_of?( the_senior)
@@ -649,8 +649,7 @@ class User < ActiveRecord::Base
       role = self.roles.first(:conditions => {
         :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
       })
-      debugger if debug
-      options = self.options_for_role(role, attributes, debug)
+      options = self.options_for_role(role, attributes)
     end
     options
   end
@@ -658,14 +657,14 @@ class User < ActiveRecord::Base
   # 
   # Thu Nov  4 06:13:47 IST 2010, ramonrails
   # TODO: FIXME: this should handle the roles_users_options directly, without user_intake
-  def options_for_role(role, attributes = nil, debug = false)
+  def options_for_role(role, attributes = nil)
     role_id = (role.is_a?(Role) ? role.id : role)
     # debugger
     if attributes.blank?
       role_user = RolesUser.first( :conditions => { :user_id => self.id, :role_id => role_id })
       options = (role_user.blank? ? nil : role_user.roles_users_option)
     else
-      debugger if debug
+      # debugger if debug
       role_user = RolesUser.first(:conditions => { :user_id => self.id, :role_id => role_id })
       role_user = RolesUser.create( :user_id => self.id, :role_id => role_id) if role_user.blank?
       _attributes = (attributes.is_a?(RolesUsersOption) ? attributes.attributes : attributes).reject {|k,v| k.to_s == 'id' || (k.to_s[-1..-3] == '_id') }

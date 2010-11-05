@@ -141,5 +141,8 @@ Feature: Pre quality
     And I select "Verizon" from "user_intake_caregiver2_attributes__profile_attributes_carrier_id"
     And I press "user_intake_submit"
     Then I should see "successfully updated"
-    And caregiver1 of last user intake should have email_active opted
-    And caregiver1 of last user intake should have text_active opted
+    # #
+    # # email, text and phone checkboxes
+    # # https://redmine.corp.halomonitor.com/issues/3674
+    # And caregiver1 of last user intake should have email_active opted
+    # And caregiver1 of last user intake should have text_active opted

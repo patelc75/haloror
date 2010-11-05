@@ -6,6 +6,10 @@ class OrderItem < ActiveRecord::Base
   
   # FIXME: this should not be static!  but while it is, this should be in device class. Why here?
   # WARNING: do not change anything in this hash. lot of code is depenent on this
+  # 
+  #  Fri Nov  5 02:09:54 IST 2010, ramonrails
+  #   shift the logic to use serial numbers instead of product names. check device_model for more details
+  #   alternate: DeviceModel.myhalo_complete, DeviceModel.myhalo_clip
   PRODUCT_HASH = Hash[
    "myHalo Complete" => "12001002-1",
    "myHalo Clip"     => "12001008-1"
@@ -42,12 +46,16 @@ class OrderItem < ActiveRecord::Base
     end
   end
   
-  def formatted_cost(qty=nil)
-    qty = 1 if qty == nil
-    formatted_cost = number_to_currency(qty * cost, :precision => 2, :unit => '$')
-    if(recurring_monthly == true)
-      formatted_cost = formatted_cost.to_s + "/mo"
-    end
-    formatted_cost
+  def formatted_cost( qty = nil)
+    # qty = 1 if qty == nil
+    # formatted_cost = number_to_currency(qty * cost, :precision => 2, :unit => '$')
+    # if(recurring_monthly == true)
+    #   formatted_cost = formatted_cost.to_s + "/mo"
+    # end
+    # formatted_cost
+    # 
+    #  Fri Nov  5 02:07:14 IST 2010, ramonrails
+    #  same logic as above. DRY
+    number_to_currency( (qty || 1) * cost, :precision => 2, :unit => '$').to_s + ( recurring_monthly ? '/mo' : '')
   end
 end

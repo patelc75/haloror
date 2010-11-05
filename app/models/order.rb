@@ -151,15 +151,15 @@ class Order < ActiveRecord::Base
   # * <tt>:phone</tt> - The phone number of the customer.
   #
   # 439 recurring error fix
-  def charge_credit_card( pro_rata = 0)
+  def charge_credit_card( options = {})
     # mode is set (in environment config files) to :test for development and test, :production when production
     #
     # charges pro-rata or upfront
-    if pro_rata.to_i == 0
+    if options.blank? # no options means charge upfront
       _cost = (product_cost.blank? ? 0 : product_cost.upfront_charge)
       _action = "purchase"
     else
-      _cost = pro_rata.to_i
+      _cost = options[ :pro_rata]
       _action = "pro-rata"
     end
     #
@@ -272,7 +272,10 @@ class Order < ActiveRecord::Base
                       :params => credit_card.errors.full_messages.join(". ")})
     end # validate_card
     
-    create_user_intake if card_successful? && (pro_rata.to_i == 0) # card successful? then create user intake data
+    # 
+    #  Fri Nov  5 06:55:50 IST 2010, ramonrails
+    #  do not create a userintake if already present
+    create_user_intake if card_successful? && user_intake.blank? # card successful? then create user intake data
     
     # return @one_time_fee_response, @recurring_fee_response # more DRY. contained in Order
     card_successful? # return success/failure status as true/false
@@ -294,6 +297,9 @@ class Order < ActiveRecord::Base
   # https://redmine.corp.halomonitor.com/issues/3215
   #   business logic updated to charge credit card on clicking credit_card icon in user intake list, after successful installation
   #   this will verify if recurring charges were applied?
+  # 
+  #  Fri Nov  5 06:15:23 IST 2010, ramonrails
+  #  WARNING: This is a very risky method. What about continued subscriptions?
   def subscription_successful?
     !payment_gateway_responses.subscription.successful.blank? # row found = true, nil = false
   end
@@ -302,8 +308,14 @@ class Order < ActiveRecord::Base
   # * subscrition for DTC is now charged from 1st of next month
   # * pro-rata chargeed since installed date or, 7 calendar days from shipped
   def charge_subscription( days = nil)
+    _success = false # default
     # recurring attempted only when one-time is success
-    if purchase_successful? and !subscription_successful?
+    if purchase_successful? and subscription_successful?
+      # 
+      #  Fri Nov  5 06:31:05 IST 2010, ramonrails
+      #  If both charges are received, return true
+      _success = true
+    else
       if product_cost.monthly_recurring.zero?
         errors.add_to_base "Recurring subscription fee: #{product_cost.monthly_recurring}"
       else
@@ -364,20 +376,27 @@ class Order < ActiveRecord::Base
         # store response in database
         payment_gateway_responses.create!(:action => "recurring", :amount => product_cost.monthly_recurring*100, :response => @recurring_fee_response)
         errors.add_to_base @recurring_fee_response.message unless @recurring_fee_response.success?
+        _success = @recurring_fee_response.success?
       end # recurring
     end
+    _success
   end
   
   def charge_pro_rata
     #
     # assuming the cost is for 30 days (one month)
-    _per_day_cost = (product_cost.monthly_recurring / 30)
+    # CHANGED:
+    #   DO NOT remove the decimals. if monthly recurring is less than 30, this will return ZERO
+    _per_day_cost = (product_cost.monthly_recurring / 30.00)
     #
     # difference of days since desired installation date and now
-    _number_of_days_including_today = ((Time.now.end_of_month - user_intake.pro_rata_start_date) / 1.day).to_i
+    _number_of_days_including_today = ((Time.now.end_of_month - user_intake.pro_rata_start_date) / 1.day)
     #
     # charge pro-rata for the period
-    charge_credit_card( _per_day_cost * _number_of_days_including_today )
+    # 
+    #  Fri Nov  5 07:25:43 IST 2010, ramonrails
+    #  both values here must be 2 decimals, for correct calculation
+    charge_credit_card( :pro_rata => (_per_day_cost * _number_of_days_including_today) )
   end
 
   # reference from the active_merchant code
@@ -400,16 +419,17 @@ class Order < ActiveRecord::Base
     #   card number was accessed before the initialization completed
     #   this step ensures card_number in plain text state
     decrypt_credit_card_number # does not harm if run more than once
-    #
-    @card ||= ActiveMerchant::Billing::CreditCard.new(
+    # 
+    #  Fri Nov  5 07:37:01 IST 2010, ramonrails
+    #  We do not have the CSC/CVV code at the time of "Bill"
+    _options = {
       :first_name => bill_first_name,
       :last_name => bill_last_name,
       :month => card_expiry.month,
       :year => card_expiry.year,
       :type => card_type,
-      :number => card_number,
-      :verification_value => card_csc
-    )
+      :number => card_number }
+    @card ||= ActiveMerchant::Billing::CreditCard.new( _options.merge( card_csc.blank? ? {} : {:verification_value => card_csc} ))
     # @card.extend ActiveMerchant::Billing::CreditCardMethods::ClassMethods
     # @card
   end

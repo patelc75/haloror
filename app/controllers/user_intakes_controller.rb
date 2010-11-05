@@ -1,3 +1,5 @@
+include ApplicationHelper
+
 class UserIntakesController < ApplicationController
   before_filter :login_required
 
@@ -62,12 +64,16 @@ class UserIntakesController < ApplicationController
   # GET /user_intakes/1
   # GET /user_intakes/1.xml
   def show
-    @user_intake = UserIntake.find(params[:id])
+    if params[:id] == 'index_fast'
+      redirect_to :action => 'index_fast'
+    else
+      @user_intake = UserIntake.find(params[:id])
 
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @user_intake }
     end
+  end
   end
 
   # GET /user_intakes/new
@@ -109,7 +115,7 @@ class UserIntakesController < ApplicationController
       redirect_to :controller => :user_intakes, :action => "single_row", :id => @user_intake.id
     end
   end
-
+  
   # POST /user_intakes
   # POST /user_intakes.xml
   def create

@@ -228,31 +228,36 @@ class UserIntake < ActiveRecord::Base
       #
       # charge subscription and pro-rata recurring charges (including today), only when installed
       unless order.blank?
+        # 
+        #  Fri Nov  5 06:29:06 IST 2010, ramonrails
+        #  First charge pro-rata. That is one time. Then charge subscription.
+        #  So, for some reason if subscription fails, we do not miss pro-rata charges
         #
-        # charge the credit card subscription now
-        if order.charge_subscription
+        # pro-rata for subscription should also be charged
+        if order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
           #
-          # pro-rata for subscription should also be charged
-          order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
-          #
-          # now make user "Installed"
-          self.senior.update_attribute( :status, User::STATUS[:installed])
-          #
-          # add a row to triage audit log
-          #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log
-          attributes = {
-            :user         => senior,
-            :is_dismissed => senior.last_triage_status,
-            :status       => senior.status,
-            :created_by   => senior.id,
-            :updated_by   => senior.id,
-            :description  => "Transitioned from 'Ready to Bill' state to 'Installed'. Billed. Subscription charged. Pro-rata charged."
-          }
-          TriageAuditLog.create( attributes)
-          #
-          # explicitly send email to group admins, halouser, caregivers. tables are saved without callbacks
-          [ senior, senior.has_caregivers, senior.group_admins ].flatten.uniq.each do |_user|
-            UserMailer.deliver_user_installation_alert( _user)
+          # charge the credit card subscription now
+          if order.charge_subscription
+            #
+            # now make user "Installed"
+            self.senior.update_attribute( :status, User::STATUS[:installed])
+            #
+            # add a row to triage audit log
+            #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log
+            attributes = {
+              :user         => senior,
+              :is_dismissed => senior.last_triage_status,
+              :status       => senior.status,
+              :created_by   => senior.id,
+              :updated_by   => senior.id,
+              :description  => "Transitioned from 'Ready to Bill' state to 'Installed'. Billed. Subscription charged. Pro-rata charged."
+            }
+            TriageAuditLog.create( attributes)
+            #
+            # explicitly send email to group admins, halouser, caregivers. tables are saved without callbacks
+            [ senior, senior.has_caregivers, senior.group_admins ].flatten.uniq.each do |_user|
+              UserMailer.deliver_user_installation_alert( _user)
+            end
           end
         end
       
@@ -462,12 +467,10 @@ class UserIntake < ActiveRecord::Base
         #   user values were stored with apply_attributes_from_hash
         #   now we persist them into database
         _options = self.send("caregiver#{index}_role_options")
-        debug = created_at != updated_at
-        debugger if debug
         # if RolesUsersOption.exists?( _options) # we are already at the record
         #   _options.save # just save it
         # else # maybe this is a new association and options
-        self.send("caregiver#{index}_role_options=", _caregiver.options_for_senior( senior, _options, debug )) # create appropriate data
+        self.send("caregiver#{index}_role_options=", _caregiver.options_for_senior( senior, _options)) # create appropriate data
         # end
         # debugger
         # caregiver1_role_options
