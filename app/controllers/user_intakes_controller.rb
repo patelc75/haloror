@@ -36,7 +36,7 @@ class UserIntakesController < ApplicationController
         end.include?( true) # collection must have at least one TRUE
       end
     end
-    @user_intakes = @user_intakes.paginate :page => params[:page],:order => 'created_at desc',:per_page => 10
+    @user_intakes = @user_intakes.paginate :page => params[:page],:order => 'updated_at desc',:per_page => 10
 
     respond_to do |format|
       format.html # index.html.erb
@@ -48,10 +48,10 @@ class UserIntakesController < ApplicationController
     @groups = (current_user.is_super_admin? ? Group.all(:order => "name") : current_user.group_memberships) 
     if !params[:group_name].blank? 
       @group = Group.find_by_name(params[:group_name])
-      @user_intakes = UserIntake.paginate :page => params[:page],:order => 'created_at desc',:per_page => 10, :conditions => "group_id = #{@group.id}"
+      @user_intakes = UserIntake.paginate :page => params[:page],:order => 'updated_at desc',:per_page => 15, :conditions => "group_id = #{@group.id}"
     else
       if current_user.is_super_admin?
-        @user_intakes = UserIntake.paginate :page => params[:page],:order => 'created_at desc',:per_page => 10   
+        @user_intakes = UserIntake.paginate :page => params[:page],:order => 'updated_at desc',:per_page => 15   
       else
         @groups = current_user.group_memberships
         conditions = "group_id IN (0,"
@@ -59,7 +59,7 @@ class UserIntakesController < ApplicationController
       		conditions += "#{group.id},"
       	end
       	conditions += "0)"
-        @user_intakes = UserIntake.paginate :page => params[:page],:order => 'created_at desc',:per_page => 10, :conditions => "#{conditions}"  
+        @user_intakes = UserIntake.paginate :page => params[:page],:order => 'updated_at desc',:per_page => 15, :conditions => "#{conditions}"  
       end
     end
     respond_to do |format|

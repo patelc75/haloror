@@ -1,5 +1,6 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
 <!-- <meta http-equiv="refresh" content="30"> -->
+<h3>User Intake Forms</h3>
 <div class="span-9 last">
 <form id="group_form_id" action="/user_intakes/index_fast" method="GET">
   <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
@@ -16,7 +17,8 @@
       <% end %>
       <th class="span-1">UID</th>
       <th class="span-4"><%= image_tag "profile.png", :alt => "Senior", :title => "Senior" %>&nbsp;Name</th>
-      <th>Group</th>      
+      <th>Group</th>     
+      <th>Updated At</th>             
     </tr>
     <% @user_intakes.each do |user_intake_row| %>     
     <tr>
@@ -26,9 +28,15 @@
       <td><%= user_intake_row.senior.id rescue '?' %></td>
       <td><%= link_to (user_intake_row.senior.name), :action => :single_row, :id => user_intake_row.id %></td> 
       <td><%= user_intake_row.group.name rescue '?' %></td>      
+      <td><%= user_intake_row.updated_at %></td>            
     </tr>
     <% end %>  
   </table>
   <% end %>
 </div>
 <div class="span-12"><%= will_paginate @user_intakes %></div>        
+<% if current_user.is_super_admin? %>
+<div class="span-12 last text-right">
+  <%= link_to "New User Intake", new_user_intake_path, :class => "button blue-button" %>
+</div>
+<% end %>
