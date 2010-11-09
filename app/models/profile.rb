@@ -223,22 +223,17 @@ class Profile < ActiveRecord::Base
     return false
   end
 
-  private # --------------------------------------------------
-
-  # WARNING: test required
   def next_account_number
-    #
-    # ordered account_numbers would ideally have the list in chronological order
     if (last_profile = Profile.first( :conditions => ["account_number LIKE ?", "HM%"], :order => "account_number DESC" ))
       call_center = last_profile.account_number
-      #
-      # extract SSSNNN where SSS = string, NNN = number
-      # get the next number and assign it bak
-      call_center[0..2] + (call_center.to_i + 1).to_s
+      call_center_number = call_center[2..5].to_i
+      call_center_number == 0 ? "HM????" : "HM" + (call_center_number + 1).to_s
     else
-      'HM001' # this is the first one if the last profile was not found. correct?
+      "HM????"
     end
   end
+
+  private # --------------------------------------------------
 
   # def check_valid_phone_numbers
   # errors.add(:home_phone," is the wrong length (should be 10 characters)") if home_phone.length != 10
