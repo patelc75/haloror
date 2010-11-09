@@ -416,6 +416,10 @@ class Order < ActiveRecord::Base
   #
   # Optional verification_value (CVV, CVV2 etc). Gateways will try their best to 
   # run validation on the passed in value if it is supplied
+  # 
+  #  Wed Nov 10 02:38:28 IST 2010, ramonrails
+  #  CVV is *not* optional for authorize.net at least
+  #   We had to create a temporary cvv column in orders table earlier to shift to CIM token system
   #
   def credit_card
     #
@@ -560,10 +564,10 @@ class Order < ActiveRecord::Base
     #   BUT, we still need to test it before releasing
     #
     # Keep data Base64 encoded to prevent any loss during conversion process
-    self.card_number = Base64.encode64( encryption_key.encrypt( card_number)) unless encrypted?
+    self.card_number = Base64.encode64( encryption_key.encrypt( card_number.to_s)) unless encrypted?
     # TODO: we must switch to CIM token process instead of encrypted CVV value, as soon as possible
     # TODO: can be more DRY in a loop
-    self.cvv = Base64.encode64( encryption_key.encrypt( cvv)) unless encrypted?( cvv)
+    self.cvv = Base64.encode64( encryption_key.encrypt( cvv.to_s)) unless encrypted?( cvv)
   end
   
   def decrypt_credit_card_number
@@ -573,10 +577,10 @@ class Order < ActiveRecord::Base
     #   BUT, we still need to test it before releasing
     #
     # Keep data Base64 encoded to prevent any loss during conversion process
-    self.card_number = encryption_key.decrypt( Base64.decode64( card_number)) if encrypted?
+    self.card_number = encryption_key.decrypt( Base64.decode64( card_number.to_s)) if encrypted?
     # TODO: we must switch to CIM token process instead of encrypted CVV value, as soon as possible
     # TODO: can be more DRY in a loop
-    self.cvv = encryption_key.decrypt( Base64.decode64( cvv)) if encrypted?( cvv)
+    self.cvv = encryption_key.decrypt( Base64.decode64( cvv.to_s)) if encrypted?( cvv)
   end
   
   def encryption_key
@@ -600,6 +604,7 @@ class Order < ActiveRecord::Base
     # * card number is not just plain all digits
     # * salt exists (not a robust idea. this can be removed by external factors also)
     # !salt.blank?
+    arg = arg.to_s
     !arg.blank? && (arg.gsub(' ','').to_i.to_s != arg.gsub(' ',''))
   end
 end

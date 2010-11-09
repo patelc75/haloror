@@ -86,7 +86,7 @@ class UserIntake < ActiveRecord::Base
     define_method "caregiver#{_index}_role_options" do
       _caregiver = self.send("caregiver#{_index}")
       # _options = self.send( "mem_caregiver#{_index}_options")
-      _options = _caregiver.options_for_senior( senior) unless _caregiver.blank?
+      _options = _caregiver.options_for_senior( senior) unless (_caregiver.blank? || _caregiver.nothing_assigned?)
       _options =  RolesUsersOption.new( :position => _index) if _options.blank?
       self.send("mem_caregiver#{_index}_options=", _options) # remember what we have
       _options
@@ -155,7 +155,7 @@ class UserIntake < ActiveRecord::Base
       #
       # for any new_record in memory, no_caregiver_x must be "on"
       _caregiver = self.send("caregiver#{index}")
-      self.send("caregiver#{index}_role_options=".to_sym, ( self.new_record? ? { "position" => index } : _caregiver.options_for_senior( senior) ) )
+      self.send("caregiver#{index}_role_options=".to_sym, ( self.new_record? ? { "position" => index } : _caregiver.options_for_senior( senior) ) ) unless (_caregiver.blank? || _caregiver.nothing_assigned?)
       bool = self.send("no_caregiver_#{index}".to_sym)
       no_caregiver = (self.new_record? ? (bool != "0") : (_caregiver.blank? || _caregiver.nothing_assigned?))
       self.send("no_caregiver_#{index}=".to_sym, no_caregiver) # bool.blank? || 
