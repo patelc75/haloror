@@ -519,8 +519,8 @@ class Order < ActiveRecord::Base
       # FIXME: should we have gateway and transmitter serials derived from kit serial here?
       user_intake.kit_serial_number = self.kit_serial
       user_intake.order_id = self.id
-      user_intake.creator = self.creator # https://redmine.corp.halomonitor.com/issues/3117
-      user_intake.updater = self.updater
+      user_intake.created_by = self.created_by # https://redmine.corp.halomonitor.com/issues/3117
+      user_intake.updated_by = self.updated_by
       user_intake.skip_validation = true # just save. even incomplete data
       user_intake.save # database
       user_intake.caregivers.each(&:activate) # https://redmine.corp.halomonitor.com/issues/3117

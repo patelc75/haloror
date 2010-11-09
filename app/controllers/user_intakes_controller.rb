@@ -95,7 +95,7 @@ class UserIntakesController < ApplicationController
   # GET /user_intakes/new
   # GET /user_intakes/new.xml
   def new
-    @user_intake = UserIntake.new( :creator => current_user, :updater => current_user)
+    @user_intake = UserIntake.new( :created_by => current_user.id, :updated_by => current_user.id)
     @groups = Group.for_user(current_user)
 
     respond_to do |format|
@@ -216,7 +216,7 @@ class UserIntakesController < ApplicationController
         @user_intake.apply_attributes_from_hash( params[:user_intake]) # apply user attributes
         #
         # Now save the user intake object. Should pass validation
-        if @user_intake.update_attributes( params[:user_intake])
+        if @user_intake.update_attributes( params[:user_intake].merge( :updated_by => current_user.id))
           #
           # proceed as usual
           flash[:notice] = 'User Intake was successfully updated.'
