@@ -138,9 +138,10 @@ class Profile < ActiveRecord::Base
     #   some of these attributes have conditional validations
     #   at least one of them should have some value to call this record filled
     #   so, if all these attributes are blank, we consider nothing is assigned
-    [:first_name, :last_name, :address, :city, :state, :zipcode, :time_zone, :home_phone,
+    _options = [:first_name, :last_name, :address, :city, :state, :zipcode, :time_zone, :home_phone,
       :cell_phone, :carrier_id, :emergency_number_id, :account_number,
-      :hospital_number, :doctor_phone].collect {|e| self.send(e).blank? }.compact.uniq.include?( false) == false
+      :hospital_number, :doctor_phone].collect {|e| self.send(e).blank? }.compact.uniq
+    (_options.length == 1) && !_options.include?( false)
   end
 
   def validate

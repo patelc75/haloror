@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101028232305) do
+ActiveRecord::Schema.define(:version => 20101109160603) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -669,6 +669,12 @@ ActiveRecord::Schema.define(:version => 20101028232305) do
     t.datetime "updated_at", :null => false
   end
 
+  create_table "lost_data_skin_temps", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "begin_time"
+    t.datetime "end_time"
+  end
+
   create_table "lost_datas", :force => true do |t|
     t.integer  "user_id"
     t.datetime "begin_time"
@@ -773,6 +779,7 @@ ActiveRecord::Schema.define(:version => 20101028232305) do
     t.string   "coupon_code"
     t.string   "kit_serial"
     t.string   "salt"
+    t.string   "cvv"
   end
 
   create_table "oscope_msgs", :force => true do |t|

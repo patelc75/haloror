@@ -21,7 +21,7 @@ Purchased from <%= link_to 'http://'+ServerInstance.current_host+'/order' %>
 	  	<td><%= order.id %></td>
 	  	<td><%= UtilityHelper.format_datetime(order.created_at,current_user) %></td>	
 	  	<td><%= order.full_number %></td>
-	  	<td>xxxx<% if !order.card_number.nil? %><%=  order.card_number[12,16] %> <% end %></td>
+	  	<td><%= order.masked_card_number %></td>
 	  	<td><b><%= order.bill_first_name %> <%= order.bill_last_name %></b><br>
 	  		<%= order.bill_address%><br>
 	  		<%= order.bill_city%>,<%= order.bill_state %>-<%= order.bill_zip%><br>

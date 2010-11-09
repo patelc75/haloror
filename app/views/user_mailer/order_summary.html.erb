@@ -19,7 +19,7 @@ Order items:
 Qty:<%= item.quantity %> Cost:<%= item.formatted_cost(item.quantity) %>
 
 <% end -%>
-Card Number *****<%= @order.card_number[-4..-1] %> (exp <%= @order.card_expiry %>) has been charged <%= number_to_currency(@order.cost, :precision => 2, :unit => '$') %>
+Card Number <%= @order.masked_card_number %> (exp <%= @order.card_expiry %>) has been charged <%= number_to_currency(@order.cost, :precision => 2, :unit => '$') %>
 
 Shipping
   Name    : <%= @order[:ship_first_name] %> <%= @order[:ship_last_name] %>

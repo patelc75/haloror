@@ -50,7 +50,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     When I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the billing details for online store
-    And I fill in "<csc>" for "CSC"
+    And I fill in "<cvv>" for "CVV"
     And I fill in "Card number" with "<card>"
     And I select "<type>" from "order_card_type"
     And I select "January" from "order_card_expiry_2i"
@@ -60,7 +60,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Then I should see "<result>"
     
     Examples: pass and failed cards
-      | card             | csc  | type             | result  |
+      | card             | cvv  | type             | result  |
       | 1234567812345678 | 111  | VISA             | Failure |
       | 4111111111111111 | 111  | VISA             | Success |
       | 4012888888881881 | 111  | VISA             | Success |

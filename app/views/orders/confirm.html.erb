@@ -127,7 +127,7 @@
         <h3>Payment method</h3>
         <p>
           <label>Card number</label><br />
-          <%= h '****' + @store[:card_number][-3..-1] %> <!-- mask card number -->
+          <%= h @store.masked_card_number %> <!-- mask card number -->
         </p>
         <p>
           <label>Expiration (Month/Year)</label><br />

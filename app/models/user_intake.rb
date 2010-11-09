@@ -157,7 +157,7 @@ class UserIntake < ActiveRecord::Base
       _caregiver = self.send("caregiver#{index}")
       self.send("caregiver#{index}_role_options=".to_sym, ( self.new_record? ? { "position" => index } : _caregiver.options_for_senior( senior) ) )
       bool = self.send("no_caregiver_#{index}".to_sym)
-      no_caregiver = ( (self.new_record? ? (bool != "0") : _caregiver.blank?) || _caregiver.nothing_assigned? )
+      no_caregiver = (self.new_record? ? (bool != "0") : (_caregiver.blank? || _caregiver.nothing_assigned?))
       self.send("no_caregiver_#{index}=".to_sym, no_caregiver) # bool.blank? || 
     end
     build_associations
@@ -944,7 +944,7 @@ class UserIntake < ActiveRecord::Base
           bool = self.send("no_caregiver_#{index}")
           #
           # for any new_record in memory, no_caregiver_x must be "on"
-          self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || self.new_record? || bool == "1") || user.nothing_assigned? )
+          self.send("no_caregiver_#{index}=".to_sym, (bool.nil? || self.new_record? || (bool == "1") || user.nothing_assigned?) )
         end
       end
       # end
