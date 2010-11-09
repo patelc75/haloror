@@ -10,7 +10,7 @@ class Order < ActiveRecord::Base
   has_many :payment_gateway_responses
   has_one :user_intake
   validates_presence_of :group
-  attr_accessor :card_csc, :product, :bill_address_same
+  attr_accessor :product, :bill_address_same
   before_update :check_kit_serial_validation
   
   # causing failure of order. need to force kit_serial for retailer in some other way
@@ -399,6 +399,10 @@ class Order < ActiveRecord::Base
     charge_credit_card( :pro_rata => (_per_day_cost * _number_of_days_including_today) )
   end
 
+  def masked_card_number
+    '****' + ( card_number.blank? ? '' : card_number.to_s[-4..-1] ) # fetch last 4 characters
+  end
+
   # reference from the active_merchant code
   #
   #   cc = CreditCard.new(
@@ -421,15 +425,16 @@ class Order < ActiveRecord::Base
     decrypt_credit_card_number # does not harm if run more than once
     # 
     #  Fri Nov  5 07:37:01 IST 2010, ramonrails
-    #  We do not have the CSC/CVV code at the time of "Bill"
-    _options = {
+    #   We do not have the CSC/CVV code at the time of "Bill"
+    #   We are going to store it "encrypted" until we shift to CIM token system
+    @card ||= ActiveMerchant::Billing::CreditCard.new( {
       :first_name => bill_first_name,
       :last_name => bill_last_name,
       :month => card_expiry.month,
       :year => card_expiry.year,
       :type => card_type,
-      :number => card_number }
-    @card ||= ActiveMerchant::Billing::CreditCard.new( _options.merge( card_csc.blank? ? {} : {:verification_value => card_csc} ))
+      :number => card_number,
+      :verification_value => cvv })
     # @card.extend ActiveMerchant::Billing::CreditCardMethods::ClassMethods
     # @card
   end
@@ -556,6 +561,9 @@ class Order < ActiveRecord::Base
     #
     # Keep data Base64 encoded to prevent any loss during conversion process
     self.card_number = Base64.encode64( encryption_key.encrypt( card_number)) unless encrypted?
+    # TODO: we must switch to CIM token process instead of encrypted CVV value, as soon as possible
+    # TODO: can be more DRY in a loop
+    self.cvv = Base64.encode64( encryption_key.encrypt( cvv)) unless encrypted?( cvv)
   end
   
   def decrypt_credit_card_number
@@ -566,6 +574,9 @@ class Order < ActiveRecord::Base
     #
     # Keep data Base64 encoded to prevent any loss during conversion process
     self.card_number = encryption_key.decrypt( Base64.decode64( card_number)) if encrypted?
+    # TODO: we must switch to CIM token process instead of encrypted CVV value, as soon as possible
+    # TODO: can be more DRY in a loop
+    self.cvv = encryption_key.decrypt( Base64.decode64( cvv)) if encrypted?( cvv)
   end
   
   def encryption_key
@@ -578,11 +589,17 @@ class Order < ActiveRecord::Base
     EzCrypto::Key.with_password "HaloROR-Encryption", salt, :algorithm => "blowfish" # this generates the key
   end
 
-  def encrypted?
+  # 
+  #  Tue Nov  9 21:46:51 IST 2010, ramonrails
+  #  default: check card_number column
+  #      arg: check given value. (For example: cvv column)
+  def encrypted?( arg = card_number)
+    # WARNING: A missing or deleted salt (for any reason) can cause card data unusable
+    #   This ensures safety of card user also
     # To identify if the card number is encrypted
     # * card number is not just plain all digits
     # * salt exists (not a robust idea. this can be removed by external factors also)
     # !salt.blank?
-    !card_number.blank? && (card_number.gsub(' ','').to_i.to_s != card_number.gsub(' ',''))
+    !arg.blank? && (arg.gsub(' ','').to_i.to_s != arg.gsub(' ',''))
   end
 end

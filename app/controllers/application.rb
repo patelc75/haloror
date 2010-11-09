@@ -13,7 +13,10 @@ class ApplicationController < ActionController::Base
   # Pick a unique cookie name to distinguish our session data from others'
   session :session_key => '_HaloRoR2_session_id'  
 
-  filter_parameter_logging :card_number
+  # 
+  #  Tue Nov  9 21:39:39 IST 2010, ramonrails
+  #  Never allow these to go into logs, even on production
+  filter_parameter_logging :card_number, :cvv, :password, :password_confirmation
 
   # ==================
   # = public methods =

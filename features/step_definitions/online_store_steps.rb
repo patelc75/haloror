@@ -137,7 +137,7 @@ When /^I fill the (.+) details for online store$/ do |which|
 
   elsif which == "credit card"
     { "card_number" => "4111111111111111",
-      "card_csc"    => "111"}.each do |field, value|
+      "cvv"    => "111"}.each do |field, value|
       When %{I fill in "order_#{field}" with "#{value}"}
     end
     When %{I select "VISA" from "order_card_type"}

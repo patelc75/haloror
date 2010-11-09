@@ -71,7 +71,7 @@
       <%= @order.ship_email %><br />
     </td>
     <td>
-      Card: *****<%= @order.card_number[-4..-1] %><br />
+      Card: <%= @order.masked_card_number %><br />
       Expiry: <%= @order.card_expiry %>
     </td>
     <td>
