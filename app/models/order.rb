@@ -542,8 +542,11 @@ class Order < ActiveRecord::Base
     messages = []
     unless device_model.blank? || !device_model.is_a?( DeviceModel)
       price = device_model.coupon_codes.find_by_coupon_code(coupon_code)
-      if price.blank? || (price.coupon_code != coupon_code) || (group.coupon_codes.find_by_coupon_code(coupon_code).blank?)
-        messages << coupon_code_message( device_model.model_type, "invalid")
+      # 
+      #  Wed Nov 10 02:53:22 IST 2010, ramonrails
+      #  https://redmine.corp.halomonitor.com/issues/3693
+      if price.blank? # || (price.coupon_code != coupon_code) || (group.coupon_codes.find_by_coupon_code(coupon_code).blank?)
+        # messages << coupon_code_message( device_model.model_type, "invalid")
       elsif price.expired?
         messages << coupon_code_message( device_model.model_type, "expired")
       end
