@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101109160603) do
+ActiveRecord::Schema.define(:version => 20101109193431) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1193,6 +1193,12 @@ ActiveRecord::Schema.define(:version => 20101109160603) do
     t.datetime "shipped_at"
     t.string   "transmitter_serial"
     t.string   "gateway_serial"
+    t.boolean  "caregiver1_email"
+    t.boolean  "caregiver1_text"
+    t.boolean  "caregiver2_email"
+    t.boolean  "caregiver2_text"
+    t.boolean  "caregiver3_email"
+    t.boolean  "caregiver3_text"
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|
