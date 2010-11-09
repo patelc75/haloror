@@ -483,8 +483,8 @@ class UserIntake < ActiveRecord::Base
     senior.add_triage_audit_log( args) unless ( args.blank? || senior.blank? )
   end
 
-  def self.status_color( arg = '')
-    STATUS_COLOR[ STATUS.index( arg) || :pending ]
+  def status_color( arg = '')
+    senior.blank? ? 'gray' : senior.status_button_color
   end
 
   # https://redmine.corp.halomonitor.com/issues/3215
