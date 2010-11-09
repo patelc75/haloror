@@ -579,8 +579,9 @@ class User < ActiveRecord::Base
   def nothing_assigned?
     # instead of checking for all attributes, we will only check the mandatory ones
     #   non-mandatory attributes cannot anyways exist without the mandatory ones
-    [:login, :email, :crypted_password,
-      :activation_code, :activated_at].collect {|e| self.send(e).blank? }.compact.uniq.include?( false) == false
+    _options = [:login, :email, :crypted_password,
+      :activation_code, :activated_at].collect {|e| self.send(e).blank? }.compact.uniq
+    (_options.length == 1) && !_options.include?( false)
   end
 
   # profile_attributes hash can be given here to create a related profile
