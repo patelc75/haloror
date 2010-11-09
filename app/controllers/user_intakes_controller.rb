@@ -140,7 +140,7 @@ class UserIntakesController < ApplicationController
     #   creator, updater introduced an error anytime when validation failed
     #   the values are not oerwritten here
     #   https://redmine.corp.halomonitor.com/issues/3497
-    @user_intake = UserIntake.new(params[:user_intake].merge( :creator => current_user, :updater => current_user))
+    @user_intake = UserIntake.new(params[:user_intake].merge( :created_by => current_user.id, :updated_by => current_user.id))
     @user_intake.skip_validation = (params[:commit] == "Save") # just save without asking anything
     @groups = Group.for_user(current_user)
 
