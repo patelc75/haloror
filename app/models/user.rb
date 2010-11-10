@@ -1452,10 +1452,16 @@ class User < ActiveRecord::Base
     
   # Activates the user in the database.
   def activate
-    @activated = true
-    self.activated_at = Time.now.utc
-    self.activation_code = nil
-    save(false)
+    # 
+    #  Thu Nov 11 00:54:42 IST 2010, ramonrails
+    #  'Save' is mandatory before activating. Cannot just activate a new record in memory
+    unless self.new_record?
+      @activated = true
+      self.activated_at = Time.now.utc
+      self.activation_code = nil
+      #  Thu Nov 11 00:57:21 IST 2010, ramonrails
+      save(false) # WARNING: Risky to skip validations. caused bugs. should work better now
+    end
   end
   
   # FIXME: need more coverage. some coverage is 

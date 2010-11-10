@@ -123,6 +123,11 @@ class ReportingController < ApplicationController
     #
     # show non-demo users, unless "/all" given in URL
     @users.reject(&:demo_mode?) if params[:id].to_s != "all"
+    # sort now
+    # WARNING: costly on time. we should implement a better business logic for faster results
+    #  Wed Nov 10 01:36:30 IST 2010, ramonrails
+    # https://redmine.corp.halomonitor.com/issues/3667
+    @users.sort! {|a,b| a.id <=> b.id }
     # debugger
     #
     # paginate the list of users

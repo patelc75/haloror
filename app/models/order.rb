@@ -416,6 +416,10 @@ class Order < ActiveRecord::Base
   #
   # Optional verification_value (CVV, CVV2 etc). Gateways will try their best to 
   # run validation on the passed in value if it is supplied
+  # 
+  #  Wed Nov 10 02:38:28 IST 2010, ramonrails
+  #  CVV is *not* optional for authorize.net at least
+  #   We had to create a temporary cvv column in orders table earlier to shift to CIM token system
   #
   def credit_card
     #
@@ -516,14 +520,22 @@ class Order < ActiveRecord::Base
         user_intake.subscriber_is_caregiver = true
         user_intake.subscriber_attributes = {:email => bill_email, :profile_attributes => subscriber_profile}
       end
-      # FIXME: should we have gateway and transmitter serials derived from kit serial here?
+      # QUESTION: should we have gateway and transmitter serials derived from kit serial here?
+      user_intake.bill_monthly = false # paid through card already
+      user_intake.credit_debit_card_proceessed = true # we received online payment through a card
       user_intake.kit_serial_number = self.kit_serial
       user_intake.order_id = self.id
-      user_intake.creator = self.creator # https://redmine.corp.halomonitor.com/issues/3117
-      user_intake.updater = self.updater
+      user_intake.created_by = self.created_by # https://redmine.corp.halomonitor.com/issues/3117
+      user_intake.updated_by = self.updated_by
       user_intake.skip_validation = true # just save. even incomplete data
       user_intake.save # database
-      user_intake.caregivers.each(&:activate) # https://redmine.corp.halomonitor.com/issues/3117
+      # 
+      #  Thu Nov 11 00:51:52 IST 2010, ramonrails
+      #  This caused a ghost row in users table if caregivers were just blank records in UI
+      #  Now shifted to user_intake.associations_after_save
+      #  * This means active/away - the role, not active/login-password - the account
+      #  * user_intake.caregivers.each(&:activate) # https://redmine.corp.halomonitor.com/issues/3117
+      #  * OBSOLETE: refer to user intake states spreadsheet
       #
       # CHANGED: dispatch emails now goes to user.rb
       # #
@@ -538,8 +550,11 @@ class Order < ActiveRecord::Base
     messages = []
     unless device_model.blank? || !device_model.is_a?( DeviceModel)
       price = device_model.coupon_codes.find_by_coupon_code(coupon_code)
-      if price.blank? || (price.coupon_code != coupon_code) || (group.coupon_codes.find_by_coupon_code(coupon_code).blank?)
-        messages << coupon_code_message( device_model.model_type, "invalid")
+      # 
+      #  Wed Nov 10 02:53:22 IST 2010, ramonrails
+      #  https://redmine.corp.halomonitor.com/issues/3693
+      if price.blank? # || (price.coupon_code != coupon_code) || (group.coupon_codes.find_by_coupon_code(coupon_code).blank?)
+        # messages << coupon_code_message( device_model.model_type, "invalid")
       elsif price.expired?
         messages << coupon_code_message( device_model.model_type, "expired")
       end
@@ -560,10 +575,10 @@ class Order < ActiveRecord::Base
     #   BUT, we still need to test it before releasing
     #
     # Keep data Base64 encoded to prevent any loss during conversion process
-    self.card_number = Base64.encode64( encryption_key.encrypt( card_number)) unless encrypted?
+    self.card_number = Base64.encode64( encryption_key.encrypt( card_number.to_s)) unless encrypted?
     # TODO: we must switch to CIM token process instead of encrypted CVV value, as soon as possible
     # TODO: can be more DRY in a loop
-    self.cvv = Base64.encode64( encryption_key.encrypt( cvv)) unless encrypted?( cvv)
+    self.cvv = Base64.encode64( encryption_key.encrypt( cvv.to_s)) unless encrypted?( cvv)
   end
   
   def decrypt_credit_card_number
@@ -573,10 +588,10 @@ class Order < ActiveRecord::Base
     #   BUT, we still need to test it before releasing
     #
     # Keep data Base64 encoded to prevent any loss during conversion process
-    self.card_number = encryption_key.decrypt( Base64.decode64( card_number)) if encrypted?
+    self.card_number = encryption_key.decrypt( Base64.decode64( card_number.to_s)) if encrypted?
     # TODO: we must switch to CIM token process instead of encrypted CVV value, as soon as possible
     # TODO: can be more DRY in a loop
-    self.cvv = encryption_key.decrypt( Base64.decode64( cvv)) if encrypted?( cvv)
+    self.cvv = encryption_key.decrypt( Base64.decode64( cvv.to_s)) if encrypted?( cvv)
   end
   
   def encryption_key
@@ -600,6 +615,7 @@ class Order < ActiveRecord::Base
     # * card number is not just plain all digits
     # * salt exists (not a robust idea. this can be removed by external factors also)
     # !salt.blank?
+    arg = arg.to_s
     !arg.blank? && (arg.gsub(' ','').to_i.to_s != arg.gsub(' ',''))
   end
 end

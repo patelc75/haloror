@@ -63,7 +63,11 @@ Feature: Create user intake
     And I select "verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
     And I press "user_intake_submit"
     Then page content should have "successfully created"
-
+    And last user intake should have separate senior and subscriber
+    And users of last user intake should have appropriate roles
+    And users of last user intake should have valid emails
+    And 2 users should be associated to last user intake
+    
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Submit. user profile ok. subscriber not user. subscriber = caregiver1
     When I fill the senior details for user intake form
@@ -76,6 +80,11 @@ Feature: Create user intake
     And I check "Add as #1 Caregiver"
     And I press "user_intake_submit"
     Then page content should have "successfully created"
+    And last user intake should have separate senior and subscriber
+    And last user intake should have same subscriber and caregiver1
+    And users of last user intake should have appropriate roles
+    And users of last user intake should have valid emails
+    And 2 users should be associated to last user intake
 
   # # @priority-low
   # # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170

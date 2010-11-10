@@ -27,8 +27,7 @@ class TriageAuditLog < ActiveRecord::Base
     user.blank? ? '' : user.name
   end
 
-  # status color as defined in User::STATUS_COLOR
   def status_color
-    UserIntake.status_color( status)
+    'white' # user.status_button_color
   end
 end
