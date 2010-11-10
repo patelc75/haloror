@@ -769,6 +769,15 @@ class UserIntake < ActiveRecord::Base
     self.mem_caregiver3
   end
 
+  # 
+  #  Thu Nov 11 02:55:34 IST 2010, ramonrails
+  # Checked in any of the following situations
+  #   * no_caregiver_1 is checked
+  #   * subscriber is caregiver
+  def hide_caregiver1?
+    [true, "1"].include?( no_caregiver_1) || [true, "1"].include?( subscriber_is_caregiver)
+  end
+
   def caregivers
     [caregiver1, caregiver2, caregiver3].uniq.compact
   end
