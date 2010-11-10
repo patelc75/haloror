@@ -477,7 +477,6 @@ class UserIntake < ActiveRecord::Base
       _skip = self.send("no_caregiver_#{index}")
       unless (_caregiver.blank? || _caregiver.nothing_assigned? || [true, "1"].include?(_skip))
         _caregiver.is_caregiver_to( senior) # assign role
-        _caregiver.activate # https://redmine.corp.halomonitor.com/issues/3117
         # 
         # Thu Nov  4 05:57:16 IST 2010, ramonrails
         #   user values were stored with apply_attributes_from_hash

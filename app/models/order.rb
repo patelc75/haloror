@@ -533,7 +533,9 @@ class Order < ActiveRecord::Base
       #  Thu Nov 11 00:51:52 IST 2010, ramonrails
       #  This caused a ghost row in users table if caregivers were just blank records in UI
       #  Now shifted to user_intake.associations_after_save
-      # user_intake.caregivers.each(&:activate) # https://redmine.corp.halomonitor.com/issues/3117
+      #  * This means active/away - the role, not active/login-password - the account
+      #  * user_intake.caregivers.each(&:activate) # https://redmine.corp.halomonitor.com/issues/3117
+      #  * OBSOLETE: refer to user intake states spreadsheet
       #
       # CHANGED: dispatch emails now goes to user.rb
       # #
