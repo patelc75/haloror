@@ -1,4 +1,4 @@
-<% patient_ids = current_user.patients.collect(&:id) %>
+<% patient_ids = current_user.patients.compact.collect(&:id) %>
 <% patient_ids << current_user.id %>
 <% if patient_ids.include?(@user.id) %>
 

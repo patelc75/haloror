@@ -468,7 +468,10 @@ class UserIntake < ActiveRecord::Base
     # senior
     senior.is_halouser_of( group) unless senior.blank?
     # subscriber
-    subscriber.is_subscriber_of( senior) unless senior.blank? || subscriber.blank?    
+    unless senior.blank? || subscriber.blank?
+      subscriber.is_subscriber_of( senior)
+      subscriber.is_caregiver_of( senior) if [true, "1"].include?( subscriber_is_caregiver)
+    end
     # Wed Oct 27 23:55:22 IST 2010
     #   * no need to check subscriber_is_caregiver here. that is done in caregiver1 method
     #   * just call for each caregiver and assign position and other options

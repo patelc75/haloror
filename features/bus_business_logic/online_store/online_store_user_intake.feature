@@ -11,7 +11,7 @@ Feature: Online store user intake
     And the product catalog exists
     And a user "test-user" exists with profile
     And I am authenticated as "test-user" with password "12345"
-    And user "test-user" has "sales" role for group "group1"
+    And user "test-user" has "sales, admin" role for group "group1"
     
   Scenario: User Intake form does not accept Order ID input
     And I am on new user_intake page
@@ -80,6 +80,9 @@ Feature: Online store user intake
     And I press "Place Order"
     Then I should see "Success"
   
+  # 
+  #  Thu Nov 11 03:43:15 IST 2010, ramonrails
+  #  1.6.0 tests
   Scenario: User intake checks for Order with different senior and subscriber
     When I go to the online store
     And I am placing an online order for "group1" group
@@ -93,3 +96,5 @@ Feature: Online store user intake
     And users of last user intake should have appropriate roles
     And users of last user intake should have valid emails
     And 2 users should be associated to last user intake
+    And subscriber of last user intake is also the caregiver
+    
