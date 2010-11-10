@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101109193431) do
+ActiveRecord::Schema.define(:version => 20101110172014) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1238,6 +1238,7 @@ ActiveRecord::Schema.define(:version => 20101109193431) do
     t.boolean  "test_mode"
     t.datetime "status_changed_at"
     t.boolean  "demo_mode"
+    t.boolean  "vip"
   end
 
   create_table "vital_scans", :force => true do |t|

@@ -435,7 +435,10 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
       # CHANGED: we cannot check ui.caregivers
       #   because caregivers are instantiated in memory for user_intake UI bug
       #   so we check the total number of users (connected in active record)
-      ui.users.length.should == 2 # just senior and subscriber
+      # 
+      #  Thu Nov 11 02:00:36 IST 2010, ramonrails
+      # we can check after rejecting caregivers with nothing_assigned?
+      ui.caregivers.reject(&:nothing_assigned?).should be_blank # just senior and subscriber
     else
       assert false, 'add this condition'
     end
@@ -551,6 +554,19 @@ Then /^senior of last user intake should have "([^"]*)" status$/ do |status|
     senior.status.should be_blank
   else
     senior.status.should == status
+  end
+end
+
+Then /^senior of last user intake should have (.+)$/ do |_what|
+  (ui = UserIntake.last).should_not be_blank
+  (senior = ui.senior).should_not be_blank
+  case _what
+  when 'demo mode'
+    senior.demo_mode.should be_true
+  when 'vip mode'
+    senior.vip.should be_true
+  else
+    assert false # explicitly implement any required step
   end
 end
 

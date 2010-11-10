@@ -809,13 +809,16 @@ class UserIntake < ActiveRecord::Base
       attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
       self.senior = ((senior.blank? || self.new_record?) ? User.new(attributes) : self.senior.update_attributes(attributes)) # includes profile_attributes hash
       self.senior.profile_attributes = _profile_attributes # profile_attributes explicitly built
+      #  Thu Nov 11 02:17:15 IST 2010, ramonrails
+      #   * patch for boolean fix
+      ["vip", "demo_mode"].each {|e| self.senior.send("#{e}=", ["1", "true", "yes"].include?( attributes[e] ) )}
       self.senior.skip_validation = self.skip_validation unless self.senior.blank?
     end
     self.senior
   end
 
   def subscriber_attributes=(attributes)
-    unless attributes.blank?
+    unless attributes.blank? || subscribed_for_self?
       _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
       attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
       # (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver

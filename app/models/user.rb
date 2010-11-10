@@ -464,10 +464,11 @@ class User < ActiveRecord::Base
   end
 
   def after_initialize
+    # #
+    # # assume not in demo mode
+    # self.demo_mode = false if new_record? && demo_mode.nil?
+    # self.vip = false if new_record? && vip.nil?
     #
-    # assume not in demo mode
-    self.demo_mode = false if new_record?
-    self.vip = false if new_record?
     # just make the login blank in memory, if this is _AUTO_xxx login
     self.login = "" if (login =~ /_AUTO_/)
     #
