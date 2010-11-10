@@ -26,7 +26,7 @@
         <%= link_to image_tag(user.status_image, :alt => (user.status || 'Unknown'), :title => (user.status || 'Unknown')), user_user_log_path(user, user.last_log_when_status_changed) %>
         <% end %>
       </span>
-      <%= user.full_name.blank? ? user.full_name : "(no name)" %>
+      <%= user.full_name.blank? ? "(no name)" : user.full_name %>
       <span style="font-size: 80%;">
         <br /><%= user.login.blank? ? "(no login)" : user.login %>
         <% if user.demo_mode? %>
