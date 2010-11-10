@@ -26,14 +26,14 @@
         <%= link_to image_tag(user.status_image, :alt => (user.status || 'Unknown'), :title => (user.status || 'Unknown')), user_user_log_path(user, user.last_log_when_status_changed) %>
         <% end %>
       </span>
-      <%= user.full_name %>
+      <%= user.full_name.blank? ? user.full_name : "(no name)" %>
       <span style="font-size: 80%;">
-        <br /><%= user.login %>
+        <br /><%= user.login.blank? ? "(no login)" : user.login %>
         <% if user.demo_mode? %>
         <br /><%= image_tag( 'warning_16.png', :alt => "Demo", :title => "Demo") %> Demo
         <% end %> 
         <% if user.vip? %>
-        <br /><%= image_tag( 'warning_16.png', :alt => "VIP", :title => "VIP") %> VIP
+        <br /><%= image_tag( 'warning_go.png', :alt => "VIP", :title => "VIP") %> VIP
         <% end %>        
       </span>
       <% if caregiver && user.profile %>
