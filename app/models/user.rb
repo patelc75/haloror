@@ -467,6 +467,7 @@ class User < ActiveRecord::Base
     #
     # assume not in demo mode
     self.demo_mode = false if new_record?
+    self.vip = false if new_record?
     # just make the login blank in memory, if this is _AUTO_xxx login
     self.login = "" if (login =~ /_AUTO_/)
     #
@@ -2614,10 +2615,23 @@ class User < ActiveRecord::Base
   
   def demo_mode?
     demo_mode == true
+  end 
+  
+  def vip?
+    vip == true
   end
   
   def toggle_demo_mode
     set_demo_mode( !demo_mode)
+  end
+  
+  def toggle_vip
+    set_vip(!vip) 
+  end     
+  
+  def set_vip_mode( status = false)
+    self.vip = ( status == true)
+    self.send( :update_without_callbacks) unless self.new_record?
   end
   
   def set_demo_mode( status = false)

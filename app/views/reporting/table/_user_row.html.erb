@@ -31,7 +31,10 @@
         <br /><%= user.login %>
         <% if user.demo_mode? %>
         <br /><%= image_tag( 'warning_16.png', :alt => "Demo", :title => "Demo") %> Demo
-        <% end %>
+        <% end %> 
+        <% if user.vip? %>
+        <br /><%= image_tag( 'warning_16.png', :alt => "VIP", :title => "VIP") %> VIP
+        <% end %>        
       </span>
       <% if caregiver && user.profile %>
     </a>
