@@ -414,6 +414,9 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
     when 'separate senior and subscriber'
       [:senior, :subscriber].each {|e| ui.send( e).should_not be_blank }
       ui.senior.should_not == ui.subscriber
+    when 'same subscriber and caregiver1'
+      [:subscriber, :caregiver1].each {|e| ui.send( e).should_not be_blank }
+      ui.subscriber.should == ui.caregiver1
     else
       assert false, 'add this condition'
     end

@@ -347,21 +347,25 @@ class UserIntake < ActiveRecord::Base
   # collapse any associations to "nil" if they are just "new" (nothing assigned to them after "new")
   def collapse_associations
     # TODO: DRY this
-    unless senior.nil?
+    if senior.nothing_assigned?
       senior.collapse_associations
-      senior.nothing_assigned? ? (self.senior = nil) : (self.senior.skip_validation = skip_validation)
+      self.senior = nil
+    else
+      self.senior.skip_validation = skip_validation
     end
 
-    unless subscriber.nil?
+    unless subscriber.nothing_assigned?
       if subscribed_for_self? || senior_and_subscriber_match?
-        self.subscriber = nil # we have senior. no need of subscriber
-      else
         subscriber.collapse_associations
-        (subscriber.nothing_assigned? || subscribed_for_self? || senior_and_subscriber_match?) ? (self.subscriber = nil) : (self.subscriber.skip_validation = skip_validation)
+        self.subscriber = senior # we have senior. no need of subscriber
+      else
+        self.subscriber.skip_validation = skip_validation
       end
     end
 
-    if !caregiver1.blank? && !["1", true].include?( no_caregiver_1) && !caregiver1.nothing_assigned? && !subscriber_is_caregiver
+    if subscriber_is_caregiver
+      self.caregiver1 = subscriber
+    elsif !caregiver1.blank? && !["1", true].include?( no_caregiver_1) && !caregiver1.nothing_assigned?
       self.caregiver1.skip_validation = true
     else
       self.caregiver1 = nil

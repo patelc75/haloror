@@ -520,7 +520,7 @@ class Order < ActiveRecord::Base
         user_intake.subscriber_is_caregiver = true
         user_intake.subscriber_attributes = {:email => bill_email, :profile_attributes => subscriber_profile}
       end
-      # FIXME: should we have gateway and transmitter serials derived from kit serial here?
+      # QUESTION: should we have gateway and transmitter serials derived from kit serial here?
       user_intake.kit_serial_number = self.kit_serial
       user_intake.order_id = self.id
       user_intake.created_by = self.created_by # https://redmine.corp.halomonitor.com/issues/3117
