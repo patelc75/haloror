@@ -79,4 +79,17 @@ Feature: Online store user intake
     And I press "Continue"
     And I press "Place Order"
     Then I should see "Success"
-    
+  
+  Scenario: User intake checks for Order with different senior and subscriber
+    When I go to the online store
+    And I am placing an online order for "group1" group
+    And I uncheck "order_bill_address_same"
+    And I press "Continue"
+    And I press "Place Order"
+    Then I should see "Success"
+    And last order should have associated user intake
+    And last user intake should have separate senior and subscriber
+    And last user intake should have same subscriber and caregiver1
+    And users of last user intake should have appropriate roles
+    And users of last user intake should have valid emails
+    And 2 users should be associated to last user intake

@@ -529,7 +529,11 @@ class Order < ActiveRecord::Base
       user_intake.updated_by = self.updated_by
       user_intake.skip_validation = true # just save. even incomplete data
       user_intake.save # database
-      user_intake.caregivers.each(&:activate) # https://redmine.corp.halomonitor.com/issues/3117
+      # 
+      #  Thu Nov 11 00:51:52 IST 2010, ramonrails
+      #  This caused a ghost row in users table if caregivers were just blank records in UI
+      #  Now shifted to user_intake.associations_after_save
+      # user_intake.caregivers.each(&:activate) # https://redmine.corp.halomonitor.com/issues/3117
       #
       # CHANGED: dispatch emails now goes to user.rb
       # #

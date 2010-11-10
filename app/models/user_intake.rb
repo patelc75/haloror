@@ -347,14 +347,14 @@ class UserIntake < ActiveRecord::Base
   # collapse any associations to "nil" if they are just "new" (nothing assigned to them after "new")
   def collapse_associations
     # TODO: DRY this
-    if senior.nothing_assigned?
+    if senior.blank? || senior.nothing_assigned?
       senior.collapse_associations
       self.senior = nil
     else
       self.senior.skip_validation = skip_validation
     end
 
-    unless subscriber.nothing_assigned?
+    unless subscriber.blank? || subscriber.nothing_assigned?
       if subscribed_for_self? || senior_and_subscriber_match?
         subscriber.collapse_associations
         self.subscriber = senior # we have senior. no need of subscriber
@@ -438,14 +438,24 @@ class UserIntake < ActiveRecord::Base
     # TODO: conflicting with 1.6.0 pre-quality. removed to check compatiblity or related errors
     # for remaining, fill login, password details only when login is empty
     # This is a 3 step process
+    # 
+    #  Thu Nov 11 00:14:24 IST 2010, ramonrails
+    #  Link per user, once only. compact.uniq ensures that
     ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |_what|
       _user = self.send( _what) # fetch the associated user
+      # 
+      #  Thu Nov 11 00:32:18 IST 2010, ramonrails
+      #  Do not save any non-assigned data, or blank ones
       unless _user.blank? || _user.nothing_assigned?
         _user.skip_validation = true # TODO: patch for 1.6.0 release. fix later with business logic, if required
 
         _user.autofill_login # Step 1: make them valid
         _user.save # Step 2: save them to database
-        self.users << _user # Step 3: link them to user intake
+        # 
+        #  Thu Nov 11 00:13:31 IST 2010, ramonrails
+        #  https://redmine.corp.halomonitor.com/issues/3696
+        #   caused a bug that created multiple links to the same user
+        self.users << _user unless self.users.include?( _user) # Step 3: link them to user intake
       end
     end
     #
@@ -464,8 +474,10 @@ class UserIntake < ActiveRecord::Base
     #   * just call for each caregiver and assign position and other options
     (1..3).each do |index|
       _caregiver = self.send("caregiver#{index}".to_sym)
-      unless (_caregiver.blank? || _caregiver.nothing_assigned?)
+      _skip = self.send("no_caregiver_#{index}")
+      unless (_caregiver.blank? || _caregiver.nothing_assigned? || [true, "1"].include?(_skip))
         _caregiver.is_caregiver_to( senior) # assign role
+        _caregiver.activate # https://redmine.corp.halomonitor.com/issues/3117
         # 
         # Thu Nov  4 05:57:16 IST 2010, ramonrails
         #   user values were stored with apply_attributes_from_hash
@@ -476,7 +488,6 @@ class UserIntake < ActiveRecord::Base
         # else # maybe this is a new association and options
         self.send("caregiver#{index}_role_options=", _caregiver.options_for_senior( senior, _options)) # create appropriate data
         # end
-        # debugger
         # caregiver1_role_options
       end
     end
@@ -590,7 +601,6 @@ class UserIntake < ActiveRecord::Base
   end
 
   def senior=(arg)
-    # debugger
     if arg == nil
       self.mem_senior = nil
     else
@@ -650,7 +660,6 @@ class UserIntake < ActiveRecord::Base
           # remember role option when subscriber is caregiver
           if subscriber_is_caregiver
             self.mem_caregiver1 = User.new( mem_subscriber.attributes) # clone
-            # debugger
             # (self.mem_caregiver1_options = attributes["role_options"]) if attributes.has_key?("role_options")
           end
         end
@@ -692,7 +701,6 @@ class UserIntake < ActiveRecord::Base
             self.mem_caregiver1 = arg_user
           end
 
-          # debugger
           # self.mem_caregiver1_options = attributes["role_options"] if attributes.has_key?("role_options")
         end
 
@@ -791,14 +799,12 @@ class UserIntake < ActiveRecord::Base
         #   Store the options into virtual attribute in user intake
         #   We will persist it to database during associations_after_save
         #   We need this because during the update_attributes, these virtual attributes do not get assigned
-        # debugger
         self.send("caregiver#{index}_role_options=", _hash["caregiver#{index}_role_options"])
       end
     end
   end
 
   def senior_attributes=(attributes)
-    # debugger
     unless attributes.blank?
       _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
       attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }

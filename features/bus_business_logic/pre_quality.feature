@@ -58,8 +58,7 @@ Feature: Pre quality
     And I create a coupon code for "reseller" group
     And I create admin of "reseller" group
     And I activate the last user as "reseller_admin"
-    And I am placing an online order
-    And I select "reseller_group" from "Group"
+    And I am placing an online order for "re_reseller_group" group
     And I fill in "Coupon Code" with "reseller_coupon"
     And I press "Continue"
     Then I should see "$77"
@@ -73,8 +72,7 @@ Feature: Pre quality
     When I create a coupon code for "re_reseller" group
     And I create admin of "re_reseller" group
     And I activate the last user as "re_reseller_admin"
-    And I am placing an online order
-    And I select "re_reseller_group" from "Group"
+    And I am placing an online order for "re_reseller_group" group
     And I fill in "Coupon Code" with "re_reseller_coupon"
     And I press "Continue"
     And I press "Place Order"

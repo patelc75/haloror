@@ -260,13 +260,16 @@ When /^I fill the (.+) details for user intake form$/ do |which|
     # cross_st is only for user profile. but this is not mandatory
     # When %{I fill in "user_profile_cross_st" with "street address"} if which == "senior"
     #  
-    #  Thu Nov  4 01:37:57 IST 2010, ramonrails 
-    #   caregiver options
-    if which =~ /^caregiver/
-      When %{I check "user_intake_caregiver1_role_options_phone_active"}
-      When %{I check "user_intake_caregiver1_role_options_email_active"}
-      When %{I check "user_intake_caregiver1_role_options_text_active"}
-    end
+    # 
+    #  Wed Nov 10 20:53:17 IST 2010, ramonrails
+    #  * we have local columns in user intake for 1.6.0
+    # #  Thu Nov  4 01:37:57 IST 2010, ramonrails 
+    # #   caregiver options
+    # if which =~ /^caregiver/
+    #   When %{I check "user_intake_caregiver1_role_options_phone_active"}
+    #   When %{I check "user_intake_caregiver1_role_options_email_active"}
+    #   When %{I check "user_intake_caregiver1_role_options_text_active"}
+    # end
   end
 end
 
@@ -421,6 +424,7 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
       assert false, 'add this condition'
     end
     
+  #  SHOULD NOT cases
   else
     case what
     when "credit card value"
@@ -602,14 +606,30 @@ Then /^caregivers of user intake "([^"]*)" are away$/ do |_serial|
   ui.caregivers.each {|e| e.away_for?( senior).should be_true }
 end
 
-Then /^users of last user intake should have appropriate roles$/ do
+Then /^users of last user intake should have (.+)$/ do |_what|
   (ui = UserIntake.last).should_not be_blank
   (senior = ui.senior).should_not be_blank
   subscriber = ui.subscriber
   (caregivers = ui.caregivers) # can be blank
-  lambda { senior.is_halouser_of?( ui.group) }.should be_true
-  lambda { subscriber.is_subscriber_of?( senior) }.should be_true unless ui.subscriber.blank?
-  caregivers.each {|cg| lambda { cg.is_caregiver_of?( senior) }.should be_true }
+  case _what
+    
+  when "appropriate roles"
+    lambda { senior.is_halouser_of?( ui.group) }.should be_true
+    lambda { subscriber.is_subscriber_of?( senior) }.should be_true unless ui.subscriber.blank?
+    caregivers.each {|cg| lambda { cg.is_caregiver_of?( senior) }.should be_true }
+    
+  when "valid emails"
+    [ui.senior, ui.subscriber, ui.caregivers].flatten.compact.each do |_user|
+      _user.email.should_not be_blank unless _user.blank? || _user.new_record? || _user.nothing_assigned?
+    end
+  else
+    assert false # impleemnt everything explicitly
+  end
+end
+
+Then /^(\d+) users should be associated to last user intake$/ do |_count|
+  (ui = UserIntake.last).should_not be_blank
+  ui.users.length.should == _count.to_i
 end
 
 # ============================
