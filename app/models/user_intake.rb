@@ -385,7 +385,7 @@ class UserIntake < ActiveRecord::Base
 
     # # FIXME: TODO. look when other bugs are fixed
     # # association are collapsing ignoring the params
-    # # need most close debugging. Not getting a clue for now.
+    # # need more debugging. Not getting a clue for now.
     # (1..3).each do |index|
     #   caregiver = self.send("caregiver#{index}".to_sym)
     #   unless caregiver.blank?
@@ -627,8 +627,10 @@ class UserIntake < ActiveRecord::Base
 
   def subscriber
     if subscribed_for_self?
-      self.mem_subscriber = senior # return senior. do not assign here. this is READ mode method
-      # self.mem_subscriber = senior # pick senior, if self subscribed
+      # 
+      #  Thu Nov 11 23:40:04 IST 2010, ramonrails
+      #  consider senior data as subscriber
+      senior # return senior. do not assign here. this is READ mode method
     else
       if self.new_record?
         self.mem_subscriber
@@ -646,7 +648,7 @@ class UserIntake < ActiveRecord::Base
 
       if subscribed_for_self?
         self.senior = User.new( arg.attributes) if senior.blank? # we can use this data
-        self.mem_subscriber = senior # assign to senior, then reference as subscriber
+        self.mem_subscriber = User.new( arg.attributes) # assign to senior, then reference as subscriber
       else
 
         arg_user = argument_to_object(arg) # (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
