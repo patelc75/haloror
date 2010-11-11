@@ -73,7 +73,7 @@ class Order < ActiveRecord::Base
   
   # quick shortcut for the bill and ship address same
   def subscribed_for_self?
-    ((bill_address_same == "1") || ship_and_bill_address_match)
+    (["1", true ].include?( bill_address_same) || ship_and_bill_address_match)
   end
     
   # find out if the product catalog has the product from HASH
@@ -511,15 +511,13 @@ class Order < ActiveRecord::Base
       subscriber_profile = { :first_name => bill_first_name, :last_name => bill_last_name, :address => bill_address, :city => bill_city, :state => bill_state, :zipcode => bill_zip, :home_phone => bill_phone }
       user_intake = UserIntake.new
       user_intake.group = group # halouser role is for group
-      # debugger
       user_intake.senior_attributes = {:email => ship_email, :profile_attributes => senior_profile}
       #
       # when senior and subscriber are different, then subscriber is also the caregiver
-      if !subscribed_for_self? # when marked common or data common
-        user_intake.subscriber_is_user = false
-        user_intake.subscriber_is_caregiver = true
-        user_intake.subscriber_attributes = {:email => bill_email, :profile_attributes => subscriber_profile}
-      end
+      user_intake.subscriber_is_user = subscribed_for_self?
+      # subscriber cannot be user and acregiver at the same time
+      user_intake.subscriber_is_caregiver = !user_intake.subscriber_is_user
+      user_intake.subscriber_attributes = {:email => bill_email, :profile_attributes => subscriber_profile}
       # QUESTION: should we have gateway and transmitter serials derived from kit serial here?
       user_intake.bill_monthly = false # paid through card already
       user_intake.credit_debit_card_proceessed = true # we received online payment through a card
@@ -541,7 +539,6 @@ class Order < ActiveRecord::Base
       # #
       # # force manual emails dispatch here
       # # Usually it will not send emails because skip_validation is "on"
-      # # debugger
       # user_intake.senior.dispatch_emails # will dispatch only when user = halouser and valid email address
     end
   end
