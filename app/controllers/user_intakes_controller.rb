@@ -176,8 +176,9 @@ class UserIntakesController < ApplicationController
     # debugger
     @user_intake = UserIntake.find(params[:id])
     @user_intake.skip_validation = (['Save', 'Print', 'Proceed'].include?(params[:commit])) # just save without asking anything
-    @user_intake.locked = @user_intake.valid? unless @user_intake.skip_validation
     @groups = Group.for_user(current_user)
+    _hash = params[:user_intake].merge( :updated_by => current_user.id)
+    _hash.each {|k,v| @user_intake.send( "#{k}=".to_sym, v) }
 
     respond_to do |format|
       # _attributes = params[:user_intake].reject {|k,v| v.is_a?(Hash) || k.include?( "attributes") }
@@ -210,20 +211,25 @@ class UserIntakesController < ApplicationController
         #   @user_intake.senior.update_attribute( :status, User::STATUS[:install_pending])
         #   @user_intake.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
         # end
-        params[:user_intake][:lazy_action] = params[:commit] # commit button text
+        _hash[:lazy_action] = params[:commit] # commit button text
         #
         # apply all attributes to associations
-        @user_intake.apply_attributes_from_hash( params[:user_intake]) # apply user attributes
+        # @user_intake.apply_attributes_from_hash( _hash) # apply user attributes
+        #
+        #  Thu Nov 11 20:50:41 IST 2010, ramonrails
+        # we can apply this within user intake, why here?
+        # # we applied the attribute hash on intake, now decide locked/submitted
+        # @user_intake.locked = @user_intake.valid? if !@user_intake.submitted? && !@user_intake.skip_validation
         #
         # Now save the user intake object. Should pass validation
-        if @user_intake.update_attributes( params[:user_intake].merge( :updated_by => current_user.id))
+        if @user_intake.save # update_attributes( _hash)
           #
           # proceed as usual
           flash[:notice] = 'User Intake was successfully updated.'
           format.html do
             #
             # QUESTION: Is this correct?
-            #   We were showing successful order here but the busoness logic changed later
+            #   We were showing successful order here but the business logic changed later
             #
             # if params[:redirect_hash].blank?
             redirect_to :action => 'single_row', :id => @user_intake.id # just show user_intakes
@@ -241,7 +247,7 @@ class UserIntakesController < ApplicationController
         #   * just a silent update of user intake attributes. no questions asked. no validations. no checking.
         #   * we need this for interfaces like 'shipping date update' from user intake overview
       else
-        params[:user_intake].each {|k,v| @user_intake.send( "#{k}=".to_sym, v) }
+        # we already applied the attributes from hash, outside this condition
         @user_intake.send( :update_without_callbacks) # just save it. no questions asked.
         flash[:notice] = "Successfully updated the user intake"
         format.html { redirect_to :action => 'single_row', :id => @user_intake.id }
