@@ -132,6 +132,7 @@ Feature: Pre quality
     And I follow "edit_link"
     And I uncheck "user_intake_subscriber_is_user"
     And I check "user_intake_subscriber_is_caregiver"
+    And I uncheck "user_intake_no_caregiver_2"
     And I fill the subscriber details for user intake form
     And I fill the caregiver2 details for user intake form
     And I select "Verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"

@@ -176,7 +176,7 @@ class UserIntake < ActiveRecord::Base
     # WARNING: Need test coverage
     # lock if required
     # skip_validation decides if "save" was hit instead of "submit"
-    self.locked = (!skip_validation && valid?)
+    self.locked = (!submitted? && !skip_validation && valid?)
     self.senior.update_attribute( :status, User::STATUS[:approval_pending]) if (locked? && self.senior.status.blank?) # once submitted, get ready for approval
     #
     # WARNING: Wed Sep 15 04:29:08 IST 2010
@@ -197,9 +197,6 @@ class UserIntake < ActiveRecord::Base
       options = { :updated_by => updated_by, :description => "Status updated from [#{senior.status_was}] to [#{senior.status}], triggered from user intake" }
       add_triage_note( options)
     end
-    #  Wed Nov  3 05:00:46 IST 2010, ramonrails 
-    #   anyways validate devices 
-    validate_devices # validate the serial_numbers
   end
 
   def after_save
@@ -324,6 +321,9 @@ class UserIntake < ActiveRecord::Base
     else
       skip_associations_validation # propogate to associated models
     end
+    #  Wed Nov  3 05:00:46 IST 2010, ramonrails 
+    #   ignore any flags and force validate devices
+    validate_devices # validate the serial_numbers
   end
 
   def validate_associations
@@ -371,13 +371,13 @@ class UserIntake < ActiveRecord::Base
       self.caregiver1 = nil
     end
 
-    if !caregiver2.blank? && !["1", true].include?( no_caregiver_1) && !caregiver2.nothing_assigned?
+    if !caregiver2.blank? && !["1", true].include?( no_caregiver_2) && !caregiver2.nothing_assigned?
       self.caregiver2.skip_validation = true
     else
       self.caregiver2 = nil
     end
 
-    if !caregiver3.blank? && !["1", true].include?( no_caregiver_1) && !caregiver3.nothing_assigned?
+    if !caregiver3.blank? && !["1", true].include?( no_caregiver_3) && !caregiver3.nothing_assigned?
       self.caregiver3.skip_validation = true
     else
       self.caregiver3 = nil
@@ -757,6 +757,9 @@ class UserIntake < ActiveRecord::Base
     else
 
       arg_user = argument_to_object(arg) # (arg.is_a?(User) ? arg : (arg.is_a?(Hash) ? User.new(arg) : nil))
+      # 
+      #  Thu Nov 11 20:44:45 IST 2010, ramonrails
+      #  TODO: need to DRY this
       unless arg_user.blank?
         if self.new_record?
           self.mem_caregiver3 = arg_user
@@ -777,8 +780,11 @@ class UserIntake < ActiveRecord::Base
   # Checked in any of the following situations
   #   * no_caregiver_1 is checked
   #   * subscriber is caregiver
-  def hide_caregiver1?
-    [true, "1"].include?( no_caregiver_1) || [true, "1"].include?( subscriber_is_caregiver)
+  def hide_caregiver?( index = 1)
+    index = ( (1..3).include?( index) ? index : 1 )
+    _result = [true, "1"].include?( self.send("no_caregiver_#{index}"))
+    _result = (_result || [true, "1"].include?( subscriber_is_caregiver)) if (index == 1) && !_result
+    _result
   end
 
   def caregivers
@@ -794,11 +800,11 @@ class UserIntake < ActiveRecord::Base
       #  Thu Nov  4 02:54:35 IST 2010, ramonrails 
       #   We can also do this, but no time for testing before 1.6.0 release
       #   _hash.each {|k,v| self.send("#{k}=", v) if self.respond_to?( k) }
-      self.senior_attributes = _hash[:senior_attributes] unless _hash[:senior_attributes].blank?
-      self.subscriber_attributes = _hash[:subscriber_attributes] unless (_hash[:subscriber_attributes].blank? || (_hash[:subscriber_is_user] == "1"))
-      self.caregiver1_attributes = _hash[:caregiver1_attributes] unless (_hash[:caregiver1_attributes].blank? || (_hash[:subscriber_is_caregiver] == "1"))
-      self.caregiver2_attributes = _hash[:caregiver2_attributes] unless _hash[:caregiver2_attributes].blank?
-      self.caregiver3_attributes = _hash[:caregiver3_attributes] unless _hash[:caregiver3_attributes].blank?
+      self.senior_attributes = _hash["senior_attributes"] unless _hash["senior_attributes"].blank?
+      self.subscriber_attributes = _hash["subscriber_attributes"] unless (_hash["subscriber_attributes"].blank? || (_hash[:subscriber_is_user] == "1"))
+      self.caregiver1_attributes = _hash["caregiver1_attributes"] unless (_hash["caregiver1_attributes"].blank? || (_hash[:subscriber_is_caregiver] == "1"))
+      self.caregiver2_attributes = _hash["caregiver2_attributes"] unless _hash["caregiver2_attributes"].blank?
+      self.caregiver3_attributes = _hash["caregiver3_attributes"] unless _hash["caregiver3_attributes"].blank?
       #
       # hide profiles on view, as appropriate
       self.subscriber_is_user = (subscribed_for_self? || senior_and_subscriber_match?)
@@ -812,15 +818,23 @@ class UserIntake < ActiveRecord::Base
         #   We need this because during the update_attributes, these virtual attributes do not get assigned
         self.send("caregiver#{index}_role_options=", _hash["caregiver#{index}_role_options"])
       end
+      # # 
+      # #  Thu Nov 11 19:49:44 IST 2010, ramonrails
+      # #  remove applied attributes from hash, return remaining attributes
+      # _hash = _hash.reject {|k,v| ["senior_attributes", "subscriber_attributes", "caregiver1_attributes",
+      #   "caregiver2_attributes", "caregiver3_attributes"].include?( k) }
     end
+    # _hash
   end
 
   def senior_attributes=(attributes)
     unless attributes.blank?
-      _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
-      attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
-      self.senior = ((senior.blank? || self.new_record?) ? User.new(attributes) : self.senior.update_attributes(attributes)) # includes profile_attributes hash
-      self.senior.profile_attributes = _profile_attributes # profile_attributes explicitly built
+      self.senior ||= User.new
+      attributes.each {|_key, _value| self.senior.send("#{_key}=", _value) }
+      # _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
+      # attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
+      # self.senior = ((senior.blank? || self.new_record?) ? User.new(attributes) : self.senior.update_attributes(attributes)) # includes profile_attributes hash
+      # self.senior.profile_attributes = _profile_attributes # profile_attributes explicitly built
       #  Thu Nov 11 02:17:15 IST 2010, ramonrails
       #   * patch for boolean fix
       ["vip", "demo_mode"].each {|e| self.senior.send("#{e}=", ["1", "true", "yes"].include?( attributes[e] ) )}
@@ -831,11 +845,13 @@ class UserIntake < ActiveRecord::Base
 
   def subscriber_attributes=(attributes)
     unless attributes.blank? || subscribed_for_self?
-      _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
-      attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
-      # (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
-      self.subscriber = ((subscriber.blank? || self.new_record?) ? User.new( attributes) : self.subscriber.update_attributes(attributes)) # includes profile_attributes hash
-      self.subscriber.profile_attributes = _profile_attributes # profile_attributes explicitly built
+      self.subscriber ||= User.new
+      attributes.each {|_key, _value| self.subscriber.send("#{_key}=", _value) }
+      # _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
+      # attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
+      # # (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options") && subscriber_is_caregiver
+      # self.subscriber = ((subscriber.blank? || self.new_record?) ? User.new( attributes) : self.subscriber.update_attributes(attributes)) # includes profile_attributes hash
+      # self.subscriber.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.subscriber.skip_validation = self.skip_validation unless self.subscriber.blank?
     end
     self.subscriber
@@ -843,11 +859,13 @@ class UserIntake < ActiveRecord::Base
 
   def caregiver1_attributes=(attributes)
     unless attributes.blank?
-      _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
-      attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
-      # (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-      self.caregiver1 = ((caregiver1.blank? || self.new_record?) ? User.new( attributes) : self.caregiver1.update_attributes(attributes)) # includes profile_attributes hash
-      self.caregiver1.profile_attributes = _profile_attributes # profile_attributes explicitly built
+      self.caregiver1 ||= User.new
+      attributes.each {|_key, _value| self.caregiver1.send("#{_key}=", _value) }
+      # _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
+      # attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
+      # # (self.mem_caregiver1_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
+      # self.caregiver1 = ((caregiver1.blank? || self.new_record?) ? User.new( attributes) : self.caregiver1.update_attributes(attributes)) # includes profile_attributes hash
+      # self.caregiver1.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.caregiver1.skip_validation = self.skip_validation unless self.caregiver1.blank?
     end
     self.caregiver1
@@ -855,11 +873,13 @@ class UserIntake < ActiveRecord::Base
 
   def caregiver2_attributes=(attributes)
     unless attributes.blank?
-      _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
-      attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
-      # (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-      self.caregiver2 = ((caregiver2.blank? || self.new_record?) ? User.new( attributes) : self.caregiver2.update_attributes(attributes)) # includes profile_attributes hash
-      self.caregiver2.profile_attributes = _profile_attributes # profile_attributes explicitly built
+      self.caregiver2 ||= User.new
+      attributes.each {|_key, _value| self.caregiver2.send("#{_key}=", _value) }
+      # _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
+      # attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
+      # # (self.mem_caregiver2_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
+      # self.caregiver2 = ((caregiver2.blank? || self.new_record?) ? User.new( attributes) : self.caregiver2.update_attributes(attributes)) # includes profile_attributes hash
+      # self.caregiver2.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.caregiver2.skip_validation = self.skip_validation unless self.caregiver2.blank?
     end
     self.caregiver2
@@ -867,11 +887,13 @@ class UserIntake < ActiveRecord::Base
 
   def caregiver3_attributes=(attributes)
     unless attributes.blank?
-      _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
-      attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
-      # (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
-      self.caregiver3 = ((caregiver3.blank? || self.new_record?) ? User.new( attributes) : self.caregiver3.update_attributes(attributes)) # includes profile_attributes hash
-      self.caregiver3.profile_attributes = _profile_attributes # profile_attributes explicitly built
+      self.caregiver3 ||= User.new
+      attributes.each {|_key, _value| self.caregiver3.send("#{_key}=", _value) }
+      # _profile_attributes = (attributes["profile_attributes"] || attributes[:profile_attributes])
+      # attributes = attributes.reject {|k,v| k.to_s == "profile_attributes" }
+      # # (self.mem_caregiver3_options = attributes.delete("role_options")) if attributes.has_key?("role_options")
+      # self.caregiver3 = ((caregiver3.blank? || self.new_record?) ? User.new( attributes) : self.caregiver3.update_attributes(attributes)) # includes profile_attributes hash
+      # self.caregiver3.profile_attributes = _profile_attributes # profile_attributes explicitly built
       self.caregiver3.skip_validation = self.skip_validation unless self.caregiver3.blank?
     end
     self.caregiver3

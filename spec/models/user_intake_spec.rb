@@ -217,7 +217,24 @@ describe UserIntake do
     end
   end # create user intake
 
-  context "editing an existing user intake" do
-    # TODO: write some test cases for "edit" scenario. after QA release of 1.6.0
+  context "editing an existing user intake - senior = subscriber" do
+    before(:all) do
+      ui = Factory.build( :user_intake) # build associations
+      ui.subscriber_is_user = false
+      ui.subscriber_is_caregiver = false
+      # we already have caregivers defined. just switch off the flag
+      (1..3).each {|e| ui.send("no_caregiver_#{e}=", false) } # no_caregiver_? switched off
+      ui.senior_attributes = Factory.build( :user).attributes.merge( "profile_attributes" => Factory.build(:profile).attributes)
+      ui.save.should be_true
+      @ui = UserIntake.find( ui.id) # load form database
+    end
+    specify { @ui.senior.should be_valid } # senior
+    specify { @ui.senior.profile.should be_valid }
+    specify { @ui.subscriber.should be_valid } # subscriber
+    specify { @ui.subscriber.profile.should be_valid }
+    specify { @ui.subscriber.should == @ui.senior }
+    specify { @ui.subscriber.profile.should == @ui.senior.profile } # both profiles are different
+    specify { lambda { @ui.senior.is_halouser_of?( @ui.group) }.should be_true } # valid halouser role
+    specify { lambda { @ui.subscriber.is_subscriber_of?( @ui.senior) }.should be_true } # subscriber role
   end # editing
 end #user intake
