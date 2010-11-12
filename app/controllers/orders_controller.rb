@@ -229,18 +229,10 @@ class OrdersController < ApplicationController
                 #   UserMailer.deliver_signup_installation(email,:exclude_senior_info)
                 # end
                 [@order.bill_email, "senior_signup@halomonitoring.com"].each do |email|
-                  UserMailer.deliver_order_summary(@order, email, (email.include?("senior_signup") ? :no_email_log : nil))
+                  UserMailer.deliver_order_summary(@order, email, nil)
                 end
                 
-                # Thu Oct 28 23:56:18 IST 2010
-                #   CHANGED: DRYed into order and group model
-                @order.send_summary_to_master_group
-                # if (!@order.group.name.blank?)   #old matching code: !(o.group.name.match /^ml_/).nil?
-                #    master_group = Group.find_by_name(@order.group.name[0..2] + 'master')  #eg. find ml_master group
-                #    if !master_group.nil? and !master_group.email.blank? 
-                #      UserMailer.deliver_order_summary(@order, master_group.email) 
-                #    end
-                # end 
+                @order.send_summary_to_group_and_master_group
                                     
                 # show on browser
                 flash[:notice] = 'Thank you for your order.'
