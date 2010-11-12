@@ -83,7 +83,7 @@ Feature: Business - user intake - submit
     When I edit user intake with gateway serial "1234567890"
     Then page content should have "Warning, Shipped at"
 
-  Scenario: When the approve button is clicked, disable test mode of user
+  Scenario: When the approve button is clicked, partially disable test mode of user
     Given the following user intakes:
       | gateway_serial |
       | 1234567890     |

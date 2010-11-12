@@ -40,7 +40,7 @@ class UserIntake < ActiveRecord::Base
     attr_accessor "mem_caregiver#{index+1}_options".to_sym
     attr_accessor "no_caregiver_#{index+1}".to_sym
   end
-  attr_accessor :test_mode, :opt_out, :put_away, :card_or_bill, :lazy_action
+  attr_accessor :test_mode, :opt_out, :put_away, :lazy_action # , :card_or_bill
 
   # =============================
   # = dynamic generated methods =
@@ -166,8 +166,9 @@ class UserIntake < ActiveRecord::Base
   def before_save
     #
     # card or bill
-    self.credit_debit_card_proceessed = (card_or_bill == "Card")
+    self.credit_debit_card_proceessed = !order.blank? # online store means card was used
     self.bill_monthly = !credit_debit_card_proceessed
+    #
     # self.bill_monthly = (card_or_bill == "Bill")
     # self.credit_debit_card_proceessed = !bill_monthly
     # associations
@@ -585,10 +586,18 @@ class UserIntake < ActiveRecord::Base
   # either the boolean is "on", or, the attributes have same values
   # FIXME: optimize after 1.6.0 release
   def senior_and_subscriber_match?
-    _senior_attributes = senior.attributes
+    # 
+    #  Fri Nov 12 00:15:39 IST 2010, ramonrails
+    #  when either of them is blank?, this may cause error in browser
+    #   * senior attributes
+    _senior_attributes = (senior.blank? ? {} : senior.attributes)
     _senior_attributes.merge( senior.profile.attributes) unless senior.profile.blank?
-    _subscriber_attributes = subscriber.attributes
+    # 
+    #   * subscriber attrbutes
+    _subscriber_attributes = (subscriber.blank? ? {} : subscriber.attributes)
     _subscriber_attributes.merge( subscriber.profile.attributes) unless subscriber.profile.blank?
+    # 
+    #   * check for the match among attributes
     _senior_attributes.values.compact == _subscriber_attributes.values.compact
   end
 

@@ -41,46 +41,37 @@ class Profile < ActiveRecord::Base
   #check_valid_phone_numbers
   #end
 
+  # =============
+  # = callbacks =
+  # =============
+  
   def after_initialize
     self.need_validation = true # default = run validations
   end
 
-  # not required. we can check profile account number directly
-  # # cache fields in user
-  # def after_save
-  #   unless user.blank?
-  #     self.user.has_no_call_center_account = account_number.blank?
-  #     # WARNING. need to check if this might cause a recursive update
-  #     # update_without_callbacks should eliminate recursion
-  #     user.update_without_callbacks unless user.new_record? # else do not bother, user in memory has the data. it will save
-  #   end
-  # end
-
-  def skip_validation
-    !need_validation
+  def validate
+    if self.skip_validation
+      true
+    else
+      if self[:is_new_caregiver]
+        return false
+      else
+        # "length != 10" changed to "length < 10" for compatibility with user_intake_form
+        errors.add(:home_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.home_phone != '' and !self.home_phone.nil? and phone_strip(self.home_phone).length < 10 
+        errors.add(:work_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.work_phone != '' and !self.work_phone.nil? and phone_strip(self.work_phone).length < 10 
+        errors.add(:cell_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.cell_phone != '' and !self.cell_phone.nil? and phone_strip(self.cell_phone).length < 10
+      end
+    end
   end
 
-  def skip_validation=(value = false)
-    self.need_validation = !value
-  end
-
-  def before_save
-    # auto increment account number if it starts with "HM"
-    #   * account number is 3 places alphabets, then number
-    self.account_number = next_account_number if self.new_record? # only for new records
-  end
-
-  def name
-    [first_name, last_name].join(' ')
+  # =================
+  # = class methods =
+  # =================
+  
+  def self.last_account_number
+    Profile.first( :conditions => ["account_number LIKE ?", "HM%"], :order => "account_number DESC" )
   end
   
-  def email=(email); nil; end
-  def email; self.user.email; end
-
-  def owner_user # for auditing
-    self.user rescue nil
-  end
-
   class << self # class methods
 
     # create profile for provided user. bypass all validations
@@ -126,7 +117,45 @@ class Profile < ActiveRecord::Base
 
   end # class methods
 
-  # instance methods ------------------------------------------------
+  # ====================
+  # = instance methods =
+  # ====================
+  
+  # not required. we can check profile account number directly
+  # # cache fields in user
+  # def after_save
+  #   unless user.blank?
+  #     self.user.has_no_call_center_account = account_number.blank?
+  #     # WARNING. need to check if this might cause a recursive update
+  #     # update_without_callbacks should eliminate recursion
+  #     user.update_without_callbacks unless user.new_record? # else do not bother, user in memory has the data. it will save
+  #   end
+  # end
+
+  def skip_validation
+    !need_validation
+  end
+
+  def skip_validation=(value = false)
+    self.need_validation = !value
+  end
+
+  def before_save
+    # auto increment account number if it starts with "HM"
+    #   * account number is 3 places alphabets, then number
+    self.account_number = next_account_number if self.new_record? # only for new records
+  end
+
+  def name
+    [first_name, last_name].join(' ')
+  end
+  
+  def email=(email); nil; end
+  def email; self.user.email; end
+
+  def owner_user # for auditing
+    self.user rescue nil
+  end
 
   # checks if any attribute was assigned a value after "new"
   # helps in user intake at least
@@ -142,21 +171,6 @@ class Profile < ActiveRecord::Base
       :cell_phone, :carrier_id, :emergency_number_id, :account_number,
       :hospital_number, :doctor_phone].collect {|e| self.send(e).blank? }.compact.uniq
     (_options.length == 1) && !_options.include?( false)
-  end
-
-  def validate
-    if self.skip_validation
-      true
-    else
-      if self[:is_new_caregiver]
-        return false
-      else
-        # "length != 10" changed to "length < 10" for compatibility with user_intake_form
-        errors.add(:home_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.home_phone != '' and !self.home_phone.nil? and phone_strip(self.home_phone).length < 10 
-        errors.add(:work_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.work_phone != '' and !self.work_phone.nil? and phone_strip(self.work_phone).length < 10 
-        errors.add(:cell_phone," is the wrong length (should be 10 digits) or contains invalid characters") if self.cell_phone != '' and !self.cell_phone.nil? and phone_strip(self.cell_phone).length < 10
-      end
-    end
   end
 
   def phone_strip(phone)
@@ -224,7 +238,7 @@ class Profile < ActiveRecord::Base
   end
 
   def next_account_number
-    if (last_profile = Profile.first( :conditions => ["account_number LIKE ?", "HM%"], :order => "account_number DESC" ))
+    if (last_profile = Profile.last_account_number)
       call_center = last_profile.account_number
       call_center_number = call_center[2..5].to_i
       call_center_number == 0 ? "HM????" : "HM" + (call_center_number + 1).to_s

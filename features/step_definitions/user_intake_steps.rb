@@ -202,10 +202,21 @@ Given /^user intake for "([^"]*)" exists$/ do |login|
   ui.save.should be_true
 end
 
+Given /^I am editing user intake "([^"]*)"$/ do |_serial|
+  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  visit url_for( :controller => 'user_intakes', :action => 'edit', :id => ui)
+end
+
   # =========
   # = whens =
   # =========
   
+When /^I send caregiver details for the last user intake$/ do
+  (ui = UserIntake.last).should_not be_blank
+  ui.senior.should_not be_blank
+  visit "/users/send_caregiver_details/#{ui.senior.id}/"
+end
+
 When /^user intake "([^"]*)" gets approved$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.skip_validation = true
@@ -369,14 +380,46 @@ Then /^"([^"]*)" for user_intake "([^"]*)" is assigned$/ do |col_name, _serial|
 end
 
 Then /^senior of user intake "([^"]*)" (should|should not) be in test mode$/ do |_serial, condition|
-  ui = UserIntake.find_by_gateway_serial( _serial)
+  ui = if _serial == 'last'
+    UserIntake.last
+  else
+    UserIntake.find_by_gateway_serial( _serial)
+  end
   ui.should_not be_blank
   
   case condition
   when "should"
-    ui.senior.test_mode?.should == true
+    ui.senior.test_mode?.should be_true
   when "should not"
-    ui.senior.test_mode?.should != true
+    ui.senior.test_mode?.should_not be_true
+  end
+end
+
+Then /^senior of last user intake (should|should not) be (.+)$/ do |_condition, _expression|
+  (ui = UserIntake.last).should_not be_blank
+  ui.senior.should_not be_blank
+  # 
+  #   * cases for 'should'
+  if _condition == 'should'
+    case _expression
+    when 'in test mode'
+      ui.senior.test_mode?.should be_true
+    when 'opted out of call center'
+      ui.senior.is_halouser_of?( Group.safety_care!).should be_false
+    when 'opted in to call center'
+      ui.senior.is_halouser_of?( Group.safety_care!).should be_true # member
+    end
+    
+  #   * cases for 'should not'
+  else
+    case _expression
+    when 'in test mode'
+      ui.senior.test_mode?.should be_false
+    when 'opted out of call center'
+      ui.senior.is_halouser_of?( Group.safety_care!).should be_true # member
+    when 'opted in to call center'
+      ui.senior.is_halouser_of?( Group.safety_care!).should be_false
+    end
   end
 end
 
@@ -404,9 +447,9 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
     when "an agreement stamp"
       ui.legal_agreement_at.should_not be_blank
     when "bill monthly value"
-      ui.bill_monthly.should_not be_blank
+      ui.bill_monthly.should be_true
     when "credit card value"
-      ui.credit_debit_card_proceessed.should_not be_blank
+      ui.credit_debit_card_proceessed.should be_true
     when "a recent audit log", "an audit log"
       ui.senior.last_triage_audit_log.should_not be_blank
     when "a status attribute"
@@ -420,6 +463,8 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
     when 'same subscriber and caregiver1'
       [:subscriber, :caregiver1].each {|e| ui.send( e).should_not be_blank }
       ui.subscriber.should == ui.caregiver1
+    when 'latest call center account number'
+      ui.senior.call_center_account.should == Profile.last_account_number.account_number
     else
       assert false, 'add this condition'
     end
@@ -428,7 +473,9 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
   else
     case what
     when "credit card value"
-      ui.credit_debit_card_proceessed.should be_blank
+      ui.credit_debit_card_proceessed.should be_false
+    when "bill monthly value"
+      ui.bill_monthly.should be_false
     when "a status attribute"
       ui.senior.attributes.keys.should_not have( "status")
     when 'caregivers'
@@ -474,11 +521,9 @@ Then /^subscriber of last user intake is also the caregiver$/ do
   lambda { subs.is_caregiver_of?( ui.senior) }.should be_true
 end
 
-Then /^all caregivers for senior of user intake "([^"]*)" should be away$/ do |_serial|
-  ui = user_intake_by_gateway( _serial)
-  ui.senior.should_not be_blank
-  ui.caregivers.compact.uniq.each {|e| e.active_for?( ui.senior).should be_false }
-end
+# Use: Then caregivers should be away for user intake "12345"
+# Then /^all caregivers for senior of user intake "([^"]*)" should be away$/ do |_serial|
+# end
 
 Then /^senior of user intake "([^"]*)" should not be a member of "([^"]*)" group$/ do |_serial, group_name|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
@@ -596,7 +641,8 @@ Then /^senior of user intake "([^"]*)" should be opted in to call center$/ do |_
 end
 
 Then /^caregivers (should|should not) be away for user intake "([^"]*)"$/ do |condition, _serial|
-  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  ui = ( (_serial == 'last') ? UserIntake.last : UserIntake.find_by_gateway_serial( _serial) )
+  ui.should_not be_blank
   (senior = ui.senior).should_not be_blank
   if condition == "should"
     ui.caregivers.each {|e| e.should be_away_for( senior) }
@@ -605,9 +651,8 @@ Then /^caregivers (should|should not) be away for user intake "([^"]*)"$/ do |co
   end
 end
 
-Given /^I am editing user intake "([^"]*)"$/ do |_serial|
-  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
-  visit url_for( :controller => 'user_intakes', :action => 'edit', :id => ui)
+Then /^caregivers of last user intake should be away$/ do
+  Then %{caregivers should be away for user intake "last"}
 end
 
 Then /^senior of user intake "([^"]*)" is halouser of safety care group$/ do |_serial|

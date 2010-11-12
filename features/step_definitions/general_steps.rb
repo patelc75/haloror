@@ -262,7 +262,7 @@ end
 # accepts any ruby expression enclosed in ``
 # usage:
 #   Then page content should have "Successfully processed at `Time.now`"
-Then /^(?:|the )page content (?:|should have) "([^\"]*)"$/ do |array_as_text|
+Then /^(?:|the )page content should have "([^\"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect do |part|
     if part.include?("`")
       part.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).to_s }.join(' ').strip
@@ -270,20 +270,12 @@ Then /^(?:|the )page content (?:|should have) "([^\"]*)"$/ do |array_as_text|
       part.strip
     end
   end
-  if defined?(Spec::Rails::Matchers)
-    contents.each {|text| response.should contain(text)}
-  else
-    contents.each {|text| assert_contain text}
-  end
+  contents.each {|text| response.should contain(text) }
 end
 
-Then /^(?:|the )(?:|page )content (?:should|does) not have "([^\"]*)"$/ do |array_as_text|
+Then /^(?:|the )page content should not have "([^\"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect(&:strip)
-  if defined?(Spec::Rails::Matchers)
-    contents.each {|text| response.should_not contain(text)}
-  else
-    contents.each {|text| assert_not_contain text}
-  end
+  contents.each {|text| response.should_not contain(text) }
 end
 
 Then /^(?:|the )page content (?:should have|has) "([^"]*)" within "([^"]*)"$/ do |csv_data, scope_selector|

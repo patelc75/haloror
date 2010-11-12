@@ -22,6 +22,9 @@
       $(".theme-body").find("select").attr('disabled','disabled');
       $(".theme-body").find("textarea").attr('disabled','disabled');
     <% end %>
+    
+    document.getElementById('user_intake_bill_monthly_').checked = <%= !@user_intake.credit_debit_card_proceessed %>;
+    document.getElementById('user_intake_credit_debit_card_proceessed_').checked = <%= @user_intake.credit_debit_card_proceessed %>;
   });
 
   </script>
@@ -162,12 +165,12 @@
             &nbsp;
             <% if current_user.is_super_admin? %>
             <div>
-              <%= f.radio_button :card_or_bill, "Card" %>
-              <%= f.label :card_or_bill_card, "Card" %>
+              <%= f.radio_button :credit_debit_card_proceessed, "", :onclick => "document.getElementById('user_intake_bill_monthly_').checked = false;" %>
+              <label for="user_intake_credit_debit_card_proceessed_">Card</label>
             </div>
             <div>
-              <%= f.radio_button :card_or_bill, "Manual" %>
-              <%= f.label :card_or_bill_bill, "Manual Billing" %>
+              <%= f.radio_button :bill_monthly, "", :onclick => "document.getElementById('user_intake_credit_debit_card_proceessed_').checked = false;" %>
+              <label for="user_intake_bill_monthly_">Manual Billing</label>
             </div>
             <% end %>
           </div>
