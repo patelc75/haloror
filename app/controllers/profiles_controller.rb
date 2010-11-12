@@ -274,7 +274,6 @@ get_caregivers(current_user)
   # FIXME: this is a confused logic, actually here we have;
   #   params[:user][:id] == selected_user.id
   def change_password
-    # debugger
     user_hash = params[:user]
     user = User.find(user_hash[:id])
     unless current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships)

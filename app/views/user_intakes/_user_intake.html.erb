@@ -72,20 +72,18 @@
 
       <div class="span-16 last">
         <div class="span-8">
-          <table>
-            <tr>
-              <td><%= f.label :installation_datetime, "Desired Installation Date:" %></td>
-              <td><%= f.text_field :installation_datetime, :class => "span-5 #{@user_intake.submitted? && !current_user.is_super_admin? ? '' : 'datepicker'}" %></td>
-            </tr>
-            <tr>
-              <td><%= f.label :gateway_serial, "Gateway Serial" %> (H2):</td>
-              <td><%= f.text_field :gateway_serial, :class => "span-5" %></td>
-            </tr>
-            <tr>
-              <td><%= f.label :transmitter_serial, "Transmitter Serial" %> (H1 or H5):</td>
-              <td><%= f.text_field :transmitter_serial, :class => "span-5" %></td>
-            </tr>
-          </table>
+          <p>
+            <%= f.label :installation_datetime, "Desired Installation Date:" %><br />
+            <%= f.text_field :installation_datetime, :class => "span-5 #{@user_intake.submitted? && !current_user.is_super_admin? ? '' : 'datepicker'}" %>
+          </p>
+          <p>
+            <%= f.label :gateway_serial, "Gateway Serial" %> (H2):<br />
+            <%= f.text_field :gateway_serial, :class => "span-5" %>
+          </p>
+          <p>
+            <%= f.label :transmitter_serial, "Transmitter Serial" %> (H1 or H5):<br />
+            <%= f.text_field :transmitter_serial, :class => "span-5" %>
+          </p>
         </div>
 
         <div class="span-8 last">

@@ -29,7 +29,6 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
       # ramonrails: Thu Oct 14 01:55:31 IST 2010
       # CHANGED: rails 2.1.0 is fires after_save for Panic.after_save also
       #   No need to explicitly make a call here
-      # debugger
       # event.after_save if event.class == Panic # run more after_save actions for panic
       #
       # ramonrails: Thu Oct 14 02:05:58 IST 2010

@@ -128,7 +128,6 @@ class ReportingController < ApplicationController
     #  Wed Nov 10 01:36:30 IST 2010, ramonrails
     # https://redmine.corp.halomonitor.com/issues/3667
     @users.sort! {|a,b| a.id <=> b.id }
-    # debugger
     #
     # paginate the list of users
     @users = @users.uniq.paginate :page => params[:page], :per_page => REPORTING_USERS_PER_PAGE, :order => 'id'

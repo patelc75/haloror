@@ -203,4 +203,48 @@ Feature: Pre quality
     And I activate the last subscriber as "reseller_subscriber"
     Then last subscriber should be activated
     And I should see "reseller_subscriber"
+  
+  # user intake sheet: H4
+  # (3) Activate user, subscriber, and caregiver via email link
+  Scenario: Activating admin, senior, subsriber and caregivers
+    Given the product catalog exists
+    When I create a "reseller" group
+    And I create a coupon code for "reseller" group
+    And I create admin of "reseller" group
+    And I activate the last user as "reseller_admin"
+    And I am placing an online order for "reseller" group
+    And I fill in "Coupon Code" with "reseller_coupon"
+    And I uncheck "order_bill_address_same"
+    And I press "Continue"
+    And I press "Place Order"
+    When I edit the last user intake
+    And I uncheck "user_intake_subscriber_is_caregiver"
+    And I uncheck "user_intake_no_caregiver_1"
+    And I uncheck "user_intake_no_caregiver_2"
+    And I uncheck "user_intake_no_caregiver_3"
+    And I fill the caregiver1 details for user intake form
+    And I fill the caregiver2 details for user intake form
+    And I fill the caregiver3 details for user intake form
+    And I press "user_intake_submit"
+    Then I should see "successfully updated"
+    #
+    # activate senior
+    When I activate the last senior as "reseller_senior"
+    Then last senior should be activated
+    #
+    # activate subscriber
+    When I activate the last subscriber as "reseller_subscriber"
+    Then last subscriber should be activated
+    #
+    # activate caregiver1
+    When I activate the last caregiver1 as "reseller_caregiver1"
+    Then last caregiver1 should be activated
+    #
+    # activate caregiver2
+    When I activate the last caregiver2 as "reseller_caregiver2"
+    Then last caregiver2 should be activated
+    #
+    # activate caregiver3
+    When I activate the last caregiver3 as "reseller_caregiver3"
+    Then last caregiver3 should be activated
     

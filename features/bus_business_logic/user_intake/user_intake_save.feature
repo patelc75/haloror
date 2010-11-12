@@ -51,6 +51,7 @@ Feature: Save User Intake
     #
     #  Fri Nov 12 18:38:03 IST 2010, ramonrails
     #   * user intake states sheet, H4
+    # https://redmine.corp.halomonitor.com/issues/3704
     When I edit the last user intake
     Then checkboxes "user_intake_caregiver1_email, user_intake_caregiver1_text" should be checked
 
@@ -69,3 +70,52 @@ Feature: Save User Intake
     And I uncheck "No Caregiver #1"
     And I press "Save"
     Then page content should have "successfully saved"
+
+  #
+  #  Fri Nov 12 18:38:03 IST 2010, ramonrails
+  #   * user intake states sheet, H4
+  # https://redmine.corp.halomonitor.com/issues/3704
+  # http://spreadsheets.google.com/a/halomonitoring.com/ccc?key=0AnT533LvuYHydENwbW9sT0NWWktOY2VoMVdtbnJqTWc&hl=en#gid=3
+  Scenario: New > Save. user profile ok. subscriber not user. caregiver2 given
+    When I am creating a user intake
+    And I select "halo_group" from "group"
+    And I fill the senior details for user intake form
+    And I fill the subscriber details for user intake form
+    And I fill the caregiver2 details for user intake form
+    And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
+    And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
+    And I uncheck "Same as User"
+    And I uncheck "user_intake_no_caregiver_2"
+    And I check "user_intake_caregiver1_email"
+    And I check "user_intake_caregiver1_text"
+    And I check "user_intake_caregiver2_email"
+    And I check "user_intake_caregiver2_text"
+    And I press "Save"
+    Then page content should have "successfully saved"
+    And last user intake should have a senior profile
+    When I edit the last user intake
+    Then checkboxes "user_intake_caregiver1_email, user_intake_caregiver1_text" should be checked
+    # And page content should have "caregiver2 first name, caregiver2 last name"
+    And caregivers of last user intake should be away
+  
+  # 
+  #  Sat Nov 13 00:43:56 IST 2010, ramonrails
+  #   * user intake states sheet, H4
+  # https://redmine.corp.halomonitor.com/issues/3704
+  # http://spreadsheets.google.com/a/halomonitoring.com/ccc?key=0AnT533LvuYHydENwbW9sT0NWWktOY2VoMVdtbnJqTWc&hl=en#gid=3
+  Scenario: Devices are attached appropriately to user intake
+    Given the product catalog exists
+    And the following devices:
+      | serial_number |
+      | H200112233    |
+      | H500445566    |
+    When I create a "reseller" group
+    And I am creating a user intake
+    And I select "reseller_group" from "group"
+    And I fill the senior details for user intake form
+    And I fill in the following:
+      | Gateway Serial     | H200112233      |
+      | Transmitter Serial | H500445566      |
+    And I press "Save"
+    Then last user intake should have devices attached
+    

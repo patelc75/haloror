@@ -107,7 +107,6 @@ class UserIntakesController < ApplicationController
   # GET /user_intakes/1/edit
   def edit
     @user_intake = UserIntake.find(params[:id])
-    @user_intake.build_associations
     @groups = current_user.group_memberships
 
     # QUESTION: Should we have some logic here to allow editing, subject to state?
@@ -143,17 +142,15 @@ class UserIntakesController < ApplicationController
     @user_intake = UserIntake.new(params[:user_intake].merge( :created_by => current_user.id, :updated_by => current_user.id))
     @user_intake.skip_validation = (params[:commit] == "Save") # just save without asking anything
     @groups = Group.for_user(current_user)
-
     # user intake form submission
     # Thu Oct 21 23:42:41 IST 2010
     #   user intake form now has a new hidden field 'user_intake_form_view'
     #   this will identify if the submission is coming from user intake form or any other interface
     #   we are updating user intake from many other places like update of 'shipping date' from overview
-    if params.keys.include?( "user_intake_form_view")
-      #
-      # apply all attributes to associations
-      @user_intake.apply_attributes_from_hash( params[:user_intake]) # apply user attributes
-    end
+    #
+    # apply all attributes to associations
+    apply_attributes_from_hash( @user_intake, params[:user_intake]) if params.keys.include?( "user_intake_form_view")
+    # @user_intake.apply_attributes_from_hash( params[:user_intake]) # apply user attributes
 
     respond_to do |format|
       if @user_intake.save
@@ -173,12 +170,12 @@ class UserIntakesController < ApplicationController
   # PUT /user_intakes/1
   # PUT /user_intakes/1.xml
   def update
-    # debugger
     @user_intake = UserIntake.find(params[:id])
     @user_intake.skip_validation = (['Save', 'Print', 'Proceed'].include?(params[:commit])) # just save without asking anything
     @groups = Group.for_user(current_user)
     _hash = params[:user_intake].merge( :updated_by => current_user.id)
-    _hash.each {|k,v| @user_intake.send( "#{k}=".to_sym, v) }
+    apply_attributes_from_hash( @user_intake, _hash)
+    # _hash.each {|k,v| @user_intake.send( "#{k}=".to_sym, v) }
 
     respond_to do |format|
       # _attributes = params[:user_intake].reject {|k,v| v.is_a?(Hash) || k.include?( "attributes") }
@@ -293,3 +290,4 @@ class UserIntakesController < ApplicationController
     redirect_to :back # just go back to the last triage
   end
 end
+# ~> -:1: uninitialized constant ApplicationHelper (NameError)

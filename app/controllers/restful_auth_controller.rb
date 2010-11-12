@@ -26,7 +26,6 @@ class RestfulAuthController < ApplicationController
   def authorize
     timestamp = get_hash_value_from_array([:timestamp, :begin_timestamp], params)
     #puts "timestamp #{timestamp}"
-    # debugger
     if(params[:gateway_id])
       serial_num = Device.find(params[:gateway_id].to_i).serial_number;
       raise "Auth failed: timestamp missing" if timestamp == nil
@@ -71,7 +70,6 @@ class RestfulAuthController < ApplicationController
   end
   
   def is_hash_valid?(string, hash)
-    # debugger
     #return true if hash == Digest::SHA256.hexdigest(DEFAULT_HASH_KEY + string)
     return true if hash == Digest::SHA256.hexdigest(string)
     #Digest::SHA256.hexdigest(226f3834726d5531683d4f4b5a2d202729695853662543375c226c6447 + "Mon Dec 25 15:52:55 -0600 2007")

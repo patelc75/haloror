@@ -6,7 +6,6 @@ class UsersController < ApplicationController
   include UserHelper
 
   # def index
-  #   debugger
   #   @users = current_user.group_memberships.collect(&:users)
   #   respond_to do |format|
   #     format.html
@@ -332,7 +331,6 @@ class UsersController < ApplicationController
   end
 
   def create
-    # debugger
     @group = params[:group]
     if !@group.blank? && @group != 'Choose a Group'
       User.transaction do
@@ -620,7 +618,6 @@ class UsersController < ApplicationController
   end
     
   def update
-    # debugger
     #  check if this is an activation request or regular update
     if params[:user][:activation_code].blank?
       #

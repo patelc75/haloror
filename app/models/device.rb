@@ -103,18 +103,25 @@ class Device < ActiveRecord::Base
   #   Device.available?( device_object)
   #   Device.available?( device_object, User.last) => Device is either assigned to given user, or free to assign
   def self.available?( _serial, _user = nil)
-    _device = if _serial.is_a?( Device)
-      _serial
-    elsif _serial.is_a?( String)
-      Device.find_by_serial_number( _serial.strip)
-    elsif _serial.to_i > 0
-      Device.find_by_id( _serial.to_i)
-    end
+    _device = Device.fetch_device( _serial)
     #
     # * device was found in database
     # * device is not assigned to any user yet
     # * QUESTION: do we want to check "active"?
     !_device.blank? && (_device.users - [_user]).blank? # && _device.active
+  end
+
+  def self.registered?( _serial, _user = nil)
+    if (_device = Device.fetch_device( _serial))
+      if _user.blank?
+        !_device.users.blank? # registered to someone
+      else
+        _device.users.include?( _user) # registered to given user
+      end
+    else
+      # QUESTION: shall we treat missing devices as "assigned"? to keep business logic bug free
+      true # missing? consider it registered
+    end
   end
   
   def self.unregister( _ids = "")
@@ -144,6 +151,23 @@ class Device < ActiveRecord::Base
     end
   end
   
+  # 
+  #  Sat Nov 13 01:22:16 IST 2010, ramonrails
+  #  fetch the device by serial number, id or instance
+  # Usage
+  #   Device.fetch_device( 'H200112233')
+  #   Device.fetch_device( 123)
+  #   Device.fetch_device( device)
+  def self.fetch_device( _serial)
+    if _serial.is_a?( Device)
+      _serial
+    elsif _serial.is_a?( String)
+      Device.find_by_serial_number( _serial.strip)
+    elsif _serial.to_i > 0
+      Device.find_by_id( _serial.to_i)
+    end
+  end
+
   # ====================
   # = instance methods =
   # ====================
@@ -315,4 +339,5 @@ class Device < ActiveRecord::Base
 
     self.save
   end
+  
 end

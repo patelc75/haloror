@@ -32,7 +32,6 @@ When /^I process the curl text file "([^\"]*)"$/ do |text_file|
   
   # unless (xml_string = File.read(text_file)).blank?
   #   unless (bundle_hash = Hash.from_xml(xml_string)).blank?
-  #     debugger
   #     #
   #     # make sure the user_id referred in the XML, exist in database
   #     user_ids = recursively_search_hash(bundle_hash, "user_id")

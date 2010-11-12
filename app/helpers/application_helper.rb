@@ -7,6 +7,13 @@ module ApplicationHelper
   include UtilityHelper
   include UserHelper
 
+  # 
+  #  Fri Nov 12 23:48:25 IST 2010, ramonrails
+  #  apply attributes to given object, from given hash
+  def apply_attributes_from_hash( _object, _hash)
+    _hash.each {|_key, _value| _object.send("#{_key}=", _value) }
+  end
+
   # Method used for inserting developer comments in views
   # Usage:
   #   <%= developer { "This is a sample comment" } %>

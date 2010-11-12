@@ -12,7 +12,6 @@ end
 
 Given /^I am (?:|an )authenticated(?: user)$/ do
   _login = "demo"
-  # debugger
   user = User.find_by_login( _login)
   user = Factory.create(:user, {:login => _login, :password => '12345', :password_confirmation => '12345'}) if user.blank?
   user.activate unless user.activated?

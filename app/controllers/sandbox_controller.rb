@@ -4,7 +4,6 @@ class SandboxController < ApplicationController
   #use this method to debug Rufus jobs
   #run server like this: ruby script/server -p 3001 --debugger
   def ruby_debug
-    #debugger
     #CriticalMailer.deliver_device_not_worn_daily()
     #MgmtQuery.job_gw_offline
     #MgmtQuery.job_gw_offline

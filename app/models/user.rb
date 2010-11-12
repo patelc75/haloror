@@ -601,7 +601,6 @@ class User < ActiveRecord::Base
     #   #   self.profile = any_existing_profile
     #   #   self.profile.attributes = attributes
     #   # else
-    # debugger
     (profile.blank? || profile.new_record?) ? self.build_profile( attributes) : self.profile.update_attributes( attributes) # .merge("user_id" => self)
     #   # end
     # end
@@ -627,7 +626,7 @@ class User < ActiveRecord::Base
   # return blank when not found
   def options_attribute_for_senior(senior, attribute)
     options = options_for_senior(senior)
-    options.blank? ? nil : options.send("#{attribute}".to_sym)
+    options.blank? ? nil : options.send("#{attribute}")
   end
   
   # methods for a RESTful approach
@@ -641,22 +640,29 @@ class User < ActiveRecord::Base
   # 
   # Thu Nov  4 06:13:47 IST 2010, ramonrails
   # TODO: FIXME: this should handle the roles_users_options directly, without user_intake
-  def options_for_senior(the_senior, attributes = nil)
-    # debugger
-    if attributes.blank?
-      if self.is_caregiver_of?( the_senior)
-        role = self.roles.first(:conditions => {
-          :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
-        })
-        options = options_for_role(role) unless role.blank?
-      end
-    else
-      self.is_caregiver_of(the_senior) # FIXME: should it not be already assigned?. do we want to force?
-      role = self.roles.first(:conditions => {
-        :name => "caregiver", :authorizable_id => the_senior, :authorizable_type => "User"
-      })
-      options = self.options_for_role(role, attributes)
-    end
+  def options_for_senior( _senior, attributes = nil)
+    # 
+    #  Sat Nov 13 03:37:30 IST 2010, ramonrails
+    #  just fetch the options by supplying attributes. blank ones will be handled appropriately
+    role = self.roles.first(:conditions => { :name => "caregiver", :authorizable_id => _senior.id, :authorizable_type => "User" })
+    options = options_for_role(role, attributes) unless role.blank?
+    #
+    # old logic
+    #
+    # if attributes.blank?
+    #   if self.is_caregiver_of?( the_senior)
+    #     role = self.roles.first(:conditions => {
+    #       :name => "caregiver", :authorizable_id => the_senior.id, :authorizable_type => "User"
+    #     })
+    #     options = options_for_role(role) unless role.blank?
+    #   end
+    # else
+    #   self.is_caregiver_of(the_senior) # FIXME: should it not be already assigned?. do we want to force?
+    #   role = self.roles.first(:conditions => {
+    #     :name => "caregiver", :authorizable_id => the_senior.id, :authorizable_type => "User"
+    #   })
+    #   options = self.options_for_role(role, attributes)
+    # end
     options
   end
   
@@ -664,22 +670,48 @@ class User < ActiveRecord::Base
   # Thu Nov  4 06:13:47 IST 2010, ramonrails
   # TODO: FIXME: this should handle the roles_users_options directly, without user_intake
   def options_for_role(role, attributes = nil)
-    role_id = (role.is_a?(Role) ? role.id : role)
-    # debugger
-    if attributes.blank?
-      role_user = RolesUser.first( :conditions => { :user_id => self.id, :role_id => role_id })
-      options = (role_user.blank? ? nil : role_user.roles_users_option)
+    #   * fetch role_id from given instance or id
+    #   * no issues, if we cannot identify one
+    role_id = if role.is_a?(Role)
+      role.id
+    elsif role.to_i > 0
+      role.to_i
     else
-      # debugger if debug
-      role_user = RolesUser.first(:conditions => { :user_id => self.id, :role_id => role_id })
-      role_user = RolesUser.create( :user_id => self.id, :role_id => role_id) if role_user.blank?
-      _attributes = (attributes.is_a?(RolesUsersOption) ? attributes.attributes : attributes).reject {|k,v| k.to_s == 'id' || (k.to_s[-1..-3] == '_id') }
-      options = if role_user.roles_users_option.blank?
-        role_user.create_roles_users_option( _attributes) # create a row and save attributes
+      nil
+    end
+    #   * proceed only when role_id available, otherwise no point
+    #   * role must exist prior to calling this method
+    unless role_id.blank?
+      #   * get roles_user through ORM
+      role_user = roles_users.find_by_role_id( role_id) # RolesUser.first( :conditions => { :user_id => self.id, :role_id => role_id })
+      #   * Is this a GET request?
+      if attributes.blank?
+        # just fetch the options, or return nil
+        options = (role_user.blank? ? nil : role_user.roles_users_option)
+
+      # a POST request?
       else
-        options = role_user.roles_users_option
-        options.update_attributes( _attributes) # update the given attributes
-        options
+        # create a roles_user unless already exists
+        role_user = roles_users.create( :role_id => role_id) if role_user.blank? # RolesUser.create( :user_id => self.id, :role_id => role_id) if role_user.blank?
+        # get attributes from the given arguments
+        # keep them {} if nothing can be derived
+        _attributes = if attributes.is_a?(RolesUsersOption)
+          attributes.attributes
+        elsif attributes.is_a?( Hash)
+          attributes
+        else
+          {}
+        end
+        #
+        #   * reject IDs from attributes, as they may be blank
+        #   * we are building or updating the roles_users_option from roles_users anyways
+        _attributes = _attributes.reject {|k,v| k.to_s == 'id' || (k.to_s[-3..-1] == '_id') }
+        # fetch or build options
+        options ||= (role_user.roles_users_option || role_user.build_roles_users_option)
+        # apply attributes to options (all IDs were already rejected)
+        _attributes.each { |k,v| options.send("#{k}=", v) }
+        # persist
+        options.save # save it
       end
     end
     options # explicitly return options row

@@ -106,8 +106,17 @@ When /^I activate the "([^\"]*)" senior of last order$/ do |_name|
 end
 
 When /^I activate the last (.+) as "([^\"]*)"$/ do |_user_type, _name|
-  When %{I am activating the last #{_user_type} as "#{_name}"}
-  When %{I press "subscribe_button"}
+  # _user = case _user_type
+  # when 'user'
+  #   User.last
+  # when 'senior', 'subscriber', 'caregiver1', 'caregiver2', 'caregiver3'
+  #   UserIntake.last.send( _user_type)
+  # end
+  # _user.should_not be_blank
+  # unless _user.activated?
+    When %{I am activating the last #{_user_type} as "#{_name}"}
+    When %{I press "subscribe_button"}
+  # end
 end
 
 When /^I am activating the last (.+) as "([^\"]*)"$/ do |_user_type, _name|
@@ -118,12 +127,14 @@ When /^I am activating the last (.+) as "([^\"]*)"$/ do |_user_type, _name|
     UserIntake.last.send( _user_type)
   end
   _user.should_not be_blank
-  visit "/activate/#{_user.activation_code}"
-  When "I fill in the following:", table(%{
-    | Username         | #{_name} |
-    | Password         | #{_name} |
-    | Confirm Password | #{_name} |
-  })
+  # unless _user.activated?
+    visit "/activate/#{_user.activation_code}"
+    When "I fill in the following:", table(%{
+      | Username         | #{_name} |
+      | Password         | #{_name} |
+      | Confirm Password | #{_name} |
+      })
+  # end
 end
 
 When /^I create admin of "([^\"]*)" group$/ do |_name|

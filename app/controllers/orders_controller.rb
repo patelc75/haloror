@@ -30,7 +30,6 @@ class OrdersController < ApplicationController
       
       @order = Order.new(order_params) # the rendering does not loop another time. we need @order set here
       @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
-      # debugger
       if @product.blank?
         @order.errors.add_to_base "Please select a product to order" if session[:product].blank?
         
@@ -178,7 +177,6 @@ class OrdersController < ApplicationController
   # create order with products, charge card for one time fee & recurring subscription
   #
   def create
-    # debugger
     @groups = (logged_in? ? Group.for_user(current_user) : [Group.direct_to_consumer])
     if session[:order].blank?
       redirect_to :action => 'new'

@@ -5,7 +5,6 @@ class Panic < CriticalDeviceAlert
 
   # WARNING: needs testing
   def before_save
-    # debugger
     #
     # test-mode status is redundant here for the purpose reporting etc...
     #
@@ -28,7 +27,6 @@ class Panic < CriticalDeviceAlert
   # we just need it for this event. Not critical_device_alert.rb super class
   # * runs after the CriticalDeviceAlert.after_save
   def after_save
-    # debugger
     # https://redmine.corp.halomonitor.com/issues/3215
     #
     unless user.blank?
@@ -70,7 +68,6 @@ class Panic < CriticalDeviceAlert
       # #   Check for panic button test (must occur after the install date)
       # auto_install = ((user.status == User::STATUS[:install_pending]) && (Time.now > user.desired_installation_date))
       # if auto_install
-      #   # debugger
       #   user.status = User::STATUS[:installed]
       #   #
       #   # explicitly send email to group admins, halouser, caregivers. tables are saved without callbacks

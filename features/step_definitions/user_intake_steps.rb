@@ -85,7 +85,6 @@ end
 Given /^(?:|the )senior of user intake "([^"]*)" (has|is at|should be) "([^"]*)" status$/ do |_serial, condition, status|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  # debugger
   ui.skip_validation = true
   ui.submitted_at = (status.blank? ? nil : Time.now)
   ui.save.should be_true # send( :update_without_callbacks)
@@ -127,7 +126,6 @@ Given /^desired installation date for user intake "([^"]*)" is in (\d+) hours$/ 
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.installation_datetime = (Time.now + value.to_i.hours)
   ui.skip_validation = true
-  # debugger
   ui.save.should be_true
 end
 
@@ -232,7 +230,6 @@ When /^panic button test data is received for user intake "([^"]*)"$/ do |_seria
   # panic.user = senior
   # #
   # # save fails here. requires a linked device? investigate further
-  # debugger
   # result = panic.save!
   # result.should be_true
 end
@@ -444,27 +441,31 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
     case what
     when "a print stamp"
       ui.paper_copy_at.should_not be_blank
+    when "a recent audit log", "an audit log"
+      ui.senior.last_triage_audit_log.should_not be_blank
+    when "a senior profile"
+      ui.senior.should_not be_blank
+      ui.senior.profile.should_not be_blank
+    when "a status attribute"
+      ui.senior.status.should_not be_blank
     when "an agreement stamp"
       ui.legal_agreement_at.should_not be_blank
     when "bill monthly value"
       ui.bill_monthly.should be_true
     when "credit card value"
       ui.credit_debit_card_proceessed.should be_true
-    when "a recent audit log", "an audit log"
-      ui.senior.last_triage_audit_log.should_not be_blank
-    when "a status attribute"
-      ui.senior.status.should_not be_blank
-    when "a senior profile"
-      ui.senior.should_not be_blank
-      ui.senior.profile.should_not be_blank
-    when 'separate senior and subscriber'
-      [:senior, :subscriber].each {|e| ui.send( e).should_not be_blank }
-      ui.senior.should_not == ui.subscriber
+    when 'devices attached'
+      [ui.gateway_serial, ui.transmitter_serial].each do |_serial|
+        Device.registered?( _serial, ui.senior) unless _serial.blank?
+      end
+    when 'latest call center account number'
+      ui.senior.call_center_account.should == Profile.last_account_number.account_number
     when 'same subscriber and caregiver1'
       [:subscriber, :caregiver1].each {|e| ui.send( e).should_not be_blank }
       ui.subscriber.should == ui.caregiver1
-    when 'latest call center account number'
-      ui.senior.call_center_account.should == Profile.last_account_number.account_number
+    when 'separate senior and subscriber'
+      [:senior, :subscriber].each {|e| ui.send( e).should_not be_blank }
+      ui.senior.should_not == ui.subscriber
     else
       assert false, 'add this condition'
     end
@@ -472,12 +473,10 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
   #  SHOULD NOT cases
   else
     case what
-    when "credit card value"
-      ui.credit_debit_card_proceessed.should be_false
-    when "bill monthly value"
-      ui.bill_monthly.should be_false
     when "a status attribute"
       ui.senior.attributes.keys.should_not have( "status")
+    when "bill monthly value"
+      ui.bill_monthly.should be_false
     when 'caregivers'
       # CHANGED: we cannot check ui.caregivers
       #   because caregivers are instantiated in memory for user_intake UI bug
@@ -486,6 +485,8 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
       #  Thu Nov 11 02:00:36 IST 2010, ramonrails
       # we can check after rejecting caregivers with nothing_assigned?
       ui.caregivers.reject(&:nothing_assigned?).should be_blank # just senior and subscriber
+    when "credit card value"
+      ui.credit_debit_card_proceessed.should be_false
     else
       assert false, 'add this condition'
     end
@@ -618,14 +619,12 @@ end
 Then /^action button for user intake "([^"]*)" should be colored (.+)$/ do |_serial, color|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  # debugger
   senior.status_button_color.should == color
 end
 
 Then /^I should see triage status "([^"]*)" for senior of user intake "([^"]*)"$/ do |status, _serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  # debugger
   senior.alert_status.should == status
 end
 

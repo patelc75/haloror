@@ -77,7 +77,6 @@ class DeviceAlert < ActiveRecord::Base
     unless critical_alerts.blank?
       # WARNING: The current implementation of sort_by generates an array of tuples containing the original collection element and the mapped value
       # critical_alerts.sort_by { |event| event[:timestamp] }.each do |crit|
-      # debugger
       critical_alerts.sort! {|a,b| a.timestamp <=> b.timestamp } if critical_alerts.length > 1
       critical_alerts.each do |crit|
         crit.call_center_pending = false
