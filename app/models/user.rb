@@ -1471,7 +1471,18 @@ class User < ActiveRecord::Base
   def set_active
     roles_users.each do |ru|
       # update flag for each options-row. create a row if does not exist
-      ru.roles_users_option.blank? ? ru.create_roles_users_option(:active => true) : ru.roles_users_option.update_attribute(:active => true)
+      if ru.roles_users_option.blank?
+        # 
+        #  Fri Nov 12 06:06:34 IST 2010, ramonrails
+        #  create new options using the given hash of attributes
+        ru.create_roles_users_option( :active => true)
+      else
+        # 
+        #  Fri Nov 12 06:05:50 IST 2010, ramonrails
+        #  Updating single attribute
+        #  Does not accept a hash. Must be comma separated parameters
+        ru.roles_users_option.update_attribute( :active, true)
+      end
     end
     #
     # CHANGED: old logic

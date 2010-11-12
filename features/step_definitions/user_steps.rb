@@ -105,13 +105,19 @@ When /^I activate the "([^\"]*)" senior of last order$/ do |_name|
   When %{I press "subscribe_button"}
 end
 
-When /^I activate the last user as "([^\"]*)"$/ do |_name|
-  When %{I am activating the last user as "_name"}
+When /^I activate the last (.+) as "([^\"]*)"$/ do |_user_type, _name|
+  When %{I am activating the last #{_user_type} as "#{_name}"}
   When %{I press "subscribe_button"}
 end
 
-When /^I am activating the last user as "([^\"]*)"$/ do |_name|
-  (_user = User.last).should_not be_blank
+When /^I am activating the last (.+) as "([^\"]*)"$/ do |_user_type, _name|
+  _user = case _user_type
+  when 'user'
+    User.last
+  when 'senior', 'subscriber', 'caregiver1', 'caregiver2', 'caregiver3'
+    UserIntake.last.send( _user_type)
+  end
+  _user.should_not be_blank
   visit "/activate/#{_user.activation_code}"
   When "I fill in the following:", table(%{
     | Username         | #{_name} |
@@ -201,8 +207,14 @@ end
 # = thens =
 # =========
 
-Then /^last user should be activated$/ do
-  (_user = User.last).should_not be_blank
+Then /^last (.+) should be activated$/ do |_user_type|
+  _user = case _user_type
+  when 'user'
+    User.last
+  when 'senior', 'subscriber', 'caregiver1', 'caregiver2', 'caregiver3'
+    UserIntake.last.send( _user_type)
+  end
+  _user.should_not be_blank
   _user.should be_activated
 end
 

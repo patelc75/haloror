@@ -199,4 +199,8 @@ Feature: Pre quality
     # When I edit the last user intake
     # Then the "Card" checkbox should be checked
     # And the "Manual Billing" checkbox should not be checked
+    When I logout
+    And I activate the last subscriber as "reseller_subscriber"
+    Then last subscriber should be activated
+    And I should see "reseller_subscriber"
     
