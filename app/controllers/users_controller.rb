@@ -134,44 +134,48 @@ class UsersController < ApplicationController
     @profile = Profile.new
   end
   
-  #handles 3 scanerios (1) new subscriber (1)subscriber same as senior (2)new subscriber also caregiver
-  # QUESITON: Can we deprecate this?
-  #   * Used by credit_card_authorization.html.erb
-  def create_subscriber
-    senior_user_id = params[:user_id]
-    @senior = User.find senior_user_id
-    if !request.post?  #clicking "skip" is a GET (vs a POST)
-      #@user = User.find(params[:user_id])
-    else
-      User.transaction do
-        same_as_senior = params[:users][:same_as_senior]
-        add_caregiver = params[:users][:add_caregiver] 
-        populate_subscriber(params[:user_id],same_as_senior,add_caregiver,params[:email],params[:profile])  
-
-        #Credit Card auth needs to be in a transaction so subscriber/caregiver data can be rolled back
-
-        Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_card],flash)             
-      end
-      #this following does not need to be in the transaction because the lines above this do not need to be rolled back if the below lines fail
-      # role = @user.has_role 'subscriber', halouser #@user set up in populate_caregiver when subscriber is also a caregiver
-      UserMailer.deliver_order_receipt(@user)
-      # Mon Nov  1 22:27:56 IST 2010
-      #   This might send duplicate emails
-      #   The email logic is now in user model
-      UserMailer.deliver_signup_installation(@user,@senior) # @user = subscriber
-    end
-    #=begin
-  rescue Exception => e
-    RAILS_DEFAULT_LOGGER.warn("ERROR in create_subscriber, #{e}")
-    RAILS_DEFAULT_LOGGER.debug(e.backtrace.join("\n"))
-    if request.post?
-      @senior_user = @senior
-      render :action => 'credit_card_authorization'
-    else
-      @senior = User.find(params[:id])
-    end
-    #=end    
-  end
+  # 
+  #  Fri Nov 12 18:02:44 IST 2010, ramonrails
+  #  DEPRECATED: to avoid confusion in code
+  #
+  # #handles 3 scanerios (1) new subscriber (1)subscriber same as senior (2)new subscriber also caregiver
+  # # QUESITON: Can we deprecate this?
+  # #   * Used by credit_card_authorization.html.erb
+  # def create_subscriber
+  #   senior_user_id = params[:user_id]
+  #   @senior = User.find senior_user_id
+  #   if !request.post?  #clicking "skip" is a GET (vs a POST)
+  #     #@user = User.find(params[:user_id])
+  #   else
+  #     User.transaction do
+  #       same_as_senior = params[:users][:same_as_senior]
+  #       add_caregiver = params[:users][:add_caregiver] 
+  #       populate_subscriber(params[:user_id],same_as_senior,add_caregiver,params[:email],params[:profile])  
+  # 
+  #       #Credit Card auth needs to be in a transaction so subscriber/caregiver data can be rolled back
+  # 
+  #       Subscription.credit_card_validate(senior_user_id,@user.id,@user,params[:credit_card],flash)             
+  #     end
+  #     #this following does not need to be in the transaction because the lines above this do not need to be rolled back if the below lines fail
+  #     # role = @user.has_role 'subscriber', halouser #@user set up in populate_caregiver when subscriber is also a caregiver
+  #     UserMailer.deliver_order_receipt(@user)
+  #     # Mon Nov  1 22:27:56 IST 2010
+  #     #   This might send duplicate emails
+  #     #   The email logic is now in user model
+  #     UserMailer.deliver_signup_installation(@user,@senior) # @user = subscriber
+  #   end
+  #   #=begin
+  # rescue Exception => e
+  #   RAILS_DEFAULT_LOGGER.warn("ERROR in create_subscriber, #{e}")
+  #   RAILS_DEFAULT_LOGGER.debug(e.backtrace.join("\n"))
+  #   if request.post?
+  #     @senior_user = @senior
+  #     render :action => 'credit_card_authorization'
+  #   else
+  #     @senior = User.find(params[:id])
+  #   end
+  #   #=end    
+  # end
 
   def add_kit_number(kit_serial_number,user)
     if (kit_serial_number == nil || kit_serial_number.size != 10 || kit_serial_number[0,2] != 'H4' ) 

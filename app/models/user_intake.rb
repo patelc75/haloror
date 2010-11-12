@@ -417,13 +417,16 @@ class UserIntake < ActiveRecord::Base
     # for remaining, fill login, password details only when login is empty
     ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_user_login( user) }
     #
-    # # assign roles to user objects. it will auto save the roles with user record
-    # # TODO: use this instead of association_after_save that is assigning roles
-    # self.senior.lazy_roles[:halouser]        = group  unless senior.blank? # senior.is_halouser_of group
-    # self.subscriber.lazy_roles[:subscriber]  = senior unless subscriber.blank?
-    # self.caregiver1.lazy_roles[:caregiver]   = senior unless caregiver1.blank?
-    # self.caregiver2.lazy_roles[:caregiver]   = senior unless caregiver2.blank?
-    # self.caregiver3.lazy_roles[:caregiver]   = senior unless caregiver3.blank?
+    #  Fri Nov 12 18:12:01 IST 2010, ramonrails
+    #   * these are mandatory to dispatch emails in user model
+    #   * a user must know the role while saving itself
+    # assign roles to user objects. it will auto save the roles with user record
+    # TODO: use this instead of association_after_save that is assigning roles
+    self.senior.lazy_roles[:halouser]        = group  unless senior.blank? # senior.is_halouser_of group
+    self.subscriber.lazy_roles[:subscriber]  = senior unless subscriber.blank?
+    self.caregiver1.lazy_roles[:caregiver]   = senior unless caregiver1.blank?
+    self.caregiver2.lazy_roles[:caregiver]   = senior unless caregiver2.blank?
+    self.caregiver3.lazy_roles[:caregiver]   = senior unless caregiver3.blank?
     #
     # # now collect the users for save as associations
     # self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq.compact # omit nil, duplicates

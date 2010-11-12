@@ -26,7 +26,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     Then page content should have "Thank you"
     And the payment gateway response should have 1 log
-    # And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
+    And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Not same as shipping has separate shipping and billing data
@@ -42,8 +42,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And billing and shipping addresses should not be same
     And last user intake should have separate senior and subscriber
     And subscriber of last user intake is also the caregiver
-    # TODO: 1.6.0. skipped for QA
-    # And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
+    And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario Outline: Success and Failure for credit cards

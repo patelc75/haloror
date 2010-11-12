@@ -529,11 +529,14 @@ class User < ActiveRecord::Base
     # Wed Oct 13 04:05:20 IST 2010
     #   CHANGED: created_at == updated_at only when it is saved for the very first time
     if (created_at == updated_at)
-      dispatch_emails # send emails as appropriate
       #
       # CHANGED: Major fix. the roles were not getting populated
       # insert the roles for user. these roles are propogated from user intake
       lazy_roles.each {|k,v| self.send( :"is_#{k}_of", v) } unless lazy_roles.blank?
+      # 
+      #  Fri Nov 12 18:09:50 IST 2010, ramonrails
+      #  emails can be dispatched only after roles
+      dispatch_emails # send emails as appropriate
     end
     #
     log(status)
@@ -1323,16 +1326,18 @@ class User < ActiveRecord::Base
   # email must be dispatched by explicit calls now
   #
   def dispatch_emails
-    if self.is_halouser? && !email.blank? # WARNING: DEPRECATED user[:is_new_halouser] == true
-      # Mon Nov  1 22:29:21 IST 2010
-      # QUESTION: Should this go out only during certain "states"?
-      UserMailer.deliver_signup_installation(self, self)
-    else
-      UserMailer.deliver_signup_notification(self) unless self.is_caregiver? || self.is_subscriber? # (user[:is_caregiver] or user[:is_new_subscriber])
-    end
-    #
-    # activation email gets delivered anyways
-    UserMailer.deliver_activation(self) if recently_activated?
+    unless email.blank? # cannot send without valid email
+      if self.is_halouser? # WARNING: DEPRECATED user[:is_new_halouser] == true
+        # Mon Nov  1 22:29:21 IST 2010
+        # QUESTION: Should this go out only during certain "states"?
+        UserMailer.deliver_signup_installation(self, self)
+      else
+        UserMailer.deliver_signup_notification(self) unless self.is_caregiver? || self.is_subscriber? # (user[:is_caregiver] or user[:is_new_subscriber])
+      end
+      #
+      # activation email gets delivered anyways
+      UserMailer.deliver_activation(self) if recently_activated?
+    end # cannot send without valid email
   end
 
   def username
