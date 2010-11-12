@@ -148,7 +148,9 @@ end
 #   models.split(',').each {|e| e.strip.singularize.camelize.constantize.send(:delete_all) }
 # end
 
-# When
+# =========
+# = whens =
+# =========
 
 When /^I reload(?:| the page)$/ do
   reload
@@ -213,7 +215,15 @@ When /^(?:|I )select the following:$/ do |fields|
   end
 end
 
-# Then
+# =========
+# = thens =
+# =========
+
+Then /^checkboxes "([^\"]*)" (should|should not) be checked$/ do |_checkboxes, _condition|
+  _checkboxes.split(',').collect(&:strip).each do |_checkbox|
+    Then %{"#{_checkbox}" checkbox #{_condition} be checked}
+  end
+end
 
 Then /^a (.+) should exist with (.+) "([^"]*)"$/ do |what, column, data|
   what = 'device model price' if what.downcase == 'coupon code'
@@ -330,8 +340,15 @@ Then /^(?:|the )page has no rails trace$/ do
   end
 end
 
-Then /^"([^"]*)" checkbox must be checked$/ do |identifier|
-  response.should have_xpath("//input[@id=#{identifier.gsub(' ','_').downcase} and @checked='checked']")
+Then /^"([^"]*)" checkbox (should|should not) be checked$/ do |identifier, _condition|
+  identifier = identifier.gsub(' ','_').downcase
+  if _condition == 'should'
+    response_body.should have_selector "input[type=checkbox][checked=checked][id=#{identifier}]"
+    # response.should have_xpath("//input[@id=\"#{identifier.gsub(' ','_').downcase}\" and @checked=\"1\"]")
+  else
+    response_body.should have_selector "input[type=checkbox][checked=checked][id=#{identifier}]"
+    # response.should_not have_xpath("//input[@id=\"#{identifier.gsub(' ','_').downcase}\" and @checked=\"1\"]")
+  end
 end
 
 Then /^I cannot change the status of user "([^"]*)" to Anything else$/ do |arg1|

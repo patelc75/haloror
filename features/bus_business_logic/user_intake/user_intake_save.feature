@@ -24,6 +24,9 @@ Feature: Save User Intake
 
   # https://redmine.corp.halomonitor.com/issues/3598
   Scenario: Edit and save a user intake
+    Given the following devices:
+      | serial_number |
+      | 1234567890    |
     Given the following user_intakes:
       | gateway_serial |
       | 1234567890     |
@@ -40,9 +43,16 @@ Feature: Save User Intake
     And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I uncheck "Same as User"
+    And I check "user_intake_caregiver1_email"
+    And I check "user_intake_caregiver1_text"
     And I press "Save"
     Then page content should have "successfully saved"
     And last user intake should have a senior profile
+    #
+    #  Fri Nov 12 18:38:03 IST 2010, ramonrails
+    #   * user intake states sheet, H4
+    When I edit the last user intake
+    Then checkboxes "user_intake_caregiver1_email, user_intake_caregiver1_text" should be checked
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: New > Save. user profile ok. subscriber profile ok. different caregiver1 with blank profile

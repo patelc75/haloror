@@ -593,12 +593,20 @@ class UserIntake < ActiveRecord::Base
     #  Fri Nov 12 00:15:39 IST 2010, ramonrails
     #  when either of them is blank?, this may cause error in browser
     #   * senior attributes
-    _senior_attributes = (senior.blank? ? {} : senior.attributes)
-    _senior_attributes.merge( senior.profile.attributes) unless senior.profile.blank?
+    if senior.blank?
+      _senior_attributes = {}
+    else
+      _senior_attributes = senior.attributes
+      _senior_attributes.merge( senior.profile.attributes) unless senior.profile.blank?
+    end
     # 
     #   * subscriber attrbutes
-    _subscriber_attributes = (subscriber.blank? ? {} : subscriber.attributes)
-    _subscriber_attributes.merge( subscriber.profile.attributes) unless subscriber.profile.blank?
+    if subscriber.blank?
+      _subscriber_attributes = {}
+    else
+      _subscriber_attributes = subscriber.attributes
+      _subscriber_attributes.merge( subscriber.profile.attributes) unless subscriber.profile.blank?
+    end
     # 
     #   * check for the match among attributes
     _senior_attributes.values.compact == _subscriber_attributes.values.compact

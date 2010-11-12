@@ -120,7 +120,7 @@ end
 
 Given /^I edit the last user intake$/ do
   (ui = UserIntake.last).should_not be_blank
-  visit url_for( :controller => "user_intakes", :action => "edit", :id => ui.id)
+  visit edit_user_intake_path( :id => ui)
 end
 
 Given /^desired installation date for user intake "([^"]*)" is in (\d+) hours$/ do |_serial, value|
