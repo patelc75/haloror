@@ -57,7 +57,7 @@ class Rma < ActiveRecord::Base
         # => ["an", "bc", "fr", "gt"]
         # >> [ phrases.length.times.collect {|e| "users.name LIKE ?" }.join(" OR ") ] + phrases.collect {|e| "%#{e}%" }
         # => ["users.name LIKE ? OR users.name LIKE ? OR users.name LIKE ? OR users.name LIKE ?", "%an%", "%bc%", "%fr%", "%gt%"]
-        options = [ phrases.length.times.collect {|e| "#{substitute.include?(which) ? substitute[which] : which} LIKE ?" }.join(" OR ") ] + phrases.collect {|e| "%#{e}%" }
+        options = [ phrases.collect {|e| "#{substitute.include?(which) ? substitute[which] : which} LIKE ?" }.join(" OR ") ] + phrases.collect {|e| "%#{e}%" }
       end
       { :include => :user, :conditions => options }
     }
