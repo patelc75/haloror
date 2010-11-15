@@ -498,9 +498,9 @@ class UserIntake < ActiveRecord::Base
     #   * just call for each caregiver and assign position and other options
     (1..3).each do |index|
       _caregiver = self.send("caregiver#{index}".to_sym)
-      _skip = self.send("no_caregiver_#{index}")
-      unless (_caregiver.blank? || _caregiver.nothing_assigned? || [true, "1"].include?(_skip))
-        _caregiver.is_caregiver_to( senior) # assign role
+      _skip = self.send("caregiver#{index}_required?")
+      unless (_caregiver.blank? || _skip || _caregiver.nothing_assigned?)
+        _caregiver.is_caregiver_of( senior) # assign role
         # 
         # Thu Nov  4 05:57:16 IST 2010, ramonrails
         #   user values were stored with apply_attributes_from_hash

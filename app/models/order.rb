@@ -519,9 +519,12 @@ class Order < ActiveRecord::Base
       # subscriber cannot be user and acregiver at the same time
       user_intake.subscriber_is_caregiver = !user_intake.subscriber_is_user
       user_intake.subscriber_attributes = {:email => bill_email, :profile_attributes => subscriber_profile}
-      # QUESTION: should we have gateway and transmitter serials derived from kit serial here?
+      #
+      #   * This is processed inside user intake
       # user_intake.bill_monthly = false # paid through card already
       # user_intake.credit_debit_card_proceessed = true # we received online payment through a card
+      #
+      # QUESTION: should we have gateway and transmitter serials derived from kit serial here?
       user_intake.kit_serial_number = self.kit_serial
       user_intake.order_id = self.id
       user_intake.created_by = self.created_by # https://redmine.corp.halomonitor.com/issues/3117

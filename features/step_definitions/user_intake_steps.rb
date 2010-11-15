@@ -70,6 +70,12 @@ Given /^(?:|the )senior of user intake "([^"]*)" (is|is not) in test mode$/ do |
   ui.senior.set_test_mode!( condition == "is")
 end
 
+Given /^the senior of last user intake is not in test mode$/ do
+  (ui = UserIntake.last).should_not be_blank
+  ui.senior.should_not be_blank
+  ui.senior.test_mode?.should be_false
+end
+
 Given /^senior of user intake "([^"]*)" has profile$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
@@ -399,23 +405,35 @@ Then /^senior of last user intake (should|should not) be (.+)$/ do |_condition, 
   #   * cases for 'should'
   if _condition == 'should'
     case _expression
+    when 'in demo mode'
+      ui.senior.demo_mode?.should be_true
     when 'in test mode'
       ui.senior.test_mode?.should be_true
-    when 'opted out of call center'
-      ui.senior.is_halouser_of?( Group.safety_care!).should be_false
+    when 'in vip mode'
+      ui.senior.vip.should be_true
     when 'opted in to call center'
       ui.senior.is_halouser_of?( Group.safety_care!).should be_true # member
+    when 'opted out of call center'
+      ui.senior.is_halouser_of?( Group.safety_care!).should be_false
+    else
+      assert false
     end
     
   #   * cases for 'should not'
   else
     case _expression
+    when 'in demo mode'
+      ui.senior.demo_mode?.should be_false
     when 'in test mode'
       ui.senior.test_mode?.should be_false
-    when 'opted out of call center'
-      ui.senior.is_halouser_of?( Group.safety_care!).should be_true # member
+    when 'in vip mode'
+      ui.senior.vip.should be_false
     when 'opted in to call center'
       ui.senior.is_halouser_of?( Group.safety_care!).should be_false
+    when 'opted out of call center'
+      ui.senior.is_halouser_of?( Group.safety_care!).should be_true # member
+    else
+      assert false
     end
   end
 end
@@ -603,18 +621,18 @@ Then /^senior of last user intake should have "([^"]*)" status$/ do |status|
   end
 end
 
-Then /^senior of last user intake should have (.+)$/ do |_what|
-  (ui = UserIntake.last).should_not be_blank
-  (senior = ui.senior).should_not be_blank
-  case _what
-  when 'demo mode'
-    senior.demo_mode.should be_true
-  when 'vip mode'
-    senior.vip.should be_true
-  else
-    assert false # explicitly implement any required step
-  end
-end
+# Then /^senior of last user intake should be in (.+)$/ do |_what|
+#   (ui = UserIntake.last).should_not be_blank
+#   (senior = ui.senior).should_not be_blank
+#   case _what
+#   when 'demo mode'
+#     senior.demo_mode.should be_true
+#   when 'vip mode'
+#     senior.vip.should be_true
+#   else
+#     assert false # explicitly implement any required step
+#   end
+# end
 
 Then /^action button for user intake "([^"]*)" should be colored (.+)$/ do |_serial, color|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank

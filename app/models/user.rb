@@ -644,8 +644,10 @@ class User < ActiveRecord::Base
     # 
     #  Sat Nov 13 03:37:30 IST 2010, ramonrails
     #  just fetch the options by supplying attributes. blank ones will be handled appropriately
-    role = self.roles.first(:conditions => { :name => "caregiver", :authorizable_id => _senior.id, :authorizable_type => "User" })
-    options = options_for_role(role, attributes) unless role.blank?
+    if !self.blank? && !_senior.blank? && (self.id > 0) && (_senior.id > 0)
+      role = self.roles.first(:conditions => { :name => "caregiver", :authorizable_id => _senior.id, :authorizable_type => "User" })
+      options = options_for_role(role, attributes) unless role.blank?
+    end
     #
     # old logic
     #

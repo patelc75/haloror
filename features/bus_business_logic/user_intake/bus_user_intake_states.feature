@@ -7,10 +7,13 @@ Feature: Bus user intake statuses
 
   Background:
     Given I am an authenticated user
+    And the following devices:
+      | serial_number |
+      | H234567890    |
     And the following user_intakes:
       | gateway_serial | id  |
-      | 1234567890     | 123 |
-    And the senior of user intake "1234567890" is not in test mode
+      | H234567890     | 123 |
+    And the senior of last user intake is not in test mode
     
   # status: gray
   # reason: default status. test mode "ON"
