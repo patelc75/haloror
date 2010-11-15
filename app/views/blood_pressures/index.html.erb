@@ -1,62 +1,42 @@
-<%= render :partial => 'vital_lists/nav'%>
+<div class="span-12"><%= render :partial => 'vital_lists/nav' %></div>
+<div class="span-12 last text-right">
+  <%= form_tag '/blood_pressures', :method => :get %>
+  MyHalo Users: 
+  <%= select_tag "id", options_from_collection_for_select( @seniors, "id", "name", @senior.id), :onchange => "this.form.submit();" %>
+</form>
+</div>
+
 <div id="call_list-col">
-	<div id="call_list-col-header">
-		Blood Pressure | <span style="color:#000;font-size:.75em">
-		<%if @blood_pressure and @blood_pressure.first and @blood_pressure.first.user %>
-		<%= @blood_pressure.first.user.name %> (<%= @blood_pressure.first.user.id %>)</big> - all times are in <%= @blood_pressure.first.user.profile.time_zone if @blood_pressure.first.user.profile %> timezone <br>
-		<%end%>
-		</span>
-	</div>
-<div class="content">
-  <div id="call_list_header">
-  	<div style="float:left;width:350px;padding-left:10px">
-  	  Timestamp
-	</div>
-   	<div style="float:left;width:150px">
-      Systolic
-    </div>
-  	<div style="float:left;width:100px">
-      Diastolic
-    </div>
-  	<div style="float:left;width:100px">
-      Map
-    </div>
-  	<div style="float:left;width:100px">
-      Pulse
-    </div>
-    <div style="float:left;width:100px">
-      Battery
-    </div>
+
+  <div id="call_list-col-header">
+    Blood Pressure | <span style="color:#000;font-size:.75em">
+      <%= @blood_pressures.first.user_summary unless @blood_pressures.blank? %><br />
+    </span>
   </div>
-  <p>&nbsp;</p>
-  <%if @blood_pressure%>
-  <% @blood_pressure.each do |blood_pressure| %>
-     <div id="event_event_<%= blood_pressure.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:100px;cursor:pointer">
-	<div class="row">
-      <div style="float:left;padding-top:25px;width:350px">
-        <%= UtilityHelper.format_datetime(blood_pressure.timestamp,blood_pressure.user) %>&nbsp
+
+  <div class="content">
+    <div id="call_list_header">
+      <div style="float:left;width:350px;padding-left:10px">
+        Timestamp
       </div>
-          <div style="float:left;padding-top:25px;width:150px">
-          	<%= blood_pressure.systolic + blood_pressure.diastolic %>
-        </div>
-		<div style="float:left;padding-top:25px;width:100px">
-		<%= blood_pressure.diastolic %>
-	    </div>
-		<div style="float:left;padding-top:25px;width:100px">
-		<%=blood_pressure.map %>
-	    </div>
-		<div style="float:left;padding-top:25px;width:100px">
-		<%= blood_pressure.pulse %>
-	    </div>
-	    <div style="float:left;padding-top:25px;width:100px">
-		<%= blood_pressure.battery %>
-	    </div>
+      <div style="float:left;width:150px">
+        Systolic
       </div>
-	</div>
-    <% end %>
-    <br>
-    <br>
-    <center><big><%#= will_paginate @events %></big></center>
-    <%end%>
+      <div style="float:left;width:100px">
+        Diastolic
+      </div>
+      <div style="float:left;width:100px">
+        Map
+      </div>
+      <div style="float:left;width:100px">
+        Pulse
+      </div>
+      <div style="float:left;width:100px">
+        Battery
+      </div>
+    </div>
+    <p>&nbsp;</p>
+    <%= render :partial => 'blood_pressure', :collection => @blood_pressures %>
   </div>
   <div id="call_list-col-footer"></div>
+</div>
