@@ -22,7 +22,7 @@ class GatewayOfflineAlert < ActiveRecord::Base
   end
   
   def to_s
-    "Gateway back online"
+    "Gateway Offline"
   end
   
   def email_body
