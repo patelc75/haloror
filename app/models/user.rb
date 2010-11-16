@@ -68,7 +68,8 @@ class User < ActiveRecord::Base
   attr_accessible :login, :email, :password, :password_confirmation
   attr_accessible :need_validation
   attr_accessor :need_validation
-  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :need_validation, :lazy_roles
+  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :need_validation
+  attr_accessor :caregiver_position, :lazy_roles
   # Virtual attribute for the unencrypted password
   cattr_accessor :current_user #stored in memory instead of table
   attr_accessor :password
@@ -444,6 +445,20 @@ class User < ActiveRecord::Base
     user_intakes.blank? ? true : (user_intakes.collect(&:credit_debit_card_proceessed).compact.uniq.include?( true) || !billed_monthly?)
   end
   
+  # 
+  #  Wed Nov 17 00:10:26 IST 2010, ramonrails
+  #  clones itself along with given/new profile
+  def clone_with_profile
+    _clone = self.clone # clone itself
+    #
+    # build a profile with given profile attributes, or, just blank attributes
+    _attributes = (profile.blank? ? {} : profile.attributes)
+    _attributes = _attributes.reject { |k,v| (k == 'id') || (k[-3..-1] == '_id') }
+    _clone.build_profile( _attributes)
+    # _attributes.each { |k,v| _clone.send("#{k}=".to_sym, v) if _clone.respond_to?( "#{k}=".to_sym) }
+    _clone # return the clone
+  end
+  
   # default: card processed
   # Business logic:
   #   * user_intakes missing? == card charged
@@ -464,6 +479,7 @@ class User < ActiveRecord::Base
   end
 
   def after_initialize
+    self.caregiver_position ||= {}
     # #
     # # assume not in demo mode
     # self.demo_mode = false if new_record? && demo_mode.nil?
@@ -601,7 +617,9 @@ class User < ActiveRecord::Base
     #   #   self.profile = any_existing_profile
     #   #   self.profile.attributes = attributes
     #   # else
-    (profile.blank? || profile.new_record?) ? self.build_profile( attributes) : self.profile.update_attributes( attributes) # .merge("user_id" => self)
+    self.build_profile if profile.blank?
+    attributes.each { |k,v| self.profile.send( "#{k}=".to_sym, v) if self.profile.respond_to?( "#{k}=".to_sym) }
+    # (profile.blank? || profile.new_record?) ? self.build_profile( attributes) : self.profile.update_attributes( attributes) # .merge("user_id" => self)
     #   # end
     # end
   end
@@ -626,7 +644,7 @@ class User < ActiveRecord::Base
   # return blank when not found
   def options_attribute_for_senior(senior, attribute)
     options = options_for_senior(senior)
-    options.blank? ? nil : options.send("#{attribute}")
+    options.blank? || !options.respond_to?("#{attribute}".to_sym) ? nil : options.send("#{attribute}".to_sym)
   end
   
   # methods for a RESTful approach
@@ -644,27 +662,38 @@ class User < ActiveRecord::Base
     # 
     #  Sat Nov 13 03:37:30 IST 2010, ramonrails
     #  just fetch the options by supplying attributes. blank ones will be handled appropriately
-    if !self.blank? && !_senior.blank? && (self.id > 0) && (_senior.id > 0)
-      role = self.roles.first(:conditions => { :name => "caregiver", :authorizable_id => _senior.id, :authorizable_type => "User" })
-      options = options_for_role(role, attributes) unless role.blank?
-    end
+    # if !self.blank? && !_senior.blank?
+    #   #   * we cannot store this yet in database
+    #   if self.new_record? || _senior.new_record?
+    #     if attributes.blank?
+    #       #   * return in-memory data
+    #       self.caregiver_position[ _senior] if self.caregiver_position.has_key?( _senior)
+    #     else
+    #       self.caregiver_position[ _senior] = RolesUsersOption.new( attributes)
+    #     end
+    #   else
+    #     self.is_caregiver_of( _senior) unless attributes.blank? # write
+    #     role = self.roles.first(:conditions => { :name => "caregiver", :authorizable_id => _senior.id, :authorizable_type => "User" })
+    #     options = options_for_role(role, attributes) unless role.blank? # read or write
+    #   end
+    # end
     #
     # old logic
     #
-    # if attributes.blank?
-    #   if self.is_caregiver_of?( the_senior)
-    #     role = self.roles.first(:conditions => {
-    #       :name => "caregiver", :authorizable_id => the_senior.id, :authorizable_type => "User"
-    #     })
-    #     options = options_for_role(role) unless role.blank?
-    #   end
-    # else
-    #   self.is_caregiver_of(the_senior) # FIXME: should it not be already assigned?. do we want to force?
-    #   role = self.roles.first(:conditions => {
-    #     :name => "caregiver", :authorizable_id => the_senior.id, :authorizable_type => "User"
-    #   })
-    #   options = self.options_for_role(role, attributes)
-    # end
+    if attributes.blank?
+      if self.is_caregiver_of?(_senior)
+        role = self.roles.first(:conditions => {
+          :name => "caregiver", :authorizable_id => _senior.id, :authorizable_type => "User"
+        })
+        options = options_for_role(role) unless role.blank?
+      end
+    else
+      self.is_caregiver_of(_senior) # FIXME: should it not be already assigned?. do we want to force?
+      role = self.roles.first(:conditions => {
+        :name => "caregiver", :authorizable_id => _senior.id, :authorizable_type => "User"
+      })
+      options = self.options_for_role(role, attributes)
+    end
     options
   end
   
@@ -711,7 +740,7 @@ class User < ActiveRecord::Base
         # fetch or build options
         options ||= (role_user.roles_users_option || role_user.build_roles_users_option)
         # apply attributes to options (all IDs were already rejected)
-        _attributes.each { |k,v| options.send("#{k}=", v) }
+        _attributes.each { |k,v| options.send("#{k}=".to_sym, v) if options.respond_to?( "#{k}=".to_sym) }
         # persist
         options.save # save it
       end

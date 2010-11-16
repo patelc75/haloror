@@ -216,8 +216,8 @@ Factory.define :user_intake do |v|
   v.bill_monthly { rand(1) == 1 }
   v.credit_debit_card_proceessed { |ui| !ui.bill_monthly } # reverse of the other field
   v.kit_serial_number { Faker::PhoneNumber.phone_number.to_i.to_s.ljust( 10, "0") }
-  v.gateway_serial { Faker::PhoneNumber.phone_number.to_i.to_s.ljust( 10, "0") }
-  v.transmitter_serial { Faker::PhoneNumber.phone_number.to_i.to_s.ljust( 10, "0") }
+  # v.gateway_serial { Faker::PhoneNumber.phone_number.to_i.to_s.ljust( 10, "0") }
+  # v.transmitter_serial { Faker::PhoneNumber.phone_number.to_i.to_s.ljust( 10, "0") }
   # v.submitted_at { Time.now } # we will submit manually where required
   v.paper_copy_at { Time.now }
   v.legal_agreement_at { Time.now }
@@ -225,6 +225,7 @@ Factory.define :user_intake do |v|
   v.subscriber_is_user { rand(1) == 1 }
   v.subscriber_is_caregiver { rand(1) == 1 }
   (1..3).each { |e| v.send("no_caregiver_#{e}".to_sym, false) }
+  v.need_validation false # force skip errors
   #
   # valid callbacks for factory_girl are
   #   :after_build, :after_create, :after_stub
