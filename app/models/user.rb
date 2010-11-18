@@ -1403,9 +1403,9 @@ class User < ActiveRecord::Base
       if self.is_halouser? # WARNING: DEPRECATED user[:is_new_halouser] == true
         # Mon Nov  1 22:29:21 IST 2010
         # QUESTION: Should this go out only during certain "states"?
-        UserMailer.deliver_signup_installation(self, self)
+        UserMailer.deliver_signup_installation(self, self) unless self.activated?
       else
-        UserMailer.deliver_signup_notification(self) unless self.is_caregiver? || self.is_subscriber? # (user[:is_caregiver] or user[:is_new_subscriber])
+        UserMailer.deliver_signup_notification(self) # unless self.is_caregiver? || self.is_subscriber? # (user[:is_caregiver] or user[:is_new_subscriber])
       end
       #
       # activation email gets delivered anyways

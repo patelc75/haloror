@@ -116,6 +116,11 @@ class UserIntake < ActiveRecord::Base
         end
         self.send("mem_caregiver#{_index}_options=", _options) # assign to mem
       end
+      # 
+      #  Fri Nov 19 02:38:23 IST 2010, ramonrails
+      #   * for some reason like blank caregiver, we may get "nil" options
+      #   * this will correct that situation
+      _options ||=  RolesUsersOption.new( :position => _index)
     end
     _options
   end
@@ -279,7 +284,7 @@ class UserIntake < ActiveRecord::Base
     #
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
-    # UserMailer.deliver_signup_installation(senior)
+    # UserMailer.deliver_signup_installation(senior) unless senior.activated?
     #
     # https://redmine.corp.halomonitor.com/projects/haloror/wiki/Intake_Install_and_Billing#Other-notes
     # https://redmine.corp.halomonitor.com/issues/3274
@@ -438,9 +443,16 @@ class UserIntake < ActiveRecord::Base
     ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |_what|
       _user = self.send( _what) # fetch the associated user
       # 
+      #  Fri Nov 19 03:17:32 IST 2010, ramonrails
+      #   * skip saving the object if already saved
+      #   * happens when object is shared. subscriber == user, or, subscriber == caregiver
+      #   * saving also dispatches emails. A few more triggers/callbacks. Please check model code
+      _skip = ((_what == 'subscriber') && subscribed_for_self?)
+      _skip = (_skip || (_what == 'caregiver1' && caregiving_subscriber?))
+      # 
       #  Thu Nov 11 00:32:18 IST 2010, ramonrails
       #  Do not save any non-assigned data, or blank ones
-      unless _user.blank? || _user.nothing_assigned?
+      unless _user.blank? || _user.nothing_assigned? || _skip
         _user.skip_validation = true # TODO: patch for 1.6.0 release. fix later with business logic, if required
 
         # _user.autofill_login # Step 1: make them valid

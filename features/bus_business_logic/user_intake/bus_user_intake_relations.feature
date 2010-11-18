@@ -14,15 +14,15 @@ Feature: Bus user intake relations
   Scenario: All changes to user intake get audit logged
     Given the following user intakes:
       | gateway_serial |
-      | 1234567890     |
-    When I update gateway serial for user intake "1234567890" to "5432198765"
+      | H234567890     |
+    When I update gateway serial for user intake "H234567890" to "H234567891"
     Then the last user intake should have a recent audit log
 
   Scenario: Any change to status gets logged to triage audit log
     Given the following user intakes:
       | gateway_serial |
-      | 1111167890     |
-    When user intake "1111167890" is submitted again
+      | H234567890     |
+    When user intake "H234567890" is submitted again
     Then the last user intake should have a recent audit log
 
   Scenario: Auto increment call center account number for "HM" accounts
@@ -31,9 +31,9 @@ Feature: Bus user intake relations
   # Scenario: Audit list is available for each user intake row
   #   Given the following user intakes:
   #     | gateway_serial |
-  #     | 1111167890        |
-  #     | 2222267890    |
-  #     | 3333367890    |
+  #     | H234567890        |
+  #     | H234567891    |
+  #     | H234567892    |
   #   When I am listing user intakes
   #   And I follow "audit_log" for the 1st row
   #   Then I see "Audit Log" for user intake "11111"

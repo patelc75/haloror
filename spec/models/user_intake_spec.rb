@@ -113,11 +113,11 @@ describe UserIntake do
     
       #  same as:
       specify { @user_intake.caregiver_role_options(1).relationship.should == @cg1_options.relationship }
-      specify { @user_intake.caregiver_role_options(1).relationship.should == @cg1_options.relationship }
-      specify { @user_intake.caregiver_role_options(1).relationship.should == @cg1_options.relationship }
+      specify { @user_intake.caregiver_role_options(2).relationship.should == @cg2_options.relationship }
+      specify { @user_intake.caregiver_role_options(3).relationship.should == @cg3_options.relationship }
       specify { @user_intake.caregiver_role_options(1).text_active.should == @cg1_options.text_active }
-      specify { @user_intake.caregiver_role_options(1).text_active.should == @cg1_options.text_active }
-      specify { @user_intake.caregiver_role_options(1).text_active.should == @cg1_options.text_active }
+      specify { @user_intake.caregiver_role_options(2).text_active.should == @cg2_options.text_active }
+      specify { @user_intake.caregiver_role_options(3).text_active.should == @cg3_options.text_active }
       # (1..1).each do |_index|
       #   specify { @user_intake.caregiver_role_options(_index).should == instance_variable_get("@cg#{_index}_options") }
       # end

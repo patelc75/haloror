@@ -308,7 +308,7 @@ end
 
 # WARNING: known to fail at panic.save
 #   debugging could not reveal any logical reason while 1.6.0 QA. fix pending
-When /^the senior of user intake "([^"]*)" gets the device installed$/ do |_serial|
+When /^the senior of user intake "([^\"]*)" gets the device installed$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   
@@ -320,7 +320,7 @@ When /^the senior of user intake "([^"]*)" gets the device installed$/ do |_seri
   panic.save.should be_true # create a panic button test
 end
 
-When /^the senior of user intake "([^"]*)" gets the call center number$/ do |_serial|
+When /^the senior of user intake "([^\"]*)" gets the call center number$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
   (profile = senior.profile).should_not be_blank
@@ -331,20 +331,20 @@ When /^I view the last user intake$/ do
   visit url_for( :controller => "user_intakes", :action => "show", :id => UserIntake.last.id)
 end
 
-When /^user intake "([^"]*)" is submitted again$/ do |_serial|
+When /^user intake "([^\"]*)" is submitted again$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.skip_validation = false
   ui.save
 end
 
-When /^I update gateway serial for user intake "([^"]*)" to "([^"]*)"$/ do |_serial, value|
+When /^I update gateway serial for user intake "([^\"]*)" to "([^\"]*)"$/ do |_serial, value|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.skip_validation = true
   ui.gateway_serial = value
   ui.save.should be_true
 end
 
-When /^user "([^"]*)" clicks the "([^"]*)" button for the subscriber in the associated user intake form$/ do |arg1, arg2|
+When /^user "([^\"]*)" clicks the "([^\"]*)" button for the subscriber in the associated user intake form$/ do |arg1, arg2|
   pending # express the regexp above with the code you wish you had
 end
 
@@ -364,7 +364,7 @@ Then /^caregiver(\d+) of last user intake should have (.+) opted$/ do |_index, _
   _options.send(_attribute.to_s).should be_true
 end
 
-Then /^"([^"]*)" is enabled for subscriber of user intake "([^"]*)"$/ do |col_name, _serial|
+Then /^"([^\"]*)" is enabled for subscriber of user intake "([^\"]*)"$/ do |col_name, _serial|
   ui = UserIntake.find_by_gateway_serial( _serial)
   ui.should_not be_blank
   
@@ -375,14 +375,14 @@ Then /^"([^"]*)" is enabled for subscriber of user intake "([^"]*)"$/ do |col_na
   end
 end
 
-Then /^"([^"]*)" for user_intake "([^"]*)" is assigned$/ do |col_name, _serial|
+Then /^"([^\"]*)" for user_intake "([^\"]*)" is assigned$/ do |col_name, _serial|
   ui = UserIntake.find_by_gateway_serial( _serial)
   
   ui.should_not be_blank
   ui.send( col_name.to_sym).should_not be_blank
 end
 
-Then /^senior of user intake "([^"]*)" (should|should not) be in test mode$/ do |_serial, condition|
+Then /^senior of user intake "([^\"]*)" (should|should not) be in test mode$/ do |_serial, condition|
   ui = if _serial == 'last'
     UserIntake.last
   else

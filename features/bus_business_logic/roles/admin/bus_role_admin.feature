@@ -89,7 +89,7 @@ Feature: Admin roles
       And user "admin-user" has "admin" role for group "bestbuy"
       And the following user intakes:
         | gateway_serial | group_name |
-        | 1122334455     | bestbuy    |
-      And I edit user intake with gateway serial "1122334455"
+        | H234567890     | bestbuy    |
+      And I edit user intake with gateway serial "H234567890"
       Then page should not have a submit button
       Then page should not have a save button
