@@ -245,9 +245,9 @@ describe UserIntake do
     specify { @ui.senior.profile.should be_valid }
     specify { @ui.subscriber.should be_valid } # subscriber
     specify { @ui.subscriber.profile.should be_valid }
-    specify { @ui.subscriber.should == @ui.senior }
-    specify { @ui.subscriber.profile.should == @ui.senior.profile } # both profiles are different
-    specify { lambda { @ui.senior.is_halouser_of?( @ui.group) }.should be_true } # valid halouser role
-    specify { lambda { @ui.subscriber.is_subscriber_of?( @ui.senior) }.should be_true } # subscriber role
+    specify { @ui.subscriber.should_not == @ui.senior }
+    specify { @ui.subscriber.profile.should_not == @ui.senior.profile } # both profiles are different
+    specify { @ui.senior.is_halouser_of?( @ui.group).should be_true } # valid halouser role
+    specify { @ui.subscriber.is_subscriber_of?( @ui.senior).should be_true } # subscriber role
   end # editing
 end #user intake

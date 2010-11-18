@@ -222,8 +222,8 @@ Factory.define :user_intake do |v|
   v.paper_copy_at { Time.now }
   v.legal_agreement_at { Time.now }
   v.association :group
-  v.subscriber_is_user { rand(1) == 1 }
-  v.subscriber_is_caregiver { rand(1) == 1 }
+  v.subscriber_is_user false # { rand(1) == 1 }
+  v.subscriber_is_caregiver false # { rand(1) == 1 }
   v.no_caregiver_1 false
   v.no_caregiver_2 false
   v.no_caregiver_3 false

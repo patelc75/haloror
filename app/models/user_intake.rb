@@ -477,8 +477,10 @@ class UserIntake < ActiveRecord::Base
         #   user values were stored with apply_attributes_from_hash
         #   now we persist them into database
         _options = self.send("mem_caregiver#{index}_options")
-        self.caregiver_role_options( index, _options)
-        # _caregiver.options_for_senior( senior, _options)
+        # 
+        #  Thu Nov 18 20:58:29 IST 2010, ramonrails
+        #   * Do not use any other method here, cyclic dependency can occur
+        _caregiver.options_for_senior( senior, _options)
       end
     end
 
@@ -670,7 +672,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver1
-    if caregiving_subscriber?
+    _user = if caregiving_subscriber?
       #   * we just need subscriber record here
       #   * keep instances separate
       self.mem_caregiver1 ||= User.new.clone_with_profile # object required for form
@@ -682,6 +684,9 @@ class UserIntake < ActiveRecord::Base
         self.mem_caregiver1 ||= User.new.clone_with_profile
       end
     end
+    self.mem_caregiver1_options ||= _user.options_for_senior( senior) unless _user.new_record?
+    self.mem_caregiver1_options ||= RolesUsersOption.new( :position => 1)
+    _user
   end
 
   def caregiver1=(arg)
@@ -696,11 +701,14 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver2
-    if caregiver2_required?
+    _user = if caregiver2_required?
       self.mem_caregiver2 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 2}.first) || User.new.clone_with_profile)
     else
       self.mem_caregiver2 ||= User.new.clone_with_profile
     end
+    self.mem_caregiver2_options ||= _user.options_for_senior( senior) unless _user.new_record?
+    self.mem_caregiver2_options ||= RolesUsersOption.new( :position => 2)
+    _user
   end
 
   def caregiver2=(arg)
@@ -712,11 +720,14 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver3
-    if caregiver3_required?
+    _user = if caregiver3_required?
       self.mem_caregiver3 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 3}.first) || User.new.clone_with_profile)
     else
       self.mem_caregiver3 ||= User.new.clone_with_profile
     end
+    self.mem_caregiver3_options ||= _user.options_for_senior( senior) unless _user.new_record?
+    self.mem_caregiver3_options ||= RolesUsersOption.new( :position => 3)
+    _user
   end
 
   def caregiver3=(arg)
@@ -880,7 +891,7 @@ class UserIntake < ActiveRecord::Base
   def build_user_type(user_type)
     #
     # instantiate the user type if not already exists
-    _user = self.send("#{user_type}")
+    self.send("#{user_type}")
     # 
     # #
     # # roles_users_options for caregivers
