@@ -224,7 +224,9 @@ Factory.define :user_intake do |v|
   v.association :group
   v.subscriber_is_user { rand(1) == 1 }
   v.subscriber_is_caregiver { rand(1) == 1 }
-  (1..3).each { |e| v.send("no_caregiver_#{e}".to_sym, false) }
+  v.no_caregiver_1 false
+  v.no_caregiver_2 false
+  v.no_caregiver_3 false
   v.need_validation false # force skip errors
   #
   # valid callbacks for factory_girl are

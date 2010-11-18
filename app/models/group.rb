@@ -89,6 +89,9 @@ class Group < ActiveRecord::Base
 
   # Usage:
   #   Group.direct_to_consumer
+  # 
+  #  Wed Nov 17 23:49:30 IST 2010, ramonrails
+  #  TODO: this method should have "!" added to the name
   def self.direct_to_consumer
     find_or_create_by_name('direct_to_consumer', { :email => "direct_to_consumer@myhalomonitor.com"})
   end
