@@ -273,10 +273,10 @@ describe UserIntake do
       # load into another variable from database
       ui2 = UserIntake.find( ui.id)
       ui2.subscriber_is_user = false
-      ui.subscriber_is_caregiver = false
-      ui.no_caregiver_1 = false
+      ui2.subscriber_is_caregiver = false
+      ui2.no_caregiver_1 = false
       ui2.subscriber_attributes = Factory.build( :user).attributes.merge( "profile_attributes" => Factory.build(:profile).attributes)
-      # ui2.caregiver1_attributes = Factory.build( :user).attributes.merge( "profile_attributes" => Factory.build(:profile).attributes)
+      ui2.caregiver1_attributes = Factory.build( :user).attributes.merge( "profile_attributes" => Factory.build(:profile).attributes)
       ui2.save.should be_true
       #
       # load from database again
