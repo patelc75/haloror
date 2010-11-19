@@ -149,6 +149,11 @@ class UserIntakesController < ApplicationController
     #   we are updating user intake from many other places like update of 'shipping date' from overview
     #
     # apply all attributes to associations
+    #   * apply the booleans first
+    ["subscriber_is_user", "subscriber_is_caregiver", "no_caregiver_1", "no_caregiver_2", "no_caregiver_3"].each do |_attribute|
+      @user_intake.send( "#{_attribute}=", params[:user_intake][_attribute])
+    end
+    #   * apply attributes now that we have the control booleans applied
     apply_attributes_from_hash( @user_intake, params[:user_intake]) if params.keys.include?( "user_intake_form_view")
     # @user_intake.apply_attributes_from_hash( params[:user_intake]) # apply user attributes
 
@@ -174,6 +179,11 @@ class UserIntakesController < ApplicationController
     @user_intake.skip_validation = (['Save', 'Print', 'Proceed'].include?(params[:commit])) # just save without asking anything
     @groups = Group.for_user(current_user)
     _hash = params[:user_intake].merge( :updated_by => current_user.id)
+    #   * apply the booleans first
+    ["subscriber_is_user", "subscriber_is_caregiver", "no_caregiver_1", "no_caregiver_2", "no_caregiver_3"].each do |_attribute|
+      @user_intake.send( "#{_attribute}=", _hash[_attribute])
+    end
+    #   * apply attributes now that we have the control booleans applied
     apply_attributes_from_hash( @user_intake, _hash)
     # _hash.each {|k,v| @user_intake.send( "#{k}=".to_sym, v) }
 

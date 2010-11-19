@@ -230,16 +230,24 @@ describe UserIntake do
   
   end # create user intake
 
-  context "editing an existing user intake - senior = subscriber" do
+  context "editing an existing user intake - senior was subscriber. Now make different" do
     before(:all) do
       ui = Factory.build( :user_intake) # build associations
-      ui.subscriber_is_user = false
+      ui.subscriber_is_user = true
       ui.subscriber_is_caregiver = false
       # we already have caregivers defined. just switch off the flag
-      (1..3).each {|e| ui.send("no_caregiver_#{e}=", false) } # no_caregiver_? switched off
+      (1..3).each {|e| ui.send("no_caregiver_#{e}=", true) } # no_caregiver_? switched off
       ui.senior_attributes = Factory.build( :user).attributes.merge( "profile_attributes" => Factory.build(:profile).attributes)
       ui.save.should be_true
-      @ui = UserIntake.find( ui.id) # load form database
+      #
+      # load into another variable from database
+      ui2 = UserIntake.find( ui.id)
+      ui2.subscriber_is_user = false
+      ui2.subscriber_attributes = Factory.build( :user).attributes.merge( "profile_attributes" => Factory.build(:profile).attributes)
+      ui2.save.should be_true
+      #
+      # load from database again
+      @ui = UserIntake.find( ui2.id) # load form database
     end
     specify { @ui.senior.should be_valid } # senior
     specify { @ui.senior.profile.should be_valid }
@@ -248,6 +256,44 @@ describe UserIntake do
     specify { @ui.subscriber.should_not == @ui.senior }
     specify { @ui.subscriber.profile.should_not == @ui.senior.profile } # both profiles are different
     specify { @ui.senior.is_halouser_of?( @ui.group).should be_true } # valid halouser role
+    specify { @ui.senior.is_subscriber_of?( @ui.senior).should be_false }
     specify { @ui.subscriber.is_subscriber_of?( @ui.senior).should be_true } # subscriber role
+  end # editing
+
+  context "editing an existing user intake - keep everyone different" do
+    before(:all) do
+      ui = Factory.build( :user_intake) # build associations
+      ui.subscriber_is_user = true
+      ui.subscriber_is_caregiver = false
+      # we already have caregivers defined. just switch off the flag
+      (1..3).each {|e| ui.send("no_caregiver_#{e}=", true) } # no_caregiver_? switched off
+      ui.senior_attributes = Factory.build( :user).attributes.merge( "profile_attributes" => Factory.build(:profile).attributes)
+      ui.save.should be_true
+      #
+      # load into another variable from database
+      ui2 = UserIntake.find( ui.id)
+      ui2.subscriber_is_user = false
+      ui.subscriber_is_caregiver = false
+      ui.no_caregiver_1 = false
+      ui2.subscriber_attributes = Factory.build( :user).attributes.merge( "profile_attributes" => Factory.build(:profile).attributes)
+      # ui2.caregiver1_attributes = Factory.build( :user).attributes.merge( "profile_attributes" => Factory.build(:profile).attributes)
+      ui2.save.should be_true
+      #
+      # load from database again
+      @ui = UserIntake.find( ui2.id) # load form database
+    end
+    specify { @ui.senior.should be_valid } # senior
+    specify { @ui.senior.profile.should be_valid }
+    specify { @ui.subscriber.should be_valid } # subscriber
+    specify { @ui.subscriber.profile.should be_valid }
+    specify { @ui.caregiver1.should be_valid } # caregiver 1
+    specify { @ui.caregiver1.profile.should be_valid }
+    specify { @ui.subscriber.should_not == @ui.senior }
+    specify { @ui.subscriber.profile.should_not == @ui.senior.profile } # both profiles are different
+    specify { @ui.senior.is_halouser_of?( @ui.group).should be_true } # valid halouser role
+    specify { @ui.senior.is_subscriber_of?( @ui.senior).should be_false }
+    specify { @ui.subscriber.is_subscriber_of?( @ui.senior).should be_true }
+    specify { @ui.subscriber.is_caregiver_of?( @ui.senior).should be_false }
+    specify { @ui.caregiver1.is_caregiver_of?( @ui.senior).should be_true }
   end # editing
 end #user intake

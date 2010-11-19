@@ -127,17 +127,18 @@ class UserIntake < ActiveRecord::Base
 
   def subscribed_for_self?
     subscriber_is_user == true
-    # ["1", true].include?( subscriber_is_user) # subscriber is marked as user as well
   end
 
   def was_subscribed_for_self?
     subscriber_is_user_was == true
-    # ["1", true].include?( subscriber_is_user_was) # was subscriber same as user when loaded?
   end
 
   def caregiving_subscriber?
     subscriber_is_caregiver == true
-    # ["1", true].include?( subscriber_is_caregiver)
+  end
+
+  def was_caregiving_subscriber?
+    subscriber_is_caregiver_was == true
   end
 
   # Usage:
@@ -441,60 +442,152 @@ class UserIntake < ActiveRecord::Base
     #  Thu Nov 11 00:14:24 IST 2010, ramonrails
     #  Link per user, once only. compact.uniq ensures that
     ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |_what|
+      # 
+      #  Sat Nov 20 02:03:52 IST 2010, ramonrails
+      #   * this logic is required when uset simply toggles the flag and saves
       _user = self.send( _what) # fetch the associated user
-      # 
-      #  Fri Nov 19 03:17:32 IST 2010, ramonrails
-      #   * skip saving the object if already saved
-      #   * happens when object is shared. subscriber == user, or, subscriber == caregiver
-      #   * saving also dispatches emails. A few more triggers/callbacks. Please check model code
-      _skip = ((_what == 'subscriber') && subscribed_for_self?)
-      _skip = (_skip || (_what == 'caregiver1' && caregiving_subscriber?))
-      # 
-      #  Thu Nov 11 00:32:18 IST 2010, ramonrails
-      #  Do not save any non-assigned data, or blank ones
-      unless _user.blank? || _user.nothing_assigned? || _skip
+      _user.autofill_login # create login and password if not already
+      unless _user.blank? || _user.nothing_assigned?
         _user.skip_validation = true # TODO: patch for 1.6.0 release. fix later with business logic, if required
 
-        # _user.autofill_login # Step 1: make them valid
-        if _user.save # Step 2: save them to database
-          # 
-          #  Thu Nov 11 00:13:31 IST 2010, ramonrails
-          #  https://redmine.corp.halomonitor.com/issues/3696
-          #   caused a bug that created multiple links to the same user
-          self.users << _user unless users.include?( _user) # Step 3: link them to user intake
-        end
-      end
-    end
+        case _what
+        when 'senior'
+          _user.save
+          _user.is_halouser_of( group) # role
+          
+        when 'subscriber'
+          if subscribed_for_self? # senior is same as subscriber
+            if was_subscribed_for_self?
+              #   * user and subscriber are same. not changed
+            else
+              #   * subscriber was different. now same as senior
+              self.subscriber_is_user = false # create old condition
+              subscriber.is_not_subscriber_of( senior) # remove old role first
+              # subscriber.delete # remove this extra user
+              self.subscriber_is_user = true # back to current situation
+            end
+            _user.save
+            _user.is_subscriber_of( senior) # role
+
+          else # senior different from subscriber
+            if was_subscribed_for_self?
+              #   * was different earlier. no change
+              # _user.save
+              # _user.is_subscriber_of( senior) # role
+              _user = senior.clone_with_profile if senior.equal?( subscriber) # same IDs, clone first
+              senior.is_not_subscriber_of( senior) # senior was subscriber, not now
+            else
+              # all good. nothing changed
+            end
+            _user.save
+            _user.is_subscriber_of( senior) # role
+          end
+          
+        when 'caregiver1'
+          if caregiving_subscriber? # subscriber is caregiver
+            if was_caregiving_subscriber?
+              # all good. nothing changed
+            else
+              # was separate
+              self.subscriber_is_caregiver = false # make old condition
+              caregiver1.is_not_caregiver_of( senior)
+              # caregiver1.delete # remove extra
+              self.subscriber_is_caregiver = true # current condition again
+            end
+            
+          else # subscriber different from caregiver1
+            if was_caregiving_subscriber?
+              _user = subscriber.clone_with_profile if subscriber.equal?( caregiver1) # same ID? clone first
+              subscriber.is_not_caregiver_of( senior) # remove caregiving role for subscriber
+            else
+              # all good. nothing changed
+            end
+          end
+          if caregiving_subscriber? || caregiver1_required?
+            _user.save
+            _user.is_caregiver_of( senior)
+            _user.options_for_senior( senior, mem_caregiver1_options)
+          end
+          
+        when 'caregiver2'
+          if caregiver2_required?
+            _user.save
+            _user.is_caregiver_of( senior)
+            _user.options_for_senior( senior, mem_caregiver2_options)
+          end
+
+        when 'caregiver3'
+          if caregiver3_required?
+            _user.save
+            _user.is_caregiver_of( senior)
+            _user.options_for_senior( senior, mem_caregiver3_options)
+          end
+        end # case
+      end # blank?
+    end # _what
+    
     #
-    #   * add roles and options
-    #   * roles are already handled by user model
-    #   * this will not double write the roles
-    # senior
-    senior.is_halouser_of( group) unless senior.blank?
-    # subscriber
-    unless senior.blank? || subscriber.blank?
-      subscriber.is_subscriber_of( senior)
-      subscriber.is_caregiver_of( senior) if caregiving_subscriber?
-    end
-    # Wed Oct 27 23:55:22 IST 2010
-    #   * no need to check subscriber_is_caregiver here. that is done in caregiver1 method
-    #   * just call for each caregiver and assign position and other options
-    (1..3).each do |index|
-      _caregiver = self.send("caregiver#{index}".to_sym)
-      _required = self.send("caregiver#{index}_required?")
-      unless (_caregiver.blank? || !_required || _caregiver.nothing_assigned?)
-        _caregiver.is_caregiver_of( senior) unless _caregiver.is_caregiver_of?( senior)
-        # 
-        # Thu Nov  4 05:57:16 IST 2010, ramonrails
-        #   user values were stored with apply_attributes_from_hash
-        #   now we persist them into database
-        _options = self.send("mem_caregiver#{index}_options")
-        # 
-        #  Thu Nov 18 20:58:29 IST 2010, ramonrails
-        #   * Do not use any other method here, cyclic dependency can occur
-        _caregiver.options_for_senior( senior, _options)
-      end
-    end
+    #   * replace earlier associations. keep fresh ones
+    #   * do not create duplicate associations
+    # QUESTION: what happens to orphaned users here?
+    self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq
+
+
+    # ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |_what|
+    #   
+    #   # 
+    #   #  Fri Nov 19 03:17:32 IST 2010, ramonrails
+    #   #   * skip saving the object if already saved
+    #   #   * happens when object is shared. subscriber == user, or, subscriber == caregiver
+    #   #   * saving also dispatches emails. A few more triggers/callbacks. Please check model code
+    #   _skip = ((_what == 'subscriber') && subscribed_for_self?)
+    #   _skip = (_skip || (_what == 'caregiver1' && caregiving_subscriber?))
+    #   # 
+    #   #  Thu Nov 11 00:32:18 IST 2010, ramonrails
+    #   #  Do not save any non-assigned data, or blank ones
+    #   unless _user.blank? || _user.nothing_assigned? || _skip
+    #     _user.skip_validation = true # TODO: patch for 1.6.0 release. fix later with business logic, if required
+    # 
+    #     # _user.autofill_login # Step 1: make them valid
+    #     if _user.save # Step 2: save them to database
+    #       # 
+    #       #  Thu Nov 11 00:13:31 IST 2010, ramonrails
+    #       #  https://redmine.corp.halomonitor.com/issues/3696
+    #       #   caused a bug that created multiple links to the same user
+    #       self.users << _user unless users.include?( _user) # Step 3: link them to user intake
+    #     end
+    #   end
+    # end
+    # #
+    # #   * add roles and options
+    # #   * roles are already handled by user model
+    # #   * this will not double write the roles
+    # # senior
+    # senior.is_halouser_of( group) unless senior.blank?
+    # # subscriber
+    # unless senior.blank? || subscriber.blank?
+    #   subscriber.is_subscriber_of( senior)
+    #   subscriber.is_caregiver_of( senior) if caregiving_subscriber?
+    # end
+    # # Wed Oct 27 23:55:22 IST 2010
+    # #   * no need to check subscriber_is_caregiver here. that is done in caregiver1 method
+    # #   * just call for each caregiver and assign position and other options
+    # (1..3).each do |index|
+    #   _caregiver = self.send("caregiver#{index}".to_sym)
+    #   _required = self.send("caregiver#{index}_required?")
+    #   unless (_caregiver.blank? || !_required || _caregiver.nothing_assigned?)
+    #     _caregiver.is_caregiver_of( senior) unless _caregiver.is_caregiver_of?( senior)
+    #     # 
+    #     # Thu Nov  4 05:57:16 IST 2010, ramonrails
+    #     #   user values were stored with apply_attributes_from_hash
+    #     #   now we persist them into database
+    #     _options = self.send("mem_caregiver#{index}_options")
+    #     # 
+    #     #  Thu Nov 18 20:58:29 IST 2010, ramonrails
+    #     #   * Do not use any other method here, cyclic dependency can occur
+    #     _caregiver.options_for_senior( senior, _options)
+    #   end
+    # end
 
   end
 
@@ -637,117 +730,80 @@ class UserIntake < ActiveRecord::Base
   end
 
   def senior=( arg)
-    _user = senior
-    _attributes = argument_to_attributes( arg)
-    _attributes.each { |k,v| _user.send("#{k}=", v)} # if _user.respond_to?( "#{k}=".to_sym) }
-    #
-    # subscriber should be blank if senior is subscriber
-    if subscribed_for_self?
-      # erase the subscriber if...
-      #   * subscriber was different earlier
-      #   * but now is same as senior
-      self.mem_subscriber ||= User.new.clone_with_profile # cannot be NIL. need object for form view
-    else
-      #   * just fetch subscriber. it will reload itself from database, or clone senior
-      subscriber # load from database || clone senior
-    end
-    _user
+    apply_attributes_to_object( arg, senior)
   end
 
   def subscriber
-    if subscribed_for_self?
-      # 
-      #  Thu Nov 11 23:40:04 IST 2010, ramonrails
-      #  consider senior data as subscriber
-      #   * keep instances separate
-      self.mem_subscriber ||= User.new.clone_with_profile # cannot be NIL. need object for form view
-      senior # return senior. do not assign here. this is READ mode method
-    else
-      self.mem_subscriber ||= ( (users.select {|e| e.is_subscriber_of?(senior) }.first) || User.new.clone_with_profile)
+    self.mem_subscriber ||= ( (users.select {|e| e.is_subscriber_of?(senior) }.first) || User.new.clone_with_profile)
+    if subscribed_for_self? # senior and subscriber same
+      if was_subscribed_for_self?
+        # nothing changed
+      else
+        # senior will be returned
+      end
+    else # senior is different from subscriber
+      if was_subscribed_for_self?
+        self.mem_subscriber = User.new.clone_with_profile if mem_senior.equal?( mem_subscriber) # clone if same object
+      else
+        # nothing changed
+      end
     end
+    subscribed_for_self? ? senior : mem_subscriber
   end
 
   def subscriber=(arg)
-    #
-    # attributes hash from given arguments
-    #   * user "subscriber" instead of "mem_subscriber"
-    #   * this will use conditional logic to populate data
-    _user = subscriber
-    unless subscribed_for_self?
-      # when subscribed_for_self, we need senior attributes
-      # do not overwrite
-      _attributes = argument_to_attributes( arg)
-      _attributes.each { |k,v| _user.send("#{k}=", v)} # if _user.respond_to?( "#{k}=".to_sym) }
-    end    
-    # self.local_caregiver( 1, mem_subscriber) if caregiving_subscriber? && !caregiver1_required?
-    _user
+    subscribed_for_self? ? subscriber : apply_attributes_to_object( arg, subscriber)
   end
 
   def caregiver1
-    _user = if caregiving_subscriber?
-      #   * we just need subscriber record here
-      #   * keep instances separate
-      self.mem_caregiver1 ||= User.new.clone_with_profile # object required for form
-      subscriber # return subscriber
-    else
-      if caregiver1_required?
-        self.mem_caregiver1 ||= ( (users.select {|e| e.caregiver_position_for(senior) == 1}.first) || User.new.clone_with_profile)
+    self.mem_caregiver1 ||= ( (users.select {|e| e.caregiver_position_for(senior) == 1}.first) || User.new.clone_with_profile)
+    if caregiving_subscriber? # subscriber is caregiver
+      if was_caregiving_subscriber?
+        # nothing changed
       else
-        self.mem_caregiver1 ||= User.new.clone_with_profile
+        # subscriber will be returned
+      end
+    else # subscriber is not ceregiver
+      if was_caregiving_subscriber?
+        # clone
+        self.mem_caregiver1 = User.new.clone_with_profile if mem_subscriber.equal?( mem_caregiver1) # clone if same object
+      else
+        # nothing changed
       end
     end
-    self.mem_caregiver1_options ||= _user.options_for_senior( senior) unless _user.new_record?
-    self.mem_caregiver1_options ||= RolesUsersOption.new( :position => 1)
+    _user = (caregiving_subscriber? ? subscriber : mem_caregiver1)
+    #
+    # QUESTION: What happens when
+    #   * subscriber == caregiver
+    #   * caregiver position changed from elsewhere
+    self.mem_caregiver1_options ||= (_user.options_for_senior( senior) || RolesUsersOption.new( :position => 1))
     _user
   end
 
   def caregiver1=(arg)
-    _user = caregiver1
-    unless caregiving_subscriber?
-      _attributes = argument_to_attributes( arg)
-      _attributes.each { |k,v| _user.send("#{k}=", v)} # if _user.respond_to?( "#{k}=".to_sym) }
-    end
-    # self.local_caregiver(1, mem_caregiver1)
-    #   * this maybe a returned subscriber
-    _user
+    caregiving_subscriber? ? caregiver1 : apply_attributes_to_object( arg, caregiver1)
   end
 
   def caregiver2
-    _user = if caregiver2_required?
-      self.mem_caregiver2 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 2}.first) || User.new.clone_with_profile)
-    else
-      self.mem_caregiver2 ||= User.new.clone_with_profile
-    end
-    self.mem_caregiver2_options ||= _user.options_for_senior( senior) unless _user.new_record?
-    self.mem_caregiver2_options ||= RolesUsersOption.new( :position => 2)
+    self.mem_caregiver2 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 2}.first) || User.new.clone_with_profile)
+    _user = mem_caregiver2
+    self.mem_caregiver2_options ||= (_user.options_for_senior( senior) || RolesUsersOption.new( :position => 2))
     _user
   end
 
   def caregiver2=(arg)
-    _user = caregiver2
-    _attributes = argument_to_attributes( arg)
-    _attributes.each { |k,v| _user.send("#{k}=", v)} # if _user.respond_to?( "#{k}=".to_sym) }
-    # self.local_caregiver(2, mem_caregiver2)
-    _user
+    apply_attributes_to_object( arg, caregiver2)
   end
 
   def caregiver3
-    _user = if caregiver3_required?
-      self.mem_caregiver3 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 3}.first) || User.new.clone_with_profile)
-    else
-      self.mem_caregiver3 ||= User.new.clone_with_profile
-    end
-    self.mem_caregiver3_options ||= _user.options_for_senior( senior) unless _user.new_record?
-    self.mem_caregiver3_options ||= RolesUsersOption.new( :position => 3)
+    self.mem_caregiver3 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 3}.first) || User.new.clone_with_profile)
+    _user = mem_caregiver3
+    self.mem_caregiver3_options ||= (_user.options_for_senior( senior) || RolesUsersOption.new( :position => 3))
     _user
   end
 
   def caregiver3=(arg)
-    _user = caregiver3
-    _attributes = argument_to_attributes( arg)
-    _attributes.each { |k,v| _user.send("#{k}=", v)} # if _user.respond_to?( "#{k}=".to_sym) }
-    # self.local_caregiver(3, mem_caregiver3)
-    _user
+    apply_attributes_to_object( arg, caregiver3)
   end
 
   # 
@@ -949,19 +1005,6 @@ class UserIntake < ActiveRecord::Base
     # end
   end
 
-  def argument_to_attributes( _arg)
-    if _arg.is_a?( User)
-      _attributes = _arg.clone.attributes # .reject { |k,v| (k == 'id') || (k[-3..-1] == '_id') }
-      _attributes["profile_attributes"] = _arg.profile.clone.attributes unless _arg.profile.blank? # .reject { |k,v| (k == 'id') || (k[-3..-1] == '_id') }
-      _attributes
-      
-    elsif _arg.is_a?( Hash)
-      _arg
-      
-    else
-      {}
-    end
-  end
   # def argument_to_object(arg)
   #   # User object
   #   if arg.is_a?(User)
@@ -979,5 +1022,30 @@ class UserIntake < ActiveRecord::Base
   #     nil
   #   end
   # end
+
+  # ===========
+  # = private =
+  # ===========
+  private
+  
+  def apply_attributes_to_object( _attributes, _instance)
+    _hash = argument_to_attributes( _attributes)
+    _hash.each { |k,v| _instance.send( "#{k}=", v) }
+    _instance
+  end
+
+  def argument_to_attributes( _arg)
+    if _arg.is_a?( User)
+      _attributes = _arg.clone.attributes # .reject { |k,v| (k == 'id') || (k[-3..-1] == '_id') }
+      _attributes["profile_attributes"] = _arg.profile.clone.attributes unless _arg.profile.blank? # .reject { |k,v| (k == 'id') || (k[-3..-1] == '_id') }
+      _attributes
+      
+    elsif _arg.is_a?( Hash)
+      _arg
+      
+    else
+      {}
+    end
+  end
 
 end

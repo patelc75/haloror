@@ -53,16 +53,6 @@ Given /^the product catalog exists$/ do
   end
 end
 
-# CHANGED:
-#   Given there are no payment gateway responses
-# Given /^the payment gateway response log is empty$/ do
-#   PaymentGatewayResponse.delete_all
-# end
-
-# Given /^Scenario (\d+) has happened$/ do |arg1|
-#   pending # express the regexp above with the code you wish you had
-# end
-
 # =========
 # = whens =
 # =========
@@ -92,7 +82,7 @@ When /^I am ready to create a coupon code for "([^\"]*)" group$/ do |_name|
   When %{I go to the home page}
   When %{I follow links "Config > Coupon Codes > New coupon code"}
   When "I select the following:", table(%{
-    | Group                             | #{_name}_group            |
+    | Group                             | #{_name}                  |
     | Device model                      | 12001002-1 -- Chest Strap |
     | device_model_price_expiry_date_1i | 2012                      |
   })
@@ -109,9 +99,13 @@ end
 When /^I switch "([^\"]*)" group for online store$/ do |_name|
   When %{I visit "/orders/switch_group"}
   if response.body.include? "Please select a group"
-    When %{I select "#{_name}_group" from "Group"}
+    When %{I select "#{_name}" from "Group"}
     When %{I press "Continue"}
   end
+end
+
+When /^I am switching the group for online store$/ do
+  When %{I visit "/orders/switch_group"}
 end
 
 When /^I erase the payment gateway response log$/ do

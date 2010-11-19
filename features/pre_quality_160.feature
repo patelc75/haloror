@@ -10,23 +10,28 @@ Feature: Pre quality
       | Alltel  |
       | Verizon |
     
-  Scenario: super admin > create a group
-    When I am ready to create a "reseller" group
+  Scenario Outline: super admin > create a group
+    When I am ready to create a "<name>" reseller group
     And I press "Save"
-    Then a group should exist with name "reseller_group"
+    Then a group should exist with name "<name>"
+    
+    Examples:
+      | name        |
+      | ml_reseller |
+      | ml_master   |
 
   Scenario: super admin > create an admin
-    When I create a "reseller" group
+    When I create a "reseller" reseller group
     And I am creating admin of "reseller" group
     And I press "subscribe"
     Then I should see "for activation of account"
     And email with activation code of last user should be sent for delivery
-    And user "last" should have "admin" role for group "reseller_group"
+    And user "last" should have "admin" role for group "reseller"
     # count of emails is ignored here to accommodate within timeline of 1.6.0 release
     # we must check the count also, or, users may get multiple similar emails
 
   Scenario: Activate an admin
-    When I create a "reseller" group
+    When I create a "reseller" reseller group
     And I create admin of "reseller" group
     And I logout
     And I am activating the last user as "reseller_admin"
@@ -36,7 +41,7 @@ Feature: Pre quality
     
   Scenario: super admin > create an coupon code
     Given the product catalog exists
-    When I create a "reseller" group
+    When I create a "reseller" reseller group
     And I am ready to create a coupon code for "reseller" group
     And I press "Save"
     Then a coupon code should exist with coupon_code "reseller_coupon"
@@ -44,21 +49,24 @@ Feature: Pre quality
   Scenario: admin > online store has single group
     Given the product catalog exists
     And a group "bogus" exists
-    When I create a "reseller" group
+    When I create a "reseller" reseller group
     And I create admin of "reseller" group
     And I logout
     And I activate the last user as "reseller_admin"
     And I go to the online store
-    Then I should see "reseller_group"
-    And I should not see "bogus"
+    Then I should see "reseller"
+    And page content should not have "bogus, switch"
+    When I am switching the group for online store
+    Then I should see "Group: reseller"
+    And I should not see "Please select a group"
 
   Scenario: admin > coupon applies correctly
     Given the product catalog exists
-    When I create a "reseller" group
+    When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
     And I create admin of "reseller" group
     And I activate the last user as "reseller_admin"
-    And I am placing an online order for "re_reseller_group" group
+    And I am placing an online order for "re_reseller" group
     And I fill in "Coupon Code" with "reseller_coupon"
     And I press "Continue"
     Then I should see "$77"
@@ -67,25 +75,28 @@ Feature: Pre quality
   Scenario: admin > place order
     Given the product catalog exists
     And the following groups:
-      | name              | sales_type |
-      | re_reseller_group | reseller   |
-    When I create a coupon code for "re_reseller" group
-    And I create admin of "re_reseller" group
-    And I activate the last user as "re_reseller_admin"
-    And I am placing an online order for "re_reseller_group" group
-    And I fill in "Coupon Code" with "re_reseller_coupon"
+      | name        | sales_type | email                |
+      | ml_reseller | reseller   | ml_reseller@test.com |
+      | ml_master   | reseller   | ml_master@test.com   |
+    When I create a coupon code for "ml_reseller" group
+    And I create admin of "ml_reseller" group
+    And I activate the last user as "ml_reseller_admin"
+    And I am placing an online order for "ml_reseller" group
+    Then I should see "ml_reseller"
+    And I should not see "ml_master"
+    When I fill in "Coupon Code" with "ml_reseller_coupon"
     And I press "Continue"
     And I press "Place Order"
-    Then 1 email to "cuc_senior@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
-    And 1 email to "cuc_subscriber@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
-    And 1 email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery
-    And 1 email to "re_master@halomonitoring.com" with subject "Order Summary" should be sent for delivery
+    Then an email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
+    And an email to "cuc_bill@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
+    And an email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery
+    And an email to "ml_master@test.com" with subject "Order Summary" should be sent for delivery
     # smoke testing on sdev is at higher priority than this
     # will come back to this later
 
   Scenario: admin > add a new caregiver with no email
     Given the product catalog exists
-    When I create a "reseller" group
+    When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
     And I create admin of "reseller" group
     And I activate the last user as "reseller_admin"
@@ -110,7 +121,7 @@ Feature: Pre quality
 
   Scenario: halouser > approve subscription agreement
     Given the product catalog exists
-    When I create a "reseller" group
+    When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
     And I create admin of "reseller" group
     And I activate the last user as "reseller_admin"
@@ -121,9 +132,9 @@ Feature: Pre quality
     And I press "Agree"
     Then I should see "Successfully updated"
 
-  Scenario: halouser > submit user intake form
+  Scenario: halouser > submit user intake form - subscriber is caregiver
     Given the product catalog exists
-    When I create a "reseller" group
+    When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
     And I create admin of "reseller" group
     And I activate the last user as "reseller_admin"
@@ -132,12 +143,16 @@ Feature: Pre quality
     And I follow "edit_link"
     And I uncheck "user_intake_subscriber_is_user"
     And I check "user_intake_subscriber_is_caregiver"
+    And I check "user_intake_no_caregiver_1"
     And I uncheck "user_intake_no_caregiver_2"
+    And I uncheck "user_intake_no_caregiver_3"
     And I fill the subscriber details for user intake form
     And I fill the caregiver2 details for user intake form
+    And I fill the caregiver3 details for user intake form
     And I select "Verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I select "Verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
     And I select "Verizon" from "user_intake_caregiver2_attributes__profile_attributes_carrier_id"
+    And I select "Verizon" from "user_intake_caregiver3_attributes__profile_attributes_carrier_id"
     And I press "user_intake_submit"
     Then I should see "successfully updated"
     # #
@@ -146,13 +161,39 @@ Feature: Pre quality
     # And caregiver1 of last user intake should have email_active opted
     # And caregiver1 of last user intake should have text_active opted
 
+  Scenario: halouser > submit user intake form - make all users distinct
+    Given the product catalog exists
+    When I create a "reseller" reseller group
+    And I create a coupon code for "reseller" group
+    And I create admin of "reseller" group
+    And I activate the last user as "reseller_admin"
+    And I place an online order for "reseller" group
+    And I am listing user intakes
+    And I follow "edit_link"
+    And I uncheck "user_intake_subscriber_is_user"
+    And I uncheck "user_intake_subscriber_is_caregiver"
+    And I uncheck "user_intake_no_caregiver_1"
+    And I uncheck "user_intake_no_caregiver_2"
+    And I uncheck "user_intake_no_caregiver_3"
+    And I fill the subscriber details for user intake form
+    And I fill the caregiver1 details for user intake form
+    And I fill the caregiver2 details for user intake form
+    And I fill the caregiver3 details for user intake form
+    And I select "Verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
+    And I select "Verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
+    And I select "Verizon" from "user_intake_caregiver1_attributes__profile_attributes_carrier_id"
+    And I select "Verizon" from "user_intake_caregiver2_attributes__profile_attributes_carrier_id"
+    And I select "Verizon" from "user_intake_caregiver3_attributes__profile_attributes_carrier_id"
+    And I press "user_intake_submit"
+    Then I should see "successfully updated"
+
   # 
   #  Fri Nov 12 00:20:54 IST 2010, ramonrails
   #  release 1.6.0 test cases from Intake + Install States spreadsheet
   #  http://spreadsheets.google.com/a/halomonitoring.com/ccc?key=0AnT533LvuYHydENwbW9sT0NWWktOY2VoMVdtbnJqTWc&hl=en#gid=3
   Scenario: D2 - Enable test mode (opt out of call center + caregivers away)
     Given the product catalog exists
-    When I create a "reseller" group
+    When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
     And I create admin of "reseller" group
     And I activate the last user as "reseller_admin"
@@ -169,7 +210,7 @@ Feature: Pre quality
   # (5) Verify Credit Card/Manual Billing radio button User Intake Form
   Scenario: H4 - Intake + Install States spreadsheet
     Given the product catalog exists
-    When I create a "reseller" group
+    When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
     And I am placing an online order for "reseller" group
     And I uncheck "order_bill_address_same"
@@ -184,7 +225,7 @@ Feature: Pre quality
     And subscriber of last user intake is also the caregiver
     #
     # verify roles in config > users
-    When I visit "/reporting/users?group_name=reseller_group"
+    When I visit "/reporting/users?group_name=reseller"
     Then page content should have "subscriber for, caregiver for"
     #
     # verify call center account number
@@ -208,7 +249,7 @@ Feature: Pre quality
   # (3) Activate user, subscriber, and caregiver via email link
   Scenario: Activating admin, senior, subsriber and caregivers
     Given the product catalog exists
-    When I create a "reseller" group
+    When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
     And I create admin of "reseller" group
     And I activate the last user as "reseller_admin"
@@ -225,6 +266,9 @@ Feature: Pre quality
     And I fill the caregiver1 details for user intake form
     And I fill the caregiver2 details for user intake form
     And I fill the caregiver3 details for user intake form
+    And I select "Verizon" from "user_intake_caregiver1_attributes__profile_attributes_carrier_id"
+    And I select "Verizon" from "user_intake_caregiver2_attributes__profile_attributes_carrier_id"
+    And I select "Verizon" from "user_intake_caregiver3_attributes__profile_attributes_carrier_id"
     And I press "user_intake_submit"
     Then I should see "successfully updated"
     #

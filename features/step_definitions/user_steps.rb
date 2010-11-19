@@ -127,14 +127,13 @@ When /^I am activating the last (.+) as "([^\"]*)"$/ do |_user_type, _name|
     UserIntake.last.send( _user_type)
   end
   _user.should_not be_blank
-  # unless _user.activated?
-    visit "/activate/#{_user.activation_code}"
-    When "I fill in the following:", table(%{
-      | Username         | #{_name} |
-      | Password         | #{_name} |
-      | Confirm Password | #{_name} |
-      })
-  # end
+  _user.activated?.should be_false
+  visit "/activate/#{_user.activation_code}"
+  When "I fill in the following:", table(%{
+    | Username         | #{_name} |
+    | Password         | #{_name} |
+    | Confirm Password | #{_name} |
+    })
 end
 
 When /^I create admin of "([^\"]*)" group$/ do |_name|
@@ -152,7 +151,7 @@ When /^I am creating admin of "([^\"]*)" group$/ do |_name|
   Given %{a role "admin" exists}
   When "I go to the home page"
   When %{I follow links "Config > Sign up users with other roles"}
-  When %{I select "#{_name}_group" from "Group"}
+  When %{I select "#{_name}" from "Group"}
   When %{I select "admin" from "Role"}
   When "I fill in the following:", table(%{
     | Email      | #{_name}_admin@text.com |
