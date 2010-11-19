@@ -9,7 +9,7 @@
    rs.each do |role|
      if role.authorizable_type == 'Group'
        group = Group.find(role.authorizable_id)
-       if current_user.is_admin_of? group || current_user.is_super_admin? 
+       if current_user.is_admin_of? group or current_user.is_super_admin? 
          names << "#{role.name} / #{group.name}"
        end
      else
