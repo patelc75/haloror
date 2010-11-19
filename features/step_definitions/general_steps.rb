@@ -141,7 +141,7 @@ end
 
 # Usage:
 #   Given there are no panics, Email, user, user intakes, Device Type, Device Models
-Given /^there are no (.+)$/ do |_models|
+Given /^there (is|are) no (.+)$/ do |_models|
   _models.split(',').each {|e| e.strip.gsub(' ','_').classify.constantize.send(:delete_all) }
 end
 

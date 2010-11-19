@@ -453,7 +453,7 @@ class UserIntake < ActiveRecord::Base
         case _what
         when 'senior'
           _user.save
-          _user.is_halouser_of( group) # role
+          _user.is_halouser_of( group) unless _user.blank? || group.blank? # role
           
         when 'subscriber'
           if subscribed_for_self? # senior is same as subscriber
@@ -462,12 +462,12 @@ class UserIntake < ActiveRecord::Base
             else
               #   * subscriber was different. now same as senior
               self.subscriber_is_user = false # create old condition
-              subscriber.is_not_subscriber_of( senior) # remove old role first
+              subscriber.is_not_subscriber_of( senior) unless subscriber.blank? || senior.blank? # remove old role first
               # subscriber.delete # remove this extra user
               self.subscriber_is_user = true # back to current situation
             end
             _user.save
-            _user.is_subscriber_of( senior) # role
+            _user.is_subscriber_of( senior) unless _user.blank? || senior.blank? # role
 
           else # senior different from subscriber
             if was_subscribed_for_self?
@@ -475,12 +475,12 @@ class UserIntake < ActiveRecord::Base
               # _user.save
               # _user.is_subscriber_of( senior) # role
               _user = senior.clone_with_profile if senior.equal?( subscriber) # same IDs, clone first
-              senior.is_not_subscriber_of( senior) # senior was subscriber, not now
+              senior.is_not_subscriber_of( senior) unless senior.blank? # senior was subscriber, not now
             else
               # all good. nothing changed
             end
             _user.save
-            _user.is_subscriber_of( senior) # role
+            _user.is_subscriber_of( senior) unless _user.blank? || senior.blank? # role
           end
           
         when 'caregiver1'
@@ -490,7 +490,7 @@ class UserIntake < ActiveRecord::Base
             else
               # was separate
               self.subscriber_is_caregiver = false # make old condition
-              caregiver1.is_not_caregiver_of( senior)
+              caregiver1.is_not_caregiver_of( senior) unless caregiver1.blank? || senior.blank?
               # caregiver1.delete # remove extra
               self.subscriber_is_caregiver = true # current condition again
             end
@@ -498,28 +498,28 @@ class UserIntake < ActiveRecord::Base
           else # subscriber different from caregiver1
             if was_caregiving_subscriber?
               _user = subscriber.clone_with_profile if subscriber.equal?( caregiver1) # same ID? clone first
-              subscriber.is_not_caregiver_of( senior) # remove caregiving role for subscriber
+              subscriber.is_not_caregiver_of( senior) unless subscriber.blank? || senior.blank? # remove caregiving role for subscriber
             else
               # all good. nothing changed
             end
           end
-          if caregiving_subscriber? || caregiver1_required?
+          if caregiving_subscriber? || (caregiver1_required? && _user.something_assigned?)
             _user.save
-            _user.is_caregiver_of( senior)
+            _user.is_caregiver_of( senior) unless _user.blank? || senior.blank?
             _user.options_for_senior( senior, mem_caregiver1_options)
           end
           
         when 'caregiver2'
-          if caregiver2_required?
+          if caregiver2_required? && _user.something_assigned?
             _user.save
-            _user.is_caregiver_of( senior)
+            _user.is_caregiver_of( senior) unless _user.blank? || senior.blank?
             _user.options_for_senior( senior, mem_caregiver2_options)
           end
 
         when 'caregiver3'
-          if caregiver3_required?
+          if caregiver3_required? && _user.something_assigned?
             _user.save
-            _user.is_caregiver_of( senior)
+            _user.is_caregiver_of( senior) unless _user.blank? || senior.blank?
             _user.options_for_senior( senior, mem_caregiver3_options)
           end
         end # case
@@ -530,7 +530,9 @@ class UserIntake < ActiveRecord::Base
     #   * replace earlier associations. keep fresh ones
     #   * do not create duplicate associations
     # QUESTION: what happens to orphaned users here?
-    self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq
+    #   * reject new_record? anything not saved does not get assigned
+    #   * only associate one copy of each
+    self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].reject(&:new_record?).compact.uniq
 
 
     # ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |_what|
