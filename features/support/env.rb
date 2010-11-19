@@ -61,4 +61,4 @@ ActionMailer::Base.perform_deliveries = true
 # How to clean your database when transactions are turned off. See
 # http://github.com/bmabey/database_cleaner for more info.
 DatabaseCleaner.clean_with :truncation
-DatabaseCleaner.strategy = (ENV[‘SELENIUM’] == ‘true’) ? :truncation : :transaction
+DatabaseCleaner.strategy = :transaction

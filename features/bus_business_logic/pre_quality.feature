@@ -76,8 +76,8 @@ Feature: Pre quality
     And I fill in "Coupon Code" with "re_reseller_coupon"
     And I press "Continue"
     And I press "Place Order"
-    Then 1 email to "cuc_senior@chirag.name" with subject "activation" should be sent for delivery
-    And 1 email to "cuc_subscriber@chirag.name" with subject "activation" should be sent for delivery
+    Then 1 email to "cuc_senior@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
+    And 1 email to "cuc_subscriber@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
     And 1 email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery
     And 1 email to "re_master@halomonitoring.com" with subject "Order Summary" should be sent for delivery
     # smoke testing on sdev is at higher priority than this

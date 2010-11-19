@@ -43,9 +43,9 @@ class DeviceModelPrice < ActiveRecord::Base
     _model = if arg.blank?
       DeviceModel.myhalo_complete
     elsif arg.is_a?( DeviceModel)
-      arg == DeviceModel.myhalo_clip ? DeviceModel.myhalo_clip : DeviceModel.myhalo_complete
+      (arg == DeviceModel.myhalo_clip) ? DeviceModel.myhalo_clip : DeviceModel.myhalo_complete
     else
-      arg.to_s == DeviceModel.myhalo_clip.part_number ? DeviceModel.myhalo_clip : DeviceModel.myhalo_complete
+      (arg.to_s == DeviceModel.myhalo_clip.part_number) ? DeviceModel.myhalo_clip : DeviceModel.myhalo_complete
     end
     _model.coupon_codes.first( :conditions => { :coupon_code => 'default', :group_id => Group.default! })
   end

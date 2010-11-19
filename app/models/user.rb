@@ -69,7 +69,7 @@ class User < ActiveRecord::Base
   attr_accessible :need_validation
   attr_accessor :need_validation
   attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :need_validation
-  attr_accessor :caregiver_position, :lazy_roles
+  attr_accessor :caregiver_position, :lazy_roles, :lazy_options
   # Virtual attribute for the unencrypted password
   cattr_accessor :current_user #stored in memory instead of table
   attr_accessor :password
@@ -450,12 +450,11 @@ class User < ActiveRecord::Base
   #  clones itself along with given/new profile
   def clone_with_profile
     _clone = self.clone # clone itself
-    #
-    # build a profile with given profile attributes, or, just blank attributes
-    _attributes = (profile.blank? ? {} : profile.attributes)
-    _attributes = _attributes.reject { |k,v| (k == 'id') || (k[-3..-1] == '_id') }
-    _clone.build_profile( _attributes)
-    # _attributes.each { |k,v| _clone.send("#{k}=".to_sym, v) if _clone.respond_to?( "#{k}=".to_sym) }
+    if profile.blank?
+      _clone.build_profile
+    else
+      _clone.profile = profile.clone
+    end
     _clone # return the clone
   end
   
@@ -498,6 +497,7 @@ class User < ActiveRecord::Base
     #   user.roles = {:halouser => @group}
     #   user.roles[:subscriber] = @senior
     self.lazy_roles = {} # lazy loading roles of this user
+    self.lazy_options = {} # lazy loading options of this user, if this is a caregiver
   end
 
   def before_save
@@ -541,6 +541,7 @@ class User < ActiveRecord::Base
   # https://redmine.corp.halomonitor.com/issues/398
   # Create a log page of all steps above with timestamps
   def after_save
+    profile.save unless profile.blank?
     #
     # Wed Oct 13 04:05:20 IST 2010
     #   CHANGED: created_at == updated_at only when it is saved for the very first time
@@ -548,7 +549,8 @@ class User < ActiveRecord::Base
       #
       # CHANGED: Major fix. the roles were not getting populated
       # insert the roles for user. these roles are propogated from user intake
-      lazy_roles.each {|k,v| self.send( :"is_#{k}_of", v) } unless lazy_roles.blank?
+      lazy_roles.each {|k,v| self.send( "is_#{k}_of", v) }
+      lazy_options.each { |k,v| self.options_for_senior( User.find_by_login(k), v) }
       # 
       #  Fri Nov 12 18:09:50 IST 2010, ramonrails
       #  emails can be dispatched only after roles
@@ -607,7 +609,7 @@ class User < ActiveRecord::Base
 
   # profile_attributes hash can be given here to create a related profile
   #
-  def profile_attributes=(attributes)
+  def profile_attributes=( arg)
     # if !profile.blank? && profile.is_a?( Profile)
     #   # keep the existing user connected. no need to re-assign
     #   self.profile.attributes = attributes # .reject {|k,v| k == "user_id"} # except user_id, take all attributes
@@ -617,8 +619,16 @@ class User < ActiveRecord::Base
     #   #   self.profile = any_existing_profile
     #   #   self.profile.attributes = attributes
     #   # else
+    _attributes = if arg.is_a?( Profile)
+      arg.clone.attributes
+    elsif arg.is_a?( Hash)
+      arg
+    else
+      {}
+    end
+    _attributes = _attributes.reject { |k,v| k == 'user_id' }
     self.build_profile if profile.blank?
-    attributes.each { |k,v| self.profile.send( "#{k}=".to_sym, v) if self.profile.respond_to?( "#{k}=".to_sym) }
+    _attributes.each { |k,v| self.profile.send( "#{k}=", v) if self.profile.respond_to?( "#{k}=") }
     # (profile.blank? || profile.new_record?) ? self.build_profile( attributes) : self.profile.update_attributes( attributes) # .merge("user_id" => self)
     #   # end
     # end
@@ -727,7 +737,7 @@ class User < ActiveRecord::Base
         # get attributes from the given arguments
         # keep them {} if nothing can be derived
         _attributes = if attributes.is_a?(RolesUsersOption)
-          attributes.attributes
+          attributes.clone.attributes
         elsif attributes.is_a?( Hash)
           attributes
         else
@@ -1393,9 +1403,9 @@ class User < ActiveRecord::Base
       if self.is_halouser? # WARNING: DEPRECATED user[:is_new_halouser] == true
         # Mon Nov  1 22:29:21 IST 2010
         # QUESTION: Should this go out only during certain "states"?
-        UserMailer.deliver_signup_installation(self, self)
+        UserMailer.deliver_signup_installation(self, self) unless self.activated?
       else
-        UserMailer.deliver_signup_notification(self) unless self.is_caregiver? || self.is_subscriber? # (user[:is_caregiver] or user[:is_new_subscriber])
+        UserMailer.deliver_signup_notification(self) # unless self.is_caregiver? || self.is_subscriber? # (user[:is_caregiver] or user[:is_new_subscriber])
       end
       #
       # activation email gets delivered anyways

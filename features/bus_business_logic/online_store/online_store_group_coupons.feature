@@ -36,7 +36,7 @@ Feature: Online store group coupons
     And I check "order_bill_address_same"
     And I fill in "Coupon Code" with "<code>"
     And I press "Continue"
-    Then page content should have "This coupon is invalid. Regular pricing is applied."
+    Then I should see "249"
     
     Examples:
       | code    |
@@ -67,7 +67,7 @@ Feature: Online store group coupons
     And I check "order_bill_address_same"
     And I fill in "Coupon Code" with "DIRECT_TO_CONSUMER"
     And I press "Continue"
-    Then page content should have "This coupon is invalid. Regular pricing is applied."
+    Then I should see "249"
   
   Scenario: Group required when creating coupon code
     Given I am an authenticated user

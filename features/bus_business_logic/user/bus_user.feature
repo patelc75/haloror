@@ -34,9 +34,9 @@ Feature: User status
   Scenario: Keep status in users table (existing status column) and not the user_intakes table
     Given the following user intakes:
       | gateway_serial |
-      | 1122334455     |
-    Then user intake "1122334455" should not have a status attribute
-    And senior of user intake "1122334455" should have a status attribute
+      | H234567890     |
+    Then user intake "H234567890" should not have a status attribute
+    And senior of user intake "H234567890" should have a status attribute
 
   Scenario: Super admin can change password for any config > user
     When I am changing the password for "test-user"

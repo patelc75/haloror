@@ -63,14 +63,17 @@ Given /^(the|only the) following (.+):$/ do |_condition, name, table|
     model = Factory.build(name.gsub(/ /,'_').singularize.to_sym)
     model.attributes = hash # apply attributes in memory. helps to apply virtual attributes correctly
     model.skip_validation = true if model.is_a?( UserIntake)
-    model.save
+    model.save.should be_true
+    # 
+    #  Fri Nov 19 01:08:12 IST 2010, ramonrails
+    #   * TODO: check if this can be skipped now
     if model.is_a?( UserIntake)
       # now make relations
-      model.senior.is_halouser_of model.group
-      model.subscriber.is_subscriber_of model.senior
-      model.caregiver1.is_caregiver_of model.senior unless model.caregiver1.blank?
-      model.caregiver2.is_caregiver_of model.senior unless model.caregiver2.blank?
-      model.caregiver3.is_caregiver_of model.senior unless model.caregiver3.blank?
+      model.senior.is_halouser_of( model.group)
+      model.subscriber.is_subscriber_of( model.senior)
+      model.caregiver1.is_caregiver_of( model.senior) unless model.caregiver1.blank?
+      model.caregiver2.is_caregiver_of( model.senior) unless model.caregiver2.blank?
+      model.caregiver3.is_caregiver_of( model.senior) unless model.caregiver3.blank?
     end
   end
   # model.create!(table.hashes)

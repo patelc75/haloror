@@ -42,12 +42,20 @@ class DeviceModel < ActiveRecord::Base
 
   def self.complete_coupon( group, coupon_code)
     _product = DeviceModel.myhalo_complete
-    _product.coupon( :group => group, :coupon_code => coupon_code) || DeviceModelPrice.default( _product)
+    if _product.blank?
+      DeviceModelPrice.default( _product)
+    else
+      _product.coupon( :group => group, :coupon_code => coupon_code)
+    end
   end
   
   def self.clip_coupon( group, coupon_code)
     _product = DeviceModel.myhalo_clip
-    _product.coupon( :group => group, :coupon_code => coupon_code) || DeviceModelPrice.default( _product)
+    if _product.blank?
+      DeviceModelPrice.default( _product)
+    else
+      _product.coupon( :group => group, :coupon_code => coupon_code)
+    end
   end
 
   # ====================
