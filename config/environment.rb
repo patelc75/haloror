@@ -127,7 +127,7 @@ ExceptionNotifier.email_prefix = "[" + ServerInstance.current_host_short_string 
 #require 'tzinfo/lib/tzinfo' # Use tzinfo library to convert to and from the users timezone
 ENV['TZ'] = 'UTC' # This makes Time.now return time in UTC and assumes all data in DB is this timezone, seems to only work in production mode
 Time::DATE_FORMATS[:date_time] = "%a %b %d, %Y at %I:%M%p" #Tue Dec 25,2007 at 03:52PM
-Time::DATE_FORMATS[:date_time_seconds] = "%a %b %d, %Y at %I:%M:%S%p" #Tue Dec 25,2007 at 03:52PM
+Time::DATE_FORMATS[:date_time_seconds] = "%a %b %d, %Y at %I:%M:%S%p" #Tue Dec 25,2007 at 01:02:13PM
 Time::DATE_FORMATS[:date_time_seconds_2] = "%m/%d/%y %I:%M%p" #12/25/07 03:52PM
 Time::DATE_FORMATS[:date_time_timezone] = Time::DATE_FORMATS[:date_time] + " %Z" #Tue Dec 25, 2007 at 03:52PM CST
 Time::DATE_FORMATS[:time_date] = "%I:%M%p on %a %b %d,%Y" #03:52PM on Tue Dec 25,2007
