@@ -169,13 +169,13 @@ class UserIntake < ActiveRecord::Base
     self.need_validation = true # assume, the user will not hit "save"
     self.installation_datetime ||= (order.created_at + 7.days) if ordered_direct_to_consumer?
     decide_card_or_bill
-    # # 
-    # #   * we begin from this state
-    # if self.new_record?
-    #   self.no_caregiver_1 = true if no_caregiver_1.nil?
-    #   self.no_caregiver_2 = true if no_caregiver_2.nil?
-    #   self.no_caregiver_3 = true if no_caregiver_3.nil?
-    # end
+    # 
+    #   * we begin from this state
+    if self.new_record?
+      self.no_caregiver_1 = true if no_caregiver_1.nil?
+      self.no_caregiver_2 = true if no_caregiver_2.nil?
+      self.no_caregiver_3 = true if no_caregiver_3.nil?
+    end
     #
     # build before fetching caregiver options. also establishes
     #   * same as user
@@ -527,9 +527,9 @@ class UserIntake < ActiveRecord::Base
             _user.lazy_roles[:caregiver] = senior
             _user.lazy_options[ senior] = mem_caregiver2_options
             _user.save
-          # else
-          #   self.no_caregiver_2 = true
-          #   self.send(:update_without_callbacks)
+          else
+            self.no_caregiver_2 = true
+            self.send(:update_without_callbacks)
           end
 
         when 'caregiver3'
@@ -540,9 +540,9 @@ class UserIntake < ActiveRecord::Base
             _user.lazy_roles[:caregiver] = senior
             _user.lazy_options[ senior] = mem_caregiver3_options
             _user.save
-          # else
-          #   self.no_caregiver_3 = true
-          #   self.send(:update_without_callbacks)
+          else
+            self.no_caregiver_3 = true
+            self.send(:update_without_callbacks)
           end
         end # case
       end # blank?
