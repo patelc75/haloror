@@ -566,6 +566,7 @@ ActiveRecord::Schema.define(:version => 20101122192124) do
     t.datetime "reconnected_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "user_id"
   end
 
   add_index "gateway_offline_alerts", ["device_id"], :name => "outage_alerts_device_id_idx"
@@ -574,6 +575,7 @@ ActiveRecord::Schema.define(:version => 20101122192124) do
   create_table "gateway_online_alerts", :force => true do |t|
     t.integer  "device_id",  :null => false
     t.datetime "created_at", :null => false
+    t.integer  "user_id"
   end
 
   add_index "gateway_online_alerts", ["device_id"], :name => "gateway_online_alerts_device_id_idx"
@@ -682,12 +684,6 @@ ActiveRecord::Schema.define(:version => 20101122192124) do
   end
 
   add_index "lost_datas", ["begin_time", "end_time", "user_id"], :name => "index_lost_datas_on_user_id_and_end_time_and_begin_time"
-
-  create_table "mgmt_acks", :force => true do |t|
-    t.integer  "mgmt_cmd_id"
-    t.datetime "timestamp_device"
-    t.datetime "timestamp_server"
-  end
 
   create_table "mgmt_cmds", :force => true do |t|
     t.integer  "device_id"
