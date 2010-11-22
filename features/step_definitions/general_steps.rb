@@ -141,7 +141,7 @@ end
 
 # Usage:
 #   Given there are no panics, Email, user, user intakes, Device Type, Device Models
-Given /^there (is|are) no (.+)$/ do |_models|
+Given /^there (is|are) no (.+)$/ do |_what, _models|
   _models.split(',').each {|e| e.strip.gsub(' ','_').classify.constantize.send(:delete_all) }
 end
 
@@ -153,6 +153,15 @@ end
 # =========
 # = whens =
 # =========
+
+When /^I fill in "([^"]*)" date with "([^"]*)"$/ do |_element, _dynamic|
+  _value = if _dynamic.include?("`")
+    _dynamic.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).to_s }.join(' ').strip
+  else
+    _dynamic.strip
+  end
+  fill_in( _element, :with => _value)
+end
 
 When /^I reload(?:| the page)$/ do
   reload
@@ -225,6 +234,16 @@ Then /^checkboxes "([^\"]*)" (should|should not) be checked$/ do |_checkboxes, _
   _checkboxes.split(',').collect(&:strip).each do |_checkbox|
     Then %{"#{_checkbox}" checkbox #{_condition} be checked}
   end
+end
+
+Then /^(\d+) (.+) should be available$/ do |_count, _models|
+  _count = case _count
+  when "an", "a"; 1;
+  when "no"; 0;
+  else
+    _count.to_i
+  end
+  _models.split(',').each {|e| e.strip.gsub(' ','_').classify.constantize.send(:count).should == _count }
 end
 
 Then /^a (.+) should exist with (.+) "([^"]*)"$/ do |what, column, data|
@@ -345,11 +364,11 @@ end
 Then /^"([^"]*)" checkbox (should|should not) be checked$/ do |identifier, _condition|
   identifier = identifier.gsub(' ','_').downcase
   if _condition == 'should'
-    response_body.should have_selector "input[type=checkbox][checked=checked][id=#{identifier}]"
-    # response.should have_xpath("//input[@id=\"#{identifier.gsub(' ','_').downcase}\" and @checked=\"1\"]")
+    response_body.should have_selector "input[type='checkbox'][checked='checked'][id='#{identifier}']"
+    # response.should have_xpath("//input[@id=\"#{identifier.gsub(' ','_').downcase}\" and @checked=\"checked\"]")
   else
-    response_body.should have_selector "input[type=checkbox][checked=checked][id=#{identifier}]"
-    # response.should_not have_xpath("//input[@id=\"#{identifier.gsub(' ','_').downcase}\" and @checked=\"1\"]")
+    response_body.should have_selector "input[type='checkbox'][checked='checked'][id='#{identifier}']"
+    # response.should_not have_xpath("//input[@id=\"#{identifier.gsub(' ','_').downcase}\" and @checked=\"checked\"]")
   end
 end
 

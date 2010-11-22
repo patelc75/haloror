@@ -4,12 +4,15 @@ Feature: Pre quality
   I want feature
 
   Background:
+    # Login as super_admin
     Given I am an authenticated super admin
     And only the following carriers:
       | name    |
       | Alltel  |
       | Verizon |
     
+  # Create a new group (eg. ml_group1.5.1-rc1) at My Links > Config > Roles + Groups and add an email addr for the group
+  # Create a master group (eg. ml_master) and add an email addr for the master group
   Scenario Outline: super admin > create a group
     When I am ready to create a "<name>" reseller group
     And I press "Save"
@@ -20,6 +23,7 @@ Feature: Pre quality
       | ml_reseller |
       | ml_master   |
 
+  # Create an admin (eg. admin1.5.1-rc1) for the new group at My Links > Sign up users with other roles
   Scenario: super admin > create an admin
     When I create a "reseller" reseller group
     And I am creating admin of "reseller" group
@@ -30,6 +34,8 @@ Feature: Pre quality
     # count of emails is ignored here to accommodate within timeline of 1.6.0 release
     # we must check the count also, or, users may get multiple similar emails
 
+  # Login as admin created in previous section
+  # Try clicking activation link in both emails
   Scenario: Activate an admin
     When I create a "reseller" reseller group
     And I create admin of "reseller" group
@@ -39,13 +45,15 @@ Feature: Pre quality
     Then last user should be activated
     And I should see "reseller_admin"
     
+  # Create a new coupon code for the new group at My Links > Config > Coupon Codes
   Scenario: super admin > create an coupon code
     Given the product catalog exists
     When I create a "reseller" reseller group
     And I am ready to create a coupon code for "reseller" group
     And I press "Save"
     Then a coupon code should exist with coupon_code "reseller_coupon"
-    
+  
+  # Verify group under “Billing and Shipping” block
   Scenario: admin > online store has single group
     Given the product catalog exists
     And a group "bogus" exists
@@ -54,8 +62,11 @@ Feature: Pre quality
     And I logout
     And I activate the last user as "reseller_admin"
     And I go to the online store
+    # Verify the group name displays correctly
     Then I should see "reseller"
+    # Verify there in “no” link adjacent to the group name for changing the group
     And page content should not have "bogus, switch"
+    # Verify that manually forcing “/orders/switch_group” does not allow to switch the group, but snaps back to order page with the same group name visible
     When I am switching the group for online store
     Then I should see "Group: reseller"
     And I should not see "Please select a group"
@@ -69,10 +80,12 @@ Feature: Pre quality
     And I am placing an online order for "re_reseller" group
     And I fill in "Coupon Code" with "reseller_coupon"
     And I press "Continue"
+    # Use above coupon code and verify above values are charged to credit card
     Then I should see "$77"
     And I should see "2 months trial"
 
-  Scenario: admin > place order
+  # senior different from subscriber
+  Scenario: admin > place order : senior <> subscriber
     Given the product catalog exists
     And there are no user intakes
     And the following groups:
@@ -88,13 +101,43 @@ Feature: Pre quality
     When I fill in "Coupon Code" with "ml_reseller_coupon"
     And I press "Continue"
     And I press "Place Order"
+    # To halouser (and subscriber if there is one): Subject "Please activate your new myHalo account"
     Then an email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
     #   * TODO: verify the count of emails as per business logic
+    # To halouser (and subscriber if there is one): Subject "Please activate your new myHalo account"
     And 2 emails to "cuc_bill@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
+    # To senior_signup@halomonitoring.com, group, master group: Subject "[HALO] Order Summary"
     And an email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery
     And an email to "ml_master@test.com" with subject "Order Summary" should be sent for delivery
     And 1 user intake should be available
 
+  # senior == subscriber
+  Scenario: admin > place order : senior == subscriber
+    Given the product catalog exists
+    And there are no user intakes
+    And the following groups:
+      | name        | sales_type | email                |
+      | ml_reseller | reseller   | ml_reseller@test.com |
+      | ml_master   | reseller   | ml_master@test.com   |
+    When I create a coupon code for "ml_reseller" group
+    And I create admin of "ml_reseller" group
+    And I activate the last user as "ml_reseller_admin"
+    And I am placing an online order for "ml_reseller" group
+    And I check "order_bill_address_same"
+    Then I should see "ml_reseller"
+    And I should not see "ml_master"
+    When I fill in "Coupon Code" with "ml_reseller_coupon"
+    And I press "Continue"
+    And I press "Place Order"
+    # Verify only 1 user halouser was added in Config > Users. Verify no extra users were created.
+    And senior of last user intake should be subscriber
+    And last user intake should not have caregivers
+    When I edit the last user intake
+    # “Same as User” is checked and “No Caregiver #1” is clickable
+    Then "user_intake_subscriber_is_user" checkbox should be checked
+    # And "user_intake_no_caregiver_1" checkbox should be checked
+
+  # Add caregiver: My Links > Config > Users > (find row for new halouser) > Caregiver > Add Caregiver > Add new caregiver with no email
   Scenario: admin > add a new caregiver with no email
     Given the product catalog exists
     When I create a "reseller" reseller group
@@ -120,14 +163,17 @@ Feature: Pre quality
     And I press "submit_caregiver"
     Then I should see "cg first name cg last name"
 
+  # Approve Subscription agreement after picking login/password
   Scenario: halouser > approve subscription agreement
     Given the product catalog exists
     When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
     And I create admin of "reseller" group
+    # Login as admin of the group created in Section 1
     And I activate the last user as "reseller_admin"
     And I place an online order for "reseller" group
     And I logout
+    # Try clicking activation link in both emails
     And I activate the "reseller_senior" senior of last order
     And I check "userintake_agree"
     And I press "Agree"
@@ -135,32 +181,56 @@ Feature: Pre quality
 
   Scenario: halouser > submit user intake form - subscriber is caregiver
     Given the product catalog exists
+    And the following devices:
+      | serial_number |
+      | H200220022    |
+      | H100110011    |
     When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
-    And I create admin of "reseller" group
-    And I activate the last user as "reseller_admin"
     And I place an online order for "reseller" group
-    And I am listing user intakes
-    And I follow "edit_link"
+    # Open the user intake, perform the following steps and click Save
+    And I edit the last user intake
+    # Check email, text toggles
+    And I check "user_intake_caregiver1_email"
+    And I check "user_intake_caregiver1_text"
+    And I check "user_intake_caregiver2_email"
+    And I check "user_intake_caregiver2_text"
+    And I check "user_intake_caregiver3_email"
+    And I check "user_intake_caregiver3_text"
     And I uncheck "user_intake_subscriber_is_user"
     And I check "user_intake_subscriber_is_caregiver"
     And I check "user_intake_no_caregiver_1"
     And I uncheck "user_intake_no_caregiver_2"
     And I uncheck "user_intake_no_caregiver_3"
     And I fill the subscriber details for user intake form
+    # Add Caregiver #2 and Caregiver #3
     And I fill the caregiver2 details for user intake form
     And I fill the caregiver3 details for user intake form
     And I select "Verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I select "Verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
     And I select "Verizon" from "user_intake_caregiver2_attributes__profile_attributes_carrier_id"
     And I select "Verizon" from "user_intake_caregiver3_attributes__profile_attributes_carrier_id"
+    # Add today’s date as Desired Installation Date
+    And I fill in "user_intake_installation_datetime" date with "`Date.today.to_s`"
+    # Add GW and Transmitter serial numbers by finding  unused (no icon) serial numbers at Config > Devices
+    And I fill in "user_intake_gateway_serial" with "H200220022"
+    And I fill in "user_intake_transmitter_serial" with "H100110011"
     And I press "user_intake_submit"
     Then I should see "successfully updated"
-    # #
-    # # email, text and phone checkboxes
-    # # https://redmine.corp.halomonitor.com/issues/3674
-    # And caregiver1 of last user intake should have email_active opted
-    # And caregiver1 of last user intake should have text_active opted
+    # Verify serial numbers were mapped to devices at Config > Devices
+    And devices "H200220022, H100110011" should be attached to last user intake
+    # Click “Submit” button on User intake form and verify “Ready for Approval” state at My Links > User Intakes
+    When I edit the last user intake
+    #  Mon Nov 22 13:31:40 IST 2010, ramonrails: TODO: manually smoke tested this step
+    # Then page content should have "H200220022, H100110011, caregiver2 first name, caregiver3 first name, `Date.today.to_s`"
+    # email, text and phone checkboxes
+    # https://redmine.corp.halomonitor.com/issues/3674
+    And "user_intake_caregiver1_email" checkbox should be checked
+    And "user_intake_caregiver1_text" checkbox should be checked
+    And "user_intake_caregiver2_email" checkbox should be checked
+    And "user_intake_caregiver2_text" checkbox should be checked
+    And "user_intake_caregiver3_email" checkbox should be checked
+    And "user_intake_caregiver3_text" checkbox should be checked
 
   Scenario: halouser > submit user intake form - make all users distinct
     Given the product catalog exists
@@ -200,8 +270,16 @@ Feature: Pre quality
     And I activate the last user as "reseller_admin"
     And I place an online order for "reseller" group
     Then senior of last user intake should be in test mode
+    # Verify “Opt out of live call center” is checked in the profile of halouser
     And senior of last user intake should be opted out of call center
+    # Verify all caregivers are away at Config > Users > (pick row) > Caregivers
     And caregivers of last user intake should be away
+    # Open user intake and Verify Credit Card/Manual Billing radio button is set to credit card
+    #  Mon Nov 22 13:33:56 IST 2010, ramonrails
+    #   TODO: these are ajax/css steps. need capybara. webrat does not work. manualy smoke tested
+    # When I edit the last user intake
+    # Then "user_intake_credit_debit_card_proceessed_" checkbox should be checked
+    # And "user_intake_bill_monthly_" checkbox should not be checked
   
   # (1) Uncheck "Same as User" at the Online Store
   # (2) Verify both halouser and subsriber (and roles) in Config > Users
@@ -214,6 +292,7 @@ Feature: Pre quality
     When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
     And I am placing an online order for "reseller" group
+    # Uncheck “Same as Users Home Address”
     And I uncheck "order_bill_address_same"
     And I fill the shipping details for online store
     And I fill the billing details for online store
@@ -221,15 +300,20 @@ Feature: Pre quality
     And I press "Continue"
     And I press "Place Order"
     Then I should see "Success"
+    # “Same as User” is unchecked, “Add as #1 Caregiver” is checked, and “No Caregiver #1” is not clickable
     And billing and shipping addresses should not be same
+    # At Config > Users, verify the 2 users halouser and subscriber (will also include caregiver role) were added.
     And last user intake should have separate senior and subscriber
     And subscriber of last user intake is also the caregiver
     #
     # verify roles in config > users
+    # Verify no extra roles and no extra users were created.
+    And last user intake should have 2 users
     When I visit "/reporting/users?group_name=reseller"
     Then page content should have "subscriber for, caregiver for"
     #
     # verify call center account number
+    # Verify call center account number is incremented in the profile of halouser
     Then last user intake should have latest call center account number
     #
     # safety care email
@@ -292,4 +376,5 @@ Feature: Pre quality
     # activate caregiver3
     When I activate the last caregiver3 as "reseller_caregiver3"
     Then last caregiver3 should be activated
-    
+  
+  Scenario: Safety care group email dispatch

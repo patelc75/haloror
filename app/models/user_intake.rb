@@ -406,23 +406,23 @@ class UserIntake < ActiveRecord::Base
   def associations_before_validation_and_save
     collapse_associations # make obsolete ones = nil
     #
-    # TODO: conflicting with 1.6.0 pre-quality. removed to check compatiblity or related errors
-    # for remaining, fill login, password details only when login is empty
-    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_user_login( user) }
+    # # TODO: conflicting with 1.6.0 pre-quality. removed to check compatiblity or related errors
+    # # for remaining, fill login, password details only when login is empty
+    # ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_user_login( user) }
     #
     #  Fri Nov 12 18:12:01 IST 2010, ramonrails
     #   * these are mandatory to dispatch emails in user model
     #   * a user must know the role while saving itself
     # assign roles to user objects. it will auto save the roles with user record
     # TODO: use this instead of association_after_save that is assigning roles
-    self.senior.lazy_roles[:halouser]         = group  unless senior.blank? # senior.is_halouser_of group
-    self.subscriber.lazy_roles[:subscriber]   = senior unless subscriber.blank?
-    self.caregiver1.lazy_roles[:caregiver]    = senior unless caregiver1.blank?
-    self.caregiver2.lazy_roles[:caregiver]    = senior unless caregiver2.blank?
-    self.caregiver3.lazy_roles[:caregiver]    = senior unless caregiver3.blank?
-    self.caregiver1.lazy_options[ caregiver1.login ] = mem_caregiver1_options
-    self.caregiver2.lazy_options[ caregiver2.login ] = mem_caregiver2_options
-    self.caregiver3.lazy_options[ caregiver3.login ] = mem_caregiver3_options
+    self.senior.lazy_roles[:halouser]                = group  unless senior.blank? # senior.is_halouser_of group
+    self.subscriber.lazy_roles[:subscriber]          = senior unless subscriber.blank?
+    self.caregiver1.lazy_roles[:caregiver]           = senior unless caregiver1.blank?
+    self.caregiver2.lazy_roles[:caregiver]           = senior unless caregiver2.blank?
+    self.caregiver3.lazy_roles[:caregiver]           = senior unless caregiver3.blank?
+    self.caregiver1.lazy_options[ senior ] = mem_caregiver1_options
+    self.caregiver2.lazy_options[ senior ] = mem_caregiver2_options
+    self.caregiver3.lazy_options[ senior ] = mem_caregiver3_options
     #
     # # now collect the users for save as associations
     # self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq.compact # omit nil, duplicates
@@ -446,14 +446,17 @@ class UserIntake < ActiveRecord::Base
       #  Sat Nov 20 02:03:52 IST 2010, ramonrails
       #   * this logic is required when uset simply toggles the flag and saves
       _user = self.send( _what) # fetch the associated user
-      _user.autofill_login # create login and password if not already
       unless _user.blank? || _user.nothing_assigned?
+        #   * default properties
+        _user.autofill_login # create login and password if not already
         _user.skip_validation = true # TODO: patch for 1.6.0 release. fix later with business logic, if required
 
         case _what
         when 'senior'
+          # _user.save
+          # _user.is_halouser_of( group) unless _user.blank? || group.blank? # role
+          _user.lazy_roles[:halouser] = group unless _user.blank? || group.blank? # role
           _user.save
-          _user.is_halouser_of( group) unless _user.blank? || group.blank? # role
           
         when 'subscriber'
           if subscribed_for_self? # senior is same as subscriber
@@ -466,21 +469,22 @@ class UserIntake < ActiveRecord::Base
               # subscriber.delete # remove this extra user
               self.subscriber_is_user = true # back to current situation
             end
+            # _user.save
+            # _user.is_subscriber_of( senior) unless _user.blank? || senior.blank? # role
+            _user.lazy_roles[:subscriber] = senior unless _user.blank? || senior.blank? # role
             _user.save
-            _user.is_subscriber_of( senior) unless _user.blank? || senior.blank? # role
 
           else # senior different from subscriber
             if was_subscribed_for_self?
-              #   * was different earlier. no change
-              # _user.save
-              # _user.is_subscriber_of( senior) # role
               _user = senior.clone_with_profile if senior.equal?( subscriber) # same IDs, clone first
               senior.is_not_subscriber_of( senior) unless senior.blank? # senior was subscriber, not now
             else
               # all good. nothing changed
             end
+            # _user.save
+            # _user.is_subscriber_of( senior) unless _user.blank? || senior.blank? # role
+            _user.lazy_roles[:subscriber] = senior unless _user.blank? || senior.blank? # role
             _user.save
-            _user.is_subscriber_of( senior) unless _user.blank? || senior.blank? # role
           end
           
         when 'caregiver1'
@@ -503,24 +507,42 @@ class UserIntake < ActiveRecord::Base
               # all good. nothing changed
             end
           end
-          if caregiving_subscriber? || (caregiver1_required? && _user.something_assigned?)
+          if caregiving_subscriber? || (caregiver1_required? && _user.something_assigned? && !senior.blank? && !_user.equal?( senior))
+            # _user.save
+            # _user.is_caregiver_of( senior) unless _user.blank? || senior.blank? || _user.equal?( senior)
+            # _user.options_for_senior( senior, mem_caregiver1_options)
+            _user.lazy_roles[:caregiver] = senior
+            _user.lazy_options[ senior] = mem_caregiver1_options
             _user.save
-            _user.is_caregiver_of( senior) unless _user.blank? || senior.blank?
-            _user.options_for_senior( senior, mem_caregiver1_options)
+          # else
+          #   self.no_caregiver_1 = true
+          #   self.send(:update_without_callbacks)
           end
           
         when 'caregiver2'
-          if caregiver2_required? && _user.something_assigned?
+          if caregiver2_required? && _user.something_assigned? && !senior.blank? && !_user.equal?( senior)
+            # _user.save
+            # _user.is_caregiver_of( senior) unless _user.blank? || senior.blank? || _user.equal?( senior)
+            # _user.options_for_senior( senior, mem_caregiver2_options)
+            _user.lazy_roles[:caregiver] = senior
+            _user.lazy_options[ senior] = mem_caregiver2_options
             _user.save
-            _user.is_caregiver_of( senior) unless _user.blank? || senior.blank?
-            _user.options_for_senior( senior, mem_caregiver2_options)
+          # else
+          #   self.no_caregiver_2 = true
+          #   self.send(:update_without_callbacks)
           end
 
         when 'caregiver3'
-          if caregiver3_required? && _user.something_assigned?
+          if caregiver3_required? && _user.something_assigned? && !senior.blank? && !_user.equal?( senior)
+            # _user.save
+            # _user.is_caregiver_of( senior) unless _user.blank? || senior.blank? || _user.equal?( senior)
+            # _user.options_for_senior( senior, mem_caregiver3_options)
+            _user.lazy_roles[:caregiver] = senior
+            _user.lazy_options[ senior] = mem_caregiver3_options
             _user.save
-            _user.is_caregiver_of( senior) unless _user.blank? || senior.blank?
-            _user.options_for_senior( senior, mem_caregiver3_options)
+          # else
+          #   self.no_caregiver_3 = true
+          #   self.send(:update_without_callbacks)
           end
         end # case
       end # blank?
@@ -659,7 +681,10 @@ class UserIntake < ActiveRecord::Base
   end
 
   def group_name=( name)
-    self.group = Group.find_or_create_by_name( name)
+    # 
+    #  Mon Nov 22 16:55:15 IST 2010, ramonrails
+    #   * find_or_create is not appropriate
+    self.group = Group.find_by_name( name) # or_create_
   end
 
   def order_present?
@@ -925,27 +950,27 @@ class UserIntake < ActiveRecord::Base
 
   private
 
-  # WARNING: This is conflicting with the 1.6.0 Pre-Quality
-  #   Order from online store should create a user intake with blank login & password for all associated users
-  #   This does not suit well wil existing user intake scenarios
-  # Proposed action:
-  #   comment out this method to see the affects in cucumber
-  #   this can help to idenitfy all the issue quickly
-  def autofill_user_login(user_type = "")
-    unless user_type.blank?
-      user = self.send("#{user_type}") # local copy, to keep code clean
-      user.autofill_login unless user.blank? # || user.nothing_assigned?
-      # #
-      # # user_intake validation will fail if this is removed from here
-      # if user && user.login.blank? && !user.email.blank? # !user.blank? && user.login.blank?
-      #   hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
-      #   # only when user_type is not nil, but login is
-      #   user.send("login=".to_sym, "_AUTO_#{hex}") # _AUTO_xxx is treated as blank
-      #   user.send("password=".to_sym, hex)
-      #   user.send("password_confirmation=".to_sym, hex)
-      # end
-    end
-  end
+  # # WARNING: This is conflicting with the 1.6.0 Pre-Quality
+  # #   Order from online store should create a user intake with blank login & password for all associated users
+  # #   This does not suit well wil existing user intake scenarios
+  # # Proposed action:
+  # #   comment out this method to see the affects in cucumber
+  # #   this can help to idenitfy all the issue quickly
+  # def autofill_user_login(user_type = "")
+  #   unless user_type.blank?
+  #     user = self.send("#{user_type}") # local copy, to keep code clean
+  #     user.autofill_login unless user.blank? # || user.nothing_assigned?
+  #     # #
+  #     # # user_intake validation will fail if this is removed from here
+  #     # if user && user.login.blank? && !user.email.blank? # !user.blank? && user.login.blank?
+  #     #   hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
+  #     #   # only when user_type is not nil, but login is
+  #     #   user.send("login=".to_sym, "_AUTO_#{hex}") # _AUTO_xxx is treated as blank
+  #     #   user.send("password=".to_sym, hex)
+  #     #   user.send("password_confirmation=".to_sym, hex)
+  #     # end
+  #   end
+  # end
 
   def skip_associations_validation
     #

@@ -5,8 +5,8 @@ require "faker"
 Given /^the product catalog exists$/ do
   #
   # remove any existing data for product catalog
-  Given "there are no device types, device models, device model prices"
-  # [DeviceType, DeviceModel, DeviceModelPrice].each {|e| e.delete_all }
+  # Given %{there are no device types, device models, device model prices}
+  [DeviceType, DeviceModel, DeviceModelPrice].each(&:delete_all)
   #
   # Now create what we need
   {

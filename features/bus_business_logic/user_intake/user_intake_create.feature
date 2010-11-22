@@ -44,8 +44,8 @@ Feature: Create user intake
     And I press "user_intake_submit"
     Then page content should have "successfully created"
     And last user intake should not have caregivers
-    And senior of last user intake should have demo mode
-    And senior of last user intake should have vip mode
+    And senior of last user intake should be in demo mode
+    And senior of last user intake should be in vip mode
 
     # skipped for 1.6.0 release
   # # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
