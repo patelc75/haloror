@@ -175,11 +175,13 @@
 
           <!-- role attributes -->
           <div id="caregiver_extras" class="prepend-3 span-7 hidden">
+            <p>Critical Alert Message Types<br />
             <%= f.check_box "caregiver1_email" %><%= f.label "caregiver1_email", "Email" %>
             <%= f.check_box "caregiver1_text" %><%= f.label "caregiver1_text", "Text" %>
             <!-- <%# fields_for "user_intake[caregiver1_role_options]", @user_intake.subscriber do |subscriber_form| %>
             <%#= render :partial => 'caregiver_role_options', :locals => {:f => subscriber_form} %>
             <%# end -%> -->
+            </p>
           </div>
         </div>
       </div>
@@ -213,8 +215,10 @@
             <!--  temporary checkboxes for 1.6.0 -->
             <div class="span-2">&nbsp;</div>
             <div class="span-5 last">
+              <p>Critical Alert Message Types<br />
               <%= f.check_box "caregiver#{index+1}_email" %><%= f.label "caregiver#{index+1}_email", "Email" %>
               <%= f.check_box "caregiver#{index+1}_text" %><%= f.label "caregiver#{index+1}_text", "Text" %>
+              </p>
             </div>
             <!-- role attributes -->
             <!--

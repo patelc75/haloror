@@ -62,6 +62,7 @@ class UserIntakesController < ApplicationController
         @user_intakes = UserIntake.paginate :page => params[:page],:order => 'updated_at desc',:per_page => 15, :conditions => "#{conditions}"  
       end
     end
+    @group_names = @groups.collect { |e| [e.name, e.name] }.insert( 0, ['All Groups', ''])
     respond_to do |format|
       format.html 
       format.xml  { render :xml => @user_intakes }
