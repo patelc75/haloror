@@ -234,7 +234,8 @@ class UserIntake < ActiveRecord::Base
     #   * last user action was "Approve"
     # QUESTION: admin can approve?
     if lazy_action == "Approve" && senior.status == User::STATUS[:approval_pending] # && !self.updater.blank? && self.updater.is_super_admin?
-      self.senior.update_attribute( :status, User::STATUS[:install_pending])
+      self.senior.status = User::STATUS[:install_pending]
+      self.senior.send( :update_without_callbacks)
       self.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
 
       # Switch user to installed state, if
@@ -256,7 +257,11 @@ class UserIntake < ActiveRecord::Base
           if order.charge_subscription
             #
             # now make user "Installed"
-            self.senior.update_attribute( :status, User::STATUS[:installed])
+            self.senior.status = User::STATUS[:installed]
+            self.senior.send( :update_without_callbacks)
+            #
+            # all caregivers are active now
+            caregivers.each { |e| e.set_active_for( senior, true) }
             #
             # add a row to triage audit log
             #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log
@@ -406,9 +411,9 @@ class UserIntake < ActiveRecord::Base
   def associations_before_validation_and_save
     collapse_associations # make obsolete ones = nil
     #
-    # # TODO: conflicting with 1.6.0 pre-quality. removed to check compatiblity or related errors
-    # # for remaining, fill login, password details only when login is empty
-    # ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_user_login( user) }
+    # TODO: conflicting with 1.6.0 pre-quality. removed to check compatiblity or related errors
+    # for remaining, fill login, password details only when login is empty
+    ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each {|user| autofill_user_login( user) }
     #
     #  Fri Nov 12 18:12:01 IST 2010, ramonrails
     #   * these are mandatory to dispatch emails in user model
@@ -950,27 +955,27 @@ class UserIntake < ActiveRecord::Base
 
   private
 
-  # # WARNING: This is conflicting with the 1.6.0 Pre-Quality
-  # #   Order from online store should create a user intake with blank login & password for all associated users
-  # #   This does not suit well wil existing user intake scenarios
-  # # Proposed action:
-  # #   comment out this method to see the affects in cucumber
-  # #   this can help to idenitfy all the issue quickly
-  # def autofill_user_login(user_type = "")
-  #   unless user_type.blank?
-  #     user = self.send("#{user_type}") # local copy, to keep code clean
-  #     user.autofill_login unless user.blank? # || user.nothing_assigned?
-  #     # #
-  #     # # user_intake validation will fail if this is removed from here
-  #     # if user && user.login.blank? && !user.email.blank? # !user.blank? && user.login.blank?
-  #     #   hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
-  #     #   # only when user_type is not nil, but login is
-  #     #   user.send("login=".to_sym, "_AUTO_#{hex}") # _AUTO_xxx is treated as blank
-  #     #   user.send("password=".to_sym, hex)
-  #     #   user.send("password_confirmation=".to_sym, hex)
-  #     # end
-  #   end
-  # end
+  # WARNING: This is conflicting with the 1.6.0 Pre-Quality
+  #   Order from online store should create a user intake with blank login & password for all associated users
+  #   This does not suit well wil existing user intake scenarios
+  # Proposed action:
+  #   comment out this method to see the affects in cucumber
+  #   this can help to idenitfy all the issue quickly
+  def autofill_user_login(user_type = "")
+    unless user_type.blank?
+      user = self.send("#{user_type}") # local copy, to keep code clean
+      user.autofill_login unless user.blank? # || user.nothing_assigned?
+      # #
+      # # user_intake validation will fail if this is removed from here
+      # if user && user.login.blank? && !user.email.blank? # !user.blank? && user.login.blank?
+      #   hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
+      #   # only when user_type is not nil, but login is
+      #   user.send("login=".to_sym, "_AUTO_#{hex}") # _AUTO_xxx is treated as blank
+      #   user.send("password=".to_sym, hex)
+      #   user.send("password_confirmation=".to_sym, hex)
+      # end
+    end
+  end
 
   def skip_associations_validation
     #
