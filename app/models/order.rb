@@ -404,7 +404,7 @@ class Order < ActiveRecord::Base
     #   * pro-rata includes both dates defining the boundaries. add +1 to include them
     #   * On 1st of the month, do not pro-rate
     unless Date.today == Date.today.beginning_of_month
-      _number_of_days = ((Date.today.end_of_month - user_intake.pro_rata_start_date + 1) / 1.day)
+      _number_of_days = Date.today.end_of_month.day - user_intake.pro_rata_start_date.day + 1
     end
     #
     # charge pro-rata for the period
