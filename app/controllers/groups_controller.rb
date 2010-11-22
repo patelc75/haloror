@@ -4,7 +4,7 @@ class GroupsController < ApplicationController
   # GET /groups
   # GET /groups.xml
   def index
-    @groups = Group.find(:all, :order => "updated_at DESC").paginate :page => params[:page], :per_page => 15
+    @groups = Group.find(:all, :order => "updated_at DESC").paginate :page => params[:page], :per_page => 25
 
     respond_to do |format|
       format.html # index.html.erb
