@@ -328,7 +328,12 @@ class UserIntake < ActiveRecord::Base
 
   # when billing starts, the monthly recurring amount is charged pro-rated since this date
   def pro_rata_start_date
-    installation_datetime || shipped_at || created_at
+    # 
+    #  Tue Nov 23 00:53:04 IST 2010, ramonrails
+    #   * we will never use "installation_datetime"
+    #   * installation_datetime is the "desired" installation datetime
+    #   * Pro-rata is charged from the date a panic button is received making user ready to install
+    panic_received_at || shipped_at || created_at
   end
 
   # create blank placeholder records
