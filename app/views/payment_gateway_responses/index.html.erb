@@ -25,7 +25,7 @@
       <td><%=h pgr.id %></td>
       <td><%=h pgr.action %></td>
       <td class="textcenter"><%= link_to pgr.order_id, :controller => 'orders',:action => 'show' ,:id => pgr.order_id %></td>
-      <td class="textright"><%=h USD_value(pgr.amount/100) %></td>
+      <td class="textright"><%=h USD_value(pgr.amount/100.0) %></td>
       <td class="textcenter"><%= image_tag(pgr.success ? "tick.png" : "exclamation.png") %></td>
       <% if current_user.is_super_admin? %>
       <td><%=h pgr.authorization %></td>
