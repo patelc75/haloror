@@ -1,7 +1,6 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
 <%= render :partial => 'reporting/nav'%>
-<h2>Payment Gateway Responses</h2>
-
+<h2>Payments</h2>
 <p>
   <table class="bluegrey">
     <tr>
@@ -10,11 +9,15 @@
       <th style="width:25px;">Order ID</th>
       <th style="width:75px;">Amount</th>
       <th style="width:25px;">Success</th>
+      <% if current_user.is_super_admin? %>
       <th style="width:100px;">Authorization</th>
+      <% end %>      
       <th>Message</th>
+      <% if current_user.is_super_admin? %>
       <th>Params</th>
-      <th>Request data</th>
+      <th>Request data</th>                      
       <th>Request HTTP Headers</th>
+      <% end %>            
       <th>Created At</th>
     </tr>
     <% @payment_gateway_responses.each do |pgr| %>
@@ -24,11 +27,15 @@
       <td class="textcenter"><%= link_to pgr.order_id, :controller => 'orders',:action => 'show' ,:id => pgr.order_id %></td>
       <td class="textright"><%=h USD_value(pgr.amount/100) %></td>
       <td class="textcenter"><%= image_tag(pgr.success ? "tick.png" : "exclamation.png") %></td>
+      <% if current_user.is_super_admin? %>
       <td><%=h pgr.authorization %></td>
+      <% end %>
       <td><%= link_to truncate(pgr.message, 20, "..."), :controller => 'payment_gateway_responses',:action => 'details' ,:id => pgr.id,:column => 'message'  %></td>
+      <% if current_user.is_super_admin? %>
       <td><%= link_to truncate(pgr.params.to_s, 20, "..."), :controller => 'payment_gateway_responses',:action => 'details' ,:id => pgr.id,:column => 'params'  %></td>
       <td><%= link_to sanitize(truncate(pgr.request_data.to_s, 20, "...")), :controller => 'payment_gateway_responses',:action => 'details' ,:id => pgr.id,:column => 'request_data'  %></td>
       <td><%= link_to sanitize(truncate(pgr.request_headers.to_s, 20, "...")), :controller => 'payment_gateway_responses',:action => 'details' ,:id => pgr.id,:column => 'request_headers'  %></td>
+      <% end %>      
       <td><%=h pgr.created_at %></td>
     </tr>
     <% end -%>
