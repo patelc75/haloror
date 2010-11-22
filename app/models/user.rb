@@ -607,6 +607,10 @@ class User < ActiveRecord::Base
     (_options.length == 1) && !_options.include?( false)
   end
 
+  def something_assigned?
+    !nothing_assigned?
+  end
+
   # profile_attributes hash can be given here to create a related profile
   #
   def profile_attributes=( arg)

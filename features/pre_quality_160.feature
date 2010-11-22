@@ -74,6 +74,7 @@ Feature: Pre quality
 
   Scenario: admin > place order
     Given the product catalog exists
+    And there are no user intakes
     And the following groups:
       | name        | sales_type | email                |
       | ml_reseller | reseller   | ml_reseller@test.com |
@@ -92,8 +93,7 @@ Feature: Pre quality
     And 2 emails to "cuc_bill@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
     And an email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery
     And an email to "ml_master@test.com" with subject "Order Summary" should be sent for delivery
-    # smoke testing on sdev is at higher priority than this
-    # will come back to this later
+    And 1 user intake should be available
 
   Scenario: admin > add a new caregiver with no email
     Given the product catalog exists

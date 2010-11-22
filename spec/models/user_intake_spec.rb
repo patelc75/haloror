@@ -135,6 +135,9 @@ describe UserIntake do
       before(:all) do
         ui = Factory.build( :user_intake) # build associations
         ui.subscriber_is_user = true # keep subscriber same as senior
+        ui.no_caregiver_1 = true
+        ui.no_caregiver_2 = true
+        ui.no_caregiver_3 = true
         ui.save
         @ui = UserIntake.find( ui.id) # load form database
       end
@@ -144,14 +147,20 @@ describe UserIntake do
       specify { @ui.subscriber.profile.should be_valid } # valid subscriber profile
       specify { @ui.group.should be_valid } # valid group
       specify { @ui.subscriber.should == @ui.senior } # senior and subscriber should be same
-      specify { lambda { @ui.senior.is_halouser_of?( @ui.group) }.should be_true } # valid halouser role
-      specify { lambda { @ui.subscriber.is_subscriber_of?( @ui.senior) }.should be_true } # subscriber role
+      specify { @ui.senior.is_halouser_of?( @ui.group).should be_true } # valid halouser role
+      specify { @ui.subscriber.is_subscriber_of?( @ui.senior).should be_true } # subscriber role
+      specify { @ui.users.length.should == 1 } # subscriber is user
+      specify { @ui.senior.roles.length == 2 }
     end
 
     context "subscriber is not senior" do
       before(:all) do
         ui = Factory.build( :user_intake) # build associations
         ui.subscriber_is_user = false # subcriber different from senior
+        ui.subscriber_is_caregiver = true # subscriber is caregiver1
+        ui.no_caregiver_1 = true
+        ui.no_caregiver_2 = true
+        ui.no_caregiver_3 = true
         ui.save.should be_true
         @ui = UserIntake.find( ui.id) # load form database
       end
@@ -162,14 +171,19 @@ describe UserIntake do
       specify { @ui.group.should be_valid } # valid group
       specify { @ui.subscriber.should_not == @ui.senior }
       specify { @ui.subscriber.profile.should_not == @ui.senior.profile } # both profiles are different
-      specify { lambda { @ui.senior.is_halouser_of?( @ui.group) }.should be_true } # valid halouser role
-      specify { lambda { @ui.subscriber.is_subscriber_of?( @ui.senior) }.should be_true } # subscriber role
+      specify { @ui.senior.is_halouser_of?( @ui.group).should be_true } # valid halouser role
+      specify { @ui.subscriber.is_subscriber_of?( @ui.senior).should be_true } # subscriber role
+      specify { @ui.subscriber.is_caregiver_of?( @ui.senior).should be_true } # caregiver role
       #
       # Wed Oct 27 23:15:10 IST 2010
       #   * we will tackle this after 1.6.0 release. we might shift to FK approach and skip this fix
       #  Thu Nov 18 05:15:33 IST 2010, ramonrails
       #   Now fixed. no need to skip
       specify { @ui.subscriber.is_halouser_of?( @ui.group).should be_false } # subscriber is not halouser
+      specify { @ui.users.length.should == 2 }
+      specify { @ui.senior.roles.length == 1 }
+      specify { @ui.subscriber.roles.length == 2 }
+      specify { @ui.caregiver1.roles.length == 2 }
     end
 
     context "subscriber is not senior, subscriber is caregiver" do
@@ -177,6 +191,9 @@ describe UserIntake do
         ui = Factory.build( :user_intake) # build associations
         ui.subscriber_is_user = false # subcriber different from senior
         ui.subscriber_is_caregiver = true # subscriber is caregiver1
+        ui.no_caregiver_1 = true
+        ui.no_caregiver_2 = true
+        ui.no_caregiver_3 = true
         ui.save.should be_true
         @ui = UserIntake.find( ui.id) # load form database
       end
@@ -190,9 +207,10 @@ describe UserIntake do
       specify { @ui.subscriber.should_not == @ui.senior }
       specify { @ui.caregiver1.should == @ui.subscriber }
       specify { @ui.subscriber.profile.should_not == @ui.senior.profile } # both profiles are different
-      specify { lambda { @ui.senior.is_halouser_of?( @ui.group) }.should be_true } # valid halouser role
-      specify { lambda { @ui.subscriber.is_subscriber_of?( @ui.senior) }.should be_true } # subscriber role
-      specify { lambda { @ui.caregiver1.is_caregiver_of?( @ui.senior) }.should be_true } # caregiver role
+      specify { @ui.senior.is_halouser_of?( @ui.group).should be_true } # valid halouser role
+      specify { @ui.subscriber.is_subscriber_of?( @ui.senior).should be_true } # subscriber role
+      specify { @ui.caregiver1.is_caregiver_of?( @ui.senior).should be_true } # caregiver role
+      specify { @ui.users.length.should == 2 }
     end
 
     # Wed Oct 27 23:59:00 IST 2010
@@ -221,11 +239,12 @@ describe UserIntake do
       specify { @ui.caregiver2.should be_valid }
       specify { @ui.caregiver3.should be_valid }
       specify { @ui.subscriber.profile.should_not == @ui.senior.profile } # both profiles are different
-      specify { lambda { @ui.senior.is_halouser_of?( @ui.group) }.should be_true } # valid halouser role
-      specify { lambda { @ui.subscriber.is_subscriber_of?( @ui.senior) }.should be_true } # subscriber role
-      specify { lambda { @ui.caregiver1.is_caregiver_of?( @ui.senior) }.should be_true } # caregiver role
-      specify { lambda { @ui.caregiver2.is_caregiver_of?( @ui.senior) }.should be_true }
-      specify { lambda { @ui.caregiver3.is_caregiver_of?( @ui.senior) }.should be_true }
+      specify { @ui.senior.is_halouser_of?( @ui.group).should be_true } # valid halouser role
+      specify { @ui.subscriber.is_subscriber_of?( @ui.senior).should be_true } # subscriber role
+      specify { @ui.caregiver1.is_caregiver_of?( @ui.senior).should be_true } # caregiver role
+      specify { @ui.caregiver2.is_caregiver_of?( @ui.senior).should be_true }
+      specify { @ui.caregiver3.is_caregiver_of?( @ui.senior).should be_true }
+      specify { @ui.users.length.should == 5 }
     end
   
   end # create user intake
