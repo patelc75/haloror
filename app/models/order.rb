@@ -359,9 +359,18 @@ class Order < ActiveRecord::Base
         # recurring start_date was immediate. ".months" was missed in last release
         #
         # product_cost.recurring_delay.months.from_now.to_date
+        # 
+        #  Tue Nov 23 01:11:03 IST 2010, ramonrails
+        #   * subscription is charged from today if month started today
+        #   * subscription starts from next month if we are already within this month
+        _date = if (Date.today == Date.today.beginning_of_month)
+          Date.today
+        else
+          (Date.today + 1.month).beginning_of_month.to_date
+        end
         @recurring_fee_response = payment_gateway_server.recurring(product_cost.monthly_recurring*100, credit_card, {
             :interval => {:unit => :months, :length => 1},
-            :duration => {:start_date => (Time.now + 1.month).beginning_of_month.to_date, :occurrences => 60},
+            :duration => {:start_date => _date, :occurrences => 60},
             :billing_address => {
               :first_name => bill_first_name,
               :last_name => bill_last_name,
@@ -391,13 +400,18 @@ class Order < ActiveRecord::Base
     _per_day_cost = (product_cost.monthly_recurring / 30.00)
     #
     # difference of days since desired installation date and now
-    _number_of_days_including_today = ((Time.now.end_of_month - user_intake.pro_rata_start_date) / 1.day)
+    #  Tue Nov 23 01:03:39 IST 2010, ramonrails
+    #   * pro-rata includes both dates defining the boundaries. add +1 to include them
+    #   * On 1st of the month, do not pro-rate
+    unless Date.today == Date.today.beginning_of_month
+      _number_of_days = ((Date.today.end_of_month - user_intake.pro_rata_start_date + 1) / 1.day)
+    end
     #
     # charge pro-rata for the period
     # 
     #  Fri Nov  5 07:25:43 IST 2010, ramonrails
     #  both values here must be 2 decimals, for correct calculation
-    charge_credit_card( :pro_rata => (_per_day_cost * _number_of_days_including_today) )
+    charge_credit_card( :pro_rata => (_per_day_cost * _number_of_days) )
   end
 
   def masked_card_number
