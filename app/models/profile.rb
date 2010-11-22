@@ -241,7 +241,7 @@ class Profile < ActiveRecord::Base
     if (last_profile = Profile.last_account_number)
       call_center = last_profile.account_number
       call_center_number = call_center[2..5].to_i
-      call_center_number == 0 ? "HM????" : "HM" + (call_center_number + 1).to_s
+      call_center_number == 0 ? "HM????" : "HM" + "%03d" % (call_center_number + 1)
     else
       "HM????"
     end
