@@ -123,11 +123,6 @@ Given /^credit card is charged in user intake "([^"]*)"$/ do |_serial|
   ui.save.should == true
 end
 
-Given /^I edit the last user intake$/ do
-  (ui = UserIntake.last).should_not be_blank
-  visit edit_user_intake_path( :id => ui)
-end
-
 Given /^desired installation date for user intake "([^"]*)" is in (\d+) hours$/ do |_serial, value|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.installation_datetime = (Time.now + value.to_i.hours)
@@ -214,7 +209,12 @@ end
   # =========
   # = whens =
   # =========
-  
+
+When /^I edit the last user intake$/ do
+  (ui = UserIntake.last).should_not be_blank
+  visit url_for( :controller => 'user_intakes', :action => 'edit', :id => ui.id)
+end
+
 When /^I send caregiver details for the last user intake$/ do
   (ui = UserIntake.last).should_not be_blank
   ui.senior.should_not be_blank
@@ -415,6 +415,8 @@ Then /^senior of last user intake (should|should not) be (.+)$/ do |_condition, 
       ui.senior.is_halouser_of?( Group.safety_care!).should be_true # member
     when 'opted out of call center'
       ui.senior.is_halouser_of?( Group.safety_care!).should be_false
+    when 'subscriber'
+      ui.senior.should == ui.subscriber
     else
       assert false
     end
@@ -432,6 +434,8 @@ Then /^senior of last user intake (should|should not) be (.+)$/ do |_condition, 
       ui.senior.is_halouser_of?( Group.safety_care!).should be_false
     when 'opted out of call center'
       ui.senior.is_halouser_of?( Group.safety_care!).should be_true # member
+    when 'subscriber'
+      ui.senior.should_not be_is_subscriber_of( ui.senior)
     else
       assert false
     end
@@ -484,6 +488,10 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
     when 'separate senior and subscriber'
       [:senior, :subscriber].each {|e| ui.send( e).should_not be_blank }
       ui.senior.should_not == ui.subscriber
+    when /^(\d+) users$/
+      #  #<MatchData "2 users" 1:"2" 2:"users">
+      _count = /^(\d+) (.+)$/.match( what)[1].to_i # match the data pattern and extract as argument 1, 2
+      ui.users.length.should == _count
     else
       assert false, 'add this condition'
     end
@@ -509,6 +517,13 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
       assert false, 'add this condition'
     end
   end
+end
+
+Then /^devices "([^\"]*)" should be attached to last user intake$/ do |_serials|
+  (ui = UserIntake.last).should_not be_blank
+  ui.senior.should_not be_blank
+  _serials = _serials.split(',').collect(&:strip).flatten.uniq
+  ui.senior.devices.collect(&:serial_number).uniq.should == _serials
 end
 
 Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |_serial, what|

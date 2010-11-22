@@ -46,6 +46,10 @@ class Panic < CriticalDeviceAlert
         #
         # transition the user from "Ready to Install" => "Ready to Bill"
         user.update_attribute( :status, User::STATUS[:bill_pending]) # "Ready to bill". no validations
+        # 
+        #  Tue Nov 23 00:48:30 IST 2010, ramonrails
+        #   * Pro rata is charged from the date we received panic button after 
+        user.user_intakes.first.update_attribute( :panic_received_at, Time.now) unless user.user_intakes.blank?
         #
         # add a row to triage audit log
         #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log

@@ -62,6 +62,7 @@ class UserIntakesController < ApplicationController
         @user_intakes = UserIntake.paginate :page => params[:page],:order => 'updated_at desc',:per_page => 15, :conditions => "#{conditions}"  
       end
     end
+    @group_names = @groups.collect { |e| [e.name, e.name] }.insert( 0, ['All Groups', ''])
     respond_to do |format|
       format.html 
       format.xml  { render :xml => @user_intakes }
@@ -179,6 +180,19 @@ class UserIntakesController < ApplicationController
     @user_intake.skip_validation = (['Save', 'Print', 'Proceed'].include?(params[:commit])) # just save without asking anything
     @groups = Group.for_user(current_user)
     _hash = params[:user_intake].merge( :updated_by => current_user.id)
+    #
+    # Fri Oct 22 00:36:11 IST 2010
+    #   * distributed logic in controller and model was causing issues like "Bill" button never visible
+    #   * shifted the logic to model
+    #   * lazy_action attribute holds the text of last button pushed
+    #   * action will be perfoemed within model
+    # # if approval was pending and this time "Approve" button is submitted
+    # #   then mark the senior "Ready to Install"
+    # if (@user_intake.senior.status == User::STATUS[:approval_pending]) && (params[:commit] == "Approve")
+    #   @user_intake.senior.update_attribute( :status, User::STATUS[:install_pending])
+    #   @user_intake.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
+    # end
+    _hash[:lazy_action] = params[:commit] # commit button text
     #   * apply the booleans first
     ["subscriber_is_user", "subscriber_is_caregiver", "no_caregiver_1", "no_caregiver_2", "no_caregiver_3"].each do |_attribute|
       @user_intake.send( "#{_attribute}=", _hash[_attribute])
@@ -206,19 +220,6 @@ class UserIntakesController < ApplicationController
       #   this will identify if the submission is coming from user intake form or any other interface
       #   we are updating user intake from many other places like update of 'shipping date' from overview
       if params.keys.include?( "user_intake_form_view")
-        #
-        # Fri Oct 22 00:36:11 IST 2010
-        #   * distributed logic in controller and model was causing issues like "Bill" button never visible
-        #   * shifted the logic to model
-        #   * lazy_action attribute holds the text of last button pushed
-        #   * action will be perfoemed within model
-        # # if approval was pending and this time "Approve" button is submitted
-        # #   then mark the senior "Ready to Install"
-        # if (@user_intake.senior.status == User::STATUS[:approval_pending]) && (params[:commit] == "Approve")
-        #   @user_intake.senior.update_attribute( :status, User::STATUS[:install_pending])
-        #   @user_intake.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
-        # end
-        _hash[:lazy_action] = params[:commit] # commit button text
         #
         # apply all attributes to associations
         # @user_intake.apply_attributes_from_hash( _hash) # apply user attributes

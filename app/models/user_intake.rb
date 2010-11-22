@@ -169,13 +169,13 @@ class UserIntake < ActiveRecord::Base
     self.need_validation = true # assume, the user will not hit "save"
     self.installation_datetime ||= (order.created_at + 7.days) if ordered_direct_to_consumer?
     decide_card_or_bill
-    # # 
-    # #   * we begin from this state
-    # if self.new_record?
-    #   self.no_caregiver_1 = true if no_caregiver_1.nil?
-    #   self.no_caregiver_2 = true if no_caregiver_2.nil?
-    #   self.no_caregiver_3 = true if no_caregiver_3.nil?
-    # end
+    # 
+    #   * we begin from this state
+    if self.new_record?
+      self.no_caregiver_1 = true if no_caregiver_1.nil?
+      self.no_caregiver_2 = true if no_caregiver_2.nil?
+      self.no_caregiver_3 = true if no_caregiver_3.nil?
+    end
     #
     # build before fetching caregiver options. also establishes
     #   * same as user
@@ -234,7 +234,8 @@ class UserIntake < ActiveRecord::Base
     #   * last user action was "Approve"
     # QUESTION: admin can approve?
     if lazy_action == "Approve" && senior.status == User::STATUS[:approval_pending] # && !self.updater.blank? && self.updater.is_super_admin?
-      self.senior.update_attribute( :status, User::STATUS[:install_pending])
+      self.senior.status = User::STATUS[:install_pending]
+      self.senior.send( :update_without_callbacks)
       self.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
 
       # Switch user to installed state, if
@@ -256,7 +257,11 @@ class UserIntake < ActiveRecord::Base
           if order.charge_subscription
             #
             # now make user "Installed"
-            self.senior.update_attribute( :status, User::STATUS[:installed])
+            self.senior.status = User::STATUS[:installed]
+            self.senior.send( :update_without_callbacks)
+            #
+            # all caregivers are active now
+            caregivers.each { |e| e.set_active_for( senior, true) }
             #
             # add a row to triage audit log
             #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log
@@ -323,7 +328,12 @@ class UserIntake < ActiveRecord::Base
 
   # when billing starts, the monthly recurring amount is charged pro-rated since this date
   def pro_rata_start_date
-    installation_datetime || shipped_at || created_at
+    # 
+    #  Tue Nov 23 00:53:04 IST 2010, ramonrails
+    #   * we will never use "installation_datetime"
+    #   * installation_datetime is the "desired" installation datetime
+    #   * Pro-rata is charged from the date a panic button is received making user ready to install
+    panic_received_at || shipped_at || created_at
   end
 
   # create blank placeholder records
@@ -415,14 +425,14 @@ class UserIntake < ActiveRecord::Base
     #   * a user must know the role while saving itself
     # assign roles to user objects. it will auto save the roles with user record
     # TODO: use this instead of association_after_save that is assigning roles
-    self.senior.lazy_roles[:halouser]         = group  unless senior.blank? # senior.is_halouser_of group
-    self.subscriber.lazy_roles[:subscriber]   = senior unless subscriber.blank?
-    self.caregiver1.lazy_roles[:caregiver]    = senior unless caregiver1.blank?
-    self.caregiver2.lazy_roles[:caregiver]    = senior unless caregiver2.blank?
-    self.caregiver3.lazy_roles[:caregiver]    = senior unless caregiver3.blank?
-    self.caregiver1.lazy_options[ caregiver1.login ] = mem_caregiver1_options
-    self.caregiver2.lazy_options[ caregiver2.login ] = mem_caregiver2_options
-    self.caregiver3.lazy_options[ caregiver3.login ] = mem_caregiver3_options
+    self.senior.lazy_roles[:halouser]                = group  unless senior.blank? # senior.is_halouser_of group
+    self.subscriber.lazy_roles[:subscriber]          = senior unless subscriber.blank?
+    self.caregiver1.lazy_roles[:caregiver]           = senior unless caregiver1.blank?
+    self.caregiver2.lazy_roles[:caregiver]           = senior unless caregiver2.blank?
+    self.caregiver3.lazy_roles[:caregiver]           = senior unless caregiver3.blank?
+    self.caregiver1.lazy_options[ senior ] = mem_caregiver1_options
+    self.caregiver2.lazy_options[ senior ] = mem_caregiver2_options
+    self.caregiver3.lazy_options[ senior ] = mem_caregiver3_options
     #
     # # now collect the users for save as associations
     # self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].uniq.compact # omit nil, duplicates
@@ -446,14 +456,17 @@ class UserIntake < ActiveRecord::Base
       #  Sat Nov 20 02:03:52 IST 2010, ramonrails
       #   * this logic is required when uset simply toggles the flag and saves
       _user = self.send( _what) # fetch the associated user
-      _user.autofill_login # create login and password if not already
       unless _user.blank? || _user.nothing_assigned?
+        #   * default properties
+        _user.autofill_login # create login and password if not already
         _user.skip_validation = true # TODO: patch for 1.6.0 release. fix later with business logic, if required
 
         case _what
         when 'senior'
+          # _user.save
+          # _user.is_halouser_of( group) unless _user.blank? || group.blank? # role
+          _user.lazy_roles[:halouser] = group unless _user.blank? || group.blank? # role
           _user.save
-          _user.is_halouser_of( group) unless _user.blank? || group.blank? # role
           
         when 'subscriber'
           if subscribed_for_self? # senior is same as subscriber
@@ -466,21 +479,22 @@ class UserIntake < ActiveRecord::Base
               # subscriber.delete # remove this extra user
               self.subscriber_is_user = true # back to current situation
             end
+            # _user.save
+            # _user.is_subscriber_of( senior) unless _user.blank? || senior.blank? # role
+            _user.lazy_roles[:subscriber] = senior unless _user.blank? || senior.blank? # role
             _user.save
-            _user.is_subscriber_of( senior) unless _user.blank? || senior.blank? # role
 
           else # senior different from subscriber
             if was_subscribed_for_self?
-              #   * was different earlier. no change
-              # _user.save
-              # _user.is_subscriber_of( senior) # role
               _user = senior.clone_with_profile if senior.equal?( subscriber) # same IDs, clone first
               senior.is_not_subscriber_of( senior) unless senior.blank? # senior was subscriber, not now
             else
               # all good. nothing changed
             end
+            # _user.save
+            # _user.is_subscriber_of( senior) unless _user.blank? || senior.blank? # role
+            _user.lazy_roles[:subscriber] = senior unless _user.blank? || senior.blank? # role
             _user.save
-            _user.is_subscriber_of( senior) unless _user.blank? || senior.blank? # role
           end
           
         when 'caregiver1'
@@ -503,24 +517,42 @@ class UserIntake < ActiveRecord::Base
               # all good. nothing changed
             end
           end
-          if caregiving_subscriber? || (caregiver1_required? && _user.something_assigned?)
+          if caregiving_subscriber? || (caregiver1_required? && _user.something_assigned? && !senior.blank? && !_user.equal?( senior))
+            # _user.save
+            # _user.is_caregiver_of( senior) unless _user.blank? || senior.blank? || _user.equal?( senior)
+            # _user.options_for_senior( senior, mem_caregiver1_options)
+            _user.lazy_roles[:caregiver] = senior
+            _user.lazy_options[ senior] = mem_caregiver1_options
             _user.save
-            _user.is_caregiver_of( senior) unless _user.blank? || senior.blank?
-            _user.options_for_senior( senior, mem_caregiver1_options)
+          # else
+          #   self.no_caregiver_1 = true
+          #   self.send(:update_without_callbacks)
           end
           
         when 'caregiver2'
-          if caregiver2_required? && _user.something_assigned?
+          if caregiver2_required? && _user.something_assigned? && !senior.blank? && !_user.equal?( senior)
+            # _user.save
+            # _user.is_caregiver_of( senior) unless _user.blank? || senior.blank? || _user.equal?( senior)
+            # _user.options_for_senior( senior, mem_caregiver2_options)
+            _user.lazy_roles[:caregiver] = senior
+            _user.lazy_options[ senior] = mem_caregiver2_options
             _user.save
-            _user.is_caregiver_of( senior) unless _user.blank? || senior.blank?
-            _user.options_for_senior( senior, mem_caregiver2_options)
+          else
+            self.no_caregiver_2 = true
+            self.send(:update_without_callbacks)
           end
 
         when 'caregiver3'
-          if caregiver3_required? && _user.something_assigned?
+          if caregiver3_required? && _user.something_assigned? && !senior.blank? && !_user.equal?( senior)
+            # _user.save
+            # _user.is_caregiver_of( senior) unless _user.blank? || senior.blank? || _user.equal?( senior)
+            # _user.options_for_senior( senior, mem_caregiver3_options)
+            _user.lazy_roles[:caregiver] = senior
+            _user.lazy_options[ senior] = mem_caregiver3_options
             _user.save
-            _user.is_caregiver_of( senior) unless _user.blank? || senior.blank?
-            _user.options_for_senior( senior, mem_caregiver3_options)
+          else
+            self.no_caregiver_3 = true
+            self.send(:update_without_callbacks)
           end
         end # case
       end # blank?
@@ -659,7 +691,10 @@ class UserIntake < ActiveRecord::Base
   end
 
   def group_name=( name)
-    self.group = Group.find_or_create_by_name( name)
+    # 
+    #  Mon Nov 22 16:55:15 IST 2010, ramonrails
+    #   * find_or_create is not appropriate
+    self.group = Group.find_by_name( name) # or_create_
   end
 
   def order_present?

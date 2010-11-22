@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101117185522) do
+ActiveRecord::Schema.define(:version => 20101122192124) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -782,6 +782,15 @@ ActiveRecord::Schema.define(:version => 20101117185522) do
     t.string   "cvv"
   end
 
+  create_table "orientation_thresholds", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "begin_time"
+    t.datetime "end_time"
+    t.integer  "min_angle"
+    t.integer  "max_angle"
+    t.datetime "created_at"
+  end
+
   create_table "oscope_msgs", :force => true do |t|
     t.datetime "timestamp"
     t.integer  "channel_num"
@@ -1202,6 +1211,7 @@ ActiveRecord::Schema.define(:version => 20101117185522) do
     t.boolean  "no_caregiver_1"
     t.boolean  "no_caregiver_2"
     t.boolean  "no_caregiver_3"
+    t.datetime "panic_received_at"
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|

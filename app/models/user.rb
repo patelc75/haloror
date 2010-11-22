@@ -545,17 +545,27 @@ class User < ActiveRecord::Base
     #
     # Wed Oct 13 04:05:20 IST 2010
     #   CHANGED: created_at == updated_at only when it is saved for the very first time
-    if (created_at == updated_at)
+    # if (created_at == updated_at)
       #
       # CHANGED: Major fix. the roles were not getting populated
       # insert the roles for user. these roles are propogated from user intake
-      lazy_roles.each {|k,v| self.send( "is_#{k}_of", v) }
-      lazy_options.each { |k,v| self.options_for_senior( User.find_by_login(k), v) }
+      lazy_roles.each do |k,v|
+        unless v.blank?
+          if k == :caregiver
+            self.send( "is_#{k}_of", v) unless self.equal?( v)
+          else
+            self.send( "is_#{k}_of", v)
+          end
+        end
+      end
+      #
+      # caregiver options
+      lazy_options.each { |k,v| self.options_for_senior( k, v) unless k.blank? || k.new_record? }
       # 
       #  Fri Nov 12 18:09:50 IST 2010, ramonrails
       #  emails can be dispatched only after roles
       dispatch_emails # send emails as appropriate
-    end
+    # end
     #
     log(status)
   end
@@ -1458,9 +1468,9 @@ class User < ActiveRecord::Base
       battery_plugged = BatteryPlugged.find(:first,:conditions => ["user_id = ?",self.id],:order => 'timestamp desc')
       battery_unplugged = BatteryUnplugged.find(:first,:conditions => ["user_id = ?",self.id],:order => 'timestamp desc')
       if battery_plugged and battery_unplugged
-  	    return battery_plugged.timestamp > battery_unplugged.timestamp ? 'Battery Plugged' : 'Battery Unplugged'
+        return battery_plugged.timestamp > battery_unplugged.timestamp ? 'Battery Plugged' : 'Battery Unplugged'
       else
-  	    return false
+        return false
       end
     end
   end
