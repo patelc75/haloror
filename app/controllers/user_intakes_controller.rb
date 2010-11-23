@@ -155,7 +155,7 @@ class UserIntakesController < ApplicationController
       @user_intake.send( "#{_attribute}=", params[:user_intake][_attribute])
     end
     #   * apply attributes now that we have the control booleans applied
-    apply_attributes_from_hash( @user_intake, params[:user_intake]) if params.keys.include?( "user_intake_form_view")
+    apply_attributes_from_hash( @user_intake, params[:user_intake].select {|k,v| k.include?("attributes") }) if params.keys.include?( "user_intake_form_view")
     # @user_intake.apply_attributes_from_hash( params[:user_intake]) # apply user attributes
 
     respond_to do |format|
@@ -192,13 +192,14 @@ class UserIntakesController < ApplicationController
     #   @user_intake.senior.update_attribute( :status, User::STATUS[:install_pending])
     #   @user_intake.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
     # end
-    _hash[:lazy_action] = params[:commit] # commit button text
+    @user_intake.lazy_action = params[:commit] # commit button text
     #   * apply the booleans first
     ["subscriber_is_user", "subscriber_is_caregiver", "no_caregiver_1", "no_caregiver_2", "no_caregiver_3"].each do |_attribute|
       @user_intake.send( "#{_attribute}=", _hash[_attribute])
     end
     #   * apply attributes now that we have the control booleans applied
-    apply_attributes_from_hash( @user_intake, _hash)
+    @user_intake.attributes = params[:user_intake].reject { |k,v| k.include?("attributes") }
+    apply_attributes_from_hash( @user_intake, _hash.select {|k,v| k.include?("attributes") })
     # _hash.each {|k,v| @user_intake.send( "#{k}=".to_sym, v) }
 
     respond_to do |format|

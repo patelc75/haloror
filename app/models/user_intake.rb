@@ -163,6 +163,10 @@ class UserIntake < ActiveRecord::Base
     need_validation
   end
 
+  # def just_submitted?
+  #   submitted_at == updated_at
+  # end
+
   # for every instance, make sure the associated objects are built
   def after_initialize
     self.lazy_action = '' # keep it text. we need it for Approve, Bill actions
@@ -302,19 +306,24 @@ class UserIntake < ActiveRecord::Base
 
     # TODO: audit log is not in readable format for SafetyCare, redo in future release
     #if self.senior.status == User::STATUS[:approval_pending]
-    if ["Submit", "Approve"].include?( lazy_action)
-      UserMailer.deliver_senior_and_caregiver_details( self.senior)
-      #else
-      # Mon Nov  1 22:08:10 IST 2010
-      #   Send update to safety care only when submitted for the first time
-      #   * lazy_action is the button.text of user intake form, submitted by user
-      #   * senior.status.blank? means the form is not yet "submitted", only "saved" so far, or created from online order
-      #   * user intake can be submitted by "Submit" or "Approve" action, so they are checked
-      #  
-      #  Thu Nov  4 00:29:10 IST 2010, ramonrails 
-      #   Emails to safety_care are never sent on any update to user intake
-      # UserMailer.deliver_update_to_safety_care( self) if senior.status.blank? #acts_as_audited is not a good format to send to SafetyCare, defer for next release
-    end
+    # 
+    #  Tue Nov 23 22:40:26 IST 2010, ramonrails
+    #   * safety_care email dispatch is eliminated
+    #   * https://redmine.corp.halomonitor.com/issues/3767
+    #
+    # if ["Submit", "Approve"].include?( lazy_action)
+    #   UserMailer.deliver_senior_and_caregiver_details( self.senior)
+    #   #else
+    #   # Mon Nov  1 22:08:10 IST 2010
+    #   #   Send update to safety care only when submitted for the first time
+    #   #   * lazy_action is the button.text of user intake form, submitted by user
+    #   #   * senior.status.blank? means the form is not yet "submitted", only "saved" so far, or created from online order
+    #   #   * user intake can be submitted by "Submit" or "Approve" action, so they are checked
+    #   #  
+    #   #  Thu Nov  4 00:29:10 IST 2010, ramonrails 
+    #   #   Emails to safety_care are never sent on any update to user intake
+    #   # UserMailer.deliver_update_to_safety_care( self) if senior.status.blank? #acts_as_audited is not a good format to send to SafetyCare, defer for next release
+    # end
   end
 
   def decide_card_or_bill

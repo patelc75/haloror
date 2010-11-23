@@ -9,6 +9,9 @@ class Profile < ActiveRecord::Base
   belongs_to :emergency_number
   attr_accessor :need_validation
 
+  # 
+  #  Wed Nov 24 01:57:41 IST 2010, ramonrails
+  #   * TODO: DRY this more
   validates_presence_of     :first_name, :if => :unless_new_caregiver
   validates_presence_of     :last_name, :if => :unless_new_caregiver
   validates_presence_of     :address, :if => :unless_new_caregiver
@@ -144,6 +147,11 @@ class Profile < ActiveRecord::Base
     # auto increment account number if it starts with "HM"
     #   * account number is 3 places alphabets, then number
     self.account_number = next_account_number if self.new_record? # only for new records
+    # 
+    #  Wed Nov 24 02:17:59 IST 2010, ramonrails
+    #   * make sure time zone is present
+    #   * WARNING: default is not compatible with users outside this zone
+    self.time_zone ||= 'Central Time (US & Canada)'
   end
 
   def name

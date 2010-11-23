@@ -117,8 +117,13 @@ class ApplicationController < ActionController::Base
 
   def set_user_time_zone
     if logged_in? && !current_user.profile.blank?
-      Time.zone = current_user.profile.time_zone
+      # 
+      #  Wed Nov 24 01:32:51 IST 2010, ramonrails
+      #   * # this will default to UTC, as defined in environment.rb
+      #   * https://redmine.corp.halomonitor.com/issues/3771
+      Time.zone = current_user.profile.time_zone || 'Central Time (US & Canada)' # just in case
     else
+      #   * When not logged in, assume to be in Central Time Zone
       Time.zone = 'Central Time (US & Canada)'
     end
   end

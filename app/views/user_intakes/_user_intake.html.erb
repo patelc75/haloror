@@ -74,7 +74,7 @@
         <div class="span-8">
           <p>
             <%= f.label :installation_datetime, "Desired Installation Date:" %><br />
-            <%= f.text_field :installation_datetime, :class => "span-5 #{@user_intake.submitted? && !current_user.is_super_admin? ? '' : 'datepicker'}" %>
+            <%= f.date_select :installation_datetime %>
           </p>
           <p>
             <%= f.label :gateway_serial, "Gateway Serial" %> (H2):<br />
@@ -176,8 +176,8 @@
           <!-- role attributes -->
           <div id="caregiver_extras" class="prepend-3 span-7 hidden">
             <p>Critical Alert Message Types<br />
-            <%= f.check_box "caregiver1_email" %><%= f.label "caregiver1_email", "Email" %>
-            <%= f.check_box "caregiver1_text" %><%= f.label "caregiver1_text", "Text" %>
+            <%= f.check_box :caregiver1_email, :id => "subscriber_email_flag", :onclick => "$('#caregiver1_email_flag').attr('checked', this.checked);" %><%= f.label :caregiver1_email, "Email" %>
+            <%= f.check_box :caregiver1_text, :id => "subscriber_text_flag", :onclick => "$('#caregiver1_text_flag').attr('checked', this.checked);" %><%= f.label :caregiver1_text, "Text" %>
             <!-- <%# fields_for "user_intake[caregiver1_role_options]", @user_intake.subscriber do |subscriber_form| %>
             <%#= render :partial => 'caregiver_role_options', :locals => {:f => subscriber_form} %>
             <%# end -%> -->
@@ -216,8 +216,8 @@
             <div class="span-2">&nbsp;</div>
             <div class="span-5 last">
               <p>Critical Alert Message Types<br />
-              <%= f.check_box "caregiver#{index+1}_email" %><%= f.label "caregiver#{index+1}_email", "Email" %>
-              <%= f.check_box "caregiver#{index+1}_text" %><%= f.label "caregiver#{index+1}_text", "Text" %>
+              <%= f.check_box "caregiver#{index+1}_email", :id => "caregiver#{index+1}_email_flag", :onclick => "$('#subscriber_email_flag').attr('checked', $('#caregiver1_email_flag').attr('checked'));" %><%= f.label "caregiver#{index+1}_email", "Email" %>
+              <%= f.check_box "caregiver#{index+1}_text", :id => "caregiver#{index+1}_text_flag", :onclick => "$('#subscriber_text_flag').attr('checked', $('#caregiver1_text_flag').attr('checked'));" %><%= f.label "caregiver#{index+1}_text", "Text" %>
               </p>
             </div>
             <!-- role attributes -->

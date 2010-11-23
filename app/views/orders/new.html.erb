@@ -195,7 +195,7 @@
   </fieldset>
   <p class="textright">
     <%= link_to "< Back", order_path, :id => "back_link", :class => 'largebutton' if @confirmation %>
-    <%= f.submit "#{@confirmation ? 'Place Order >' : 'Continue >'}", :class => 'largebutton' %>
+    <%= f.submit "#{@confirmation ? 'Place Order >' : 'Continue >'}", :disable_with => "Please wait...", :class => 'largebutton' %>
   </p>
 <% end -%>
 

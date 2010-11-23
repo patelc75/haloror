@@ -451,11 +451,15 @@ class InstallsController < ApplicationController
   end
 
   def resend
-  	user = User.find params[:id]
-  	#UserMailer.deliver_activation(user) if user.recently_activated?
-  	UserMailer.deliver_signup_installation(user,user)
-  	flash[:notice] = "Signup/Installation email resent to #{user.email}"
-  	#redirect_to (request.env['HTTP_REFERER'])
+    # 
+    #  Tue Nov 23 22:51:54 IST 2010, ramonrails
+    #   * DEPRECATED: https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
+    #
+    # user = User.find params[:id]
+    # #UserMailer.deliver_activation(user) if user.recently_activated?
+    # UserMailer.deliver_signup_installation(user,user)
+    # flash[:notice] = "Signup/Installation email resent to #{user.email}"
+    # #redirect_to (request.env['HTTP_REFERER'])
   end
   
   

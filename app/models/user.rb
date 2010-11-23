@@ -1409,18 +1409,76 @@ class User < ActiveRecord::Base
     #   alert when software version does not match
     devices.reject(&:current_software_version?).blank?
   end
+  
+  # 
+  #  Tue Nov 23 22:19:53 IST 2010, ramonrails
+  #   * Whether activation email was sent
+  def activation_email_sent?
+    !activation_sent_at.blank?
+  end
+  
   # https://redmine.corp.halomonitor.com/issues/3067
   # email must be dispatched by explicit calls now
+  # 
+  #  Tue Nov 23 20:58:22 IST 2010, ramonrails
+  #   * emails are only dispatched on submit, not save
+  #   * identify submit as skip_vaiation == false
   #
   def dispatch_emails
     unless email.blank? # cannot send without valid email
-      if self.is_halouser? # WARNING: DEPRECATED user[:is_new_halouser] == true
-        # Mon Nov  1 22:29:21 IST 2010
-        # QUESTION: Should this go out only during certain "states"?
-        UserMailer.deliver_signup_installation(self, self) unless self.activated?
-      else
-        UserMailer.deliver_signup_notification(self) # unless self.is_caregiver? || self.is_subscriber? # (user[:is_caregiver] or user[:is_new_subscriber])
-      end
+      unless activation_email_sent?
+        # 
+        #  Tue Nov 23 22:21:44 IST 2010, ramonrails
+        #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
+        #   * signup_installation email is deprecated now
+        #   * Only 2 type of emails are dispatched for activation
+        #
+        # if self.is_halouser? # WARNING: DEPRECATED user[:is_new_halouser] == true
+        #   # Mon Nov  1 22:29:21 IST 2010
+        #   # QUESTION: Should this go out only during certain "states"?
+        #   UserMailer.deliver_signup_installation( self, self) unless self.activated? # || self.user_intakes.first.just_submitted?
+        #   
+        # else # user type?
+        # 
+        #  Tue Nov 23 18:54:13 IST 2010, ramonrails
+        #   * Invitation to be a caregiver
+        #   * https://redmine.corp.halomonitor.com/issues/3767
+        #
+        # #  Tue Nov 23 22:29:50 IST 2010, ramonrails
+        # # No emails should be dispatched on "Save", only "Submit" of user intake.
+        # # QUESTION: too complicated to implement like this. Needs discussion
+        #   * when admin is created, it is "saved", not "submitted"
+        #   * order "saves" all users instead of "submitting"
+        #   * user intake can "save" multiple times before a "submit"
+        #
+        # _can_send_email = if self.user_intakes.blank?
+        #   #   * When no user intake present. legacy data?
+        #   #   * Only send when submitted and validated data
+        #   #   * user intake "save" button skips the validation
+        #   need_validation == true
+        # else
+        #   #   * either we have a submitted user intake
+        #   #   * or we have an associated order (online store)
+        #   (user_intakes.first.submitted? || !user_intakes.first.order.blank?)
+        # end
+        # #
+        # #   dispatch emails subject to the role
+        # if _can_send_email
+        if self.is_caregiver?
+          #   * Only caregiver email will dispatch when subscriber is caregiver
+          #   * emails for caregivers
+          _recent_senior = is_caregiver_of_what.sort {|a,b| b.created_at <=> a.created_at }.last
+          UserMailer.deliver_caregiver_invitation( self, _recent_senior)
+        else
+          #   * emails for "non-caregivers". admins, subscribers, halousers and everybody else
+          UserMailer.deliver_signup_notification( self)
+        end
+        # end # can send email
+        #
+        #   * Now mark the dispatch of email, for next time
+        self.update_attribute( :activation_sent_at, Time.now)
+        # end # user type?
+      end # activation_email_sent?
       #
       # activation email gets delivered anyways
       UserMailer.deliver_activation(self) if recently_activated?

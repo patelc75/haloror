@@ -11,7 +11,7 @@ Feature: Pre quality
       | Alltel  |
       | Verizon |
     
-  # Create a new group (eg. ml_group1.5.1-rc1) at My Links > Config > Roles + Groups and add an email addr for the group
+  # Create a new group (eg. ml_group1_5_1-rc1) at My Links > Config > Roles + Groups and add an email addr for the group
   # Create a master group (eg. ml_master) and add an email addr for the master group
   Scenario Outline: super admin > create a group
     When I am ready to create a "<name>" reseller group
@@ -19,14 +19,15 @@ Feature: Pre quality
     Then a group should exist with name "<name>"
     
     Examples:
-      | name        |
-      | ml_reseller |
-      | ml_master   |
+      | name              | email                |
+      | ml_group1_5_1-rc1 | ml_reseller@test.com |
+      | ml_master         | ml_master@test.com   |
 
   # Create an admin (eg. admin1.5.1-rc1) for the new group at My Links > Sign up users with other roles
   Scenario: super admin > create an admin
     When I create a "reseller" reseller group
     And I am creating admin of "reseller" group
+    And I fill in "First Name" with "admin1.5.1-rc1"
     And I press "subscribe"
     Then I should see "for activation of account"
     And email with activation code of last user should be sent for delivery
@@ -101,14 +102,13 @@ Feature: Pre quality
     When I fill in "Coupon Code" with "ml_reseller_coupon"
     And I press "Continue"
     And I press "Place Order"
-    # To halouser (and subscriber if there is one): Subject "Please activate your new myHalo account"
-    Then an email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
     #   * TODO: verify the count of emails as per business logic
-    # To halouser (and subscriber if there is one): Subject "Please activate your new myHalo account"
-    And 2 emails to "cuc_bill@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
+    Then an email to "cuc_ship@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
+    And an emails to "cuc_bill@chirag.name" with subject "wants you to be their caregiver" should be sent for delivery
     # To senior_signup@halomonitoring.com, group, master group: Subject "[HALO] Order Summary"
     And an email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery
     And an email to "ml_master@test.com" with subject "Order Summary" should be sent for delivery
+    And an email to "ml_reseller@test.com" with subject "Order Summary" should be sent for delivery
     And 1 user intake should be available
 
   # senior == subscriber
@@ -191,12 +191,12 @@ Feature: Pre quality
     # Open the user intake, perform the following steps and click Save
     And I edit the last user intake
     # Check email, text toggles
-    And I check "user_intake_caregiver1_email"
-    And I check "user_intake_caregiver1_text"
-    And I check "user_intake_caregiver2_email"
-    And I check "user_intake_caregiver2_text"
-    And I check "user_intake_caregiver3_email"
-    And I check "user_intake_caregiver3_text"
+    And I check "caregiver1_email_flag"
+    And I check "caregiver2_email_flag"
+    And I check "caregiver3_email_flag"
+    And I check "caregiver1_text_flag"
+    And I check "caregiver2_text_flag"
+    And I check "caregiver3_text_flag"
     And I uncheck "user_intake_subscriber_is_user"
     And I check "user_intake_subscriber_is_caregiver"
     And I check "user_intake_no_caregiver_1"
@@ -211,7 +211,7 @@ Feature: Pre quality
     And I select "Verizon" from "user_intake_caregiver2_attributes__profile_attributes_carrier_id"
     And I select "Verizon" from "user_intake_caregiver3_attributes__profile_attributes_carrier_id"
     # Add today’s date as Desired Installation Date
-    And I fill in "user_intake_installation_datetime" date with "`Date.today.to_s`"
+    And I select "user_intake_installation_datetime" date as "`Date.today.to_s`"
     # Add GW and Transmitter serial numbers by finding  unused (no icon) serial numbers at Config > Devices
     And I fill in "user_intake_gateway_serial" with "H200220022"
     And I fill in "user_intake_transmitter_serial" with "H100110011"
@@ -223,14 +223,15 @@ Feature: Pre quality
     When I edit the last user intake
     #  Mon Nov 22 13:31:40 IST 2010, ramonrails: TODO: manually smoke tested this step
     # Then page content should have "H200220022, H100110011, caregiver2 first name, caregiver3 first name, `Date.today.to_s`"
+    #   * This is now AJAX. need capybara
     # email, text and phone checkboxes
     # https://redmine.corp.halomonitor.com/issues/3674
-    And "user_intake_caregiver1_email" checkbox should be checked
-    And "user_intake_caregiver1_text" checkbox should be checked
-    And "user_intake_caregiver2_email" checkbox should be checked
-    And "user_intake_caregiver2_text" checkbox should be checked
-    And "user_intake_caregiver3_email" checkbox should be checked
-    And "user_intake_caregiver3_text" checkbox should be checked
+    # And "caregiver1_email_flag" checkbox should be checked
+    # And "caregiver2_email_flag" checkbox should be checked
+    # And "caregiver3_email_flag" checkbox should be checked
+    # And "caregiver1_text_flag" checkbox should be checked
+    # And "caregiver2_text_flag" checkbox should be checked
+    # And "caregiver3_text_flag" checkbox should be checked
 
   Scenario: halouser > submit user intake form - make all users distinct
     Given the product catalog exists
