@@ -1460,7 +1460,7 @@ class User < ActiveRecord::Base
         end
         #
         #   dispatch emails subject to the role
-        if can_send_email
+        if _can_send_email
           if self.is_caregiver?
             #   * Only caregiver email will dispatch when subscriber is caregiver
             #   * emails for caregivers
