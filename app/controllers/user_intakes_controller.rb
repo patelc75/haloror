@@ -192,7 +192,7 @@ class UserIntakesController < ApplicationController
     #   @user_intake.senior.update_attribute( :status, User::STATUS[:install_pending])
     #   @user_intake.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
     # end
-    _hash[:lazy_action] = params[:commit] # commit button text
+    @user_intake.lazy_action = params[:commit] # commit button text
     #   * apply the booleans first
     ["subscriber_is_user", "subscriber_is_caregiver", "no_caregiver_1", "no_caregiver_2", "no_caregiver_3"].each do |_attribute|
       @user_intake.send( "#{_attribute}=", _hash[_attribute])

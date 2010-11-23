@@ -154,13 +154,14 @@ end
 # = whens =
 # =========
 
-When /^I fill in "([^"]*)" date with "([^"]*)"$/ do |_element, _dynamic|
+When /^I select "([^"]*)" date as "([^"]*)"$/ do |_element, _dynamic|
   _value = if _dynamic.include?("`")
     _dynamic.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).to_s }.join(' ').strip
   else
     _dynamic.strip
   end
-  fill_in( _element, :with => _value)
+  # fill_in( _element, :with => _value)
+  select_date( _value)
 end
 
 When /^I reload(?:| the page)$/ do

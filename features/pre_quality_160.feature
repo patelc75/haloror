@@ -211,7 +211,7 @@ Feature: Pre quality
     And I select "Verizon" from "user_intake_caregiver2_attributes__profile_attributes_carrier_id"
     And I select "Verizon" from "user_intake_caregiver3_attributes__profile_attributes_carrier_id"
     # Add today’s date as Desired Installation Date
-    And I fill in "user_intake_installation_datetime" date with "`Date.today.to_s`"
+    And I select "user_intake_installation_datetime" date as "`Date.today.to_s`"
     # Add GW and Transmitter serial numbers by finding  unused (no icon) serial numbers at Config > Devices
     And I fill in "user_intake_gateway_serial" with "H200220022"
     And I fill in "user_intake_transmitter_serial" with "H100110011"
