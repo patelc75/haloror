@@ -216,8 +216,8 @@
             <div class="span-2">&nbsp;</div>
             <div class="span-5 last">
               <p>Critical Alert Message Types<br />
-              <%= f.check_box "caregiver#{index+1}_email", :id => "caregiver1_email_flag", :onclick => "$('#subscriber_email_flag').attr('checked', this.checked);" %><%= f.label "caregiver#{index+1}_email", "Email" %>
-              <%= f.check_box "caregiver#{index+1}_text", :id => "caregiver1_text_flag", :onclick => "$('#subscriber_text_flag').attr('checked', this.checked);" %><%= f.label "caregiver#{index+1}_text", "Text" %>
+              <%= f.check_box "caregiver#{index+1}_email", :id => "caregiver#{index+1}_email_flag", :onclick => "$('#subscriber_email_flag').attr('checked', this.checked);" %><%= f.label "caregiver#{index+1}_email", "Email" %>
+              <%= f.check_box "caregiver#{index+1}_text", :id => "caregiver#{index+1}_text_flag", :onclick => "$('#subscriber_text_flag').attr('checked', this.checked);" %><%= f.label "caregiver#{index+1}_text", "Text" %>
               </p>
             </div>
             <!-- role attributes -->
