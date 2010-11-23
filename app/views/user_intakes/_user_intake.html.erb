@@ -74,7 +74,7 @@
         <div class="span-8">
           <p>
             <%= f.label :installation_datetime, "Desired Installation Date:" %><br />
-            <%= f.text_field :installation_datetime, :class => "span-5 #{@user_intake.submitted? && !current_user.is_super_admin? ? '' : 'datepicker'}" %>
+            <%= f.date_select :installation_datetime %>
           </p>
           <p>
             <%= f.label :gateway_serial, "Gateway Serial" %> (H2):<br />
