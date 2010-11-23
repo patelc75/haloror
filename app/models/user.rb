@@ -1456,7 +1456,7 @@ class User < ActiveRecord::Base
           #   * either we have a submitted user intake
           #   * or we have an associated order (online store)
           #   * and we validated/submitted this record
-          (user_intakes.first.submitted? || !user_intakes.first.order.blank?) && (need_validation == true)
+          (user_intakes.first.submitted? || !user_intakes.first.order.blank?)
         end
         #
         #   dispatch emails subject to the role
