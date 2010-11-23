@@ -101,14 +101,13 @@ Feature: Pre quality
     When I fill in "Coupon Code" with "ml_reseller_coupon"
     And I press "Continue"
     And I press "Place Order"
-    # To halouser (and subscriber if there is one): Subject "Please activate your new myHalo account"
-    Then an email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
     #   * TODO: verify the count of emails as per business logic
-    # To halouser (and subscriber if there is one): Subject "Please activate your new myHalo account"
-    And 2 emails to "cuc_bill@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
+    Then an email to "cuc_ship@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
+    And an emails to "cuc_bill@chirag.name" with subject "wants you to be their caregiver" should be sent for delivery
     # To senior_signup@halomonitoring.com, group, master group: Subject "[HALO] Order Summary"
     And an email to "senior_signup@halomonitoring.com" with subject "Order Summary" should be sent for delivery
     And an email to "ml_master@test.com" with subject "Order Summary" should be sent for delivery
+    And an email to "ml_reseller@test.com" with subject "Order Summary" should be sent for delivery
     And 1 user intake should be available
 
   # senior == subscriber
@@ -191,12 +190,12 @@ Feature: Pre quality
     # Open the user intake, perform the following steps and click Save
     And I edit the last user intake
     # Check email, text toggles
-    And I check "user_intake_caregiver1_email"
-    And I check "user_intake_caregiver1_text"
-    And I check "user_intake_caregiver2_email"
-    And I check "user_intake_caregiver2_text"
-    And I check "user_intake_caregiver3_email"
-    And I check "user_intake_caregiver3_text"
+    And I check "caregiver1_email_flag"
+    And I check "caregiver2_email_flag"
+    And I check "caregiver3_email_flag"
+    And I check "caregiver1_text_flag"
+    And I check "caregiver2_text_flag"
+    And I check "caregiver3_text_flag"
     And I uncheck "user_intake_subscriber_is_user"
     And I check "user_intake_subscriber_is_caregiver"
     And I check "user_intake_no_caregiver_1"
@@ -223,14 +222,15 @@ Feature: Pre quality
     When I edit the last user intake
     #  Mon Nov 22 13:31:40 IST 2010, ramonrails: TODO: manually smoke tested this step
     # Then page content should have "H200220022, H100110011, caregiver2 first name, caregiver3 first name, `Date.today.to_s`"
+    #   * This is now AJAX. need capybara
     # email, text and phone checkboxes
     # https://redmine.corp.halomonitor.com/issues/3674
-    And "user_intake_caregiver1_email" checkbox should be checked
-    And "user_intake_caregiver1_text" checkbox should be checked
-    And "user_intake_caregiver2_email" checkbox should be checked
-    And "user_intake_caregiver2_text" checkbox should be checked
-    And "user_intake_caregiver3_email" checkbox should be checked
-    And "user_intake_caregiver3_text" checkbox should be checked
+    # And "caregiver1_email_flag" checkbox should be checked
+    # And "caregiver2_email_flag" checkbox should be checked
+    # And "caregiver3_email_flag" checkbox should be checked
+    # And "caregiver1_text_flag" checkbox should be checked
+    # And "caregiver2_text_flag" checkbox should be checked
+    # And "caregiver3_text_flag" checkbox should be checked
 
   Scenario: halouser > submit user intake form - make all users distinct
     Given the product catalog exists

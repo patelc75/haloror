@@ -1444,33 +1444,36 @@ class User < ActiveRecord::Base
         #   * Invitation to be a caregiver
         #   * https://redmine.corp.halomonitor.com/issues/3767
         #
-        #  Tue Nov 23 22:29:50 IST 2010, ramonrails
-        # No emails should be dispatched on "Save", only "Submit" of user intake.
-        # TODO: DRY this
-        _can_send_email = if self.user_intakes.blank?
-          #   * When no user intake present. legacy data?
-          #   * Only send when submitted and validated data
-          #   * user intake "save" button skips the validation
-          need_validation == true
-        else
-          #   * either we have a submitted user intake
-          #   * or we have an associated order (online store)
-          #   * and we validated/submitted this record
-          (user_intakes.first.submitted? || !user_intakes.first.order.blank?)
-        end
+        # #  Tue Nov 23 22:29:50 IST 2010, ramonrails
+        # # No emails should be dispatched on "Save", only "Submit" of user intake.
+        # # QUESTION: too complicated to implement like this. Needs discussion
+        #   * when admin is created, it is "saved", not "submitted"
+        #   * order "saves" all users instead of "submitting"
+        #   * user intake can "save" multiple times before a "submit"
         #
-        #   dispatch emails subject to the role
-        if _can_send_email
-          if self.is_caregiver?
-            #   * Only caregiver email will dispatch when subscriber is caregiver
-            #   * emails for caregivers
-            _recent_senior = is_caregiver_of_what.sort {|a,b| b.created_at <=> a.created_at }.last
-            UserMailer.deliver_caregiver_invitation( self, _recent_senior)
-          else
-            #   * emails for "non-caregivers". admins, subscribers, halousers and everybody else
-            UserMailer.deliver_signup_notification( self)
-          end
+        # _can_send_email = if self.user_intakes.blank?
+        #   #   * When no user intake present. legacy data?
+        #   #   * Only send when submitted and validated data
+        #   #   * user intake "save" button skips the validation
+        #   need_validation == true
+        # else
+        #   #   * either we have a submitted user intake
+        #   #   * or we have an associated order (online store)
+        #   (user_intakes.first.submitted? || !user_intakes.first.order.blank?)
+        # end
+        # #
+        # #   dispatch emails subject to the role
+        # if _can_send_email
+        if self.is_caregiver?
+          #   * Only caregiver email will dispatch when subscriber is caregiver
+          #   * emails for caregivers
+          _recent_senior = is_caregiver_of_what.sort {|a,b| b.created_at <=> a.created_at }.last
+          UserMailer.deliver_caregiver_invitation( self, _recent_senior)
+        else
+          #   * emails for "non-caregivers". admins, subscribers, halousers and everybody else
+          UserMailer.deliver_signup_notification( self)
         end
+        # end # can send email
         #
         #   * Now mark the dispatch of email, for next time
         self.update_attribute( :activation_sent_at, Time.now)

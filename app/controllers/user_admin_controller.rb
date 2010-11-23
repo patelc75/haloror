@@ -47,7 +47,7 @@ class UserAdminController < ApplicationController
     @user = User.new(params[:user])
     @user.email = params[:user][:email]
     @group_name = params[:group_name]
-    @profile = Profile.new(params[:profile])
+    # @profile = Profile.new(params[:profile]) # build_profile used now
     @roles = Role.distinct_by_name.ordered
     #
     # We need group specific code before the "if" condition
@@ -87,9 +87,10 @@ class UserAdminController < ApplicationController
         if @user.save # "!" is not recommended here
           # TODO: render or redirect is not explicit when "save" fails
           #
-          # TODO: DRY: profile can auto assign if we use profile_attributes in partial
-          @profile.user_id = @user.id
-          @profile.save # "!" is not recommended here
+          #   * already above
+          # # TODO: DRY: profile can auto assign if we use profile_attributes in partial
+          # @profile.user_id = @user.id
+          # @profile.save # "!" is not recommended here
           #
           # DEPRECATED: why assign a role like this. use authorization plugin methods instead
           #   # @user.roles << role
