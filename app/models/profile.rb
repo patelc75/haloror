@@ -12,23 +12,23 @@ class Profile < ActiveRecord::Base
   # 
   #  Wed Nov 24 01:57:41 IST 2010, ramonrails
   #   * TODO: DRY this more
-  validates_presence_of     :first_name, :if => :validation_required?
-  validates_presence_of     :last_name, :if => :validation_required?
-  validates_presence_of     :address, :if => :validation_required?
-  validates_presence_of     :city, :if => :validation_required?
-  validates_presence_of     :state, :if => :validation_required?
-  validates_presence_of     :zipcode, :if => :validation_required?
-  validates_presence_of     :time_zone, :if => :validation_required?
+  validates_presence_of     :first_name, :if => :unless_new_caregiver
+  validates_presence_of     :last_name, :if => :unless_new_caregiver
+  validates_presence_of     :address, :if => :unless_new_caregiver
+  validates_presence_of     :city, :if => :unless_new_caregiver
+  validates_presence_of     :state, :if => :unless_new_caregiver
+  validates_presence_of     :zipcode, :if => :unless_new_caregiver
+  validates_presence_of     :time_zone  , :if => :unless_new_caregiver
 
   validates_presence_of     :home_phone, :if => :phone_required?, :message => 'or Cell Phone is required'
   validates_presence_of     :cell_phone, :if => :phone_required?, :message => 'or Home Phone is required'
   validates_presence_of     :carrier_id, :if => :cell_phone_exists?, :message => "for Cell Phone can't be blank"
 
-  validates_presence_of     :emergency_number_id,:if => :validation_required?
+  validates_presence_of     :emergency_number_id,:if => :unless_new_halouser
 
-  validates_length_of       :account_number, :maximum => 4,:if => :validation_required?
-  validates_length_of       :hospital_number, :maximum => 10,:if => :validation_required?
-  validates_length_of       :doctor_phone, :maximum => 10,:if => :validation_required?
+  validates_length_of       :account_number, :maximum => 4,:if => :unless_new_halouser
+  validates_length_of       :hospital_number, :maximum => 10,:if => :unless_new_halouser
+  validates_length_of       :doctor_phone, :maximum => 10,:if => :unless_new_halouser
 
   #validates_length_of       :home_phone, :is => 10
   #validates_length_of       :work_phone, :is => 10, :if => :work_phone_exists?
@@ -192,32 +192,25 @@ class Profile < ActiveRecord::Base
     end
   end
 
-  def validation_required?
-    #   * explicitly mark FALSE to skip validation
-    #   * in all other cases, always validate
-    need_validation != false # NIL means validate
-    #
-    # # cannot skip validation + not is_new_caregiver = run validations
-    # !(skip_validation || self[:is_new_caregiver])
-    # # if (skip_validation || self[:is_new_caregiver])
-    # #   return false
-    # # else
-    # #   return true
-    # # end
+  def unless_new_caregiver
+    # cannot skip validation + not is_new_caregiver = run validations
+    !(skip_validation || self[:is_new_caregiver])
+    # if (skip_validation || self[:is_new_caregiver])
+    #   return false
+    # else
+    #   return true
+    # end
   end
 
-  # 
-  #  Wed Nov 24 02:00:02 IST 2010, ramonrails
-  #   * OBSOLETE: just use validation_required?
-  # def unless_new_halouser
-  #   # cannot skip validation? + is_halouser? = run validations
-  #   (skip_validation ? false : self[:is_halouser])
-  #   # if self[:is_halouser] # WARNING: :is_halouser is a mis-type?
-  #   #   return true
-  #   # else
-  #   #   return false
-  #   # end
-  # end
+  def unless_new_halouser
+    # cannot skip validation? + is_halouser? = run validations
+    (skip_validation ? false : self[:is_halouser])
+    # if self[:is_halouser] # WARNING: :is_halouser is a mis-type?
+    #   return true
+    # else
+    #   return false
+    # end
+  end
 
   def cell_phone_exists?
     # cannot skip validation? + not new caregiver = check existance of cell phone
@@ -244,7 +237,7 @@ class Profile < ActiveRecord::Base
   end
 
   def phone_required?
-    if validation_required?
+    if unless_new_caregiver
       if self.home_phone.blank? && self.cell_phone.blank?
         return true
       end
