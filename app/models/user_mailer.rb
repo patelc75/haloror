@@ -20,19 +20,23 @@ class UserMailer < ActionMailer::ARMailer
     body        :user => user
   end
 
-  def signup_installation(recipient,senior=:exclude_senior_info)
-    setup_email(recipient)
-    @subject    += EMAIL_SUBJECT[:installation] # 'Please read before your installation'
-    @body[:host] = "http://#{ServerInstance.current_host}"
-    if senior == :exclude_senior_info
-      @body[:name] = nil
-    elsif senior.is_a?(User)
-      @body[:url]  = "http://#{ServerInstance.current_host}/activate/#{senior.activation_code}"
-      @body[:name] = senior.name
-    else
-      raise "senior must be a User object or :exclude_senior_info"
-    end
-  end
+  # 
+  #  Tue Nov 23 22:51:11 IST 2010, ramonrails
+  #   * DEPRECATED: https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
+  #
+  # def signup_installation(recipient,senior=:exclude_senior_info)
+  #   setup_email(recipient)
+  #   @subject    += EMAIL_SUBJECT[:installation] # 'Please read before your installation'
+  #   @body[:host] = "http://#{ServerInstance.current_host}"
+  #   if senior == :exclude_senior_info
+  #     @body[:name] = nil
+  #   elsif senior.is_a?(User)
+  #     @body[:url]  = "http://#{ServerInstance.current_host}/activate/#{senior.activation_code}"
+  #     @body[:name] = senior.name
+  #   else
+  #     raise "senior must be a User object or :exclude_senior_info"
+  #   end
+  # end
 
   def signup_notification(user)
     setup_email(user)
