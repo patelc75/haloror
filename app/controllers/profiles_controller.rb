@@ -133,6 +133,11 @@ class ProfilesController < ApplicationController
       @user.is_new_caregiver = true
       @user[:is_caregiver] =  true
       @user.skip_validation = true # skip validation, just save user data
+      # 
+      #  Wed Nov 24 03:31:20 IST 2010, ramonrails
+      #   * caregiver role is lazy load now
+      #   * this is required to set the role and send emails
+      @user.lazy_action[:caregiver] = @senior
 
       if @user.save
         @user
