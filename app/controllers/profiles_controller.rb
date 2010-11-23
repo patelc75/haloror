@@ -137,7 +137,7 @@ class ProfilesController < ApplicationController
       #  Wed Nov 24 03:31:20 IST 2010, ramonrails
       #   * caregiver role is lazy load now
       #   * this is required to set the role and send emails
-      @user.lazy_action[:caregiver] = @senior
+      @user.lazy_roles[:caregiver] = @senior
 
       if @user.save
         @user
