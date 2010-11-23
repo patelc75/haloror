@@ -163,6 +163,10 @@ class UserIntake < ActiveRecord::Base
     need_validation
   end
 
+  # def just_submitted?
+  #   submitted_at == updated_at
+  # end
+
   # for every instance, make sure the associated objects are built
   def after_initialize
     self.lazy_action = '' # keep it text. we need it for Approve, Bill actions

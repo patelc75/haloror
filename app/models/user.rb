@@ -1409,6 +1409,7 @@ class User < ActiveRecord::Base
     #   alert when software version does not match
     devices.reject(&:current_software_version?).blank?
   end
+  
   # https://redmine.corp.halomonitor.com/issues/3067
   # email must be dispatched by explicit calls now
   #
@@ -1417,9 +1418,18 @@ class User < ActiveRecord::Base
       if self.is_halouser? # WARNING: DEPRECATED user[:is_new_halouser] == true
         # Mon Nov  1 22:29:21 IST 2010
         # QUESTION: Should this go out only during certain "states"?
-        UserMailer.deliver_signup_installation(self, self) unless self.activated?
+        UserMailer.deliver_signup_installation( self, self) unless self.activated? || self.user_intake.not_new?
       else
-        UserMailer.deliver_signup_notification(self) # unless self.is_caregiver? || self.is_subscriber? # (user[:is_caregiver] or user[:is_new_subscriber])
+        # 
+        #  Tue Nov 23 18:54:13 IST 2010, ramonrails
+        #   * Invitation to be a caregiver
+        #   * https://redmine.corp.halomonitor.com/issues/3767
+        if self.is_caregiver?
+          _recent_senior = is_caregiver_of_what.sort {|a,b| b.created_at <=> a.created_at }.last
+          UserMailer.deliver_caregiver_invitation( self, _recent_senior)
+        else
+          UserMailer.deliver_signup_notification( self) # unless self.is_caregiver? || self.is_subscriber? # (user[:is_caregiver] or user[:is_new_subscriber])
+        end
       end
       #
       # activation email gets delivered anyways
