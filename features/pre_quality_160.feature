@@ -11,7 +11,7 @@ Feature: Pre quality
       | Alltel  |
       | Verizon |
     
-  # Create a new group (eg. ml_group1.5.1-rc1) at My Links > Config > Roles + Groups and add an email addr for the group
+  # Create a new group (eg. ml_group1_5_1-rc1) at My Links > Config > Roles + Groups and add an email addr for the group
   # Create a master group (eg. ml_master) and add an email addr for the master group
   Scenario Outline: super admin > create a group
     When I am ready to create a "<name>" reseller group
@@ -19,14 +19,15 @@ Feature: Pre quality
     Then a group should exist with name "<name>"
     
     Examples:
-      | name        |
-      | ml_reseller |
-      | ml_master   |
+      | name              | email                |
+      | ml_group1_5_1-rc1 | ml_reseller@test.com |
+      | ml_master         | ml_master@test.com   |
 
   # Create an admin (eg. admin1.5.1-rc1) for the new group at My Links > Sign up users with other roles
   Scenario: super admin > create an admin
     When I create a "reseller" reseller group
     And I am creating admin of "reseller" group
+    And I fill in "First Name" with "admin1.5.1-rc1"
     And I press "subscribe"
     Then I should see "for activation of account"
     And email with activation code of last user should be sent for delivery

@@ -14,7 +14,7 @@ class Group < ActiveRecord::Base
 
   validates_presence_of :name
   # FIXME: validates_uniqueness_of :name
-  validates_format_of :name, :with => /\A[a-z0-9_]+\z/, :message => 'Only lowercase and numeric characters are allowed'
+  validates_format_of :name, :with => /\A[a-z0-9_-]+\z/, :message => 'Only underscore, hyphen, lowercase and numeric characters are allowed'
   # http://api.rubyonrails.org/classes/ActiveModel/Validations/HelperMethods.html#method-i-validates_format_of
   # email validation taken from rails api
   # check email validity for master group. others exempted
