@@ -14,10 +14,14 @@ class UserMailer < ActionMailer::ARMailer
     @body[:user] = user
   end
   
-  def user_installation_alert(user)
-    setup_email("senior_signup@halomonitoring.com")       
-    @subject += "#{user.name} installed"
-    body        :user => user
+  # 
+  #  Wed Nov 24 23:01:26 IST 2010, ramonrails
+  #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
+  #   * https://redmine.corp.halomonitor.com/issues/3785
+  def user_installation_alert( _senior, _email)
+    setup_email( _email) # email can go to anyone given here
+    @subject += "#{_senior.name} installed" # user state
+    body        :user => _senior # senior details in the email
   end
 
   # 
