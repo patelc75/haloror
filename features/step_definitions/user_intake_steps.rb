@@ -398,25 +398,27 @@ Then /^senior of user intake "([^\"]*)" (should|should not) be in test mode$/ do
   end
 end
 
-Then /^senior of last user intake (should|should not) be (.+)$/ do |_condition, _expression|
+Then /^(senior|subscriber) of last user intake (should|should not) be (.+)$/ do |_who, _condition, _expression|
   (ui = UserIntake.last).should_not be_blank
-  ui.senior.should_not be_blank
+  (_user = ui.send("#{_who}")).should_not be_blank
   # 
   #   * cases for 'should'
   if _condition == 'should'
     case _expression
     when 'in demo mode'
-      ui.senior.demo_mode?.should be_true
+      _user.demo_mode?.should be_true
     when 'in test mode'
-      ui.senior.test_mode?.should be_true
+      _user.test_mode?.should be_true
     when 'in vip mode'
-      ui.senior.vip.should be_true
+      _user.vip.should be_true
     when 'opted in to call center'
-      ui.senior.is_halouser_of?( Group.safety_care!).should be_true # member
+      _user.is_halouser_of?( Group.safety_care!).should be_true # member
     when 'opted out of call center'
-      ui.senior.is_halouser_of?( Group.safety_care!).should be_false
+      _user.is_halouser_of?( Group.safety_care!).should be_false
     when 'subscriber'
-      ui.senior.should == ui.subscriber
+      _user.should == ui.subscriber
+    when 'caregiver'
+      _user.should be_is_caregiver
     else
       assert false
     end
@@ -425,17 +427,19 @@ Then /^senior of last user intake (should|should not) be (.+)$/ do |_condition, 
   else
     case _expression
     when 'in demo mode'
-      ui.senior.demo_mode?.should be_false
+      _user.demo_mode?.should be_false
     when 'in test mode'
-      ui.senior.test_mode?.should be_false
+      _user.test_mode?.should be_false
     when 'in vip mode'
-      ui.senior.vip.should be_false
+      _user.vip.should be_false
     when 'opted in to call center'
-      ui.senior.is_halouser_of?( Group.safety_care!).should be_false
+      _user.is_halouser_of?( Group.safety_care!).should be_false
     when 'opted out of call center'
-      ui.senior.is_halouser_of?( Group.safety_care!).should be_true # member
+      _user.is_halouser_of?( Group.safety_care!).should be_true # member
     when 'subscriber'
-      ui.senior.should_not be_is_subscriber_of( ui.senior)
+      _user.should_not be_is_subscriber_of( ui.senior)
+    when 'caregiver'
+      _user.should_not be_is_caregiver
     else
       assert false
     end

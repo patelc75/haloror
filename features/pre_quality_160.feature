@@ -12,7 +12,7 @@ Feature: Pre quality
       | Verizon |
     
   # Create a new group (eg. ml_group1_5_1-rc1) at My Links > Config > Roles + Groups and add an email addr for the group
-  # Create a master group (eg. ml_master) and add an email addr for the master group
+  # Create a master group (eg. ml_master) and add an email address for the master group
   Scenario Outline: super admin > create a group
     When I am ready to create a "<name>" reseller group
     And I press "Save"
@@ -51,8 +51,15 @@ Feature: Pre quality
     Given the product catalog exists
     When I create a "reseller" reseller group
     And I am ready to create a coupon code for "reseller" group
+    And I fill in the following:
+      | Coupon code       | coupon1.5.1-rc1 |
+      | Deposit           | 66              |
+      | Shipping          | 6               |
+      | Monthly recurring | 77              |
+      | Months advance    | 0               |
+      | Months trial      | 2               |
     And I press "Save"
-    Then a coupon code should exist with coupon_code "reseller_coupon"
+    Then a coupon code should exist with coupon_code "coupon1.5.1-rc1"
   
   # Verify group under “Billing and Shipping” block
   Scenario: admin > online store has single group
@@ -110,6 +117,14 @@ Feature: Pre quality
     And an email to "ml_master@test.com" with subject "Order Summary" should be sent for delivery
     And an email to "ml_reseller@test.com" with subject "Order Summary" should be sent for delivery
     And 1 user intake should be available
+    # At Config > Users, verify the following 2 users were created
+    And senior of last user intake should not be subscriber
+    And subscriber of last user intake should be caregiver
+    When I edit the last user intake
+    Then "user_intake_subscriber_is_user" checkbox should not be checked
+    And "user_intake_no_caregiver_1" checkbox should be checked
+    And "user_intake_no_caregiver_2" checkbox should be checked
+    And "user_intake_no_caregiver_3" checkbox should be checked
 
   # senior == subscriber
   Scenario: admin > place order : senior == subscriber
@@ -129,13 +144,20 @@ Feature: Pre quality
     When I fill in "Coupon Code" with "ml_reseller_coupon"
     And I press "Continue"
     And I press "Place Order"
+    And 1 user intake should be available
     # Verify only 1 user halouser was added in Config > Users. Verify no extra users were created.
     And senior of last user intake should be subscriber
     And last user intake should not have caregivers
     When I edit the last user intake
     # “Same as User” is checked and “No Caregiver #1” is clickable
     Then "user_intake_subscriber_is_user" checkbox should be checked
-    # And "user_intake_no_caregiver_1" checkbox should be checked
+    And "user_intake_no_caregiver_1" checkbox should be checked
+    And "user_intake_no_caregiver_2" checkbox should be checked
+    And "user_intake_no_caregiver_3" checkbox should be checked
+    # At Config > Users, verify the following 2 users were created
+    When I follow links "Config > All"
+    Then page content should have "halouser, subscriber for"
+    And page content should not have "caregiver for"
 
   # Add caregiver: My Links > Config > Users > (find row for new halouser) > Caregiver > Add Caregiver > Add new caregiver with no email
   Scenario: admin > add a new caregiver with no email

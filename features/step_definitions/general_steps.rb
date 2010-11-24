@@ -317,7 +317,7 @@ Then /^(?:|the )page content (?:should have|has) "([^"]*)" within "([^"]*)"$/ do
   end
 end
 
-Then /^(?:|the )page source (?:should have|has) xpath "([^"]*)"$/ do |array_as_text|
+Then /^(?:|the )page source should have xpath "([^"]*)"$/ do |array_as_text|
   contents = array_as_text.split(',').collect do |part|
     if part.include?("`")
       part.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).to_s }.join(' ').strip
@@ -366,12 +366,15 @@ Then /^"([^"]*)" checkbox (should|should not) be checked$/ do |identifier, _cond
   identifier = identifier.gsub(' ','_').downcase
   if _condition == 'should'
     response_body.should have_selector "input[type='checkbox'][checked='checked'][id='#{identifier}']"
-    # response.should have_xpath("//input[@id=\"#{identifier.gsub(' ','_').downcase}\" and @checked=\"checked\"]")
   else
-    response_body.should have_selector "input[type='checkbox'][checked='checked'][id='#{identifier}']"
-    # response.should_not have_xpath("//input[@id=\"#{identifier.gsub(' ','_').downcase}\" and @checked=\"checked\"]")
+    response_body.should_not have_selector "input[type='checkbox'][checked='checked'][id='#{identifier}']"
   end
 end
+
+#   * need capybara for this
+# Then /^"([^"]*)" checkbox should be (enabled|disabled)$/ do |_element, _state|
+#   Then %{the page source should have xpath "//input[@id='#{_element}' and @disabled='true']"}
+# end
 
 Then /^I cannot change the status of user "([^"]*)" to Anything else$/ do |arg1|
   pending # express the regexp above with the code you wish you had

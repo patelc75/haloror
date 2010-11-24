@@ -11,7 +11,11 @@ class PaymentGatewayResponse < ActiveRecord::Base
   named_scope :successful,    :conditions => { :success => true  }
   named_scope :failed,        :conditions => { :success => false }
   named_scope :subscription,  :conditions => { :action  => 'recurring' }
-  named_scope :purchase,      :conditions => { :action  => 'purchase'  }
+  # 
+  #  Thu Nov 25 00:18:21 IST 2010, ramonrails
+  #   * "purchase" was changed to "deposit + shipping"
+  #   * inculude both in the search
+  named_scope :purchase,      :conditions => { :action  => ['deposit + shipping', 'purchase']  }
 
   after_save :send_alert_email_if_failure
 
