@@ -1,7 +1,7 @@
 class CriticalMailer < ActionMailer::ARMailer
   include UtilityHelper
   include ServerInstance
-  NO_REPLY = "no-reply@halomonitoring.com"
+  NO_REPLY = "myHalo@halomonitoring.com"
 
 #=============== General Methods for Alerts ======================
   def device_event_admin_email(event)
@@ -163,7 +163,7 @@ class CriticalMailer < ActionMailer::ARMailer
   protected
     
   def setup_message(subject, msg_body, email_log=nil)
-    @from        = "no-reply@#{ServerInstance.current_host}"
+    @from        = NO_REPLY
     @subject     = "[" + ServerInstance.current_host_short_string + "] "
     @subject     += subject unless subject.blank?
     @sent_on     = Time.now

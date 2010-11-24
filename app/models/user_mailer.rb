@@ -67,8 +67,9 @@ class UserMailer < ActionMailer::ARMailer
 
     This message is the official notice that myHalo account #{user.id} #{user.name} has been cancelled.
 
-    Thanks, 
-    myHalo Staff
+    Thank you,
+    Halo Monitoring Customer Support
+    1-866-546-2540
     EOF
   end
   
@@ -78,6 +79,11 @@ class UserMailer < ActionMailer::ARMailer
     body <<-EOF
     Cancelled myHalo account of #{user.name} was used to attempt an access at #{Time.now}.
     Please do the needful.
+      
+    Thank you,
+    Halo Monitoring Customer Support
+    1-866-546-2540
+
     EOF
   end
 
@@ -88,6 +94,10 @@ class UserMailer < ActionMailer::ARMailer
     You have been invited to be a caregiver for #{user.name}.
 
     Please click here to activate the account:  http://#{ServerInstance.current_host}/activate/#{caregiver.activation_code}?senior=#{user.id}
+    
+    Thank you,
+    Halo Monitoring Customer Support
+    1-866-546-2540
     EOF
   end
 
@@ -134,7 +144,7 @@ class UserMailer < ActionMailer::ARMailer
     else
       raise "user_obj_or_email_addr must be a User object or email string"
     end
-    @from        = "no-reply@halomonitoring.com"
+    @from        = "myHalo@halomonitoring.com"
     @subject     = "[" + ServerInstance.current_host_short_string + "] "
     @bcc         = "email_log@halomonitoring.com" if email_log != :no_email_log
     @sent_on     = Time.now
