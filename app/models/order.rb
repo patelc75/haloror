@@ -158,7 +158,7 @@ class Order < ActiveRecord::Base
     # charges pro-rata or upfront
     if options.blank? # no options means charge upfront
       _cost = (product_cost.blank? ? 0 : product_cost.upfront_charge)
-      _action = "purchase"
+      _action = "deposit + shipping"
     else
       _cost = options[ :pro_rata]
       _action = "pro-rata"

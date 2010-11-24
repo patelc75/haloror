@@ -280,8 +280,15 @@ class UserIntake < ActiveRecord::Base
             TriageAuditLog.create( attributes)
             #
             # explicitly send email to group admins, halouser, caregivers. tables are saved without callbacks
-            [ senior, senior.has_caregivers, senior.group_admins ].flatten.uniq.each do |_user|
-              UserMailer.deliver_user_installation_alert( _user)
+            # 
+            #  Wed Nov 24 23:01:26 IST 2010, ramonrails
+            #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
+            #   * https://redmine.corp.halomonitor.com/issues/3785
+            [ senior, senior.has_caregivers, senior.group_admins, 
+              subscriber, group, group.master_group
+              ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq.each do |_email|
+              #   * send installation intimations
+              UserMailer.deliver_user_installation_alert( senior, _email)
             end
           end
         end
@@ -342,7 +349,7 @@ class UserIntake < ActiveRecord::Base
     #   * we will never use "installation_datetime"
     #   * installation_datetime is the "desired" installation datetime
     #   * Pro-rata is charged from the date a panic button is received making user ready to install
-    panic_received_at || shipped_at || created_at
+    panic_received_at || (shipped_at + 7.days) # || created_at
   end
 
   # create blank placeholder records
