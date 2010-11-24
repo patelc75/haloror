@@ -665,11 +665,16 @@ class UsersController < ApplicationController
             end
             current_user.set_active()
             if current_user.is_caregiver?
-              if session[:senior]
-                redirect_to :controller => 'call_list', :action => 'show', :id => session[:senior]
-              else
-                redirect_to :controller => 'call_list', :action => 'show', :recently_activated => 'true'
-              end
+              # 
+              #  Wed Nov 24 18:06:36 IST 2010, ramonrails
+              #   * https://redmine.corp.halomonitor.com/issues/3782
+              #   * after caregiver activation, show recently activated caregiver
+              #   
+              # if session[:senior]
+              #   redirect_to :controller => 'call_list', :action => 'show', :id => session[:senior]
+              # else
+              redirect_to :controller => 'call_list', :action => 'show', :recently_activated => 'true'
+              # end
 
               # FIXME: patching the logic here for now. Needs DRYing up. Needs code coverage.
               # redirect to user intake, if the current_user is halouser/subscriber with incomplete user intake
