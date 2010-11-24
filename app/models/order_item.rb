@@ -40,7 +40,8 @@ class OrderItem < ActiveRecord::Base
   
   def status
     if(recurring_monthly == true)
-      "Billing starts " + device_model.coupon( :group => (order.group || Group.direct_to_consumer), :coupon_code => order.coupon_code).recurring_delay.months.from_now.to_s(:day_date).to_s
+      #{}"Billing starts " + device_model.coupon( :group => (order.group || Group.direct_to_consumer), :coupon_code => order.coupon_code).recurring_delay.months.from_now.to_s(:day_date).to_s
+      "A prorated charge will occur when the system is installed or 7 days after the sytem has shipped, whichever comes first.\nThe monthly recurring will begin the 1st day of the month AFTER the prorated charge."
     else
       "In Process"
     end
