@@ -9,7 +9,7 @@ class UserMailer < ActionMailer::ARMailer
   
   def senior_and_caregiver_details(user)
     setup_email(Group.safety_care!.email) 
-    @subject     += "#{user.profile.account_number}" unless user.profile.blank?
+    @subject     += "HM" + "#{user.profile.account_number}" unless user.profile.blank?
     #content_type "text/html"
     @body[:user] = user
   end

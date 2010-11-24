@@ -72,7 +72,7 @@ class Profile < ActiveRecord::Base
   # =================
   
   def self.last_account_number
-    Profile.first( :conditions => ["account_number LIKE ?", "HM%"], :order => "account_number DESC" )
+    Profile.first( :conditions => ["account_number LIKE ?", "____"], :order => "account_number DESC" )
   end
   
   class << self # class methods
@@ -247,11 +247,9 @@ class Profile < ActiveRecord::Base
 
   def next_account_number
     if (last_profile = Profile.last_account_number)
-      call_center = last_profile.account_number
-      call_center_number = call_center[2..5].to_i
-      call_center_number == 0 ? "HM????" : "HM" + "%04d" % (call_center_number + 1)
+      last_profile.account_number.to_i == 9999 ? "????" : "%04d" % (last_profile.account_number.to_i + 1)
     else
-      "HM????"
+      "????"
     end
   end
 
