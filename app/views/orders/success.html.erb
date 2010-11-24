@@ -8,8 +8,7 @@
   Your card has been charged <strong><%= number_to_currency(@order.cost, :precision => 2, :unit => '$') %></strong>. 
   Order confirmation has been emailed to <strong><%= @order.bill_email %></strong>
 </p>
-<hr/>
-<table width="100%">
+<table width="100%" class="bluegrey">
   <tr align="left">
     <th>Company</th>
     <th>Order number</th>
@@ -29,7 +28,7 @@
 
 <br/>
 
-<table width="100%">
+<table width="100%" class="bluegrey">
   <tr align="left">
     <th>Product</th>
     <th>Status</th>
@@ -48,7 +47,7 @@
   <% end -%>
 </table>
 <br>
-<table width="100%">
+<table width="100%" class="bluegrey">
   <tr align="left">
     <th>Billing address</th>
     <th>Shipping address</th>
