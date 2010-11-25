@@ -73,3 +73,4 @@ Feature: Online store group coupons
     Given I am an authenticated user
     When I am creating a coupon code
     Then I should see "Group"
+    

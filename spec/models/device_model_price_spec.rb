@@ -53,4 +53,16 @@ describe DeviceModelPrice do
     
     specify { Factory.build( :device_model_price, :coupon_code => @coupon.coupon_code, :group => @coupon.group, :device_model => @coupon.device_model ).should_not be_valid }
   end
+  
+  # 
+  #  Thu Nov 25 21:25:26 IST 2010, ramonrails
+  #   * TODO: prepate a product catalog and then check coupon codes
+  # context "a valid coupon code for the group should be picked up when asked" do
+  #   before(:each) do
+  #     @group = Factory.create( :group)
+  #     @coupon = Factory.create( :device_model_price, :group => @group, :coupon_code => "my_coupon_code")
+  #   end
+  #   
+  #   specify {  }
+  # end
 end

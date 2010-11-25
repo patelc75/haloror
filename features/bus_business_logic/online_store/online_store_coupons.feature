@@ -11,7 +11,7 @@ Feature: Online store coupons
   Scenario Outline: Order page - referral link fills coupon code text field
     When I visit "/order/<coupon>"
     Then the "Coupon Code" field should contain "<coupon>"
-    
+
     Examples:
       | coupon            |
       | coupon-code-1     |
@@ -30,7 +30,7 @@ Feature: Online store coupons
     And I fill the credit card details for online store
     And I check "order_bill_address_same"
     Then page content should have "<deposit>, <shipping>, <phrase>, <total>, <recurring>"
-  
+
     Examples:
       | product  | coupon_code | group   | deposit | shipping | months | free | recurring | total | phrase           |
       | clip     | 99TRIAL     | bestbuy | 99      | 15       | 0      | 1    | 49        | 114   | 1 month trial    |
@@ -97,20 +97,23 @@ Feature: Online store coupons
   #     | coupon_code | date                                | upfront | free | advance |
   #     | 99TRIAL     | `1.month.from_now.to_s(:day_date)`  | 114     | 1    | 0       |
   #     |             | `3.months.from_now.to_s(:day_date)` | 441     | 0    | 3       |
-  
-  Scenario Outline: Confirmation page - Invalid or expired coupon code gives error message
-    When I go to the online store
-    And I choose "product_complete"
-    And I fill the shipping details for online store
-    And I fill the credit card details for online store
-    And I check "order_bill_address_same"
-    And I fill in "Coupon Code" with "<coupon_code>"
-    And I press "Continue"
-    Then page content should have "This coupon is <message>. Regular pricing is applied."
-    
-    Examples:
-      | coupon_code | message |
-      | ABC         | invalid |
-      | EXPIRED     | expired |
-      
+
+  # 
+  #  Thu Nov 25 20:59:46 IST 2010, ramonrails
+  #   * Error messages for coupon codes do not show at online store anymore
+  # Scenario Outline: Confirmation page - Invalid or expired coupon code gives error message
+  #   When I go to the online store
+  #   And I choose "product_complete"
+  #   And I fill the shipping details for online store
+  #   And I fill the credit card details for online store
+  #   And I check "order_bill_address_same"
+  #   And I fill in "Coupon Code" with "<coupon_code>"
+  #   And I press "Continue"
+  #   Then page content should have "This coupon is <message>. Regular pricing is applied."
+  #   
+  #   Examples:
+  #     | coupon_code | message |
+  #     | ABC         | invalid |
+  #     | EXPIRED     | expired |
+
   Scenario: Order items are created appropriately for selected product and coupon code

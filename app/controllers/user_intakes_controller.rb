@@ -238,6 +238,9 @@ class UserIntakesController < ApplicationController
         if @user_intake.save # update_attributes( _hash)
           #
           # proceed as usual
+          # 
+          #  Fri Nov 26 01:50:31 IST 2010, ramonrails
+          #   * TODO: flash[:notice] not drawing after redirect?
           flash[:notice] = 'User Intake was successfully updated.'
           format.html do
             #
