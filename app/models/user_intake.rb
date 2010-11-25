@@ -185,6 +185,8 @@ class UserIntake < ActiveRecord::Base
     #   * same as user
     #   * add as caregiver #1
     build_associations
+    #
+    self.subscriber_is_caregiver ||= subscriber_and_caregiver1_match?
   end
 
   def before_save
@@ -756,6 +758,28 @@ class UserIntake < ActiveRecord::Base
     _senior_attributes.values.compact == _subscriber_attributes.values.compact
   end
 
+  def subscriber_and_caregiver1_match?
+    # 
+    #   * subscriber attributes
+    if subscriber.blank?
+      _subscriber_attributes = {}
+    else
+      _subscriber_attributes = subscriber.attributes
+      _subscriber_attributes.merge( subscriber.profile.attributes) unless subscriber.profile.blank?
+    end
+    # 
+    #   * caregiver1 attrbutes
+    if caregiver1.blank?
+      _caregiver1_attributes = {}
+    else
+      _caregiver1_attributes = caregiver1.attributes
+      _caregiver1_attributes.merge( caregiver1.profile.attributes) unless caregiver1.profile.blank?
+    end
+    # 
+    #   * check for the match among attributes
+    _subscriber_attributes.values.compact == _caregiver1_attributes.values.compact
+  end
+
   # # 
   # #  Tue Nov 16 18:53:33 IST 2010, ramonrails
   # #  caregiver positions stored locally
@@ -866,10 +890,11 @@ class UserIntake < ActiveRecord::Base
   #   * subscriber is caregiver
   def hide_caregiver?( index = 1)
     if (1..3).include?( index)
+      _caregiver = self.send("caregiver#{index}")
       #   * check subscriber status first
       #   * no_caregiver_1 will be forced by this anyways
       #   * then check the boolean on form
-      ( (index == 1) && caregiving_subscriber? ) || (self.send("no_caregiver_#{index}") == true)
+      ( (index == 1) && caregiving_subscriber? ) || (self.send("no_caregiver_#{index}") == true) || _caregiver.nothing_assigned?
     else
       false # force to show. this is incorrect call anyways
     end
