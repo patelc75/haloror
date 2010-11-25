@@ -1467,7 +1467,7 @@ class User < ActiveRecord::Base
         if self.is_caregiver?
           #   * Only caregiver email will dispatch when subscriber is caregiver
           #   * emails for caregivers
-          _recent_senior = is_caregiver_of_what.sort {|a,b| b.created_at <=> a.created_at }.last
+          _recent_senior = is_caregiver_of_what.last
           UserMailer.deliver_caregiver_invitation( self, _recent_senior)
         else
           #   * emails for "non-caregivers". admins, subscribers, halousers and everybody else
