@@ -71,8 +71,30 @@ class Profile < ActiveRecord::Base
   # = class methods =
   # =================
   
+  # 
+  #  Thu Nov 25 19:17:05 IST 2010, ramonrails
+  #   * updated the logic
+  #   * eliminates "HM<any other alpha character>"
+  #   * Only searches within "HM<digits>"
   def self.last_account_number
-    Profile.first( :conditions => ["account_number LIKE ?", "____"], :order => "account_number DESC" )
+    #   * fetch all profiles with account_number starting with "HM"
+    #   * reject any that have extra characters. Only keep strict "HM...." with digits
+    #   * find the highest number within that
+    #
+    #   * find all account numbers with "HM" + anything
+    #   * minimize memory usage: just select account_number in query
+    #   * collect array of all numbers
+    #   * eliminate any blanks
+    _numbers = Profile.all( :conditions => ["account_number LIKE ?", "HM%"], :select => "account_number").collect(&:account_number).compact
+    #   * Only keep strict "HM" + digits
+    #   * "HM????" are also eliminated
+    _numbers = _numbers.reject { |e| e.match(/^(\D+)(\d+)$/).nil? }
+    #   * HM + more alphabets, are eliminated
+    _numbers = _numbers.reject { |e| e.match(/^(\D+)(\d+)$/)[1] != "HM" }
+    #   * sort and pick the highest value
+    _max_digit = _numbers.collect { |e| e.match(/^(\D+)(\d+)$/)[2].to_i }.sort.last.to_s
+    # return the complete account number, not just digit
+    _numbers.select { |e| e.include?( _max_digit) }.first
   end
   
   class << self # class methods
@@ -144,14 +166,39 @@ class Profile < ActiveRecord::Base
   end
 
   def before_save
-    # auto increment account number if it starts with "HM"
-    #   * account number is 3 places alphabets, then number
-    self.account_number = next_account_number if self.new_record? # only for new records
     # 
     #  Wed Nov 24 02:17:59 IST 2010, ramonrails
     #   * make sure time zone is present
     #   * WARNING: default is not compatible with users outside this zone
     self.time_zone ||= 'Central Time (US & Canada)'
+  end
+
+  def after_save
+    # auto increment account number if it starts with "HM"
+    #   * account number is 3 places alphabets, then number
+    #   * increment for halouser only
+    #   * increment when blank
+    # QUESTION: do we only want to update this for new_record?
+    #           what happens to existing user with invalid account number?
+    self.update_attribute( :account_number, next_account_number) if !valid_account_number? && is_profile_of_halouser? # only for new records
+  end
+
+  def is_profile_of_halouser?
+    #   * user is assigned to this profile
+    #   * user row is saved to database
+    #   * user is halouser (does not matter, of what?)
+    !user.blank? && !user.new_record? && user.is_halouser?
+  end
+
+  # 
+  #  Thu Nov 25 19:52:32 IST 2010, ramonrails
+  #   * validity of account number to "HM...."
+  def valid_account_number?
+    #   * cannot be blank
+    #   * must match the pattern "HM...." where "." is 0-9
+    #   * alphabets other than "HM" (like "HMA") are not valid
+    #   * just the digits (without "HM") like "123" are not valid
+    !account_number.blank? && !account_number.match(/^(\D+)(\d+)$/).nil? && (account_number.match(/^(\D+)(\d+)$/)[1] == "HM")
   end
 
   def name
@@ -245,15 +292,39 @@ class Profile < ActiveRecord::Base
     return false
   end
 
+  # 
+  #  Thu Nov 25 19:08:20 IST 2010, ramonrails
+  #   * updated to a more stable logic
+  #   * better recognition of the HMnnnn pattern
+  #   * keep at least 4 digits, but allow more than 4
   def next_account_number
-    if (last_profile = Profile.last_account_number)
-      last_profile.account_number.to_i == 9999 ? "????" : "%04d" % (last_profile.account_number.to_i + 1)
+    _fetched = if (_number = Profile.last_account_number)
+      #   * first two characters are "HM"
+      #   * the last character is a digit?
+      if _number[0..1] == "HM" && (48..57).include?( _number[-1])
+        # Example: "HM0123".match(/^(\D+)(\d+)$/)[2]    => "0123"
+        #   * return the second match as fetched value
+        #   * result is integer
+        #   * increment the result by 1 => number that we want
+        _number.match(/^(\D+)(\d+)$/)[2].to_i + 1
+      end
+    end
+    if _fetched.blank?
+      #   * We do not have any number
+      #   * lets start with first
+      "HM0001"
+    elsif _fetched < 1000 # last number is less than 4 digits?
+      #   * Force at least 4 digits
+      #   * Insert "0" prefixes to make 4 digits
+      #   * Example: _fetched = 1; this yields => "HM0002"
+      "HM" + ( "%04d" % _fetched)
     else
-      "????"
+      #   * More than 4 digits, can be accepted directly as to_s
+      "HM" + _fetched.to_s
     end
   end
 
-  private # --------------------------------------------------
+  # private # --------------------------------------------------
 
   # def check_valid_phone_numbers
   # errors.add(:home_phone," is the wrong length (should be 10 characters)") if home_phone.length != 10

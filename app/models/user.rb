@@ -541,7 +541,6 @@ class User < ActiveRecord::Base
   # https://redmine.corp.halomonitor.com/issues/398
   # Create a log page of all steps above with timestamps
   def after_save
-    profile.save unless profile.blank?
     #
     # Wed Oct 13 04:05:20 IST 2010
     #   CHANGED: created_at == updated_at only when it is saved for the very first time
@@ -566,6 +565,10 @@ class User < ActiveRecord::Base
       #  emails can be dispatched only after roles
       dispatch_emails # send emails as appropriate
     # end
+    #
+    #   * save the profile after roles are established
+    #   * required to increment call center account number HM...
+    profile.save unless profile.blank?
     #
     log(status)
   end
