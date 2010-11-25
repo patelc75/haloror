@@ -108,7 +108,11 @@ class UserIntakesController < ApplicationController
   # GET /user_intakes/1/edit
   def edit
     @user_intake = UserIntake.find(params[:id])
-    @groups = current_user.group_memberships
+    # 
+    #  Thu Nov 25 17:58:51 IST 2010, ramonrails
+    #   * When subscriber edits the user intake, groups will not load
+    #   * we need to include the user intake group at least, for page to load properly
+    @groups = (current_user.group_memberships + [@user_intake.group])
 
     # QUESTION: Should we have some logic here to allow editing, subject to state?
     #

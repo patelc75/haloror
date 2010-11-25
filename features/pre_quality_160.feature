@@ -400,4 +400,26 @@ Feature: Pre quality
     When I activate the last caregiver3 as "reseller_caregiver3"
     Then last caregiver3 should be activated
   
-  Scenario: Safety care group email dispatch
+    # https://redmine.corp.halomonitor.com/issues/3793
+    # QUESTION: If a subscriber subscribes for multiple halousers, how does he/she view all those user intakes?
+  Scenario: Activated subscriber (not same as halouser) can edit user intake
+    Given the product catalog exists
+    When I create a "reseller" reseller group
+    And I create a coupon code for "reseller" group
+    And I am placing an online order for "reseller" group
+    And I uncheck "order_bill_address_same"
+    And I fill the shipping details for online store
+    And I fill the billing details for online store
+    And I fill the credit card details for online store
+    And I press "Continue"
+    And I press "Place Order"
+    Then I should see "Success"
+    #
+    When I activate the last subscriber as "reseller_subscriber"
+    Then last subscriber should be activated
+    #
+    When I follow "User Intake"
+    #   * TODO: Need capybara
+    # Then the page content should have "reseller, cuc_ship@chirag.name, cuc_bill@chirag.name"
+    Then page content should have "User Information, Billing Information"
+    
