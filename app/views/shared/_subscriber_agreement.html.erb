@@ -194,7 +194,7 @@
       <% if @user_intake && @user_intake.can_sign_agreement?(current_user) %>
         <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update', :redirect_url => @redirect_url} do |f| -%>
           <%= f.text_field :legal_agreement_at, :value => Time.now.to_s, :class => "hidden" %>
-          <%= f.submit "Agree", :class => "button green-button hidden", :id => "user_intake_submit", :onclick => "window.print();" %>
+          <%= f.submit "Agree", :class => "button green-button hidden", :id => "user_intake_submit" %>
         <% end -%>
       <% end %>
     </div>

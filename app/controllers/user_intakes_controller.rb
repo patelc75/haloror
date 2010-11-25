@@ -245,7 +245,7 @@ class UserIntakesController < ApplicationController
             #   We were showing successful order here but the business logic changed later
             #
             # if params[:redirect_hash].blank?
-            redirect_to :action => 'single_row', :id => @user_intake.id # just show user_intakes
+            redirect_to '/' # :action => 'single_row', :id => @user_intake.id # just show user_intakes
             # else
             #   redirect_to redirect_hash # this comes from online order form
             # end
