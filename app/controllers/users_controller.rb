@@ -356,22 +356,25 @@ class UsersController < ApplicationController
   end
   
   
-  def set_roles_users_option(caregiver, roles_users_option, senior = nil)
-    unless caregiver.blank? || senior.blank? || roles_users_option.blank? || !(roles_users_option.is_a?(Hash))
-      @roles_users_option = RolesUsersOption.find_by_roles_user_id(senior.roles_user_by_caregiver(caregiver))
-      #
-      # We need to setup boolean flag for each of these attributes
-      unless @roles_users_option.blank?
-        [:is_keyholder, :phone_active, :email_active, :text_active].each do |attribute|
-          @roles_users_option.send("#{attribute}=".to_sym, (roles_users_option[attribute] == '1'))
-        end
-        #
-        # force validation. do not raise exceptions. add exceptions to base mnaually in code where this is called from
-        # ideally this should be RESTful model for user, roles_user. then this tricky /manual logic is not required
-        @roles_users_option.save! rescue nil
-      end
-    end
-  end
+  # 
+  #  Fri Nov 26 22:36:11 IST 2010, ramonrails
+  #   * DEPRECATED: we now have user intake
+  # def set_roles_users_option(caregiver, roles_users_option, senior = nil)
+  #   unless caregiver.blank? || senior.blank? || roles_users_option.blank? || !(roles_users_option.is_a?(Hash))
+  #     @roles_users_option = RolesUsersOption.find_by_roles_user_id(senior.roles_user_by_caregiver(caregiver))
+  #     #
+  #     # We need to setup boolean flag for each of these attributes
+  #     unless @roles_users_option.blank?
+  #       [:is_keyholder, :phone_active, :email_active, :text_active].each do |attribute|
+  #         @roles_users_option.send("#{attribute}=".to_sym, (roles_users_option[attribute] == '1'))
+  #       end
+  #       #
+  #       # force validation. do not raise exceptions. add exceptions to base mnaually in code where this is called from
+  #       # ideally this should be RESTful model for user, roles_user. then this tricky /manual logic is not required
+  #       @roles_users_option.save! rescue nil
+  #     end
+  #   end
+  # end
 
   # DEPRECATED: we now have user_intakes
   # def user_intake_form_confirm
@@ -600,18 +603,22 @@ class UsersController < ApplicationController
         session[:senior] = params[:senior]
         redirect_to login_path # use ***_path instead of ***_url
 
-      else
+        # else
         # just show user's attributes on form
+        # 
+        #  Fri Nov 26 20:48:32 IST 2010, ramonrails
+        #   * do not increment caregiver position here!
+        #   * increment on "update"
         #
-        # Sat Oct  2 02:21:20 IST 2010
-        # https://redmine.corp.halomonitor.com/wiki/haloror/Dev_Testing 1.6.0 PQ
-        #   we need caregiver position only when user getting activated is a caregiver
-        if params[:senior] && @user.is_caregiver?
-          if (senior = User.find params[:senior])
-            role_user = senior.roles_user_by_caregiver(@user)
-            RolesUsersOption.update(role_user.roles_users_option.id, {:active => 1,:position => User.get_max_caregiver_position(senior)}) unless role_user.blank?
-          end
-        end
+        # # Sat Oct  2 02:21:20 IST 2010
+        # # https://redmine.corp.halomonitor.com/wiki/haloror/Dev_Testing 1.6.0 PQ
+        # #   we need caregiver position only when user getting activated is a caregiver
+        # if params[:senior] && @user.is_caregiver? && !@user.is_subscriber?
+        #   if (senior = User.find params[:senior])
+        #     role_user = senior.roles_user_by_caregiver(@user)
+        #     RolesUsersOption.update(role_user.roles_users_option.id, {:active => 1,:position => User.get_max_caregiver_position(senior)}) unless role_user.blank?
+        #   end
+        # end
 
       end # activated?
     end # @user ?
@@ -621,7 +628,7 @@ class UsersController < ApplicationController
     #  check if this is an activation request or regular update
     if params[:user][:activation_code].blank?
       #
-      # just a reguar update
+      # just a regular update
       @user = User.find(params[:id])
       respond_to do |format|
         if @user.update_attributes!(params[:user])
@@ -666,6 +673,20 @@ class UsersController < ApplicationController
             current_user.set_active()
             if current_user.is_caregiver?
               # 
+              #  Fri Nov 26 20:49:23 IST 2010, ramonrails
+              #   * increment caregiver position, unless already defined
+              #   * QUESTION: Why should we establish caregiver position here?
+              #   *   Why is that not established when user was created? Any other logic applies?
+              if (_senior = @user.is_caregiver_for_what.first) # find senior
+                if (_position = @user.caregiver_position_for( _senior)) # find any existing position
+                  if _position.blank? || (_position.to_i == 0) # only when position not already defined
+                    #   * when next position is nil, it does not get assigned
+                    #   * so, this is safe to call like this, without checking position value
+                    @user.options_for_senior( _senior, { :position => _senior.next_caregiver_position } ) # SET
+                  end
+                end
+              end
+              
               #  Wed Nov 24 18:06:36 IST 2010, ramonrails
               #   * https://redmine.corp.halomonitor.com/issues/3782
               #   * after caregiver activation, show recently activated caregiver
@@ -913,7 +934,7 @@ class UsersController < ApplicationController
     
     opt = RolesUsersOption.find(params[:id])
     opt.removed = false
-    opt.position = User.get_max_caregiver_position(user)
+    opt.position = user.next_caregiver_position # User.get_max_caregiver_position(user)
     opt.save
     
     refresh_caregivers(user)
@@ -932,7 +953,7 @@ class UsersController < ApplicationController
     end
     
     opt.active = true
-    opt.position = User.get_max_caregiver_position(@patient)
+    opt.position = @patient.next_caregiver_position # User.get_max_caregiver_position(@patient)
     #opt.position = 1
     opt.removed = false
     opt.save

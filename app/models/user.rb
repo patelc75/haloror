@@ -343,9 +343,9 @@ class User < ActiveRecord::Base
       end
       senior = User.find(senior_id)
 
-      if position.blank?
-        position = self.get_max_caregiver_position(senior)
-      end
+      # if position.blank?
+      position ||= senior.next_caregiver_position # self.get_max_caregiver_position(senior)
+      # end
       
       role = @user.has_role 'caregiver', senior #if 'caregiver' role already exists, it will return nil
       
@@ -368,7 +368,29 @@ class User < ActiveRecord::Base
     @senior = User.find(senior)
     UserMailer.deliver_caregiver_invitation(@user, @senior)
   end
-  
+
+  # 
+  #  Fri Nov 26 20:38:15 IST 2010, ramonrails
+  #   * next caregiver position for "self" senior
+  def next_caregiver_position
+    #   * we need a position only for halouser reference
+    if self.is_halouser?
+      #   * fetch all caregivers for this user
+      #   * collect thier positions in an array
+      #   * eliminate blanks or duplicates (? error!)
+      #   * sort them chronologically
+      #   * return the number next to the last position
+      self.has_caregivers.collect { |e| e.caregiver_position_for( self) }.compact.uniq.sort.last + 1
+    else
+      #   * returning nil can be passed inline into any statement
+      #   * an argument received as nil is same as not specified
+      nil # "self" is not halouser. what position can we get anyways :)
+    end
+  end
+
+  # 
+  #  Fri Nov 26 20:31:00 IST 2010, ramonrails
+  #   * DEPRECATED: TODO: change all calls to user.next_caregiver_position
   def self.get_max_caregiver_position(user)
     #get_caregivers(user)
     #@caregivers.size + 1  #the old method would not work if a position num was skipped
@@ -559,7 +581,9 @@ class User < ActiveRecord::Base
       end
       #
       # caregiver options
-      lazy_options.each { |k,v| self.options_for_senior( k, v) unless k.blank? || k.new_record? }
+      lazy_options.each do |k,v|
+        self.options_for_senior( k, v) unless k.blank? || k.new_record?
+      end
       # 
       #  Fri Nov 12 18:09:50 IST 2010, ramonrails
       #  emails can be dispatched only after roles
@@ -663,15 +687,31 @@ class User < ActiveRecord::Base
   # end
   
   # fetch position if "this" user assuming he/she is a caregiver to given senior
-  def caregiver_position_for(senior)
-    options_attribute_for_senior(senior, :position)
+  # Usage:
+  #   * cg.caregiver_position_for( senior) => n
+  #   * cg.caregiver_position_for( senior, 2) => 2
+  def caregiver_position_for( _senior, _position = nil)
+    options_attribute_for_senior(_senior, :position, _position)
   end
   
   # get attribute value from the roles_users_options this user has for senior
   # return blank when not found
-  def options_attribute_for_senior(senior, attribute)
-    options = options_for_senior(senior)
-    options.blank? || !options.respond_to?("#{attribute}".to_sym) ? nil : options.send("#{attribute}".to_sym)
+  # Usage:
+  #   * cg.options_attribute_for_senior( senior, :position) => GET
+  #   * cg.options_attribute_for_senior( senior, :position, 2) => SET
+  def options_attribute_for_senior( _senior, _attribute, _value = nil)
+    #   * fetch options
+    if (_options = options_for_senior( _senior))
+      #   * check validity of options
+      unless ( _options.blank? || !_options.respond_to?("#{_attribute}") )
+        if _value.blank?
+          _options.send("#{_attribute}")  # GET
+        else
+          _options.update_attribute( "#{_attribute}", _value) # no callbacks
+          _value
+        end
+      end
+    end
   end
   
   # methods for a RESTful approach

@@ -117,7 +117,7 @@ class ProfilesController < ApplicationController
       end
     end
     get_caregivers(current_user)
-    @max_position = User.get_max_caregiver_position(@senior)
+    @max_position = @senior.next_caregiver_position # User.get_max_caregiver_position(@senior)
     @profile = Profile.new
     @user = User.new(:need_validation => false, :profile => @profile)
   end

@@ -419,6 +419,8 @@ Then /^(senior|subscriber) of last user intake (should|should not) be (.+)$/ do 
       _user.should == ui.subscriber
     when 'caregiver'
       _user.should be_is_caregiver
+    when 'caregiver1'
+      _user.should == ui.caregiver1
     else
       assert false
     end
@@ -440,6 +442,10 @@ Then /^(senior|subscriber) of last user intake (should|should not) be (.+)$/ do 
       _user.should_not be_is_subscriber_of( ui.senior)
     when 'caregiver'
       _user.should_not be_is_caregiver
+    when 'caregiver1'
+      _user.should_not == ui.caregiver1
+    when 'caregiver2'
+      _user.should_not == ui.caregiver2
     else
       assert false
     end

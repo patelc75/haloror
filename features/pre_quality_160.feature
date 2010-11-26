@@ -133,6 +133,12 @@ Feature: Pre quality
     And "user_intake_no_caregiver_1" checkbox should be checked
     And "user_intake_no_caregiver_2" checkbox should be checked
     And "user_intake_no_caregiver_3" checkbox should be checked
+    #
+    # https://redmine.corp.halomonitor.com/issues/3790
+    When I activate the last subscriber as "ml_reseller_subscriber"
+    Then senior of last user intake should not be subscriber
+    And subscriber of last user intake should be caregiver1
+    And subscriber of last user intake should not be caregiver2
 
   # senior == subscriber
   Scenario: admin > place order : senior == subscriber

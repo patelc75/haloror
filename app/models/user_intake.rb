@@ -44,7 +44,10 @@ class UserIntake < ActiveRecord::Base
   end
   attr_accessor :test_mode, :opt_out, :put_away, :lazy_action # , :card_or_bill
 
-  serialize :caregiver_positions
+  # 
+  #  Fri Nov 26 17:48:38 IST 2010, ramonrails
+  #   * DEPRECATED: we are not using roles_users_option for caregiver position
+  # serialize :caregiver_positions
   
   # =============================
   # = dynamic generated methods =
@@ -89,6 +92,7 @@ class UserIntake < ActiveRecord::Base
   def caregiver_role_options( _index = 0, _given_options = nil)
     if (1..3).include?( _index)
       _caregiver = self.send("caregiver#{_index}")
+      _options = nil # start with a blank
       # 
       # GET / SET mode. required for both
       unless (_caregiver.blank? || _caregiver.nothing_assigned?)
