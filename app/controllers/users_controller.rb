@@ -670,7 +670,14 @@ class UsersController < ApplicationController
             if logged_in? && !current_user.activated?
               current_user.activate
             end
-            current_user.set_active()
+            # 
+            #  Tue Nov 30 00:49:20 IST 2010, ramonrails
+            #   * https://redmine.corp.halomonitor.com/issues/3798#note-2
+            #   * as discussed with Chirag
+            #     when a caregiver gets its authentication credentials activated
+            #     then it does not become an "active caregiver", just gets login activated
+            # current_user.set_active
+            #
             if current_user.is_caregiver?
               # 
               #  Fri Nov 26 20:49:23 IST 2010, ramonrails
