@@ -307,6 +307,10 @@ class Profile < ActiveRecord::Base
     #  Mon Nov 29 23:48:23 IST 2010, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/3796
     #   * just pick the last nmuber and return next number
+    #
+    #   TODO: To avoid any such misunderstandings
+    #   * Chirag keeps ownership of business logic in feature files
+    #   * Ram keeps the ownership of keeping them green
     if (last_profile = Profile.last_account_number)
       last_profile.account_number.to_i == 9999 ? "????" : "%04d" % (last_profile.account_number.to_i + 1)
     else
