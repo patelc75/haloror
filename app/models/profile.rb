@@ -181,7 +181,11 @@ class Profile < ActiveRecord::Base
     #   * increment when blank
     # QUESTION: do we only want to update this for new_record?
     #           what happens to existing user with invalid account number?
-    self.update_attribute( :account_number, next_account_number) if !valid_account_number? && is_profile_of_halouser? # only for new records
+    if !valid_account_number? && is_profile_of_halouser? # only for new records
+      self.account_number = next_account_number
+      self.send( :update_without_callbacks)
+      # self.update_attribute( :account_number, next_account_number)
+    end
   end
 
   def is_profile_of_halouser?
