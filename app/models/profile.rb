@@ -78,22 +78,24 @@ class Profile < ActiveRecord::Base
   #   * Only searches within "HM<digits>"
   #  Mon Nov 29 22:46:12 IST 2010, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/3796
-  #   * prefix is not required. Only the number is required
+  #   * we only consider the values with digits in it
+  #   * any other pattern existing in the records, is ignored
   def self.last_account_number
-    #   * fetch all profiles with account_number not blank
-    #   * reject any alphabets or prefixed characters from each
-    #   * collect the digit values that appear at the end of string
-    #   * find the highest number within that
-    #
-    #   * minimize memory usage: just select account_number in query
-    #   * collect array of all numbers
-    #   * eliminate any blanks
-    _numbers = Profile.all( :conditions => ["account_number <> '' AND account_number IS NOT NULL"], :select => "account_number").collect(&:account_number).compact
-    #   * collect the numeric values embedded anywhere in that string
-    #   * alpha (or nothing)
-    _collected = _numbers.collect { |e| e.match(/^(\D*)(\d+)(\D*)$/) ? e.match(/^(\D*)(\d+)(\D*)$/)[2].to_i : nil }.compact
-    #   * sort and pick the highest value
-    _collected.sort.last
+    Profile.first( :conditions => ["account_number LIKE ?", "____"], :order => "account_number DESC" )
+    # #   * fetch all profiles with account_number not blank
+    # #   * reject any alphabets or prefixed characters from each
+    # #   * collect the digit values that appear at the end of string
+    # #   * find the highest number within that
+    # #
+    # #   * minimize memory usage: just select account_number in query
+    # #   * collect array of all numbers
+    # #   * eliminate any blanks
+    # _numbers = Profile.all( :conditions => ["account_number <> '' AND account_number IS NOT NULL"], :select => "account_number").collect(&:account_number).compact
+    # #   * collect the numeric values embedded anywhere in that string
+    # #   * alpha (or nothing)
+    # _collected = _numbers.collect { |e| e.match(/^(\D*)(\d+)(\D*)$/) ? e.match(/^(\D*)(\d+)(\D*)$/)[2].to_i : nil }.compact
+    # #   * sort and pick the highest value
+    # _collected.sort.last
   end
   
   class << self # class methods
@@ -301,32 +303,37 @@ class Profile < ActiveRecord::Base
     #  Mon Nov 29 23:48:23 IST 2010, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/3796
     #   * just pick the last nmuber and return next number
-    Profile.last_account_number + 1
+    if (last_profile = Profile.last_account_number)
+      last_profile.account_number.to_i == 9999 ? "????" : "%04d" % (last_profile.account_number.to_i + 1)
+    else
+      "????"
+    end
     
-    # _fetched = if (_number = Profile.last_account_number)
-    #   #   * first two characters are "HM"
-    #   #   * the last character is a digit?
-    #   if _number[0..1] == "HM" && (48..57).include?( _number[-1])
-    #     # Example: "HM0123".match(/^(\D+)(\d+)$/)[2]    => "0123"
-    #     #   * return the second match as fetched value
-    #     #   * result is integer
-    #     #   * increment the result by 1 => number that we want
-    #     _number.match(/^(\D+)(\d+)$/)[2].to_i + 1
-    #   end
-    # end
-    # if _fetched.blank?
-    #   #   * We do not have any number
-    #   #   * lets start with first
-    #   "HM0001"
-    # elsif _fetched < 1000 # last number is less than 4 digits?
-    #   #   * Force at least 4 digits
-    #   #   * Insert "0" prefixes to make 4 digits
-    #   #   * Example: _fetched = 1; this yields => "HM0002"
-    #   "HM" + ( "%04d" % _fetched)
-    # else
-    #   #   * More than 4 digits, can be accepted directly as to_s
-    #   "HM" + _fetched.to_s
-    # end
+    # Profile.last_account_number + 1    
+    # # _fetched = if (_number = Profile.last_account_number)
+    # #   #   * first two characters are "HM"
+    # #   #   * the last character is a digit?
+    # #   if _number[0..1] == "HM" && (48..57).include?( _number[-1])
+    # #     # Example: "HM0123".match(/^(\D+)(\d+)$/)[2]    => "0123"
+    # #     #   * return the second match as fetched value
+    # #     #   * result is integer
+    # #     #   * increment the result by 1 => number that we want
+    # #     _number.match(/^(\D+)(\d+)$/)[2].to_i + 1
+    # #   end
+    # # end
+    # # if _fetched.blank?
+    # #   #   * We do not have any number
+    # #   #   * lets start with first
+    # #   "HM0001"
+    # # elsif _fetched < 1000 # last number is less than 4 digits?
+    # #   #   * Force at least 4 digits
+    # #   #   * Insert "0" prefixes to make 4 digits
+    # #   #   * Example: _fetched = 1; this yields => "HM0002"
+    # #   "HM" + ( "%04d" % _fetched)
+    # # else
+    # #   #   * More than 4 digits, can be accepted directly as to_s
+    # #   "HM" + _fetched.to_s
+    # # end
   end
 
   # private # --------------------------------------------------
