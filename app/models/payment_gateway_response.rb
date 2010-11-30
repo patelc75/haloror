@@ -31,7 +31,11 @@ class PaymentGatewayResponse < ActiveRecord::Base
       self.request_headers = response[:request_headers]
     else
       begin
-        self.success       = response.success?
+        # 
+        #  Wed Dec  1 02:47:48 IST 2010, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/3805
+        #   * invalid amount is considered a success, not failure
+        self.success       = ( response.success? || response.message.include?( 'valid amount is required'))
         self.authorization = response.authorization
         self.message       = response.message
         self.params        = response.params

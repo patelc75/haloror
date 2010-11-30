@@ -195,10 +195,6 @@ class OrdersController < ApplicationController
         if @order.valid? && @order.save #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
           # pick any of these hard coded values for now. This will change to device_revisions on order screen
           @order.product = session[:product] # used at many places in this code
-          # 
-          #  Tue Nov 30 02:06:33 IST 2010, ramonrails
-          #   * reset the selected group when the transaction is successful
-          session[:order_group_id] = nil
           
           if @order.product_from_catalog.blank?
             # this should have been caught on first page though
@@ -219,6 +215,10 @@ class OrdersController < ApplicationController
                 goto = "failure"
                 # format.html { render :action => 'failure' }
               else
+                # 
+                #  Tue Nov 30 02:06:33 IST 2010, ramonrails
+                #   * reset the selected group when the transaction is successful
+                session[:order_group_id] = nil
                 # success
                 #
                 # # CHANGED: emails are now delivered explicitly through order > create_user_intake > dispatch_emails

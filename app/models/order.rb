@@ -170,8 +170,15 @@ class Order < ActiveRecord::Base
     if validate_card
       if product_cost.blank?
         errors.add_to_base "Product cost cannot be identified in the database"
-      elsif product_cost.upfront_charge.zero?
-        errors.add_to_base "One time fee: #{product_cost.upfront_charge}"
+      # 
+      #  Wed Dec  1 02:37:38 IST 2010, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/3805
+      #   * zero one-time-fee is possible with certain coupon codes
+      #   * therefore, absolutely zero charge at online order
+      #   * subscription & pro-rata charged later as usual
+      #   OBSOLETE: the logic now accepts zero value charges
+      # elsif product_cost.upfront_charge.zero?
+      #   errors.add_to_base "One time fee: #{product_cost.upfront_charge}"
       else
         # one time charge as presented in the product detail box
         # charge_amount = (cost * 100) # cents
@@ -286,8 +293,12 @@ class Order < ActiveRecord::Base
   end
 
   def card_successful?
+    # 
+    #  Wed Dec  1 02:57:13 IST 2010, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3805
+    #   * order can be successful with an invalid amount also
     # when instance variables are blank? this might be a successful saved order. check payment_gateway_responses
-    return (@one_time_fee_response.blank?) ? purchase_successful? : (@one_time_fee_response.success?)
+    return (@one_time_fee_response.blank?) ? purchase_successful? : (@one_time_fee_response.success? || @one_time_fee_response.message.include?('valid amount is required'))
     # return (@one_time_fee_response.blank? || @recurring_fee_response.blank?) ? purchase_successful? : (@one_time_fee_response.success? && @recurring_fee_response.success?)
   end
   
