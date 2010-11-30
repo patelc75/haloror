@@ -86,6 +86,7 @@ class MgmtQuery < ActiveRecord::Base
     conds = MgmtQuery.access_mode_conds(access_mode_system_timeout) #conds to query for either ethernet or dialup devices
     gw_offline_timeout = access_mode_system_timeout.gateway_offline_timeout_sec
     gw_offline_timeout += access_mode_system_timeout.gateway_offline_offset_sec if !access_mode_system_timeout.gateway_offline_offset_sec.nil? 
+    conds << "id in (select id from devices where serial_number like 'H2%')"
     conds << "updated_at < now() - interval '#{gw_offline_timeout} seconds'"
     conds << "reconnected_at is NOT NULL"
     dlqs = DeviceLatestQuery.find(:all, :conditions => conds.join(' and '))
