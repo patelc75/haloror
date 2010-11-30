@@ -4,7 +4,7 @@
   <h3>Your order has failed for the following reason:</h3>
   <% if @one_time_fee.blank? %>
     <h3>Credit card charge failed.</h3>
-    Please check your credit card info (number, address) carefully.
+    Please check your credit card info (number, CVV, billing address) carefully.
   <% else %>
     <h3>One time charge</h3>
     <p>
@@ -19,7 +19,7 @@
     Error Messages:
     <ul>
     <% @order.errors.each_full do |error_message| %>
-      <li><%= error_message %></li>
+      <li><font color="red"><%= error_message %></font></li>
     <% end -%>
     </ul>
     
