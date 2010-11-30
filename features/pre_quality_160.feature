@@ -302,7 +302,8 @@ Feature: Pre quality
   #  Fri Nov 12 00:20:54 IST 2010, ramonrails
   #  release 1.6.0 test cases from Intake + Install States spreadsheet
   #  http://spreadsheets.google.com/a/halomonitoring.com/ccc?key=0AnT533LvuYHydENwbW9sT0NWWktOY2VoMVdtbnJqTWc&hl=en#gid=3
-  Scenario: D2 - Enable test mode (opt out of call center + caregivers away)
+  # https://redmine.corp.halomonitor.com/issues/3798
+  Scenario: D2 - halouser == subscriber. Enable test mode (opt out of call center + caregivers away)
     Given the product catalog exists
     When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
@@ -313,6 +314,8 @@ Feature: Pre quality
     # Verify “Opt out of live call center” is checked in the profile of halouser
     And senior of last user intake should be opted out of call center
     # Verify all caregivers are away at Config > Users > (pick row) > Caregivers
+    And I activate the last senior as "reseller_senior"
+    And I activate the last subscriber as "reseller_subscriber"
     And caregivers of last user intake should be away
     # Open user intake and Verify Credit Card/Manual Billing radio button is set to credit card
     #  Mon Nov 22 13:33:56 IST 2010, ramonrails
@@ -320,6 +323,25 @@ Feature: Pre quality
     # When I edit the last user intake
     # Then "user_intake_credit_debit_card_proceessed_" checkbox should be checked
     # And "user_intake_bill_monthly_" checkbox should not be checked
+
+  # https://redmine.corp.halomonitor.com/issues/3798
+  Scenario: halouser <> subscriber - Enable test mode (opt out of call center + caregivers away)
+    Given the product catalog exists
+    When I create a "reseller" reseller group
+    And I create a coupon code for "reseller" group
+    And I create admin of "reseller" group
+    And I activate the last user as "reseller_admin"
+    And I am placing an online order for "reseller" group
+    And I uncheck "order_bill_address_same"
+    And I press "Continue"
+    And I press "Place Order"
+    Then senior of last user intake should be in test mode
+    # Verify “Opt out of live call center” is checked in the profile of halouser
+    And senior of last user intake should be opted out of call center
+    # Verify all caregivers are away at Config > Users > (pick row) > Caregivers
+    And I activate the last senior as "reseller_senior"
+    And I activate the last subscriber as "reseller_subscriber"
+    And caregivers of last user intake should be away
   
   # (1) Uncheck "Same as User" at the Online Store
   # (2) Verify both halouser and subsriber (and roles) in Config > Users
