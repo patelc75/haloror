@@ -51,6 +51,28 @@ class Panic < CriticalDeviceAlert
         #   * Pro rata is charged from the date we received panic button after 
         user.user_intakes.first.update_attribute( :panic_received_at, Time.now) unless user.user_intakes.blank?
         #
+        # add triage_audit_log with a message
+        _message = "Automatically transitioned from 'Ready to Insall' to 'Ready to Bill' state at 'Panic button'"
+        
+      # 
+      #  Wed Dec  1 03:36:39 IST 2010, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/3786
+      #   * if subscription was already charged, mark user "installed"
+      elsif !user.user_intakes.blank? && user.user_intakes.first.subscription_successful?
+        user.update_attribute( :status, User::STATUS[:installed]) # "Installed"
+        # 
+        #  Tue Nov 23 00:48:30 IST 2010, ramonrails
+        #   * Pro rata is charged from the date we received panic button after 
+        user.user_intakes.first.update_attribute( :panic_received_at, Time.now) unless user.user_intakes.blank?
+        #
+        # add triage_audit_log with a message
+        _message = "Automatically transitioned from any existing state to 'Installed' state at 'Panic button' because subscription started before panic event."
+      end
+
+      #
+      # add to triage audit log with a message
+      if defined?( _message) && !_message.blank?
+        #
         # add a row to triage audit log
         #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log
         attributes = {
@@ -59,7 +81,7 @@ class Panic < CriticalDeviceAlert
           :status       => user.status,
           :created_by   => user.id,
           :updated_by   => user.id,
-          :description  => "Automatically transitioned from 'Ready to Insall' to 'Ready to Bill' state at 'Panic button'"
+          :description  => _message
         }
         TriageAuditLog.create( attributes)
       end

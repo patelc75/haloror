@@ -28,6 +28,7 @@
     <% else %>
       <%= image_tag('exclamation.png') %>
     <% end %>
+    <%= link_to image_tag( 'warning_go.png', :alt => "Start subscription", :title => "Start subscription"), { :controller => "user_intakes", :action => "charge_subscription", :id => user_intake_row} unless user_intake_row.subscription_successful? %>
   </td> 
   <% end %>
   <td class="text-center">

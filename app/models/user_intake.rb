@@ -727,6 +727,10 @@ class UserIntake < ActiveRecord::Base
     order_present? && order.purchase_successful?
   end
 
+  def subscription_successful?
+    order_present? && order.subscription_successful?
+  end
+
   # Usage:
   #   user_intake.caregivers_active
   #   user_intake.caregivers_away

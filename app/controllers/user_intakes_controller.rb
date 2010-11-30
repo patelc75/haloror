@@ -285,7 +285,7 @@ class UserIntakesController < ApplicationController
 
   def charge_subscription
     @user_intake = UserIntake.find( params[:id])
-    @user_intake.order and @user_intake.order.charge_subscription # begin charge for subscription
+    @user_intake.order.charge_subscription if @user_intake.order # begin charge for subscription
   end
 
   def paper_copy_submission
