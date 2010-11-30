@@ -9,19 +9,18 @@ Huntsville, AL 35816
 Phone 888.971.HALO (888-971-4256)
 Fax 866.275.1904
 
-ORDER SUMMARY
 Order number: <%= @order.full_number %>
 Order date: <%= @order.created_at.to_s(:date_time_timezone) %>
 
-Order items:
+ORDER ITEMS
 <% @order.order_items.each do |item| %><%= item.product_model %>
+Quantity:<%= item.quantity %>, Cost:<%= item.formatted_cost(item.quantity) %>
 <%= item.status %>
-Qty:<%= item.quantity %> Cost:<%= item.formatted_cost(item.quantity) %>
 
 <% end -%>
 Card Number <%= @order.masked_card_number %> (exp <%= @order.card_expiry %>) has been charged <%= number_to_currency(@order.cost, :precision => 2, :unit => '$') %>
 
-Shipping
+SHIPPING
   Name    : <%= @order[:ship_first_name] %> <%= @order[:ship_last_name] %>
   Address : <%= @order[:ship_address] %>
   City    : <%= @order[:ship_city] %>
@@ -32,7 +31,7 @@ Shipping
 Comments and special shipping instructions:
   <%= @order.comments %>
 
-Billing
+BILLING
   Name    : <%= @order[:bill_first_name] %> <%= @order[:bill_last_name] %>
   Address : <%= @order[:bill_address] %>
   City    : <%= @order[:bill_city] %>

@@ -174,12 +174,13 @@
           <% else %>
             <%= f.select "card_type", credit_card_types.to_a %>
           <% end -%>
-        </p>
+
         <p>
-          CSC / <label for="order_cvv">CVV</label> (Card Security Code / Card Verification Value)<br />
+          CSC / <label for="order_cvv">CVV</label>
             <%= f.password_field "cvv", :class => "required", :size => 4, :disabled => @confirmation %>
+            <br>
+        <span class="tiny">Note: The CSC/CVV (Card Security Code / Card Verification Value) is located on the back of <%= link_to "MasterCard, VISA, or Discover", image_path("CVC2SampleVisaNew.png"), :rel => "facebox" %> cards and is typically a separate group of 3 digits to the right of signature strip. On <%= link_to "American Express", image_path("CIDSampleAmex.png"), :rel => "facebox" %> cards, the CSC/CVV is a 4 digit code on the front towards the right.</span>
         </p>
-        <span class="hint">Note: The CSC/CVV is located on the back of <%= link_to "MasterCard, VISA, or Discover", image_path("CVC2SampleVisaNew.png"), :rel => "facebox" %> cards and is typically a separate group of 3 digits to the right of signature strip. On <%= link_to "American Express", image_path("CIDSampleAmex.png"), :rel => "facebox" %> cards, the CSC/CVV is a 4 digit code on the front towards the right.</span>
         <p>
           <label>Comments and special shipping instructions</label><br />
           <%= f.text_area "comments", :rows => 5, :disabled => @confirmation %>

@@ -20,7 +20,8 @@
     </td></tr>
   </table>
   <p>
-    *Note: Recurring monthly charge of <b><%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.monthly_recurring.to_i) %>/mo</b> will begin <%= @complete_tariff.blank? ? '?' : @complete_tariff.recurring_delay.to_i.months.from_now.to_s(:day_date) %>
+    <!-- #*Note: Recurring monthly charge of <b><%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.monthly_recurring.to_i) %>/mo</b> will begin <%= @complete_tariff.blank? ? '?' : @complete_tariff.recurring_delay.to_i.months.from_now.to_s(:day_date) %> -->
+    <span class="tiny">*<b>Note</b>: A one-time prorated charge will be charged to your credit card when your myHalo system is installed or 7 days after your myHalo system has shipped, whichever comes first. The monthly recurring charge will begin the 1st day of the month AFTER the prorated charge.</span>  
   </p>
 </div>
 <% end -%>
@@ -46,7 +47,8 @@
     </td></tr>
   </table>
   <p>
-    *Note: Recurring monthly charge of <b><%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %>/mo</b> will begin <%= @clip_tariff.blank? ? '?' : @clip_tariff.recurring_delay.months.from_now.to_s(:day_date) %>
+    <!-- *Note: Recurring monthly charge of <b><%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %>/mo</b> will begin <%= @clip_tariff.blank? ? '?' : @clip_tariff.recurring_delay.months.from_now.to_s(:day_date) %> -->
+    <span class="tiny">*<b>Note</b>: A one-time prorated charge will be charged to your credit card when your myHalo system is installed or 7 days after your myHalo system has shipped, whichever comes first. The monthly recurring charge will begin the 1st day of the month AFTER the prorated charge.</span>  
   </p>
 </div>
 <% end -%>
