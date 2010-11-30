@@ -1,18 +1,10 @@
 <h1 id="failed_order">Failure: Incomplete order</h1>
-<h2>Thank you for your order. Your order has failed for the following reason</h2>
-
-<% unless @order.errors.blank? %>
-  <div id="order_errors" class="box error"><ul>
-  <% @order.errors.each_full do |error_message| %>
-    <li><%= error_message %></li>
-  <% end -%>
-  </ul></div>
-  <hr />
-<% end -%>
 
 <div class="box <%= @one_time_fee.success? ? 'back-green' : 'back-orange' rescue 'back-orange' %>">  
+  <h3>Your order has failed for the following reason:</h3>
   <% if @one_time_fee.blank? %>
-    <h3>Credit card charge failed. Please check your credit card number carefully.</h3>
+    <h3>Credit card charge failed.</h3>
+    Please check your credit card info (number, address) carefully.
   <% else %>
     <h3>One time charge</h3>
     <p>
@@ -22,9 +14,20 @@
       Parameters: <%= @one_time_fee.params.to_yaml %>
     </p>
     <hr />
+    <% end -%>     
+    <br>
+    Error Messages:
+    <ul>
+    <% @order.errors.each_full do |error_message| %>
+      <li><%= error_message %></li>
     <% end -%>
+    </ul>
+    
+    <%= link_to 'Try Order Again', {:controller => 'orders', :action => 'new'}, :id => "order_again", :class => 'largebutton' %><br><br>
+    If the problem continues, please call 888.971.HALO (888-971-4256)
 </div>
 
+<!--
 <div class="box <%= @subscription.success? ? 'back-green' : 'back-orange' rescue 'back-orange' %>">
   <% if @subscription.blank? %>
     <h3>Subscription failed. Please check your credit card number carefully.</h3>
@@ -37,11 +40,4 @@
       Parameters: <%= @subscription.params.to_yaml %>
     </p>
   <% end -%>
-</div>
-
-<p class="box back-grey">
-  Please attempt to <%= link_to 'try order again', {:controller => 'orders', :action => 'new'}, :id => "order_again", :class => 'largebutton' %>
-</p>
-<p class="box back-grey">
-If the problem continues, please call 888.971.HALO (888-971-4256)
-</p>
+</div> -->
