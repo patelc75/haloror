@@ -76,7 +76,7 @@ Feature: Pre quality
     And page content should not have "bogus, switch"
     # Verify that manually forcing “/orders/switch_group” does not allow to switch the group, but snaps back to order page with the same group name visible
     When I am switching the group for online store
-    Then I should see "Group: Reseller"
+    Then I should see "Group: reseller"
     And I should not see "Please select a group"
 
   Scenario: admin > coupon applies correctly
