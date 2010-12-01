@@ -251,7 +251,8 @@ class UserIntake < ActiveRecord::Base
       # Switch user to installed state, if
       #   * user is "Ready to Bill"
       #   * last user action was "Bill"
-    elsif lazy_action == 'Bill' && senior.status == User::STATUS[:bill_pending]
+    #   * subscription can be charged? trial period is over?
+    elsif lazy_action == 'Bill' && senior.status == User::STATUS[:bill_pending] && can_charge_subscription?
       #
       # charge subscription and pro-rata recurring charges (including today), only when installed
       unless order.blank?
@@ -267,8 +268,9 @@ class UserIntake < ActiveRecord::Base
           if order.charge_subscription
             #
             # now make user "Installed"
-            self.senior.status = User::STATUS[:installed]
-            self.senior.send( :update_without_callbacks)
+            self.senior.force_status!( :installed)
+            # self.senior.status = User::STATUS[:installed]
+            # self.senior.send( :update_without_callbacks)
             #
             # all caregivers are active now
             caregivers.each { |e| e.set_active_for( senior, true) }
@@ -348,6 +350,22 @@ class UserIntake < ActiveRecord::Base
     !order.blank? && (group_id == Group.direct_to_consumer.id)
   end
 
+  # 
+  #  Thu Dec  2 00:40:59 IST 2010, ramonrails
+  #   * decide whether pro-rata and subscription can be charged right now, or a trial period is running?
+  def can_charge_subscription?
+    #   * cannot charge subscription until trial period is running
+    !trial_period_running?
+  end
+
+  # 
+  #  Thu Dec  2 01:32:49 IST 2010, ramonrails
+  #   * checks if trial period is still running
+  def trial_period_running?
+    #   * trial period will end one day less than trial-period-span-months-window
+    Date.today < (order.created_at.to_date + order.product_cost.recurring_delay.months)
+  end
+  
   # when billing starts, the monthly recurring amount is charged pro-rated since this date
   def pro_rata_start_date
     # 
@@ -355,7 +373,23 @@ class UserIntake < ActiveRecord::Base
     #   * we will never use "installation_datetime"
     #   * installation_datetime is the "desired" installation datetime
     #   * Pro-rata is charged from the date a panic button is received making user ready to install
-    panic_received_at || (shipped_at + 7.days) # || created_at
+    #
+    #   * check panic button press
+    _date = panic_received_at
+    #   * no panic? check shipping date
+    _date ||= (shipped_at + 7.days) if ( _date.blank? && !shipped_at.blank? )
+    #   * no panic or shipping? nothing returned
+    _date = (_date + order.product_cost.recurring_delay.months) unless (order.blank? || _date.blank?)
+  end
+  
+  def subscription_start_date
+    if (_date = pro_rata_start_date)
+      if _date.day == 1
+        _date
+      else
+        (_date + 1.month).beginning_of_month.to_date
+      end
+    end
   end
 
   # create blank placeholder records

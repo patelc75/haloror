@@ -370,25 +370,6 @@ class User < ActiveRecord::Base
   end
 
   # 
-  #  Fri Nov 26 20:38:15 IST 2010, ramonrails
-  #   * next caregiver position for "self" senior
-  def next_caregiver_position
-    #   * we need a position only for halouser reference
-    if self.is_halouser?
-      #   * fetch all caregivers for this user
-      #   * collect thier positions in an array
-      #   * eliminate blanks or duplicates (? error!)
-      #   * sort them chronologically
-      #   * return the number next to the last position
-      self.has_caregivers.collect { |e| e.caregiver_position_for( self) }.compact.uniq.sort.last + 1
-    else
-      #   * returning nil can be passed inline into any statement
-      #   * an argument received as nil is same as not specified
-      nil # "self" is not halouser. what position can we get anyways :)
-    end
-  end
-
-  # 
   #  Fri Nov 26 20:31:00 IST 2010, ramonrails
   #   * DEPRECATED: TODO: change all calls to user.next_caregiver_position
   def self.get_max_caregiver_position(user)
@@ -434,6 +415,31 @@ class User < ActiveRecord::Base
   # ====================
   # = instance methods =
   # ====================
+
+  def force_status!( _status_key = nil)
+    if !_status_key.blank? && STATUS.keys.include?( _status_key)
+      self.status = STATUS[_status]
+      self.send( :update_without_callbacks)
+    end
+  end
+  # 
+  #  Fri Nov 26 20:38:15 IST 2010, ramonrails
+  #   * next caregiver position for "self" senior
+  def next_caregiver_position
+    #   * we need a position only for halouser reference
+    if self.is_halouser?
+      #   * fetch all caregivers for this user
+      #   * collect thier positions in an array
+      #   * eliminate blanks or duplicates (? error!)
+      #   * sort them chronologically
+      #   * return the number next to the last position
+      self.has_caregivers.collect { |e| e.caregiver_position_for( self) }.compact.uniq.sort.last + 1
+    else
+      #   * returning nil can be passed inline into any statement
+      #   * an argument received as nil is same as not specified
+      nil # "self" is not halouser. what position can we get anyways :)
+    end
+  end
 
   # Tue Nov  2 00:57:37 IST 2010
   #   * split the config > users display logic to optimize speed
