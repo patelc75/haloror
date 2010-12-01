@@ -101,15 +101,26 @@ Feature: Pre quality
     And I should see "2 months trial"
 
   # senior different from subscriber
-  Scenario: admin > place order : senior <> subscriber
+  Scenario Outline: admin > place order : senior <> subscriber
     Given the product catalog exists
     And there are no user intakes
     And the following groups:
       | name        | sales_type | email                |
       | ml_reseller | reseller   | ml_reseller@test.com |
       | ml_master   | reseller   | ml_master@test.com   |
-    When I create a coupon code for "ml_reseller" group
-    And I create admin of "ml_reseller" group
+    # coupon code 
+    When I am ready to create a coupon code for "ml_reseller" group
+    And I fill in the following:
+      | Coupon code       | coupon1.5.1-rc1   |
+      | Deposit           | <deposit_amount>  |
+      | Shipping          | <shipping_amount> |
+      | Monthly recurring | 77                |
+      | Months advance    | 0                 |
+      | Months trial      | 2                 |
+    And I press "Save"
+    Then a coupon code should exist with coupon_code "coupon1.5.1-rc1"
+    #
+    When I create admin of "ml_reseller" group
     And I activate the last user as "ml_reseller_admin"
     And I am placing an online order for "ml_reseller" group
     Then I should see "ml_reseller"
@@ -139,6 +150,11 @@ Feature: Pre quality
     Then senior of last user intake should not be subscriber
     And subscriber of last user intake should be caregiver1
     And subscriber of last user intake should not be caregiver2
+    
+    Examples:
+      | deposit_amount | shipping_amount |
+      | 66             | 6               |
+      | 0              | 0               |
 
   # senior == subscriber
   Scenario: admin > place order : senior == subscriber
