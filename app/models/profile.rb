@@ -201,7 +201,7 @@ class Profile < ActiveRecord::Base
   def valid_account_number?
     #   * cannot be blank
     #   * must match the pattern "...." where "." is 0-9
-    !account_number.blank? && !account_number.match(/^(\d+)$/).nil? #  && (account_number.match(/^(\d+)$/)[1].to_i > 0)
+    !account_number.blank? && account_number.match(/^(\d+)$/) #  && (account_number.match(/^(\d+)$/)[1].to_i > 0)
   end
 
   def name
