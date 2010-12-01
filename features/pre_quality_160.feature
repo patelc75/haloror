@@ -240,6 +240,8 @@ Feature: Pre quality
     When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
     And I place an online order for "reseller" group
+    # submit button is not available in trial period
+    And panic button test data is received for user intake "last"
     # Open the user intake, perform the following steps and click Save
     And I edit the last user intake
     # Check email, text toggles

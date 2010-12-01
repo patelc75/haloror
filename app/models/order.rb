@@ -322,110 +322,127 @@ class Order < ActiveRecord::Base
   # http://spreadsheets.google.com/a/halomonitoring.com/ccc?key=0AnT533LvuYHydENwbW9sT0NWWktOY2VoMVdtbnJqTWc&hl=en#gid=2
   # * subscrition for DTC is now charged from 1st of next month
   # * pro-rata chargeed since installed date or, 7 calendar days from shipped
-  def charge_subscription( days = nil)
-    _success = false # default
-    # recurring attempted only when one-time is success
-    if purchase_successful? and subscription_successful?
-      # 
-      #  Fri Nov  5 06:31:05 IST 2010, ramonrails
-      #  If both charges are received, return true
-      _success = true
+  def charge_subscription # ( days = nil)
+    # _success = false # default
+    # 
+    #  Wed Dec  1 23:17:57 IST 2010, ramonrails
+    #   * recurring should be charged multiple times
+    #   * subscription_successful? logic will only charge it once
+    # # recurring attempted only when one-time is success
+    # if purchase_successful? && subscription_successful?
+    #   # 
+    #   #  Fri Nov  5 06:31:05 IST 2010, ramonrails
+    #   #  If both charges are received, return true
+    #   _success = true
+    # else
+    if product_cost.monthly_recurring.zero?
+      errors.add_to_base "Recurring subscription fee: #{product_cost.monthly_recurring}"
     else
-      if product_cost.monthly_recurring.zero?
-        errors.add_to_base "Recurring subscription fee: #{product_cost.monthly_recurring}"
-      else
-        # https://redmine.corp.halomonitor.com/issues/2800
-        # used credit_card.first_name instead of bill_first_name
-        #
-        # recurring subscription for 60 months, starting 3.months.from_now
-        # TODO: do not hard code. pick from database
-        # =>  keep charging 5 years at least
-        #
-        # reference from active_merchant code
-        #
-        # Create a recurring payment.
-        #
-        # This transaction creates a new Automated Recurring Billing (ARB) subscription. Your account must have ARB enabled.
-        #
-        # ==== Parameters
-        #
-        # * <tt>money</tt> -- The amount to be charged to the customer at each interval as an Integer value in cents.
-        # * <tt>creditcard</tt> -- The CreditCard details for the transaction.
-        # * <tt>options</tt> -- A hash of parameters.
-        #
-        # ==== Options
-        #
-        # * <tt>:interval</tt> -- A hash containing information about the interval of time between payments. Must
-        #   contain the keys <tt>:length</tt> and <tt>:unit</tt>. <tt>:unit</tt> can be either <tt>:months</tt> or <tt>:days</tt>.
-        #   If <tt>:unit</tt> is <tt>:months</tt> then <tt>:length</tt> must be an integer between 1 and 12 inclusive.
-        #   If <tt>:unit</tt> is <tt>:days</tt> then <tt>:length</tt> must be an integer between 7 and 365 inclusive.
-        #   For example, to charge the customer once every three months the hash would be
-        #   +:interval => { :unit => :months, :length => 3 }+ (REQUIRED)
-        # * <tt>:duration</tt> -- A hash containing keys for the <tt>:start_date</tt> the subscription begins (also the date the
-        #   initial billing occurs) and the total number of billing <tt>:occurrences</tt> or payments for the subscription. (REQUIRED)
-        #
-        # requires!(options, :interval, :duration, :billing_address)
-        # requires!(options[:interval], :length, [:unit, :days, :months])
-        # requires!(options[:duration], :start_date, :occurrences)
-        # requires!(options[:billing_address], :first_name, :last_name)
-        # 
-        # https://redmine.corp.halomonitor.com/issues/3068
-        # recurring start_date was immediate. ".months" was missed in last release
-        #
-        # product_cost.recurring_delay.months.from_now.to_date
-        # 
-        #  Tue Nov 23 01:11:03 IST 2010, ramonrails
-        #   * subscription is charged from today if month started today
-        #   * subscription starts from next month if we are already within this month
-        _date = if (Date.today == Date.today.beginning_of_month)
-          Date.today
-        else
-          (Date.today + 1.month).beginning_of_month.to_date
-        end
-        @recurring_fee_response = payment_gateway_server.recurring(product_cost.monthly_recurring*100, credit_card, {
-            :interval => {:unit => :months, :length => 1},
-            :duration => {:start_date => _date, :occurrences => 60},
-            :billing_address => {
-              :first_name => bill_first_name,
-              :last_name => bill_last_name,
-              :address1 => bill_address,
-              :phone => bill_phone,
-              :city => bill_city,
-              :state => bill_state,
-              :zip => bill_zip,
-              :country => "US",
-              }
-          }
-        )
-        # store response in database
-        payment_gateway_responses.create!(:action => "recurring", :amount => product_cost.monthly_recurring*100, :response => @recurring_fee_response)
-        errors.add_to_base @recurring_fee_response.message unless @recurring_fee_response.success?
-        _success = @recurring_fee_response.success?
-      end # recurring
-    end
-    _success
+      # https://redmine.corp.halomonitor.com/issues/2800
+      # used credit_card.first_name instead of bill_first_name
+      #
+      # recurring subscription for 60 months, starting 3.months.from_now
+      # TODO: do not hard code. pick from database
+      # =>  keep charging 5 years at least
+      #
+      # reference from active_merchant code
+      #
+      # Create a recurring payment.
+      #
+      # This transaction creates a new Automated Recurring Billing (ARB) subscription. Your account must have ARB enabled.
+      #
+      # ==== Parameters
+      #
+      # * <tt>money</tt> -- The amount to be charged to the customer at each interval as an Integer value in cents.
+      # * <tt>creditcard</tt> -- The CreditCard details for the transaction.
+      # * <tt>options</tt> -- A hash of parameters.
+      #
+      # ==== Options
+      #
+      # * <tt>:interval</tt> -- A hash containing information about the interval of time between payments. Must
+      #   contain the keys <tt>:length</tt> and <tt>:unit</tt>. <tt>:unit</tt> can be either <tt>:months</tt> or <tt>:days</tt>.
+      #   If <tt>:unit</tt> is <tt>:months</tt> then <tt>:length</tt> must be an integer between 1 and 12 inclusive.
+      #   If <tt>:unit</tt> is <tt>:days</tt> then <tt>:length</tt> must be an integer between 7 and 365 inclusive.
+      #   For example, to charge the customer once every three months the hash would be
+      #   +:interval => { :unit => :months, :length => 3 }+ (REQUIRED)
+      # * <tt>:duration</tt> -- A hash containing keys for the <tt>:start_date</tt> the subscription begins (also the date the
+      #   initial billing occurs) and the total number of billing <tt>:occurrences</tt> or payments for the subscription. (REQUIRED)
+      #
+      # requires!(options, :interval, :duration, :billing_address)
+      # requires!(options[:interval], :length, [:unit, :days, :months])
+      # requires!(options[:duration], :start_date, :occurrences)
+      # requires!(options[:billing_address], :first_name, :last_name)
+      # 
+      # https://redmine.corp.halomonitor.com/issues/3068
+      # recurring start_date was immediate. ".months" was missed in last release
+      #
+      # product_cost.recurring_delay.months.from_now.to_date
+      # 
+      #  Tue Nov 23 01:11:03 IST 2010, ramonrails
+      #   * subscription is charged from today if month started today
+      #   * subscription starts from next month if we are already within this month
+      _date = user_intake.subscription_start_date
+      # 
+      #  Thu Dec  2 00:33:46 IST 2010, ramonrails
+      #   * this logic shifted to subscription_start_date
+      # _date = if (_date.day == 1) # beginning of the month
+      #   _date
+      # else
+      #   (_date + 1.month).beginning_of_month.to_date
+      # end
+      @recurring_fee_response = payment_gateway_server.recurring(product_cost.monthly_recurring*100, credit_card, {
+        :interval => {:unit => :months, :length => 1},
+        :duration => {:start_date => _date, :occurrences => 60},
+        :billing_address => {
+          :first_name => bill_first_name,
+          :last_name => bill_last_name,
+          :address1 => bill_address,
+          :phone => bill_phone,
+          :city => bill_city,
+          :state => bill_state,
+          :zip => bill_zip,
+          :country => "US",
+        }
+      }
+      )
+      # store response in database
+      payment_gateway_responses.create!(:action => "recurring", :amount => product_cost.monthly_recurring*100, :response => @recurring_fee_response)
+      errors.add_to_base @recurring_fee_response.message unless @recurring_fee_response.success?
+      # _success = @recurring_fee_response.success?
+    end # recurring
+    # end
+    # _success
+    (defined?(@recurring_fee_response) && @recurring_fee_response.success?)
   end
   
   def charge_pro_rata
-    #
-    # assuming the cost is for 30 days (one month)
-    # CHANGED:
-    #   DO NOT remove the decimals. if monthly recurring is less than 30, this will return ZERO
-    _per_day_cost = (product_cost.monthly_recurring / 30.00)
     #
     # difference of days since desired installation date and now
     #  Tue Nov 23 01:03:39 IST 2010, ramonrails
     #   * pro-rata includes both dates defining the boundaries. add +1 to include them
     #   * On 1st of the month, do not pro-rate
-    unless Date.today == Date.today.beginning_of_month
-      _number_of_days = Date.today.end_of_month.day - user_intake.pro_rata_start_date.day + 1
+    _date = user_intake.pro_rata_start_date
+    if _date.blank? || (_date.day == 1)
+      #   * we just return true for the dependent logic
+      #   * we do not charge pro-rata if today is the first of the month
+      true
+
+    else
+      #
+      # assuming the cost is for 30 days (one month)
+      # CHANGED:
+      #   DO NOT remove the decimals. if monthly recurring is less than 30, this will return ZERO
+      _per_day_cost = (product_cost.monthly_recurring / 30.00)
+      #   * calculate number of days
+      #   * charge card
+      _number_of_days = (_date.end_of_month.day - _date.day + 1)
+      #
+      # charge pro-rata for the period
+      # 
+      #  Fri Nov  5 07:25:43 IST 2010, ramonrails
+      #  both values here must be 2 decimals, for correct calculation
+      charge_credit_card( :pro_rata => (_per_day_cost * _number_of_days) )
     end
-    #
-    # charge pro-rata for the period
-    # 
-    #  Fri Nov  5 07:25:43 IST 2010, ramonrails
-    #  both values here must be 2 decimals, for correct calculation
-    charge_credit_card( :pro_rata => (_per_day_cost * _number_of_days) )
   end
 
   def masked_card_number

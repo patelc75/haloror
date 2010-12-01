@@ -229,7 +229,12 @@ When /^user intake "([^"]*)" gets approved$/ do |_serial|
 end
 
 When /^panic button test data is received for user intake "([^"]*)"$/ do |_serial|
-  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  ui = if (_serial == "last")
+    UserIntake.last
+  else
+    UserIntake.find_by_gateway_serial( _serial)
+  end
+  ui.should_not be_blank
   (senior = ui.senior).should_not be_blank
   Factory.create( :panic, {:user => senior}).should be_true
   # panic = Factory.build( :panic)
