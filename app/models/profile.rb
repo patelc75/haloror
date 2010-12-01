@@ -197,13 +197,11 @@ class Profile < ActiveRecord::Base
 
   # 
   #  Thu Nov 25 19:52:32 IST 2010, ramonrails
-  #   * validity of account number to "HM...."
+  #   * validity of account number to "nnnn"
   def valid_account_number?
     #   * cannot be blank
-    #   * must match the pattern "HM...." where "." is 0-9
-    #   * alphabets other than "HM" (like "HMA") are not valid
-    #   * just the digits (without "HM") like "123" are not valid
-    !account_number.blank? && !account_number.match(/^(\D+)(\d+)$/).nil? && (account_number.match(/^(\D+)(\d+)$/)[1] == "HM")
+    #   * must match the pattern "...." where "." is 0-9
+    !account_number.blank? && !account_number.match(/^(\d+)$/).nil? #  && (account_number.match(/^(\d+)$/)[1].to_i > 0)
   end
 
   def name
