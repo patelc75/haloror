@@ -81,6 +81,9 @@ class Profile < ActiveRecord::Base
   #   * we only consider the values with digits in it
   #   * any other pattern existing in the records, is ignored
   def self.last_account_number
+   # 
+   #  Thu Dec  2 02:57:34 IST 2010, ramonrails
+   #   * This will fail if account number has any alpahbet in it
     Profile.first( :conditions => ["account_number LIKE ?", "____"], :order => "account_number DESC" )
     # #   * fetch all profiles with account_number not blank
     # #   * reject any alphabets or prefixed characters from each
