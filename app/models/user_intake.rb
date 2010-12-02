@@ -355,13 +355,19 @@ class UserIntake < ActiveRecord::Base
   #   * decide whether pro-rata and subscription can be charged right now, or a trial period is running?
   def can_charge_subscription?
     #   * cannot charge subscription until trial period is running
-    !trial_period_running?
+    !subscription_deferred?
   end
 
   # 
   #  Thu Dec  2 01:32:49 IST 2010, ramonrails
   #   * checks if trial period is still running
-  def trial_period_running?
+  # WARNING: This has a very major bug. to produce
+  #   * make a coupon code with no advance, 2 months trial
+  #   * create an order with that
+  #   * get user intake to "ready to bill" state
+  #   * change coupon code to, 2 months advance, no trial
+  #   * FIXME: now we have not received 2 months payment but user gets benefit
+  def subscription_deferred?
     #   * trial period will end one day less than trial-period-span-months-window
     Date.today < (order.created_at.to_date + order.product_cost.recurring_delay.months)
   end
