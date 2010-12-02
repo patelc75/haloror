@@ -264,6 +264,15 @@
           <%= f.submit "Save", :class => "button blue-button", :id => "user_intake_save" %>
           <%= f.submit @user_intake.senior.submit_button_text , :class => "button #{@user_intake.senior.status_button_color}-button", :id => "user_intake_submit" %>
         <% end %>
+        
+        <br />
+        <% if @user_intake.order.product_cost.months_advance > 0 %>
+          Already paid upto: <%= @user_intake.pro_rata_start_date %>
+        <% end %>
+        <% if @user_intake.order.product_cost.months_trial > 0 %>
+          Trial period ends: <%= @user_intake.pro_rata_start_date %>
+        <% end %>
+        
       </div>
       <div class="span-22 last prepend-top text-center">
         <%= render :partial => "status_timestamps", :locals => { :user_intake => @user_intake } %>
