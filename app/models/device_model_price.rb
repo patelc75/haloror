@@ -79,15 +79,15 @@ class DeviceModelPrice < ActiveRecord::Base
   end
   
   def advance_charge
-    monthly_recurring * months_advance
+    monthly_recurring.to_i * months_advance.to_i
   end
   
   def upfront_charge
-    advance_charge + deposit + shipping
+    advance_charge.to_i + deposit.to_i + shipping.to_i
   end
   
   def discounted
-    monthly_recurring * months_trial
+    monthly_recurring.to_i * months_trial.to_i
   end
   
   def recurring_delay
