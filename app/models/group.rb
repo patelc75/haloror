@@ -85,10 +85,11 @@ class Group < ActiveRecord::Base
   #   * https://redmine.corp.halomonitor.com/issues/3817
   #   * we do not want to force any email address for safety_care
   def self.safety_care!
+    Group.find_or_create_by_name( 'safety_care')
     # _email = "safety_care@myhalomonitor.com"
-    _group = Group.find_or_create_by_name( 'safety_care', { :email => _email })
+    # _group = Group.find_or_create_by_name( 'safety_care', { :email => _email })
     # _group.update_attributes( :email => _email) unless _group.email == _email
-    _group
+    # _group
   end
 
   # Usage:
