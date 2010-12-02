@@ -248,7 +248,14 @@ class UserIntakesController < ApplicationController
             #   We were showing successful order here but the business logic changed later
             #
             # if params[:redirect_hash].blank?
-            redirect_to '/' # :action => 'single_row', :id => @user_intake.id # just show user_intakes
+            # 
+            #  Thu Dec  2 23:33:17 IST 2010, ramonrails
+            #   * https://redmine.corp.halomonitor.com/issues/3818
+            if current_user.is_admin? || current_user.is_super_admin?
+              redirect_to :action => 'single_row', :id => @user_intake.id # just show user_intakes
+            else
+              redirect_to '/'
+            end
             # else
             #   redirect_to redirect_hash # this comes from online order form
             # end
