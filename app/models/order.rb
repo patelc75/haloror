@@ -23,6 +23,11 @@ class Order < ActiveRecord::Base
   def after_initialize
     self.coupon_code = "default" if coupon_code.blank?
     populate_billing_address # copy billing address if bill_address_same
+    # 
+    #  Fri Dec  3 01:13:31 IST 2010, ramonrails
+    #   * laod product type, if applicable
+    #   * self.product attribute not touched for new record anyways
+    load_product_type unless new_record?
     #
     # WARNING: some error happening. switched off for now. needs testing
     decrypt_credit_card_number # Will decrypt only if encrypted?
@@ -79,7 +84,7 @@ class Order < ActiveRecord::Base
     
   # find out if the product catalog has the product from HASH
   def product_from_catalog
-    @product_found_in_catalog ||= DeviceModel.find_complete_or_clip(product) # cache
+    @product_found_in_catalog ||= DeviceModel.find_complete_or_clip( product) # cache
   end
   
   # tariff card for the product found in catalog
@@ -546,6 +551,20 @@ class Order < ActiveRecord::Base
   # ===================
 
   private
+  
+  # 
+  #  Fri Dec  3 01:09:05 IST 2010, ramonrails
+  #   * works at reload of order
+  #   * self.product attribute not touched for new_record
+  def load_product_type
+    unless order_items.blank? || order_items.first.device_model.blank?
+      _type = case order_items.first.device_model.part_number
+      when '12001008-1'; 'clip';
+      when '12001002-1'; 'complete';
+      end
+      self.product ||= _type
+    end
+  end
   
   def create_user_intake
     # this should only be created when
