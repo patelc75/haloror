@@ -235,7 +235,7 @@ class UserIntakesController < ApplicationController
         # @user_intake.locked = @user_intake.valid? if !@user_intake.submitted? && !@user_intake.skip_validation
         #
         # Now save the user intake object. Should pass validation
-        if @user_intake.save # update_attributes( _hash)
+        if @user_intake.save && @user_intake.errors.blank? # update_attributes( _hash)
           #
           # proceed as usual
           # 

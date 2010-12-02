@@ -305,7 +305,17 @@ class UserIntake < ActiveRecord::Base
     end
     #
     # attach devices to user/senior
-    senior.add_devices_by_serial_number( gateway_serial, transmitter_serial ) unless senior.blank?
+    unless senior.blank?
+      senior.add_devices_by_serial_number( gateway_serial, transmitter_serial )
+      #
+      # 
+      #  Fri Dec  3 02:36:22 IST 2010, ramonrails
+      #   * check for errors. report them on browser
+      _serials = senior.devices.collect(&:serial_number)
+      [gateway_serial, transmitter_serial].each do |_serial|
+        self.errors.add_to_base( "Device #{_serial} is not assigned to this halouser.") unless _serial.blank? || _serials.include?( _serial)
+      end
+    end
     #
     # send email for installation
     # this will never send duplicate emails for user intake when senior is subscriber, or similar scenarios
@@ -339,6 +349,13 @@ class UserIntake < ActiveRecord::Base
     #   #   Emails to safety_care are never sent on any update to user intake
     #   # UserMailer.deliver_update_to_safety_care( self) if senior.status.blank? #acts_as_audited is not a good format to send to SafetyCare, defer for next release
     # end
+    
+    # 
+    #  Fri Dec  3 02:29:51 IST 2010, ramonrails
+    #   * check errors in payment_gateway_responses. report on browser
+    unless order.payment_gateway_responses.failed.blank?
+      self.errors.add_to_base( order.payment_gateway_responses.failed.collect(&:message).flatten.compact.uniq.join(', '))
+    end
   end
 
   def decide_card_or_bill
@@ -369,7 +386,7 @@ class UserIntake < ActiveRecord::Base
   #   * FIXME: now we have not received 2 months payment but user gets benefit
   def subscription_deferred?
     #   * trial period will end one day less than trial-period-span-months-window
-    Date.today < (order.created_at.to_date + order.product_cost.recurring_delay.months)
+    !order.blank? && !order.product_cost.blank? && (Date.today < (order.created_at.to_date + order.product_cost.recurring_delay.months))
   end
   
   # when billing starts, the monthly recurring amount is charged pro-rated since this date

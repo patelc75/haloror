@@ -323,6 +323,13 @@ class Order < ActiveRecord::Base
   def subscription_successful?
     !payment_gateway_responses.subscription.successful.blank? # row found = true, nil = false
   end
+
+  # 
+  #  Fri Dec  3 02:25:50 IST 2010, ramonrails
+  #   * check if pro-rata was already successful
+  def pro_rata_successful?
+    !payment_gateway_responses.pro_rata.successful.blank?
+  end
   
   # http://spreadsheets.google.com/a/halomonitoring.com/ccc?key=0AnT533LvuYHydENwbW9sT0NWWktOY2VoMVdtbnJqTWc&hl=en#gid=2
   # * subscrition for DTC is now charged from 1st of next month
@@ -426,8 +433,10 @@ class Order < ActiveRecord::Base
     #  Tue Nov 23 01:03:39 IST 2010, ramonrails
     #   * pro-rata includes both dates defining the boundaries. add +1 to include them
     #   * On 1st of the month, do not pro-rate
+    #  Fri Dec  3 02:28:24 IST 2010, ramonrails
+    #   * do not charge if pro-rata was already charged
     _date = user_intake.pro_rata_start_date
-    if _date.blank? || (_date.day == 1)
+    if _date.blank? || (_date.day == 1) || pro_rata_successful?
       #   * we just return true for the dependent logic
       #   * we do not charge pro-rata if today is the first of the month
       true
