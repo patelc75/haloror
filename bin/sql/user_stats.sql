@@ -1,3 +1,5 @@
+/* TO HELP DEBUG THE CONFIG > USER STATS PAGE */
+
 /* All users grouped by states (no conditions) */	
 select count (*),status from users group by status;
 

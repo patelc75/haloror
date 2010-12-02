@@ -1,6 +1,6 @@
 <%= render :partial => 'nav_config' %>
 
-<div class="span-3"><h3>Users table</h3></div>
+<div class="span-3"><h3>Users Stats</h3></div>
 <div class="span-21 last">
   <form id="group_form_id" action="/reporting/user_stats" method="GET">
     <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
@@ -10,12 +10,13 @@
 </div>
 <br/><br/>
 <div class="span-4">                                            
-  <div style="display: inline-block;"><b>Grand Totals</b></div>  
+  <div style="display: inline-block;"><b>Grand Totals</b><br><span class="tiny">"HaloUser" is the device wearer</span><br>&nbsp;</div>  
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? User.halousers.collect(&:id) : []) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :installed] }.length %> Installed HaloUsers</div>
   <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? User.halousers.collect(&:id) : []) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :demo] }.length %> Demo HaloUsers</div>
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? User.halousers.collect(&:id) : []) : @group.has_halousers.collect(&:id)).length %> Total Users</div>
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? User.halousers.collect(&:id) : []) : @group.has_halousers.collect(&:id)).length %> Total HaloUsers</div>
 </div>
 <div class="span-5">
-  <div style="display: inline-block;"><b>Demo users not included</b></div>  
+  <div style="display: inline-block;"><b>Dialup vs Eth/BC vs CS</b><br><span class="tiny">Demo users <b>not</b> included</span><br>&nbsp;</div>  
   <% [ User::AGGREGATE_STATUS[ :installed]].each do |_status| %>
   <% [:dialups, :ethernets].each do |_mode| %>
   <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.gateways.send( "#{_mode}".to_sym).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? User.halousers.collect(&:id) : []) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.collect(&:aggregated_status).flatten.compact.uniq.include?( _status)}.length %> <%= _status %> <%= _mode.to_s.capitalize %></div>
@@ -28,7 +29,7 @@
   <% end %>
 </div>  
 <div class="span-5">
-  <div style="display: inline-block;"><b>Demo users not included</b></div>            
+  <div style="display: inline-block;"><b>Pending/Cancelled</b><br><span class="tiny">Demo users <b>not</b> included</span><br>&nbsp;</div>  
   <% [ User::AGGREGATE_STATUS[ :pending], User::AGGREGATE_STATUS[ :cancelled]].each do |_status| %>
   <% [:chest_straps, :belt_clips].each do |_device| %>
   <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? User.halousers.collect(&:id) : []) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
@@ -36,7 +37,7 @@
   <% end %>
 </div>
 <div class="span-4">
-  <div style="display: inline-block;"><b>Demo users included</b></div>  
+  <div style="display: inline-block;"><b>User Intake States</b><br><span class="tiny">Demo users included</span><br>&nbsp;</div>  
   <% User::STATUS.keys.each do |key| %>
   <div style="display: inline-block;"><%= image_tag( User::STATUS_IMAGE[key]) %> <%= @group.blank? ? (current_user.is_super_admin? ? User.where_status(User::STATUS[key]).length : 0) : @group.users.select {|e| e.status == User::STATUS[key] }.length %> <%= User::STATUS[key].blank? ? 'Not Submitted' : User::STATUS[key] %></div>
   <% end %>
