@@ -80,11 +80,16 @@ class Group < ActiveRecord::Base
   # Usage:
   #   Group.safety_care!     # will find or create the group and return the active_record
   # Exclamation mark means, this method will do anything required to "ensure" results
+  # 
+  #  Thu Dec  2 23:25:44 IST 2010, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3817
+  #   * we do not want to force any email address for safety_care
   def self.safety_care!
-    _email = "safety_care@myhalomonitor.com"
-    _group = Group.find_or_create_by_name( 'safety_care', { :email => _email })
-    _group.update_attributes( :email => _email) unless _group.email == _email
-    _group
+    Group.find_or_create_by_name( 'safety_care')
+    # _email = "safety_care@myhalomonitor.com"
+    # _group = Group.find_or_create_by_name( 'safety_care', { :email => _email })
+    # _group.update_attributes( :email => _email) unless _group.email == _email
+    # _group
   end
 
   # Usage:

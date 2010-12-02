@@ -23,6 +23,11 @@ class Order < ActiveRecord::Base
   def after_initialize
     self.coupon_code = "default" if coupon_code.blank?
     populate_billing_address # copy billing address if bill_address_same
+    # 
+    #  Fri Dec  3 01:13:31 IST 2010, ramonrails
+    #   * laod product type, if applicable
+    #   * self.product attribute not touched for new record anyways
+    load_product_type unless new_record?
     #
     # WARNING: some error happening. switched off for now. needs testing
     decrypt_credit_card_number # Will decrypt only if encrypted?
@@ -79,7 +84,7 @@ class Order < ActiveRecord::Base
     
   # find out if the product catalog has the product from HASH
   def product_from_catalog
-    @product_found_in_catalog ||= DeviceModel.find_complete_or_clip(product) # cache
+    @product_found_in_catalog ||= DeviceModel.find_complete_or_clip( product) # cache
   end
   
   # tariff card for the product found in catalog
@@ -318,6 +323,13 @@ class Order < ActiveRecord::Base
   def subscription_successful?
     !payment_gateway_responses.subscription.successful.blank? # row found = true, nil = false
   end
+
+  # 
+  #  Fri Dec  3 02:25:50 IST 2010, ramonrails
+  #   * check if pro-rata was already successful
+  def pro_rata_successful?
+    !payment_gateway_responses.pro_rata.successful.blank?
+  end
   
   # http://spreadsheets.google.com/a/halomonitoring.com/ccc?key=0AnT533LvuYHydENwbW9sT0NWWktOY2VoMVdtbnJqTWc&hl=en#gid=2
   # * subscrition for DTC is now charged from 1st of next month
@@ -421,8 +433,10 @@ class Order < ActiveRecord::Base
     #  Tue Nov 23 01:03:39 IST 2010, ramonrails
     #   * pro-rata includes both dates defining the boundaries. add +1 to include them
     #   * On 1st of the month, do not pro-rate
+    #  Fri Dec  3 02:28:24 IST 2010, ramonrails
+    #   * do not charge if pro-rata was already charged
     _date = user_intake.pro_rata_start_date
-    if _date.blank? || (_date.day == 1)
+    if _date.blank? || (_date.day == 1) || pro_rata_successful?
       #   * we just return true for the dependent logic
       #   * we do not charge pro-rata if today is the first of the month
       true
@@ -546,6 +560,20 @@ class Order < ActiveRecord::Base
   # ===================
 
   private
+  
+  # 
+  #  Fri Dec  3 01:09:05 IST 2010, ramonrails
+  #   * works at reload of order
+  #   * self.product attribute not touched for new_record
+  def load_product_type
+    unless order_items.blank? || order_items.first.device_model.blank?
+      _type = case order_items.first.device_model.part_number
+      when '12001008-1'; 'clip';
+      when '12001002-1'; 'complete';
+      end
+      self.product ||= _type
+    end
+  end
   
   def create_user_intake
     # this should only be created when

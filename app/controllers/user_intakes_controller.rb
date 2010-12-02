@@ -235,7 +235,7 @@ class UserIntakesController < ApplicationController
         # @user_intake.locked = @user_intake.valid? if !@user_intake.submitted? && !@user_intake.skip_validation
         #
         # Now save the user intake object. Should pass validation
-        if @user_intake.save # update_attributes( _hash)
+        if @user_intake.save && @user_intake.errors.blank? # update_attributes( _hash)
           #
           # proceed as usual
           # 
@@ -248,7 +248,14 @@ class UserIntakesController < ApplicationController
             #   We were showing successful order here but the business logic changed later
             #
             # if params[:redirect_hash].blank?
-            redirect_to '/' # :action => 'single_row', :id => @user_intake.id # just show user_intakes
+            # 
+            #  Thu Dec  2 23:33:17 IST 2010, ramonrails
+            #   * https://redmine.corp.halomonitor.com/issues/3818
+            if current_user.is_admin? || current_user.is_super_admin?
+              redirect_to :action => 'single_row', :id => @user_intake.id # just show user_intakes
+            else
+              redirect_to '/'
+            end
             # else
             #   redirect_to redirect_hash # this comes from online order form
             # end

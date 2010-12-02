@@ -81,6 +81,9 @@ class Profile < ActiveRecord::Base
   #   * we only consider the values with digits in it
   #   * any other pattern existing in the records, is ignored
   def self.last_account_number
+   # 
+   #  Thu Dec  2 02:57:34 IST 2010, ramonrails
+   #   * This will fail if account number has any alpahbet in it
     Profile.first( :conditions => ["account_number LIKE ?", "____"], :order => "account_number DESC" )
     # #   * fetch all profiles with account_number not blank
     # #   * reject any alphabets or prefixed characters from each
@@ -197,13 +200,11 @@ class Profile < ActiveRecord::Base
 
   # 
   #  Thu Nov 25 19:52:32 IST 2010, ramonrails
-  #   * validity of account number to "HM...."
+  #   * validity of account number to "nnnn"
   def valid_account_number?
     #   * cannot be blank
-    #   * must match the pattern "HM...." where "." is 0-9
-    #   * alphabets other than "HM" (like "HMA") are not valid
-    #   * just the digits (without "HM") like "123" are not valid
-    !account_number.blank? && !account_number.match(/^(\D+)(\d+)$/).nil? && (account_number.match(/^(\D+)(\d+)$/)[1] == "HM")
+    #   * must match the pattern "...." where "." is 0-9
+    !account_number.blank? && account_number.match(/^(\d+)$/) #  && (account_number.match(/^(\d+)$/)[1].to_i > 0)
   end
 
   def name
