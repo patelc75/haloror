@@ -433,7 +433,9 @@ class User < ActiveRecord::Base
       #   * eliminate blanks or duplicates (? error!)
       #   * sort them chronologically
       #   * return the number next to the last position
-      self.has_caregivers.collect { |e| e.caregiver_position_for( self) }.compact.uniq.sort.last + 1
+      _last_position = self.has_caregivers.collect { |e| e.caregiver_position_for( self) }.compact.uniq.sort.last
+      _last_position ||= 0 # default to zero, or pick the found position
+      _last_position + 1 # pick next position
     else
       #   * returning nil can be passed inline into any statement
       #   * an argument received as nil is same as not specified
