@@ -8,7 +8,7 @@
   <div class="span-9 last">
   <form id="group_form_id" action="/reporting/users" method="GET">
     Select <label for="group_name">Group</label>:
-    <%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| [e.name, e.name] }, (@group.name unless @group.blank?)), {:onchange => "$('group_form_id').submit();"}%>
+    <%= select_tag 'group_name', options_for_select( [['All Groups','']] + @groups.collect {|e| [e.name, e.name] }, (@group.name unless @group.blank?)), {:onchange => "$('group_form_id').submit();"}%>
   </form>
   </div>
 </div>
