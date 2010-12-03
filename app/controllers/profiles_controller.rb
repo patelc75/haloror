@@ -122,6 +122,9 @@ class ProfilesController < ApplicationController
     @user = User.new(:need_validation => false, :profile => @profile)
   end
    
+  # 
+  #  Sat Dec  4 01:40:54 IST 2010, ramonrails
+  #   * TODO: DRY this up
   def create_caregiver_profile
     @user = User.new(params[:user])
     @profile = Profile.new(params[:profile])
@@ -140,21 +143,28 @@ class ProfilesController < ApplicationController
       @user.lazy_roles[:caregiver] = @senior
 
       if @user.save
-        @user
+        # @user
         @user.activate #this call differentiates this method UsersController.populate_caregiver 
 
         @profile.user_id = @user.id
         @profile[:is_new_caregiver] = true
         if @profile.save!
           patient = User.find(params[:patient_id].to_i)
-          role = @user.has_role 'caregiver', patient
-          caregiver = @user
-          @roles_user = patient.roles_user_by_caregiver(caregiver)
-          update_from_position(params[:position], @roles_user.role_id, caregiver.id) unless @roles_user.blank?
-          unless role.blank? || @roles_user.blank?
-            # a few attributes were removed from the form. this was causing Exception and user data not saved
-            RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => true) # ,:relationship => params[:relationship],:is_keyholder => params[:key_holder][:is_keyholder])
-          end
+          # 
+          #  Sat Dec  4 01:41:51 IST 2010, ramonrails
+          #   * use the easier and better method
+          @user.is_caregiver_for( patient) # create the role if not already exists
+          @user.options_for_senior( patient, { :position => params[:position] })
+          # OBSOLETE: old technoque
+          #
+          # role = @user.has_role 'caregiver', patient
+          # caregiver = @user
+          # @roles_user = patient.roles_user_by_caregiver(caregiver)
+          # update_from_position(params[:position], @roles_user.role_id, caregiver.id) unless @roles_user.blank?
+          # unless role.blank? || @roles_user.blank?
+          #   # a few attributes were removed from the form. this was causing Exception and user data not saved
+          #   RolesUsersOption.create(:roles_user_id => @roles_user.id, :position => params[:position], :active => true) # ,:relationship => params[:relationship],:is_keyholder => params[:key_holder][:is_keyholder])
+          # end
           redirect_to :controller => 'call_list',:action => 'show',:id => params[:patient_id]
         else
           render :action => 'new_caregiver_profile',:user_id => current_user
