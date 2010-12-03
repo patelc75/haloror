@@ -30,13 +30,13 @@ class Order < ActiveRecord::Base
     load_product_type unless new_record?
     #
     # WARNING: some error happening. switched off for now. needs testing
-    decrypt_credit_card_number # Will decrypt only if encrypted?
+    decrypt_sensitive_data # Will decrypt only if encrypted?
   end
 
   def before_save
     #
     # WARNING: some error happening. switched off for now. needs testing
-    encrypt_credit_card_number # Will encrypt only if not already encrypted?
+    encrypt_sensitive_data # Will encrypt only if not already encrypted?
   end
   
   # =============================
@@ -486,7 +486,7 @@ class Order < ActiveRecord::Base
     # Thu Sep 16 20:06:15 IST 2010 > https://redmine.corp.halomonitor.com/issues/3419#note-7
     #   card number was accessed before the initialization completed
     #   this step ensures card_number in plain text state
-    decrypt_credit_card_number # does not harm if run more than once
+    decrypt_sensitive_data # does not harm if run more than once
     # 
     #  Fri Nov  5 07:37:01 IST 2010, ramonrails
     #   We do not have the CSC/CVV code at the time of "Bill"
@@ -642,20 +642,20 @@ class Order < ActiveRecord::Base
     ["#{product_name}: This coupon is ", status, ". Regular pricing is applied."].join
   end
 
-  def encrypt_credit_card_number
+  def encrypt_sensitive_data
     #
     # TODO: WARNING: We need to cover this with cucumber before release
     #   All required steps are already taken to make sure data is not lost
     #   BUT, we still need to test it before releasing
     #
     # Keep data Base64 encoded to prevent any loss during conversion process
-    self.card_number = Base64.encode64( encryption_key.encrypt( card_number.to_s)) unless encrypted?
+    self.card_number = Base64.encode64( encryption_key.encrypt( card_number.to_s)) if need_encryption?
     # TODO: we must switch to CIM token process instead of encrypted CVV value, as soon as possible
     # TODO: can be more DRY in a loop
-    self.cvv = Base64.encode64( encryption_key.encrypt( cvv.to_s)) unless encrypted?( cvv)
+    self.cvv = Base64.encode64( encryption_key.encrypt( cvv.to_s)) if need_encryption?( cvv)
   end
   
-  def decrypt_credit_card_number
+  def decrypt_sensitive_data
     #
     # TODO: WARNING: We need to cover this with cucumber before release
     #   All required steps are already taken to make sure data is not lost
@@ -686,10 +686,16 @@ class Order < ActiveRecord::Base
     # WARNING: A missing or deleted salt (for any reason) can cause card data unusable
     #   This ensures safety of card user also
     # To identify if the card number is encrypted
-    # * card number is not just plain all digits
-    # * salt exists (not a robust idea. this can be removed by external factors also)
-    # !salt.blank?
+    #   * card number is not just plain all digits
+    #   * salt exists (not a robust idea. this can be removed by external factors also)
+    #   * match data with regex [A-Za-z0-9+\/]+={0,3}
+    #   * converting to_i and original values should not match
+    #   * WARNING: -- do not check --, length is divisible by 4
     arg = arg.to_s
-    !arg.blank? && (arg.gsub(' ','').to_i.to_s != arg.gsub(' ',''))
+    !arg.blank? && !salt.blank? && arg.match(/^[A-Za-z0-9+\/]+={0,3}$/) && (arg.to_i == 0) && (arg.to_i.to_s != arg) # && (arg.length % 4).zero?
+  end
+  
+  def need_encryption?( arg = card_number)
+    !arg.blank? && !encrypted?( arg)
   end
 end
