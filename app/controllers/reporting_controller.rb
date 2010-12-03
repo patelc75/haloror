@@ -153,6 +153,7 @@ class ReportingController < ApplicationController
   # https://redmine.corp.halomonitor.com/issues/3571
   def user_stats
     @groups = (current_user.is_super_admin? ? Group.all(:order => "name") : current_user.group_memberships)
+    @group_name = params[:group_name]
     @group = (@group_name.blank? ? nil : Group.find_by_name( params[:group_name] )) 
   end
   
