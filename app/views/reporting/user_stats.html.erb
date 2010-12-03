@@ -19,12 +19,12 @@
   <div style="display: inline-block;"><b>Dialup vs Eth/BC vs CS</b><br><span class="tiny">Demo users <b>not</b> included</span><br>&nbsp;</div>  
   <% [ User::AGGREGATE_STATUS[ :installed]].each do |_status| %>
   <% [:dialups, :ethernets].each do |_mode| %>
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.gateways.send( "#{_mode}".to_sym).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? User.halousers.collect(&:id) : []) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.collect(&:aggregated_status).flatten.compact.uniq.include?( _status)}.length %> <%= _status %> <%= _mode.to_s.capitalize %></div>
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.gateways.send( "#{_mode}".to_sym).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? User.halousers.collect(&:id) : @groups.collect(&:has_halousers).flatten.uniq.collect(&:id)) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.collect(&:aggregated_status).flatten.compact.uniq.include?( _status)}.length %> <%= _status %> <%= _mode.to_s.capitalize %></div>
   <% end %>
   <% end %>
   <% [User::AGGREGATE_STATUS[ :installed]].each do |_status| %>
   <% [:chest_straps, :belt_clips].each do |_device| %>
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? User.halousers.collect(&:id) : []) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? User.halousers.collect(&:id) : @groups.collect(&:has_halousers).flatten.uniq.collect(&:id)) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
   <% end %>
   <% end %>
 </div>  
@@ -32,14 +32,14 @@
   <div style="display: inline-block;"><b>Pending/Cancelled</b><br><span class="tiny">Demo users <b>not</b> included</span><br>&nbsp;</div>  
   <% [ User::AGGREGATE_STATUS[ :pending], User::AGGREGATE_STATUS[ :cancelled]].each do |_status| %>
   <% [:chest_straps, :belt_clips].each do |_device| %>
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? User.halousers.collect(&:id) : []) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? User.halousers.collect(&:id) : @groups.collect(&:has_halousers).flatten.uniq.collect(&:id)) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
   <% end %>
   <% end %>
 </div>
 <div class="span-4">
   <div style="display: inline-block;"><b>User Intake States</b><br><span class="tiny">Demo users included</span><br>&nbsp;</div>  
   <% User::STATUS.keys.each do |key| %>
-  <div style="display: inline-block;"><%= image_tag( User::STATUS_IMAGE[key]) %> <%= @group.blank? ? (current_user.is_super_admin? ? User.where_status(User::STATUS[key]).length : 0) : @group.users.select {|e| e.status == User::STATUS[key] }.length %> <%= User::STATUS[key].blank? ? 'Not Submitted' : User::STATUS[key] %></div>
+  <div style="display: inline-block;"><%= image_tag( User::STATUS_IMAGE[key]) %> <%= @group.blank? ? (current_user.is_super_admin? ? User.where_status(User::STATUS[key]).length : @groups.collect(&:has_halousers).flatten.uniq.collect(&:status).select {|e| e == User::STATUS[key]}.length) : @group.users.select {|e| e.status == User::STATUS[key] }.length %> <%= User::STATUS[key].blank? ? 'Not Submitted' : User::STATUS[key] %></div>
   <% end %>
 </div>
 <br/><br/>
