@@ -418,7 +418,7 @@ class User < ActiveRecord::Base
 
   def force_status!( _status_key = nil)
     if !_status_key.blank? && STATUS.keys.include?( _status_key)
-      self.status = STATUS[_status]
+      self.status = STATUS[_status_key]
       self.send( :update_without_callbacks)
     end
   end
