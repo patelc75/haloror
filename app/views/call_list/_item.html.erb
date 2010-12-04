@@ -96,7 +96,7 @@
 	
 	<!--ACTIVE/AWAY-->
 	
-<% if caregiver.activated? %>
+<%# if caregiver.activated? %>
 
 	<div style="float:left;padding-top:25px;width:100px">
 		<% 
@@ -129,16 +129,17 @@
 	    <%= link_to_function image_tag(img, :alt => alt, :id => 'item_away_'+caregiver.id.to_s), "show_message();" %>
     <% end -%>
 	</div>
-<% else %>
- 	<div style="float:left;padding-top:25px;width:100px">
-    <%    alt = "Caregiver, #{caregiver.name}, has not been activated."
-		  img = 'call_list-active_disabled.gif' %>
-	  <%= image_tag(img, :alt => alt, :id => 'item_active_'+caregiver.id.to_s) %>
-	  <br />
-	  <% img = 'call_list-away_disabled.gif'   %>
-	  <%= image_tag(img, :alt => alt, :id => 'item_away_'+caregiver.id.to_s)   %>	
-	</div>
-<% end  %>
+<!-- <%# else %>
+  <div style="float:left;padding-top:25px;width:100px">
+    <%#    alt = "Caregiver, #{caregiver.name}, has not been activated."
+      img = 'call_list-active_disabled.gif' %>
+    <%#= image_tag(img, :alt => alt, :id => 'item_active_'+caregiver.id.to_s) %>
+    <br />
+    <%# img = 'call_list-away_disabled.gif'   %>
+    <%#= image_tag(img, :alt => alt, :id => 'item_away_'+caregiver.id.to_s)   %> 
+  </div>
+<%# end  %> -->
+
 	<!--PHONE-->
 
 	<div style="float:left;padding-top:25px;width:75px">

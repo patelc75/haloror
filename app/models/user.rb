@@ -1667,6 +1667,9 @@ class User < ActiveRecord::Base
     end
   end
   
+  # 
+  #  Sun Dec  5 00:06:35 IST 2010, ramonrails
+  #   * OBSOLETE: this is not used anymore. check before removing
   # FIXME: need more coverage. some coverage is 
   # roles_users_option should have active flag "on"
   def set_active
@@ -2884,11 +2887,11 @@ class User < ActiveRecord::Base
   end
   
   # set the caregiver "active" for halouser
-  def set_active_for(user = nil, active = true)
-    if user && self.is_caregiver_of?(user)
-      self.options_for_senior(user, {:active => active})
+  def set_active_for(_senior = nil, active = true)
+    if !_senior.blank? && self.is_caregiver_of?(_senior)
+      self.options_for_senior(_senior, {:active => active})
       # https://redmine.corp.halomonitor.com/issues/398
-      user.log("Caregiver #{name} is #{active ? 'activated' : 'set away'} for user #{user.name}")
+      _senior.log("Caregiver #{name} is #{active ? 'activated' : 'set away'} for user #{_senior.name}")
     end
   end
   
