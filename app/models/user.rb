@@ -308,22 +308,43 @@ class User < ActiveRecord::Base
   # email = caregiver email
   # seniod_id = senior id
   # return variable = caregiver object
+  # 
+  #  Sun Dec  5 02:47:56 IST 2010, ramonrails
+  #   * TODO: DRY this up. make RESTful
   def self.populate_caregiver(email,senior_id=nil, position = nil,login = nil,profile_hash = nil)#, roles_users_hash = {})
-    existing_user = User.find_by_email(email)
-    if !login.nil? and login != ""
-      @user = User.find_by_login(login)
-      @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
-    elsif !existing_user.nil? 
-      @user = existing_user
-      @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
-    else
-      @user = User.new
-      @user.email = email
-    end
+    # 
+    #  Sun Dec  5 02:49:26 IST 2010, ramonrails
+    #   * when not found, we cannot touch attributes
+    #   * we need REST approach, not method oriented code
+    @user = User.find_by_login( login) unless login.blank? # check by login first
+    @user ||= User.find_by_email( email) unless email.blank? # not found by login, check by email
+    @user ||= User.new( :email => email) # not found by email, just instantiate new and assign email
+    #   * create activation code
+    #   * FIXME: this should be automatically created in before_save event. why here?
+    @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+    # old code
+    #
+    # existing_user = User.find_by_email(email)
+    # if !login.nil? and login != ""
+    #   @user = User.find_by_login(login)
+    #   @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+    # elsif !existing_user.nil? 
+    #   @user = existing_user
+    #   @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+    # else
+    #   @user = User.new
+    #   @user.email = email
+    # end
     
     if !@user.email.blank?
+      # 
+      #  Sun Dec  5 02:46:47 IST 2010, ramonrails
+      #   * This was skipping the validation of user model earlier
       @user.is_new_caregiver = true
       @user[:is_caregiver] = true
+      #  Sun Dec  5 02:47:43 IST 2010, ramonrails
+      #   * now we skip validation using this new technique
+      @user.skip_validation = true # skip any validation. just save
       @user.save!
 
       if @user.profile.blank?
@@ -337,6 +358,9 @@ class User < ActiveRecord::Base
           end
         end
         profile[:is_new_caregiver] = true
+        # 
+        #  Sun Dec  5 02:46:00 IST 2010, ramonrails
+        #   * FIXME: what is the point of associating a profile with user when @user is not saved after that?
         if profile.valid? && profile.save!
           @user.profile = profile
         end
