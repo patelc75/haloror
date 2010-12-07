@@ -265,12 +265,14 @@
           <%= f.submit @user_intake.senior.submit_button_text , :class => "button #{@user_intake.senior.status_button_color}-button", :id => "user_intake_submit" %>
         <% end %>
         
-        <br />
-        <% if @user_intake.order.product_cost.months_advance > 0 %>
-          Already paid upto: <%= @user_intake.pro_rata_start_date %>
-        <% end %>
-        <% if @user_intake.order.product_cost.months_trial > 0 %>
-          Trial period ends: <%= @user_intake.pro_rata_start_date %>
+        <% if @user_intake && @user_intake.order && @user_intake.order.product_cost %>
+          <br />
+          <% if @user_intake.order.product_cost.months_advance > 0 %>
+            Already paid upto: <%= @user_intake.pro_rata_start_date %>
+          <% end %>
+          <% if @user_intake.order.product_cost.months_trial > 0 %>
+            Trial period ends: <%= @user_intake.pro_rata_start_date %>
+          <% end %>
         <% end %>
         
       </div>
