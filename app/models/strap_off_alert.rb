@@ -58,8 +58,12 @@ class StrapOffAlert < ActiveRecord::Base
   #   Error on sdev: /home/web/haloror/app/models/strap_off_alert.rb:58: warning: Object#id will be deprecated; use Object#object_id
   # FIXME: assign user object, but needs testing before this code can be changed
   #   left intact without any change, for now
+  # 
+  #  Wed Dec  8 02:28:20 IST 2010, ramonrails
+  #   * changed to assigning an object instead of object.id
+  #   * log file is written on each object.id access at www
   def before_save
-    self.user_id = device.users.first.id
+    self.user = device.users.first
   end
     
   def after_save
