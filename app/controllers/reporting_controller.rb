@@ -122,7 +122,7 @@ class ReportingController < ApplicationController
     # @users = User.all( :conditions => {:id => _user_ids }, :order => "id ASC")
     #
     # show non-demo users, unless "/all" given in URL
-    @users = @users.reject(&:demo_mode?) if params[:id].to_s != "all"
+    @users = @users.reject {|e| e.demo_mode? } if params[:id].to_s != "all"
     # 
     #  Tue Dec  7 20:26:53 IST 2010, ramonrails
     #   * pagination has "order", no need to sort

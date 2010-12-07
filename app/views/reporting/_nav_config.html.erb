@@ -9,7 +9,7 @@
   <% end %>
   <% if current_user.is_super_admin? %>
   | <a href="/user_admin/roles">Roles</a>
-  | <%= link_to 'Groups', groups_path %>
+  | <%= link_to 'Groups', :controller => "groups", :action => "index" %>
   <% end %>
   <% if(current_user.is_super_admin?) %>
   | <a href="/admin/signup">Sign up users with other roles</a>
