@@ -14,15 +14,18 @@ class Event < ActiveRecord::Base
 
   # triggers ----------------------------------
   
-  # cache trigger
-  # saves the latest event status in users table
-  def after_save
-    if (user = User.find(user_id))
-      user.last_event_id = id
-      user.send(:update_without_callbacks) # quick fix to https://redmine.corp.halomonitor.com/issues/3067
-    end
-    # User.update(user_id, {:last_event_id => id})
-  end
+  #
+  #  Wed Dec  8 00:52:21 IST 2010, ramonrails
+  #   * switched off for 1.6.0 www issues
+  # # cache trigger
+  # # saves the latest event status in users table
+  # def after_save
+  #   if (user = User.find(user_id))
+  #     user.last_event_id = id
+  #     user.send(:update_without_callbacks) # quick fix to https://redmine.corp.halomonitor.com/issues/3067
+  #   end
+  #   # User.update(user_id, {:last_event_id => id})
+  # end
 
   # class methods ------------------------------
 

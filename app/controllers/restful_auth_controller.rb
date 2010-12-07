@@ -39,6 +39,9 @@ class RestfulAuthController < ApplicationController
   end
   
   private
+  # 
+  #  Wed Dec  8 00:06:57 IST 2010, ramonrails
+  #   * FIXME: need to optimize this. too much expensive on performance
   def get_hash_value(key, hsh)
     if hsh[key]
       # if key is found return value
@@ -58,6 +61,9 @@ class RestfulAuthController < ApplicationController
     return nil
   end
   
+  # 
+  #  Wed Dec  8 00:06:57 IST 2010, ramonrails
+  #   * FIXME: need to optimize this. too much expensive on performance
   def get_hash_value_from_array(keys, hsh)
     keys.each {|k| return hsh[k] if hsh[k]}
     hsh.each_value do |value|
@@ -69,6 +75,9 @@ class RestfulAuthController < ApplicationController
     return nil
   end
   
+  # 
+  #  Wed Dec  8 00:09:29 IST 2010, ramonrails
+  #   * FIXME: why re-generating a hash? if we are just checking validity of hash, regex is better
   def is_hash_valid?(string, hash)
     #return true if hash == Digest::SHA256.hexdigest(DEFAULT_HASH_KEY + string)
     return true if hash == Digest::SHA256.hexdigest(string)

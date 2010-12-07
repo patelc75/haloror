@@ -2,16 +2,22 @@ class Vital < ActiveRecord::Base
   belongs_to :user # WARNING: what is this association?
   has_many :users, :class_name => "User", :foreign_key => "last_vital_id"
   
-  # cache trigger
-  # saves the latest vital status in users table
-  def after_save
-    if (user = User.find(user_id))
-      user.last_vital_id = id
-      user.send(:update_without_callbacks) # quick fix to https://redmine.corp.halomonitor.com/issues/3067
-    end
-    # User.update(user_id, {:last_vital_id => id})
-  end
+  # # cache trigger
+  # # saves the latest vital status in users table
+  # def after_save
+  #   if (user = User.find(user_id))
+  #     user.last_vital_id = id
+  #     user.send(:update_without_callbacks) # quick fix to https://redmine.corp.halomonitor.com/issues/3067
+  #   end
+  #   # User.update(user_id, {:last_vital_id => id})
+  # end
   
+  # 
+  #  Tue Dec  7 23:24:25 IST 2010, ramonrails
+  #   * FIXME: what is this used for?
+  #   * "after_initialize" is a better alternative
+  #   * all properties can also be in a hash. self.attributes = { :heartrate => 74, ... }
+  #   * Why should model return itself at the end of a method call within itself?
   def self.new_initialize(random=false)
     model = self.new
     model.heartrate = 74
