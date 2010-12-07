@@ -183,10 +183,10 @@ class DialUpStatus < ActiveRecord::Base
   # instance methods
   
   def to_s
-    "Dial Up failure for #{phone_number} at #{UtilityHelper.format_datetime(updated_at, device.users[0])} for #{user.name} (#{user.id})" 
+    "Dial Up failure for #{phone_number} at #{UtilityHelper.format_datetime(updated_at, device.users[0])}" #for #{user.name} (#{user.id})" 
   end
 
   def email_body
-   	"Dial Up failure for #{phone_number} at #{UtilityHelper.format_datetime(updated_at, device.users[0])} for #{user.name} (#{user.id})"
+   	"Dial Up failure for #{phone_number} at #{UtilityHelper.format_datetime(updated_at, device.users[0])}" #for #{user.name} (#{user.id})"
   end
 end
