@@ -1501,7 +1501,7 @@ class User < ActiveRecord::Base
   #
   def dispatch_emails
     unless email.blank? # cannot send without valid email
-      unless activation_email_sent?
+      unless activation_email_sent? || activated?
         # 
         #  Tue Nov 23 22:21:44 IST 2010, ramonrails
         #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
@@ -1745,9 +1745,13 @@ class User < ActiveRecord::Base
   def emergency_number_with_name
     self.profile.emergency_number_id ? self.profile.emergency_number.name + ' - ' + self.profile.emergency_number.number : nil
   end
+
+  # 
+  #  Thu Dec  9 00:15:10 IST 2010, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3850
   def activated?
     # the existence of an activation code means they have not activated yet
-    activation_code.nil?
+    activation_code.blank? && !activated_at.blank?
   end
   
   # Returns true if the user has just been activated.
@@ -2992,7 +2996,7 @@ class User < ActiveRecord::Base
     # CHANGED: should this only be for new_record?
     #   does not harm this way either because activated? will ignore any new created activation_code
     #   but this is not error proof
-    self.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join ) if self.new_record?
+    self.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join ) if self.new_record? && activation_code.blank?
   end 
   
   # return true if the login is not blank
