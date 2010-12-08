@@ -89,7 +89,7 @@ class User < ActiveRecord::Base
   belongs_to :last_triage_audit_log, :class_name => "TriageAuditLog", :foreign_key => "last_triage_audit_log_id"
   belongs_to :last_vital, :class_name => "Vital", :foreign_key => "last_vital_id"
   
-  has_one  :profile, :dependent => :destroy
+  has_one  :profile, :dependent => :destroy # , :autosave => true
   
   has_many :access_logs
   has_many :batteries
@@ -210,7 +210,7 @@ class User < ActiveRecord::Base
   end
   
   def self.halousers
-    role_ids = Role.find_all_by_name('halouser').collect(&:id).compact.uniq
+    role_ids = Role.find_all_by_name('halouser', :select => 'id').collect(&:id).compact.uniq
     all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
   end
 
@@ -602,6 +602,9 @@ class User < ActiveRecord::Base
       #
       # CHANGED: Major fix. the roles were not getting populated
       # insert the roles for user. these roles are propogated from user intake
+      # 
+      #  Thu Dec  9 01:59:43 IST 2010, ramonrails
+      #   * FIXME: DRY this conditional block
       lazy_roles.each do |k,v|
         unless v.blank?
           if k == :caregiver
@@ -624,6 +627,9 @@ class User < ActiveRecord::Base
     #
     #   * save the profile after roles are established
     #   * required to increment call center account number HM...
+    # 
+    #  Thu Dec  9 01:58:50 IST 2010, ramonrails
+    #   * FIXME: use :autosave => true
     profile.save unless profile.blank?
     #
     log(status)
