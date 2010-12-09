@@ -185,11 +185,15 @@ class Profile < ActiveRecord::Base
     # QUESTION: do we only want to update this for new_record?
     #           what happens to existing user with invalid account number?
     #   * FIXME: make it less expensive on performance
-    #if !valid_account_number? && is_profile_of_halouser? # only for new records
-    #  self.account_number = next_account_number
-    #  self.send( :update_without_callbacks)
-      # self.update_attribute( :account_number, next_account_number)
-    #end
+    # 
+    #  Thu Dec  9 23:00:19 IST 2010, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3858
+    #   * account number must be blank
+    #   * user must be halouser
+    if account_number.blank? && is_profile_of_halouser? # only for new records
+     self.account_number = next_account_number
+     self.send( :update_without_callbacks)
+    end
   end
 
   def is_profile_of_halouser?
@@ -201,11 +205,16 @@ class Profile < ActiveRecord::Base
 
   # 
   #  Thu Nov 25 19:52:32 IST 2010, ramonrails
-  #   * validity of account number to "nnnn"
+  #   * validity of account number to "nnnn", 4-digits exactly, or, <albhabets><number><alphabets>
   def valid_account_number?
     #   * cannot be blank
     #   * must match the pattern "...." where "." is 0-9
-    !account_number.blank? && account_number.match(/^(\d+)$/) #  && (account_number.match(/^(\d+)$/)[1].to_i > 0)
+    #   * strictly, 4-digits only
+    #  Thu Dec  9 23:04:39 IST 2010, ramonrails
+    account_number.match(/^(\d{4})$/) || account_number.match(/^(\D*)(\d+)(\D*)$/)
+    #   * CHANGED: HM... numbers? or any other existing format?
+    #   *   match(/^(\D*)(\d+)(\D*)$/) will validate any existing HMxxx, xxxx, xxxxHM, HMxxxHM formats
+    # !account_number.blank? && account_number.match(/^(\d+)$/) #  && (account_number.match(/^(\d+)$/)[1].to_i > 0)
   end
 
   def name
