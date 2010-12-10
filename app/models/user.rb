@@ -1508,6 +1508,7 @@ class User < ActiveRecord::Base
   #   * added "_forced" option for "resend" action
   #
   def dispatch_emails( _forced = false)
+    _sent = false
     unless email.blank? # cannot send without valid email
       #  Fri Dec 10 21:04:14 IST 2010, ramonrails
       #   * "resend" needs _forced
@@ -1567,7 +1568,9 @@ class User < ActiveRecord::Base
       #
       # activation email gets delivered anyways
       UserMailer.deliver_activation(self) if recently_activated?
+      _sent = true
     end # cannot send without valid email
+    _sent
   end
 
   def username
