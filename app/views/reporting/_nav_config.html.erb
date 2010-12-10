@@ -5,7 +5,7 @@
   | <%= link_to 'User Stats', '/reporting/user_stats' %>
   <% end %>
   <% if current_user.is_admin? || current_user.is_super_admin? %>
-  | <a href="/reporting/devices">Devices</a>
+  | Devices: (<a href="/reporting/devices">By Search</a> | <%= link_to "Available", "/reporting/devices/available" %>)
   <% end %>
   <% if current_user.is_super_admin? %>
   | <a href="/user_admin/roles">Roles</a>

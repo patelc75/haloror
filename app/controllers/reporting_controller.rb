@@ -54,7 +54,7 @@ class ReportingController < ApplicationController
   def users
     # this is not required anymore. User.all or @group.users work now
     # users = User.find(:all, :include => [:roles, :roles_users], :order => 'users.id')
-    
+
     # # @roles = []
     # # rows = Role.connection.select_all("Select Distinct name from roles order by name asc")
     # # 
@@ -62,7 +62,7 @@ class ReportingController < ApplicationController
     # #   @roles << row['name']
     # # end
     # @roles = Role.all(:select => "DISTINCT name", :order => "name ASC").collect(&:name)
-    
+
     # if current_user.is_super_admin?
     #   @groups = Group.find(:all)
     # else
@@ -70,6 +70,8 @@ class ReportingController < ApplicationController
     #   @group = @groups.first
     # end
     @groups = current_user.group_memberships
+
+    @group_name = ( (params.has_key?(:group_name) && !params[:group_name].blank?) ? params[:group_name] : "")
     # @group_name = ''
     # if params[:group_name].blank?
     #   group = @groups.first
@@ -85,11 +87,11 @@ class ReportingController < ApplicationController
     # * when user is_not_super_admin, it cannot see "All groups" option, so we need to select the first one
     # Wed Oct 13 03:14:13 IST 2010
     #   We do not select the first available now. Just show "all groups"
-    @group_name = params[:group_name] # (params[:group_name] || ((current_user.is_super_admin? || @groups.blank?) ? '' : @groups.first.name))
+    # params[:group_name] # (params[:group_name] || ((current_user.is_super_admin? || @groups.blank?) ? '' : @groups.first.name))
     #
     # @groups.first replaced with nil
     @group = (@group_name.blank? ? nil : Group.find_by_name(@group_name))
-    
+
     # if @group
     #   us = []
     #   users.each do |user|
@@ -133,7 +135,7 @@ class ReportingController < ApplicationController
     # @users.sort! {|a,b| a.id <=> b.id }
     #
     # paginate the list of users
-    @users = @users.uniq.paginate :page => params[:page], :per_page => REPORTING_USERS_PER_PAGE, :order => 'id'
+    # @users = @users.uniq # .paginate :page => params[:page], :per_page => REPORTING_USERS_PER_PAGE, :order => 'id'
 
     # @users.each do |user|
     #   if user
@@ -148,10 +150,36 @@ class ReportingController < ApplicationController
     # # @user_names = (@users.blank? ? {} : Hash[ @users.collect {|user| [user.login, user.id] } ])
     #
     # Wed Oct 13 02:59:29 IST 2010 generates hash out of login => id of users
-    @user_names = {}
-    @users.each {|user| @user_names[user.login] = user.id } unless @users.blank?
+    #  Sat Dec 11 02:36:28 IST 2010, ramonrails
+    #   * disabled this. does not seem to be used
+    # @user_names = {}
+    # @users.each {|user| @user_names[user.login] = user.id } unless @users.blank?
+
+    if params.has_key?(:group_name) && !params[:group_name].blank?
+      # we already have users. nothing else to do
+      
+    elsif params.has_key?( :user_name) && !params[:user_name].blank?
+      @user_name = params[:user_name]
+      @users = @users.select do |e|
+        e.id == @user_name.to_i || e.login.include?( @user_name) || \
+        ( !e.profile.blank? && ( e.profile.first_name.include?(@user_name) || e.profile.last_name.include?(@user_name) ))
+      end
+
+    else
+      @users = []
+    end
+    @users = @users.paginate :page => params[:page], :per_page => REPORTING_USERS_PER_PAGE
   end
 
+  # 
+  #  Sat Dec 11 01:17:08 IST 2010, ramonrails
+  #   * DEPRECATED: business logic included in "users" action itself
+  # def search_user_table
+  #   @users = User.filtered( params[:query] )
+  #   # @users = User.find(:all, :conditions => "login like '%#{params[:query]}%' or profiles.first_name like '%#{params[:query]}%' or profiles.last_name like '%#{params[:query]}%'",:include => [ :profile ])
+  #   render :partial => 'user_table', :locals => {:users => @users, :sortby => 'id', :reverse => false}
+  # end
+  
   # code lifted from "users" action
   # https://redmine.corp.halomonitor.com/issues/3571
   def user_stats
@@ -166,28 +194,28 @@ class ReportingController < ApplicationController
   end
   
   def purge_data
-  	if request.post?
-  	  @user_begin_time = UtilityHelper.user_time_zone_to_utc(params[:user_begin_time])
-  	  @user_end_time = UtilityHelper.user_time_zone_to_utc(params[:user_end_time])
-  	  
-  	  if Vital.delete_all(["user_id = ? and timestamp > ? and timestamp < ? ",params[:user_id],@user_begin_time,@user_end_time]) > 0
-  	  	PurgedLog.create(:user_id => params[:user_id],:model => 'Vital',:from_date => @user_begin_time,:to_date => @user_end_time)
-  	  end
-  	  
-  	  if SkinTemp.delete_all(["user_id = ? and timestamp > ? and timestamp < ? ",params[:user_id],@user_begin_time,@user_end_time]) > 0
-  	    PurgedLog.create(:user_id => params[:user_id],:model => 'SkinTemp',:from_date => @user_begin_time,:to_date => @user_end_time)	
-  	  end
-  	  
-  	  if Battery.delete_all(["user_id = ? and timestamp > ? and timestamp < ? ",params[:user_id],@user_begin_time,@user_end_time]) > 0
-  	    PurgedLog.create(:user_id => params[:user_id],:model => 'Battery',:from_date => @user_begin_time,:to_date => @user_end_time)	
-  	  end
-  	  
-  	  if  Step.delete_all(["user_id = ? and begin_timestamp > ? and end_timestamp < ? ",params[:user_id],@user_begin_time,@user_end_time]) > 0
-  	    PurgedLog.create(:user_id => params[:user_id],:model => 'Step',:from_date => @user_begin_time,:to_date => @user_end_time)
-  	  end
-  	  
-  	  redirect_to :controller => 'purged_logs',:action => 'index'
-  	end
+    if request.post?
+      @user_begin_time = UtilityHelper.user_time_zone_to_utc(params[:user_begin_time])
+      @user_end_time = UtilityHelper.user_time_zone_to_utc(params[:user_end_time])
+      
+      if Vital.delete_all(["user_id = ? and timestamp > ? and timestamp < ? ",params[:user_id],@user_begin_time,@user_end_time]) > 0
+        PurgedLog.create(:user_id => params[:user_id],:model => 'Vital',:from_date => @user_begin_time,:to_date => @user_end_time)
+      end
+      
+      if SkinTemp.delete_all(["user_id = ? and timestamp > ? and timestamp < ? ",params[:user_id],@user_begin_time,@user_end_time]) > 0
+        PurgedLog.create(:user_id => params[:user_id],:model => 'SkinTemp',:from_date => @user_begin_time,:to_date => @user_end_time) 
+      end
+      
+      if Battery.delete_all(["user_id = ? and timestamp > ? and timestamp < ? ",params[:user_id],@user_begin_time,@user_end_time]) > 0
+        PurgedLog.create(:user_id => params[:user_id],:model => 'Battery',:from_date => @user_begin_time,:to_date => @user_end_time)  
+      end
+      
+      if  Step.delete_all(["user_id = ? and begin_timestamp > ? and end_timestamp < ? ",params[:user_id],@user_begin_time,@user_end_time]) > 0
+        PurgedLog.create(:user_id => params[:user_id],:model => 'Step',:from_date => @user_begin_time,:to_date => @user_end_time)
+      end
+      
+      redirect_to :controller => 'purged_logs',:action => 'index'
+    end
   end
   
   def user_hidden
@@ -199,49 +227,88 @@ class ReportingController < ApplicationController
     # FIXME: make a hash of conditions rather than SQL
     #   if we already search by ID / serial_number, why do we need to add device_id condition?
     @devices = []
-    # conditions = ''
-    if params[:query] and !params[:query].blank?
-      conditions = (params[:query].size == 10 ? {:serial_number => params[:query].strip} : {:id => params[:query].to_i})
-      # conditions = "id = #{params[:query]}" if params[:query].size < 10
-      # conditions = "serial_number = '#{params[:query].strip}'" if params[:query].size == 10
-    end
-    if current_user.is_super_admin?
-      @devices = Device.all(:conditions => conditions)
-    else
-      # we need this query here just for the LOGGER
-      group_ids = current_user.is_admin_of_what.select {|e| e.is_a?(Group) }.collect(&:id)
-      RAILS_DEFAULT_LOGGER.warn(group_ids.join(','))
-      # groups = current_user.group_memberships
-      # g_ids = []
-      # groups.each do |group|
-      #   g_ids << group.id if(current_user.is_admin_of?(group))
-      # end
-      # group_ids = g_ids.join(', ')
-      # RAILS_DEFAULT_LOGGER.warn(group_ids)
-      #
-      # FIXME: why do we need embedde SQL here?
-      # we can do same query in ruby (with very quick load times) like...
-      #
+    # 
+    #  Sat Dec 11 01:55:04 IST 2010, ramonrails
+    #   * added an option to see "available" devices that are not assigned to any user yet
+    if !current_user.is_super_admin?
       # 
+      #  Sat Dec 11 02:16:46 IST 2010, ramonrails
+      #   * these @devices will further be used to get IDs for SQL
       groups = current_user.is_admin_of_what.select {|e| e.is_a?(Group)}
-      @devices += groups.collect(&:has_halouser).flatten.collect(&:devices).flatten.uniq
-      @devices += groups.collect(&:has_admin).flatten.collect(&:devices).flatten.uniq
-      # https://redmine.corp.halomonitor.com/issues/3103
-      # anyone other than super admin was getting search results filtered
-      ( [:serial_number, :id].each { |field| (@devices = @devices.select {|e| e.send("#{field}".to_sym) == conditions[field] }) if conditions.has_key?(field) } ) unless conditions.blank?
-      @devices = @devices.uniq
-      # @devices += current_user.is_admin_of_what.select {|e| e.is_a?(Group)}.collect(&:has_halouser).flatten.collect(&:devices).flatten.uniq
-      #
-      # conditions += " AND " unless conditions.blank? # https://redmine.corp.halomonitor.com/issues/2890
-      # conditions += " devices.id IN (Select device_id from devices_users where devices_users.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids}))))"
+      @devices += groups.collect(&:has_halouser).flatten.compact.collect(&:devices).flatten.compact.uniq
+      @devices += groups.collect(&:has_admin).flatten.compact.collect(&:devices).flatten.compact.uniq
+    end
+    #
+    if params[:id] == "available"
+      if current_user.is_super_admin?
+        @devices = Device.find_by_sql("SELECT * FROM devices d LEFT OUTER JOIN devices_users du ON (d.id = du.device_id) WHERE du.device_id IS NULL;")
+      else
+        # 
+        #  Sat Dec 11 02:08:10 IST 2010, ramonrails
+        #   * devices with partial serial or id, but among the selected ones
+        if @devices.blank?
+          @devices = []
+        else
+          @devices = Device.find_by_sql("SELECT * FROM devices d LEFT OUTER JOIN devices_users du ON (d.id = du.device_id) WHERE du.device_id IS NULL AND d.id IN (#{@devices.collect(&:id)});")
+          # @devices = Device.all( :conditions => ["id IN (?) AND ( serial_number LIKE ? OR ID = ?)", @devices.collect(&:id).compact.uniq, "%#{params[:device_id_or_serial]}%", params[:device_id_or_serial].match(/^(\D*)(\d+)(\D*)$/)[2].to_i])
+        end
+      end
+
+    else
+      if params.has_key?( :device_id_or_serial) && !params[:device_id_or_serial].blank?
+        _search_phrase = params[:device_id_or_serial].to_s.upcase # more flexibility to the user
+        # conditions = (params[:device_id_or_serial].size == 10 ? {:serial_number => params[:device_id_or_serial].strip} : {:id => params[:device_id_or_serial].to_i})
+        if current_user.is_super_admin?
+          @devices = Device.all( :conditions => ["serial_number LIKE ? OR ID = ?", "%#{_search_phrase}%", _search_phrase.to_i])
+        else
+          # we need this query here just for the LOGGER
+          # groups = current_user.is_admin_of_what.select {|e| e.is_a?(Group)}
+          # group_ids = current_user.is_admin_of_what.select {|e| e.is_a?(Group) }.collect(&:id)
+          RAILS_DEFAULT_LOGGER.warn(groups.collect(&:id).join(','))
+          # # groups = current_user.group_memberships
+          # # g_ids = []
+          # # groups.each do |group|
+          # #   g_ids << group.id if(current_user.is_admin_of?(group))
+          # # end
+          # # group_ids = g_ids.join(', ')
+          # # RAILS_DEFAULT_LOGGER.warn(group_ids)
+          # #
+          # # FIXME: why do we need embedde SQL here?
+          # # we can do same query in ruby (with very quick load times) like...
+          # #
+          # # 
+          # @devices += groups.collect(&:has_halouser).flatten.compact.collect(&:devices).flatten.compact.uniq
+          # @devices += groups.collect(&:has_admin).flatten.compact.collect(&:devices).flatten.compact.uniq
+          # 
+          #  Sat Dec 11 02:08:10 IST 2010, ramonrails
+          #   * devices with partial serial or id, but among the selected ones
+          if @devices.blank?
+            @devices = []
+          else
+            @devices = Device.all( :conditions => ["id IN (?) AND ( serial_number LIKE ? OR ID = ?)", @devices.collect(&:id).compact.uniq, "%#{_search_phrase}%", _search_phrase.to_i])
+          end
+          # # https://redmine.corp.halomonitor.com/issues/3103
+          # # anyone other than super admin was getting search results filtered
+          # [:serial_number, :id].each do |field|
+          #   if conditions.has_key?(field)
+          #     (@devices = @devices.select {|e| e.send("#{field}".to_sym) == conditions[field] })
+          #   end
+          # end
+          # @devices = @devices.uniq
+          # # @devices += current_user.is_admin_of_what.select {|e| e.is_a?(Group)}.collect(&:has_halouser).flatten.collect(&:devices).flatten.uniq
+          # #
+          # # conditions += " AND " unless conditions.blank? # https://redmine.corp.halomonitor.com/issues/2890
+          # # conditions += " devices.id IN (Select device_id from devices_users where devices_users.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids}))))"
+        end
+      end
     end
     # if conditions.blank?
     #   @devices = Device.find(:all, :order => "id asc")
     #else
     #  @devices = Device.find(:all, :order => "id asc",:conditions => conditions)
     #end
-    @devices.sort! {|x,y| x.id <=> y.id }
-    @devices = @devices.paginate :page => params[:page], :per_page => REORTING_DEVICES_PER_PAGE
+    # @devices.sort! {|x,y| x.id <=> y.id }
+    @devices = @devices.paginate :page => params[:page], :per_page => REORTING_DEVICES_PER_PAGE, :order => 'id'
     # @devices = Device.paginate :page => params[:page], :conditions => conditions, :order => "id asc", :per_page => REORTING_DEVICES_PER_PAGE
   end
   
@@ -286,12 +353,6 @@ class ReportingController < ApplicationController
     render :partial => 'user_table', :locals => {:users => @users, :sortby => params[:col], :reverse => false}
   end
   
-  def search_user_table
-    @users = User.filtered( params[:query] )
-    # @users = User.find(:all, :conditions => "login like '%#{params[:query]}%' or profiles.first_name like '%#{params[:query]}%' or profiles.last_name like '%#{params[:query]}%'",:include => [ :profile ])
-    render :partial => 'user_table', :locals => {:users => @users, :sortby => 'id', :reverse => false}
-  end
-  
   def summary
     @critically_low = Battery.find(:all, :conditions => "time_remaining < 10")
   end
@@ -329,21 +390,21 @@ class ReportingController < ApplicationController
     end   
   end
   def lost_data
-  	if user_id = params[:id]
-    	@user = User.find(user_id)
-    	Compliance.lost_data_scan(user_id)
-  		if params[:begin_time]
-  			@user_begin_time = params[:begin_time]
-    		@user_end_time = params[:end_time]
-    		@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
-      		@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
-    		
-			@lost_data = LostData.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id} and begin_time > '#{@begin_time}' and end_time < '#{@end_time}'", :order => "id desc")  		
-  		else
-    	    @lost_data = LostData.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id}", :order => "id desc")
-	 	end
+    if user_id = params[:id]
+      @user = User.find(user_id)
+      Compliance.lost_data_scan(user_id)
+      if params[:begin_time]
+        @user_begin_time = params[:begin_time]
+        @user_end_time = params[:end_time]
+        @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+          @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
+        
+      @lost_data = LostData.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id} and begin_time > '#{@begin_time}' and end_time < '#{@end_time}'", :order => "id desc")     
+      else
+          @lost_data = LostData.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id}", :order => "id desc")
+    end
     else
-    	redirect_to '/'
+      redirect_to '/'
     end 
     
   end
@@ -390,11 +451,11 @@ class ReportingController < ApplicationController
     user_id = params[:id]
     @user = User.find(user_id)
     if params[:begin_time]
-    	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
-      	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
+      @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+        @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
         @strap_not_worn = StrapNotWorn.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id} and begin_time > '#{@begin_time}' and end_time < '#{@end_time}'", :order => "id desc") 
     else
-    	@strap_not_worn = StrapNotWorn.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id}", :order => "id desc")
+      @strap_not_worn = StrapNotWorn.paginate(:page => params[:page], :per_page => 50, :conditions => "user_id = #{user_id}", :order => "id desc")
     end
   end
   
@@ -425,20 +486,20 @@ class ReportingController < ApplicationController
       @groups = Group.find(:all)
     else
       @groups = current_user.group_memberships
-	end
+  end
     if !@user_end_time.blank? && !@user_begin_time.blank?
-    	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
-    	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
-		@group = Group.find_by_name(params[:group_name])
+      @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+      @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
+    @group = Group.find_by_name(params[:group_name])
         @users = User.find(:all)
-    	
-    	owners = "0"
-	  	@users.each do |user|
-		  owners += "," + user.id.to_s if user.has_role? "halouser", @group
-		  user.has_caregivers.each do |caregiver|
-		  	owners += "," + caregiver.id.to_s
-	      end
-	  	end
+      
+      owners = "0"
+      @users.each do |user|
+      owners += "," + user.id.to_s if user.has_role? "halouser", @group
+      user.has_caregivers.each do |caregiver|
+        owners += "," + caregiver.id.to_s
+        end
+      end
 
         @audits = Audit.paginate(
           :page => params[:page],
@@ -458,256 +519,256 @@ class ReportingController < ApplicationController
     @user_end_time = params[:end_time]
     
     if !@user_end_time.blank? && !@user_begin_time.blank?
-    	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
-    	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
-    	
-    	@falls = Event.find_all_by_event_type("Fall", :conditions => ["timestamp >= ? AND timestamp <= ?", @begin_time, @end_time])
-    	@panics = Event.find_all_by_event_type("Panic", :conditions => ["timestamp >= ? AND timestamp <= ?", @begin_time, @end_time])
-    	@gwalarm = Event.find_all_by_event_type("GwAlarmButton", :conditions => ["timestamp >= ? AND timestamp <= ?", @begin_time, @end_time])
-    	
+      @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+      @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
+      
+      @falls = Event.find_all_by_event_type("Fall", :conditions => ["timestamp >= ? AND timestamp <= ?", @begin_time, @end_time])
+      @panics = Event.find_all_by_event_type("Panic", :conditions => ["timestamp >= ? AND timestamp <= ?", @begin_time, @end_time])
+      @gwalarm = Event.find_all_by_event_type("GwAlarmButton", :conditions => ["timestamp >= ? AND timestamp <= ?", @begin_time, @end_time])
+      
         @user_groups = {}
         @group_stats = {}
         @group_totals = {}
         #flash[:notice] = @falls[0].user.group_memberships.length            #is_halouser_for_what.length
-      	#exit
-      	#gather the stats in a 2 dimensional hash/array fall by fall
-      	@group_totals[:false_alarm_falls] = 0
-      	@group_totals[:test_alarm_falls] = 0
-      	@group_totals[:real_falls] = 0
-      	@group_totals[:real_alarm_falls] = 0
- 		@group_totals[:unclassified_falls] = 0
- 		@group_totals[:ems_falls] = 0
- 		
-      	@group_totals[:false_alarm_panics] = 0
-      	@group_totals[:test_alarm_panics] = 0
-      	@group_totals[:non_emerg_panics] = 0
-      	@group_totals[:duplicate] = 0
-      	@group_totals[:real_alarm_panics] = 0
-      	@group_totals[:unclassified_panics] = 0
-      	@group_totals[:ems_panics] = 0
-      	@group_totals[:real_panics] = 0
-      	@group_totals[:installs] = 0
-		@group_totals[:battery_reminders] = 0
-		@group_totals[:total] = 0
-      	@group_totals[:total_response] = 0.0
-      	@group_totals[:gwalarm] = 0
-      	@group_totals[:gwreset_falls] = 0
-      	@group_totals[:gwreset_panics] = 0
-      	
-      	for gwalarm in @gwalarm
-      		id = gwalarm.user.id
-      		if (groups = @user_groups[id]) == nil
-    		  groups = @user_groups[id] = gwalarm.user.is_halouser_for_what
-    		end
-      		if(groups)
-        	  groups.each do |group|
-        	  	if !group.nil?
-        	  	  if @group_stats[group.name].nil? 
-         		    @group_stats[group.name] = {} 
-         		  end
-         		  if @group_stats[group.name][:gwalarm].nil? 
-            	    @group_stats[group.name][:gwalarm] = [] 
-            	  end
-            	  @group_stats[group.name][:gwalarm] << gwalarm 
-         		  @group_totals[:gwalarm] += 1 if group.name !="safety_care" and group.name !="halo"
-    	  	    end
-    	      end
-	        end
-  	    end
-      	      	
-      	for fall in @falls
-      	  id = fall.user.id
-      		if (groups = @user_groups[id]) == nil
-    		    groups = @user_groups[id] = fall.user.is_halouser_for_what
-    		  end
-      		 if(groups)
-        		 groups.each do |group|
-        		   if !group.nil?
-        		     if @group_stats[group.name].nil? 
-         			   @group_stats[group.name] = {} 
-         			 end
-         			 if fall.call_center_response and not fall.test_alarm?
-         			   @group_stats[group.name][:total_response] = 0.0 if !@group_stats[group.name][:total_response]
-         			   @group_stats[group.name][:total] = 0 if !@group_stats[group.name][:total]
-         			   @group_stats[group.name][:total_response] += fall.call_center_response.to_time - fall.timestamp.to_time
-         			   @group_stats[group.name][:total] += 1
-         			   @group_totals[:total] += 1
-         			   @group_totals[:total_response] += fall.call_center_response.to_time - fall.timestamp.to_time
-     			     end
-          		     if fall.false_alarm?
-            			   if @group_stats[group.name][:false_alarm_falls].nil? 
-            			     @group_stats[group.name][:false_alarm_falls] = [] 
-            			   end
-            			   @group_stats[group.name][:false_alarm_falls] << fall
-            			   @group_totals[:false_alarm_falls] += 1 if group.name !="safety_care" and group.name !="halo"
-          		     elsif fall.test_alarm?
-          		       if @group_stats[group.name][:test_alarm_falls].nil?
-          		         @group_stats[group.name][:test_alarm_falls] = []
-          		       end
-          		       @group_stats[group.name][:test_alarm_falls] << fall
-          		       @group_totals[:test_alarm_falls] += 1 if group.name !="safety_care" and group.name !="halo"
-          		     elsif fall.real_alarm?
-          		       if @group_stats[group.name][:real_alarm_falls].nil?
-          		         @group_stats[group.name][:real_alarm_falls] = []
-          		       end
-          		       @group_stats[group.name][:real_alarm_falls] << fall
-          		       @group_totals[:real_alarm_falls] += 1 if group.name !="safety_care" and group.name !="halo"
-          		     elsif fall.gw_reset?
-            	  	    if @group_stats[group.name][:gwreset_falls].nil?
-          		          @group_stats[group.name][:gwreset_falls] = []
-          		        end
-          		        @group_stats[group.name][:gwreset_falls] << gwalarm
-          		        @group_totals[:gwreset_falls] += 1 if group.name !="safety_care" and group.name !="halo"
+        #exit
+        #gather the stats in a 2 dimensional hash/array fall by fall
+        @group_totals[:false_alarm_falls] = 0
+        @group_totals[:test_alarm_falls] = 0
+        @group_totals[:real_falls] = 0
+        @group_totals[:real_alarm_falls] = 0
+    @group_totals[:unclassified_falls] = 0
+    @group_totals[:ems_falls] = 0
+    
+        @group_totals[:false_alarm_panics] = 0
+        @group_totals[:test_alarm_panics] = 0
+        @group_totals[:non_emerg_panics] = 0
+        @group_totals[:duplicate] = 0
+        @group_totals[:real_alarm_panics] = 0
+        @group_totals[:unclassified_panics] = 0
+        @group_totals[:ems_panics] = 0
+        @group_totals[:real_panics] = 0
+        @group_totals[:installs] = 0
+    @group_totals[:battery_reminders] = 0
+    @group_totals[:total] = 0
+        @group_totals[:total_response] = 0.0
+        @group_totals[:gwalarm] = 0
+        @group_totals[:gwreset_falls] = 0
+        @group_totals[:gwreset_panics] = 0
+        
+        for gwalarm in @gwalarm
+          id = gwalarm.user.id
+          if (groups = @user_groups[id]) == nil
+          groups = @user_groups[id] = gwalarm.user.is_halouser_for_what
+        end
+          if(groups)
+            groups.each do |group|
+              if !group.nil?
+                if @group_stats[group.name].nil? 
+                @group_stats[group.name] = {} 
+              end
+              if @group_stats[group.name][:gwalarm].nil? 
+                  @group_stats[group.name][:gwalarm] = [] 
+                end
+                @group_stats[group.name][:gwalarm] << gwalarm 
+              @group_totals[:gwalarm] += 1 if group.name !="safety_care" and group.name !="halo"
+              end
+            end
+          end
+        end
+                
+        for fall in @falls
+          id = fall.user.id
+          if (groups = @user_groups[id]) == nil
+            groups = @user_groups[id] = fall.user.is_halouser_for_what
+          end
+           if(groups)
+             groups.each do |group|
+               if !group.nil?
+                 if @group_stats[group.name].nil? 
+                 @group_stats[group.name] = {} 
+               end
+               if fall.call_center_response and not fall.test_alarm?
+                 @group_stats[group.name][:total_response] = 0.0 if !@group_stats[group.name][:total_response]
+                 @group_stats[group.name][:total] = 0 if !@group_stats[group.name][:total]
+                 @group_stats[group.name][:total_response] += fall.call_center_response.to_time - fall.timestamp.to_time
+                 @group_stats[group.name][:total] += 1
+                 @group_totals[:total] += 1
+                 @group_totals[:total_response] += fall.call_center_response.to_time - fall.timestamp.to_time
+               end
+                   if fall.false_alarm?
+                     if @group_stats[group.name][:false_alarm_falls].nil? 
+                       @group_stats[group.name][:false_alarm_falls] = [] 
+                     end
+                     @group_stats[group.name][:false_alarm_falls] << fall
+                     @group_totals[:false_alarm_falls] += 1 if group.name !="safety_care" and group.name !="halo"
+                   elsif fall.test_alarm?
+                     if @group_stats[group.name][:test_alarm_falls].nil?
+                       @group_stats[group.name][:test_alarm_falls] = []
+                     end
+                     @group_stats[group.name][:test_alarm_falls] << fall
+                     @group_totals[:test_alarm_falls] += 1 if group.name !="safety_care" and group.name !="halo"
+                   elsif fall.real_alarm?
+                     if @group_stats[group.name][:real_alarm_falls].nil?
+                       @group_stats[group.name][:real_alarm_falls] = []
+                     end
+                     @group_stats[group.name][:real_alarm_falls] << fall
+                     @group_totals[:real_alarm_falls] += 1 if group.name !="safety_care" and group.name !="halo"
+                   elsif fall.gw_reset?
+                      if @group_stats[group.name][:gwreset_falls].nil?
+                        @group_stats[group.name][:gwreset_falls] = []
+                      end
+                      @group_stats[group.name][:gwreset_falls] << gwalarm
+                      @group_totals[:gwreset_falls] += 1 if group.name !="safety_care" and group.name !="halo"
                      elsif fall.ems?
-            	  	    if @group_stats[group.name][:ems_falls].nil?
-          		          @group_stats[group.name][:ems_falls] = []
-          		        end
-          		        @group_stats[group.name][:ems_falls] << fall
-          		        @group_totals[:ems_falls] += 1 if group.name !="safety_care" and group.name !="halo"
-        		     else
-        		       if @group_stats[group.name][:unclassified_falls].nil?
-        		         @group_stats[group.name][:unclassified_falls] = [] 
-        		       end
-          			   @group_stats[group.name][:unclassified_falls] << fall
-          			   @group_totals[:unclassified_falls] += 1 if group.name !="safety_care" and group.name !="halo"
-          		     end	
-      		       end
-  		         end
-  		      end
-      	  end
+                      if @group_stats[group.name][:ems_falls].nil?
+                        @group_stats[group.name][:ems_falls] = []
+                      end
+                      @group_stats[group.name][:ems_falls] << fall
+                      @group_totals[:ems_falls] += 1 if group.name !="safety_care" and group.name !="halo"
+                 else
+                   if @group_stats[group.name][:unclassified_falls].nil?
+                     @group_stats[group.name][:unclassified_falls] = [] 
+                   end
+                   @group_stats[group.name][:unclassified_falls] << fall
+                   @group_totals[:unclassified_falls] += 1 if group.name !="safety_care" and group.name !="halo"
+                   end  
+                 end
+               end
+            end
+          end
 
-      	#gather the stats in a 2 dimensional hash/array fall by fall      	
-      	for panic in @panics  	  
-      		id = panic.user.id
-      		if (groups = @user_groups[id]) == nil
-    		    groups = @user_groups[id] = panic.user.is_halouser_for_what
-    		end
-      		if(groups)
-        		groups.each do |group|  
-        		  if !group.nil?  
-        		    if @group_stats[group.name].nil? 
-         			   @group_stats[group.name] = {} 
-         			end
-       			    if panic.call_center_response and not panic.test_alarm?
-         	          @group_stats[group.name][:total_response] = 0.0 if !@group_stats[group.name][:total_response]
-         	          @group_stats[group.name][:total] = 0 if !@group_stats[group.name][:total]
-         	          @group_stats[group.name][:total_response] += panic.call_center_response.to_time - panic.timestamp.to_time
-         	          @group_stats[group.name][:total] += 1
-         	          @group_totals[:total] += 1
-         	          @group_totals[:total_response] += panic.call_center_response.to_time - panic.timestamp.to_time
-     		        end
-            		if panic.false_alarm?
-            		  if @group_stats[group.name][:false_alarm_panics].nil? 
-            		    @group_stats[group.name][:false_alarm_panics] = [] 
-            		  end
-            		  @group_stats[group.name][:false_alarm_panics]  << panic
-            		  @group_totals[:false_alarm_panics] += 1 if group.name !="safety_care" and group.name !="halo"
-            		elsif panic.test_alarm?
-            		  if @group_stats[group.name][:test_alarm_panics].nil?
-            		    @group_stats[group.name][:test_alarm_panics] = []
-            		  end
-            		  @group_stats[group.name][:test_alarm_panics]  << panic
-            		  @group_totals[:test_alarm_panics] += 1 if group.name !="safety_care" and group.name !="halo"
-            		elsif panic.non_emerg_panic?
-            		  if @group_stats[group.name][:non_emerg_panics].nil?
-            		    @group_stats[group.name][:non_emerg_panics] = []
-            		  end 
-            		  @group_stats[group.name][:non_emerg_panics]  << panic
-            		  @group_totals[:non_emerg_panics] += 1 if group.name !="safety_care" and group.name !="halo"
+        #gather the stats in a 2 dimensional hash/array fall by fall        
+        for panic in @panics      
+          id = panic.user.id
+          if (groups = @user_groups[id]) == nil
+            groups = @user_groups[id] = panic.user.is_halouser_for_what
+        end
+          if(groups)
+            groups.each do |group|  
+              if !group.nil?  
+                if @group_stats[group.name].nil? 
+                 @group_stats[group.name] = {} 
+              end
+                if panic.call_center_response and not panic.test_alarm?
+                    @group_stats[group.name][:total_response] = 0.0 if !@group_stats[group.name][:total_response]
+                    @group_stats[group.name][:total] = 0 if !@group_stats[group.name][:total]
+                    @group_stats[group.name][:total_response] += panic.call_center_response.to_time - panic.timestamp.to_time
+                    @group_stats[group.name][:total] += 1
+                    @group_totals[:total] += 1
+                    @group_totals[:total_response] += panic.call_center_response.to_time - panic.timestamp.to_time
+                end
+                if panic.false_alarm?
+                  if @group_stats[group.name][:false_alarm_panics].nil? 
+                    @group_stats[group.name][:false_alarm_panics] = [] 
+                  end
+                  @group_stats[group.name][:false_alarm_panics]  << panic
+                  @group_totals[:false_alarm_panics] += 1 if group.name !="safety_care" and group.name !="halo"
+                elsif panic.test_alarm?
+                  if @group_stats[group.name][:test_alarm_panics].nil?
+                    @group_stats[group.name][:test_alarm_panics] = []
+                  end
+                  @group_stats[group.name][:test_alarm_panics]  << panic
+                  @group_totals[:test_alarm_panics] += 1 if group.name !="safety_care" and group.name !="halo"
+                elsif panic.non_emerg_panic?
+                  if @group_stats[group.name][:non_emerg_panics].nil?
+                    @group_stats[group.name][:non_emerg_panics] = []
+                  end 
+                  @group_stats[group.name][:non_emerg_panics]  << panic
+                  @group_totals[:non_emerg_panics] += 1 if group.name !="safety_care" and group.name !="halo"
                     elsif panic.duplicate?
-            		  if @group_stats[group.name][:duplicate].nil?
-            		    @group_stats[group.name][:duplicate] = []
-            		  end 
-            		  @group_stats[group.name][:duplicate]  << panic
-            		  @group_totals[:duplicate] += 1 if group.name !="safety_care" and group.name !="halo"
-            		elsif panic.real_alarm?
-            		  if @group_stats[group.name][:real_alarm_panics].nil?
-            		    @group_stats[group.name][:real_alarm_panics] = []
-            		  end
-            		  @group_stats[group.name][:real_alarm_panics]  << panic
-            		  @group_totals[:real_alarm_panics] += 1 if group.name !="safety_care" and group.name !="halo"
-          		    elsif panic.gw_reset?
-            	  	  if @group_stats[group.name][:gwreset_panics].nil?
-          		        @group_stats[group.name][:gwreset_panics] = []
-          		      end
-          		      @group_stats[group.name][:gwreset_panics] << gwalarm
-          		      @group_totals[:gwreset_panics] += 1 if group.name !="safety_care" and group.name !="halo"
+                  if @group_stats[group.name][:duplicate].nil?
+                    @group_stats[group.name][:duplicate] = []
+                  end 
+                  @group_stats[group.name][:duplicate]  << panic
+                  @group_totals[:duplicate] += 1 if group.name !="safety_care" and group.name !="halo"
+                elsif panic.real_alarm?
+                  if @group_stats[group.name][:real_alarm_panics].nil?
+                    @group_stats[group.name][:real_alarm_panics] = []
+                  end
+                  @group_stats[group.name][:real_alarm_panics]  << panic
+                  @group_totals[:real_alarm_panics] += 1 if group.name !="safety_care" and group.name !="halo"
+                  elsif panic.gw_reset?
+                    if @group_stats[group.name][:gwreset_panics].nil?
+                      @group_stats[group.name][:gwreset_panics] = []
+                    end
+                    @group_stats[group.name][:gwreset_panics] << gwalarm
+                    @group_totals[:gwreset_panics] += 1 if group.name !="safety_care" and group.name !="halo"
                     elsif fall.ems?
-            	  	  if @group_stats[group.name][:ems_panics].nil?
-          		        @group_stats[group.name][:ems_panics] = []
-          		      end
-          		      @group_stats[group.name][:ems_panics] << panic
-          		      @group_totals[:ems_panics] += 1 if group.name !="safety_care" and group.name !="halo"
-          			else
-          		  	  if @group_stats[group.name][:unclassified_panics].nil?
-            		    @group_stats[group.name][:unclassified_panics] = []
-            		  end
-            		  @group_stats[group.name][:unclassified_panics]  << panic
-            		  @group_totals[:unclassified_panics] += 1 if group.name !="safety_care" and group.name !="halo"
-            		end
-          	  	  end
-      		    end
-        	end	
-      	end
-      	
+                    if @group_stats[group.name][:ems_panics].nil?
+                      @group_stats[group.name][:ems_panics] = []
+                    end
+                    @group_stats[group.name][:ems_panics] << panic
+                    @group_totals[:ems_panics] += 1 if group.name !="safety_care" and group.name !="halo"
+                else
+                    if @group_stats[group.name][:unclassified_panics].nil?
+                    @group_stats[group.name][:unclassified_panics] = []
+                  end
+                  @group_stats[group.name][:unclassified_panics]  << panic
+                  @group_totals[:unclassified_panics] += 1 if group.name !="safety_care" and group.name !="halo"
+                end
+                  end
+              end
+          end 
+        end
+        
         get_installs
         
         get_battery_reminders
     end
-  	#flash[:warning] = 'Begin Time and End Time are required.'
+    #flash[:warning] = 'Begin Time and End Time are required.'
   end
   
   def get_installs
     @installs = SelfTestSession.find(:all,
-  								     :select => "user_id,count(*)",
-  	                                 :conditions => ["completed_on >= ? AND completed_on <= ?", @begin_time.to_s(:db), @end_time.to_s(:db)],
-  	                                 :group => 'user_id')
-  	 for install in @installs
-  	 	id = install.user.id
-  		if (groups = @user_groups[id]) == nil
-		    groups = @user_groups[id] = install.user.is_halouser_for_what
-		  end
-		  if(groups)
-      		groups.each do |group|
-      			if !group.nil?
-      			  if @group_stats[group.name].nil? 
-       			   @group_stats[group.name] = {} 
-       			  end
-       			  
-      			  if @group_stats[group.name][:installs].nil?
-        		    @group_stats[group.name][:installs] = []
-        		  end
-      			  @group_stats[group.name][:installs]  << install
-      			  @group_totals[:installs] += 1 if group.name !="safety_care" and group.name !="halo"
-  			    end
-  			end
-		  end
-  	 end
+                       :select => "user_id,count(*)",
+                                     :conditions => ["completed_on >= ? AND completed_on <= ?", @begin_time.to_s(:db), @end_time.to_s(:db)],
+                                     :group => 'user_id')
+     for install in @installs
+      id = install.user.id
+      if (groups = @user_groups[id]) == nil
+        groups = @user_groups[id] = install.user.is_halouser_for_what
+      end
+      if(groups)
+          groups.each do |group|
+            if !group.nil?
+              if @group_stats[group.name].nil? 
+               @group_stats[group.name] = {} 
+              end
+              
+              if @group_stats[group.name][:installs].nil?
+                @group_stats[group.name][:installs] = []
+              end
+              @group_stats[group.name][:installs]  << install
+              @group_totals[:installs] += 1 if group.name !="safety_care" and group.name !="halo"
+            end
+        end
+      end
+     end
   end
   
   def get_battery_reminders
-  	@battery_reminders = BatteryReminder.find(:all,:conditions => ["reminder_num >= ?",3])
-  	for battery_reminder in @battery_reminders
-  		id = battery_reminder.user.id
-  		if (groups = @user_groups[id]) == nil
-		    groups = @user_groups[id] = battery_reminder.user.is_halouser_for_what
-		end
-		if(groups)
-      		groups.each do |group|
-      			if !group.nil?
-      			  if @group_stats[group.name].nil? 
-       			   @group_stats[group.name] = {} 
-       			  end
-       			  
-      			  if @group_stats[group.name][:battery_reminders].nil?
-        		    @group_stats[group.name][:battery_reminders] = []
-        		  end
-      			  @group_stats[group.name][:battery_reminders]  << battery_reminder
-      			  @group_totals[:battery_reminders] += 1 if group.name !="safety_care" and group.name !="halo"
-  			    end
-  			end
-		end
-  	end
+    @battery_reminders = BatteryReminder.find(:all,:conditions => ["reminder_num >= ?",3])
+    for battery_reminder in @battery_reminders
+      id = battery_reminder.user.id
+      if (groups = @user_groups[id]) == nil
+        groups = @user_groups[id] = battery_reminder.user.is_halouser_for_what
+    end
+    if(groups)
+          groups.each do |group|
+            if !group.nil?
+              if @group_stats[group.name].nil? 
+               @group_stats[group.name] = {} 
+              end
+              
+              if @group_stats[group.name][:battery_reminders].nil?
+                @group_stats[group.name][:battery_reminders] = []
+              end
+              @group_stats[group.name][:battery_reminders]  << battery_reminder
+              @group_totals[:battery_reminders] += 1 if group.name !="safety_care" and group.name !="halo"
+            end
+        end
+    end
+    end
   end
   
   def installs
@@ -719,21 +780,21 @@ class ReportingController < ApplicationController
   def compliance_report
     @user_begin_time = params[:begin_time]
     @user_end_time = params[:end_time]
-  	if current_user.is_super_admin?
-  	  @groups = Group.find(:all)
-  	else
+    if current_user.is_super_admin?
+      @groups = Group.find(:all)
+    else
       @groups = current_user.group_memberships
     end
     if !@user_end_time.blank? && !@user_begin_time.blank?
-		
-    	@end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
-    	@begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
+    
+      @end_time = UtilityHelper.user_time_zone_to_utc(@user_end_time)
+      @begin_time = UtilityHelper.user_time_zone_to_utc(@user_begin_time)
 
         #emacs
-	if(!params[:id])  
-    	  @group = Group.find_by_name(params[:group_name])
-    	  @users = User.find(:all)
-	end
+  if(!params[:id])  
+        @group = Group.find_by_name(params[:group_name])
+        @users = User.find(:all)
+  end
     end
     #flash[:warning] = 'Begin Time and End Time are required.'
   end
