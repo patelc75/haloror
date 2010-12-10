@@ -1504,10 +1504,14 @@ class User < ActiveRecord::Base
   #  Tue Nov 23 20:58:22 IST 2010, ramonrails
   #   * emails are only dispatched on submit, not save
   #   * identify submit as skip_vaiation == false
+  #  Fri Dec 10 21:04:05 IST 2010, ramonrails
+  #   * added "_forced" option for "resend" action
   #
-  def dispatch_emails
+  def dispatch_emails( _forced = false)
     unless email.blank? # cannot send without valid email
-      unless activation_email_sent? || activated?
+      #  Fri Dec 10 21:04:14 IST 2010, ramonrails
+      #   * "resend" needs _forced
+      unless activation_email_sent? || activated? || !_forced
         # 
         #  Tue Nov 23 22:21:44 IST 2010, ramonrails
         #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4

@@ -129,7 +129,7 @@
       <%= submit_tag "#{user.test_mode? ? 'Dis' : 'En'}able Test Mode", :class => "small #{user.test_mode? ? 'blue-button' : 'gray-button'} button", :id => "#{user.test_mode? ? 'dis' : 'en'}able_test_mode_#{user.id}" %>
       <br />
       <% if user.activation_code != nil %>
-      <%= image_tag('profile.png') %><%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %> | <%= link_to 'Resend  Email', resend_path(user.id) %>
+      <%= image_tag('profile.png') %><%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %> | <%= link_to 'Resend Email', resend_path(user.id) %>
       <% else %>
       <span class="text-small"> Activated <%= user.activated_at.strftime(Time::DATE_FORMATS[:date_time]) %> </span> 
       <% end %>

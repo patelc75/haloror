@@ -454,7 +454,21 @@ class InstallsController < ApplicationController
     # 
     #  Tue Nov 23 22:51:54 IST 2010, ramonrails
     #   * DEPRECATED: https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
+    # 
+    #  Fri Dec 10 20:53:49 IST 2010, ramonrails
+    #   * re-activated on https://redmine.corp.halomonitor.com/issues/3857
     #
+    if (@user = User.find params[:id])
+      if @user.email.blank?
+        flash[:notice] = "User #{@user} does not have an email."
+      else
+        #   * Keep DRY. user model has business logic to dispatch emails.
+        @user.dispatch_emails( true) # forced
+        flash[:notice] = "Signup/Installation email resent to #{@user.email}"
+      end
+    else
+      flash[:notice] = "User not found. Please check with customer support"
+    end
     # user = User.find params[:id]
     # #UserMailer.deliver_activation(user) if user.recently_activated?
     # UserMailer.deliver_signup_installation(user,user)
