@@ -24,7 +24,10 @@ class DialUp < ActiveRecord::Base
   #   DialUp.global
   ["global", "local"].each do |which|
     # include upper, lower and capitalized text-cases (GLOBAL, Global and global) in search. just in case.
-    named_scope which.to_sym, :conditions => { :dialup_type => [which, which.upcase, which.capitalize] }
+    # 
+    #  Tue Dec 14 00:20:15 IST 2010, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3859
+    named_scope which.to_sym, :conditions => { :dialup_type => [which, which.upcase, which.capitalize] }, :order => "state, city, phone_number"
   end
   # WARNING: Code cover required : https://redmine.corp.halomonitor.com/issues/2809
   # Usage:
@@ -41,7 +44,10 @@ class DialUp < ActiveRecord::Base
     #   DialUp.global_for_select => [["G-1234567890", "G-1234567890"]]
     ["global", "local"].each do |which|
       define_method "#{which}_for_select".to_sym do
-        self.send("#{which}".to_sym).collect {|e| [e.phone_number, e.phone_number] }
+        # 
+        #  Tue Dec 14 00:20:23 IST 2010, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/3859
+        self.send("#{which}".to_sym).collect {|e| ["#{e.state} #{e.city} #{e.phone_number}", e.phone_number] }
       end
     end
     

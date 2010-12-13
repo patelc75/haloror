@@ -224,7 +224,10 @@ class ManagementController < ApplicationController
   end
   
   def issue
-    @firmware_upgrades = FirmwareUpgrade.find(:all, :order => 'id desc')
+    # 
+    #  Tue Dec 14 00:14:59 IST 2010, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3859
+    @firmware_upgrades = FirmwareUpgrade.find(:all, :order => 'id desc').paginate :per_page => 20, :page => params[:page]
     @ftps = Ftp.find(:all, :order => 'id desc')
   end
   

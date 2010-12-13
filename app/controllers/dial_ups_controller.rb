@@ -1,10 +1,14 @@
 class DialUpsController < ApplicationController
 
   def index
-    # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/2809
-    @groups = current_user.group_memberships # fetch groups
-    @group_name ||= ( params[:group_name] || @groups.first.name || "" rescue "") # selected group
-    @dial_ups = DialUp.where_group_id( @groups.collect(&:id)) # collect IDs
+    # 
+    #  Tue Dec 14 00:07:59 IST 2010, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3859
+    # # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/2809
+    # @groups = current_user.group_memberships # fetch groups
+    # @group_name ||= ( params[:group_name] || @groups.first.name || "" rescue "") # selected group
+    # @dial_ups = DialUp.where_group_id( @groups.collect(&:id)) # collect IDs
+    @dial_ups = DialUp.all( :order, "state, city, phone_number").paginate :per_page => 10, :page => params[:page]
   end
 
   def new

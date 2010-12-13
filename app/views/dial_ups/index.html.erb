@@ -1,14 +1,14 @@
 <%=render :partial => 'reporting/nav_dialup_status'%>
 <h1>Dialup Numbers</h1>
 
-<div class="span-24 last">
+<!-- <div class="span-24 last">
   <form id="group_form_id" action="/dial_ups" method="GET">
-    <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
+    <%#= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
     Select <label for="group_name">Group</label>:
-    <%= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| ["(#{e.id}) #{e.name}", e.name] }, (@group_name || @groups.first.name)), {:onchange => "$('group_form_id').submit();"}%>
+    <%#= select_tag 'group_name', options_for_select(  (current_user.is_super_admin? ? [['All Groups','']] : []) + @groups.collect {|e| ["(#{e.id}) #{e.name}", e.name] }, (@group_name || @groups.first.name)), {:onchange => "$('group_form_id').submit();"}%>
   </form>
-</div>
-
+</div> -->
+<%= will_paginate @dial_ups %>
 <table class="bluegrey">
   <tr>
     <th>Phone<br>Number</th>
@@ -42,7 +42,8 @@
   </tr>
   <% end %>
 </table>
+<%= will_paginate @dial_ups %>
 
 <br />
 
-<%= link_to 'New dial up', new_dial_up_path %>
+<%= link_to 'New dial up', new_dial_up_path, :class => "button green-button" %>
