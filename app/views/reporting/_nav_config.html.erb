@@ -2,10 +2,9 @@
 <div id="nav_links">
   <b>Config:</b><% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
   Users (<%= link_to 'All', '/reporting/users/all', :id => 'users_all' %> | <%= link_to 'Except Demo', '/reporting/users', :id => 'users_except_demo' %>)
-  | <%= link_to 'User Stats', '/reporting/user_stats' %>
   <% end %>
   <% if current_user.is_admin? || current_user.is_super_admin? %>
-  | Devices: (<a href="/reporting/devices">By Search</a> | <%= link_to "Available", "/reporting/devices/available" %>)
+  | <a href="/reporting/devices">Devices</a>
   <% end %>
   <% if current_user.is_super_admin? %>
   | <a href="/user_admin/roles">Roles</a>

@@ -155,18 +155,21 @@ class ReportingController < ApplicationController
     # @user_names = {}
     # @users.each {|user| @user_names[user.login] = user.id } unless @users.blank?
 
-    if params.has_key?(:group_name) && !params[:group_name].blank?
-      # we already have users. nothing else to do
-      
-    elsif params.has_key?( :user_name) && !params[:user_name].blank?
-      @user_name = params[:user_name]
-      @users = @users.select do |e|
-        e.id == @user_name.to_i || e.login.include?( @user_name) || \
-        ( !e.profile.blank? && ( e.profile.first_name.include?(@user_name) || e.profile.last_name.include?(@user_name) ))
+    # 
+    #  Tue Dec 14 03:36:11 IST 2010, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3851
+    #   * search is "inclusive". searches the phrase within the group
+    # if params.has_key?(:group_name) && !params[:group_name].blank?
+    #   # we already have users. nothing else to do
+    if params.has_key?( :user_name) && !params[:user_name].blank?
+      if (@user_name = params[:user_name])
+        @user_name = @user_name.downcase
+        @users = @users.select do |e|
+          (e.id == @user_name.to_i) || e.login.to_s.downcase.include?(@user_name) || (!e.profile.blank? && e.full_name.downcase.include?(@user_name))
+        end
       end
-
-    else
-      @users = []
+    # else
+    #   @users = []
     end
     @users = @users.paginate :page => params[:page], :per_page => REPORTING_USERS_PER_PAGE
   end
@@ -255,7 +258,7 @@ class ReportingController < ApplicationController
       end
 
     else
-      if params.has_key?( :device_id_or_serial) && !params[:device_id_or_serial].blank?
+      # if params.has_key?( :device_id_or_serial) && !params[:device_id_or_serial].blank?
         _search_phrase = params[:device_id_or_serial].to_s.upcase # more flexibility to the user
         # conditions = (params[:device_id_or_serial].size == 10 ? {:serial_number => params[:device_id_or_serial].strip} : {:id => params[:device_id_or_serial].to_i})
         if current_user.is_super_admin?
@@ -300,7 +303,7 @@ class ReportingController < ApplicationController
           # # conditions += " AND " unless conditions.blank? # https://redmine.corp.halomonitor.com/issues/2890
           # # conditions += " devices.id IN (Select device_id from devices_users where devices_users.user_id IN (Select user_id from roles_users INNER JOIN roles ON roles_users.role_id = roles.id where roles.id IN (Select id from roles where authorizable_type = 'Group' AND authorizable_id IN (#{group_ids}))))"
         end
-      end
+      # end
     end
     # if conditions.blank?
     #   @devices = Device.find(:all, :order => "id asc")

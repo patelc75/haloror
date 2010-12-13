@@ -1,15 +1,6 @@
 <%=render :partial => 'nav_config'%>
 
-<div style="float:right">
-  <form action='/reporting/devices' method="get">
-    Search: <input type="text" id="device_id_or_serial" name="device_id_or_serial" value="<%= params[:device_id_or_serial] %>"/> <input type="submit" value="Go" />
-    <br />
-    <span class="tiny">
-      Enter partial serial number or ID<br />
-      Any non-digit is considered as "0" (zero)
-    </span>
-  </form>
-</div>
+<%= render :partial => 'search_devices' %>
 <h3>Devices table</h3>
 <div align="center"><%= will_paginate @devices %></div><br/>
 <div id="device-table" class="table bluegrey">

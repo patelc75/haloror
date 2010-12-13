@@ -1,0 +1,13 @@
+<%= render :partial => 'nav_config' %>
+
+<% if current_user.is_super_admin? %>
+    <div class="span-11 box">
+      <h2>Users</h2>
+      <%= render :partial => 'search_users' %>
+    </div>
+    
+    <div class="prepend-1 span-11 last box">
+      <h2>Devices</h2>
+      <%= render :partial => 'search_devices' %>
+    </div>
+<% end %>
