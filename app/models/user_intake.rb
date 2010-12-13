@@ -353,7 +353,7 @@ class UserIntake < ActiveRecord::Base
     # 
     #  Fri Dec  3 02:29:51 IST 2010, ramonrails
     #   * check errors in payment_gateway_responses. report on browser
-    unless order.payment_gateway_responses.failed.blank?
+    if !order.blank? && !order.payment_gateway_responses.blank? && !order.payment_gateway_responses.failed.blank?
       self.errors.add_to_base( order.payment_gateway_responses.failed.collect(&:message).flatten.compact.uniq.join(', '))
     end
   end
