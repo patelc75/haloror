@@ -7,12 +7,14 @@
   <%#= f.label :phone_active, "Call" %>
 </div> -->
 
+<!-- , :onclick => "$('#caregiver1_text_flag').attr('checked', this.checked);" -->
+
 <div class="span-2 ">
-  <%= f.check_box :email_active %>
+  <%= f.check_box :email_active, :id => "#{user_type}_email_flag" %>
   <%= f.label :email_active, "Email" %>
 </div>
 
 <div class="span-2 ">
-  <%= f.check_box :text_active %>
+  <%= f.check_box :text_active, :id => "#{user_type}_text_flag" %>
   <%= f.label :text_active, "Text" %>
 </div>

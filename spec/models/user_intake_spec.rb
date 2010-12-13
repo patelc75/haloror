@@ -49,16 +49,16 @@ describe UserIntake do
         @cg3_options = Factory.build( :roles_users_option, { :position => 3, :text_active => true })         
         # (1..3).each {|_index| instance_variable_set("@cg#{_index}_options", Factory.build( :roles_users_option, { :position => _index, :text_active => true })) }
         #  same as:
-        @user_intake.caregiver_role_options( 1, @cg1_options)
-        @user_intake.caregiver_role_options( 2, @cg2_options)
-        @user_intake.caregiver_role_options( 3, @cg3_options)
+        @user_intake.caregiver1_role_options = @cg1_options
+        @user_intake.caregiver2_role_options = @cg2_options
+        @user_intake.caregiver3_role_options = @cg3_options
         # (1..3).each {|_index| @user_intake.caregiver_role_options( _index, instance_variable_get("@cg#{_index}_options")) }
       end
     
       #  same as:
-      specify { @user_intake.caregiver_role_options(1).attributes.should == @cg1_options.attributes }
-      specify { @user_intake.caregiver_role_options(2).attributes.should == @cg2_options.attributes }
-      specify { @user_intake.caregiver_role_options(3).attributes.should == @cg3_options.attributes }
+      specify { @user_intake.caregiver1_role_options.attributes.should == @cg1_options.attributes }
+      specify { @user_intake.caregiver2_role_options.attributes.should == @cg2_options.attributes }
+      specify { @user_intake.caregiver3_role_options.attributes.should == @cg3_options.attributes }
       # (1..3).each do |_index|
       #   specify { @user_intake.caregiver_role_options(_index).attributes.should == instance_variable_get("@cg#{_index}_options").attributes }
       # end

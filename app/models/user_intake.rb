@@ -53,6 +53,18 @@ class UserIntake < ActiveRecord::Base
   # = dynamic generated methods =
   # =============================
 
+  (1..3).each do |_index|
+    #   * GET
+    define_method "caregiver#{_index}_role_options" do
+      caregiver_role_options( _index)
+    end
+    
+    #   * SET
+    define_method "caregiver#{_index}_role_options=" do |_options|
+      caregiver_role_options( _index, _options)
+    end
+  end
+
   [:gateway, :chest_strap, :belt_clip].each do |device|
     # Usage:
     #   user_intake.gateway
@@ -114,10 +126,11 @@ class UserIntake < ActiveRecord::Base
             # we can raise an exception here, but the user does not have to see that
             {}
           end
-          _given_options = _given_options # .reject { |k,v| (k == 'id') || (k[-3..-1] == '_id') } # exclude IDs
+          # _given_options = _given_options # .reject { |k,v| (k == 'id') || (k[-3..-1] == '_id') } # exclude IDs
           _given_options.each {|k,v| _options.send( "#{k}=", v) if _options.respond_to?( "#{k}=".to_sym) } # apply applicable hash values
           _caregiver.options_for_senior( senior, _options) # persist
         end
+        #   * we must assign this to memory attribute anyways
         self.send("mem_caregiver#{_index}_options=", _options) # assign to mem
       end
       # 

@@ -188,11 +188,11 @@
           <!-- role attributes -->
           <div id="caregiver_extras" class="prepend-3 span-7 hidden">
             <p>Critical Alert Message Types<br />
-            <%= f.check_box :caregiver1_email, :id => "subscriber_email_flag", :onclick => "$('#caregiver1_email_flag').attr('checked', this.checked);" %><%= f.label :caregiver1_email, "Email" %>
-            <%= f.check_box :caregiver1_text, :id => "subscriber_text_flag", :onclick => "$('#caregiver1_text_flag').attr('checked', this.checked);" %><%= f.label :caregiver1_text, "Text" %>
-            <!-- <%# fields_for "user_intake[caregiver1_role_options]", @user_intake.subscriber do |subscriber_form| %>
-            <%#= render :partial => 'caregiver_role_options', :locals => {:f => subscriber_form} %>
-            <%# end -%> -->
+            <!-- <%#= f.check_box :caregiver1_email, :id => "subscriber_email_flag", :onclick => "$('#caregiver1_email_flag').attr('checked', this.checked);" %><%= f.label :caregiver1_email, "Email" %>
+            <%#= f.check_box :caregiver1_text, :id => "subscriber_text_flag", :onclick => "$('#caregiver1_text_flag').attr('checked', this.checked);" %><%= f.label :caregiver1_text, "Text" %> -->
+            <% fields_for "user_intake[caregiver1_role_options]", @user_intake.subscriber do |subscriber_form| %>
+              <%= render :partial => 'caregiver_role_options', :locals => { :f => subscriber_form, :user_type => "subscriber"} %>
+            <% end -%>
             </p>
           </div>
         </div>
@@ -228,15 +228,16 @@
             <div class="span-2">&nbsp;</div>
             <div class="span-5 last">
               <p>Critical Alert Message Types<br />
-              <%= f.check_box "caregiver#{index+1}_email", :id => "caregiver#{index+1}_email_flag", :onclick => "$('#subscriber_email_flag').attr('checked', $('#caregiver1_email_flag').attr('checked'));" %><%= f.label "caregiver#{index+1}_email", "Email" %>
-              <%= f.check_box "caregiver#{index+1}_text", :id => "caregiver#{index+1}_text_flag", :onclick => "$('#subscriber_text_flag').attr('checked', $('#caregiver1_text_flag').attr('checked'));" %><%= f.label "caregiver#{index+1}_text", "Text" %>
+                <% fields_for "user_intake[caregiver#{index+1}_role_options]", caregiver do |caregiver_form| %>
+                  <%= render :partial => 'caregiver_role_options', :locals => { :f => caregiver_form, :user_type => "caregiver#{index+1}"} %>
+                <% end -%>
               </p>
             </div>
             <!-- role attributes -->
             <!--
-            <%# fields_for "user_intake[caregiver#{index+1}_role_options]", caregiver do |caregiver_form| %>
-            <%#= render :partial => 'caregiver_role_options', :locals => {:f => caregiver_form} %>
-            <%# end -%> -->
+            <%#= f.check_box "caregiver#{index+1}_email", :id => "caregiver#{index+1}_email_flag", :onclick => "$('#subscriber_email_flag').attr('checked', $('#caregiver1_email_flag').attr('checked'));" %><%= f.label "caregiver#{index+1}_email", "Email" %>
+            <%#= f.check_box "caregiver#{index+1}_text", :id => "caregiver#{index+1}_text_flag", :onclick => "$('#subscriber_text_flag').attr('checked', $('#caregiver1_text_flag').attr('checked'));" %><%= f.label "caregiver#{index+1}_text", "Text" %>
+            -->
 
           </div>
         </div>
