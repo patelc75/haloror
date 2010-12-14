@@ -161,8 +161,8 @@ class ReportingController < ApplicationController
     elsif params.has_key?( :user_name) && !params[:user_name].blank?
       @user_name = params[:user_name]
       @users = @users.select do |e|
-        e.id == @user_name.to_i || e.login.include?( @user_name) || \
-        ( !e.profile.blank? && ( e.profile.first_name.include?(@user_name) || e.profile.last_name.include?(@user_name) ))
+        e.id == @user_name.to_i || e.login.to_s.include?( @user_name) || \
+        ( !e.profile.blank? && e.full_name.include?(@user_name) )
       end
 
     else

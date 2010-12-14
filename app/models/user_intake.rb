@@ -102,9 +102,9 @@ class UserIntake < ActiveRecord::Base
   #   caregiver_role_options( 2, {:position => 2})
   #   caregiver_role_options( 2, roles_users_option_instance)
   def caregiver_role_options( _index = 0, _given_options = nil)
+    _options = nil # start with a blank
     if (1..3).include?( _index)
       _caregiver = self.send("caregiver#{_index}")
-      _options = nil # start with a blank
       # 
       # GET / SET mode. required for both
       unless (_caregiver.blank? || _caregiver.nothing_assigned?)
@@ -128,10 +128,17 @@ class UserIntake < ActiveRecord::Base
           end
           # _given_options = _given_options # .reject { |k,v| (k == 'id') || (k[-3..-1] == '_id') } # exclude IDs
           _given_options.each {|k,v| _options.send( "#{k}=", v) if _options.respond_to?( "#{k}=".to_sym) } # apply applicable hash values
-          _caregiver.options_for_senior( senior, _options) # persist
+          #   * save when user does
+          #   * mem_caregiverX_options also does the same at save
+          _caregiver.lazy_options[ senior] = _options
+          # _caregiver.options_for_senior( senior, _options) # persist
         end
         #   * we must assign this to memory attribute anyways
-        self.send("mem_caregiver#{_index}_options=", _options) # assign to mem
+        if (_mem_options = self.send( "mem_caregiver#{_index}_options"))
+          _mem_options.attributes = _options.attributes.reject { |k,v| (k == 'id') || (k[-3..-1] == '_id') }
+          # _options.attributes.each { |k,v| _mem_options.send( "#{k}=", v) }
+        end
+        # self.send("mem_caregiver#{_index}_options=", _options) # assign to mem
       end
       # 
       #  Fri Nov 19 02:38:23 IST 2010, ramonrails
@@ -366,7 +373,7 @@ class UserIntake < ActiveRecord::Base
     # 
     #  Fri Dec  3 02:29:51 IST 2010, ramonrails
     #   * check errors in payment_gateway_responses. report on browser
-    unless order.payment_gateway_responses.failed.blank?
+    if !order.blank? && !order.payment_gateway_responses.blank? && order.payment_gateway_responses.failed.blank?
       self.errors.add_to_base( order.payment_gateway_responses.failed.collect(&:message).flatten.compact.uniq.join(', '))
     end
   end

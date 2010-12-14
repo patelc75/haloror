@@ -43,8 +43,8 @@ Feature: Save User Intake
     And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I uncheck "Same as User"
-    And I check "user_intake_caregiver1_email"
-    And I check "user_intake_caregiver1_text"
+    # And I check "caregiver1_email_flag"
+    # And I check "caregiver1_text_flag"
     And I press "Save"
     Then page content should have "successfully saved"
     And last user intake should have a senior profile
@@ -52,8 +52,8 @@ Feature: Save User Intake
     #  Fri Nov 12 18:38:03 IST 2010, ramonrails
     #   * user intake states sheet, H4
     # https://redmine.corp.halomonitor.com/issues/3704
-    When I edit the last user intake
-    Then checkboxes "user_intake_caregiver1_email, user_intake_caregiver1_text" should be checked
+    # When I edit the last user intake
+    # Then checkboxes "user_intake_caregiver1_email, user_intake_caregiver1_text" should be checked
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: New > Save. user profile ok. subscriber profile ok. different caregiver1 with blank profile
@@ -86,15 +86,16 @@ Feature: Save User Intake
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I uncheck "Same as User"
     And I uncheck "user_intake_no_caregiver_2"
-    And I check "user_intake_caregiver1_email"
-    And I check "user_intake_caregiver1_text"
-    And I check "user_intake_caregiver2_email"
-    And I check "user_intake_caregiver2_text"
+    And I check "caregiver1_email_flag"
+    And I check "caregiver1_text_flag"
+    And I check "caregiver2_email_flag"
+    And I check "caregiver2_text_flag"
     And I press "Save"
     Then page content should have "successfully saved"
     And last user intake should have a senior profile
     When I edit the last user intake
-    Then checkboxes "user_intake_caregiver1_email, user_intake_caregiver1_text" should be checked
+    Then checkboxes "caregiver1_email_flag, caregiver1_text_flag" should be checked
+    And checkboxes "caregiver2_email_flag, caregiver2_text_flag" should be checked
     # And page content should have "caregiver2 first name, caregiver2 last name"
     And caregivers of last user intake should be away
   

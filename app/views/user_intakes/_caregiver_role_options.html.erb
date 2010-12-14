@@ -1,5 +1,5 @@
-<div class="span-5"><%= f.label :is_keyholder, "Do you have a key to residence" %>:</div>
-<div class="span-2 last"><%= f.select :is_keyholder, yes_no_options_for_select, :class => "span-2" %></div>
+<!-- <div class="span-5"><%#= f.label :is_keyholder, "Do you have a key to residence" %>:</div>
+<div class="span-2 last"><%#= f.select :is_keyholder, yes_no_options_for_select, :class => "span-2" %></div> -->
 <div class="span-5"><%= f.label :critical_alert_messages, "Critical Alert Message Types" %>:</div>
  
 <!-- <div class="span-2">
@@ -10,11 +10,23 @@
 <!-- , :onclick => "$('#caregiver1_text_flag').attr('checked', this.checked);" -->
 
 <div class="span-2 ">
-  <%= f.check_box :email_active, :id => "#{user_type}_email_flag" %>
+  <% if user_type == 'caregiver1' %>
+    <%= f.check_box :email_active, :id => "#{user_type}_email_flag", :onclick => "$('#subscriber_email_flag').attr('checked', $('#caregiver1_email_flag').attr('checked'));" %>
+  <% elsif user_type == 'subscriber' %>
+    <%= f.check_box :email_active, :id => "#{user_type}_email_flag", :onclick => "$('#caregiver1_email_flag').attr('checked', $('#subscriber_email_flag').attr('checked'));" %>
+  <% else %>
+    <%= f.check_box :email_active, :id => "#{user_type}_email_flag" %>
+  <% end %>
   <%= f.label :email_active, "Email" %>
 </div>
 
 <div class="span-2 ">
-  <%= f.check_box :text_active, :id => "#{user_type}_text_flag" %>
+  <% if user_type == 'caregiver1' %>
+    <%= f.check_box :text_active, :id => "#{user_type}_text_flag", :onclick => "$('#subscriber_text_flag').attr('checked', $('#caregiver1_text_flag').attr('checked'));" %>
+  <% elsif user_type == 'subscriber' %>
+    <%= f.check_box :text_active, :id => "#{user_type}_text_flag", :onclick => "$('#caregiver1_text_flag').attr('checked', $('#subscriber_text_flag').attr('checked'));" %>
+  <% else %>
+    <%= f.check_box :text_active, :id => "#{user_type}_text_flag" %>
+  <% end %>
   <%= f.label :text_active, "Text" %>
 </div>
