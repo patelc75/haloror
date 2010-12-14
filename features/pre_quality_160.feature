@@ -28,6 +28,7 @@ Feature: Pre quality
     When I create a "reseller" reseller group
     And I am creating admin of "reseller" group
     And I fill in "First Name" with "admin1.5.1-rc1"
+    And I fill in "Email" with "admin1_5_1_rc1@example.com"
     And I press "subscribe"
     Then I should see "for activation of account"
     And email with activation code of last user should be sent for delivery

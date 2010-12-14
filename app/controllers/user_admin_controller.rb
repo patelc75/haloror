@@ -45,7 +45,7 @@ class UserAdminController < ApplicationController
 
   def create
     @user = User.new(params[:user])
-    @user.email = params[:user][:email]
+    # @user.email = params[:user][:email] # already assigned with :user
     @group_name = params[:group_name]
     # @profile = Profile.new(params[:profile]) # build_profile used now
     @roles = Role.distinct_by_name.ordered

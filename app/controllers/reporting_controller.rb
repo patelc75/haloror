@@ -113,18 +113,32 @@ class ReportingController < ApplicationController
     # Sat Oct 23 03:21:54 IST 2010
     #   * show admins, halousers, subscribers and caregivers
     _groups = (@group.blank? ? @groups : [@group]) # fetch groups, or make the single group an array
-    _halousers = _groups.collect(&:has_halousers).flatten.compact # fetch halousers for groups
-    #   * fetch admins of groups, [subscirbers & caregivers] of halousers
-    #   * keep everyone in a single array, not multi-level arrays
-    #   * collect ID of these users and 
-    @users = [ _groups.collect(&:has_admins), _halousers, _halousers.collect(&:has_subscribers), _halousers.collect(&:has_caregivers) ].flatten.compact
-    #
-    # Sat Oct 23 03:30:46 IST 2010 : save another query. we already have these objects loaded in memory
-    # # fetch users based on collected ids
-    # @users = User.all( :conditions => {:id => _user_ids }, :order => "id ASC")
-    #
-    # show non-demo users, unless "/all" given in URL
-    @users = @users.reject {|e| e.demo_mode? } if params[:id].to_s != "all"
+    
+    # 
+    #  Wed Dec 15 01:06:13 IST 2010, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3851
+    #   * faster search
+    #   * WARNING: Need to check all related test cases. Nothing should break
+    if current_user.is_super_admin?
+      # 
+      #  Wed Dec 15 00:56:06 IST 2010, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/3851
+      #   * This does not serve the exact roles we want, but works close. we are super admin after all
+      @users = User.all_except_demo
+    else
+      _halousers = _groups.collect(&:has_halousers).flatten.compact # fetch halousers for groups
+      #   * fetch admins of groups, [subscirbers & caregivers] of halousers
+      #   * keep everyone in a single array, not multi-level arrays
+      #   * collect ID of these users and 
+      @users = [ _groups.collect(&:has_admins), _halousers, _halousers.collect(&:has_subscribers), _halousers.collect(&:has_caregivers) ].flatten.compact
+      #
+      # Sat Oct 23 03:30:46 IST 2010 : save another query. we already have these objects loaded in memory
+      # # fetch users based on collected ids
+      # @users = User.all( :conditions => {:id => _user_ids }, :order => "id ASC")
+      #
+      # show non-demo users, unless "/all" given in URL
+      @users = @users.reject {|e| e.demo_mode? } if params[:id].to_s != "all"
+    end
     # 
     #  Tue Dec  7 20:26:53 IST 2010, ramonrails
     #   * pagination has "order", no need to sort
@@ -162,14 +176,15 @@ class ReportingController < ApplicationController
     # if params.has_key?(:group_name) && !params[:group_name].blank?
     #   # we already have users. nothing else to do
     if params.has_key?( :user_name) && !params[:user_name].blank?
-      if (@user_name = params[:user_name])
-        @user_name = @user_name.downcase
-        @users = @users.select do |e|
-          (e.id == @user_name.to_i) || e.login.to_s.downcase.include?(@user_name) || (!e.profile.blank? && e.full_name.downcase.include?(@user_name))
-        end
-      end
-    # else
-    #   @users = []
+      @users = User.where_id( @users.collect(&:id) ).filtered( params[:user_name])
+      # if (@user_name = params[:user_name])
+      #   @user_name = @user_name.downcase
+      #   @users = @users.select do |e|
+      #     (e.id == @user_name.to_i) || e.login.to_s.downcase.include?(@user_name) || (!e.profile.blank? && e.full_name.downcase.include?(@user_name))
+      #   end
+      # end
+      # # else
+      # #   @users = []
     end
     @users = @users.paginate :page => params[:page], :per_page => REPORTING_USERS_PER_PAGE
   end

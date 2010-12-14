@@ -150,8 +150,9 @@ class User < ActiveRecord::Base
   # after_save :post_process # shifted to method instead
   
   named_scope :all_except_demo, :conditions => ["demo_mode <> ?", true] # https://redmine.corp.halomonitor.com/issues/3274
-  named_scope :filtered, lambda {|arg| query = "%#{arg}%"; {:include => :profile, :conditions => ["users.id = ? OR users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", arg.to_i, query, query, query]}}
-  named_scope :where_status, lambda {|*arg| {:conditions => {:status => arg.flatten.first.to_s} }}
+  named_scope :filtered, lambda {|arg| query = "%#{arg}%"; { :include => :profile, :conditions => ["users.id = ? OR users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", arg.to_i, query, query, query]}}
+  named_scope :where_status, lambda {|*arg| { :conditions => { :status => arg.flatten.first.to_s} }}
+  named_scope :where_id, lambda {|*arg| { :conditions => { :id => arg.first} }}
   named_scope :ordered, lambda {|*args| { :include => :profile, :order => ( args.flatten.first || "id ASC" ) }} # Wed Oct 13 02:52:36 IST 2010 ramonrails
 
   # =================
@@ -544,9 +545,9 @@ class User < ActiveRecord::Base
     # default: assume we need a validation
     # features like user intake that do not want validation can switch it off
     self.need_validation = true
-    #
-    # instantiate a profile object if not already
-    self.build_profile if profile.blank?
+    # #
+    # # instantiate a profile object if not already
+    # self.build_profile if profile.blank?
     # example:
     #   user.roles = {:halouser => @group}
     #   user.roles[:subscriber] = @senior
@@ -1512,7 +1513,7 @@ class User < ActiveRecord::Base
     unless email.blank? # cannot send without valid email
       #  Fri Dec 10 21:04:14 IST 2010, ramonrails
       #   * "resend" needs _forced
-      unless activation_email_sent? || activated? || !_forced
+      unless activation_email_sent? || activated? || _forced
         # 
         #  Tue Nov 23 22:21:44 IST 2010, ramonrails
         #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4

@@ -579,11 +579,12 @@ class Order < ActiveRecord::Base
     # this should only be created when
     # => credit card transaction is successful
     # => order is saved
-    unless self.new_record? && user_intake.blank? # user intake can be created only after save
+    if (self.created_at == self.updated_at) && user_intake.blank? # user intake can be created only after save
       # TODO: DRYness required here
       senior_profile = { :first_name => ship_first_name, :last_name => ship_last_name, :address => ship_address, :city => ship_city, :state => ship_state, :zipcode => ship_zip, :home_phone => ship_phone }
       subscriber_profile = { :first_name => bill_first_name, :last_name => bill_last_name, :address => bill_address, :city => bill_city, :state => bill_state, :zipcode => bill_zip, :home_phone => bill_phone }
-      user_intake = UserIntake.new
+      #   * build... assigns order id automatically
+      self.build_user_intake # user_intake = UserIntake.new
       user_intake.group = group # halouser role is for group
       user_intake.senior_attributes = {:email => ship_email, :profile_attributes => senior_profile}
       #
