@@ -8,7 +8,20 @@ select demo_mode, count(*) from users group by demo_mode;
 
 /* Individual non-demo users not in an installed state */	
 select id, status from users where demo_mode = false and status is not null and status != 'Installed' order by status;
-select users.id, profiles.first_name, profiles.last_name, users.status, users.demo_mode, users.vip, users.created_at from users, profiles where users.status = 'Installed' and users.id = profiles.user_id order by users.created_at;
+
+/* Installed non-demo halousers with first_name, last_name */
+select users.id, users.vip, profiles.first_name, profiles.last_name, profiles.city, profiles.state, users.created_at 
+from users, profiles 
+where users.status = 'Installed' and demo_mode != true and users.id = profiles.user_id order by users.vip desc, users.created_at desc;
+
+/* Installed users (not halousers) */
+select users.id, users.vip, users.demo_mode, profiles.first_name, profiles.last_name, profiles.city, profiles.state, users.created_at 
+from users, profiles 
+where users.status = 'Installed' and users.id = profiles.user_id order by users.vip desc, users.created_at desc;
+
+/* Installed halousers */
+select user_id, first_name, last_name, demo_mode from users_by_role('halouser') where status = 'Installed' and demo_mode != true order by demo_mode desc, user_id;
+select user_id from users_by_role('halouser') where status = 'Installed' and demo_mode != true order by demo_mode desc, user_id;
 
 /* Individual installed users mapped to a device */ 	
 select distinct users.id, users.status, users.demo_mode from users, devices_users, devices where users.status is not null and users.status = 'Installed' and users.id = devices_users.user_id order by users.status;
@@ -18,6 +31,7 @@ select distinct users.id, users.status, users.demo_mode from users, devices_user
 
 /* "Pg function users_by_role_and_group() to show all halousers for safety_care group for example" */
 select * from users_by_role_and_group('halouser', 'ems');
+
 
 select user_id, first_name, last_name, role_name, group_name, demo_mode, status from users_by_role('halouser') where status like '%ancelled%' order by demo_mode;
 select distinct user_id, first_name, last_name, role_name, group_name, demo_mode, status from users_by_role('halouser') where demo_mode = true order by user_id;
@@ -46,5 +60,17 @@ select users.id, users.login, users.email, users.status, users.demo_mode, users.
 from users, profiles 
 where profiles.user_id = users.id and users.id in (1065, 712, 688);
 update users set vip = true where id in (1065, 712, 688);
+
+/* test */
+    SELECT distinct (users.id) as user_id, profiles.first_name, profiles.last_name, roles.id as role_id, roles.name, groups.name, users.status, users.test_mode, users.demo_mode, users.vip, users.created_at
+      from users, roles, roles_users, groups
+      left outer join profiles on users.id = profiles.user_id
+      where users.id = roles_users.user_id 
+      and roles_users.role_id = roles.id 
+      and roles.name = 'halouser'
+      and roles.authorizable_type = 'Group' 
+      and roles.authorizable_id = groups.id
+      and groups.name != 'safety_care'
+      order by groups.name, users.id;   
 
 
