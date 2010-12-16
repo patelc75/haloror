@@ -2,12 +2,12 @@
 <div style="margin-left:20px;">
   <table class="span-20">
     <tr>
-      <td class="span-3">Primary (Local)</td>
+      <td class="span-3">Local Primary</td>
       <td class="span-5"><%=f.select(:local_primary,DialUp.local_for_select, :prompt => 'none')%></td>
       <td></td>
     </tr>
     <tr>
-      <td>Secondary (Local)</td>
+      <td>Local Secondary</td>
       <td><%=f.select(:local_secondary,DialUp.local_for_select, :prompt => 'none')%></td>
       <td></td>
     </tr>
@@ -17,7 +17,7 @@
       <td><%=f.select(:global_primary,DialUp.global_for_select, :prompt => 'none')%></td>
       <% if !@glob_prim.nil? %>
       <input type="hidden" id="global_prim_hidden" value="<%= @glob_prim.phone_number %>">
-      <td><%= check_box_tag "global_default",{},checked = false,:onclick => "set_default_number(this,'global_prim_hidden','management_cmd_device_global_primary')"%> Default (<%= link_to 'Dial Up Table',dial_ups_path %>: Default Order = 2)</td>
+      <td><%= check_box_tag "global_default",{},checked = false,:onclick => "set_default_number(this,'global_prim_hidden','management_cmd_device_global_primary')"%> Default (In <%= link_to 'Master Dialup Num Table',dial_ups_path %>, Type = "Global" and Default Order = 1)</td>
       <% end %>
     </tr>
     <tr>
@@ -26,7 +26,7 @@
       <td><%=f.select(:global_secondary,DialUp.global_for_select, :prompt => 'none')%></td>
       <% if !@global_alt.nil? %>
       <input type="hidden" id="global_alt_hidden" value="<%= @global_alt.phone_number %>">
-      <td><%= check_box_tag "global_alt_default",{},checked = false,{:onclick => "set_default_number(this,'global_alt_hidden','management_cmd_device_global_secondary')"}%> Default (<%= link_to 'Dial Up Table',dial_ups_path %>: Default Order = 2)</td>
+      <td><%= check_box_tag "global_alt_default",{},checked = false,{:onclick => "set_default_number(this,'global_alt_hidden','management_cmd_device_global_secondary')"}%> Default (In <%= link_to 'Master Dialup Num Table',dial_ups_path %>, Type = "Global" and Default Order = 2)</td>
       <% end %>
     </tr>
   </table>

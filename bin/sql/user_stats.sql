@@ -21,7 +21,7 @@ where users.status = 'Installed' and users.id = profiles.user_id order by users.
 
 /* Installed halousers */
 select user_id, first_name, last_name, demo_mode from users_by_role('halouser') where status = 'Installed' and demo_mode != true order by demo_mode desc, user_id;
-select user_id from users_by_role('halouser') where status = 'Installed' and demo_mode != true order by demo_mode desc, user_id;
+select user_id from users_by_role('halouser') where status = 'Installed' and demo_mode != true order by vip desc, created_at;
 
 /* Individual installed users mapped to a device */ 	
 select distinct users.id, users.status, users.demo_mode from users, devices_users, devices where users.status is not null and users.status = 'Installed' and users.id = devices_users.user_id order by users.status;
@@ -61,16 +61,19 @@ from users, profiles
 where profiles.user_id = users.id and users.id in (1065, 712, 688);
 update users set vip = true where id in (1065, 712, 688);
 
-/* test */
-    SELECT distinct (users.id) as user_id, profiles.first_name, profiles.last_name, roles.id as role_id, roles.name, groups.name, users.status, users.test_mode, users.demo_mode, users.vip, users.created_at
-      from users, roles, roles_users, groups
-      left outer join profiles on users.id = profiles.user_id
+/* the new users_by_role function */
+SELECT distinct (users.id) as user_id, profiles.first_name, profiles.last_name, roles.id as role_id, roles.name, groups.name, users.status, users.test_mode, users.demo_mode, users.vip, users.created_at
+      from users LEFT OUTER JOIN profiles ON users.id = profiles.user_id, roles, roles_users, groups 
       where users.id = roles_users.user_id 
       and roles_users.role_id = roles.id 
       and roles.name = 'halouser'
       and roles.authorizable_type = 'Group' 
       and roles.authorizable_id = groups.id
       and groups.name != 'safety_care'
-      order by groups.name, users.id;   
+      and status = 'Installed' and demo_mode != true
+      /* order by groups.name, users.id; */
+      order by users.vip desc, users.created_at desc;
 
+select id, user_id, account_number, first_name, last_name from profiles order by id desc;
+select id from users order by id desc;
 

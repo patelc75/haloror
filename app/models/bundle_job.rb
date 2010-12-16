@@ -61,30 +61,30 @@ class BundleJob
           
           if (file_name.include?(EXT_NAME) && !File.directory?(file_path_and_name))
 
-            base_name = File.basename(file_path_and_name, EXT_NAME) #remove extension from filename
+            base_name = File.basename(file_path_and_name, EXT_NAME) #remove extension from filename H200000512_1292447207.tar.bz2
             dir_path = "#{BUNDLE_PATH}/#{base_name}"
-            Dir.mkdir(dir_path) rescue nil #try to make the directory
-            self.extract(file_path_and_name,  dir_path) 
-            self.archive(file_path_and_name,  ARCHIVE_PATH) #archive the file to the /archive directory
+            Dir.mkdir(dir_path) rescue nil #try to make the H200000512_1292447207/ directory
+            self.extract(file_path_and_name,  dir_path)  #H200000512_1292447207.tar.bz2 into H200000512_1292447207/
+            self.archive(file_path_and_name,  ARCHIVE_PATH) #archive H200000512_1292447207.tar.bz2 to the /archive directory
             RAILS_DEFAULT_LOGGER.warn("#{Time.now}: BundleJob beginng work on extracted #{file_name}")
           
           else
             RAILS_DEFAULT_LOGGER.warn("#{Time.now}: BundleJob beginng work on directory #{file_name}")
             dir_path = file_path_and_name
           end
-        
-          if File.directory?(dir_path)
+          RAILS_DEFAULT_LOGGER.warn("#{Time.now}: dir_path #{dir_path}")
+          if File.directory?(dir_path)  # if H200000512_1292447207/ directory exists
             begin
-              self.process_xml_files_in_dir(dir_path)
+              self.process_xml_files_in_dir(dir_path)  #process files in H200000512_1292447207/ directory
               # CHANGED: Dir.delete(dir_path)
               # recursively delete the folders. We can expect subfolders
-              recursively_delete_dir(dir_path)
+              recursively_delete_dir(dir_path)   #delete files from H200000512_1292447207/ directory
               delete_oldest_file_from_archive
             rescue Exception => e
               @error_collection << "#{Time.now}: BUNDLE_JOB_EXCEPTION while processing a directory:  #{e}"
               RAILS_DEFAULT_LOGGER.warn "#{Time.now}: BUNDLE_JOB_EXCEPTION while processing a directory:  #{e}"
             end
-          elsif file_name.include?(".xml")
+          elsif file_name.include?(".xml")  #if H200000512_1292447207.xml was uploadeded instead H200000512_1292447207.tar.bz2  
             # @error_collection << "Found a random xml file in the bundle dir:  #{file_name}"
             RAILS_DEFAULT_LOGGER.warn "#{Time.now}: Found a random xml file in the bundle dir:  #{file_name}"
             # process a single XML file here, sometime
