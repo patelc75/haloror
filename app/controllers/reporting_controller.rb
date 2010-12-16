@@ -130,7 +130,7 @@ class ReportingController < ApplicationController
       #   * fetch admins of groups, [subscirbers & caregivers] of halousers
       #   * keep everyone in a single array, not multi-level arrays
       #   * collect ID of these users and 
-      @users = [ _groups.collect(&:has_admins), _halousers, _halousers.collect(&:has_subscribers), _halousers.collect(&:has_caregivers) ].flatten.compact
+      @users = [ _groups.collect(&:has_admins), _halousers, _halousers.collect(&:has_subscribers), _halousers.collect(&:has_caregivers) ].flatten.compact.uniq
       #
       # Sat Oct 23 03:30:46 IST 2010 : save another query. we already have these objects loaded in memory
       # # fetch users based on collected ids
