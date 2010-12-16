@@ -46,3 +46,6 @@ select * from mgmt_cmds where device_id = 5877 and cmd_type = 'firmware_upgrade'
 delete from mgmt_cmds where id = 3081009;
 
 select * from events where user_id = 292 order by timestamp desc;
+
+select * from mgmt_queries where device_id = 330 order by timestamp_server desc limit 10;
+select count(*) from users;
