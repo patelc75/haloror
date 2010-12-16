@@ -1,6 +1,6 @@
 <%=f.radio_button :cmd_type, 'dial_up_num_glob_prim' unless controller.controller_name == "user_intakes" %>Change All Dial Up Numbers (<%= link_to 'configure',dial_ups_path %>)<br>
 <div style="margin-left:20px;">
-  <table class="span-8">
+  <table class="span-20">
     <tr>
       <td>Primary (Local)</td>
       <td><%=f.select(:local_primary,DialUp.local_for_select, :prompt => 'none')%></td>
