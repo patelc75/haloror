@@ -3,7 +3,7 @@
   <form id="user_search_form_id" action="/reporting/users" method="GET">
     <%= hidden_field_tag "group_name", @group_name %>
     Search: <input type="text" name="user_name" value="<%= @user_name %>" />
-    <input type="submit" value="Search Users" class="button green-button" />
+    <input type="submit" value="Search Users" class="button green-button span-4" />
   </form>
   <span class="tiny">
     Find any rows contianing this search string in ID, Login, or First / Last name.<br />
