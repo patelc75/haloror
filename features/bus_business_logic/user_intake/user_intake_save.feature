@@ -40,7 +40,7 @@ Feature: Save User Intake
     When I am creating a user intake
     And I select "halo_group" from "group"
     And I fill the senior details for user intake form
-    And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
+    # And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
     And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
     And I uncheck "Same as User"
     # And I check "caregiver1_email_flag"

@@ -680,7 +680,12 @@ class User < ActiveRecord::Base
     #   non-mandatory attributes cannot anyways exist without the mandatory ones
     _options = [:login, :email, :crypted_password,
       :activation_code, :activated_at].collect {|e| self.send(e).blank? }.compact.uniq
-    (_options.length == 1) && !_options.include?( false)
+    # 
+    #  Thu Dec 16 20:57:36 IST 2010, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3880
+    #   * profile has to be part of nothing_assigned? check
+    #   * user_intakes/new with just the name and no email, when saved was causing blank profile saved
+    (_options.length == 1) && !_options.include?( false) && profile.blank? && profile.nothing_assigned?
   end
 
   def something_assigned?
