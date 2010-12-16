@@ -77,3 +77,9 @@ SELECT distinct (users.id) as user_id, profiles.first_name, profiles.last_name, 
 select id, user_id, account_number, first_name, last_name from profiles order by id desc;
 select id from users order by id desc;
 
+select users.id as user_id, profiles.first_name, profiles.last_name, devices_users.device_id, devices.serial_number from users
+left outer join devices_users on users.id = devices_users.user_id, devices, profiles
+where users.id = profiles.user_id
+and devices.id = devices_users.device_id 
+and users.status = 'Installed'
+order by users.id asc; 
