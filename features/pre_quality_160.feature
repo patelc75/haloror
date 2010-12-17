@@ -480,4 +480,27 @@ Feature: Pre quality
     #   * TODO: Need capybara
     # Then the page content should have "reseller, cuc_ship@chirag.name, cuc_bill@chirag.name"
     Then page content should have "User Information, Billing Information"
+  
+  Scenario: Create user intake without online order > Reach installed state
+    Given I am an authenticated super admin
+    And the following groups:
+      | name       |
+      | halo_group |
+    And the following carriers:
+      | name    |
+      | verizon |
+    When I am creating a user intake
+    And I select "halo_group" from "group"
+    And I fill the senior details for user intake form
+    And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
+    And I press "Submit"
+    Then page content should have "successfully created"
+    And last user intake should have a senior profile
+    And user intake "last" should have "Ready for Approval" status
+    When I edit the last user intake
+    And I press "Approve"
+    Then page content should have "successfully updated"
+    And user intake "last" should have "Ready to Install" status
+    When panic button test data is received for user intake "last"
+    Then user intake "last" should have "Installed" status
     

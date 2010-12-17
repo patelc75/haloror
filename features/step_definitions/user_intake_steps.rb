@@ -89,7 +89,8 @@ Given /^user intake "([^"]*)" does not have the product shipped yet$/ do |_seria
 end
 
 Given /^(?:|the )senior of user intake "([^"]*)" (has|is at|should be) "([^"]*)" status$/ do |_serial, condition, status|
-  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  ui = ( _serial == 'last' ? UserIntake.last : UserIntake.find_by_gateway_serial( _serial))
+  ui.should_not be_blank
   (senior = ui.senior).should_not be_blank
   ui.skip_validation = true
   ui.submitted_at = (status.blank? ? nil : Time.now)
@@ -458,7 +459,8 @@ Then /^(senior|subscriber) of last user intake (should|should not) be (.+)$/ do 
 end
 
 Then /^user intake "([^"]*)" (should|should not) have "([^"]*)" status$/ do |_serial, condition, status|
-  (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
+  ui = (_serial == 'last' ? UserIntake.last : UserIntake.find_by_gateway_serial( _serial))
+  ui.should_not be_blank
   ( senior = ui.senior).should_not be_blank
   if condition == "should"
     senior.status.should == status

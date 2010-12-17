@@ -43,31 +43,45 @@ class Panic < CriticalDeviceAlert
       #   * "Installed" means, panic button was ok. user was "Bill"ed by human action
       _allowed_states = [User::STATUS[:install_pending], User::STATUS[:overdue]]
       if !user.desired_installation_date.blank? && (Time.now > user.desired_installation_date) && _allowed_states.include?( user.status.to_s)
-        #
-        # transition the user from "Ready to Install" => "Ready to Bill"
-        user.update_attribute( :status, User::STATUS[:bill_pending]) # "Ready to bill". no validations
         # 
-        #  Tue Nov 23 00:48:30 IST 2010, ramonrails
-        #   * Pro rata is charged from the date we received panic button after 
-        user.user_intakes.first.update_attribute( :panic_received_at, Time.now) unless user.user_intakes.blank?
+        #  Fri Dec 17 21:01:27 IST 2010, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/3891
+        if user.order_placed_online?
+          # transition the user from "Ready to Install" => "Ready to Bill"
+          #   * We need "bill" state when order was placed online
+          user.update_attribute( :status, User::STATUS[:bill_pending]) # "Ready to bill". no validations
+        else
+          #   * just mark the user "Installed", when created directly from user intake
+          user.update_attribute( :status, User::STATUS[:installed]) # "Installed"
+        end
+        # # 
+        # #  Tue Nov 23 00:48:30 IST 2010, ramonrails
+        # #   * Pro rata is charged from the date we received panic button after 
+        # user.user_intakes.first.update_attribute( :panic_received_at, Time.now) unless user.user_intakes.blank?
         #
         # add triage_audit_log with a message
         _message = "Automatically transitioned from 'Ready to Insall' to 'Ready to Bill' state at 'Panic button'"
-        
+
       # 
       #  Wed Dec  1 03:36:39 IST 2010, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/3786
       #   * if subscription was already charged, mark user "installed"
-      elsif !user.user_intakes.blank? && user.user_intakes.first.subscription_successful?
+      elsif (user.status.to_s == User::STATUS[:bill_pending]) && user.subscription_successful?
         user.update_attribute( :status, User::STATUS[:installed]) # "Installed"
-        # 
-        #  Tue Nov 23 00:48:30 IST 2010, ramonrails
-        #   * Pro rata is charged from the date we received panic button after 
-        user.user_intakes.first.update_attribute( :panic_received_at, Time.now) unless user.user_intakes.blank?
+        # # 
+        # #  Tue Nov 23 00:48:30 IST 2010, ramonrails
+        # #   * Pro rata is charged from the date we received panic button after 
+        # user.user_intakes.first.update_attribute( :panic_received_at, Time.now) unless user.user_intakes.blank?
         #
         # add triage_audit_log with a message
         _message = "Automatically transitioned from any existing state to 'Installed' state at 'Panic button' because subscription started before panic event."
       end
+      # 
+      #  Tue Nov 23 00:48:30 IST 2010, ramonrails
+      #   * Pro rata is charged from the date we received panic button after 
+      #  Fri Dec 17 21:03:40 IST 2010, ramonrails
+      #   * This is common method call for "if" conditions above
+      user.user_intakes.first.update_attribute( :panic_received_at, Time.now) unless user.user_intakes.blank?
 
       #
       # add to triage audit log with a message

@@ -18,7 +18,11 @@ class UserMailer < ActionMailer::ARMailer
   #  Wed Nov 24 23:01:26 IST 2010, ramonrails
   #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
   #   * https://redmine.corp.halomonitor.com/issues/3785
-  def user_installation_alert( _senior, _email)
+  def user_installation_alert( _senior, _email = nil)
+    #  Fri Dec 17 21:06:18 IST 2010, ramonrails
+    #   * email is now optional. when not supplied, picks user's email
+    #   * WARNING: this can send multiple emails if code is not proper
+    _email ||= _senior.email
     setup_email( _email) # email can go to anyone given here
     @subject += "#{_senior.name} installed" # user state
     body        :user => _senior # senior details in the email

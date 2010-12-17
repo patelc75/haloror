@@ -499,6 +499,22 @@ class User < ActiveRecord::Base
     #   * billed_monthly? == false
     user_intakes.blank? ? true : (user_intakes.collect(&:credit_debit_card_proceessed).compact.uniq.include?( true) || !billed_monthly?)
   end
+
+  # 
+  #  Fri Dec 17 20:48:44 IST 2010, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3891
+  #   * Only applies to halouser
+  def order_placed_online?
+    !( self.is_not_halouser? || user_intakes.blank? || user_intakes.first.order.blank? )
+  end
+
+  # 
+  #  Fri Dec 17 20:50:55 IST 2010, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3891
+  #   * Only applies to halouser
+  def subscription_successful?
+    order_placed_online? && user_intakes.first.order.subscription_successful?
+  end
   
   # 
   #  Wed Nov 17 00:10:26 IST 2010, ramonrails
@@ -685,7 +701,7 @@ class User < ActiveRecord::Base
     #   * https://redmine.corp.halomonitor.com/issues/3880
     #   * profile has to be part of nothing_assigned? check
     #   * user_intakes/new with just the name and no email, when saved was causing blank profile saved
-    (_options.length == 1) && !_options.include?( false) && profile.blank? && profile.nothing_assigned?
+    (_options.length == 1) && !_options.include?( false) && ( profile.blank? || profile.nothing_assigned? )
   end
 
   def something_assigned?
