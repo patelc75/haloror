@@ -1,4 +1,4 @@
-<%= render :partial => 'nav_config' %>
+<%=render :partial => 'nav'%>
 
 <div class="span-3"><h3>Users Stats</h3></div>
 <div class="span-21 last">
@@ -9,7 +9,7 @@
   </form>
 </div>
 <br/><br/>
-<div class="span-4">                                            
+<div class="span-6">                                            
   <div style="display: inline-block;"><b>Grand Totals</b><br><span class="tiny">"HaloUser" is the device wearer</span><br>&nbsp;</div>  
   <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :installed] }.length %> Installed Non-Demo HaloUsers</div>
   <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :cancelled] }.length %> Cancelled Non-Demo HaloUsers</div>   
@@ -28,10 +28,7 @@
   <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
   <% end %>
   <% end %>
-</div>  
-<div class="span-5">
-  <div style="display: inline-block;"><b>Pending/Cancelled</b><br><span class="tiny">Demo users <b>not</b> included</span><br>&nbsp;</div>  
-  <% [ User::AGGREGATE_STATUS[ :pending], User::AGGREGATE_STATUS[ :cancelled]].each do |_status| %>
+  <% [ User::AGGREGATE_STATUS[ :pending]].each do |_status| %>
   <% [:chest_straps, :belt_clips].each do |_device| %>
   <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
   <% end %>
