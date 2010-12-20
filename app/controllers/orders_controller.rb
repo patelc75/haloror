@@ -238,6 +238,11 @@ class OrdersController < ApplicationController
                 end
                 
                 @order.send_summary_to_group_and_master_group
+                # 
+                #  Mon Dec 20 23:06:22 IST 2010, ramonrails
+                #   * updated method includes group admins
+                # #   * group, master group, group admin
+                # @order.send_summary_to_group_and_related
                                     
                 # show on browser
                 flash[:notice] = 'Thank you for your order.'

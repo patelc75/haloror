@@ -53,6 +53,28 @@ class Order < ActiveRecord::Base
     UserMailer.deliver_order_summary( self, group.email ) if !group.blank?
     UserMailer.deliver_order_summary( self, _master_group.email ) if !_master_group.blank? && _master_group.valid?
   end
+  # ----------- new, updated method below ------------------
+  # 
+  #  Mon Dec 20 23:04:50 IST 2010, ramonrails
+  #   * send emails to group, group admins, master group
+  # # send order summary email to the master group, only when applicable
+  # def send_summary_to_group_and_related
+  #   # group must be present
+  #   # master group must be present
+  #   #   * group name should be xx_...
+  #   #   * master group with name xx_master must exist
+  #   unless group.blank?
+  #     _master_group = group.master_group
+  #     #   * group
+  #     # UserMailer.deliver_order_summary( self, group.email )
+  #     #   * group admins
+  #     _emails = [ group.email, group.has_admins.collect(&:email) ]
+  #     #   * master group
+  #     _emails += _master_group.email if ( !_master_group.blank? && _master_group.valid? )
+  #     #   * dispatch to all collected emails
+  #     _emails.compact.uniq.each { |_email| UserMailer.deliver_order_summary( self, _email ) }
+  #   end
+  # end
 
   def group_name
     group.blank? ? "" : group.name
