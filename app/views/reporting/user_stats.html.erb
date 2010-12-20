@@ -11,10 +11,11 @@
 <br/><br/>
 <div class="span-6">                                            
   <div style="display: inline-block;"><b>Grand Totals</b><br><span class="tiny">"HaloUser" is the device wearer</span><br>&nbsp;</div>  
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :installed] }.length %> Installed Non-Demo HaloUsers</div>
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :cancelled] }.length %> Cancelled Non-Demo HaloUsers</div>   
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :demo] }.length %> Demo HaloUsers</div> 
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).length %> Total HaloUsers</div>
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :installed] }.length %> Installed Non-Demo HaloUsers</div><br />
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :cancelled] }.length %> Cancelled Non-Demo HaloUsers</div><br />
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :demo] }.length %> Demo HaloUsers</div><br />
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).length %> Total HaloUsers</div><br />
+  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= (@group.blank? ? @vips : @group.has_halousers.collect(&:id)).length %> VIP Users</div>
 </div>
 <div class="span-5">
   <div style="display: inline-block;"><b>Dialup vs Eth/BC vs CS</b><br><span class="tiny">Demo users <b>not</b> included</span><br>&nbsp;</div>  

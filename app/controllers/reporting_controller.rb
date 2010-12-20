@@ -208,7 +208,9 @@ class ReportingController < ApplicationController
     #  Thu Dec  9 01:28:27 IST 2010, ramonrails
     #   * more variables that are required in view
     @halouser_ids = User.halousers.collect(&:id).flatten.compact.uniq
-    @group_halouser_ids = @groups.collect(&:has_halousers).flatten.compact.uniq.collect(&:id)
+    _group_halousers = @groups.collect(&:has_halousers).flatten.compact.uniq
+    @group_halouser_ids = _group_halousers.collect(&:id)
+    @vips = ( current_user.is_super_admin? ? User.vips : _group_halousers.select(&:vip?) )
   end
   
   def purge_data

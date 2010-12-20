@@ -150,6 +150,7 @@ class User < ActiveRecord::Base
   # after_save :post_process # shifted to method instead
   
   named_scope :all_except_demo, :conditions => ["demo_mode <> ?", true] # https://redmine.corp.halomonitor.com/issues/3274
+  named_scope :vips, :conditions => ["vip = ?", true] # https://redmine.corp.halomonitor.com/issues/3894
   named_scope :filtered, lambda {|arg| query = "%#{arg}%"; { :include => :profile, :conditions => ["users.id = ? OR users.login LIKE ? OR profiles.first_name LIKE ? OR profiles.last_name LIKE ?", arg.to_i, query, query, query]}}
   named_scope :where_status, lambda {|*arg| { :conditions => { :status => arg.flatten.first.to_s} }}
   named_scope :where_id, lambda {|*arg| { :conditions => { :id => arg.first} }}
