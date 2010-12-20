@@ -1,4 +1,4 @@
-require "spec_helper"
+require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 describe DeviceModel do
   before(:all) { product_catalog } # direct_to_consumer, bestbuy, default

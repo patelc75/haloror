@@ -397,9 +397,12 @@ Feature: Pre quality
     # Verify call center account number is incremented in the profile of halouser
     Then last user intake should have latest call center account number
     #
+    #  Mon Dec 20 23:44:09 IST 2010, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3767
+    #   * safety_care email dispatch is elimited from business logic
     # safety care email
-    When I send caregiver details for the last user intake
-    Then 1 email to "safety care" should be sent for delivery
+    # When I send caregiver details for the last user intake
+    # Then 1 email to "safety care" should be sent for delivery
     #
     Then the last user intake should have credit card value
     #   * Cannot check javascript action

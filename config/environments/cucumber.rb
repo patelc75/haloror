@@ -39,6 +39,7 @@ config.after_initialize do
   # ::GATEWAY = ActiveMerchant::Billing::BogusGateway.new
   ::PAYMENT_GATEWAY = ActiveMerchant::Billing::AuthorizeNetGateway.new(
     :login => AUTH_NET_LOGIN,
-    :password => AUTH_NET_TXN_KEY
+    :password => AUTH_NET_TXN_KEY,
+    :test => true
   )
 end
