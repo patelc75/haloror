@@ -145,7 +145,13 @@ class ProfilesController < ApplicationController
       if @user.save
         # @user
         @user.activate #this call differentiates this method UsersController.populate_caregiver 
-
+        # 
+        #  Tue Dec 21 01:17:33 IST 2010, ramonrails
+        #   * 
+        #   * Make the caregiver "active for senior" when created from caregivers list
+        # @user.options_for_senior( @senior, {:active => true}) # the latter syntax also works equally
+        @user.options_attribute_for_senior( @senior, :active, true) # the former syntax also works equally
+        
         @profile.user_id = @user.id
         @profile[:is_new_caregiver] = true
         if @profile.save!
