@@ -83,6 +83,10 @@ class UserAdminController < ApplicationController
         # TODO: these are quick fix. need better implementation
         # @user.autofill_login # just place some random login for now. user will activate later
         @user.skip_validation = true # do not validate profile. just capture the form
+        # 
+        #  Tue Dec 21 00:56:54 IST 2010, ramonrails
+        #   * Need role at user level
+        @user.lazy_roles[ :admin] = _group
         #
         if @user.save # "!" is not recommended here
           # TODO: render or redirect is not explicit when "save" fails
@@ -92,11 +96,13 @@ class UserAdminController < ApplicationController
           # @profile.user_id = @user.id
           # @profile.save # "!" is not recommended here
           #
-          # DEPRECATED: why assign a role like this. use authorization plugin methods instead
-          #   # @user.roles << role
-          #   user.is_admin_of( group) uses authorization methods
-          #   CHANGED: not working correctly sometimes. better to use simpler syntax
-          @user.has_role params[:role], _group # more technical syntax but works better
+          #  Tue Dec 21 00:57:14 IST 2010, ramonrails
+          #   * shifted to user.lazy_roles above "save"
+          # # DEPRECATED: why assign a role like this. use authorization plugin methods instead
+          # #   # @user.roles << role
+          # #   user.is_admin_of( group) uses authorization methods
+          # #   CHANGED: not working correctly sometimes. better to use simpler syntax
+          # @user.has_role params[:role], _group # more technical syntax but works better
           #
           # Tue Oct 26 04:32:30 IST 2010
           #   email is triggered from user model
