@@ -1,6 +1,14 @@
 # critical alert related
 # ----------------- Given
 
+Given /^critical alerts types exist$/ do
+  if (_critical = AlertGroup.create( :group_type => "critical"))
+    ["Fall", "Panic", "GwAlarmButton", "GwAlarmButtonTimeout"].each do |_alert_type|
+      _critical.alert_types.create( :alert_type => _alert_type)
+    end
+  end
+end
+
 # ----------------- When
 
 When /^I simulate a "([^\"]*)" with delivery to the call center for user login "([^\"]*)" with a "([^\"]*)" "([^\"]*)"$/ do |model, login, valid, error_type|

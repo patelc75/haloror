@@ -639,7 +639,7 @@ class User < ActiveRecord::Base
         #   * blank or not_saved means not_valid
         unless k.blank? || k.new_record?
           #   * save role_options
-          self.options_for_senior( k, v)
+          self.options_for_senior( k, v) # will also create alert_options for critical alert types
         end
       end
       # 
@@ -791,6 +791,8 @@ class User < ActiveRecord::Base
   # 
   # Thu Nov  4 06:13:47 IST 2010, ramonrails
   # TODO: FIXME: this should handle the roles_users_options directly, without user_intake
+  #  Tue Dec 21 23:22:13 IST 2010, ramonrails
+  #   * will also create alert_options for critical alert types
   def options_for_senior( _senior, attributes = nil)
     # 
     #  Sat Nov 13 03:37:30 IST 2010, ramonrails

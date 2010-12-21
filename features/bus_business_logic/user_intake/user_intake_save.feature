@@ -77,6 +77,7 @@ Feature: Save User Intake
   # https://redmine.corp.halomonitor.com/issues/3704
   # http://spreadsheets.google.com/a/halomonitoring.com/ccc?key=0AnT533LvuYHydENwbW9sT0NWWktOY2VoMVdtbnJqTWc&hl=en#gid=3
   Scenario: New > Save. user profile ok. subscriber not user. caregiver2 given
+    Given critical alerts types exist
     When I am creating a user intake
     And I select "halo_group" from "group"
     And I fill the senior details for user intake form

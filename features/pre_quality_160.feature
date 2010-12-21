@@ -238,6 +238,7 @@ Feature: Pre quality
       | serial_number |
       | H200220022    |
       | H100110011    |
+    And critical alerts types exist
     When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
     And I place an online order for "reseller" group
@@ -276,17 +277,17 @@ Feature: Pre quality
     And devices "H200220022, H100110011" should be attached to last user intake
     # Click “Submit” button on User intake form and verify “Ready for Approval” state at My Links > User Intakes
     #  Mon Nov 22 13:31:40 IST 2010, ramonrails: TODO: manually smoke tested this step
-    # When I edit the last user intake
+    When I edit the last user intake
     # Then page content should have "H200220022, H100110011, caregiver2 first name, caregiver3 first name, `Date.today.to_s`"
     #   * This is now AJAX. need capybara
     # email, text and phone checkboxes
     # https://redmine.corp.halomonitor.com/issues/3674
-    # And "caregiver1_email_flag" checkbox should be checked
-    # And "caregiver2_email_flag" checkbox should be checked
-    # And "caregiver3_email_flag" checkbox should be checked
-    # And "caregiver1_text_flag" checkbox should be checked
-    # And "caregiver2_text_flag" checkbox should be checked
-    # And "caregiver3_text_flag" checkbox should be checked
+    Then "caregiver1_email_flag" checkbox should be checked
+    And "caregiver2_email_flag" checkbox should be checked
+    And "caregiver3_email_flag" checkbox should be checked
+    And "caregiver1_text_flag" checkbox should be checked
+    And "caregiver2_text_flag" checkbox should be checked
+    And "caregiver3_text_flag" checkbox should be checked
 
   Scenario: halouser > submit user intake form - make all users distinct
     Given the product catalog exists

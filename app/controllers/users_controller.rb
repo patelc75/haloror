@@ -1011,21 +1011,21 @@ class UsersController < ApplicationController
     # device.save!
   end
     
-
-=begin  
-  def enable_by_default(roles_user)
-    
-      ALERTS_ENABLED_BY_DEFAULT.each do |type|
-        alert_type = AlertType.find_by_alert_type(type)
-      
-        alert_opt = AlertOption.new
-        alert_opt.roles_user_id = roles_user.id
-        alert_opt.alert_type_id = alert_type.id
-        alert_opt.phone_active = true
-        alert_opt.email_active = true
-        alert_opt.text_active = true
-        alert_opt.save
-      end
-  end
-=end  
+  #  Tue Dec 21 20:52:53 IST 2010, ramonrails
+  #   * block comment does not depict in global search. this does.
+  # def enable_by_default(roles_user)
+  #   
+  #     ALERTS_ENABLED_BY_DEFAULT.each do |type|
+  #       alert_type = AlertType.find_by_alert_type(type)
+  #     
+  #       alert_opt = AlertOption.new
+  #       alert_opt.roles_user_id = roles_user.id
+  #       alert_opt.alert_type_id = alert_type.id
+  #       alert_opt.phone_active = true
+  #       alert_opt.email_active = true
+  #       alert_opt.text_active = true
+  #       alert_opt.save
+  #     end
+  # end
+  
 end
