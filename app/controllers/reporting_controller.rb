@@ -119,7 +119,9 @@ class ReportingController < ApplicationController
     #   * https://redmine.corp.halomonitor.com/issues/3851
     #   * faster search
     #   * WARNING: Need to check all related test cases. Nothing should break
-    if current_user.is_super_admin?
+    #   * should only be faster for "all groups" by "super admin"
+    #   * all other cases must go through group selection subject to role or manually selected from options
+    if current_user.is_super_admin? && @group.blank?
       # 
       #  Wed Dec 15 00:56:06 IST 2010, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/3851
@@ -534,6 +536,9 @@ class ReportingController < ApplicationController
     end
   end
   
+  # 
+  #  Mon Dec 20 23:40:56 IST 2010, ramonrails
+  #   * TODO: DRY this. Lot of optimization required
   def fall_panic_report
     @user_begin_time = params[:begin_time]
     @user_end_time = params[:end_time]

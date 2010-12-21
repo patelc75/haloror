@@ -635,7 +635,12 @@ class User < ActiveRecord::Base
       #
       # caregiver options
       lazy_options.each do |k,v|
-        self.options_for_senior( k, v) unless k.blank? || k.new_record?
+        #   * DRYed: Tue Dec 21 00:52:57 IST 2010
+        #   * blank or not_saved means not_valid
+        unless k.blank? || k.new_record?
+          #   * save role_options
+          self.options_for_senior( k, v)
+        end
       end
       # 
       #  Fri Nov 12 18:09:50 IST 2010, ramonrails
@@ -1531,7 +1536,6 @@ class User < ActiveRecord::Base
   #   * added "_forced" option for "resend" action
   #
   def dispatch_emails( _forced = false)
-    _sent = false
     unless email.blank? # cannot send without valid email
       #  Fri Dec 10 21:04:14 IST 2010, ramonrails
       #   * "resend" needs _forced
@@ -1570,30 +1574,44 @@ class User < ActiveRecord::Base
         #   #   * or we have an associated order (online store)
         #   (user_intakes.first.submitted? || !user_intakes.first.order.blank?)
         # end
-        # #
-        # #   dispatch emails subject to the role
-        # if _can_send_email
-        if self.is_caregiver?
-          #   * Only caregiver email will dispatch when subscriber is caregiver
-          #   * emails for caregivers
-          _recent_senior = is_caregiver_of_what.last
-          UserMailer.deliver_caregiver_invitation( self, _recent_senior)
+        _can_send_email = if self.is_admin?
+          #   * admin does not have user_intake
+          #   * admin is "saved", not validated
+          true
         else
-          #   * emails for "non-caregivers". admins, subscribers, halousers and everybody else
-          UserMailer.deliver_signup_notification( self)
+          #   * any non-admin will have user_intake, or order
+          ( !user_intakes.blank? && ( user_intakes.first.submitted? || !user_intakes.first.order.blank? ))
         end
-        # end # can send email
         #
-        #   * Now mark the dispatch of email, for next time
-        self.update_attribute( :activation_sent_at, Time.now)
+        #  Tue Dec 21 00:29:04 IST 2010, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/3895
+        #   * either we have a submitted user intake
+        #   * or we have an associated order (online store)
+        #   dispatch emails subject to the role
+        if _can_send_email
+          if self.is_caregiver?
+            #   * Only caregiver email will dispatch when subscriber is caregiver
+            #   * emails for caregivers
+            _recent_senior = is_caregiver_of_what.last
+            UserMailer.deliver_caregiver_invitation( self, _recent_senior)
+          else
+            #   * emails for "non-caregivers". admins, subscribers, halousers and everybody else
+            UserMailer.deliver_signup_notification( self)
+          end
+          #
+          #   * Now mark the dispatch of email, for next time
+          self.update_attribute( :activation_sent_at, Time.now)
+        end # can send email
         # end # user type?
       end # activation_email_sent?
       #
       # activation email gets delivered anyways
       UserMailer.deliver_activation(self) if recently_activated?
-      _sent = true
     end # cannot send without valid email
-    _sent
+    #
+    #  Tue Dec 21 00:33:39 IST 2010, ramonrails
+    #   * return a status whether activation was sent
+    return !activation_sent_at.blank? # when this is filled, activation was sent
   end
 
   def username
