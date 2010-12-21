@@ -115,11 +115,21 @@ class CallListController < ApplicationController
   end
   
   def toggle_text
-  	@user = User.find(params[:user_id])
-  	unless @user.profile.cell_phone.blank? || @user.profile.carrier_id == nil || @user.profile.carrier_id == ""
+    @user = User.find(params[:user_id])
+    # 
+    #  Wed Dec 22 00:03:32 IST 2010, ramonrails
+    #   * more robust conditions
+    #   * added a flash message if this was not updated
+    # if @user.profile.cell_phone.blank? || @user.profile.carrier_id == nil || @user.profile.carrier_id == ""
+    if @user.profile.blank? || @user.profile.cell_phone.blank? || @user.profile.carrier.blank?
+      render :update do |page|
+        flash[:notice] = "Cannot update phone toggle: User profile, cell phone or carrier is missing."
+        page.reload_flash # load flash explicitly. this is AJAX call
+      end
+    else
       toggle_critical('text', params[:id])
+      render :text => '', :layout => false
     end
-    render :text => '', :layout => false
   end
   
   def activate

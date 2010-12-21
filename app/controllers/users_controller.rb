@@ -13,9 +13,13 @@ class UsersController < ApplicationController
   #   end
   # end
   
+  # 
+  #  Tue Dec 21 23:35:56 IST 2010, ramonrails
+  #   * DRYed
   def cancel_account
-    @user = User.find(params[:id])
-    @user.cancel_account unless @user.blank?
+    # @user = User.find(params[:id])
+    # @user.cancel_account unless @user.blank?
+    @user.cancel_account if ( @user = User.find(params[:id]) )
   end
 
   def triage

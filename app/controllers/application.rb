@@ -47,6 +47,7 @@ class ApplicationController < ActionController::Base
   before_filter :authenticated?
   before_filter :set_host
   before_filter :set_user_time_zone
+  after_filter :discard_flash_if_xhr # usually happens on visiting another action. AJAX calls require to force discard it
 
   def error(exception)
     render :controller => 'errors', :action => 'error'
@@ -133,6 +134,14 @@ class ApplicationController < ActionController::Base
   # =====================
 
   protected
+  
+  # 
+  #  Wed Dec 22 00:17:00 IST 2010, ramonrails
+  #   * flash for AJAX. must be discarded
+  #   * flash usually gets discarded when another action is visited
+  def discard_flash_if_xhr
+    flash.discard if request.xhr?
+  end
 
   def authenticated?
     unless (controller_name == 'users' && (action_name == 'init_caregiver' || action_name == 'update_caregiver' || action_name == 'activate') || 

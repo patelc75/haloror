@@ -8,6 +8,13 @@ module ApplicationHelper
   include UserHelper
 
   # 
+  #  Wed Dec 22 00:14:23 IST 2010, ramonrails
+  #   * reload flash for AJAX calls
+  def reload_flash
+    page.replace "flash_messages", :partial => 'layouts/flasher'
+  end
+
+  # 
   #  Fri Nov 12 23:48:25 IST 2010, ramonrails
   #  apply attributes to given object, from given hash
   def apply_attributes_from_hash( _object, _hash)
@@ -224,4 +231,15 @@ module ApplicationHelper
     content_for(:meta_tags) { tags }
     content_for(:meta_tags) { concat(capture( &block), block.binding) if block_given? }
   end
+
+  protected
+  
+  # 
+  #  Wed Dec 22 00:17:00 IST 2010, ramonrails
+  #   * flash for AJAX. must be discarded
+  #   * flash usually gets discarded when another action is visited
+  def discard_flash_if_xhr
+    flash.discard if request.xhr?
+  end
+
 end
