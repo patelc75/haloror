@@ -11,7 +11,8 @@ where id in (select device_id from access_mode_statuses where mode = 'ethernet')
 and  id in (select id from devices where serial_number like 'H2%');	
 
 
-curl -v -k -H "Content-Type: text/xml" -d "<panic><device_id>26</device_id><duration_press>1000</duration_press><gw_timestamp>Mon Dec 25 15:52:55 -0600 2007</gw_timestamp><user_id>827</user_id><timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp></panic>" "https://sdev.myhalomonitor.com/panics?gateway_id=0&auth=9ad3cad0f0e130653ec377a47289eaf7f22f83edb81e406c7bd7919ea725e024"
+curl -v -k -H "Content-Type: text/xml" -d "<panic><device_id>26</device_id><duration_press>1000</duration_press><gw_timestamp>Mon Dec 25 15:52:55 -0600 2007</gw_timestamp><user_id>848</user_id><timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp></panic>" "https://sdev.myhalomonitor.com:3000/panics?gateway_id=0&auth=9ad3cad0f0e130653ec377a47289eaf7f22f83edb81e406c7bd7919ea725e024"
+curl -v -H "Content-Type: text/xml" -d "<panic><device_id>26</device_id><duration_press>1000</duration_press><gw_timestamp>Mon Dec 25 15:52:55 -0600 2007</gw_timestamp><user_id>848</user_id><timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp></panic>" "http://sdev.myhalomonitor.com:3000/panics?gateway_id=0&auth=9ad3cad0f0e130653ec377a47289eaf7f22f83edb81e406c7bd7919ea725e024"
 
 drop function users_by_role_and_group(text, text);
 drop function users_by_group(text);
@@ -49,3 +50,8 @@ select * from events where user_id = 292 order by timestamp desc;
 
 select * from mgmt_queries where device_id = 330 order by timestamp_server desc limit 10;
 select count(*) from users;
+
+select * from alert_options;
+select * from alert_types;
+
+select * from caregivers_by_user_id(5);

@@ -71,9 +71,10 @@ SELECT distinct (users.id) as user_id, profiles.first_name, profiles.last_name, 
       and roles.authorizable_id = groups.id
       and groups.name != 'safety_care'
       and status = 'Installed' and demo_mode != true
-      /* order by groups.name, users.id; */
       order by users.vip desc, users.created_at desc;
 
+
+      
 select id, user_id, account_number, first_name, last_name from profiles order by id desc;
 select id from users order by id desc;
 
@@ -83,3 +84,5 @@ where users.id = profiles.user_id
 and devices.id = devices_users.device_id 
 and users.status = 'Installed'
 order by users.id asc; 
+
+select * from alert_options_by_user_id(5);
