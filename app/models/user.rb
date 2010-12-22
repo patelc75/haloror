@@ -2988,8 +2988,15 @@ class User < ActiveRecord::Base
     CriticalMailer.deliver_cancel_call_center_acct(self.profile.account_number)
     self.log("Email sent to safety_care: Cancel #{self.profile.account_number}")  
     set_test_mode!( true)  # Call Test Mode method to make caregivers away and opt out of SafetyCare    
-    # devices = []    
-    #Device.unregister( devices.collect(&:id).flatten.compact.uniq ) # Sends unregister command to both devices 
+    # 
+    #  Wed Dec 22 20:35:43 IST 2010, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3900
+    #   * devices are *not* removed from database
+    #   * any other user (unlikely in business logic right now) linked to this device will remain linked
+    devices = []  # release the devices from this user
+    #   * "unregister"ing the devices released the devices from all linked user
+    #   * for now in business logic, only one user is linked to the device
+    # Device.unregister( devices.collect(&:id).flatten.compact.uniq ) # Sends unregister command to both devices 
     caregivers.each {|e| UserMailer.deliver_user_cancelled( self, e) } # Send email to caregivers informing de-activation of device  
     self.status = User::STATUS[:cancelled] 
     self.send(:update_without_callbacks)
