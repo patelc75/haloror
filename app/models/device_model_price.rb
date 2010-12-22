@@ -23,6 +23,14 @@ class DeviceModelPrice < ActiveRecord::Base
   named_scope :for_coupon_code, lambda {|arg| { :conditions => { :coupon_code => arg.to_s } }}
   named_scope :for_device_model, lambda {|_device| { :conditions => { :device_model_id => _device.id } }} # used in group.rb
 
+  # =============
+  # = callbacks =
+  # =============
+
+  def after_initialize
+    self.group ||= Group.direct_to_consumer
+  end
+
   # =================
   # = class methods =
   # =================
