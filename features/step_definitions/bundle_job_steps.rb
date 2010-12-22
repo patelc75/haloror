@@ -17,6 +17,7 @@ When /^I process the xml file "([^\"]*)"$/ do |file_offset_path|
   temp_file.write( File.read( file_offset_path).gsub('965', Device.find_by_serial_number("1234567890").id.to_s) )
   temp_file.close
   BundleJob.process_xml_file( temp_file.path) # can be full or offset
+  File.delete("temp") # causes extra file checked into git
 end
 
 When /^I process the curl text file "([^\"]*)"$/ do |text_file|

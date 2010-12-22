@@ -48,7 +48,7 @@ class DialUpStatusesController < RestfulAuthController
   def create
     #
     # get the hashes separate for each row of AR
-    # WARNING: Not tested
+    # WARNING: Not tested. need to check for more keys than just one
     if params[:dial_up_status].keys.include?( "alt_status") # composite hash received from device
       save_dial_up_status_hash( params[:dial_up_status])
     else

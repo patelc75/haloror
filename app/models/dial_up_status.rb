@@ -128,6 +128,9 @@ class DialUpStatus < ActiveRecord::Base
     # end
   end
   
+  # 
+  #  Wed Dec 22 22:52:34 IST 2010, ramonrails
+  #   * FIXME: "and" "or" logic needs a fix. testing required to ensure correctness
   def create_event
     if !device.blank? and (status == "fail" && consecutive_fails > 3 && configured == "old") or (status == "fail" && configured == "new") 
       device.users.each do |user|
