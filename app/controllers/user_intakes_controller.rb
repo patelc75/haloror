@@ -55,10 +55,10 @@ class UserIntakesController < ApplicationController
       else
         @groups = current_user.group_memberships
         conditions = "group_id IN (0,"
-      	for group in @groups
-      		conditions += "#{group.id},"
-      	end
-      	conditions += "0)"
+        for group in @groups
+          conditions += "#{group.id},"
+        end
+        conditions += "0)"
         @user_intakes = UserIntake.paginate :page => params[:page],:order => 'updated_at desc',:per_page => 15, :conditions => "#{conditions}"  
       end
     end
@@ -86,11 +86,11 @@ class UserIntakesController < ApplicationController
     else
       @user_intake = UserIntake.find(params[:id])
 
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @user_intake }
+      respond_to do |format|
+        format.html # show.html.erb
+        format.xml  { render :xml => @user_intake }
+      end
     end
-  end
   end
 
   # GET /user_intakes/new
@@ -273,7 +273,13 @@ class UserIntakesController < ApplicationController
         # we already applied the attributes from hash, outside this condition
         @user_intake.send( :update_without_callbacks) # just save it. no questions asked.
         flash[:notice] = "Successfully updated the user intake"
-        format.html { redirect_to :action => 'single_row', :id => @user_intake.id }
+        format.html do
+          if params[:commit] != 'Agree'
+            redirect_to :action => 'single_row', :id => @user_intake.id
+          else
+            # just render the message about editing the user intake
+          end
+        end
       end # just one column updates
     end
   end
