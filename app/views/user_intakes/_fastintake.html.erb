@@ -1,0 +1,10 @@
+<tr>
+  <% if current_user.is_super_admin? %>
+  <td><%= fastintake.id %></td>
+  <% end %>
+  <td><%= fastintake.senior.id rescue '?' %></td>
+  <td><%= link_to (fastintake.senior ? fastintake.senior.name : "(unnamed)"), :action => :single_row, :id => fastintake.id %></td>
+  <td><%= fastintake.senior.status_text %></td>
+  <td><%= fastintake.group.name rescue '?' %></td>
+  <td><%= fastintake.updated_at %></td>
+</tr>

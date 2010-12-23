@@ -1092,6 +1092,14 @@ class User < ActiveRecord::Base
     #   The valid logic now: Call "alert_status" to check status and color based on that
     # STATUS_COLOR[ status_index]
   end
+
+  # 
+  #  Thu Dec 23 20:43:19 IST 2010, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3913
+  #   * replaces '' with 'Not Submitted'. All other status, as they are
+  def status_text
+    status || 'Not Submitted'
+  end
   
   def status_image
     STATUS_IMAGE[ status_index]
@@ -2053,6 +2061,11 @@ class User < ActiveRecord::Base
     # then change the symbol method to "is_halouser_of_what"
   end
   
+  # 
+  #  Thu Dec 23 20:11:56 IST 2010, ramonrails
+  #   * if super_user? => All groups
+  #   * any other user? => groups where the user has "any" role
+  #   * ordered => name
   def group_memberships
     # CHANGED: test this
     # Groups for which current_user has roles
