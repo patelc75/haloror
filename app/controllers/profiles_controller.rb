@@ -272,7 +272,7 @@ get_caregivers(current_user)
   end
   
   #  Wed Nov  3 04:07:13 IST 2010, ramonrails 
-  #    FIXME: this should just be a simple REST form for profile update
+  #    TODO: this should just be a simple REST form for profile update
   def change_password_init
     @user = User.find(params[:user_id])
     #render :partial => 'change_password_init'
@@ -292,7 +292,7 @@ get_caregivers(current_user)
   end
   
   # Wed Nov  3 03:50:24 IST 2010, ramonrails
-  # FIXME: this is a confused logic, actually here we have;
+  # TODO: this is a confused logic, actually here we have;
   #   params[:user][:id] == selected_user.id
   def change_password
     user_hash = params[:user]
@@ -317,7 +317,7 @@ get_caregivers(current_user)
       end
     else
       #  Wed Nov  3 04:40:07 IST 2010, ramonrails 
-      #   FIXME: why are we validating here? this should be done in model
+      #   TODO: why are we validating here? this should be done in model
       [:password, :password_confirmation].each {|e| user.send("#{e}=", user_hash[e]) } # apply password
       #
       # save and collect errors for failures

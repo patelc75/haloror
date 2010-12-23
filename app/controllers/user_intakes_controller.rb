@@ -45,24 +45,52 @@ class UserIntakesController < ApplicationController
   end
 
   def index_fast
-    @groups = (current_user.is_super_admin? ? Group.all(:order => "name") : current_user.group_memberships) 
-    if !params[:group_name].blank? 
-      @group = Group.find_by_name(params[:group_name])
-      @user_intakes = UserIntake.paginate :page => params[:page],:order => 'updated_at desc',:per_page => 15, :conditions => "group_id = #{@group.id}"
-    else
-      if current_user.is_super_admin?
-        @user_intakes = UserIntake.paginate :page => params[:page],:order => 'updated_at desc',:per_page => 15   
-      else
-        @groups = current_user.group_memberships
-        conditions = "group_id IN (0,"
-        for group in @groups
-          conditions += "#{group.id},"
-        end
-        conditions += "0)"
-        @user_intakes = UserIntake.paginate :page => params[:page],:order => 'updated_at desc',:per_page => 15, :conditions => "#{conditions}"  
+    _conditions = {} # show all user intakes, unless this hash changes
+    # 
+    #  Thu Dec 23 20:19:59 IST 2010, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3913
+    #   * optimized logic for fetching user intakes
+    @groups = current_user.group_memberships # fetch groups
+    #   * no search?
+    if params[:group_name].blank?
+      #   * fetch user intakes "visible" as per the role
+      #   * do not do anything for super_user. it will see "all" intakes anyways
+      if current_user.is_not_super_admin?
+        #   * for non-super-admin, collect unique group IDs. eliminate blank IDs if any
+        _conditions = @groups.collect(&:id).flatten.compact.uniq
+      # else
+      #   #   * super admin can see "all" user intakes
+      #   #   * no change in _conditions here. Will fetch all intakes
       end
+    else
+      #   * fetch the group use is looking for
+      @group = Group.find_by_name(params[:group_name])
+      _conditions = { :group_id => @group } # intakes only for this group
     end
+    #   * Now fetch the intakes, apply conditions and paginate them at once
+    @user_intakes = UserIntake.paginate :conditions => _conditions, :order => "updated_at DESC", :per_page => 15, :page => params[:page]
+    #
+    #   * Earlier logic. Same as above, but just optimized DRYed code above
+    # @groups = (current_user.is_super_admin? ? Group.all(:order => "name") : current_user.group_memberships) 
+    # if !params[:group_name].blank? 
+    #   @group = Group.find_by_name(params[:group_name])
+    #   @user_intakes = UserIntake.paginate :page => params[:page],:order => 'updated_at desc',:per_page => 15, :conditions => "group_id = #{@group.id}"
+    # else
+    #   if current_user.is_super_admin?
+    #     @user_intakes = UserIntake.paginate :page => params[:page],:order => 'updated_at desc',:per_page => 15   
+    #   else
+    #     @groups = current_user.group_memberships
+    #     conditions = "group_id IN (0,"
+    #     for group in @groups
+    #       conditions += "#{group.id},"
+    #     end
+    #     conditions += "0)"
+    #     @user_intakes = UserIntake.paginate :page => params[:page],:order => 'updated_at desc',:per_page => 15, :conditions => "#{conditions}"  
+    #   end
+    # end
+    #
     @group_names = @groups.collect { |e| [e.name, e.name] }.insert( 0, ['All Groups', ''])
+    #   * we can skip this block and simply create index_fast.html.erb, index_fast.xml.erb to get the same results
     respond_to do |format|
       format.html 
       format.xml  { render :xml => @user_intakes }

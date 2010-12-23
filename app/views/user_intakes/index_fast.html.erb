@@ -17,24 +17,15 @@
       <% end %>
       <th class="span-1">UID</th>
       <th class="span-4"><%= image_tag "profile.png", :alt => "Senior", :title => "Senior" %>&nbsp;Name</th>
-      <th>Group</th>     
-      <th>Updated At</th>             
+      <th>Status</th>
+      <th>Group</th>
+      <th>Updated At</th>
     </tr>
-    <% @user_intakes.each do |user_intake_row| %>     
-    <tr>
-      <% if current_user.is_super_admin? %>
-      <td><%= user_intake_row.id %></td>
-      <% end %>        
-      <td><%= user_intake_row.senior.id rescue '?' %></td>
-      <td><%= link_to (user_intake_row.senior ? user_intake_row.senior.name : "(unnamed)"), :action => :single_row, :id => user_intake_row.id %></td> 
-      <td><%= user_intake_row.group.name rescue '?' %></td>      
-      <td><%= user_intake_row.updated_at %></td>            
-    </tr>
-    <% end %>  
+    <%= render :partial => 'fastintake', :collection => @user_intakes %>
   </table>
   <% end %>
 </div>
-<div class="span-12"><%= will_paginate @user_intakes %></div>        
+<div class="span-12"><%= will_paginate @user_intakes %></div>
 <% if current_user.is_super_admin? %>
 <div class="span-12 last text-right">
   <%= link_to "New User Intake", new_user_intake_path, :class => "button blue-button" %>

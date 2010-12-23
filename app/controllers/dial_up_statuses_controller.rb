@@ -9,7 +9,7 @@ class DialUpStatusesController < RestfulAuthController
     # WARNING: Not tested
     # 1. using named scopes to filter the data. Paginate will just do what it says
     # 2. 'Select Type' also get covered because no matching record will be found anyways
-    # FIXME: extra query fired here. Can be DRYed
+    # TODO: extra query fired here. Can be DRYed
     #  This logic is causing one database search every time. Needs conditional code for speed optimization.
     @dial_up_statuses = \
       DialUpStatus.by_dialup_type(params[:dialup_type]).by_device_id(params[:device_id]).paginate \
