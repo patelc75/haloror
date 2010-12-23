@@ -7,6 +7,7 @@ class Email < ActiveRecord::Base
      arsendmail.run
     else
       #send critical exception here
+      UtilityHelper.log_message_critical( "Email.notify_by_priority: More emails than maximum allowed #{MAX_EMAILS_ALLOWED}")
     end
   end
   

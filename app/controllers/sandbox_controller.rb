@@ -7,7 +7,8 @@ class SandboxController < ApplicationController
     #CriticalMailer.deliver_device_not_worn_daily()
     #MgmtQuery.job_gw_offline
     #MgmtQuery.job_gw_offline
-    DeviceAlert.job_process_crtical_alerts() #Rufus job
+    Email.notify_by_priority
+    # DeviceAlert.job_process_crtical_alerts() #Rufus job
     #BundleJob.process_xml_file("dialup/H200000025_1258657676_2.xml") #Rufus job
     #BatteryReminder.send_reminders()
 		#BatteryReminder.create(:device_id => 215, 
