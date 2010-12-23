@@ -1,6 +1,9 @@
 select id, device_id as did, phone_number as phone_num, status, configured as conf, num_failures as num_f, consecutive_fails as consec_f, ever_connected as ever, dialup_type as type, created_at from dial_up_statuses where status = 'fail' and created_at is not null order by created_at desc;
 select * from dial_up_statuses where status = 'fail' and created_at is not null and id in (30784, 30785, 30786) order by created_at desc;
 
+select id, device_id as did, phone_number as phone_num, status, configured as conf, num_failures as num_f, consecutive_fails as consec_f, ever_connected as ever, dialup_type as type, created_at from dial_up_statuses where status = 'fail' and created_at is not null order by created_at desc;
+select * from dial_up_statuses where status = 'fail' and created_at is not null order by created_at desc;
+
 -[ RECORD 1 ]-------------------+---------------------------
 id                              | 30786
 device_id                       | 5981
@@ -26,3 +29,6 @@ global_alt_password             |
 global_prim_username            | 
 global_prim_password            | 
 -[ RECORD 2 ]-------------------+---------------------------
+
+
+select id, device_id, username, password, alt_username, alt_password, last_successful_number  as las_suc_num, timestamp from dial_up_alerts order by timestamp desc;

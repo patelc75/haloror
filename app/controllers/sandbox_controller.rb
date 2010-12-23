@@ -16,7 +16,14 @@ class SandboxController < ApplicationController
 							   #:time_remaining => 1000,
 							   #:battery_critical_id => 7014)
   end
-
+  
+  def ethernet_users
+    #code to run in script/console
+    #total number of live non-demo ethernet users
+    Device.ethernets.gateways.each { |d| puts (d.users[0].id.to_s + "\t" + d.users[0].name + " \t\t" + d.id.to_s + "\t" + d.serial_number.to_s) if !d.users[0].nil? and d.users[0].status == "Installed" and d.users[0].demo_mode != true }; 0
+    Device.dialups.gateways.each { |d| puts (d.users[0].id.to_s + "\t" + d.users[0].name + " \t\t" + d.id.to_s + "\t" + d.serial_number.to_s) if !d.users[0].nil? and d.users[0].status == "Installed" and d.users[0].demo_mode != true }; 0        
+  end
+  
   def helloworld
     @heartrate = Heartrate.new
     @display = 0

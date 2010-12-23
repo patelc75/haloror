@@ -1,8 +1,13 @@
 class Email < ActiveRecord::Base
   def self.notify_by_priority
     RAILS_DEFAULT_LOGGER.warn("Email.notify_by_priority running at #{Time.now}")
-    arsendmail = ActionMailer::ARSendmail.new(:Once => true)
-    arsendmail.run
+
+    if Email.count < MAX_EMAILS_ALLOWED 
+     arsendmail = ActionMailer::ARSendmail.new(:Once => true)
+     arsendmail.run
+    else
+      #send critical exception here
+    end
   end
   
   #after_save :debug_it
