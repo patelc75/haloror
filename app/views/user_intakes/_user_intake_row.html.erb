@@ -17,7 +17,7 @@
   <% if current_user.is_super_admin? %>  
   <td>
     <% if user_intake_row.credit_debit_card_proceessed %>
-      <% if user_intake_row.order && user_intake_row.order.subscription_successful? %>
+      <% if user_intake_row.order && user_intake_row.order.card_successful? %>
         <%= image_tag "tick.png", :alt => "Credit/Debit Card Processed", :title => "Credit/Debit Card Processed" %>
       <% else %>
         <%= image_tag('exclamation.png', :alt => "Credit card failed", :title => "Credit card failed") %>
