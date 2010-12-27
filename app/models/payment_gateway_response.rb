@@ -49,7 +49,7 @@ class PaymentGatewayResponse < ActiveRecord::Base
         self.params        = {}
         self.request_data  = response.request_data
         self.request_headers = response.request_headers
-        OrderMailer.deliver_payment_gateway_rsponse_exception(self, e.message) unless self.success
+        OrderMailer.deliver_payment_gateway_response_exception(self, e.message) unless self.success
       end
     end
   end

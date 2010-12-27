@@ -14,4 +14,14 @@ class OrderMailer < ActionMailer::ARMailer
     subject     "[" + ServerInstance.current_host_short_string + "]" + "Exception while creating a credit card transaction log"
     body        :response => payment_gateway_response, :message => message
   end
+  
+  # 
+  #  Mon Dec 27 23:59:16 IST 2010, ramonrails
+  #   * email when any error happens in encryption or decryption of sensitive data
+  def encryption_decryption_exception( _order, _message = "")
+    recipients  "payment_gateway@halomonitoring.com"
+    from        "no-reply@halomonitoring.com"
+    subject     "[" + ServerInstance.current_host_short_string + "] Order:#{_order.id} " + "Encrypting or Decrypting sensitive data has error"
+    body        :order => _order, :message => _message
+  end
 end
