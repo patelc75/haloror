@@ -41,7 +41,7 @@ class OrderItem < ActiveRecord::Base
   def status
     if(recurring_monthly == true)
       #{}"Billing starts " + device_model.coupon( :group => (order.group || Group.direct_to_consumer), :coupon_code => order.coupon_code).recurring_delay.months.from_now.to_s(:day_date).to_s
-      "A prorated charge will occur when your myHalo system is installed or 7 days after your myHalo system has shipped, whichever comes first. The monthly recurring will begin the 1st day of the month AFTER the prorated charge."
+      "Your credit card will be charged #{formatted_cost(quantity)}, recurring on the 1st day of each month.  Your first month's charge will not be billed until your myHalo system is installed or 7 days after your myHalo system has shipped, whichever comes first.  The first month's charge will be prorated according to the installation date."
     else
       "In Process"
     end
@@ -57,6 +57,6 @@ class OrderItem < ActiveRecord::Base
     # 
     #  Fri Nov  5 02:07:14 IST 2010, ramonrails
     #  same logic as above. DRY
-    number_to_currency( (qty || 1) * cost, :precision => 2, :unit => '$').to_s + ( recurring_monthly ? '/mo' : '')
+    number_to_currency( (qty || 1) * cost, :precision => 2, :unit => '$').to_s + ( recurring_monthly ? '/month' : '')
   end
 end

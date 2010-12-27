@@ -21,7 +21,7 @@
   </table>
   <p>
     <!-- #*Note: Recurring monthly charge of <b><%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.monthly_recurring.to_i) %>/mo</b> will begin <%= @complete_tariff.blank? ? '?' : @complete_tariff.recurring_delay.to_i.months.from_now.to_s(:day_date) %> -->
-    <span class="tiny">*<b>Note</b>: A one-time prorated charge will be charged to your credit card when your myHalo system is installed or 7 days after your myHalo system has shipped, whichever comes first. The monthly recurring charge will begin the 1st day of the month AFTER the prorated charge.</span>  
+    <span class="tiny">*<b>Note</b>: Your credit card will be charged $<%=@complete_tariff.monthly_recurring%>/month, recurring on the 1st day of each month.  Your first month's charge will not be billed until your myHalo system is installed or 7 days after your myHalo system has shipped, whichever comes first.  The first month's charge will be prorated according to the installation date.</span>  
   </p>
 </div>
 <% end -%>
@@ -48,7 +48,7 @@
   </table>
   <p>
     <!-- *Note: Recurring monthly charge of <b><%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %>/mo</b> will begin <%= @clip_tariff.blank? ? '?' : @clip_tariff.recurring_delay.months.from_now.to_s(:day_date) %> -->
-    <span class="tiny">*<b>Note</b>: A one-time prorated charge will be charged to your credit card when your myHalo system is installed or 7 days after your myHalo system has shipped, whichever comes first. The monthly recurring charge will begin the 1st day of the month AFTER the prorated charge.</span>  
+    <span class="tiny">*<b>Note</b>: Your credit card will be charged $<%=@clip_tariff.monthly_recurring%>/month, recurring on the 1st day of each month.  Your first month's charge will not be billed until your myHalo system is installed or 7 days after your myHalo system has shipped, whichever comes first.  The first month's charge will be prorated according to the installation date.</span>  
   </p>
 </div>
 <% end -%>
