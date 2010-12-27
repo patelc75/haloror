@@ -665,6 +665,8 @@ class Order < ActiveRecord::Base
     ["#{product_name}: This coupon is ", status, ". Regular pricing is applied."].join
   end
 
+  public
+  
   def encrypt_sensitive_data
     #
     # TODO: WARNING: We need to cover this with cucumber before release
@@ -676,7 +678,10 @@ class Order < ActiveRecord::Base
     # TODO: we must switch to CIM token process instead of encrypted CVV value, as soon as possible
     # TODO: can be more DRY in a loop
     self.cvv = Base64.encode64( encryption_key.encrypt( cvv.to_s)) if need_encryption?( cvv)
-  rescue
+  rescue Exception => e
+    #  Tue Dec 28 00:09:05 IST 2010, ramonrails
+    #   * send email for any error
+    OrderMailer.deliver_encryption_decryption_exception( self, e.message)
   end
   
   def decrypt_sensitive_data
@@ -690,17 +695,21 @@ class Order < ActiveRecord::Base
     # TODO: we must switch to CIM token process instead of encrypted CVV value, as soon as possible
     # TODO: can be more DRY in a loop
     self.cvv = encryption_key.decrypt( Base64.decode64( cvv.to_s)) if encrypted?( cvv)
-  rescue
+  rescue Exception => e
+    #  Tue Dec 28 00:09:05 IST 2010, ramonrails
+    #   * send email for any error
+    OrderMailer.deliver_encryption_decryption_exception( self, e.message)
   end
   
   def encryption_key
     #
     # generate random salt for each credit card
     # takes Time.now and adds random amount of seconds to it, up to 10 place values
+    #   * WARNING: do not use "||=". blank? checks for empty strings, ||= does not
     self.salt = Base64.encode64( (Time.now + rand(9999999999).seconds).to_s )[0..56] if salt.blank?
     #
-    # generate key from the salt
-    EzCrypto::Key.with_password "HaloROR-Encryption", salt, :algorithm => "blowfish" # this generates the key
+    # generate key from the salt, unless buffered
+    @_encryption_key ||= EzCrypto::Key.with_password( "HaloROR-Encryption", salt, :algorithm => "blowfish") # this generates the key
   end
 
   # 
@@ -716,8 +725,9 @@ class Order < ActiveRecord::Base
     #   * match data with regex [A-Za-z0-9+\/]+={0,3}
     #   * converting to_i and original values should not match
     #   * WARNING: -- do not check --, length is divisible by 4
+    #   * WARNING: -- do not check --, arg.to_i == 0
     arg = arg.to_s
-    !arg.blank? && arg.match(/^[A-Za-z0-9+\/]+={0,3}$/) && !arg.match(/^(\d+)$/) && (arg.to_i == 0) && (arg.to_i.to_s != arg) && !salt.blank? # && (arg.length % 4).zero?
+    !arg.blank? && arg.match(/^[A-Za-z0-9+\/]+={0,3}$/) && !arg.match(/^(\d+)$/) && (arg.to_i.to_s != arg) && !salt.blank? # && (arg.length % 4).zero?
   end
   
   def need_encryption?( arg = card_number)
