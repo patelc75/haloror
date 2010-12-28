@@ -43,6 +43,13 @@ class Order < ActiveRecord::Base
   # = public : instance methods =
   # =============================
 
+  # 
+  #  Tue Dec 28 21:24:08 IST 2010, ramonrails
+  #   * check payment_gateway_responses for any failed transactions
+  def has_failed_transactions?
+    !payment_gateway_responses.failed.blank?
+  end
+
   # send order summary email to the master group, only when applicable
   def send_summary_to_group_and_master_group
     # group must be present
