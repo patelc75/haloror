@@ -54,14 +54,8 @@ class UserIntakesController < ApplicationController
     #   * no search?
     if params[:group_name].blank?
       #   * fetch user intakes "visible" as per the role
-      #   * do not do anything for super_user. it will see "all" intakes anyways
-      if current_user.is_not_super_admin?
-        #   * for non-super-admin, collect unique group IDs. eliminate blank IDs if any
-        _group_ids = @groups.collect(&:id).flatten.compact.uniq
-      # else
-      #   #   * super admin can see "all" user intakes
-      #   #   * no change in _group_ids here. Will fetch all intakes
-      end
+      #   * any role, incuding super_admin must go through the IDs collect
+      _group_ids = @groups.collect(&:id).flatten.compact.uniq
     else
       #   * fetch the group use is looking for
       @group = Group.find_by_name(params[:group_name])
