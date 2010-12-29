@@ -45,7 +45,7 @@ class UserIntakesController < ApplicationController
   end
 
   def index_fast
-    _conditions = {} # show all user intakes, unless this hash changes
+    _group_ids = {} # show all user intakes, unless this hash changes
     # 
     #  Thu Dec 23 20:19:59 IST 2010, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/3913
@@ -57,18 +57,18 @@ class UserIntakesController < ApplicationController
       #   * do not do anything for super_user. it will see "all" intakes anyways
       if current_user.is_not_super_admin?
         #   * for non-super-admin, collect unique group IDs. eliminate blank IDs if any
-        _conditions = @groups.collect(&:id).flatten.compact.uniq
+        _group_ids = @groups.collect(&:id).flatten.compact.uniq
       # else
       #   #   * super admin can see "all" user intakes
-      #   #   * no change in _conditions here. Will fetch all intakes
+      #   #   * no change in _group_ids here. Will fetch all intakes
       end
     else
       #   * fetch the group use is looking for
       @group = Group.find_by_name(params[:group_name])
-      _conditions = { :group_id => @group } # intakes only for this group
+      _group_ids = @group.id # intakes only for this group
     end
     #   * Now fetch the intakes, apply conditions and paginate them at once
-    @user_intakes = UserIntake.paginate :conditions => _conditions, :order => "updated_at DESC", :per_page => 15, :page => params[:page]
+    @user_intakes = UserIntake.paginate :conditions => { :group_id => _group_ids }, :order => "updated_at DESC", :per_page => 15, :page => params[:page]
     #
     #   * Earlier logic. Same as above, but just optimized DRYed code above
     # @groups = (current_user.is_super_admin? ? Group.all(:order => "name") : current_user.group_memberships) 
