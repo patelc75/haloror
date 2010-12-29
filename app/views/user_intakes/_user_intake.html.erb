@@ -96,16 +96,20 @@
         </div>
 
         <div class="span-8 last">
-          <div class="span-3 text-right">Subscription Agreement:</div>
-          <div class="span-5 last"><%= h( @user_intake.legal_agreement_at || 'Not agreed to online yet') %></div>
-          <br><br>
-          <div class="span-3 text-right">Download:</div>
-          <% unless @user_intake.can_sign_agreement?(current_user) %>
-          <div id="legal_agreement" class="span-5 last">
-            <%= image_tag "pdf-icon-small.png" %>
-            <%= link_to "Halo Subscriber Agreement", "/Halo_Subscriber_Agreement.pdf", :target => "_blank" %>
-          </div>
-          <% end %>
+          Subscription Agreement:<br>
+          <div class="span-8">
+          <% if @user_intake.legal_agreement_at.blank? %>
+            The user (senior) or subscriber has not logged in yet to accept the subscriber agreement.     
+            <% unless @user_intake.can_sign_agreement?(current_user) %>
+              If <b>both</b> user and subscriber do NOT have access to web,
+              <%= image_tag "pdf-icon-small.png" %>
+              <%= link_to "download pdf version", "/Halo_Subscriber_Agreement.pdf", :target => "_blank" %>
+            </div>
+            <% end %>
+          <% else %>             
+            The user (senior) or subscriber accepted the agreement online on <%= @user_intake.legal_agreement_at %>
+          <% end %>             
+
           <% if @user_intake.subscription_deferred? && @user_intake.senior.status == User::STATUS[:bill_pending] %>
           <strong>
             <% if @user_intake.order.product_cost.months_advance > 0 %>
