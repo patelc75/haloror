@@ -92,7 +92,7 @@ When /^I am ready to create a coupon code for "([^\"]*)" group$/ do |_name|
     | Shipping          | 7               |
     | Monthly recurring | 45              |
     | Months advance    | 0               |
-    | Months trial      | 2               |
+    | Months trial      | 0               |
   })
 end
 

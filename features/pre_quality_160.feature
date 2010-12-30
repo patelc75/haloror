@@ -485,7 +485,7 @@ Feature: Pre quality
     # Then the page content should have "reseller, cuc_ship@chirag.name, cuc_bill@chirag.name"
     Then page content should have "User Information, Billing Information"
   
-  Scenario: Create user intake without online order > Reach installed state
+  Scenario: User Intake > Submit > Approve > Panic > Installed
     Given I am an authenticated super admin
     And the following groups:
       | name       |
@@ -506,5 +506,31 @@ Feature: Pre quality
     Then page content should have "successfully updated"
     And user intake "last" should have "Ready to Install" status
     When panic button test data is received for user intake "last"
+    Then user intake "last" should have "Installed" status
+  
+  Scenario: Online Order > User Intake > Submit > Approve > Panic > Installed
+    Given the product catalog exists
+    When I create a "reseller" reseller group
+    And I create a coupon code for "reseller" group
+    And I am placing an online order for "reseller" group
+    And I uncheck "order_bill_address_same"
+    And I press "Continue"
+    And I press "Place Order"
+    Then I should see "Success"
+    #   * submit
+    When I edit the last user intake
+    And I press "Submit"
+    Then page content should have "successfully updated"
+    #   * approve
+    When I edit the last user intake
+    And I press "Approve"
+    Then page content should have "successfully updated"
+    And user intake "last" should have "Ready to Install" status
+    #   * panic
+    When panic button test data is received for user intake "last"
+    Then user intake "last" should have "Ready to Bill" status
+    #   * bill
+    When I edit the last user intake
+    And I press "Bill"
     Then user intake "last" should have "Installed" status
     
