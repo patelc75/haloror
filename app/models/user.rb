@@ -3006,7 +3006,7 @@ class User < ActiveRecord::Base
     #   * https://redmine.corp.halomonitor.com/issues/3900
     #   * devices are *not* removed from database
     #   * any other user (unlikely in business logic right now) linked to this device will remain linked
-    devices = []  # release the devices from this user
+    self.devices = []  # release the devices from this user
     #   * "unregister"ing the devices released the devices from all linked user
     #   * for now in business logic, only one user is linked to the device
     # Device.unregister( devices.collect(&:id).flatten.compact.uniq ) # Sends unregister command to both devices 
