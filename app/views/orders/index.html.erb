@@ -6,7 +6,15 @@ Purchased from <%= link_to 'http://'+ServerInstance.current_host+'/order' %>
 <br>
 <table class="bluegrey">
   <tr>
-    <th>Id</th>
+    <th>
+      ID ( Order number ) Created at<br/>
+      <span class="prepend-1 tiny">Billing, Shipping</span>
+    </th>
+    <th class="textright append-2">
+      Card number, Charged amount, Payments<br />
+      <span class="append-2 tiny">Products, Coupon details</span>
+    </th>
+    <!-- <th>Id</th>
     <th>Created At</th>
     <th>Order #</th>
     <th>Card Number</th>
@@ -15,9 +23,9 @@ Purchased from <%= link_to 'http://'+ServerInstance.current_host+'/order' %>
     <th>Order Items</th>
     <th>Total<br>Charged</th>
     <th>Notes</th>
-    <th>Payments</th>
+    <th>Payments</th> -->
   </tr>
-  <%= render :partial => 'order', :collection => @orders %>
+  <%= render :partial => 'order_row', :collection => @orders %>
 </table>
 <br>
 <center><big><%= will_paginate @orders %></big></center>

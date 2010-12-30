@@ -105,6 +105,7 @@ div.fixed-height { height: 550px; min-height: 250px; overflow: auto; }
 .italic { font-style: italic;}
 .text-small { font-size: 85%;}
 .text-blue { color: #0080FF;}
+.text-red { color: #F00;}
 .text-grey { color: #4C4C4C;}
 .text-light-grey { color: #B3B3B3;}
 

@@ -1,0 +1,69 @@
+<tr>
+  <table class="<%= cycle('', 'altrow') %>" style="margin-bottom: 2px;">
+    <tr>
+      <td>
+        <%= image_tag (order_row.has_failed_transactions? ? 'exclamation.png' : 'tick.png') %>
+        <span class="text-large"><%= order_row.id %></span> ( <%= order_row.full_number %> )
+        <span class="tiny">Created at :</span> <%= UtilityHelper.format_datetime(order_row.created_at,current_user) %>
+      </td>
+      <td>
+        <span class="tiny">Card Number: </span><%= order_row.masked_card_number %>, <span class="tiny">charged </span><%= number_to_currency(order_row.cost, :precision => 2, :unit => '$') %>
+        <%= link_to "Payments", :controller => 'payment_gateway_responses', :action => 'index', :order_id => order_row.id %>
+      </td>
+    </tr>
+    <tr>
+      <td class="span-12">
+        <span class="tiny">Billing:&nbsp;</span>
+        <span class="text-blue"><strong><%= order_row.bill_first_name %> <%= order_row.bill_last_name %></strong></span>, 
+          <%= order_row.bill_address %>, 
+          <%= order_row.bill_city %>,<%= order_row.bill_state %>-<%= order_row.bill_zip %>, 
+          phone: <%= order_row.bill_phone %>, 
+          <%= order_row.bill_email %>
+          <br />
+          <span class="tiny">Shipping:&nbsp;</span>
+          <span class="text-blue"><strong><%= order_row.ship_first_name %> <%= order_row.ship_last_name %></strong></span>
+            <%= order_row.ship_address %>
+            <%= order_row.ship_city %>,<%= order_row.ship_state %>-<%= order_row.ship_zip %>
+            phone: <%= order_row.ship_phone %>
+      </td>
+      <td class="span-12 last">
+        <span class="tiny">Products:</span>
+        <ul style="margin-bottom: 2px;">
+        <% order_row.order_items.each_with_index do |item, index| %>
+          <li><%= item.product_model %> x <%= item.quantity %> = <%= item.formatted_cost(item.quantity) %></li>
+        <% end -%>
+        </ul>
+        <span class="tiny">Coupon details: </span>
+        <%= order_row.coupon_details_as_hash.collect {|k,v| "#{k}: <strong><span class='text-blue'>#{v}</span></strong>"}.join(', ') %>
+      </td>
+    </tr>
+  </table>
+  <hr />
+</tr>
+
+<!-- <tr class="<%#= cycle('', 'altrow') %>">
+  <td><%#= image_tag (order_row.has_failed_transactions? ? 'exclamation.png' : 'tick.png') %> <%#= order_row.id %></td>
+  <td><%#= UtilityHelper.format_datetime(order_row.created_at,current_user) %></td>  
+  <td><%#= order_row.full_number %></td>
+  <td><%#= order_row.masked_card_number %></td>
+  <td><b><%#= order_row.bill_first_name %> <%#= order_row.bill_last_name %></b><br>
+    <%#= order_row.bill_address%><br>
+    <%#= order_row.bill_city%>,<%#= order_row.bill_state %>-<%#= order_row.bill_zip%><br>
+    phone: <%#= order_row.bill_phone%><br>
+    <%#= order_row.bill_email %>
+  </td>
+  <td><b><%#= order_row.ship_first_name %> <%#= order_row.ship_last_name %></b><br>
+    <%#= order_row.ship_address%><br>
+    <%#= order_row.ship_city%>,<%#= order_row.ship_state %>-<%#= order_row.ship_zip%><br>
+    phone: <%#= order_row.ship_phone%><br>
+    <%##= ship.bill_email %>
+  </td>
+  <td>
+    <%# order_row.order_items.each do |item| %>
+    <%#= item.product_model %> x <%#= item.quantity %> = <%#= item.formatted_cost(item.quantity) %><br>
+    <%# end -%>
+  </td>
+  <td><%#= number_to_currency(order_row.cost, :precision => 2, :unit => '$') %></td>
+  <td><%#unless order_row.comments.nil?%><%#= link_to truncate(order_row.comments, 10, "..."),:controller => 'orders',:action => 'comments',:order_id => order_row.id  %><%#end%></td>
+  <td><%#= link_to "Payments", :controller => 'payment_gateway_responses', :action => 'index', :order_id => order_row.id %></td>           
+</tr> -->

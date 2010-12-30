@@ -44,6 +44,18 @@ class Order < ActiveRecord::Base
   # =============================
 
   # 
+  #  Fri Dec 31 02:56:24 IST 2010, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3951
+  def coupon_details_as_hash
+    if order_items && order_items.first.device_model && order_items.first.device_model.coupon_codes
+      _coupon = order_items.first.device_model.coupon_codes.first
+      { "deposit" => _coupon.deposit, "shipping" => _coupon.shipping, "monthly_recurring" => _coupon.monthly_recurring, "months_advance" => _coupon.months_advance, "months_trial" => _coupon.months_trial }
+    else
+     {} 
+    end
+  end
+  
+  # 
   #  Tue Dec 28 21:24:08 IST 2010, ramonrails
   #   * check payment_gateway_responses for any failed transactions
   def has_failed_transactions?
