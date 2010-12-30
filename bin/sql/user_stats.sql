@@ -62,7 +62,7 @@ where profiles.user_id = users.id and users.id in (1065, 712, 688);
 update users set vip = true where id in (1065, 712, 688);
 
 
-select id, user_id, account_number, first_name, last_name from profiles order by id desc;
+select id, user_id, account_number, first_name, last_name from profiles where account_number is not null order by id desc;
 select id from users order by id desc;
 
 select users.id as user_id, profiles.first_name, profiles.last_name, devices_users.device_id, devices.serial_number from users
@@ -81,7 +81,10 @@ select id, status from users where status is not null;
 update users set status = 'Ready to Install' where id in (1159, 937);
 update users set status = 'Cancelled' where id in (641);
 
-update users set status = 'Cancelled' where id in (1158);
+update users set status = 'Installed' where id in (1207, 1209, 1222, 1167);
+update users set vip = false where id in (1222, 1209);
+update users set demo_mode = false where id in (1222);
+
 
 select users.id as user_id, profiles.first_name, profiles.last_name, devices_users.device_id, devices.serial_number from users
 left outer join devices_users on users.id = devices_users.user_id, devices, profiles
@@ -97,5 +100,26 @@ and devices.id = devices_users.device_id
 and users.status = 'Installed'
 order by users.id asc;
 
-select users.id, profiles.first_name, profiles.last_name, users.demo_mode, users.vip, users.status, users.created_at from users, profiles where users.id = profiles.user_id and users.id in (1146, 1158, 163);
+select users.id, profiles.first_name, profiles.last_name, users.demo_mode, users.vip, users.status, users.created_at from users, profiles where users.id = profiles.user_id order by id desc;
 
+select user_id, first_name, last_name, group_name, test_mode, demo_mode, vip, created_at from users_by_role('halouser') where status = 'Installed' order by vip desc, created_at desc;
+
+select * from events where user_id = 470 order by timestamp desc;
+
+select orig.users.id, first_name, 
+last_name, group_name, test_mode, demo_mode, vip, created_at 
+from users_by_role('halouser') as orig, devices_users, devices 
+where status = 'Installed' 
+order by vip desc, created_at desc;
+
+          CASE WHEN first_name like 'C%' THEN 'C letter'
+               WHEN first_name like 'a%' THEN 'a letter'
+               ELSE 'other'
+          END,
+          
+SELECT a,
+          CASE WHEN a=1 THEN 'one'
+               WHEN a=2 THEN 'two'
+               ELSE 'other'
+          END
+    FROM test;

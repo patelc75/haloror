@@ -27,23 +27,7 @@ class CriticalMailer < ActionMailer::ARMailer
     @from        = "myHalo@HaloMonitoring.com"
     self.priority  = model.priority
   end  
-   
-#  def non_critical_bkgd_caregiver_email(alert, user)
-#    body = "User #{user.name} (#{user.id})\n" +
-#      "Detected at #{UtilityHelper.format_datetime(alert.created_at, user)}\n" +
-#      "Device ID: #{alert.device.id}  Alert ID: #{alert.id}\n"
-#    setup_message(alert.to_s, body)
-#    setup_caregivers(user, alert, :recepients)
-#    self.priority = alert.priority
-#  end
-#  
-#  def non_critical_bkgd_caregiver_text(alert, user)
-#    setup_message(alert.to_s, "")
-#    setup_caregivers(user, alert, :recepients)
-#    @recipients = @text_recipients    
-#    self.priority = alert.priority
-#  end
-  
+     
   def device_event_operator(event)
     # refs #864, New non-wizard email for call center agents
     setup_caregivers(event.user, event, :caregiver_info)
@@ -57,7 +41,8 @@ class CriticalMailer < ActionMailer::ARMailer
     message_text << "ADDRESS + LOCK\n%s\n%s\n%s, %s %s\n%s\n\n" % [user.name, user.profile.address, user.profile.city, user.profile.state, user.profile.zipcode, user.profile.access_information.blank? ? "(No access information)" : user.profile.access_information]
     message_text << "MEDICAL\n%s\n\n" % [user.profile.allergies.blank? ? "(No medical / allergy information)" : user.profile.allergies]
     message_text << "PET\n%s\n\n" % [user.profile.pet_information.blank? ? "(No pet information)" : user.profile.pet_information]
-    setup_message(event.to_s, message_text)
+    setup_message(event.to_s, message_text)     
+    @from = "no-reply@halomonitoring.com"    
     setup_operators(event, :recepients, :include_phone_call) 
     #setup_emergency_group(event, :recepients)
     self.priority  = event.priority
@@ -70,13 +55,14 @@ class CriticalMailer < ActionMailer::ARMailer
 
     #setup_message(event.to_s, "Go here: " + link + " If site down, use paper scripts with this info:" + @caregiver_info)
     setup_message(event.to_s, @caregiver_info + "\n" + (event.user.profile.account_number.blank? ? "(No acct num)" : event.user.profile.account_number) + (event.user.address.nil? ? "(No address)" : event.user.address))
+    @from = "no-reply@halomonitoring.com"
     setup_operators(event, :recepients, :include_phone_call) 
     # setup_emergency_group(event, :recepients)
     @recipients = @text_recipients
     self.priority  = event.priority
   end
 
-#=============== Call Center Operator ======================
+#=============== Call Center Operator ============================
   def call_center_operator(event_action)
     setup_message(event_action.to_s, event_action.email_body + event_action.event.notes_string + "\n\nYou received this email because you’re an operator.")
     setup_operators(event_action.event.event, :recepients)
@@ -93,7 +79,7 @@ class CriticalMailer < ActionMailer::ARMailer
     self.priority = Priority::IMMEDIATE
   end
 
-#=============== Reporting  ========================    
+#=============== Reporting  ======================================    
   def lost_data_daily()
     subject = 'Lost Data Daily Report'
     @body[:period] = 1.week.ago
@@ -115,7 +101,7 @@ class CriticalMailer < ActionMailer::ARMailer
     setup_daily(subject)
   end
 
-#================== Other   ========================    
+#================== Other   ======================================    
   def test_email(to, subject, body) 
     setup_message(subject, body)
     @recipients = []
@@ -138,7 +124,7 @@ class CriticalMailer < ActionMailer::ARMailer
     setup_message(subject, msg_body)         
   end
   
-#============ Safetycare related ===================
+#============ Safetycare related =================================
   def monitoring_failure(message, event)
     setup_message("call center monitoring failure: #{message}", "The following event triggered, but an error was encountered.\n\nTime: #{Time.now}\n\nError: #{message}\n\nEvent: #{event.to_s}\n\n#{event.inspect}\n\n", :no_email_log)
     @recipients = ["exceptions_critical@halomonitoring.com"]
@@ -159,7 +145,7 @@ class CriticalMailer < ActionMailer::ARMailer
     setup_message(subject, msg_body)     
   end
 
-#=============== Utility Methods  ===================  
+#=============== Utility Methods  ================================  
   protected
     
   def setup_message(subject, msg_body, email_log=nil)
@@ -321,5 +307,4 @@ class CriticalMailer < ActionMailer::ARMailer
       return "Please use the following link to accept and handle the event on the the call center overview page.  \nhttps://#{@primary_host}/call_center \n\n" + suffix 
     end
   end
-
  end
