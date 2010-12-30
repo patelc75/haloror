@@ -3005,13 +3005,17 @@ class User < ActiveRecord::Base
     #  Wed Dec 22 20:35:43 IST 2010, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/3900
     #   * devices are *not* removed from database
-    #   * any other user (unlikely in business logic right now) linked to this device will remain linked
+    #   * WARNING: any other user (unlikely in business logic right now) linked to this device will remain linked
     self.devices = []  # release the devices from this user
     #   * "unregister"ing the devices released the devices from all linked user
     #   * for now in business logic, only one user is linked to the device
     # Device.unregister( devices.collect(&:id).flatten.compact.uniq ) # Sends unregister command to both devices 
     caregivers.each {|e| UserMailer.deliver_user_cancelled( self, e) } # Send email to caregivers informing de-activation of device  
-    self.status = User::STATUS[:cancelled] 
+    self.status = User::STATUS[:cancelled]
+    # 
+    #  Thu Dec 30 23:17:56 IST 2010, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3950
+    self.cancelled_at = Time.now
     self.send(:update_without_callbacks)
     triage_audit_logs.create( :status => User::STATUS[:cancelled], :description => "MyHalo account of #{name} is now cancelled.") 
   end
