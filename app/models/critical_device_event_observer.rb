@@ -10,7 +10,8 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
         if event.user.profile         
           if event.call_center_pending == false
               DeviceAlert.notify_call_center_and_partners(event)
-              DeviceAlert.notify_operators(event)    
+              #refs #3958 disable temporarily due to Email delay from ATL-WEB1 on 4 hour slots on critical alerts
+              #DeviceAlert.notify_operators(event)    
           else
             if(ServerInstance.current_host_short_string() != "ATL-WEB1" and ServerInstance.current_host_short_string() != "CRIT2")
               DeviceAlert.notify_caregivers(event)
