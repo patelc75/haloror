@@ -126,7 +126,10 @@ class ReportingController < ApplicationController
       #  Wed Dec 15 00:56:06 IST 2010, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/3851
       #   * This does not serve the exact roles we want, but works close. we are super admin after all
-      @users = User.all_except_demo
+      # 
+      #  Tue Jan  4 23:50:07 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/3961
+      @users = User.all # _except_demo
     else
       _halousers = _groups.collect(&:has_halousers).flatten.compact # fetch halousers for groups
       #   * fetch admins of groups, [subscirbers & caregivers] of halousers
@@ -137,10 +140,15 @@ class ReportingController < ApplicationController
       # Sat Oct 23 03:30:46 IST 2010 : save another query. we already have these objects loaded in memory
       # # fetch users based on collected ids
       # @users = User.all( :conditions => {:id => _user_ids }, :order => "id ASC")
-      #
-      # show non-demo users, unless "/all" given in URL
-      @users = @users.reject {|e| e.demo_mode? } if params[:id].to_s != "all"
+      # 
+      #  Tue Jan  4 23:50:27 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/3961
+      # # show non-demo users, unless "/all" given in URL
+      # @users = @users.reject {|e| e.demo_mode? } if params[:id].to_s != "all"
     end
+    #  Tue Jan  4 23:50:27 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3961
+    @users = @users.select(&:installed?) if params[:id].to_s.downcase == "installed"
     # 
     #  Tue Dec  7 20:26:53 IST 2010, ramonrails
     #   * pagination has "order", no need to sort
