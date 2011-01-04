@@ -1,7 +1,7 @@
 <div class="box">
 <div id="nav_links">
   <b>Config:</b><% if current_user.is_admin? || current_user.is_super_admin? || current_user.is_moderator? %>
-  Users (<%= link_to 'All', '/reporting/users/all', :id => 'users_all' %> | <%= link_to 'Installed', '/reporting/users/installed', :id => 'installed' %>)
+  <%= link_to 'Users', '/reporting/users' %>
   <% end %>
   <% if current_user.is_admin? || current_user.is_super_admin? %>
   | <a href="/reporting/devices">Devices</a>

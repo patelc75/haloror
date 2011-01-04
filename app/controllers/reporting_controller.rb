@@ -63,6 +63,11 @@ class ReportingController < ApplicationController
     # # end
     # @roles = Role.all(:select => "DISTINCT name", :order => "name ASC").collect(&:name)
 
+    # 
+    #  Wed Jan  5 02:07:33 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3972
+    @user_subset = (params[:user_subset] || 'all')
+    
     # if current_user.is_super_admin?
     #   @groups = Group.find(:all)
     # else
@@ -129,7 +134,8 @@ class ReportingController < ApplicationController
       # 
       #  Tue Jan  4 23:50:07 IST 2011, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/3961
-      @users = User.all # _except_demo
+      #   * https://redmine.corp.halomonitor.com/issues/3972
+      @users = ( @user_subset.downcase == "installed" ? User.where_status(User::STATUS[:installed]) : User.all ) # .all # _except_demo
     else
       _halousers = _groups.collect(&:has_halousers).flatten.compact # fetch halousers for groups
       #   * fetch admins of groups, [subscirbers & caregivers] of halousers
@@ -145,10 +151,9 @@ class ReportingController < ApplicationController
       #   * https://redmine.corp.halomonitor.com/issues/3961
       # # show non-demo users, unless "/all" given in URL
       # @users = @users.reject {|e| e.demo_mode? } if params[:id].to_s != "all"
+      #   * https://redmine.corp.halomonitor.com/issues/3972
+      @users = @users.select(&:installed?) if @user_subset.downcase == "installed"
     end
-    #  Tue Jan  4 23:50:27 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/3961
-    @users = @users.select(&:installed?) if params[:id].to_s.downcase == "installed"
     # 
     #  Tue Dec  7 20:26:53 IST 2010, ramonrails
     #   * pagination has "order", no need to sort

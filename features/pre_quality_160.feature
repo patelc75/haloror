@@ -282,7 +282,7 @@ Feature: Pre quality
     #   * This is now AJAX. need capybara
     # email, text and phone checkboxes
     # https://redmine.corp.halomonitor.com/issues/3674
-    Then "caregiver1_email_flag" checkbox should be checked
+    Then the "caregiver1_email_flag" checkbox should be checked
     And "caregiver2_email_flag" checkbox should be checked
     And "caregiver3_email_flag" checkbox should be checked
     And "caregiver1_text_flag" checkbox should be checked
