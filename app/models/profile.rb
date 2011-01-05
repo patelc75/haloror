@@ -81,24 +81,22 @@ class Profile < ActiveRecord::Base
   #   * we only consider the values with digits in it
   #   * any other pattern existing in the records, is ignored
   def self.last_account_number
-   # 
-   #  Thu Dec  2 02:57:34 IST 2010, ramonrails
-   #   * This will fail if account number has any alpahbet in it
-    Profile.first( :conditions => ["account_number LIKE ?", "____"], :order => "account_number DESC" )
-    # #   * fetch all profiles with account_number not blank
-    # #   * reject any alphabets or prefixed characters from each
-    # #   * collect the digit values that appear at the end of string
-    # #   * find the highest number within that
-    # #
-    # #   * minimize memory usage: just select account_number in query
-    # #   * collect array of all numbers
-    # #   * eliminate any blanks
-    # _numbers = Profile.all( :conditions => ["account_number <> '' AND account_number IS NOT NULL"], :select => "account_number").collect(&:account_number).compact
-    # #   * collect the numeric values embedded anywhere in that string
-    # #   * alpha (or nothing)
-    # _collected = _numbers.collect { |e| e.match(/^(\D*)(\d+)(\D*)$/) ? e.match(/^(\D*)(\d+)(\D*)$/)[2].to_i : nil }.compact
-    # #   * sort and pick the highest value
-    # _collected.sort.last
+    # # 
+    # #  Thu Dec  2 02:57:34 IST 2010, ramonrails
+    # #   * This will fail if account number has any alpahbet in it
+    # Profile.first( :conditions => ["account_number LIKE ?", "____"], :order => "account_number DESC" )
+    #   * fetch all profiles with account_number not blank
+    #   * reject any alphabets or prefixed characters from each
+    #   * collect the digit values that appear at the end of string
+    #   * find the highest number within that
+    #
+    #   * minimize memory usage: just select account_number in query
+    #   * collect array of all numbers
+    #   * eliminate any blanks
+    _numbers = Profile.all( :conditions => ["account_number <> '' AND account_number IS NOT NULL"], :select => "account_number").collect(&:account_number).compact
+    #   * collect the numeric values embedded anywhere in that string
+    #   * pick the highest value
+    _numbers.collect { |e| e.match(/^(\D*)(\d+)(\D*)$/) ? e.match(/^(\D*)(\d+)(\D*)$/)[2].to_i : nil }.compact.max
   end
   
   class << self # class methods
@@ -314,21 +312,21 @@ class Profile < ActiveRecord::Base
   #   * better recognition of the HMnnnn pattern
   #   * keep at least 4 digits, but allow more than 4
   def next_account_number
-    # 
-    #  Mon Nov 29 23:48:23 IST 2010, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/3796
-    #   * just pick the last nmuber and return next number
-    #
-    #   TODO: To avoid any such misunderstandings
-    #   * Chirag keeps ownership of business logic in feature files
-    #   * Ram keeps the ownership of keeping them green
-    if (last_profile = Profile.last_account_number)
-      last_profile.account_number.to_i == 9999 ? "????" : "%04d" % (last_profile.account_number.to_i + 1)
-    else
-      "????"
-    end
+    # # 
+    # #  Mon Nov 29 23:48:23 IST 2010, ramonrails
+    # #   * https://redmine.corp.halomonitor.com/issues/3796
+    # #   * just pick the last nmuber and return next number
+    # #
+    # #   TODO: To avoid any such misunderstandings
+    # #   * Chirag keeps ownership of business logic in feature files
+    # #   * Ram keeps the ownership of keeping them green
+    # if (last_profile = Profile.last_account_number)
+    #   last_profile.account_number.to_i == 9999 ? "????" : "%04d" % (last_profile.account_number.to_i + 1)
+    # else
+    #   "????"
+    # end
     
-    # Profile.last_account_number + 1    
+    "%04d" % (Profile.last_account_number + 1)
     # # _fetched = if (_number = Profile.last_account_number)
     # #   #   * first two characters are "HM"
     # #   #   * the last character is a digit?
