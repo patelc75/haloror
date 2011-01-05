@@ -301,8 +301,8 @@ class UserIntake < ActiveRecord::Base
               :user         => senior,
               :is_dismissed => senior.last_triage_status,
               :status       => senior.status,
-              :created_by   => senior.id,
-              :updated_by   => senior.id,
+              :created_by   => self.updated_by, # senior.id,
+              :updated_by   => self.updated_by, # senior.id,
               :description  => "Transitioned from 'Ready to Bill' state to 'Installed'. Billed. Subscription charged. Pro-rata charged."
             }
             TriageAuditLog.create( attributes)
@@ -722,6 +722,13 @@ class UserIntake < ActiveRecord::Base
     #   end
     # end
 
+  end
+
+  # 
+  #  Thu Jan  6 00:20:58 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3937
+  def action_required?
+    !senior.blank? && !senior.triage_audit_logs.blank? && senior.triage_audit_logs.action_required.length > 0
   end
 
   def add_triage_note( args = {})

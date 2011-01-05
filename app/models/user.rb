@@ -956,11 +956,16 @@ class User < ActiveRecord::Base
 
   # keep an audit trail in triage_audit_log
   def add_triage_audit_log( args = {})
-    options = { :status => last_triage_status, :is_dismissed => dismissed_from_triage?,
-      :description => "Status updated to [#{status}]. Auto triggered through user model." }
-    log = TriageAuditLog.new( options.merge( args).merge( :user => self))
-    log.send( :create_without_callbacks)
-    self.last_triage_audit_log = log # link it, since we do not have callbacks
+    # 
+    #  Wed Jan  5 23:45:29 IST 2011, ramonrails
+    #   * pick up last status from unsaved changes, or fire query
+    _last_status = (self.changed? ? status_was : last_triage_status)
+    if (status != _last_status)
+      options = { :status => _last_status, :is_dismissed => dismissed_from_triage?, :description => "Status updated to [#{status}]. Auto triggered through user model." }
+      log = TriageAuditLog.new( options.merge( args).merge( :user => self, :created_by => self.updated_by, :updated_by => self.updated_by))
+      log.send( :create_without_callbacks)
+      self.last_triage_audit_log = log # link it, since we do not have callbacks
+    end
   end
   
   # # check if dial_up_numbers are have "Ok" status for the given device
@@ -1182,7 +1187,7 @@ class User < ActiveRecord::Base
   # end
   
   def dismiss_from_triage(message = nil)
-    self.last_triage_audit_log = TriageAuditLog.create(:user => self, :is_dismissed => true, :description => (message || "Dismissed at #{Time.now}"))
+    self.last_triage_audit_log = TriageAuditLog.create(:user => self, :is_dismissed => true, :description => (message || "Dismissed at #{Time.now}"), :created_by => self.updated_by, :updated_by => self.updated_by)
   end
   
   # check and return boolean, if this user was in triage list and was dismissed today

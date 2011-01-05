@@ -91,7 +91,7 @@
   <!--% end %-->
   </td>
   <td class="text-center"><%= user_intake_row.creator ? user_intake_row.created_by_user_name : image_tag('exclamation.png') %></td>
-  <td><%= link_to image_tag( "note.png", :alt => "Notes", :title => "Notes"), { :controller => "triage_audit_logs", :id => user_intake_row.senior.id} if !user_intake_row.senior.blank? %></td>
+  <td><%= link_to image_tag( (user_intake_row.action_required? ? "exclamation.png" : 'tick.png'), :alt => "Notes", :title => "Notes"), { :controller => "triage_audit_logs", :id => user_intake_row.senior.id} if !user_intake_row.senior.blank? %></td>
   <% if current_user.is_super_admin? %>  
   <td><%= link_to image_tag( "briefcase.png", :alt => "Audit", :title => "Audit" ), user_audits_path( user_intake_row.senior), {:id => "audit_log"} unless user_intake_row.blank? %></td>
   <% end %>  

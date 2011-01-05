@@ -25,7 +25,7 @@
       <th class="text-center span-3">Status</th>
       <th class="text-center"><%= image_tag('truck.png', :alt => 'Ship Date', :title => 'Shipped on') %>&nbsp;Shipped On</th>
       <th class="text-center"><%= image_tag "user_placeholder.png", :alt => "Created by", :title => "Created by" %></th>
-      <th></th>
+      <th><%= image_tag( 'note.png') %></th>
       <% if current_user.is_super_admin? %>           
       <th></th>
       <% end %>              
