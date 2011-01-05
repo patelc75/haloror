@@ -1,11 +1,11 @@
 <div class="span-24 last">
   <div class="span-12">
-    <h2 id="triage_notes"><span class="text-light-grey">Triage Notes for:</span> <%= @user.name %></h2>
+    <h2 id="triage_notes"><span class="text-light-grey">Notes for:</span> <%= @user.name %></h2>
   </div>
   <div class="span-12 last text-right">
-    <strong>Legends: </strong>
-    <%= image_tag "tick.png" %> (<span class="tiny">Dismissed</span>), 
-    <%= image_tag "warning_16.png" %> (<span class="tiny">Not-Dismissed / Needs action</span>)
+Legend:
+    <%= image_tag "tick.png" %> <span class="tiny">Normal/Dismissed</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+    <%= image_tag "warning_16.png" %> <span class="tiny">Needs action</span>
   </div>
   <div class="span-24 last">
     <table class="bluegrey">
