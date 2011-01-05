@@ -193,6 +193,10 @@
       </td>
       </tr>
     </table>
+    <div>
+      <%= f.hidden_field :created_by %>
+      <%= f.hidden_field :updated_by %>
+    </div>
   </fieldset>
   <p class="textright">
     <%= link_to "< Back", order_path, :id => "back_link", :class => 'largebutton' if @confirmation %>
