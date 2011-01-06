@@ -72,7 +72,7 @@
     <% end %>
   </td>
   <% if current_user.is_super_admin? %>
-    <td><span class="call_center_id"><%= link_to ((user_intake_row.senior.blank? || user_intake_row.senior.call_center_account.blank?) ? image_tag("warning_go.png") : user_intake_row.senior.call_center_account), {:controller => "user_intakes", :action => "safety_care_account_creation", :id => user_intake_row.id}  %></span></td>
+    <td><span class="call_center_id"><%= link_to ( user_intake_row.sc_account_created_on.blank? ? image_tag( 'exclamation.png', :title => "Click to stamp a date when Call Center Account was created") : image_tag('tick.png')), {:controller => "user_intakes", :action => "safety_care_account_creation", :id => user_intake_row.id}  %></span></td>
     <td><%= image_tag( user_intake_row.dial_up_numbers_ok? ? "tick.png" : "exclamation.png") %></td>
   <% end %>
   <td class="text-center">
