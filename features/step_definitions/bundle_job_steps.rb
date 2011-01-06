@@ -53,3 +53,10 @@ Then /^last (.+) should at least have (\d+) (.+)$/ do |one_name, number, many_na
   one_model.should_not be_blank
   one_model.send("#{many_name.gsub(/ /,'_')}".to_sym).length.should == number.to_i
 end
+
+Then /^all dial up statuses should have username and password$/ do
+  DialUpStatus.all.each do |_row|
+    _row.username.should_not be_blank
+    _row.password.should_not be_blank
+  end
+end

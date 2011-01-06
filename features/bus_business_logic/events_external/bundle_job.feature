@@ -41,6 +41,7 @@ Feature: Bundle job
     Then I should have the following counts of data:
       | dial up statuses        | 4 |
       | dial up last successful | 1 |
+    And all dial up statuses should have username and password
 
   Scenario: OscopeStartMsg link to OscopeMsg
     When I process the xml file "spec/data/oscope_start_msg.xml"

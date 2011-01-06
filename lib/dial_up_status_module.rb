@@ -35,7 +35,7 @@ module DialUpStatusModule
       # 
       #  Wed Dec 22 22:33:56 IST 2010, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/3901
-      #   * columns shifted from disl_up_statuses to dial_up_last_successfuls
+      #   * columns shifted from dial_up_statuses to dial_up_last_successfuls
       # # https://redmine.corp.halomonitor.com/issues/3189
       # # common fields without prefix
       # ["lowest_connect_rate", "longest_dial_duration_sec"].each do |hash_key|
@@ -48,7 +48,11 @@ module DialUpStatusModule
     end
 
     # device_id is same
-    [local, alternate, global_prime, global_alternate].each {|e| e[:device_id] = hash["device_id"] }
+    [local, alternate, global_prime, global_alternate].each do |_type|
+      ["device_id", "username", "password"].each do |_column|
+        _type[_column.to_sym] = hash[_column]
+      end
+    end
     
     # dialup_type
     local[:dialup_type]            = 'Local' # self
