@@ -84,7 +84,8 @@
 									email_active = 0
 								end
 							%>
-							<% if @user.email != "no-email@halomonitoring.com" %>
+              <!-- ticket 3955 -->
+							<% if @caregiver.email != "no-email@halomonitoring.com" %>
 								<%=link_to_remote(image_tag(img, :id => 'alert_email_'+alert.id.to_s), :url => { :action => "toggle_email",:id => alert.id, :roles_user_id => @roles_user.id }, :before => 'toggleAlert('+alert.id.to_s+', '+email_active.to_s+', \'email\')')%>
 							<% else %>
 								<%=link_to image_tag(img),'javascript:;',:onclick => 'run_redbox();'%>

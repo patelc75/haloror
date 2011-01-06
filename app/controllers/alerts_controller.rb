@@ -17,7 +17,11 @@ class AlertsController < ApplicationController
     # and have @user
     # so @user should hold senior record
     @user = User.find(params[:senior_id]) # added this parameter. we need @user in view
-    caregiver = User.find(roles_user.user_id)
+    # 
+    #  Fri Jan  7 01:29:07 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3955
+    #   * "caregiver" is now "@caregiver"
+    @caregiver = User.find(roles_user.user_id)
     # @user = User.find(roles_user.user_id) # earlier logic was this line
     #
     # the business logic here is
@@ -27,7 +31,7 @@ class AlertsController < ApplicationController
     #   * admin of any group where @user is halouser
     #   * super admin
     # the logic is now => caregiver || super admin || admin || halouser
-    if caregiver.id == current_user.id || current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) || current_user.caregivers.include?(caregiver)
+    if @caregiver.id == current_user.id || current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) || current_user.caregivers.include?(@caregiver)
       @roles_user = roles_user
     else
       redirect_to :action => 'unauthorized', :controller => 'security'
