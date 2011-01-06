@@ -16,6 +16,9 @@
 <h1 id="user_intake:_">User Intake: <%= @user_intake.id %></h1>
 <% form_for @user_intake do |f| -%>
   <p>
+    <strong>Call Center Account Number:</strong> <%= @user_intake.senior.call_center_account unless @user_intake.senior.blank? %>
+  </p>
+  <p>
     <%= f.label :sc_account_created_on, "Safety Care account created on" %><br />
     <%= f.text_field :sc_account_created_on, :class => "datepicker" %>
   </p>
