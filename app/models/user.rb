@@ -962,7 +962,7 @@ class User < ActiveRecord::Base
     _last_status = (self.changed? ? status_was : last_triage_status)
     if (status != _last_status)
       options = { :status => _last_status, :is_dismissed => dismissed_from_triage?, :description => "Status updated to [#{status}]. Auto triggered through user model." }
-      log = TriageAuditLog.new( options.merge( args).merge( :user => self, :created_by => self.updated_by, :updated_by => self.updated_by))
+      log = TriageAuditLog.new( options.merge( args).merge( :user => self, :created_by => self.created_by, :updated_by => self.created_by))
       log.send( :create_without_callbacks)
       self.last_triage_audit_log = log # link it, since we do not have callbacks
     end

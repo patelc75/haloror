@@ -742,6 +742,20 @@ Then /^(\d+) users should be associated to last user intake$/ do |_count|
   ui.users.length.should == _count.to_i
 end
 
+Then /^(.+) of last user intake (should|should not) have (.+) checked$/ do |_who, _condition, _what|
+  (_ui = UserIntake.last).should_not be_blank
+  (_user = _ui.send(_who.to_sym)).should_not be_blank
+  (_senior = _ui.senior).should_not be_blank
+  _attributes = _what.split(',').collect(&:strip)
+  _attributes.each do |e|
+    if _condition == "should"
+      _user.options_attribute_for_senior( _senior, "#{e}_active").should be_true
+    else
+      _user.options_attribute_for_senior( _senior, "#{e}_active").should_not be_true
+    end
+  end
+end
+
 # ============================
 # = local methods for DRYness =
 # ============================

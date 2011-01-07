@@ -55,15 +55,33 @@ class UserIntake < ActiveRecord::Base
 
   (1..3).each do |_index|
     #   * GET
-    define_method "caregiver#{_index}_role_options" do
+    define_method "caregiver#{_index}_role_options".to_sym do
       caregiver_role_options( _index)
     end
     
     #   * SET
-    define_method "caregiver#{_index}_role_options=" do |_options|
+    define_method "caregiver#{_index}_role_options=".to_sym do |_options|
       caregiver_role_options( _index, _options)
     end
   end
+  # 
+  #  Sat Jan  8 01:37:59 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3949
+  #   * TODO: static methods not required anymore. dynamic method works
+  # def caregiver1_role_options=( _options)
+  #   # debugger
+  #   caregiver_role_options( 1, _options)
+  # end
+  # 
+  # def caregiver2_role_options=( _options)
+  #   # debugger
+  #   caregiver_role_options( 2, _options)
+  # end
+  # 
+  # def caregiver3_role_options=( _options)
+  #   # debugger
+  #   caregiver_role_options( 3, _options)
+  # end
 
   [:gateway, :chest_strap, :belt_clip].each do |device|
     # Usage:
@@ -102,12 +120,13 @@ class UserIntake < ActiveRecord::Base
   #   caregiver_role_options( 2, {:position => 2})
   #   caregiver_role_options( 2, roles_users_option_instance)
   def caregiver_role_options( _index = 0, _given_options = nil)
+    # debugger
     _options = nil # start with a blank
     if (1..3).include?( _index)
       _caregiver = self.send("caregiver#{_index}")
       # 
       # GET / SET mode. required for both
-      unless (_caregiver.blank? || _caregiver.nothing_assigned?)
+      # unless (_caregiver.blank? || _caregiver.nothing_assigned?)
         _options = self.send( "mem_caregiver#{_index}_options")
         _options ||= _caregiver.options_for_senior( senior)
         _options ||=  RolesUsersOption.new( :position => _index)
@@ -139,7 +158,7 @@ class UserIntake < ActiveRecord::Base
           # _options.attributes.each { |k,v| _mem_options.send( "#{k}=", v) }
         end
         # self.send("mem_caregiver#{_index}_options=", _options) # assign to mem
-      end
+      # end
       # 
       #  Fri Nov 19 02:38:23 IST 2010, ramonrails
       #   * for some reason like blank caregiver, we may get "nil" options

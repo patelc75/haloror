@@ -255,7 +255,7 @@ Feature: Pre quality
     And I check "caregiver3_text_flag"
     And I uncheck "user_intake_subscriber_is_user"
     And I check "user_intake_subscriber_is_caregiver"
-    And I check "user_intake_no_caregiver_1"
+    # And I check "user_intake_no_caregiver_1"
     And I uncheck "user_intake_no_caregiver_2"
     And I uncheck "user_intake_no_caregiver_3"
     And I fill the subscriber details for user intake form
@@ -282,12 +282,14 @@ Feature: Pre quality
     #   * This is now AJAX. need capybara
     # email, text and phone checkboxes
     # https://redmine.corp.halomonitor.com/issues/3674
-    Then the "caregiver1_email_flag" checkbox should be checked
-    And "caregiver2_email_flag" checkbox should be checked
-    And "caregiver3_email_flag" checkbox should be checked
-    And "caregiver1_text_flag" checkbox should be checked
-    And "caregiver2_text_flag" checkbox should be checked
-    And "caregiver3_text_flag" checkbox should be checked
+    Then caregiver2 of last user intake should have email, text checked
+    And caregiver3 of last user intake should have email, text checked
+    # Then "caregiver1_email_flag" checkbox should be checked
+    # And "caregiver2_email_flag" checkbox should be checked
+    # And "caregiver3_email_flag" checkbox should be checked
+    # And "caregiver1_text_flag" checkbox should be checked
+    # And "caregiver2_text_flag" checkbox should be checked
+    # And "caregiver3_text_flag" checkbox should be checked
 
   Scenario: halouser > submit user intake form - make all users distinct
     Given the product catalog exists
