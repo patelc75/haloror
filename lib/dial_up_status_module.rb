@@ -25,13 +25,20 @@ module DialUpStatusModule
       end
       #
       # https://redmine.corp.halomonitor.com/issues/3189
-      ["num_failures", "consecutive_fails", "ever_connected"].each do |hash_key|
+      #   * https://redmine.corp.halomonitor.com/issues/4002
+      # , "ever_connected"
+      ["num_failures", "consecutive_fails"].each do |hash_key|
         eval("#{key}[:#{hash_key}] = hash['#{value}#{hash_key}'].to_i")
       end
       #
       # FIXME: structure is boolean, value received is integer
       eval("#{key}[:ever_connected] = !hash['#{value}ever_connected'].to_i.zero?")
       eval("#{key}[:phone_number] = hash['#{value}number']") # similar pattern for all
+      # 
+      #  Tue Jan 11 03:34:09 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4002
+      #   * This is a boolean, so anything more than zero is TRUE
+      eval("#{key}[:ever_connected] = (hash['ever_connected'].to_i > 0)")
       # 
       #  Wed Dec 22 22:33:56 IST 2010, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/3901
