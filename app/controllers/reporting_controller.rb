@@ -63,10 +63,12 @@ class ReportingController < ApplicationController
     # # end
     # @roles = Role.all(:select => "DISTINCT name", :order => "name ASC").collect(&:name)
 
-    # 
-    #  Wed Jan  5 02:07:33 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/3972
-    @user_subset = (params[:user_subset] || 'all')
+    #   * https://redmine.corp.halomonitor.com/issues/3988
+    @user_subset = (params[:user_subset] || {})
+    # # 
+    # #  Wed Jan  5 02:07:33 IST 2011, ramonrails
+    # #   * https://redmine.corp.halomonitor.com/issues/3972
+    # @user_subset = (params[:user_subset] || 'all')
     
     # if current_user.is_super_admin?
     #   @groups = Group.find(:all)
@@ -132,10 +134,12 @@ class ReportingController < ApplicationController
       #   * https://redmine.corp.halomonitor.com/issues/3851
       #   * This does not serve the exact roles we want, but works close. we are super admin after all
       # 
-      #  Tue Jan  4 23:50:07 IST 2011, ramonrails
-      #   * https://redmine.corp.halomonitor.com/issues/3961
-      #   * https://redmine.corp.halomonitor.com/issues/3972
-      @users = ( @user_subset.downcase == "installed" ? User.where_status(User::STATUS[:installed]) : User.all ) # .all # _except_demo
+      #   * https://redmine.corp.halomonitor.com/issues/3988
+      @users = User.all
+      # #  Tue Jan  4 23:50:07 IST 2011, ramonrails
+      # #   * https://redmine.corp.halomonitor.com/issues/3961
+      # #   * https://redmine.corp.halomonitor.com/issues/3972
+      # @users = ( @user_subset.downcase == "installed" ? User.where_status(User::STATUS[:installed]) : User.all ) # .all # _except_demo
     else
       _halousers = _groups.collect(&:has_halousers).flatten.compact # fetch halousers for groups
       #   * fetch admins of groups, [subscirbers & caregivers] of halousers
@@ -147,13 +151,28 @@ class ReportingController < ApplicationController
       # # fetch users based on collected ids
       # @users = User.all( :conditions => {:id => _user_ids }, :order => "id ASC")
       # 
-      #  Tue Jan  4 23:50:27 IST 2011, ramonrails
-      #   * https://redmine.corp.halomonitor.com/issues/3961
-      # # show non-demo users, unless "/all" given in URL
-      # @users = @users.reject {|e| e.demo_mode? } if params[:id].to_s != "all"
-      #   * https://redmine.corp.halomonitor.com/issues/3972
-      @users = @users.select(&:installed?) if @user_subset.downcase == "installed"
+      #   * https://redmine.corp.halomonitor.com/issues/3988
+      # #  Tue Jan  4 23:50:27 IST 2011, ramonrails
+      # #   * https://redmine.corp.halomonitor.com/issues/3961
+      # # # show non-demo users, unless "/all" given in URL
+      # # @users = @users.reject {|e| e.demo_mode? } if params[:id].to_s != "all"
+      # #   * https://redmine.corp.halomonitor.com/issues/3972
+      # @users = @users.select(&:installed?) if @user_subset.downcase == "installed"
     end
+    # 
+    #  Tue Jan 11 02:38:36 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/3988
+    unless @user_subset.blank? || @user_subset.keys.include?( 'all')
+      @users = @users.select do |_user|
+        # "Installed" required, keep if installed
+        ( @user_subset.include?( "installed") && _user.status.to_s.downcase == "installed" ) ||
+        # "pending" required, reject installed/cancelled
+        ( @user_subset.include?( "pending") && !["installed", "cancelled"].include?( _user.status.to_s.downcase) ) || 
+        # "cancelled" required, keep if cancelled
+        ( @user_subset.include?("cancelled") && _user.status.to_s.downcase == "cancelled" )
+      end
+    end
+    
     # 
     #  Tue Dec  7 20:26:53 IST 2010, ramonrails
     #   * pagination has "order", no need to sort

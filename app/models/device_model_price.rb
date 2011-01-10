@@ -58,6 +58,17 @@ class DeviceModelPrice < ActiveRecord::Base
     _model.coupon_codes.first( :conditions => { :coupon_code => 'default', :group_id => Group.default! })
   end
   
+  # =================
+  # = class methods =
+  # =================
+
+  # 
+  #  Tue Jan 11 01:22:02 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3988
+  def self.collection_for_selection
+    self.all.collect { |e| ["#{e.group_name} : #{e.part_number} : #{e.device_type} : #{e.coupon_code}", e.id] }
+  end
+
   # ====================
   # = instance methods =
   # ====================

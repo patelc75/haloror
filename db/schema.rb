@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110106214123) do
+ActiveRecord::Schema.define(:version => 20101230174420) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -775,6 +775,24 @@ ActiveRecord::Schema.define(:version => 20110106214123) do
     t.string   "kit_serial"
     t.string   "salt"
     t.string   "cvv"
+    t.integer  "coupon_code_id"
+    t.string   "invoice_num"
+    t.string   "payment_collector"
+    t.string   "payment_type"
+    t.string   "kit_owner"
+    t.boolean  "kit_leased"
+    t.datetime "kit_charged_at"
+    t.decimal  "kit_charged"
+    t.string   "deposit_holder"
+    t.datetime "deposit_returned_at"
+    t.decimal  "install_fee_amount"
+    t.date     "install_fee_charged_at"
+    t.decimal  "affiliate_fee_amount"
+    t.integer  "affiliate_fee_group_id"
+    t.datetime "affiliate_fee_charged_at"
+    t.decimal  "referral_amount"
+    t.integer  "referral_group_id"
+    t.datetime "referral_charged_at"
   end
 
   create_table "orientation_thresholds", :force => true do |t|

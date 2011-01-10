@@ -1,0 +1,23 @@
+<h1 id="invoice_">Invoice <%= @invoice.invoice_num %><span class="tiny">(Order: <%= @invoice.id %>)</span></h1>
+<p>Coupon Code: <%= h @invoice.device_model_price.coupon_code unless @invoice.device_model_price.blank? %></p>
+<p>Invoice #: <%= h @invoice.invoice_num %></p>
+<p>Payment Collector: <%= h @invoice.payment_collector %></p>
+<p>Payment Type: <%= h @invoice.payment_type %></p>
+<p>Kit Owner: <%= h @invoice.kit_owner %></p>
+<p>Leased from Master Dealer?: <%= image_tag( @invoice.kit_leased ? 'tick.png' : 'cross.png') %></p>
+<p>Kit Charged Date: <%= h @invoice.kit_charged_at %></p>
+<p>Kit Charged Price: <%= h @invoice.kit_charged %></p>
+<p>Deposit Holder: <%= h @invoice.deposit_holder %></p>
+<p>Deposit Returned Date: <%= h @invoice.deposit_returned_at %></p>
+<p>Dealer Install Fee: <%= h @invoice.install_fee_amount %></p>
+<p>Dealer Install Charge Date: <%= h @invoice.install_fee_charged_at %></p>
+<p>Affiliate Fee: <%= h @invoice.affiliate_fee_amount %></p>
+<p>Affiliate Group: <%= h @invoice.affiliate_fee_group_name %></p>
+<p>Affiliate Charge Date: <%= h @invoice.affiliate_fee_charged_at %></p>
+<p>Referral Fee <span class="tiny">(If installed for 3 monps)</span>: <%= h @invoice.referral_amount %></p>
+<p>Referral Fee Group: <%= h @invoice.referral_group_name %></p>
+<p>Referral Charge Date: <%= h @invoice.referral_charged_at %></p>
+<p>
+  <%= link_to 'List', invoices_path, :class => 'button white-button' %>
+  <%= link_to 'Edit', edit_invoice_path( @invoice), :class => 'button green-button' %>
+</p>

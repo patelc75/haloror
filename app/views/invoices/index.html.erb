@@ -1,0 +1,28 @@
+<h1 id="invoices_(orders)">Invoices (Orders)</h1>
+<%= render :partial => "/reporting/nav_config" %>
+<div><%= will_paginate @invoices %></div>
+<table class="bluegrey">
+  <tr>
+    <th>&nbsp;</th>
+    <th>Coupon Code</th>
+    <th>Invoice #</th>
+    <th>Payment Collector</th>
+    <th>Payment Type</th>
+    <th>Kit Owner</th>
+    <th>Leased from Master Dealer?</th>
+    <th>Kit Charged Date</th>
+    <th>Kit Charged Price</th>
+    <th>Deposit Holder</th>
+    <th>Deposit Returned Date</th>
+    <th>Dealer Install Fee</th>
+    <th>Dealer Install Charge Date</th>
+    <th>Affiliate Fee</th>
+    <th>Affiliate Group</th>
+    <th>Affiliate Charge Date</th>
+    <th>Referral Fee <span class="tiny">(If installed for 3 months)</span></th>
+    <th>Referral Fee Group</th>
+    <th>Referral Charge Date</th>
+  </tr>
+  <%= render :partial => 'invoice', :collection => @invoices %>
+</table>
+<div><%= will_paginate @invoices %></div>

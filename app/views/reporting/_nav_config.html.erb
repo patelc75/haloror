@@ -32,7 +32,10 @@
   <% end %>
   <!-- % if(current_user.is_super_admin?) and params[:action] == 'roles' % -->
   <% if current_user.is_super_admin? %>
-  | <%= link_to 'Healthvault', :controller => 'healthvault', :action => 'index' %></li>
+  | <%= link_to 'Healthvault', :controller => 'healthvault', :action => 'index' %>
+  <% end %>
+  <% if current_user.is_super_admin? %>
+  | <%= link_to 'Invoices', :controller => 'invoices', :action => 'index' %>
   <% end %>
 </div>
 </div>

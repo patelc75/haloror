@@ -4,14 +4,21 @@ class Order < ActiveRecord::Base
   include UtilityHelper
   
   belongs_to :group
+  belongs_to :affiliate_fee_group, :class_name => "Group"
+  belongs_to :referral_group, :class_name => "Group"
+  belongs_to :device_model_price, :class_name => "DeviceModelPrice", :foreign_key => "coupon_code_id"
   belongs_to :creator, :class_name => 'User', :foreign_key => 'created_by'
   belongs_to :updater, :class_name => 'User', :foreign_key => 'updated_by'
   has_many :order_items
   has_many :payment_gateway_responses
   has_one :user_intake
-  validates_presence_of :group
-  attr_accessor :product, :bill_address_same
+
+  attr_accessor :product, :bill_address_same, :need_validation
   before_update :check_kit_serial_validation
+
+  validates_presence_of :group, :unless => :skip_validation?
+  
+  named_scope :ordered, lambda { |*args| { :order => (args.blank? ? 'created_at DESC' : args.flatten.first.to_s) } }
   
   # causing failure of order. need to force kit_serial for retailer in some other way
   # validates_presence_of :kit_serial, :if => :retailer?
@@ -38,10 +45,38 @@ class Order < ActiveRecord::Base
     # WARNING: some error happening. switched off for now. needs testing
     encrypt_sensitive_data # Will encrypt only if not already encrypted?
   end
-  
+
   # =============================
   # = public : instance methods =
   # =============================
+
+  # 
+  #  Tue Jan 11 01:54:22 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3988
+  def skip_validation?
+    !need_validation
+  end
+  
+  # 
+  #  Tue Jan 11 01:54:22 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3988
+  def skip_validation=( _action = true)
+    self.need_validation = !_action
+  end
+
+  # 
+  #  Tue Jan 11 01:08:02 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3988
+  def affiliate_fee_group_name
+    affiliate_fee_group.name rescue ''
+  end
+
+  # 
+  #  Tue Jan 11 01:08:02 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3988
+  def referral_group_name
+    referral_group.name rescue ''
+  end
 
   # 
   #  Fri Dec 31 02:56:24 IST 2010, ramonrails
