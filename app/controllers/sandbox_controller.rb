@@ -24,6 +24,11 @@ class SandboxController < ApplicationController
     Device.ethernets.gateways.each { |d| puts (d.users[0].id.to_s + "\t" + d.users[0].name + " \t\t" + d.id.to_s + "\t" + d.serial_number.to_s) if !d.users[0].nil? and d.users[0].status == "Installed" and d.users[0].demo_mode != true }; 0
     Device.dialups.gateways.each { |d| puts (d.users[0].id.to_s + "\t" + d.users[0].name + " \t\t" + d.id.to_s + "\t" + d.serial_number.to_s) if !d.users[0].nil? and d.users[0].status == "Installed" and d.users[0].demo_mode != true }; 0        
   end
+        
+  def weight_scale_debugging
+    ws = WeightScale.find(:first,:conditions => "user_id = '230' AND timestamp <= '#{Time.now.to_s}'",:order => 'timestamp desc')
+    ws[:weight_unit]
+  end
   
   def helloworld
     @heartrate = Heartrate.new
