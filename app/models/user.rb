@@ -90,6 +90,7 @@ class User < ActiveRecord::Base
   belongs_to :last_vital, :class_name => "Vital", :foreign_key => "last_vital_id"
   
   has_one  :profile, :dependent => :destroy # , :autosave => true
+  has_one  :invoice, :dependent => :destroy
   
   has_many :access_logs
   has_many :batteries

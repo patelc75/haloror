@@ -82,7 +82,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :sessions,:member => {:edit_user_intake_form => :any,:user_intake_form_confirm => :get} # added automatically after running restful_authentication script
   map.resources :user_intakes, :collection => { :add_notes => :post, :index_fast => :get }
   map.resources :orders, :except => [:destroy, :edit, :update]
-  map.resources :invoices, :only => [ :index, :edit, :update ]
+  map.resources :invoices, :except => [ :new, :destroy ]
   map.resources :rmas, :has_many => :rma_items
   map.resources :purged_logs
   map.resources :triage_thresholds
@@ -122,6 +122,7 @@ ActionController::Routing::Routes.draw do |map|
   map.triage '/triage', :controller => 'users', :action => 'triage'
   map.dismiss_triage 'triage/:user_id/dismiss', :controller => 'triage_audit_logs', :action => 'new', :is_dismissed => true
   map.undismiss_triage 'triage/:user_id/undismiss', :controller => 'triage_audit_logs', :action => 'new', :is_dismissed => false
+  map.new_user_invoice '/invoices/new/:id', :controller => 'invoices', :action => 'new'
   
   
   #map.resend '/resend/:id', :controller => 'installs', :action => 'resend'

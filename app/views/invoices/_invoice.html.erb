@@ -1,21 +1,42 @@
-<tr class="<%= cycle('', 'altrow') %>">
-  <td><%= link_to "Show&nbsp;#{invoice.id}", invoice_path( invoice), :class => 'button small green-button' %></td>
-  <td><%=h invoice.coupon_code %></td>
-  <td><%=h invoice.invoice_num %></td>
-  <td><%=h invoice.payment_collector %></td>
-  <td><%=h invoice.payment_type %></td>
-  <td><%=h invoice.kit_owner %></td>
-  <td><%= invoice.kit_leased ? image_tag( 'tick.png') : h( '') %></td>
-  <td><%=h invoice.kit_charged_at %></td>
-  <td><%=h invoice.kit_charged %></td>
-  <td><%=h invoice.deposit_holder %></td>
-  <td><%=h invoice.deposit_returned_at %></td>
-  <td><%=h invoice.install_fee_amount %></td>
-  <td><%=h invoice.install_fee_charged_at %></td>
-  <td><%=h invoice.affiliate_fee_amount %></td>
-  <td><%=h invoice.affiliate_fee_group_name %></td>
-  <td><%=h invoice.affiliate_fee_charged_at %></td>
-  <td><%=h invoice.referral_amount %></td>
-  <td><%=h invoice.referral_group_name %></td>
-  <td><%=h invoice.referral_charged_at %></td>
-</tr>
+<% content_for :js do %>
+  <%= javascript_include_tag 'jquery', 'jquery-ui', :cache => true %>
+<% end %>
+<% content_for :css do %>
+  <%= stylesheet_link_tag 'jquery-ui', :cache => true %>
+<% end %>
+<script type="text/javascript" charset="utf-8">
+$(function() {
+  $('.datepicker').datepicker({
+    numberOfMonths: 3,
+    showButtonPanel: true
+  });
+});
+</script>
+
+<h1 id="invoice_">Invoice <%= @invoice.invoice_num %><span class="tiny">(User: <%= @invoice.user %>)</span></h1>
+<% form_for @invoice do |f| -%>
+  <span><%= hidden_field_tag "invoice_columns" %></span>
+  <span><%= f.hidden_field :user_id %></span>
+  <p>Coupon Code: <%= f.select :coupon_code_id, DeviceModelPrice.collection_for_selection %></p>
+  <p>Invoice #: <%= f.text_field :invoice_num %></p>
+  <p>Payment Collector: <%= f.text_field :payment_collector %></p>
+  <p>Payment Type: <%= f.text_field :payment_type %></p>
+  <p>Kit Owner: <%= f.text_field :kit_owner %></p>
+  <p>Leased from Master Dealer?: <%= f.check_box :kit_leased %></p>
+  <p>Kit Charged Date: <%= f.text_field :kit_charged_at, :class => 'datepicker' %></p>
+  <p>Kit Charged Price: <%= f.text_field :kit_charged %></p>
+  <p>Deposit Holder: <%= f.text_field :deposit_holder %></p>
+  <p>Deposit Returned Date: <%= f.text_field :deposit_returned_at, :class => 'datepicker' %></p>
+  <p>Dealer Install Fee: <%= f.text_field :install_fee_amount %></p>
+  <p>Dealer Install Charge Date: <%= f.text_field :install_fee_charged_at, :class => 'datepicker' %></p>
+  <p>Affiliate Fee: <%= f.text_field :affiliate_fee_amount %></p>
+  <p>Affiliate Group: <%= f.select :affiliate_fee_group_id, Group.ordered.collect { |e| [e.name, e.id] } %></p>
+  <p>Affiliate Charge Date: <%= f.text_field :affiliate_fee_charged_at, :class => 'datepicker' %></p>
+  <p>Referral Fee <span class="tiny">(If installed for 3 monps)</span>: <%= f.text_field :referral_amount %></p>
+  <p>Referral Fee Group: <%= f.select :referral_group_id, Group.ordered.collect { |e| [e.name, e.id] } %></p>
+  <p>Referral Charge Date: <%= f.text_field :referral_charged_at, :class => 'datepicker' %></p>
+  <p>
+    <%= link_to 'Cancel', invoices_path, :class => 'button white-button' %>
+    <%= f.submit "Save", :disable_with => 'Saving...', :class => 'button green-button' %>
+  </p>
+<% end -%>

@@ -1,0 +1,24 @@
+<tr class="<%= cycle('', 'altrow') %>">
+  <td>
+    (<%=h invoice_row.user.id %>) <%= link_to invoice_row.user_name, :controller => 'reporting', :action => 'users', :user_name => invoice_row.user.id unless invoice_row.user.blank? %><br />
+    <%= link_to "Show", invoice_path( invoice_row), :class => 'button small green-button' %>
+  </td>
+  <td><%=h invoice_row.coupon_code.coupon_code unless invoice_row.coupon_code.blank? %></td>
+  <td><%=h invoice_row.invoice_num %></td>
+  <td><%=h invoice_row.payment_collector %></td>
+  <td><%=h invoice_row.payment_type %></td>
+  <td><%=h invoice_row.kit_owner %></td>
+  <td><%=  invoice_row.kit_leased ? image_tag( 'tick.png') : h( '') %></td>
+  <td><%=h invoice_row.kit_charged_at %></td>
+  <td><%=h invoice_row.kit_charged %></td>
+  <td><%=h invoice_row.deposit_holder %></td>
+  <td><%=h invoice_row.deposit_returned_at %></td>
+  <td><%=h invoice_row.install_fee_amount %></td>
+  <td><%=h invoice_row.install_fee_charged_at %></td>
+  <td><%=h invoice_row.affiliate_fee_amount %></td>
+  <td><%=h invoice_row.affiliate_fee_group_name %></td>
+  <td><%=h invoice_row.affiliate_fee_charged_at %></td>
+  <td><%=h invoice_row.referral_amount %></td>
+  <td><%=h invoice_row.referral_group_name %></td>
+  <td><%=h invoice_row.referral_charged_at %></td>
+</tr>

@@ -1,0 +1,43 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  coupon_code_id: 1
+  invoice_num: MyString
+  payment_collector: MyString
+  payment_type: MyString
+  kit_owner: MyString
+  kit_leased: false
+  kit_charged_at: 2011-01-11 17:40:06
+  kit_charged: 9.99
+  deposit_holder: MyString
+  deposit_returned_at: 2011-01-11 17:40:06
+  install_fee_amount: 9.99
+  install_fee_charged_at: 2011-01-11 17:40:06
+  affiliate_fee_amount: 9.99
+  affiliate_fee_group_id: 1
+  affiliate_fee_charged_at: 2011-01-11 17:40:06
+  referral_amount: 9.99
+  referral_group_id: 1
+  referral_charged_at: 2011-01-11 17:40:06
+  user_id: 1
+
+two:
+  coupon_code_id: 1
+  invoice_num: MyString
+  payment_collector: MyString
+  payment_type: MyString
+  kit_owner: MyString
+  kit_leased: false
+  kit_charged_at: 2011-01-11 17:40:06
+  kit_charged: 9.99
+  deposit_holder: MyString
+  deposit_returned_at: 2011-01-11 17:40:06
+  install_fee_amount: 9.99
+  install_fee_charged_at: 2011-01-11 17:40:06
+  affiliate_fee_amount: 9.99
+  affiliate_fee_group_id: 1
+  affiliate_fee_charged_at: 2011-01-11 17:40:06
+  referral_amount: 9.99
+  referral_group_id: 1
+  referral_charged_at: 2011-01-11 17:40:06
+  user_id: 1

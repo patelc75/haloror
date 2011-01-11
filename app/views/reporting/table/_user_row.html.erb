@@ -88,17 +88,25 @@
       <%= image_tag('profile.png') %> <%= link_to( 'Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile.id,:user_id => user.id )%>
       <br />
       <% if user.is_halouser? %>
-      <% unless user.user_intakes.blank? %>
-      <%= image_tag('caregivers.png') %> <%= link_to 'User Intake', :controller => "user_intakes", :action => "edit", :id => user.user_intakes.first.id %>
-      <br />
-      <% end %>
-      <%= image_tag('caregivers.png') %> <%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => user.id %> 
-      <br />
-      <%= image_tag('clock.png') %> <%= link_to_remote "Start Range Test", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :id => user.id} %>
-      <br />
-      <%= image_tag 'bell.png' %> <a href="/events/user/<%=user[:id]%>">Events</a>
-      <br />
-      <%= image_tag('chart_bar.png') %> <a href="/chart/flex/<%=user[:id]%>">Chart</a>
+        <% unless user.user_intakes.blank? %>
+          <%= image_tag('caregivers.png') %> <%= link_to 'User Intake', :controller => "user_intakes", :action => "edit", :id => user.user_intakes.first.id %>
+          <br />
+        <% end %>
+        <%= image_tag('caregivers.png') %> <%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => user.id %> 
+        <br />
+        <%= image_tag('clock.png') %> <%= link_to_remote "Start Range Test", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :id => user.id} %>
+        <br />
+        <%= image_tag 'bell.png' %> <a href="/events/user/<%=user[:id]%>">Events</a>
+        <br />
+        <%= image_tag('chart_bar.png') %> <a href="/chart/flex/<%=user[:id]%>">Chart</a>
+        <% if current_user.is_super_admin? %>
+          <br />
+          <% if user.invoice.blank? %>
+            <%= link_to 'Invoice', new_user_invoice_path( :id => user), :class => "button small blue-button" %>
+          <% else %>
+            <%= link_to 'Invoice', invoice_path( user.invoice), :class => "button small green-button" %>
+          <% end %>
+        <% end %>
       <% end %>
     </div>
     <div class="span-4 last">

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101230174420) do
+ActiveRecord::Schema.define(:version => 20110111174006) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -648,6 +648,30 @@ ActiveRecord::Schema.define(:version => 20101230174420) do
     t.datetime "updated_at"
   end
 
+  create_table "invoices", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "coupon_code_id"
+    t.integer  "affiliate_fee_group_id"
+    t.integer  "referral_group_id"
+    t.string   "invoice_num"
+    t.string   "payment_collector"
+    t.string   "payment_type"
+    t.string   "kit_owner"
+    t.string   "deposit_holder"
+    t.boolean  "kit_leased"
+    t.datetime "kit_charged_at"
+    t.datetime "deposit_returned_at"
+    t.datetime "install_fee_charged_at"
+    t.datetime "affiliate_fee_charged_at"
+    t.datetime "referral_charged_at"
+    t.decimal  "kit_charged"
+    t.decimal  "install_fee_amount"
+    t.decimal  "affiliate_fee_amount"
+    t.decimal  "referral_amount"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "kit_serial_numbers", :force => true do |t|
     t.text     "serial_number"
     t.integer  "user_id"
@@ -775,24 +799,6 @@ ActiveRecord::Schema.define(:version => 20101230174420) do
     t.string   "kit_serial"
     t.string   "salt"
     t.string   "cvv"
-    t.integer  "coupon_code_id"
-    t.string   "invoice_num"
-    t.string   "payment_collector"
-    t.string   "payment_type"
-    t.string   "kit_owner"
-    t.boolean  "kit_leased"
-    t.datetime "kit_charged_at"
-    t.decimal  "kit_charged"
-    t.string   "deposit_holder"
-    t.datetime "deposit_returned_at"
-    t.decimal  "install_fee_amount"
-    t.date     "install_fee_charged_at"
-    t.decimal  "affiliate_fee_amount"
-    t.integer  "affiliate_fee_group_id"
-    t.datetime "affiliate_fee_charged_at"
-    t.decimal  "referral_amount"
-    t.integer  "referral_group_id"
-    t.datetime "referral_charged_at"
   end
 
   create_table "orientation_thresholds", :force => true do |t|
@@ -1206,10 +1212,6 @@ ActiveRecord::Schema.define(:version => 20101230174420) do
     t.datetime "paper_copy_at"
     t.date     "paper_copy_submitted_on"
     t.date     "emailed_on"
-    t.string   "local_primary"
-    t.string   "local_secondary"
-    t.string   "global_primary"
-    t.string   "global_secondary"
     t.datetime "installation_datetime"
     t.date     "sc_account_created_on"
     t.datetime "shipped_at"
