@@ -73,4 +73,9 @@ select * from dial_up_last_successfuls order by id desc;
 
 select id, user_id, timestamp, weight, weight_unit, battery, serial_number from weight_scales where user_id != 0 order by id desc;
 
+select * from device_model_prices order by device_model_id;
+update device_model_prices set device_model_id = 8 where device_model_id = 5;
 
+curl -v -H "Content-Type: text/xml" -d "<fall><device_id>1</device_id><gw_timestamp>Mon Dec 25 15:52:55 -0600 2007</gw_timestamp><magnitude>60</magnitude><severity>12</severity><timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp><user_id>6</user_id></fall>" "http://localhost:3000/falls?gateway_id=0&auth=9ad3cad0f0e130653ec377a47289eaf7f22f83edb81e406c7bd7919ea725e024" 
+
+select emails.from, emails.mail from emails order by id desc limit 5;

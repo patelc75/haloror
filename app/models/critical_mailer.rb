@@ -3,14 +3,7 @@ class CriticalMailer < ActionMailer::ARMailer
   include ServerInstance
   NO_REPLY = "myHalo@halomonitoring.com"
 
-#=============== General Methods for Alerts ======================
-  def device_event_admin_email(event)
-    setup_caregivers(event.user, event, :recepients)
-    setup_operators(event, :recepients, :include_phone_call, :halo_only) 
-    setup_message(event.to_s, "It has been #{GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT / 60} minutes and we have detected that the GW Alarm button has not been pushed for #{event.user.name} #{event.event.event_type} on #{event.timestamp}")
-    self.priority = Priority::IMMEDIATE
-  end
-  
+#=============== General Methods for Alerts ======================  
   def non_critical_caregiver_email(model, user=nil)
     user = model.user if user.nil?
     setup_message(model.to_s, model.email_body + "\n\nYou received this email because you’re either a myHalo user or a caregiver of #{user.name}")
@@ -33,50 +26,25 @@ class CriticalMailer < ActionMailer::ARMailer
     setup_caregivers(event.user, event, :caregiver_info)
     
     @caregiver_info << "EMERGENCY NUM\n" + event.user.profile.emergency_number.name + "\n" + event.user.profile.emergency_number.number if event.user.profile.emergency_number
-    message_text = "You received this email because you’re a Halo call center agent.\n\n#{@caregiver_info}\n\n"
-    
+    message_text = "You received this email because you’re a Halo call center agent.\n\n#{@caregiver_info}\n\n"    
     user = event.user
     
     message_text << "ACCOUNT NUM\n%s\n\n" % [user.profile.account_number.blank? ? "(No account number)" : user.profile.account_number]
     message_text << "ADDRESS + LOCK\n%s\n%s\n%s, %s %s\n%s\n\n" % [user.name, user.profile.address, user.profile.city, user.profile.state, user.profile.zipcode, user.profile.access_information.blank? ? "(No access information)" : user.profile.access_information]
     message_text << "MEDICAL\n%s\n\n" % [user.profile.allergies.blank? ? "(No medical / allergy information)" : user.profile.allergies]
     message_text << "PET\n%s\n\n" % [user.profile.pet_information.blank? ? "(No pet information)" : user.profile.pet_information]
-    setup_message(event.to_s, message_text)     
-    @from = "no-reply@halomonitoring.com"    
+    setup_message(event.to_s, message_text, :use_email_log, :use_host_name_in_from_addr)     
     setup_operators(event, :recepients, :include_phone_call) 
-    #setup_emergency_group(event, :recepients)
     self.priority  = event.priority
   end
  
   def device_event_operator_text(event)
     setup_caregivers(event.user, event, :caregiver_info)
     @caregiver_info << '(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
-    link = get_link_to_call_center_text()
-
-    #setup_message(event.to_s, "Go here: " + link + " If site down, use paper scripts with this info:" + @caregiver_info)
-    setup_message(event.to_s, @caregiver_info + "\n" + (event.user.profile.account_number.blank? ? "(No acct num)" : event.user.profile.account_number) + (event.user.address.nil? ? "(No address)" : event.user.address))
-    @from = "no-reply@halomonitoring.com"
+    setup_message(event.to_s, @caregiver_info + "\n" + (event.user.profile.account_number.blank? ? "(No acct num)" : event.user.profile.account_number) + (event.user.address.nil? ? "(No address)" : event.user.address),:use_email_log, :use_host_name_in_from_addr)
     setup_operators(event, :recepients, :include_phone_call) 
-    # setup_emergency_group(event, :recepients)
     @recipients = @text_recipients
     self.priority  = event.priority
-  end
-
-#=============== Call Center Operator ============================
-  def call_center_operator(event_action)
-    setup_message(event_action.to_s, event_action.email_body + event_action.event.notes_string + "\n\nYou received this email because you’re an operator.")
-    setup_operators(event_action.event.event, :recepients)
-    self.priority  = event_action.priority
-  end
-
-  def admin_call_log(event, body, recipients)
-    @recipients = []
-    setup_message("Call Log for #{event.user.name} #{event.event_type} at #{UtilityHelper.format_datetime(event.timestamp, event.user)}", body)
-    recipients.each do |admin|
-     @recipients << ["#{admin.email}"] 
-    end
-    @recipients << ["reports@halomonitoring.com"] 
-    self.priority = Priority::IMMEDIATE
   end
 
 #=============== Reporting  ======================================    
@@ -108,7 +76,7 @@ class CriticalMailer < ActionMailer::ARMailer
     @recipients  << to
     self.priority = Priority::IMMEDIATE
   end
-  
+
   def password_confirmation(user)
     @recipients = [user.email]
     msg_body = <<-EOF
@@ -142,26 +110,21 @@ class CriticalMailer < ActionMailer::ARMailer
     msg_body = <<-EOF
     Cancel Halo Monitoring Acct# #{acct_num}
     EOF
-    setup_message(subject, msg_body)     
+    setup_message(subject, msg_body, :use_email_log, :use_host_name_in_from_addr)     
   end
 
 #=============== Utility Methods  ================================  
   protected
-    
-  def setup_message(subject, msg_body, email_log=nil)
-    @from        = NO_REPLY
+
+  #if email_log != :no_email_log, then send BCC to email_log@halomonitoring.com
+  #if from_addr != :use_host_name_in_from_addr, then myHalo@halomonitoring.com instead of hostname in from addr
+  def setup_message(subject, msg_body, email_log=nil, from_addr=nil)
+    @from        = from_addr != :use_host_name_in_from_addr ? NO_REPLY : "no-reply@"+ServerInstance.current_host 
     @subject     = "[" + ServerInstance.current_host_short_string + "] "
     @subject     += subject unless subject.blank?
     @sent_on     = Time.now
     @bcc         = "email_log@halomonitoring.com" if email_log != :no_email_log
     body msg_body
-  end
-
-  def setup_daily(subject)
-    @recipients = daily_recipients
-    @from        = NO_REPLY
-    @subject     = "[" + ServerInstance.current_host_short_string + "] #{subject}"
-    @sent_on     = Time.now
   end
 
   #if mode = :caregiver_info, then show user AND caregiver info in body
@@ -177,80 +140,7 @@ class CriticalMailer < ActionMailer::ARMailer
     end
     
   end
-  
-  #if group = :halo_only, only set up operators for the 'halo' group
-  def setup_operators(event, mode, phone = :no_phone_call, group = :all)
-    ops = User.active_operators
-    groups = event.user.is_halouser_for_what
-    halo_group = Group.find_by_name('halo') if group == :halo_only
-    operators = []
-    ops.each do |op|
-      if (group == :halo_only)
-  	    operators << op if op.is_operator_of? halo_group
-  	  else
-      	operators << op if(op.is_operator_of_any?(groups))
-  	  end
-    end
-    
-    if operators
-      operators.each do |operator|
-        recipients_setup(operator, operator.alert_option_by_type_operator(operator,event), mode, phone)
-      end
-    end
-  end
-  
-  def setup_emergency_group(event, mode, phone = :no_phone_call)
-    users = []
-    EMERGENCY_GROUPS.each do |group_name|
-      group = Group.find_by_name(group_name)
-      roles = Role.find(:all, :conditions => "authorizable_type = 'Group' and authorizable_id = #{group.id}")
-      roles.each do |role|
-        role.roles_users do |ru|
-          users << ru.user if ru.user.is_operator_of? group
-        end
-      end
-    end
-    if users
-      users.each do |user|
-        @recipients << ["#{user.email}"]
-      end
-    end
-  end
-  
-  def setup_halo_operators()
-    @recipients = []
-    operators = User.halo_operators()
-    if !operators.blank?
-      operators.each do |operator|
-        @recipients << ["#{operator.email}"] 
-      end       
-    end
-  end
-  
-  def setup_halo_administrators()
-    @recipients = []
-    admins = User.halo_administrators()
-    if !admins.blank?
-      admins.each do |admin|
-        @recipients << ["#{admin.email}"] 
-      end       
-    end
-  end
-  
-  def setup_administrators()
-    @recipients = []
-    admins = User.administrators()
-    if !admins.blank?
-      admins.each do |admin|
-        @recipients << ["#{admin.email}"] 
-      end       
-    end
-  end
-  
-  def daily_recipients
-    return ["reports@halomonitoring.com"]  
-  end
-  
+
   def recipients_setup(user, alert_option, mode, phone = :no_phone_call)
     @recipients = Array.new if @recipients.nil?
     @text_recipients = Array.new if @text_recipients.nil?
@@ -285,6 +175,38 @@ class CriticalMailer < ActionMailer::ARMailer
     @recipients = @recipients.uniq
   end
   
+  #if group = :halo_only, only set up operators for the 'halo' group
+  def setup_operators(event, mode, phone = :no_phone_call, group = :all)
+    ops = User.active_operators
+    groups = event.user.is_halouser_for_what
+    halo_group = Group.find_by_name('halo') if group == :halo_only
+    operators = []
+    ops.each do |op|
+      if (group == :halo_only)
+  	    operators << op if op.is_operator_of? halo_group
+  	  else
+      	operators << op if(op.is_operator_of_any?(groups))
+  	  end
+    end
+    
+    if operators
+      operators.each do |operator|
+        recipients_setup(operator, operator.alert_option_by_type_operator(operator,event), mode, phone)
+      end
+    end
+  end
+  
+  def daily_recipients
+    return ["reports@halomonitoring.com"]  
+  end
+
+  def setup_daily(subject)
+    @recipients = daily_recipients
+    @from        = NO_REPLY
+    @subject     = "[" + ServerInstance.current_host_short_string + "] #{subject}"
+    @sent_on     = Time.now
+  end
+  
   def set_hostnames
     @primary_host = ServerInstance.current_host
     if ServerInstance.in_hostname?('crit2')
@@ -292,19 +214,13 @@ class CriticalMailer < ActionMailer::ARMailer
     end
     @secondary_host = @primary_host.gsub('crit1', 'crit2')
   end
- 
-  def get_link_to_call_center_text()
-    set_hostnames
-	return "https://#{@primary_host}/call_center If the site is not available then try the backup link https://#{@secondary_host}/call_center "
+
+#=============== Deprecated  ===================================  
+  def device_event_admin_email(event)
+    setup_caregivers(event.user, event, :recepients)
+    setup_operators(event, :recepients, :include_phone_call, :halo_only) 
+    setup_message(event.to_s, "It has been #{GW_RESET_BUTTON_FOLLOW_UP_TIMEOUT / 60} minutes and we have detected that the GW Alarm button has not been pushed for #{event.user.name} #{event.event.event_type} on #{event.timestamp}")
+    self.priority = Priority::IMMEDIATE
   end
-  
-  def get_link_to_call_center()
-    suffix = "The following contact info is only used for disaster recovery."
-	set_hostnames
-    if ServerInstance.in_hostname?('crit1') || ServerInstance.in_hostname?('crit2')	  
-      return "Please use the following link to accept and handle the event on the the call center overview page.  \nhttps://#{@primary_host}/call_center  \n\nIf the site is not available then try the backup link \nhttps://#{@secondary_host}/call_center \n\n" + suffix 
-    else
-      return "Please use the following link to accept and handle the event on the the call center overview page.  \nhttps://#{@primary_host}/call_center \n\n" + suffix 
-    end
-  end
- end
+end
+
