@@ -96,7 +96,10 @@ class Profile < ActiveRecord::Base
     _numbers = Profile.all( :conditions => ["account_number <> '' AND account_number IS NOT NULL"], :select => "account_number").collect(&:account_number).compact
     #   * collect the numeric values embedded anywhere in that string
     #   * pick the highest value
-    _numbers.collect { |e| e.match(/^(\D*)(\d+)(\D*)$/) ? e.match(/^(\D*)(\d+)(\D*)$/)[2].to_i : nil }.compact.max
+    # 
+    #  Thu Jan 13 03:00:24 IST 2011, ramonrails
+    #   * Ticket #4008 note-2
+    (_numbers.collect { |e| e.match(/^(\D*)(\d+)(\D*)$/) ? e.match(/^(\D*)(\d+)(\D*)$/)[2].to_i : nil }.compact.max) || 0
   end
   
   class << self # class methods
