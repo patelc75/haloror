@@ -559,6 +559,7 @@ class UserIntake < ActiveRecord::Base
       unless _user.blank? || _user.nothing_assigned?
         #   * default properties
         _user.autofill_login # create login and password if not already
+        _user.lazy_associations[:user_intake] = self
         _user.skip_validation = true # TODO: patch for 1.6.0 release. fix later with business logic, if required
 
         case _what
@@ -658,13 +659,22 @@ class UserIntake < ActiveRecord::Base
       end # blank?
     end # _what
     
-    #
-    #   * replace earlier associations. keep fresh ones
-    #   * do not create duplicate associations
-    # QUESTION: what happens to orphaned users here?
-    #   * reject new_record? anything not saved does not get assigned
-    #   * only associate one copy of each
-    self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].reject(&:new_record?).compact.uniq
+    # 
+    #  Thu Jan 13 02:38:38 IST 2011, ramonrails
+    #   * Not required anymore
+    #   * lazy_associations attaches each user to this user intake
+    # #
+    # #   * replace earlier associations. keep fresh ones
+    # #   * do not create duplicate associations
+    # # QUESTION: what happens to orphaned users here?
+    # #   * reject new_record? anything not saved does not get assigned
+    # #   * only associate one copy of each
+    # self.users = [senior, subscriber, caregiver1, caregiver2, caregiver3].reject(&:new_record?).compact.uniq
+    # # # 
+    # # #  Thu Jan 13 02:34:27 IST 2011, ramonrails
+    # # #   * pre_quality.feature had error dispatching emails
+    # # #   * This might dispatch the email more than once
+    # # self.users.each(&:dispatch_emails)
 
 
     # ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].each do |_what|

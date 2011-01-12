@@ -498,7 +498,7 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
         Device.registered?( _serial, ui.senior) unless _serial.blank?
       end
     when 'latest call center account number'
-      ui.senior.call_center_account.should == Profile.last_account_number.account_number
+      ui.senior.call_center_account.to_i.should == Profile.last_account_number.to_i
     when 'same subscriber and caregiver1'
       [:subscriber, :caregiver1].each {|e| ui.send( e).should_not be_blank }
       ui.subscriber.should == ui.caregiver1

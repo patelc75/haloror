@@ -186,7 +186,7 @@ Feature: Pre quality
     And "user_intake_no_caregiver_2" checkbox should be checked
     And "user_intake_no_caregiver_3" checkbox should be checked
     # At Config > Users, verify the following 2 users were created
-    When I follow links "Config > All"
+    When I follow links "Config > Users"
     Then page content should have "halouser, subscriber for"
     And page content should not have "caregiver for"
 
@@ -278,16 +278,17 @@ Feature: Pre quality
     # Click “Submit” button on User intake form and verify “Ready for Approval” state at My Links > User Intakes
     #  Mon Nov 22 13:31:40 IST 2010, ramonrails: TODO: manually smoke tested this step
     When I edit the last user intake
-    # Then page content should have "H200220022, H100110011, caregiver2 first name, caregiver3 first name, `Date.today.to_s`"
-    #   * This is now AJAX. need capybara
-    # email, text and phone checkboxes
-    # https://redmine.corp.halomonitor.com/issues/3674
-    Then the "caregiver1_email_flag" checkbox should be checked
-    And "caregiver2_email_flag" checkbox should be checked
-    And "caregiver3_email_flag" checkbox should be checked
-    And "caregiver1_text_flag" checkbox should be checked
-    And "caregiver2_text_flag" checkbox should be checked
-    And "caregiver3_text_flag" checkbox should be checked
+    #   * https://redmine.corp.halomonitor.com/issues/4006#note-10
+    # # Then page content should have "H200220022, H100110011, caregiver2 first name, caregiver3 first name, `Date.today.to_s`"
+    # #   * This is now AJAX. need capybara
+    # # email, text and phone checkboxes
+    # # https://redmine.corp.halomonitor.com/issues/3674
+    # Then "caregiver1_email_flag" checkbox should be checked
+    # And "caregiver2_email_flag" checkbox should be checked
+    # And "caregiver3_email_flag" checkbox should be checked
+    # And "caregiver1_text_flag" checkbox should be checked
+    # And "caregiver2_text_flag" checkbox should be checked
+    # And "caregiver3_text_flag" checkbox should be checked
 
   Scenario: halouser > submit user intake form - make all users distinct
     Given the product catalog exists

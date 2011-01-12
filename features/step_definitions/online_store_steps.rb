@@ -12,19 +12,21 @@ Given /^the product catalog exists$/ do
   {
     "Chest Strap" => {
       :part_number => "12001002-1", :tariff => {
-      :default => { :coupon_code => "default", :deposit => 249, :shipping => 15, :monthly_recurring => 59, :months_advance => 3, :months_trial => 0},
+      :default => { :coupon_code => "default", :deposit => 249, :shipping => 15, :monthly_recurring => 59, :months_advance => 0, :months_trial => 0},
       :expired => { :coupon_code => "EXPIRED", :deposit => 99, :shipping => 15, :monthly_recurring => 59, :months_advance => 3, :months_trial => 0, :expiry_date => 1.month.ago.to_date},
       :declined => { :coupon_code => "DECLINED", :deposit => 3, :shipping => 0, :monthly_recurring => 59, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.ago.to_date},
       :trial =>   { :coupon_code => "99TRIAL", :deposit => 99, :shipping => 15, :monthly_recurring => 59, :months_advance => 0, :months_trial => 1, :expiry_date => 1.month.from_now.to_date},
-      :custom =>   { :coupon_code => "group_name_here", :deposit => 99, :shipping => 15, :monthly_recurring => 59, :months_advance => 0, :months_trial => 1, :expiry_date => 1.month.from_now.to_date}
+      :snapback =>   { :coupon_code => "SNAPBACK", :deposit => 55, :shipping => 55, :monthly_recurring => 5, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.from_now.to_date},
+      :custom =>   { :coupon_code => "group_name_here", :deposit => 99, :shipping => 15, :monthly_recurring => 59, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.from_now.to_date}
       }
     },
     "Belt Clip" => {
       :part_number => "12001008-1", :tariff => {
-      :default => { :coupon_code => "default", :deposit => 249, :shipping => 15, :monthly_recurring => 49, :months_advance => 3, :months_trial => 0},
+      :default => { :coupon_code => "default", :deposit => 249, :shipping => 15, :monthly_recurring => 49, :months_advance => 0, :months_trial => 0},
       :expired => { :coupon_code => "EXPIRED", :deposit => 99, :shipping => 15, :monthly_recurring => 49, :months_advance => 3, :months_trial => 0, :expiry_date => 1.month.ago.to_date},
       :declined => { :coupon_code => "DECLINED", :deposit => 3, :shipping => 0, :monthly_recurring => 49, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.ago.to_date},
       :trial =>   { :coupon_code => "99TRIAL", :deposit => 99, :shipping => 15, :monthly_recurring => 49, :months_advance => 0, :months_trial => 1, :expiry_date => 1.month.from_now.to_date},
+      :snapback =>   { :coupon_code => "SNAPBACK", :deposit => 55, :shipping => 55, :monthly_recurring => 5, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.from_now.to_date},
       :custom =>   { :coupon_code => "group_name_here", :deposit => 99, :shipping => 15, :monthly_recurring => 49, :months_advance => 0, :months_trial => 1, :expiry_date => 1.month.from_now.to_date}
       }
     }
@@ -43,7 +45,12 @@ Given /^the product catalog exists$/ do
     default_group = Group.default!
     ["direct_to_consumer", "bestbuy", 'default'].each do |group_name|
       group = (Group.find_by_name( group_name) || Factory.create( :group, :name => group_name))
-      values[:tariff].each do |key, prices_hash|
+      # 
+      #  Thu Jan 13 00:32:00 IST 2011, ramonrails
+      #   * For 'default' group create all keys
+      #   * For any other group, do not create 'SNAPBACK' key
+      _hash = ((group_name == 'default') ? values[:tariff] : (values[:tariff].reject { |k,v| k == :snapback }))
+      _hash.each do |key, prices_hash|
         prices_hash[:coupon_code] = group_name.upcase if key == :custom
         if DeviceModelPrice.first( :conditions => { :device_model_id => device_model.id, :coupon_code => prices_hash[:coupon_code], :group_id => group.id}).blank?
           Factory.create(:device_model_price, prices_hash.merge(:device_model => device_model, :group => group))
@@ -83,7 +90,7 @@ When /^I am ready to create a coupon code for "([^\"]*)" group$/ do |_name|
   When %{I follow links "Config > Coupon Codes > New coupon code"}
   When "I select the following:", table(%{
     | Group                             | #{_name}                  |
-    | Device model                      | 12001002-1 -- Chest Strap |
+    | Product                           | 12001002-1 -- Chest Strap |
     | device_model_price_expiry_date_1i | 2012                      |
   })
   When "I fill in the following:", table(%{

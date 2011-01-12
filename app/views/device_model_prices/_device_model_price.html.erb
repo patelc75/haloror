@@ -6,7 +6,7 @@
     <%= f.select :group_id, @groups.collect {|e| [e.name, e.id]} %>
   </p>
   <p>
-    <%= f.label :device_model_id, "Product (choose 1200xxx for complete kits)" %><br />
+    <%= f.label :device_model_id, "Product" %> (choose 1200xxx for complete kits)<br />
     <%= f.select :device_model_id, DeviceModel.all.collect {|p| [p.model_type, p.id]} %>
   </p>
   <p>

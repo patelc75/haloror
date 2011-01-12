@@ -95,7 +95,14 @@ class DeviceModel < ActiveRecord::Base
       else
         #
         # fetch given coupon code for 'default' group. we may find it
-        coupon_codes.for_group( options[:group]).for_coupon_code( options[:coupon_code]).first
+        _match = coupon_codes.for_group( options[:group]).for_coupon_code( options[:coupon_code]).first
+        # 
+        #  Thu Jan 13 00:07:28 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4006
+        # group_name/coupon_name exists for product, group_name/coupon_name applied
+        # group_name/coupon_name missing for product, default/coupon_name applied
+        # default/coupon_name missing for product, default/default applied
+        _match ||= coupon_codes.for_group( Group.default!).for_coupon_code( options[:coupon_code]).first
       end
     end
     #

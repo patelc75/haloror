@@ -69,7 +69,7 @@ class User < ActiveRecord::Base
   attr_accessible :need_validation
   attr_accessor :need_validation
   attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :need_validation
-  attr_accessor :caregiver_position, :lazy_roles, :lazy_options
+  attr_accessor :caregiver_position, :lazy_roles, :lazy_options, :lazy_associations
   # Virtual attribute for the unencrypted password
   cattr_accessor :current_user #stored in memory instead of table
   attr_accessor :password
@@ -575,6 +575,7 @@ class User < ActiveRecord::Base
     #   user.roles[:subscriber] = @senior
     self.lazy_roles = {} # lazy loading roles of this user
     self.lazy_options = {} # lazy loading options of this user, if this is a caregiver
+    self.lazy_associations = {} # user intake and other associations that user should have when saved
   end
 
   def before_save
@@ -645,6 +646,16 @@ class User < ActiveRecord::Base
         unless k.blank? || k.new_record?
           #   * save role_options
           self.options_for_senior( k, v) # will also create alert_options for critical alert types
+        end
+      end
+      # 
+      #  Thu Jan 13 02:31:10 IST 2011, ramonrails
+      #   * lazy_associations
+      lazy_associations.each do |_sym, _ar_row|
+        unless _ar_row.blank? || _ar_row.new_record?
+          if _sym == :user_intake
+            self.user_intakes << _ar_row unless self.user_intakes.include?( _ar_row)
+          end
         end
       end
       # 
@@ -963,7 +974,7 @@ class User < ActiveRecord::Base
     _last_status = (self.changed? ? status_was : last_triage_status)
     if (status != _last_status)
       options = { :status => _last_status, :is_dismissed => dismissed_from_triage?, :description => "Status updated to [#{status}]. Auto triggered through user model." }
-      log = TriageAuditLog.new( options.merge( args).merge( :user => self, :created_by => self.updated_by, :updated_by => self.updated_by))
+      log = TriageAuditLog.new( options.merge( args).merge( :user => self, :created_by => self.created_by, :updated_by => self.created_by))
       log.send( :create_without_callbacks)
       self.last_triage_audit_log = log # link it, since we do not have callbacks
     end
