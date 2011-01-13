@@ -39,6 +39,11 @@ class SessionsController < ApplicationController
         message = ((user.status == 'cancelled') ? "This account of #{user.name} was cancelled at #{user.updated_at}" : :login_failed)
         # Email to admin indication cancelled user is trying to login
         UserMailer.cancelled_user_attempted_access(user) if user.status == "cancelled"
+      else
+        # 
+        #  Fri Jan 14 02:52:20 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/3577#note-9
+        message = "The login information you entered does not match an account in our records. Remember, your login and password is case-sensitive, please check your Caps Lock key."
       end
       redirect_to_message(:message => message, :back_url => url_for(:controller => "sessions", :action => "new"))
       # redirect_to :controller => "alerts", :action => "alert"
