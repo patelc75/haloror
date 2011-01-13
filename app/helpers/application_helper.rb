@@ -8,6 +8,18 @@ module ApplicationHelper
   include UserHelper
 
   # 
+  #  Fri Jan 14 03:21:56 IST 2011, ramonrails
+  #   * fetch an array of strings and make an array for f.select
+  def strings_for_select( *_array)
+    _array = _array.flatten
+    if _array.blank?
+      []
+    else
+      _array.zip _array
+    end
+  end
+
+  # 
   #  Wed Dec 22 00:14:23 IST 2010, ramonrails
   #   * reload flash for AJAX calls
   def reload_flash

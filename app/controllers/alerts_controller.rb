@@ -127,7 +127,7 @@ class AlertsController < ApplicationController
   #
   def alert
     if !params[:message].blank? && !params[:back_url].blank?
-      @phrase = ALERT_MESSAGES[params[:message].to_sym]
+      @phrase = ALERT_MESSAGES[params[:message].to_sym] || 
       @back_url = params[:back_url]
     else
       @phrase = (session[:alert_phrase] || '')

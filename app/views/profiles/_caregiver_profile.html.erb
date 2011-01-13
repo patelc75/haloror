@@ -1,6 +1,6 @@
 <div class="content">
 <% content_for :js do %>
-<% unless current_user.is_super_admin? || current_user.is_admin_of_any?(@senior.extended_group_memberships) %> <!-- everything read only unless super admin -->
+<% unless current_user.is_super_admin? %> <!-- everything read only unless super admin -->
 <script type="text/javascript" charset="utf-8">
 function DisableEnableForm(xForm,xHow){
   objElems = xForm.elements;
@@ -60,7 +60,7 @@ window.onload = function(){
     <%= link_to "Resend Caregiver Invitation Email",:controller => 'profiles',:action => 'resend_mail',:id => @user.id,:roles_user_id => params[:roles_user_id]%>
     <%end%> 
 
-    <% unless current_user.is_super_admin? || current_user.is_admin_of_any?(@senior.extended_group_memberships) %>
+    <% unless current_user.is_super_admin? %>
     <p class="color-red" style="padding-left:30px;">Please call tech support 1-888-971-HALO (4256) to make modification to this profile.</p>
     <% end -%>
     <%# form_tag :action => 'create' do -%>
@@ -92,7 +92,7 @@ window.onload = function(){
               <%= image_submit_tag("add.gif", :id => "submit_caregiver", :title => "submit_caregiver") %>
 
             <% else %>
-              <% if current_user.is_super_admin? || current_user.is_admin_of_any?(@senior.extended_group_memberships) %> <!-- super admin can update, others can just view -->
+              <% if current_user.is_super_admin? %> <!-- super admin can update, others can just view -->
                 <%= image_submit_tag("update.gif") %>
               <% else %>
                 <%= image_tag("update_grey.gif") %>

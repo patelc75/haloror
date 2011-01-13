@@ -20,7 +20,10 @@ module DialUpStatusModule
     }.each do |key, value|
       #
       # https://redmine.corp.halomonitor.com/issues/3189
-      ["status", "configured"].each do |hash_key|
+      # 
+      #  Thu Jan 13 23:43:54 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4002
+      ["status", "configured", "username", "password"].each do |hash_key|
         eval("#{key}[:#{hash_key}] = hash['#{value}#{hash_key}']")
       end
       #
@@ -32,13 +35,14 @@ module DialUpStatusModule
       end
       #
       # FIXME: structure is boolean, value received is integer
-      eval("#{key}[:ever_connected] = !hash['#{value}ever_connected'].to_i.zero?")
+      #   * Custom patterns
+      eval("#{key}[:ever_connected] = ((hash['#{value}ever_connected'].downcase.strip == 'true') || (hash['#{value}ever_connected'].to_i > 0))")
       eval("#{key}[:phone_number] = hash['#{value}number']") # similar pattern for all
-      # 
-      #  Tue Jan 11 03:34:09 IST 2011, ramonrails
-      #   * https://redmine.corp.halomonitor.com/issues/4002
-      #   * This is a boolean, so anything more than zero is TRUE
-      eval("#{key}[:ever_connected] = (hash['ever_connected'].to_i > 0)")
+      # # 
+      # #  Tue Jan 11 03:34:09 IST 2011, ramonrails
+      # #   * https://redmine.corp.halomonitor.com/issues/4002
+      # #   * This is a boolean, so anything more than zero is TRUE
+      # eval("#{key}[:ever_connected] = (hash['ever_connected'].to_i > 0)")
       # 
       #  Wed Dec 22 22:33:56 IST 2010, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/3901
@@ -55,11 +59,7 @@ module DialUpStatusModule
     end
 
     # device_id is same
-    [local, alternate, global_prime, global_alternate].each do |_type|
-      ["device_id", "username", "password"].each do |_column|
-        _type[_column.to_sym] = hash[_column]
-      end
-    end
+    [local, alternate, global_prime, global_alternate].each { |e| e[:device_id] = hash["device_id"] }
     
     # dialup_type
     local[:dialup_type]            = 'Local' # self

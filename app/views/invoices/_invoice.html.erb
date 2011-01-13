@@ -17,15 +17,15 @@ $(function() {
 <% form_for @invoice do |f| -%>
   <span><%= hidden_field_tag "invoice_columns" %></span>
   <span><%= f.hidden_field :user_id %></span>
-  <p>Coupon Code: <%= f.select :coupon_code_id, DeviceModelPrice.collection_for_selection %></p>
+  <p>Coupon Code: <%= f.text_field :coupon_code %></p>
   <p>Invoice #: <%= f.text_field :invoice_num %></p>
-  <p>Payment Collector: <%= f.text_field :payment_collector %></p>
-  <p>Payment Type: <%= f.text_field :payment_type %></p>
-  <p>Kit Owner: <%= f.text_field :kit_owner %></p>
+  <p>Payment Collector: <%= f.select :payment_collector, strings_for_select( 'halo', 'dealer', 'master') %></p>
+  <p>Payment Type: <%= f.select :payment_type, strings_for_select( 'credit_card', 'invoice', 'bank_draft') %></p>
+  <p>Kit Owner: <%= f.select :kit_owner, strings_for_select( 'halo', 'dealer', 'master') %></p>
   <p>Leased from Master Dealer?: <%= f.check_box :kit_leased %></p>
   <p>Kit Charged Date: <%= f.text_field :kit_charged_at, :class => 'datepicker' %></p>
   <p>Kit Charged Price: <%= f.text_field :kit_charged %></p>
-  <p>Deposit Holder: <%= f.text_field :deposit_holder %></p>
+  <p>Deposit Holder: <%= f.select :deposit_holder, strings_for_select( 'halo', 'dealer', 'master') %></p>
   <p>Deposit Returned Date: <%= f.text_field :deposit_returned_at, :class => 'datepicker' %></p>
   <p>Dealer Install Fee: <%= f.text_field :install_fee_amount %></p>
   <p>Dealer Install Charge Date: <%= f.text_field :install_fee_charged_at, :class => 'datepicker' %></p>

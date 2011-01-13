@@ -1,5 +1,5 @@
 <h1 id="invoice_">Invoice <%= @invoice.invoice_num %><span class="tiny">(User: <%= @invoice.user_name %>)</span></h1>
-<p>Coupon Code: <%= h @invoice.coupon_code.coupon_code unless @invoice.coupon_code.blank? %></p>
+<p>Coupon Code: <%= h @invoice.coupon_code %></p>
 <p>Invoice #: <%= h @invoice.invoice_num %></p>
 <p>Payment Collector: <%= h @invoice.payment_collector %></p>
 <p>Payment Type: <%= h @invoice.payment_type %></p>
