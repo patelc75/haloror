@@ -32,3 +32,4 @@ global_prim_password            |
 
 
 select id, device_id, username, password, alt_username, alt_password, last_successful_number  as las_suc_num, timestamp from dial_up_alerts order by timestamp desc;
+

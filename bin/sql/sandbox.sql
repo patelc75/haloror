@@ -52,24 +52,11 @@ select * from events where user_id = 292 order by timestamp desc;
 select * from mgmt_queries where device_id = 330 order by timestamp_server desc limit 10;
 select count(*) from users;
 
-select * from alert_options;
-select * from alert_types;
-
 select * from caregivers_by_user_id(5);
 
 select id, timestamp, timestamp_call_center, timestamp_server, timestamp_call_center-timestamp_server  as delay from falls where timestamp_call_center-timestamp_server > interval'5 minutes' order by id desc limit 100;
 
 select id, timestamp, timestamp_call_center, timestamp_server, timestamp_call_center-timestamp_server  as delay from panics where ((timestamp_call_center-timestamp_server) > interval'5 minutes') order by id desc limit 100;
-
-select users.id, users.login, profiles.first_name, profiles.last_name from users, profiles where users.id in (229, 230,231,232, 233) and profiles.user_id = users.id;
-
-
-curl -v -k -H "Content-Type: text/xml" -d "<dial_up_status><device_id>5773</device_id><alt_number>2567053101</alt_number><alt_status>success</alt_status><alt_username>halo</alt_username><alt_password>gepitka</alt_password><alt_configured>new</alt_configured><alt_num_failures>0</alt_num_failures><alt_consecutive_fails>0</alt_consecutive_fails><alt_ever_connected>False</alt_ever_connected><number>2562700020</number><status>success</status><username>halopoolplan@earthlink.net</username><password>UKA8aKh5</password><configured>new</configured><num_failures>0</num_failures><consecutive_fails>0</consecutive_fails><ever_connected>True</ever_connected><global_alt_number>18772383816</global_alt_number><global_alt_status>success</global_alt_status><global_alt_username>halo</global_alt_username><global_alt_password>gepitka</global_alt_password><global_alt_configured>new</global_alt_configured><global_alt_num_failures>0</global_alt_num_failures><global_alt_consecutive_fails>0</global_alt_consecutive_fails><global_alt_ever_connected>False</global_alt_ever_connected><global_prim_number>18008537921</global_prim_number><global_prim_status>success</global_prim_status><global_prim_username>halopoolplan@earthlink.net</global_prim_username><global_prim_password>UKA8aKh5</global_prim_password><global_prim_configured>new</global_prim_configured><global_prim_num_failures>0</global_prim_num_failures><global_prim_consecutive_fails>0</global_prim_consecutive_fails><global_prim_ever_connected>False</global_prim_ever_connected><last_successful_number>2562700020</last_successful_number><last_successful_username>halopoolplan@earthlink.net</last_successful_username><last_successful_password>UKA8aKh5</last_successful_password><timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp><lowest_connect_rate>100</lowest_connect_rate><lowest_connect_timestamp>Mon Dec 25 15:52:55 -0600 2011</lowest_connect_timestamp></dial_up_status>" "https://sdev.myhalomonitor.com/dial_up_statuses?gateway_id=0&auth=9ad3cad0f0e130653ec377a47289eaf7f22f83edb81e406c7bd7919ea725e024" 
-
-select * from dial_up_statuses order by id desc;
-select * from dial_up_last_successfuls order by id desc;
-
-<dial_up_status><device_id>5773</device_id><alt_number>2567053101</alt_number><alt_status>success</alt_status><alt_username>halo</alt_username><alt_password>gepitka</alt_password><alt_configured>new</alt_configured><alt_num_failures>0</alt_num_failures><alt_consecutive_fails>0</alt_consecutive_fails><alt_ever_connected>False</alt_ever_connected><number>2562700020</number><status>success</status><username>halopoolplan@earthlink.net</username><password>UKA8aKh5</password><configured>new</configured><num_failures>0</num_failures><consecutive_fails>0</consecutive_fails><ever_connected>True</ever_connected><global_alt_number>18772383816</global_alt_number><global_alt_status>success</global_alt_status><global_alt_username>halo</global_alt_username><global_alt_password>gepitka</global_alt_password><global_alt_configured>new</global_alt_configured><global_alt_num_failures>0</global_alt_num_failures><global_alt_consecutive_fails>0</global_alt_consecutive_fails><global_alt_ever_connected>False</global_alt_ever_connected><global_prim_number>18008537921</global_prim_number><global_prim_status>success</global_prim_status><global_prim_username>halopoolplan@earthlink.net</global_prim_username><global_prim_password>UKA8aKh5</global_prim_password><global_prim_configured>new</global_prim_configured><global_prim_num_failures>0</global_prim_num_failures><global_prim_consecutive_fails>0</global_prim_consecutive_fails><global_prim_ever_connected>False</global_prim_ever_connected><last_successful_number>2562700020</last_successful_number><last_successful_username>halopoolplan@earthlink.net</last_successful_username><last_successful_password>UKA8aKh5</last_successful_password><timestamp>Thu Jan 06 14:59:22 UTC 2011</timestamp></dial_up_status><lowest_connect_rate>31200</lowest_connect_rate><longest_dial_duration_sec>213</longest_dial_duration_sec>
 
 select id, user_id, timestamp, weight, weight_unit, battery, serial_number from weight_scales where user_id != 0 order by id desc;
 
@@ -79,3 +66,32 @@ update device_model_prices set device_model_id = 8 where device_model_id = 5;
 curl -v -H "Content-Type: text/xml" -d "<fall><device_id>1</device_id><gw_timestamp>Mon Dec 25 15:52:55 -0600 2007</gw_timestamp><magnitude>60</magnitude><severity>12</severity><timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp><user_id>6</user_id></fall>" "http://localhost:3000/falls?gateway_id=0&auth=9ad3cad0f0e130653ec377a47289eaf7f22f83edb81e406c7bd7919ea725e024" 
 
 select emails.from, emails.mail from emails order by id desc limit 5;
+
+select user_id, first_name, last_name, group_name, test_mode, demo_mode, vip, created_at 
+from users_by_role('halouser') 
+where status = 'Installed' 
+order by vip desc, created_at desc;
+
+select *
+from users_by_role('halouser') 
+where status = 'Installed' 	
+order by vip desc, created_at desc;
+
+select * from users_by_role_and_group('halouser', 'safety_care');
+
+select users.id, users.login, users.status, users.demo_mode, profiles.first_name, profiles.last_name from users, profiles where users.id in (1220, 1233) and profiles.user_id = users.id;
+update users set status = 'Installed' where id in (1220, 1233);
+update users set demo_mode = fa where id in (1220, 1233);
+
+/* Ordered by state for jill */
+      SELECT distinct (users.id) as user_id, profiles.first_name, profiles.last_name, profiles.city, profiles.state, profiles.zipcode, profiles.home_phone, profiles.cell_phone, groups.name, users.status, users.test_mode, users.demo_mode, users.vip, users.created_at
+        from users LEFT OUTER JOIN profiles ON users.id = profiles.user_id, roles, roles_users, groups 
+        where users.id = roles_users.user_id 
+        and roles_users.role_id = roles.id 
+        and roles.name = 'halouser'
+        and roles.authorizable_type = 'Group' 
+        and roles.authorizable_id = groups.id
+        and groups.name != 'safety_care'
+        and status = 'Installed' and demo_mode != true
+        order by users.id;
+        order by profiles.state asc, users.created_at desc;      
