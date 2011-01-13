@@ -2,7 +2,6 @@ class Invoice < ActiveRecord::Base
   belongs_to :user
   belongs_to :affiliate_fee_group, :class_name => "Group"
   belongs_to :referral_group, :class_name => "Group"
-  belongs_to :coupon_code, :class_name => "DeviceModelPrice", :foreign_key => "coupon_code_id"
   
   validates_presence_of :user_id, :on => :create, :message => "can't be blank"
   

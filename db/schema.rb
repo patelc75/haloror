@@ -650,7 +650,6 @@ ActiveRecord::Schema.define(:version => 20110111174006) do
 
   create_table "invoices", :force => true do |t|
     t.integer  "user_id"
-    t.integer  "coupon_code_id"
     t.integer  "affiliate_fee_group_id"
     t.integer  "referral_group_id"
     t.string   "invoice_num"
@@ -670,6 +669,7 @@ ActiveRecord::Schema.define(:version => 20110111174006) do
     t.decimal  "referral_amount"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "coupon_code"
   end
 
   create_table "kit_serial_numbers", :force => true do |t|
