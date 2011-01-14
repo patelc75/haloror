@@ -24,7 +24,7 @@
 
 <div class="span-12"><%= will_paginate @user_intakes %></div>
 <div class="span-12 last text-right">
-  <% if current_user.is_super_admin? %>
+  <% if current_user.is_super_admin? || current_user.is_retailer? %>
   <%= link_to "New User Intake", new_user_intake_path, :class => "button blue-button" %>
   <% end %>
 </div>
