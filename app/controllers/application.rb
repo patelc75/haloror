@@ -1,6 +1,11 @@
 # Filters added to this controller apply to all controllers in the application.
 # Likewise, all the methods added will be available for all controllers.
 
+# 
+#  Sat Jan 15 00:27:37 IST 2011, ramonrails
+#   * profiling the code, made easier
+require "ruby-prof"
+
 class ApplicationController < ActionController::Base
   audit User, Profile, RolesUsersOption, AlertOption
   
@@ -17,10 +22,28 @@ class ApplicationController < ActionController::Base
   #  Tue Nov  9 21:39:39 IST 2010, ramonrails
   #  Never allow these to go into logs, even on production
   filter_parameter_logging :card_number, :cvv, :password, :password_confirmation
+  
+  # 
+  #  Sat Jan 15 00:27:53 IST 2011, ramonrails
+  #   * around filter for profiling the code
+  around_filter :profile
 
   # ==================
   # = public methods =
   # ==================
+  
+  # 
+  #  Sat Jan 15 00:28:25 IST 2011, ramonrails
+  #   * profiling the code
+  def profile
+    return yield if params[:profile].nil? || (RAILS_ENV != 'development')
+    result = RubyProf.profile { yield }
+    printer = RubyProf::GraphPrinter.new(result)
+    out = StringIO.new
+    printer.print(out, 0)
+    response.body.replace out.string
+    response.content_type = "text/plain"
+  end
   
   # TODO: need some work before it can run flawless
   # # ramonrails: auto-assign created_by, updated_by only if the columns exist

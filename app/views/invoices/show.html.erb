@@ -1,14 +1,23 @@
 <h1 id="invoice_">Invoice <%= @invoice.invoice_num %><span class="tiny">(User: <%= @invoice.user_name %>)</span></h1>
+<p>Prorate Start Date: <%= h @invoice.prorate_start_date %></p>
+<p>Installed Date: <%= h @invoice.installed_date %></p>
+<p>Recurring Start Date: <%= h @invoice.recurring_start_date %></p>
 <p>Coupon Code: <%= h @invoice.coupon_code %></p>
 <p>Invoice #: <%= h @invoice.invoice_num %></p>
 <p>Payment Collector: <%= h @invoice.payment_collector %></p>
 <p>Payment Type: <%= h @invoice.payment_type %></p>
+<p>Manual Billing? (ie. no Credit Card): <%= h @invoice.manual_billing %></p>
 <p>Kit Owner: <%= h @invoice.kit_owner %></p>
 <p>Leased from Master Dealer?: <%= image_tag( @invoice.kit_leased ? 'tick.png' : 'cross.png') %></p>
 <p>Kit Charged Date: <%= h @invoice.kit_charged_at %></p>
 <p>Kit Charged Price: <%= h @invoice.kit_charged %></p>
 <p>Deposit Holder: <%= h @invoice.deposit_holder %></p>
 <p>Deposit Returned Date: <%= h @invoice.deposit_returned_at %></p>
+<p>Deposit Amount: <%= h @invoice.deposit %></p>
+<p>Shipping: <%= h @invoice.shipping %></p>
+<p>Prorate: <%= h @invoice.prorate %></p>
+<p>Recurring: <%= h @invoice.recurring %></p>
+<p>Cancelled Date: <%= h @invoice.cancelled_date %></p>
 <p>Dealer Install Fee: <%= h @invoice.install_fee_amount %></p>
 <p>Dealer Install Charge Date: <%= h @invoice.install_fee_charged_at %></p>
 <p>Affiliate Fee: <%= h @invoice.affiliate_fee_amount %></p>

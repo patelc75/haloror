@@ -670,6 +670,14 @@ ActiveRecord::Schema.define(:version => 20110111174006) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "coupon_code"
+    t.datetime "prorate_start_date"
+    t.datetime "installed_date"
+    t.datetime "recurring_start_date"
+    t.boolean  "manual_billing"
+    t.decimal  "deposit"
+    t.decimal  "shipping"
+    t.decimal  "prorate"
+    t.decimal  "recurring"
   end
 
   create_table "kit_serial_numbers", :force => true do |t|

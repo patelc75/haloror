@@ -7,6 +7,7 @@ ol.detailed { list-style-type: lower-latin; }
 ul.no-style, ol.no-style { list-style: none; }
 
 div.fixed-height { height: 550px; min-height: 250px; overflow: auto; }
+div.fixed-width { width: 960px; min-width: 960px; overflow: auto;}
 
 .empty-box {
   padding: 1.5em;

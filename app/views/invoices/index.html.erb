@@ -1,28 +1,41 @@
 <h1 id="invoices">Invoices</h1>
 <%= render :partial => "/reporting/nav_config" %>
 <div><%= will_paginate @invoices %></div>
-<table class="bluegrey">
-  <tr>
-    <th>User</th>
-    <th>Coupon Code</th>
-    <th>Invoice #</th>
-    <th>Payment Collector</th>
-    <th>Payment Type</th>
-    <th>Kit Owner</th>
-    <th>Leased from Master Dealer?</th>
-    <th>Kit Charged Date</th>
-    <th>Kit Charged Price</th>
-    <th>Deposit Holder</th>
-    <th>Deposit Returned Date</th>
-    <th>Dealer Install Fee</th>
-    <th>Dealer Install Charge Date</th>
-    <th>Affiliate Fee</th>
-    <th>Affiliate Group</th>
-    <th>Affiliate Charge Date</th>
-    <th>Referral Fee <span class="tiny">(If installed for 3 months)</span></th>
-    <th>Referral Fee Group</th>
-    <th>Referral Charge Date</th>
-  </tr>
-  <%= render :partial => 'invoice_row', :collection => @invoices %>
-</table>
+<div class="span-24 fixed-width border">
+  <table class="bluegrey">
+    <tr>
+      <th><div class="border">UID</div></th>
+      <th><div class="border">Name</div></th>
+      <th><div class="border">Groups</div></th>
+      <th><div class="border">Pro-Rata Start Date</div></th>
+      <th><div class="border">Installed Date</div></th>
+      <th><div class="border">Recurring Start Date</div></th>
+      <th><div class="border">Coupon Code</div></th>
+      <th><div class="border">Invoice #</div></th>
+      <th><div class="border">Payment Collector</div></th>
+      <th><div class="border">Payment Type</div></th>
+      <th><div class="border">Manual Billing? <span class="tiny">(ie. no Credit Card)</span></div></th>
+      <th><div class="border">Kit Owner</div></th>
+      <th><div class="border">Leased from Master Dealer?</div></th>
+      <th><div class="border">Kit Charged Date</div></th>
+      <th><div class="border">Kit Charged Price</div></th>
+      <th><div class="border">Deposit Holder</div></th>
+      <th><div class="border">Deposit Returned Date</div></th>
+      <th><div class="border">Deposit Amount</div></th>
+      <th><div class="border">Shipping</div></th>
+      <th><div class="border">Prorate</div></th>
+      <th><div class="border">Recurring</div></th>
+      <th><div class="border">Cancelled Date</div></th>
+      <th><div class="border">Dealer Install Fee</div></th>
+      <th><div class="border">Dealer Install Charge Date</div></th>
+      <th><div class="border">Affiliate Fee</div></th>
+      <th><div class="border">Affiliate Group</div></th>
+      <th><div class="border">Affiliate Charge Date</div></th>
+      <th><div class="border">Referral Fee <span class="tiny">(If installed for 3 months)</span></div></th>
+      <th><div class="border">Referral Fee Group</div></th>
+      <th><div class="border">Referral Charge Date</div></th>
+    </tr>
+    <%= render :partial => 'invoice_row', :collection => @invoices %>
+  </table>
+</div>
 <div><%= will_paginate @invoices %></div>
