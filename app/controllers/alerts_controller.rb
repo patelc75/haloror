@@ -100,12 +100,16 @@ class AlertsController < ApplicationController
       _alert_type = AlertType.find(params[:id])
       _name = (_alert_type.blank? ? '' : _alert_type.alert_type)
       render :update do |page|
-        flash[:notice] = "Error: #{_name} cannot switch #{}. User profile, cell phone or carrier is missing."
+        flash[:notice] = "Error: #{_name} cannot switch. User profile, cell phone or carrier is missing."
         page.reload_flash # load flash explicitly. this is AJAX call
       end
     else
       toggle('text') 
-      render :text => '', :layout => false
+      # 
+      #  Mon Jan 17 22:04:22 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4034
+      #   * :nothing is already rendered in 'toggle' action here
+      # render :text => '', :layout => false
     end
     # render :text => '', :layout => false
     # unless @user.profile.cell_phone.blank? || @user.profile.carrier_id == nil || @user.profile.carrier_id == ""
