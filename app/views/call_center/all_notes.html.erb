@@ -33,7 +33,7 @@
 		<div class="col-100">
 			<%= link_to_remote 'edit', :update => "notes_#{note.id}", :url => {:controller => 'call_center', :action => 'edit_note', :id => note.id }%> 
 			&nbsp;|&nbsp; 
-			<%= link_to 'delete', :controller => 'call_center', :action => 'delete_note', :id => note.id %>
+			<%= link_to 'delete', :controller => 'call_center', :action => 'delete_note', :id => note.id, :confirm => "Sure to delete this note?" %>
 		</div>
 		<div class="col-100">
 			<%= note.user_id %>
