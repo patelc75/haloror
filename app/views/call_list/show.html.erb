@@ -84,7 +84,7 @@
 	<%= link_to '<< Back To Chart', :controller => 'chart', :action => 'flex', :id => current_user.id %>
 	</div>
   <!-- https://redmine.corp.halomonitor.com/issues/2778 -->
-	<% if current_user.is_super_admin? || current_user.is_admin_of_any?(@user.group_memberships) %> <!-- @user.is_halouser? || @user.is_sales? -->
+	<% if current_user.is_super_admin? %> <!-- @user.is_halouser? || @user.is_sales? || current_user.is_admin_of_any?(@user.group_memberships) -->
     <%= link_to image_tag('add-caregiver.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), {:controller => 'users' , :action => 'new_caregiver_options', :user_id => @user.id, :back_url => url_for(:controller => 'call_list', :action => 'show', :id => @user.id)}, {:id => 'add_caregiver_button'} %>
   <% else %>
     <%= link_to image_tag('add-caregiver-grey.gif', :style => 'float:right;margin-right:10px;margin-top:15px'), {:controller => "alerts", :action => "alert", :message => "call_tech_support", :back_url => url_for(:controller => 'call_list', :action => 'show', :id => @user.id)}, {:id => 'add_caregiver_button'} %>
