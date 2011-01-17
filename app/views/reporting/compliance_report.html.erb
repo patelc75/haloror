@@ -55,6 +55,7 @@ end %>
 	  <% debug Time.zone %>	
 	<table border="1">
   		<tr>
+  			<th bgcolor="#E1E1E1">User ID</th>
   			<th bgcolor="#E1E1E1">User</th>
   			<th bgcolor="#E1E1E1">Last Post<br>(older than 1 day in <font color="red">red</font>)</th>
   			<th bgcolor="#E1E1E1">Last<br>Connectivity<br>Event</th>
@@ -72,6 +73,7 @@ end %>
 		
   		<% for user in users %>
   	    <tr align="center">
+  	      <td align="left"><a href="/reporting/compliance_report/<%=user.id%>"><%= user.id %></a></td>
   	    	<td align="left"><a href="/reporting/compliance_report/<%=user.id%>"><%= user.name %></a></td>
 
 			<!-- Last Post (older than 1 day in red) -->
