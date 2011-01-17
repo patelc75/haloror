@@ -13,7 +13,11 @@ class Group < ActiveRecord::Base
   # named_scope :distinct_by_name, :select => "DISTINCT name, *", :order => "name ASC"
 
   validates_presence_of :name
-  # FIXME: validates_uniqueness_of :name
+  # 
+  #  Tue Jan 18 01:15:10 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4027
+  #   * FIXME: why was this tag here? uniqueness should have ideally been validated anyways
+  validates_uniqueness_of :name
   validates_format_of :name, :with => /\A[a-z0-9_-]+\z/, :message => 'Only underscore, hyphen, lowercase and numeric characters are allowed'
   # http://api.rubyonrails.org/classes/ActiveModel/Validations/HelperMethods.html#method-i-validates_format_of
   # email validation taken from rails api
