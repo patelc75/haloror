@@ -1,82 +1,59 @@
 <h2><%= @title %></h2>
 
 <div class="table">
-	<div class="row header">
-<div class="col-100">
-	Actions
-</div>
-<div class="col-100">
-	User ID
-</div>
-<div class="col-100">
-	Event ID
-</div>
-<div class="col-100">
-	Event Type
-</div>
-<div class="col-200">
-	Event Timestamp
-</div>
-<div class="col-100">
-	Created By
-</div>
-<div class="col-200">
-	Created At
-</div>
-<div class="col-350">
-	Note
-</div>
-</div>
-<% if @notes %>
-	<% @notes.each do |note| %>
-	<div class="row">
-		<div class="col-100">
-			<%= link_to_remote 'edit', :update => "notes_#{note.id}", :url => {:controller => 'call_center', :action => 'edit_note', :id => note.id }%> 
-			&nbsp;|&nbsp; 
-			<%= link_to 'delete', :controller => 'call_center', :action => 'delete_note', :id => note.id, :confirm => "Sure to delete this note?" %>
-		</div>
-		<div class="col-100">
-			<%= note.user_id %>
-		</div>
-		<div class="col-100">&nbsp;
-			<%= note.event_id %>
-		</div>
-		<div class="col-100">&nbsp;
-			<%= note.event.event_type if note.event %>
-		</div>
-		<div class="col-200">&nbsp;
-			<%= note.event.timestamp if note.event %>
-		</div>
-			<div class="col-100">&nbsp;
-				<% user = nil
-				 	if !note.created_by.blank?
-					  user = note.creator
-					end
-				%>
-				<%= user.name if user %>
-			</div>
-		<div class="col-200">
-			<%= note.created_at %>
-		</div>
-		<div id="notes_column_<%= note.id %>" class="col-350">
-			<%= h(note.notes) %>
-		</div>
-	</div>
-	<div id="notes_<%= note.id %>">
-	
-	</div>
-	<% end %>
-<% end %>
+  <div class="row header">
+    <div class="col-125">&nbsp;</div>
+    <div class="col-100">
+      Created By
+    </div>
+    <div class="col-200">
+      Created At
+    </div>
+    <div class="col-350">
+      Note
+    </div>
+  </div>
+  <% if @notes %>
+    <% @notes.each do |note| %>
+    <div class="row">
+      <div class="col-125">
+        <table style="margin: 0; padding: 0;">
+          <tr>
+            <td><%= link_to_remote 'edit', :update => "notes_#{note.id}", :url => {:controller => 'call_center', :action => 'edit_note', :id => note.id }, :html => {:class => 'button small green-button'} %></td>
+            <td><%= link_to 'delete', {:controller => 'call_center', :action => 'delete_note', :id => note.id}, :class => "button small green-button" %></td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-100">&nbsp;
+        <% user = nil
+        if !note.created_by.blank?
+          user = note.creator
+        end
+        %>
+        <%= user.name if user %>
+      </div>
+      <div class="col-200">
+        <%= note.created_at %>
+      </div>
+      <div id="notes_column_<%= note.id %>" class="col-350">
+        <%= h(note.notes) %>
+      </div>
+    </div>
+    <div id="notes_<%= note.id %>">
+
+    </div>
+    <% end %>
+  <% end %>
   <div class="row">
-	  <div class="col-100">
-		<% if @event_id %>
-			<%= link_to_remote 'Add Note', :update => 'new_note_id', :url => {:controller => 'call_center', :action => 'add_event_note', :event_id => @event_id, :user_id => @user_id}%> 
-		<% else %>
-			<%= link_to_remote 'Add Note', :update => 'new_note_id', :url => {:controller => 'call_center', :action => 'add_note', :user_id => @user_id}%> 
-			<%end%>
-		</div>
-	  <div id='new_note_id'>
-		
-		</div>
-	</div>
+    <div class="col-150">
+      <% if @event_id %>
+        <%= link_to_remote 'Add Note', :update => 'new_note_id', :url => {:controller => 'call_center', :action => 'add_event_note', :event_id => @event_id, :user_id => @user_id}, :html => { :class => "button blue-button"} %> 
+      <% else %>
+        <%= link_to_remote 'Add Note', :update => 'new_note_id', :url => {:controller => 'call_center', :action => 'add_note', :user_id => @user_id}, :html => { :class => "button blue-button"}%> 
+      <% end %>
+    </div>
+    <div id='new_note_id'>
+
+    </div>
+  </div>
 </div>
