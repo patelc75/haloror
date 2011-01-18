@@ -6,4 +6,5 @@
     <%= link_to group_row.name, edit_group_path(group_row) %><br />
     <span class="tiny"><%= h group_row.description %></span>
   </td>
+  <td><%= link_to "Config > Users", {:controller => 'reporting', :action => 'users', :group_name => group_row.name}, :class => "button small green-button" %></td>
 </tr>

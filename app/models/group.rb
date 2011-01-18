@@ -35,6 +35,7 @@ class Group < ActiveRecord::Base
   # }
   
   named_scope :ordered, lambda {|*args| {:order => (args.flatten.first || :name)}}
+  named_scope :contains, lambda {|*args| _str = "%#{args.flatten.first}%"; { :conditions => ["name LIKE ? OR email LIKE ? OR sales_type LIKE ?", _str, _str, _str] }}
 
   # --------------- triggers / callbacks (never called directly in code)
 

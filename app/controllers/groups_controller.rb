@@ -4,7 +4,9 @@ class GroupsController < ApplicationController
   # GET /groups
   # GET /groups.xml
   def index
-    @groups = Group.find(:all, :order => "updated_at DESC").paginate :page => params[:page], :per_page => 25
+    @search_string = params[:search_string]
+    @groups = (@search_string.blank? ? Group.find(:all, :order => "updated_at DESC") : Group.contains(@search_string))
+    @groups = @groups.paginate :page => params[:page], :per_page => 25
 
     respond_to do |format|
       format.html # index.html.erb
