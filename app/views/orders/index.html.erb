@@ -8,22 +8,12 @@ Purchased from <%= link_to 'http://'+ServerInstance.current_host+'/order' %>
   <tr>
     <th>
       ID ( Order number ) Created at<br/>
-      <span class="prepend-1 tiny">Billing, Shipping</span>
+      <span class="prepend-1 tiny">Group, Billing, Shipping</span>
     </th>
     <th class="textright append-2">
       Card number, Charged amount, Payments<br />
       <span class="append-2 tiny">Products, Coupon details</span>
     </th>
-    <!-- <th>Id</th>
-    <th>Created At</th>
-    <th>Order #</th>
-    <th>Card Number</th>
-    <th>Billing</th>
-    <th>Shipping</th>
-    <th>Order Items</th>
-    <th>Total<br>Charged</th>
-    <th>Notes</th>
-    <th>Payments</th> -->
   </tr>
   <%= render :partial => 'order_row', :collection => @orders %>
 </table>
