@@ -2,7 +2,7 @@
 <%= render :partial => "/reporting/nav_config" %>
 <div><%= will_paginate @invoices %></div>
 <div><%= link_to 'Config > Users (Installed, Pending)', { :controller => 'reporting', :action => 'users', :user_subset => {'pending' => 'pending', 'installed' => 'installed'} }, :class => 'button small green-button float-right' %></div>
-<div class="span-24 fixed-width border">
+<div class="span-24">
   <table class="bluegrey">
     <tr>
       <th><div class="border">UID</div></th>
