@@ -141,18 +141,21 @@
             <%= submit_tag "#{user.test_mode? ? 'Dis' : 'En'}able Test Mode", :class => "small #{user.test_mode? ? 'blue-button' : 'gray-button'} button", :id => "#{user.test_mode? ? 'dis' : 'en'}able_test_mode_#{user.id}" %>
             <br />
           <% end %>
-          <% if user.activation_code != nil %>
-            <% if current_user.is_super_admin? %>
-              <%= image_tag('profile.png') %><%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %> | 
-            <% end %>
-            <%= link_to 'Resend Email', resend_path(user.id) %>
-          <% else %>
-            <span class="text-small"> Activated <%= user.activated_at.strftime(Time::DATE_FORMATS[:date_time]) %> </span> 
-          <% end %>
         <% end %>
       <% end %>
       <% end %>
       &nbsp;
+
+      <% if user.is_halouser? || user.is_caregiver? %>
+        <% if user.activation_code != nil %>
+          <% if current_user.is_super_admin? %>
+            <%= image_tag('profile.png') %><%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %> | 
+          <% end %>
+          <%= link_to 'Resend Email', resend_path(user.id) %>
+        <% else %>
+          <span class="text-small"> Activated <%= user.activated_at.strftime(Time::DATE_FORMATS[:date_time]) %> </span> 
+        <% end %>
+      <% end %>
 
       <%#=link_to_remote_redbox('Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile[:id], :frame => true }, :html => {:method => :get})%>
       <!-- %if user.user_intakes and user.user_intakes.length > 0%-->
