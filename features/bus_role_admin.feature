@@ -19,7 +19,7 @@ Feature: Admin roles
     And I am authenticated as "admin-user" with password "12345"
     
   Scenario: I can seniors with a link to their Caregivers
-    When I follow links "Config > users_all"
+    When I follow links "Config > Users"
     Then page content should have "Config:, Users table"
     And I should see "Caregivers" link
 
@@ -38,7 +38,6 @@ Feature: Admin roles
     Given a user "other-admin" exists with profile
     And the following groups:
       | name   |
-      | group1 |
       | group2 |
     And user "other-admin" has "admin" roles for group "group2"
     And I am authenticated as "other-admin" with password "12345"
@@ -56,9 +55,8 @@ Feature: Admin roles
 
   # shorthand: Given I am adding a new caregiver for "senior-user"
   Scenario: Admin can create new caregiver for a new halouser
-    When I follow links "Config > users_all > Caregivers > add_caregiver_button"
-    And I follow "Add new caregiver with no email"
-    Then I should not see "Please call tech support 1-888-971-HALO"
+    When I follow links "Config > Users > Caregivers > add_caregiver_button"
+    Then I should see "Please call tech support 1-888-971-HALO"
     
   Scenario: Add a new caregiver and check result
     Given I am adding a new caregiver for "senior-user"
@@ -88,8 +86,8 @@ Feature: Admin roles
       Given a group "bestbuy" exists
       And user "admin-user" has "admin" role for group "bestbuy"
       And the following user intakes:
-        | gateway_serial | group_name |
-        | H234567890     | bestbuy    |
-      And I edit user intake with gateway serial "H234567890"
+        | group_name |
+        | bestbuy    |
+      And I edit the last user intake
       Then page should not have a submit button
       Then page should not have a save button
