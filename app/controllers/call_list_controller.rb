@@ -44,6 +44,7 @@ class CallListController < ApplicationController
         opts.save
       end
     end
+    render :text => '', :layout => false
   end
   
   def text
