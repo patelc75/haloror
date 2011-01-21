@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110111174006) do
+ActiveRecord::Schema.define(:version => 20110113184745) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -308,17 +308,20 @@ ActiveRecord::Schema.define(:version => 20110111174006) do
   end
 
   create_table "device_infos", :force => true do |t|
-    t.integer "device_id"
-    t.string  "serial_number"
-    t.string  "mac_address"
-    t.string  "vendor"
-    t.string  "model"
-    t.string  "device_info_type"
-    t.integer "device_info_id"
-    t.integer "user_id"
-    t.string  "hardware_version"
-    t.string  "software_version"
-    t.integer "mgmt_response_id"
+    t.integer  "device_id"
+    t.string   "serial_number"
+    t.string   "mac_address"
+    t.string   "vendor"
+    t.string   "model"
+    t.string   "device_info_type"
+    t.integer  "device_info_id"
+    t.integer  "user_id"
+    t.string   "hardware_version"
+    t.string   "software_version"
+    t.integer  "mgmt_response_id"
+    t.datetime "created_at"
+    t.boolean  "software_version_new"
+    t.boolean  "software_version_current"
   end
 
   add_index "device_infos", ["device_id"], :name => "index_device_infos_on_device_id"
