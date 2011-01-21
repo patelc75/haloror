@@ -39,7 +39,7 @@ class UserAdminController < ApplicationController
       @profile = @user.profile # Profile.new. Why do we need it at all?
       # g = Group.find_by_name(@group)
       # @group_roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
-      @roles = Role.distinct_by_name.ordered
+      @roles = Role.all_distinct_names_except("halouser", "caregiver", "installer", "moderator", "sales", "subscriber")
     # end
   end
 
