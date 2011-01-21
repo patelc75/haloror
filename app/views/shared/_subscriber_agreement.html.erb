@@ -181,7 +181,7 @@
     
     <div class="span-24 last text-right">
       <% if @user_intake && @user_intake.can_sign_agreement?(current_user) %>
-        <%= check_box "userintake", "agree", :onchange => "agree_button.toggle(); return false;" %> I Agree Terms and Conditions
+        <%= check_box "userintake", "agree", :checked => true, :onchange => "user_intake_submit.toggle(); return false;" %> I Agree Terms and Conditions
       <% end %>
       
       <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update', :id => @user_intake.id, :redirect_hash => @redirect_hash} do |f| -%>
