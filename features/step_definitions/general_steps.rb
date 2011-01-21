@@ -63,7 +63,6 @@ Given /^(the|only the) following (.+):$/ do |_condition, name, table|
     model = Factory.build(name.gsub(/ /,'_').singularize.to_sym)
     model.attributes = hash # apply attributes in memory. helps to apply virtual attributes correctly
     model.skip_validation = true if model.is_a?( UserIntake)
-    debugger
     model.save.should be_true
     # 
     #  Fri Nov 19 01:08:12 IST 2010, ramonrails
