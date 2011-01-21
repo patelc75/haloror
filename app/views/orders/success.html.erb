@@ -1,4 +1,4 @@
-<h1 id="thank_you_for_placing_the_order_with_us">Success: Please check your email for online activation instructions!</h1>
+<h1 id="thank_you_for_placing_the_order_with_us">Success: Please check your email for online activation instructions (details below)!</h1>
 <% if logged_in? && current_user.is_super_admin? %>
 <p><a href="/orders">Online Store Orders table</a></p>
 <% end %>
@@ -81,6 +81,6 @@
 <br><br>
 <fieldset style="border: 2px solid ; padding: 10px;">
 <legend><b>Follow-up Instructions</b></legend>
-Instructions for online activation have been sent in a separate email. Once you login, you will be asked to accept our subscriber agreement. You will also be prompted to fill out our online User Intake form which asks for your profile and your caregiver's profiles. Your account CANNOT go live until 48 hours after you have submitted the online user intake form, so please start the process as soon as possible.<br><br> 
+Instructions for online activation have been sent in a separate email. Once you login, you will be asked to accept our subscriber agreement. You will also be prompted to fill out our online User Intake form which asks for your personal info and your caregiver's personal info. Your account CANNOT go live until 48 hours after you have submitted the online user intake form, so please start the process as soon as possible.<br><br> 
 <%= render :partial => 'users/forms_and_installation'%>
 </fieldset>
