@@ -79,8 +79,18 @@ Factory.define :device_unavailable_alert do |v|
   v.association :device
 end
 
-Factory.define :dial_up do |v|
-  
+Factory.define :device_info do |v|
+  v.serial_number { |e| e.device.serial_number }
+  v.mac_address {  6.times.collect { "%02d" % rand(99) }.join(':') } # "64:97:62:76:78:86"
+  v.vendor { Faker::Company.name }
+  v.model { Faker::Lorem.words[0] }
+  v.device_info_type { Faker::Lorem.words[0] }
+  v.hardware_version { "4.times.collect { rand(99).to_s }.join('.')" }
+  v.software_version { "4.times.collect { rand(99).to_s }.join('.')" }
+  v.software_version_new { rand(1) == 1 }
+  v.software_version_current { rand(1) == 1 }
+  v.association :device
+  v.association :user
 end
 
 Factory.define :emergency_number do |v|
