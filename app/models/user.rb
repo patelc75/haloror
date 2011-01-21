@@ -2208,15 +2208,12 @@ class User < ActiveRecord::Base
   
   def name
     (profile.blank? ? (login.blank? ? email : login) : profile.name)
-    # if(profile and !profile.last_name.blank? and !profile.first_name.blank?)
-    #   profile.first_name + " " + profile.last_name 
-    # elsif !login.blank?
-    #   login
-    # else 
-    #   email
-    # end
   end
-
+       
+  def id_and_name
+     "(#{id}) " + name if !name.nil? 
+  end    
+  
   # Ticket: 3213 requires this
   # defines the following methods
   #   user.first_name
