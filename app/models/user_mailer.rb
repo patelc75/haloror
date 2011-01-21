@@ -2,22 +2,20 @@ class UserMailer < ActionMailer::ARMailer
   include ServerInstance
 
   def update_to_safety_care( user_intake)
-    setup_email(Group.safety_care!.email) 
+    setup_email(Group.safety_care!.email)
+    @from = "customer_intake@halomonitoring.com"     
     @subject     += "Update #{user_intake.senior.call_center_account}"
     @body[:user_intake] = user_intake
   end
   
   def senior_and_caregiver_details(user)
-    setup_email(Group.safety_care!.email) 
+    setup_email(Group.safety_care!.email)
+    @from = "customer_intake@halomonitoring.com" 
     @subject     += "HM" + "#{user.profile.account_number}" unless user.profile.blank?
     #content_type "text/html"
     @body[:user] = user
   end
   
-  # 
-  #  Wed Nov 24 23:01:26 IST 2010, ramonrails
-  #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
-  #   * https://redmine.corp.halomonitor.com/issues/3785
   def user_installation_alert( _senior, _email = nil)
     #  Fri Dec 17 21:06:18 IST 2010, ramonrails
     #   * email is now optional. when not supplied, picks user's email
@@ -27,24 +25,6 @@ class UserMailer < ActionMailer::ARMailer
     @subject += "#{_senior.name} installed" # user state
     body        :user => _senior # senior details in the email
   end
-
-  # 
-  #  Tue Nov 23 22:51:11 IST 2010, ramonrails
-  #   * DEPRECATED: https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
-  #
-  # def signup_installation(recipient,senior=:exclude_senior_info)
-  #   setup_email(recipient)
-  #   @subject    += EMAIL_SUBJECT[:installation] # 'Please read before your installation'
-  #   @body[:host] = "http://#{ServerInstance.current_host}"
-  #   if senior == :exclude_senior_info
-  #     @body[:name] = nil
-  #   elsif senior.is_a?(User)
-  #     @body[:url]  = "http://#{ServerInstance.current_host}/activate/#{senior.activation_code}"
-  #     @body[:name] = senior.name
-  #   else
-  #     raise "senior must be a User object or :exclude_senior_info"
-  #   end
-  # end
 
   def signup_notification(user)
     setup_email(user)

@@ -1,7 +1,6 @@
 class CriticalMailer < ActionMailer::ARMailer
   include UtilityHelper
   include ServerInstance
-  NO_REPLY = "myHalo@halomonitoring.com"
 
 #=============== General Methods for Alerts ======================  
   def non_critical_caregiver_email(model, user=nil)
@@ -110,7 +109,8 @@ class CriticalMailer < ActionMailer::ARMailer
     msg_body = <<-EOF
     Cancel Halo Monitoring Acct# #{acct_num}
     EOF
-    setup_message(subject, msg_body, :use_email_log, :use_host_name_in_from_addr)     
+    setup_message(subject, msg_body, :use_email_log, :use_host_name_in_from_addr) 
+    @from = "customer_intake@halomonitoring.com"    
   end
 
 #=============== Utility Methods  ================================  
@@ -119,7 +119,7 @@ class CriticalMailer < ActionMailer::ARMailer
   #if email_log != :no_email_log, then send BCC to email_log@halomonitoring.com
   #if from_addr != :use_host_name_in_from_addr, then myHalo@halomonitoring.com instead of hostname in from addr
   def setup_message(subject, msg_body, email_log=nil, from_addr=nil)
-    @from        = from_addr != :use_host_name_in_from_addr ? NO_REPLY : "no-reply@"+ServerInstance.current_host 
+    @from        = from_addr != :use_host_name_in_from_addr ? "myHalo@halomonitoring.com" : "no-reply@"+ServerInstance.current_host 
     @subject     = "[" + ServerInstance.current_host_short_string + "] "
     @subject     += subject unless subject.blank?
     @sent_on     = Time.now
@@ -202,7 +202,7 @@ class CriticalMailer < ActionMailer::ARMailer
 
   def setup_daily(subject)
     @recipients = daily_recipients
-    @from        = NO_REPLY
+    @from        = "no-reply@"+ServerInstance.current_host
     @subject     = "[" + ServerInstance.current_host_short_string + "] #{subject}"
     @sent_on     = Time.now
   end
