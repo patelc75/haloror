@@ -202,6 +202,7 @@ class UserIntakesController < ApplicationController
   # PUT /user_intakes/1
   # PUT /user_intakes/1.xml
   def update
+    # debugger
     @user_intake = UserIntake.find(params[:id])
     @user_intake.skip_validation = (['Save', 'Print', 'Proceed'].include?(params[:commit])) # just save without asking anything
     @groups = Group.for_user(current_user)
@@ -224,8 +225,8 @@ class UserIntakesController < ApplicationController
       @user_intake.send( "#{_attribute}=", _hash[_attribute])
     end
     #   * apply attributes now that we have the control booleans applied
-    @user_intake.attributes = params[:user_intake].reject { |k,v| k.include?("attributes") }
     apply_attributes_from_hash( @user_intake, _hash.select {|k,v| k.include?("attributes") })
+    @user_intake.attributes = params[:user_intake].reject { |k,v| k.include?("attributes") }
     # _hash.each {|k,v| @user_intake.send( "#{k}=".to_sym, v) }
 
     respond_to do |format|

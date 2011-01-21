@@ -255,7 +255,7 @@ Feature: Pre quality
     And I check "caregiver3_text_flag"
     And I uncheck "user_intake_subscriber_is_user"
     And I check "user_intake_subscriber_is_caregiver"
-    And I check "user_intake_no_caregiver_1"
+    # And I check "user_intake_no_caregiver_1"
     And I uncheck "user_intake_no_caregiver_2"
     And I uncheck "user_intake_no_caregiver_3"
     And I fill the subscriber details for user intake form
@@ -278,11 +278,12 @@ Feature: Pre quality
     # Click “Submit” button on User intake form and verify “Ready for Approval” state at My Links > User Intakes
     #  Mon Nov 22 13:31:40 IST 2010, ramonrails: TODO: manually smoke tested this step
     When I edit the last user intake
-    #   * https://redmine.corp.halomonitor.com/issues/4006#note-10
-    # # Then page content should have "H200220022, H100110011, caregiver2 first name, caregiver3 first name, `Date.today.to_s`"
-    # #   * This is now AJAX. need capybara
-    # # email, text and phone checkboxes
-    # # https://redmine.corp.halomonitor.com/issues/3674
+    # Then page content should have "H200220022, H100110011, caregiver2 first name, caregiver3 first name, `Date.today.to_s`"
+    #   * This is now AJAX. need capybara
+    # email, text and phone checkboxes
+    # https://redmine.corp.halomonitor.com/issues/3674
+    Then caregiver2 of last user intake should have email, text checked
+    And caregiver3 of last user intake should have email, text checked
     # Then "caregiver1_email_flag" checkbox should be checked
     # And "caregiver2_email_flag" checkbox should be checked
     # And "caregiver3_email_flag" checkbox should be checked

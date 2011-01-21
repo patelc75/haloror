@@ -72,39 +72,42 @@ Feature: Manage triage
   #   When I follow "Dismiss All Greens"
   #   Then I should not see any green battery
 
-  Scenario Outline: Correct battery fill and color
-    Given battery status for "senior1" is <number> percent
-    When I visit "group1-admin" pending triage for group "group1"
-    Then I should see <width> wide <color> battery for "senior1"
-    
-    Examples:
-      | number | color  | width |
-      | 9      | red    | 10    |
-      | 10     | red    | 10    |
-      | 20     | red    | 10    |
-      | 25     | yellow | 25    |
-      | 30     | yellow | 25    |
-      | 50     | green  | 50    |
-      | 60     | green  | 50    |
-      | 75     | green  | 75    |
-      | 85     | green  | 75    |
-      | 100    | green  | 100   |
-      | 110    | green  | 100   |
-
-  Scenario Outline: Correct connectivity status icon
-    Given last event for "senior1" is <event>
-    When I visit "group1-admin" pending triage for group "group1"
-    Then I should see <icon> icon for "senior1"
-    
-    Examples:
-      | event                  | icon                     |
-      | BatteryPlugged         | battery_plugged          |
-      | DeviceAvailableAlert   | device_available_alert   |
-      | DeviceUnavailableAlert | device_unavailable_alert |
-      | GatewayOfflineAlert    | gateway_offline_alert    |
-      | GatewayOnlineAlert     | gateway_online_alert     |
-      | StrapFastened          | strap_fastened           |
-      | StrapRemoved           | strap_removed            |
+  # 
+  #  Fri Jan 21 01:03:43 IST 2011, ramonrails
+  #   * 3887. For later. triage is not part of release right now
+  # Scenario Outline: Correct battery fill and color
+  #   Given battery status for "senior1" is <number> percent
+  #   When I visit "group1-admin" pending triage for group "group1"
+  #   Then I should see <width> wide <color> battery for "senior1"
+  #   
+  #   Examples:
+  #     | number | color  | width |
+  #     | 9      | red    | 10    |
+  #     | 10     | red    | 10    |
+  #     | 20     | red    | 10    |
+  #     | 25     | yellow | 25    |
+  #     | 30     | yellow | 25    |
+  #     | 50     | green  | 50    |
+  #     | 60     | green  | 50    |
+  #     | 75     | green  | 75    |
+  #     | 85     | green  | 75    |
+  #     | 100    | green  | 100   |
+  #     | 110    | green  | 100   |
+  # 
+  # Scenario Outline: Correct connectivity status icon
+  #   Given last event for "senior1" is <event>
+  #   When I visit "group1-admin" pending triage for group "group1"
+  #   Then I should see <icon> icon for "senior1"
+  #   
+  #   Examples:
+  #     | event                  | icon                     |
+  #     | BatteryPlugged         | battery_plugged          |
+  #     | DeviceAvailableAlert   | device_available_alert   |
+  #     | DeviceUnavailableAlert | device_unavailable_alert |
+  #     | GatewayOfflineAlert    | gateway_offline_alert    |
+  #     | GatewayOnlineAlert     | gateway_online_alert     |
+  #     | StrapFastened          | strap_fastened           |
+  #     | StrapRemoved           | strap_removed            |
 
   # # https://redmine.corp.halomonitor.com/issues/3170
   # # # assuming all other conditions for the alert status are "normal" since we just created the user data

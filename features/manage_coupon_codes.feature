@@ -32,7 +32,7 @@ Feature: Manage coupon codes
   Scenario: Add a new coupon code
     Given I am creating a coupon code
     When I select "reseller" from "Group"
-    And I select "12001002-1 -- Chest Strap" from "Device model"
+    And I select "12001002-1 -- Chest Strap" from "Product"
     And I fill in the following:
       | Coupon Code       | cc_160_pq1 |
       | Deposit           | 66         |
