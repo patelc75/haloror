@@ -6,7 +6,7 @@
   <div id="assign-super-admin" class="container box rounded">
     <h2>Assign Super Admin Role</h2>
     <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_super_role'}, :update => 'assign_role' do %>
-      <%= collection_select 'superadmin', 'user_id', @users, :id, :name, {}, {} %> is a Super Admin.
+      <%= collection_select 'superadmin', 'user_id', @users, :id, :id_and_name, {}, {} %> is a Super Admin.
       <br /><%= submit_tag 'Assign Super Admin Role' %>
     <% end %>
   </div>
@@ -15,7 +15,7 @@
   <div id="assign-role" class="container box rounded">
     <h2>Assign Roles</h2>
     <% form_remote_tag :url => {:controller => 'user_admin',:action => 'assign_role'}, :update => 'assign_role' do %>
-      <%= collection_select 'role', 'user_id', @users, :id, :name %> is a(n) <%= collection_select 'role', 'role_name', @roles, :name, :name %> of <%= collection_select 'role', 'group_name', @groups, :name, :name %>
+      <%= collection_select 'role', 'user_id', @users, :id, :id_and_name %> is a(n) <%= collection_select 'role', 'role_name', @roles, :name, :name %> of <%= collection_select 'role', 'group_name', @groups, :name, :name %>
       <br /><%= submit_tag 'Assign Role and Group' %>
     <% end %>
   </div>
@@ -23,7 +23,7 @@
   <div id="remove-role" class="container box rounded">
     <h2>Remove Role</h2>
     <% form_remote_tag :url => {:controller => 'user_admin',:action => 'remove_role'}, :update => 'assign_role' do %>
-      Remove <%= collection_select 'remove', 'user_id', @users, :id, :name %> from <%= collection_select 'role', 'name', @roles, :name, :name %> of <%= collection_select 'group', 'name', @groups, :name, :name %>
+      Remove <%= collection_select 'remove', 'user_id', @users, :id, :id_and_name %> from <%= collection_select 'role', 'name', @roles, :name, :name %> of <%= collection_select 'group', 'name', @groups, :name, :name %>
       <br /><%= submit_tag 'Remove Role and Group' %>
     <% end %>
   </div>
