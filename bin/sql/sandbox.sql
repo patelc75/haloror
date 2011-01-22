@@ -79,7 +79,9 @@ order by vip desc, created_at desc;
 
 select * from users_by_role_and_group('halouser', 'safety_care');
 
-select users.id, users.login, users.status, users.demo_mode, profiles.first_name, profiles.last_name from users, profiles where users.id in (1220, 1233) and profiles.user_id = users.id;
+/* Users with associated profiles */
+select users.id, users.login, users.activated_at, users.status, users.demo_mode, profiles.first_name, profiles.last_name from users, profiles where users.id in (1268, 1269, 1270) and profiles.user_id = users.id;
+
 update users set status = 'Installed' where id in (1220, 1233);
 update users set demo_mode = fa where id in (1220, 1233);
 
@@ -94,4 +96,20 @@ update users set demo_mode = fa where id in (1220, 1233);
         and groups.name != 'safety_care'
         and status = 'Installed' and demo_mode != true
         order by users.id;
-        order by profiles.state asc, users.created_at desc;      
+        order by profiles.state asc, users.created_at desc;  
+
+select * from mgmt_responses where id in (3712791, 3713124);
+select user_id, software_version, mgmt_response_id from device_infos where software_version like '%1319%'; 
+s
+select di.user_id, di.device_id, di.software_version, mr.timestamp_server from device_infos di, mgmt_responses mr 
+where di.mgmt_response_id = mr.id
+and di.software_version not like '%2.01.01.421%'
+and user_id in (248)
+limit 1000;
+
+/*ADL pie chart on server WWW
+UID #1
+12am CST - 4am CST last night (morning of Jan 20) */
+select * from vitals where user_id = 1 and timestamp > '2011-01-20 05:00' and timestamp < '2011-01-20 09:00' limit 1000;
+
+
