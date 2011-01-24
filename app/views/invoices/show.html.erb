@@ -21,7 +21,7 @@
 <p>Dealer Install Fee: <%= h @invoice.install_fee_amount %></p>
 <p>Dealer Install Charge Date: <%= h @invoice.install_fee_charged_at %></p>
 <p>Dealer Install Fee Payout Date: <%= h @invoice.install_fee_payout_date %></p>
-<p>Affiliate Fee: <%= h @invoice.affiliate_fee_amount %></p>
+<p>Affiliate Fee <span class="tiny">(If installed for 3 months)</span>: <%= h @invoice.affiliate_fee_amount %></p>
 <p>Affiliate Group: <%= h @invoice.affiliate_fee_group_name %></p>
 <p>Affiliate Payout Date: <%= h @invoice.affiliate_fee_payout_at %></p>
 <p>Referral Fee <span class="tiny">(If installed for 3 months)</span>: <%= h @invoice.referral_amount %></p>
