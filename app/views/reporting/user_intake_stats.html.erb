@@ -1,0 +1,38 @@
+<%=render :partial => 'nav'%>
+
+<div class="span-4"><h3>Users Intake Stats</h3></div>
+<div class="span-20 last">
+  <form id="group_form_id" action="/reporting/user_intake_stats" method="GET">
+    <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
+    Select <label for="group_name">Group</label>:
+    <%= select_tag 'group_name', options_for_select( [['All Groups','']] + @groups.collect {|e| [e.name, e.name] }, (@group.name unless @group.blank?)), {:onchange => "$('group_form_id').submit();"}%>
+  </form>
+</div>
+<br/><br/>
+
+<div class="box span-7">
+  <div style="display: inline-block;"><b>User Intake States</b><br><span class="tiny">Non-Demo / Demo users</span><br>&nbsp;</div>
+  <br />
+  <% User::STATUS.each do |key, _status| %>
+    <div style="display: inline-block;">
+      <%= image_tag( 'user.png') %>
+      <% if @group.blank? %>
+        <% if current_user.is_super_admin? %>
+          <%= User.where_status(_status).reject(&:demo_mode?).length %>
+           / <%= User.where_status(_status).select(&:demo_mode?).length %>
+        <% else %>
+          <%= @groups.collect(&:has_halousers).flatten.uniq.reject(&:demo_mode?).collect(&:status).select {|e| e == _status}.length %>
+           / <%= @groups.collect(&:has_halousers).flatten.uniq.select(&:demo_mode?).collect(&:status).select {|e| e == _status}.length %>
+        <% end %>
+      <% else %>
+        <%= @group.users.reject(&:demo_mode?).select {|e| e.status == _status }.length %>
+         / <%= @group.users.select(&:demo_mode?).select {|e| e.status == _status }.length %>
+      <% end %>
+      <%= _status.blank? ? 'Not Submitted' : _status %>
+      <%= "<span class='tiny'> (Pending)</span>" if !['Installed', 'Cancelled'].include?(_status) %>
+    </div>
+    <br />
+  <% end %>
+</div>
+<hr />
+<div><%= link_to 'User Stats', { :controller => 'reporting', :action => 'user_stats' } %></div>
