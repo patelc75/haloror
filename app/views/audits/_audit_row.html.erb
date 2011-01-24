@@ -5,7 +5,7 @@
   <td><%= audit_row.action %></td>
   <td>
     <% if audit_row.auditable_type == 'User' %>
-      <%= link_to "#{truncate( audit_row.changes.to_s, 30, "...")}", user_audit_path( audit_row.user.id, audit_row.id) %>
+      <%= link_to "#{truncate( audit_row.changes.to_s, 30, "...")}", user_audit_path( audit_row.auditable_id, audit_row.id) %>
     <% elsif audit_row.auditable_type == 'Invoice' %>
       <%= link_to "#{truncate( audit_row.changes.to_s, 30, "...")}", invoice_audit_path( audit_row.auditable_id, audit_row.id) %>
     <% end %>
