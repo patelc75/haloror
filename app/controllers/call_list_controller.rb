@@ -38,10 +38,11 @@ class CallListController < ApplicationController
     get_caregivers(user)
     @caregivers.each do |position, caregiver|
       roles_user = user.roles_user_by_caregiver(caregiver)		
-      opts = roles_user.roles_users_option
+      if ( opts = roles_user.roles_users_option )
       if new_pos = params['call_list'].index(roles_user.user_id.to_s)
         opts.position = new_pos + 1
         opts.save
+      end
       end
     end
     render :text => '', :layout => false
