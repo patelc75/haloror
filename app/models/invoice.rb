@@ -7,6 +7,11 @@ class Invoice < ActiveRecord::Base
   
   named_scope :ordered, :order => "created_at DESC"
   
+  # 
+  #  Mon Jan 24 21:15:04 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4074
+  acts_as_audited
+  
   # ===========================
   # = public instance methods =
   # ===========================

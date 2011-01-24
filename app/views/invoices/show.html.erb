@@ -29,5 +29,6 @@
 <p>Referral Payout Date: <%= h @invoice.referral_payout_at %></p>
 <p>
   <%= link_to 'List', invoices_path, :class => 'button white-button' %>
+  <%= link_to 'Audit...', invoice_audits_path( @invoice), :class => 'button white-button' %>
   <%= link_to 'Edit', edit_invoice_path( @invoice), :class => 'button green-button' %>
 </p>

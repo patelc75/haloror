@@ -45,6 +45,7 @@ $(function() {
   <p>Referral Fee Group: <%= f.select :referral_group_id, Group.ordered.collect { |e| [e.name, e.id] }, :include_blank => true %></p>
   <p>Referral Payout Date: <%= f.text_field :referral_payout_at, :class => 'datepicker' %></p>
   <p>
+    <%= link_to 'Audit...', invoice_audits_path( @invoice), :class => 'button white-button' %>
     <%= link_to 'Cancel', invoices_path, :class => 'button white-button' %>
     <%= f.submit "Save", :disable_with => 'Saving...', :class => 'button green-button' %>
   </p>
