@@ -18,9 +18,33 @@ order by vip desc, created_at desc);
 select user_id, timestamp, timestamp_call_center, call_center_pending as pend from panics 
 where timestamp_call_center > '2010-12-01' and timestamp_call_center < '2011-01-01';
 
-select user_id, timestamp, timestamp_call_center, call_center_pending as pend from falls 
-where timestamp_call_center > '2011-01-12' and timestamp_call_center < '2011-01-15';
+select falls.user_id, falls.timestamp, falls.timestamp_call_center, falls.timestamp_server, falls.call_center_pending as pend, devices.serial_number 
+from falls, devices_users, devices
+where falls.user_id = devices_users.user_id 
+and devices.id = devices_users.device_id 
+and timestamp_call_center > '2010-12-01' and timestamp_call_center < '2011-01-01'
+and devices.serial_number not like '%H2%' 
+order by devices.serial_number desc
+limit 1000;
 
+
+select falls.user_id, falls.timestamp,falls.timestamp_server, falls.timestamp_call_center, falls.call_center_pending as pend, devices.serial_number 
+from falls, devices_users, devices
+where falls.user_id = devices_users.user_id 
+and devices.id = devices_users.device_id 
+and devices.serial_number not like '%H2%' 
+and falls.user_id = 1263
+order by devices.serial_number desc
+limit 1000;
+
+select panics.user_id, panics.timestamp, panics.timestamp_server, panics.timestamp_call_center, panics.call_center_pending as pend, devices.serial_number 
+from panics, devices_users, devices
+where panics.user_id = devices_users.user_id 
+and devices.id = devices_users.device_id 
+and devices.serial_number not like '%H2%' 
+and panics.user_id = 1263
+order by devices.serial_number desc
+limit 1000;
 
 /* critical alerts with more than 5 min delay from GW to server */
 select id, timestamp, timestamp_call_center, timestamp_server, timestamp_call_center-timestamp_server as delay 

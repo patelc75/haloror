@@ -20,13 +20,15 @@
 <p>Cancelled Date: <%= h @invoice.cancelled_date %></p>
 <p>Dealer Install Fee: <%= h @invoice.install_fee_amount %></p>
 <p>Dealer Install Charge Date: <%= h @invoice.install_fee_charged_at %></p>
+<p>Dealer Install Fee Payout Date: <%= h @invoice.install_fee_payout_date %></p>
 <p>Affiliate Fee: <%= h @invoice.affiliate_fee_amount %></p>
 <p>Affiliate Group: <%= h @invoice.affiliate_fee_group_name %></p>
-<p>Affiliate Charge Date: <%= h @invoice.affiliate_fee_charged_at %></p>
+<p>Affiliate Payout Date: <%= h @invoice.affiliate_fee_payout_at %></p>
 <p>Referral Fee <span class="tiny">(If installed for 3 months)</span>: <%= h @invoice.referral_amount %></p>
 <p>Referral Fee Group: <%= h @invoice.referral_group_name %></p>
-<p>Referral Charge Date: <%= h @invoice.referral_charged_at %></p>
+<p>Referral Payout Date: <%= h @invoice.referral_payout_at %></p>
 <p>
   <%= link_to 'List', invoices_path, :class => 'button white-button' %>
+  <%= link_to 'Audit...', invoice_audits_path( @invoice), :class => 'button white-button' %>
   <%= link_to 'Edit', edit_invoice_path( @invoice), :class => 'button green-button' %>
 </p>

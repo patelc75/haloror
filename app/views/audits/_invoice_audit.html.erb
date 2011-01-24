@@ -1,0 +1,11 @@
+<!-- <h1 id="audit_log">Audit log for invoice <%= @model_object.id %></h1>
+<div class="span-8">
+  <% @model_object.user.user_intakes.each do |user_intake| %>
+  <div>User Intake <%= user_intake.id %>:
+    <% user_intake.users.each do |user| %>
+      <span><%= link_to "#{user.name}", invoice_audits_path( user.id) unless user.blank? %> </span>
+    <% end %>
+  </div>
+  <% end %>
+</div>
+<hr /> -->

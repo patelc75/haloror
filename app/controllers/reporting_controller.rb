@@ -235,16 +235,21 @@ class ReportingController < ApplicationController
   # code lifted from "users" action
   # https://redmine.corp.halomonitor.com/issues/3571
   def user_stats
-    @groups = (current_user.is_super_admin? ? Group.all(:order => "name") : current_user.group_memberships)
-    @group_name = params[:group_name]
-    @group = (@group_name.blank? ? nil : Group.find_by_name( params[:group_name] )) 
-    # 
-    #  Thu Dec  9 01:28:27 IST 2010, ramonrails
-    #   * more variables that are required in view
-    @halouser_ids = User.halousers.collect(&:id).flatten.compact.uniq
-    _group_halousers = @groups.collect(&:has_halousers).flatten.compact.uniq
-    @group_halouser_ids = _group_halousers.collect(&:id)
+    fetch_stats_variables( params)
+    # @groups = (current_user.is_super_admin? ? Group.all(:order => "name") : current_user.group_memberships)
+    # @group_name = params[:group_name]
+    # @group = (@group_name.blank? ? nil : Group.find_by_name( params[:group_name] )) 
+    # # 
+    # #  Thu Dec  9 01:28:27 IST 2010, ramonrails
+    # #   * more variables that are required in view
+    # @halouser_ids = User.halousers.collect(&:id).flatten.compact.uniq
+    # _group_halousers = @groups.collect(&:has_halousers).flatten.compact.uniq
+    # @group_halouser_ids = _group_halousers.collect(&:id)
     @vips = ( current_user.is_super_admin? ? User.vips : _group_halousers.select(&:vip?) )
+  end
+  
+  def user_intake_stats
+    fetch_stats_variables( params)
   end
   
   def purge_data
@@ -856,4 +861,20 @@ class ReportingController < ApplicationController
     #flash[:warning] = 'Begin Time and End Time are required.'
   end
   
+  
+  # ===========
+  # = private =
+  # ===========
+  
+  def fetch_stats_variables( params)
+    @groups = (current_user.is_super_admin? ? Group.all(:order => "name") : current_user.group_memberships)
+    @group_name = params[:group_name]
+    @group = (@group_name.blank? ? nil : Group.find_by_name( params[:group_name] )) 
+    # 
+    #  Thu Dec  9 01:28:27 IST 2010, ramonrails
+    #   * more variables that are required in view
+    @halouser_ids = User.halousers.collect(&:id).flatten.compact.uniq
+    _group_halousers = @groups.collect(&:has_halousers).flatten.compact.uniq
+    @group_halouser_ids = _group_halousers.collect(&:id)
+  end
 end

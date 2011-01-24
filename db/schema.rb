@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110113184745) do
+ActiveRecord::Schema.define(:version => 20110124142746) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -664,8 +664,8 @@ ActiveRecord::Schema.define(:version => 20110113184745) do
     t.datetime "kit_charged_at"
     t.datetime "deposit_returned_at"
     t.datetime "install_fee_charged_at"
-    t.datetime "affiliate_fee_charged_at"
-    t.datetime "referral_charged_at"
+    t.datetime "affiliate_fee_payout_at"
+    t.datetime "referral_payout_at"
     t.decimal  "kit_charged"
     t.decimal  "install_fee_amount"
     t.decimal  "affiliate_fee_amount"
@@ -681,6 +681,7 @@ ActiveRecord::Schema.define(:version => 20110113184745) do
     t.decimal  "shipping"
     t.decimal  "prorate"
     t.decimal  "recurring"
+    t.datetime "install_fee_payout_date"
   end
 
   create_table "kit_serial_numbers", :force => true do |t|

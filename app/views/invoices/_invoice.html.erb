@@ -37,13 +37,15 @@ $(function() {
   <p>Recurring: <%= f.text_field :recurring %></p>
   <p>Dealer Install Fee: <%= f.text_field :install_fee_amount %></p>
   <p>Dealer Install Charge Date: <%= f.text_field :install_fee_charged_at, :class => 'datepicker' %></p>
+  <p>Dealer Install Fee Payout Date: <%= f.text_field :install_fee_payout_date, :class => 'datepicker' %></p>
   <p>Affiliate Fee: <%= f.text_field :affiliate_fee_amount %></p>
   <p>Affiliate Group: <%= f.select :affiliate_fee_group_id, Group.ordered.collect { |e| [e.name, e.id] }, :include_blank => true %></p>
-  <p>Affiliate Charge Date: <%= f.text_field :affiliate_fee_charged_at, :class => 'datepicker' %></p>
+  <p>Affiliate Payout Date: <%= f.text_field :affiliate_fee_payout_at, :class => 'datepicker' %></p>
   <p>Referral Fee <span class="tiny">(If installed for 3 months)</span>: <%= f.text_field :referral_amount %></p>
   <p>Referral Fee Group: <%= f.select :referral_group_id, Group.ordered.collect { |e| [e.name, e.id] }, :include_blank => true %></p>
-  <p>Referral Charge Date: <%= f.text_field :referral_charged_at, :class => 'datepicker' %></p>
+  <p>Referral Payout Date: <%= f.text_field :referral_payout_at, :class => 'datepicker' %></p>
   <p>
+    <%= link_to 'Audit...', invoice_audits_path( @invoice), :class => 'button white-button' %>
     <%= link_to 'Cancel', invoices_path, :class => 'button white-button' %>
     <%= f.submit "Save", :disable_with => 'Saving...', :class => 'button green-button' %>
   </p>
