@@ -59,8 +59,10 @@
             <%#= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"} %>
           <%# else %>
             <%#= @groups.collect {|e| e.name.gsub('_',' ').capitalize }.join(', ') %>
-          <%# end -%>
+          <%# end -%>  
+          <% if logged_in? %>
           Group: <span class="large"><%= @order.group.blank? ? '?' : @order.group.name %></span>&nbsp;
+          <% end %>
           <% if @groups.length > 1 %>
             <span class="tiny">(<%= link_to 'Switch Group', :controller => 'orders', :action => 'switch_group' %>)</span>
           <% end %>
