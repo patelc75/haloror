@@ -38,9 +38,9 @@ class Invoice < ActiveRecord::Base
   # 
   #  Sat Jan 15 02:32:45 IST 2011, ramonrails
   #   * user table > cancelled_at
-  def cancelled_date
-    user.cancelled_at unless user.blank?
-  end
+  #def cancelled_date
+  #  user.cancelled_at unless user.blank?
+  #end
   
   # 
   #  Tue Jan 11 01:08:02 IST 2011, ramonrails

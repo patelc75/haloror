@@ -17,36 +17,37 @@ $(function() {
 <% form_for @invoice do |f| -%>
   <span><%= hidden_field_tag "invoice_columns" %></span>
   <span><%= f.hidden_field :user_id %></span>
-  <p>Prorate Start Date: <%= f.text_field :prorate_start_date, :class => 'datepicker' %></p>
-  <p>Installed Date: <%= f.text_field :installed_date, :class => 'datepicker' %></p>
-  <p>Recurring Start Date: <%= f.text_field :recurring_start_date, :class => 'datepicker' %></p>
-  <p>Coupon Code: <%= f.text_field :coupon_code %></p>
-  <p>Invoice #: <%= f.text_field :invoice_num %></p>
-  <p>Payment Collector: <%= f.select :payment_collector, strings_for_select( 'halo', 'dealer', 'master') %></p>
-  <p>Payment Type: <%= f.select :payment_type, strings_for_select( 'credit_card', 'invoice', 'bank_draft') %></p>
-  <p>Manual Billing? (ie. no Credit Card): <%= f.check_box :manual_billing %></p>
-  <p>Kit Owner: <%= f.select :kit_owner, strings_for_select( 'halo', 'dealer', 'master') %></p>
-  <p>Leased from Master Dealer?: <%= f.check_box :kit_leased %></p>
-  <p>Kit Charged Date: <%= f.text_field :kit_charged_at, :class => 'datepicker' %></p>
-  <p>Kit Charged Price: <%= f.text_field :kit_charged %></p>
-  <p>Deposit Holder: <%= f.select :deposit_holder, strings_for_select( 'halo', 'dealer', 'master') %></p>
-  <p>Deposit Returned Date: <%= f.text_field :deposit_returned_at, :class => 'datepicker' %></p>
-  <p>Deposit Amount: <%= f.text_field :deposit %></p>
-  <p>Shipping: <%= f.text_field :shipping %></p>
-  <p>Prorate: <%= f.text_field :prorate %></p>
-  <p>Recurring: <%= f.text_field :recurring %></p>
-  <p>Dealer Install Fee: <%= f.text_field :install_fee_amount %></p>
-  <p>Dealer Install Charge Date: <%= f.text_field :install_fee_charged_at, :class => 'datepicker' %></p>
-  <p>Dealer Install Fee Payout Date: <%= f.text_field :install_fee_payout_date, :class => 'datepicker' %></p>
-  <p>Affiliate Fee <span class="tiny">(If installed for 3 months)</span>: <%= f.text_field :affiliate_fee_amount %></p>
-  <p>Affiliate Group: <%= f.select :affiliate_fee_group_id, Group.ordered.collect { |e| [e.name, e.id] }, :include_blank => true %></p>
-  <p>Affiliate Payout Date: <%= f.text_field :affiliate_fee_payout_at, :class => 'datepicker' %></p>
-  <p>Referral Fee <span class="tiny">(If installed for 3 months)</span>: <%= f.text_field :referral_amount %></p>
-  <p>Referral Fee Group: <%= f.select :referral_group_id, Group.ordered.collect { |e| [e.name, e.id] }, :include_blank => true %></p>
-  <p>Referral Payout Date: <%= f.text_field :referral_payout_at, :class => 'datepicker' %></p>
+  <p><span style="background-color: #9ED3FA;">Prorate Start Date:</span> <%= f.text_field :prorate_start_date, :class => 'datepicker' %></p>
+  <p><span style="background-color: #9ED3FA;">Installed Date:</span> <%= f.text_field :installed_date, :class => 'datepicker' %></p>
+  <p><span style="background-color: #9ED3FA;">Recurring Start Date:</span> <%= f.text_field :recurring_start_date, :class => 'datepicker' %></p>
+  <p><span style="background-color: #9ED3FA;">Coupon Code:</span> <%= f.text_field :coupon_code %></p>
+  <p><span style="background-color: #9ED3FA;">Invoice #:</span> <%= f.text_field :invoice_num %></p>
+  <p><span style="background-color: #9ED3FA;">Shipping:</span> <%= f.text_field :shipping %></p>
+  <p><span style="background-color: #9ED3FA;">Prorate:</span> <%= f.text_field :prorate %></p>
+  <p><span style="background-color: #9ED3FA;">Recurring:</span> <%= f.text_field :recurring %></p>       
+  <p><span style="background-color: #9ED3FA;">Deposit Amount:</span> <%= f.text_field :deposit %></p>
+  <p><span style="background-color: #9ED3FA;">Cancelled Date:</span> <%= f.text_field :cancelled_date, :class => 'datepicker' %></p>  
+  <p><span style="background-color: #FFB3B3;">Deposit Holder:</span> <%= f.select :deposit_holder, strings_for_select( 'halo', 'dealer', 'master') %></p>
+  <p><span style="background-color: #FFB3B3;">Payment Collector:</span> <%= f.select :payment_collector, strings_for_select( 'halo', 'dealer', 'master') %></p>
+  <p><span style="background-color: #FFB3B3;">Payment Type:</span> <%= f.select :payment_type, strings_for_select( 'credit_card', 'invoice', 'bank_draft') %></p>
+  <p><span style="background-color: #FFB3B3;">Manual Billing? (ie. no Credit Card):</span> <%= f.check_box :manual_billing %></p>
+  <p><span style="background-color: #FFB3B3;">Kit Owner:</span> <%= f.select :kit_owner, strings_for_select( 'halo', 'dealer', 'master') %></p>
+  <p><span style="background-color: #FFB3B3;">Kit Leased from Master Dealer?:</span> <%= f.check_box :kit_leased %></p>
+  <p><span style="background-color: #FFB866;">Kit Charged Date:</span> <%= f.text_field :kit_charged_at, :class => 'datepicker' %></p>
+  <p><span style="background-color: #FFB866;">Kit Charged Price:</span> <%= f.text_field :kit_charged %></p>
+  <p><span style="background-color: #FFB866;">Deposit Returned Date:</span> <%= f.text_field :deposit_returned_at, :class => 'datepicker' %></p>
+  <p><span style="background-color: #CAE495;">Dealer Install Fee:</span> <%= f.text_field :install_fee_amount %></p>
+  <p><span style="background-color: #CAE495;">Dealer Install Charge Date:</span> <%= f.text_field :install_fee_charged_at, :class => 'datepicker' %></p>
+  <p><span style="background-color: #CAE495;">Dealer Install Fee Payout Date:</span> <%= f.text_field :install_fee_payout_date, :class => 'datepicker' %></p>
+  <p><span style="background-color: #E5E5FF;">Affiliate Fee <span class="tiny">(If installed for 3 months)</span>:</span> <%= f.text_field :affiliate_fee_amount %></p>
+  <p><span style="background-color: #E5E5FF;">Affiliate Group:</span> <%= f.select :affiliate_fee_group_id, Group.ordered.collect { |e| [e.name, e.id] }, :include_blank => true %></p>
+  <p><span style="background-color: #E5E5FF;">Affiliate Payout Date:</span> <%= f.text_field :affiliate_fee_payout_at, :class => 'datepicker' %></p>
+  <p><span style="background-color: #D6D6D6;">Referral Fee <span class="tiny">(If installed for 3 months)</span>:</span> <%= f.text_field :referral_amount %></p>
+  <p><span style="background-color: #D6D6D6;">Referral Fee Group:</span> <%= f.select :referral_group_id, Group.ordered.collect { |e| [e.name, e.id] }, :include_blank => true %></p>
+  <p><span style="background-color: #D6D6D6;">Referral Payout Date:</span> <%= f.text_field :referral_payout_at, :class => 'datepicker' %></p>
   <p>
     <%= link_to 'Audit...', invoice_audits_path( @invoice), :class => 'button white-button' %>
     <%= link_to 'Cancel', invoices_path, :class => 'button white-button' %>
     <%= f.submit "Save", :disable_with => 'Saving...', :class => 'button green-button' %>
   </p>
-<% end -%>
+<% end -%>    
