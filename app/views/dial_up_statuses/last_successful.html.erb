@@ -2,24 +2,26 @@
 <h2>Dial Up Last Successfuls</h2>
 <br>
 <form method="get" action="/dial_up_statuses/last_successful">
-<input type="text" name="device_id" value="<%= params[:device_id]%>">
-<input type="submit" value="Enter device_id">
+  <input type="text" name="device_id" value="<%= params[:device_id]%>">
+  <input type="submit" value="Enter device_id">
 </form>
 <br><br>
 <table class="bluegrey">
-	<th>Device Id</th>
-	<th>last_successful_number</th>
-	<th>last_successful_username </th>
-	<th>last_successful_password</th>
-	
-	<%@dial_up_last_successfuls.each do |dial_up_last_successful|%>
+  <th>Device Id</th>
+  <th>last_successful_number</th>
+  <th>last_successful_username </th>
+  <th>last_successful_password</th>
+  <th>Timestamp</th>
+
+  <% @dial_up_last_successfuls.each do |dial_up_last_successful| %>
   <tr class="<%= cycle('', 'altrow') %>">
-	  	<td><%= dial_up_last_successful.device_id %></td>
-	  	<td><%= dial_up_last_successful.last_successful_number %></td>
-	  	<td><%= dial_up_last_successful.last_successful_username %></td>
-	  	<td><%= dial_up_last_successful.last_successful_password %></td>
-	  </tr>
-	<%end%>
+    <td><%= dial_up_last_successful.device_id %></td>
+    <td><%= dial_up_last_successful.last_successful_number %></td>
+    <td><%= dial_up_last_successful.last_successful_username %></td>
+    <td><%= dial_up_last_successful.last_successful_password %></td>
+    <td><%= dial_up_last_successful.timestamp %></td>
+  </tr>
+  <% end %>
 </table>
 <br>
 <center><%= will_paginate @dial_up_last_successfuls %></center>

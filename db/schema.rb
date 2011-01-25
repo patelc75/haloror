@@ -457,6 +457,7 @@ ActiveRecord::Schema.define(:version => 20110124142746) do
     t.datetime "lowest_connect_timestamp"
     t.integer  "longest_dial_duration_sec"
     t.datetime "longest_dial_duration_timestamp"
+    t.datetime "timestamp"
   end
 
   create_table "dial_up_statuses", :force => true do |t|
@@ -473,6 +474,7 @@ ActiveRecord::Schema.define(:version => 20110124142746) do
     t.string   "username"
     t.string   "password"
     t.string   "dialup_rank"
+    t.datetime "timestamp"
   end
 
   create_table "dial_ups", :force => true do |t|
