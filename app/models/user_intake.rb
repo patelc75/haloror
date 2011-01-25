@@ -25,12 +25,13 @@ class UserIntake < ActiveRecord::Base
   validates_format_of :transmitter_serial, :with => /^H[15].{8}$/, :unless => :transmitter_blank?, :message => "is not formatted correctly"
   validates_presence_of :subscriber, :unless => :subscribed_for_self?, :message => "is mandatory unless user is subscribing for itself"
 
-  acts_as_audited
   # https://redmine.corp.halomonitor.com/issues/3215
   #   Comment out "Change All Dial Up Numbers" > update ticket #2809
   #   * https://redmine.corp.halomonitor.com/issues/3988
   # validates_presence_of :local_primary, :global_primary, :unless => :skip_validation # https://redmine.corp.halomonitor.com/issues/2809
   named_scope :recent_on_top, :order => "updated_at DESC"
+
+  acts_as_audited
 
   # hold the data temporarily
   # user type is identified by the role it has subject to this user intake and other users
