@@ -18,15 +18,16 @@
       <%= image_tag( 'user.png') %>
       <% if @group.blank? %>
         <% if current_user.is_super_admin? %>
-          <%= User.where_status(_status).reject(&:demo_mode?).length %>
-           / <%= User.where_status(_status).select(&:demo_mode?).length %>
+          <% if _status.blank? %>
+            <%= User.where_status('').all_except_demo.length + User.where_status(nil).all_except_demo.length %>
+          <% else %>
+            <%= User.where_status(_status).all_except_demo.length %>
+          <% end %>
         <% else %>
-          <%= @groups.collect(&:has_halousers).flatten.uniq.reject(&:demo_mode?).collect(&:status).select {|e| e == _status}.length %>
-           / <%= @groups.collect(&:has_halousers).flatten.uniq.select(&:demo_mode?).collect(&:status).select {|e| e == _status}.length %>
+          <%= @groups.collect(&:has_halousers).flatten.uniq.reject(&:demo_mode?).collect(&:status).select {|e| e.to_s == _status}.length %>
         <% end %>
       <% else %>
-        <%= @group.users.reject(&:demo_mode?).select {|e| e.status == _status }.length %>
-         / <%= @group.users.select(&:demo_mode?).select {|e| e.status == _status }.length %>
+        <%= @group.users.reject(&:demo_mode?).select {|e| e.status.to_s == _status }.length %>
       <% end %>
       <%= _status.blank? ? 'Not Submitted' : _status %>
       <%= "<span class='tiny'> (Pending)</span>" if !['Installed', 'Cancelled'].include?(_status) %>
