@@ -6,10 +6,9 @@
     <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
     Select <label for="group_name">Group</label>:
     <%= select_tag 'group_name', options_for_select( [['All Groups','']] + @groups.collect {|e| [e.name, e.name] }, (@group.name unless @group.blank?)), {:onchange => "$('group_form_id').submit();"}%>
-  </form>
+  </form>  
 </div>
 <br/><br/>
-
 <div class="box span-7">
   <div style="display: inline-block;"><b>Grand Totals</b><br><span class="tiny">"HaloUser" is the device wearer</span><br>&nbsp;</div>  
   <br /><div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id( @group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :installed] }.length %> Installed Non-Demo HaloUsers</div>
@@ -42,11 +41,9 @@
       <br />
     <% end %>
   <% end %>
-</div>
-
-<hr />
+</div>     
+<div class="span-21"><%= link_to "User Intake Stats", {:controller => 'reporting', :action => 'user_intake_stats'}, :class => 'button small green-button' %></div>   
 <div class="span-21" >
-  <%= link_to "User Intake Stats", {:controller => 'reporting', :action => 'user_intake_stats'} %>
 <br/> 
 <span class="text-small">*Pending = Not Submitted + Ready for Approval + Ready to Install + Install Overdue + Ready to Bill</span>
 <br/>

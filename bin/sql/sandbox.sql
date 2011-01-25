@@ -80,7 +80,7 @@ order by vip desc, created_at desc;
 select * from users_by_role_and_group('halouser', 'safety_care');
 
 /* Users with associated profiles */
-select users.id, users.login, users.activated_at, users.status, users.demo_mode, profiles.first_name, profiles.last_name from users, profiles where users.id in (1268, 1269, 1270) and profiles.user_id = users.id;
+select users.id, users.login, users.activated_at, users.status, users.demo_mode, profiles.first_name, profiles.last_name from users, profiles where users.id in (17) and profiles.user_id = users.id;
 
 update users set status = 'Installed' where id in (1220, 1233);
 update users set demo_mode = fa where id in (1220, 1233);
