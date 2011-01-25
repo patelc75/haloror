@@ -39,15 +39,15 @@
     <table width="100%">
       <tr align="left">
         <th width="33%">
-          <%= logged_in? ? 'Shipping Address' : 'Users Home Address' %>
+          <%= !logged_in? ? 'Shipping Address' : 'Users Home Address' %>
         </th>
         
         <th width="33%">
-          <%= logged_in? ? 'Billing Address' : 'Subscriber Billing Address' %>
+          <%= !logged_in? ? 'Billing Address' : 'Subscriber Billing Address' %>
         </th>
         
         <th>
-          <%= logged_in? ? 'Payment Info' : 'Subscriber\'s Credit Card' %>
+          <%= !logged_in? ? 'Payment Info' : 'Subscriber\'s Credit Card' %>
         </th>
       </tr>
       
@@ -72,7 +72,7 @@
         </td>
         <td width="33%">
           <%= f.check_box "bill_address_same", :checked => @same_address, :disabled => @confirmation %>
-          <label for="order_bill_address_same"><%= @groups.include?( Group.direct_to_consumer) ? 'Same as Shipping info' : 'Same as Users Home Address' %></label>
+          <label for="order_bill_address_same"><%= !logged_in? ? 'Same as Shipping info' : 'Same as Users Home Address' %></label>
           <%= observe_field(:order_bill_address_same,
                             :on => :click,
                             :function => "if (document.getElementById('order_bill_address_same').checked) { hideDiv('billing_block'); } else { showDiv('billing_block'); }"

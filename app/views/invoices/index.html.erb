@@ -1,8 +1,13 @@
-<h1 id="invoices">Invoices</h1>
-<%= render :partial => "/reporting/nav_config" %>
+<%= render :partial => "/reporting/nav_config" %>     
+<h2 id="invoices">Invoices</h1>    
+
+<span style="background-color: #9ED3FA;">Blue</span> - Will be initialized by server, rarely updated by Accounting<br/>
+<span style="background-color: #FFB3B3;">Red</span> -  Possible to initialize by server, will need update by Accounting<br/> 
+<span style="background-color: #CAE495;">Green</span> <span style="background-color: #B3B3FF;">Purple</span> <span style="background-color: #B0B0B0;">Grey</span> - Not touched by server, populated by Accounting<br/>   
+<br/>
 <div><%= will_paginate @invoices %></div>
 <div><%= link_to 'All Installed and Pending Users', { :controller => 'reporting', :action => 'users', :user_subset => {'pending' => 'pending', 'installed' => 'installed'} }, :class => 'button small green-button' %></div>
-<br/>
+<br/> 
 <div class="span-24">
   <table class="bluegrey">
     <tr>
@@ -14,11 +19,11 @@
       <th><div class="border">Recurring Start Date</div></th>
       <th><div class="border">Coupon Code</div></th>
       <th><div class="border">Invoice #</div></th>
-      <th><div class="border">Payment Collector</div></th>
-      <th><div class="border">Payment Type</div></th>
-      <th><div class="border">Manual Billing? <span class="tiny">(ie. no Credit Card)</span></div></th>
-      <th><div class="border">Kit Owner</div></th>
-      <th><div class="border">Leased from Master Dealer?</div></th>
+      <th style="background-color: #FFB3B3;"><div class="border">Payment Collector</div></th>
+      <th style="background-color: #FFB3B3;"><div class="border">Payment Type</div></th>
+      <th style="background-color: #FFB3B3;"><div class="border">Manual Billing? <span class="tiny">(ie. no Credit Card)</span></div></th>
+      <th style="background-color: #FFB3B3;"><div class="border">Kit Owner</div></th>
+      <th style="background-color: #FFB3B3;"><div class="border">Leased from Master Dealer?</div></th>
       <th><div class="border">Kit Charged Date</div></th>
       <th><div class="border">Kit Charged Price</div></th>
       <th><div class="border">Deposit Holder</div></th>
@@ -27,20 +32,22 @@
       <th><div class="border">Shipping</div></th>
       <th><div class="border">Prorate</div></th>
       <th><div class="border">Recurring</div></th>
-      <th><div class="border">Cancelled Date</div></th>
-      <th><div class="border">Dealer Install Fee</div></th>
-      <th><div class="border">Dealer Install Charge Date</div></th>
-      <th><div class="border">Dealer Install Fee Payout Date</div></th>
-      <th><div class="border">Affiliate Fee</div></th>
-      <th><div class="border">Affiliate Group</div></th>
-      <th><div class="border">Affiliate Charge Date</div></th>
-      <th><div class="border">Referral Fee <span class="tiny">(If installed for 3 months)</span></div></th>
-      <th><div class="border">Referral Fee Group</div></th>
-      <th><div class="border">Referral Charge Date</div></th>
+      <th>Cancelled Date</div></th>
+      <th style="background-color: #CAE495;"><div class="border">Dealer Install Fee</div></th>
+      <th style="background-color: #CAE495;"><div class="border">Dealer Install Charge Date</div></th>
+      <th style="background-color: #CAE495;"><div class="border">Dealer Install Fee Payout Date</div></th>
+      <th style="background-color: #B3B3FF;"><div class="border">Affiliate Fee <span class="tiny">(If installed for 3 months)</span></div></th>
+      <th style="background-color: #B3B3FF;"><div class="border">Affiliate Group</div></th>
+      <th style="background-color: #B3B3FF;"><div class="border">Affiliate Payout Date</div></th>
+      <th style="background-color: #B0B0B0;"><div class="border">Referral Fee <span class="tiny">(If installed for 3 months)</span></div></th>
+      <th style="background-color: #B0B0B0;"><div class="border">Referral Fee Group</div></th>
+      <th style="background-color: #B0B0B0;"><div class="border">Referral Payout Date</div></th>
       <th><div class="border">UID</div></th>
       <th><div class="border">Audit</div></th>
     </tr>
     <%= render :partial => 'invoice_row', :collection => @invoices %>
   </table>
 </div>
-<div><%= will_paginate @invoices %></div>
+<div><%= will_paginate @invoices %></div>   
+
+

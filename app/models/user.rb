@@ -151,13 +151,14 @@ class User < ActiveRecord::Base
   # after_save :post_process # shifted to method instead
   
   named_scope :all_except_demo, :conditions => { :demo_mode => [nil, false] } # https://redmine.corp.halomonitor.com/issues/3274
+  named_scope :all_demo, :conditions => { :demo_mode => true } # https://redmine.corp.halomonitor.com/issues/4077
   named_scope :vips, :conditions => ["vip = ?", true] # https://redmine.corp.halomonitor.com/issues/3894
   # 
   #  Tue Jan  4 22:56:00 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/3961
   #   * the search is now case-insensitive. User can search in any "text-case"
   named_scope :filtered, lambda {|arg| query = "%#{arg}%".upcase; { :include => :profile, :conditions => ["users.id = ? OR upper(users.login) LIKE ? OR upper(profiles.first_name) LIKE ? OR upper(profiles.last_name) LIKE ?", arg.to_i, query, query, query]}}
-  named_scope :where_status, lambda {|*arg| { :conditions => { :status => arg.flatten.first.to_s} }}
+  named_scope :where_status, lambda {|arg| { :conditions => { :status => arg } }}
   named_scope :where_id, lambda {|*arg| { :conditions => { :id => arg.first} }}
   named_scope :ordered, lambda {|*args| { :include => :profile, :order => ( args.flatten.first || "id ASC" ) }} # Wed Oct 13 02:52:36 IST 2010 ramonrails
 
