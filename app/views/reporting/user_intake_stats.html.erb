@@ -10,7 +10,7 @@
 </div>
 <br/><br/>
 
-<div class="box span-7">
+<div class="box span-7 last">
   <div style="display: inline-block;"><b>User Intake States</b><br><span class="tiny">Non-Demo / Demo users</span><br>&nbsp;</div>
   <br />
   <% User::STATUS.each do |key, _status| %>
@@ -35,5 +35,4 @@
     <br />
   <% end %>
 </div>
-<hr />
-<div><%= link_to 'User Stats', { :controller => 'reporting', :action => 'user_stats' } %></div>
+<div class="span-21"><%= link_to 'User Stats', { :controller => 'reporting', :action => 'user_stats' }, :class => 'button small green-button' %></div>
