@@ -59,7 +59,10 @@ module DialUpStatusModule
     end
 
     # device_id is same
-    [local, alternate, global_prime, global_alternate].each { |e| e[:device_id] = hash["device_id"] }
+    [local, alternate, global_prime, global_alternate].each do |e|
+      e[:device_id] = hash["device_id"]
+      e[:timestamp] = hash["timestamp"] # https://redmine.corp.halomonitor.com/issues/4087
+    end
     
     # dialup_type
     local[:dialup_type]            = 'Local' # self
@@ -73,6 +76,7 @@ module DialUpStatusModule
     global_alternate[:dialup_rank] = 'Alternate'
 
     # last successful
+    last_successful[:timestamp]                 = hash["timestamp"] # https://redmine.corp.halomonitor.com/issues/4087
     last_successful[:device_id]                 = hash["device_id"].to_i
     last_successful[:last_successful_number]    = hash["last_successful_number"]
     last_successful[:last_successful_username]  = hash["last_successful_username"]

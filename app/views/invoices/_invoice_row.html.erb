@@ -2,11 +2,17 @@
   <td><div class="span-2 border"><%= link_to "#{invoice_row.user.id}", invoice_path( invoice_row), :class => 'button small green-button' %></div></td>
   <td><div class="span-3 border"><%= link_to invoice_row.user_name, :controller => 'reporting', :action => 'users', :user_name => invoice_row.user.id unless invoice_row.user.blank? %></div></td>
   <td><div class="span-3 border"><%= invoice_row.group_names %></div></td>
-  <td><div class="span-3 border"><%=h invoice_row.prorate_start_date %></div></td>
-  <td><div class="span-3 border"><%=h invoice_row.installed_date %></div></td>
-  <td><div class="span-3 border"><%=h invoice_row.recurring_start_date %></div></td>
+  <td><div class="span-3 border"><span class="tiny"><%=h invoice_row.prorate_start_date %></div></span></td>
+  <td><div class="span-3 border"><span class="tiny"><%=h invoice_row.installed_date %></div></span></td>
+  <td><div class="span-3 border"><span class="tiny"><%=h invoice_row.recurring_start_date %></div></span></td>
   <td><div class="span-3 border"><%=h invoice_row.coupon_code %></div></td>
   <td><div class="span-2 border"><%=h invoice_row.invoice_num %></div></td>
+  <td><div class="span-2 border"><%= h invoice_row.shipping %></div></td>
+  <td><div class="span-2 border"><%= h invoice_row.prorate %></div></td>
+  <td><div class="span-2 border"><%= h invoice_row.recurring %></div></td>
+  <td><div class="span-2 border"><%= h invoice_row.deposit %></div></td>   
+  <td><div class="span-3 border"><span class="tiny"><%= h invoice_row.cancelled_date %></div></span></td>
+  <td><div class="span-3 border"><%=h invoice_row.deposit_holder %></div></td>   
   <td><div class="span-3 border"><%=h invoice_row.payment_collector %></div></td>
   <td><div class="span-2 border"><%=h invoice_row.payment_type %></div></td>
   <td><div class="span-1 border"><%=h invoice_row.manual_billing %></div></td>
@@ -14,20 +20,16 @@
   <td><div class="span-1 border"><%=h invoice_row.kit_leased? ? 'Yes' : 'No' %></div></td>
   <td><div class="span-3 border"><span class="tiny"><%=h invoice_row.kit_charged_at %></span></div></td>
   <td><div class="span-2 border"><%=h invoice_row.kit_charged %></div></td>
-  <td><div class="span-3 border"><%=h invoice_row.deposit_holder %></div></td>
   <td><div class="span-3 border"><span class="tiny"><%=h invoice_row.deposit_returned_at %></span></div></td>
-  <td><div class="span-2 border"><%= h invoice_row.deposit %></div></td>
-  <td><div class="span-2 border"><%= h invoice_row.shipping %></div></td>
-  <td><div class="span-2 border"><%= h invoice_row.prorate %></div></td>
-  <td><div class="span-2 border"><%= h invoice_row.recurring %></div></td>
-  <td><div class="span-3 border"><%= h invoice_row.cancelled_date %></div></td>
   <td><div class="span-2 border"><%=h invoice_row.install_fee_amount %></div></td>
   <td><div class="span-3 border"><span class="tiny"><%=h invoice_row.install_fee_charged_at %></span></div></td>
+  <td><div class="span-3 border"><span class="tiny"><%=h invoice_row.install_fee_payout_date %></span></div></td>
   <td><div class="span-2 border"><%=h invoice_row.affiliate_fee_amount %></div></td>
   <td><div class="span-2 border"><%=h invoice_row.affiliate_fee_group_name %></div></td>
-  <td><div class="span-3 border"><span class="tiny"><%=h invoice_row.affiliate_fee_charged_at %></span></div></td>
+  <td><div class="span-3 border"><span class="tiny"><%=h invoice_row.affiliate_fee_payout_at %></span></div></td>
   <td><div class="span-2 border"><%=h invoice_row.referral_amount %></div></td>
   <td><div class="span-2 border"><%=h invoice_row.referral_group_name %></div></td>
-  <td><div class="span-3 border"><span class="tiny"><%=h invoice_row.referral_charged_at %></span></div></td>
+  <td><div class="span-3 border"><span class="tiny"><%=h invoice_row.referral_payout_at %></span></div></td>
   <td><div class="span-2 border"><%= link_to "#{invoice_row.user.id}", invoice_path( invoice_row), :class => 'button small green-button' %></div></td>    
+  <td><div class="span-2 border"><%= link_to 'Audit...', invoice_audits_path( invoice_row.id), :class => 'button small green-button' %></div></td>
 </tr>

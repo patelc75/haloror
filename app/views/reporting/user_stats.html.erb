@@ -6,42 +6,43 @@
     <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
     Select <label for="group_name">Group</label>:
     <%= select_tag 'group_name', options_for_select( [['All Groups','']] + @groups.collect {|e| [e.name, e.name] }, (@group.name unless @group.blank?)), {:onchange => "$('group_form_id').submit();"}%>
-  </form>
+  </form>  
 </div>
 <br/><br/>
-<div class="span-6">                                            
+<div class="box span-7">
   <div style="display: inline-block;"><b>Grand Totals</b><br><span class="tiny">"HaloUser" is the device wearer</span><br>&nbsp;</div>  
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :installed] }.length %> Installed Non-Demo HaloUsers</div><br />
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :cancelled] }.length %> Cancelled Non-Demo HaloUsers</div><br />
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :demo] }.length %> Demo HaloUsers</div><br />
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id(@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).length %> Total HaloUsers</div><br />
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= (@group.blank? ? @vips : @group.has_halousers.collect(&:id)).length %> VIP Users</div>
+  <br /><div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id( @group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :installed] }.length %> Installed Non-Demo HaloUsers</div>
+  <br /><div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id( @group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :cancelled] }.length %> Cancelled Non-Demo HaloUsers</div>
+  <br /><div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id( @group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :demo] }.length %> Demo HaloUsers</div>
+  <br /><div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id( @group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).length %> Total HaloUsers</div>
+  <br /><div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= ( @group.blank? ? @vips : @group.has_halousers.collect(&:id)).length %> VIP HaloUsers</div>
+  <br /><div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= User.find_all_by_id( @group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids ) : @group.has_halousers.collect(&:id)).select {|e| e.aggregated_status == User::AGGREGATE_STATUS[ :pending] }.length %> Pending Non-Demo HaloUsers</div>
+  <br />
 </div>
-<div class="span-5">
-  <div style="display: inline-block;"><b>Dialup vs Eth/BC vs CS</b><br><span class="tiny">Demo users <b>not</b> included</span><br>&nbsp;</div>  
+
+<div class="box span-7">
+  <div style="display: inline-block;"><b>Dialup vs Eth/BC vs CS</b><br><span class="tiny">Demo users <b>not</b> included</span><br>&nbsp;</div>
+  <br />
   <% [ User::AGGREGATE_STATUS[ :installed]].each do |_status| %>
-  <% [:dialups, :ethernets].each do |_mode| %>
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.gateways.send( "#{_mode}".to_sym).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.collect(&:aggregated_status).flatten.compact.uniq.include?( _status)}.length %> <%= _status %> <%= _mode.to_s.capitalize %></div>
-  <% end %>
+    <% [:dialups, :ethernets].each do |_mode| %>
+      <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.gateways.send( "#{_mode}".to_sym).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.collect(&:aggregated_status).flatten.compact.uniq.include?( _status)}.length %> <%= _status %> <%= _mode.to_s.capitalize %></div>
+      <br />
+    <% end %>
   <% end %>
   <% [User::AGGREGATE_STATUS[ :installed]].each do |_status| %>
-  <% [:chest_straps, :belt_clips].each do |_device| %>
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
-  <% end %>
+    <% [:chest_straps, :belt_clips].each do |_device| %>
+      <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
+      <br />
+    <% end %>
   <% end %>
   <% [ User::AGGREGATE_STATUS[ :pending]].each do |_status| %>
-  <% [:chest_straps, :belt_clips].each do |_device| %>
-  <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
+    <% [:chest_straps, :belt_clips].each do |_device| %>
+      <div style="display: inline-block;"><%= image_tag "user_placeholder.png" %> <%= Device.send(_device).where_user_ids( (@group.blank? ? (current_user.is_super_admin? ? @halouser_ids : @group_halouser_ids) : @group.has_halousers.collect(&:id)) ).select {|e| !e.users.blank? && e.users.first.aggregated_status == _status}.length %> <%= _status %> <%= _device.to_s.split('_').collect(&:capitalize).join(' ') %></div>
+      <br />
+    <% end %>
   <% end %>
-  <% end %>
-</div>
-<div class="span-4">
-  <div style="display: inline-block;"><b>User Intake States</b><br><span class="tiny">Demo users included</span><br>&nbsp;</div>  
-  <% User::STATUS.keys.each do |key| %>
-  <div style="display: inline-block;"><%= image_tag( User::STATUS_IMAGE[key]) %> <%= @group.blank? ? (current_user.is_super_admin? ? User.where_status(User::STATUS[key]).length : @groups.collect(&:has_halousers).flatten.uniq.collect(&:status).select {|e| e == User::STATUS[key]}.length) : @group.users.select {|e| e.status == User::STATUS[key] }.length %> <%= User::STATUS[key].blank? ? 'Not Submitted' : User::STATUS[key] %></div>
-  <% end %>
-</div>
-<br/><br/>
+</div>     
+<div class="span-21"><%= link_to "User Intake Stats", {:controller => 'reporting', :action => 'user_intake_stats'}, :class => 'button small green-button' %></div>   
 <div class="span-21" >
 <br/> 
 <span class="text-small">*Pending = Not Submitted + Ready for Approval + Ready to Install + Install Overdue + Ready to Bill</span>

@@ -1,32 +1,36 @@
+<%= render :partial => 'invoice_header' %>              
+<br/>
 <h1 id="invoice_">Invoice <%= @invoice.invoice_num %><span class="tiny">(User: <%= @invoice.user_name %>)</span></h1>
-<p>Prorate Start Date: <%= h @invoice.prorate_start_date %></p>
-<p>Installed Date: <%= h @invoice.installed_date %></p>
-<p>Recurring Start Date: <%= h @invoice.recurring_start_date %></p>
-<p>Coupon Code: <%= h @invoice.coupon_code %></p>
-<p>Invoice #: <%= h @invoice.invoice_num %></p>
-<p>Payment Collector: <%= h @invoice.payment_collector %></p>
-<p>Payment Type: <%= h @invoice.payment_type %></p>
-<p>Manual Billing? (ie. no Credit Card): <%= h @invoice.manual_billing %></p>
-<p>Kit Owner: <%= h @invoice.kit_owner %></p>
-<p>Leased from Master Dealer?: <%= image_tag( @invoice.kit_leased ? 'tick.png' : 'cross.png') %></p>
-<p>Kit Charged Date: <%= h @invoice.kit_charged_at %></p>
-<p>Kit Charged Price: <%= h @invoice.kit_charged %></p>
-<p>Deposit Holder: <%= h @invoice.deposit_holder %></p>
-<p>Deposit Returned Date: <%= h @invoice.deposit_returned_at %></p>
-<p>Deposit Amount: <%= h @invoice.deposit %></p>
-<p>Shipping: <%= h @invoice.shipping %></p>
-<p>Prorate: <%= h @invoice.prorate %></p>
-<p>Recurring: <%= h @invoice.recurring %></p>
-<p>Cancelled Date: <%= h @invoice.cancelled_date %></p>
-<p>Dealer Install Fee: <%= h @invoice.install_fee_amount %></p>
-<p>Dealer Install Charge Date: <%= h @invoice.install_fee_charged_at %></p>
-<p>Affiliate Fee: <%= h @invoice.affiliate_fee_amount %></p>
-<p>Affiliate Group: <%= h @invoice.affiliate_fee_group_name %></p>
-<p>Affiliate Charge Date: <%= h @invoice.affiliate_fee_charged_at %></p>
-<p>Referral Fee <span class="tiny">(If installed for 3 months)</span>: <%= h @invoice.referral_amount %></p>
-<p>Referral Fee Group: <%= h @invoice.referral_group_name %></p>
-<p>Referral Charge Date: <%= h @invoice.referral_charged_at %></p>
+<p><span style="background-color: #9ED3FA;">Prorate Start Date:</span> <%= h @invoice.prorate_start_date %></p>
+<p><span style="background-color: #9ED3FA;">Installed Date:</span>  <%= h @invoice.installed_date %></p>
+<p><span style="background-color: #9ED3FA;">Recurring Start Date:</span>  <%= h @invoice.recurring_start_date %></p>
+<p><span style="background-color: #9ED3FA;">Coupon Code:</span>  <%= h @invoice.coupon_code %></p>
+<p><span style="background-color: #9ED3FA;">Invoice #:</span>  <%= h @invoice.invoice_num %></p>   
+<p><span style="background-color: #9ED3FA;">Shipping:</span>  <%= h @invoice.shipping %></p>
+<p><span style="background-color: #9ED3FA;">Prorate:</span>  <%= h @invoice.prorate %></p>
+<p><span style="background-color: #9ED3FA;">Recurring:</span>  <%= h @invoice.recurring %></p>  
+<p><span style="background-color: #9ED3FA;">Deposit Amount:</span>  <%= h @invoice.deposit %></p>
+<p><span style="background-color: #9ED3FA;">Cancelled Date:</span>  <%= h @invoice.cancelled_date %></p>
+<p><span style="background-color: #FFB3B3;">Deposit Holder:</span>  <%= h @invoice.deposit_holder %></p>
+<p><span style="background-color: #FFB3B3;">Payment Collector:</span>  <%= h @invoice.payment_collector %></p>
+<p><span style="background-color: #FFB3B3;">Payment Type:</span>  <%= h @invoice.payment_type %></p>
+<p><span style="background-color: #FFB3B3;">Manual Billing? (ie. no Credit Card):</span>  <%= h @invoice.manual_billing %></p>
+<p><span style="background-color: #FFB3B3;">Kit Owner:</span>  <%= h @invoice.kit_owner %></p>
+<p><span style="background-color: #FFB3B3;">Kit Leased from Master Dealer?:</span>  <%= image_tag( @invoice.kit_leased ? 'tick.png' : 'cross.png') %></p>
+<p><span style="background-color: #FFB866;">Kit Charged Date:</span>  <%= h @invoice.kit_charged_at %></p>
+<p><span style="background-color: #FFB866;">Kit Charged Price:</span>  <%= h @invoice.kit_charged %></p>
+<p><span style="background-color: #FFB866;">Deposit Returned Date:</span>  <%= h @invoice.deposit_returned_at %></p>
+<p><span style="background-color: #CAE495;">Dealer Install Fee:</span>  <%= h @invoice.install_fee_amount %></p>
+<p><span style="background-color: #CAE495;">Dealer Install Charge Date:</span>  <%= h @invoice.install_fee_charged_at %></p>
+<p><span style="background-color: #CAE495;">Dealer Install Fee Payout Date:</span>  <%= h @invoice.install_fee_payout_date %></p>
+<p><span style="background-color: #E5E5FF;">Affiliate Fee <span class="tiny">(If installed for 3 months)</span>:</span>  <%= h @invoice.affiliate_fee_amount %></p>
+<p><span style="background-color: #E5E5FF;">Affiliate Group:</span>  <%= h @invoice.affiliate_fee_group_name %></p>
+<p><span style="background-color: #E5E5FF;">Affiliate Payout Date:</span>  <%= h @invoice.affiliate_fee_payout_at %></p>
+<p><span style="background-color: #D6D6D6;">Referral Fee <span class="tiny">(If installed for 3 months)</span>:</span>  <%= h @invoice.referral_amount %></p>
+<p><span style="background-color: #D6D6D6;">Referral Fee Group:</span>  <%= h @invoice.referral_group_name %></p>
+<p><span style="background-color: #D6D6D6;">Referral Payout Date:</span>  <%= h @invoice.referral_payout_at %></p>
 <p>
   <%= link_to 'List', invoices_path, :class => 'button white-button' %>
+  <%= link_to 'Audit...', invoice_audits_path( @invoice), :class => 'button white-button' %>
   <%= link_to 'Edit', edit_invoice_path( @invoice), :class => 'button green-button' %>
 </p>

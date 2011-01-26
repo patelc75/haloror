@@ -1,4 +1,16 @@
-select id, device_id as did, phone_number as phone_num, status, configured as conf, num_failures as num_f, consecutive_fails as consec_f, ever_connected as ever, dialup_type as type, created_at from dial_up_statuses where status = 'fail' and created_at is not null order by created_at desc;
+select id, device_id as did, phone_number as phone_num, status, configured as conf, num_failures as num_f, consecutive_fails as consec_f, ever_connected as ever, dialup_type as type, created_at 
+from dial_up_statuses 
+where status = 'fail' 
+and created_at is not null 
+order by created_at desc  limit 1000;
+
+
+select id, device_id as did, phone_number as phone_num, status, configured as conf, num_failures as num_f, consecutive_fails as consec_f, ever_connected as ever, dialup_type as type, dialup_rank as rank, created_at 
+from dial_up_statuses 
+where device_id in (368)
+and created_at is not null 
+order by created_at desc limit 1000;
+
 select * from dial_up_statuses where status = 'fail' and created_at is not null and id in (30784, 30785, 30786) order by created_at desc;
 
 select id, device_id as did, phone_number as phone_num, status, configured as conf, num_failures as num_f, consecutive_fails as consec_f, ever_connected as ever, dialup_type as type, created_at from dial_up_statuses where status = 'fail' and created_at is not null order by created_at desc;
