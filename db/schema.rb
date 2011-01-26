@@ -1283,6 +1283,7 @@ ActiveRecord::Schema.define(:version => 20110124142746) do
     t.boolean  "vip"
     t.datetime "activation_sent_at"
     t.datetime "cancelled_at"
+    t.datetime "installed_at"
   end
 
   create_table "vital_scans", :force => true do |t|
