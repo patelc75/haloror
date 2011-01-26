@@ -61,6 +61,10 @@ class User < ActiveRecord::Base
     "dial_up_alert" => "800 Abuse Alert"
   }
   
+  acts_as_authorized_user
+  acts_as_authorizable
+  acts_as_audited :except => [:is_caregiver, :is_new_caregiver]
+  
   #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
   
   # prevents a user from submitting a crafted form that bypasses activation
@@ -76,10 +80,6 @@ class User < ActiveRecord::Base
   attr_accessor :current_password,:username_confirmation
 
   # arranged associations alphabetically for easier traversing
-  
-  acts_as_authorized_user
-  acts_as_authorizable
-  acts_as_audited :except => [:is_caregiver, :is_new_caregiver]
   
   belongs_to :creator, :class_name => 'User',:foreign_key => 'created_by'
   belongs_to :last_battery, :class_name => "Battery", :foreign_key => "last_battery_id"
@@ -447,6 +447,34 @@ class User < ActiveRecord::Base
   # ====================
   # = instance methods =
   # ====================
+
+  # 
+  #  Wed Jan 26 22:49:44 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4088
+  # Usage:
+  #   * user.installed_at
+  #   * user.cancelled_at
+  ['installed', 'cancelled'].each do |_status|
+    define_method "#{_status}_at".to_sym do
+      _log = triage_audit_logs.where_status( _status.capitalize).recent_on_top.few(1).first
+      _log.blank? ? '' : _log.created_at
+    end
+  end
+
+  # 
+  #  Wed Jan 26 23:36:14 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4088
+  def important_role
+    _roles = roles.collect(&:name).compact.uniq
+    ['super_admin', 'admin', 'halouser', 'caregiver'].each { |e| return e if _roles.include?( e) }
+  end
+
+  # 
+  #  Wed Jan 26 22:49:44 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4088
+  def last_vital_timestamp
+    last_vital.blank? ? '' : last_vital.created_at
+  end
 
   def force_status!( _status_key = nil)
     if !_status_key.blank? && STATUS.keys.include?( _status_key)

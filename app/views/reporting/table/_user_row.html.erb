@@ -1,67 +1,67 @@
 <% if toggle %>
-<a name="user_<%=user.id%>"></a>
+<a name="user_<%=user_row.id%>"></a>
 <% end %>
-<div id="user_<%= user.id %>" class="row">
+<div id="user_<%= user_row.id %>" class="row">
   <div class="col-25">
     <% if toggle %>
-    <a href="javascript:void(0)" onClick="toggle_user_hidden(<%=user.id%>,<%= params[:page].nil? ? '1' : params[:page] %>)" id="user_<%=user.id%>-toggle">[+]</a>
+    <a href="javascript:void(0)" onClick="toggle_user_hidden(<%=user_row.id%>,<%= params[:page].nil? ? '1' : params[:page] %>)" id="user_<%=user_row.id%>-toggle">[+]</a>
     <% else %>
     &nbsp;
     <% end %>
   </div>
 
   <div class="col-35">
-    <%=user[:id]%>
+    <%=user_row[:id]%>
   </div>
 
   <div class="col-150">
     <% if caregiver %>
-    <a href="#user_<%=user.id%>">
+    <a href="#user_<%=user_row.id%>">
       <% end %>
 
       <span class="text-small">
-        <% if user.last_log_when_status_changed.blank? %>
-        <%= image_tag user.status_image, :alt => (user.status || 'Unknown'), :title => (user.status || 'Unknown') %>
+        <% if user_row.last_log_when_status_changed.blank? %>
+        <%= image_tag user_row.status_image, :alt => (user_row.status || 'Unknown'), :title => (user_row.status || 'Unknown') %>
         <% else %>
-        <%= link_to image_tag(user.status_image, :alt => (user.status || 'Unknown'), :title => (user.status || 'Unknown')), user_user_log_path(user, user.last_log_when_status_changed) %>
+        <%= link_to image_tag(user_row.status_image, :alt => (user_row.status || 'Unknown'), :title => (user_row.status || 'Unknown')), user_user_log_path(user, user_row.last_log_when_status_changed) %>
         <% end %>
       </span>
-      <%= user.full_name.blank? ? "(no name)" : user.full_name %>
+      <%= user_row.full_name.blank? ? "(no name)" : user_row.full_name %>
       <span style="font-size: 80%;">
-        <br /><%= user.login.blank? ? "(no login)" : user.login %>
-        <% if user.demo_mode? %>
+        <br /><%= user_row.login.blank? ? "(no login)" : user_row.login %>
+        <% if user_row.demo_mode? %>
         <br /><%= image_tag( 'warning_16.png', :alt => "Demo", :title => "Demo") %> Demo
         <% end %> 
-        <% if user.vip? %>
+        <% if user_row.vip? %>
         <br /><%= image_tag( 'warning_go.png', :alt => "VIP", :title => "VIP") %> VIP
         <% end %>        
       </span>
-      <% if caregiver && user.profile %>
+      <% if caregiver && user_row.profile %>
     </a>
-    (<%=user.profile[:relationship]%>)
+    (<%=user_row.profile[:relationship]%>)
     <% end %>
 
     <% [:chest_straps, :belt_clips].each do |_device_type| %>
-    <% unless user.devices.send( _device_type).blank? %>
+    <% unless user_row.devices.send( _device_type).blank? %>
     <br />
-    <span class="tiny"><%= _device_type.to_s.singularize.split('_').collect(&:capitalize).join(' ') %>: <%= user.devices.send( _device_type).first.serial_number.blank? ? "Unknown" : user.devices.send( _device_type).first.serial_number.to_s %></span>
+    <span class="tiny"><%= _device_type.to_s.singularize.split('_').collect(&:capitalize).join(' ') %>: <%= user_row.devices.send( _device_type).first.serial_number.blank? ? "Unknown" : user_row.devices.send( _device_type).first.serial_number.to_s %></span>
     <% end %>
     <% end %>
-    <% unless user.devices.gateways.blank? %>
+    <% unless user_row.devices.gateways.blank? %>
     <br />
-    <span class="tiny">Access mode: <%= user.devices.gateways.first.access_mode_status.mode rescue ''  %></span>
+    <span class="tiny">Access mode: <%= user_row.devices.gateways.first.access_mode_status.mode rescue ''  %></span>
     <% end %>
     <br />
-    <span class="tiny">Status: <%= user.status %></span>
+    <span class="tiny">Status: <%= user_row.status %></span>
   </div>
 
   <div class="col-250">
-    <%=render :partial => 'reporting/table/user_roles', :locals => {:user => user}%>
+    <%=render :partial => 'reporting/table/user_roles', :locals => {:user => user_row}%>
     &nbsp;
   </div>
 
   <div class="col-150">
-    <% @vital = Vital.find(:first,:conditions => ["user_id = ?",user.id],:order => 'timestamp DESC') %>
+    <% @vital = Vital.find(:first,:conditions => ["user_id = ?",user_row.id],:order => 'timestamp DESC') %>
     <%if !@vital.nil?%>
     <%if @vital.timestamp < (Time.now - 1.day)%>
     <font color="red"><%= UtilityHelper.format_datetime(@vital.timestamp, current_user) %></font>
@@ -73,9 +73,9 @@
     <%end%>
 
     <!-- Last Login commented out  -->
-    <!-- <% last_log = AccessLog.find(:first, :conditions => "user_id = #{user.id}", :order => 'created_at desc') %>
+    <!-- <% last_log = AccessLog.find(:first, :conditions => "user_id = #{user_row.id}", :order => 'created_at desc') %>
     <% if !last_log.blank? %>
-    <a href="/logs/user/<%=user.id%>"><%= last_log.created_at.to_formatted_s(:short) %></a>
+    <a href="/logs/user/<%=user_row.id%>"><%= last_log.created_at.to_formatted_s(:short) %></a>
     <% else %>
     &nbsp;
     <% end %> -->
@@ -83,62 +83,62 @@
 
   <% device = nil unless device %>
   <div class="col-300">
-    <% if user.profile %>
+    <% if user_row.profile %>
     <div class="span-3"> 
-      <%= image_tag('profile.png') %> <%= link_to( 'Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile.id,:user_id => user.id )%>
+      <%= image_tag('profile.png') %> <%= link_to( 'Profile', :controller => "profiles", :action => "edit_caregiver_profile", :id => user_row.profile.id,:user_id => user_row.id )%>
       <br />
-      <% if user.is_halouser? %>
-        <% unless user.user_intakes.blank? %>
-          <%= image_tag('caregivers.png') %> <%= link_to 'User Intake', :controller => "user_intakes", :action => "edit", :id => user.user_intakes.first.id %>
+      <% if user_row.is_halouser? %>
+        <% unless user_row.user_intakes.blank? %>
+          <%= image_tag('caregivers.png') %> <%= link_to 'User Intake', :controller => "user_intakes", :action => "edit", :id => user_row.user_intakes.first.id %>
           <br />
         <% end %>
-        <%= image_tag('caregivers.png') %> <%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => user.id %> 
+        <%= image_tag('caregivers.png') %> <%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => user_row.id %> 
         <% if current_user.is_super_admin? %>
           <br />
-          <%= image_tag('clock.png') %> <%= link_to_remote "Start Range Test", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :id => user.id} %>
+          <%= image_tag('clock.png') %> <%= link_to_remote "Start Range Test", :url => {:controller => 'installs', :action => 'start_range_test_only_init', :id => user_row.id} %>
         <% end %>
         <br />
-        <%= image_tag 'bell.png' %> <a href="/events/user/<%=user[:id]%>">Events</a>
+        <%= image_tag 'bell.png' %> <a href="/events/user/<%=user_row[:id]%>">Events</a>
         <br />
-        <%= image_tag('chart_bar.png') %> <a href="/chart/flex/<%=user[:id]%>">Chart</a>
+        <%= image_tag('chart_bar.png') %> <a href="/chart/flex/<%=user_row[:id]%>">Chart</a>
         <% if current_user.is_super_admin? %>
           <br />
-          <% if user.invoice.blank? %>
-            <%= link_to 'Invoice', new_user_invoice_path( :id => user), :class => "button small blue-button" %>
+          <% if user_row.invoice.blank? %>
+            <%= link_to 'Invoice', new_user_invoice_path( :id => user_row), :class => "button small blue-button" %>
           <% else %>
-            <%= link_to 'Invoice', invoice_path( user.invoice), :class => "button small green-button" %>
+            <%= link_to 'Invoice', invoice_path( user_row.invoice), :class => "button small green-button" %>
           <% end %>
         <% end %>
       <% end %>
     </div>
     <div class="span-4 last">
-      <% if user.is_halouser? %>
-      <%= image_tag 'note.png' %> <a href="<%= url_for(:controller => 'call_center', :action => 'all_user_notes', :id => user[:id], :user_id => user[:id])%>">Notes</a>
+      <% if user_row.is_halouser? %>
+      <%= image_tag 'note.png' %> <a href="<%= url_for(:controller => 'call_center', :action => 'all_user_notes', :id => user_row[:id], :user_id => user_row[:id])%>">Notes</a>
       <br />
       <% if current_user.is_super_admin? %>
-      <%= image_tag 'compliance.png' %> <a href="/reporting/compliance_report/<%=user[:id]%>">Compliance</a>
+      <%= image_tag 'compliance.png' %> <a href="/reporting/compliance_report/<%=user_row[:id]%>">Compliance</a>
       <br />
       <% if device %> 
-      <%= image_tag 'disconnect.png' %> <a href="/reporting/remove_user_mapping/<%=user.id%>?device_id=<%= device.id %>">Remove</a>
+      <%= image_tag 'disconnect.png' %> <a href="/reporting/remove_user_mapping/<%=user_row.id%>?device_id=<%= device.id %>">Remove</a>
       <br />
       <% end %>
-      <%= image_tag 'chart_line.png' %> <a href="/blood_pressures?id=<%=user.id%>">Vitals List</a>
+      <%= image_tag 'chart_line.png' %> <a href="/blood_pressures?id=<%=user_row.id%>">Vitals List</a>
       <br />
-      <% if user.subscriptions.length > 0 %>
-      <%= link_to('Subscription',subscription_path(user.subscriptions.first)) %>
-      <br />
-      <% end %>
-      <% unless user.status == User::STATUS[:cancelled] %>
-      <%= button_to "Cancel", { :controller => "users", :action => "cancel_account", :id => user}, :method => :post, :class => "button small gray-button" %>
+      <% if user_row.subscriptions.length > 0 %>
+      <%= link_to('Subscription',subscription_path(user_row.subscriptions.first)) %>
       <br />
       <% end %>
+      <% unless user_row.status == User::STATUS[:cancelled] %>
+      <%= button_to "Cancel", { :controller => "users", :action => "cancel_account", :id => user_row}, :method => :post, :class => "button small gray-button" %>
+      <br />
       <% end %>
-      <% if current_user.is_super_admin? || current_user.is_admin_of_any?(user.group_memberships) %>
-        <% form_tag url_for(:controller => 'users', :action => 'toggle_test_mode', :id => user.id), :method => :post, :id => "user_form_#{user.id}" do %>
+      <% end %>
+      <% if current_user.is_super_admin? || current_user.is_admin_of_any?(user_row.group_memberships) %>
+        <% form_tag url_for(:controller => 'users', :action => 'toggle_test_mode', :id => user_row.id), :method => :post, :id => "user_form_#{user_row.id}" do %>
           <% if current_user.is_super_admin? %>
             <!-- admins cannot see this. super admin can -->
-            <%= image_tag("test_#{user.test_mode? ? 'en' : 'dis'}abled.gif") %>
-            <%= submit_tag "#{user.test_mode? ? 'Dis' : 'En'}able Test Mode", :class => "small #{user.test_mode? ? 'blue-button' : 'gray-button'} button", :id => "#{user.test_mode? ? 'dis' : 'en'}able_test_mode_#{user.id}" %>
+            <%= image_tag("test_#{user_row.test_mode? ? 'en' : 'dis'}abled.gif") %>
+            <%= submit_tag "#{user_row.test_mode? ? 'Dis' : 'En'}able Test Mode", :class => "small #{user_row.test_mode? ? 'blue-button' : 'gray-button'} button", :id => "#{user_row.test_mode? ? 'dis' : 'en'}able_test_mode_#{user_row.id}" %>
             <br />
           <% end %>
         <% end %>
@@ -146,31 +146,31 @@
       <% end %>
       &nbsp;
 
-      <% if user.is_halouser? || user.is_caregiver? %>
-        <% if user.activation_code != nil %>
+      <% if user_row.is_halouser? || user_row.is_caregiver? %>
+        <% if user_row.activation_code != nil %>
           <% if current_user.is_super_admin? %>
-            <%= image_tag('profile.png') %><%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %> | 
+            <%= image_tag('profile.png') %><%= link_to 'Activate', :controller => 'activate', :action => user_row.activation_code %> | 
           <% end %>
-          <%= link_to 'Resend Email', resend_path(user.id) %>
+          <%= link_to 'Resend Email', resend_path(user_row.id) %>
         <% else %>
-          <span class="text-small"> Activated <%= user.activated_at.strftime(Time::DATE_FORMATS[:date_time]) %> </span> 
+          <span class="text-small"> Activated <%= user_row.activated_at.strftime(Time::DATE_FORMATS[:date_time]) %> </span> 
         <% end %>
       <% end %>
 
-      <%#=link_to_remote_redbox('Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => user.profile[:id], :frame => true }, :html => {:method => :get})%>
-      <!-- %if user.user_intakes and user.user_intakes.length > 0%-->
+      <%#=link_to_remote_redbox('Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => user_row.profile[:id], :frame => true }, :html => {:method => :get})%>
+      <!-- %if user_row.user_intakes and user_row.user_intakes.length > 0%-->
       <% if false %>
-      | <%=link_to 'Intake',edit_user_intake_form_user_path(user.user_intakes[0])%>
+      | <%=link_to 'Intake',edit_user_intake_form_user_path(user_row.user_intakes[0])%>
       <%end%>
     </div>
 
     <% else %>
-    Profile missing for user <%= user.login %>
+    Profile missing for user <%= user_row.login %>
     <% end %>
   </div>
   <!--
   <div class="col-50">
-  <%# for session in user.self_test_sessions %>
+  <%# for session in user_row.self_test_sessions %>
   session: <%#= session.id %>
   <%# for step in session.self_test_steps %>
   <%#= step.self_test_step_description.description %> , 

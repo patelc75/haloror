@@ -409,7 +409,7 @@ class ReportingController < ApplicationController
     @users = @users.paginate :page => params[:page], :include => [:roles, :roles_users, :profile] ,:order => options[:order], :per_page => REPORTING_USERS_PER_PAGE
     # everything else should work as earlier
     
-    render :partial => 'user_table', :locals => {:users => @users, :sortby => params[:col], :reverse => false}
+    render :partial => 'users_table', :locals => {:users => @users, :sortby => params[:col], :reverse => false}
   end
   
   def summary

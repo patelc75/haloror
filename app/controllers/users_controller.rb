@@ -118,13 +118,19 @@ class UsersController < ApplicationController
   end
   
   def show
-    RAILS_DEFAULT_LOGGER.debug("****START show")
-    if params[:user_id]
-      @senior_user = User.find(params[:user_id])
+    if params.has_key?( 'user_id')
+      RAILS_DEFAULT_LOGGER.debug("****START show")
+      if params[:user_id]
+        @senior_user = User.find(params[:user_id])
+      end
+      @user = User.new
+      @profile = Profile.new
+      render :action => 'credit_card_authorization' # QUESTION: even for admin account?
+
+    else
+      @user = User.find( params[:id])
+      # render 'show' action
     end
-    @user = User.new
-    @profile = Profile.new
-    render :action => 'credit_card_authorization' # QUESTION: even for admin account?
   end
   
   def credit_card_authorization

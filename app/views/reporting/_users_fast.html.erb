@@ -1,0 +1,17 @@
+<div id="user-table">
+<table class="bluegrey">
+  <tr>
+    <th class="span-1">ID</th>
+    <th class="span-5">Name</th>
+    <th class="span-3">Type</th>
+    <th class="span-3">Access</th>
+    <th class="span-3">Status</th>
+    <th class="span-3">Important Role</th>
+    <th class="span-3">Last Vitals POST</th>
+    <th class="span-3">Created at</th>
+    <th class="span-3">Installed at</th>
+    <th class="span-3">Cancelled at</th>
+  </tr>
+  <%= render :partial => 'user', :collection => @users %>
+</table>
+</div>

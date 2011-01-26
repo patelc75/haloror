@@ -1,57 +1,55 @@
-<%= render :partial => 'nav_config' %>
+<%= render :partial => 'reporting/nav_config' %>
 
 <div class="span-24 last">
   <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
 
-<h3>Users table</h3>
-<div class="span-11 box">
-  <form id="group_form_id" action="/reporting/users" method="GET">
-  <div class="span-8 last">
-    Select <label for="group_name">Group</label>:
-    <%= select_tag 'group_name', options_for_select( [['All Groups','']] + @groups.collect {|e| [e.name, e.name] }, (@group.name unless @group.blank?)) %>
-    <br />
-    <div class="prepend-2">
-      <%= check_box_tag "user_subset[all]", "all", @user_subset.keys.include?( 'all') %><%= label_tag "All" %>
-      <%= check_box_tag "user_subset[pending]", "pending", @user_subset.keys.include?( 'pending') %><%= label_tag "Pending*" %>
-      <br />
-      <%= check_box_tag "user_subset[installed]", "installed", @user_subset.keys.include?( 'installed') %><%= label_tag "Installed" %>
-      <%= check_box_tag "user_subset[cancelled]", "cancelled", @user_subset.keys.include?( 'cancelled') %><%= label_tag "Cancelled" %>
-    </div>  
-    <br/>
-    <span class="tiny">*Pending = Not Submitted + Ready for Approval + Ready to Install + Install Overdue + Ready to Bill</span>
+  <h3>Users table</h3>
+  <div class="span-11 box">
+    <form id="group_form_id" action="/reporting/users" method="GET">
+      <div class="span-8 last">
+        Select <label for="group_name">Group</label>:
+        <%= select_tag 'group_name', options_for_select( [['All Groups','']] + @groups.collect {|e| [e.name, e.name] }, (@group.name unless @group.blank?)) %>
+        <br />
+        <div class="prepend-2">
+          <%= check_box_tag "user_subset[all]", "all", @user_subset.keys.include?( 'all') %><%= label_tag "All" %>
+          <%= check_box_tag "user_subset[pending]", "pending", @user_subset.keys.include?( 'pending') %><%= label_tag "Pending*" %>
+          <br />
+          <%= check_box_tag "user_subset[installed]", "installed", @user_subset.keys.include?( 'installed') %><%= label_tag "Installed" %>
+          <%= check_box_tag "user_subset[cancelled]", "cancelled", @user_subset.keys.include?( 'cancelled') %><%= label_tag "Cancelled" %>
+        </div>  
+        <br/>
+        <span class="tiny">*Pending = Not Submitted + Ready for Approval + Ready to Install + Install Overdue + Ready to Bill</span>
+      </div>
+      <div class="span-3">
+        <%= submit_tag "Submit", :class => "button green-button" %>
+      </div>
+    </form>
+    <br/>     
+    <div class="span-3"></div>
   </div>
-  <div class="span-3">
-    <%= submit_tag "Submit", :class => "button green-button" %>
+  <div class="span-11 box last">
+    <%= render :partial => 'search_users' %>
   </div>
-</form>
-<br/>     
-  <div class="span-3"></div>
-</div>
-<div class="span-11 box last">
-  <%= render :partial => 'search_users' %>
-</div>
-</div>
-
-<center><%= will_paginate @users %></center>
-<div id="user-table" class="table bluegrey">
-    <%= render :partial => 'user_table', :locals => {:users => @users, :sortby => 'id', :reverse => false} %>
 </div>
 
 <div><%= will_paginate @users %></div>
+<%= render :partial => 'users_fast' %>
+
+<%#= render :partial => 'user_table', :locals => {:users => @users, :sortby => 'id', :reverse => false} %>
+<div><%= will_paginate @users %></div>
+
 <div id="range_test_launcher"></div>
 
 <script language="javascript">
+  function start_range_test(user_id){
+    url = "/installs/start_range_test_only/?user_id=" + user_id
+    new Ajax.Request(url, {
+      method: 'get'});
+    }
 
-function start_range_test(user_id){
-  url = "/installs/start_range_test_only/?user_id=" + user_id
-  new Ajax.Request(url, {
-    method: 'get'});
-  }
-
-function stop_range_test(user_id){
-  url = "/installs/stop_range_test_only/?user_id=" + user_id
-  new Ajax.Request(url, {
-    method: 'get'});
-  }
-
+  function stop_range_test(user_id){
+    url = "/installs/stop_range_test_only/?user_id=" + user_id
+    new Ajax.Request(url, {
+      method: 'get'});
+    }
 </script>
