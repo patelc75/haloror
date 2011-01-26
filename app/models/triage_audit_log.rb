@@ -4,6 +4,9 @@ class TriageAuditLog < ActiveRecord::Base
   belongs_to :updator, :class_name => "User", :foreign_key => "updated_by"
 
   named_scope :action_required, :conditions => { :is_dismissed => true }
+  named_scope :few, lambda {|*args| { :limit => ( args.flatten.first || 5) }}
+  named_scope :recent_on_top, :order => "created_at DESC"
+  named_scope :where_status, lambda {|arg| { :conditions => { :status => arg} }}
   
   def self.latest
     first( :order => "created_at DESC")

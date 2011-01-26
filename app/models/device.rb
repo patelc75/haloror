@@ -172,6 +172,13 @@ class Device < ActiveRecord::Base
   # = instance methods =
   # ====================
   
+  # 
+  #  Wed Jan 26 22:58:05 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4088
+  def connectivity_type
+    access_mode_status.blank? ? '' : access_mode_status.mode
+  end
+  
   # user intake with kit_serial_number of this device
   def user_intake
     # CHANGED: Sat Sep 25 00:56:19 IST 2010
