@@ -3,6 +3,14 @@ class DeviceInfo < ActiveRecord::Base
   belongs_to :mgmt_response
   belongs_to :device_info, :polymorphic => true
   
+  named_scope :except_id, lambda {|arg| { :conditions => ["id <> ?", arg] }}
+  named_scope :few, lambda {|*args| { :limit => (args.flatten.first || 5) }}
+  named_scope :recent_on_top, :order => 'created_at DESC'
+  named_scope :where_device_id, lambda {|arg| { :conditions => { :device_id => arg} }}
+  named_scope :where_software_version_given, :conditions => ["software_version IS NOT NULL"]
+
+  attr_accessor :_previous_row
+  
   # ============
   # = triggers =
   # ============
@@ -36,14 +44,16 @@ class DeviceInfo < ActiveRecord::Base
   end
   
   def previous_row
-    if @previous_row.blank?
-      @previous_row = if self.new_record?
-        DeviceInfo.first( :conditions => { :device_id => device_id }, :order => 'created_at DESC')
+    if _previous_row.blank?
+      _previous_row = if self.new_record?
+        DeviceInfo.where_software_version_given.where_device_id( device_id).recent_on_top.few(1).first
+        # DeviceInfo.first( :conditions => { :device_id => device_id }, :order => 'created_at DESC')
       else
-        DeviceInfo.first( :conditions => ["device_id = ? AND id <> ?", device_id, id], :order => 'created_at DESC')
+        DeviceInfo.where_software_version_given.where_device_id( device_id).except_id( id).recent_on_top.few(1).first
+        # DeviceInfo.first( :conditions => ["device_id = ? AND id <> ?", device_id, id], :order => 'created_at DESC')
       end
     else
-      @previous_row
+      _previous_row
     end
   end
   
@@ -56,8 +66,13 @@ class DeviceInfo < ActiveRecord::Base
     #   * required for simpler SQLs
     #   * Only ONE row can have this TRUE for each DEVICE
     #   * previous row always is marked non-current, whether version changes or not
-    _row = previous_row
-    _row.software_version_current = false
-    _row.send( :update_without_callbacks)
+    # 
+    #  Wed Jan 26 20:14:55 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4089
+    #   * Ignore any rows with blank software_version
+    if (_row = previous_row)
+      _row.software_version_current = false
+      _row.send( :update_without_callbacks)
+    end
   end
 end
