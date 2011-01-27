@@ -68,8 +68,15 @@ class Order < ActiveRecord::Base
   #  Fri Dec 31 02:56:24 IST 2010, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/3951
   def coupon_details_as_hash
-    if order_items && order_items.first.device_model && order_items.first.device_model.coupon_codes
-      _coupon = order_items.first.device_model.coupon_codes.first
+    # 
+    #  Thu Jan 27 21:47:44 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4101
+    #   * coupon code should be picked with the applied business logic
+    #   * confirmed in browser with a temporary change on dfw-web3. ticket updated with details
+    #   * just picking the first one is not appropriate
+    if ( _coupon = product_cost )
+    # if order_items && order_items.first.device_model && order_items.first.device_model.coupon_codes
+    #   _coupon = order_items.first.device_model.coupon_codes.first
       { "deposit" => _coupon.deposit, "shipping" => _coupon.shipping, "monthly_recurring" => _coupon.monthly_recurring, "months_advance" => _coupon.months_advance, "months_trial" => _coupon.months_trial }
     else
      {} 
