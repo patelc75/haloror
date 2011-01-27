@@ -104,7 +104,8 @@ class User < ActiveRecord::Base
   belongs_to :last_panic, :class_name => "Panic", :foreign_key => "last_panic_id"
   belongs_to :last_strap_fastened, :class_name => "StrapFastened", :foreign_key => "last_strap_fastened_id"
   belongs_to :last_triage_audit_log, :class_name => "TriageAuditLog", :foreign_key => "last_triage_audit_log_id"
-  belongs_to :last_vital, :class_name => "Vital", :foreign_key => "last_vital_id"
+  #   * DEPRECATED: https://redmine.corp.halomonitor.com/issues/4104
+  # belongs_to :last_vital, :class_name => "Vital", :foreign_key => "last_vital_id"
   
   has_one  :profile, :dependent => :destroy # , :autosave => true
   has_one  :invoice, :dependent => :destroy
@@ -612,8 +613,21 @@ class User < ActiveRecord::Base
   # 
   #  Wed Jan 26 22:49:44 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4088
+  #   * returns [ stamp_till_now, <stamp_maybe_in_future>], if the last POST is in future
+  #   * returns [ stamp_last ], if the last POST is on or before Time.now
+  #   * returns [ '' ], if no POST found
   def last_vital_timestamp
-    last_vital.blank? ? '' : last_vital.created_at
+    if ( _vital = Vital.where_user_id( self).recent_on_top.few(1).first ) # last, even in future
+      if _vital.timestamp > Time.now
+        if (_till_now = Vital.till_now.where_user_id( self).recent_on_top.few(1)) # last, not beyond this moment
+          [_till_now.timestamp, _vital.timestamp]
+        end
+      else
+        [_vital.timestamp]
+      end
+    else
+      ['No Vitals']
+    end
   end
 
   def force_status!( _status_key = nil)

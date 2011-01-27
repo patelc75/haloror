@@ -61,16 +61,24 @@
   </div>
 
   <div class="col-150">
-    <% @vital = Vital.find(:first,:conditions => ["user_id = ?",user_row.id],:order => 'timestamp DESC') %>
-    <%if !@vital.nil?%>
-    <%if @vital.timestamp < (Time.now - 1.day)%>
-    <font color="red"><%= UtilityHelper.format_datetime(@vital.timestamp, current_user) %></font>
-    <%else%>
-    <%= UtilityHelper.format_datetime(@vital.timestamp, current_user) %>
-    <%end%>
-    <% else %>
+    <% _stamp = user_row.last_vital_timestamp %>
+    <% unless _stamp.first.is_a?( String) %>
+      <span class="<%= (_stamp.first < 1.day.ago) ? 'text-red' : '' %>"><%= UtilityHelper.format_datetime( _stamp.first, current_user) %></span>
+      <% if current_user.is_super_admin? && _stamp.length == 2 %>
+        <span class="tiny"><%= h _stamp[1] %></span>
+      <% end %>
+    <% end %>
+    
+    <!-- <%# @vital = Vital.find(:first,:conditions => ["user_id = ?",user_row.id],:order => 'timestamp DESC') %>
+    <%#if !@vital.nil?%>
+    <%#if @vital.timestamp < (Time.now - 1.day)%>
+    <font color="red"><%#= UtilityHelper.format_datetime(@vital.timestamp, current_user) %></font>
+    <%#else%>
+    <%#= UtilityHelper.format_datetime(@vital.timestamp, current_user) %>
+    <%#end%>
+    <%# else %>
     No Vitals
-    <%end%>
+    <%#end%> -->
 
     <!-- Last Login commented out  -->
     <!-- <% last_log = AccessLog.find(:first, :conditions => "user_id = #{user_row.id}", :order => 'created_at desc') %>

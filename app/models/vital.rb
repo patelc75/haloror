@@ -2,6 +2,11 @@ class Vital < ActiveRecord::Base
   belongs_to :user # WARNING: what is this association?
   has_many :users, :class_name => "User", :foreign_key => "last_vital_id"
   
+  named_scope :few, lambda {|*args| { :limit => (args.flatten.first || 5) }}
+  named_scope :till_now, :conditions => ["timestamp <= ?", Time.now]
+  named_scope :recent_on_top, :order => 'timestamp DESC'
+  named_scope :where_user_id, lambda {|arg| { :conditions => {:user_id => arg} }}
+  
   # # cache trigger
   # # saves the latest vital status in users table
   # def after_save
