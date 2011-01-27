@@ -619,7 +619,7 @@ class User < ActiveRecord::Base
   def last_vital_timestamp
     if ( _vital = Vital.where_user_id( self).recent_on_top.few(1).first ) # last, even in future
       if _vital.timestamp > Time.now
-        if (_till_now = Vital.till_now.where_user_id( self).recent_on_top.few(1)) # last, not beyond this moment
+        if (_till_now = Vital.till_now.where_user_id( self).recent_on_top.few(1).first) # last, not beyond this moment
           [_till_now.timestamp, _vital.timestamp]
         end
       else
