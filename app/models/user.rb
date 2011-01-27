@@ -605,9 +605,22 @@ class User < ActiveRecord::Base
   # 
   #  Wed Jan 26 23:36:14 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4088
+  #   * include group name for halouser, admin roles
+  #   * Any role other than ['super_admin', 'admin', 'halouser', 'caregiver'] = "Other"
+  #   * No role at all = "None"
   def important_role
     _roles = roles.collect(&:name).compact.uniq
-    ['super_admin', 'admin', 'halouser', 'caregiver'].each { |e| return e if _roles.include?( e) }
+    _role = ( (_roles - ['super_admin', 'admin', 'halouser', 'caregiver']).blank? ? 'None' : 'Other' )
+    ['super_admin', 'admin', 'halouser', 'caregiver'].each do |e|
+      if _roles.include?( e)
+        if ['admin', 'halouser'].include?( e)
+          _role = "#{e} / " + self.send( "is_#{e}_of_what").compact.collect(&:name).join(', ')
+        else
+          _role = e
+        end
+      end
+    end
+    _role
   end
 
   # 
