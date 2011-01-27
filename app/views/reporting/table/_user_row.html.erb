@@ -62,7 +62,9 @@
 
   <div class="col-150">
     <% _stamp = user_row.last_vital_timestamp %>
-    <% unless _stamp.first.is_a?( String) %>
+    <% if _stamp.first == 'No Vitals' %>
+      No Vitals
+    <% else %>
       <span class="<%= (_stamp.first < 1.day.ago) ? 'text-red' : '' %>"><%= UtilityHelper.format_datetime( _stamp.first, current_user) %></span>
       <% if current_user.is_super_admin? && _stamp.length == 2 %>
         <span class="tiny"><%= h _stamp[1] %></span>
