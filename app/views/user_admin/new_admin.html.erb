@@ -1,18 +1,6 @@
 <% form_tag :action => 'create' do -%>
 
-<% unless @groups.blank? %>
-  <% if @groups.length > 1 %>
-      <% gs = ['Choose a Group']
-      @groups.each do |g|
-        gs << g.name
-      end %>
-      Select <label for="group_name">Group</label>:  
-      <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]}, @group_name) %>
-  <% else %>
-    <input type="hidden" name="group_name" value="<%= @groups[0].name%>">
-  <% end %>
-  <br><br>
-<% end %>
+
 <div id="call_list-col">
   <div id="call_list-col-header">
     User Signup
@@ -33,12 +21,24 @@
 
 
       <div id="device-table" class="table">
-        <div class="row">
-          <div class="col-250" style="padding-left:20px">
+        <div class="row">  
+          <div class="col-250" style="padding-left:20px">   
+            <% unless @groups.blank? %>
+              <% if @groups.length > 1 %>
+                  <% gs = ['Choose a Group']
+                  @groups.each do |g|
+                    gs << g.name
+                  end %>
+                  Select <label for="group_name">Group</label>:  
+                  <%= select_tag 'group_name', options_for_select(gs.collect { |g| [g, g]}, @group_name) %>
+              <% else %>
+                <input type="hidden" name="group_name" value="<%= @groups[0].name%>">
+              <% end %>
+              <br><br>
+            <% end %>  
             <label for="role">Role</label>
             <%= select_tag :role, options_for_select( @roles.collect {|e| [e.name, e.name]} ), :multiple => false %>
             <br />
-            <span class="tiny">Please select a role</span>
           </div>
           <div class="col-250">
 
@@ -56,7 +56,7 @@
             <br />
             <input name="commit" type="image" src="/images/subscribe.gif" id="subscribe"/>
           </div>
-        </div>
+        </div>  
       </div>	
 
     </div>
