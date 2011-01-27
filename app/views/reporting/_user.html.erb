@@ -7,9 +7,13 @@
   <td><%= h user.important_role %></td>
   <td>
     <% _stamp = user.last_vital_timestamp %>
-    <%= h _stamp.first %>
-    <% if current_user.is_super_admin? && _stamp.length == 2 %>
-      <span class="tiny"><%= h _stamp[1] %></span>
+    <% if _stamp.first == 'No Vitals' %>
+      No Vitals
+    <% else %>
+      <span class="<%= (_stamp.first < 1.day.ago) ? 'text-red' : '' %>"><%= UtilityHelper.format_datetime( _stamp.first, current_user) %></span>
+      <% if current_user.is_super_admin? && _stamp.length == 2 %>
+        <br /><span class="tiny text-red">(<%= h _stamp[1] %>)</span>
+      <% end %>
     <% end %>
   </td>
   <td><span class="tiny"><%= h user.created_at %></span></td>
