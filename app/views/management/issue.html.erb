@@ -1,39 +1,41 @@
 <% javascript "validation.js", "masked-input.js" %>
 <%=render :partial=>'nav'%>
 
-<h2>Issue Commands</h2>  
+<h2>Issue Commands</h2>
 <div class="box">
 <% remote_form_for :management_cmd_device, :url => {:action => 'create_many'}, :update => 'issue_cmd' do |f|%>
-Enter a range of device ids (min-max) -or- ids separated by commas:<br/> 
-<%=f.text_field 'ids'%> 
-<div id="issue_cmd"> </div><br>  
-<%=f.submit 'Queue up Command', :class => "button green-button" %>&nbsp;&nbsp;<%= f.check_box :instantaneous %>Instantaneous<br/><br/>  
-		<%=f.radio_button :cmd_type, 'info'%> Info Request<br>
-		<%=f.radio_button :cmd_type, 'reset'%> Reset<br> 
-		<%=f.radio_button :cmd_type, 'firmware_upgrade'%> Firmware Upgrade <%=render :partial => 'firmware_upgrade'%><br> 
-		<%=f.radio_button :cmd_type, 'self_test'%> Self Test<br> 
-		<%=f.radio_button :cmd_type, 'self_test_phone'%> Self Test Phone<br> 
-		<%=f.radio_button :cmd_type, 'range_test_start'%> Range Test Start<br> 
-		<%=f.radio_button :cmd_type, 'range_test_stop'%> Range Test Stop<br> 
-		<%=f.radio_button :cmd_type, 'mgmt_poll_rate'%> Adjust Mgmt Poll Rate in seconds (eg. 60) <%= f.text_field :param1 %><br> 
+Enter a range of device ids (min-max) -or- ids separated by commas:<br/>
+<%=f.text_field 'ids'%>
+<div id="issue_cmd"> </div><br>
+<%=f.submit 'Queue up Command', :class => "button green-button" %>&nbsp;&nbsp;<%= f.check_box :instantaneous %>Instantaneous<br/><br/>
+    <%= f.radio_button :cmd_type, 'info'%> Info Request<br>
+    <%= f.radio_button :cmd_type, 'reset'%> Reset<br>
+    <%= f.radio_button :cmd_type, 'firmware_upgrade'%> Firmware Upgrade <%=render :partial => 'firmware_upgrade'%><br>
+    <%= f.radio_button :cmd_type, 'self_test'%> Self Test<br>
+    <%= f.radio_button :cmd_type, 'self_test_phone'%> Self Test Phone<br>
+    <%= f.radio_button :cmd_type, 'range_test_start'%> Range Test Start<br>
+    <%= f.radio_button :cmd_type, 'range_test_stop'%> Range Test Stop<br>
+    <%= f.radio_button :cmd_type, 'mgmt_poll_rate'%> Adjust Mgmt Poll Rate in seconds (eg. 60) <%= f.text_field :param1 %><br>
     <%= render :partial => 'change_all_dial_up_numbers', :locals => { :f => f } %>
-		<%=f.radio_button :cmd_type, 'unregister'%> Unregister<br> 
-		<%=f.radio_button :cmd_type, 'boot_image'%> Instruct cheststrap to switchover to a newly downloaded image<br> 
-	  <%=f.radio_button :cmd_type, 'start_time'%> Start Time <%= calendar_date_select_tag "param1", Time.now, :time => true %>, Duration <%= f.text_field :param2, :class => "span-1 validate-number" %> minutes<br>
-	  <%=f.radio_button :cmd_type, 'remote_access'%> Remote Access<br> 
-		<!--
-		<%=f.radio_button :cmd_type, 'dial_up_num', :disabled => 'disabled'%>Change only Local Primary dial up number (deprecated)<br>
-		<div style="margin-left:20px;">
-		<table class="span-4">
-		<tr><td>Number</td><td> : </td><td><%= f.text_field :param2 %></td><td class="span-9">&nbsp;</td></tr>
-		<tr><td>Username</td><td>: </td><td><%= f.text_field :param3%></td><td>&nbsp;</td></tr>
-		<tr><td>Password</td><td>: </td><td><%= f.text_field :param4 %></td><td>&nbsp;</td></tr>
-		</table>
-		</div>
+    <%= f.radio_button :cmd_type, 'unregister'%> Unregister<br>
+    <%= f.radio_button :cmd_type, 'boot_image'%> Instruct cheststrap to switchover to a newly downloaded image<br>
+    <%= f.radio_button :cmd_type, 'remote_access'%> Remote Access<br>
+    <div class="prepend-1">
+      <%= f.hidden_field :start_time %> Start Time <%= calendar_date_select_tag "param1", Time.now, :time => true %>, Duration <%= f.text_field :param2, :value => "30", :class => "span-1 validate-number" %> minutes<br>
+    </div>
+    <!--
+    <%#f.radio_button :cmd_type, 'dial_up_num', :disabled => 'disabled'%>Change only Local Primary dial up number (deprecated)<br>
+    <div style="margin-left:20px;">
+    <table class="span-4">
+    <tr><td>Number</td><td> : </td><td><%# f.text_field :param2 %></td><td class="span-9">&nbsp;</td></tr>
+    <tr><td>Username</td><td>: </td><td><%# f.text_field :param3%></td><td>&nbsp;</td></tr>
+    <tr><td>Password</td><td>: </td><td><%# f.text_field :param4 %></td><td>&nbsp;</td></tr>
+    </table>
+    </div>
      -->
-<% end %>    
+<% end %>
 </div>
-	
+
 <hr />
 <%= render :partial => 'firmware_upgrades_table' %>
 <hr />
@@ -41,9 +43,9 @@ Enter a range of device ids (min-max) -or- ids separated by commas:<br/>
 <script>
 function set_default_number(checkbox,default_textbox,dropdown)
 {
-	if(checkbox.checked)
-	  document.getElementById(dropdown).value = document.getElementById(default_textbox).value
-	else
-	  document.getElementById(dropdown).value = ''
+  if(checkbox.checked)
+    document.getElementById(dropdown).value = document.getElementById(default_textbox).value
+  else
+    document.getElementById(dropdown).value = ''
 }
 </script>
