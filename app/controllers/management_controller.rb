@@ -134,10 +134,17 @@ class ManagementController < ApplicationController
         cmd[:instantaneous] = request[:instantaneous] == "1" ? true : false
 
         #command specific parameter (such as <poll_rate> for the mgmt_poll_rate cmd)
-        cmd[:param1] = request[:param1] if !request[:param1].blank? and request[:cmd_type] == 'mgmt_poll_rate'
-        cmd[:param1] = request[:param2] if !request[:param2].blank? and request[:cmd_type] == 'dial_up_num'
-        cmd[:param2] = request[:param3] if !request[:param3].blank? and request[:cmd_type] == 'dial_up_num'
-        cmd[:param3] = request[:param4] if !request[:param4].blank? and request[:cmd_type] == 'dial_up_num'
+        cmd[:param1] = request[:param1] if !request[:param1].blank? && (request[:cmd_type] == 'mgmt_poll_rate')
+        cmd[:param1] = request[:param2] if !request[:param2].blank? && (request[:cmd_type] == 'dial_up_num')
+        cmd[:param2] = request[:param3] if !request[:param3].blank? && (request[:cmd_type] == 'dial_up_num')
+        cmd[:param3] = request[:param4] if !request[:param4].blank? && (request[:cmd_type] == 'dial_up_num')
+        # 
+        #  Thu Jan 27 22:51:42 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4043
+        if request[:cmd_type] == 'remote_access'
+          cmd[:param1] = request[:param1] # start time
+          cmd[:param2] = request[:param2] # duration
+        end
          
         @flag = false
         @flag = true unless request[:local_primary].blank?
