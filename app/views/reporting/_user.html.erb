@@ -5,7 +5,13 @@
   <td><%= h user.devices.collect(&:connectivity_type).compact.uniq %></td>
   <td><%= h user.status || 'Not Submitted' %></td>
   <td><%= h user.important_role %></td>
-  <td><%= h user.last_vital_timestamp %></td>
+  <td>
+    <% _stamp = user.last_vital_timestamp %>
+    <%= h _stamp.first %>
+    <% if current_user.is_super_admin? && _stamp.length == 2 %>
+      <span class="tiny"><%= h _stamp[1] %></span>
+    <% end %>
+  </td>
   <td><span class="tiny"><%= h user.created_at %></span></td>
   <td><span class="tiny"><%= h user.installed_at %></span></td>
   <td><span class="tiny"><%= h user.cancelled_at %></span></td>
