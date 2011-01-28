@@ -211,8 +211,8 @@ class Device < ActiveRecord::Base
   # * local numbers cannot begin with "18"
   def dial_up_numbers_ok?
     # further logic is based on this mgmt_cmd row
-    mgmt_cmd ||= mgmt_cmds.first(:conditions => ["cmd_type LIKE ?", "%dial_up_num_glob_prim%"], :order => "timestamp_sent DESC")
-    unless ( failure = mgmt_cmd.blank? ) # mgmt_cmd row must exist
+    mgmt_cmd ||= mgmt_cmds.first(:conditions => ["cmd_type LIKE ?", "%dial_up_num%"], :order => "timestamp_sent DESC")
+    unless ( failure = mgmt_cmd.blank? ) # mgmt_cmd row must exist    
       numbers = (1..4).collect {|e| mgmt_cmd.send(:"param#{e}") } # collect global/local primary/secondary
       failure = numbers.any?(&:blank?) unless failure # the set of 4 numbers exist
       failure = numbers[0..1].collect {|e| e[0..1] == '18'}.include?( true) unless failure # local numbers (1,2) cannot start with "18"

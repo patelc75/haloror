@@ -1,3 +1,33 @@
+<div class="box span-23">
+  <div class="row header">
+    <div class="col-25">
+      &nbsp;
+    </div>
+
+    <div class="col-35">
+      ID
+    </div>
+
+    <div class="col-150">
+      Name
+    </div>
+
+    <div class="col-250">
+      Role(s) 
+      <% if current_user.is_super_admin? %>
+      <a href="/user_admin/roles">Configure</a>&nbsp;
+      <% end %>
+    </div>
+
+    <div class="col-150">
+      Last Vitals POST (older than 1 day in <font color="red">red</font>)<br>
+    </div>
+
+    <div class="col-200">
+      Links
+    </div>
+</div>
+<hr>
 <% if toggle %>
 <a name="user_<%=user_row.id%>"></a>
 <% end %>
@@ -189,4 +219,5 @@
   <%# end %>
   </div>
   -->
+</div>
 </div>
