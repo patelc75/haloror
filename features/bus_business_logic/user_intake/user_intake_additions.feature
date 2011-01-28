@@ -1,3 +1,4 @@
+@user_intake
 Feature: User intake additions
   In order to value
   As a role

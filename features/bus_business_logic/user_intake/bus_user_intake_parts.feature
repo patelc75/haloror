@@ -6,8 +6,12 @@ Feature: User intake parts
   Background:
     Given I am an authenticated super admin
     And a group "mygroup" exists
+    And the following devices:
+      | serial_number |
+      | H234567890    |
   
   # Scenario: Test mode checkboxes put all caregivers away
+  @user_intake
   Scenario: Test mode checkboxes put senior in test mode, not member of safety_care
     Given the following user intakes:
       | gateway_serial |
@@ -39,11 +43,13 @@ Feature: User intake parts
   #   Then last user intake should not have credit card value
   #   And last user intake should have bill monthly value
 
+  @user_intake
   Scenario: Validation: "Desired Installation Date" must be 48 hours after submitted_at
     Given I am ready to submit a user intake
     When I press "user_intake_submit"
     Then "installation_datetime" for last user intake should be 48 hours after "submitted_at"
     
+  @user_intake
   Scenario: "Desired Installation Date" should auto-fill to order date + 7.days for direct_to_consumer group
     Given a group "direct_to_consumer" exists
     And I am ready to submit a user intake

@@ -166,11 +166,23 @@ class UserAdminController < ApplicationController
     role_name = params[:role][:role_name]
     user_id = params[:role][:user_id] rescue nil # may error otherwise
     
+    # 
+    #  Sat Jan 29 00:51:18 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
     unless user_id.blank?
-      unless group_name.blank?
-        User.find(user_id).has_role role_name, Group.find_by_name(group_name)
+      _user = User.find(user_id) # fetch user for use later in this script
+      unless _user.blank? || group_name.blank? # check if user was found
+        _group = Group.find_by_name(group_name) # fetch group for buffer
+        _user.has_role role_name, _group
+        if (role_name == 'halouser') && !_group.blank? # if halouser role assigned, change user_intakes as well
+          #   * WARNING: Multiple user intakes is possible? Very risky business logic here
+          _user.user_intakes.each do |ui|
+            ui.group = _group
+            ui.send( :update_without_callbacks)
+          end
+        end
       else
-        User.find(user_id).has_role role_name
+        _user.has_role role_name
       end
       
       @success = true

@@ -1,3 +1,4 @@
+@user_intake
 Feature: Manage user_intakes
   In order manage user intakes
   As an administrator

@@ -1,3 +1,4 @@
+@user_intake
 Feature: Bus user intake relations
   In order to value
   As a role
