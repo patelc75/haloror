@@ -926,7 +926,12 @@ class UserIntake < ActiveRecord::Base
     #   * fetch using the role, when above fails
     #   * insitantiate a new if all above failed
     #   * Assign the final instance to mem... attribute, for next time
-    self.mem_senior ||= ( (users.select {|e| e.is_halouser_of?(group) }.first) || User.new.clone_with_profile)
+    # 
+    #  Sat Jan 29 00:32:43 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    #   * pick up the most recent one (sort b <> a) if multiple halousers exist for some reason
+    #   * FIXME: we should never have multiple halousers for a user intake
+    self.mem_senior ||= ( (users.select {|e| e.is_halouser_of?(group) }.sort {|a,b| b.created_at <=> a.created_at }.first) || User.new.clone_with_profile)
   end
 
   def senior=( arg)
@@ -934,7 +939,12 @@ class UserIntake < ActiveRecord::Base
   end
 
   def subscriber
-    self.mem_subscriber ||= ( (users.select {|e| e.is_subscriber_of?(senior) }.first) || User.new.clone_with_profile)
+    # 
+    #  Sat Jan 29 00:32:43 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    #   * pick up the most recent one (sort b <> a) if multiple subscribers exist for some reason
+    #   * FIXME: we should never have multiple subscribers for a user intake
+    self.mem_subscriber ||= ( (users.select {|e| e.is_subscriber_of?(senior) }.sort {|a,b| b.created_at <=> a.created_at }.first) || User.new.clone_with_profile)
     if subscribed_for_self? # senior and subscriber same
       if was_subscribed_for_self?
         # nothing changed
@@ -956,7 +966,11 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver1
-    self.mem_caregiver1 ||= ( (users.select {|e| e.caregiver_position_for(senior) == 1}.first) || User.new.clone_with_profile)
+    # 
+    #  Sat Jan 29 00:32:43 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    #   * pick up the most recent one (sort b <> a) if multiple roles exist for some reason
+    self.mem_caregiver1 ||= ( (users.select {|e| e.caregiver_position_for(senior) == 1}.sort {|a,b| b.created_at <=> a.created_at }.first) || User.new.clone_with_profile)
     if caregiving_subscriber? # subscriber is caregiver
       if was_caregiving_subscriber?
         # nothing changed
@@ -985,7 +999,11 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver2
-    self.mem_caregiver2 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 2}.first) || User.new.clone_with_profile)
+    # 
+    #  Sat Jan 29 00:32:43 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    #   * pick up the most recent one (sort b <> a) if multiple roles exist for some reason
+    self.mem_caregiver2 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 2}.sort {|a,b| b.created_at <=> a.created_at }.first) || User.new.clone_with_profile)
     _user = mem_caregiver2
     self.mem_caregiver2_options ||= (_user.options_for_senior( senior) || RolesUsersOption.new( :position => 2))
     _user
@@ -996,7 +1014,11 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver3
-    self.mem_caregiver3 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 3}.first) || User.new.clone_with_profile)
+    # 
+    #  Sat Jan 29 00:32:43 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    #   * pick up the most recent one (sort b <> a) if multiple roles exist for some reason
+    self.mem_caregiver3 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 3}.sort {|a,b| b.created_at <=> a.created_at }.first) || User.new.clone_with_profile)
     _user = mem_caregiver3
     self.mem_caregiver3_options ||= (_user.options_for_senior( senior) || RolesUsersOption.new( :position => 3))
     _user

@@ -1,3 +1,4 @@
+@user_intake
 Feature: Save User Intake
   In order allow users to save user intake and edit it later
   As a 

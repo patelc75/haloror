@@ -1,3 +1,4 @@
+@user_intake
 Feature: Edit user intake
   In order to value
   As a role
@@ -12,6 +13,10 @@ Feature: Edit user intake
     And the following carriers:
       | name    |
       | verizon |
+    And the following devices:
+      | serial_number |
+      | H201234567    |
+      | H298765432    |
     And user "test-user" has "super_admin, caregiver" roles
     
   # https://redmine.corp.halomonitor.com/issues/3170
@@ -22,12 +27,12 @@ Feature: Edit user intake
   Scenario: Editing a user intake should show edit view. Does not trigger emails again
     Given the following user intakes:
       | gateway_serial | submitted_at |
-      | 1122334455     |              |
+      | H201234567     |              |
     And there are no emails
-    And user intake "1122334455" is not submitted
+    And user intake "H201234567" is not submitted
     And I am listing user intakes
     And I follow "edit_link" in the 1st row
-    And I fill in "user_intake_gateway_serial" with "1234567890"
+    And I fill in "user_intake_gateway_serial" with "H298765432"
     And I press "user_intake_submit"
     Then I should see "successfully updated"
     And no email to "cuc_senior@chirag.name" with subject "Please read before your installation" should be sent for delivery
@@ -36,8 +41,8 @@ Feature: Edit user intake
   Scenario: User Intake locks on Submit
     Given the following user intakes:
       | gateway_serial | submitted_at |
-      | 1122334455     |              |
-    When user intake "1122334455" is not submitted
+      | H201234567     |              |
+    When user intake "H201234567" is not submitted
     And I am listing user intakes
     And I follow "edit_link" in the 1st row
     And I press "user_intake_submit"

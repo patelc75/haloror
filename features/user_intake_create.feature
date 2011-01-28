@@ -1,3 +1,4 @@
+@user_intake
 Feature: Create user intake
   In order to value
   As a role

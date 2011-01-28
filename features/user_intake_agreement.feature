@@ -1,5 +1,6 @@
 # this feature is not implemented yet
 # ticket 2901 needs to be working before this
+@user_intake
 Feature: User Intake Legal Agreement
   In order to value
   As a role

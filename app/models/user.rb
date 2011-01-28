@@ -311,7 +311,12 @@ class User < ActiveRecord::Base
     # 
     #  Thu Dec  9 01:58:50 IST 2010, ramonrails
     #   * FIXME: use :autosave => true
-    profile.save unless profile.blank?
+    # 
+    #  Fri Jan 28 22:55:39 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    #   * Skip saving a blank/non-assigned profile. When user object loads, it will re-build a profile anyways
+    #   * This might have caused the missing profile issues. Maybe it got overwritten with a nothing_assigned one.
+    profile.save unless profile.blank? || profile.nothing_assigned?
     #
     log(status)
   end
@@ -772,7 +777,10 @@ class User < ActiveRecord::Base
   # build associated model
   def build_associations
     # self.build_profile
-    self.profile = (Profile.find_by_user_id(self.id) || Profile.new(:user_id => self.id)) if profile.blank?
+    # 
+    #  Fri Jan 28 22:47:30 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    self.profile ||= ( Profile.find_by_user_id( self.id) || Profile.new( :user_id => self.id ))
   end
   
   # assign nil to the associated model if the record is just new with no data assigned

@@ -1,3 +1,4 @@
+@user_intake
 Feature: Business - user intake - submit
   In order to value
   As a role
