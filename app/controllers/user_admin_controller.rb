@@ -31,15 +31,15 @@ class UserAdminController < ApplicationController
     # else
     #   @group = params[:group]
     # end
-    
+
     # if @group
-      @user = User.new # will also instantiate a profile object
-      #
-      # TODO: DRY: use "profile_attributes" in the partial instead of separate profile object
-      @profile = @user.profile # Profile.new. Why do we need it at all?
-      # g = Group.find_by_name(@group)
-      # @group_roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
-      @roles = Role.all_distinct_names_except("caregiver", "installer", "moderator", "sales", "subscriber")
+    @user = User.new # will also instantiate a profile object
+    #
+    # TODO: DRY: use "profile_attributes" in the partial instead of separate profile object
+    @profile = @user.profile # Profile.new. Why do we need it at all?
+    # g = Group.find_by_name(@group)
+    # @group_roles = Role.find_all_by_authorizable_type_and_authorizable_id('Group', g.id, :conditions => "name <> 'halouser'", :order => 'name')
+    @roles = ( Role.all_distinct_names_except("caregiver", "installer", "moderator", "sales", "subscriber") || [Role.new] )
     # end
   end
 

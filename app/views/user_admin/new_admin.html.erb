@@ -37,7 +37,7 @@
               <br><br>
             <% end %>  
             <label for="role">Role</label>
-            <%= select_tag :role, options_for_select( @roles.collect {|e| [e.name, e.name]} ), :multiple => false %>
+            <%= select_tag :role, options_for_select( @roles.collect {|e| [e.name, e.name]} ), :multiple => false unless @roles.blank? %>
             <br />
           </div>
           <div class="col-250">

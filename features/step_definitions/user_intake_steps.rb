@@ -742,6 +742,11 @@ Then /^(\d+) users should be associated to last user intake$/ do |_count|
   ui.users.length.should == _count.to_i
 end
 
+Then /^last user intake retains its existing panic timestamp$/ do
+  (ui = UserIntake.last).should_not be_blank
+  ui.audits.last[:changes].keys.should_not include( "installation_datetime")
+end
+
 # ============================
 # = local methods for DRYness =
 # ============================
