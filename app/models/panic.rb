@@ -81,7 +81,25 @@ class Panic < CriticalDeviceAlert
       #   * Pro rata is charged from the date we received panic button after 
       #  Fri Dec 17 21:03:40 IST 2010, ramonrails
       #   * This is common method call for "if" conditions above
-      user.user_intakes.first.update_attribute( :panic_received_at, Time.now) unless user.user_intakes.blank?
+      unless user.user_intakes.blank?
+        _intake = user.user_intakes.first
+        # 
+        #  Fri Jan 28 02:15:27 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4111#note-7
+        #   * update the Panic.after_save, only store the first panic after installation_datetime, not every subsequent panic
+        if _intake.installation_datetime.blank?
+          # Installation date time blank?
+          ## First panic stored
+          ## Subsequent panics do not over-write the first stored one
+          _intake.update_attribute( :panic_received_at, Time.now) if _intake.panic_received_at.blank?
+          
+        elsif _intake.panic_received_at.blank? || (_intake.panic_received_at < _intake.installation_datetime)
+          # Installation date time given?
+          ## First panic after the timestamp, is stored. Overwriting any existing one that might have existed before the timestamp
+          ## Subsequent panics do not overwrite the existing stored one
+          _intake.update_attribute( :panic_received_at, Time.now)
+        end
+      end
 
       #
       # add to triage audit log with a message

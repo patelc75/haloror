@@ -509,7 +509,10 @@ Feature: Pre quality
     And user intake "last" should have "Ready to Install" status
     When panic button test data is received for user intake "last"
     Then user intake "last" should have "Installed" status
-  
+    #   * https://redmine.corp.halomonitor.com/issues/4111#note-8
+    When panic button test data is received for user intake "last"
+    Then last user intake retains its existing panic timestamp
+
   Scenario: Online Order > User Intake > Submit > Approve > Panic > Installed
     Given the product catalog exists
     When I create a "reseller" reseller group
@@ -535,4 +538,7 @@ Feature: Pre quality
     When I edit the last user intake
     And I press "Bill"
     Then user intake "last" should have "Installed" status
+    #   * https://redmine.corp.halomonitor.com/issues/4111#note-8
+    When panic button test data is received for user intake "last"
+    Then last user intake retains its existing panic timestamp
     

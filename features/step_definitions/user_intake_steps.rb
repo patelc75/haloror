@@ -1,8 +1,8 @@
 
-  # ==========
-  # = givens =
-  # ==========
-  
+# ==========
+# = givens =
+# ==========
+
 Given /^I have a (saved|complete|non-agreed) user intake$/ do |state|
   ui = Factory.build(:user_intake)
   ui.skip_validation = ( state = 'saved') # skip validation means "save" state
@@ -18,10 +18,10 @@ end
 Given /^the "([^"]*)" of last user intake is not activated$/ do |user_type|
   user_intake = UserIntake.last
   user_intake.should_not be_blank
-  
+
   user = user_intake.send(user_type.to_sym)
   user.should_not be_blank
-  
+
   user.make_activation_pending # change the state of user to "activation pending"
   user.errors.should be_blank
 end
@@ -29,7 +29,7 @@ end
 Given /^I am activating the "([^"]*)" of last user intake$/ do |user_type|
   user_intake = UserIntake.last
   user_intake.should_not be_blank
-  
+
   user = user_intake.send(user_type.to_sym)
   user.should_not be_blank
 
@@ -39,7 +39,7 @@ end
 Given /^user intake "([^"]*)" belongs to group "([^"]*)"$/ do |_serial, group_name|
   ui = UserIntake.find_by_gateway_serial( _serial)
   ui.should_not be_blank
-  
+
   ui.skip_validation = true
   ui.group = Group.find_by_name( group_name)
   ui.save.should be_true
@@ -66,7 +66,7 @@ end
 Given /^(?:|the )senior of user intake "([^"]*)" (is|is not) in test mode$/ do |_serial, condition|
   ui = UserIntake.find_by_gateway_serial( _serial)
   ui.should_not be_blank
-  
+
   ui.senior.set_test_mode!( condition == "is")
 end
 
@@ -133,11 +133,11 @@ end
 
 Given /^(.+) for user intake "([^"]*)" was (\d+) days ago$/ do |what, _serial, span|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
-  
+
   case what
   when 'desired installation date', 'monitoring grace period with ship date'
     ui.installation_datetime = span.to_i.days.ago
-    
+
     (group = ui.group).should_not be_blank
     group.grace_mon_days = 0
     group.save.should be_true
@@ -207,9 +207,9 @@ Given /^I am editing user intake "([^"]*)"$/ do |_serial|
   visit url_for( :controller => 'user_intakes', :action => 'edit', :id => ui)
 end
 
-  # =========
-  # = whens =
-  # =========
+# =========
+# = whens =
+# =========
 
 When /^I edit the last user intake$/ do
   (ui = UserIntake.last).should_not be_blank
@@ -249,7 +249,7 @@ end
 When /^I (view|edit) user intake with gateway serial "([^"]*)"$/ do |action, _serial|
   user_intake = UserIntake.find_by_gateway_serial( _serial)
   user_intake.should_not be_blank
-  
+
   visit url_for(:controller => 'user_intakes', :action => (action == 'view' ? 'show' : action), :id => user_intake.id)
 end
 
@@ -257,7 +257,7 @@ When /^I am authenticated as "([^\"]*)" of last user intake$/ do |user_type|
   (ui = UserIntake.last).should_not be_blank
   (user = ui.send(user_type.to_sym)).should_not be_blank
   user.activate unless user.activated?
-  
+
   authenticate(user.login, user.login) # user intake creates password same as login
 end
 
@@ -265,14 +265,14 @@ When /^I fill the (.+) details for user intake form$/ do |which|
   which = which.gsub(' ','_')
   if ["senior", "subscriber", "caregiver1", "caregiver2", "caregiver3"].include?(which)
     { "first_name"  => "#{which} first name",
-      "last_name"   => "#{which} last name",
-      "address"     => "#{which} address",
-      "city"        => "#{which} city",
-      "state"       => "#{which} state",
-      "zipcode"     => "22001",
-      "home_phone"  => "2120001112",
-      "cell_phone"  => "2120001112",
-      "work_phone"  => "2120001112"}.each do |field, value|
+    "last_name"   => "#{which} last name",
+    "address"     => "#{which} address",
+    "city"        => "#{which} city",
+    "state"       => "#{which} state",
+    "zipcode"     => "22001",
+    "home_phone"  => "2120001112",
+    "cell_phone"  => "2120001112",
+    "work_phone"  => "2120001112"}.each do |field, value|
       When %{I fill in "user_intake_#{which}_attributes__profile_attributes_#{field}" with "#{value}"}
     end
     When %{I fill in "user_intake_#{which}_attributes_email" with "#{which}@example.com"}
@@ -296,7 +296,7 @@ end
 When /^I bring senior of user intake "([^"]*)" into test mode$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  
+
   senior.set_test_mode!( true)
 end
 
@@ -317,7 +317,7 @@ end
 When /^the senior of user intake "([^\"]*)" gets the device installed$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   (senior = ui.senior).should_not be_blank
-  
+
   senior.status = User::STATUS[ :install_pending] # make it install pending
   senior.send( :update_without_callbacks)
   # This will trigger status change to "Installed"
@@ -360,9 +360,9 @@ When /^I am editing the user intake associated to last order$/ do
   visit url_for( :controller => "user_intakes", :action => "edit", :id => ui.id)
 end
 
-  # =========
-  # = thens =
-  # =========
+# =========
+# = thens =
+# =========
 
 Then /^caregiver(\d+) of last user intake should have (.+) opted$/ do |_index, _attribute|
   (ui = UserIntake.last).should_not be_blank
@@ -373,7 +373,7 @@ end
 Then /^"([^\"]*)" is enabled for subscriber of user intake "([^\"]*)"$/ do |col_name, _serial|
   ui = UserIntake.find_by_gateway_serial( _serial)
   ui.should_not be_blank
-  
+
   case col_name
   when "card"
     ui.subscriber.should_not be_blank
@@ -383,7 +383,7 @@ end
 
 Then /^"([^\"]*)" for user_intake "([^\"]*)" is assigned$/ do |col_name, _serial|
   ui = UserIntake.find_by_gateway_serial( _serial)
-  
+
   ui.should_not be_blank
   ui.send( col_name.to_sym).should_not be_blank
 end
@@ -395,7 +395,7 @@ Then /^senior of user intake "([^\"]*)" (should|should not) be in test mode$/ do
     UserIntake.find_by_gateway_serial( _serial)
   end
   ui.should_not be_blank
-  
+
   case condition
   when "should"
     ui.senior.test_mode?.should be_true
@@ -430,8 +430,8 @@ Then /^(senior|subscriber) of last user intake (should|should not) be (.+)$/ do 
     else
       assert false
     end
-    
-  #   * cases for 'should not'
+
+    #   * cases for 'should not'
   else
     case _expression
     when 'in demo mode'
@@ -475,7 +475,7 @@ end
 
 Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, what|
   (ui = UserIntake.last).should_not be_blank
-  
+
   if condition == "should"
     case what
     when "a print stamp"
@@ -512,8 +512,8 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
     else
       assert false, 'add this condition'
     end
-    
-  #  SHOULD NOT cases
+
+    #  SHOULD NOT cases
   else
     case what
     when "a status attribute"
@@ -722,12 +722,12 @@ Then /^users of last user intake should have (.+)$/ do |_what|
   subscriber = ui.subscriber
   (caregivers = ui.caregivers) # can be blank
   case _what
-    
+
   when "appropriate roles"
     lambda { senior.is_halouser_of?( ui.group) }.should be_true
     lambda { subscriber.is_subscriber_of?( senior) }.should be_true unless ui.subscriber.blank?
     caregivers.each {|cg| lambda { cg.is_caregiver_of?( senior) }.should be_true }
-    
+
   when "valid emails"
     [ui.senior, ui.subscriber, ui.caregivers].flatten.compact.each do |_user|
       _user.email.should_not be_blank unless _user.blank? || _user.new_record? || _user.nothing_assigned?
@@ -754,6 +754,11 @@ Then /^(.+) of last user intake (should|should not) have (.+) checked$/ do |_who
       _user.options_attribute_for_senior( _senior, "#{e}_active").should_not be_true
     end
   end
+end
+
+Then /^last user intake retains its existing panic timestamp$/ do
+  (ui = UserIntake.last).should_not be_blank
+  ui.audits.last[:changes].keys.should_not include( "installation_datetime")
 end
 
 # ============================
