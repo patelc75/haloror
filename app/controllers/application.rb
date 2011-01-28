@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   # 
   #  Tue Jan 25 20:45:46 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4074
-  audit User, Profile, RolesUsersOption, AlertOption, Invoice, UserIntake
+  audit User, Profile, RolesUsersOption, AlertOption, Invoice#, UserIntake
   
   include ServerInstance
   include AuthenticatedSystem
