@@ -284,7 +284,7 @@ class UserIntake < ActiveRecord::Base
     #   * user is "Ready to Install"
     #   * last user action was "Approve"
     # QUESTION: admin can approve?
-    if lazy_action == "Approve" && senior.status == User::STATUS[:approval_pending] # && !self.updater.blank? && self.updater.is_super_admin?
+    if (lazy_action == "Approve") && (senior.status == User::STATUS[:approval_pending]) # && !self.updater.blank? && self.updater.is_super_admin?
       self.senior.status = User::STATUS[:install_pending]
       self.senior.send( :update_without_callbacks)
       self.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
@@ -293,7 +293,7 @@ class UserIntake < ActiveRecord::Base
       #   * user is "Ready to Bill"
       #   * last user action was "Bill"
     #   * subscription can be charged? trial period is over?
-    elsif lazy_action == 'Bill' && senior.status == User::STATUS[:bill_pending] && can_charge_subscription?
+    elsif (lazy_action == 'Bill') && (senior.status == User::STATUS[:bill_pending]) && can_charge_subscription?
       #
       # charge subscription and pro-rata recurring charges (including today), only when installed
       unless order.blank?
@@ -1006,6 +1006,7 @@ class UserIntake < ActiveRecord::Base
     self.mem_caregiver2 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 2}.sort {|a,b| b.created_at <=> a.created_at }.first) || User.new.clone_with_profile)
     _user = mem_caregiver2
     self.mem_caregiver2_options ||= (_user.options_for_senior( senior) || RolesUsersOption.new( :position => 2))
+    # self.no_caregiver_2 = (self.mem_caregiver2.blank? || self.mem_caregiver2.nothing_assigned?)
     _user
   end
 
@@ -1021,6 +1022,7 @@ class UserIntake < ActiveRecord::Base
     self.mem_caregiver3 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 3}.sort {|a,b| b.created_at <=> a.created_at }.first) || User.new.clone_with_profile)
     _user = mem_caregiver3
     self.mem_caregiver3_options ||= (_user.options_for_senior( senior) || RolesUsersOption.new( :position => 3))
+    # self.no_caregiver_3 = (self.mem_caregiver3.blank? || self.mem_caregiver3.nothing_assigned?)
     _user
   end
 
