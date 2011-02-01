@@ -45,3 +45,27 @@ global_prim_password            |
 
 select id, device_id, username, password, alt_username, alt_password, last_successful_number  as las_suc_num, timestamp from dial_up_alerts order by timestamp desc;
 
+/*refs #4115 check on user intake dial up numbers column */
+ select device_id, timestamp_initiated, originator as orig, pending as pend, created_by as cb from mgmt_cmds where cmd_type LIKE '%dial_up_num_glob%' limit 100;
+
+select mgmt_cmds.device_id, users.id as user_id, profiles.first_name, profiles.last_name, mgmt_cmds.cmd_type, mgmt_cmds.timestamp_initiated, mgmt_cmds.originator as orig, mgmt_cmds.pending as pend, mgmt_cmds.created_by as cb
+from profiles left outer join users on users.id = profiles.user_id, mgmt_cmds, devices_users 
+where mgmt_cmds.device_id = devices_users.device_id 
+and devices_users.user_id = users.id
+and mgmt_cmds.cmd_type LIKE '%dial_up%' 
+and users.id in (1284, 1258, 1277, 1243, 1295, 1267, 1289, 1294, 1288, 1263, 1251, 1275, 1256, 1252, 1237, 1226, 1227, 1218)
+order by mgmt_cmds.id desc limit 100;
+
+
+
+select * from mgmt_cmds where cmd_type  not like '%user%' and cmd_type not like '%info%' and cmd_type not like '%reset$' and cmd_type not like '%reset%' and cmd_type not like '%firmware_upgrade%' order by id desc limit 1250;
+
+select * from mgmt_cmds where cmd_type like '%dial_up%' and device_id = 178 order by id desc limit 1250;
+
+select device_id, cmd_type, timestamp_initiated, originator as orig, pending as pend, created_by as cr from mgmt_cmds where cmd_type LIKE '%dial_up_num%' order by id desc limit 100;
+
+select id from user_intakes;
+
+select * from mgmt_cmds where device_id = 178 and cmd_type  not like '%user%'order by id desc limit 1250;
+
+select device_id, cmd_type, timestamp_initiated, originator as orig, pending as pend from mgmt_cmds where device_id in (178) order by timestamp_initiated desc limit 100;
