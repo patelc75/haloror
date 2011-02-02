@@ -161,8 +161,13 @@ class User < ActiveRecord::Base
   validates_length_of       :password, :within => 4..40, :if => :password_required?
   validates_presence_of     :password,                   :if => :password_required?
   validates_presence_of     :password_confirmation,      :if => :password_required?
-  validates_presence_of     :login, :if => :password_required?
-  validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
+  # 
+  #  Thu Feb  3 00:10:53 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4124#note-11
+  #   * login is always required now
+  #   * when not available/required, it gets _AUTO_generated
+  validates_presence_of     :login # , :if => :password_required?
+  validates_uniqueness_of   :login, :case_sensitive => false # , :if => :login_not_blank?
   
   # before_save :encrypt_password # shifted to a method where we can make multiple calls
   #
