@@ -835,6 +835,11 @@ class User < ActiveRecord::Base
     end
     _attributes = _attributes.reject { |k,v| k == 'user_id' }
     self.build_profile if profile.blank?
+    # 
+    #  Wed Feb  2 01:02:38 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4106
+    #   * date columns get auto assigned by this. We may have to write our own logic otherwise
+    self.profile.attributes = _attributes
     _attributes.each { |k,v| self.profile.send( "#{k}=", v) if self.profile.respond_to?( "#{k}=") }
     # (profile.blank? || profile.new_record?) ? self.build_profile( attributes) : self.profile.update_attributes( attributes) # .merge("user_id" => self)
     #   # end
