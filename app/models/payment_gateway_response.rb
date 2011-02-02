@@ -12,6 +12,7 @@ class PaymentGatewayResponse < ActiveRecord::Base
   named_scope :failed,        :conditions => { :success => false }
   named_scope :subscription,  :conditions => { :action  => 'recurring' }
   named_scope :pro_rata,      :conditions => { :action  => 'pro-rata' }
+  named_scope :recent, lambda {|*args| { :conditions => ["created_at >= ?", (args.flatten.first || 10.seconds.ago) ] }}
   # 
   #  Thu Nov 25 00:18:21 IST 2010, ramonrails
   #   * "purchase" was changed to "deposit + shipping"

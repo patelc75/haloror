@@ -275,55 +275,10 @@ class UserIntake < ActiveRecord::Base
       #   * last user action was "Bill"
     #   * subscription can be charged? trial period is over?
     elsif (lazy_action == 'Bill') && (senior.status == User::STATUS[:bill_pending]) && can_charge_subscription?
-      #
-      # charge subscription and pro-rata recurring charges (including today), only when installed
-      unless order.blank?
-        # 
-        #  Fri Nov  5 06:29:06 IST 2010, ramonrails
-        #  First charge pro-rata. That is one time. Then charge subscription.
-        #  So, for some reason if subscription fails, we do not miss pro-rata charges
-        #
-        # pro-rata for subscription should also be charged
-        if order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
-          #
-          # charge the credit card subscription now
-          if order.charge_subscription
-            #
-            # now make user "Installed"
-            self.senior.force_status!( :installed)
-            # self.senior.status = User::STATUS[:installed]
-            # self.senior.send( :update_without_callbacks)
-            #
-            # all caregivers are active now
-            caregivers.each { |e| e.set_active_for( senior, true) }
-            #
-            # add a row to triage audit log
-            #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log
-            attributes = {
-              :user         => senior,
-              :is_dismissed => senior.last_triage_status,
-              :status       => senior.status,
-              :created_by   => self.updated_by, # senior.id,
-              :updated_by   => self.updated_by, # senior.id,
-              :description  => "Transitioned from 'Ready to Bill' state to 'Installed'. Billed. Subscription charged. Pro-rata charged."
-            }
-            TriageAuditLog.create( attributes)
-            #
-            # explicitly send email to group admins, halouser, caregivers. tables are saved without callbacks
-            # 
-            #  Wed Nov 24 23:01:26 IST 2010, ramonrails
-            #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
-            #   * https://redmine.corp.halomonitor.com/issues/3785
-            [ senior, senior.has_caregivers, senior.group_admins, 
-              subscriber, group, group.master_group
-              ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq.each do |_email|
-              #   * send installation intimations
-              UserMailer.deliver_user_installation_alert( senior, _email)
-            end
-          end
-        end
-      
-      end
+      # 
+      #  Thu Feb  3 01:18:20 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4137
+      charge_pro_rata_and_subscription
     end
     #
     # attach devices to user/senior
@@ -377,6 +332,62 @@ class UserIntake < ActiveRecord::Base
     #   * check errors in payment_gateway_responses. report on browser
     if !order.blank? && !order.payment_gateway_responses.blank? && !order.payment_gateway_responses.failed.blank?
       self.errors.add_to_base( order.payment_gateway_responses.failed.collect(&:message).flatten.compact.uniq.join(', '))
+    end
+  end
+
+  # 
+  #  Thu Feb  3 01:17:13 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4137
+  def charge_pro_rata_and_subscription
+    #
+    # charge subscription and pro-rata recurring charges (including today), only when installed
+    unless order.blank?
+      # 
+      #  Fri Nov  5 06:29:06 IST 2010, ramonrails
+      #  First charge pro-rata. That is one time. Then charge subscription.
+      #  So, for some reason if subscription fails, we do not miss pro-rata charges
+      #
+      # pro-rata for subscription should also be charged
+      if order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
+        #
+        # charge the credit card subscription now
+        if order.charge_subscription
+          #
+          # now make user "Installed"
+          self.senior.force_status!( :installed)
+          # self.senior.status = User::STATUS[:installed]
+          # self.senior.send( :update_without_callbacks)
+          #
+          # all caregivers are active now
+          caregivers.each { |e| e.set_active_for( senior, true) }
+          #
+          # add a row to triage audit log
+          #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log
+          attributes = {
+            :user         => senior,
+            :is_dismissed => senior.last_triage_status,
+            :status       => senior.status,
+            :created_by   => self.updated_by, # senior.id,
+            :updated_by   => self.updated_by, # senior.id,
+            :description  => "Transitioned from 'Ready to Bill' state to 'Installed'. Billed. Subscription charged. Pro-rata charged."
+          }
+          TriageAuditLog.create( attributes)
+          #
+          # explicitly send email to group admins, halouser, caregivers. tables are saved without callbacks
+          # 
+          #  Wed Nov 24 23:01:26 IST 2010, ramonrails
+          #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
+          #   * https://redmine.corp.halomonitor.com/issues/3785
+          [ senior, senior.has_caregivers, senior.group_admins, 
+            subscriber, group, group.master_group
+            ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq.each do |_email|
+            #   * send installation intimations
+            UserMailer.deliver_user_installation_alert( senior, _email)
+          end
+
+        end
+      end
+
     end
   end
 
