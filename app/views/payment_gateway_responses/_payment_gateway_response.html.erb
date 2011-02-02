@@ -1,0 +1,23 @@
+<tr class="<%= cycle( '', 'altrow') %>">
+  <td><%=h payment_gateway_response.id %></td>
+  <td><%=h payment_gateway_response.action %></td>
+  <td class="textcenter">
+  <% if current_user.is_super_admin? %>      
+  <%= link_to payment_gateway_response.order_id, :controller => 'orders',:action => 'show' ,:id => payment_gateway_response.order_id %>
+  <% else %>                  
+  <%= link_to payment_gateway_response.order_id,:controller => 'orders',:action => 'index',:id => payment_gateway_response.order_id %>
+  <% end %>                  
+  </td>  
+  <td class="textright"><%=h USD_value( payment_gateway_response.amount/100.0) %></td>      
+  <td class="textcenter"><%= image_tag( payment_gateway_response.success ? "tick.png" : "exclamation.png") %></td>
+  <% if current_user.is_super_admin? %>
+  <td><%=h payment_gateway_response.authorization %></td>
+  <% end %>
+  <td><%= link_to truncate( payment_gateway_response.message, 20, "..."), :controller => 'payment_gateway_responses',:action => 'details' ,:id => payment_gateway_response.id,:column => 'message'  %></td>
+  <% if current_user.is_super_admin? %>
+  <td><%= link_to truncate( payment_gateway_response.params.to_s, 20, "..."), :controller => 'payment_gateway_responses',:action => 'details' ,:id => payment_gateway_response.id,:column => 'params'  %></td>
+  <td><%= link_to sanitize( truncate( payment_gateway_response.request_data.to_s, 20, "...")), :controller => 'payment_gateway_responses',:action => 'details' ,:id => payment_gateway_response.id,:column => 'request_data'  %></td>
+  <td><%= link_to sanitize( truncate( payment_gateway_response.request_headers.to_s, 20, "...")), :controller => 'payment_gateway_responses',:action => 'details' ,:id => payment_gateway_response.id,:column => 'request_headers'  %></td>
+  <% end %>      
+  <td><%=h payment_gateway_response.created_at %></td>
+</tr>

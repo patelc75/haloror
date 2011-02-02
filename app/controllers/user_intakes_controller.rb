@@ -321,7 +321,13 @@ class UserIntakesController < ApplicationController
 
   def charge_subscription
     @user_intake = UserIntake.find( params[:id])
-    @user_intake.order.charge_subscription if @user_intake.order # begin charge for subscription
+    # 
+    #  Thu Feb  3 01:19:04 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4137
+    @user_intake.charge_pro_rata_and_subscription
+    #   * old method was not considering the pro-rata charges
+    #   * payment gateway was also returning error due to subscription start date in the past
+    # @user_intake.order.charge_subscription if @user_intake.order # begin charge for subscription
   end
 
   def paper_copy_submission
