@@ -288,6 +288,8 @@ class UserIntake < ActiveRecord::Base
       # 
       #  Fri Dec  3 02:36:22 IST 2010, ramonrails
       #   * check for errors. report them on browser
+      #   * FIXME: validation errors should be checked before_save, not after_save
+      #   *   to do that, we need to delegate device assignment to user model
       _serials = senior.devices.collect(&:serial_number)
       [gateway_serial, transmitter_serial].each do |_serial|
         self.errors.add_to_base( "Device #{_serial} is not assigned to this halouser.") unless _serial.blank? || _serials.include?( _serial)
@@ -330,8 +332,12 @@ class UserIntake < ActiveRecord::Base
     # 
     #  Fri Dec  3 02:29:51 IST 2010, ramonrails
     #   * check errors in payment_gateway_responses. report on browser
-    if !order.blank? && !order.payment_gateway_responses.blank? && !order.payment_gateway_responses.failed.blank?
-      self.errors.add_to_base( order.payment_gateway_responses.failed.collect(&:message).flatten.compact.uniq.join(', '))
+    # 
+    #  Wed Feb  2 21:51:36 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4116
+    #   * FIXME: validation errors should be checked before_save, not after_save
+    if !order.blank? && !order.payment_gateway_responses.blank? && !order.payment_gateway_responses.failed.recent.blank?
+      self.errors.add_to_base( order.payment_gateway_responses.failed.recent.collect(&:message).flatten.compact.uniq.join(', '))
     end
   end
 
