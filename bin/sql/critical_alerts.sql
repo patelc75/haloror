@@ -60,3 +60,39 @@ and timestamp_call_center is not null
 and timestamp > now() - interval '1 week'
 and panics.user_id = profiles.user_id
 order by user_id desc;
+
+/*Critical Alerts of more than 5 minutes */
+select id, timestamp, timestamp_call_center, timestamp_server, timestamp_call_center-timestamp_server  as delay from falls where timestamp_call_center-timestamp_server > interval'5 minutes' order by id desc limit 100;
+
+select id, timestamp, timestamp_call_center, timestamp_server, timestamp_call_center-timestamp_server  as delay from panics where ((timestamp_call_center-timestamp_server) > interval'5 minutes') order by id desc limit 100;
+
+/*Try to get subsequent gw_alarm_button after a fall or panic */
+SELECT user_id, timestamp, event_type,
+	CASE 
+	 WHEN (SELECT timestamp FROM gw_alarm_buttons gwab where gwab.timestamp > e.timestamp order by gwab.timestamp desc limit 1) is not null
+	 THEN now()
+	END
+from events e
+WHERE event_type in ('Fall', 'Panic');
+		
+SELECT au_lname, au_fname, title, Category =
+        CASE
+         WHEN (SELECT AVG(royaltyper) FROM titleauthor ta
+                           WHERE t.title_id = ta.title_id) > 65
+                 THEN 'Very High'
+         WHEN (SELECT AVG(royaltyper) FROM titleauthor ta
+                           WHERE t.title_id = ta.title_id)
+                                     BETWEEN 55 and 64
+                 THEN 'High'
+         WHEN (SELECT AVG(royaltyper) FROM titleauthor ta
+                           WHERE t.title_id = ta.title_id)
+                                     BETWEEN 41 and 54
+                 THEN 'Moderate'
+         ELSE 'Low'
+       END
+FROM authors a,
+     titles t,
+     titleauthor ta
+WHERE a.au_id = ta.au_id
+AND   ta.title_id = t.title_id
+ORDER BY Category, au_lname, au_fname
