@@ -1,2 +1,28 @@
 <%= render :partial => 'reporting/nav_config' %>
-<%= render :partial => 'reporting/table/user_row', :collection => [@user], :locals => { :toggle => true, :caregiver => false} %>
+<div class="bluegrey">
+  <%= render :partial => 'reporting/table/user_row', :collection => [@user], :locals => { :toggle => true, :caregiver => false} %>
+
+  <div id='user_devices'>
+    <hr />
+    <div class="header">
+      <div class="span-2 text-right">Device ID</div>
+      <div class="span-4">Device Type</div>
+      <div class="span-4">Serial Number</div>
+      <div class="span-5">Last Charge</div>
+      <div class="span-5">Software Version</div>
+      <div class="span-4 last">&nbsp;</div>
+    </div>
+
+    <% @user.devices.each do |device| %>
+    <div>
+      <div class="span-2 text-right"><%= device.id %></div>
+      <div class="span-4"><%= device.device_type %>&nbsp;</div>
+      <div class="span-4"><%= device.serial_number %>&nbsp;</div>
+      <div class="span-5"><%= render :partial => 'reporting/charge', :locals => {:device => device} %></div>
+      <div class="span-5"><%= device.software_version %>&nbsp;</div>
+      <div class="span-4 last">&nbsp;</div>
+    </div>
+    <% end %>
+  </div>
+  
+</div>
