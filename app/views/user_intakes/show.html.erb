@@ -1,8 +1,6 @@
-<% unless @user_intake.agreement_signed? %>
 <div id="user_intake_legal_agreement">
   <%= render :partial => "shared/subscriber_agreement" %>
 </div>
-<% end %>
 
 <% if current_user.is_super_admin? %> <% # || current_user.is_halouser? || @user_intake.users.include?( current_user) %>
 <div class="container">
