@@ -34,7 +34,7 @@
   <td class="text-center">
     <% if user_intake_row.legal_agreement_at.blank? %>
       <% if user_intake_row.paper_copy_submitted_on.blank? %>
-        <%= link_to image_tag("exclamation.png", :alt => "Update the date of paper copy submission", :title => "Update the date of paper copy submission"), :controller => "user_intakes", :action => "paper_copy_submission", :id => user_intake_row.id %>
+        <%= link_to image_tag("exclamationgrey.png", :alt => "Update the date of paper copy submission", :title => "Update the date of paper copy submission"), :controller => "user_intakes", :action => "paper_copy_submission", :id => user_intake_row.id %>
       <% else %>
         <%= image_tag("script.png", :alt => "Paper copy submitted on #{user_intake_row.paper_copy_submitted_on}", :title => "Paper copy submitted at #{user_intake_row.paper_copy_submitted_on}") %>
       <% end %>
@@ -44,7 +44,7 @@
   </td>
   <td class="text-center">
     <% if user_intake_row.order_id.blank? %>
-      <%= image_tag('exclamation.png') %>
+      <%= image_tag('exclamationgrey.png') %>
     <% else %>
       <%= link_to user_intake_row.order_id,:controller => 'orders',:action => 'index',:id => user_intake_row.order_id %>
     <% end %>
@@ -73,7 +73,7 @@
   </td>
   <% if current_user.is_super_admin? %>
     <td><span class="call_center_id"><%= link_to ( user_intake_row.sc_account_created_on.blank? ? image_tag( 'exclamation.png', :title => "Click to stamp a date when Call Center Account was created") : image_tag('tick.png')), {:controller => "user_intakes", :action => "safety_care_account_creation", :id => user_intake_row.id}  %></span></td>
-    <td><%= image_tag( user_intake_row.dial_up_numbers_ok? ? "tick.png" : "exclamation.png") %></td>
+    <td><%= image_tag( user_intake_row.dial_up_numbers_ok? ? "tick.png" : "exclamationgrey.png") %></td>
   <% end %>
   <td class="text-center">
     <% unless user_intake_row.senior.blank? %>

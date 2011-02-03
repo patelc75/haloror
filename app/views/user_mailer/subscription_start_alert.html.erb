@@ -1,0 +1,22 @@
+Halo Monitoring, Inc.
+515 Sparkman Drive
+Huntsville, AL 35816
+Phone 888.971.HALO (888-971-4256)
+Fax 866.275.1904
+
+Order number: <%= @order.full_number %>
+Original Order date: <%= @order.created_at %>
+Group: <%= @order.group_name rescue '' %>
+
+Card Number <%= @order.masked_card_number %> (exp <%= @order.card_expiry.year rescue '' %>) has been charged for prorated service from <%= @order.user_intake.pro_rata_start_date rescue '' %> to <%= @order.user_intake.pro_rata_end_date rescue '' %>
+
+Your credit card will also be charged an amount of $<%= @order.product_cost.monthly_recurring rescue '' %> on <%= @order.user_intake.subscription_start_date rescue '' %>. This charge will recur the 1st day of every month.  
+
+BILLING
+ Name    : <%= [@order.bill_first_name, @order.bill_last_name].compact.join(' ') %>
+ Address : <%= @order.bill_address %>
+ City    : <%= @order.bill_city %>
+ State   : <%= @order.bill_state %>
+ ZIP     : <%= @order.bill_zip %>
+ Phone   : <%= @order.bill_phone %>
+ Email   : <%= @order.bill_email %>

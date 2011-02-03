@@ -357,7 +357,7 @@ class UserIntake < ActiveRecord::Base
       if order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
         #
         # charge the credit card subscription now
-        if order.charge_subscription
+        if order.charge_subscription          
           #
           # now make user "Installed"
           self.senior.force_status!( :installed)
@@ -384,13 +384,21 @@ class UserIntake < ActiveRecord::Base
           #  Wed Nov 24 23:01:26 IST 2010, ramonrails
           #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
           #   * https://redmine.corp.halomonitor.com/issues/3785
-          [ senior, senior.has_caregivers, senior.group_admins, 
-            subscriber, group, group.master_group
-            ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq.each do |_email|
+          #   * shifted to variable to reduce double call
+          _email_to = [ senior, senior.group_admins, subscriber, group, group.master_group
+            ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq
+            
+          #   * include caregivers as they were earlier
+          (_email_to + senior.has_caregivers.collect(&:email)).flatten.compact.uniq.each do |_email|
             #   * send installation intimations
             UserMailer.deliver_user_installation_alert( senior, _email)
           end
-
+          # 
+          #  Thu Feb  3 23:51:32 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4146
+          #   * when both charges are green, send these emails
+          #   * we collected these emails in a variable already. caregivers do not get this email
+          _email_to.each { |_email| UserMailer.deliver_subscription_start_alert( senior, _email) }
         end
       end
 
@@ -442,6 +450,13 @@ class UserIntake < ActiveRecord::Base
     _date ||= (shipped_at + 7.days) if ( _date.blank? && !shipped_at.blank? )
     #   * no panic or shipping? nothing returned
     _date = (_date + order.product_cost.recurring_delay.months) unless (order.blank? || _date.blank?)
+  end
+  
+  # 
+  #  Fri Feb  4 00:25:57 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4146
+  def pro_rata_end_date
+    subscription_start_date - 1.day rescue nil
   end
   
   def subscription_start_date
