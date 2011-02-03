@@ -22,7 +22,7 @@
       <% end %>
       <% if !current_user.user_intakes.blank? %>
       <li><%= link_to 'User&nbsp;Intake', edit_user_intake_url( current_user.user_intakes.first) %></li>  
-      <li><%= link_to 'Sub Agreement', user_intake_path( current_user.user_intakes.first) %></li>      
+      <li><%= link_to 'Agreement', user_intake_path( current_user.user_intakes.first) %></li>      
       <% end %>
       <li><%= link_to 'Support', url_for(:controller => 'util', :action => 'support') %></li>
       <li><%= link_to 'Buy Online', '/order' %></li>
