@@ -39,6 +39,12 @@ class Panic < CriticalDeviceAlert
       #   * https://redmine.corp.halomonitor.com/issues/4147
       # all caregivers are active now
       user.has_caregivers.each { |e| e.set_active_for( user, true) }
+      # 
+      #  Fri Feb  4 22:31:15 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4152
+      #   * make user out of test mode here
+      user.test_mode = false
+      user.send( :update_without_callbacks)
       #   * this is only for cucumber purpose
       if user.has_caregivers.any?(&:raises_exception?)
         raise "Custom exception for BDD tests only" # WARNING: this will not send emails until exception handling is added here
