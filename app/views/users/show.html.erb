@@ -13,16 +13,15 @@
       <div class="span-4 last">&nbsp;</div>
     </div>
 
-    <% @user.devices.each do |device| %>
-    <div>
-      <div class="span-2 text-right"><%= device.id %></div>
-      <div class="span-4"><%= device.device_type %>&nbsp;</div>
-      <div class="span-4"><%= device.serial_number %>&nbsp;</div>
-      <div class="span-5"><%= render :partial => 'reporting/charge', :locals => {:device => device} %></div>
-      <div class="span-5"><%= device.software_version %>&nbsp;</div>
-      <div class="span-4 last">&nbsp;</div>
-    </div>
-    <% end %>
+    <%= render :partial => 'device', :collection => @user.devices %>
+    
+    <hr />
+    <form action="/users/add_device_to_user" method="post">
+      <input type="hidden" name="user_id" value="<%= @user.id %>" />
+      Add a device by serial number: <input type="text" name="serial_number" />
+      <input type="submit" value="Add" />
+    </form>
+
   </div>
   
 </div>
