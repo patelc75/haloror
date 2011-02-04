@@ -363,9 +363,12 @@ class UserIntake < ActiveRecord::Base
           self.senior.force_status!( :installed)
           # self.senior.status = User::STATUS[:installed]
           # self.senior.send( :update_without_callbacks)
-          #
-          # all caregivers are active now
-          caregivers.each { |e| e.set_active_for( senior, true) }
+          # 
+          #  Fri Feb  4 01:05:28 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4147
+          # #
+          # # all caregivers are active now
+          # caregivers.each { |e| e.set_active_for( senior, true) }
           #
           # add a row to triage audit log
           #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log

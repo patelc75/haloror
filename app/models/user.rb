@@ -613,6 +613,15 @@ class User < ActiveRecord::Base
   # ====================
 
   # 
+  #  Fri Feb  4 01:44:06 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4147
+  #   * mainly for test cases (cucumber)
+  def raises_exception?
+    #   * conditional logic to raise exception in test cases
+    group_memberships.collect(&:name).flatten.compact.uniq.include?( 'raises_exception')
+  end
+
+  # 
   #  Wed Jan 26 23:36:14 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4088
   #   * include group name for halouser, admin roles

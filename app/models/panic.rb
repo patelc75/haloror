@@ -27,12 +27,22 @@ class Panic < CriticalDeviceAlert
   # we just need it for this event. Not critical_device_alert.rb super class
   # * runs after the CriticalDeviceAlert.after_save
   def after_save
+    # begin
     # https://redmine.corp.halomonitor.com/issues/3215
     #
     unless user.blank?
       #
       # buffer for last panic row related to this user
       user.update_attribute( :last_panic_id, id) # no validations
+      # 
+      #  Fri Feb  4 01:06:31 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4147
+      # all caregivers are active now
+      user.has_caregivers.each { |e| e.set_active_for( user, true) }
+      #   * this is only for cucumber purpose
+      if user.has_caregivers.any?(&:raises_exception?)
+        raise "Custom exception for BDD tests only" # WARNING: this will not send emails until exception handling is added here
+      end
       #
       # 
       # "Ready to Bill" state if panic is
@@ -149,6 +159,10 @@ class Panic < CriticalDeviceAlert
     # ramonrails: Thu Oct 14 02:05:21 IST 2010
     #   return TRUE to continue executing further callbacks, if any
     true
+  # rescue
+  #   Some_Module.public_method_to_handle_event( self) # we just want observer method called for any exceptions
+  #   super # let the exception pass through
+  # end
   end
 
   def to_s

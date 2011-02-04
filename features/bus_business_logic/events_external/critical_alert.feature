@@ -50,6 +50,19 @@ Feature: Critical Alert
     And 2 emails to "exceptions_critical@halomonitoring.com" with subject "Missing user profile!" should be sent for delivery
     And 1 email to "exceptions_critical@halomonitoring.com" with subject "call center monitoring failure" should be sent for delivery
 
+  # 
+  #  Fri Feb  4 00:59:03 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4147
+  @one @critical
+  Scenario: Simulate a panic button press with successful delivery to the call center even if there is an exception caregiver
+    Given user "test-user" has caregivers
+    And a caregiver of "test-user" can raise exception
+    When user "test-user" has "halouser" role for group "safety_care, cms"
+    And I simulate a "Panic" with delivery to the call center for user login "test-user" with a "valid" "call center account number"
+    Then I should have "1" count of "Panic"
+    And I should have a "Panic" alert "not pending" to the call center with a "valid" call center delivery timestamp    
+    And 1 email to "exceptions_critical@halomonitoring.com" with subject "call center monitoring failure" should be sent for delivery
+
   # Scenario: Simulate a fall with  delivery to the call center with Timeout exception
   #   When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "TCP connection"
   #   Then I should have "1" count of "Fall"

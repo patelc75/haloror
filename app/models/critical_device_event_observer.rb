@@ -6,6 +6,17 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
     # https://redmine.corp.halomonitor.com/issues/3076
     # this ws before_save but it caused the data loss due to reload of record
     def after_save(event)
+      # 
+      #  Fri Feb  4 21:56:28 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4147
+      #   * we need to call this code from outside this observer
+      #   * observer can only have a predefined set of methods
+      #   * we need to keep this code in a public method in a module and call it from where exception happens
+      #   option 2
+      #   * put this entire code in before_save (does not serve the purpose)
+      #
+      #   NOT TOUCHED THE CODE YET for #4147
+      #
       if UtilityHelper.validate_event_user(event) == true #only validating user because GW does not use the device_id
         if event.user.profile         
           if event.call_center_pending == false
@@ -38,7 +49,7 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
       #   return TRUE to continue executing further callbacks
       true
     end
-
+    
 # https://redmine.corp.halomonitor.com/issues/3076
 #   This callback method was commented out anyways
 #   Please see after_save aboev
