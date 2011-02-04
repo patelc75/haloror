@@ -1,0 +1,8 @@
+<div>
+  <div class="span-2 text-right"><%= device.id %></div>
+  <div class="span-4"><%= device.device_type %>&nbsp;</div>
+  <div class="span-4"><%= device.serial_number %>&nbsp;</div>
+  <div class="span-5"><%= render :partial => 'reporting/charge', :locals => {:device => device} %></div>
+  <div class="span-5"><%= device.software_version %>&nbsp;</div>
+  <div class="span-4 last">&nbsp;</div>
+</div>

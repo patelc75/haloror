@@ -568,17 +568,18 @@ class UsersController < ApplicationController
   end
   
   def add_device_to_user
-    if valid_serial_number(params[:serial_number])
-      register_user_with_serial_num(User.find(params[:user_id]),params[:serial_number].strip)
+    _user = User.find( params[:user_id])
+    if valid_serial_number( params[:serial_number])
+      register_user_with_serial_num( _user, params[:serial_number].strip)
     else
       flash[:notice] = "Not Valid Serial Number, Serial number must be exactly 10 digits."
     end 
      
-    unless params[:page] == '1'
-      redirect_to :controller => 'reporting', :action => 'users',:page => params[:page]
-    else
-    	redirect_to :controller => 'reporting', :action => 'users'
-    end   
+    # unless params[:page] == '1'
+    #   redirect_to :controller => 'reporting', :action => 'users',:page => params[:page]
+    # else
+    	redirect_to :controller => 'users', :action => 'show', :id => _user
+    # end   
   end
   
   def valid_serial_number(serial_number)
