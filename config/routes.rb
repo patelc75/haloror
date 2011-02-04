@@ -81,7 +81,9 @@ ActionController::Routing::Routes.draw do |map|
   end
   map.resources :sessions,:member => {:edit_user_intake_form => :any,:user_intake_form_confirm => :get} # added automatically after running restful_authentication script
   map.resources :user_intakes, :collection => { :add_notes => :post, :index_fast => :get }
-  map.resources :orders, :except => [:destroy, :edit, :update]
+  map.resources :orders, :except => [:destroy, :edit, :update] do |order|
+    order.resources :payment_gateway_responses, :only => [ :index, :show ]
+  end
   map.resources :invoices, :except => [ :new, :destroy ] do |invoice|
     invoice.resources :audits, :only => [:index, :show]
   end
