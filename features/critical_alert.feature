@@ -56,7 +56,7 @@ Feature: Critical Alert
   @one @critical
   Scenario: Simulate a panic button press with successful delivery to the call center even if there is an exception caregiver
     Given user "test-user" has caregivers
-    And a caregiver of "test-user" can raise exception
+    # And a caregiver of "test-user" can raise exception
     When user "test-user" has "halouser" role for group "safety_care, cms"
     And I simulate a "Panic" with delivery to the call center for user login "test-user" with a "valid" "call center account number"
     Then I should have "1" count of "Panic"
