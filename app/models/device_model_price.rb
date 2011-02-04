@@ -9,7 +9,12 @@ class DeviceModelPrice < ActiveRecord::Base
   # = validations =
   # ===============
   
+  # 
+  #  Sat Feb  5 00:36:47 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4103
+  validates_presence_of :expiry_date, :deposit, :shipping, :monthly_recurring, :months_advance, :months_trial
   validates_presence_of :group, :coupon_code, :device_model # https://redmine.corp.halomonitor.com/issues/3542
+  
   # https://redmine.corp.halomonitor.com/issues/3562
   # one coupon_code per device_model per group
   validates_uniqueness_of :coupon_code, :scope => [:device_model_id, :group_id]
