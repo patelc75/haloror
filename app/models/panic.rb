@@ -53,6 +53,10 @@ class Panic < CriticalDeviceAlert
         if user.has_caregivers.any?(&:raises_exception?)
           raise "Custom exception for BDD tests only" # WARNING: this will not send emails until exception handling is added here
         end
+        # 
+        #  Mon Feb  7 21:26:59 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4146#note-6
+        user.notify_about_installation # new method that collects all people emails who should get this alert
         #
         # 
         # "Ready to Bill" state if panic is

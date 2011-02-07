@@ -254,7 +254,12 @@ class User < ActiveRecord::Base
           #  Thu Jan 27 00:51:51 IST 2011, ramonrails
           #   * https://redmine.corp.halomonitor.com/issues/4088
           self.installed_at = Time.now # mark the timestamo when status changed to 'Installed'
-          UserMailer.deliver_user_installation_alert( self)
+          # 
+          #  Mon Feb  7 21:24:27 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4146#note-6
+          #   * WARNING: this should send emails to several people as referenced in user intake, not just self
+          #   * use => 'notify_about_installation' instead of sending emails directly
+          # #UserMailer.deliver_user_installation_alert( self)
         end
         #
         # do not update the status_changed_at timestamp if that itself is updated during the change
@@ -557,6 +562,28 @@ class User < ActiveRecord::Base
     @user
   end
   
+  # 
+  #  Mon Feb  7 21:35:32 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4146#note-6
+  #   * This method can only be called for a halouser
+  #   * collects all people emails who should get this alert
+  #   * when it cannot collect any other email, at least sends to itself
+  def notify_about_installation
+    if self.is_halouser? # 
+      _emails = [self] # at least, send email to itself
+      unless self.user_intakes.blank? # if we have user intake associated
+        _ui = self.user_intakes.first # fetch user intake, for fetching related people
+        #   fetch related people who require this installation alert
+        _emails += [ self.has_caregivers.collect(&:email), self.group_admins, _ui.subscriber, 
+          _ui.group, _ui.group.master_group
+          ].flatten.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq
+          #   * send installation alert to people
+          _emails.each { |_email| UserMailer.deliver_user_installation_alert( self, _email) }
+        end
+      end
+    end
+  end
+
   def self.resend_mail(id,senior)
     @user = User.find(id)
     @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
