@@ -408,13 +408,15 @@ class UserIntake < ActiveRecord::Base
           #   * https://redmine.corp.halomonitor.com/issues/3785
           #   * shifted to variable to reduce double call
           _email_to = [ senior, senior.group_admins, subscriber, group, group.master_group
-            ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq
-            
-          #   * include caregivers as they were earlier
-          (_email_to + senior.has_caregivers.collect(&:email)).flatten.compact.uniq.each do |_email|
-            #   * send installation intimations
-            UserMailer.deliver_user_installation_alert( senior, _email)
-          end
+            ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq            
+          # 
+          #  Mon Feb  7 21:26:10 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4146#note-6
+          # #   * include caregivers as they were earlier
+          # (_email_to + senior.has_caregivers.collect(&:email)).flatten.compact.uniq.each do |_email|
+          #   #   * send installation intimations
+          #   UserMailer.deliver_user_installation_alert( senior, _email)
+          # end
           # 
           #  Thu Feb  3 23:51:32 IST 2011, ramonrails
           #   * https://redmine.corp.halomonitor.com/issues/4146
