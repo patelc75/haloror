@@ -21,7 +21,7 @@ Enter a range of device ids (min-max) -or- ids separated by commas:<br/>
     <%= f.radio_button :cmd_type, 'boot_image'%> Instruct cheststrap to switchover to a newly downloaded image<br>
     <%= f.radio_button :cmd_type, 'remote_access'%> Remote Access<br>
     <div class="prepend-1">
-      <%= f.hidden_field :start_time %> Start Time <%= calendar_date_select_tag "param1", Time.now, :time => true %>, Duration <%= f.text_field :param2, :value => "30", :class => "span-1 validate-number" %> minutes<br>
+      Start Time <%= calendar_date_select_tag "management_cmd_device_start_time", Time.now, :time => true, :name => "management_cmd_device[start_time]" %>, Duration <%= f.text_field :duration, :value => "30", :class => "span-1 validate-number" %> minutes<br>
     </div>
     <!--
     <%#f.radio_button :cmd_type, 'dial_up_num', :disabled => 'disabled'%>Change only Local Primary dial up number (deprecated)<br>
