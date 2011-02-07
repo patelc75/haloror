@@ -575,11 +575,10 @@ class User < ActiveRecord::Base
         _ui = self.user_intakes.first # fetch user intake, for fetching related people
         #   fetch related people who require this installation alert
         _emails += [ self.has_caregivers.collect(&:email), self.group_admins, _ui.subscriber, 
-          _ui.group, _ui.group.master_group
-          ].flatten.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq
-          #   * send installation alert to people
-          _emails.each { |_email| UserMailer.deliver_user_installation_alert( self, _email) }
-        end
+        _ui.group, _ui.group.master_group
+        ].flatten.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq
+        #   * send installation alert to people
+        _emails.each { |_email| UserMailer.deliver_user_installation_alert( self, _email) }
       end
     end
   end
