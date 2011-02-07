@@ -173,7 +173,6 @@ LOST_DATA_GAP = 17
 
 EVENTS_PER_PAGE = 25
 REPORTING_USERS_PER_PAGE = 20 # speed up display of lists. browsing schronologically arranged data on pages, or search is better
-REORTING_DEVICES_PER_PAGE = 10
 
 MGMT_POLL_RATE=900
 INSTALL_WIZ_TIMEOUT_REGISTRATION=600.seconds
