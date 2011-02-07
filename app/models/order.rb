@@ -511,6 +511,31 @@ class Order < ActiveRecord::Base
       true
 
     else
+      # 
+      #  Mon Feb  7 23:53:48 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4155
+      # #
+      # # assuming the cost is for 30 days (one month)
+      # # CHANGED:
+      # #   DO NOT remove the decimals. if monthly recurring is less than 30, this will return ZERO
+      # _per_day_cost = (product_cost.monthly_recurring / 30.00)
+      # #   * calculate number of days
+      # #   * charge card
+      # _number_of_days = (_date.end_of_month.day - _date.day + 1)
+      #
+      # charge pro-rata for the period
+      # 
+      #  Fri Nov  5 07:25:43 IST 2010, ramonrails
+      #  both values here must be 2 decimals, for correct calculation
+      charge_credit_card( :pro_rata => pro_rated_amount )
+    end
+  end
+
+  # 
+  #  Mon Feb  7 23:53:43 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4155
+  def pro_rated_amount
+    if ( _date = user_intake.pro_rata_start_date)
       #
       # assuming the cost is for 30 days (one month)
       # CHANGED:
@@ -519,12 +544,8 @@ class Order < ActiveRecord::Base
       #   * calculate number of days
       #   * charge card
       _number_of_days = (_date.end_of_month.day - _date.day + 1)
-      #
-      # charge pro-rata for the period
-      # 
-      #  Fri Nov  5 07:25:43 IST 2010, ramonrails
-      #  both values here must be 2 decimals, for correct calculation
-      charge_credit_card( :pro_rata => (_per_day_cost * _number_of_days) )
+      #   * return the pro-rata amount applicable
+      _per_day_cost * _number_of_days
     end
   end
 
