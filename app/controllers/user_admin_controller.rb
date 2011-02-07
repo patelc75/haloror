@@ -175,8 +175,13 @@ class UserAdminController < ApplicationController
         _group = Group.find_by_name(group_name) # fetch group for buffer
         _user.has_role role_name, _group
         if (role_name == 'halouser') && !_group.blank? # if halouser role assigned, change user_intakes as well
+          #   * Symptom: user intake disappeared when group changed for halouser
           #   * WARNING: Multiple user intakes is possible? Very risky business logic here
-          _user.user_intakes.each do |ui|
+          # 
+          #  Tue Feb  8 02:40:03 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4119#note-17
+          #   * update associated user intake with no group assigned yet
+          _user.user_intakes.without_group.each do |ui|
             ui.group = _group
             ui.send( :update_without_callbacks)
           end
