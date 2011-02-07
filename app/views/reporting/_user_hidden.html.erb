@@ -1,19 +1,16 @@
 	<% user = @user if @user	%>
-	<% caregivers = user.caregivers %>
-	<% if caregivers.length > 0 %>
-		<div class="row">
-			<div class="col-25">&nbsp;</div>
-			<div class="col-200">
-				<h3>Caregivers</h3>
-			</div>
-		</div>
-		
-		<% caregivers.each do |caregiver| %>
-			<%=render :partial => 'reporting/table/user_row', :locals => {:user => caregiver, :toggle => false, :caregiver => true}%>
-		<% end %>
-		<br />
-		<br />
-	<% end %>
+  <% unless @user.caregivers.blank? %>
+  <div class="row">
+    <div class="col-25">&nbsp;</div>
+    <div class="col-200">
+      <h3>Caregivers</h3>
+    </div>
+  </div>
+
+  <%= render :partial => 'reporting/table/user_row', :collection => @user.caregivers, :locals => { :toggle => false, :caregiver => true} %>
+  <br />
+  <br />
+  <% end %>
 	
 	<% devices = user.devices %>
 	<div class="row">
@@ -80,18 +77,15 @@
 		</form>
 	</div>
 	
-	<% patients = user.patients %>
-	<% if patients.length > 0 %>
-		<div class="row">
-			<div class="col-25">&nbsp;</div>
-			<div class="col-200">
-				<h3>Seniors caregiving for</h3>
-			</div>
-		</div>
-		
-		<% patients.each do |patient| %>
-			<%=render :partial => 'reporting/table/user_row', :locals => {:user => patient, :toggle => false, :caregiver => false}%>
-		<% end %>
-		<br />
-		<br />
-	<% end %>
+  <% unless @user.patients.blank? %>
+  <div class="row">
+    <div class="col-25">&nbsp;</div>
+    <div class="col-200">
+      <h3>Seniors caregiving for</h3>
+    </div>
+  </div>
+
+  <%= render :partial => 'reporting/table/user_row', :collection => @user.patients, :locals => { :toggle => false, :caregiver => false} %>
+  <br />
+  <br />
+  <% end %>
