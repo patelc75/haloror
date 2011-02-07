@@ -367,8 +367,8 @@ class ReportingController < ApplicationController
     #  @devices = Device.find(:all, :order => "id asc",:conditions => conditions)
     #end
     # @devices.sort! {|x,y| x.id <=> y.id }
-    @devices = @devices.paginate :page => params[:page], :per_page => REORTING_DEVICES_PER_PAGE, :order => 'id'
-    # @devices = Device.paginate :page => params[:page], :conditions => conditions, :order => "id asc", :per_page => REORTING_DEVICES_PER_PAGE
+    @devices = @devices.paginate :page => params[:page], :per_page => 20, :order => 'id'
+    # @devices = Device.paginate :page => params[:page], :conditions => conditions, :order => "id asc", :per_page => 20
   end
   
   def device_hidden
