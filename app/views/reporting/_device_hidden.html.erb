@@ -1,11 +1,7 @@
-<% device = @device if @device%>
-	<div class="row">
-		<div class="col-25">&nbsp;</div>
-		<div class="col-200">
-			<h3>Users</h3>
-		</div>
-	</div>
-	<% users = device.users
-		 users.each do |user| %>
-		<%=render :partial => 'reporting/table/user_row', :locals => {:device => device, :user => user, :toggle => false, :caregiver => false}%>
-	<% end %>
+<div class="row">
+  <div class="col-25">&nbsp;</div>
+  <div class="col-200">
+    <h3>Users</h3>
+  </div>
+</div>
+<%= render :partial => 'reporting/table/user_row', :collection => @device.users, :locals => {:device => @device, :toggle => false, :caregiver => false} %>
