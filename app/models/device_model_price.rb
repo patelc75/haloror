@@ -14,6 +14,9 @@ class DeviceModelPrice < ActiveRecord::Base
   #   * https://redmine.corp.halomonitor.com/issues/4103
   validates_presence_of :expiry_date, :deposit, :shipping, :monthly_recurring, :months_advance, :months_trial
   validates_presence_of :group, :coupon_code, :device_model # https://redmine.corp.halomonitor.com/issues/3542
+  validates_each :expiry_date do |model, attr, value|
+    model.errors.add( 'Expiry date must be at least one day in future.') if value.blank? || (value < Date.tomorrow)
+  end
   
   # https://redmine.corp.halomonitor.com/issues/3562
   # one coupon_code per device_model per group

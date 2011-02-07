@@ -29,6 +29,7 @@ class UserIntake < ActiveRecord::Base
   #   Comment out "Change All Dial Up Numbers" > update ticket #2809
   #   * https://redmine.corp.halomonitor.com/issues/3988
   # validates_presence_of :local_primary, :global_primary, :unless => :skip_validation # https://redmine.corp.halomonitor.com/issues/2809
+  named_scope :without_group, :conditions => { :group_id => nil }
   named_scope :recent_on_top, :order => "updated_at DESC"
 
   #acts_as_audited

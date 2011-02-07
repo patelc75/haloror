@@ -314,6 +314,43 @@ class User < ActiveRecord::Base
       #  Fri Nov 12 18:09:50 IST 2010, ramonrails
       #  emails can be dispatched only after roles
       dispatch_emails # send emails as appropriate
+    # 
+    #  Mon Feb  7 23:26:37 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4155
+    #   * create an associated invoice automatically with as much data auto-populated as possible
+    #   * only halousers have invoice
+    #   * WARNING: this will impact performance!
+    if self.is_halouser?
+      #   * some values from user itself
+      _hash = { :installed_date => self.installed_at }
+      #   * some values from user intake
+      if ( _ui = self.user_intakes.first )
+        _hash[ :prorate_start_date]   = _ui.pro_rata_start_date
+        _hash[ :recurring_start_date] = _ui.subscription_start_date
+        #   * some values from order
+        if ( _order = _ui.order )
+          _hash[ :coupon_code] = _order.coupon_code
+          _hash[ :prorate]     = _order.pro_rated_amount
+          #   * some values from coupon_code
+          if ( _coupon = _order.product_cost )
+            _hash[ :shipping]    = _coupon.shipping
+            _hash[ :recurring]   = _coupon.monthly_recurring
+            _hash[ :deposit]     = _coupon.deposit
+          end
+        end
+      end
+      #   * keep auto-populating as much as possible
+      if self.invoice.blank?
+        self.create_invoice( _hash) # create associated invoice with these populated attributes
+      else
+        #   * filter out the values that are already filled in
+        # [ :installed_date, :prorate_start_date, :recurring_start_date, :coupon_code, :prorate, :shipping, :recurring, :deposit ].each do |_attr|
+        _hash.delete_if {|k,v| !self.invoice.send(k).blank? }
+        # end
+        #   * update attributes only when we have some values to update
+        self.invoice.update_attributes( _hash) unless _hash.blank?
+      end
+    end
     # end
     #
     #   * save the profile after roles are established

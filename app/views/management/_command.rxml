@@ -3,10 +3,10 @@ xml.management_cmd_server do
   # 
   #  Sat Feb  5 00:28:50 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4043
-  if cmd.cmd_type == 'remote_access' && !cmd.instantaneous
-    xml.start_time cmd.param1.to_i # if time, convert to epoch. if not time, convert to number
-    xml.duration cmd.param2.to_i # convert to number
-  end
+  # if cmd.cmd_type == 'remote_access' && !cmd.instantaneous
+  #   xml.start_time cmd.param1.to_i # if time, convert to epoch. if not time, convert to number
+  #   xml.duration cmd.param2.to_i # convert to number
+  # end
   xml.cmd_type cmd.cmd_type
   xml.timestamp cmd.timestamp_sent
   
