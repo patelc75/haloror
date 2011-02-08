@@ -66,7 +66,6 @@ WHERE p.proname ~ '^(users_by_user_intake_id)$'
       order by roles_users_options.position asc, user_id;     
 
 
-
 /* make sure user intake is updating user.installed_at---------------------------------------------------------------------------------------------------*/
 select id, login, installed_at from users where id in (1263, 1284, 1277, 1243, 1309, 1317, 1310, 1295, 1288, 1306, 1294, 1267, 1258, 1289, 1251);
 
