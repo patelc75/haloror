@@ -8,5 +8,4 @@
         and roles.authorizable_id = groups.id
         and groups.name != 'safety_care'
         and status = 'Installed' and demo_mode != true
-        order by users.id;
         order by profiles.state asc, users.created_at desc;  

@@ -75,3 +75,20 @@ select panics.id, panics.user_id, profiles.first_name, profiles.last_name, times
 where test_mode = true
 and panics.user_id = profiles.user_id
 limit 100;
+
+/* device_infos with a particular software verison--------------------------------------------------------------------------------------------------*/
+select device_id, software_version, software_version_current as cur, software_version_new as new, created_at from device_infos where software_version like '%02.00.00.1334%' order by device_id desc, created_at desc;
+
+select device_id from device_infos where software_version like '%02.00.00.1334%';
+
+select device_id, software_version, software_version_current as cur, software_version_new as new, created_at from device_infos where device_id in (select device_id from device_infos where software_version like '%02.00.00.1334%') order by device_id desc, created_at desc nulls last;
+
+select users.id, profiles.first_name, profiles.last_name, users.status 
+from users, profiles, devices_users, devices 
+where users.id in (1288, 1303) 
+and profiles.user_id = users.id;
+and devices.id in (select device_id from device_infos where device_id in (select device_id from device_infos where software_version like '%02.00.00.1334%') order by device_id desc, created_at desc nulls last)
+limit 1000;
+
+
+select device_id, software_version, software_version_current as cur, software_version_new as new, created_at from device_infos where device_id < 2500 and created_at is not null order by device_id desc, created_at desc;
