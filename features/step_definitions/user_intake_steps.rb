@@ -337,6 +337,12 @@ When /^I view the last user intake$/ do
   visit url_for( :controller => "user_intakes", :action => "show", :id => UserIntake.last.id)
 end
 
+When /^I view the (senior|subscriber) of last user intake$/ do |_role|
+  (ui = UserIntake.last).should_not be_blank
+  (_user = ui.send(_role.to_sym)).should_not be_blank
+  visit user_path( _user)
+end
+
 When /^user intake "([^\"]*)" is submitted again$/ do |_serial|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank
   ui.skip_validation = false
@@ -758,7 +764,13 @@ end
 
 Then /^last user intake retains its existing panic timestamp$/ do
   (ui = UserIntake.last).should_not be_blank
-  ui.audits.last[:changes].keys.should_not include( "installation_datetime")
+  ui.senior.panics.length.should == 2
+  ui.panic_received_at.should == ui.senior.panics.first.timestamp
+  ui.panic_received_at.should_not == ui.senior.panics.last.timestamp
+  # 
+  #  Wed Feb  9 23:29:24 IST 2011, ramonrails
+  #   * audit was removed from user intake due to an error
+  # ui.audits.last[:changes].keys.should_not include( "installation_datetime")
 end
 
 # ============================

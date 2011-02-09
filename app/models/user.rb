@@ -3,9 +3,9 @@ require 'digest/sha1'
 class User < ActiveRecord::Base
   include UtilityHelper
 
-  # =============
-  # = constants =
-  # =============
+  # ============================
+  # = constants and attributes =
+  # ============================
   
   # IMPORTANT -----------------
   #   * The order of appearance of the keys, MUST be exactly as shown from pending .. installed
@@ -66,16 +66,6 @@ class User < ActiveRecord::Base
     "dial_up_alert" => "800 Abuse Alert"
   }
   
-  # ==========================
-  # = includes and libraries =
-  # ==========================
-  
-  acts_as_authorized_user
-  acts_as_authorizable
-  acts_as_audited :except => [:is_caregiver, :is_new_caregiver]
-  
-  #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
-  
   # ================================
   # = attributes and accessibility =
   # ================================
@@ -92,6 +82,16 @@ class User < ActiveRecord::Base
   attr_accessor :password
   attr_accessor :current_password,:username_confirmation
 
+  # ==========================
+  # = includes and libraries =
+  # ==========================
+  
+  acts_as_authorized_user
+  acts_as_authorizable
+  acts_as_audited :except => [:is_caregiver, :is_new_caregiver]
+  
+  #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
+  
   # arranged associations alphabetically for easier traversing
   
   # =============
@@ -611,9 +611,9 @@ class User < ActiveRecord::Base
       unless self.user_intakes.blank? # if we have user intake associated
         _ui = self.user_intakes.first # fetch user intake, for fetching related people
         #   fetch related people who require this installation alert
-        _emails += [ self.has_caregivers.collect(&:email), self.group_admins, _ui.subscriber, 
+        _emails += [ self.has_caregivers, self.group_admins, _ui.subscriber, 
         _ui.group, _ui.group.master_group
-        ].flatten.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq
+        ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq
         #   * send installation alert to people
         _emails.each { |_email| UserMailer.deliver_user_installation_alert( self, _email) }
       end

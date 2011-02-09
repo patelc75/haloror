@@ -203,6 +203,11 @@ module CollectiveIdea #:nodoc:
           rescue
           end
           begin
+            # 
+            #  Wed Feb  9 20:40:00 IST 2011, ramonrails
+            #   * patch to fix error caused when :user == :false
+            #   * when user is not signed in, acts_as_authenticated returns current_user => :false
+            attrs[:user] = nil if attrs[:user] == :false
             attrs[:owner] = self.owner_user rescue attrs[:user]
           rescue
           end

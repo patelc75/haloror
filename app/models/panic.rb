@@ -35,6 +35,11 @@ class Panic < CriticalDeviceAlert
       # https://redmine.corp.halomonitor.com/issues/3215
       #
       unless user.blank?
+        # 
+        #  Wed Feb  9 23:26:29 IST 2011, ramonrails
+        #   * this is the panic 'timestamp'
+        #   * we do not want any difference at all between timestamp in panic & user intake
+        _time_now = timestamp
         #
         # buffer for last panic row related to this user
         user.update_attribute( :last_panic_id, id) # no validations
@@ -66,7 +71,7 @@ class Panic < CriticalDeviceAlert
         #     * Ready to Install or Install Overdue
         #   * "Installed" means, panic button was ok. user was "Bill"ed by human action
         _allowed_states = [User::STATUS[:install_pending], User::STATUS[:overdue]]
-        if !user.desired_installation_date.blank? && (Time.now > user.desired_installation_date) && _allowed_states.include?( user.status.to_s)
+        if !user.desired_installation_date.blank? && (_time_now > user.desired_installation_date) && _allowed_states.include?( user.status.to_s)
           # 
           #  Fri Dec 17 21:01:27 IST 2010, ramonrails
           #   * https://redmine.corp.halomonitor.com/issues/3891
@@ -81,7 +86,7 @@ class Panic < CriticalDeviceAlert
           # # 
           # #  Tue Nov 23 00:48:30 IST 2010, ramonrails
           # #   * Pro rata is charged from the date we received panic button after 
-          # user.user_intakes.first.update_attribute( :panic_received_at, Time.now) unless user.user_intakes.blank?
+          # user.user_intakes.first.update_attribute( :panic_received_at, _time_now) unless user.user_intakes.blank?
           #
           # add triage_audit_log with a message
           _message = "Automatically transitioned from 'Ready to Insall' to 'Ready to Bill' state at 'Panic button'"
@@ -95,7 +100,7 @@ class Panic < CriticalDeviceAlert
           # # 
           # #  Tue Nov 23 00:48:30 IST 2010, ramonrails
           # #   * Pro rata is charged from the date we received panic button after 
-          # user.user_intakes.first.update_attribute( :panic_received_at, Time.now) unless user.user_intakes.blank?
+          # user.user_intakes.first.update_attribute( :panic_received_at, _time_now) unless user.user_intakes.blank?
           #
           # add triage_audit_log with a message
           _message = "Automatically transitioned from any existing state to 'Installed' state at 'Panic button' because subscription started before panic event."
@@ -115,13 +120,13 @@ class Panic < CriticalDeviceAlert
             # Installation date time blank?
             ## First panic stored
             ## Subsequent panics do not over-write the first stored one
-            _intake.update_attribute( :panic_received_at, Time.now) if _intake.panic_received_at.blank?
+            _intake.update_attribute( :panic_received_at, _time_now) if _intake.panic_received_at.blank?
 
           elsif _intake.panic_received_at.blank? || (_intake.panic_received_at < _intake.installation_datetime)
             # Installation date time given?
             ## First panic after the timestamp, is stored. Overwriting any existing one that might have existed before the timestamp
             ## Subsequent panics do not overwrite the existing stored one
-            _intake.update_attribute( :panic_received_at, Time.now)
+            _intake.update_attribute( :panic_received_at, _time_now)
           end
         end
 
@@ -148,7 +153,7 @@ class Panic < CriticalDeviceAlert
         # #  
         # #   Ready for Install > Installed (green) is automatically transitioned
         # #   Check for panic button test (must occur after the install date)
-        # auto_install = ((user.status == User::STATUS[:install_pending]) && (Time.now > user.desired_installation_date))
+        # auto_install = ((user.status == User::STATUS[:install_pending]) && (_time_now > user.desired_installation_date))
         # if auto_install
         #   user.status = User::STATUS[:installed]
         #   #
@@ -174,6 +179,10 @@ class Panic < CriticalDeviceAlert
       #   return TRUE to continue executing further callbacks, if any
       true
     rescue
+      # 
+      #  Wed Feb  9 23:16:17 IST 2011, ramonrails
+      #   * at least send an email about this error
+      CriticalMailer.deliver_monitoring_failure( "Technical exception", self)
       true # no matter what, execute critical_device_event_observer.after_save
     end
   end

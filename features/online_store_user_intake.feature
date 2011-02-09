@@ -20,7 +20,7 @@ Feature: Online store user intake
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario Outline: Successful order has associated user intake, Failed does not have it
     When I go to the online store
-    And I select "group1" from "Group"
+    # And I select "group1" from "Group"
     And I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
@@ -39,7 +39,7 @@ Feature: Online store user intake
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: myHalo user has role for group
     When I go to the online store
-    And I select "group1" from "Group"
+    # And I select "group1" from "Group"
     And I choose "product_complete"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
@@ -64,7 +64,7 @@ Feature: Online store user intake
     And I check "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
-    Then I should see "Thank you for placing the order with us"
+    Then I should see " Thank you for your order"
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Skip Subscriber Agreement after a successful order to reach success page

@@ -10,13 +10,13 @@ Feature: Online store coupons
 
   Scenario Outline: Order page - referral link fills coupon code text field
     When I visit "/order/<coupon>"
-    Then the "Coupon Code" field should contain "<coupon>"
+    Then the "Coupon Code" field should contain "<replaced>"
 
     Examples:
-      | coupon            |
-      | coupon-code-1     |
-      | abc               |
-      | 12345             |
+      | coupon        | replaced |
+      | coupon-code-1 | default  |
+      | abc           | default  |
+      | 12345         | default  |
       # | QUALITY-1.5.0-RC3 |
 
   # Sat Sep 18 01:46:00 IST 2010

@@ -26,7 +26,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     Then page content should have "Thank you"
     And the payment gateway response should have 1 log
-    And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
+    And 1 email to "cuc_ship@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Not same as shipping has separate shipping and billing data
@@ -42,7 +42,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And billing and shipping addresses should not be same
     And last user intake should have separate senior and subscriber
     And subscriber of last user intake is also the caregiver
-    And 1 email to "cuc_ship@chirag.name" with subject "Please read before your installation" should be sent for delivery
+    And 1 email to "cuc_ship@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario Outline: Success and Failure for credit cards
@@ -124,7 +124,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Continue"
     And I press "Place Order"
     Then page content should have "Thank you"
-    And the payment gateway should have log for 441 USD
+    And the payment gateway should have log for 264 USD
     # And the payment gateway should have log for 59 USD
 
   # https://redmine.corp.halomonitor.com/issues/3170
@@ -212,5 +212,6 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I check "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
-    Then caregivers of last order should be activated
-  
+    Then caregivers of last order should not be activated
+    # https://spreadsheets.google.com/ccc?key=0Amq6Nxcn9fTPdHlkWFVNZnphZWxtdGtYQW0wczRtdFE&hl=en#gid=20
+    

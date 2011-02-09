@@ -74,6 +74,10 @@ class UserAdminController < ApplicationController
       # role_id = params[:role]
       # role = Role.find_by_id(role_id)
       User.transaction do
+        # 
+        #  Wed Feb  9 22:28:56 IST 2011, ramonrails
+        #   * FIXME: before_save not trigerring for some reason. check later
+        @user.autofill_login
         # @user[:is_new_user] = true # DEPRECATED: this logic is not used anymore
         @user.created_by = current_user.id # TODO: DRY: include this in partial. no need to assign here
         #

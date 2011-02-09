@@ -40,6 +40,7 @@ Feature: Manage coupon codes
       | Monthly recurring | 77         |
       | Months advance    | 0          |
       | Months trial      | 2          |
+    And I select "31 Dec, 2015" as the "Expiry date" date
     And I press "Save"
     Then I should see "successfully"
     And coupon code "cc_160_pq1" should have a related device model, group

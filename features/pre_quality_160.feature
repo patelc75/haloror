@@ -186,7 +186,7 @@ Feature: Pre quality
     And "user_intake_no_caregiver_2" checkbox should be checked
     And "user_intake_no_caregiver_3" checkbox should be checked
     # At Config > Users, verify the following 2 users were created
-    When I follow links "Config > Users"
+    When I view the senior of last user intake
     Then page content should have "halouser, subscriber for"
     And page content should not have "caregiver for"
 
@@ -196,10 +196,13 @@ Feature: Pre quality
     When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
     And I create admin of "reseller" group
-    And I activate the last user as "reseller_admin"
+    #   * "Admin" cannot create a caregiver anymore
+    #   * activating an admin also makes it logged in
+    # And I activate the last user as "reseller_admin"
     And I place an online order for "reseller" group
-    And I visit "/reporting/users/"
-    And I follow links "Caregivers > add_caregiver_button > Add new caregiver with no email"
+    And I view the senior of last user intake
+    And I follow links "Caregivers > add_caregiver_button"
+    And I follow "Add new caregiver with no email"
     And I fill in the following:
       | Username         | caregiver1    |
       | Password         | abc123        |
@@ -393,7 +396,7 @@ Feature: Pre quality
     # verify roles in config > users
     # Verify no extra roles and no extra users were created.
     And last user intake should have 2 users
-    When I visit "/reporting/users?group_name=reseller"
+    When I view the subscriber of last user intake
     Then page content should have "subscriber for, caregiver for"
     #
     # verify call center account number
