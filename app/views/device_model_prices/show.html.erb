@@ -1,3 +1,5 @@
+<h1>Show Coupon Code</h1>
+<div class="span-8 box">
 <p>
   <b>Group:</b>
   <%= h @device_model_price.group_name %>
@@ -41,7 +43,8 @@
   <b>Months trial:</b>
   <%=h @device_model_price.months_trial %>
 </p>
-
-
+</div>
+<div class="span-20"> 
 <%= link_to 'Back', device_model_prices_path, :class => "button blue-button medium"  %>
 <%= link_to 'Edit', edit_device_model_price_path(@device_model_price), :class => "button green-button medium"  %>
+</div>
