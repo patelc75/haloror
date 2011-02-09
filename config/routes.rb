@@ -127,6 +127,7 @@ ActionController::Routing::Routes.draw do |map|
   map.dismiss_triage 'triage/:user_id/dismiss', :controller => 'triage_audit_logs', :action => 'new', :is_dismissed => true
   map.undismiss_triage 'triage/:user_id/undismiss', :controller => 'triage_audit_logs', :action => 'new', :is_dismissed => false
   map.new_user_invoice '/invoices/new/:id', :controller => 'invoices', :action => 'new'
+  map.management '/management', :controller => 'management', :action => 'issue' 
   
   
   #map.resend '/resend/:id', :controller => 'installs', :action => 'resend'
