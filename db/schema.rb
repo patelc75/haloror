@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110209144746) do
+ActiveRecord::Schema.define(:version => 20110209192226) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -1223,7 +1223,6 @@ ActiveRecord::Schema.define(:version => 20110209144746) do
     t.boolean  "subscriber_is_caregiver"
     t.datetime "submitted_at"
     t.datetime "legal_agreement_at"
-    t.datetime "paper_copy_at"
     t.date     "paper_copy_submitted_on"
     t.date     "emailed_on"
     t.datetime "installation_datetime"

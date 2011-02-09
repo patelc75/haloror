@@ -1170,7 +1170,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def paper_copy_submitted?
-    !paper_copy_at.blank? # paper_copy of the scubscriber agreement was submitted
+    !paper_copy_submitted_on.blank? # paper_copy of the scubscriber agreement was submitted
   end
 
   def safety_care_email_sent

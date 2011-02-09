@@ -9,7 +9,7 @@ Given /^I have a (saved|complete|non-agreed) user intake$/ do |state|
   unless state == "complete"
     # usually nullify only submitted_at (works for non-agreed)
     # for "saved", also nullify legal_agreement_ and print flags
-    fields = ([:legal_agreement_at, :paper_copy_at] + (state == "saved" ? [:submitted_at] : []))
+    fields = ([:legal_agreement_at, :paper_copy_submitted_on] + (state == "saved" ? [:submitted_at] : []))
     fields.each {|field| ui.send("#{field}=", nil) }
   end
   ui.save.should be_true # send(:update_without_callbacks) # cannot ui.save
@@ -485,7 +485,7 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
   if condition == "should"
     case what
     when "a print stamp"
-      ui.paper_copy_at.should_not be_blank
+      ui.paper_copy_submitted_on.should_not be_blank
     when "a recent audit log", "an audit log"
       ui.senior.last_triage_audit_log.should_not be_blank
     when "a senior profile"
