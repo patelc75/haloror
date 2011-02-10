@@ -185,8 +185,17 @@ class UserAdminController < ApplicationController
           #  Tue Feb  8 02:40:03 IST 2011, ramonrails
           #   * https://redmine.corp.halomonitor.com/issues/4119#note-17
           #   * update associated user intake with no group assigned yet
-          _user.user_intakes.without_group.each do |ui|
-            ui.group = _group
+          #  Thu Feb 10 01:50:51 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4119#note-25
+          #   * config > roles can change status of senior.is_halouser_of?( self.group)
+          #   * changing the role of "sole" halouser to a different group will also change the group of user intake
+          #   * adding additional halousers to the group will not change the group of user intake
+          #   * in other words, a user intake will not auto-change the group as long as a user from user_intake.users has a halouser role for that group
+          # 
+          #  Thu Feb 10 02:31:26 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4119#note-29
+          _user.user_intakes.select {|e| e.halouser.blank? }.each do |ui| # pick user intakes orphaned of halouser
+            ui.group = _group # assign halouser's group
             ui.send( :update_without_callbacks)
           end
         end

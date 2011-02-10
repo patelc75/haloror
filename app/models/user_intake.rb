@@ -958,6 +958,16 @@ class UserIntake < ActiveRecord::Base
   #   end # index range
   # end
 
+  # 
+  #  Thu Feb 10 02:22:55 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4119#note-25
+  #   * this is different from "senior"
+  #   * "senior" uses "halouser" to select the user
+  #   * "halouser" if not buffered. it is always fetched from database
+  def halouser
+    users.select {|e| e.is_halouser_of?(group) }.sort {|a,b| b.created_at <=> a.created_at }.first
+  end
+  
   # TODO: DRYness required here
   def senior
     #   * pickup any exiting from mem_... attribute
@@ -969,11 +979,7 @@ class UserIntake < ActiveRecord::Base
     #   * https://redmine.corp.halomonitor.com/issues/4119
     #   * pick up the most recent one (sort b <> a) if multiple halousers exist for some reason
     #   * FIXME: we should never have multiple halousers for a user intake
-    # 
-    #  Thu Feb 10 01:50:51 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4119#note-25
-    #   * config > roles can change status of senior.is_halouser_of?( self.group)
-    self.mem_senior ||= ( (users.select(&:is_halouser?).sort {|a,b| b.created_at <=> a.created_at }.first) || User.new.clone_with_profile)
+    self.mem_senior ||= ( halouser || User.new.clone_with_profile)
   end
 
   def senior=( arg)
