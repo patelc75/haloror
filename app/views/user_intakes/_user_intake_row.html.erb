@@ -11,7 +11,7 @@
     <% end %>
   </td>
   <% end %>
-  <td><%= user_intake_row.senior.id rescue '?' %></td>
+  <td><%= link_to user_intake_row.senior.id, user_path( user_intake_row.senior) %></td>
   <td><%= user_intake_row.senior.name rescue '?' %></td>
   <td class="text-center"><span class="timestamp"><%= (user_intake_row.installation_datetime.strftime(Time::DATE_FORMATS[:day_MM_DD_YYYY]) if user_intake_row.installation_datetime) || image_tag('exclamation.png') %></span></td>
   <% if current_user.is_super_admin? %>  
