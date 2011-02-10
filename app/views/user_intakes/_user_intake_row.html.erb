@@ -78,7 +78,7 @@
   <td class="text-center">
     <% unless user_intake_row.senior.blank? %>
       <%= link_to ((user_intake_row.senior.status_index == :pending) ? 'Not Submitted' : user_intake_row.senior.status), edit_user_intake_path(user_intake_row), :class => "span-2 button small #{user_intake_row.senior.status_button_color}-button", :id => "edit_link" %>
-      <%= "<br /><span class='timestamp'>#{user_intake_row.senior.status_timestamps(:installed)}</span>" unless user_intake_row.senior.status_timestamps(:installed).blank? %>
+      <%= "<br /><span class='timestamp'>#{user_intake_row.senior.installed_at}</span>" unless user_intake_row.senior.status_timestamps(:installed).blank? %>
     <% end %>
   </td>
   <td class="text-center">

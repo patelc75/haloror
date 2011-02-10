@@ -47,25 +47,10 @@ class Panic < CriticalDeviceAlert
         #
         # buffer for last panic row related to this user
         user.update_attribute( :last_panic_id, id) # no validations
-        # 
-        #  Fri Feb  4 01:06:31 IST 2011, ramonrails
-        #   * https://redmine.corp.halomonitor.com/issues/4147
-        # all caregivers are active now
-        user.has_caregivers.each { |e| e.set_active_for( user, true) }
-        # 
-        #  Fri Feb  4 22:31:15 IST 2011, ramonrails
-        #   * https://redmine.corp.halomonitor.com/issues/4152
-        #   * make user out of test mode here
-        user.test_mode = false
-        user.send( :update_without_callbacks)
         #   * this is only for cucumber purpose
         if user.has_caregivers.any?(&:raises_exception?)
           raise "Custom exception for BDD tests only" # WARNING: this will not send emails until exception handling is added here
         end
-        # 
-        #  Mon Feb  7 21:26:59 IST 2011, ramonrails
-        #   * https://redmine.corp.halomonitor.com/issues/4146#note-6
-        user.notify_about_installation # new method that collects all people emails who should get this alert
         #
         # 
         # "Ready to Bill" state if panic is
@@ -117,21 +102,55 @@ class Panic < CriticalDeviceAlert
         unless user.user_intakes.blank?
           _intake = user.user_intakes.first
           # 
-          #  Fri Jan 28 02:15:27 IST 2011, ramonrails
-          #   * https://redmine.corp.halomonitor.com/issues/4111#note-7
-          #   * update the Panic.after_save, only store the first panic after installation_datetime, not every subsequent panic
-          if _intake.installation_datetime.blank?
-            # Installation date time blank?
-            ## First panic stored
-            ## Subsequent panics do not over-write the first stored one
-            _intake.update_attribute( :panic_received_at, _time_now) if _intake.panic_received_at.blank?
-
-          elsif _intake.panic_received_at.blank? || (_intake.panic_received_at < _intake.installation_datetime)
-            # Installation date time given?
-            ## First panic after the timestamp, is stored. Overwriting any existing one that might have existed before the timestamp
-            ## Subsequent panics do not overwrite the existing stored one
-            _intake.update_attribute( :panic_received_at, _time_now)
+          #  Fri Feb 11 00:48:03 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4181
+          #   * we need panic_received_at and installed_at to reflect the actual timestamp
+          #   * we cannot however switch the status to "Installed" as we want a concurrent "Ready to Bill" status
+          # if panic < desired 
+          #   panic_received_at is not updated and stays blank
+          # elsif (panic > desired or desired.blank?)
+          if ( _time_now > _intake.installation_datetime ) || _intake.installation_datetime.blank?
+            #   only the first panic updates panic_received_at, ignore subsequent panics
+            if _intake.panic_received_at.blank?
+              _intake.update_attribute( :panic_received_at, _time_now)
+              #   send "<halouser> installed" email" 
+              user.notify_about_installation
+              #   update User.installed_at
+              user.update_attribute( :installed_at, _time_now)
+              # make all caregivers active
+              # 
+              #  Fri Feb  4 01:06:31 IST 2011, ramonrails
+              #   * https://redmine.corp.halomonitor.com/issues/4147
+              # all caregivers are active now
+              user.has_caregivers.each { |e| e.set_active_for( user, true) }
+              # Installed timestamp in the "Status" column of Single Row User Intake
+              #   * updated in _user_intake_row.html.erb
+              #
+              # Completely disable test mode (User.test_mode = false)
+              # 
+              #  Fri Feb  4 22:31:15 IST 2011, ramonrails
+              #   * https://redmine.corp.halomonitor.com/issues/4152
+              #   * make user out of test mode here
+              user.test_mode = false
+              user.send( :update_without_callbacks)
+            end
           end
+          # # 
+          # #  Fri Jan 28 02:15:27 IST 2011, ramonrails
+          # #   * https://redmine.corp.halomonitor.com/issues/4111#note-7
+          # #   * update the Panic.after_save, only store the first panic after installation_datetime, not every subsequent panic
+          # if _intake.installation_datetime.blank?
+          #   # Installation date time blank?
+          #   ## First panic stored
+          #   ## Subsequent panics do not over-write the first stored one
+          #   _intake.update_attribute( :panic_received_at, _time_now) if _intake.panic_received_at.blank?
+          # 
+          # elsif _intake.panic_received_at.blank? || (_intake.panic_received_at < _intake.installation_datetime)
+          #   # Installation date time given?
+          #   ## First panic after the timestamp, is stored. Overwriting any existing one that might have existed before the timestamp
+          #   ## Subsequent panics do not overwrite the existing stored one
+          #   _intake.update_attribute( :panic_received_at, _time_now)
+          # end
         end
 
         #
