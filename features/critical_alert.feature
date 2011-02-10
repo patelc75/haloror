@@ -61,7 +61,9 @@ Feature: Critical Alert
     And I simulate a "Panic" with delivery to the call center for user login "test-user" with a "valid" "call center account number"
     Then I should have "1" count of "Panic"
     And I should have a "Panic" alert "not pending" to the call center with a "valid" call center delivery timestamp    
-    And 1 email to "exceptions_critical@halomonitoring.com" with subject "call center monitoring failure" should be sent for delivery
+    #   * usually only 1 email is sent
+    #   * 3 emails due to "caregiver ... can raise exception" and panic sending additional email about "Technical Exception"
+    And 3 emails to "exceptions_critical@halomonitoring.com" with subject "call center monitoring failure" should be sent for delivery
 
   # Scenario: Simulate a fall with  delivery to the call center with Timeout exception
   #   When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "TCP connection"

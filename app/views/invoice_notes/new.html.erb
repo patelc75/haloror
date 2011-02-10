@@ -1,0 +1,21 @@
+<h1>New invoice note for Invoice <%= @invoice.id %></h1>
+
+<% form_for :invoice_note, :url => invoice_invoice_notes_path(@invoice) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.hidden_field :invoice_id %>
+    <%= f.hidden_field :user_id %>
+    <%= f.hidden_field :created_by %>
+    <%= f.hidden_field :updated_by %>
+  </p>
+  <p>
+    <%= f.label :description %><br />
+    <%= f.text_area :description, :rows => 5, :class => "span-15" %>
+  </p>
+  <p>
+    <%= f.submit "Save", :class => "button green-button" %>
+    <%= link_to 'Back', invoice_invoice_notes_path( @invoice), :class => "button white-button" %>
+  </p>
+<% end %>
+

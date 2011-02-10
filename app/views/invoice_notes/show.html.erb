@@ -1,0 +1,21 @@
+<p>
+  <b>Invoice:</b>
+  <%=h @invoice_note.invoice_id %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%=h @invoice_note.description %>
+</p>
+
+<p>
+  <b>Created by:</b>
+  <%=h @invoice_note.creator %>
+</p>
+
+<p>
+  <b>Updated by:</b>
+  <%=h @invoice_note.updater %>
+</p>
+
+<%= link_to 'Back', invoice_invoice_notes_path( @invoice_note.invoice) %>

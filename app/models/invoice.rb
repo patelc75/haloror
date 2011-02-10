@@ -2,6 +2,7 @@ class Invoice < ActiveRecord::Base
   belongs_to :user
   belongs_to :affiliate_fee_group, :class_name => "Group"
   belongs_to :referral_group, :class_name => "Group"
+  has_many :notes, :class_name => "InvoiceNote", :foreign_key => "invoice_id"
   
   validates_presence_of :user_id, :on => :create, :message => "can't be blank"
   

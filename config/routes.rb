@@ -78,6 +78,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :users, :member => { :new_caregiver_options => :get, :triage => :get, :dismiss => :post, :toggle_test_mode => :post } do |user|
     user.resources :user_logs, :only => [:index, :show]
     user.resources :audits, :only => [:index, :show]
+    user.resources :triage_audit_logs
   end
   map.resources :sessions,:member => {:edit_user_intake_form => :any,:user_intake_form_confirm => :get} # added automatically after running restful_authentication script
   map.resources :user_intakes, :collection => { :add_notes => :post, :index_fast => :get }
@@ -86,6 +87,7 @@ ActionController::Routing::Routes.draw do |map|
   end
   map.resources :invoices, :except => [ :new, :destroy ] do |invoice|
     invoice.resources :audits, :only => [:index, :show]
+    invoice.resources :invoice_notes, :as => :notes, :except => [:edit, :update]
   end
   map.resources :rmas, :has_many => :rma_items
   map.resources :purged_logs
