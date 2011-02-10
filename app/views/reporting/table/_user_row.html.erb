@@ -54,7 +54,7 @@
         <% if user_row.last_log_when_status_changed.blank? %>
         <%= image_tag user_row.status_image, :alt => (user_row.status || 'Unknown'), :title => (user_row.status || 'Unknown') %>
         <% else %>
-        <%= link_to image_tag(user_row.status_image, :alt => (user_row.status || 'Unknown'), :title => (user_row.status || 'Unknown')), user_user_log_path(user, user_row.last_log_when_status_changed) %>
+        <%= link_to image_tag(user_row.status_image, :alt => (user_row.status || 'Unknown'), :title => (user_row.status || 'Unknown')), user_user_log_path(user_row, user_row.last_log_when_status_changed) %>
         <% end %>
       </span>
       <%= user_row.full_name.blank? ? "(no name)" : user_row.full_name %>
