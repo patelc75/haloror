@@ -3,8 +3,9 @@ class TriageAuditLogsController < ApplicationController
   
   def index
     # pick user_id, id or current_user.id
-    @triage_audit_logs = TriageAuditLog.find_all_by_user_id( params[:id], :order => "updated_at DESC").paginate :page => params[:page], :per_page => 10
-    @user = User.find( params[:id])
+    _id = ( params[:id] || params[:user_id] )
+    @triage_audit_logs = TriageAuditLog.find_all_by_user_id( _id, :order => "updated_at DESC").paginate :page => params[:page], :per_page => 10
+    @user = User.find( _id)
     
     respond_to do |format|
       format.html
@@ -71,6 +72,18 @@ class TriageAuditLogsController < ApplicationController
         format.html { render :action => "edit", :id => @triage_audit_log.id }
         format.xml  { render :xml => @triage_audit_log.errors, :status => :unprocessable_entity }
       end
+    end
+  end
+  
+  def destroy
+    @triage_audit_log = TriageAuditLog.find( params[:id])
+    _user = @triage_audit_log.user
+    @triage_audit_log.destroy
+    
+    respond_to do |format|
+      flash[:notice] = "Note '#{@triage_audit_log.description[0..10]}' removed"
+      format.html { redirect_to :controller => 'triage_audit_logs', :action => 'index', :user_id => _user }
+      format.xml { head :ok }
     end
   end
   
