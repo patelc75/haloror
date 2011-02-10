@@ -39,7 +39,11 @@ class Panic < CriticalDeviceAlert
         #  Wed Feb  9 23:26:29 IST 2011, ramonrails
         #   * this is the panic 'timestamp'
         #   * we do not want any difference at all between timestamp in panic & user intake
-        _time_now = timestamp
+        # 
+        #  Thu Feb 10 23:17:52 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4180
+        #   * tiemstamp may really not be the recent one. We need Time.now
+        _time_now = Time.now
         #
         # buffer for last panic row related to this user
         user.update_attribute( :last_panic_id, id) # no validations
