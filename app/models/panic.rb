@@ -182,11 +182,11 @@ class Panic < CriticalDeviceAlert
       # ramonrails: Thu Oct 14 02:05:21 IST 2010
       #   return TRUE to continue executing further callbacks, if any
       true
-    rescue
+    rescue Exception => e
       # 
       #  Wed Feb  9 23:16:17 IST 2011, ramonrails
       #   * at least send an email about this error
-      CriticalMailer.deliver_monitoring_failure( "Technical exception", self)
+      CriticalMailer.deliver_monitoring_failure( "Technical exception #{e}", self)
       true # no matter what, execute critical_device_event_observer.after_save
     end
   end
