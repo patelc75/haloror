@@ -1,0 +1,258 @@
+Request-log-analyzer summary report
+--------------------------------------------------------------------------------
+Version 1.5.4 - written by Willem van Bergen and Bart ten Brinke
+Website: http://github.com/wvanbergen/request-log-analyzer
+
+Request summary
+--------------------------------------------------------------------------------
+Parsed lines:        209958
+Skipped lines:       0     
+Parsed requests:     104979
+Skipped requests:    0     
+
+First request:       2010-12-06 10:03:10
+Last request:        2010-12-06 21:07:09
+Total time analyzed: 1 days             
+
+Request distribution per hour
+--------------------------------------------------------------------------------
+  0:00 |     0 hits/day | 
+  1:00 |     0 hits/day | 
+  2:00 |     0 hits/day | 
+  3:00 |     0 hits/day | 
+  4:00 |     0 hits/day | 
+  5:00 |     0 hits/day | 
+  6:00 |     0 hits/day | 
+  7:00 |     0 hits/day | 
+  8:00 |     0 hits/day | 
+  9:00 |     0 hits/day | 
+ 10:00 |  9140 hits/day | =====
+ 11:00 |  9456 hits/day | =====
+ 12:00 |  9240 hits/day | =====
+ 13:00 |  9236 hits/day | =====
+ 14:00 |  9665 hits/day | =====
+ 15:00 | 10166 hits/day | =====
+ 16:00 |  9899 hits/day | =====
+ 17:00 |  9811 hits/day | =====
+ 18:00 |  9669 hits/day | =====
+ 19:00 |  9694 hits/day | =====
+ 20:00 |  8855 hits/day | =====
+ 21:00 |   148 hits/day | 
+ 22:00 |     0 hits/day | 
+ 23:00 |     0 hits/day | 
+
+Most requested
+--------------------------------------------------------------------------------
+BundleController#create.html [POST]                 | 50070 hits | 47.7% | ==
+MgmtQueriesController#create.html [POST]            | 17573 hits | 16.7% | =
+MgmtCmdsController#create.html [POST]               | 17316 hits | 16.5% | =
+UtilController#hostname.html [GET]                  | 16561 hits | 15.8% | =
+AccessModesController#check.html [POST]             |  1905 hits |  1.8% | 
+FlexController#chart.html [POST]                    |   805 hits |  0.8% | 
+AtpDeviceController#index.html [GET]                |    78 hits |  0.1% | 
+ReportingController#users.html [GET]                |    74 hits |  0.1% | 
+EventsController#user.html [GET]                    |    71 hits |  0.1% | 
+ReportingController#search_user_table.html [POST]   |    53 hits |  0.1% | 
+AtpGatewayPasswordController#retrieve.html [POST]   |    40 hits |  0.0% | 
+SecurityController#is_admin.html [GET]              |    35 hits |  0.0% | 
+ChartController#flex.html [GET]                     |    35 hits |  0.0% | 
+ReportingController#user_hidden.html [POST]         |    33 hits |  0.0% | 
+BatteryChargeCompletesController#create.html [POST] |    32 hits |  0.0% | 
+SessionsController#new.html [GET]                   |    26 hits |  0.0% | 
+RedirectorController#index.html [GET]               |    25 hits |  0.0% | 
+WorkOrdersController#index.html [GET]               |    24 hits |  0.0% | 
+ReportingController#blank_config.html [GET]         |    23 hits |  0.0% | 
+AtpTestResultsController#index.html [POST]          |    18 hits |  0.0% | 
+
+HTTP methods
+--------------------------------------------------------------------------------
+POST | 87943 hits | 83.8% | ============================================
+GET  | 17036 hits | 16.2% | ========
+
+HTTP statuses returned
+--------------------------------------------------------------------------------
+200 | 104629 hits | 100.0% | ===================================================
+302 |     49 hits |   0.0% | 
+
+Rails action cache hits
+--------------------------------------------------------------------------------
+No hit | 104979 hits | 100.0% | ================================================
+
+--------------------------------------------------------------------------------
+Request duration - by sum |  Hits |      Sum |   Mean | StdDev |    Min |    Max
+--------------------------------------------------------------------------------
+BundleController#create.h | 50070 | 2h17m07s |  0.16s |  0.44s |  0.01s | 21.62s
+MgmtCmdsController#create | 17040 |   32m35s |  0.11s |  0.23s |  0.03s | 11.47s
+MgmtQueriesController#cre | 17573 |   30m10s |  0.10s |  0.64s |  0.01s | 56.62s
+FlexController#chart.html |   805 |   12m02s |  0.90s |  2.54s |  0.11s | 48.83s
+ReportingController#users |    72 |   10m49s |  9.01s | 11.94s |  0.44s |  1m03s
+UtilController#hostname.h | 16561 |    8m07s |  0.03s |  0.06s |  0.01s |  2.77s
+ReportingController#searc |    49 |    1m59s |  2.43s |  9.77s |  0.04s | 58.93s
+EventsController#user.htm |    68 |    1m44s |  1.53s |  0.90s |  0.17s |  4.64s
+ReportingController#devic |     9 |    1m19s |  8.80s |  7.30s |  0.16s | 21.89s
+AccessModesController#che |  1905 |    1m18s |  0.04s |  0.09s |  0.01s |  1.35s
+ManagementController#stre |     5 |    1m15s | 15.02s | 32.31s |  0.10s |  1m13s
+UserAdminController#roles |     3 |   29.18s |  9.73s |  1.25s |  8.75s | 11.14s
+ReportingController#user_ |    33 |   25.99s |  0.79s |  0.87s |  0.14s |  5.32s
+BatteryCriticalsControlle |     8 |   17.21s |  2.15s |  3.17s |  0.38s |  9.85s
+WorkOrdersController#inde |    24 |   16.72s |  0.70s |  0.20s |  0.39s |  1.32s
+BatteryChargeCompletesCon |    32 |   14.42s |  0.45s |  0.33s |  0.09s |  1.68s
+AtpDeviceController#index |    78 |   13.86s |  0.18s |  0.17s |  0.02s |  0.70s
+ChartController#flex.html |    35 |    8.76s |  0.25s |  0.17s |  0.00s |  0.61s
+UserIntakesController#sin |     5 |    7.41s |  1.48s |  0.64s |  0.84s |  2.32s
+ProfilesController#edit_c |    10 |    7.28s |  0.73s |  0.31s |  0.24s |  1.28s
+
+--------------------------------------------------------------------------------
+Request duration - by mean   | Hits |    Sum |   Mean | StdDev |    Min |    Max
+--------------------------------------------------------------------------------
+ManagementController#stream. |    5 |  1m15s | 15.02s | 32.31s |  0.10s |  1m13s
+UserAdminController#roles.ht |    3 | 29.18s |  9.73s |  1.25s |  8.75s | 11.14s
+ReportingController#users.ht |   72 | 10m49s |  9.01s | 11.94s |  0.44s |  1m03s
+ReportingController#devices. |    9 |  1m19s |  8.80s |  7.30s |  0.16s | 21.89s
+ReportingController#search_u |   49 |  1m59s |  2.43s |  9.77s |  0.04s | 58.93s
+BatteryCriticalsController#c |    8 | 17.21s |  2.15s |  3.17s |  0.38s |  9.85s
+EventsController#user.html [ |   68 |  1m44s |  1.53s |  0.90s |  0.17s |  4.64s
+UserIntakesController#single |    5 |  7.41s |  1.48s |  0.64s |  0.84s |  2.32s
+AtpController#gateway_passwo |    3 |  3.24s |  1.08s |  0.67s |  0.66s |  1.85s
+CallListController#show.html |    1 |  0.91s |  0.91s |  0.00s |  0.91s |  0.91s
+FlexController#chart.html [P |  805 | 12m02s |  0.90s |  2.54s |  0.11s | 48.83s
+AlertBundleController#create |    4 |  3.18s |  0.80s |  0.55s |  0.49s |  1.61s
+ReportingController#user_hid |   33 | 25.99s |  0.79s |  0.87s |  0.14s |  5.32s
+ProfilesController#edit_care |   10 |  7.28s |  0.73s |  0.31s |  0.24s |  1.28s
+UserIntakesController#show.h |    2 |  1.40s |  0.70s |  0.03s |  0.68s |  0.72s
+WorkOrdersController#index.h |   24 | 16.72s |  0.70s |  0.20s |  0.39s |  1.32s
+UserIntakesController#index_ |    4 |  2.47s |  0.62s |  0.09s |  0.57s |  0.75s
+AccessModesController#create |    4 |  2.23s |  0.56s |  0.60s |  0.11s |  1.41s
+ManagementController#issue.h |    5 |  2.47s |  0.49s |  0.26s |  0.21s |  0.80s
+InstallationInProgressContro |    5 |  2.40s |  0.48s |  0.94s |  0.02s |  2.15s
+
+--------------------------------------------------------------------------------
+View rendering time - by su |  Hits |    Sum |   Mean | StdDev |    Min |    Max
+--------------------------------------------------------------------------------
+UtilController#hostname.htm | 16561 |  6m59s |  0.03s |  0.05s |  0.01s |  2.76s
+MgmtCmdsController#create.h | 17040 |  2m03s |  0.01s |  0.02s |  0.00s |  1.17s
+ReportingController#users.h |    72 |  1m35s |  1.32s |  0.65s |  0.11s |  4.43s
+FlexController#chart.html [ |   805 |  1m03s |  0.08s |  0.25s |  0.01s |  6.28s
+ReportingController#search_ |    49 | 55.90s |  1.14s |  4.45s |  0.01s | 25.57s
+EventsController#user.html  |    68 | 47.54s |  0.70s |  0.43s |  0.05s |  2.55s
+BundleController#create.htm | 50070 |  9.79s |  0.00s |  0.00s |  0.00s |  0.18s
+ReportingController#user_hi |    33 |  7.71s |  0.23s |  0.21s |  0.04s |  0.86s
+MgmtQueriesController#creat | 17573 |  7.32s |  0.00s |  0.00s |  0.00s |  0.09s
+ReportingController#devices |     9 |  6.35s |  0.71s |  0.36s |  0.09s |  1.11s
+ChartController#flex.html [ |    33 |  5.13s |  0.16s |  0.12s |  0.02s |  0.44s
+ProfilesController#edit_car |    10 |  4.62s |  0.46s |  0.20s |  0.09s |  0.74s
+SessionsController#new.html |    26 |  4.60s |  0.18s |  0.26s |  0.00s |  0.86s
+UserIntakesController#singl |     5 |  4.33s |  0.87s |  0.23s |  0.62s |  1.20s
+ReportingController#blank_c |    23 |  3.11s |  0.14s |  0.12s |  0.04s |  0.54s
+UserAdminController#roles.h |     3 |  1.46s |  0.49s |  0.04s |  0.45s |  0.54s
+OrdersController#new.html [ |     9 |  1.39s |  0.15s |  0.09s |  0.07s |  0.32s
+DialUpsController#index.htm |     4 |  1.34s |  0.34s |  0.17s |  0.18s |  0.54s
+ManagementController#issue. |     5 |  1.34s |  0.27s |  0.16s |  0.11s |  0.49s
+AtpController#gateway_passw |     3 |  0.93s |  0.31s |  0.19s |  0.18s |  0.53s
+
+--------------------------------------------------------------------------------
+View rendering time - by mea | Hits |    Sum |   Mean | StdDev |    Min |    Max
+--------------------------------------------------------------------------------
+ReportingController#users.ht |   72 |  1m35s |  1.32s |  0.65s |  0.11s |  4.43s
+ReportingController#search_u |   49 | 55.90s |  1.14s |  4.45s |  0.01s | 25.57s
+UserIntakesController#single |    5 |  4.33s |  0.87s |  0.23s |  0.62s |  1.20s
+ReportingController#devices. |    9 |  6.35s |  0.71s |  0.36s |  0.09s |  1.11s
+EventsController#user.html [ |   68 | 47.54s |  0.70s |  0.43s |  0.05s |  2.55s
+CallListController#show.html |    1 |  0.66s |  0.66s |  0.00s |  0.66s |  0.66s
+UserAdminController#roles.ht |    3 |  1.46s |  0.49s |  0.04s |  0.45s |  0.54s
+ProfilesController#edit_care |   10 |  4.62s |  0.46s |  0.20s |  0.09s |  0.74s
+DialUpsController#index.html |    4 |  1.34s |  0.34s |  0.17s |  0.18s |  0.54s
+AtpController#gateway_passwo |    3 |  0.93s |  0.31s |  0.19s |  0.18s |  0.53s
+ManagementController#issue.h |    5 |  1.34s |  0.27s |  0.16s |  0.11s |  0.49s
+ReportingController#user_hid |   33 |  7.71s |  0.23s |  0.21s |  0.04s |  0.86s
+UtilController#info.html [GE |    1 |  0.22s |  0.22s |  0.00s |  0.22s |  0.22s
+AtpController#gateway_passwo |    2 |  0.40s |  0.20s |  0.24s |  0.03s |  0.37s
+SessionsController#new.html  |   26 |  4.60s |  0.18s |  0.26s |  0.00s |  0.86s
+UserIntakesController#index_ |    4 |  0.65s |  0.16s |  0.07s |  0.10s |  0.25s
+ChartController#flex.html [G |   33 |  5.13s |  0.16s |  0.12s |  0.02s |  0.44s
+OrdersController#new.html [G |    9 |  1.39s |  0.15s |  0.09s |  0.07s |  0.32s
+ReportingController#blank_co |   23 |  3.11s |  0.14s |  0.12s |  0.04s |  0.54s
+UserIntakesController#show.h |    2 |  0.27s |  0.13s |  0.01s |  0.13s |  0.14s
+
+--------------------------------------------------------------------------------
+Database time - by sum      |  Hits |    Sum |   Mean | StdDev |    Min |    Max
+--------------------------------------------------------------------------------
+BundleController#create.htm | 50070 | 54m27s |  0.07s |  0.36s |  0.00s | 20.71s
+MgmtQueriesController#creat | 17573 | 12m47s |  0.04s |  0.58s |  0.01s | 56.61s
+MgmtCmdsController#create.h | 17040 | 10m52s |  0.04s |  0.15s |  0.01s | 11.35s
+ReportingController#users.h |    72 |  6m50s |  5.69s |  8.16s |  0.22s | 41.13s
+FlexController#chart.html [ |   805 |  5m46s |  0.43s |  2.22s |  0.07s | 48.41s
+ManagementController#stream |     5 |  1m14s | 14.80s | 32.39s |  0.04s |  1m13s
+ReportingController#search_ |    49 |  1m00s |  1.23s |  5.36s |  0.03s | 33.34s
+EventsController#user.html  |    68 | 49.20s |  0.72s |  0.62s |  0.07s |  3.77s
+ReportingController#devices |     9 | 43.21s |  4.80s |  4.20s |  0.06s | 12.46s
+UserAdminController#roles.h |     3 | 16.38s |  5.46s |  0.85s |  4.67s |  6.36s
+ReportingController#user_hi |    33 | 15.71s |  0.48s |  0.89s |  0.08s |  5.25s
+AccessModesController#check |  1905 | 14.61s |  0.01s |  0.02s |  0.00s |  0.42s
+BatteryCriticalsController# |     8 |  6.60s |  0.82s |  1.27s |  0.05s |  3.90s
+BatteryChargeCompletesContr |    32 |  4.79s |  0.15s |  0.21s |  0.05s |  1.18s
+WorkOrdersController#index. |    24 |  4.64s |  0.19s |  0.09s |  0.12s |  0.43s
+AtpDeviceController#index.h |    78 |  2.85s |  0.04s |  0.03s |  0.01s |  0.19s
+UtilController#hostname.htm | 16561 |  2.41s |  0.00s |  0.00s |  0.00s |  0.14s
+MgmtResponsesController#cre |    17 |  2.20s |  0.13s |  0.15s |  0.02s |  0.44s
+ProfilesController#edit_car |    10 |  2.05s |  0.21s |  0.18s |  0.13s |  0.71s
+InstallationInProgressContr |     5 |  1.88s |  0.38s |  0.78s |  0.01s |  1.78s
+
+--------------------------------------------------------------------------------
+Database time - by mean      | Hits |    Sum |   Mean | StdDev |    Min |    Max
+--------------------------------------------------------------------------------
+ManagementController#stream. |    5 |  1m14s | 14.80s | 32.39s |  0.04s |  1m13s
+ReportingController#users.ht |   72 |  6m50s |  5.69s |  8.16s |  0.22s | 41.13s
+UserAdminController#roles.ht |    3 | 16.38s |  5.46s |  0.85s |  4.67s |  6.36s
+ReportingController#devices. |    9 | 43.21s |  4.80s |  4.20s |  0.06s | 12.46s
+ReportingController#search_u |   49 |  1m00s |  1.23s |  5.36s |  0.03s | 33.34s
+BatteryCriticalsController#c |    8 |  6.60s |  0.82s |  1.27s |  0.05s |  3.90s
+EventsController#user.html [ |   68 | 49.20s |  0.72s |  0.62s |  0.07s |  3.77s
+ReportingController#user_hid |   33 | 15.71s |  0.48s |  0.89s |  0.08s |  5.25s
+FlexController#chart.html [P |  805 |  5m46s |  0.43s |  2.22s |  0.07s | 48.41s
+InstallationInProgressContro |    5 |  1.88s |  0.38s |  0.78s |  0.01s |  1.78s
+UserIntakesController#single |    5 |  1.81s |  0.36s |  0.40s |  0.16s |  1.07s
+AtpController#gateway_passwo |    3 |  0.95s |  0.32s |  0.43s |  0.07s |  0.81s
+UserIntakesController#show.h |    2 |  0.60s |  0.30s |  0.30s |  0.09s |  0.51s
+AccessModesController#create |    4 |  0.92s |  0.23s |  0.21s |  0.03s |  0.41s
+ManagementController#index.h |    7 |  1.58s |  0.23s |  0.24s |  0.02s |  0.70s
+ProfilesController#edit_care |   10 |  2.05s |  0.21s |  0.18s |  0.13s |  0.71s
+WorkOrdersController#index.h |   24 |  4.64s |  0.19s |  0.09s |  0.12s |  0.43s
+ProfilesController#update_ca |    2 |  0.38s |  0.19s |  0.23s |  0.03s |  0.35s
+AlertBundleController#create |    4 |  0.67s |  0.17s |  0.07s |  0.09s |  0.24s
+MgmtAcksController#create.ht |    3 |  0.46s |  0.15s |  0.04s |  0.12s |  0.19s
+
+Process blockers (> 1 sec duration)
+--------------------------------------------------------------------------------
+BundleController#create.html [POST]                  | 1003 hits | 66.3% | ===
+FlexController#chart.html [POST]                     |  143 hits |  9.5% | 
+MgmtQueriesController#create.html [POST]             |  114 hits |  7.5% | 
+MgmtCmdsController#create.html [POST]                |   85 hits |  5.6% | 
+ReportingController#users.html [GET]                 |   69 hits |  4.6% | 
+EventsController#user.html [GET]                     |   51 hits |  3.4% | 
+ReportingController#search_user_table.html [POST]    |    7 hits |  0.5% | 
+ReportingController#devices.html [GET]               |    6 hits |  0.4% | 
+UtilController#hostname.html [GET]                   |    6 hits |  0.4% | 
+ReportingController#user_hidden.html [POST]          |    5 hits |  0.3% | 
+BatteryCriticalsController#create.html [POST]        |    4 hits |  0.3% | 
+UserIntakesController#single_row.html [GET]          |    3 hits |  0.2% | 
+UserAdminController#roles.html [GET]                 |    3 hits |  0.2% | 
+ProfilesController#edit_caregiver_profile.html [GET] |    2 hits |  0.1% | 
+ManagementController#stream.html [GET]               |    2 hits |  0.1% | 
+BatteryChargeCompletesController#create.html [POST]  |    2 hits |  0.1% | 
+WorkOrdersController#index.html [GET]                |    2 hits |  0.1% | 
+AccessModesController#create.html [POST]             |    1 hits |  0.1% | 
+InstallationInProgressController#create.html [POST]  |    1 hits |  0.1% | 
+AlertBundleController#create.html [POST]             |    1 hits |  0.1% | 
+
+Failed requests
+--------------------------------------------------------------------------------
+ActiveRecord::StatementInvalid | 276 hits | 91.7% | ==========================
+RuntimeError                   |  16 hits |  5.3% | =
+ActionView::TemplateError      |   6 hits |  2.0% | =
+NoMethodError                  |   3 hits |  1.0% | 
+
+Need an expert to analyze your application?
+Mail to contact@railsdoctors.com or visit us at http://railsdoctors.com.
+--------------------------------------------------------------------------------
+Thanks for using request-log-analyzer!
