@@ -141,7 +141,8 @@ module UtilityHelper
 
   def self.format_datetime(datetime,user,format = :date_time_timezone)
     #this line is causing problems in Rufus (without tzinfo) and don't really need it anyway
-    #return datetime if !datetime.respond_to?(:strftime)
+    #return datetime if !datetime.respond_to?(:strftime) 
+    
     if user and user.profile and user.profile.time_zone
       tz = user.profile.tz
     else
@@ -150,8 +151,11 @@ module UtilityHelper
     end
 
     #see environment.rb for examples of formats
-    datetime.in_time_zone(tz).to_s(format) if datetime != nil  
-    
+    if (format == :date_time_timezone)
+      datetime.in_time_zone(tz).to_s(format) if datetime != nil 
+    else 
+      datetime.in_time_zone(tz).strftime(format) if datetime != nil 
+    end             
     #datetime = tz.utc_to_local(datetime) 
   end
     

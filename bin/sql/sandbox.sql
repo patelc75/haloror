@@ -78,16 +78,48 @@ limit 100;
 /* device_infos with a particular software verison--------------------------------------------------------------------------------------------------*/
 select device_id, software_version, software_version_current as cur, software_version_new as new, created_at from device_infos where software_version like '%02.00.00.1334%' order by device_id desc, created_at desc;
 
-select device_id from device_infos where software_version like '%02.00.00.1334%';
-
 select device_id, software_version, software_version_current as cur, software_version_new as new, created_at from device_infos where device_id in (select device_id from device_infos where software_version like '%02.00.00.1334%') order by device_id desc, created_at desc nulls last;
 
-select users.id, profiles.first_name, profiles.last_name, users.status 
-from users, profiles, devices_users, devices 
-where users.id in (1288, 1303) 
-and profiles.user_id = users.id;
+select users.id as uid, devices.id as did, profiles.first_name, profiles.last_name, users.status 
+from users, profiles, devices left outer join devices_users on devices_users.device_id = devices.id
+where devices_users.user_id = users.id
+and profiles.user_id = users.id
 and devices.id in (select device_id from device_infos where device_id in (select device_id from device_infos where software_version like '%02.00.00.1334%') order by device_id desc, created_at desc nulls last)
+order by devices.id desc
 limit 1000;
 
-
 select device_id, software_version, software_version_current as cur, software_version_new as new, created_at from device_infos where device_id < 2500 and created_at is not null order by device_id desc, created_at desc;
+
+/* device unavailbles for last month for all users--------------------------------------------------------------------------------------------------*/
+select dua.user_id, count(*) as count
+from device_unavailable_alerts dua
+where dua.created_at > now() - interval '30 days' 
+group by dua.user_id 
+order by count(*) desc
+limit 1000;
+
+select users.id, profiles.first_name, profiles.last_name, users.activated_at, users.status, users.demo_mode from users, profiles where users.id in (
+select dua.user_id
+from device_unavailable_alerts dua
+where dua.created_at > now() - interval '30 days' 
+group by dua.user_id 
+order by count(*) desc
+limit 1000) and profiles.user_id = users.id order by users.id asc;
+
+  SELECT roles.id as role_id, roles.name, 
+  CASE 
+   WHEN (roles.authorizable_type = 'Group')
+    THEN (select name from groups where id = roles.authorizable_id)
+   WHEN (roles.authorizable_type = 'User')  
+    THEN (select profiles.first_name from users, profiles where users.id = roles.authorizable_id and users.id = profiles.user_id)
+  END as group_or_user,
+  CASE 
+   WHEN (roles.authorizable_type = 'User')  
+    THEN (select profiles.last_name from users, profiles where users.id = roles.authorizable_id and users.id = profiles.user_id)
+  END as group_or_user
+    from users, roles, roles_users, profiles 
+    where users.id = roles_users.user_id 
+    and roles_users.role_id = roles.id 
+    and users.id = profiles.user_id
+    and users.id = 5
+    order by roles.name; 

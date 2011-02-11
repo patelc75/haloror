@@ -33,7 +33,7 @@ class UserMailer < ActionMailer::ARMailer
     _order = ((!_senior.user_intakes.blank? && !_senior.user_intakes.first.order.blank?) ? _senior.user_intakes.first.order : nil )
     _email ||= _senior.email
     setup_email( _email) # email can go to anyone given here
-    @subject += "#{_senior.name} billed. Subscription started." # user state
+    @subject += "#{_senior.name}'s prorate & monthly recurring has been processed." # user state
     body        :user => _senior, :order => _order # senior details in the email
   end
 
