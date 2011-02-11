@@ -325,16 +325,27 @@ class User < ActiveRecord::Base
       _hash = { :installed_date => self.installed_at }
       #   * some values from user intake
       if ( _ui = self.user_intakes.first )
-        _hash[ :prorate_start_date]   = _ui.pro_rata_start_date
-        _hash[ :recurring_start_date] = _ui.subscription_start_date
+        # 
+        #  Fri Feb 11 22:27:44 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4185
+        if _ui.order_successful? && _ui.subscription_successful?
+          _hash[ :prorate_start_date]   = _ui.pro_rata_start_date
+          _hash[ :recurring_start_date] = _ui.subscription_start_date
+        end
         #   * some values from order
         if ( _order = _ui.order )
           _hash[ :coupon_code] = _order.coupon_code
-          _hash[ :prorate]     = _order.pro_rated_amount
+          # 
+          #  Fri Feb 11 22:27:49 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4185
+          _hash[ :prorate]     = _order.pro_rated_amount if ( _ui.order_successful? && _ui.subscription_successful? )
           #   * some values from coupon_code
           if ( _coupon = _order.product_cost )
             _hash[ :shipping]    = _coupon.shipping
-            _hash[ :recurring]   = _coupon.monthly_recurring
+            # 
+            #  Fri Feb 11 22:27:53 IST 2011, ramonrails
+            #   * https://redmine.corp.halomonitor.com/issues/4185
+            _hash[ :recurring]   = _coupon.monthly_recurring if ( _ui.order_successful? && _ui.subscription_successful? )
             _hash[ :deposit]     = _coupon.deposit
           end
         end
