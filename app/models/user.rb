@@ -687,6 +687,20 @@ class User < ActiveRecord::Base
   # ====================
 
   # 
+  #  Fri Feb 11 22:46:07 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4188
+  def shipped?
+    !user_intakes.blank? && !user_intakes.first.shipped_at.blank?
+  end
+  
+  # 
+  #  Fri Feb 11 22:47:54 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4188
+  def dtc?
+    group_memberships.include?( Group.direct_to_consumer)
+  end
+
+  # 
   #  Fri Feb  4 01:44:06 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4147
   #   * mainly for test cases (cucumber)
@@ -1217,6 +1231,21 @@ class User < ActiveRecord::Base
     # device.users << user
     # device.save!
   end
+
+  # 
+  #  Fri Feb 11 22:51:02 IST 2011, ramonrails
+  #   * shorthand for checking aggregated status
+  # Usage:
+  #   * user.aggregated_status_demo?
+  #   * user.aggregated_status_installed?
+  #   * user.aggregated_status_pending?
+  #   * user.aggregated_status_cancelled?
+  ['demo', 'installed', 'pending', 'cancelled'].each do |_status|
+    define_method "aggregated_status_#{_status}?".to_sym do
+      self.aggregated_status == AGGREGATE_STATUS[ _status.to_sym]
+    end
+  end
+  
   
   # Fri Oct  1 22:56:06 IST 2010
   # https://redmine.corp.halomonitor.com/projects/haloror/wiki/Intake_Install_and_Billing#Other-notes
