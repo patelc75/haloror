@@ -35,7 +35,11 @@ class SandboxController < ApplicationController
     user = User.find 893
     _ui = UserIntake.find 179
     _emails = [ user.has_caregivers, user.group_admins, _ui.subscriber, _ui.group, _ui.group.master_group ]  
-    _emails.each {|e| puts e.class}; 0
+    _emails.each {|e| puts e.class}; 0  
+    
+    current_user = User.find 5
+    @order = Order.find 221   
+    UserMailer.deliver_subscription_start_alert(User.find 627)
   end
   
   def helloworld

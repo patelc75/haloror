@@ -154,7 +154,11 @@ module UtilityHelper
     if (format == :date_time_timezone)
       datetime.in_time_zone(tz).to_s(format) if datetime != nil 
     else 
-      datetime.in_time_zone(tz).strftime(format) if datetime != nil 
+      if datetime != nil and datetime.respond_to?(:in_time_zone)
+        datetime.in_time_zone(tz).strftime(format)   
+      else
+        datetime
+      end
     end             
     #datetime = tz.utc_to_local(datetime) 
   end
