@@ -34,7 +34,7 @@ class UserMailer < ActionMailer::ARMailer
     _email ||= _senior.email
     setup_email( _email) # email can go to anyone given here
     @subject += "#{_senior.name}'s prorate & monthly recurring charges have been processed." # user state
-    body        :user => _senior, :order => _order # senior details in the email
+    body        :user => _senior, :order => _order, :current_user => Thread.current[:user] # senior details in the email
   end
 
   def signup_notification(user)

@@ -1,7 +1,7 @@
 include ApplicationHelper
 
 class UserIntakesController < ApplicationController
-  before_filter :login_required
+  before_filter :login_required, :set_current_user
 
   # GET /user_intakes
   # GET /user_intakes.xml
@@ -349,6 +349,14 @@ class UserIntakesController < ApplicationController
       flash[:notice] = "Triage note added for " + user_intakes.collect {|e| e.senior.blank? ? nil : e.senior.name }.compact.uniq.join(', ')
     end
     redirect_to :back # just go back to the last triage
+  end
+  
+  # ===========
+  # = private =
+  # ===========
+  
+  def set_current_user
+    Thread.current[:user] = current_user
   end
 end
 # ~> -:1: uninitialized constant ApplicationHelper (NameError)
