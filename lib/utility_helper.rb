@@ -139,28 +139,52 @@ module UtilityHelper
     return datetime.getutc.strftime("%a %b %d %H:%M:%S %Z %Y")
   end
 
-  def self.format_datetime(datetime,user,format = :date_time_timezone)
+  # 
+  #  Mon Feb 14 21:11:24 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4190
+  def self.format_datetime( datetime, user = nil, format = :date_time_timezone)
     #this line is causing problems in Rufus (without tzinfo) and don't really need it anyway
-    #return datetime if !datetime.respond_to?(:strftime) 
-    
-    if user and user.profile and user.profile.time_zone
-      tz = user.profile.tz
-    else
-      #tz = TZInfo::Timezone.get('America/Chicago')    #deprecated tzinfo
-      tz = Time.zone
-    end
+    #return datetime if !datetime.respond_to?(:strftime)
 
-    #see environment.rb for examples of formats
-    if (format == :date_time_timezone)
-      datetime.in_time_zone(tz).to_s(format) if datetime != nil 
-    else 
-      if datetime != nil and datetime.respond_to?(:in_time_zone)
-        datetime.in_time_zone(tz).strftime(format)   
+    tz = ((!user.blank? && !user.profile.blank? && !user.profile.time_zone.blank?) ? user.profile.tz : Time.zone)
+    # if !user.blank? && !user.profile.blank? && !user.profile.time_zone.blank?
+    #   tz = user.profile.tz
+    # else
+    #   #tz = TZInfo::Timezone.get('America/Chicago')    #deprecated tzinfo
+    #   tz = Time.zone
+    # end
+
+    #   * commented-out code and working block here , are same
+    #   * just a bit of refactoring
+    if !datetime.blank? && datetime.respond_to?(:in_time_zone)
+      #   * formatted or not
+      if format.blank?
+        datetime.in_time_zone(tz)
       else
-        datetime
+        datetime.in_time_zone(tz).send( ((format == :date_time_timezone) ? :to_s : :strftime), format)
       end
-    end             
-    #datetime = tz.utc_to_local(datetime) 
+    else
+      datetime # at least return some date time
+    end
+    #   * same code above, just refactored
+    #   
+    # #see environment.rb for examples of formats
+    # if (format == :date_time_timezone)
+    #   if !datetime.blank? && datetime.respond_to?(:in_time_zone)
+    #     #   * formatted or not
+    #     format.blank? ? datetime.in_time_zone(tz) : datetime.in_time_zone(tz).to_s(format)
+    #   else
+    #     datetime # at least return some date time
+    #   end
+    # else
+    #   if !datetime.blank? && datetime.respond_to?(:in_time_zone)
+    #     #   * formatted or not
+    #     format.blank? ? datetime.in_time_zone(tz) : datetime.in_time_zone(tz).strftime(format)
+    #   else
+    #     datetime # at least return some date time
+    #   end
+    # end
+    #datetime = tz.utc_to_local(datetime)
   end
     
   def self.get_stacktrace(exception)
