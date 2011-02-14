@@ -17,7 +17,8 @@ class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
       :date        => { :name => "date" },
       :binary      => { :name => "bytea" },
       :boolean     => { :name => "boolean" },
-      :real        => { :name => "real" }     #uses 'real'type in Pg (4 bytes)
+      :real        => { :name => "real" },     #uses 'real'type in Pg (4 bytes)  
+      :interval    => { :name => "interval" }     
     }
   end
 end
