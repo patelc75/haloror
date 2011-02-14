@@ -3229,7 +3229,7 @@ class User < ActiveRecord::Base
   # steps taken from https://redmine.corp.halomonitor.com/issues/398
   def cancel_account
     # Send email to SafetyCare similar to the current email to SafetyCare except body will simple oneline with text "Cancel HM1234" 
-    CriticalMailer.deliver_cancel_call_center_acct(self.profile.account_number) if !self.profile.account_number.blank?
+    CriticalMailer.deliver_cancel_call_center_acct(self.profile.account_number, self.name) if !self.profile.account_number.blank?
     self.log("Email sent to safety_care: Cancel #{self.profile.account_number}")  
     set_test_mode!( true)  # Call Test Mode method to make caregivers away and opt out of SafetyCare    
     # 

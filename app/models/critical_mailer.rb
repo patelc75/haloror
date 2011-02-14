@@ -102,12 +102,12 @@ class CriticalMailer < ActionMailer::ARMailer
     @recipients = ["exceptions@halomonitoring.com"]
   end
   
-  def cancel_call_center_acct( acct_num )
+  def cancel_call_center_acct(acct_num, name)
     @recipients = Group.safety_care!.email
-    subject     = "Cancel Acct #{acct_num}"
+    subject     = "Cancel Acct #{acct_num} (#{name})"
     #@body[:acct_num] = acct_num
     msg_body = <<-EOF
-    Cancel Halo Monitoring Acct# #{acct_num}
+    Cancel Halo Monitoring Acct# #{acct_num} (#{name})
     EOF
     setup_message(subject, msg_body, :use_email_log, :use_host_name_in_from_addr) 
     @from = "customer_intake@halomonitoring.com"    

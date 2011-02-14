@@ -38,7 +38,9 @@ class SandboxController < ApplicationController
     _emails.each {|e| puts e.class}; 0  
     
     current_user = User.find 5
-    @order = Order.find 221   
+    @order = Order.find 257  
+    @order.user_intake.pro_rata_start_date               
+    datetime.in_time_zone(tz).strftime(Time::DATE_FORMATS[:day_date_short]) 
     UserMailer.deliver_subscription_start_alert(User.find 627)
   end
   
