@@ -4,7 +4,9 @@ class DeviceModelPricesController < ApplicationController
   # GET /device_model_prices
   # GET /device_model_prices.xml
   def index
-    @device_model_prices = DeviceModelPrice.all.paginate :per_page => 20, :page => params[:page]
+    @search = params[:search]
+    @device_model_prices = (@search.blank? ? DeviceModelPrice.all : DeviceModelPrice.contains(@search))
+    @device_model_prices = @device_model_prices.paginate :per_page => 20, :page => params[:page]
 
     respond_to do |format|
       format.html # index.html.erb

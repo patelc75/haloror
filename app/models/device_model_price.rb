@@ -30,6 +30,16 @@ class DeviceModelPrice < ActiveRecord::Base
   named_scope :for_group, lambda {|_group| { :conditions => { :group_id => _group.id } }} # used in device_model.rb
   named_scope :for_coupon_code, lambda {|arg| { :conditions => { :coupon_code => arg.to_s } }}
   named_scope :for_device_model, lambda {|_device| { :conditions => { :device_model_id => _device.id } }} # used in group.rb
+  named_scope :contains, lambda {|*args|
+    _str = "%#{args.flatten.first}%"
+    _num = args.flatten.first.to_i
+    _conditions = if _num.zero?
+      ["coupon_code LIKE ? OR device_models.part_number LIKE ? OR groups.name LIKE ?", _str, _str, _str]
+    else
+      ["coupon_code LIKE ? OR device_models.part_number LIKE ? OR groups.name LIKE ? OR deposit = ? OR shipping = ? OR monthly_recurring = ? OR months_advance = ? OR months_trial = ?", _str, _str, _str, _num, _num, _num, _num, _num]
+    end
+    { :joins => "LEFT OUTER JOIN groups ON device_model_prices.group_id = groups.id LEFT OUTER JOIN device_models ON device_model_prices.device_model_id = device_models.id", :conditions => _conditions }
+    }
 
   # =============
   # = callbacks =
