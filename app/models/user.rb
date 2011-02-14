@@ -315,53 +315,9 @@ class User < ActiveRecord::Base
       #  emails can be dispatched only after roles
       dispatch_emails # send emails as appropriate
     # 
-    #  Mon Feb  7 23:26:37 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4155
-    #   * create an associated invoice automatically with as much data auto-populated as possible
-    #   * only halousers have invoice
-    #   * WARNING: this will impact performance!
-    if self.is_halouser?
-      #   * some values from user itself
-      _hash = { :installed_date => self.installed_at }
-      #   * some values from user intake
-      if ( _ui = self.user_intakes.first )
-        # 
-        #  Fri Feb 11 22:27:44 IST 2011, ramonrails
-        #   * https://redmine.corp.halomonitor.com/issues/4185
-        if _ui.order_successful? && _ui.subscription_successful?
-          _hash[ :prorate_start_date]   = _ui.pro_rata_start_date
-          _hash[ :recurring_start_date] = _ui.subscription_start_date
-        end
-        #   * some values from order
-        if ( _order = _ui.order )
-          _hash[ :coupon_code] = _order.coupon_code
-          # 
-          #  Fri Feb 11 22:27:49 IST 2011, ramonrails
-          #   * https://redmine.corp.halomonitor.com/issues/4185
-          _hash[ :prorate]     = _order.pro_rated_amount if ( _ui.order_successful? && _ui.subscription_successful? )
-          #   * some values from coupon_code
-          if ( _coupon = _order.product_cost )
-            _hash[ :shipping]    = _coupon.shipping
-            # 
-            #  Fri Feb 11 22:27:53 IST 2011, ramonrails
-            #   * https://redmine.corp.halomonitor.com/issues/4185
-            _hash[ :recurring]   = _coupon.monthly_recurring if ( _ui.order_successful? && _ui.subscription_successful? )
-            _hash[ :deposit]     = _coupon.deposit
-          end
-        end
-      end
-      #   * keep auto-populating as much as possible
-      if self.invoice.blank?
-        self.create_invoice( _hash) # create associated invoice with these populated attributes
-      else
-        #   * filter out the values that are already filled in
-        # [ :installed_date, :prorate_start_date, :recurring_start_date, :coupon_code, :prorate, :shipping, :recurring, :deposit ].each do |_attr|
-        _hash.delete_if {|k,v| !self.invoice.send(k).blank? }
-        # end
-        #   * update attributes only when we have some values to update
-        self.invoice.update_attributes( _hash) unless _hash.blank?
-      end
-    end
+    #  Mon Feb 14 22:36:04 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4185
+    update_invoice_attributes # update the invoice attributes as appropriate
     # end
     #
     #   * save the profile after roles are established
@@ -686,6 +642,59 @@ class User < ActiveRecord::Base
   # = instance methods =
   # ====================
 
+  # 
+  #  Mon Feb 14 22:36:56 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4185
+  def update_invoice_attributes
+    # 
+    #  Mon Feb  7 23:26:37 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4155
+    #   * create an associated invoice automatically with as much data auto-populated as possible
+    #   * only halousers have invoice
+    #   * WARNING: this will impact performance!
+    if self.is_halouser?
+      #   * some values from user itself
+      _hash = { :installed_date => self.installed_at }
+      #   * some values from user intake
+      if ( _ui = self.user_intakes.first )
+        # 
+        #  Fri Feb 11 22:27:44 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4185
+        if _ui.order_successful? && _ui.subscription_successful?
+          _hash[ :prorate_start_date]   = _ui.pro_rata_start_date
+          _hash[ :recurring_start_date] = _ui.subscription_start_date
+        end
+        #   * some values from order
+        if ( _order = _ui.order )
+          _hash[ :coupon_code] = _order.coupon_code
+          # 
+          #  Fri Feb 11 22:27:49 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4185
+          _hash[ :prorate]     = _order.pro_rated_amount if ( _ui.order_successful? && _ui.subscription_successful? )
+          #   * some values from coupon_code
+          if ( _coupon = _order.product_cost )
+            _hash[ :shipping]    = _coupon.shipping
+            # 
+            #  Fri Feb 11 22:27:53 IST 2011, ramonrails
+            #   * https://redmine.corp.halomonitor.com/issues/4185
+            _hash[ :recurring]   = _coupon.monthly_recurring if ( _ui.order_successful? && _ui.subscription_successful? )
+            _hash[ :deposit]     = _coupon.deposit
+          end
+        end
+      end
+      #   * keep auto-populating as much as possible
+      if self.invoice.blank?
+        self.create_invoice( _hash) # create associated invoice with these populated attributes
+      else
+        #   * filter out the values that are already filled in
+        # [ :installed_date, :prorate_start_date, :recurring_start_date, :coupon_code, :prorate, :shipping, :recurring, :deposit ].each do |_attr|
+        _hash.delete_if {|k,v| !self.invoice.send(k).blank? }
+        # end
+        #   * update attributes only when we have some values to update
+        self.invoice.update_attributes( _hash) unless _hash.blank?
+      end
+    end
+  end
   # 
   #  Fri Feb 11 22:46:07 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4188

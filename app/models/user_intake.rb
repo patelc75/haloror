@@ -380,7 +380,7 @@ class UserIntake < ActiveRecord::Base
         if order.charge_subscription          
           #
           # now make user "Installed"
-          self.senior.force_status!( :installed)
+          self.senior.update_attribute( :status, User::STATUS[:installed]) # force_status!( :installed)
           # self.senior.status = User::STATUS[:installed]
           # self.senior.send( :update_without_callbacks)
           # 
