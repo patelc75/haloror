@@ -5,7 +5,10 @@ class CriticalMailer < ActionMailer::ARMailer
 #=============== General Methods for Alerts ======================  
   def non_critical_caregiver_email(model, user=nil)
     user = model.user if user.nil?
-    setup_message(model.to_s, model.email_body + "\n\nYou received this email because you’re either a myHalo user or a caregiver of #{user.name}")
+    # 
+    #  Wed Feb 16 02:16:09 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4174
+    setup_message(model.to_s, model.email_body + "\n\nYou received this email because you’re either a myHalo user or a caregiver" + (user.blank? ? '' : " of #{user.name}"))
     setup_caregivers(user, model, :recepients)
     self.priority  = model.priority
   end
