@@ -157,4 +157,13 @@ where status = 'Installed'
 order by vip desc, created_at desc;
 
 select * from users_by_role_and_group('halouser', 'safety_care');
-    
+
+/* show all "installed" users and all dtc users who have been shipped but not installed ----------------------------------------- */
+
+select user_id, first_name, last_name, group_name, test_mode, demo_mode, vip, created_at 
+from users_by_role('halouser') 
+where status = 'Installed' 
+order by user_id asc;    
+
+select user_id, first_name, last_name, group_name, test_mode, demo_mode, vip, created_at 
+ 
