@@ -10,6 +10,7 @@ class ReplaceUserComplianceFunction < ActiveRecord::Migration
      	   row record;
      	   battery_charge_duration interval;
      	   lost_data_duration interval;
+     	   usage_minus_lost_data_gaps_and_battery_charge interval;
      	 begin
      	   delete from battery_charge_periods where user_id = p_user_id;
      	   delete from lost_datas where user_id = p_user_id;
@@ -27,12 +28,13 @@ class ReplaceUserComplianceFunction < ActiveRecord::Migration
      	     lost_data_duration = interval '0 seconds';
      	   end if;
 
-     	   RAISE NOTICE 'battery_charge_duration = %', battery_charge_duration;
-     	   RAISE NOTICE 'lost_data_duration = %', lost_data_duration;
-     	   RAISE NOTICE 'total period = %', p_end_time - p_begin_time;     
-     	   RAISE NOTICE 'total usage = total period - battery_charge_duration - lost_data_duration = %', p_end_time - p_begin_time - battery_charge_duration - lost_data_duration;
+     	   RAISE NOTICE 'battery_charge_duration = %', date_trunc('second', battery_charge_duration);
+     	   RAISE NOTICE 'lost_data_duration = %',  date_trunc('second', lost_data_duration);
+     	   RAISE NOTICE 'total period = %', date_trunc('second', p_end_time - p_begin_time); 
+     	   usage_minus_lost_data_gaps_and_battery_charge = date_trunc('second', p_end_time - (p_begin_time + battery_charge_duration + lost_data_duration));   
+     	   RAISE NOTICE 'total usage = total period - battery_charge_duration - lost_data_duration = %', usage_minus_lost_data_gaps_and_battery_charge;
 
-     	   return p_begin_time-  p_end_time - battery_charge_duration - lost_data_duration;
+     	   return usage_minus_lost_data_gaps_and_battery_charge;
      	 end;
        $$ language plpgsql;
 
