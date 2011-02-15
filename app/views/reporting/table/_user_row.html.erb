@@ -173,7 +173,7 @@
       <%= link_to('Subscription',subscription_path(user_row.subscriptions.first)) %>
       <br />
       <% end %>
-      <% if (user_row.status.downcase != User::STATUS[:cancelled].downcase) %>
+      <% if (user_row.status.to_s.downcase != User::STATUS[:cancelled].downcase) %>
         <%= button_to "Cancel", { :controller => "users", :action => "cancel_account", :id => user_row}, :method => :post, :class => "button small gray-button" %>
       <% else %>
         <span class="tiny">Cancelled at: <%= h user_row.cancelled_at %></span>
