@@ -548,4 +548,32 @@ Feature: Pre quality
     #   * https://redmine.corp.halomonitor.com/issues/4111#note-8
     When panic button test data is received for user intake "last"
     Then last user intake retains its existing panic timestamp
-    
+
+  Scenario: Online Order > User Intake > Submit > Approve > Ship date > Start Subscription > Installed
+    Given the product catalog exists
+    When I create a "reseller" reseller group
+    And I create a coupon code for "reseller" group
+    And I am placing an online order for "reseller" group
+    And I uncheck "order_bill_address_same"
+    And I press "Continue"
+    And I press "Place Order"
+    Then I should see "Success"
+    #   * submit
+    When I edit the last user intake
+    And I press "Submit"
+    Then page content should have "successfully updated"
+    And the last invoice has pro-rata and recurring columns empty
+    #   * approve
+    When I edit the last user intake
+    And I press "Approve"
+    Then page content should have "successfully updated"
+    And user intake "last" should have "Ready to Install" status
+    And the last invoice has pro-rata and recurring columns empty
+    #   * ship date
+    When the last user intake had the product shipped 5 weeks ago
+    #   * start subscription (same as "Bill")
+    And I start the subscription for the last user intake
+    Then user intake "last" should have "Installed" status
+    And the last user intake should prorate up to this month
+    And the last user intake should start subscription from upcoming month
+    And the last invoice has pro-rata and recurring columns filled

@@ -392,6 +392,15 @@ class Order < ActiveRecord::Base
   def subscription_successful?
     !payment_gateway_responses.subscription.successful.blank? # row found = true, nil = false
   end
+  
+  # 
+  #  Wed Feb 16 00:35:22 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4199
+  def subscription_started_at
+    if (_row = payment_gateway_responses.subscription.successful.all( :order => 'created_at ASC').first)
+      Time.parse( Hash.from_xml( _row.request_data)["hash"]["ARBCreateSubscriptionRequest"]["subscription"]["paymentSchedule"]["startDate"])
+    end
+  end
 
   # 
   #  Fri Dec  3 02:25:50 IST 2010, ramonrails
@@ -463,6 +472,7 @@ class Order < ActiveRecord::Base
       #   * subscription is charged from today if month started today
       #   * subscription starts from next month if we are already within this month
       _date = user_intake.subscription_start_date
+      _date = _date.to_date unless _date.blank? # consider 'nil' values too
       # 
       #  Thu Dec  2 00:33:46 IST 2010, ramonrails
       #   * this logic shifted to subscription_start_date
@@ -476,13 +486,13 @@ class Order < ActiveRecord::Base
         :duration => {:start_date => _date, :occurrences => 60},
         :billing_address => {
           :first_name => bill_first_name,
-          :last_name => bill_last_name,
-          :address1 => bill_address,
-          :phone => bill_phone,
-          :city => bill_city,
-          :state => bill_state,
-          :zip => bill_zip,
-          :country => "US",
+          :last_name  => bill_last_name,
+          :address1   => bill_address,
+          :phone      => bill_phone,
+          :city       => bill_city,
+          :state      => bill_state,
+          :zip        => bill_zip,
+          :country    => "US",
         }
       }
       )
@@ -540,10 +550,10 @@ class Order < ActiveRecord::Base
       # assuming the cost is for 30 days (one month)
       # CHANGED:
       #   DO NOT remove the decimals. if monthly recurring is less than 30, this will return ZERO
-      _per_day_cost = (product_cost.monthly_recurring / 30.00)
+      _per_day_cost = (product_cost.monthly_recurring / 30.00).round(2)
       #   * calculate number of days
       #   * charge card
-      _number_of_days = (_date.end_of_month.day - _date.day + 1)
+      _number_of_days = user_intake.pro_rated_days # (_date.end_of_month.day - _date.day + 1)
       #   * return the pro-rata amount applicable
       _per_day_cost * _number_of_days
     end

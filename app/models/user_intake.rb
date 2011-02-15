@@ -444,7 +444,7 @@ class UserIntake < ActiveRecord::Base
   #   * decide whether pro-rata and subscription can be charged right now, or a trial period is running?
   def can_charge_subscription?
     #   * cannot charge subscription until trial period is running
-    !subscription_deferred?
+    !order.blank? && !subscription_deferred?
   end
 
   # 
@@ -481,17 +481,45 @@ class UserIntake < ActiveRecord::Base
   #  Fri Feb  4 00:25:57 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4146
   def pro_rata_end_date
-    subscription_start_date - 1.day rescue nil
+    subscription_start_date - 1.day unless subscription_start_date.blank?
   end
   
+  # 
+  #  Wed Feb 16 00:23:52 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4199
+  def pro_rated_days
+    _date_begin = pro_rata_start_date
+    _date_end = subscription_start_date
+    if _date_begin.blank? || _date_end.blank?
+      0
+    else
+     ((_date_end - _date_begin) / 1.day).round(0).to_i # n days
+    end
+  end
+  
+  # 
+  #  Wed Feb 16 00:41:18 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4199
   def subscription_start_date
-    if (_date = pro_rata_start_date)
+    if (_subscribed_at = subscription_started_at)
+      #   * if the subscription already started, no point calulating again
+      _subscribed_at
+    else
+      #   * if no subscription started yet, consider this month
+      _date = Time.now
       if _date.day == 1
-        _date
+        _date # if today is 1st, why wait? start the subscription from today
       else
-        (_date + 1.month).beginning_of_month.to_date
+        (_date + 1.month).beginning_of_month # .to_date # today is not 1st, let this month be pro-rated
       end
     end
+  end
+  
+  # 
+  #  Wed Feb 16 00:30:04 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4199
+  def subscription_started_at
+    order.subscription_started_at unless order.blank?
   end
 
   # create blank placeholder records

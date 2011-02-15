@@ -366,6 +366,16 @@ When /^I am editing the user intake associated to last order$/ do
   visit url_for( :controller => "user_intakes", :action => "edit", :id => ui.id)
 end
 
+When /^the last user intake had the product shipped (\d+) weeks ago$/ do |_time|
+  (ui = UserIntake.last).should_not be_blank
+  ui.update_attribute( :shipped_at, _time.to_i.weeks.ago).should be_true
+end
+
+When /^I start the subscription for the last user intake$/ do
+  (ui = UserIntake.last).should_not be_blank
+  ui.charge_pro_rata_and_subscription
+end
+
 # =========
 # = thens =
 # =========
@@ -774,6 +784,24 @@ Then /^last user intake retains its existing panic timestamp$/ do
   #  Wed Feb  9 23:29:24 IST 2011, ramonrails
   #   * audit was removed from user intake due to an error
   # ui.audits.last[:changes].keys.should_not include( "installation_datetime")
+end
+
+Then /^the last user intake should prorate up to this month$/ do
+  (ui = UserIntake.last).should_not be_blank
+  if Date.today.day == 1
+    ui.pro_rata_end_date.to_date.should == Date.yesterday
+  else
+    ui.pro_rata_end_date.to_date.should == ((Date.today + 1.month).beginning_of_month.to_date - 1.day)
+  end
+end
+
+Then /^the last user intake should start subscription from upcoming month$/ do
+  (ui = UserIntake.last).should_not be_blank
+  if Date.today.day == 1
+    ui.subscription_start_date.to_date.should == Date.today
+  else
+    ui.subscription_start_date.to_date.should == (Date.today + 1.month).beginning_of_month.to_date
+  end
 end
 
 # ============================
