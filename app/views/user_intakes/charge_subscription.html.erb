@@ -1,4 +1,16 @@
 <h1>User Intake: Subscription Charge</h1>
-<p>
-  Subcription status: <%= image_tag( (@user_intake.order and @user_intake.order.subscription_successful?) ? 'tick.png' : 'exclamation.png' ) %>
-</p>
+<div class="box">
+  <p>
+    Subcription status: 
+    <% if (@user_intake.order && @user_intake.order.subscription_successful?) %>
+      <%= image_tag( 'tick.png' ) %> Success
+    <% else %>
+      <%= image_tag( 'exclamation.png') %> Failure
+    <% end %>    
+  </p>
+  <p>
+    <% @user_intake.order.payment_gateway_responses.subscription.recent.each do |_response| %>
+      <%= _response.message %>
+    <% end %>
+  </p>
+</div>

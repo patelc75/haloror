@@ -13,8 +13,8 @@ Given /^the product catalog exists$/ do
     "Chest Strap" => {
       :part_number => "12001002-1", :tariff => {
       :default => { :coupon_code => "default", :deposit => 249, :shipping => 15, :monthly_recurring => 59, :months_advance => 0, :months_trial => 0},
-      :expired => { :coupon_code => "EXPIRED", :deposit => 99, :shipping => 15, :monthly_recurring => 59, :months_advance => 3, :months_trial => 0, :expiry_date => 1.month.ago.to_date},
-      :declined => { :coupon_code => "DECLINED", :deposit => 3, :shipping => 0, :monthly_recurring => 59, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.ago.to_date},
+      :expired => { :coupon_code => "EXPIRED", :deposit => 99, :shipping => 15, :monthly_recurring => 59, :months_advance => 3, :months_trial => 0, :expiry_date => 1.month.from_now.to_date},
+      :declined => { :coupon_code => "DECLINED", :deposit => 3, :shipping => 0, :monthly_recurring => 59, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.from_now.to_date},
       :trial =>   { :coupon_code => "99TRIAL", :deposit => 99, :shipping => 15, :monthly_recurring => 59, :months_advance => 0, :months_trial => 1, :expiry_date => 1.month.from_now.to_date},
       :snapback =>   { :coupon_code => "SNAPBACK", :deposit => 55, :shipping => 55, :monthly_recurring => 5, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.from_now.to_date},
       :custom =>   { :coupon_code => "group_name_here", :deposit => 99, :shipping => 15, :monthly_recurring => 59, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.from_now.to_date}
@@ -23,8 +23,8 @@ Given /^the product catalog exists$/ do
     "Belt Clip" => {
       :part_number => "12001008-1", :tariff => {
       :default => { :coupon_code => "default", :deposit => 249, :shipping => 15, :monthly_recurring => 49, :months_advance => 0, :months_trial => 0},
-      :expired => { :coupon_code => "EXPIRED", :deposit => 99, :shipping => 15, :monthly_recurring => 49, :months_advance => 3, :months_trial => 0, :expiry_date => 1.month.ago.to_date},
-      :declined => { :coupon_code => "DECLINED", :deposit => 3, :shipping => 0, :monthly_recurring => 49, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.ago.to_date},
+      :expired => { :coupon_code => "EXPIRED", :deposit => 99, :shipping => 15, :monthly_recurring => 49, :months_advance => 3, :months_trial => 0, :expiry_date => 1.month.from_now.to_date},
+      :declined => { :coupon_code => "DECLINED", :deposit => 3, :shipping => 0, :monthly_recurring => 49, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.from_now.to_date},
       :trial =>   { :coupon_code => "99TRIAL", :deposit => 99, :shipping => 15, :monthly_recurring => 49, :months_advance => 0, :months_trial => 1, :expiry_date => 1.month.from_now.to_date},
       :snapback =>   { :coupon_code => "SNAPBACK", :deposit => 55, :shipping => 55, :monthly_recurring => 5, :months_advance => 0, :months_trial => 0, :expiry_date => 1.month.from_now.to_date},
       :custom =>   { :coupon_code => "group_name_here", :deposit => 99, :shipping => 15, :monthly_recurring => 49, :months_advance => 0, :months_trial => 1, :expiry_date => 1.month.from_now.to_date}
@@ -218,9 +218,14 @@ Then /^last order should not have associated user intake$/ do
   end
 end
 
-Then /^caregivers of last order should be activated$/ do
+Then /^caregivers of last order (should|should not) be activated$/ do |_state|
   (order = Order.last).should_not be_blank
   order.user_intake.should_not be_blank
-  order.user_intake.caregivers.each {|e| e.should be_activated }
-  
+  order.user_intake.caregivers.each do |e|
+    if _state == 'should'
+      e.should be_activated
+    else
+      e.should_not be_activated
+    end
+  end
 end

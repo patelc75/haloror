@@ -1,5 +1,15 @@
-<div class="container">
-  You must approve this subscriber agreement before system can be activated. Please review this document and click Approve below.
+<div class="container">        
+  <h3>
+  <% if @user_intake.agreement_signed? %>
+    This agreement was accepted on <%= UtilityHelper.format_datetime(@user_intake.legal_agreement_at,current_user) %> 
+  <% else %>
+    <% if @user_intake.paper_copy_submitted? %> 
+      A paper copy of this agreement was processed on <%= UtilityHelper.format_datetime(@user_intake.paper_copy_submitted_on, current_user) %>  
+    <% else %>
+      You must approve this subscriber agreement before system can be activated. Please review this document and click Approve below.
+    <% end %>
+  <% end %>  
+  </h3><br/><br/>    
   <div class="box fixed-height">
     <div>
       <h1 id="halo_subscriber_agreement"><center>HALO SUBSCRIBER AGREEMENT</center></h1>
@@ -176,21 +186,21 @@
 
   </div>
 
-  <% unless controller.class == UtilController && action_name == "terms" # ticket 3126 %>
+  <% unless controller.class == UtilController && action_name == "terms" && !@user_intake.agreement_signed? %>
   <div id="agreement_buttons">
     
     <div class="span-24 last text-right">
-      <% if @user_intake && @user_intake.can_sign_agreement?(current_user) %>
-        <%= check_box "userintake", "agree", :checked => true, :onchange => "user_intake_submit.toggle(); return false;" %> I Agree Terms and Conditions
-      <% end %>
-      
+      <br/>
       <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update', :id => @user_intake.id, :redirect_hash => @redirect_hash} do |f| -%>
-        <%= f.text_field :paper_copy_at, :value => Time.now.to_s, :class => "hidden" %>
+        <%= f.text_field :paper_copy_submitted_on, :value => Date.today.to_s, :class => "hidden" %>
         <%= f.submit "Print", :disable_with => 'Printing...', :class => "button blue-button", :id => "user_intake_print", :onclick => "window.print();" %>
         
         <%= link_to 'Skip for later', url_for(@redirect_hash), :class => "button green-button" if @redirect_hash %>
       <% end -%>
-      
+      <br/>
+      <% if @user_intake && @user_intake.can_sign_agreement?(current_user) %>
+        <%= check_box "userintake", "agree", :checked => true, :onchange => "user_intake_submit.toggle(); return false;" %> I Agree Terms and Conditions
+      <% end %>      
       <% if @user_intake && @user_intake.can_sign_agreement?(current_user) %>
         <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update', :redirect_url => @redirect_url} do |f| -%>
           <%= f.text_field :legal_agreement_at, :value => Time.now.to_s, :class => "hidden" %>

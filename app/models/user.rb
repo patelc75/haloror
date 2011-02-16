@@ -2,6 +2,11 @@ require 'digest/sha1'
 
 class User < ActiveRecord::Base
   include UtilityHelper
+
+  # ============================
+  # = constants and attributes =
+  # ============================
+  
   # IMPORTANT -----------------
   #   * The order of appearance of the keys, MUST be exactly as shown from pending .. installed
   #   * shift_to_next_status method depends on this
@@ -61,7 +66,9 @@ class User < ActiveRecord::Base
     "dial_up_alert" => "800 Abuse Alert"
   }
   
-  #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
+  # ================================
+  # = attributes and accessibility =
+  # ================================
   
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
@@ -75,11 +82,21 @@ class User < ActiveRecord::Base
   attr_accessor :password
   attr_accessor :current_password,:username_confirmation
 
-  # arranged associations alphabetically for easier traversing
+  # ==========================
+  # = includes and libraries =
+  # ==========================
   
   acts_as_authorized_user
   acts_as_authorizable
   acts_as_audited :except => [:is_caregiver, :is_new_caregiver]
+  
+  #composed_of :tz, :class_name => 'TZInfo::Timezone', :mapping => %w(time_zone identifier)
+  
+  # arranged associations alphabetically for easier traversing
+  
+  # =============
+  # = relations =
+  # =============
   
   belongs_to :creator, :class_name => 'User',:foreign_key => 'created_by'
   belongs_to :last_battery, :class_name => "Battery", :foreign_key => "last_battery_id"
@@ -87,7 +104,8 @@ class User < ActiveRecord::Base
   belongs_to :last_panic, :class_name => "Panic", :foreign_key => "last_panic_id"
   belongs_to :last_strap_fastened, :class_name => "StrapFastened", :foreign_key => "last_strap_fastened_id"
   belongs_to :last_triage_audit_log, :class_name => "TriageAuditLog", :foreign_key => "last_triage_audit_log_id"
-  belongs_to :last_vital, :class_name => "Vital", :foreign_key => "last_vital_id"
+  #   * DEPRECATED: https://redmine.corp.halomonitor.com/issues/4104
+  # belongs_to :last_vital, :class_name => "Vital", :foreign_key => "last_vital_id"
   
   has_one  :profile, :dependent => :destroy # , :autosave => true
   has_one  :invoice, :dependent => :destroy
@@ -127,6 +145,10 @@ class User < ActiveRecord::Base
   #has_many :call_orders, :order => :position
   #has_many :caregivers, :through => :call_orders #self referential many to many
   
+  # ===============
+  # = validations =
+  # ===============
+  
   # validate associations
   # validates_associated :profile, :unless => "skip_validation" # Proc.new {|e| skip_validation }
   #validates_length_of       :serial_number, :is => 10
@@ -139,8 +161,13 @@ class User < ActiveRecord::Base
   validates_length_of       :password, :within => 4..40, :if => :password_required?
   validates_presence_of     :password,                   :if => :password_required?
   validates_presence_of     :password_confirmation,      :if => :password_required?
-  validates_presence_of     :login, :if => :password_required?
-  validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
+  # 
+  #  Thu Feb  3 00:10:53 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4124#note-11
+  #   * login is always required now
+  #   * when not available/required, it gets _AUTO_generated
+  validates_presence_of     :login # , :if => :password_required?
+  validates_uniqueness_of   :login, :case_sensitive => false # , :if => :login_not_blank?
   
   # before_save :encrypt_password # shifted to a method where we can make multiple calls
   #
@@ -149,6 +176,10 @@ class User < ActiveRecord::Base
   # before_create :make_activation_code # FIXME: this should be part of before_save
   #
   # after_save :post_process # shifted to method instead
+  
+  # =========================
+  # = queries, scopes, .... =
+  # =========================
   
   named_scope :all_except_demo, :conditions => { :demo_mode => [nil, false] } # https://redmine.corp.halomonitor.com/issues/3274
   named_scope :all_demo, :conditions => { :demo_mode => true } # https://redmine.corp.halomonitor.com/issues/4077
@@ -162,6 +193,148 @@ class User < ActiveRecord::Base
   named_scope :where_id, lambda {|*arg| { :conditions => { :id => arg.first} }}
   named_scope :ordered, lambda {|*args| { :include => :profile, :order => ( args.flatten.first || "id ASC" ) }} # Wed Oct 13 02:52:36 IST 2010 ramonrails
 
+  # ===============================
+  # = triggers, events, callbacks =
+  # ===============================
+  
+  def after_initialize
+    self.caregiver_position ||= {}
+    # #
+    # # assume not in demo mode
+    # self.demo_mode = false if new_record? && demo_mode.nil?
+    # self.vip = false if new_record? && vip.nil?
+    #
+    # just make the login blank in memory, if this is _AUTO_xxx login
+    self.login = "" if (login =~ /_AUTO_/)
+    #
+    # default: assume we need a validation
+    # features like user intake that do not want validation can switch it off
+    self.need_validation = true
+    # #
+    # # instantiate a profile object if not already
+    # self.build_profile if profile.blank?
+    # example:
+    #   user.roles = {:halouser => @group}
+    #   user.roles[:subscriber] = @senior
+    self.lazy_roles = {} # lazy loading roles of this user
+    self.lazy_options = {} # lazy loading options of this user, if this is a caregiver
+    self.lazy_associations = {} # user intake and other associations that user should have when saved
+  end
+
+  def before_save
+    #
+    # Mon Oct  4 19:27:23 IST 2010, v1.6.0
+    # activation code should be created for .create as well as .save
+    make_activation_code # generate activation code as appropriate
+    autofill_login # pre-fill login and password with _AUTO_xxx login, unless already
+    #
+    encrypt_password
+    # https://redmine.corp.halomonitor.com/issues/3215
+    # WARNING: we need to confirm which logic holds true to shift user to "Installed" mode
+    #   * when alert_status == "normal"
+    #   * when panic button test happens in "Ready to Install" state
+    #
+    # # https://redmine.corp.halomonitor.com/issues/398
+    # # When user is created, put in "Install" state by default
+    # # User goes from "Install" to "Active" state after all the installation special status fields go green
+    # status = (self.alert_status == 'normal' ? STATUS[:active] : STATUS[:installed])
+
+    # status column is about to change
+    if self.changed?
+      #
+      add_triage_audit_log # create a log at least
+      #
+      # more actions for changes made to status
+      if !self.status_change.blank?
+        #
+        # Send an email to administrator if
+        #   * status column is about to change to "Installed" just now
+        if self.status_change.last == User::STATUS[:installed]
+          # 
+          #  Thu Jan 27 00:51:51 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4088
+          self.installed_at = Time.now # mark the timestamo when status changed to 'Installed'
+          # 
+          #  Mon Feb  7 21:24:27 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4146#note-6
+          #   * WARNING: this should send emails to several people as referenced in user intake, not just self
+          #   * use => 'notify_about_installation' instead of sending emails directly
+          # #UserMailer.deliver_user_installation_alert( self)
+        end
+        #
+        # do not update the status_changed_at timestamp if that itself is updated during the change
+        self.status_changed_at = Time.now if self.status_changed_at_change.blank?
+      end
+    end
+  end
+
+  # https://redmine.corp.halomonitor.com/issues/398
+  # Create a log page of all steps above with timestamps
+  def after_save
+    #
+    # Wed Oct 13 04:05:20 IST 2010
+    #   CHANGED: created_at == updated_at only when it is saved for the very first time
+    # if (created_at == updated_at)
+      #
+      # CHANGED: Major fix. the roles were not getting populated
+      # insert the roles for user. these roles are propogated from user intake
+      # 
+      #  Thu Dec  9 01:59:43 IST 2010, ramonrails
+      #   * FIXME: DRY this conditional block
+      lazy_roles.each do |k,v|
+        unless v.blank?
+          if k == :caregiver
+            self.send( "is_#{k}_of", v) unless self.equal?( v)
+          else
+            self.send( "is_#{k}_of", v)
+          end
+        end
+      end
+      #
+      # caregiver options
+      lazy_options.each do |k,v|
+        #   * DRYed: Tue Dec 21 00:52:57 IST 2010
+        #   * blank or not_saved means not_valid
+        unless k.blank? || k.new_record?
+          #   * save role_options
+          self.options_for_senior( k, v) # will also create alert_options for critical alert types
+        end
+      end
+      # 
+      #  Thu Jan 13 02:31:10 IST 2011, ramonrails
+      #   * lazy_associations
+      lazy_associations.each do |_sym, _ar_row|
+        unless _ar_row.blank? || _ar_row.new_record?
+          if _sym == :user_intake
+            self.user_intakes << _ar_row unless self.user_intakes.include?( _ar_row)
+          end
+        end
+      end
+      # 
+      #  Fri Nov 12 18:09:50 IST 2010, ramonrails
+      #  emails can be dispatched only after roles
+      dispatch_emails # send emails as appropriate
+    # 
+    #  Mon Feb 14 22:36:04 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4185
+    update_invoice_attributes # update the invoice attributes as appropriate
+    # end
+    #
+    #   * save the profile after roles are established
+    #   * required to increment call center account number HM...
+    # 
+    #  Thu Dec  9 01:58:50 IST 2010, ramonrails
+    #   * FIXME: use :autosave => true
+    # 
+    #  Fri Jan 28 22:55:39 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    #   * Skip saving a blank/non-assigned profile. When user object loads, it will re-build a profile anyways
+    #   * This might have caused the missing profile issues. Maybe it got overwritten with a nothing_assigned one.
+    profile.save unless profile.blank? || profile.nothing_assigned?
+    #
+    log(status)
+  end
+  
   # =================
   # = class methods =
   # =================
@@ -393,6 +566,27 @@ class User < ActiveRecord::Base
     @user
   end
   
+  # 
+  #  Mon Feb  7 21:35:32 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4146#note-6
+  #   * This method can only be called for a halouser
+  #   * collects all people emails who should get this alert
+  #   * when it cannot collect any other email, at least sends to itself
+  def notify_about_installation
+    if self.is_halouser? # 
+      _emails = [self] # at least, send email to itself
+      unless self.user_intakes.blank? # if we have user intake associated
+        _ui = self.user_intakes.first # fetch user intake, for fetching related people
+        #   fetch related people who require this installation alert
+        _emails += [ self.has_caregivers, self.group_admins, _ui.subscriber, 
+        _ui.group, _ui.group.master_group
+        ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq
+        #   * send installation alert to people
+        _emails.each { |_email| UserMailer.deliver_user_installation_alert( self, _email) }
+      end
+    end
+  end
+
   def self.resend_mail(id,senior)
     @user = User.find(id)
     @user.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
@@ -447,6 +641,123 @@ class User < ActiveRecord::Base
   # ====================
   # = instance methods =
   # ====================
+
+  # 
+  #  Mon Feb 14 22:36:56 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4185
+  def update_invoice_attributes
+    # 
+    #  Mon Feb  7 23:26:37 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4155
+    #   * create an associated invoice automatically with as much data auto-populated as possible
+    #   * only halousers have invoice
+    #   * WARNING: this will impact performance!
+    if self.is_halouser?
+      #   * some values from user itself
+      _hash = { :installed_date => self.installed_at }
+      #   * some values from user intake
+      if ( _ui = self.user_intakes.first )
+        # 
+        #  Fri Feb 11 22:27:44 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4185
+        if _ui.order_successful? && _ui.subscription_successful?
+          _hash[ :prorate_start_date]   = _ui.pro_rata_start_date
+          _hash[ :recurring_start_date] = _ui.subscription_start_date
+        end
+        #   * some values from order
+        if ( _order = _ui.order )
+          _hash[ :coupon_code] = _order.coupon_code
+          # 
+          #  Fri Feb 11 22:27:49 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4185
+          _hash[ :prorate]     = _order.pro_rated_amount if ( _ui.order_successful? && _ui.subscription_successful? )
+          #   * some values from coupon_code
+          if ( _coupon = _order.product_cost )
+            _hash[ :shipping]    = _coupon.shipping
+            # 
+            #  Fri Feb 11 22:27:53 IST 2011, ramonrails
+            #   * https://redmine.corp.halomonitor.com/issues/4185
+            _hash[ :recurring]   = _coupon.monthly_recurring if ( _ui.order_successful? && _ui.subscription_successful? )
+            _hash[ :deposit]     = _coupon.deposit
+          end
+        end
+      end
+      #   * keep auto-populating as much as possible
+      if self.invoice.blank?
+        self.create_invoice( _hash) # create associated invoice with these populated attributes
+      else
+        #   * filter out the values that are already filled in
+        # [ :installed_date, :prorate_start_date, :recurring_start_date, :coupon_code, :prorate, :shipping, :recurring, :deposit ].each do |_attr|
+        _hash.delete_if {|k,v| !self.invoice.send(k).blank? }
+        # end
+        #   * update attributes only when we have some values to update
+        self.invoice.update_attributes( _hash) unless _hash.blank?
+      end
+    end
+  end
+  # 
+  #  Fri Feb 11 22:46:07 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4188
+  def shipped?
+    !user_intakes.blank? && !user_intakes.first.shipped_at.blank?
+  end
+  
+  # 
+  #  Fri Feb 11 22:47:54 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4188
+  def dtc?
+    group_memberships.include?( Group.direct_to_consumer)
+  end
+
+  # 
+  #  Fri Feb  4 01:44:06 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4147
+  #   * mainly for test cases (cucumber)
+  def raises_exception?
+    #   * conditional logic to raise exception in test cases
+    group_memberships.collect(&:name).flatten.compact.uniq.include?( 'raises_exception')
+  end
+
+  # 
+  #  Wed Jan 26 23:36:14 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4088
+  #   * include group name for halouser, admin roles
+  #   * Any role other than ['super_admin', 'admin', 'halouser', 'caregiver'] = "Other"
+  #   * No role at all = "None"
+  def important_role
+    _roles = roles.collect(&:name).compact.uniq
+    _role = ( (_roles - ['super_admin', 'admin', 'halouser', 'caregiver']).blank? ? 'None' : 'Other' )
+    ['super_admin', 'admin', 'halouser', 'caregiver'].each do |e|
+      if _roles.include?( e)
+        if ['admin', 'halouser'].include?( e)
+          _role = "#{e} / " + self.send( "is_#{e}_of_what").compact.collect(&:name).join(', ')
+        else
+          _role = e
+        end
+      end
+    end
+    _role
+  end
+
+  # 
+  #  Wed Jan 26 22:49:44 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4088
+  #   * returns [ stamp_till_now, <stamp_maybe_in_future>], if the last POST is in future
+  #   * returns [ stamp_last ], if the last POST is on or before Time.now
+  #   * returns [ '' ], if no POST found
+  def last_vital_timestamp
+    if ( _vital = Vital.where_user_id( self).recent_on_top.few(1).first ) # last, even in future
+      if _vital.timestamp > Time.now
+        if (_till_now = Vital.till_now.where_user_id( self).recent_on_top.few(1).first) # last, not beyond this moment
+          [_till_now.timestamp, _vital.timestamp]
+        end
+      else
+        [_vital.timestamp]
+      end
+    else
+      ['No Vitals']
+    end
+  end
 
   def force_status!( _status_key = nil)
     if !_status_key.blank? && STATUS.keys.include?( _status_key)
@@ -555,126 +866,6 @@ class User < ActiveRecord::Base
     keys[ index + 1]
   end
 
-  def after_initialize
-    self.caregiver_position ||= {}
-    # #
-    # # assume not in demo mode
-    # self.demo_mode = false if new_record? && demo_mode.nil?
-    # self.vip = false if new_record? && vip.nil?
-    #
-    # just make the login blank in memory, if this is _AUTO_xxx login
-    self.login = "" if (login =~ /_AUTO_/)
-    #
-    # default: assume we need a validation
-    # features like user intake that do not want validation can switch it off
-    self.need_validation = true
-    # #
-    # # instantiate a profile object if not already
-    # self.build_profile if profile.blank?
-    # example:
-    #   user.roles = {:halouser => @group}
-    #   user.roles[:subscriber] = @senior
-    self.lazy_roles = {} # lazy loading roles of this user
-    self.lazy_options = {} # lazy loading options of this user, if this is a caregiver
-    self.lazy_associations = {} # user intake and other associations that user should have when saved
-  end
-
-  def before_save
-    #
-    # Mon Oct  4 19:27:23 IST 2010, v1.6.0
-    # activation code should be created for .create as well as .save
-    make_activation_code # generate activation code as appropriate
-    autofill_login # pre-fill login and password with _AUTO_xxx login, unless already
-    #
-    encrypt_password
-    # https://redmine.corp.halomonitor.com/issues/3215
-    # WARNING: we need to confirm which logic holds true to shift user to "Installed" mode
-    #   * when alert_status == "normal"
-    #   * when panic button test happens in "Ready to Install" state
-    #
-    # # https://redmine.corp.halomonitor.com/issues/398
-    # # When user is created, put in "Install" state by default
-    # # User goes from "Install" to "Active" state after all the installation special status fields go green
-    # status = (self.alert_status == 'normal' ? STATUS[:active] : STATUS[:installed])
-
-    # status column is about to change
-    if self.changed?
-      #
-      add_triage_audit_log # create a log at least
-      #
-      # more actions for changes made to status
-      if !self.status_change.blank?
-        #
-        # Send an email to administrator if
-        #   * status column is about to change to "Installed" just now
-        if self.status_change.last == User::STATUS[:installed]
-          UserMailer.deliver_user_installation_alert( self)
-        end
-        #
-        # do not update the status_changed_at timestamp if that itself is updated during the change
-        self.status_changed_at = Time.now if self.status_changed_at_change.blank?
-      end
-    end
-  end
-  
-  # https://redmine.corp.halomonitor.com/issues/398
-  # Create a log page of all steps above with timestamps
-  def after_save
-    #
-    # Wed Oct 13 04:05:20 IST 2010
-    #   CHANGED: created_at == updated_at only when it is saved for the very first time
-    # if (created_at == updated_at)
-      #
-      # CHANGED: Major fix. the roles were not getting populated
-      # insert the roles for user. these roles are propogated from user intake
-      # 
-      #  Thu Dec  9 01:59:43 IST 2010, ramonrails
-      #   * FIXME: DRY this conditional block
-      lazy_roles.each do |k,v|
-        unless v.blank?
-          if k == :caregiver
-            self.send( "is_#{k}_of", v) unless self.equal?( v)
-          else
-            self.send( "is_#{k}_of", v)
-          end
-        end
-      end
-      #
-      # caregiver options
-      lazy_options.each do |k,v|
-        #   * DRYed: Tue Dec 21 00:52:57 IST 2010
-        #   * blank or not_saved means not_valid
-        unless k.blank? || k.new_record?
-          #   * save role_options
-          self.options_for_senior( k, v) # will also create alert_options for critical alert types
-        end
-      end
-      # 
-      #  Thu Jan 13 02:31:10 IST 2011, ramonrails
-      #   * lazy_associations
-      lazy_associations.each do |_sym, _ar_row|
-        unless _ar_row.blank? || _ar_row.new_record?
-          if _sym == :user_intake
-            self.user_intakes << _ar_row unless self.user_intakes.include?( _ar_row)
-          end
-        end
-      end
-      # 
-      #  Fri Nov 12 18:09:50 IST 2010, ramonrails
-      #  emails can be dispatched only after roles
-      dispatch_emails # send emails as appropriate
-    # end
-    #
-    #   * save the profile after roles are established
-    #   * required to increment call center account number HM...
-    # 
-    #  Thu Dec  9 01:58:50 IST 2010, ramonrails
-    #   * FIXME: use :autosave => true
-    profile.save unless profile.blank?
-    #
-    log(status)
-  end
-  
   # TODO: make this method skip_validation? for more appropriate convention
   def skip_validation
     !need_validation
@@ -697,7 +888,10 @@ class User < ActiveRecord::Base
   # build associated model
   def build_associations
     # self.build_profile
-    self.profile = (Profile.find_by_user_id(self.id) || Profile.new(:user_id => self.id)) if profile.blank?
+    # 
+    #  Fri Jan 28 22:47:30 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    self.profile ||= ( Profile.find_by_user_id( self.id) || Profile.new( :user_id => self.id ))
   end
   
   # assign nil to the associated model if the record is just new with no data assigned
@@ -752,6 +946,11 @@ class User < ActiveRecord::Base
     end
     _attributes = _attributes.reject { |k,v| k == 'user_id' }
     self.build_profile if profile.blank?
+    # 
+    #  Wed Feb  2 01:02:38 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4106
+    #   * date columns get auto assigned by this. We may have to write our own logic otherwise
+    self.profile.attributes = _attributes
     _attributes.each { |k,v| self.profile.send( "#{k}=", v) if self.profile.respond_to?( "#{k}=") }
     # (profile.blank? || profile.new_record?) ? self.build_profile( attributes) : self.profile.update_attributes( attributes) # .merge("user_id" => self)
     #   # end
@@ -900,8 +1099,6 @@ class User < ActiveRecord::Base
     options # explicitly return options row
   end
 
-  # ------------------ more methods
-    
   # when was the device successfully installed for this user
   #   * check when "Installed" status first occured for this user
   #   * and so on...
@@ -1043,6 +1240,21 @@ class User < ActiveRecord::Base
     # device.users << user
     # device.save!
   end
+
+  # 
+  #  Fri Feb 11 22:51:02 IST 2011, ramonrails
+  #   * shorthand for checking aggregated status
+  # Usage:
+  #   * user.aggregated_status_demo?
+  #   * user.aggregated_status_installed?
+  #   * user.aggregated_status_pending?
+  #   * user.aggregated_status_cancelled?
+  ['demo', 'installed', 'pending', 'cancelled'].each do |_status|
+    define_method "aggregated_status_#{_status}?".to_sym do
+      self.aggregated_status == AGGREGATE_STATUS[ _status.to_sym]
+    end
+  end
+  
   
   # Fri Oct  1 22:56:06 IST 2010
   # https://redmine.corp.halomonitor.com/projects/haloror/wiki/Intake_Install_and_Billing#Other-notes
@@ -3017,7 +3229,7 @@ class User < ActiveRecord::Base
   # steps taken from https://redmine.corp.halomonitor.com/issues/398
   def cancel_account
     # Send email to SafetyCare similar to the current email to SafetyCare except body will simple oneline with text "Cancel HM1234" 
-    CriticalMailer.deliver_cancel_call_center_acct(self.profile.account_number)
+    CriticalMailer.deliver_cancel_call_center_acct(self.profile.account_number, self.name) if !self.profile.account_number.blank?
     self.log("Email sent to safety_care: Cancel #{self.profile.account_number}")  
     set_test_mode!( true)  # Call Test Mode method to make caregivers away and opt out of SafetyCare    
     # 

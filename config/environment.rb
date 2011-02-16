@@ -134,7 +134,8 @@ Time::DATE_FORMATS[:time_date] = "%I:%M%p on %a %b %d,%Y" #03:52PM on Tue Dec 25
 Time::DATE_FORMATS[:time_date_text] = "%I:%M%p %a %b %d" #03:52PM Tue Dec 25
 Time::DATE_FORMATS[:time_date_timezone] = "%I:%M%p %Z on %a %b %d, %Y" #03:52PM CST on Tue Dec 25, 2007
 Time::DATE_FORMATS[:timezone] = "%Z" #CST
-Time::DATE_FORMATS[:day_date] = "%A, %B %d, %Y" # Wednesday, May 10, 2010
+Time::DATE_FORMATS[:day_date] = "%A, %B %d, %Y" # Wednesday, February 10, 2010   
+Time::DATE_FORMATS[:day_date_short] = "%a %b %d, %Y" # Wed Feb 10, 2010
 Time::DATE_FORMATS[:MM_DD_YYYY] = "%m-%d-%Y" # 12-25-2010
 Time::DATE_FORMATS[:day_MM_DD_YYYY] = "%a %m-%d-%Y" # 12-25-2010
 
@@ -172,8 +173,7 @@ MGMT_CMD_ATTEMPTS_WITHOUT_ACK=5
 LOST_DATA_GAP = 17
 
 EVENTS_PER_PAGE = 25
-REPORTING_USERS_PER_PAGE = 10 # speed up display of lists. browsing schronologically arranged data on pages, or search is better
-REORTING_DEVICES_PER_PAGE = 10
+REPORTING_USERS_PER_PAGE = 20 # speed up display of lists. browsing schronologically arranged data on pages, or search is better
 
 MGMT_POLL_RATE=900
 INSTALL_WIZ_TIMEOUT_REGISTRATION=600.seconds

@@ -1,0 +1,22 @@
+Halo Monitoring, Inc.
+515 Sparkman Drive
+Huntsville, AL 35816
+Phone 888.971.HALO (888-971-4256)
+Fax 866.275.1904
+
+Order number: <%= @order.full_number %>
+Original Order date: <%= @order.created_at %>
+Group: <%= @order.group_name rescue '<unknown>' %>
+
+Card Number <%= @order.masked_card_number %> (exp <%= @order.card_expiry.year rescue '' %>) has been charged for prorated service from <%= UtilityHelper.format_datetime(@order.user_intake.pro_rata_start_date, @current_user, Time::DATE_FORMATS[:day_date_short]) rescue '<unknown>' %> to <%= UtilityHelper.format_datetime(@order.user_intake.pro_rata_end_date, @current_user, Time::DATE_FORMATS[:day_date_short]) rescue '<unknown>' %>
+
+The credit card will also be charged an amount of $<%= @order.product_cost.monthly_recurring rescue '<unknown>' %> per month starting on <%= UtilityHelper.format_datetime(@order.user_intake.subscription_start_date, @current_user, Time::DATE_FORMATS[:day_date_short]) rescue '<unknown>' %>. This charge will recur the 1st day of every month.  
+
+BILLING INFO
+ Name    : <%= [@order.bill_first_name, @order.bill_last_name].compact.join(' ') %>
+ Address : <%= @order.bill_address %>
+ City    : <%= @order.bill_city %>
+ State   : <%= @order.bill_state %>
+ ZIP     : <%= @order.bill_zip %>
+ Phone   : <%= @order.bill_phone %>
+ Email   : <%= @order.bill_email %>

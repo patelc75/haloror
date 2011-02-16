@@ -172,6 +172,13 @@ class Device < ActiveRecord::Base
   # = instance methods =
   # ====================
   
+  # 
+  #  Wed Jan 26 22:58:05 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4088
+  def connectivity_type
+    access_mode_status.blank? ? '' : access_mode_status.mode
+  end
+  
   # user intake with kit_serial_number of this device
   def user_intake
     # CHANGED: Sat Sep 25 00:56:19 IST 2010
@@ -204,8 +211,8 @@ class Device < ActiveRecord::Base
   # * local numbers cannot begin with "18"
   def dial_up_numbers_ok?
     # further logic is based on this mgmt_cmd row
-    mgmt_cmd ||= mgmt_cmds.first(:conditions => ["cmd_type LIKE ?", "%dial_up_num_glob_prim%"], :order => "timestamp_sent DESC")
-    unless ( failure = mgmt_cmd.blank? ) # mgmt_cmd row must exist
+    mgmt_cmd ||= mgmt_cmds.first(:conditions => ["cmd_type LIKE ?", "%dial_up_num%"], :order => "timestamp_sent DESC")
+    unless ( failure = mgmt_cmd.blank? ) # mgmt_cmd row must exist    
       numbers = (1..4).collect {|e| mgmt_cmd.send(:"param#{e}") } # collect global/local primary/secondary
       failure = numbers.any?(&:blank?) unless failure # the set of 4 numbers exist
       failure = numbers[0..1].collect {|e| e[0..1] == '18'}.include?( true) unless failure # local numbers (1,2) cannot start with "18"

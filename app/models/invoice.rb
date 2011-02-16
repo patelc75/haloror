@@ -2,6 +2,7 @@ class Invoice < ActiveRecord::Base
   belongs_to :user
   belongs_to :affiliate_fee_group, :class_name => "Group"
   belongs_to :referral_group, :class_name => "Group"
+  has_many :notes, :class_name => "InvoiceNote", :foreign_key => "invoice_id"
   
   validates_presence_of :user_id, :on => :create, :message => "can't be blank"
   
@@ -38,9 +39,9 @@ class Invoice < ActiveRecord::Base
   # 
   #  Sat Jan 15 02:32:45 IST 2011, ramonrails
   #   * user table > cancelled_at
-  #def cancelled_date
-  #  user.cancelled_at unless user.blank?
-  #end
+  def cancelled_date
+    user.cancelled_at unless user.blank?
+  end
   
   # 
   #  Tue Jan 11 01:08:02 IST 2011, ramonrails

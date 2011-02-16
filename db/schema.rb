@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110124142746) do
+ActiveRecord::Schema.define(:version => 20110210154459) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -653,6 +653,16 @@ ActiveRecord::Schema.define(:version => 20110124142746) do
     t.datetime "updated_at"
   end
 
+  create_table "invoice_notes", :force => true do |t|
+    t.integer  "invoice_id"
+    t.text     "description"
+    t.integer  "created_by"
+    t.integer  "updated_by"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "invoices", :force => true do |t|
     t.integer  "user_id"
     t.integer  "affiliate_fee_group_id"
@@ -668,10 +678,10 @@ ActiveRecord::Schema.define(:version => 20110124142746) do
     t.datetime "install_fee_charged_at"
     t.datetime "affiliate_fee_payout_at"
     t.datetime "referral_payout_at"
-    t.decimal  "kit_charged"
-    t.decimal  "install_fee_amount"
-    t.decimal  "affiliate_fee_amount"
-    t.decimal  "referral_amount"
+    t.float    "kit_charged"
+    t.float    "install_fee_amount"
+    t.float    "affiliate_fee_amount"
+    t.float    "referral_amount"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "coupon_code"
@@ -679,10 +689,10 @@ ActiveRecord::Schema.define(:version => 20110124142746) do
     t.datetime "installed_date"
     t.datetime "recurring_start_date"
     t.boolean  "manual_billing"
-    t.decimal  "deposit"
-    t.decimal  "shipping"
-    t.decimal  "prorate"
-    t.decimal  "recurring"
+    t.float    "deposit"
+    t.float    "shipping"
+    t.float    "prorate"
+    t.float    "recurring"
     t.datetime "install_fee_payout_date"
   end
 
@@ -1223,7 +1233,6 @@ ActiveRecord::Schema.define(:version => 20110124142746) do
     t.boolean  "subscriber_is_caregiver"
     t.datetime "submitted_at"
     t.datetime "legal_agreement_at"
-    t.datetime "paper_copy_at"
     t.date     "paper_copy_submitted_on"
     t.date     "emailed_on"
     t.datetime "installation_datetime"
@@ -1283,6 +1292,7 @@ ActiveRecord::Schema.define(:version => 20110124142746) do
     t.boolean  "vip"
     t.datetime "activation_sent_at"
     t.datetime "cancelled_at"
+    t.datetime "installed_at"
   end
 
   create_table "vital_scans", :force => true do |t|

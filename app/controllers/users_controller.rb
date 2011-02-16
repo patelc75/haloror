@@ -118,13 +118,19 @@ class UsersController < ApplicationController
   end
   
   def show
-    RAILS_DEFAULT_LOGGER.debug("****START show")
-    if params[:user_id]
-      @senior_user = User.find(params[:user_id])
+    if params.has_key?( 'user_id')
+      RAILS_DEFAULT_LOGGER.debug("****START show")
+      if params[:user_id]
+        @senior_user = User.find(params[:user_id])
+      end
+      @user = User.new
+      @profile = Profile.new
+      render :action => 'credit_card_authorization' # QUESTION: even for admin account?
+
+    else
+      @user = User.find( params[:id])
+      # render 'show' action
     end
-    @user = User.new
-    @profile = Profile.new
-    render :action => 'credit_card_authorization' # QUESTION: even for admin account?
   end
   
   def credit_card_authorization
@@ -562,17 +568,18 @@ class UsersController < ApplicationController
   end
   
   def add_device_to_user
-    if valid_serial_number(params[:serial_number])
-      register_user_with_serial_num(User.find(params[:user_id]),params[:serial_number].strip)
+    _user = User.find( params[:user_id])
+    if valid_serial_number( params[:serial_number])
+      register_user_with_serial_num( _user, params[:serial_number].strip)
     else
       flash[:notice] = "Not Valid Serial Number, Serial number must be exactly 10 digits."
     end 
      
-    unless params[:page] == '1'
-      redirect_to :controller => 'reporting', :action => 'users',:page => params[:page]
-    else
-    	redirect_to :controller => 'reporting', :action => 'users'
-    end   
+    # unless params[:page] == '1'
+    #   redirect_to :controller => 'reporting', :action => 'users',:page => params[:page]
+    # else
+    	redirect_to :controller => 'users', :action => 'show', :id => _user
+    # end   
   end
   
   def valid_serial_number(serial_number)
@@ -669,78 +676,86 @@ class UsersController < ApplicationController
             @user.login = user_hash[:login]
             # https://redmine.corp.halomonitor.com/issues/3554 point 3 fixed by this
             @user.skip_validation = true # this object could have been "saved" earlier
-            @user.save!
-            self.current_user = @user
-            if logged_in? && !current_user.activated?
-              current_user.activate
-            end
-            # 
-            #  Tue Nov 30 00:49:20 IST 2010, ramonrails
-            #   * https://redmine.corp.halomonitor.com/issues/3798#note-2
-            #   * as discussed with Chirag
-            #     when a caregiver gets its authentication credentials activated
-            #     then it does not become an "active caregiver", just gets login activated
-            # current_user.set_active
-            #
-            if current_user.is_caregiver?
+            if @user.save
+              self.current_user = @user
+              if logged_in? && !current_user.activated?
+                current_user.activate
+              end
               # 
-              #  Fri Nov 26 20:49:23 IST 2010, ramonrails
-              #   * increment caregiver position, unless already defined
-              #   * QUESTION: Why should we establish caregiver position here?
-              #   *   Why is that not established when user was created? Any other logic applies?
-              if (_senior = @user.is_caregiver_for_what.first) # find senior
-                if (_position = @user.caregiver_position_for( _senior)) # find any existing position
-                  if _position.blank? || (_position.to_i == 0) # only when position not already defined
-                    #   * when next position is nil, it does not get assigned
-                    #   * so, this is safe to call like this, without checking position value
-                    @user.options_for_senior( _senior, { :position => _senior.next_caregiver_position } ) # SET
+              #  Tue Nov 30 00:49:20 IST 2010, ramonrails
+              #   * https://redmine.corp.halomonitor.com/issues/3798#note-2
+              #   * as discussed with Chirag
+              #     when a caregiver gets its authentication credentials activated
+              #     then it does not become an "active caregiver", just gets login activated
+              # current_user.set_active
+              #
+              if current_user.is_caregiver?
+                # 
+                #  Fri Nov 26 20:49:23 IST 2010, ramonrails
+                #   * increment caregiver position, unless already defined
+                #   * QUESTION: Why should we establish caregiver position here?
+                #   *   Why is that not established when user was created? Any other logic applies?
+                if (_senior = @user.is_caregiver_for_what.first) # find senior
+                  if (_position = @user.caregiver_position_for( _senior)) # find any existing position
+                    if _position.blank? || (_position.to_i == 0) # only when position not already defined
+                      #   * when next position is nil, it does not get assigned
+                      #   * so, this is safe to call like this, without checking position value
+                      @user.options_for_senior( _senior, { :position => _senior.next_caregiver_position } ) # SET
+                    end
                   end
                 end
-              end
               
-              #  Wed Nov 24 18:06:36 IST 2010, ramonrails
-              #   * https://redmine.corp.halomonitor.com/issues/3782
-              #   * after caregiver activation, show recently activated caregiver
-              #   
-              # if session[:senior]
-              #   redirect_to :controller => 'call_list', :action => 'show', :id => session[:senior]
-              # else
-              redirect_to :controller => 'call_list', :action => 'show', :recently_activated => 'true'
-              # end
-
-              # FIXME: patching the logic here for now. Needs DRYing up. Needs code coverage.
-              # redirect to user intake, if the current_user is halouser/subscriber with incomplete user intake
-            elsif (current_user.is_halouser? || current_user.is_subscriber?)
-              # if this user has
-              #   an incomplete user intake, sk to fill it
-              #   completed user intake but legal agreement not made, ask for agreement
-              if current_user.incomplete_user_intakes.blank? && current_user.legal_agreements_pending.blank?
-                # if current_user.legal_agreements_pending.blank?
-                redirect_to '/'
-              else
-                # paths do not work correctly. using url_for
-                redirect_to :controller => 'user_intakes', :action => 'show', :id => current_user.user_intakes.first
-              end
-              #
-              # do not ask edit right away. let the senior/subscriber agree to subscriber's agreement first
-              # else
-              #   # WARNING: subscriber can have many user intakes. How do we identify the correct one?
-              #   # FIXME: For now: assuming the user just got activated, it only has one user intake
-              #   # Needs to be tested yet
-              #   # paths do not work correctly. using url_for
-              #   redirect_to url_for(:controller => 'user_intakes', :action => 'edit', :id => current_user.incomplete_user_intakes.first)
-              #   # once the user intake is submitted successfully, legal agreement will be shown automatically until agreed
-              #   # any user other than halouser/subscriber will also see the legal agreement, but can only print. cannot accept/agree/submit.
-              # end
+                #  Wed Nov 24 18:06:36 IST 2010, ramonrails
+                #   * https://redmine.corp.halomonitor.com/issues/3782
+                #   * after caregiver activation, show recently activated caregiver
+                #   
+                # if session[:senior]
+                #   redirect_to :controller => 'call_list', :action => 'show', :id => session[:senior]
+                # else
+                redirect_to :controller => 'call_list', :action => 'show', :recently_activated => 'true'
+                # end
+              
+                # FIXME: patching the logic here for now. Needs DRYing up. Needs code coverage.
+                # redirect to user intake, if the current_user is halouser/subscriber with incomplete user intake
+              elsif (current_user.is_halouser? || current_user.is_subscriber?)
+                # if this user has
+                #   an incomplete user intake, sk to fill it
+                #   completed user intake but legal agreement not made, ask for agreement
+                if current_user.incomplete_user_intakes.blank? && current_user.legal_agreements_pending.blank?
+                  # if current_user.legal_agreements_pending.blank?
+                  redirect_to '/'
+                else
+                  # paths do not work correctly. using url_for
+                  redirect_to :controller => 'user_intakes', :action => 'show', :id => current_user.user_intakes.first
+                end
+                #
+                # do not ask edit right away. let the senior/subscriber agree to subscriber's agreement first
+                # else
+                #   # WARNING: subscriber can have many user intakes. How do we identify the correct one?
+                #   # FIXME: For now: assuming the user just got activated, it only has one user intake
+                #   # Needs to be tested yet
+                #   # paths do not work correctly. using url_for
+                #   redirect_to url_for(:controller => 'user_intakes', :action => 'edit', :id => current_user.incomplete_user_intakes.first)
+                #   # once the user intake is submitted successfully, legal agreement will be shown automatically until agreed
+                #   # any user other than halouser/subscriber will also see the legal agreement, but can only print. cannot accept/agree/submit.
+                # end
             
-            # Fri Oct 22 02:31:18 IST 2010
-            #   TODO: DRY: This logic should be elsewhere in a common method, not here
-            elsif current_user.is_admin?
-              redirect_to :controller => 'reporting', :action => 'users'
+              # Fri Oct 22 02:31:18 IST 2010
+              #   TODO: DRY: This logic should be elsewhere in a common method, not here
+              elsif current_user.is_admin?
+                redirect_to :controller => 'reporting', :action => 'users'
               
+              else
+                redirect_to '/'
+              end
+
+              # 
+              #  Thu Feb  3 00:16:55 IST 2011, ramonrails
+              #   * https://redmine.corp.halomonitor.com/issues/4124
             else
-              redirect_to '/'
+              render :action => 'init_user'
             end
+
           else
             flash[:warning] = "Password must be at least 4 characters"
             render :action => 'init_user'

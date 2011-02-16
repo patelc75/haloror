@@ -1,0 +1,25 @@
+<h1>Listing invoice notes for Invoice <%= @invoice.id %></h1>
+
+<table class="bluegrey">
+  <tr>
+    <th>Invoice</th>
+    <th>Description</th>
+    <th>Created by</th>
+    <th>Updated by</th>
+  </tr>
+
+<% for invoice_note in @invoice_notes %>
+  <tr>
+    <td><%=h invoice_note.invoice_id %></td>
+    <td><%=h invoice_note.description %></td>
+    <td><%=h invoice_note.creator %></td>
+    <td><%=h invoice_note.updater %></td>
+    <td><%= link_to 'Show', invoice_invoice_note_path(@invoice, invoice_note) %></td>
+    <td><%= link_to 'Destroy', invoice_invoice_note_path(@invoice, invoice_note), :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New invoice note', new_invoice_invoice_note_path( @invoice), :class => "button green-button" %>

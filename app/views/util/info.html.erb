@@ -3,7 +3,7 @@
 UNIX hostname: <code><%= `hostname` %></code><br>
 Unix time: <code><%= `date` %></code><br>
 Server Instance: <code><%= ServerInstance.current_host_short_string() %></code><br>
-Health Server S/W version (via <code>git describe</code>): <code><%= `cd ~/haloror; /usr/bin/git describe` %></code><br>
+Health Server S/W version (via <code>git describe</code>): <code><%= `cd #{RAILS_ROOT}; /usr/bin/git describe` %></code><br>
 Rails Environment: <code><%= ENV['RAILS_ENV'] %></code><br>  
 <br>
 <b>Current User</b><br>

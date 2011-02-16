@@ -82,6 +82,23 @@ Given /^user "([^\"]*)" status gets changed to "([^\"]*)"$/ do |login, status|
   user.save.should == true
 end
 
+Given /^user "([^"]*)" has caregivers$/ do |user_login|
+  (user = User.find_by_login(user_login)).should_not be_blank
+  3.times do
+    _cg = Factory.create( :user)
+    _cg.is_caregiver_of( user)
+  end
+  user.caregivers.length.should == 3
+end
+
+Given /^a caregiver of "([^"]*)" can raise exception$/ do |user_login|
+  (user = User.find_by_login(user_login)).should_not be_blank
+  user.caregivers.should_not be_blank
+  _group = Factory.create( :group, { :name => 'raises_exception'} )
+  cg = user.caregivers.first
+  cg.is_member_of( _group)
+  cg.group_memberships.collect(&:name).flatten.compact.uniq.should include('raises_exception')
+end
 
 # =========
 # = whens =

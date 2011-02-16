@@ -17,14 +17,14 @@
 
     caregiver_extras_form(document.getElementById('user_intake_subscriber_is_caregiver'), 'caregiver_extras');
     
-    // $('#subscriber_email_flag').attr('checked', <%= @user_intake.caregiver1_role_options.email_active %>);
-    // $('#subscriber_text_flag').attr('checked', <%= @user_intake.caregiver1_role_options.text_active %>);
-    // $('#caregiver1_email_flag').attr('checked', <%= @user_intake.caregiver1_role_options.email_active %>);
-    // $('#caregiver1_text_flag').attr('checked', <%= @user_intake.caregiver1_role_options.text_active %>);
-    // $('#caregiver2_email_flag').attr('checked', <%= @user_intake.caregiver2_role_options.email_active %>);
-    // $('#caregiver2_text_flag').attr('checked', <%= @user_intake.caregiver2_role_options.text_active %>);
-    // $('#caregiver3_email_flag').attr('checked', <%= @user_intake.caregiver3_role_options.email_active %>);
-    // $('#caregiver3_text_flag').attr('checked', <%= @user_intake.caregiver3_role_options.text_active %>);
+    $('#subscriber_email_flag').attr('checked', <%= @user_intake.caregiver1_role_options.email_active %>);
+    $('#subscriber_text_flag').attr('checked', <%= @user_intake.caregiver1_role_options.text_active %>);
+    $('#caregiver1_email_flag').attr('checked', <%= @user_intake.caregiver1_role_options.email_active %>);
+    $('#caregiver1_text_flag').attr('checked', <%= @user_intake.caregiver1_role_options.text_active %>);
+    $('#caregiver2_email_flag').attr('checked', <%= @user_intake.caregiver2_role_options.email_active %>);
+    $('#caregiver2_text_flag').attr('checked', <%= @user_intake.caregiver2_role_options.text_active %>);
+    $('#caregiver3_email_flag').attr('checked', <%= @user_intake.caregiver3_role_options.email_active %>);
+    $('#caregiver3_text_flag').attr('checked', <%= @user_intake.caregiver3_role_options.text_active %>);
     
     <% if !current_user.is_super_admin? && @user_intake.submitted? %>
       $(".theme-body").find("input").attr('disabled','disabled');
@@ -36,6 +36,15 @@
     document.getElementById('user_intake_credit_debit_card_proceessed_').checked = <%= @user_intake.credit_debit_card_proceessed %>;
   });
 
+  <!-- script to disable enter key for form submission
+  function stopEnterKey(evt) {
+     var evt = (evt) ? evt : ((event) ? event : null);
+     var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+     if ((evt.keyCode == 13) && (node.type=="text")) {return false;}
+  }
+  document.onkeypress = stopEnterKey; 
+  -->
+  
   </script>
   
 <% end -%>
@@ -201,11 +210,11 @@
           <!-- role attributes -->
           <div id="caregiver_extras" class="prepend-3 span-7 hidden">
             <p>
-            <%= f.check_box :caregiver1_email, :id => "subscriber_email_flag", :onclick => "$('#caregiver1_email_flag').attr('checked', this.checked);" %><%= f.label :caregiver1_email, "Email" %>
-            <%= f.check_box :caregiver1_text, :id => "subscriber_text_flag", :onclick => "$('#caregiver1_text_flag').attr('checked', this.checked);" %><%= f.label :caregiver1_text, "Text" %>
-            <!-- <%# fields_for "user_intake[caregiver1_role_options]", @user_intake.subscriber do |subscriber_form| %>
-              <%#= render :partial => 'caregiver_role_options', :locals => { :f => subscriber_form, :user_type => "subscriber"} %>
-            <%# end -%> -->
+            <!-- <%#= f.check_box :caregiver1_email, :id => "subscriber_email_flag", :onclick => "$('#caregiver1_email_flag').attr('checked', this.checked);" %><%= f.label :caregiver1_email, "Email" %>
+            <%#= f.check_box :caregiver1_text, :id => "subscriber_text_flag", :onclick => "$('#caregiver1_text_flag').attr('checked', this.checked);" %><%= f.label :caregiver1_text, "Text" %> -->
+            <% fields_for "user_intake[caregiver1_role_options]", @user_intake.subscriber do |subscriber_form| %>
+              <%= render :partial => 'caregiver_role_options', :locals => { :f => subscriber_form, :user_type => "subscriber"} %>
+            <% end -%>
             </p>
           </div>
         </div>
@@ -241,12 +250,11 @@
             <div class="span-2">&nbsp;</div>
             <div class="span-5 last">
               <p>
-                <!-- <%# fields_for "user_intake[caregiver#{index+1}_role_options]", caregiver do |caregiver_form| %>
-                  <%#= render :partial => 'caregiver_role_options', :locals => { :f => caregiver_form, :user_type => "caregiver#{index+1}"} %>
-                <%# end -%> -->
-                <!-- role attributes -->
-                <%= f.check_box "caregiver#{index+1}_email", :id => "caregiver#{index+1}_email_flag", :onclick => "$('#subscriber_email_flag').attr('checked', $('#caregiver1_email_flag').attr('checked'));" %><%= f.label "caregiver#{index+1}_email", "Email" %>
-                <%= f.check_box "caregiver#{index+1}_text", :id => "caregiver#{index+1}_text_flag", :onclick => "$('#subscriber_text_flag').attr('checked', $('#caregiver1_text_flag').attr('checked'));" %><%= f.label "caregiver#{index+1}_text", "Text" %>
+                <% fields_for "user_intake[caregiver#{index+1}_role_options]", caregiver do |caregiver_form| %>
+                  <%= render :partial => 'caregiver_role_options', :locals => { :f => caregiver_form, :user_type => "caregiver#{index+1}"} %>
+                <% end -%>
+                <!-- <%#= f.check_box "caregiver#{index+1}_email", :id => "caregiver#{index+1}_email_flag", :onclick => "$('#subscriber_email_flag').attr('checked', $('#caregiver1_email_flag').attr('checked'));" %><%= f.label "caregiver#{index+1}_email", "Email" %>
+                <%#= f.check_box "caregiver#{index+1}_text", :id => "caregiver#{index+1}_text_flag", :onclick => "$('#subscriber_text_flag').attr('checked', $('#caregiver1_text_flag').attr('checked'));" %><%= f.label "caregiver#{index+1}_text", "Text" %> -->
               </p>
             </div>
 

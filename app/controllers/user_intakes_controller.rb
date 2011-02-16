@@ -1,7 +1,7 @@
 include ApplicationHelper
 
 class UserIntakesController < ApplicationController
-  before_filter :login_required
+  before_filter :login_required, :set_current_user
 
   # GET /user_intakes
   # GET /user_intakes.xml
@@ -202,6 +202,7 @@ class UserIntakesController < ApplicationController
   # PUT /user_intakes/1
   # PUT /user_intakes/1.xml
   def update
+    # debugger
     @user_intake = UserIntake.find(params[:id])
     @user_intake.skip_validation = (['Save', 'Print', 'Proceed'].include?(params[:commit])) # just save without asking anything
     @groups = Group.for_user(current_user)
@@ -224,8 +225,8 @@ class UserIntakesController < ApplicationController
       @user_intake.send( "#{_attribute}=", _hash[_attribute])
     end
     #   * apply attributes now that we have the control booleans applied
-    @user_intake.attributes = params[:user_intake].reject { |k,v| k.include?("attributes") }
     apply_attributes_from_hash( @user_intake, _hash.select {|k,v| k.include?("attributes") })
+    @user_intake.attributes = params[:user_intake].reject { |k,v| k.include?("attributes") }
     # _hash.each {|k,v| @user_intake.send( "#{k}=".to_sym, v) }
 
     respond_to do |format|
@@ -320,7 +321,13 @@ class UserIntakesController < ApplicationController
 
   def charge_subscription
     @user_intake = UserIntake.find( params[:id])
-    @user_intake.order.charge_subscription if @user_intake.order # begin charge for subscription
+    # 
+    #  Thu Feb  3 01:19:04 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4137
+    @user_intake.charge_pro_rata_and_subscription
+    #   * old method was not considering the pro-rata charges
+    #   * payment gateway was also returning error due to subscription start date in the past
+    # @user_intake.order.charge_subscription if @user_intake.order # begin charge for subscription
   end
 
   def paper_copy_submission
@@ -342,6 +349,14 @@ class UserIntakesController < ApplicationController
       flash[:notice] = "Triage note added for " + user_intakes.collect {|e| e.senior.blank? ? nil : e.senior.name }.compact.uniq.join(', ')
     end
     redirect_to :back # just go back to the last triage
+  end
+  
+  # ===========
+  # = private =
+  # ===========
+  
+  def set_current_user
+    Thread.current[:user] = current_user
   end
 end
 # ~> -:1: uninitialized constant ApplicationHelper (NameError)

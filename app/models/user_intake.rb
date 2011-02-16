@@ -29,6 +29,7 @@ class UserIntake < ActiveRecord::Base
   #   Comment out "Change All Dial Up Numbers" > update ticket #2809
   #   * https://redmine.corp.halomonitor.com/issues/3988
   # validates_presence_of :local_primary, :global_primary, :unless => :skip_validation # https://redmine.corp.halomonitor.com/issues/2809
+  named_scope :without_group, :conditions => { :group_id => nil }
   named_scope :recent_on_top, :order => "updated_at DESC"
 
   #acts_as_audited
@@ -57,15 +58,33 @@ class UserIntake < ActiveRecord::Base
 
   (1..3).each do |_index|
     #   * GET
-    define_method "caregiver#{_index}_role_options" do
+    define_method "caregiver#{_index}_role_options".to_sym do
       caregiver_role_options( _index)
     end
     
     #   * SET
-    define_method "caregiver#{_index}_role_options=" do |_options|
+    define_method "caregiver#{_index}_role_options=".to_sym do |_options|
       caregiver_role_options( _index, _options)
     end
   end
+  # 
+  #  Sat Jan  8 01:37:59 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/3949
+  #   * TODO: static methods not required anymore. dynamic method works
+  # def caregiver1_role_options=( _options)
+  #   # debugger
+  #   caregiver_role_options( 1, _options)
+  # end
+  # 
+  # def caregiver2_role_options=( _options)
+  #   # debugger
+  #   caregiver_role_options( 2, _options)
+  # end
+  # 
+  # def caregiver3_role_options=( _options)
+  #   # debugger
+  #   caregiver_role_options( 3, _options)
+  # end
 
   [:gateway, :chest_strap, :belt_clip].each do |device|
     # Usage:
@@ -104,12 +123,13 @@ class UserIntake < ActiveRecord::Base
   #   caregiver_role_options( 2, {:position => 2})
   #   caregiver_role_options( 2, roles_users_option_instance)
   def caregiver_role_options( _index = 0, _given_options = nil)
+    # debugger
     _options = nil # start with a blank
     if (1..3).include?( _index)
       _caregiver = self.send("caregiver#{_index}")
       # 
       # GET / SET mode. required for both
-      unless (_caregiver.blank? || _caregiver.nothing_assigned?)
+      # unless (_caregiver.blank? || _caregiver.nothing_assigned?)
         _options = self.send( "mem_caregiver#{_index}_options")
         _options ||= _caregiver.options_for_senior( senior)
         _options ||=  RolesUsersOption.new( :position => _index)
@@ -141,7 +161,7 @@ class UserIntake < ActiveRecord::Base
           # _options.attributes.each { |k,v| _mem_options.send( "#{k}=", v) }
         end
         # self.send("mem_caregiver#{_index}_options=", _options) # assign to mem
-      end
+      # end
       # 
       #  Fri Nov 19 02:38:23 IST 2010, ramonrails
       #   * for some reason like blank caregiver, we may get "nil" options
@@ -265,7 +285,7 @@ class UserIntake < ActiveRecord::Base
     #   * user is "Ready to Install"
     #   * last user action was "Approve"
     # QUESTION: admin can approve?
-    if lazy_action == "Approve" && senior.status == User::STATUS[:approval_pending] # && !self.updater.blank? && self.updater.is_super_admin?
+    if (lazy_action == "Approve") && (senior.status == User::STATUS[:approval_pending]) # && !self.updater.blank? && self.updater.is_super_admin?
       self.senior.status = User::STATUS[:install_pending]
       self.senior.send( :update_without_callbacks)
       self.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true
@@ -274,56 +294,11 @@ class UserIntake < ActiveRecord::Base
       #   * user is "Ready to Bill"
       #   * last user action was "Bill"
     #   * subscription can be charged? trial period is over?
-    elsif lazy_action == 'Bill' && senior.status == User::STATUS[:bill_pending] && can_charge_subscription?
-      #
-      # charge subscription and pro-rata recurring charges (including today), only when installed
-      unless order.blank?
-        # 
-        #  Fri Nov  5 06:29:06 IST 2010, ramonrails
-        #  First charge pro-rata. That is one time. Then charge subscription.
-        #  So, for some reason if subscription fails, we do not miss pro-rata charges
-        #
-        # pro-rata for subscription should also be charged
-        if order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
-          #
-          # charge the credit card subscription now
-          if order.charge_subscription
-            #
-            # now make user "Installed"
-            self.senior.force_status!( :installed)
-            # self.senior.status = User::STATUS[:installed]
-            # self.senior.send( :update_without_callbacks)
-            #
-            # all caregivers are active now
-            caregivers.each { |e| e.set_active_for( senior, true) }
-            #
-            # add a row to triage audit log
-            #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log
-            attributes = {
-              :user         => senior,
-              :is_dismissed => senior.last_triage_status,
-              :status       => senior.status,
-              :created_by   => self.updated_by, # senior.id,
-              :updated_by   => self.updated_by, # senior.id,
-              :description  => "Transitioned from 'Ready to Bill' state to 'Installed'. Billed. Subscription charged. Pro-rata charged."
-            }
-            TriageAuditLog.create( attributes)
-            #
-            # explicitly send email to group admins, halouser, caregivers. tables are saved without callbacks
-            # 
-            #  Wed Nov 24 23:01:26 IST 2010, ramonrails
-            #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
-            #   * https://redmine.corp.halomonitor.com/issues/3785
-            [ senior, senior.has_caregivers, senior.group_admins, 
-              subscriber, group, group.master_group
-              ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq.each do |_email|
-              #   * send installation intimations
-              UserMailer.deliver_user_installation_alert( senior, _email)
-            end
-          end
-        end
-      
-      end
+    elsif (lazy_action == 'Bill') && (senior.status == User::STATUS[:bill_pending]) && can_charge_subscription?
+      # 
+      #  Thu Feb  3 01:18:20 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4137
+      charge_pro_rata_and_subscription
     end
     #
     # attach devices to user/senior
@@ -333,6 +308,8 @@ class UserIntake < ActiveRecord::Base
       # 
       #  Fri Dec  3 02:36:22 IST 2010, ramonrails
       #   * check for errors. report them on browser
+      #   * FIXME: validation errors should be checked before_save, not after_save
+      #   *   to do that, we need to delegate device assignment to user model
       _serials = senior.devices.collect(&:serial_number)
       [gateway_serial, transmitter_serial].each do |_serial|
         self.errors.add_to_base( "Device #{_serial} is not assigned to this halouser.") unless _serial.blank? || _serials.include?( _serial)
@@ -375,8 +352,81 @@ class UserIntake < ActiveRecord::Base
     # 
     #  Fri Dec  3 02:29:51 IST 2010, ramonrails
     #   * check errors in payment_gateway_responses. report on browser
-    if !order.blank? && !order.payment_gateway_responses.blank? && !order.payment_gateway_responses.failed.blank?
-      self.errors.add_to_base( order.payment_gateway_responses.failed.collect(&:message).flatten.compact.uniq.join(', '))
+    # 
+    #  Wed Feb  2 21:51:36 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4116
+    #   * FIXME: validation errors should be checked before_save, not after_save
+    if !order.blank? && !order.payment_gateway_responses.blank? && !order.payment_gateway_responses.failed.recent.blank?
+      self.errors.add_to_base( order.payment_gateway_responses.failed.recent.collect(&:message).flatten.compact.uniq.join(', '))
+    end
+  end
+
+  # 
+  #  Thu Feb  3 01:17:13 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4137
+  def charge_pro_rata_and_subscription
+    #
+    # charge subscription and pro-rata recurring charges (including today), only when installed
+    unless order.blank?
+      # 
+      #  Fri Nov  5 06:29:06 IST 2010, ramonrails
+      #  First charge pro-rata. That is one time. Then charge subscription.
+      #  So, for some reason if subscription fails, we do not miss pro-rata charges
+      #
+      # pro-rata for subscription should also be charged
+      if order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
+        #
+        # charge the credit card subscription now
+        if order.charge_subscription          
+          #
+          # now make user "Installed"
+          self.senior.update_attribute( :status, User::STATUS[:installed]) # force_status!( :installed)
+          # self.senior.status = User::STATUS[:installed]
+          # self.senior.send( :update_without_callbacks)
+          # 
+          #  Fri Feb  4 01:05:28 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4147
+          # #
+          # # all caregivers are active now
+          # caregivers.each { |e| e.set_active_for( senior, true) }
+          #
+          # add a row to triage audit log
+          #   cyclic dependency is not created. update_withut_callbacks is used in triage_audit_log
+          attributes = {
+            :user         => senior,
+            :is_dismissed => senior.last_triage_status,
+            :status       => senior.status,
+            :created_by   => self.updated_by, # senior.id,
+            :updated_by   => self.updated_by, # senior.id,
+            :description  => "Transitioned from 'Ready to Bill' state to 'Installed'. Billed. Subscription charged. Pro-rata charged."
+          }
+          TriageAuditLog.create( attributes)
+          #
+          # explicitly send email to group admins, halouser, caregivers. tables are saved without callbacks
+          # 
+          #  Wed Nov 24 23:01:26 IST 2010, ramonrails
+          #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
+          #   * https://redmine.corp.halomonitor.com/issues/3785
+          #   * shifted to variable to reduce double call
+          _email_to = [ senior, senior.group_admins, subscriber, group, group.master_group
+            ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq            
+          # 
+          #  Mon Feb  7 21:26:10 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4146#note-6
+          # #   * include caregivers as they were earlier
+          # (_email_to + senior.has_caregivers.collect(&:email)).flatten.compact.uniq.each do |_email|
+          #   #   * send installation intimations
+          #   UserMailer.deliver_user_installation_alert( senior, _email)
+          # end
+          # 
+          #  Thu Feb  3 23:51:32 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4146
+          #   * when both charges are green, send these emails
+          #   * we collected these emails in a variable already. caregivers do not get this email
+          _email_to.each { |_email| UserMailer.deliver_subscription_start_alert( senior, _email) }
+        end
+      end
+
     end
   end
 
@@ -394,7 +444,7 @@ class UserIntake < ActiveRecord::Base
   #   * decide whether pro-rata and subscription can be charged right now, or a trial period is running?
   def can_charge_subscription?
     #   * cannot charge subscription until trial period is running
-    !subscription_deferred?
+    !order.blank? && !subscription_deferred?
   end
 
   # 
@@ -427,14 +477,49 @@ class UserIntake < ActiveRecord::Base
     _date = (_date + order.product_cost.recurring_delay.months) unless (order.blank? || _date.blank?)
   end
   
+  # 
+  #  Fri Feb  4 00:25:57 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4146
+  def pro_rata_end_date
+    subscription_start_date - 1.day unless subscription_start_date.blank?
+  end
+  
+  # 
+  #  Wed Feb 16 00:23:52 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4199
+  def pro_rated_days
+    _date_begin = pro_rata_start_date
+    _date_end = subscription_start_date
+    if _date_begin.blank? || _date_end.blank?
+      0
+    else
+     ((_date_end - _date_begin) / 1.day).round(0).to_i # n days
+    end
+  end
+  
+  # 
+  #  Wed Feb 16 00:41:18 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4199
   def subscription_start_date
-    if (_date = pro_rata_start_date)
+    if (_subscribed_at = subscription_started_at)
+      #   * if the subscription already started, no point calulating again
+      _subscribed_at
+    else
+      #   * if no subscription started yet, consider this month
+      _date = Time.now
       if _date.day == 1
-        _date
+        _date # if today is 1st, why wait? start the subscription from today
       else
-        (_date + 1.month).beginning_of_month.to_date
+        (_date + 1.month).beginning_of_month # .to_date # today is not 1st, let this month be pro-rated
       end
     end
+  end
+  
+  # 
+  #  Wed Feb 16 00:30:04 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4199
+  def subscription_started_at
+    order.subscription_started_at unless order.blank?
   end
 
   # create blank placeholder records
@@ -901,13 +986,28 @@ class UserIntake < ActiveRecord::Base
   #   end # index range
   # end
 
+  # 
+  #  Thu Feb 10 02:22:55 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4119#note-25
+  #   * this is different from "senior"
+  #   * "senior" uses "halouser" to select the user
+  #   * "halouser" if not buffered. it is always fetched from database
+  def halouser
+    users.select {|e| e.is_halouser_of?(group) }.sort {|a,b| b.created_at <=> a.created_at }.first
+  end
+  
   # TODO: DRYness required here
   def senior
     #   * pickup any exiting from mem_... attribute
     #   * fetch using the role, when above fails
     #   * insitantiate a new if all above failed
     #   * Assign the final instance to mem... attribute, for next time
-    self.mem_senior ||= ( (users.select {|e| e.is_halouser_of?(group) }.first) || User.new.clone_with_profile)
+    # 
+    #  Sat Jan 29 00:32:43 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    #   * pick up the most recent one (sort b <> a) if multiple halousers exist for some reason
+    #   * FIXME: we should never have multiple halousers for a user intake
+    self.mem_senior ||= ( halouser || User.new.clone_with_profile)
   end
 
   def senior=( arg)
@@ -915,7 +1015,12 @@ class UserIntake < ActiveRecord::Base
   end
 
   def subscriber
-    self.mem_subscriber ||= ( (users.select {|e| e.is_subscriber_of?(senior) }.first) || User.new.clone_with_profile)
+    # 
+    #  Sat Jan 29 00:32:43 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    #   * pick up the most recent one (sort b <> a) if multiple subscribers exist for some reason
+    #   * FIXME: we should never have multiple subscribers for a user intake
+    self.mem_subscriber ||= ( (users.select {|e| e.is_subscriber_of?(senior) }.sort {|a,b| b.created_at <=> a.created_at }.first) || User.new.clone_with_profile)
     if subscribed_for_self? # senior and subscriber same
       if was_subscribed_for_self?
         # nothing changed
@@ -937,7 +1042,11 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver1
-    self.mem_caregiver1 ||= ( (users.select {|e| e.caregiver_position_for(senior) == 1}.first) || User.new.clone_with_profile)
+    # 
+    #  Sat Jan 29 00:32:43 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    #   * pick up the most recent one (sort b <> a) if multiple roles exist for some reason
+    self.mem_caregiver1 ||= ( (users.select {|e| e.caregiver_position_for(senior) == 1}.sort {|a,b| b.created_at <=> a.created_at }.first) || User.new.clone_with_profile)
     if caregiving_subscriber? # subscriber is caregiver
       if was_caregiving_subscriber?
         # nothing changed
@@ -966,9 +1075,14 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver2
-    self.mem_caregiver2 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 2}.first) || User.new.clone_with_profile)
+    # 
+    #  Sat Jan 29 00:32:43 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    #   * pick up the most recent one (sort b <> a) if multiple roles exist for some reason
+    self.mem_caregiver2 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 2}.sort {|a,b| b.created_at <=> a.created_at }.first) || User.new.clone_with_profile)
     _user = mem_caregiver2
     self.mem_caregiver2_options ||= (_user.options_for_senior( senior) || RolesUsersOption.new( :position => 2))
+    # self.no_caregiver_2 = (self.mem_caregiver2.blank? || self.mem_caregiver2.nothing_assigned?)
     _user
   end
 
@@ -977,9 +1091,14 @@ class UserIntake < ActiveRecord::Base
   end
 
   def caregiver3
-    self.mem_caregiver3 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 3}.first) || User.new.clone_with_profile)
+    # 
+    #  Sat Jan 29 00:32:43 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4119
+    #   * pick up the most recent one (sort b <> a) if multiple roles exist for some reason
+    self.mem_caregiver3 ||= ( (users.select {|user| user.caregiver_position_for(senior) == 3}.sort {|a,b| b.created_at <=> a.created_at }.first) || User.new.clone_with_profile)
     _user = mem_caregiver3
     self.mem_caregiver3_options ||= (_user.options_for_senior( senior) || RolesUsersOption.new( :position => 3))
+    # self.no_caregiver_3 = (self.mem_caregiver3.blank? || self.mem_caregiver3.nothing_assigned?)
     _user
   end
 
@@ -1089,7 +1208,7 @@ class UserIntake < ActiveRecord::Base
   end
 
   def paper_copy_submitted?
-    !paper_copy_at.blank? # paper_copy of the scubscriber agreement was submitted
+    !paper_copy_submitted_on.blank? # paper_copy of the scubscriber agreement was submitted
   end
 
   def safety_care_email_sent

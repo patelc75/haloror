@@ -107,6 +107,7 @@ div.fixed-width { width: 960px; min-width: 960px; overflow: auto;}
 .text-small { font-size: 85%;}
 .text-blue { color: #0080FF;}
 .text-red { color: #F00;}
+.text-black { color: #000;}
 .text-grey { color: #4C4C4C;}
 .text-light-grey { color: #B3B3B3;}
 
@@ -163,3 +164,5 @@ div.fixed-width { width: 960px; min-width: 960px; overflow: auto;}
     height: 1%; }
   *:first-child+html .pagination {
     overflow: hidden; }
+
+.errorExplanation li { color: #F00; font-style: italic; background-color: #FEFFC6; font-weight: bold;}

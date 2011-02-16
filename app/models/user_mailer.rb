@@ -26,6 +26,17 @@ class UserMailer < ActionMailer::ARMailer
     body        :user => _senior # senior details in the email
   end
 
+  # 
+  #  Fri Feb  4 00:03:10 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4146
+  def subscription_start_alert( _senior, _email = nil)
+    _order = ((!_senior.user_intakes.blank? && !_senior.user_intakes.first.order.blank?) ? _senior.user_intakes.first.order : nil )
+    _email ||= _senior.email
+    setup_email( _email) # email can go to anyone given here
+    @subject += "#{_senior.name}'s prorate & monthly recurring charges have been processed." # user state
+    body        :user => _senior, :order => _order, :current_user => Thread.current[:user] # senior details in the email
+  end
+
   def signup_notification(user)
     setup_email(user)
     @subject    += EMAIL_SUBJECT[:activation] # 'Please activate your new myHalo account'

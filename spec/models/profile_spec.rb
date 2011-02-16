@@ -64,11 +64,11 @@ describe Profile do
     end
     
     5.times.with_index do |n,i|
-      it "get ???? account number when profile gets saved" do
+      it "get valid account number when profile gets saved" do
         _users = User.find( @user_ids)
         _users[n].profile.save.should be_true
         _users[n].profile.account_number.should_not be_blank
-        _users[n].profile.account_number.should == "????"
+        _users[n].profile.account_number.to_i.should > 0
       end
     end
   end

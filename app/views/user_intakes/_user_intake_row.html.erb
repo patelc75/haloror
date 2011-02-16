@@ -11,14 +11,14 @@
     <% end %>
   </td>
   <% end %>
-  <td><%= user_intake_row.senior.id rescue '?' %></td>
+  <td><%= link_to user_intake_row.senior.id, user_path( user_intake_row.senior) %></td>
   <td><%= user_intake_row.senior.name rescue '?' %></td>
   <td class="text-center"><span class="timestamp"><%= (user_intake_row.installation_datetime.strftime(Time::DATE_FORMATS[:day_MM_DD_YYYY]) if user_intake_row.installation_datetime) || image_tag('exclamation.png') %></span></td>
   <% if current_user.is_super_admin? %>  
   <td>
     <% if user_intake_row.credit_debit_card_proceessed %>
       <% if user_intake_row.order && user_intake_row.order.card_successful? %>
-        <%= image_tag "tick.png", :alt => "Credit/Debit Card Processed", :title => "Credit/Debit Card Processed" %>
+        <%= link_to image_tag( "tick.png", :alt => "Credit/Debit Card Processed", :title => "Credit/Debit Card Processed"), order_payment_gateway_responses_path( user_intake_row.order) %>
       <% else %>
         <%= image_tag('exclamation.png', :alt => "Credit card failed", :title => "Credit card failed") %>
         <!--%= link_to image_tag('warning_go.png', :alt => "Click to charge subscription on credit card", :title => "Click to charge subscription on credit card"), {:controller => 'user_intakes', :action => 'charge_subscription', :id => user_intake_row.id} %-->
@@ -34,9 +34,9 @@
   <td class="text-center">
     <% if user_intake_row.legal_agreement_at.blank? %>
       <% if user_intake_row.paper_copy_submitted_on.blank? %>
-        <%= link_to image_tag("exclamation.png", :alt => "Update the date of paper copy submission", :title => "Update the date of paper copy submission"), :controller => "user_intakes", :action => "paper_copy_submission", :id => user_intake_row.id %>
+        <%= link_to image_tag("exclamationgrey.png", :alt => "Update the date of paper copy submission", :title => "Update the date of paper copy submission"), :controller => "user_intakes", :action => "paper_copy_submission", :id => user_intake_row.id %>
       <% else %>
-        <%= image_tag("script.png", :alt => "Paper copy submitted on #{user_intake_row.paper_copy_submitted_on}", :title => "Paper copy submitted at #{user_intake_row.paper_copy_submitted_on}") %>
+        <%= image_tag("script.png", :alt => "Paper copy submitted on #{user_intake_row.paper_copy_submitted_on}", :title => "Paper copy submitted on #{user_intake_row.paper_copy_submitted_on}") %>
       <% end %>
     <% else %>
       <%= image_tag("tick.png", :alt => "Submitted online at #{user_intake_row.legal_agreement_at}", :title => "Submitted online at #{user_intake_row.legal_agreement_at}" ) %>
@@ -44,7 +44,7 @@
   </td>
   <td class="text-center">
     <% if user_intake_row.order_id.blank? %>
-      <%= image_tag('exclamation.png') %>
+      <%= image_tag('exclamationgrey.png') %>
     <% else %>
       <%= link_to user_intake_row.order_id,:controller => 'orders',:action => 'index',:id => user_intake_row.order_id %>
     <% end %>
@@ -73,12 +73,12 @@
   </td>
   <% if current_user.is_super_admin? %>
     <td><span class="call_center_id"><%= link_to ( user_intake_row.sc_account_created_on.blank? ? image_tag( 'exclamation.png', :title => "Click to stamp a date when Call Center Account was created") : image_tag('tick.png')), {:controller => "user_intakes", :action => "safety_care_account_creation", :id => user_intake_row.id}  %></span></td>
-    <td><%= image_tag( user_intake_row.dial_up_numbers_ok? ? "tick.png" : "exclamation.png") %></td>
+    <td><%= image_tag( user_intake_row.dial_up_numbers_ok? ? "tick.png" : "exclamationgrey.png") %></td>
   <% end %>
   <td class="text-center">
     <% unless user_intake_row.senior.blank? %>
       <%= link_to ((user_intake_row.senior.status_index == :pending) ? 'Not Submitted' : user_intake_row.senior.status), edit_user_intake_path(user_intake_row), :class => "span-2 button small #{user_intake_row.senior.status_button_color}-button", :id => "edit_link" %>
-      <%= "<br /><span class='timestamp'>#{user_intake_row.senior.status_timestamps(:installed)}</span>" unless user_intake_row.senior.status_timestamps(:installed).blank? %>
+      <%= "<br /><span class='timestamp'>#{user_intake_row.senior.installed_at}</span>" unless user_intake_row.senior.status_timestamps(:installed).blank? %>
     <% end %>
   </td>
   <td class="text-center">
@@ -91,7 +91,7 @@
   <!--% end %-->
   </td>
   <td class="text-center"><%= user_intake_row.creator ? user_intake_row.created_by_user_name : image_tag('exclamation.png') %></td>
-  <td><%= link_to image_tag( (user_intake_row.action_required? ? "exclamation.png" : 'tick.png'), :alt => "Notes", :title => "Notes"), { :controller => "triage_audit_logs", :id => user_intake_row.senior.id} if !user_intake_row.senior.blank? %></td>
+  <td><%= link_to image_tag( (user_intake_row.action_required? ? "exclamation.png" : 'tick.png'), :alt => "Notes", :title => "Notes"), user_triage_audit_logs_path( user_intake_row.senior) if !user_intake_row.senior.blank? %></td>
   <% if current_user.is_super_admin? %>  
   <td><%= link_to image_tag( "briefcase.png", :alt => "Audit", :title => "Audit" ), user_audits_path( user_intake_row.senior), {:id => "audit_log"} unless user_intake_row.blank? %></td>
   <% end %>  

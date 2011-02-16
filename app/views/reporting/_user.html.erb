@@ -1,0 +1,22 @@
+<tr>
+  <td><%= link_to user.id, user_path( user) %></td>
+  <td><%= h user.name %></td>
+  <td><%= h user.devices.collect(&:device_type).compact.uniq %></td>
+  <td><%= h user.devices.collect(&:connectivity_type).compact.uniq %></td>
+  <td><%= h user.status || 'Not Submitted' %></td>
+  <td><%= h user.important_role %></td>
+  <td>
+    <% _stamp = user.last_vital_timestamp %>
+    <% if _stamp.first == 'No Vitals' %>
+      No Vitals
+    <% else %>
+      <span class="<%= (_stamp.first < 1.day.ago) ? 'tiny text-red' : 'tiny' %>"><%= UtilityHelper.format_datetime( _stamp.first, current_user) %></span>
+      <% if current_user.is_super_admin? && _stamp.length == 2 %>
+        <br /><span class="tiny text-red">(<%= h _stamp[1] %>)</span>
+      <% end %>
+    <% end %>
+  </td>
+  <td><span class="tiny"><%= h user.created_at %></span></td>
+  <td><span class="tiny"><%= h user.installed_at %></span></td>
+  <td><span class="tiny"><%= h user.cancelled_at %></span></td>
+</tr>

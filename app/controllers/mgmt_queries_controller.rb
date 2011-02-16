@@ -118,7 +118,14 @@ class MgmtQueriesController < RestfulAuthController
         @more = @more.merge({'global_alt_number' => cmd.param4,'global_alt_username' => @global_alt.username,'global_alt_password' => @global_alt.password}) if @global_alt
         
       elsif cmd.cmd_type == 'remote_access'
-      	@more = {'instantaneous' => cmd.instantaneous }                
+        @more = {'instantaneous' => cmd.instantaneous }
+        # 
+        #  Tue Feb  8 01:42:39 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4043
+        unless cmd.instantaneous
+          @more[ 'start_time'] = (cmd.param1.blank? ? Time.now : cmd.param1)
+          @more[ 'duration']   = cmd.param2
+        end
       end
       
       query.mgmt_cmd_id = cmd.id

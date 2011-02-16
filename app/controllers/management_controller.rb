@@ -108,7 +108,6 @@ class ManagementController < ApplicationController
   end
   
   def create_many
-
     @success = true
     #@message = "Command created"
     @message = "Command created by #{current_user.id} #{current_user.name}"
@@ -134,10 +133,10 @@ class ManagementController < ApplicationController
         cmd[:instantaneous] = request[:instantaneous] == "1" ? true : false
 
         #command specific parameter (such as <poll_rate> for the mgmt_poll_rate cmd)
-        cmd[:param1] = request[:param1] if !request[:param1].blank? and request[:cmd_type] == 'mgmt_poll_rate'
-        cmd[:param1] = request[:param2] if !request[:param2].blank? and request[:cmd_type] == 'dial_up_num'
-        cmd[:param2] = request[:param3] if !request[:param3].blank? and request[:cmd_type] == 'dial_up_num'
-        cmd[:param3] = request[:param4] if !request[:param4].blank? and request[:cmd_type] == 'dial_up_num'
+        cmd[:param1] = request[:param1] if !request[:param1].blank? && (request[:cmd_type] == 'mgmt_poll_rate')
+        cmd[:param1] = request[:param2] if !request[:param2].blank? && (request[:cmd_type] == 'dial_up_num')
+        cmd[:param2] = request[:param3] if !request[:param3].blank? && (request[:cmd_type] == 'dial_up_num')
+        cmd[:param3] = request[:param4] if !request[:param4].blank? && (request[:cmd_type] == 'dial_up_num')
          
         @flag = false
         @flag = true unless request[:local_primary].blank?
@@ -173,6 +172,14 @@ class ManagementController < ApplicationController
           
         # https://redmine.corp.halomonitor.com/issues/3191
         # nothing to add here. it will automatically post to param1, param2
+
+        # 
+        #  Thu Jan 27 22:51:42 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4043
+        elsif request[:cmd_type] == 'remote_access'
+          #   * WARNING: invalid value for time will be parsed as Time.now
+          cmd[:param1] = Time.parse( request[:start_time]).to_i # start time, epoch
+          cmd[:param2] = request[:duration].to_i # duration, integer
         end
 
         # # CHANGED: Re-factored

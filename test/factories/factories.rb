@@ -229,7 +229,7 @@ Factory.define :user_intake do |v|
   # v.gateway_serial { Faker::PhoneNumber.phone_number.to_i.to_s.ljust( 10, "0") }
   # v.transmitter_serial { Faker::PhoneNumber.phone_number.to_i.to_s.ljust( 10, "0") }
   # v.submitted_at { Time.now } # we will submit manually where required
-  v.paper_copy_at { Time.now }
+  v.paper_copy_submitted_on { Time.now }
   v.legal_agreement_at { Time.now }
   v.association :group
   v.subscriber_is_user false # { rand(1) == 1 }

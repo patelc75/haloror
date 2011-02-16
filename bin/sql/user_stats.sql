@@ -101,6 +101,27 @@ and devices.id = devices_users.device_id
 and users.status = 'Installed'
 order by users.id asc;
 
+/* refs #3740 pull all gateways that are in ethernet mode */
+select * from devices 
+where id in (select device_id from access_mode_statuses where mode = 'ethernet') 
+and  id in (select id from devices where serial_number like 'H2%');	
+    	
+select * from users_by_group('meridian') where demo_mode = false;
+select * from users_by_role_and_group('halouser', 'meridian');
+select * from users_by_role('halouser');
+
+
+select user_id, first_name, last_name, group_name, status, test_mode, demo_mode, vip from users_by_role('halouser');
+
+select count(*) from users where id in (select user_id from users_by_role('halouser') where status = 'Installed'); /* Installed Halousers*/
+select count(*) from users where status = 'Installed';
+select count(*) from users where id in (select user_id from users_by_role('halouser') where demo_mode = true); /* Demo Halousers*/
+select count(*) from users where id in (select user_id from users_by_role('halouser')); /*Total Halousers */
+select* from users_by_role('halouser');
+select user_id from users_by_role('halouser') order by user_id;
+
+select roles_users.*, roles.name from roles_users, roles where roles_users.role_id = roles.id and user_id = 19;
+
 select users.id, profiles.first_name, profiles.last_name, users.demo_mode, users.vip, users.status, users.created_at from users, profiles where users.id = profiles.user_id order by id desc;
 
 select user_id, first_name, last_name, group_name, test_mode, demo_mode, vip, created_at from users_by_role('halouser') where status = 'Installed' order by vip desc, created_at desc;
@@ -124,3 +145,25 @@ SELECT a,
                ELSE 'other'
           END
     FROM test;
+
+select user_id, first_name, last_name, group_name, test_mode, demo_mode, vip, created_at 
+from users_by_role('halouser') 
+where status = 'Installed' 
+order by vip desc, created_at desc;
+
+select *
+from users_by_role('halouser') 
+where status = 'Installed' 	
+order by vip desc, created_at desc;
+
+select * from users_by_role_and_group('halouser', 'safety_care');
+
+/* show all "installed" users and all dtc users who have been shipped but not installed ----------------------------------------- */
+
+select user_id, first_name, last_name, group_name, test_mode, demo_mode, vip, created_at 
+from users_by_role('halouser') 
+where status = 'Installed' 
+order by user_id asc;    
+
+select user_id, first_name, last_name, group_name, test_mode, demo_mode, vip, created_at 
+ 

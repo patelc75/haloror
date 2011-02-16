@@ -1,8 +1,23 @@
 <%=render :partial => 'reporting/nav_config'%>
 
-<div class="span-4"><h3>Coupon Codes</h3></div> <%= link_to 'New coupon code', new_device_model_price_path, :class => "button green-button medium" %>
-<br><br>
-<%= will_paginate %>  
+<div class="span-12">
+  <h3>Coupon Codes</h3>
+</div>
+<div class="span-4 border">
+  <%= link_to 'New coupon code', new_device_model_price_path, :class => "button green-button medium" %>
+</div>
+<div class="span-8 last">
+  <% form_tag( {:action => "index"}, :method => :get) do %>
+    <%= text_field_tag "search", @search, :class => "span-5" %>
+    <%= submit_tag "Search", :class => "button medium white-button" %>
+  <% end -%>
+</div>
+
+<div class="span-12">
+  <%= will_paginate %>
+</div>
+<div class="span-12 last text-right">
+</div>
 <table class="bluegrey">
   <tr>
     <th>Group</th>

@@ -1,0 +1,27 @@
+<%= render :partial => 'reporting/nav_config' %>
+<div class="bluegrey">
+  <%= render :partial => 'reporting/table/user_row', :collection => [@user], :locals => { :toggle => true, :caregiver => false} %>
+
+  <div id='user_devices'>
+    <hr />
+    <div class="header">
+      <div class="span-2 text-right">Device ID</div>
+      <div class="span-4">Device Type</div>
+      <div class="span-4">Serial Number</div>
+      <div class="span-5">Last Charge</div>
+      <div class="span-5">Software Version</div>
+      <div class="span-4 last">&nbsp;</div>
+    </div>
+
+    <%= render :partial => 'device', :collection => @user.devices %>
+    
+    <hr />
+    <form action="/users/add_device_to_user" method="post">
+      <input type="hidden" name="user_id" value="<%= @user.id %>" />
+      Add a device by serial number: <input type="text" name="serial_number" />
+      <input type="submit" value="Add" />
+    </form>
+
+  </div>
+  
+</div>

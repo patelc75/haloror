@@ -8,7 +8,7 @@
       </td>
       <td>
         <span class="tiny">Card Number: </span><%= order_row.masked_card_number %>, <span class="tiny">charged </span><%= number_to_currency(order_row.cost, :precision => 2, :unit => '$') %>
-        <%= link_to "Payments", :controller => 'payment_gateway_responses', :action => 'index', :order_id => order_row.id %>
+        <%= link_to "Payments", order_payment_gateway_responses_path( order_row.id) %>
       </td>
     </tr>
     <tr>

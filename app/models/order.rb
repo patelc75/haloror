@@ -68,8 +68,15 @@ class Order < ActiveRecord::Base
   #  Fri Dec 31 02:56:24 IST 2010, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/3951
   def coupon_details_as_hash
-    if order_items && order_items.first.device_model && order_items.first.device_model.coupon_codes
-      _coupon = order_items.first.device_model.coupon_codes.first
+    # 
+    #  Thu Jan 27 21:47:44 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4101
+    #   * coupon code should be picked with the applied business logic
+    #   * confirmed in browser with a temporary change on dfw-web3. ticket updated with details
+    #   * just picking the first one is not appropriate
+    if ( _coupon = product_cost )
+    # if order_items && order_items.first.device_model && order_items.first.device_model.coupon_codes
+    #   _coupon = order_items.first.device_model.coupon_codes.first
       { "deposit" => _coupon.deposit, "shipping" => _coupon.shipping, "monthly_recurring" => _coupon.monthly_recurring, "months_advance" => _coupon.months_advance, "months_trial" => _coupon.months_trial }
     else
      {} 
@@ -385,6 +392,15 @@ class Order < ActiveRecord::Base
   def subscription_successful?
     !payment_gateway_responses.subscription.successful.blank? # row found = true, nil = false
   end
+  
+  # 
+  #  Wed Feb 16 00:35:22 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4199
+  def subscription_started_at
+    if (_row = payment_gateway_responses.subscription.successful.all( :order => 'created_at ASC').first)
+      Time.parse( Hash.from_xml( _row.request_data)["hash"]["ARBCreateSubscriptionRequest"]["subscription"]["paymentSchedule"]["startDate"])
+    end
+  end
 
   # 
   #  Fri Dec  3 02:25:50 IST 2010, ramonrails
@@ -456,6 +472,7 @@ class Order < ActiveRecord::Base
       #   * subscription is charged from today if month started today
       #   * subscription starts from next month if we are already within this month
       _date = user_intake.subscription_start_date
+      _date = _date.to_date unless _date.blank? # consider 'nil' values too
       # 
       #  Thu Dec  2 00:33:46 IST 2010, ramonrails
       #   * this logic shifted to subscription_start_date
@@ -469,13 +486,13 @@ class Order < ActiveRecord::Base
         :duration => {:start_date => _date, :occurrences => 60},
         :billing_address => {
           :first_name => bill_first_name,
-          :last_name => bill_last_name,
-          :address1 => bill_address,
-          :phone => bill_phone,
-          :city => bill_city,
-          :state => bill_state,
-          :zip => bill_zip,
-          :country => "US",
+          :last_name  => bill_last_name,
+          :address1   => bill_address,
+          :phone      => bill_phone,
+          :city       => bill_city,
+          :state      => bill_state,
+          :zip        => bill_zip,
+          :country    => "US",
         }
       }
       )
@@ -504,20 +521,41 @@ class Order < ActiveRecord::Base
       true
 
     else
-      #
-      # assuming the cost is for 30 days (one month)
-      # CHANGED:
-      #   DO NOT remove the decimals. if monthly recurring is less than 30, this will return ZERO
-      _per_day_cost = (product_cost.monthly_recurring / 30.00)
-      #   * calculate number of days
-      #   * charge card
-      _number_of_days = (_date.end_of_month.day - _date.day + 1)
+      # 
+      #  Mon Feb  7 23:53:48 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4155
+      # #
+      # # assuming the cost is for 30 days (one month)
+      # # CHANGED:
+      # #   DO NOT remove the decimals. if monthly recurring is less than 30, this will return ZERO
+      # _per_day_cost = (product_cost.monthly_recurring / 30.00)
+      # #   * calculate number of days
+      # #   * charge card
+      # _number_of_days = (_date.end_of_month.day - _date.day + 1)
       #
       # charge pro-rata for the period
       # 
       #  Fri Nov  5 07:25:43 IST 2010, ramonrails
       #  both values here must be 2 decimals, for correct calculation
-      charge_credit_card( :pro_rata => (_per_day_cost * _number_of_days) )
+      charge_credit_card( :pro_rata => pro_rated_amount )
+    end
+  end
+
+  # 
+  #  Mon Feb  7 23:53:43 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4155
+  def pro_rated_amount
+    if ( _date = user_intake.pro_rata_start_date)
+      #
+      # assuming the cost is for 30 days (one month)
+      # CHANGED:
+      #   DO NOT remove the decimals. if monthly recurring is less than 30, this will return ZERO
+      _per_day_cost = (product_cost.monthly_recurring / 30.00).round(2)
+      #   * calculate number of days
+      #   * charge card
+      _number_of_days = user_intake.pro_rated_days # (_date.end_of_month.day - _date.day + 1)
+      #   * return the pro-rata amount applicable
+      _per_day_cost * _number_of_days
     end
   end
 
