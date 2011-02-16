@@ -4,5 +4,9 @@
   <div class="span-4"><%= device.serial_number %>&nbsp;</div>
   <div class="span-5"><%= render :partial => 'reporting/charge', :locals => {:device => device} %></div>
   <div class="span-5"><%= device.software_version %>&nbsp;</div>
-  <div class="span-4 last">&nbsp;</div>
+  <div class="span-4 last">
+    <% if current_user.is_super_admin? %>
+      <a href="/management/?device_id=<%= device.id %>">Manage</a> | <a href="/devices/stats/<%= device.id %>">Stats</a> | <%= link_to 'ATP',:controller => 'atp',:action => 'report', :device_id => device.id %>
+    <% end %>
+	</div>
 </div>

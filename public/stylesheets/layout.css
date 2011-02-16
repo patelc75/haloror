@@ -52,6 +52,10 @@ h3 a {
 	text-align:right;
 	
 	height:28px;
+  /**/
+  /* Thu Feb 17 02:07:28 IST 2011, ramonrails*/
+  /*  * https://redmine.corp.halomonitor.com/issues/4204 */
+  z-index: 9999999; /* Keep it on top of any other interface object */
 }
 
 #user-info a
