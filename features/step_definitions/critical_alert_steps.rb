@@ -73,6 +73,6 @@ Then /^I should have a "([^\"]*)" alert "([^\"]*)" to the call center with a "([
 end
 
 Then /^I should have "([^\"]*)" count of "([^\"]*)"$/ do |count, model| 
-  assert model.constantize.count + Event.all.length == 2*count.to_i, "Should have #{count} #{model}"
+  (model.constantize.count + Event.all.length).should == (2 * count.to_i) #, "Should have #{count} #{model}"
 end
 

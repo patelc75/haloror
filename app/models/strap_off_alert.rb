@@ -9,7 +9,7 @@ class StrapOffAlert < ActiveRecord::Base
     
     ethernet_system_timeout = SystemTimeout.find_by_mode('ethernet')
     dialup_system_timeout   = SystemTimeout.find_by_mode('dialup')
-    
+
     conds = []
     conds << "reconnected_at IS NULL"
     conds << "device_id IN (SELECT d.id FROM devices d WHERE d.device_revision_id IN (SELECT device_revisions.id FROM device_revisions INNER JOIN (device_models INNER JOIN device_types ON device_models.device_type_id = device_types.id) ON device_revisions.device_model_id = device_models.id WHERE device_types.device_type = 'Chest Strap'))"
