@@ -194,6 +194,17 @@ Factory.define :strap_removed do |v|
   v.association :user
 end
 
+Factory.define :system_timeout do |v|
+  v.mode                            { ['dialup', 'ethernet'][rand(1)] }
+  v.gateway_offline_timeout_sec     3600
+  v.device_unavailable_timeout_sec  3600
+  v.strap_off_timeout_sec           3600
+  v.critical_event_delay_sec        3600
+  v.battery_reminder_two_sec        3600
+  v.battery_reminder_three_sec      3600
+  v.gateway_offline_offset_sec      3600
+end
+
 Factory.define :triage_audit_log do |v|
   v.association :user
   v.is_dismissed { rand(1) == 1 }

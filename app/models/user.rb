@@ -192,6 +192,8 @@ class User < ActiveRecord::Base
   named_scope :where_status, lambda {|arg| { :conditions => { :status => arg } }}
   named_scope :where_id, lambda {|*arg| { :conditions => { :id => arg.first} }}
   named_scope :ordered, lambda {|*args| { :include => :profile, :order => ( args.flatten.first || "id ASC" ) }} # Wed Oct 13 02:52:36 IST 2010 ramonrails
+  named_scope :where_login_or_email, lambda {|arg| { :conditions => ["login = ? OR email = ?", arg, arg] }}
+  named_scope :contains, lambda {|arg| { :conditions => ["login LIKE ? OR email LIKE ?", "%#{arg}%", "%#{arg}%"] }}
 
   # ===============================
   # = triggers, events, callbacks =

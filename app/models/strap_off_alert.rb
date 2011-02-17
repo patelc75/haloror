@@ -9,11 +9,11 @@ class StrapOffAlert < ActiveRecord::Base
     
     ethernet_system_timeout = SystemTimeout.find_by_mode('ethernet')
     dialup_system_timeout   = SystemTimeout.find_by_mode('dialup')
-    
+
     conds = []
-    conds << "reconnected_at is null"
-    conds << "device_id in (select d.id from devices d where d.device_revision_id in (Select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id Where device_types.device_type = 'Chest Strap'))"
-    conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"
+    conds << "reconnected_at IS NULL"
+    conds << "device_id IN (SELECT d.id FROM devices d WHERE d.device_revision_id IN (SELECT device_revisions.id FROM device_revisions INNER JOIN (device_models INNER JOIN device_types ON device_models.device_type_id = device_types.id) ON device_revisions.device_model_id = device_models.id WHERE device_types.device_type = 'Chest Strap'))"
+    conds << "device_id IN (SELECT status.id FROM device_strap_status status WHERE is_fastened > 0)"
     
     alerts = StrapOffAlert.find(:all,
       :conditions => conds.join(' and '))
@@ -25,9 +25,9 @@ class StrapOffAlert < ActiveRecord::Base
     end
 
     conds = []
-    conds << "(id in (select device_id from access_mode_statuses where mode = 'ethernet') OR id not in (select device_id from access_mode_statuses))"
-    conds << "id in (select ss.id from device_strap_status ss where is_fastened = 0 AND ss.updated_at < now() - interval '#{ethernet_system_timeout.strap_off_timeout_sec} seconds')"
-    conds << "id in (select d.id from devices d where d.device_revision_id in (select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id where device_types.device_type = 'Chest Strap'))"
+    conds << "(id IN (SELECT device_id FROM access_mode_statuses WHERE mode = 'ethernet') OR id NOT IN (SELECT device_id FROM access_mode_statuses))"
+    conds << "id IN (SELECT ss.id FROM device_strap_status ss WHERE is_fastened = 0 AND ss.updated_at < now() - interval '#{ethernet_system_timeout.strap_off_timeout_sec} seconds')"
+    conds << "id IN (SELECT d.id FROM devices d WHERE d.device_revision_id IN (SELECT device_revisions.id FROM device_revisions INNER JOIN (device_models INNER JOIN device_types ON device_models.device_type_id = device_types.id) ON device_revisions.device_model_id = device_models.id WHERE device_types.device_type = 'Chest Strap'))"
 
     devices = Device.find(:all,
       :conditions => conds.join(' and '))
@@ -39,9 +39,9 @@ class StrapOffAlert < ActiveRecord::Base
     
     # Do same thing for dialup
     conds = []
-    conds << "id in (select device_id from access_mode_statuses where mode = 'dialup')"
-    conds << "id in (select ss.id from device_strap_status ss where is_fastened = 0 AND ss.updated_at < now() - interval '#{dialup_system_timeout.strap_off_timeout_sec} seconds')"
-    conds << "id in (select d.id from devices d where d.device_revision_id in (select device_revisions.id from device_revisions inner join (device_models inner join device_types on device_models.device_type_id = device_types.id) on device_revisions.device_model_id = device_models.id where device_types.device_type = 'Chest Strap'))"
+    conds << "id IN (SELECT device_id FROM access_mode_statuses WHERE mode = 'dialup')"
+    conds << "id IN (SELECT ss.id FROM device_strap_status ss WHERE is_fastened = 0 AND ss.updated_at < now() - interval '#{dialup_system_timeout.strap_off_timeout_sec} seconds')"
+    conds << "id IN (SELECT d.id FROM devices d WHERE d.device_revision_id IN (SELECT device_revisions.id FROM device_revisions INNER JOIN (device_models INNER JOIN device_types ON device_models.device_type_id = device_types.id) ON device_revisions.device_model_id = device_models.id WHERE device_types.device_type = 'Chest Strap'))"
 
     devices = Device.find(:all,
       :conditions => conds.join(' and '))
@@ -55,13 +55,13 @@ class StrapOffAlert < ActiveRecord::Base
   end
 
   # Wed Oct 27 01:17:41 IST 2010
-  #   Error on sdev: /home/web/haloror/app/models/strap_off_alert.rb:58: warning: Object#id will be deprecated; use Object#object_id
+  #   Error ON sdev: /home/web/haloror/app/models/strap_off_alert.rb:58: warning: Object#id will be deprecated; use Object#object_id
   # FIXME: assign user object, but needs testing before this code can be changed
   #   left intact without any change, for now
   # 
   #  Wed Dec  8 02:28:20 IST 2010, ramonrails
   #   * changed to assigning an object instead of object.id
-  #   * log file is written on each object.id access at www
+  #   * log file is written ON each object.id access at www
   def before_save
     self.user = device.users.first
   end

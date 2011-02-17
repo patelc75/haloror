@@ -1,5 +1,7 @@
 class StrapFastened < DeviceAlert
   set_table_name "strap_fasteneds"
+  
+  named_scope :within_time_span, lambda {|arg| { :conditions => ["timestamp >= ?", arg] }}
 
   #
   #  Wed Dec  8 00:52:21 IST 2010, ramonrails
@@ -17,8 +19,12 @@ class StrapFastened < DeviceAlert
     "Strap fastened for #{user.name} (#{user.id})"
   end
   
-  def self.new_initialize(random=false)
-    model = self.new
-    return model    
-  end
+  # 
+  #  Fri Feb 18 03:37:01 IST 2011, ramonrails
+  #   * WARNING: What is this? initialize itself from its own model?
+  #   * StrapFastened.new could have done the same thing
+  # def self.new_initialize(random=false)
+  #   model = self.new
+  #   return model    
+  # end
 end

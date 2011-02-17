@@ -80,6 +80,10 @@ class RestfulAuthController < ApplicationController
   #   * FIXME: why re-generating a hash? if we are just checking validity of hash, regex is better
   def is_hash_valid?(string, hash)
     #return true if hash == Digest::SHA256.hexdigest(DEFAULT_HASH_KEY + string)
+    # 
+    #  Fri Feb 18 01:04:52 IST 2011, ramonrails
+    #   * FIXME: Why not just return true/false as the result of the expression?
+    #   * Not touching this since it is a core logic for background jobs
     return true if hash == Digest::SHA256.hexdigest(string)
     #Digest::SHA256.hexdigest(226f3834726d5531683d4f4b5a2d202729695853662543375c226c6447 + "Mon Dec 25 15:52:55 -0600 2007")
   end
