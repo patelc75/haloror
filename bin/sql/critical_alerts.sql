@@ -96,3 +96,6 @@ FROM authors a,
 WHERE a.au_id = ta.au_id
 AND   ta.title_id = t.title_id
 ORDER BY Category, au_lname, au_fname
+
+
+select id, user_id, timestamp, timestamp_server, timestamp_call_center, call_center_pending as pend from falls order by id desc limit 20;
