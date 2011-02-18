@@ -392,11 +392,6 @@ class User < ActiveRecord::Base
     end
   end
   
-  def self.halousers
-    role_ids = Role.find_all_by_name('halouser', :select => 'id').collect(&:id).compact.uniq
-    all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
-  end
-
   # DEPRECATED: use query where_status
   #
   # def self.count_where_status( _status = nil)
@@ -439,9 +434,17 @@ class User < ActiveRecord::Base
   end
   
   def self.halousers
-    halousers = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'halouser']
-    return halousers
+    User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'halouser']
   end
+  # 
+  #  Fri Feb 18 23:49:53 IST 2011, ramonrails
+  #   * DEPRECATED: in favor of the method above
+  # def self.halousers
+  #   role_ids = Role.find_all_by_name('halouser', :select => 'id').collect(&:id).compact.uniq
+  #   all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
+  # end
+
+
   def self.active_operators
     os = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
     os2 = []
@@ -1290,7 +1293,11 @@ class User < ActiveRecord::Base
           AGGREGATE_STATUS[ :installed]
           #
           # pending, ready for approval / install / bill, install overdue
-        elsif [:pending, :approval_pending, :install_pending, :bill_pending, :overdue].collect {|e| STATUS[e]}.include?( status)
+        # 
+        #  Fri Feb 18 23:24:20 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4206
+        #   * Must include 'nil' to cover the status values that are never assigned anything
+        elsif [ nil, :pending, :approval_pending, :install_pending, :bill_pending, :overdue].collect {|e| STATUS[e]}.include?( status)
           AGGREGATE_STATUS[ :pending]
 
           # Sat Oct  2 23:17:10 IST 2010 Discussed with Chirag
