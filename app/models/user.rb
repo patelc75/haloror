@@ -683,18 +683,25 @@ class User < ActiveRecord::Base
             _hash[ :deposit]     = _coupon.deposit
           end
         end
-      end
-      #   * keep auto-populating as much as possible
-      if self.invoice.blank?
-        self.create_invoice( _hash) # create associated invoice with these populated attributes
-      else
-        #   * filter out the values that are already filled in
-        # [ :installed_date, :prorate_start_date, :recurring_start_date, :coupon_code, :prorate, :shipping, :recurring, :deposit ].each do |_attr|
-        _hash.delete_if {|k,v| !self.invoice.send(k).blank? }
-        # end
-        #   * update attributes only when we have some values to update
-        self.invoice.update_attributes( _hash) unless _hash.blank?
-      end
+      
+        # 
+        #  Fri Feb 18 22:34:31 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4217
+        #   * populate invoice only when user intake present
+        #
+        #   * keep auto-populating as much as possible
+        if self.invoice.blank?
+          self.create_invoice( _hash) # create associated invoice with these populated attributes
+        else
+          #   * filter out the values that are already filled in
+          # [ :installed_date, :prorate_start_date, :recurring_start_date, :coupon_code, :prorate, :shipping, :recurring, :deposit ].each do |_attr|
+          _hash.delete_if {|k,v| !self.invoice.send(k).blank? }
+          # end
+          #   * update attributes only when we have some values to update
+          self.invoice.update_attributes( _hash) unless _hash.blank?
+        end
+      end # ui required to create invoice
+    
     end
   end
   # 
