@@ -1267,6 +1267,12 @@ class User < ActiveRecord::Base
     end
   end
   
+  # 
+  #  Sat Feb 19 01:05:50 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4205
+  def has_user_intake?
+    !user_intakes.blank?
+  end
   
   # Fri Oct  1 22:56:06 IST 2010
   # https://redmine.corp.halomonitor.com/projects/haloror/wiki/Intake_Install_and_Billing#Other-notes
@@ -1279,6 +1285,7 @@ class User < ActiveRecord::Base
   #   * Pending   = user.status == "Not Submitted" or "Ready for Approval" or "Ready for Install" or "Ready to Bill"
   #   * Demo      = user.demo_mode == true
   #   * Cancelled = status == "Cancelled"
+  #   TODO: make a named_scope instead of this
   def aggregated_status
     if demo_mode?
       AGGREGATE_STATUS[ :demo]
