@@ -392,11 +392,6 @@ class User < ActiveRecord::Base
     end
   end
   
-  def self.halousers
-    role_ids = Role.find_all_by_name('halouser', :select => 'id').collect(&:id).compact.uniq
-    all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
-  end
-
   # DEPRECATED: use query where_status
   #
   # def self.count_where_status( _status = nil)
@@ -439,9 +434,17 @@ class User < ActiveRecord::Base
   end
   
   def self.halousers
-    halousers = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'halouser']
-    return halousers
+    User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'halouser']
   end
+  # 
+  #  Fri Feb 18 23:49:53 IST 2011, ramonrails
+  #   * DEPRECATED: in favor of the method above
+  # def self.halousers
+  #   role_ids = Role.find_all_by_name('halouser', :select => 'id').collect(&:id).compact.uniq
+  #   all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
+  # end
+
+
   def self.active_operators
     os = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'operator']
     os2 = []
@@ -683,18 +686,25 @@ class User < ActiveRecord::Base
             _hash[ :deposit]     = _coupon.deposit
           end
         end
-      end
-      #   * keep auto-populating as much as possible
-      if self.invoice.blank?
-        self.create_invoice( _hash) # create associated invoice with these populated attributes
-      else
-        #   * filter out the values that are already filled in
-        # [ :installed_date, :prorate_start_date, :recurring_start_date, :coupon_code, :prorate, :shipping, :recurring, :deposit ].each do |_attr|
-        _hash.delete_if {|k,v| !self.invoice.send(k).blank? }
-        # end
-        #   * update attributes only when we have some values to update
-        self.invoice.update_attributes( _hash) unless _hash.blank?
-      end
+      
+        # 
+        #  Fri Feb 18 22:34:31 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4217
+        #   * populate invoice only when user intake present
+        #
+        #   * keep auto-populating as much as possible
+        if self.invoice.blank?
+          self.create_invoice( _hash) # create associated invoice with these populated attributes
+        else
+          #   * filter out the values that are already filled in
+          # [ :installed_date, :prorate_start_date, :recurring_start_date, :coupon_code, :prorate, :shipping, :recurring, :deposit ].each do |_attr|
+          _hash.delete_if {|k,v| !self.invoice.send(k).blank? }
+          # end
+          #   * update attributes only when we have some values to update
+          self.invoice.update_attributes( _hash) unless _hash.blank?
+        end
+      end # ui required to create invoice
+    
     end
   end
   # 
@@ -1257,6 +1267,12 @@ class User < ActiveRecord::Base
     end
   end
   
+  # 
+  #  Sat Feb 19 01:05:50 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4205
+  def has_user_intake?
+    !user_intakes.blank?
+  end
   
   # Fri Oct  1 22:56:06 IST 2010
   # https://redmine.corp.halomonitor.com/projects/haloror/wiki/Intake_Install_and_Billing#Other-notes
@@ -1269,6 +1285,7 @@ class User < ActiveRecord::Base
   #   * Pending   = user.status == "Not Submitted" or "Ready for Approval" or "Ready for Install" or "Ready to Bill"
   #   * Demo      = user.demo_mode == true
   #   * Cancelled = status == "Cancelled"
+  #   TODO: make a named_scope instead of this
   def aggregated_status
     if demo_mode?
       AGGREGATE_STATUS[ :demo]
@@ -1283,7 +1300,11 @@ class User < ActiveRecord::Base
           AGGREGATE_STATUS[ :installed]
           #
           # pending, ready for approval / install / bill, install overdue
-        elsif [:pending, :approval_pending, :install_pending, :bill_pending, :overdue].collect {|e| STATUS[e]}.include?( status)
+        # 
+        #  Fri Feb 18 23:24:20 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4206
+        #   * Must include 'nil' to cover the status values that are never assigned anything
+        elsif [ nil, :pending, :approval_pending, :install_pending, :bill_pending, :overdue].collect {|e| STATUS[e]}.include?( status)
           AGGREGATE_STATUS[ :pending]
 
           # Sat Oct  2 23:17:10 IST 2010 Discussed with Chirag
