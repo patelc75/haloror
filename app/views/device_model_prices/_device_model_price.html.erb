@@ -4,7 +4,7 @@
 
   <p>
     <%= f.label :group_id, "Group" %>
-    <%= f.select :group_id, @groups.collect {|e| [e.name, e.id]} %>
+    <%= f.select :group_id, @groups.collect {|e| [e.name, e.id]}.insert( 0, ['Please select a group', '']) %>
   </p>
   <p>
     <%= f.label :device_model_id, "Product" %> (choose 1200xxx for complete kits)<br />

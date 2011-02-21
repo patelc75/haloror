@@ -45,9 +45,12 @@ class DeviceModelPrice < ActiveRecord::Base
   # = callbacks =
   # =============
 
-  def after_initialize
-    self.group ||= Group.direct_to_consumer
-  end
+  # 
+  #  Mon Feb 21 22:36:17 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4226#note-5
+  # def after_initialize
+  #   self.group ||= Group.direct_to_consumer
+  # end
 
   # =================
   # = class methods =
