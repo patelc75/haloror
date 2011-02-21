@@ -197,6 +197,15 @@ class UserAdminController < ApplicationController
           _user.user_intakes.select {|e| e.halouser.blank? }.each do |ui| # pick user intakes orphaned of halouser
             ui.group = _group # assign halouser's group
             ui.send( :update_without_callbacks)
+            # 
+            #  Mon Feb 21 22:39:14 IST 2011, ramonrails
+            #   * https://redmine.corp.halomonitor.com/issues/4226#note-5
+            #   * update the order to show the same group as user intake
+            #   * update only when an order is associated. user intakes can also be created without an order
+            if (_order = ui.order)
+              _order.group = ui.group
+              _order.send( :update_without_callbacks)
+            end
           end
         end
       else
