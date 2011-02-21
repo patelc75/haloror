@@ -76,3 +76,7 @@ Then /^I should have "([^\"]*)" count of "([^\"]*)"$/ do |count, model|
   (model.constantize.count + Event.all.length).should == (2 * count.to_i) #, "Should have #{count} #{model}"
 end
 
+Then /^I should exactly have (\d+) count(?:|s) of "([^\"]*)" and events$/ do |count, model| 
+  (model.constantize.count + Event.all.length).should == count.to_i #, "Should have #{count} #{model}"
+end
+

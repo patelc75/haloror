@@ -17,12 +17,13 @@ require "digest/sha2"
 When /^I simulate a "([^"]*)" event with the following attributes:$/ do |_event, table|
   # fetch values and keys from the table
   options = {}
-  table.raw.each {|name, value| options[name.gsub(/ /,'_').downcase] = value }
+  table.raw.each {|name, value| options[name.gsub(/ /,'_').downcase] = ( value.include?('`') ? eval(value.gsub('`','')).to_s : value) }
+  # table.raw.each {|name, value| options[name.gsub(/ /,'_').downcase] = value }
 
   _event = _event.downcase.gsub(/ /,'_')
   options['file_name'] = "#{_event}.xml" unless options.has_key?( 'file_name')
   options['path'] = "/#{_event.pluralize}" unless options.has_key?( 'path')
-  
+
   #   * attributes specific to events can also be introduced hete to make step definition short and readable
   # _event = _event.downcase.gsub(/ /,'_')
   # case _event
@@ -30,6 +31,13 @@ When /^I simulate a "([^"]*)" event with the following attributes:$/ do |_event,
   # end
 
   When "I post the following XML:", table( options.collect {|k,v| "| #{k} | #{v} |" }.join(10.chr) )
+
+  case _event
+  when 'strap_fastened', 'strap_removed'
+    if (dss = DeviceStrapStatus.last( :order => 'updated_at')) # pick most recent one
+      dss.update_attribute( :updated_at, options['timestamp'])
+    end
+  end
 end
 
 
@@ -59,9 +67,11 @@ end
 # = thens =
 # =========
 
-Then /^device "([^"]*)" should state the strap fastened between now and "([^\"]*)"$/ do |_serial, _timestamp|
+#   * strap fastened
+#   * strap removed
+Then /^device "([^"]*)" should state the strap (fastened|removed) between now and "([^\"]*)"$/ do |_serial, _state, _timestamp|
   (device = Device.find_by_serial_number(_serial)).should_not be_blank
   #   * need UTC
   _timestamp = Time.parse( (_timestamp.include?('`') ? eval(_timestamp.gsub('`','')).to_s : _timestamp) ).utc
-  device.strap_fasteneds.within_time_span( _timestamp).should_not be_blank
+  device.send("strap_#{_state.pluralize}".to_sym).within_time_span( _timestamp).should_not be_blank
 end

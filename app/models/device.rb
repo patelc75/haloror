@@ -172,6 +172,22 @@ class Device < ActiveRecord::Base
   # = instance methods =
   # ====================
   
+  def access_mode_status_name=( _mode)
+    self.create_access_mode_status( :mode => _mode.singularize)
+  end
+  # 
+  #  Tue Feb 22 01:39:53 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4203
+  def user_login=( _login)
+    if ( _user = User.find_by_login( _login))
+      self.users << _user
+    end
+  end
+
+  def device_revision_number=( _revision)
+    self.device_revision = DeviceRevision.find_by_revision( _revision)
+  end
+  
   # 
   #  Wed Jan 26 22:58:05 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4088

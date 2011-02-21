@@ -42,6 +42,12 @@ Factory.define :carrier do |v|
   v.domain { Faker::Internet.domain_name }
 end
 
+Factory.define :device_revision do |v|
+  v.revision "v1-1"
+  v.comments { Faker::Lorem.sentence }
+  v.association :device_model
+end
+
 Factory.define :device_type do |v|
   v.device_type "Chest Strap" # { Faker::Lorem.words[0] } # "Chest Strap"
 end
@@ -68,6 +74,7 @@ Factory.define :device do |v|
   # Need a 10 digit serial_number
   v.serial_number { Time.now.to_i.to_s.ljust( 10, "0") }
   v.active true
+  v.association :device_revision
 end
 
 Factory.define :device_available_alert do |v|

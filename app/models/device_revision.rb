@@ -33,6 +33,10 @@ class DeviceRevision < ActiveRecord::Base
   
   # instance methods
   
+  def device_model_part_number=( _part_number)
+    self.device_model = DeviceModel.find_by_part_number( _part_number)
+  end
+  
   def revision_model
     return self.device_model ? "#{self.device_model.part_number}-#{self.revision}" : "#{self.revision}"
   end
