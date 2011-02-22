@@ -12,17 +12,6 @@ delete from lost_datas;
 insert into vitals (timestamp, user_id) values ('2011-02-16 02:48:38.88439+00', 1);
 
 /* refs #4183 queries for calculate battery periods ------------------------------------------------------------------- */
-<<<<<<< HEAD:bin/sql/battery_charge_periods.sql
-select * from events where event_type in ('BatteryPlugged', 'BatteryUnplugged') and user_id = 1;
-select * from battery_charge_periods_function(1, '2009-10-10', now());
-
-select * from events where event_type in ('BatteryPlugged', 'BatteryUnplugged') and user_id = 1 and timestamp >= '2009-10-08 11:27:05+00' and timestamp <= '2009-10-08 13:26:05+00' order by timestamp asc;
-select * from battery_charge_periods_function(1, '2009-10-08 11:26:05+00', '2009-10-08 13:26:05+00');
-
-delete from battery_charge_periods;
-select * from battery_charge_periods where user_id = 1;
-select sum(duration) from battery_charge_periods;
-=======
 select * from events where event_type in ('BatteryPlugged', 'BatteryUnplugged') and user_id = 1 order by timestamp asc;
 select * from battery_charge_periods_function(1, '2009-10-10', now());
 select * from events where event_type in ('BatteryPlugged', 'BatteryUnplugged') and user_id = 177 and timestamp >= '2011-01-24 00:06:00+00' and timestamp <= '2011-01-31 00:06:00+00' order by timestamp asc;
@@ -36,34 +25,8 @@ select * from lost_datas where user_id = 177;
 delete from battery_charge_periods where user_id = 177;
 select sum(duration) from battery_charge_periods where user_id = 177;;
 
->>>>>>> prod:bin/sql/battery_charge_periods.sql
-
 select * from usage_minus_lost_data_gaps_and_battery_charge(261, '2011-02-08', now(), '90 seconds');
 select * from usage_minus_lost_data_gaps_and_battery_charge_multiple(array_agg(select id from users limit 2), '2011-02-08', now(), '90 seconds');
-select array_agg(any (select id from users limit 2));
-<<<<<<< HEAD:bin/sql/battery_charge_periods.sql
-=======
-select array_agg((select id from users limit 2));
-select array_agg(id) from users limit 2;
-
-select * from test_array_agg("{13,5}");
-
-CREATE OR REPLACE FUNCTION test_array_agg(user_ids integer[])
-  RETURNS void AS
-$$
-declare
-begin
-FOR i in array_lower(user_ids, 1) .. array_upper(user_ids, 1) LOOP
-  Raise Notice '%', user_ids[i]::integer;
-  --select * from usage_minus_lost_data_gaps_and_battery_charge(user_ids[i]::integer, '2011-02-08', now(), '90 seconds');
-END LOOP;
-end
-$$
-  LANGUAGE plpgsql;
-
-
->>>>>>> prod:bin/sql/battery_charge_periods.sql
---http://stackoverflow.com/questions/3848679/sql-error-more-than-one-row-returned-by-a-subquery-used-as-an-expression
 
 select date_trunc('second', usage_minus_lost_data_gaps_and_battery_charge) from usage_minus_lost_data_gaps_and_battery_charge(261, '2011-02-08', now(), '90 seconds');
 select extract(usage_minus_lost_data_gaps_and_battery_charge from usage_minus_lost_data_gaps_and_battery_charge(261, '2011-02-08', now(), '90 seconds'));
@@ -126,120 +89,34 @@ begin
 end;
 $$ language plpgsql; 
 
-<<<<<<< HEAD:bin/sql/battery_charge_periods.sql
+--- need to create a function to pass in an array of users ------
+select * from test_array_agg('{1,2}');
+select array_agg(id) from users limit 2;
 
-/* Create a query for batteryplugged/batteryunplugged within X minutes post fall ------------------------------------------------------- */
-CREATE OR REPLACE FUNCTION usage_minus_lost_data_gaps_and_battery_charge_multiple(user_ids integer[], p_begin_time timestamp with time zone, p_end_time timestamp with time zone, p_lost_data_gap varchar)
-RETURNS void AS
+CREATE OR REPLACE FUNCTION test_array_agg(user_ids integer[])
+  RETURNS void AS
 $$
 declare
- bp_post
- bp_pre
- bp_post
- bp_pre
 begin
-bp_post = 
+FOR i in array_lower(user_ids, 1) .. array_upper(user_ids, 1) LOOP
+  Raise Notice '%', user_ids[i]::integer;
+  --select * from usage_minus_lost_data_gaps_and_battery_charge(user_ids[i]::integer, '2011-02-08', now(), '90 seconds');
+END LOOP;
+end
+$$
+LANGUAGE plpgsql;
 
+--- need to creatte a function to pass in an array of users ------
 
-explain select bp.timestamp from battery_pluggeds bp where ('2009-11-05 20:08:36+00'::timestamp + interval '10 minutes') > bp.timestamp  and '2009-11-05 20:08:36+00' < bp.timestamp and bp.user_id=1
-
-select * from falls where user_id = 1 and timestamp > '2009-11-01';
-select * from strap_fasteneds where user_id = 1;
-select * from battery_pluggeds;
-select * from battery_unpluggeds where user_id = 1;
-
-
-SELECT user_id, timestamp, event_type,
-	CASE 
-	 WHEN (SELECT timestamp FROM gw_alarm_buttons gwab where gwab.timestamp > e.timestamp order by gwab.timestamp desc limit 1) is not null
-	 THEN now()
-	END
-from events e
-WHERE event_type in ('Fall', 'Panic');
-
-
-
----------
-
-CREATE OR REPLACE FUNCTION battery_charge_periods_function(p_user_id integer, p_begin_time timestamp with time zone, p_end_time timestamp with time zone)
+CREATE OR REPLACE FUNCTION test_array_agg(user_ids integer[])
   RETURNS void AS
-$BODY$
-      	declare
-      	   row record;
-      	   plugged_timestamp timestamp with time zone;
-      	   unplugged_timestamp timestamp with time zone;
-      	   no_data_flag boolean;
-      	 begin
-      	   no_data_flag = true;  
-      	   for row in (select timestamp, event_type from events where user_id = p_user_id AND timestamp <= p_end_time AND timestamp >= p_begin_time and event_type in ('BatteryPlugged', 'BatteryUnplugged') order by timestamp asc) loop
-	     no_data_flag = false;
-      	     if(row.event_type = 'BatteryPlugged') then
-      	       plugged_timestamp := row.timestamp;
-      	       unplugged_timestamp = NULL;      	       
-      	     else -- 'BatteryUnplugged'
-      	       if (plugged_timestamp is NULL) then --left boundary condition
-      		 insert into battery_charge_periods (user_id, begin_time, end_time, duration) values (p_user_id, p_begin_time, row.timestamp, row.timestamp-p_begin_time); 
-      		 RAISE NOTICE '1 plugged_timestamp = %, unplugged_timestamp = %, row.timestamp = %', plugged_timestamp, unplugged_timestamp, row.timestamp;
-      	       end if;
-      	       if (unplugged_timestamp is NULL and plugged_timestamp is not NULL) then --conditional in case there are 2 unpluggeds in a row
-      		 unplugged_timestamp := row.timestamp;
-      		 insert into battery_charge_periods (user_id, begin_time, end_time, duration) values (p_user_id, plugged_timestamp, unplugged_timestamp, unplugged_timestamp-plugged_timestamp);
-      		 RAISE NOTICE '2 plugged_timestamp = %, unplugged_timestamp = %, row.timestamp = %', plugged_timestamp, unplugged_timestamp, row.timestamp;
-      	       end if;
-      	     end if;
-      	   end loop;
-      	   if(row.event_type = 'BatteryPlugged') then
-      	     insert into battery_charge_periods (user_id, begin_time, end_time, duration) values (p_user_id, row.timestamp, p_end_time, p_end_time-row.timestamp);
-      	     RAISE NOTICE '3 plugged_timestamp = %, unplugged_timestamp = %, row.timestamp = %, row.event_type = %', plugged_timestamp, unplugged_timestamp, row.timestamp, row.event_type;
-      	   end if;
-      	   
-      	   if(no_data_flag true) then   
-      	     row = select timestamp, event_type from events where user_id = p_user_id AND timestamp <p_begin_time and event_type in ('BatteryPlugged', 'BatteryUnplugged') order by timestamp desc limit 1;
-      	     if(row.event_type = 'BatteryPlugged') then
-		insert into battery_charge_periods (user_id, begin_time, end_time, duration) values (p_user_id, p_begin_time, p_end_time, p_end_time-p_begin_time);
-	     end if;
-           end if;   
-      	 end;
-        $BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION battery_charge_periods_function(integer, timestamp with time zone, timestamp with time zone) OWNER TO postgres;
-=======
----------
-
-      CREATE OR REPLACE FUNCTION usage_minus_lost_data_gaps_and_battery_charge(p_user_id integer, p_begin_time timestamp with time zone, p_end_time timestamp with time zone, p_lost_data_gap varchar)
-       RETURNS double precision AS
-       $$
-     	 declare
-     	   row record;
-     	   battery_charge_duration interval;
-     	   lost_data_duration interval;
-     	   usage_minus_lost_data_gaps_and_battery_charge interval;
-     	 begin
-     	   delete from battery_charge_periods where user_id = p_user_id;
-     	   delete from lost_datas where user_id = p_user_id;
-
-     	   select * into row from battery_charge_periods_function(p_user_id, p_begin_time, p_end_time);
-     	   select * into row from lost_data_function(p_user_id, p_begin_time, p_end_time, p_lost_data_gap);
-
-     	   select sum(duration) into battery_charge_duration from battery_charge_periods where user_id = p_user_id;
-     	   select sum(end_time-begin_time) into lost_data_duration from lost_datas where user_id = p_user_id;
-     	   if battery_charge_duration is NULL then
-     	     battery_charge_duration = interval '0 seconds';
-     	   end if;
-
-     	   if lost_data_duration is NULL then
-     	     lost_data_duration = interval '0 seconds';
-     	   end if;
-
-     	   RAISE NOTICE 'battery_charge_duration = %', date_trunc('second', battery_charge_duration);
-     	   RAISE NOTICE 'lost_data_duration = %',  date_trunc('second', lost_data_duration);
-     	   RAISE NOTICE 'total period = %', date_trunc('second', p_end_time - p_begin_time); 
-     	   usage_minus_lost_data_gaps_and_battery_charge = date_trunc('second', p_end_time - (p_begin_time + battery_charge_duration + lost_data_duration));   
-     	   RAISE NOTICE 'total usage = total period - battery_charge_duration - lost_data_duration = % = ', usage_minus_lost_data_gaps_and_battery_charge, extract('epoch' from usage_minus_lost_data_gaps_and_battery_charge) / 3600;
-
-     	   return extract('epoch' from usage_minus_lost_data_gaps_and_battery_charge) / 3600;
-     	 end;
-       $$ language plpgsql;   
-
->>>>>>> prod:bin/sql/battery_charge_periods.sql
+$$
+declare
+begin
+FOR i in array_lower(user_ids, 1) .. array_upper(user_ids, 1) LOOP
+  Raise Notice '%', user_ids[i]::integer;
+  --select * from usage_minus_lost_data_gaps_and_battery_charge(user_ids[i]::integer, '2011-02-08', now(), '90 seconds');
+END LOOP;
+end
+$$
+LANGUAGE plpgsql;
