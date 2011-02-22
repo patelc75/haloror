@@ -72,7 +72,6 @@ When /^I post the following for (user|device) "([^\"]*)":$/ do |_type, _type_dat
   end
 
   # load data for POST
-  # debugger
   # doc = Nokogiri::XML( File.read(File.join(Rails.root, "spec", "data", "curl", options[:file_name])) )
   # doc.should_not be_blank
   # #   * except these 3, all other can be node names
