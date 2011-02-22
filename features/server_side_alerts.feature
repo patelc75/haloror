@@ -45,8 +45,8 @@ Feature: Server Side Alerts
       | time_ago         | how_many | event    |
       | `7.hours.ago`    | 1        | fastened |
       | `30.minutes.ago` | 1        | fastened |
-      | `7.hours.ago`    | 3        | removed  |
       | `30.minutes.ago` | 1        | removed  |
+      | `7.hours.ago`    | 3        | removed  |
 
   @wip
   Scenario: Simulate a GatewayOfflineAlert for a user

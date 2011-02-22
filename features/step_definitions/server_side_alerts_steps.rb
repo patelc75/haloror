@@ -35,7 +35,8 @@ When /^I simulate a "([^"]*)" event with the following attributes:$/ do |_event,
   case _event
   when 'strap_fastened', 'strap_removed'
     if (dss = DeviceStrapStatus.last( :order => 'updated_at')) # pick most recent one
-      dss.update_attribute( :updated_at, Time.parse( options['timestamp']).utc)
+      dss.updated_at = Time.parse(options['timestamp'])
+      dss.send( :update_without_callbacks)
     end
   end
 end
