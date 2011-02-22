@@ -501,10 +501,10 @@ class UserIntake < ActiveRecord::Base
   #  Wed Feb 16 00:41:18 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4199
   def subscription_start_date
-    if (_subscribed_at = subscription_started_at)
-      #   * if the subscription already started, no point calulating again
-      _subscribed_at
-    else
+    # if (_subscribed_at = subscription_started_at)
+    #   #   * if the subscription already started, no point calulating again
+    #   _subscribed_at
+    # else
       #   * if no subscription started yet, consider this month
       _date = Time.now
       if _date.day == 1
@@ -512,7 +512,7 @@ class UserIntake < ActiveRecord::Base
       else
         (_date + 1.month).beginning_of_month # .to_date # today is not 1st, let this month be pro-rated
       end
-    end
+    # end
   end
   
   # 
