@@ -1,0 +1,14 @@
+<management_response_device>
+  <cmd_type>info</cmd_type>
+  <device_id>12</device_id>
+  <info>
+    <hardware_version>00.01</hardware_version>
+    <mac_address>00:00:11:00:00:08</mac_address>
+    <model>A</model>
+    <serial_num>H2D0000008</serial_num>
+    <software_version>00.00r35</software_version>
+    <user_id>8</user_id>
+    <vendor>Halo</vendor>
+  </info>
+  <timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp>
+</management_response_device>
