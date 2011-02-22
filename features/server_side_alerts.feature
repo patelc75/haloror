@@ -37,14 +37,15 @@ Feature: Server Side Alerts
       | timestamp | <time_ago> |
       | device    | H134567890 |
     And background scheduler has detected strap offs
-    Then device "H134567890" should state the strap <event> between now and "<time_ago>"
+    #   * we are adding some extra time to keep the last simulated event within the span window
+    Then device "H134567890" should state the strap <event> between now and "`<time_ago> - 1.minute`"
     And I should exactly have <how_many> counts of "StrapOffAlert" and events
     
     Examples:
       | time_ago         | how_many | event    |
-      # | `7.hours.ago`    | 1        | fastened |
-      # | `30.minutes.ago` | 1        | fastened |
-      # | `7.hours.ago`    | 3        | removed  |
+      | `7.hours.ago`    | 1        | fastened |
+      | `30.minutes.ago` | 1        | fastened |
+      | `7.hours.ago`    | 3        | removed  |
       | `30.minutes.ago` | 1        | removed  |
 
   @wip

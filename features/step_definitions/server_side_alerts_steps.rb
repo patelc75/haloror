@@ -35,29 +35,43 @@ When /^I simulate a "([^"]*)" event with the following attributes:$/ do |_event,
   case _event
   when 'strap_fastened', 'strap_removed'
     if (dss = DeviceStrapStatus.last( :order => 'updated_at')) # pick most recent one
-      dss.update_attribute( :updated_at, options['timestamp'])
+      dss.update_attribute( :updated_at, Time.parse( options['timestamp']).utc)
     end
   end
 end
 
 
-When /^I simulate a mgmt query with the timestamp "([^\"]*)" and device_id "([^\"]*)"$/ do |timestamp, device_id|   
+When /^I simulate a mgmt query with the timestamp "([^\"]*)" and device_id "([^\"]*)"$/ do |timestamp, device_id|
   #user = User.find_by_login(login, :include => :profile)
 
-  SystemTimeout.create(:mode => "dialup", :critical_event_delay_sec => 0, :gateway_offline_timeout_sec => 21600, :gateway_offline_offset_sec => 4800, :device_unavailable_timeout_sec => 0, :strap_off_timeout_sec => 0)
-  query = MgmtQuery.new
-  query.device_id = device_id
-  query.timestamp_device = timestamp
-  query.timestamp_server = Time.now
-  query.poll_rate = 60
-  query.cycle_num = 1
-  query.save
-  
-  dlq = DeviceLatestQuery.first
-  dlq.updated_at = 7.hours.ago  
-  dlq.save
-  MgmtQuery.job_gw_offline  
-end                       
+  # SystemTimeout.create(:mode => "dialup", :critical_event_delay_sec => 0, :gateway_offline_timeout_sec => 21600, :gateway_offline_offset_sec => 4800, :device_unavailable_timeout_sec => 0, :strap_off_timeout_sec => 0)
+  Factory.create( :system_timeout, {
+    :mode                           => 'dialup',
+    :critical_event_delay_sec       => 0,
+    :gateway_offline_timeout_sec    => 21600,
+    :gateway_offline_offset_sec     => 4800,
+    :device_unavailable_timeout_sec => 0,
+    :strap_off_timeout_sec          => 0
+    })
+  # query = MgmtQuery.new
+  # query.device_id = device_id
+  # query.timestamp_device = timestamp
+  # query.timestamp_server = Time.now
+  # query.poll_rate = 60
+  # query.cycle_num = 1
+  # query.save
+  #   * supply the ones that are not default. Others picked from factory definition
+  Factory.create( :mgmt_query, {
+    :device_id        => device_id,
+    :timestamp_device => timestamp
+    })
+
+  # dlq = DeviceLatestQuery.first
+  # dlq.updated_at = 7.hours.ago
+  # dlq.save
+  DeviceLatestQuery.first.update_attribute( :updated_at => 7.hours.ago)
+  MgmtQuery.job_gw_offline
+end
 
 When /^background scheduler has detected strap offs$/ do
   StrapOffAlert.job_detect_straps_off

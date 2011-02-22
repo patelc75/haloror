@@ -43,3 +43,5 @@ config.after_initialize do
     :test => true
   )
 end
+
+Time.zone = 'Central Time (US & Canada)'

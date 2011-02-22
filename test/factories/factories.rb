@@ -127,6 +127,14 @@ Factory.define :gateway_online_alert do |v|
   v.association :device
 end
 
+Factory.define :mgmt_query do |v|
+  v.timestamp_server { Time.now }
+  v.timestamp_device { Time.now }
+  v.poll_rate 60
+  v.cycle_num 1
+  v.association :device
+end
+
 Factory.define :panic do |v|
   v.timestamp { Time.now }
   v.duration_press { rand(10) }
