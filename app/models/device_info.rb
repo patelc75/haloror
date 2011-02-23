@@ -7,9 +7,9 @@ class DeviceInfo < ActiveRecord::Base
   named_scope :few, lambda {|*args| { :limit => (args.flatten.first || 5) }}
   named_scope :recent_on_top, :order => 'created_at DESC'
   named_scope :where_device_id, lambda {|arg| { :conditions => { :device_id => arg} }}
-  named_scope :where_software_version_given, :conditions => ["software_version IS NOT NULL"]
+  named_scope :having_software_version, :conditions => ["software_version IS NOT NULL"]
 
-  attr_accessor :_previous_row
+  # attr_accessor :_previous_row
   
   # ============
   # = triggers =
@@ -44,17 +44,18 @@ class DeviceInfo < ActiveRecord::Base
   end
   
   def previous_row
-    if _previous_row.blank?
-      _previous_row = if self.new_record?
-        DeviceInfo.where_software_version_given.where_device_id( device_id).recent_on_top.few(1).first
+    # if _previous_row.blank?
+      # _previous_row =
+      if self.new_record?
+        DeviceInfo.having_software_version.where_device_id( device_id).recent_on_top.few(1).first
         # DeviceInfo.first( :conditions => { :device_id => device_id }, :order => 'created_at DESC')
       else
-        DeviceInfo.where_software_version_given.where_device_id( device_id).except_id( id).recent_on_top.few(1).first
+        DeviceInfo.having_software_version.where_device_id( device_id).except_id( id).recent_on_top.few(1).first
         # DeviceInfo.first( :conditions => ["device_id = ? AND id <> ?", device_id, id], :order => 'created_at DESC')
       end
-    else
-      _previous_row
-    end
+    # else
+    #   _previous_row
+    # end
   end
   
   # ===================
