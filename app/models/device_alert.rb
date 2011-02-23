@@ -22,7 +22,6 @@ class DeviceAlert < ActiveRecord::Base
   
   def self.notify_caregivers(event)
     CriticalMailer.deliver_non_critical_caregiver_email(event)
-    debugger
     CriticalMailer.deliver_non_critical_caregiver_text(event)
   end
 

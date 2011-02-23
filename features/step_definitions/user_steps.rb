@@ -100,6 +100,20 @@ Given /^a caregiver of "([^"]*)" can raise exception$/ do |user_login|
   cg.group_memberships.collect(&:name).flatten.compact.uniq.should include('raises_exception')
 end
 
+Given /^user "([^"]*)" has "([^"]*)" carrier$/ do |_login, _name|
+  (_user = User.find_by_login(_login)).should_not be_blank
+  (_carrier = Carrier.find_by_name(_name)).should_not be_blank
+  (_profile = _user.profile).should_not be_blank
+  _profile.update_attribute( :carrier_id, _carrier).should be_true
+end
+
+Given /^"([^"]*)" is set to receive (email|text) for senior "([^"]*)"$/ do |_login, _what, _senior|
+  (_user = User.find_by_login(_login)).should_not be_blank
+  (_senior = User.find_by_login(_login)).should_not be_blank
+  _user.options_for_senior( _senior, { "#{_what}_active".to_sym => true })
+  _user.options_attribute_for_senior( _senior, "#{_what}_active".to_sym).should be_true
+end
+
 # =========
 # = whens =
 # =========
