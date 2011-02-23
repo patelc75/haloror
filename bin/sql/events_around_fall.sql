@@ -5,7 +5,7 @@ explain select f.id, f.timestamp,
  (select sr.timestamp from strap_removeds  sr where (sr.user_id=f.user_id and f.timestamp + interval '10 minutes' > sr.timestamp and sr.timestamp > f.timestamp) order by sr.timestamp asc  limit 1) as sr_post,  
  (select sr.timestamp from strap_removeds  sr where (sr.user_id=f.user_id and f.timestamp - interval '10 minutes' < sr.timestamp and sr.timestamp < f.timestamp) order by sr.timestamp desc limit 1) as sr_pre
 from falls f
-where f.user_id = 1
+where f.user_id in (1)
 and timestamp > now() - interval '1 week'
 and timestamp < now();
 
@@ -16,7 +16,7 @@ select f.id, f.timestamp,
  (select bu.timestamp from battery_unpluggeds bu where (bu.user_id=f.user_id and f.timestamp + interval '10 minutes' > bu.timestamp and bu.timestamp > f.timestamp) order by bu.timestamp asc  limit 1) as bu_post,  
  (select bu.timestamp from battery_unpluggeds bu where (bu.user_id=f.user_id and f.timestamp - interval '10 minutes' < bu.timestamp and bu.timestamp < f.timestamp) order by bu.timestamp desc limit 1) as bu_pre
 from falls f
-where f.user_id = 1
+where f.user_id in (1)
 and timestamp > now() - interval '1 week'
 and timestamp < now();
 
