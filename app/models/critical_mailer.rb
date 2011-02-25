@@ -28,33 +28,42 @@ class CriticalMailer < ActionMailer::ARMailer
     # refs #864, New non-wizard email for call center agents
     setup_caregivers(event.user, event, :caregiver_info)
     
-    @caregiver_info << "EMERGENCY NUM\n" + event.user.profile.emergency_number.name + "\n" + event.user.profile.emergency_number.number if event.user.profile.emergency_number
-    message_text = "You received this email because you’re a Halo call center agent.\n\n#{@caregiver_info}\n\n"    
+    #@caregiver_info << "EMERGENCY NUM\n" + event.user.profile.emergency_number.name + "\n" + event.user.profile.emergency_number.number if event.user.profile.emergency_number
+    message_text = "You received this email because you’re a Halo call center agent.\n\n"    
     user = event.user
-    
-    message_text << "ACCOUNT NUM\n%s\n\n" % [user.profile.account_number.blank? ? "(No account number)" : user.profile.account_number]
-    message_text << "ADDRESS + LOCK\n%s\n%s\n%s, %s %s\n%s\n\n" % [user.name, user.profile.address, user.profile.city, user.profile.state, user.profile.zipcode, user.profile.access_information.blank? ? "(No access information)" : user.profile.access_information]
-    message_text << "MEDICAL\n%s\n\n" % [user.profile.allergies.blank? ? "(No medical / allergy information)" : user.profile.allergies]
-    message_text << "PET\n%s\n\n" % [user.profile.pet_information.blank? ? "(No pet information)" : user.profile.pet_information]
-    setup_message(event.to_s, message_text, :use_email_log, :use_host_name_in_from_addr)     
+     
+    account_num, timestamp, body_text = operator_body(event) 
+    message_text <<  body_text + "\n\n"     
+    message_text << "ACCESS" + "\n" + (user.profile.access_information.blank? ? "(No access information)" : user.profile.access_information) + "\n\n"
+    message_text << "MEDICAL" + "\n" + (user.profile.allergies.blank? ? "(No medical / allergy information)" : user.profile.allergies) + "\n\n"
+    message_text << "PET INFO" + "\n" + (user.profile.pet_information.blank? ? "(No pet information)" : user.profile.pet_information) + "\n\n"
+    setup_message(event.to_s_short + " (" + account_num + " at " + timestamp + ")", message_text, :use_email_log, :use_host_name_in_from_addr)     
     setup_operators(event, :recepients, :include_phone_call) 
     self.priority  = event.priority
   end
  
-  def device_event_operator_text(event)
-    setup_caregivers(event.user, event, :caregiver_info)
-    #!event.user.profile.emergency_number.blank? ? (@caregiver_info << '(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number)  
-    time_zone = Time.zone
-    Time.zone = 'Eastern Time (US & Canada)'
-    message_text = (event.user.profile.account_number.blank? ? "(No acct num)" : "HM" + event.user.profile.account_number) + " | "
-    message_text << (event.timestamp.blank? ? "(No timestamp)" : event.timestamp.in_time_zone(time_zone).to_s) + "\n"     
-    message_text << @caregiver_info
-    message_text << (event.user.address.nil? ? "(No address)" : "Address: " + event.user.address)
-    setup_message(event.to_s, message_text,:use_email_log, :use_host_name_in_from_addr) 
+  def device_event_operator_text(event)    
+    setup_caregivers(event.user, event, :caregiver_info)    
+
+    account_num, timestamp, body_text = operator_body(event) 
+    setup_message( account_num  + " " + event.to_s_short, body_text,:use_email_log, :use_host_name_in_from_addr) 
     setup_operators(event, :recepients, :include_phone_call) 
     @recipients = @text_recipients 
-    self.priority  = event.priority   
-    Time.zone = time_zone   
+    self.priority  = event.priority      
+  end
+  
+  def operator_body(event)
+    #!event.user.profile.emergency_number.blank? ? (@caregiver_info << '(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number)  
+    time_zone = Time.zone
+    Time.zone = 'Eastern Time (US & Canada)' 
+    account_num =  (event.user.profile.account_number.blank? ? "(No acct num)" : "HM" + event.user.profile.account_number)
+    message_text = account_num + " | "
+    timestamp =  (event.timestamp.blank? ? "(No timestamp)" : event.timestamp.in_time_zone(time_zone).to_s) + "\n"     
+    message_text << timestamp
+    message_text << @caregiver_info
+    message_text << (event.user.address.nil? ? "(No address)" : "Address: " + event.user.address)
+    Time.zone = time_zone       
+    return account_num, timestamp, message_text   
   end
 
 #=============== Reporting  ======================================    

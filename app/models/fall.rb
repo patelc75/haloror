@@ -4,6 +4,10 @@ class Fall < CriticalDeviceAlert
   def to_s
     "#{user.name} fell at #{UtilityHelper.format_datetime(timestamp, user)}"
   end
+  
+  def to_s_short
+   "#{user.name} fell" 
+  end
 
   def email_body
     "Hello,\nWe detected that #{to_s}" +
