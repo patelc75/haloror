@@ -20,22 +20,24 @@ Feature: Critical Alert
       | halo        |             |
       | safety_care | call_center |
       | cms         | call_center |
+    And critical alerts types exist
     And a carrier exists with the following attributes:
-      | name       | cell_carrier |
+      | name   | cell_carrier    |
       | domain | @cingularme.com |
-    And there are no falls, events, emails
+    And there are no falls, events, emails, alert_options
     And user "test-user" has "halouser" role for group "halo"
     And user "senior-user" has "halouser" role for group "halo"
     And user "caregiver-user" has "caregiver" role for user "senior-user"
     And user "caregiver-user" has "cell_carrier" carrier
     And "caregiver-user" is set to receive email for senior "senior-user"
     And "caregiver-user" is set to receive text for senior "senior-user"
+    And "caregiver-user" is active caregiver for senior "senior-user"
 
   Scenario: Simulate a fall with successful text and email delivery to the call center
     When user "senior-user" has "halouser" role for group "safety_care"
     And I simulate a "Fall" with delivery to the call center for user login "senior-user" with a "valid" "call center account number"
     Then I should have "1" count of "Fall"
-    And user "caregiver-user" has "caregiver" roles for user "senior-user"
+    # And user "caregiver-user" has "caregiver" roles for user "senior-user"
     And 1 email to "caregiver@cucumber.com" with keyword "fell" should be sent for delivery
     And 1 email to "1234567890@cingularme.com" with keyword "fell" should be sent for delivery
 
