@@ -6,7 +6,7 @@ class GwAlarmButton < CriticalDeviceAlert
   end
   
   def to_s_short
-   "#{user.name} alarm cleared" 
+   "CLEAR #{user.name}" 
   end
   
   def email_body

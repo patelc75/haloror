@@ -6,7 +6,7 @@ class Fall < CriticalDeviceAlert
   end
   
   def to_s_short
-   "#{user.name} fell" 
+   "FALL #{user.name}" 
   end
 
   def email_body

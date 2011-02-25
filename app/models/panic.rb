@@ -215,7 +215,7 @@ class Panic < CriticalDeviceAlert
   end  
   
   def to_s_short
-   "#{user.name} panicked" 
+   "PANIC #{user.name}" 
   end
 
   def email_body
