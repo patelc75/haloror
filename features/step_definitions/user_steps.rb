@@ -110,39 +110,45 @@ end
 
 Given /^"([^"]*)" is set to receive (email|text) for senior "([^"]*)"$/ do |_caregiver_login, _what, _senior_login|
   (_caregiver = User.find_by_login(_caregiver_login)).should_not be_blank
-  (_senior = User.find_by_login(_senior_login)).should_not be_blank
-  #   attributes
-  _caregiver.options_for_senior( _senior, { "#{_what}_active".to_sym => true, :active => true })
-  (_options = _caregiver.options_for_senior( _senior)).should be_true
-  _options.send( "#{_what}_active".to_sym).should be_true
-  _options.active.should be_true
-  #   
-  #   * check alert_options along with this
-  (_critical = AlertGroup.critical).should_not be_blank
-  ["Fall", "Panic", "GwAlarmButton", "GwAlarmButtonTimeout"].each do |_alert_type|
-    (_type = AlertType.find_by_alert_type( _alert_type)).should_not be_blank
+  #   * check multiple senior logins
+  _senior_login.split(',').collect(&:strip).flatten.compact.uniq.each do |_login|
+
+    (_senior = User.find_by_login( _login)).should_not be_blank
+    #   attributes
+    _caregiver.options_for_senior( _senior, { "#{_what}_active".to_sym => true, :active => true })
+    (_options = _caregiver.options_for_senior( _senior)).should be_true
+    _options.send( "#{_what}_active".to_sym).should be_true
+    _options.active.should be_true
+    #   
+    #   * check alert_options along with this
+    (_critical = AlertGroup.critical).should_not be_blank
+    ["Fall", "Panic", "GwAlarmButton", "GwAlarmButtonTimeout"].each do |_alert_type|
+      (_type = AlertType.find_by_alert_type( _alert_type)).should_not be_blank
 
       (_roles = _caregiver.roles_for( _senior)).should_not be_blank
       _roles.each do |_role|
-        
+
         (_roles_users = _role.roles_users).should_not be_blank
         _roles_users.each do |_roles_user|
-          
+
           (_alert_options = AlertOption.all( :conditions => { :roles_user_id => _roles_user, :alert_type_id => _type})).should_not be_blank
           _alert_options.each do |_alert_option|
             _alert_option.send( "#{_what}_active".to_sym).should be_true
           end
         end
-      
+      end
     end
-  end
+    
+  end # multiple seniors
 end
 
 Given /^"([^"]*)" is active caregiver for senior "([^"]*)"$/ do |_caregiver_login, _senior_login|
   (_caregiver = User.find_by_login( _caregiver_login)).should_not be_blank
-  (_senior = User.find_by_login( _senior_login)).should_not be_blank
-  _caregiver.set_active_for( _senior)
-  _caregiver.active_for?( _senior).should be_true
+  _senior_login.split(',').collect(&:strip).flatten.compact.uniq.each do |_login|
+    (_senior = User.find_by_login( _login)).should_not be_blank
+    _caregiver.set_active_for( _senior)
+    _caregiver.active_for?( _senior).should be_true
+  end
 end
 
 # =========

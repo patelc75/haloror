@@ -6,6 +6,9 @@ Feature: Critical Alert
   As a system user
   I want verify the delivery of the critical alert
 
+  # 
+  #  Sat Feb 26 01:29:13 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4223
   Background:
     Given a user "test-user" exists with profile
     And a user "senior-user" exists with profile
@@ -27,31 +30,28 @@ Feature: Critical Alert
     And there are no falls, events, emails, alert_options
     And user "test-user" has "halouser" role for group "halo"
     And user "senior-user" has "halouser" role for group "halo"
-    And user "caregiver-user" has "caregiver" role for user "senior-user"
+    And user "caregiver-user" has "caregiver" role for user "senior-user, test-user"
     And user "caregiver-user" has "cell_carrier" carrier
-    And "caregiver-user" is set to receive email for senior "senior-user"
-    And "caregiver-user" is set to receive text for senior "senior-user"
-    And "caregiver-user" is active caregiver for senior "senior-user"
+    And "caregiver-user" is set to receive email for senior "senior-user, test-user"
+    And "caregiver-user" is set to receive text for senior "senior-user, test-user"
+    And "caregiver-user" is active caregiver for senior "senior-user, test-user"
 
   Scenario: Simulate a fall with successful text and email delivery to the call center
     When user "senior-user" has "halouser" role for group "safety_care"
+    And user "test-user" has "halouser" role for group "safety_care, cms"
     And I simulate a "Fall" with delivery to the call center for user login "senior-user" with a "valid" "call center account number"
     Then I should have "1" count of "Fall"
+    And I should have a "Fall" alert "not pending" to the call center with a "valid" call center delivery timestamp
     # And user "caregiver-user" has "caregiver" roles for user "senior-user"
     And 1 email to "caregiver@cucumber.com" with keyword "fell" should be sent for delivery
     And 1 email to "1234567890@cingularme.com" with keyword "fell" should be sent for delivery
-
-  # @wip here will skip only this scenario, unless feature has @wip tag
-  Scenario: Simulate a fall with successful delivery to the call center
-    When user "test-user" has "halouser" role for group "safety_care, cms"
-    And I simulate a "Fall" with delivery to the call center for user login "test-user" with a "valid" "call center account number"
-    Then I should have "1" count of "Fall"
-    And I should have a "Fall" alert "not pending" to the call center with a "valid" call center delivery timestamp
 
   Scenario: Simulate a fall for a user with no call center group (eg. "safety_care")
     When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "call center account number"
     Then I should have "1" count of "Fall"
     And I should have a "Fall" alert "not pending" to the call center with a "missing" call center delivery timestamp
+    And 1 email to "caregiver@cucumber.com" with keyword "fell" should be sent for delivery
+    And 1 email to "1234567890@cingularme.com" with keyword "fell" should be sent for delivery
 
   # https://redmine.corp.halomonitor.com/issues/3170
   # Scenario: Simulate a fall for a user with an invalid call center account number
