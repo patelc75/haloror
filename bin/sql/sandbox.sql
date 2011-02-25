@@ -106,20 +106,5 @@ group by dua.user_id
 order by count(*) desc
 limit 1000) and profiles.user_id = users.id order by users.id asc;
 
-  SELECT roles.id as role_id, roles.name, 
-  CASE 
-   WHEN (roles.authorizable_type = 'Group')
-    THEN (select name from groups where id = roles.authorizable_id)
-   WHEN (roles.authorizable_type = 'User')  
-    THEN (select profiles.first_name from users, profiles where users.id = roles.authorizable_id and users.id = profiles.user_id)
-  END as group_or_user,
-  CASE 
-   WHEN (roles.authorizable_type = 'User')  
-    THEN (select profiles.last_name from users, profiles where users.id = roles.authorizable_id and users.id = profiles.user_id)
-  END as group_or_user
-    from users, roles, roles_users, profiles 
-    where users.id = roles_users.user_id 
-    and roles_users.role_id = roles.id 
-    and users.id = profiles.user_id
-    and users.id = 5
-    order by roles.name; 
+---- refs #4224 CHT: Delays after GW reboot --------------------------
+select * from vitals where user_id = 232 and timestamp > '2011-02-15' and timestamp < '2011-02-17' order by id desc limit 1000;

@@ -1,12 +1,12 @@
 ----- strap fastened and strap removed X minutes before (pre) and after (post) a fall for a given user--------
-explain select f.id, f.timestamp, 
+select f.id, f.timestamp, 
  (select sf.timestamp from strap_fasteneds sf where (sf.user_id=f.user_id and f.timestamp + interval '10 minutes' > sf.timestamp and sf.timestamp > f.timestamp) order by sf.timestamp asc  limit 1) as sf_post,
  (select sf.timestamp from strap_fasteneds sf where (sf.user_id=f.user_id and f.timestamp - interval '10 minutes' < sf.timestamp and sf.timestamp < f.timestamp) order by sf.timestamp desc limit 1) as sf_pre,	  
  (select sr.timestamp from strap_removeds  sr where (sr.user_id=f.user_id and f.timestamp + interval '10 minutes' > sr.timestamp and sr.timestamp > f.timestamp) order by sr.timestamp asc  limit 1) as sr_post,  
  (select sr.timestamp from strap_removeds  sr where (sr.user_id=f.user_id and f.timestamp - interval '10 minutes' < sr.timestamp and sr.timestamp < f.timestamp) order by sr.timestamp desc limit 1) as sr_pre
 from falls f
-where f.user_id in (1)
-and timestamp > now() - interval '1 week'
+where f.user_id in (230)
+and timestamp > now() - interval '2 weeks'
 and timestamp < now();
 
 ----- battery plugged and battery unplugged X minutes before (pre) and after (post) a fall for a given user--------
@@ -19,6 +19,20 @@ from falls f
 where f.user_id in (1)
 and timestamp > now() - interval '1 week'
 and timestamp < now();
+
+----- gw_alarm_buttons X minutes before (pre) and after (post) a fall for a given user--------
+select f.id, 'Fall' as crit_type, f.timestamp, 
+ (select gab.timestamp from gw_alarm_buttons gab where (gab.user_id=f.user_id and f.timestamp - interval '10 minutes' < gab.timestamp and gab.timestamp < f.timestamp) order by gab.timestamp desc limit 1) as gw_alarm_button_post
+from falls f
+where timestamp > now() - interval '5 year'
+and timestamp < now()
+union all
+select p.id, 'Panic' as crit_type, p.timestamp, 
+ (select gab.timestamp from gw_alarm_buttons gab where (gab.user_id=p.user_id and p.timestamp - interval '10 minutes' < gab.timestamp and gab.timestamp < p.timestamp) order by gab.timestamp desc limit 1) as gw_alarm_button_post
+from panics p
+where timestamp > now() - interval '5 year'
+and timestamp < now();
+and p.user_id in (1);
 
 ----- debugging statements -------------------------------------------------------------------------------
 select * from falls where user_id = 1;

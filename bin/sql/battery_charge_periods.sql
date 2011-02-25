@@ -7,14 +7,14 @@ delete from lost_datas;
 insert into vitals (timestamp, user_id) values ('2011-02-16 02:48:38.88439+00', 1);
 
 /* refs #4183 queries for calculate battery periods ------------------------------------------------------------------- */
-select * from events where event_type in ('StrapFastened', '') and user_id = 1 order by timestamp asc;
+select * from events where event_type in ('StrapFastened', 'StrapRemoved') and user_id = 1 order by timestamp asc;
 select * from strap_fastened_periods_function(1, '2009-10-10', now());
 select * from events where event_type in ('BatteryPlugged', 'BatteryUnplugged') and user_id = 1 and timestamp >= '2011-01-24 00:06:00+00' and timestamp <= '2011-01-31 00:06:00+00' order by timestamp asc;
 select * from strap_fastened_periods_function(1, '2009-10-08 08:26:05+00', '2009-10-08 8:36:05+00');
 insert into events (user_id, timestamp, event_type) values (1, '2009-10-08 9:37:05+00', 'BatteryUnplugged');
 delete from events where timestamp = '2009-10-08 9:37:05+00';
 
-delete from strap_fastened_periods;
+delete from strap_fastened_periods where user_id = 1;
 select * from strap_fastened_periods where user_id = 1;
 select * from lost_datas where user_id = 177;
 delete from strap_fastened_periods where user_id = 177;
