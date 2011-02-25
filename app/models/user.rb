@@ -2059,7 +2059,7 @@ class User < ActiveRecord::Base
     pcity = self.profile.city
     pstate = self.profile.state
     zipcode = self.profile.zipcode
-    address && pcity && pstate && zipcode ? address + ', ' + pcity + ', ' + pstate + ' - ' + zipcode : nil
+    address && pcity && pstate && zipcode ? address + ', ' + pcity + ', ' + pstate + ' ' + zipcode : nil
   end
 
   # 

@@ -15,7 +15,8 @@ class CriticalMailer < ActionMailer::ARMailer
   
   def non_critical_caregiver_text(model, user=nil)
     user = model.user if user.nil?    
-    setup_message("", model.to_s)
+    setup_message("", model.to_s)      
+    debugger
     setup_caregivers(user, model, :recepients)
     @subject =  ""
     @recipients = @text_recipients
@@ -42,11 +43,18 @@ class CriticalMailer < ActionMailer::ARMailer
  
   def device_event_operator_text(event)
     setup_caregivers(event.user, event, :caregiver_info)
-    @caregiver_info << '(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number if event.user.profile.emergency_number
-    setup_message(event.to_s, @caregiver_info + "\n" + (event.user.profile.account_number.blank? ? "(No acct num)" : event.user.profile.account_number) + (event.user.address.nil? ? "(No address)" : event.user.address),:use_email_log, :use_host_name_in_from_addr)
+    #!event.user.profile.emergency_number.blank? ? (@caregiver_info << '(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number)  
+    time_zone = Time.zone
+    Time.zone = 'Eastern Time (US & Canada)'
+    message_text = (event.user.profile.account_number.blank? ? "(No acct num)" : "HM" + event.user.profile.account_number) + " | "
+    message_text << (event.timestamp.blank? ? "(No timestamp)" : event.timestamp.in_time_zone(time_zone).to_s) + "\n"     
+    message_text << @caregiver_info
+    message_text << (event.user.address.nil? ? "(No address)" : "Address: " + event.user.address)
+    setup_message(event.to_s, message_text,:use_email_log, :use_host_name_in_from_addr) 
     setup_operators(event, :recepients, :include_phone_call) 
-    @recipients = @text_recipients
-    self.priority  = event.priority
+    @recipients = @text_recipients 
+    self.priority  = event.priority   
+    Time.zone = time_zone   
   end
 
 #=============== Reporting  ======================================    
@@ -140,8 +148,7 @@ class CriticalMailer < ActionMailer::ARMailer
     end
     user.active_caregivers.each do |caregiver|
       recipients_setup(caregiver, user.alert_option_by_type(caregiver, alert), mode)  
-    end
-    
+    end    
   end
 
   def recipients_setup(user, alert_option, mode, phone = :no_phone_call)
@@ -153,7 +160,7 @@ class CriticalMailer < ActionMailer::ARMailer
       email_bool = alert_option.email_active
       text_msg_bool = alert_option.text_active
       call_bool = alert_option.phone_active
-
+      
       if text_msg_bool == true and mode == :recepients
         if !user.profile.cell_phone.blank? and !user.profile.carrier.nil? and mode == :recepients
           @text_recipients  << ["#{user.profile.phone_strip(user.profile.cell_phone)}" + "#{user.profile.carrier.domain}"]

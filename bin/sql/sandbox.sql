@@ -108,3 +108,14 @@ limit 1000) and profiles.user_id = users.id order by users.id asc;
 
 ---- refs #4224 CHT: Delays after GW reboot --------------------------
 select * from vitals where user_id = 232 and timestamp > '2011-02-15' and timestamp < '2011-02-17' order by id desc limit 1000;
+
+---- find all operators for alll groups --------------------------
+select users.id, profiles.first_name, profiles.last_name, users.email, roles.authorizable_type as a_type, roles.authorizable_id as a_id
+case when roles.authorizable_type = 'Group' 
+then (select g.name from groups g where g.id = roles.authorizable_id) end as group_name
+from roles, roles_users, profiles, users 
+where roles.name = 'operator'
+and roles_users.user_id = users.id
+and profiles.user_id = users.id
+and roles_users.role_id = roles.id
+order by group_name;
