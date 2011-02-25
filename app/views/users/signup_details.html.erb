@@ -13,7 +13,7 @@
 		<div class="signup_detail_fields">Home Phone:</div><div> <%= @user.profile.home_phone%><br><br></div>
 		<div class="signup_detail_fields">Work Phone:</div><div> <%= @user.profile.work_phone%><br><br></div>
 		<div class="signup_detail_fields">Cell Phone:</div><div> <%= @user.profile.cell_phone%><br><br></div>
-		<div class="signup_detail_fields">Carrier:</div><div> <%= @user.carrier %><br><br></div>
+		<div class="signup_detail_fields">Carrier:</div><div> <%= @user.carrier_name %><br><br></div>
 		<div class="signup_detail_fields">Timezone:</div><div> <%= @user.profile.time_zone%><br><br></div>
 		<% if @user.is_halouser? %>
 		  <div class="signup_detail_fields">Emergency Number:</div><div> <%= @user.emergency_number_with_name %><br><br></div>
@@ -51,7 +51,7 @@
 	<div class="signup_detail_fields">Home Phone:</div><div><%= caregiver.profile.home_phone%><br><br></div>
 	<div class="signup_detail_fields">Work Phone:</div><div><%= caregiver.profile.work_phone%><br><br></div>
 	<div class="signup_detail_fields">Cell Phone:</div><div><%= caregiver.profile.cell_phone%><br><br></div>
-	<div class="signup_detail_fields">Cell Phone Carrier:</div><div><%= caregiver.carrier%><br><br></div>
+	<div class="signup_detail_fields">Cell Phone Carrier:</div><div><%= caregiver.carrier_name %><br><br></div>
 	<div class="signup_detail_fields">Key to Senior's Home:</div><div><br><br></div>	
 	<div class="signup_detail_fields">Active/Away:</div><div><%= @user.is_active_caregiver?(caregiver) ? "Active" : "Away" %><br><br></div>
 	<% @alert_types.each do |alert| %>

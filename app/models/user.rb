@@ -108,6 +108,7 @@ class User < ActiveRecord::Base
   # belongs_to :last_vital, :class_name => "Vital", :foreign_key => "last_vital_id"
   
   has_one  :profile, :dependent => :destroy # , :autosave => true
+  has_one :carrier, :through => :profile
   has_one  :invoice, :dependent => :destroy
   
   has_many :access_logs
@@ -2060,9 +2061,18 @@ class User < ActiveRecord::Base
     zipcode = self.profile.zipcode
     address && pcity && pstate && zipcode ? address + ', ' + pcity + ', ' + pstate + ' - ' + zipcode : nil
   end
-  def carrier
-    self.profile.cell_phone && self.profile.carrier_id ? self.profile.carrier.name : nil
+
+  # 
+  #  Thu Feb 24 01:15:24 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4223#note-10
+  #   * carrier is now :through association
+  # def carrier
+  #   self.profile.cell_phone && self.profile.carrier_id ? self.profile.carrier.name : nil
+  # end
+  def carrier_name
+    carrier.name unless carrier.blank?
   end
+
   def emergency_number_with_name
     self.profile.emergency_number_id ? self.profile.emergency_number.name + ' - ' + self.profile.emergency_number.number : nil
   end

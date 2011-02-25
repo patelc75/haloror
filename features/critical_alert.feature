@@ -8,18 +8,36 @@ Feature: Critical Alert
 
   Background:
     Given a user "test-user" exists with profile
+    And a user "senior-user" exists with profile
+    And a user exists with the following attributes:
+      | login      | caregiver-user         |
+      | email      | caregiver@cucumber.com |
+      | cell_phone | 1234567890             |
     And a device exists with the following attributes:
       | serial_number | 1234567890 |
-    And a group exists with the following attributes:
-      | name | halo |
-    And a group exists with the following attributes:
-      | name       | safety_care |
-      | sales_type | call_center |
-      And a group exists with the following attributes:
-      | name       | cms         |
-      | sales_type | call_center |
+    And the following groups:
+      | name        | sales_type  |
+      | halo        |             |
+      | safety_care | call_center |
+      | cms         | call_center |
+    And a carrier exists with the following attributes:
+      | name       | cell_carrier |
+      | domain | @cingularme.com |
+    And there are no falls, events, emails
     And user "test-user" has "halouser" role for group "halo"
-    And there are no falls, events
+    And user "senior-user" has "halouser" role for group "halo"
+    And user "caregiver-user" has "caregiver" role for user "senior-user"
+    And user "caregiver-user" has "cell_carrier" carrier
+    And "caregiver-user" is set to receive email for senior "senior-user"
+    And "caregiver-user" is set to receive text for senior "senior-user"
+
+  Scenario: Simulate a fall with successful text and email delivery to the call center
+    When user "senior-user" has "halouser" role for group "safety_care"
+    And I simulate a "Fall" with delivery to the call center for user login "senior-user" with a "valid" "call center account number"
+    Then I should have "1" count of "Fall"
+    And user "caregiver-user" has "caregiver" roles for user "senior-user"
+    And 1 email to "caregiver@cucumber.com" with keyword "fell" should be sent for delivery
+    And 1 email to "1234567890@cingularme.com" with keyword "fell" should be sent for delivery
 
   # @wip here will skip only this scenario, unless feature has @wip tag
   Scenario: Simulate a fall with successful delivery to the call center
@@ -50,7 +68,7 @@ Feature: Critical Alert
     And 2 emails to "exceptions_critical@halomonitoring.com" with subject "Missing user profile!" should be sent for delivery
     And 1 email to "exceptions_critical@halomonitoring.com" with subject "call center monitoring failure" should be sent for delivery
 
-  # 
+  #
   #  Fri Feb  4 00:59:03 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4147
   @one @critical
@@ -60,7 +78,7 @@ Feature: Critical Alert
     When user "test-user" has "halouser" role for group "safety_care, cms"
     And I simulate a "Panic" with delivery to the call center for user login "test-user" with a "valid" "call center account number"
     Then I should have "1" count of "Panic"
-    And I should have a "Panic" alert "not pending" to the call center with a "valid" call center delivery timestamp    
+    And I should have a "Panic" alert "not pending" to the call center with a "valid" call center delivery timestamp
     #   * usually only 1 email is sent
     #   * 3 emails due to "caregiver ... can raise exception" and panic sending additional email about "Technical Exception"
     And 3 emails to "exceptions_critical@halomonitoring.com" with subject "call center monitoring failure" should be sent for delivery
@@ -73,10 +91,10 @@ Feature: Critical Alert
   Scenario Outline: check battery status available and battery plugged
     When Battery status is "<status>" and "<event>" is latest for user login "test-user"
     Then I should have "<message>" for user "test-user"
-    
+
     Examples:
       | status      | event            | message           |
       | available   | BatteryPlugged   | Battery Plugged   |
       | available   | BatteryUnplugged | Battery Unplugged |
       | unavailable | BatteryPlugged   | Battery Plugged   |
-      | unavailable | BatteryUnplugged | Battery Unplugged |  
+      | unavailable | BatteryUnplugged | Battery Unplugged |
