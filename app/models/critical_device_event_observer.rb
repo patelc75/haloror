@@ -44,15 +44,19 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
             #end    
           end
           # 
-          #  Sat Feb 26 01:29:40 IST 2011, ramonrails
+          #  Tue Mar  1 03:49:49 IST 2011, ramonrails
           #   * https://redmine.corp.halomonitor.com/issues/4223
-          # if ( ServerInstance.current_host_short_string() != "ATL-WEB1" && ServerInstance.current_host_short_string() != "CRIT2" )
-          #   * server host string checking is shortened for better maintenance and readability
-          #   * notify caregivers irrespective of call_center_pending flag
-          #   * do not notify if the last thing changed was call_center_pending flag
-          unless ( ServerInstance.host?( "ATL-WEB1", "CRIT2") || @_changes.keys.include?( "call_center_timed_out") )
-            DeviceAlert.notify_caregivers(event)
-          end
+          #   * moved to critical_device_alert > after_create
+          # # 
+          # #  Sat Feb 26 01:29:40 IST 2011, ramonrails
+          # #   * https://redmine.corp.halomonitor.com/issues/4223
+          # # if ( ServerInstance.current_host_short_string() != "ATL-WEB1" && ServerInstance.current_host_short_string() != "CRIT2" )
+          # #   * server host string checking is shortened for better maintenance and readability
+          # #   * notify caregivers irrespective of call_center_pending flag
+          # #   * do not notify if the last thing changed was call_center_pending flag
+          # unless ( ServerInstance.host?( "ATL-WEB1", "CRIT2") || event.call_center_timed_out == false ) # @_changes.keys.include?( "call_center_timed_out") )
+          #   DeviceAlert.notify_caregivers(event)
+          # end
           # end
         else
           CriticalMailer.deliver_monitoring_failure("Missing user profile!", event)

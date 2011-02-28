@@ -8,7 +8,7 @@ class CriticalDeviceAlert < DeviceAlert
     # 
     #  Mon Feb 28 23:10:30 IST 2011, ramonrails
     #   * changed during the skype call
-    self.call_center_pending = false
+    # self.call_center_pending = false
     self.call_center_timed_out = false
     # 
     #  Mon Feb 28 23:24:26 IST 2011, ramonrails
@@ -28,7 +28,13 @@ class CriticalDeviceAlert < DeviceAlert
   end
 
   def after_create 
-    Event.create_event(self.user_id, self.class.to_s, self.id, self.timestamp)
+    Event.create_event( self.user_id, self.class.to_s, self.id, self.timestamp)
+    # 
+    #  Tue Mar  1 03:48:05 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4223
+    unless (ServerInstance.host?( "ATL-WEB1", "CRIT2"))
+      DeviceAlert.notify_caregivers( self)
+    end
     #
     # ramonrails: Thu Oct 14 02:05:58 IST 2010
     #   return TRUE to continue executing further callbacks
