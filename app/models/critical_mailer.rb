@@ -37,7 +37,7 @@ class CriticalMailer < ActionMailer::ARMailer
     message_text << "PET INFO" + "\n" + (user.profile.pet_information.blank? ? "(No pet information)" : user.profile.pet_information) + "\n\n"
     message_text << "You received this email because you’re a Halo call center agent.\n\n"    
     
-    setup_message(event.to_s_short + " (" + account_num + " at " + timestamp + ")", message_text, :use_email_log, :use_host_name_in_from_addr)     
+    setup_message(event.to_s_short + " (" + account_num + " " + timestamp + ")", message_text, :use_email_log, :use_host_name_in_from_addr)     
     setup_operators(event, :recepients, :include_phone_call) 
     self.priority  = event.priority
   end
@@ -53,12 +53,13 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   def operator_body(event)
+    message_text = ""
     #!event.user.profile.emergency_number.blank? ? (@caregiver_info << '(Emergency) ' + event.user.profile.emergency_number.name + event.user.profile.emergency_number.number)  
     time_zone = Time.zone
     Time.zone = 'Eastern Time (US & Canada)' 
     account_num =  (event.user.profile.account_number.blank? ? "(No acct num)" : "HM" + event.user.profile.account_number)
     timestamp =  (event.timestamp.blank? ? "(No timestamp)" : event.timestamp.in_time_zone(time_zone).to_s) + "\n"     
-    message_text = timestamp
+    message_text << timestamp
     message_text << @caregiver_info
     message_text << (event.user.address.nil? ? "(No address)" : "Address: " + event.user.address)
     Time.zone = time_zone       

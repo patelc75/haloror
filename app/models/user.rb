@@ -3079,8 +3079,9 @@ class User < ActiveRecord::Base
   def contact_info_by_alert_option(alert_option)
     if opts = alert_option.roles_user.roles_users_option
       unless opts.removed
-         info = "(#{opts.position}) " + contact_info()
-         return info += (opts.is_keyholder? ? " | Key holder" : " | Non-key holder")
+         info = "(#{opts.position}) " + contact_info()  
+         info << (opts.is_keyholder? ? " | Key holder" : " | Non-key holder")
+         return info 
       end
     end
   end
