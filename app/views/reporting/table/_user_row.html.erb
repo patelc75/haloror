@@ -102,7 +102,7 @@
     <% else %>
       <span class="<%= (_stamp.first < 1.day.ago) ? 'text-red' : '' %>"><%= UtilityHelper.format_datetime( _stamp.first, current_user) %></span>
       <% if current_user.is_super_admin? && _stamp.length == 2 %>
-        <br /><span class="tiny text-red">(<%= h _stamp[1] %>)</span>
+        <br /><span class="tiny text-blue">(Future:<%= h _stamp[1] %>)</span>
       <% end %>
     <% end %>
     
