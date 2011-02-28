@@ -189,7 +189,8 @@
         </p>
         <p id="coupon_code">
           <%= f.label :coupon_code, "Coupon Code" %> (if any)
-          <%= f.text_field :coupon_code %>
+          <%= f.text_field :coupon_code %> 
+          <%= f.label :coupon_code_extra, "Example: WINTER" %>
         </p>
         <% #= recaptcha_tags %>
       </td>
