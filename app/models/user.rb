@@ -581,7 +581,7 @@ class User < ActiveRecord::Base
   def notify_about_installation
     if self.is_halouser? # 
       _emails = [self] # at least, send email to itself
-      unless self.user_intakes.blank? # if we have user intake associated
+      unless (self.user_intakes.blank? || ServerInstance.host?( "ATL-WEB1", "CRIT2"))  # if we have user intake associated
         _ui = self.user_intakes.first # fetch user intake, for fetching related people
         #   fetch related people who require this installation alert
         _emails += [ self.has_caregivers, self.group_admins, _ui.subscriber, 
