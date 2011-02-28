@@ -425,25 +425,46 @@ class User < ActiveRecord::Base
     return admins
   end
   
-  def self.super_admins
-    admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'super_admin']
-    return admins
-  end
-  def self.administrators
-    admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'administrator']
-    return admins
-  end
-  
-  def self.halousers
-    User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'halouser']
-  end
   # 
-  #  Fri Feb 18 23:49:53 IST 2011, ramonrails
-  #   * DEPRECATED: in favor of the method above
-  # def self.halousers
-  #   role_ids = Role.find_all_by_name('halouser', :select => 'id').collect(&:id).compact.uniq
-  #   all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
+  #  Tue Mar  1 00:36:55 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4223
+  # Usage:
+  #   * User.super_admins
+  #   * User.administrators
+  #   * User.halousers
+  #   * User.operators
+  class << self
+    ['super_admin', 'administrator', 'halouser', 'operator'].each do |_type|
+      define_method "#{_type.pluralize}".to_sym do
+        User.find( :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", _type])
+        # if (_roles = Role.find_all_by_name( _type))
+        #   _roles.collect(&:users).flatten
+        # else
+        #   []
+        # end
+      end
+    end
+  end # << self
+  #   * OBSOLETE: by the dynamic code above
+  # def self.super_admins
+  #   admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'super_admin']
+  #   return admins
   # end
+  # def self.administrators
+  #   admins = User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'administrator']
+  #   return admins
+  # end
+  # 
+  # def self.halousers
+  #   User.find :all, :include => {:roles_users => :role}, :conditions => ["roles.name = ?", 'halouser']
+  # end
+  # # 
+  # #  Fri Feb 18 23:49:53 IST 2011, ramonrails
+  # #   * DEPRECATED: in favor of the method above
+  # # def self.halousers
+  # #   role_ids = Role.find_all_by_name('halouser', :select => 'id').collect(&:id).compact.uniq
+  # #   all( :conditions => { :id => RolesUser.find_all_by_role_id( role_ids).collect(&:user_id).compact.uniq }, :order => "id" )
+  # # end
 
 
   def self.active_operators
@@ -1008,7 +1029,7 @@ class User < ActiveRecord::Base
       end
     end
   end
-  
+
   # methods for a RESTful approach
   # using the authorization plugin for the following methods
   # examples:
@@ -1112,6 +1133,25 @@ class User < ActiveRecord::Base
     options # explicitly return options row
   end
 
+  # 
+  #  Mon Feb 28 22:12:49 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4223
+  def options_attribute_for_role( _role, _attribute, _value = nil)
+    #   * fetch options
+    options_for_role( _role, (_value.blank? ? nil : { _attribute.to_sym => _value }) )
+    # if (_options = options_for_role( _role))
+    #   #   * check validity of options
+    #   unless ( _options.blank? || !_options.respond_to?("#{_attribute}") )
+    #     if _value.blank?
+    #       _options.send("#{_attribute}")  # GET
+    #     else
+    #       _options.update_attribute( "#{_attribute}", _value) # no callbacks
+    #       _value
+    #     end
+    #   end
+    # end
+  end
+  
   # when was the device successfully installed for this user
   #   * check when "Installed" status first occured for this user
   #   * and so on...
@@ -2151,36 +2191,46 @@ class User < ActiveRecord::Base
   #   
   # end
 
-  def is_active_caregiver?(caregiver)
-    roles_user = self.roles_user_by_caregiver(caregiver)
-    if roles_user
-      opt = roles_user.roles_users_option
-      if opt && !opt.removed && opt.active
-        if opt.position
-          caregiver[:position] = opt.position
-        else
-          caregiver[:position] = 1
-        end
-        return true
-      end
-    end
-    return false
+  # 
+  #  Mon Feb 28 22:43:38 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4223
+  def is_active_caregiver?( _caregiver)
+    _options = _caregiver.options_for_senior( self)
+    !_options.blank? && _options.active == true
+    # roles_user = self.roles_user_by_caregiver(caregiver)
+    # if roles_user
+    #   opt = roles_user.roles_users_option
+    #   if opt && !opt.removed && opt.active
+    #     #   * FIXME: why are we assigning when boolean is returned?
+    #     if opt.position
+    #       caregiver[:position] = opt.position
+    #     else
+    #       caregiver[:position] = 1
+    #     end
+    #     return true
+    #   end
+    # end
+    # return false
   end
   
+  # 
+  #  Mon Feb 28 22:41:57 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4223
   def active_caregivers
-    cg_array = []
-    cgs = self.caregivers
-    if !cgs.nil?
-      cgs.each do |caregiver|
-        if self.is_active_caregiver?(caregiver)
-          cg_array << caregiver
-        end
-      end
-      cg_array.sort! do |a,b| a[:position] <=> b[:position] end
-      return cg_array
-    else
-      return []
-    end
+    self.has_caregivers.select {|e| e.active_for?( self) }
+    # cg_array = []
+    # cgs = self.caregivers
+    # if !cgs.nil?
+    #   cgs.each do |caregiver|
+    #     if self.is_active_caregiver?(caregiver)
+    #       cg_array << caregiver
+    #     end
+    #   end
+    #   cg_array.sort! do |a,b| a[:position] <=> b[:position] end
+    #   return cg_array
+    # else
+    #   return []
+    # end
   end
   
   def inactive_caregivers
@@ -2252,6 +2302,7 @@ class User < ActiveRecord::Base
     end
     return alert_option
   end
+
   def alert_option_by_type_operator(operator, type) 
     alert_option = nil
     roles_user = operator.roles_user_by_role_name('operator')

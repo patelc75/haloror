@@ -34,7 +34,7 @@ When /^I simulate a "([^\"]*)" with delivery to the call center for user login "
   object = model.gsub(/ /,'_').classify.constantize.create( _attributes) # was 965
   object.timestamp_server = Time.now-1.minute
   object.send(:update_without_callbacks)
-  DeviceAlert.job_process_crtical_alerts
+  CriticalDeviceAlert.job_process_crtical_alerts
 end
 
 When /^Battery status is "([^\"]*)" and "([^\"]*)" is latest for user login "([^\"]*)"$/ do |status, battery, login|
@@ -53,12 +53,16 @@ end
 
 # ---------- Then
 
+# 
+#  Mon Feb 28 23:58:55 IST 2011, ramonrails
+#   * changed the business logic code during voice call on skype
+#   * WARNING: needs to get these steps verified
 Then /^I should have a "([^\"]*)" alert "([^\"]*)" to the call center with a "([^\"]*)" call center delivery timestamp$/ do |model, pending_string, timestamp_status|
-  critical_alert =  model.constantize.first   
+  critical_alert =  model.classify.constantize.first  
   if pending_string == "not pending"
-    critical_alert.call_center_pending.should be false, "#{model} should be not pending"
+    critical_alert.call_center_pending.should be_false, "#{model} should be not pending"
   elsif pending_string == "pending"
-    critical_alert.call_center_pending.should be true, "#{model} should be pending"  
+    critical_alert.call_center_pending.should be_true, "#{model} should be pending"  
   else
     assert false, "#{pending_string} is not a valid pending status"
   end

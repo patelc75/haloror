@@ -27,11 +27,20 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
       #
       if UtilityHelper.validate_event_user(event) == true #only validating user because GW does not use the device_id
         if event.user.profile         
-          if event.call_center_pending == false
+          # 
+          #  Mon Feb 28 23:11:33 IST 2011, ramonrails
+          #   * changed during skype voice call
+          if (event.call_center_pending == true) && (event.call_center_timed_out == true)
             DeviceAlert.notify_call_center_and_partners(event)
             #refs #3958 comment/uncomment due to Email delay from ATL-WEB1 on 4 hour slots on critical alerts
-            #if(ServerInstance.current_host_short_string() != "ATL-WEB1" and ServerInstance.current_host_short_string() != "CRIT2")              
+            #if(ServerInstance.current_host_short_string() != "ATL-WEB1" and ServerInstance.current_host_short_string() != "CRIT2")
             DeviceAlert.notify_operators(event)
+            # 
+            #  Mon Feb 28 23:12:17 IST 2011, ramonrails
+            #   * changed during hte skype voice call
+            #   * WARNING: not tested
+            event.call_center_pending = false
+            event.send( :update_without_callbacks) # do not fire recursive triggers
             #end    
           end
           # 
@@ -41,7 +50,9 @@ class CriticalDeviceEventObserver  < ActiveRecord::Observer
           #   * server host string checking is shortened for better maintenance and readability
           #   * notify caregivers irrespective of call_center_pending flag
           #   * do not notify if the last thing changed was call_center_pending flag
-          DeviceAlert.notify_caregivers(event) unless ( ServerInstance.host?( "ATL-WEB1", "CRIT2") || @_changes.keys.include?( "call_center_pending") )
+          unless ( ServerInstance.host?( "ATL-WEB1", "CRIT2") || @_changes.keys.include?( "call_center_timed_out") )
+            DeviceAlert.notify_caregivers(event)
+          end
           # end
         else
           CriticalMailer.deliver_monitoring_failure("Missing user profile!", event)

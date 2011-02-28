@@ -15,11 +15,11 @@ Feature: Critical Alert
     And a user exists with the following attributes:
       | login      | caregiver-user         |
       | email      | caregiver@cucumber.com |
-      | cell_phone | 1234567890             |
+      And user "caregiver-user" has "1234567890" cell phone
     And a user exists with the following attributes:
       | login      | operator-user          |
       | email      | operator@cucumber.com  |
-      | cell_phone | 0987654321             |
+    And user "operator-user" has "0987654321" cell phone
     And a device exists with the following attributes:
       | serial_number | 1234567890 |
     And the following groups:
@@ -37,12 +37,13 @@ Feature: Critical Alert
     And user "operator-user" has "operator" role for group "safety_care"
     And user "caregiver-user" has "caregiver" role for user "senior-user, test-user"
     And user "caregiver-user" has "cell_carrier" carrier
+    And user "operator-user" has "cell_carrier" carrier
     And "caregiver-user" is set to receive email for senior "senior-user, test-user"
     And "caregiver-user" is set to receive text for senior "senior-user, test-user"
     And "operator-user" is set to receive email for group "safety_care"
     And "operator-user" is set to receive text for group "safety_care"
     And "caregiver-user" is active caregiver for senior "senior-user, test-user"
-    And "operator-user" is  active operator for group "safety_care"
+    And "operator-user" is active operator for group "safety_care"
 
   Scenario: Simulate a fall with successful text and email delivery to the call center
     When user "senior-user" has "halouser" role for group "safety_care"
@@ -53,8 +54,8 @@ Feature: Critical Alert
     # And user "caregiver-user" has "caregiver" roles for user "senior-user"
     And 1 email to "caregiver@cucumber.com" with keyword "fell" should be sent for delivery
     And 1 email to "1234567890@cingularme.com" with keyword "fell" should be sent for delivery
-    And 1 email to "operator@cucumber.com" with keyword "fell" should be sent for delivery
-    And 1 email to "0987654321@cingularme.com" with keyword "fell" should be sent for delivery                                                                                                  
+    And 1 email to "operator@cucumber.com" with keyword "FALL" should be sent for delivery
+    And 1 email to "0987654321@cingularme.com" with keyword "FALL" should be sent for delivery                                                                                                  
 
   Scenario: Simulate a fall for a user with no call center group (eg. "safety_care")
     When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "call center account number"
@@ -62,8 +63,8 @@ Feature: Critical Alert
     And I should have a "Fall" alert "not pending" to the call center with a "missing" call center delivery timestamp
     And 1 email to "caregiver@cucumber.com" with keyword "fell" should be sent for delivery
     And 1 email to "1234567890@cingularme.com" with keyword "fell" should be sent for delivery
-    And no email to "operator@cucumber.com" with keyword "fell" should be sent for delivery
-    And no email to "0987654321@cingularme.com" with keyword "fell" should be sent for delivery                                                                                                  
+    And no email to "operator@cucumber.com" with keyword "FALL" should be sent for delivery
+    And no email to "0987654321@cingularme.com" with keyword "FALL" should be sent for delivery                                                                                                  
 
   # https://redmine.corp.halomonitor.com/issues/3170
   # Scenario: Simulate a fall for a user with an invalid call center account number

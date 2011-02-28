@@ -37,7 +37,9 @@ class Group < ActiveRecord::Base
   named_scope :ordered, lambda {|*args| {:order => (args.flatten.first || :name)}}
   named_scope :contains, lambda {|*args| _str = "%#{args.flatten.first}%"; { :conditions => ["name LIKE ? OR email LIKE ? OR sales_type LIKE ?", _str, _str, _str] }}
 
-  # --------------- triggers / callbacks (never called directly in code)
+  # =====================
+  # = triggers / events =
+  # =====================
 
   # TODO: rspec done. cucumber pending for this
   # at least one value for NORMAL must exist
@@ -64,22 +66,6 @@ class Group < ActiveRecord::Base
     _group = Group.find_or_create_by_name('default', { :email => _email} ) # find or create default group
     _group.update_attributes( :email => _email) unless _group.email == _email # ensure default email address
     _group # return the default group
-  end
-
-  # is this a master group? name should have last 6 characters "master"
-  def is_master_group?
-    name.to_s =~ /^.._master$/
-  end
-  
-  # find master group of itself
-  #   * master group is only available to a group with name pattern ??_(.+) which means 2 letters and '_'
-  #   * master group will have a name pattern ??_master where ?? is picked from child group name
-  def master_group
-    # for example
-    #   ml_master for "ml_the_dealer_name"
-    #   de_master for "de_ any name suits here"
-    #   nothing for bestbuy
-    Group.find_by_name( name[0..2] + 'master') if name =~ /^.._(.+)$/
   end
 
   # Usage:
@@ -111,23 +97,6 @@ class Group < ActiveRecord::Base
     Group.default!.coupon_codes.all( :conditions => { :device_model_id => _devices, :coupon_code => 'default'}).length == 2
   end
 
-  # Usage:
-  #   get_coupon_code( :device_model => <AR_object_here>, :coupon_code => '99TRIAL', :part_number => '<here>')
-  def coupon( options = {})
-    # valid options structure with a coupon code
-    if !options.blank? && options.is_a?(Hash) && !options[:coupon_code].blank?
-      # AR object given?
-      _model = options[:device_model] unless options[:device_model].blank?
-      # part_number given? not found yet?
-      _model = DeviceModel.find_by_part_number( options[:part_number]) if _model.blank? && !options[:part_number].blank?
-      # find amoung counpon_codes for this group
-      _coupon = self.coupon_codes.first( :conditions => { :coupon_code => options[:coupon_code], :device_model_id => _model})
-    end
-    # not found so far? get default for options[:device_model] or myhalo_complete
-    _coupon = DeviceModelPrice.default( options[:device_model]) if !defined?(_coupon) || _coupon.blank?
-    _coupon
-  end
-
   # QUESTION: how is user.group_memberships different from this?
   #   Tue Nov  2 06:44:15 IST 2010 : updated the logic above now. should be faster
   # groups applicable to user
@@ -155,6 +124,46 @@ class Group < ActiveRecord::Base
   # =============================
   # = public : instance methods =
   # =============================
+
+  # 
+  #  Mon Feb 28 23:27:55 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4223
+  def is_call_center?
+    sales_type == 'call_center'
+  end
+  
+  # Usage:
+  #   get_coupon_code( :device_model => <AR_object_here>, :coupon_code => '99TRIAL', :part_number => '<here>')
+  def coupon( options = {})
+    # valid options structure with a coupon code
+    if !options.blank? && options.is_a?(Hash) && !options[:coupon_code].blank?
+      # AR object given?
+      _model = options[:device_model] unless options[:device_model].blank?
+      # part_number given? not found yet?
+      _model = DeviceModel.find_by_part_number( options[:part_number]) if _model.blank? && !options[:part_number].blank?
+      # find amoung counpon_codes for this group
+      _coupon = self.coupon_codes.first( :conditions => { :coupon_code => options[:coupon_code], :device_model_id => _model})
+    end
+    # not found so far? get default for options[:device_model] or myhalo_complete
+    _coupon = DeviceModelPrice.default( options[:device_model]) if !defined?(_coupon) || _coupon.blank?
+    _coupon
+  end
+
+  # is this a master group? name should have last 6 characters "master"
+  def is_master_group?
+    name.to_s =~ /^.._master$/
+  end
+  
+  # find master group of itself
+  #   * master group is only available to a group with name pattern ??_(.+) which means 2 letters and '_'
+  #   * master group will have a name pattern ??_master where ?? is picked from child group name
+  def master_group
+    # for example
+    #   ml_master for "ml_the_dealer_name"
+    #   de_master for "de_ any name suits here"
+    #   nothing for bestbuy
+    Group.find_by_name( name[0..2] + 'master') if name =~ /^.._(.+)$/
+  end
 
   ["reseller", "retailer", "call_center"].each do |_what|
     define_method "is_#{_what}?".to_sym do

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110210154459) do
+ActiveRecord::Schema.define(:version => 20110228174600) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -162,6 +162,13 @@ ActiveRecord::Schema.define(:version => 20110210154459) do
   end
 
   add_index "battery_charge_completes", ["device_id"], :name => "index_battery_charge_completes_on_device_id"
+
+  create_table "battery_charge_periods", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "begin_time"
+    t.datetime "end_time"
+    t.string   "duration",   :limit => nil
+  end
 
   create_table "battery_criticals", :force => true do |t|
     t.integer  "device_id"
@@ -542,6 +549,7 @@ ActiveRecord::Schema.define(:version => 20110210154459) do
     t.datetime "timestamp_server"
     t.datetime "gw_timestamp"
     t.integer  "severity"
+    t.boolean  "call_center_timed_out"
   end
 
   create_table "firmware_upgrades", :force => true do |t|
@@ -625,6 +633,7 @@ ActiveRecord::Schema.define(:version => 20110210154459) do
     t.datetime "timestamp_call_center"
     t.boolean  "call_center_pending"
     t.datetime "timestamp_server"
+    t.boolean  "call_center_timed_out"
   end
 
   create_table "halo_debug_msgs", :force => true do |t|
@@ -859,6 +868,7 @@ ActiveRecord::Schema.define(:version => 20110210154459) do
     t.datetime "timestamp_server"
     t.datetime "gw_timestamp"
     t.boolean  "test_mode"
+    t.boolean  "call_center_timed_out"
   end
 
   create_table "payment_gateway_responses", :force => true do |t|
@@ -1117,6 +1127,13 @@ ActiveRecord::Schema.define(:version => 20110210154459) do
 
   add_index "steps", ["begin_timestamp", "steps", "user_id"], :name => "index_steps_on_user_id_and_begin_timestamp_and_steps"
   add_index "steps", ["id"], :name => "steps_pkey"
+
+  create_table "strap_fastened_periods", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "begin_time"
+    t.datetime "end_time"
+    t.string   "duration",   :limit => nil
+  end
 
   create_table "strap_fasteneds", :force => true do |t|
     t.integer  "device_id"

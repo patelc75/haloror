@@ -153,11 +153,11 @@ Factory.define :profile do |v|
   v.state { Faker::Address.us_state }
   v.zipcode { Faker::Address.zip_code }
   v.time_zone { Time.now.zone }
-  v.home_phone "1234567890"
-  v.cell_phone "1234567890"
-  v.account_number "1234"
-  v.hospital_number "0987654321"
-  v.doctor_phone "1234567890"
+  v.home_phone { (0..9).to_a.shuffle.join('') }
+  v.cell_phone { (0..9).to_a.shuffle.join('') }
+  v.account_number { (0..9).to_a.shuffle.join('') }[0..3]
+  v.hospital_number { (0..9).to_a.shuffle.join('') }
+  v.doctor_phone { (0..9).to_a.shuffle.join('') }
   v.association :carrier #, :factory => :carrier
   v.association :emergency_number #, :factory => :emergency_number
   # v.association :user #, :factory => :user

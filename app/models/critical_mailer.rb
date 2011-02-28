@@ -16,7 +16,7 @@ class CriticalMailer < ActionMailer::ARMailer
   def non_critical_caregiver_text(model, user=nil)
     user = model.user if user.nil?    
     setup_message("", model.to_s)      
-    debugger
+
     setup_caregivers(user, model, :recepients)
     @subject =  ""
     @recipients = @text_recipients
@@ -169,21 +169,21 @@ class CriticalMailer < ActionMailer::ARMailer
       email_bool = alert_option.email_active
       text_msg_bool = alert_option.text_active
       call_bool = alert_option.phone_active
-      
-      if text_msg_bool == true and mode == :recepients
-        if !user.profile.cell_phone.blank? and !user.profile.carrier.nil? and mode == :recepients
+
+      if (text_msg_bool == true) && (mode == :recepients)
+        if !user.profile.cell_phone.blank? && !user.profile.carrier.nil? && (mode == :recepients)
           @text_recipients  << ["#{user.profile.phone_strip(user.profile.cell_phone)}" + "#{user.profile.carrier.domain}"]
         end
       end
       
       if email_bool == true
-        if !user.email.blank? and mode == :recepients
+        if !user.email.blank? && (mode == :recepients)
           @recipients << ["#{user.email}"]
         end
       end
       
       if call_bool == true
-        if !user.profile.phone_email.blank? and mode == :recepients and phone == :include_phone_call
+        if !user.profile.phone_email.blank? && (mode == :recepients) && (phone == :include_phone_call)
           @recipients  << ["#{user.profile.phone_email}"]
         elsif mode == :caregiver_info
           @caregiver_info += user.contact_info_by_alert_option(alert_option) + "\n" 
@@ -195,24 +195,31 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   #if group = :halo_only, only set up operators for the 'halo' group
-  def setup_operators(event, mode, phone = :no_phone_call, group = :all)
-    ops = User.active_operators
-    groups = event.user.is_halouser_for_what
-    halo_group = Group.find_by_name('halo') if group == :halo_only
-    operators = []
-    ops.each do |op|
-      if (group == :halo_only)
-  	    operators << op if op.is_operator_of? halo_group
-  	  else
-      	operators << op if(op.is_operator_of_any?(groups))
-  	  end
-    end
+  # 
+  #  Tue Mar  1 00:23:32 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4223
+  #   * code optimized for better readability
+  def setup_operators( event, mode, phone = :no_phone_call, group = :all)
+    # ops = User.active_operators
+    #   * return an array of group(s) in both conditions
+    groups = ( (group == :halo_only) ? [Group.find_by_name('halo')] : event.user.is_halouser_for_what )
+    # halo_group = Group.find_by_name('halo') if group == :halo_only
+    #   * pick operators of the selected groups
+    operators = User.active_operators.select {|e| e.is_operator_of_any?( groups) }
+    # operators = []
+    # ops.each do |op|
+    #   if (group == :halo_only)
+    #         operators << op if op.is_operator_of? halo_group
+    #       else
+    #     operators << op if(op.is_operator_of_any?(groups))
+    #       end
+    # end
     
-    if operators
+    # if operators
       operators.each do |operator|
-        recipients_setup(operator, operator.alert_option_by_type_operator(operator,event), mode, phone)
+        recipients_setup( operator, operator.alert_option_by_type_operator(operator,event), mode, phone)
       end
-    end
+    # end
   end
   
   def daily_recipients

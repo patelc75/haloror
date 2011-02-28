@@ -151,6 +151,38 @@ Given /^"([^"]*)" is active caregiver for senior "([^"]*)"$/ do |_caregiver_logi
   end
 end
 
+Given /^"([^"]*)" is set to receive (email|text) for group "([^"]*)"$/ do |_caregiver_login, _what, _names|
+  (_caregiver = User.find_by_login(_caregiver_login)).should_not be_blank
+  #   * check multiple senior logins
+  _names.split(',').collect(&:strip).flatten.compact.uniq.each do |_name|
+
+    (_group = Group.find_by_name( _name)).should_not be_blank
+    #   attributes
+    _role = _caregiver.roles_for( _group).each do |_role|
+      _caregiver.options_attribute_for_role( _role, "#{_what}_active".to_sym, true)
+      _caregiver.options_attribute_for_role( _role, "#{_what}_active".to_sym).should be_true
+    end    
+  end # multiple seniors
+end
+
+Given /^"([^"]*)" is active operator for group "([^"]*)"$/ do |_login, _names|
+  (_user = User.find_by_login( _login)).should_not be_blank
+  #   groups
+  _names.split(',').collect(&:strip).flatten.compact.uniq.each do |_name|
+    _group = Group.find_by_name( _name)
+    _user.roles_for( _group).select {|e| e.name == 'operator' }.each do |_role|
+      _user.options_attribute_for_role( _role, :active, true)
+      _user.options_attribute_for_role( _role, :active).should be_true
+    end
+  end
+end
+
+Given /^user "([^"]*)" has "([^"]*)" cell phone$/ do |_login, _phone|
+  (_user = User.find_by_login( _login)).should_not be_blank
+  _user.profile.should_not be_blank
+  _user.profile.update_attribute( :cell_phone, _phone).should be_true
+end
+
 # =========
 # = whens =
 # =========
