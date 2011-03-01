@@ -10,7 +10,8 @@ class StrapOffAlert < ActiveRecord::Base
     conds = []
     conds << "reconnected_at IS NULL"
     conds << "device_id IN (SELECT id from devices where serial_number LIKE 'H1%')"
-    conds << "device_id IN (SELECT status.id FROM device_strap_status status WHERE is_fastened > 0)"
+    conds << "device_id IN (SELECT status.id FROM device_strap_status status WHERE is_fastened > 0)" 
+    conds << "id IN ( SELECT d.device_id FROM devices_users d )" #  exclude devices with no mapped users
     #conds << "device_id IN (SELECT d.id FROM devices d WHERE d.device_revision_id IN (SELECT device_revisions.id FROM device_revisions INNER JOIN (device_models INNER JOIN device_types ON device_models.device_type_id = device_types.id) ON device_revisions.device_model_id = device_models.id WHERE device_types.device_type = 'Chest Strap'))"
     
     alerts = StrapOffAlert.find(:all, :conditions => conds.join(' and '))
