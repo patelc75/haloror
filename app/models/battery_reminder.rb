@@ -28,8 +28,11 @@ class BatteryReminder < DeviceAlert
   
   def after_create
   	if self.reminder_num == 3
-  	  #DeviceAlert.notify_call_center_and_partners(self)      #do not send to call center until they are ready
-		  DeviceAlert.notify_operators(self)
+  	  #DeviceAlert.notify_call_center_and_partners(self)      #do not send TCP alerts to call center until they are ready
+
+		  # FIXME: if battery reminder ever goes to operators we need rename created_at to timestamp to match falls, panic since it's considered a critical alert
+		  #DeviceAlert.notify_operators(self)     #we do NOT send battery reminders email, text to SafetyCare
+		  
 		  DeviceAlert.notify_caregivers(self)
 	  else
 		  DeviceAlert.notify_caregivers(self)
