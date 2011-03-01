@@ -7,45 +7,28 @@ class StrapOffAlert < ActiveRecord::Base
   def self.job_detect_straps_off
     RAILS_DEFAULT_LOGGER.warn("StrapOffAlert.job_detect_straps_off running at #{Time.now}")
     
-    # 
-    #  Wed Feb 23 01:58:04 IST 2011, ramonrails
-    #   * SystemTimeout.ethernet
-    #   * SystemTimeout.dialup
-    #   
-    # ethernet_system_timeout = SystemTimeout.find_by_mode('ethernet')
-    # dialup_system_timeout   = SystemTimeout.find_by_mode('dialup')
-
     conds = []
     conds << "reconnected_at IS NULL"
-    conds << "device_id IN (SELECT d.id FROM devices d WHERE d.device_revision_id IN (SELECT device_revisions.id FROM device_revisions INNER JOIN (device_models INNER JOIN device_types ON device_models.device_type_id = device_types.id) ON device_revisions.device_model_id = device_models.id WHERE device_types.device_type = 'Chest Strap'))"
+    conds_chest_strap = "device_id IN (SELECT id from devices where serial_number LIKE 'H1%')"
+    conds << conds_chest_strap 
     conds << "device_id IN (SELECT status.id FROM device_strap_status status WHERE is_fastened > 0)"
+    #conds << "device_id IN (SELECT d.id FROM devices d WHERE d.device_revision_id IN (SELECT device_revisions.id FROM device_revisions INNER JOIN (device_models INNER JOIN device_types ON device_models.device_type_id = device_types.id) ON device_revisions.device_model_id = device_models.id WHERE device_types.device_type = 'Chest Strap'))"
     
-    alerts = StrapOffAlert.find(:all,
-      :conditions => conds.join(' and '))
+    alerts = StrapOffAlert.find(:all, :conditions => conds.join(' and '))
+    
     alerts.each do |alert|
       soa = StrapOnAlert.new(:device_id => alert.device_id)
       soa.save!
       alert.reconnected_at = Time.now
       alert.save!
     end
-
-    # 
-    #  Tue Feb 22 04:39:17 IST 2011, ramonrails
-    #   * This is a working code. Similar to the small code block below
-    #   
+ 
     ['ethernet', 'dialup'].each do |_mode|
       conds = []
       conds << "(id IN (SELECT device_id FROM access_mode_statuses WHERE mode = '#{_mode}') OR id NOT IN (SELECT device_id FROM access_mode_statuses))"
-      # 
-      #  Tue Feb 22 01:16:24 IST 2011, ramonrails
-      #   * https://redmine.corp.halomonitor.com/issues/4203
       conds << "id IN (SELECT ss.id FROM device_strap_status ss WHERE is_fastened = 0 AND ss.updated_at < now() - interval '#{SystemTimeout.send(_mode.to_sym).strap_off_timeout_sec} seconds')"
-      conds << "id IN (SELECT d.id FROM devices d WHERE d.device_revision_id IN (SELECT device_revisions.id FROM device_revisions INNER JOIN (device_models INNER JOIN device_types ON device_models.device_type_id = device_types.id) ON device_revisions.device_model_id = device_models.id WHERE device_types.device_type = 'Chest Strap'))"
-      # 
-      #  Wed Feb 23 01:19:16 IST 2011, ramonrails
-      #   * https://redmine.corp.halomonitor.com/issues/4203
-      #   * exclude devices with no mapped users
-      conds << "id IN ( SELECT d.device_id FROM devices_users d )"
+      conds << conds_chest_strap      
+      conds << "id IN ( SELECT d.device_id FROM devices_users d )" #  exclude devices with no mapped users  
       # 
       #  Tue Feb 22 02:27:56 IST 2011, ramonrails
       #   * Can be ruby code with single SQL query
@@ -53,43 +36,7 @@ class StrapOffAlert < ActiveRecord::Base
       #    Device.chest_straps.ethernets.all( :conditions => { :id => DeviceStrapStatus.strapped_off.updated_before( SystemTimeout.dialup.strap_off_timeout_sec ).all( :select => :id).collect(&:id) })
       devices = Device.find(:all, :conditions => conds.join(' AND '))
       devices.each { |device| process_device_strap_off(device) }
-    end
-    
-    # 
-    #  Wed Feb 23 01:55:17 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4203
-    #   * re-factored above in a loop
-    #   
-    # # Do same thing for dialup
-    # conds = []
-    # conds << "id IN (SELECT device_id FROM access_mode_statuses WHERE mode = 'dialup')"
-    # # 
-    # #  Tue Feb 22 01:16:24 IST 2011, ramonrails
-    # #   * https://redmine.corp.halomonitor.com/issues/4203
-    # conds << "id IN (SELECT ss.id FROM device_strap_status ss WHERE is_fastened = 0 AND ss.updated_at < (now() - interval '#{dialup_system_timeout.strap_off_timeout_sec} seconds'))"
-    # conds << "id IN (SELECT d.id FROM devices d WHERE d.device_revision_id IN (SELECT device_revisions.id FROM device_revisions INNER JOIN (device_models INNER JOIN device_types ON device_models.device_type_id = device_types.id) ON device_revisions.device_model_id = device_models.id WHERE device_types.device_type = 'Chest Strap'))"
-    # # 
-    # #  Wed Feb 23 01:19:16 IST 2011, ramonrails
-    # #   * https://redmine.corp.halomonitor.com/issues/4203
-    # #   * exclude devices with no mapped users
-    # conds << "id IN (  SELECT d.id FROM devices d INNER JOIN devices_users du ON du.device_id = d.id )"
-    # # 
-    # #  Tue Feb 22 02:27:56 IST 2011, ramonrails
-    # #   * Can be ruby code with single SQL query
-    # #   * TODO: change to ruby code. Has same performance
-    # #    Device.chest_straps.dialups.all( :conditions => { :id => DeviceStrapStatus.strapped_off.updated_before( SystemTimeout.dialup.strap_off_timeout_sec ).all( :select => :id).collect(&:id) })
-    # devices = Device.find(:all, :conditions => conds.join(' AND '))
-    # devices.each { |device| process_device_strap_off(device) }
-
-    # # 
-    # #  Tue Feb 22 02:36:43 IST 2011, ramonrails
-    # #   * https://redmine.corp.halomonitor.com/issues/4203
-    # #   * This code block is similar to the one commented above
-    # #   * Either can be used. This one may be easier to maintain
-    # ['ethernets', 'dialups'].each do |_mode|
-    #   _devices = Device.send(_mode.to_sym).chest_straps.all( :conditions => { :id => DeviceStrapStatus.strapped_off.updated_before( SystemTimeout.send(_mode.singularize.to_sym).strap_off_timeout_sec ).all( :select => :id).collect(&:id) })
-    #   _devices.each { |e| process_device_strap_off( e) }
-    # end
+    end   
     
     true
   end

@@ -11,6 +11,7 @@ class CriticalHealthClient
   def self.alert(event_type,user_id,account_num,timestamp=Time.now)
     event_type = event_type_string(event_type)
     time_format = timestamp.strftime("%Y-%m-%d|%H:%M:%S")
+    RAILS_DEFAULT_LOGGER.warn("CriticalHealthClient::alert before sock.write = " +  "event, %s, %s, %s\r\n" % [event_type, time_format, user_id])
 
     Timeout::timeout(2) {
       sock = TCPSocket.open(CRITICALHEALTH_ADDRESS, CRITICALHEALTH_EVENT_PORT)
@@ -20,7 +21,7 @@ class CriticalHealthClient
       sock.close
     }
 
-    RAILS_DEFAULT_LOGGER.warn("CriticalHealthClient::alert = " +  "event, %s, %s, %s\r\n" % [event_type, time_format, user_id])
+    RAILS_DEFAULT_LOGGER.warn("CriticalHealthClient::alert after sock.write = " +  "event, %s, %s, %s\r\n" % [event_type, time_format, user_id])
     return true
   end
 
