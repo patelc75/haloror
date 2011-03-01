@@ -30,7 +30,7 @@ When /^I simulate a "([^\"]*)" with delivery to the call center for user login "
   end
   SystemTimeout.create(:mode => "dialup", :critical_event_delay_sec => 0, :gateway_offline_timeout_sec => 0, :device_unavailable_timeout_sec => 0, :strap_off_timeout_sec => 0)
   _attributes = { :timestamp => Time.now-2.minutes, :user => user, :device_id => Device.find_by_serial_number("1234567890").id }
-  _attributes[:magnitude] = 23 unless model.downcase == 'panic' # , :magnitude => 23
+  _attributes[:magnitude] = 23 if model.classify.constantize.new.respond_to?( :magnitude) # unless model.downcase == 'panic' # , :magnitude => 23
   object = model.gsub(/ /,'_').classify.constantize.create( _attributes) # was 965
   object.timestamp_server = Time.now-1.minute
   object.send(:update_without_callbacks)
