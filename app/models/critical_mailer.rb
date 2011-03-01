@@ -25,7 +25,6 @@ class CriticalMailer < ActionMailer::ARMailer
   end  
      
   def device_event_operator(event)
-    # refs #864, New non-wizard email for call center agents
     setup_caregivers(event.user, event, :caregiver_info)    
     #@caregiver_info << "EMERGENCY NUM\n" + event.user.profile.emergency_number.name + "\n" + event.user.profile.emergency_number.number if event.user.profile.emergency_number
     user = event.user
@@ -195,31 +194,14 @@ class CriticalMailer < ActionMailer::ARMailer
   end
   
   #if group = :halo_only, only set up operators for the 'halo' group
-  # 
-  #  Tue Mar  1 00:23:32 IST 2011, ramonrails
-  #   * https://redmine.corp.halomonitor.com/issues/4223
-  #   * code optimized for better readability
   def setup_operators( event, mode, phone = :no_phone_call, group = :all)
-    # ops = User.active_operators
-    #   * return an array of group(s) in both conditions
     groups = ( (group == :halo_only) ? [Group.find_by_name('halo')] : event.user.is_halouser_for_what )
-    # halo_group = Group.find_by_name('halo') if group == :halo_only
-    #   * pick operators of the selected groups
+
     operators = User.active_operators.select {|e| e.is_operator_of_any?( groups) }
-    # operators = []
-    # ops.each do |op|
-    #   if (group == :halo_only)
-    #         operators << op if op.is_operator_of? halo_group
-    #       else
-    #     operators << op if(op.is_operator_of_any?(groups))
-    #       end
-    # end
     
-    # if operators
-      operators.each do |operator|
-        recipients_setup( operator, operator.alert_option_by_type_operator(operator,event), mode, phone)
-      end
-    # end
+    operators.each do |operator|
+      recipients_setup( operator, operator.alert_option_by_type_operator(operator,event), mode, phone)
+    end
   end
   
   def daily_recipients
