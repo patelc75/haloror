@@ -57,7 +57,7 @@ class CriticalMailer < ActionMailer::ARMailer
     time_zone = Time.zone
     Time.zone = 'Eastern Time (US & Canada)' 
     account_num =  (event.user.profile.account_number.blank? ? "(No acct num)" : "HM" + event.user.profile.account_number)
-    timestamp =  (event.timestamp.blank? ? "(No timestamp)" : event.timestamp.in_time_zone(time_zone).to_s) + "\n"     
+    timestamp =  (event.timestamp.blank? ? "(No timestamp)" : event.timestamp.in_time_zone(Time.zone).to_s) + "\n"     
     message_text << timestamp
     message_text << @caregiver_info
     message_text << (event.user.address.nil? ? "(No address)" : "Address: " + event.user.address)
