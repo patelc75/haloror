@@ -77,8 +77,8 @@ class Order < ActiveRecord::Base
     if ( _coupon = product_cost )
     # if order_items && order_items.first.device_model && order_items.first.device_model.coupon_codes
     #   _coupon = order_items.first.device_model.coupon_codes.first
-      { "deposit" => _coupon.deposit, "shipping" => _coupon.shipping, "monthly_recurring" => _coupon.monthly_recurring, "months_advance" => _coupon.months_advance, "months_trial" => _coupon.months_trial }
-    else
+      { "code name" => _coupon.coupon_code, "deposit" => _coupon.deposit, "shipping" => _coupon.shipping, "monthly_recurring" => _coupon.monthly_recurring, "months_advance" => _coupon.months_advance, "months_trial" => _coupon.months_trial }
+    else                           
      {} 
     end
   end
