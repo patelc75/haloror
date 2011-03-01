@@ -26,7 +26,7 @@ Feature: Critical Alert
       | name        | sales_type  |
       | halo        |             |
       | safety_care | call_center |
-      | cms         | call_center |
+      # | cms         | call_center |
     And critical alerts types exist
     And a carrier exists with the following attributes:
       | name   | cell_carrier    |
@@ -47,7 +47,7 @@ Feature: Critical Alert
 
   Scenario Outline: Simulate a <event> with successful text and email delivery to the call center
     When user "senior-user" has "halouser" role for group "safety_care"
-    And user "test-user" has "halouser" role for group "safety_care, cms"
+    And user "test-user" has "halouser" role for group "safety_care"
     And I simulate a "<event>" with delivery to the call center for user login "senior-user" with a "valid" "call center account number"
     Then I should have "1" count of "<event>"
     And I should have a "<event>" alert "not pending" to the call center with a "valid" call center delivery timestamp
@@ -100,15 +100,19 @@ Feature: Critical Alert
   #   * https://redmine.corp.halomonitor.com/issues/4147
   @one @critical
   Scenario: Simulate a panic button press with successful delivery to the call center even if there is an exception caregiver
-    Given user "test-user" has caregivers
+    Given user "test-user" has 3 caregivers
     And a caregiver of "test-user" can raise exception
-    When user "test-user" has "halouser" role for group "safety_care, cms"
+    When user "test-user" has "halouser" role for group "safety_care"
     And I simulate a "Panic" with delivery to the call center for user login "test-user" with a "valid" "call center account number"
     Then I should have "1" count of "Panic"
     And I should have a "Panic" alert "not pending" to the call center with a "valid" call center delivery timestamp
     #   * usually only 1 email is sent
     #   * 3 emails due to "caregiver ... can raise exception" and panic sending additional email about "Technical Exception"
-    And 3 emails to "exceptions_critical@halomonitoring.com" with subject "call center monitoring failure" should be sent for delivery
+    # 
+    #  Tue Mar  1 23:28:25 IST 2011, ramonrails
+    #   * caregiver gets email every time. event or rufus
+    #   * 1 event = 2 emails ( event + rufus )
+    And 2 emails to "exceptions_critical@halomonitoring.com" with subject "call center monitoring failure" should be sent for delivery
 
   # Scenario: Simulate a fall with  delivery to the call center with Timeout exception
   #   When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "TCP connection"

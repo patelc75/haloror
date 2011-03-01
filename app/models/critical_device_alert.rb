@@ -62,6 +62,7 @@ class CriticalDeviceAlert < DeviceAlert
     unless critical_alerts.blank?
       # WARNING: The current implementation of sort_by generates an array of tuples containing the original collection element and the mapped value
       # critical_alerts.sort_by { |event| event[:timestamp] }.each do |crit|
+      #   * QUESTION: why do we sort this? we are looping through the array anyways
       critical_alerts.sort! {|a,b| a.timestamp <=> b.timestamp } if critical_alerts.length > 1
       critical_alerts.each do |crit|
         # 

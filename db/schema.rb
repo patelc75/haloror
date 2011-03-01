@@ -703,6 +703,7 @@ ActiveRecord::Schema.define(:version => 20110228174600) do
     t.float    "prorate"
     t.float    "recurring"
     t.datetime "install_fee_payout_date"
+    t.datetime "cancelled_date"
   end
 
   create_table "kit_serial_numbers", :force => true do |t|

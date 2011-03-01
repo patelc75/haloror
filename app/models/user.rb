@@ -681,54 +681,55 @@ class User < ActiveRecord::Base
     #   * WARNING: this will impact performance!
     if self.is_halouser?
       #   * some values from user itself
-      _hash = { :installed_date => self.installed_at }
+      _hash = { :installed_date => installed_at, :cancelled_date => cancelled_at }
       #   * some values from user intake
       if ( _ui = self.user_intakes.first )
         # 
         #  Fri Feb 11 22:27:44 IST 2011, ramonrails
         #   * https://redmine.corp.halomonitor.com/issues/4185
-        if _ui.order_successful? && _ui.subscription_successful?
+        if _ui.order_successful? && _ui.subscription_successful? # update --only-- when order is successful
           _hash[ :prorate_start_date]   = _ui.pro_rata_start_date
           _hash[ :recurring_start_date] = _ui.subscription_start_date
-        end
-        #   * some values from order
-        if ( _order = _ui.order )
-          _hash[ :coupon_code] = _order.coupon_code
-          # 
-          #  Fri Feb 11 22:27:49 IST 2011, ramonrails
-          #   * https://redmine.corp.halomonitor.com/issues/4185
-          _hash[ :prorate]     = _order.pro_rated_amount if ( _ui.order_successful? && _ui.subscription_successful? )
-          #   * some values from coupon_code
-          if ( _coupon = _order.product_cost )
-            _hash[ :shipping]    = _coupon.shipping
+          #   * some values from order
+          if ( _order = _ui.order )
+            _hash[ :coupon_code] = _order.coupon_code
             # 
-            #  Fri Feb 11 22:27:53 IST 2011, ramonrails
+            #  Fri Feb 11 22:27:49 IST 2011, ramonrails
             #   * https://redmine.corp.halomonitor.com/issues/4185
-            _hash[ :recurring]   = _coupon.monthly_recurring if ( _ui.order_successful? && _ui.subscription_successful? )
-            _hash[ :deposit]     = _coupon.deposit
+            _hash[ :prorate]     = _order.pro_rated_amount if ( _ui.order_successful? && _ui.subscription_successful? )
+            #   * some values from coupon_code
+            if ( _coupon = _order.product_cost )
+              _hash[ :shipping]    = _coupon.shipping
+              # 
+              #  Fri Feb 11 22:27:53 IST 2011, ramonrails
+              #   * https://redmine.corp.halomonitor.com/issues/4185
+              _hash[ :recurring]   = _coupon.monthly_recurring if ( _ui.order_successful? && _ui.subscription_successful? )
+              _hash[ :deposit]     = _coupon.deposit
+            end
           end
-        end
-      
-        # 
-        #  Fri Feb 18 22:34:31 IST 2011, ramonrails
-        #   * https://redmine.corp.halomonitor.com/issues/4217
-        #   * populate invoice only when user intake present
-        #
-        #   * keep auto-populating as much as possible
-        if self.invoice.blank?
-          self.create_invoice( _hash) # create associated invoice with these populated attributes
-        else
-          #   * filter out the values that are already filled in
-          # [ :installed_date, :prorate_start_date, :recurring_start_date, :coupon_code, :prorate, :shipping, :recurring, :deposit ].each do |_attr|
-          _hash.delete_if {|k,v| !self.invoice.send(k).blank? }
-          # end
-          #   * update attributes only when we have some values to update
-          self.invoice.update_attributes( _hash) unless _hash.blank?
-        end
+
+          # 
+          #  Fri Feb 18 22:34:31 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4217
+          #   * populate invoice only when user intake present
+          #
+          #   * keep auto-populating as much as possible
+          if self.invoice.blank?
+            self.create_invoice( _hash) # create associated invoice with these populated attributes
+          else
+            #   * filter out the values that are already filled in
+            # [ :installed_date, :prorate_start_date, :recurring_start_date, :coupon_code, :prorate, :shipping, :recurring, :deposit ].each do |_attr|
+            _hash.delete_if {|k,v| !self.invoice.send(k).blank? }
+            # end
+            #   * update attributes only when we have some values to update
+            self.invoice.update_attributes( _hash) unless _hash.blank?
+          end
+        end # update --only-- when order is successful
       end # ui required to create invoice
-    
+
     end
   end
+
   # 
   #  Fri Feb 11 22:46:07 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4188

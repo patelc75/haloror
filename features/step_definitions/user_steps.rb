@@ -82,13 +82,13 @@ Given /^user "([^\"]*)" status gets changed to "([^\"]*)"$/ do |login, status|
   user.save.should == true
 end
 
-Given /^user "([^"]*)" has caregivers$/ do |user_login|
+Given /^user "([^"]*)" has (\d+) caregivers$/ do |user_login, _count|
   (user = User.find_by_login(user_login)).should_not be_blank
-  3.times do
+  _count.to_i.times do
     _cg = Factory.create( :user)
     _cg.is_caregiver_of( user)
+    _cg.is_caregiver_of?( user).should be_true
   end
-  user.caregivers.length.should == 3
 end
 
 Given /^a caregiver of "([^"]*)" can raise exception$/ do |user_login|
@@ -469,6 +469,12 @@ end
 Then /^user "([^\"]*)" should have attribute "([^\"]*)"$/ do |login, attribute|
   (user = User.find_by_login( login)).should_not be_blank
   user.attributes.keys.should include( attribute)
+end
+
+Then /^the last senior should not have an invoice$/ do
+  (_ui = UserIntake.last).should_not be_blank
+  (_senior = _ui.senior).should_not be_blank
+  _senior.invoice.should be_blank
 end
 
 # ===================================
