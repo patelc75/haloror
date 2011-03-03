@@ -544,19 +544,59 @@ class Order < ActiveRecord::Base
   # 
   #  Mon Feb  7 23:53:43 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4155
+  #  Fri Mar  4 03:20:57 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4215
   def pro_rated_amount
-    if ( _date = user_intake.pro_rata_start_date)
-      #
-      # assuming the cost is for 30 days (one month)
-      # CHANGED:
-      #   DO NOT remove the decimals. if monthly recurring is less than 30, this will return ZERO
-      _per_day_cost = (product_cost.monthly_recurring / 30.00).round(2)
-      #   * calculate number of days
-      #   * charge card
-      _number_of_days = user_intake.pro_rated_days # (_date.end_of_month.day - _date.day + 1)
-      #   * return the pro-rata amount applicable
-      _per_day_cost * _number_of_days
+    _start = user_intake.pro_rata_start_date
+    _stop  = user_intake.subscription_start_date
+
+    unless _start.blank? || _stop.blank?
+      #   * calculate month specific cost
+      #   * WARNING: do not use "round". It will give incorrect results
+      _months_diff = ((_stop - _start) / 1.month).to_i # to_i will show sandwitched complete months
+      _cost        = product_cost.monthly_recurring
+      _amount      = 0 # default
+
+      #   * same month. we want "round" here to keep "both days inclusive"
+      #   * just get the difference between two dates
+      if _start.end_of_month == _stop.end_of_month
+        _days       = ((_stop - _start) / 1.day).round
+        _daily_cost = (_cost / (_stop.end_of_month.day * 1.00)) # per day cost for this month
+        _amount     = (_days * _daily_cost).round(2)
+      else
+
+
+        #   * start and 
+        #   * start = last month, end = this month
+        #   last month
+        _days       = ((_start.end_of_month - _start) / 1.day).round # include both days
+        _daily_cost = (_cost / (_start.end_of_month.day * 1.00)) # per day cost for this month
+        _amount     += (_days * _daily_cost).round(2)
+        #   this month
+        _days       = ((_stop - _stop.beginning_of_month) / 1.day).round # include both days
+        _daily_cost = (_cost / (_stop.end_of_month.day * 1.00)) # per day cost for this month
+        _amount     += (_days * _daily_cost).round(2)
+        
+        #   * now add any "complete" months that were between these dates
+        #   * _months_diff is calculated via "to_i", which excludes months of start, stop dates
+        #   * only complete months are counted here. no start ot stop dates occur between them
+        #   * 1.00 is just to make the value for 2 decimal places
+        _amount += (_months_diff * _cost * 1.00).round(2)
+        
+      end
     end
+    # if ( _date = user_intake.pro_rata_start_date)
+    #   #
+    #   # assuming the cost is for 30 days (one month)
+    #   # CHANGED:
+    #   #   DO NOT remove the decimals. if monthly recurring is less than 30, this will return ZERO
+    #   _per_day_cost = (product_cost.monthly_recurring / 30.00).round(2)
+    #   #   * calculate number of days
+    #   #   * charge card
+    #   _number_of_days = user_intake.pro_rated_days # (_date.end_of_month.day - _date.day + 1)
+    #   #   * return the pro-rata amount applicable
+    #   _per_day_cost * _number_of_days
+    # end
   end
 
   def masked_card_number

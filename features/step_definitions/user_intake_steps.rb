@@ -804,6 +804,12 @@ Then /^the last user intake should start subscription from upcoming month$/ do
   end
 end
 
+Then /^the last user intake does not have any invoice$/ do
+  (_ui = UserIntake.last).should_not be_blank
+  (_senior = _ui.senior).should_not be_blank
+  _senior.invoice.should be_blank
+end
+
 # ============================
 # = local methods for DRYness =
 # ============================

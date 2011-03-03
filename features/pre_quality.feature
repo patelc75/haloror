@@ -532,17 +532,17 @@ Feature: Pre quality
     When I edit the last user intake
     And I press "Submit"
     Then page content should have "successfully updated"
-    And the last invoice has pro-rata and recurring columns empty
+    And the last user intake does not have any invoice
     #   * approve
     When I edit the last user intake
     And I press "Approve"
     Then page content should have "successfully updated"
     And user intake "last" should have "Ready to Install" status
-    And the last invoice has pro-rata and recurring columns empty
+    And the last user intake does not have any invoice
     #   * panic
     When panic button test data is received for user intake "last"
     Then user intake "last" should have "Ready to Bill" status
-    And the last invoice has pro-rata and recurring columns empty
+    And the last user intake does not have any invoice
     #   * bill
     When I edit the last user intake
     And I press "Bill"

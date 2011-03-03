@@ -135,6 +135,38 @@ Factory.define :mgmt_query do |v|
   v.association :device
 end
 
+Factory.define :order do |v|
+  v.number { ("0".."9").to_a.shuffle.join }
+  v.bill_first_name { Faker::Name.first_name }
+  v.bill_city { Faker::Address.city }
+  v.bill_state { Faker::Address.us_state }
+  v.bill_zip { Faker::Address.zip_code }
+  v.bill_phone { ("0".."9").to_a.shuffle.join }
+  v.bill_email { Faker::Internet.email }
+  v.card_number "4" + ("1"*15)
+  v.ship_first_name { Faker::Name.first_name }
+  v.ship_city { Faker::Address.city }
+  v.ship_state { Faker::Address.us_state }
+  v.ship_zip { Faker::Address.zip_code }
+  v.ship_phone { ("0".."9").to_a.shuffle.join }
+  v.ship_email { Faker::Internet.email }
+  v.card_type "VISA"
+  v.ship_last_name { Faker::Name.last_name }
+  v.bill_last_name { Faker::Name.last_name }
+  v.coupon_code { ("A".."Z").to_a.shuffle[0..7].join }
+  v.kit_serial { ("A".."Z").to_a.shuffle[0..7].join }
+  v.ship_address { Faker::Address.street_address }
+  v.bill_address { Faker::Address.street_address }
+  v.comments { Faker::Lorem.paragraph }
+  v.card_expiry { 3.months.from_now }
+  v.association :created_by, :factory => :user
+  v.association :updated_by, :factory => :user
+  v.association :group
+  v.created_at { Time.now }
+  v.updated_at { Time.now }
+  v.association :user_intake
+end
+
 Factory.define :panic do |v|
   v.timestamp { Time.now }
   v.duration_press { rand(10) }
