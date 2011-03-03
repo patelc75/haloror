@@ -1,11 +1,32 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
 <!-- <meta http-equiv="refresh" content="30"> -->
 <h3>User Intake Forms</h3>
-<div class="span-9 last">
-<form id="group_form_id" action="/user_intakes/index_fast" method="GET">
+<div class="span-24 last">
   <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
-  Select <label for="group_name">Group</label>:
-  <%= select_tag 'group_name', options_for_select( @group_names, (@group.name unless @group.blank?)), {:onchange => "$('group_form_id').submit();"}%>
+<form id="group_form_id" action="/user_intakes/index_fast" method="GET">
+  <table>
+    <tr>
+      <td>
+        Select <label for="group_name">Group</label>:
+        <%= select_tag 'search[group_name]', options_for_select( @group_names, (@group.name unless @group.blank?)) %> <br />
+      </td>
+      <td>
+        Select <label for="status_name">Status</label>:
+        <%= select_tag 'search[status]', options_for_select( @statuses, @status) %> <br />
+      </td>
+      <td>
+        <label for="search[q]">Search phrase</label>
+        <%= text_field_tag "search[q]", @q %><br />
+        <span class="tiny">Search UID, name</span>
+      </td>
+      <td>
+        <%= submit_tag "Search", :class => "button small green-button" %>
+      </td>
+    </tr>
+  </table>
+  <div>
+  </div>
+    
 </form>
 </div>
 <div class="span-24 last">

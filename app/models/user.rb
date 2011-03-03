@@ -665,6 +665,9 @@ class User < ActiveRecord::Base
     end
   end
 
+  def self.unique_statuses
+    all( :select => "DISTINCT status, login").collect(&:status).compact.uniq
+  end
   # ====================
   # = instance methods =
   # ====================
@@ -2386,14 +2389,15 @@ class User < ActiveRecord::Base
   #   * any other user? => groups where the user has "any" role
   #   * ordered => name
   def group_memberships
-    # CHANGED: test this
-    # Groups for which current_user has roles
-    #   ths method is self-contained. does not depend on group_roles
-    #   also has additional check for super_admin role
-    options = ( is_super_admin? ? {} : \
-                {:id => roles.find_all_by_authorizable_type('Group').collect(&:authorizable_id).compact.uniq})
-                # self.is_halouser_of_what will not work here. user can have more roles than halouser
-    Group.all(:conditions => options, :order => 'name')
+    # # CHANGED: test this
+    # # Groups for which current_user has roles
+    # #   ths method is self-contained. does not depend on group_roles
+    # #   also has additional check for super_admin role
+    # options = ( is_super_admin? ? {} : \
+    #             {:id => roles.find_all_by_authorizable_type('Group').collect(&:authorizable_id).compact.uniq})
+    #             # self.is_halouser_of_what will not work here. user can have more roles than halouser
+    _group_ids = group_membership_ids
+    Group.all(:conditions => (_group_ids.blank? ? {} : { :id => _group_ids}), :order => 'name')
     #   group roles of user, uniq, sorted
     #   this method also works but requires "group_roles" method
     # return group_roles.collect {|role| Group.find(role.authorizable_id) }.uniq.sort {|a, b| a <=> b}
@@ -2414,6 +2418,14 @@ class User < ActiveRecord::Base
     #   groups.uniq!
     # end
     # return groups
+  end
+  
+  # 
+  #  Fri Mar  4 00:44:11 IST 2011, ramonrails
+  #   * super admin => return all group ids to which this user belongs
+  #   * any other user => return the group ids, this user has role for
+  def group_membership_ids
+    is_super_admin? ? [] : roles.where_authorizable_type('Group').all(:select => :authorizable_id).collect(&:authorizable_id).compact.uniq
   end
   
   def group_memberships_by_role(role)

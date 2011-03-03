@@ -7,6 +7,7 @@ class UserIntakesController < ApplicationController
   # GET /user_intakes.xml
   def index
     # TODO: needs re-factoring
+    @statuses = User.unique_statuses
     @groups = current_user.group_memberships # this will be a drop-down on user intake list
     _group = Group.find_by_name( @group_name = params[:group_name])
     #
@@ -45,6 +46,7 @@ class UserIntakesController < ApplicationController
   end
 
   def index_fast
+    @statuses = User.unique_statuses
     _group_ids = {} # show all user intakes, unless this hash changes
     # 
     #  Thu Dec 23 20:19:59 IST 2010, ramonrails
@@ -52,17 +54,32 @@ class UserIntakesController < ApplicationController
     #   * optimized logic for fetching user intakes
     @groups = current_user.group_memberships # fetch groups
     #   * no search?
-    if params[:group_name].blank?
+    if params["search"].blank? || params["search"]["group_name"].blank?
       #   * fetch user intakes "visible" as per the role
       #   * any role, incuding super_admin must go through the IDs collect
       _group_ids = @groups.collect(&:id).flatten.compact.uniq
     else
+      # 
+      #  Fri Mar  4 00:26:45 IST 2011, ramonrails
+      #   * WARNING: This will not work correct when search if by text phrase
+      #   *   This method assumes that given group_names are for current user
       #   * fetch the group use is looking for
-      @group = Group.find_by_name(params[:group_name])
+      @group = Group.find_by_name(params["search"]["group_name"])
       _group_ids = @group.id # intakes only for this group
     end
+    _ids = UserIntake.all( :conditions => { :group_id => _group_ids}).collect(&:id)
+    #   * search user name, id
+    if !params["search"].blank? && !params["search"]["q"].blank?
+      @q = params["search"]["q"]
+      _ids = (_ids & UserIntake.all( :include => :users, :conditions => ["users.name LIKE ? OR users.id = ?", "%#{@q}%", @q.to_i], :select => :id).collect(&:id) )
+    end
+    #   * search status
+    if !params["search"].blank? && !params["search"]["status"].blank?
+      @status = params["search"]["status"]
+      _ids = (_ids & UserIntake.all( :include => :users, :conditions => ["users.status LIKE ?", "%#{@status}%"], :select => :id).collect(&:id) )
+    end
     #   * Now fetch the intakes, apply conditions and paginate them at once
-    @user_intakes = UserIntake.paginate :conditions => { :group_id => _group_ids }, :order => "updated_at DESC", :per_page => 15, :page => params[:page]
+    @user_intakes = UserIntake.paginate :conditions => { :id => _ids }, :order => "updated_at DESC", :per_page => 15, :page => params[:page]
     #
     #   * Earlier logic. Same as above, but just optimized DRYed code above
     # @groups = (current_user.is_super_admin? ? Group.all(:order => "name") : current_user.group_memberships) 

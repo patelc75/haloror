@@ -11,6 +11,7 @@ class Role < ActiveRecord::Base
   named_scope :ordered, lambda {|*args| {:order => (args.flatten.first || "name ASC" )}}
   named_scope :distinct_by_name, :select => "DISTINCT name", :order => "name"
   named_scope :where_authorizable, lambda {|_type, _ids| { :conditions => { :authorizable_type => _type, :authorizable_id => _ids } }}
+  named_scope :where_authorizable_type, lambda {|_type| { :conditions => { :authorizable_type => _type } }}
 
   # class methods
 
