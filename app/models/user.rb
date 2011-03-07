@@ -514,7 +514,7 @@ class User < ActiveRecord::Base
   end
   
   # email = caregiver email
-  # seniod_id = senior id
+  # senior_id = senior id
   # return variable = caregiver object
   # 
   #  Sun Dec  5 02:47:56 IST 2010, ramonrails
@@ -553,6 +553,11 @@ class User < ActiveRecord::Base
       #  Sun Dec  5 02:47:43 IST 2010, ramonrails
       #   * now we skip validation using this new technique
       @user.skip_validation = true # skip any validation. just save
+      # 
+      #  Tue Mar  8 02:09:41 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4219
+      #   * for some reason, login was not filled during before_save. manually force it for now
+      @user.autofill_login
       @user.save!
 
       if @user.profile.blank?
