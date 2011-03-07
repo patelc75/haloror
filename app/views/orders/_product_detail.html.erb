@@ -2,6 +2,11 @@
 
 <% if @confirmation.blank? || (@product == "complete") %>
 <div id="halo_complete_box" style="display: block; float:left; margin-top: 20px; width: 100%">
+  <% if @confirmation %>
+    <div class="text-red text-large">
+      If these charges are incorrect, please click "<%= link_to 'Back', order_path %>" and re-enter the coupon code. If still incorrect, call 1-866-546-2540
+    </div>
+  <% end %>
   <table width="100%" class="colored">
     <tr><th>Shopping cart items</th><th style="text-align:right;">Price</th></tr>
     <tr><td>Deposit</td><td style="text-align:right;"><%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.deposit) %></td></tr>

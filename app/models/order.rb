@@ -45,11 +45,28 @@ class Order < ActiveRecord::Base
     # WARNING: some error happening. switched off for now. needs testing
     encrypt_sensitive_data # Will encrypt only if not already encrypted?
   end
+  
+  def validate
+    # 
+    #  Mon Mar  7 23:27:25 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4248
+    coupon_code_valid?
+  end
 
   # =============================
   # = public : instance methods =
   # =============================
 
+  # 
+  #  Mon Mar  7 23:07:53 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4248
+  def coupon_code_valid?
+    _coupon = product_cost # fetch the coupon code applicable for the selected group
+    errors.add_to_base( "Coupon code #{coupon_code} is not valid for the group #{group_name}") if _coupon.blank? || (_coupon.coupon_code != coupon_code)
+    errors.add_to_base( "Coupon code expired on #{_coupon.expiry_date}") if _coupon.expired?
+    ( !_coupon.blank? && !_coupon.expired? ) # valid?
+  end
+  
   # 
   #  Tue Jan 11 01:54:22 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/3988

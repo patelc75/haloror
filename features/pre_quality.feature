@@ -126,7 +126,7 @@ Feature: Pre quality
     And I am placing an online order for "ml_reseller" group
     Then I should see "ml_reseller"
     And I should not see "ml_master"
-    When I fill in "Coupon Code" with "ml_reseller_coupon"
+    When I fill in "Coupon Code" with "coupon1.5.1-rc1"
     And I press "Continue"
     And I press "Place Order"
     #   * TODO: verify the count of emails as per business logic
@@ -565,13 +565,13 @@ Feature: Pre quality
     When I edit the last user intake
     And I press "Submit"
     Then page content should have "successfully updated"
-    And the last invoice has pro-rata and recurring columns empty
+    And the last senior should not have an invoice
     #   * approve
     When I edit the last user intake
     And I press "Approve"
     Then page content should have "successfully updated"
     And user intake "last" should have "Ready to Install" status
-    And the last invoice has pro-rata and recurring columns empty
+    And the last senior should not have an invoice
     #   * ship date
     When the last user intake had the product shipped 5 weeks ago
     #   * start subscription (same as "Bill")

@@ -57,10 +57,13 @@ class OrdersController < ApplicationController
         #
         # check some validation on the first page itself
         # TODO: send an email to administrator or webmaster
-        @order.errors.add_to_base \
-          "Link to product catalog is broken. Please inform webmaster @ halomonitoring.com about this" \
-          if DeviceModel.find_complete_or_clip( params[:product] ).blank?
-
+        if DeviceModel.find_complete_or_clip( params[:product] ).blank?
+          @order.errors.add_to_base( "Link to product catalog is broken. Please inform webmaster @ halomonitoring.com about this")
+        end
+        # 
+        #  Mon Mar  7 23:43:00 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4248
+        @order.coupon_code_valid?
       end
       @same_address = @order.subscribed_for_self?
       # @same_address = ((params[:order][:bill_address_same] == "1" || @order.ship_and_bill_address_same) ? "checked" : "")

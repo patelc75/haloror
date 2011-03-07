@@ -105,6 +105,7 @@ div.fixed-width { width: 960px; min-width: 960px; overflow: auto;}
 .text-justify {text-align: justify;}
 .italic { font-style: italic;}
 .text-small { font-size: 85%;}
+.text-large { font-size: 1.7em; line-height: 1.25em;}
 .text-blue { color: #0080FF;}
 .text-red { color: #F00;}
 .text-black { color: #000;}
