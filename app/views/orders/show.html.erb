@@ -1,4 +1,11 @@
 <%= render :partial => 'reporting/nav'%>
 <h2>Order ID# <%= params[:id]%></h2>
+<%= hash_to_html( @order.attributes.reject {|k,v| ["cvv", "card_number"].include?( k) }) %>
 
-<%=debug @order%>
+<h3>Group</h3>
+<%= hash_to_html( @order.group.attributes) %>
+
+<h3>Order Items</h3>
+<% @order.order_items.each do |_item| %>
+  <%= hash_to_html( _item.attributes) %>
+<% end %>
