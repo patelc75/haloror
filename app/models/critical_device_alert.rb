@@ -5,10 +5,6 @@ class CriticalDeviceAlert < DeviceAlert
   
   def before_create 
     self.timestamp_server = Time.now.utc
-    # 
-    #  Mon Feb 28 23:10:30 IST 2011, ramonrails
-    #   * changed during the skype call
-    # self.call_center_pending = false
     self.call_center_timed_out = false
     # 
     #  Mon Feb 28 23:24:26 IST 2011, ramonrails
@@ -29,27 +25,14 @@ class CriticalDeviceAlert < DeviceAlert
 
   def after_create 
     Event.create_event( self.user_id, self.class.to_s, self.id, self.timestamp)
-    # 
-    #  Tue Mar  1 03:48:05 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4223
     unless (ServerInstance.host?( "ATL-WEB1", "CRIT2"))
       DeviceAlert.notify_caregivers( self)
     end
-    #
-    # ramonrails: Thu Oct 14 02:05:58 IST 2010
-    #   return TRUE to continue executing further callbacks
-    true
+    true #   return TRUE to continue executing further callbacks
   end
   
-  # 
-  #  Tue Mar  1 03:19:00 IST 2011, ramonrails
-  #   * https://redmine.corp.halomonitor.com/issues/4223
-  #   * shifted from device_alert.rb
   def self.job_process_crtical_alerts
     RAILS_DEFAULT_LOGGER.warn("CriticalDeviceAlert.job_process_crtical_alerts running at #{Time.now}")
-    #   * used directly now
-    # ethernet_system_timeout = SystemTimeout.find_by_mode('ethernet')
-    # dialup_system_timeout   = SystemTimeout.find_by_mode('dialup')
     
     critical_alerts = []
     critical_alerts += Panic.find(:all, :include => [:user => :profile], :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{SystemTimeout.dialup.critical_event_delay_sec} seconds'", :order => "timestamp asc")
@@ -65,14 +48,7 @@ class CriticalDeviceAlert < DeviceAlert
       #   * QUESTION: why do we sort this? we are looping through the array anyways
       critical_alerts.sort! {|a,b| a.timestamp <=> b.timestamp } if critical_alerts.length > 1
       critical_alerts.each do |crit|
-        # 
-        #  Mon Feb 28 23:08:41 IST 2011, ramonrails
-        #   * changed during the voice call on skype
-        # crit.call_center_pending = false
         crit.call_center_timed_out = true
-        #
-        # if the model respond_to? call_center_number_valid? method, then check it before timestamo
-        # otherwise just time stamp it
         crit.timestamp_call_center = Time.now #if (crit.respond_to?(:call_center_number_valid?) ? crit.call_center_number_valid? : true)
         # https://redmine.corp.halomonitor.com/issues/3076
         # crit.send(:update_without_callbacks) # save
