@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110228174600) do
+ActiveRecord::Schema.define(:version => 20110308192712) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -352,6 +352,7 @@ ActiveRecord::Schema.define(:version => 20110228174600) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "group_id"
+    t.integer  "dealer_install_fee"
   end
 
   create_table "device_models", :force => true do |t|
@@ -833,6 +834,15 @@ ActiveRecord::Schema.define(:version => 20110228174600) do
     t.string   "kit_serial"
     t.string   "salt"
     t.string   "cvv"
+    t.integer  "device_model_id"
+    t.date     "cc_expiry_date"
+    t.integer  "cc_deposit"
+    t.integer  "cc_shipping"
+    t.integer  "cc_monthly_recurring"
+    t.integer  "cc_months_advance"
+    t.integer  "cc_months_trial"
+    t.string   "ship_description"
+    t.integer  "ship_price"
   end
 
   create_table "orientation_thresholds", :force => true do |t|
@@ -1109,6 +1119,14 @@ ActiveRecord::Schema.define(:version => 20110228174600) do
   create_table "serial_number_prefixes", :force => true do |t|
     t.string   "prefix",         :null => false
     t.integer  "device_type_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "shipping_options", :force => true do |t|
+    t.string   "description"
+    t.integer  "price"
+    t.integer  "order_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

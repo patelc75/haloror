@@ -11,6 +11,10 @@ class Order < ActiveRecord::Base
   belongs_to :updater, :class_name => 'User', :foreign_key => 'updated_by'
   has_many :order_items
   has_many :payment_gateway_responses
+  # 
+  #  Wed Mar  9 01:01:27 IST 2011, ramonrails
+  #   * coupon code changes for tickets #4253, #4067, #4060, #3923
+  has_many :shipping_options
   has_one :user_intake
 
   attr_accessor :product, :bill_address_same, :need_validation
