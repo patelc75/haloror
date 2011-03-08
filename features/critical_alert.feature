@@ -27,6 +27,10 @@ Feature: Critical Alert
       | halo        |             |
       | safety_care | call_center |
       # | cms         | call_center |
+    And the following devices:
+      | serial_number |
+      | H123456789    |
+      | H567053101    |
     And critical alerts types exist
     And a carrier exists with the following attributes:
       | name   | cell_carrier    |
@@ -77,6 +81,25 @@ Feature: Critical Alert
       | Fall          | fell     | FALL  |
       | Panic         | panicked | PANIC |
       | GwAlarmButton | cleared  | CLEAR |
+
+  # 
+  #  Wed Mar  9 03:39:08 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4260
+  Scenario: Simulate an alert_bundle with successful text and email delivery to the call center
+    When user "senior-user" has "halouser" role for group "safety_care"
+    And user "test-user" has "halouser" role for group "safety_care"
+    And I simulate a "alert bundle" event with the following attributes:
+      | device | H567053101    |
+      | user   | senior-user   |
+      | path   | /alert_bundle |
+    Then I should have "1" count of "Panic"
+    And I should have "1" count of "GwAlarmButton"
+    And I should have a "Panic" alert "not pending" to the call center with a "valid" call center delivery timestamp
+    And I should have a "GwAlarmbutton" alert "not pending" to the call center with a "valid" call center delivery timestamp
+    And 1 email to "caregiver@cucumber.com" with keyword "<action>" should be sent for delivery
+    And 1 email to "1234567890@cingularme.com" with keyword "<action>" should be sent for delivery
+    And 1 email to "operator@cucumber.com" with keyword "<caps>" should be sent for delivery
+    And 1 email to "0987654321@cingularme.com" with keyword "<caps>" should be sent for delivery
 
   # https://redmine.corp.halomonitor.com/issues/3170
   # Scenario: Simulate a fall for a user with an invalid call center account number

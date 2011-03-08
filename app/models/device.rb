@@ -28,6 +28,7 @@ class Device < ActiveRecord::Base
   has_many :falls
   has_many :gateway_offline_alerts
   has_many :gateway_online_alerts
+  has_many :gw_alarm_buttons
   has_many :mgmt_cmds
   has_many :mgmt_queries
   has_many :panics

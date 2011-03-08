@@ -36,8 +36,10 @@ When /^I post the following XML:$/ do |table|
   #   * replace the data of given nodes, if they are found in the XML
   if (_meta = options.keys.reject {|e| ['file_name', 'path', 'auth_key'].include?(e) })
     _meta.each do |_key|
-      if ( _node = doc.at_xpath( "//#{_key}")) # find the node with the key in given table
-        _node.content = options[_key] # replace the value from table data
+      #  Wed Mar  9 03:34:06 IST 2011, ramonrails
+      #   * WARNING: do not use at_xpath. We want to replace all occurrences
+      if ( _nodes = doc.xpath( "//#{_key}")) # find the node with the key in given table
+        _nodes.each {|_node| _node.content = options[_key]} unless _nodes.blank? # replace the value from table data
       end
     end
   end

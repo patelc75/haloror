@@ -14,7 +14,7 @@ class CriticalDeviceAlert < DeviceAlert
     #  Mon Feb 28 23:24:26 IST 2011, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/4223
     #   * call_center_pending flags ON when any halouser-group is call_center
-    self.call_center_pending = user.is_halouser_of_what.any?(&:is_call_center?)
+    self.call_center_pending = user.is_halouser_of_what.any?(&:is_call_center?) # unless user.blank?
     # groups = user.is_halouser_for_what
     # groups.each do |group|
     #   if !group.nil? and group.sales_type == "call_center"

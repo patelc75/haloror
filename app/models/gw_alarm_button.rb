@@ -1,5 +1,7 @@
 class GwAlarmButton < CriticalDeviceAlert
   set_table_name "gw_alarm_buttons"
+  belongs_to :user
+  belongs_to :device
 
   def to_s
   	"Alarm cleared for #{user.name} on #{UtilityHelper.format_datetime(timestamp, user)}"

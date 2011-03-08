@@ -118,6 +118,7 @@ class User < ActiveRecord::Base
   has_many :events
   has_many :event_actions
   has_many :falls  
+  has_many :gw_alarm_buttons
   has_many :halo_debug_msgs
   has_many :logs, :class_name => "UserLog", :foreign_key => "user_id"
   has_many :mgmt_cmds

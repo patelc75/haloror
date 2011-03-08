@@ -29,7 +29,6 @@ When /^I simulate a "([^"]*)" event with the following attributes:$/ do |_event,
   # case _event
   # when 'strap_fastened'
   # end
-
   When "I post the following XML:", table( options.collect {|k,v| "| #{k} | #{v} |" }.join(10.chr) )
 
   case _event

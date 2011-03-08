@@ -19,13 +19,13 @@ class BundleProcessor # < ActiveRecord::Base
     RAILS_DEFAULT_LOGGER.warn("Entering BundleProcessor.self_process")
     begin
       @@bundled_models[0].transaction do
-        @@bundled_models.each do |model|
+        @@bundled_models.each do |_model|
           #
           # for dial_up_status, we want the entire bundle, not extracted hash
           # https://redmine.corp.halomonitor.com/issues/2742
-          value = ( ((model.to_s.underscore == "dial_up_status") && bundle.has_key?("num_failures")) || \
-                    ((model.to_s.underscore == "oscope_start_msg") && bundle.has_key?("capture_reason")) \
-                  ) ? bundle : bundle[model.to_s.underscore]
+          value = ( ((_model.to_s.underscore == "dial_up_status") && bundle.has_key?("num_failures")) || \
+                    ((_model.to_s.underscore == "oscope_start_msg") && bundle.has_key?("capture_reason")) \
+                  ) ? bundle : bundle[_model.to_s.underscore]
           
           unless value.blank?
             value = (value.class == Array ? value : [value])
@@ -39,7 +39,7 @@ class BundleProcessor # < ActiveRecord::Base
                 #   https://redmine.corp.halomonitor.com/issues/3255
                 save_dial_up_status_hash( v)
               else
-                obj = model.new(v)
+                obj = _model.new(v)
               end
 
               #

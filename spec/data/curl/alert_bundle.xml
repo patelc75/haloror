@@ -1,0 +1,14 @@
+<alert_bundle>
+  <timestamp>Tue Mar 08 19:37:56 UTC 2011</timestamp>
+  <panic>
+    <duration_press>322</duration_press>
+    <gw_timestamp>Tue Mar 08 19:37:41 UTC 2011</gw_timestamp>
+    <timestamp>Tue Mar 08 19:37:39 UTC 2011</timestamp>
+    <user_id>56</user_id>
+  </panic>
+  <gw_alarm_button>
+    <device_id>214</device_id>
+    <timestamp>Tue Mar 08 19:37:46 UTC 2011</timestamp>
+    <user_id>56</user_id>
+  </gw_alarm_button>
+</alert_bundle>

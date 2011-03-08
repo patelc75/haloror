@@ -329,7 +329,7 @@ Then /^last (.+) should be activated$/ do |_user_type|
 end
 
 Then /^user "([^\"]*)" should have data for (.+)$/ do |user_login, method_names|
-  methods = method_names.split(',').collect(&:strip).collect(&:to_sym) # array of method names as symbols
+  methods = method_names.split(',').collect {|e| e.strip.gsub(/ /,'_').tableize.to_sym } # array of method names as symbols
   user = User.find_by_login(user_login)
   user.should_not be_blank
   

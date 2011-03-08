@@ -66,4 +66,10 @@ Feature: POST XML to simulate gateway
       | user             | senior1    |
       | software_version | 00.00r35   |
     Then device "H567053101" should have only one current and new software version
-  
+
+  Scenario: Alert Bundle
+    When I simulate a "alert bundle" event with the following attributes:
+      | device | H567053101    |
+      | user   | senior1       |
+      | path   | /alert_bundle |
+    Then user "senior1" should have data for panic, gw alarm button
