@@ -112,6 +112,19 @@ Factory.define :event do |v|
   v.association :user
 end
 
+Factory.define :fall do |v|
+  v.timestamp             { 30.minutes.ago }
+  v.magnitude             28
+  v.timestamp_call_center { 30.minutes.ago }
+  v.call_center_pending   true
+  v.timestamp_server      { 30.minutes.ago }
+  v.gw_timestamp          { 30.minutes.ago }
+  v.severity              1
+  v.call_center_timed_out true
+  v.association :user
+  v.association :device
+end
+
 Factory.define :gateway do |v|
   v.serial_number { Faker::PhoneNumber.phone_number.to_i.to_s.ljust( 10, "0") }
   v.mac_address "rand(99):rand(99):rand(99):rand(99):rand(99):ab"

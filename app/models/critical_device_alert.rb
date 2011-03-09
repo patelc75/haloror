@@ -10,7 +10,8 @@ class CriticalDeviceAlert < DeviceAlert
     #  Mon Feb 28 23:24:26 IST 2011, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/4223
     #   * call_center_pending flags ON when any halouser-group is call_center
-    self.call_center_pending = user.is_halouser_of_what.any?(&:is_call_center?) # unless user.blank?
+    #   * WARNING: nil returned in group array will cause save! to fail
+    self.call_center_pending = user.is_halouser_of_what.compact.any?(&:is_call_center?) # unless user.blank?
     # groups = user.is_halouser_for_what
     # groups.each do |group|
     #   if !group.nil? and group.sales_type == "call_center"
@@ -21,6 +22,9 @@ class CriticalDeviceAlert < DeviceAlert
     # ramonrails: Thu Oct 14 02:05:58 IST 2010
     #   return TRUE to continue executing further callbacks
     true
+  # rescue Exception => e
+  #   CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
+  #   UtilityHelper.log_message_critical("CriticalDeviceAlert.before_create::Exception:: #{e} : #{event.to_s}", e)
   end
 
   def after_create 
@@ -34,10 +38,21 @@ class CriticalDeviceAlert < DeviceAlert
   def self.job_process_crtical_alerts
     RAILS_DEFAULT_LOGGER.warn("CriticalDeviceAlert.job_process_crtical_alerts running at #{Time.now}")
     
+    # 
+    #  Thu Mar 10 01:29:01 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4260#note-6
+    #   * CHANGED: the query for critical alerts. SQL version was not working correctly
+    #   * WARNING: needs more code coverage. Please check and cover every possible scenario
     critical_alerts = []
-    critical_alerts += Panic.find(:all, :include => [:user => :profile], :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{SystemTimeout.dialup.critical_event_delay_sec} seconds'", :order => "timestamp asc")
-    critical_alerts += Fall.find(:all, :include => [:user => :profile], :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{SystemTimeout.dialup.critical_event_delay_sec} seconds'", :order => "timestamp asc")
-    critical_alerts += GwAlarmButton.find(:all, :include => [:user => :profile], :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{SystemTimeout.dialup.critical_event_delay_sec} seconds'", :order => "timestamp asc")
+    # critical_alerts += Panic.find(:all, :include => [:user => :profile], :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{SystemTimeout.dialup.critical_event_delay_sec} seconds'", :order => "timestamp asc")
+    # critical_alerts += Fall.find(:all, :include => [:user => :profile], :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{SystemTimeout.dialup.critical_event_delay_sec} seconds'", :order => "timestamp asc")
+    # critical_alerts += GwAlarmButton.find(:all, :include => [:user => :profile], :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{SystemTimeout.dialup.critical_event_delay_sec} seconds'", :order => "timestamp asc")
+    [Panic, Fall, GwAlarmButton].each do |_klass|
+      critical_alerts += _klass.all({
+        :include    => [ :user => :profile ],
+        :conditions => [ "call_center_pending = ? AND ( ? > (timestamp_server + interval '? seconds'))", true, Time.now, SystemTimeout.dialup.critical_event_delay_sec ]
+      })
+    end
     #not going to filter access_mode == 'dialup' because access_mode is not yet reliable according to corey
     #{}"id in (select device_id from access_mode_statuses where mode = 'dialup') " <<    
 

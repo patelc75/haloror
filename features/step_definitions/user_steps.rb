@@ -313,6 +313,12 @@ When /^a panic button is delivered after the desired installation date and the u
   pending # express the regexp above with the code you wish you had
 end
 
+When /^user "([^"]*)" has (|in)valid call center account$/ do |_login, _validity|
+  (_user = User.find_by_login(_login)).should_not be_blank
+  _user.profile.should_not be_blank
+  _user.profile.update_attribute( :account_number, (_validity.blank? ? "1234" : nil))
+end
+
 # =========
 # = thens =
 # =========

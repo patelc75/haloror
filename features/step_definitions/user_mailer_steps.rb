@@ -7,7 +7,7 @@
 
 # subject|body|content does not matter. we will just check entire email content anyways
 #
-Then /^(.+) emails? to "([^\"]*)" with (subject|body|content|keyword) "([^\"]*)" should be sent for delivery$/ do |_count, email, part, data|
+Then /^(.+) email(?:|s) to "([^\"]*)" with (subject|body|content|keyword) "([^\"]*)" should be sent for delivery$/ do |_count, email, part, data|
   Email.all.select {|e| e.to == email && e.mail.include?( data) }.length.should == parsed_count( _count)
 end
 

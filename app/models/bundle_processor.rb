@@ -21,7 +21,7 @@ class BundleProcessor # < ActiveRecord::Base
       @@bundled_models[0].transaction do
         @@bundled_models.each do |_model|
           #
-          # for dial_up_status, we want the entire bundle, not extracted hash
+          # for dial_up_status and oscope_start_msg, we want the entire bundle, not extracted hash
           # https://redmine.corp.halomonitor.com/issues/2742
           value = ( ((_model.to_s.underscore == "dial_up_status") && bundle.has_key?("num_failures")) || \
                     ((_model.to_s.underscore == "oscope_start_msg") && bundle.has_key?("capture_reason")) \

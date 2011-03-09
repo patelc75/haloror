@@ -53,7 +53,7 @@ Feature: Critical Alert
     When user "senior-user" has "halouser" role for group "safety_care"
     And user "test-user" has "halouser" role for group "safety_care"
     And I simulate a "<event>" with delivery to the call center for user login "senior-user" with a "valid" "call center account number"
-    Then I should have "1" count of "<event>"
+    Then I should have 1 count of "<event>"
     And I should have a "<event>" alert "not pending" to the call center with a "valid" call center delivery timestamp
     # And user "caregiver-user" has "caregiver" roles for user "senior-user"
     And 1 email to "caregiver@cucumber.com" with keyword "<action>" should be sent for delivery
@@ -69,7 +69,7 @@ Feature: Critical Alert
 
   Scenario Outline: Simulate a <event> for a user with no call center group (eg. "safety_care")
     When I simulate a "<event>" with delivery to the call center for user login "test-user" with a "invalid" "call center account number"
-    Then I should have "1" count of "<event>"
+    Then I should have 1 count of "<event>"
     And I should have a "<event>" alert "not pending" to the call center with a "missing" call center delivery timestamp
     And 1 email to "caregiver@cucumber.com" with keyword "<action>" should be sent for delivery
     And 1 email to "1234567890@cingularme.com" with keyword "<action>" should be sent for delivery
@@ -85,27 +85,36 @@ Feature: Critical Alert
   # 
   #  Wed Mar  9 03:39:08 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4260
-  Scenario: Simulate an alert_bundle with successful text and email delivery to the call center
+  Scenario Outline: Simulate an alert_bundle with successful text and email delivery to the call center
     When user "senior-user" has "halouser" role for group "safety_care"
-    And user "test-user" has "halouser" role for group "safety_care"
+    When user "senior-user" has valid call center account
+    And system timeout exists with no tolerence
     And I simulate a "alert bundle" event with the following attributes:
-      | device | H567053101    |
-      | user   | senior-user   |
-      | path   | /alert_bundle |
-    Then I should have "1" count of "Panic"
-    And I should have "1" count of "GwAlarmButton"
+      | device           | H567053101      |
+      | user             | senior-user     |
+      | path             | /alert_bundle   |
+      | timestamp        | `2.minutes.ago` |
+      | timestamp_server | `1.minute.ago`  |
+    And critical alerts are processed by a background job
+    Then I should have 1 counts of "Panic"
+    And I should have 1 counts of "GwAlarmButton"
     And I should have a "Panic" alert "not pending" to the call center with a "valid" call center delivery timestamp
-    And I should have a "GwAlarmbutton" alert "not pending" to the call center with a "valid" call center delivery timestamp
+    And I should have a "GwAlarmButton" alert "not pending" to the call center with a "valid" call center delivery timestamp
     And 1 email to "caregiver@cucumber.com" with keyword "<action>" should be sent for delivery
     And 1 email to "1234567890@cingularme.com" with keyword "<action>" should be sent for delivery
     And 1 email to "operator@cucumber.com" with keyword "<caps>" should be sent for delivery
     And 1 email to "0987654321@cingularme.com" with keyword "<caps>" should be sent for delivery
 
+    Examples:
+      | event         | action   | caps  |
+      | Panic         | panicked | PANIC |
+      | GwAlarmButton | cleared  | CLEAR |
+
   # https://redmine.corp.halomonitor.com/issues/3170
   # Scenario: Simulate a fall for a user with an invalid call center account number
   #   When user "test-user" has "halouser" role for group "safety_care"
   #   And I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "call center account number"
-  #   Then I should have "1" count of "Fall"
+  #   Then I should have 1 count of "Fall"
   #   And I should have a "Fall" alert "not pending" to the call center with a "missing" call center delivery timestamp
   #   And 1 email to "exceptions_critical@halomonitoring.com" with subject "SafetyCareClient.alert::Missing account number!" should be sent for delivery
 
@@ -113,7 +122,7 @@ Feature: Critical Alert
   # we are noe checking more specific subject
   Scenario: Simulate a fall for a user with an with invalid profile
     When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "profile"
-    Then I should have "1" count of "Fall"
+    Then I should have 1 count of "Fall"
     And I should have a "Fall" alert "not pending" to the call center with a "missing" call center delivery timestamp
     And 2 emails to "exceptions_critical@halomonitoring.com" with subject "Missing user profile!" should be sent for delivery
     And 1 email to "exceptions_critical@halomonitoring.com" with subject "call center monitoring failure" should be sent for delivery
@@ -127,7 +136,7 @@ Feature: Critical Alert
     And a caregiver of "test-user" can raise exception
     When user "test-user" has "halouser" role for group "safety_care"
     And I simulate a "Panic" with delivery to the call center for user login "test-user" with a "valid" "call center account number"
-    Then I should have "1" count of "Panic"
+    Then I should have 1 count of "Panic"
     And I should have a "Panic" alert "not pending" to the call center with a "valid" call center delivery timestamp
     #   * usually only 1 email is sent
     #   * 3 emails due to "caregiver ... can raise exception" and panic sending additional email about "Technical Exception"
@@ -139,7 +148,7 @@ Feature: Critical Alert
 
   # Scenario: Simulate a fall with  delivery to the call center with Timeout exception
   #   When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "TCP connection"
-  #   Then I should have "1" count of "Fall"
+  #   Then I should have 1 count of "Fall"
   #   And I should have a "Fall" alert "pending" to the call center
 
   Scenario Outline: check battery status available and battery plugged
