@@ -39,6 +39,34 @@ and timestamp < now()
 order by strap_state asc
 limit 1000;
 
+------ falls while battery is charging for all users ------------------------------------------------------
+SELECT f.id, f.user_id as user_id, f.timestamp, 
+ CASE when
+   (select bp.timestamp from battery_pluggeds   bp where (bp.user_id=f.user_id and bp.timestamp < f.timestamp) order by bp.timestamp desc limit 1) >
+   (select bu.timestamp from battery_unpluggeds bu where (bu.user_id=f.user_id and bu.timestamp < f.timestamp) order by bu.timestamp desc limit 1)
+ THEN 
+  'Battery Plugged'
+ ELSE
+  'Battery Unplugged'
+ END as battery_state
+from falls f 
+where f.user_id in (1)
+and timestamp > now() - interval '2 weeks'
+and timestamp < now()
+order by battery_state asc
+limit 1000;
+
+----- falls & software version X minutes before (pre) and after (post)  halo_debug_msgs ------------------------
+select hdm.id, hdm.user_id, hdm.timestamp,
+ (select f.timestamp from falls f where (hdm.user_id=f.user_id and hdm.timestamp + interval '10 minutes' > f.timestamp and f.timestamp > hdm.timestamp) order by f.timestamp asc  limit 1) as fall_post,
+ (select f.timestamp from falls f where (hdm.user_id=f.user_id and hdm.timestamp - interval '10 minutes' < f.timestamp and f.timestamp < hdm.timestamp) order by f.timestamp desc limit 1) as fall_pre,
+ (select di.software_version from device_infos di where hdm.timestamp > di.created_at order by di.created_at asc limit 1) as software_version
+from halo_debug_msgs hdm
+where (dbg_type = 2 or dbg_type = 3 or dbg_type = 4)
+and hdm.timestamp > now() - interval '1 day'
+and hdm.timestamp < now()
+limit 1000;
+
 ----- gw_alarm_buttons X minutes before (pre) and after (post) a fall for a given user-------------------
 select f.id, f.user_id as user_id,'Fall' as crit_type, f.timestamp, 
  (select gab.timestamp from gw_alarm_buttons gab where (gab.user_id=f.user_id and f.timestamp + interval '10 minutes' > gab.timestamp and gab.timestamp > f.timestamp) order by gab.timestamp desc limit 1) as gw_alarm_button_post
