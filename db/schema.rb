@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110308192712) do
+ActiveRecord::Schema.define(:version => 20110310215236) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -843,6 +843,7 @@ ActiveRecord::Schema.define(:version => 20110308192712) do
     t.integer  "cc_months_trial"
     t.string   "ship_description"
     t.integer  "ship_price"
+    t.boolean  "dealer_install_fee_applies"
   end
 
   create_table "orientation_thresholds", :force => true do |t|
@@ -1126,7 +1127,6 @@ ActiveRecord::Schema.define(:version => 20110308192712) do
   create_table "shipping_options", :force => true do |t|
     t.string   "description"
     t.integer  "price"
-    t.integer  "order_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

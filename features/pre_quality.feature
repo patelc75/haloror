@@ -53,12 +53,13 @@ Feature: Pre quality
     When I create a "reseller" reseller group
     And I am ready to create a coupon code for "reseller" group
     And I fill in the following:
-      | Coupon code       | coupon1.5.1-rc1 |
-      | Deposit           | 66              |
-      | Shipping          | 6               |
-      | Monthly recurring | 77              |
-      | Months advance    | 0               |
-      | Months trial      | 2               |
+      | Coupon code        | coupon1.5.1-rc1 |
+      | Deposit            | 66              |
+      | Shipping           | 6               |
+      | Monthly recurring  | 77              |
+      | Months advance     | 0               |
+      | Months trial       | 2               |
+      | Dealer Install Fee | 99              |
     And I press "Save"
     Then a coupon code should exist with coupon_code "coupon1.5.1-rc1"
   
@@ -85,12 +86,13 @@ Feature: Pre quality
     When I create a "reseller" reseller group
     And I am ready to create a coupon code for "reseller" group
     And I fill in the following:
-      | Coupon code       | coupon1.5.1-rc1 |
-      | Deposit           | 66              |
-      | Shipping          | 6               |
-      | Monthly recurring | 77              |
-      | Months advance    | 0               |
-      | Months trial      | 2               |
+      | Coupon code        | coupon1.5.1-rc1 |
+      | Deposit            | 66              |
+      | Shipping           | 6               |
+      | Monthly recurring  | 77              |
+      | Months advance     | 0               |
+      | Months trial       | 2               |
+      | Dealer Install Fee | 99              |
     And I press "Save"
     And I create admin of "reseller" group
     And I activate the last user as "reseller_admin"
@@ -112,12 +114,13 @@ Feature: Pre quality
     # coupon code 
     When I am ready to create a coupon code for "ml_reseller" group
     And I fill in the following:
-      | Coupon code       | coupon1.5.1-rc1   |
-      | Deposit           | <deposit_amount>  |
-      | Shipping          | <shipping_amount> |
-      | Monthly recurring | 77                |
-      | Months advance    | 0                 |
-      | Months trial      | 2                 |
+      | Coupon code        | coupon1.5.1-rc1   |
+      | Deposit            | <deposit_amount>  |
+      | Shipping           | <shipping_amount> |
+      | Monthly recurring  | 77                |
+      | Months advance     | 0                 |
+      | Months trial       | 2                 |
+      | Dealer Install Fee | 99                |
     And I press "Save"
     Then a coupon code should exist with coupon_code "coupon1.5.1-rc1"
     #
@@ -547,7 +550,7 @@ Feature: Pre quality
     When I edit the last user intake
     And I press "Bill"
     Then user intake "last" should have "Installed" status
-    And the last invoice has pro-rata and recurring columns filled
+    And the last invoice has prorate_start_date, recurring_start_date, prorate, recurring columns filled
     #   * https://redmine.corp.halomonitor.com/issues/4111#note-8
     When panic button test data is received for user intake "last"
     Then last user intake retains its existing panic timestamp
@@ -558,6 +561,7 @@ Feature: Pre quality
     And I create a coupon code for "reseller" group
     And I am placing an online order for "reseller" group
     And I uncheck "order_bill_address_same"
+    And I check "order_dealer_install_fee_applies"
     And I press "Continue"
     And I press "Place Order"
     Then I should see "Success"
@@ -579,4 +583,5 @@ Feature: Pre quality
     Then user intake "last" should have "Installed" status
     And the last user intake should prorate up to this month
     And the last user intake should start subscription from upcoming month
-    And the last invoice has pro-rata and recurring columns filled
+    And the last invoice has prorate_start_date, recurring_start_date, prorate, recurring columns filled
+    And the last invoice has install_fee_amount, install_fee_charged_at columns filled

@@ -65,6 +65,7 @@ Factory.define :device_model_price do |v|
   v.monthly_recurring { rand(50) }
   v.months_advance { rand(3) }
   v.months_trial { rand(3) }
+  v.dealer_install_fee { rand(99) }
   v.association :device_model
   v.association :group
 end

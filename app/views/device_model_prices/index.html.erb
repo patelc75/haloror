@@ -29,25 +29,27 @@
     <th>Shipping</th>
     <th>Monthly<br> recurring</th>
     <th>Months<br> advance</th>
-    <th>Months<br> trial</th> 
+    <th>Months<br> trial</th>
+    <th>Dealer<br> Install Fee</th>
     <th/><th/><th/>
   </tr>
 
-<% for device_model_price in @device_model_prices %>
+<% for _coupon in @device_model_prices %>
   <tr class="<%= cycle('', 'altrow') %>">
-    <td><%=h device_model_price.group_name %></td>
-    <td><%=h device_model_price.part_number %></td>
-    <td><%=h device_model_price.device_type %></td>
-    <td><%=h device_model_price.coupon_code %></td>
-    <td><%=h device_model_price.expiry_date %></td>
-    <td><%=h device_model_price.deposit %></td>
-    <td><%=h device_model_price.shipping %></td>
-    <td><%=h device_model_price.monthly_recurring %></td>
-    <td><%=h device_model_price.months_advance %></td>
-    <td><%=h device_model_price.months_trial %></td>
-    <td><%= link_to 'Show', device_model_price %></td>
-    <td><%= link_to 'Edit', edit_device_model_price_path(device_model_price) %></td>
-    <td><%= link_to 'Destroy', device_model_price, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%=h _coupon.group_name %></td>
+    <td><%=h _coupon.part_number %></td>
+    <td><%=h _coupon.device_type %></td>
+    <td><%=h _coupon.coupon_code %></td>
+    <td><%=h _coupon.expiry_date %></td>
+    <td><%=h _coupon.deposit %></td>
+    <td><%=h _coupon.shipping %></td>
+    <td><%=h _coupon.monthly_recurring %></td>
+    <td><%=h _coupon.months_advance %></td>
+    <td><%=h _coupon.months_trial %></td>
+    <td><%=h _coupon.dealer_install_fee %></td>
+    <td><%= link_to 'Show', _coupon %></td>
+    <td><%= link_to 'Edit', edit_device_model_price_path(_coupon) %></td>
+    <td><%= link_to 'Destroy', _coupon, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
 <% end %>
 </table>

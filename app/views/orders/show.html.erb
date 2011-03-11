@@ -1,11 +1,22 @@
 <%= render :partial => 'reporting/nav'%>
 <h2>Order ID# <%= params[:id]%></h2>
-<%= hash_to_html( @order.attributes.reject {|k,v| ["cvv", "card_number"].include?( k) }) %>
+<% if current_user.is_super_admin? %>
+  <%= hash_to_html( @order.attributes.reject {|k,v| ["cvv", "card_number"].include?( k) }) %>
 
-<h3>Group</h3>
-<%= hash_to_html( @order.group.attributes) %>
+  <h3>Group</h3>
+  <%= hash_to_html( @order.group.attributes) %>
 
-<h3>Order Items</h3>
-<% @order.order_items.each do |_item| %>
-  <%= hash_to_html( _item.attributes) %>
+  <h3>Order Items</h3>
+  <% @order.order_items.each do |_item| %>
+    <%= hash_to_html( _item.attributes) %>
+  <% end %>
+
+  <h3>Payment Gateway Responses</h3>
+  <% @order.payment_gateway_responses.each do |_response| %>
+    <h4><%= _response.action %></h4>
+    <%= hash_to_html( _response.attributes) %>
+  <% end %>
+  
+<% else %>
+  <p>Please contact 1-866-546-2540 for assistance</p>
 <% end %>

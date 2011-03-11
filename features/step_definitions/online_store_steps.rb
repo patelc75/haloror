@@ -94,12 +94,13 @@ When /^I am ready to create a coupon code for "([^\"]*)" group$/ do |_name|
     | device_model_price_expiry_date_1i | 2012                      |
   })
   When "I fill in the following:", table(%{
-    | Coupon code       | #{_name}_coupon |
-    | Deposit           | 77              |
-    | Shipping          | 7               |
-    | Monthly recurring | 45              |
-    | Months advance    | 0               |
-    | Months trial      | 0               |
+    | Coupon code        | #{_name}_coupon |
+    | Deposit            | 77              |
+    | Shipping           | 7               |
+    | Monthly recurring  | 45              |
+    | Months advance     | 0               |
+    | Months trial       | 0               |
+    | Dealer Install Fee | 99              |
   })
 end
 
