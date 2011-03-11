@@ -1,5 +1,6 @@
 class DeviceModel < ActiveRecord::Base
   belongs_to :device_type
+  belongs_to :order
   has_many :device_revisions
   has_many :rma_items
   has_many :coupon_codes, :class_name => "DeviceModelPrice", :dependent => :destroy # just easier and DRY

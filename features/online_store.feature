@@ -1,5 +1,6 @@
 # https://redmine.corp.halomonitor.com/issues/show/2558
 #
+@L1 @store @order
 Feature: Online (D)irect (T)o (C)ustomer store
   In order sell Halo products online to direct customer
   As an administrator
@@ -214,4 +215,18 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     Then caregivers of last order should not be activated
     # https://spreadsheets.google.com/ccc?key=0Amq6Nxcn9fTPdHlkWFVNZnphZWxtdGtYQW0wczRtdFE&hl=en#gid=20
+
+  Scenario: Coupon code values get copied into order
+    Given I am an authenticated super admin
+    When I create a "reseller" reseller group
+    And I create a coupon code for "reseller" group
+    And I am placing an online order for "reseller" group
+    And I choose "product_complete"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "order_bill_address_same"
+    And I fill in "Coupon Code" with "reseller_coupon"
+    And I press "Continue"
+    And I press "Place Order"
+    Then last order should have coupon code values copied
     

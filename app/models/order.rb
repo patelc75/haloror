@@ -16,6 +16,7 @@ class Order < ActiveRecord::Base
   #   * coupon code changes for tickets #4253, #4067, #4060, #3923
   has_many :shipping_options
   has_one :user_intake
+  has_one :device_model
 
   attr_accessor :product, :bill_address_same, :need_validation
   before_update :check_kit_serial_validation
@@ -48,6 +49,18 @@ class Order < ActiveRecord::Base
     #
     # WARNING: some error happening. switched off for now. needs testing
     encrypt_sensitive_data # Will encrypt only if not already encrypted?
+    # 
+    #  Sat Mar 12 02:14:06 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4253
+    #   * copy coupon code data to order
+    _coupon = product_cost
+    self.device_model_id      = _coupon.device_model.id
+    self.cc_expiry_date       = _coupon.expiry_date
+    self.cc_deposit           = _coupon.deposit
+    self.cc_shipping          = _coupon.shipping
+    self.cc_monthly_recurring = _coupon.monthly_recurring
+    self.cc_months_advance    = _coupon.months_advance
+    self.cc_months_trial      = _coupon.months_trial
   end
   
   def validate

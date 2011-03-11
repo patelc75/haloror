@@ -1,3 +1,4 @@
+@L1 @critical
 Feature: Bundle job
   In order to process the bundled job from device
   As a system user

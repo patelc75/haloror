@@ -5,6 +5,7 @@
 #  Fri Feb 18 01:01:10 IST 2011, ramonrails
 #   * If "Has check failed" error comes up, auth_key can be updated by
 #   *  Digest::SHA256.hexdigest( <timestamp_from_xml> + <device.serial_number>)
+@L1 @critical
 Feature: POST XML to simulate gateway
   In order to value
   As a role

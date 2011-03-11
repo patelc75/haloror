@@ -1,6 +1,7 @@
 # @wip will tell cucumber to skip this feature
 #@wip
 # TODO: Add Panic to critical_alert.feature and make sure it is run every time
+@L1 @critical
 Feature: Critical Alert
   In order to process a fall, panic, or gw_alarm_button from the gateway
   As a system user
@@ -130,7 +131,6 @@ Feature: Critical Alert
   #
   #  Fri Feb  4 00:59:03 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4147
-  @one @critical
   Scenario: Simulate a panic button press with successful delivery to the call center even if there is an exception caregiver
     Given user "test-user" has 3 caregivers
     And a caregiver of "test-user" can raise exception
