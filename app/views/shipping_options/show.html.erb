@@ -1,0 +1,13 @@
+<p>
+  <b>Description:</b>
+  <%=h @shipping_option.description %>
+</p>
+
+<p>
+  <b>Price:</b>
+  <%=h @shipping_option.price %>
+</p>
+
+
+<%= link_to 'Edit', edit_shipping_option_path(@shipping_option) %> |
+<%= link_to 'Back', shipping_options_path %>

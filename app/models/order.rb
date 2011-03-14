@@ -9,12 +9,12 @@ class Order < ActiveRecord::Base
   # belongs_to :device_model_price, :class_name => "DeviceModelPrice", :foreign_key => "coupon_code_id"
   belongs_to :creator, :class_name => 'User', :foreign_key => 'created_by'
   belongs_to :updater, :class_name => 'User', :foreign_key => 'updated_by'
-  has_many :order_items
-  has_many :payment_gateway_responses
   # 
   #  Wed Mar  9 01:01:27 IST 2011, ramonrails
   #   * coupon code changes for tickets #4253, #4067, #4060, #3923
-  has_many :shipping_options
+  belongs_to :shipping_option
+  has_many :order_items
+  has_many :payment_gateway_responses
   has_one :user_intake
   has_one :device_model
 
@@ -61,6 +61,16 @@ class Order < ActiveRecord::Base
     self.cc_monthly_recurring = _coupon.monthly_recurring
     self.cc_months_advance    = _coupon.months_advance
     self.cc_months_trial      = _coupon.months_trial
+    # 
+    #  Tue Mar 15 03:01:33 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4060
+    if _coupon.shipping.to_i == 0
+      self.ship_description = shipping_option.description
+      self.ship_price       = shipping_option.price
+    else
+      self.ship_description = "Coupon Code: #{coupon_code}"
+      self.ship_price       = _coupon.shipping
+    end
   end
   
   def validate

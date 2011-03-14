@@ -10,9 +10,8 @@ ActionController::Routing::Routes.draw do |map|
   #     device_models.resources :rma_items
   #     device_models.resources :device_model_prices # prices based on coupon codes
   #   end
-  # end  
-  map.resources :access_modes
-  map.resources :carriers
+  # end    map.resources :access_modes  map.resources :carriers
+  map.resources :shipping_options
   map.resources :device_model_prices
   map.resources :groups
   map.resources :installation_in_progress

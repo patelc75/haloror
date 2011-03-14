@@ -245,6 +245,11 @@ Factory.define :roles_users_option do |v|
   v.relationship { Faker::Name.name }
 end
 
+Factory.define :shipping_option do |v|
+  v.description { Faker::Company.name }
+  v.price { rand(99) }
+end
+
 Factory.define :strap_fastened do |v|
   v.association :device
   v.association :user

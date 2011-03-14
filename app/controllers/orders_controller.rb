@@ -18,6 +18,7 @@ class OrdersController < ApplicationController
     #   https://redmine.corp.halomonitor.com/issues/3653#note-7
     @groups = (logged_in? ? Group.for_user(current_user) : [Group.direct_to_consumer])
     @confirmation = false
+    @shipping_option = session[:shipping_option_id]
     @product = session[:product]
     @order = Order.new(session[:order]) # recall if any order data was remembered
     @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
@@ -28,6 +29,7 @@ class OrdersController < ApplicationController
     @clip_tariff = DeviceModel.clip_coupon( @order.group, _coupon_code)
     
     if request.post? # confirmation mode
+      @shipping_option = session[:shipping_option_id] = params[:order][:shipping_option_id]
       @product = params[:product]
       order_params = params[:order] # we need to remember these
       

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110310215236) do
+ActiveRecord::Schema.define(:version => 20110314211701) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -844,6 +844,7 @@ ActiveRecord::Schema.define(:version => 20110310215236) do
     t.string   "ship_description"
     t.integer  "ship_price"
     t.boolean  "dealer_install_fee_applies"
+    t.integer  "shipping_option_id"
   end
 
   create_table "orientation_thresholds", :force => true do |t|

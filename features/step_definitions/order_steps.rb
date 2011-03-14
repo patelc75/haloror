@@ -30,3 +30,17 @@ Then /^last order should have coupon code values copied$/ do
     :cc_months_trial      => :months_trial
   }.each { |k, v| _order.send( k).should == _coupon.send( v) }
 end
+
+Then /^shipping values get copied from (.+) for last order$/ do |_where, |
+  (_order = Order.last).should_not be_blank
+  case _where
+  when 'shipping option'
+    _order.ship_description.should == _order.shipping_option.description
+    _order.ship_price.should       == _order.shipping_option.price
+    
+  when 'coupon code'
+    (_product_cost = _order.product_cost).should_not be_blank
+    _order.ship_description.should == "Coupon Code: #{_product_cost.coupon_code}"
+    _order.ship_price.should       == _product_cost.shipping
+  end
+end

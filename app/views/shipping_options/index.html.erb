@@ -1,0 +1,23 @@
+<h1>Listing shipping_options</h1>
+
+<table class="bluegrey">
+  <tr>
+    <th class="span-12">Description</th>
+    <th class="span-3">Price</th>
+    <th class="span-3"></th>
+  </tr>
+
+<% for shipping_option in @shipping_options %>
+  <tr class="<%= cycle('altrow','') %>">
+    <td><%= link_to shipping_option.description, edit_shipping_option_path(shipping_option) %></td>
+    <td><%=h shipping_option.price %></td>
+    <td>
+      <%= link_to 'Show', shipping_option, :class => 'button small green-button' %>
+    </td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New shipping option', new_shipping_option_path, :class => 'button blue-button' %>

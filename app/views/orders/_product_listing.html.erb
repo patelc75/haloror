@@ -24,6 +24,24 @@
   </tr>
   <% end -%>
   <% if !@confirmation %>
-  <tr><td colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= link_to "What's the difference?", image_path("product_matrix.jpg"), :rel => "facebox" %></td></tr>
+    <tr>
+      <td colspan="2">
+        <%= link_to "What's the difference?", image_path("product_matrix.jpg"), :rel => "facebox", :class => "prepend-1" %>
+      </td>
+    </tr>
+    
   <% end -%>
 </table>
+
+<% if !@confirmation %>
+  <ul>
+    <% for _option in ShippingOption.ordered %>
+    <li>
+      <%= radio_button_tag 'order[shipping_option_id]', "#{_option.id}", (_option.id == @shipping_option) %>
+      <%= label_tag "order_shipping_option_id_#{_option.id}", "#{_option.description}" %> <%= " #{USD_value( _option.price)}" %>
+    </li>
+    <% end %>
+  </ul>
+<% else %>
+  <%= h ShippingOption.find( @shipping_option).description %>
+<% end %>

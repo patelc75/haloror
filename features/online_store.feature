@@ -230,3 +230,29 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Place Order"
     Then last order should have coupon code values copied
     
+  Scenario Outline: Shipping options
+    Given the following shipping_options:
+      | description            | price |
+      | UPS Overnight shipping | 60    |
+      | UPS 2 day shipping     | 28    |
+      | UPS Ground Shipping    | 16    |
+    And "default" coupon_code for "direct_to_consumer" group has <_ship> shipping
+    When I go to the online store
+    And I choose "product_complete"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "order_bill_address_same"
+    And I choose "UPS 2 day shipping"
+    And I press "Continue"
+    Then page content should have "UPS 2 day shipping"
+    When I press "Place Order"
+    Then page content should have "Thank you for your order"
+    And the payment gateway response should have 1 log
+    And 1 email to "cuc_ship@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
+    And shipping values get copied from <_where> for last order
+    
+    Examples:
+      | _ship | _where          |
+      | 0     | shipping option |
+      | 9     | coupon code     |
+      
