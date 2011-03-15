@@ -408,7 +408,7 @@ class UserIntake < ActiveRecord::Base
           #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
           #   * https://redmine.corp.halomonitor.com/issues/3785
           #   * shifted to variable to reduce double call
-          _email_to = [ senior, senior.group_admins, subscriber, group, group.master_group
+          _email_to = [ senior.group_admins, subscriber, group, group.master_group
             ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq            
           # 
           #  Mon Feb  7 21:26:10 IST 2011, ramonrails
