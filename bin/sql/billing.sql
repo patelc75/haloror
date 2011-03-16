@@ -15,7 +15,7 @@
 -- (psql -F ',' -A haloror > (run the query) > \o outputfile.csv > (use mutt to email)---------------------
 select 
 (select group_or_first_name from roles_by_user_id(invoices.user_id) where role = 'halouser' and group_or_first_name != 'safety_care' limit 1) as group,
-profiles.first_name, profiles.last_name,
+profiles.first_name, profiles.last_name, users.demo_mode,
 invoices.*
 from invoices, users, profiles
 where users.id = invoices.user_id
