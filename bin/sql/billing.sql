@@ -19,4 +19,5 @@ profiles.first_name, profiles.last_name, users.demo_mode,
 invoices.*
 from invoices, users, profiles
 where users.id = invoices.user_id
+and (cancelled_date > now() - interval '1 month' or cancelled_date is null)
 and profiles.user_id = users.id;
