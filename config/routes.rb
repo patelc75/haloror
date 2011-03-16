@@ -74,7 +74,7 @@ ActionController::Routing::Routes.draw do |map|
   
   #user related models
   map.resources :profiles
-  map.resources :users, :member => { :new_caregiver_options => :get, :triage => :get, :dismiss => :post, :toggle_test_mode => :post } do |user|
+  map.resources :users, :member => { :change_password => :get, :new_caregiver_options => :get, :triage => :get, :dismiss => :post, :toggle_test_mode => :post } do |user|
     user.resources :user_logs, :only => [:index, :show]
     user.resources :audits, :only => [:index, :show]
     user.resources :triage_audit_logs
