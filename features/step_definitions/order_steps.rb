@@ -44,3 +44,19 @@ Then /^shipping values get copied from (.+) for last order$/ do |_where, |
     _order.ship_price.should       == _product_cost.shipping
   end
 end
+
+Then /^order items for each charge should be created separately for last order$/ do
+  (_order = Order.last).should_not be_blank
+  _order.order_items.recurring_charges.should_not be_blank
+  (_cost = _order.product_cost).should_not be_blank
+  [_cost.deposit, _cost.shipping, _cost.advance_charge, _cost.dealer_install_fee].reject(&:zero?).each do |_amount|
+    _order.order_items.first( :conditions => { :cost => _amount }).should_not be_blank
+  end
+end
+
+Then /^upfront charge for last order should include dealer install fee charges$/ do
+  (_order = Order.last).should_not be_blank
+  (_cost = _order.product_cost).should_not be_blank
+  _recurring_sum = _order.order_items.recurring_charges.sum( :cost)
+  _order.order_items.reject {|e| e.recurring_monthly != true }.sum( :conditions => { :cost => _cost.upfront_charge}).should_not be_blank
+end

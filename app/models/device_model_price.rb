@@ -123,7 +123,7 @@ class DeviceModelPrice < ActiveRecord::Base
   end
   
   def upfront_charge
-    advance_charge.to_i + deposit.to_i + shipping.to_i
+    advance_charge.to_i + deposit.to_i + shipping.to_i + dealer_install_fee.to_i
   end
   
   def discounted

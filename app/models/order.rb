@@ -65,8 +65,10 @@ class Order < ActiveRecord::Base
     #  Tue Mar 15 03:01:33 IST 2011, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/4060
     if _coupon.shipping.to_i == 0
-      self.ship_description = shipping_option.description
-      self.ship_price       = shipping_option.price
+      unless shipping_option.blank?
+        self.ship_description = shipping_option.description
+        self.ship_price       = shipping_option.price
+      end
     else
       self.ship_description = "Coupon Code: #{coupon_code}"
       self.ship_price       = _coupon.shipping
@@ -208,11 +210,33 @@ class Order < ActiveRecord::Base
   # create order_item enteries for this order
   def create_order_items
     device_model = product_from_catalog
-    # create order item for product
-    order_items.create!(:device_model_id => device_model.id, :cost => product_cost.upfront_charge, :quantity => 1)
+    _cost = product_cost
     # create a recurring order item
-    order_items.create!(:cost => product_cost.monthly_recurring, :quantity => 1, \
-      :recurring_monthly => true, :device_model_id => device_model.id)
+    if order_items.create({
+        :cost              => _cost.monthly_recurring,
+        :quantity          => 1,
+        :recurring_monthly => true,
+        :device_model_id   => device_model.id
+      })
+      # 
+      #  Thu Mar 17 01:00:16 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/3923
+      # create order item for each product charge
+      [_cost.deposit, _cost.shipping, _cost.advance_charge, _cost.dealer_install_fee].each do |_amount|
+        unless _amount.zero?
+          if order_items.create!({
+              :device_model_id => device_model.id,
+              :cost            => _amount,
+              :quantity        => 1
+            })
+          else
+            errors.add_to_base( "Cannot create charge for #{USD_value(_amount)}")
+          end
+        end
+      end
+    else
+      errors.add_to_base( "Cannot create monthly recurring order item #{USD_value(_cost.monthly_recurring)}")
+    end
   end
   
   # same_as_shipping checkbox can reply on this
