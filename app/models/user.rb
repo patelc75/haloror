@@ -81,7 +81,7 @@ class User < ActiveRecord::Base
   cattr_accessor :current_user #stored in memory instead of table
   attr_accessor :password
   attr_accessor :current_password,:username_confirmation
-
+  
   # ==========================
   # = includes and libraries =
   # ==========================
@@ -1858,13 +1858,13 @@ class User < ActiveRecord::Base
   #   * emails are only dispatched on submit, not save
   #   * identify submit as skip_vaiation == false
   #  Fri Dec 10 21:04:05 IST 2010, ramonrails
-  #   * added "_forced" option for "resend" action
+  #   * added "options" option for "resend" action
   #
-  def dispatch_emails( _forced = false)
+  def dispatch_emails( options = {})
     unless email.blank? # cannot send without valid email
       #  Fri Dec 10 21:04:14 IST 2010, ramonrails
-      #   * "resend" needs _forced
-      unless activation_email_sent? || activated? || _forced
+      #   * "resend" needs options
+      unless activation_email_sent? || activated? || (options.is_a?( Hash) && options.has_key?(:force) && (options[:force] == true))
         # 
         #  Tue Nov 23 22:21:44 IST 2010, ramonrails
         #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
@@ -1899,21 +1899,24 @@ class User < ActiveRecord::Base
         #   #   * or we have an associated order (online store)
         #   (user_intakes.first.submitted? || !user_intakes.first.order.blank?)
         # end
-        _can_send_email = if self.is_admin?
-          #   * admin does not have user_intake
-          #   * admin is "saved", not validated
-          true
-        else
-          #   * any non-admin will have user_intake, or order
-          ( !user_intakes.blank? && ( user_intakes.first.submitted? || !user_intakes.first.order.blank? ))
-        end
+        # 
+        #  Fri Mar 18 01:22:24 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4244
+        # _can_send_email = if self.is_admin?
+        #   #   * admin does not have user_intake
+        #   #   * admin is "saved", not validated
+        #   true
+        # else
+        #   #   * any non-admin will have user_intake, or order
+        #   ( !user_intakes.blank? && ( user_intakes.first.submitted? || !user_intakes.first.order.blank? ))
+        # end
         #
         #  Tue Dec 21 00:29:04 IST 2010, ramonrails
         #   * https://redmine.corp.halomonitor.com/issues/3895
         #   * either we have a submitted user intake
         #   * or we have an associated order (online store)
         #   dispatch emails subject to the role
-        if _can_send_email
+        if can_send_email?
           if self.is_caregiver?
             #   * Only caregiver email will dispatch when subscriber is caregiver
             #   * emails for caregivers
@@ -1939,6 +1942,20 @@ class User < ActiveRecord::Base
     return !activation_sent_at.blank? # when this is filled, activation was sent
   end
 
+  # 
+  #  Fri Mar 18 01:22:35 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4244
+  def can_send_email?
+    if self.is_admin?
+      #   * admin does not have user_intake
+      #   * admin is "saved", not validated
+      true
+    else
+      #   * any non-admin will have user_intake, or order
+      ( !user_intakes.blank? && ( user_intakes.first.submitted? || !user_intakes.first.order.blank? ))
+    end
+  end
+  
   def username
     return self.name rescue ""
   end
@@ -3191,8 +3208,9 @@ class User < ActiveRecord::Base
   end
   
   # we need this method because we do not want to get "make_activation_code" public
+  #   * generate code even when not new_record?
   def make_activation_pending
-    self.make_activation_code # setup an activation code
+    self.make_activation_code( :force => true) # setup an activation code
     # blank out these fields. non-activated user intakes do not have data in any of these fields
     [:activated_at, :login, :crypted_password].each {|field| self.send("#{field}=", nil) }
     self.send(:update_without_callbacks) # just update. no triggers
@@ -3413,12 +3431,14 @@ class User < ActiveRecord::Base
   end
   
   # generates activation code
-  def make_activation_code
+  def make_activation_code( options = {})
     #
     # CHANGED: should this only be for new_record?
     #   does not harm this way either because activated? will ignore any new created activation_code
     #   but this is not error proof
-    self.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join ) if self.new_record? && activation_code.blank?
+    if (self.new_record? && activation_code.blank?) || (options.is_a?( Hash) && options.has_key?(:force) && (options[:force] == true))
+      self.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+    end
   end 
   
   # return true if the login is not blank

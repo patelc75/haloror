@@ -198,7 +198,7 @@
           <% if current_user.is_super_admin? %>
             <%= image_tag('profile.png') %><%= link_to 'Activate', :controller => 'activate', :action => user_row.activation_code %> | 
           <% end %>
-          <%= link_to 'Resend Email', resend_path(user_row.id) %>
+          <%= link_to 'Resend Email', resend_path(user_row.id) if user_row.can_send_email? %>
         <% else %>
           <span class="text-small"> Activated <%= user_row.activated_at.strftime(Time::DATE_FORMATS[:date_time]) %> </span> 
         <% end %>
