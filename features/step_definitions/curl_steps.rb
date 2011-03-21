@@ -1,5 +1,22 @@
 require "nokogiri"
 
+# ==========
+# = givens =
+# ==========
+
+Given /^Fall event was recorded (\d+) times for "([^"]*)" in the last (.+) (.+)$/ do |_count, _login, _quantity, _span|
+  (_user = User.contains( _login).first).should_not be_blank
+  _count.to_i.times { Factory.create( :fall, { :user_id => _user.id, :timestamp => eval("rand(#{_quantity}).#{_span}.ago") }) }
+  Fall.count.should == _count.to_i
+  # When 'I simulate a "Fall" event with the following attributes:', table(%{
+  #   | user | #{_login} |
+  # })
+end
+
+# =========
+# = whens =
+# =========
+
 # 
 #  Fri Feb 18 01:28:37 IST 2011, ramonrails
 #   * better method than the other one present here. this one has very flexible syntax
@@ -10,7 +27,9 @@ When /^I post the following XML:$/ do |table|
   table.raw.each {|name, value| options[name.gsub(/ /,'_').downcase] = ( value.include?('`') ? eval(value.gsub('`','')).to_s : value) }
 
   #   * manadatory keys
-  options['timestamp'] = Time.now.to_s unless options.has_key?('timestamp') # ensure timestamp
+  options['timestamp'] = Time.now.utc.strftime( Time::DATE_FORMATS[:date_time]) unless options.has_key?('timestamp') # ensure timestamp
+  options['gw_timestamp'] = options['timestamp'] unless options.has_key?('gw_timestamp')
+  
   #   * just create device here. device_id will be added to options in the next step called from here
   unless options.has_key?( 'device') # ensure device
     options['device'] = 'H123456789'
@@ -20,12 +39,16 @@ When /^I post the following XML:$/ do |table|
   (device = Device.find_by_serial_number( options['device'] )).should_not be_blank
   options['device_id'] = device.id # this value gets replaced in the XML node
   #   * generate authorization key
-  options['auth_key'] = Digest::SHA256.hexdigest( options['timestamp'] + options['device'])
+  #   * unless, we have parameters defined. This is required for flex chart query that has --basic auth
+  unless options.has_key?( 'parameters') && options['parameters'].include?( '--basic')
+    options['auth_key'] = Digest::SHA256.hexdigest( options['timestamp'] + options['device'])
+  end
 
-  #   * fetch user instance from given login or email
+  #   * fetch user instance from given login or email, replace user_id / userID
+  #   * some XML input have userID instead of user_id
   if options.has_key?('user')
     (user = User.contains( options['user'] ).first).should_not be_blank
-    options['user_id'] = user.id # this value will get replaced in the XML node
+    options['user_id'] = options['userID'] = user.id # this value will get replaced in the XML node
   end
   
   #   * read XML file
@@ -37,7 +60,8 @@ When /^I post the following XML:$/ do |table|
   if (_meta = options.keys.reject {|e| ['file_name', 'path', 'auth_key'].include?(e) })
     _meta.each do |_key|
       #  Wed Mar  9 03:34:06 IST 2011, ramonrails
-      #   * WARNING: do not use at_xpath. We want to replace all occurrences
+      #   * WARNING: do not use at_xpath which replaces only the first occurrence
+      #   * We want to replace all occurrences
       if ( _nodes = doc.xpath( "//#{_key}")) # find the node with the key in given table
         _nodes.each {|_node| _node.content = options[_key]} unless _nodes.blank? # replace the value from table data
       end
@@ -45,9 +69,13 @@ When /^I post the following XML:$/ do |table|
   end
   xml_string = doc.to_xml # convert the XML back to string
   #   * generate a path for POST
-  path = "#{options['path']}?gateway_id=#{device.id}&auth=#{options['auth_key']}"
-  
-  post( path, xml_string, {"Content-type" => "text/xml"}) # POST XML content
+  path = if options.has_key?( 'parameters') && options['parameters'].include?( '--basic')
+      options['path']
+    else
+      "#{options['path']}?gateway_id=#{device.id}&auth=#{options['auth_key']}"
+    end
+
+  post( path, "-v #{options['parameters']} -d #{xml_string}", {"Content-type" => "text/xml"}) # POST XML content
 end
 
 # 
@@ -94,4 +122,21 @@ When /^I post the following for (user|device) "([^\"]*)":$/ do |_type, _type_dat
   path = "#{options['path']}?gateway_id=#{device.id}&auth=#{options['auth_key']}"
   
   post( path, xml_string, {"Content-type" => "text/xml"}) # POST XML content
+end
+
+# =========
+# = thens =
+# =========
+
+Then /^response XML should have xpath "([^"]*)" with a value of (.+)$/ do |_xpath, _value|
+  (tags = Nokogiri::XML( response.body).xpath( _xpath)).should_not be_blank
+  tags.each { |_node| _node.content.should == _value }
+end
+
+Then /^response XML (should|should not) have xpath "([^"]*)"$/ do |_condition, _xpath|
+  if _condition == 'should'
+    Nokogiri::XML( response.body).xpath( _xpath).should_not be_blank
+  else
+    Nokogiri::XML( response.body).xpath( _xpath).should be_blank
+  end
 end
