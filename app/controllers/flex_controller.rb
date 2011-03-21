@@ -7,7 +7,7 @@ class FlexController < ApplicationController
     @query = {}
 
     # gather data from these models
-    @models = [Vital, SkinTemp, Step, Battery]
+    @models = [Vital, SkinTemp, Step, Battery, Fall]
 
     # array to store all user data in; users[0] is the default user
     @users = []
@@ -65,10 +65,11 @@ class FlexController < ApplicationController
   
   def get_data_for_user(user, last_reading_only = true)
     user_data = user
-    averaging = @query[:num_points].to_i == 0 ? false : true
+    #  Tue Mar 22 00:24:03 IST 2011, ramonrails
+    averaging = ( @query[:num_points].to_i > 0 ) # @query[:num_points].to_i == 0 ? false : true
     vital_data = nil
     # get vital data
-    if !@query[:enddate].blank? and !@query[:startdate].blank? and !last_reading_only
+    if !@query[:enddate].blank? && !@query[:startdate].blank? && !last_reading_only
       if averaging 
         interval = (@query[:enddate].to_time - @query[:startdate].to_time) / @query[:num_points].to_i
         vital_data = average_data_record(user, interval, @query[:num_points].to_i, @query[:startdate].to_time)
@@ -127,21 +128,30 @@ class FlexController < ApplicationController
     @models.each do |model|
       time_previous = nil
       get_model_data(model).each do |row|
-        if row[:timestamp]
-          timestamp = row[:timestamp]
-        else
-          timestamp = row[:begin_timestamp]
-        end
+        # 
+        #  Tue Mar 22 00:09:13 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4282
+        #   * WARNING: needs more test coverage
+        timestamp = ( row[:timestamp] || row[:begin_timestamp] )
+        # if row[:timestamp]
+        #   timestamp = row[:timestamp]
+        # else
+        #   timestamp = row[:begin_timestamp]
+        # end
         
-        move_on = false
-        if time_previous == timestamp
-          move_on = true
-        end
+        #   * WARNING: needs more test coverage
+        move_on = ( time_previous == timestamp )
+        # move_on = false
+        # if time_previous == timestamp
+        #   move_on = true
+        # end
         time_previous = timestamp
         unless move_on
-          unless data[timestamp]
-            data[timestamp] = []
-          end
+          #   * WARNING: needs more test coverage
+          data[timestamp] ||= []
+          # unless data[timestamp]
+          #   data[timestamp] = []
+          # end
           if model.class_name == "Vital"
             row[:adl] = row.adl
           end
@@ -166,7 +176,7 @@ class FlexController < ApplicationController
   
   def average_chart_data
     #average_data(num_points, start_time, end_time, id, column)
-    columns = {'Vital' => ['heartrate','activity'],'SkinTemp' => 'skin_temp','Step' => 'steps','Battery' => 'percentage'}
+    columns = {'Vital' => ['heartrate','activity'],'SkinTemp' => 'skin_temp','Step' => 'steps','Battery' => 'percentage', 'Fall' => 'count'}
         
     
     data = {}
@@ -230,6 +240,18 @@ class FlexController < ApplicationController
     if steps = Step.find(:first, :conditions => "user_id = #{user.id} AND begin_timestamp <= '#{now.to_s}'", :order => 'begin_timestamp desc')
       reading[:steps] = steps.steps
     end
+
+    # 
+    #  Tue Mar 22 00:35:53 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4282
+    reading[ :timestamp] = now
+    reading[ :fall]      = ((Fall.count( :conditions => [ "user_id = ? AND timestamp <= '#{now}'", user ]) > 0) ? 1 : 0)
+    # if !@query[:enddate].blank? && !@query[:startdate].blank?
+    #   #   * required for _chart_data.rxml output
+    #   reading[ :timestamp] = @query[ :enddate].to_time
+    #   #   * number of falls within the time span
+    #   reading[ :falls]     = Fall.count( :conditions => [ "user_id = ? AND timestamp >= ? AND timestamp < ?", user, @query[:startdate].to_time, @query[:enddate].to_time ])
+    # end
     
     return reading
   end
@@ -369,6 +391,14 @@ class FlexController < ApplicationController
       data[timestamp] = [] unless data[timestamp]
       data[timestamp] << battery_percentage_row 
     end
+    # 
+    #  Mon Mar 18 22:25:15 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4282
+    _start_time       = start_time # UtilityHelper.format_datetime(start_time, user)
+    _timestamp        = _end_time = _start_time + interval # add up interval seconds
+    _falls_count      = Fall.count( :conditions => ["user_id = ? AND timestamp >= ? AND timestamp < ?", user.id, _start_time, _end_time])
+    data[ _timestamp] << { :type => 'Fall', :count => _falls_count } # used in _chart_data_.rxml
+
     return data
   end
   

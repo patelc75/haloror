@@ -15,15 +15,10 @@ Given /^I have a (saved|complete|non-agreed) user intake$/ do |state|
   ui.save.should be_true # send(:update_without_callbacks) # cannot ui.save
 end
 
-Given /^the "([^"]*)" of last user intake is not activated$/ do |user_type|
-  user_intake = UserIntake.last
-  user_intake.should_not be_blank
-
-  user = user_intake.send(user_type.to_sym)
-  user.should_not be_blank
-
-  user.make_activation_pending # change the state of user to "activation pending"
-  user.errors.should be_blank
+Given /^the "([^"]*)" of last user intake (is|is not) activated$/ do |_role, _condition|
+  (_ui = UserIntake.last).should_not be_blank
+  (_user = _ui.send( _role.gsub(/ /,'_').to_sym)).should_not be_blank
+  Given %{user "#{_user.login || _user.email}" #{_condition} activated}
 end
 
 Given /^I am activating the "([^"]*)" of last user intake$/ do |user_type|
@@ -808,6 +803,17 @@ Then /^the last user intake does not have any invoice$/ do
   (_ui = UserIntake.last).should_not be_blank
   (_senior = _ui.senior).should_not be_blank
   _senior.invoice.should be_blank
+end
+
+Then /^(.+) email(?:|s) to (.+) of last user intake with (subject|body|content|keyword) "([^\"]*)" should be sent for delivery$/ do |_count, _roles, part, data|
+  _logins = _roles.split(',').collect {|e| e.gsub(/ /,'_').strip.to_sym }
+  (_ui = UserIntake.last).should_not be_blank
+  _emails = _logins.collect do |_login|
+    _ui.should respond_to( _login)
+    (_user = _ui.send( _login)).should_not be_blank
+    _user.email
+  end.compact.uniq
+  Email.all.select {|e| _emails.include?( e.to) && e.mail.include?( data) }.length.should == parsed_count( _count)
 end
 
 # ============================

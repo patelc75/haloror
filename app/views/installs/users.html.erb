@@ -59,7 +59,7 @@ Select Group:
 			(<%= link_to 'Report',"/installs/session_report/#{user.id.to_s}"%>)</div>
 		<div class="col-100">
 	  		<% if user.activation_code != nil %>
-      			<%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %> | <%= link_to 'Resend  Email', resend_path(user.id) %>
+      			<%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %> | <%= link_to 'Resend Email', resend_path(user.id) %>
       		<% else %>
       			Activated
       		<% end %>

@@ -1,4 +1,4 @@
-@L1
+@L1 @order @store @quality
 Feature: Pre quality
   In order to value
   As a role

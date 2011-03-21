@@ -18,9 +18,16 @@ Given /^(?:|a )user "([^\"]*)" exists with profile$/ do |user_names|
   end
 end
 
-Given /^user "([^\"]*)" is activated$/ do |user_names|
+Given /^user "([^\"]*)" (is|is not) activated$/ do |user_names, _status|
   user_names.split(',').collect(&:strip).each do |user_name|
-    User.find_by_login(user_name).activate
+    (_user = User.contains(user_name).first).should_not be_blank
+    if (_status == 'is')
+      _user.activate
+      _user.should be_activated
+    else
+      _user.make_activation_pending
+      _user.should_not be_activated
+    end
   end
 end
 
@@ -236,33 +243,33 @@ When /^I am activating the last (.+) as "([^\"]*)"$/ do |_user_type, _name|
     })
 end
 
-When /^I create admin of "([^\"]*)" group$/ do |_name|
-  When %{I am creating admin of "#{_name}" group}
+When /^I create (.+) of "([^\"]*)" group$/ do |_role, _name|
+  When %{I am creating #{_role} of "#{_name}" group}
   When %{I press "subscribe"}
 end
 
-When /^I am creating admin of "([^\"]*)" group$/ do |_name|
+When /^I am creating (.+) of "([^\"]*)" group$/ do |_role, _name|
   # just random groups to check concurrent existance
   Given "the following groups:", table(%{
     | name            | sales_type | description                |
     | bogus1_group    | reseller   | bogus reseller             |
     | retailer1_group | retailer   | retailer_group description |
   })
-  Given %{a role "admin" exists}
+  Given %{a role "#{_role}" exists}
   When "I go to the home page"
   When %{I follow links "Config > Sign up users with other roles"}
   When %{I select "#{_name}" from "Group"}
-  When %{I select "admin" from "Role"}
+  When %{I select "#{_role}" from "Role"}
   When "I fill in the following:", table(%{
-    | Email      | #{_name}_admin@text.com |
-    | First Name | #{_name}_admin          |
-    | Last Name  | #{_name}_admin          |
-    | Address    | admin address           |
-    | City       | admin_city              |
-    | State      | admin_state             |
-    | Zipcode    | 12345                   |
-    | Home Phone | 1234567890              |
-    | Work Phone | 1234567890              |
+    | Email      | #{_name}_#{_role}@text.com |
+    | First Name | #{_name}_#{_role}          |
+    | Last Name  | #{_name}_#{_role}          |
+    | Address    | #{_role} address           |
+    | City       | #{_role}_city              |
+    | State      | #{_role}_state             |
+    | Zipcode    | 12345                      |
+    | Home Phone | 1234567890                 |
+    | Work Phone | 1234567890                 |
   })
 end
 
@@ -317,6 +324,11 @@ When /^user "([^"]*)" has (|in)valid call center account$/ do |_login, _validity
   (_user = User.find_by_login(_login)).should_not be_blank
   _user.profile.should_not be_blank
   _user.profile.update_attribute( :account_number, (_validity.blank? ? "1234" : nil))
+end
+
+When /^I view user "([^"]*)"$/ do |_login|
+  (_user = User.contains(_login).first).should_not be_blank
+  visit user_url(_user) # url_for( :controller => 'users', :action => 'show', :id => _user )
 end
 
 # =========

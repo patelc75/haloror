@@ -27,3 +27,15 @@ Feature: Bus user signup
     Then I should see "Email sent to admin@chirag.name"
     And user "admin@chirag.name" has "admin" role for group "mygroup"
     And 1 email to "admin@chirag.name" with subject "Please activate" should be sent for delivery
+
+  @authentication @4244
+  Scenario: Re-send activation email
+    Given the product catalog exists
+    When I create a coupon code for "mygroup" group
+    And I place an online order for "mygroup" group
+    And the "halouser" of last user intake is not activated
+    When I view the senior of last user intake
+    And I follow "Resend Email"
+    Then I should see "Activation email sent again"
+    And 1 email to halouser of last user intake with subject "Please activate your new myHalo account" should be sent for delivery
+    And email with activation code of last user should be sent for delivery

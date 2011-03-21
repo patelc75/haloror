@@ -463,7 +463,7 @@ class InstallsController < ApplicationController
         flash[:notice] = "User #{@user} does not have an email."
       else
         #   * Keep DRY. user model has business logic to dispatch emails.
-        if @user.dispatch_emails( true) # forced
+        if @user.dispatch_emails( :force => true) # forced
           flash[:notice] = "Signup/Installation email resent to #{@user.email}"
         else
           flash[:notice] = "Signup/Installation email was not send again to #{@user.email}"

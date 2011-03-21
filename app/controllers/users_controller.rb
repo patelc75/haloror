@@ -634,13 +634,21 @@ class UsersController < ApplicationController
       end # activated?
     end # @user ?
   end
-    
+
+  # 
+  #  Thu Mar 17 03:27:57 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4097
+  def change_password
+    @user = User.find( params[:id])
+  end
+  
   def update
     #  check if this is an activation request or regular update
     if params[:user][:activation_code].blank?
       #
       # just a regular update
       @user = User.find(params[:id])
+      @user.skip_validation = (params[:user].keys.include?( "skip_validation"))
       respond_to do |format|
         if @user.update_attributes!(params[:user])
           puts "look closer"

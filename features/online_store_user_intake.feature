@@ -1,4 +1,4 @@
-@L1
+@L1 @order @store
 Feature: Online store user intake
   In order to value
   As a role

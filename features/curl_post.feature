@@ -74,3 +74,23 @@ Feature: POST XML to simulate gateway
       | user   | senior1       |
       | path   | /alert_bundle |
     Then user "senior1" should have data for panic, gw alarm button
+
+  @now @4282
+  Scenario Outline: Flex Chart
+    Given Fall event was recorded <count> times for "senior1" in the last 15 minutes
+    When I simulate a "ChartQuery" event with the following attributes:
+      | user       | senior1                                                        |
+      | path       | /flex/chart                                                    |
+      | startdate  | `15.minutes.ago.utc.strftime( Time::DATE_FORMATS[:date_time])` |
+      | parameters | -k --basic -u test-user:12345                                  |
+      | num_points | <points>                                                       |
+    Then response XML should have xpath "//LastReading/fall" with a value of <value>
+    And response XML <condition> have xpath "//DataReadings/DataReading/fall"
+
+    Examples:
+      | count | value | condition  | points |
+      | 100   | 1     | should     | 0      |
+      | 50    | 1     | should     | 0      |
+      | 5     | 1     | should     | 0      |
+      | 0     | 0     | should not | 0      |
+      | 0     | 0     | should     | 1      |

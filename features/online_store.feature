@@ -125,7 +125,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Continue"
     And I press "Place Order"
     Then page content should have "Thank you"
-    And the payment gateway should have log for 264 USD
+    And the payment gateway should have log for 314 USD
     # And the payment gateway should have log for 59 USD
 
   # https://redmine.corp.halomonitor.com/issues/3170
@@ -200,7 +200,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Continue"
     And I press "Place Order"
     Then I should see "Failure"
-    And the payment gateway should have log for 3 USD
+    And the payment gateway should have log for 53 USD
     And the payment gateway should not have log for 59 USD
 
   Scenario: Credit card is not charged at the time of online order
@@ -255,4 +255,15 @@ Feature: Online (D)irect (T)o (C)ustomer store
       | _ship | _where          |
       | 0     | shipping option |
       | 9     | coupon code     |
-      
+
+  Scenario: Separate order items for every charge
+    When I go to the online store
+    And I choose "product_complete"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "order_bill_address_same"
+    And I press "Continue"
+    And I press "Place Order"
+    Then page content should have "Thank you for your order"
+    And order items for each charge should be created separately for last order
+    And upfront charge for last order should include dealer install fee charges

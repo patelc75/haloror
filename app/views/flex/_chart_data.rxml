@@ -13,6 +13,7 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
           xml.orientation(user[:last_reading][:orientation])
           xml.steps(user[:last_reading][:steps])
           xml.adl(user[:last_reading][:adl])
+          xml.fall( user[:last_reading][:fall])
           xml.battery_outlet_status(user[:status][:battery_outlet])
           xml.battery_level_status(user[:status][:battery_level])
           xml.battery_percentage(user[:battery][:percentage].to_f/100)
@@ -46,6 +47,7 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
           xml.orientation(0)
           xml.steps(0)
           xml.adl(0)
+          xml.fall(0)
           xml.battery_outlet_status("No Data")
           xml.battery_level_status(0)
           xml.battery_percentage(0)
@@ -89,6 +91,13 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
                   if reading[:percentage]
                     xml.battery(".#{reading[:percentage]}")
                   end
+                # 
+                #  Mon Mar 18 23:39:26 IST 2011, ramonrails
+                #   * https://redmine.corp.halomonitor.com/issues/4282
+                elsif reading.class.to_s == 'Fall' || reading[:type] == 'Fall'
+                    xml.fall("1") # (".#{reading[:count]}")
+                else
+                  reading.class.to_s
                 end
               end
             end

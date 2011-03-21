@@ -73,7 +73,7 @@ end
 Factory.define :device do |v|
   #
   # Need a 10 digit serial_number
-  v.serial_number { Time.now.to_i.to_s.ljust( 10, "0") }
+  v.serial_number { rand.to_s[-10..-1].ljust( 10, "0") }
   v.active true
   v.association :device_revision
 end
@@ -114,12 +114,12 @@ Factory.define :event do |v|
 end
 
 Factory.define :fall do |v|
-  v.timestamp             { 30.minutes.ago }
+  v.timestamp             { rand(999).seconds.ago }
   v.magnitude             28
-  v.timestamp_call_center { 30.minutes.ago }
+  v.timestamp_call_center { rand(999).seconds.ago }
   v.call_center_pending   true
-  v.timestamp_server      { 30.minutes.ago }
-  v.gw_timestamp          { 30.minutes.ago }
+  v.timestamp_server      { rand(999).seconds.ago }
+  v.gw_timestamp          { rand(999).seconds.ago }
   v.severity              1
   v.call_center_timed_out true
   v.association :user
