@@ -128,9 +128,11 @@ end
 # = thens =
 # =========
 
-Then /^response XML should have xpath "([^"]*)" with a value of (.+)$/ do |_xpath, _value|
-  (tags = Nokogiri::XML( response.body).xpath( _xpath)).should_not be_blank
-  tags.each { |_node| _node.content.should == _value }
+Then /^response XML (should|should not) have xpath "([^"]*)" with a value of (.+)$/ do |_check, _xpath, _value|
+  Then %{response XML #{_check} have xpath "#{_xpath}"}
+  if _check == 'should'
+    Nokogiri::XML( response.body).xpath( _xpath).each { |_node| _node.content.should == _value }
+  end
 end
 
 Then /^response XML (should|should not) have xpath "([^"]*)"$/ do |_condition, _xpath|
