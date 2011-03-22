@@ -226,7 +226,11 @@ class FlexController < ApplicationController
       reading[:activity] = vitals.activity
       reading[:adl] = vitals.adl
       
-      reading[:orientation] = vitals.orientation
+      # 
+      #  Tue Mar 22 03:29:18 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4282
+      #   * We need to hard code "0" for orientation (which represents Fall)
+      reading[:orientation] = 0 # vitals.orientation
     end
     
     if battery = Battery.find(:first, :conditions => "user_id = #{user.id} AND timestamp <= '#{now.to_s}'", :order => 'timestamp desc')
@@ -244,14 +248,15 @@ class FlexController < ApplicationController
     # 
     #  Tue Mar 22 00:35:53 IST 2011, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/4282
-    reading[ :timestamp] = now
-    reading[ :fall]      = ((Fall.count( :conditions => [ "user_id = ? AND timestamp <= '#{now}'", user ]) > 0) ? 1 : 0)
-    # if !@query[:enddate].blank? && !@query[:startdate].blank?
-    #   #   * required for _chart_data.rxml output
-    #   reading[ :timestamp] = @query[ :enddate].to_time
-    #   #   * number of falls within the time span
-    #   reading[ :falls]     = Fall.count( :conditions => [ "user_id = ? AND timestamp >= ? AND timestamp < ?", user, @query[:startdate].to_time, @query[:enddate].to_time ])
-    # end
+    #   * we do not need "Fall" reading. Only data readings are required
+    # reading[ :timestamp] = now
+    # reading[ :fall]      = ((Fall.count( :conditions => [ "user_id = ? AND timestamp <= '#{now}'", user ]) > 0) ? 1 : 0)
+    # # if !@query[:enddate].blank? && !@query[:startdate].blank?
+    # #   #   * required for _chart_data.rxml output
+    # #   reading[ :timestamp] = @query[ :enddate].to_time
+    # #   #   * number of falls within the time span
+    # #   reading[ :falls]     = Fall.count( :conditions => [ "user_id = ? AND timestamp >= ? AND timestamp < ?", user, @query[:startdate].to_time, @query[:enddate].to_time ])
+    # # end
     
     return reading
   end
@@ -350,7 +355,11 @@ class FlexController < ApplicationController
       vital_row = {:type => 'Vital', :heartrate => heart_rate, :hrv => hrv, :activity => activity, :orientation => orientation, :adl => adl}
       timestamp = Time.parse(result['ts'])
       data[timestamp] = [] unless data[timestamp]
-      data[timestamp] << vital_row
+      # 
+      #  Tue Mar 22 22:40:55 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4282
+      #   * orientation will be removed from this. orientation now represents Fall count during the time span
+      data[timestamp] << ( vital_row.reject {|k,v| k == :orientation } )
     end
     select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime(start_time, user)}', 'skin_temps', 'skin_temp')"
     SkinTemp.connection.select_all(select).collect do |result|
@@ -394,10 +403,14 @@ class FlexController < ApplicationController
     # 
     #  Mon Mar 18 22:25:15 IST 2011, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/4282
-    _start_time       = start_time # UtilityHelper.format_datetime(start_time, user)
-    _timestamp        = _end_time = _start_time + interval # add up interval seconds
-    _falls_count      = Fall.count( :conditions => ["user_id = ? AND timestamp >= ? AND timestamp < ?", user.id, _start_time, _end_time])
-    data[ _timestamp] << { :type => 'Fall', :count => _falls_count } # used in _chart_data_.rxml
+    #   * We do not need "Fall" tag anymore. Orientation replaces it
+    _start_time = start_time
+    num_points.to_i.times do
+      _timestamp        = (_start_time + interval) # add up interval seconds
+      _falls_count      = Fall.count( :conditions => ["user_id = ? AND timestamp >= ? AND timestamp < ?", user.id, _start_time, _timestamp])
+      data[ _timestamp] << { :type => 'Fall', :count => _falls_count } # used in _chart_data_.rxml
+      _start_time       += interval # next span
+    end
 
     return data
   end

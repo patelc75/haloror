@@ -123,7 +123,7 @@ module RailsMocks
 
   def included(mod)
     require 'ruby-debug'
-    debugger
+    debugger # permanent. required here
   end
 
   def mock_resourceful(options = {}, &block)

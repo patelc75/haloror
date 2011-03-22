@@ -16,7 +16,7 @@ end
 def dbg
   require 'ruby-debug'
   Debugger.start
-  debugger
+  debugger # permanent. required here
 end
 
 class Object

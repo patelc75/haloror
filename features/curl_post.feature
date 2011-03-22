@@ -84,13 +84,13 @@ Feature: POST XML to simulate gateway
       | startdate  | `15.minutes.ago.utc.strftime( Time::DATE_FORMATS[:date_time])` |
       | parameters | -k --basic -u test-user:12345                                  |
       | num_points | <points>                                                       |
-    Then response XML should have xpath "//LastReading/fall" with a value of <value>
-    And response XML <condition> have xpath "//DataReadings/DataReading/fall"
+    Then response XML should have xpath "//LastReading/orientation" with a value of 0
+    And response XML <check> have xpath "//DataReadings/DataReading/orientation" with a value of <value>
 
     Examples:
-      | count | value | condition  | points |
-      | 100   | 1     | should     | 0      |
-      | 50    | 1     | should     | 0      |
-      | 5     | 1     | should     | 0      |
-      | 0     | 0     | should not | 0      |
-      | 0     | 0     | should     | 1      |
+      | count | points | value | check      |
+      | 50    | 0      | 1     | should     |
+      | 50    | 1      | 50    | should     |
+      | 5     | 0      | 1     | should     |
+      | 0     | 0      | 0     | should not |
+      | 0     | 1      | 0     | should     |

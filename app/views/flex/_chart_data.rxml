@@ -13,7 +13,7 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
           xml.orientation(user[:last_reading][:orientation])
           xml.steps(user[:last_reading][:steps])
           xml.adl(user[:last_reading][:adl])
-          xml.fall( user[:last_reading][:fall])
+          # xml.fall( user[:last_reading][:fall])
           xml.battery_outlet_status(user[:status][:battery_outlet])
           xml.battery_level_status(user[:status][:battery_level])
           xml.battery_percentage(user[:battery][:percentage].to_f/100)
@@ -47,13 +47,13 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
           xml.orientation(0)
           xml.steps(0)
           xml.adl(0)
-          xml.fall(0)
+          # xml.fall(0)
           xml.battery_outlet_status("No Data")
           xml.battery_level_status(0)
           xml.battery_percentage(0)
         end
       end
-            
+      
       xml.DataReadings do
         if user[:data_readings].length > 0
           user[:data_readings].sort_by { |d| d}.each do |timestamp, group|
@@ -79,14 +79,17 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
                     end
                     xml.adl(reading[:adl])                    
                   end
+                  
                 elsif reading.class.to_s == 'SkinTemp' || reading[:type] == 'SkinTemp'
                   if reading[:skin_temp]
                     xml.skin_temp(reading[:skin_temp])
                   end
+                  
                 elsif reading.class.to_s == 'Step' || reading[:type] == 'Step'
                   if reading[:steps]
                     xml.steps(reading[:steps])
                   end
+                  
                 elsif reading.class.to_s == 'Battery' || reading[:type] == 'Battery'
                   if reading[:percentage]
                     xml.battery(".#{reading[:percentage]}")
@@ -94,8 +97,9 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
                 # 
                 #  Mon Mar 18 23:39:26 IST 2011, ramonrails
                 #   * https://redmine.corp.halomonitor.com/issues/4282
+                #   * We do not need "Fall". Orientation represents the "Fall" now
                 elsif reading.class.to_s == 'Fall' || reading[:type] == 'Fall'
-                    xml.fall("1") # (".#{reading[:count]}")
+                    xml.orientation( reading[:count] || 1 ) # default = at least one fall took us here?
                 else
                   reading.class.to_s
                 end

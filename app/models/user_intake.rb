@@ -72,17 +72,14 @@ class UserIntake < ActiveRecord::Base
   #   * https://redmine.corp.halomonitor.com/issues/3949
   #   * TODO: static methods not required anymore. dynamic method works
   # def caregiver1_role_options=( _options)
-  #   # debugger
   #   caregiver_role_options( 1, _options)
   # end
   # 
   # def caregiver2_role_options=( _options)
-  #   # debugger
   #   caregiver_role_options( 2, _options)
   # end
   # 
   # def caregiver3_role_options=( _options)
-  #   # debugger
   #   caregiver_role_options( 3, _options)
   # end
 
@@ -123,7 +120,6 @@ class UserIntake < ActiveRecord::Base
   #   caregiver_role_options( 2, {:position => 2})
   #   caregiver_role_options( 2, roles_users_option_instance)
   def caregiver_role_options( _index = 0, _given_options = nil)
-    # debugger
     _options = nil # start with a blank
     if (1..3).include?( _index)
       _caregiver = self.send("caregiver#{_index}")
