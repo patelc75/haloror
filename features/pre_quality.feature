@@ -1,4 +1,4 @@
-@L1 @order @store @quality
+@L1 @critical @store @intake_billing
 Feature: Pre quality
   In order to value
   As a role

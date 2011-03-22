@@ -1,4 +1,4 @@
-@L1 @critical
+@L1 @critical @alerts
 Feature: Server Side Alerts
   In order GatewayOfflineAlert, then DeviceUnavilableAlert and StrapOffAlert
   As a system user

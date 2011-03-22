@@ -1,6 +1,6 @@
 # https://redmine.corp.halomonitor.com/issues/show/2558
 #
-@L1 @store @order
+@L1 @store
 Feature: Online (D)irect (T)o (C)ustomer store
   In order sell Halo products online to direct customer
   As an administrator
