@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110314211701) do
+ActiveRecord::Schema.define(:version => 20110323191943) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -845,6 +845,7 @@ ActiveRecord::Schema.define(:version => 20110314211701) do
     t.integer  "ship_price"
     t.boolean  "dealer_install_fee_applies"
     t.integer  "shipping_option_id"
+    t.string   "device_model_size"
   end
 
   create_table "orientation_thresholds", :force => true do |t|
@@ -1287,6 +1288,8 @@ ActiveRecord::Schema.define(:version => 20110314211701) do
     t.boolean  "no_caregiver_2"
     t.boolean  "no_caregiver_3"
     t.datetime "panic_received_at"
+    t.integer  "device_model_id"
+    t.string   "device_model_size"
   end
 
   create_table "user_intakes_users", :id => false, :force => true do |t|
@@ -1330,6 +1333,7 @@ ActiveRecord::Schema.define(:version => 20110314211701) do
     t.datetime "activation_sent_at"
     t.datetime "cancelled_at"
     t.datetime "installed_at"
+    t.boolean  "has_residence_key"
   end
 
   create_table "vital_scans", :force => true do |t|

@@ -1,3 +1,9 @@
+<% javascript do %>
+  <script type="text/javascript" charset="utf-8">
+    toggleProductDetails();
+  </script>
+<% end %>
+
 <p><a href="http://www.halomonitoring.com/products/myhalo-senior-monitoring">Learn more about myHalo</a>
 <% if logged_in? && current_user.is_super_admin? %>
   | <a href="/orders">Online Store Orders table</a>
@@ -205,7 +211,7 @@
     </div>
   </fieldset>
   <p class="textright">
-    <%= link_to "< Back", order_path, :id => "back_link", :class => 'largebutton' if @confirmation %>
+    <%= link_to "< Back", store_path, :id => "back_link", :class => 'largebutton' if @confirmation %>
     <%= f.submit "#{@confirmation ? 'Place Order >' : 'Continue >'}", :disable_with => "Please wait...", :class => 'largebutton' %>
   </p>
 <% end -%>
@@ -249,22 +255,17 @@
   //   }
   // }
   
-  function showDiv(what) {
-    document.getElementById(what).style.display = "block";
-  }
-
-  function hideDiv(what) {
-    document.getElementById(what).style.display = "none";
-  }
-  
   function toggleProductDetails() {
     if (document.getElementById('product_complete').checked == true) {
       showDiv('halo_complete_box');
+      showDiv('product_sizes');
     } else {
       hideDiv('halo_complete_box');
+      hideDiv('product_sizes');
     }
     if (document.getElementById('product_clip').checked == true) {
       showDiv('halo_clip_box');
+      hideDiv('product_sizes');
     } else {
       hideDiv('halo_clip_box');
     }

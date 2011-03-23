@@ -7,6 +7,7 @@ class DeviceModel < ActiveRecord::Base
   # validates_presence_of :part_number
   # validates_uniqueness_of :part_number
   named_scope :recent_on_top, :order => "created_at DESC"
+  named_scope :ordered, lambda {|*args| { :order => ( args.flatten.first || 'part_number') }}
 
   # =================
   # = class methods =
@@ -63,6 +64,14 @@ class DeviceModel < ActiveRecord::Base
   # = instance methods =
   # ====================
 
+  # 
+  #  Wed Mar 23 01:56:42 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4291
+  def sizes
+    #   * sizes are available for 'chest strap' only, for now
+    (self.part_number == '12001002-1') ? ['S 22-28 inches', 'M-L 28-42 inches', 'XL-XXL 42-60 inches'] : []
+  end
+  
   def device_type_name=( name)
     self.device_type = DeviceType.find_by_device_type( name)
   end
@@ -71,6 +80,7 @@ class DeviceModel < ActiveRecord::Base
     return "#{self.part_number} -- #{self.device_type.device_type}" if(self.device_type)
     return "#{self.part_number}"
   end
+  alias :name :model_type
 
   def latest_revision
     device_revisions.recent_on_top.first # (:order => "created_at DESC")

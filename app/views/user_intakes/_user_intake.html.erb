@@ -8,6 +8,7 @@
       buttonImageOnly: true,
       numberOfMonths: 3
     });
+    show_hide_product_sizes(); // hide product sizes if 'belt clip' selected when loaded
     show_when_dropdown_selected(document.getElementById('user_intake_group_id'));
     hide_when_checked(document.getElementById('user_intake_subscriber_is_user'), 'subscriber_profile');
     // TODO: DRY this
@@ -86,6 +87,20 @@
       <div class="span-6 <%= 'hidden' if @user_intake.group_id == Group.direct_to_consumer.id %>">
         <%= f.label :group_id, "Group" %>
         <%= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"}, :onchange => "show_when_dropdown_selected(this);" %>
+        <br />
+        <br />
+        <%= f.label :device_model_id, 'Product' %>
+        <%= f.select :device_model_id, DeviceModel.ordered.collect {|e| [e.name, e.id]}, {}, {:onchange => "show_hide_product_sizes();"} %>
+        <br />
+        <div class="sizes" id="product_sizes">
+          <% if (_product = DeviceModel.myhalo_complete) %>
+            <% _product.sizes.each do |_size| %>
+              <div class="prepend-1">
+                <%= f.radio_button :device_model_size, _size, :checked => (@user_intake.device_model_size == _size) %><%= f.label :device_model_size, "#{_size}" %><br />
+              </div>
+            <% end %>
+          <% end %>
+        </div>
       </div>
 
       <div class="span-16 last">
@@ -236,13 +251,18 @@
 
             <!-- caregiver profile -->
             <% fields_for "user_intake[caregiver#{index+1}_attributes][profile_attributes]", caregiver.profile do |caregiver_profile_form| %>
-            <%= render :partial => 'caregiver_profile', :locals => {:f => caregiver_profile_form} %>
+              <%= render :partial => 'caregiver_profile', :locals => {:f => caregiver_profile_form} %>
             <% end -%>
 
             <% fields_for "user_intake[caregiver#{index+1}_attributes]", caregiver do |caregiver_form| %>
-            <!-- caregiver user details -->
-            <div class="span-2"><%= caregiver_form.label :email %>:</div>
-            <div class="span-5 last"><%= caregiver_form.text_field :email, :class => "span-5" %></div>
+              <!-- caregiver user details -->
+              <div class="span-2"><%= caregiver_form.label :email %>:</div>
+              <div class="span-5 last"><%= caregiver_form.text_field :email, :class => "span-5" %></div>
+              <div class="span-4"><%= caregiver_form.label :has_residence_key, "Do you have a key to the Residence" %>:</div>
+              <div class="span-3 last">
+                <%= caregiver_form.radio_button :has_residence_key, "1", :checked => caregiver.has_residence_key %>Yes
+                <%= caregiver_form.radio_button :has_residence_key, "0", :checked => !caregiver.has_residence_key %>No
+              </div>
             <% end %>
 
             <!--  Wed Nov 10 01:10:46 IST 2010, ramonrails -->
@@ -321,6 +341,15 @@ function caregiver_extras_form(checkbox, form)
   {
     document.getElementById(form).style.display = 'none';
     document.getElementById('user_intake_no_caregiver_1').disabled = false;
+  }
+}
+
+function show_hide_product_sizes() {
+  obj = document.getElementById('user_intake_device_model_id');
+  if ((obj.options[obj.selectedIndex]).text.indexOf('12001002-1') >= 0) {
+    document.getElementById('product_sizes').style.display = 'block';
+  } else {
+    document.getElementById('product_sizes').style.display = 'none';
   }
 }
 </script>

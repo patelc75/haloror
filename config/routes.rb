@@ -107,29 +107,29 @@ ActionController::Routing::Routes.draw do |map|
   
   map.connect '', :controller => 'redirector', :action => 'index'
   
-  map.signup '/signup/:group', :controller => 'users', :action => 'new'
-  map.registration '/registration', :controller => 'users', :action => 'registration'
+  map.activate '/activate/:activation_code', :controller => 'users', :action => 'init_user'
+  map.activity '/dashboard', :controller => 'sandbox', :action => "dashboard"
   map.admin_signup '/admin/signup', :controller => 'user_admin', :action => 'new_admin'
+  map.alert '/alert', :controller => 'alerts', :action => "alert"      
+  map.dismiss_triage 'triage/:user_id/dismiss', :controller => 'triage_audit_logs', :action => 'new', :is_dismissed => true
   map.login  '/login', :controller => 'sessions', :action => 'new'
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
-  map.activate '/activate/:activation_code', :controller => 'users', :action => 'init_user'
-  map.reporting '/reporting', :controller => 'reporting', :action => 'users'
-  map.terms '/terms', :controller => 'util', :action => 'terms'
-  map.terms '/privacy', :controller => 'util', :action => 'privacy'
+  map.management '/management', :controller => 'management', :action => 'issue' 
   map.new_caregiver_profile '/profiles/new_caregiver_profile/:user_id', :controller => 'profiles', :action => 'new_caregiver_profile'
+  map.new_user_invoice '/invoices/new/:id', :controller => 'invoices', :action => 'new'
+  map.registration '/registration', :controller => 'users', :action => 'registration'
+  map.reporting '/reporting', :controller => 'reporting', :action => 'users'
   map.resend '/installs/resend/:id',:controller => 'installs',:action => 'resend'
+  map.signup '/signup/:group', :controller => 'users', :action => 'new'
+  map.store '/order/:coupon_code', :controller => 'orders', :action => 'new', :coupon_code => '', :method => :get
   map.support '/support',:controller => 'util',:action => 'support'
+  map.privacy_terms '/privacy', :controller => 'util', :action => 'privacy'
+  map.terms '/terms', :controller => 'util', :action => 'terms'
+  map.triage '/triage', :controller => 'users', :action => 'triage'
+  map.undismiss_triage '/triage/:user_id/undismiss', :controller => 'triage_audit_logs', :action => 'new', :is_dismissed => false
+  map.users_in_group '/reporting/users/:group_name', :controller => 'reporting', :action => 'users'
   map.user_intake_form '/user/user_intake_form',:controller => 'users',:action => 'user_intake_form'
   map.user_intake_post '/user/user_intake_form',:controller => 'users',:action => 'user_intake_form', :method => :post
-  map.order '/order/:coupon_code', :controller => 'orders', :action => 'new', :coupon_code => '', :method => :get
-  map.alert '/alert', :controller => 'alerts', :action => "alert"      
-  map.activity '/dashboard', :controller => 'sandbox', :action => "dashboard"
-  map.triage '/triage', :controller => 'users', :action => 'triage'
-  map.dismiss_triage 'triage/:user_id/dismiss', :controller => 'triage_audit_logs', :action => 'new', :is_dismissed => true
-  map.undismiss_triage 'triage/:user_id/undismiss', :controller => 'triage_audit_logs', :action => 'new', :is_dismissed => false
-  map.new_user_invoice '/invoices/new/:id', :controller => 'invoices', :action => 'new'
-  map.management '/management', :controller => 'management', :action => 'issue' 
-  
   
   #map.resend '/resend/:id', :controller => 'installs', :action => 'resend'
     # 

@@ -793,6 +793,10 @@ class Order < ActiveRecord::Base
       subscriber_profile = { :first_name => bill_first_name, :last_name => bill_last_name, :address => bill_address, :city => bill_city, :state => bill_state, :zipcode => bill_zip, :home_phone => bill_phone }
       #   * build... assigns order id automatically
       self.build_user_intake # user_intake = UserIntake.new
+      # 
+      #  Thu Mar 24 00:58:45 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4291
+      user_intake.device_model_size = device_model_size
       user_intake.group = group # halouser role is for group
       user_intake.senior_attributes = {:email => ship_email, :profile_attributes => senior_profile}
       #

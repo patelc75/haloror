@@ -18,8 +18,10 @@ Feature: Online (D)irect (T)o (C)ustomer store
   
   # https://redmine.corp.halomonitor.com/issues/3170
   # Wed Aug 25 01:27:32 IST 2010 : Subscriptions are not charged anymore at the time of purchase
+  @4291
   Scenario: Same as shipping copies shipping data to billing
     When I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "order_bill_address_same"
@@ -28,6 +30,8 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Then page content should have "Thank you"
     And the payment gateway response should have 1 log
     And 1 email to "cuc_ship@chirag.name" with subject "Please activate your new myHalo account" should be sent for delivery
+    And product size for last order should be "S 22-28 inches"
+    And product size for last user intake should be "S 22-28 inches"
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Not same as shipping has separate shipping and billing data

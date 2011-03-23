@@ -230,3 +230,8 @@ Then /^caregivers of last order (should|should not) be activated$/ do |_state|
     end
   end
 end
+
+Then /^product size for last (order|user intake) should be "([^"]*)"$/ do |_model, _size|
+  (_row = _model.gsub(/ /,'_').classify.constantize.last).should_not be_blank
+  _row.device_model_size.should == _size
+end

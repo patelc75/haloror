@@ -3,8 +3,12 @@
     <tr>
       <td>
         <%= image_tag (order_row.has_failed_transactions? ? 'exclamation.png' : 'tick.png') %>
-        <span class="text-large"><%= order_row.id %></span> ( <%= order_row.full_number %> )
+        <span class="text-large"><%= link_to( order_row.id, order_path( order_row)) %></span> ( <%= order_row.full_number %> )
         <span class="tiny">Created at :</span> <%= UtilityHelper.format_datetime(order_row.created_at,current_user) %>
+        <% if order_row.user_intake %>
+          <br />
+          <span>User Intake: <%= link_to( order_row.user_intake.id, user_intake_path( order_row.user_intake)) %></span>
+        <% end %>
       </td>
       <td>
         <span class="tiny">Card Number: </span><%= order_row.masked_card_number %>, <span class="tiny">charged </span><%= number_to_currency(order_row.cost, :precision => 2, :unit => '$') %>

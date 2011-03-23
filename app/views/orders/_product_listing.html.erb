@@ -2,7 +2,17 @@
   <% if @confirmation.blank? || (@product == "complete") %>
   <tr>
     <td>
-      <%= radio_button_tag 'product', 'complete', (@product == "complete") unless @confirmation %> <span style="font-size:120%"><label for="product_complete">myHalo Complete</label><b>&nbsp;(<%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.monthly_recurring) %>/mo)</b></span>
+      <%= radio_button_tag( 'product', 'complete', (@product == "complete")) unless @confirmation %> <span style="font-size:120%"><label for="product_complete">myHalo Complete</label><b>&nbsp;(<%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.monthly_recurring) %>/mo)</b></span>
+      <br />
+      <div class="sizes" id="product_sizes" style="display:none">
+        <% DeviceModel.myhalo_complete.sizes.each do |_size| %>
+          <div class="prepend-1">
+            <%= radio_button_tag "order[device_model_size]", _size, (@order.device_model_size == _size), :id => _size.gsub(/ /,'_').gsub(/-/,'_') %>
+            <%= label_tag( "#{_size.gsub(/ /,'_').gsub(/-/,'_')}", _size) %><br />
+          </div>
+        <% end %>
+      </div>
+      
     </td>
     <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
     <% unless @confirmation %>

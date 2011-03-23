@@ -19,7 +19,7 @@ ORDER ITEMS
 <% @order.order_items.each do |item| %><%= item.product_model %>
 Quantity:<%= item.quantity %>, Cost:<%= item.formatted_cost(item.quantity) %>
 <%= item.status %>
-
+<%= @order.device_model_size %>
 <% end -%>
 Card Number <%= @order.masked_card_number %> (exp <%= @order.card_expiry.year %>) has been charged <%= number_to_currency(@order.cost, :precision => 2, :unit => '$') %>
 

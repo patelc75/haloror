@@ -26,7 +26,7 @@ module NavigationHelpers
       bestbuy_store_path
       
     when /the online store/
-      order_path
+      store_path
       
     when /the triage page/
       triage_path

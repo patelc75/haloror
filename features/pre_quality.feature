@@ -496,6 +496,7 @@ Feature: Pre quality
   
   Scenario: User Intake > Submit > Approve > Panic > Installed
     Given I am an authenticated super admin
+    And the product catalog exists
     And the following groups:
       | name       |
       | halo_group |

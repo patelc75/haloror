@@ -590,3 +590,12 @@ function show_when_dropdown_selected(dropdown)
     document.getElementById('content').style.display = 'block';
   }
 }
+
+function showDiv(what) {
+  document.getElementById(what).style.display = "block";
+}
+
+function hideDiv(what) {
+  document.getElementById(what).style.display = "none";
+}
+

@@ -1,4 +1,4 @@
-class AddColumnToOrders2 < ActiveRecord::Migration
+class AddShippingOptionToOrders < ActiveRecord::Migration
   def self.up
     add_column :orders, :shipping_option_id, :integer
   end
