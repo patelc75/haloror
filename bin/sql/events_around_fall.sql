@@ -57,15 +57,21 @@ order by battery_state asc
 limit 1000;
 
 ----- falls & software version X minutes before (pre) and after (post)  halo_debug_msgs ------------------------
-select hdm.id, hdm.user_id, hdm.timestamp,
- (select f.timestamp from falls f where (hdm.user_id=f.user_id and hdm.timestamp + interval '10 minutes' > f.timestamp and f.timestamp > hdm.timestamp) order by f.timestamp asc  limit 1) as fall_post,
+select hdm.id, hdm.user_id, hdm.timestamp, hdm.dbg_type, hdm.param3, 
+ (select f.timestamp from falls f where (hdm.user_id=f.user_id and hdm.timestamp + interval '10 minutes' > f.timestamp and f.timestamp > hdm.timestamp) order by f.timestamp asc limit 1) as fall_post,
  (select f.timestamp from falls f where (hdm.user_id=f.user_id and hdm.timestamp - interval '10 minutes' < f.timestamp and f.timestamp < hdm.timestamp) order by f.timestamp desc limit 1) as fall_pre,
- (select di.software_version from device_infos di where hdm.timestamp > di.created_at order by di.created_at asc limit 1) as software_version
+ (select di.software_version from device_infos di
+where hdm.user_id = di.user_id
+and (di.serial_number like '%H1%' or di.serial_number like '%H5%')
+and hdm.timestamp > di.created_at
+order by di.created_at desc limit 1) as software_version
 from halo_debug_msgs hdm
-where (dbg_type = 2 or dbg_type = 3 or dbg_type = 4)
-and hdm.timestamp > now() - interval '1 day'
+where (dbg_type = 2 or dbg_type = 4)
+and hdm.timestamp > now() - interval '7 day'
 and hdm.timestamp < now()
-limit 1000;
+and user_id != 1
+and user_id != 485
+order by user_id asc limit 1000;
 
 ----- gw_alarm_buttons X minutes before (pre) and after (post) a fall for a given user-------------------
 select f.id, f.user_id as user_id,'Fall' as crit_type, f.timestamp, 
