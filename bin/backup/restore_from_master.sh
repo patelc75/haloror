@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PGDIR="/usr/bin"
-DATABASE="haloror_test"
+DATABASE="haloror"
 DATESTAMP=`date +%F-%R`
 HOSTSTAMP=`uname -n`
 OLDDB="backup`date +%Y%m%d%H%M`"
@@ -44,6 +44,7 @@ echo "Importing schemas for tables that are in $SCHEMARESTOREFILE"
 $PGDIR/psql -U postgres $DATABASE < $SCHEMARESTOREFILE
 echo "Done importing from $SCHEMARESTOREFILE"
 echo "Done with restore_from_master $1 at `date`"
+sudo -H -u web /home/web/ruf-restart.sh
 
 # This requires two things in /etc/sudoers (with visudo):
 # First, Defaults    requiretty MUST BE COMMENTED OUT
