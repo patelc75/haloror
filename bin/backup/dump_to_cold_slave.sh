@@ -23,6 +23,7 @@ fi
 TARGETDIR="dumps"
 SCHEMATARGETDIR="$TARGETDIR/schemas"
 TARGETLOADSCRIPT="tools/restore_from_master.sh"
+#TARGETLOADSCRIPT2="ruf-restart.sh"
 
 function read_excludes {
   exec 3<&0
@@ -55,6 +56,7 @@ $PGDUMP --schema-only $SCHEMAONLYOPTIONS $DATABASE > $SCHEMADUMPDIR/$SCHEMADUMPF
 scp -q $DUMPDIR/$DUMPFILE.pgdump ${TARGETHOST}:${TARGETDIR}
 scp -q $SCHEMADUMPDIR/$SCHEMADUMPFILE.sql ${TARGETHOST}:${SCHEMATARGETDIR}
 ssh -q $TARGETHOST $TARGETLOADSCRIPT $DUMPFILE $SCHEMADUMPFILE '</dev/null >>~/dumplog 2>&1 &'
+#ssh -u web -q $TARGETHOST $TARGETLOADSCRIPT2 '</dev/null >>~/restartlog 2>&1 &'
 
 
 # Push tools out with:
