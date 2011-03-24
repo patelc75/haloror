@@ -56,22 +56,30 @@ and timestamp < now()
 order by battery_state asc
 limit 1000;
 
------ falls & software version X minutes before (pre) and after (post)  halo_debug_msgs ------------------------
+----- falls, software version X minutes before (pre) and after (post), strap status, sensitivity, halo_debug_msgs ------------------------
 select hdm.id, hdm.user_id, hdm.timestamp, hdm.dbg_type, hdm.param3, 
- (select f.timestamp from falls f where (hdm.user_id=f.user_id and hdm.timestamp + interval '10 minutes' > f.timestamp and f.timestamp > hdm.timestamp) order by f.timestamp asc limit 1) as fall_post,
- (select f.timestamp from falls f where (hdm.user_id=f.user_id and hdm.timestamp - interval '10 minutes' < f.timestamp and f.timestamp < hdm.timestamp) order by f.timestamp desc limit 1) as fall_pre,
- (select di.software_version from device_infos di
+ (select f.timestamp from falls f where (hdm.user_id=f.user_id and hdm.timestamp = f.timestamp) order by f.timestamp desc limit 1) as falls,
+(select di.software_version from device_infos di
 where hdm.user_id = di.user_id
 and (di.serial_number like '%H1%' or di.serial_number like '%H5%')
 and hdm.timestamp > di.created_at
-order by di.created_at desc limit 1) as software_version
+order by di.created_at desc limit 1) as software_version,
+CASE when
+   (select sf.timestamp from strap_fasteneds sf where (sf.user_id=hdm.user_id and sf.timestamp < hdm.timestamp) order by sf.timestamp desc limit 1) >
+   (select sr.timestamp from strap_removeds  sr where (sr.user_id=hdm.user_id and sr.timestamp < hdm.timestamp) order by sr.timestamp desc limit 1)
+ THEN 
+  'Strap Fastened'
+ ELSE
+  'Strap Removed'
+ END as strap_state
 from halo_debug_msgs hdm
-where (dbg_type = 2 or dbg_type = 4)
-and hdm.timestamp > now() - interval '7 day'
+where (dbg_type = 4)
+and hdm.timestamp > now() - interval '7 days'
 and hdm.timestamp < now()
 and user_id != 1
 and user_id != 485
-order by user_id asc limit 1000;
+and user_id != 1250
+order by software_version asc, user_id asc, timestamp desc limit 1000;
 
 ----- gw_alarm_buttons X minutes before (pre) and after (post) a fall for a given user-------------------
 select f.id, f.user_id as user_id,'Fall' as crit_type, f.timestamp, 
