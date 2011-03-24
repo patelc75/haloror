@@ -301,20 +301,41 @@ class UserIntakesController < ApplicationController
           end
           format.xml  { head :ok }
         else
-          format.html { render :action => "edit", :id => @user_intake.id }
+          format.html do
+            if request.env['HTTP_REFERER'].include?("/edit")
+              render :action => "edit", :id => @user_intake.id
+            else
+              flash[:notice] = @user_intake.errors.full_messages.join('. ')
+              redirect_to request.env['HTTP_REFERER']
+            end
+          end
           format.xml  { render :xml => @user_intake.errors, :status => :unprocessable_entity }
         end
-
+        
         # single column/attribute updates from different interfaces like user intake overview
         #   * just a silent update of user intake attributes. no questions asked. no validations. no checking.
         #   * we need this for interfaces like 'shipping date update' from user intake overview
       else
         # we already applied the attributes from hash, outside this condition
         @user_intake.send( :update_without_callbacks) # just save it. no questions asked.
-        flash[:notice] = "Successfully updated the user intake"
+        #   * force a validation here
+        @user_intake.shipped_date_never_in_future if params.keys.include?( "user_intake_shipped_at_view") # just validate this one
+        if @user_intake.errors.blank?
+          flash[:notice] = "Successfully updated the user intake"
+        else
+          flash[:notice] = @user_intake.errors.full_messages.join('. ')
+        end
         format.html do
           if params[:commit] != 'Agree'
-            redirect_to :action => 'single_row', :id => @user_intake.id
+            # 
+            #  Fri Mar 25 02:17:06 IST 2011, ramonrails
+            #   * when coming from /user_intakes/shipped/<n>, get back there
+            if request.env['HTTP_REFERER'].include?("/shipped") && !@user_intake.errors.blank?
+              flash[:notice] = @user_intake.errors.full_messages.join('. ')
+              redirect_to request.env['HTTP_REFERER']
+            else
+              redirect_to :action => 'single_row', :id => @user_intake.id
+            end
           else
             # just render the message about editing the user intake
           end

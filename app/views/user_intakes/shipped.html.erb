@@ -16,6 +16,7 @@
 <h1 id="user_intake:_">User Intake: <%= @user_intake.id %></h1>
 <% form_for @user_intake do |f| -%>
   <p>
+    <%= hidden_field_tag "user_intake_shipped_at_view" %>
     <%= f.label :shipped_at, "Shipped on" %><br />
     <%= f.text_field :shipped_at, :class => "datepicker" %>
   </p>

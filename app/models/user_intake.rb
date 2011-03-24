@@ -472,6 +472,18 @@ class UserIntake < ActiveRecord::Base
     _date ||= (shipped_at + 7.days) if ( _date.blank? && !shipped_at.blank? )
     #   * no panic or shipping? nothing returned
     _date = (_date + order.product_cost.recurring_delay.months) unless (order.blank? || _date.blank?)
+    # 
+    #  Fri Mar 25 00:50:42 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4310
+    #   * do not allow pro-rata charges to start in future
+    if !_date.blank? && (_date > Date.today)
+      _notice = "Pro-rata start date is coming out in future for UI:#{id}, Order:#{order.id}, Senior:#{senior.id}:#{senior.name}"
+      errors.add_to_base( _notice)
+      RAILS_DEFAULT_LOGGER.warn( _notice)
+      _date = nil # do not allow in pro-rata to start in future
+    end
+    
+    _date # return the value
   end
   
   # 
@@ -519,6 +531,15 @@ class UserIntake < ActiveRecord::Base
     order.subscription_started_at unless order.blank?
   end
 
+  # 
+  #  Fri Mar 25 01:02:48 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4310
+  def shipped_date_never_in_future
+    if !shipped_at.blank? && (shipped_at > Date.today)
+      errors.add_to_base( "Product cannot be marked as 'shipped in future'. It must be today or in the past.")
+    end
+  end
+  
   # create blank placeholder records
   # required for user form input
   def build_associations
@@ -538,6 +559,10 @@ class UserIntake < ActiveRecord::Base
 
   def validate
     if need_validation?
+      # 
+      #  Fri Mar 25 01:03:00 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4310
+      shipped_date_never_in_future
       associations_before_validation_and_save # pre-process associations
       validate_associations # validate associations and add errors to AR::Base to show on user intake form
     else
