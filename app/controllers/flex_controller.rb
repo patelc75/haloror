@@ -35,6 +35,10 @@ class FlexController < ApplicationController
     end
   end
   
+  # =============
+  # = protected =
+  # =============
+  
   protected
   
   def gather_data
@@ -312,8 +316,8 @@ class FlexController < ApplicationController
     @query[:num_points] = 0                        # we want discreet data
     @query[:userID] = current_user.id              # default user is the one who's currently logged in
     @default_user = current_user
-    @query[:enddate] = Time.now                    # enddate is now
-    @query[:startdate] = @query[:enddate] - 600   # startdate is enddate - 10 minutes
+    @query[:enddate] = Time.now.to_datetime                    # enddate is now
+    @query[:startdate] = (@query[:enddate] - 600).to_datetime   # startdate is enddate - 10 minutes
   end
   
   def average_data_record(user, interval, num_points, start_time)
@@ -408,6 +412,7 @@ class FlexController < ApplicationController
     num_points.to_i.times do
       _timestamp        = (_start_time + interval) # add up interval seconds
       _falls_count      = Fall.count( :conditions => ["user_id = ? AND timestamp >= ? AND timestamp < ?", user.id, _start_time, _timestamp])
+      data[ _timestamp] ||= [] # https://redmine.corp.halomonitor.com/issues/4282#note-11
       data[ _timestamp] << { :type => 'Fall', :count => _falls_count } # used in _chart_data_.rxml
       _start_time       += interval # next span
     end

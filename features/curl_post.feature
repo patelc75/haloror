@@ -75,15 +75,19 @@ Feature: POST XML to simulate gateway
       | path   | /alert_bundle |
     Then user "senior1" should have data for panic, gw alarm button
 
-  @now @4282
+    #   * generating data for last 10 minutes but checking within 15 minutes
+    #   * otherwise some data may fall outside "scope" of checking
+  @4282
   Scenario Outline: Flex Chart
-    Given Fall event was recorded <count> times for "senior1" in the last 15 minutes
+    Given Fall event was recorded <count> times for "senior1" in the last 10 minutes
     When I simulate a "ChartQuery" event with the following attributes:
-      | user       | senior1                                                        |
-      | path       | /flex/chart                                                    |
+      | user       | senior1                       |
+      | path       | /flex/chart                   |
+      # | startdate  | `15.minutes.ago`              |
       | startdate  | `15.minutes.ago.utc.strftime( Time::DATE_FORMATS[:date_time])` |
-      | parameters | -k --basic -u test-user:12345                                  |
-      | num_points | <points>                                                       |
+      | enddate    | `Time.now`                    |
+      | parameters | -k --basic -u test-user:12345 |
+      | num_points | <points>                      |
     Then response XML should have xpath "//LastReading/orientation" with a value of 0
     And response XML <check> have xpath "//DataReadings/DataReading/orientation" with a value of <value>
 
@@ -94,3 +98,4 @@ Feature: POST XML to simulate gateway
       | 5     | 0      | 1     | should     |
       | 0     | 0      | 0     | should not |
       | 0     | 1      | 0     | should     |
+  

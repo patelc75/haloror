@@ -6,7 +6,8 @@ require "nokogiri"
 
 Given /^Fall event was recorded (\d+) times for "([^"]*)" in the last (.+) (.+)$/ do |_count, _login, _quantity, _span|
   (_user = User.contains( _login).first).should_not be_blank
-  _count.to_i.times { Factory.create( :fall, { :user_id => _user.id, :timestamp => eval("rand(#{_quantity}).#{_span}.ago") }) }
+  _calculated_quantity = (rand(_quantity.to_i - 1) + 1)
+  _count.to_i.times { Factory.create( :fall, { :user_id => _user.id, :timestamp => eval("#{_calculated_quantity}.#{_span}.ago") }) }
   Fall.count.should == _count.to_i
   # When 'I simulate a "Fall" event with the following attributes:', table(%{
   #   | user | #{_login} |
