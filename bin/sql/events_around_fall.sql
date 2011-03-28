@@ -56,7 +56,7 @@ and timestamp < now()
 order by battery_state asc
 limit 1000;
 
------ falls, software version X minutes before (pre) and after (post), strap status, sensitivity, halo_debug_msgs ------------------------
+----- falls, software version X minutes before (pre) and after (post), strap status, sensitivity, strap removed within x minutes, halo_debug_msgs ------------------
 select hdm.id, hdm.user_id, hdm.timestamp, hdm.dbg_type, hdm.param3, 
  (select f.timestamp from falls f where (hdm.user_id=f.user_id and hdm.timestamp = f.timestamp) order by f.timestamp desc limit 1) as falls,
 (select di.software_version from device_infos di
@@ -71,7 +71,8 @@ CASE when
   'Strap Fastened'
  ELSE
   'Strap Removed'
- END as strap_state
+ END as strap_state,
+(select sr.timestamp from strap_removeds sr where (sr.user_id=hdm.user_id and hdm.timestamp + interval '2 minutes' > sr.timestamp and sr.timestamp > hdm.timestamp) order by sr.timestamp asc  limit 1) as sr_post
 from halo_debug_msgs hdm
 where (dbg_type = 4)
 and hdm.timestamp > now() - interval '7 days'
