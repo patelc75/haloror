@@ -2,7 +2,7 @@
   <table class="<%= cycle('', 'altrow') %>" style="margin-bottom: 2px;">
     <tr>
       <td>
-        <%= image_tag (order_row.has_one_success_transaction? ? 'exclamation.png' : 'tick.png') %>
+        <%= image_tag (order_row.has_one_success_transaction? ?  'tick.png' : 'exclamation.png') %>
         <span class="text-large"><%= link_to( order_row.id, order_path( order_row)) %></span> ( <%= order_row.full_number %> )
         <span class="tiny">Created at :</span> <%= UtilityHelper.format_datetime(order_row.created_at,current_user) %>
         <% if order_row.user_intake %>
