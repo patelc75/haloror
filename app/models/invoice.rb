@@ -32,7 +32,8 @@ class Invoice < ActiveRecord::Base
   #  Sat Jan 15 01:16:03 IST 2011, ramonrails
   #   * group names in more sensible format
   def group_names
-    _names = user_groups.collect(&:name).compact.uniq.sort
+    _names = user_groups.collect(&:name).compact.uniq.sort 
+    _names.delete("safety_care")
     (_names.length > 1) ? "#{_names.first}<span class='tiny'>... #{_names.length - 1} more</span>" : _names.join(', ')
   end
 

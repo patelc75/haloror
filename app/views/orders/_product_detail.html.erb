@@ -4,8 +4,8 @@
 <% if @confirmation.blank? || (@product == "complete") %>
 <div id="halo_complete_box" style="display: block; float:left; margin-top: 20px; width: 100%">
   <% if @confirmation %>
-    <div class="text-red text-large">
-      If these charges are incorrect, please click "<%= link_to 'Back', store_path %>" and re-enter the coupon code. If still incorrect, call 1-866-546-2540
+    <div class="text-red text-medium">
+      If the below charges are incorrect, please click "<%= link_to 'Back', store_path %>" and re-enter the correct coupon code. If still incorrect, call 1-866-546-2540
     </div>
   <% end %>
   <table width="100%" class="colored">

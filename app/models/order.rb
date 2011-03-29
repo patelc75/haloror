@@ -135,7 +135,11 @@ class Order < ActiveRecord::Base
   def has_failed_transactions?
     !payment_gateway_responses.failed.blank?
   end
-
+  
+  def has_one_success_transaction?
+    !payment_gateway_responses.success.blank? 
+  end
+  
   # send order summary email to the master group, only when applicable
   def send_summary_to_group_and_master_group
     # group must be present
