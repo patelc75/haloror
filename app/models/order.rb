@@ -50,17 +50,30 @@ class Order < ActiveRecord::Base
     # WARNING: some error happening. switched off for now. needs testing
     encrypt_sensitive_data # Will encrypt only if not already encrypted?
     # 
+    #  Wed Mar 30 04:37:44 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4067
+    #   * https://redmine.corp.halomonitor.com/issues/4253
+    clone_coupon_and_ship_values_locally
+  end
+  
+  # 
+  #  Wed Mar 30 04:38:36 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4067
+  #   * https://redmine.corp.halomonitor.com/issues/4253
+  def clone_coupon_and_ship_values_locally
+    # 
     #  Sat Mar 12 02:14:06 IST 2011, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/4253
     #   * copy coupon code data to order
     _coupon = product_cost
-    self.device_model_id      = _coupon.device_model.id
-    self.cc_expiry_date       = _coupon.expiry_date
-    self.cc_deposit           = _coupon.deposit
-    self.cc_shipping          = _coupon.shipping
-    self.cc_monthly_recurring = _coupon.monthly_recurring
-    self.cc_months_advance    = _coupon.months_advance
-    self.cc_months_trial      = _coupon.months_trial
+    self.device_model_id       = _coupon.device_model.id
+    self.cc_expiry_date        = _coupon.expiry_date
+    self.cc_deposit            = _coupon.deposit
+    self.cc_shipping           = _coupon.shipping
+    self.cc_monthly_recurring  = _coupon.monthly_recurring
+    self.cc_months_advance     = _coupon.months_advance
+    self.cc_months_trial       = _coupon.months_trial
+    self.cc_dealer_install_fee = _coupon.dealer_install_fee
     # 
     #  Tue Mar 15 03:01:33 IST 2011, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/4060
@@ -448,6 +461,23 @@ class Order < ActiveRecord::Base
     card_successful? # return success/failure status as true/false
   end
 
+  # 
+  #  Wed Mar 30 04:22:11 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4253
+  #   * CHANGED: This is just a clone of methods for coupon_code. This one uses local columns
+  def advance_charge
+    cc_monthly_recurring.to_i * cc_months_advance.to_i
+  end
+  
+  # 
+  #  Wed Mar 30 04:20:35 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4253
+  #   * pick from local columns, else pick from coupon_code
+  #   * CHANGED: This is just a clone of methods for coupon_code. This one uses local columns
+  def upfront_charge
+    advance_charge.to_i + cc_deposit.to_i + cc_shipping.to_i + cc_dealer_install_fee.to_i
+  end
+
   def card_successful?
     # 
     #  Wed Dec  1 02:57:13 IST 2010, ramonrails
@@ -507,8 +537,12 @@ class Order < ActiveRecord::Base
     #   #  If both charges are received, return true
     #   _success = true
     # else
-    if product_cost.monthly_recurring.zero?
-      errors.add_to_base "Recurring subscription fee: #{product_cost.monthly_recurring}"
+    # 
+    #  Wed Mar 30 03:56:18 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4253
+    _recurring = ( cc_monthly_recurring || product_cost.monthly_recurring)
+    if _recurring.zero?
+      errors.add_to_base "Recurring subscription fee: #{_recurring}"
     else
       # https://redmine.corp.halomonitor.com/issues/2800
       # used credit_card.first_name instead of bill_first_name
@@ -563,7 +597,7 @@ class Order < ActiveRecord::Base
       # else
       #   (_date + 1.month).beginning_of_month.to_date
       # end
-      @recurring_fee_response = payment_gateway_server.recurring(product_cost.monthly_recurring*100, credit_card, {
+      @recurring_fee_response = payment_gateway_server.recurring( _recurring*100, credit_card, {
         :interval => {:unit => :months, :length => 1},
         :duration => {:start_date => _date, :occurrences => 60},
         :billing_address => {
@@ -579,7 +613,7 @@ class Order < ActiveRecord::Base
       }
       )
       # store response in database
-      payment_gateway_responses.create!(:action => "recurring", :amount => product_cost.monthly_recurring*100, :response => @recurring_fee_response)
+      payment_gateway_responses.create!(:action => "recurring", :amount => _recurring*100, :response => @recurring_fee_response)
       errors.add_to_base @recurring_fee_response.message unless @recurring_fee_response.success?
       # _success = @recurring_fee_response.success?
     end # recurring
@@ -636,7 +670,11 @@ class Order < ActiveRecord::Base
       #   * calculate month specific cost
       #   * WARNING: do not use "round". It will give incorrect results
       _months_diff = ((_stop - _start) / 1.month).to_i # to_i will show sandwitched complete months
-      _cost        = product_cost.monthly_recurring
+      _months_diff = ((_months_diff < 0) ? 0 : _months_diff) # never accept a negative value
+      # 
+      #  Wed Mar 30 03:48:10 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4253
+      _cost        = (cc_monthly_recurring || product_cost.monthly_recurring)
       _amount      = 0 # default
 
       #   * same month. we want "round" here to keep "both days inclusive"

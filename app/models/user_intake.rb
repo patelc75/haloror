@@ -471,7 +471,14 @@ class UserIntake < ActiveRecord::Base
     #   * no panic? check shipping date
     _date ||= (shipped_at + 7.days) if ( _date.blank? && !shipped_at.blank? )
     #   * no panic or shipping? nothing returned
-    _date = (_date + order.product_cost.recurring_delay.months) unless (order.blank? || _date.blank? || order.product_cost.blank?)
+    # 
+    #  Wed Mar 30 03:46:04 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4253
+    #   * pick local values that were copied
+    #   * when missing?, pick from device_model_prices
+    unless (order.blank? || order.product_cost.blank? || _date.blank?)
+      _date += ( order.cc_monthly_recurring || order.product_cost.recurring_delay).to_i.months
+    end
   end
   
   # 
