@@ -38,10 +38,7 @@
   </tr>
   <% @order.order_items.each do |item| %>
   <tr align="left">
-    <td>
-      <%= item.product_model %>
-      <%= @order.device_model_size %>
-    </td>
+    <td><%= item.description %></td>
     <td><%= item.status %></td>
     <td><%= item.quantity %></td>
     <td><%= item.formatted_cost %></td>

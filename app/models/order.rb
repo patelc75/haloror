@@ -64,8 +64,8 @@ class Order < ActiveRecord::Base
     # 
     #  Tue Mar 15 03:01:33 IST 2011, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/4060
-    if _coupon.shipping.to_i == 0
-      unless shipping_option.blank?
+    if !_coupon.shipping.blank? && _coupon.shipping == 0
+      unless shipping_option.blank? # many-to-one relation
         self.ship_description = shipping_option.description
         self.ship_price       = shipping_option.price
       end
@@ -216,24 +216,34 @@ class Order < ActiveRecord::Base
         :cost              => _cost.monthly_recurring,
         :quantity          => 1,
         :recurring_monthly => true,
-        :device_model_id   => device_model.id
+        :device_model_id   => device_model.id,
+        :description       => 'Recurring charges (Monthly)'
       })
       # 
       #  Thu Mar 17 01:00:16 IST 2011, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/3923
       # create order item for each product charge
-      [_cost.deposit, _cost.shipping, _cost.advance_charge, _cost.dealer_install_fee].each do |_amount|
+      ['deposit', 'shipping', 'advance_charge', 'dealer_install_fee'].each do |_col|
+        _description = _col.gsub(/_/,' ').capitalize
+        _amount      = _cost.send( _col.to_sym)
         unless _amount.zero?
-          if order_items.create!({
+          if order_items.create({
               :device_model_id => device_model.id,
               :cost            => _amount,
-              :quantity        => 1
+              :quantity        => 1,
+              :description     => _description
             })
           else
-            errors.add_to_base( "Cannot create charge for #{USD_value(_amount)}")
+            errors.add_to_base( "Cannot create charge for #{_description} of #{USD_value(_amount)}")
           end
         end
       end
+      order_items.create({
+          :device_model_id => device_model.id,
+          :cost            => 0,
+          :quantity        => 1,
+          :description     => "Size: #{device_model_size}"
+      })
     else
       errors.add_to_base( "Cannot create monthly recurring order item #{USD_value(_cost.monthly_recurring)}")
     end

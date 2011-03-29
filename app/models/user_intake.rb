@@ -471,7 +471,7 @@ class UserIntake < ActiveRecord::Base
     #   * no panic? check shipping date
     _date ||= (shipped_at + 7.days) if ( _date.blank? && !shipped_at.blank? )
     #   * no panic or shipping? nothing returned
-    _date = (_date + order.product_cost.recurring_delay.months) unless (order.blank? || _date.blank?)
+    _date = (_date + order.product_cost.recurring_delay.months) unless (order.blank? || _date.blank? || order.product_cost.blank?)
   end
   
   # 
