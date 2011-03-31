@@ -1,4 +1,4 @@
-@L1 @intake_billing @store
+@L1 @intake @billing @store
 Feature: Online store user intake
   In order to value
   As a role

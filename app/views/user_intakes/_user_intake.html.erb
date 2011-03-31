@@ -258,11 +258,6 @@
               <!-- caregiver user details -->
               <div class="span-2"><%= caregiver_form.label :email %>:</div>
               <div class="span-5 last"><%= caregiver_form.text_field :email, :class => "span-5" %></div>
-              <div class="span-4"><%= caregiver_form.label :has_residence_key, "Do you have a key to the Residence" %>:</div>
-              <div class="span-3 last">
-                <%= caregiver_form.radio_button :has_residence_key, "1", :checked => caregiver.has_residence_key %>Yes
-                <%= caregiver_form.radio_button :has_residence_key, "0", :checked => !caregiver.has_residence_key %>No
-              </div>
             <% end %>
 
             <!--  Wed Nov 10 01:10:46 IST 2010, ramonrails -->

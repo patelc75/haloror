@@ -109,7 +109,7 @@ class Panic < CriticalDeviceAlert
           # if panic < desired 
           #   panic_received_at is not updated and stays blank
           # elsif (panic > desired or desired.blank?)
-          if ( _time_now > _intake.installation_datetime ) || _intake.installation_datetime.blank?
+          if _intake.installation_datetime.blank? || ( _time_now > _intake.installation_datetime )
             #   only the first panic updates panic_received_at, ignore subsequent panics
             if _intake.panic_received_at.blank?
               _intake.update_attribute( :panic_received_at, _time_now)

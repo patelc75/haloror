@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110323191943) do
+ActiveRecord::Schema.define(:version => 20110329225848) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -799,6 +799,7 @@ ActiveRecord::Schema.define(:version => 20110323191943) do
     t.datetime "updated_at"
     t.boolean  "recurring_monthly"
     t.integer  "device_model_id"
+    t.string   "description"
   end
 
   create_table "orders", :force => true do |t|
@@ -846,6 +847,7 @@ ActiveRecord::Schema.define(:version => 20110323191943) do
     t.boolean  "dealer_install_fee_applies"
     t.integer  "shipping_option_id"
     t.string   "device_model_size"
+    t.float    "cc_dealer_install_fee"
   end
 
   create_table "orientation_thresholds", :force => true do |t|

@@ -380,6 +380,7 @@ class User < ActiveRecord::Base
   # Fri Oct  1 05:27:06 IST 2010
   #   user.devices.gateways.first works
   #   user.gateway does not? needs investigation
+  # 
   #
   # Usage:
   #   user.gateway
@@ -615,9 +616,25 @@ class User < ActiveRecord::Base
         _ui.group, _ui.group.master_group
         ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq
         #   * send installation alert to people
-        _emails.each { |_email| UserMailer.deliver_user_installation_alert( self, _email) }
+        _emails.each do |_email|
+          # 
+          #  Thu Mar 31 23:00:18 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4297
+          if not_yet_ready_to_install?
+            UserMailer.deliver_user_panic_warning( self, _email)
+          else
+            UserMailer.deliver_user_installation_alert( self, _email)
+          end
+        end
       end
     end
+  end
+  
+  # 
+  #  Thu Mar 31 23:00:26 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4297
+  def not_yet_ready_to_install?
+    status.blank? || ( status == STATUS[ :approval_pending])
   end
 
   def self.resend_mail(id,senior)
@@ -2014,18 +2031,18 @@ class User < ActiveRecord::Base
   #   end
   # end
   
-  # WARNING: code coverage required
-  # Usage:
-  #   User.last.gateway       # => returns the "Gateway" device row for this user
-  #   User.last.chest_strap   # => returns the "Chest Strap" device row for this user
-  #   User.last.belt_clip     # => returns the "Belt Clip" device row for this user 
+
+  # # WARNING: code coverage required
+  # # Usage:
+  # #   User.last.gateway       # => returns the "Gateway" device row for this user
+  # #   User.last.chest_strap   # => returns the "Chest Strap" device row for this user
+  # #   User.last.belt_clip     # => returns the "Belt Clip" device row for this user
   # [:gateway, :chest_strap, :belt_clip].each do |name|
   #   define_method name do
   #     # WARNING: AR finder methods cannot work here because "device_type" is a method, not attribute
   #     #   devices.first( :conditions...) cannot be done here
   #     devices.select {|e| e.device_type == name.to_s.split('_').collect(&:capitalize).join(' ') }.first
   #   end
-  # end   
   
   # # CHANGED: use "user.gateway" instead of this method
   # def get_gateway

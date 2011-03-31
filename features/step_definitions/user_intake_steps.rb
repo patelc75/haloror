@@ -816,6 +816,15 @@ Then /^(.+) email(?:|s) to (.+) of last user intake with (subject|body|content|k
   Email.all.select {|e| _emails.include?( e.to) && e.mail.include?( data) }.length.should == parsed_count( _count)
 end
 
+Then /^panic warning email (should|should not) be dispatched$/ do |_condition|
+  _count = Email.all( :conditions => ["mail LIKE ?", "%Install attempted without approval%"]).length
+  if _condition == 'should'
+    _count.should > 0
+  else
+    _count.should == 0
+  end
+end
+
 # ============================
 # = local methods for DRYness =
 # ============================

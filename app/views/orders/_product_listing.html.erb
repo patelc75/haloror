@@ -42,16 +42,3 @@
     
   <% end -%>
 </table>
-
-<% if !@confirmation %>
-  <ul class="no-style">
-    <% for _option in ShippingOption.ordered %>
-    <li>
-      <%= radio_button_tag 'order[shipping_option_id]', "#{_option.id}", ( !@shipping_option_id.blank? && (_option.id == @shipping_option)) %>
-      <%= label_tag "order_shipping_option_id_#{_option.id}", "#{_option.description}" %> <%= " #{USD_value( _option.price)}" %>
-    </li>
-    <% end %>
-  </ul>
-<% else %>
-  Shipping option: <%= h( ShippingOption.find( @shipping_option).description) unless @shipping_option.blank? %>
-<% end %>

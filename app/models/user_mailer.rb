@@ -26,6 +26,13 @@ class UserMailer < ActionMailer::ARMailer
     body        :user => _senior # senior details in the email
   end
 
+  def user_panic_warning( _senior, _email = nil)
+    _email ||= _senior.email
+    setup_email( _email)
+    @subject += "Warning: Install attempted for #{_senior.name} without approval from Halo"
+    body        :user => _senior
+  end
+
   # 
   #  Fri Feb  4 00:03:10 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4146
