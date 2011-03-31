@@ -1,4 +1,4 @@
-@L1 @critical @store @intake_billing
+@L1 @critical @store @intake @billing
 Feature: Pre quality
   In order to value
   As a role
@@ -251,6 +251,7 @@ Feature: Pre quality
     And I place an online order for "reseller" group
     # submit button is not available in trial period
     And panic button test data is received for user intake "last"
+    Then panic warning email should be dispatched
     # Open the user intake, perform the following steps and click Save
     And I edit the last user intake
     # Check email, text toggles
@@ -519,6 +520,7 @@ Feature: Pre quality
     And user intake "last" should have "Ready to Install" status
     When panic button test data is received for user intake "last"
     Then user intake "last" should have "Installed" status
+    And panic warning email should not be dispatched
     #   * https://redmine.corp.halomonitor.com/issues/4111#note-8
     When panic button test data is received for user intake "last"
     Then last user intake retains its existing panic timestamp

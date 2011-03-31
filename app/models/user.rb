@@ -616,9 +616,25 @@ class User < ActiveRecord::Base
         _ui.group, _ui.group.master_group
         ].flatten.compact.collect(&:email).compact.insert( 0, "senior_signup@halomonitoring.com").uniq
         #   * send installation alert to people
-        _emails.each { |_email| UserMailer.deliver_user_installation_alert( self, _email) }
+        _emails.each do |_email|
+          # 
+          #  Thu Mar 31 23:00:18 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4297
+          if not_yet_ready_to_install?
+            UserMailer.deliver_user_panic_warning( self, _email)
+          else
+            UserMailer.deliver_user_installation_alert( self, _email)
+          end
+        end
       end
     end
+  end
+  
+  # 
+  #  Thu Mar 31 23:00:26 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4297
+  def not_yet_ready_to_install?
+    status.blank? || ( status == STATUS[ :approval_pending])
   end
 
   def self.resend_mail(id,senior)
