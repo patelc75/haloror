@@ -1,8 +1,8 @@
 <tr>
   <td><%= link_to user.id, user_path( user) %></td>
   <td><%= h user.name %></td>
-  <td><%= h user.devices.collect(&:device_type).compact.uniq %></td>
-  <td><%= h user.devices.collect(&:connectivity_type).compact.uniq %></td>
+  <td><%= h user.get_wearable_type %></td>
+  <td><%= h user.get_access_mode %></td>
   <td><%= h user.status || 'Not Submitted' %></td>
   <td><%= h user.important_role %></td>
   <td>

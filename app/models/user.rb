@@ -2018,14 +2018,14 @@ class User < ActiveRecord::Base
   # Usage:
   #   User.last.gateway       # => returns the "Gateway" device row for this user
   #   User.last.chest_strap   # => returns the "Chest Strap" device row for this user
-  #   User.last.belt_clip     # => returns the "Belt Clip" device row for this user
-  [:gateway, :chest_strap, :belt_clip].each do |name|
-    define_method name do
-      # WARNING: AR finder methods cannot work here because "device_type" is a method, not attribute
-      #   devices.first( :conditions...) cannot be done here
-      devices.select {|e| e.device_type == name.to_s.split('_').collect(&:capitalize).join(' ') }.first
-    end
-  end
+  #   User.last.belt_clip     # => returns the "Belt Clip" device row for this user 
+  # [:gateway, :chest_strap, :belt_clip].each do |name|
+  #   define_method name do
+  #     # WARNING: AR finder methods cannot work here because "device_type" is a method, not attribute
+  #     #   devices.first( :conditions...) cannot be done here
+  #     devices.select {|e| e.device_type == name.to_s.split('_').collect(&:capitalize).join(' ') }.first
+  #   end
+  # end   
   
   # # CHANGED: use "user.gateway" instead of this method
   # def get_gateway
@@ -2071,6 +2071,21 @@ class User < ActiveRecord::Base
     else
       "None"
     end
+  end  
+  
+  def get_access_mode 
+    device = nil
+    if bc = self.belt_clip
+      device = bc
+    elsif cs = self.chest_strap
+      device = cs
+    end    
+    
+    if !device.nil? && !device.access_mode_status.nil?
+      device.access_mode_status.mode
+    else
+      "(none)"
+    end 
   end
     
   # Activates the user in the database.
