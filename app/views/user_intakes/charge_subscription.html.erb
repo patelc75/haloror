@@ -5,11 +5,11 @@
     <% if (@user_intake.order && @user_intake.order.subscription_successful?) %>
       <%= image_tag( 'tick.png' ) %> Success
     <% else %>
-      <%= image_tag( 'exclamation.png') %> Failure
+      <%= image_tag( 'exclamation.png') %> <%= link_to "Failure", order_payment_gateway_responses_path( @user_intake.order) %>
     <% end %>    
   </p>
   <p>
-    <% @user_intake.order.payment_gateway_responses.subscription.recent.each do |_response| %>
+    <% @user_intake.order.payment_gateway_responses.subscription.each do |_response| %>
       <%= _response.message %>
     <% end %>
   </p>
