@@ -61,6 +61,7 @@ class Device < ActiveRecord::Base
     # scopes
     named_scope key, lambda {|*args| { :conditions => ["devices.serial_number LIKE ? AND devices.serial_number LIKE ?", "#{value}%", "%#{args.flatten.first}%"] }}
   end
+  
     
   # Usage:
   #   Device.where_status "Installed"
@@ -76,7 +77,7 @@ class Device < ActiveRecord::Base
   [:dialups, :ethernets].each do |_mode|
     named_scope _mode, :include => :access_mode_status, :conditions => ["access_mode_statuses.mode = ?", "#{_mode.to_s.singularize}"]
   end
-
+  
   # =============
   # = callbacks =
   # =============
@@ -269,7 +270,12 @@ class Device < ActiveRecord::Base
   # WARNING: needs test coverage
   # firmware software version for the device
   def software_version
-    device_info.blank? ? "" : device_info.software_version
+    #device_info.blank? ? "" : device_info.software_version
+    info = DeviceInfo.find(:first, :conditions => "device_id = #{id}", :order => "created_at desc nulls last, id desc")     
+    #if info.nil?
+    #  info = DeviceInfo.find(:first, :include => :mgmt_response, :conditions => "device_id = #{id}", :order => "mgmt_responses.timestamp_server desc")
+		#end
+		info ? info.software_version : "(not reported)"
   end
 
   # https://redmine.corp.halomonitor.com/issues/3159
