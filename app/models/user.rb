@@ -696,6 +696,14 @@ class User < ActiveRecord::Base
   # ====================
 
   # 
+  #  Fri Apr  1 23:21:59 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4258
+  #   * any panic button event received for this user?
+  def any_panic_received?
+    !last_panic.blank?
+  end
+
+  # 
   #  Mon Feb 14 22:36:56 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4185
   def update_invoice_attributes

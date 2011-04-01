@@ -67,7 +67,12 @@ class Panic < CriticalDeviceAlert
           if user.order_placed_online?
             # transition the user from "Ready to Install" => "Ready to Bill"
             #   * We need "bill" state when order was placed online
-            user.update_attribute( :status, User::STATUS[:bill_pending]) # "Ready to bill". no validations
+            if user.subscription_successful?
+              #   * already "billed". we can simply go to "Installed" state
+              user.update_attribute( :status, User::STATUS[:installed]) # "Installed"
+            else
+              user.update_attribute( :status, User::STATUS[:bill_pending]) # "Ready to bill". no validations
+            end
           else
             #   * just mark the user "Installed", when created directly from user intake
             user.update_attribute( :status, User::STATUS[:installed]) # "Installed"

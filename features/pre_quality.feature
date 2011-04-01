@@ -526,7 +526,7 @@ Feature: Pre quality
     Then last user intake retains its existing panic timestamp
     And the last senior should not have an invoice
 
-  Scenario: Online Order > User Intake > Submit > Approve > Panic > Installed
+  Scenario: Online Order > User Intake > Submit > Approve > Panic > Ready to Bill > Bill > Installed
     Given the product catalog exists
     When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
@@ -554,12 +554,77 @@ Feature: Pre quality
     When I edit the last user intake
     And I press "Bill"
     Then user intake "last" should have "Installed" status
-    And the last invoice has prorate_start_date, recurring_start_date, prorate, recurring columns filled
+    And the last invoice should have prorate_start_date, recurring_start_date, prorate, recurring columns filled
     #   * https://redmine.corp.halomonitor.com/issues/4111#note-8
     When panic button test data is received for user intake "last"
     Then last user intake retains its existing panic timestamp
 
-  Scenario: Online Order > User Intake > Submit > Approve > Ship date > Start Subscription > Installed
+  Scenario: Online Order > User Intake > Submit > Approve > Ship date > Start Subscription > Panic > Installed
+    Given the product catalog exists
+    When I create a "reseller" reseller group
+    And I create a coupon code for "reseller" group
+    And I am placing an online order for "reseller" group
+    And I uncheck "order_bill_address_same"
+    And I press "Continue"
+    And I press "Place Order"
+    Then I should see "Success"
+    #   * submit
+    When I edit the last user intake
+    And I press "Submit"
+    Then page content should have "successfully updated"
+    And the last user intake does not have any invoice
+    #   * approve
+    When I edit the last user intake
+    And I press "Approve"
+    Then page content should have "successfully updated"
+    And user intake "last" should have "Ready to Install" status
+    And the last user intake does not have any invoice
+    #   * ship date
+    When the last user intake had the product shipped 5 weeks ago
+    #   * start subscription (same as "Bill")
+    And I start the subscription for the last user intake
+    #   * panic
+    When panic button test data is received for user intake "last"
+    #   * installed
+    Then user intake "last" should have "Installed" status
+    And the last invoice should have prorate_start_date, recurring_start_date, prorate, recurring columns filled
+    #   * https://redmine.corp.halomonitor.com/issues/4111#note-8
+    When panic button test data is received for user intake "last"
+    Then last user intake retains its existing panic timestamp
+
+  Scenario: Online Order > User Intake > Submit > Approve > Ship date > Panic > Start Subscription > Installed
+    Given the product catalog exists
+    When I create a "reseller" reseller group
+    And I create a coupon code for "reseller" group
+    And I am placing an online order for "reseller" group
+    And I uncheck "order_bill_address_same"
+    And I check "order_dealer_install_fee_applies"
+    And I press "Continue"
+    And I press "Place Order"
+    Then I should see "Success"
+    #   * submit
+    When I edit the last user intake
+    And I press "Submit"
+    Then page content should have "successfully updated"
+    And the last senior should not have an invoice
+    #   * approve
+    When I edit the last user intake
+    And I press "Approve"
+    Then page content should have "successfully updated"
+    And user intake "last" should have "Ready to Install" status
+    And the last senior should not have an invoice
+    #   * ship date
+    When the last user intake had the product shipped 5 weeks ago
+    And panic button test data is received for user intake "last"
+    #   * start subscription (same as "Bill")
+    And I start the subscription for the last user intake
+    Then user intake "last" should have "Installed" status
+    And the last user intake should prorate up to this month
+    And the last user intake should start subscription from upcoming month
+    And the last invoice should have prorate_start_date, recurring_start_date, prorate, recurring columns filled
+    And the last invoice should have install_fee_amount, install_fee_charged_at columns filled
+
+  Scenario: Online Order > User Intake > Submit > Approve > Ship date [No Panic] > Start Subscription > Ready to Install
     Given the product catalog exists
     When I create a "reseller" reseller group
     And I create a coupon code for "reseller" group
@@ -583,9 +648,6 @@ Feature: Pre quality
     #   * ship date
     When the last user intake had the product shipped 5 weeks ago
     #   * start subscription (same as "Bill")
+    # And panic button test data is not received for user intake "last"
     And I start the subscription for the last user intake
-    Then user intake "last" should have "Installed" status
-    And the last user intake should prorate up to this month
-    And the last user intake should start subscription from upcoming month
-    And the last invoice has prorate_start_date, recurring_start_date, prorate, recurring columns filled
-    And the last invoice has install_fee_amount, install_fee_charged_at columns filled
+    Then user intake "last" should have "Ready to Install" status

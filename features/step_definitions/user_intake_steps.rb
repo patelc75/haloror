@@ -224,7 +224,7 @@ When /^user intake "([^"]*)" gets approved$/ do |_serial|
   ui.save.should be_true
 end
 
-When /^panic button test data is received for user intake "([^"]*)"$/ do |_serial|
+When /^panic button test data (is|is not) received for user intake "([^"]*)"$/ do |_state, _serial|
   ui = if (_serial == "last")
     UserIntake.last
   else
@@ -232,13 +232,9 @@ When /^panic button test data is received for user intake "([^"]*)"$/ do |_seria
   end
   ui.should_not be_blank
   (senior = ui.senior).should_not be_blank
-  Factory.create( :panic, {:user => senior}).should be_true
-  # panic = Factory.build( :panic)
-  # panic.user = senior
-  # #
-  # # save fails here. requires a linked device? investigate further
-  # result = panic.save!
-  # result.should be_true
+  if _state == 'is'
+    Factory.create( :panic, {:user => senior}).should be_true
+  end
 end
 
 When /^I (view|edit) user intake with gateway serial "([^"]*)"$/ do |action, _serial|

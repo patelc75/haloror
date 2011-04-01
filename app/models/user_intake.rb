@@ -374,10 +374,15 @@ class UserIntake < ActiveRecord::Base
       if order.charge_pro_rata  # charge the recurring cost calculated for remaining days of this month, including today
         #
         # charge the credit card subscription now
-        if order.charge_subscription          
+        if order.charge_subscription
           #
           # now make user "Installed"
-          self.senior.update_attribute( :status, User::STATUS[:installed]) # force_status!( :installed)
+          # 
+          #  Fri Apr  1 23:23:01 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4258
+          if self.senior.any_panic_received?
+            self.senior.update_attribute( :status, User::STATUS[:installed]) # force_status!( :installed)
+          end
           # self.senior.status = User::STATUS[:installed]
           # self.senior.send( :update_without_callbacks)
           # 
