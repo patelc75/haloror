@@ -36,6 +36,7 @@
   <% end %>
   <% if current_user.is_super_admin? %>
   | <%= link_to 'Invoices', :controller => 'invoices', :action => 'index' %>
-  <% end %>
+  | <%= link_to 'Shipping Options', :controller => 'shipping_options', :action => 'index' %>  
+  <% end %>  
 </div>
 </div>
