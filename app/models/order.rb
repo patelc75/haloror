@@ -69,7 +69,6 @@ class Order < ActiveRecord::Base
     self.device_model_id       = _coupon.device_model.id
     self.cc_expiry_date        = _coupon.expiry_date
     self.cc_deposit            = _coupon.deposit
-    self.cc_shipping           = _coupon.shipping
     self.cc_monthly_recurring  = _coupon.monthly_recurring
     self.cc_months_advance     = _coupon.months_advance
     self.cc_months_trial       = _coupon.months_trial
@@ -77,15 +76,30 @@ class Order < ActiveRecord::Base
     # 
     #  Tue Mar 15 03:01:33 IST 2011, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/4060
-    if !_coupon.shipping.blank? && _coupon.shipping == 0
-      unless shipping_option.blank? # many-to-one relation
+    #   * https://redmine.corp.halomonitor.com/issues/4318
+    if _coupon.shipping.blank?
+      if shipping_option.blank?
+        self.ship_description = 'Shipping not given in coupon or shipping option'
+        self.ship_price       = 0
+      else
         self.ship_description = shipping_option.description
         self.ship_price       = shipping_option.price
       end
+    #   * 'zero' shipping is also covered here
     else
       self.ship_description = "Coupon Code: #{coupon_code}"
       self.ship_price       = _coupon.shipping
     end
+    #   CHANGED: old code below
+    # if !_coupon.shipping.blank? && _coupon.shipping == 0
+    #   unless shipping_option.blank? # many-to-one relation
+    #     self.ship_description = shipping_option.description
+    #     self.ship_price       = shipping_option.price
+    #   end
+    # else
+    #   self.ship_description = "Coupon Code: #{coupon_code}"
+    #   self.ship_price       = _coupon.shipping
+    # end
   end
   
   def validate
@@ -190,13 +204,24 @@ class Order < ActiveRecord::Base
     group.blank? ? "" : group.name
   end
 
-  def reseller?
-    group.blank? ? false : group.is_reseller?
+  # 
+  #  Tue Apr  5 00:53:38 IST 2011, ramonrails
+  #   * CHANGED: code optimized
+  #   Usage:
+  #   * reseller?
+  #   * retailer?
+  ["reseller", "retailer"].each do |_group_type|
+    define_method "#{_group_type}?".to_sym do
+      group.blank? ? false : group.send( "is_#{_group_type}?")
+    end
   end
-  
-  def retailer?
-    group.blank? ? false : group.is_retailer?
-  end
+  # def reseller?
+  #   group.blank? ? false : group.is_reseller?
+  # end
+  # 
+  # def retailer?
+  #   group.blank? ? false : group.is_retailer?
+  # end
   
   def check_kit_serial_validation
     # self.errors.add_to_base("Please provide the Kit Serial Number") if need_to_force_kit_serial?
@@ -243,7 +268,7 @@ class Order < ActiveRecord::Base
       ['deposit', 'shipping', 'advance_charge', 'dealer_install_fee'].each do |_col|
         _description = _col.gsub(/_/,' ').capitalize
         _amount      = _cost.send( _col.to_sym)
-        unless _amount.zero?
+        unless _amount.to_i == 0
           if order_items.create({
               :device_model_id => device_model.id,
               :cost            => _amount,

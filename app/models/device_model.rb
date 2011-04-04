@@ -76,9 +76,13 @@ class DeviceModel < ActiveRecord::Base
     self.device_type = DeviceType.find_by_device_type( name)
   end
 
+  #  Tue Apr  5 01:06:41 IST 2011, ramonrails
+  # Usage:
+  #   *  model_type => "12001008-1 -- Belt Clip"
   def model_type
-    return "#{self.part_number} -- #{self.device_type.device_type}" if(self.device_type)
-    return "#{self.part_number}"
+    ([part_number] + ( device_type.blank? ? [] : [' -- ', device_type.device_type])).join
+    # return "#{self.part_number} -- #{self.device_type.device_type}" if(self.device_type)
+    # return "#{self.part_number}"
   end
   alias :name :model_type
 
