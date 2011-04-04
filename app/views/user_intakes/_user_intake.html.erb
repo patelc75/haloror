@@ -90,7 +90,7 @@
         <br />
         <br />
         <%= f.label :device_model_id, 'Product' %>
-        <%= f.select :device_model_id, DeviceModel.ordered.collect {|e| [e.name, e.id]}, {}, {:onchange => "show_hide_product_sizes();"} %>
+        <%= f.select :device_model_id, DeviceModel.ordered.collect {|e| [e.name, e.id]}, {}, {:onchange => "show_hide_product_sizes();", :style => "width:180px;"} %>
         <br />
         <div class="sizes" id="product_sizes">
           <% if (_product = DeviceModel.myhalo_complete) %>
