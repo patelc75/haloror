@@ -38,7 +38,12 @@ class DeviceModelPrice < ActiveRecord::Base
     else
       ["coupon_code LIKE ? OR device_models.part_number LIKE ? OR groups.name LIKE ? OR deposit = ? OR shipping = ? OR monthly_recurring = ? OR months_advance = ? OR months_trial = ?", _str, _str, _str, _num, _num, _num, _num, _num]
     end
-    { :joins => "LEFT OUTER JOIN groups ON device_model_prices.group_id = groups.id LEFT OUTER JOIN device_models ON device_model_prices.device_model_id = device_models.id", :conditions => _conditions }
+    # 
+    #  Mon Apr  4 22:10:02 IST 2011, ramonrails
+    #   * WARNING: SQL statement caused error where ID of coupon_code row was incorrect
+    #   * rails syntax fixed it
+    ## { :joins => "LEFT OUTER JOIN groups ON device_model_prices.group_id = groups.id LEFT OUTER JOIN device_models ON device_model_prices.device_model_id = device_models.id", :conditions => _conditions }
+    { :include => [ :group, :device_model], :conditions => _conditions}
     }
 
   # =============
