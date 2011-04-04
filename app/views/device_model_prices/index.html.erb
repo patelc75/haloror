@@ -20,6 +20,7 @@
 </div>
 <table class="bluegrey">
   <tr>
+    <th>ID</th>
     <th>Group</th>
     <th>Part Num</th>
     <th>Model</th>
@@ -36,6 +37,7 @@
 
 <% for _coupon in @device_model_prices %>
   <tr class="<%= cycle('', 'altrow') %>">
+    <td><%= h _coupon.id %></td>
     <td><%=h _coupon.group_name %></td>
     <td><%=h _coupon.part_number %></td>
     <td><%=h _coupon.device_type %></td>
