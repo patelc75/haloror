@@ -17,13 +17,13 @@
     <% unless @complete_tariff.blank? || @complete_tariff.months_trial.to_i.zero? %>
       <tr class="altrow red"><td><%= pluralize(@complete_tariff.months_trial, "month") %> trial (Free <%= USD_value(@complete_tariff.monthly_recurring) %> x <%= @complete_tariff.months_trial %>)</td><td style="text-align:right;"><%= USD_value(0) %></td></tr>
     <% end -%>
-    <tr><td>Shipping</td><td style="text-align:right;"><%= selected_shipping_option %></td></tr>
-    <tr><td>Dealer Install Fee</td><td style="text-align:right;"><%= @complete_tariff.blank? ? '?' : @complete_tariff.dealer_install_fee %></td></tr>
+    <tr><td>Shipping</td><td style="text-align:right;"><%= selected_shipping_option( @complete_tariff) %></td></tr>
+    <tr><td>Dealer Install Fee</td><td style="text-align:right;"><%= @complete_tariff.blank? ? '?' : USD_value( @complete_tariff.dealer_install_fee) %></td></tr>
     <tr class="altrow"><td style="text-align:right;">Total*</td><td style="text-align:right;">
       <% if @confirmation %>
       <%= f.hidden_field "cost", :disabled => true %>
       <% end -%>
-      <strong><%= selected_total_cost %></strong>
+      <strong><%= selected_total_cost( @complete_tariff) %></strong>
     </td></tr>
   </table>
   <p>
@@ -45,12 +45,13 @@
     <% unless @clip_tariff.blank? || @clip_tariff.months_trial.to_i.zero? %>
       <tr class="altrow red"><td><%= @clip_tariff.blank? ? '?' : pluralize(@clip_tariff.months_trial, "month") %> trial (Free <%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %> x <%= @clip_tariff.blank? ? '?' : @clip_tariff.months_trial %>)</td><td style="text-align:right;"><%= USD_value(0) %></td></tr>
     <% end -%>
-    <tr><td>Shipping</td><td style="text-align:right;"><%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.shipping) %></td></tr>
+    <tr><td>Shipping</td><td style="text-align:right;"><%= selected_shipping_option( @clip_tariff) %></td></tr>
+    <tr><td>Dealer Install Fee</td><td style="text-align:right;"><%= @clip_tariff.blank? ? '?' : USD_value( @clip_tariff.dealer_install_fee) %></td></tr>
     <tr class="altrow"><td style="text-align:right;">Total*</td><td style="text-align:right;">
       <% if @confirmation %>
       <%= f.hidden_field "cost", :disabled => true %>
       <% end -%>
-      <strong><%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.upfront_charge) %></strong>
+      <strong><%= selected_total_cost( @clip_tariff) %></strong>
     </td></tr>
   </table>
   <p>
