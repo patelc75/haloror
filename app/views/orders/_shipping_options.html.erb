@@ -1,17 +1,35 @@
 <table class="colored">
-  <tr><th>Please pick shipping option</th></tr>
-  <tr><td>
-    <% if !@confirmation %>
-    <ul class="no-style">
-      <% for _option in ShippingOption.ordered %>
-      <li>
-        <%= radio_button_tag 'order[shipping_option_id]', "#{_option.id}", ( !@shipping_option_id.blank? && (_option.id == @shipping_option_id)) %>
-        <%= label_tag "order_shipping_option_id_#{_option.id}", "#{_option.description}" %> <%= " #{USD_value( _option.price)}" %>
-      </li>
+  <tr>
+    <th>Please pick shipping option</th>
+    <th>Other</th>
+  </tr>
+
+  <tr>
+    <td>
+      <% if !@confirmation %>
+      <ul class="no-style">
+        <% for _option in ShippingOption.ordered %>
+        <li>
+          <%= radio_button_tag 'order[shipping_option_id]', "#{_option.id}", ( !@shipping_option_id.blank? && (_option.id == @shipping_option_id)) %>
+          <%= label_tag "order_shipping_option_id_#{_option.id}", "#{_option.description}" %> <%= " #{USD_value( _option.price)}" %>
+        </li>
+        <% end %>
+      </ul>
+      <% else %>
+        Shipping option: 
+        <% if (@product == 'complete' && @complete_tariff.shipping.blank?) || (@product == 'clip' && @clip_tariff.shipping.blank?) %>
+          <%=h "#{@shipping_option.description}, #{USD_value( @shipping_option.price)}" unless @shipping_option.blank? %>
+        <% else %>
+          applies from coupon code
+        <% end %>
       <% end %>
-    </ul>
-    <% else %>
-    Shipping option: <%=h "#{@shipping_option.description}, #{USD_value( @shipping_option.price)}" unless @shipping_option.blank? %>
-    <% end %>
-  </td></tr>
+    </td>
+
+    <td>
+      <% if current_user.is_admin? || current_user.is_super_admin? %>
+      <%= f.check_box :dealer_install_fee_applies, :disabled => @confirmation %>
+      <%= f.label :dealer_install_fee_applies, "Dealer Install Fee" %>
+      <% end %>
+    </td>
+  </tr>
 </table>
