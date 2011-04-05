@@ -2591,7 +2591,7 @@ class User < ActiveRecord::Base
   end
        
   def id_and_name
-     "(#{id}) " + name if !name.nil? 
+     "(#{id}) #{name}" # name if !name.nil? 
   end    
   
   # Ticket: 3213 requires this

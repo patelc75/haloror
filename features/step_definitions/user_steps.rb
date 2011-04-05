@@ -301,10 +301,10 @@ When /^I navigate to caregiver page for "([^\"]*)" user$/ do |user_name|
   visit "call_list/show/#{User.find_by_login(user_name).id}"
 end
 
-When /^I select profile name of "([^\"]*)" from "([^\"]*)"$/ do |user_login, drop_down_id|
+When /^I select id and name of "([^\"]*)" from "([^\"]*)"$/ do |user_login, drop_down_id|
   user = User.find_by_login(user_login)
   user.should_not be_blank
-  select(user.name, :from => drop_down_id)
+  select(user.id_and_name, :from => drop_down_id)
 end
 
 When /^I press "([^\"]*)" within "([^\"]*)" user row$/ do |button, user_login|

@@ -1,3 +1,4 @@
+@L1 @intake @billing @store
 Feature: Config roles and groups
   In order to value
   As a role
@@ -7,8 +8,9 @@ Feature: Config roles and groups
     Given a user "demo" exists with profile
     And I am authenticated as "demo" with password "12345"
     And the following groups:
-      | name   |
-      | group1 |
+      | name     |
+      | group1   |
+      | newgroup |
     And user "user1, user2" exists with profile
     And user "user1, user2" have "halouser" role for group "group1"
     
@@ -22,8 +24,8 @@ Feature: Config roles and groups
   Scenario: Super Admin can assign super_admin role
     Given user "demo" has "super_admin" role
     When I reload the page
-    And I visit "/user_admin/roles"
-    And I select profile name of "user1" from "superadmin_user_id"
+    And I follow links "Config > Roles"
+    And I select id and name of "user1" from "superadmin_user_id"
     And I press "Assign Super Admin Role"
     Then user "user1" should have "super_admin" role
 
@@ -65,3 +67,15 @@ Feature: Config roles and groups
   Scenario: Admin can create new groups
   Scenario: Admin can edit the existing groups where they are admin
   
+  @now
+  Scenario: Config > Roles > change group of halouser > User Intake and Order group gets re-assigned
+    Given the product catalog exists
+    And I am an authenticated super admin
+    When I create a "reseller" reseller group
+    And I create a coupon code for "reseller" group
+    And I create admin of "reseller" group
+    And I place an online order for "reseller" group
+    And I switch senior of last order to become "halouser" of "newgroup"
+    Then last user intake should have group "newgroup"
+    And last order should have group "newgroup"
+    
