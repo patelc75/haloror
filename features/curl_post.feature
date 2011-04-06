@@ -53,6 +53,7 @@ Feature: POST XML to simulate gateway
   #  Wed Feb 23 03:10:12 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4168
   #   * POST the cURL twice and check single row with 'current' and 'new'
+  @4168
   Scenario: Mgmt Response (Info and Firmware Upgrade)
     When I simulate a "mgmt response" event with the following attributes:
       | cmd_type         | info       |

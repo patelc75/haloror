@@ -146,7 +146,7 @@ class UserAdminController < ApplicationController
     #
     # all users having any role in selected groups
     user_ids = @groups.collect(&:users).flatten.compact.collect(&:id).uniq # collect users from the groups
-    @users = User.all(:conditions => {:id => user_ids}, :include => :profile, :order => 'profiles.first_name, profiles.last_name') # fetch uniq IDs and find again
+    @users = User.all(:conditions => {:id => user_ids}, :include => :profile, :order => 'users.id, profiles.first_name, profiles.last_name') # fetch uniq IDs and find again
     # @users = @groups.collect(&:users).flatten.uniq.sort! {|x,y| x.name <=> y.name }
     # @users = User.find(:all, :order => 'login asc')
   end
