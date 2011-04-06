@@ -6,5 +6,6 @@
   <td><%= link_to (fastintake.senior ? fastintake.senior.name : "(unnamed)"), :action => :single_row, :id => fastintake.id %></td>
   <td><%= fastintake.senior.status_text %></td>
   <td><%= link_to( fastintake.group.name, users_in_group_path( fastintake.group.name )) rescue '?' %></td>
-  <td><%= fastintake.updated_at %></td>
+  <td><%= UtilityHelper.format_datetime(fastintake.shipped_at, current_user, Time::DATE_FORMATS[:day_date_short])  %></td>      	
+  <td><%= fastintake.updated_at %></td>   
 </tr>
