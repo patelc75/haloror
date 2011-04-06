@@ -53,7 +53,6 @@ Feature: Bundle job
       | oscope start msgs       | 1  |
     And last oscope_start_msg should at least have 2 oscope_msgs
 
-  @wip
   Scenario Outline: Simulate gateway with CURL
     Given a gateway exists with the following attributes:
       | id | 0 |
@@ -72,3 +71,21 @@ Feature: Bundle job
     Examples:
       | file_name   | bat | unplug | vital | step | skin | oscope | point | dial | dial_last |
       | oscope_msgs |     |        |       |      |      | 2      | 4     |      |           |
+
+  @now
+  Scenario: AlertBundle ticket 4260
+    Given I am an authenticated super admin
+    And user "test_senior" exists with profile
+    And the following groups:
+      | name       |
+      | test_group |
+    And the following devices:
+      | serial_number |
+      | H123456789    |
+      | H567053101    |
+    And user "test_senior" has "halouser" role for group "test_group"
+    When I simulate an "alert_bundle" event with the following attributes:
+      | user      | test_senior           |
+      | device    | H123456789            |
+      | path      | /alert_bundle         |
+      | file_name | alert_bundle_4260.xml |
