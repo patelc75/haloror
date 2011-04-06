@@ -280,12 +280,14 @@ class Order < ActiveRecord::Base
           end
         end
       end
-      order_items.create({
-          :device_model_id => device_model.id,
-          :cost            => 0,
-          :quantity        => 1,
-          :description     => "Size: #{device_model_size}"
-      })
+      if load_product_type == 'complete'
+        order_items.create({
+            :device_model_id => device_model.id,
+            :cost            => 0,
+            :quantity        => 1,
+            :description     => "Size: #{device_model_size}"
+        }) 
+      end
     else
       errors.add_to_base( "Cannot create monthly recurring order item #{USD_value(_cost.monthly_recurring)}")
     end
