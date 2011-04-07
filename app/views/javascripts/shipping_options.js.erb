@@ -1,0 +1,29 @@
+// <!-- javascripts/shipping_options.js.erb -->
+var shipping_options = new Array();
+<%- for _option in @shipping_options -%>
+  shipping_options.push( new Array( <%= _option.id %>, '<%= _option.description %>', <%= _option.price %>));
+<%- end -%>
+
+function updateCost( _element) {
+  // 
+  _cs_deposit     = parseFloat( $('hidden_cs_deposit').value );
+  _cs_install_fee = parseFloat( $('hidden_cs_install_fee').value );
+  _cs_shipping    = shipping_options[parseFloat(_element.value)] // parseFloat( $('hidden_cs_shipping').value );
+  $('cs_shipping_value').innerHTML =  "$" + _cs_shipping
+
+  _bc_deposit     = parseFloat( $('hidden_bc_deposit').value );
+  _bc_install_fee = parseFloat( $('hidden_bc_install_fee').value );
+  _bc_shipping    = parseFloat( $('hidden_bc_shipping').value );
+  $('bc_shipping_value').innerHTML = "$".concat( _bc_shipping, '')
+}
+
+document.observe('dom:loaded', function() {
+  toggleProductDetails();
+  updateCost();
+  // <%- for _element in ['product_complete', 'product_clip'] -%>
+  //   $('<%= _element -%>').observe('onclick', updateCost);
+  // <%- end -%>
+  // <%- for _option in @shipping_options -%>
+  //   $('order_shipping_option_id_<%= _option.id -%>').observe('onclick', updateCost);
+  // <%- end -%>
+});

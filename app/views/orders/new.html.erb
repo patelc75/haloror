@@ -1,8 +1,14 @@
-<% javascript do %>
-  <script type="text/javascript" charset="utf-8">
-    toggleProductDetails();
-  </script>
-<% end %>
+<% unless @confirmation %>
+  <% content_for :js do %>
+    <%= javascript_include_tag "custom/facebox/facebox.js" %>
+    <%= javascript_include_tag "validation.js" %>
+    <%= javascript_include_tag "masked-input.js" %>
+    <%= javascript_include_tag 'shipping_options' %>
+  <% end -%>
+  <% content_for :css do %>
+    <%= stylesheet_link_tag "custom/facebox/facebox.css" %>
+  <% end -%>
+<% end -%>
 
 <p><a href="http://www.halomonitoring.com/products/myhalo-senior-monitoring">Learn more about myHalo</a>
 <% if logged_in? && current_user.is_super_admin? %>
@@ -11,16 +17,6 @@
 <% if @confirmation %>
 <h1>Please verify your order</h1>
 <% end %>
-<% unless @confirmation %>
-    <% content_for :js do %>
-      <%= javascript_include_tag "custom/facebox/facebox.js" %>
-      <%= javascript_include_tag "validation.js" %>
-      <%= javascript_include_tag "masked-input.js" %>
-    <% end -%>
-    <% content_for :css do %>
-      <%= stylesheet_link_tag "custom/facebox/facebox.css" %>
-    <% end -%>
-<% end -%>
 
 <% unless @order.errors.blank? %>  <!-- show validation errors -->
   <div id="errors" class="box error">
@@ -192,11 +188,6 @@
         <p>
           <label>Comments and special shipping instructions</label><br />
           <%= f.text_area "comments", :rows => 5, :disabled => @confirmation %>
-        </p>
-        <p id="coupon_code">
-          <%= f.label :coupon_code, "Coupon Code" %> (if any)
-          <%= f.text_field :coupon_code %> 
-          <%= f.label :coupon_code_extra, "Example: WINTER" %>
         </p>
         <% #= recaptcha_tags %>
       </td>

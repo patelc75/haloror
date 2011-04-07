@@ -44,14 +44,15 @@ module ApplicationHelper
   #   <% end %>
   # TODO: test before using
   def developer( *args, &block)
-    if ENV['RAILS_ENV'] == "production"
-      ''
+    if ENV['RAILS_ENV'] == "development"
+      "<!-- #{args.flatten.first} #{concat(capture(&block), block.binding) if block_given?}"
+      # if block_given?
+      #   concat( " #{args.flatten.first} #{capture(&block)} ", block.binding)
+      # else
+      #   "<!-- #{args.flatten.first} -->"
+      # end
     else
-      if block_given?
-        concat( " #{args.flatten.first}, #{capture(&block)} ", block.binding)
-      else
-        "<!-- #{args.flatten.first} -->"
-      end
+      ''
     end
   end
 
@@ -221,7 +222,7 @@ module ApplicationHelper
     if block_given?
       captured = capture(&block)
       if captured.include?("<style")
-        content_for(:css) { concat( capture(&block), block.binding) }
+        content_for(:css) { concat( captured, block.binding) }
       else
         content_for(:css) do
           concat( "<style type=\"text/css\" media=\"screen\">", block.binding)

@@ -1,35 +1,47 @@
 <table class="colored">
   <tr>
-    <th>Please pick shipping option</th>
+    <th class="span-8">Please pick shipping option</th>
     <th>Other</th>
   </tr>
 
   <tr>
     <td>
-      <% if !@confirmation %>
-      <ul class="no-style">
-        <% for _option in ShippingOption.ordered %>
-        <li>
-          <%= radio_button_tag 'order[shipping_option_id]', "#{_option.id}", ( !@shipping_option_id.blank? && (_option.id == @shipping_option_id)) %>
-          <%= label_tag "order_shipping_option_id_#{_option.id}", "#{_option.description}" %> <%= " #{USD_value( _option.price)}" %>
-        </li>
-        <% end %>
-      </ul>
-      <% else %>
+      <% if @confirmation %>
         Shipping option: 
         <% if (@product == 'complete' && @complete_tariff.shipping.blank?) || (@product == 'clip' && @clip_tariff.shipping.blank?) %>
           <%=h "#{@shipping_option.description}, #{USD_value( @shipping_option.price)}" unless @shipping_option.blank? %>
         <% else %>
           applies from coupon code
         <% end %>
+      
+      <% else %>
+        <ul class="no-style">
+          <% for _option in ShippingOption.ordered( "price ASC") %>
+          <li>
+            <%= radio_button_tag 'order[shipping_option_id]', "#{_option.id}", ( !@shipping_option_id.blank? && (_option.id == @shipping_option_id)), :onclick => "javascript:$('cs_shipping_value').innerHTML = shipping_options[parseFloat(this.value)]+ ''" %>
+            <%= "#{USD_value( _option.price)} : " %> <%= label_tag "order_shipping_option_id_#{_option.id}", "#{_option.description}" %>
+          </li>
+          <% end %>
+        </ul>
       <% end %>
     </td>
 
     <td>
-      <% if current_user.is_admin? || current_user.is_super_admin? %>
-      <%= f.check_box :dealer_install_fee_applies, :disabled => @confirmation %>
-      <%= f.label :dealer_install_fee_applies, "Dealer Install Fee" %>
-      <% end %>
+      <div id="coupon_code">
+        <%= f.label :coupon_code, "Coupon Code" %> <span class="tiny">(if any)</span>
+        <%= f.text_field :coupon_code, :style => "width: 150px" %>
+        <br />
+        <span class="tiny">Example: WINTER</span>
+      </div>
+      <br />
+      <div>
+        <% unless current_user == :false %>
+        <% if current_user.is_admin? || current_user.is_super_admin? %>
+          <%= f.check_box :dealer_install_fee_applies, :disabled => @confirmation %>
+          <%= f.label :dealer_install_fee_applies, "Dealer Install Fee" %>
+        <% end %>
+        <% end %>
+      </div>
     </td>
   </tr>
 </table>

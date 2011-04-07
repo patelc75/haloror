@@ -18,6 +18,7 @@ class OrdersController < ApplicationController
     #   https://redmine.corp.halomonitor.com/issues/3653#note-7
     @groups = (logged_in? ? Group.for_user(current_user) : [Group.direct_to_consumer])
     @confirmation = false
+    @shipping_options = ShippingOption.ordered( 'price ASC')
     @shipping_option_id = session[:shipping_option_id]
     @product = session[:product]
     @order = Order.new(session[:order]) # recall if any order data was remembered
