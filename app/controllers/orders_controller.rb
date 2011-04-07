@@ -3,7 +3,7 @@ class OrdersController < ApplicationController
   
   # keeping RESTful
   include UserHelper
-  
+    
   def index
   	cond = ""
   	cond += "id = #{params[:id]}" if params[:id]
@@ -17,7 +17,7 @@ class OrdersController < ApplicationController
     # Tue Nov  2 04:24:51 IST 2010
     #   https://redmine.corp.halomonitor.com/issues/3653#note-7
     @groups = (logged_in? ? Group.for_user(current_user) : [Group.direct_to_consumer])
-    @confirmation = false
+    @confirmation = nil
     @shipping_options = ShippingOption.ordered( 'price ASC')
     @shipping_option_id = session[:shipping_option_id]
     @product = session[:product]
@@ -29,7 +29,8 @@ class OrdersController < ApplicationController
     @complete_tariff = DeviceModel.complete_coupon( @order.group, _coupon_code)
     @clip_tariff = DeviceModel.clip_coupon( @order.group, _coupon_code)
     
-    if request.post? # confirmation mode
+    debugger
+    if request.post? && !['Apply', 'Applying...'].include?(params[:commit])
       @shipping_option_id = session[:shipping_option_id] = params[:order][:shipping_option_id]
       @product = params[:product]
       order_params = params[:order] # we need to remember these
@@ -86,9 +87,17 @@ class OrdersController < ApplicationController
     else # store mode
       # back button needs this
       @order = (session[:order].blank? ? Order.new(:coupon_code => _coupon_code, :created_by => current_user.id, :updated_by => current_user.id) : Order.new(session[:order]))
+      @order.coupon_code = _coupon_code
       @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
       @same_address = @order.subscribed_for_self?
       # @same_address = (session[:order].blank? ? "checked" : (session[:order][:bill_address_same] || @order.bill_address_same || @order.ship_and_bill_address_same))
+    end
+    # 
+    #  Fri Apr  8 02:07:19 IST 2011, ramonrails
+    #   * CHANGED: business logic relies on BLANK value. made it work with BLANK/FALSE
+    if params[:commit] == 'Apply'
+      @order.skip_validation = true
+      @confirmation = nil
     end
     @shipping_option = ShippingOption.find( @shipping_option_id) unless (@shipping_option_id.blank? || @shipping_option_id.to_i == 0)
 

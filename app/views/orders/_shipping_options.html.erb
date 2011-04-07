@@ -6,7 +6,8 @@
 
   <tr>
     <td>
-      <% if @confirmation %>
+      <% debugger %>
+      <% if confirmation_mode? %>
         Shipping option: 
         <% if (@product == 'complete' && @complete_tariff.shipping.blank?) || (@product == 'clip' && @clip_tariff.shipping.blank?) %>
           <%=h "#{@shipping_option.description}, #{USD_value( @shipping_option.price)}" unless @shipping_option.blank? %>
@@ -37,11 +38,20 @@
       <div>
         <% unless current_user == :false %>
         <% if current_user.is_admin? || current_user.is_super_admin? %>
-          <%= f.check_box :dealer_install_fee_applies, :disabled => @confirmation %>
+          <%= f.check_box :dealer_install_fee_applies, :disabled => confirmation_mode? %>
           <%= f.label :dealer_install_fee_applies, "Dealer Install Fee" %>
         <% end %>
         <% end %>
       </div>
     </td>
   </tr>
+  
+  <% unless confirmation_mode? %>
+  <tr>
+    <td>
+      <%= f.submit "Apply", :disable_with => 'Applying...', :class => "button small green-button" %>
+    </td>
+  </tr>
+  <% end %>
 </table>
+

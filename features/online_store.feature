@@ -271,3 +271,14 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Then page content should have "Thank you for your order"
     And order items for each charge should be created separately for last order
     And upfront charge for last order should include dealer install fee charges
+
+  @now
+  Scenario: Apply coupon code without submitting the order
+    When I choose "product_complete"
+    And I choose "S_22_28_inches"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "order_bill_address_same"
+    And I fill in "Coupon Code" with "99TRIAL"
+    And I press "Apply"
+    Then I should see "Pick a product"

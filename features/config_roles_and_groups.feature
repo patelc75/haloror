@@ -67,7 +67,6 @@ Feature: Config roles and groups
   Scenario: Admin can create new groups
   Scenario: Admin can edit the existing groups where they are admin
   
-  @now
   Scenario: Config > Roles > change group of halouser > User Intake and Order group gets re-assigned
     Given the product catalog exists
     And I am an authenticated super admin

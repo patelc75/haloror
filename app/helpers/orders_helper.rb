@@ -45,5 +45,8 @@ module OrdersHelper
       USD_value( _charge)
     end
   end
-  
+
+  def confirmation_mode?
+    @confirmation == true rescue false
+  end
 end

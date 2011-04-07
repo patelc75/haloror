@@ -1,4 +1,4 @@
-<% unless @confirmation %>
+<% unless confirmation_mode? %>
   <% content_for :js do %>
     <%= javascript_include_tag "custom/facebox/facebox.js" %>
     <%= javascript_include_tag "validation.js" %>
@@ -14,8 +14,9 @@
 <% if logged_in? && current_user.is_super_admin? %>
   | <a href="/orders">Online Store Orders table</a>
 <% end %></p>
-<% if @confirmation %>
-<h1>Please verify your order</h1>
+<% if confirmation_mode? %>
+  <% debugger %>
+  <h1>Please verify your order</h1>
 <% end %>
 
 <% unless @order.errors.blank? %>  <!-- show validation errors -->
@@ -24,9 +25,9 @@
   </div>
 <% end -%>
 
-<% form_for @order, :url => {:action => (@confirmation ? "create" : "new")}, :html => {:id => 'form1', :class => "#{@confirmation ? 'confirm-form' : 'form'}"} do |f| %>
+<% form_for @order, :url => {:action => (confirmation_mode? ? "create" : "new")}, :html => {:id => 'form1', :class => "#{confirmation_mode? ? 'confirm-form' : 'form'}"} do |f| %>
  	<fieldset style="border: 2px solid ; padding: 10px;">    
-	<legend><span style="color:#008040;font-size:150%"><b>&nbsp;<%= @confirmation ? 'Order summary' : 'Pick a product or call 1-888-971-4256' %>&nbsp;</b></span></legend>
+	<legend><span style="color:#008040;font-size:150%"><b>&nbsp;<%= confirmation_mode? ? 'Order summary' : 'Pick a product or call 1-888-971-4256' %>&nbsp;</b></span></legend>
     <a name="top"></a>
     <table id="product_detail_box" width="100%">
       <tr>
@@ -37,7 +38,7 @@
   </fieldset>
   <br /><br />
 	<fieldset style="border: 2px solid; padding: 10px;">   		 
-    <legend><span style="color:#008040;font-size:150%"><b>&nbsp;Billing and Shipping<%= ' Summary' if @confirmation %></b></span></legend>
+    <legend><span style="color:#008040;font-size:150%"><b>&nbsp;Billing and Shipping<%= ' Summary' if confirmation_mode? %></b></span></legend>
     <table width="100%">
       <tr align="left">
         <th width="33%">
@@ -70,12 +71,12 @@
           <% end %>
           </p>
           <!-- <p>
-            <%#= f.check_box "halouser", :disabled => @confirmation %>
+            <%#= f.check_box "halouser", :disabled => confirmation_mode? %>
             <%#= f.label "halouser", "This person will be the myHalo user" %>
           </p> -->
         </td>
         <td width="33%">
-          <%= f.check_box "bill_address_same", :checked => @same_address, :disabled => @confirmation %>
+          <%= f.check_box "bill_address_same", :checked => @same_address, :disabled => confirmation_mode? %>
           <label for="order_bill_address_same"><%= !logged_in? ? 'Same as Shipping info' : 'Same as Users Home Address' %></label>
           <%= observe_field(:order_bill_address_same,
                             :on => :click,
@@ -89,21 +90,21 @@
       <td style="vertical-align: top;">
         <p>
           <label for="order_ship_first_name">First name</label> <br />
-          <%= f.text_field "ship_first_name", :class => "required validate-alpha", :disabled => @confirmation %> <br /><br/>
+          <%= f.text_field "ship_first_name", :class => "required validate-alpha", :disabled => confirmation_mode? %> <br /><br/>
 		  <label for="order_ship_last_name">Last name</label> <br />	
-          <%= f.text_field "ship_last_name", :class => "required validate-alpha", :disabled => @confirmation %>
+          <%= f.text_field "ship_last_name", :class => "required validate-alpha", :disabled => confirmation_mode? %>
         </p>
         <p>
           <label for="order_ship_address">Address</label><br />
-          <%= f.text_field "ship_address", :class => "required", :disabled => @confirmation %>
+          <%= f.text_field "ship_address", :class => "required", :disabled => confirmation_mode? %>
         </p>
         <p>
           <label for="order_ship_city">City</label><br />
-          <%= f.text_field "ship_city", :class => "required", :disabled => @confirmation %>
+          <%= f.text_field "ship_city", :class => "required", :disabled => confirmation_mode? %>
         </p>
         <p>
           <label for="order_ship_state">State</label><br />
-          <% if @confirmation %>
+          <% if confirmation_mode? %>
             <%= f.text_field "ship_state", :disabled => true %>
           <% else %>
             <%= f.select "ship_state", State::NAMES, :class => "required" %>
@@ -111,37 +112,37 @@
         </p>
         <p>
           <label for="order_ship_zip">Zip</label><br />
-          <%= f.text_field "ship_zip", :class => "required validate-digits", :size => 10, :disabled => @confirmation %>
+          <%= f.text_field "ship_zip", :class => "required validate-digits", :size => 10, :disabled => confirmation_mode? %>
         </p>
         <p>
           <label for="order_ship_phone">Phone</label><br />
-          <%= f.text_field "ship_phone", :class => "required", :disabled => @confirmation %>
+          <%= f.text_field "ship_phone", :class => "required", :disabled => confirmation_mode? %>
         </p>
         <p>
           <label for="order_ship_email">Email</label><br />
-          <%= f.text_field "ship_email", :class => "required validate-email", :disabled => @confirmation %>
+          <%= f.text_field "ship_email", :class => "required validate-email", :disabled => confirmation_mode? %>
         </p>
       </td>
       
       <td style="vertical-align: top;" width="33%">
-        <div id="billing_block" style="margin-left: 5px; display: <%= (@confirmation && @same_address == '') ? 'block' : 'none' %>; margin: 0px; padding: 0px;">
+        <div id="billing_block" style="margin-left: 5px; display: <%= (confirmation_mode? && @same_address == '') ? 'block' : 'none' %>; margin: 0px; padding: 0px;">
           <p>
             <label for="order_bill_first_name">First name</label><br />
-            <%= f.text_field "bill_first_name", :class => "required validate-alpha", :disabled => @confirmation %> <br/> <br/>     
+            <%= f.text_field "bill_first_name", :class => "required validate-alpha", :disabled => confirmation_mode? %> <br/> <br/>     
             <label for="order_bill_last_name">Last name</label><br />
-            <%= f.text_field "bill_last_name", :class => "required validate-alpha", :disabled => @confirmation %>
+            <%= f.text_field "bill_last_name", :class => "required validate-alpha", :disabled => confirmation_mode? %>
           </p>
           <p>
             <label for="order_bill_address">Billing address</label><br />
-            <%= f.text_field "bill_address", :class => "required", :disabled => @confirmation %>
+            <%= f.text_field "bill_address", :class => "required", :disabled => confirmation_mode? %>
           </p>
           <p>
             <label for="order_bill_city">City</label><br />
-            <%= f.text_field "bill_city", :class => "required", :disabled => @confirmation %>
+            <%= f.text_field "bill_city", :class => "required", :disabled => confirmation_mode? %>
           </p>
           <p>
             <label for="order_bill_state">State</label><br />
-            <% if @confirmation %>
+            <% if confirmation_mode? %>
               <%= f.text_field "bill_state", :disabled => true %>
             <% else %>
               <%= f.select "bill_state", State::NAMES, :class => "required" %>
@@ -149,15 +150,15 @@
           </p>
           <p>
             <label for="order_bill_zip">Zip</label><br />
-            <%= f.text_field "bill_zip", :class => "required validate-digits", :size => 10, :disabled => @confirmation %>
+            <%= f.text_field "bill_zip", :class => "required validate-digits", :size => 10, :disabled => confirmation_mode? %>
           </p>
           <p>
             <label for="order_bill_phone">Phone</label><br />
-            <%= f.text_field "bill_phone", :class => "required", :disabled => @confirmation %>
+            <%= f.text_field "bill_phone", :class => "required", :disabled => confirmation_mode? %>
           </p>
           <p>
             <label for="order_bill_email">Email</label><br />
-            <%= f.text_field "bill_email", :class => "required validate-email", :disabled => @confirmation %>
+            <%= f.text_field "bill_email", :class => "required validate-email", :disabled => confirmation_mode? %>
           </p>
         </div>
       </td>
@@ -165,15 +166,15 @@
       <td style="vertical-align: top;">
         <p>
           <label for="order_card_number">Card number</label><br />
-          <%= f.text_field "card_number", :class => "required", :size => 20, :disabled => @confirmation %>
+          <%= f.text_field "card_number", :class => "required", :size => 20, :disabled => confirmation_mode? %>
         </p>
         <p>
           <label for="order_card_expiry">Expiration</label> (Month/Year)<br />
-          <%= f.date_select "card_expiry", :class => "required", :order => [:month, :year], :disabled => @confirmation  %>
+          <%= f.date_select "card_expiry", :class => "required", :order => [:month, :year], :disabled => confirmation_mode?  %>
         </p>
         <p>
           <label for="order_card_type">Card Type</label><br />
-          <% if @confirmation %>
+          <% if confirmation_mode? %>
             <%= f.text_field "card_type", :class => "required", :disabled => true %>
           <% else %>
             <%= f.select "card_type", credit_card_types.to_a %>
@@ -181,13 +182,13 @@
 
         <p>
           CSC / <label for="order_cvv">CVV</label>
-            <%= f.password_field "cvv", :class => "required", :size => 4, :disabled => @confirmation %>
+            <%= f.password_field "cvv", :class => "required", :size => 4, :disabled => confirmation_mode? %>
             <br>
         <span class="tiny">Note: The CSC/CVV (Card Security Code / Card Verification Value) is located on the back of <%= link_to "MasterCard, VISA, or Discover", image_path("CVC2SampleVisaNew.png"), :rel => "facebox" %> cards and is typically a separate group of 3 digits to the right of signature strip. On <%= link_to "American Express", image_path("CIDSampleAmex.png"), :rel => "facebox" %> cards, the CSC/CVV is a 4 digit code on the front towards the right.</span>
         </p>
         <p>
           <label>Comments and special shipping instructions</label><br />
-          <%= f.text_area "comments", :rows => 5, :disabled => @confirmation %>
+          <%= f.text_area "comments", :rows => 5, :disabled => confirmation_mode? %>
         </p>
         <% #= recaptcha_tags %>
       </td>
@@ -199,8 +200,8 @@
     </div>
   </fieldset>
   <p class="textright">
-    <%= link_to "< Back", store_path, :id => "back_link", :class => 'largebutton' if @confirmation %>
-    <%= f.submit "#{@confirmation ? 'Place Order >' : 'Continue >'}", :disable_with => "Please wait...", :class => 'largebutton' %>
+    <%= link_to "< Back", store_path, :id => "back_link", :class => 'largebutton' if confirmation_mode? %>
+    <%= f.submit "#{confirmation_mode? ? 'Place Order >' : 'Continue >'}", :disable_with => "Please wait...", :class => 'largebutton' %>
   </p>
 <% end -%>
 
