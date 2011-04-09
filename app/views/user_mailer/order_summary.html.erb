@@ -7,7 +7,7 @@ Instructions for online activation have been sent in a separate email. Once you 
 
 Halo Monitoring, Inc.
 515 Sparkman Drive
-Huntsville, AL 35816
+Huntsville, AL 35816                                                    
 Phone 888.971.HALO (888-971-4256)
 Fax 866.275.1904
 
@@ -16,10 +16,12 @@ Order date: <%= @order.created_at.to_s(:date_time_timezone) %>
 Group: <%= @order.group_name %>
 
 ORDER ITEMS
-<% @order.order_items.each do |item| %><%= item.product_model %>
+<% @order.order_items.each do |item| %><%= item.description %>
 Quantity:<%= item.quantity %>, Cost:<%= item.formatted_cost(item.quantity) %>
+<% if item.recurring_monthly == true %> 
 <%= item.status %>
-<%= @order.device_model_size %>
+<% end %>  
+<br/>
 <% end -%>
 Card Number <%= @order.masked_card_number %> (exp <%= @order.card_expiry.year %>) has been charged <%= number_to_currency(@order.cost, :precision => 2, :unit => '$') %>
 

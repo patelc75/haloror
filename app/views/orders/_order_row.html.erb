@@ -37,7 +37,7 @@
         <span class="tiny">Products:</span>
         <ul style="margin-bottom: 2px;">
         <% order_row.order_items.each_with_index do |item, index| %>
-          <li><%= item.product_model %> x <%= item.quantity %> = <%= item.formatted_cost(item.quantity) %></li>
+          <li><%= item.description %> x <%= item.quantity %> = <%= item.formatted_cost(item.quantity) %></li>
         <% end -%>
         </ul>
         <span class="tiny">Coupon details: </span>
