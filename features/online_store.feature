@@ -273,12 +273,18 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And upfront charge for last order should include dealer install fee charges
 
   @now
-  Scenario: Apply coupon code without submitting the order
+  Scenario Outline: Apply coupon code without submitting the order
     When I choose "product_complete"
     And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "order_bill_address_same"
     And I fill in "Coupon Code" with "99TRIAL"
-    And I press "Apply"
-    Then I should see "Pick a product"
+    And I press "<button>"
+    Then I should see "<text>"
+    And the "Coupon Code" field should contain "99TRIAL"
+    
+    Examples:
+      | button   | text                     |
+      | Apply    | Pick a product           |
+      | Continue | Please verify your order |

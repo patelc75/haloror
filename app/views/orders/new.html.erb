@@ -1,13 +1,5 @@
 <% unless confirmation_mode? %>
-  <% content_for :js do %>
-    <%= javascript_include_tag "custom/facebox/facebox.js" %>
-    <%= javascript_include_tag "validation.js" %>
-    <%= javascript_include_tag "masked-input.js" %>
-    <%= javascript_include_tag 'shipping_options' %>
-  <% end -%>
-  <% content_for :css do %>
-    <%= stylesheet_link_tag "custom/facebox/facebox.css" %>
-  <% end -%>
+  <% javascript "validation.js", "masked-input.js" %>
 <% end -%>
 
 <p><a href="http://www.halomonitoring.com/products/myhalo-senior-monitoring">Learn more about myHalo</a>

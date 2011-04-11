@@ -24,7 +24,11 @@ class OrdersController < ApplicationController
     @order = Order.new(session[:order]) # recall if any order data was remembered
     @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
     #   * if present, pick the coupon code
-    _coupon_code = (params.has_key?( "order") ? params["order"]["coupon_code"] : nil)
+    _coupon_code = if params.has_key?( "order")
+      params["order"]["coupon_code"]
+    else 
+      params.has_key?('coupon_code') ? params[:coupon_code] : nil
+    end
     #   * default prices will be picked if coupon code is blank
     @complete_tariff = DeviceModel.complete_coupon( @order.group, _coupon_code)
     @clip_tariff = DeviceModel.clip_coupon( @order.group, _coupon_code)

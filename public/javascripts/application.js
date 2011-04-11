@@ -592,10 +592,16 @@ function show_when_dropdown_selected(dropdown)
 }
 
 function showDiv(what) {
-  document.getElementById(what).style.display = "block";
+  if( $( what) != null) {
+    $( what).style.display = "block";
+  }
+  // document.getElementById(what).style.display = "block";
 }
 
 function hideDiv(what) {
-  document.getElementById(what).style.display = "none";
+  if( $( what) != null) {
+    $( what).style.display = "none";
+  }
+  // document.getElementById(what).style.display = "none";
 }
 

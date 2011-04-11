@@ -4,26 +4,153 @@ var shipping_options = new Array();
   shipping_options.push( new Array( <%= _option.id %>, '<%= _option.description %>', <%= _option.price %>));
 <%- end -%>
 
-function updateCost( _element) {
-  // 
-  _cs_deposit     = parseFloat( $('hidden_cs_deposit').value );
-  _cs_install_fee = parseFloat( $('hidden_cs_install_fee').value );
-  _cs_shipping    = shipping_options[parseFloat(_element.value)] // parseFloat( $('hidden_cs_shipping').value );
-  $('cs_shipping_value').innerHTML =  "$" + _cs_shipping
+function couponDeposit() {
+  if( $('product_clip').checked) {
+    if( $('bc_hidden_deposit') != null) {
+      _bc_shipping = parseFloat( $('bc_hidden_deposit').value );
+    }
+  } else {
+    if( $('cs_hidden_deposit') != null) {
+      _cs_shipping = parseFloat( $('cs_hidden_deposit').value );
+    }
+  }
+}
 
-  _bc_deposit     = parseFloat( $('hidden_bc_deposit').value );
-  _bc_install_fee = parseFloat( $('hidden_bc_install_fee').value );
-  _bc_shipping    = parseFloat( $('hidden_bc_shipping').value );
-  $('bc_shipping_value').innerHTML = "$".concat( _bc_shipping, '')
+function couponInstallFee() {
+  if( $('product_clip').checked) {
+    if( $('bc_hidden_install_fee') != null) {
+      _bc_install_fee = parseFloat( $('bc_hidden_install_fee').value );
+    }    
+  } else {
+    if( $('cs_hidden_install_fee') != null) {
+      _cs_install_fee = parseFloat( $('cs_hidden_install_fee').value );
+    }
+  }
+}
+
+function couponShipping() {
+  var _value = 0;
+  if( $('product_clip').checked) {
+    if( $('bc_hidden_shipping') != null) {
+      _value = parseFloat( $('bc_hidden_shipping').value );
+    }
+  } else {
+    if( $('cs_hidden_shipping') != null) {
+      _value = parseFloat( $('cs_hidden_shipping').value );
+    }
+  }
+  return _value;
+}
+
+function dealerInstallFee() {
+  if( $('product_clip').checked) {
+    if( $('order_dealer_install_fee_applies').checked) {
+      $('bc_install_fee_value').show();
+      $('bc_install_fee_title').show();
+    } else {
+      $('bc_install_fee_value').hide();
+      $('bc_install_fee_title').hide();
+    }
+  } else {
+    if( $('order_dealer_install_fee_applies').checked) {
+      $('cs_install_fee_value').show();
+      $('cs_install_fee_title').show();
+    } else {
+      $('cs_install_fee_value').hide();
+      $('cs_install_fee_title').hide();
+    }
+  }
+  updateTotal();
+}
+
+function shippingChoices() {
+  <%- for _option in @shipping_options -%>
+    if( $('product_clip').checked) {
+      if( $('bc_hidden_shipping').value == '') {
+        $('order_shipping_option_id_' + <%= _option.id -%>).enable();
+      } else {
+        $('order_shipping_option_id_' + <%= _option.id -%>).disable();
+      }
+    } else {
+      if( $('cs_hidden_shipping').value == '') {
+        $('order_shipping_option_id_' + <%= _option.id -%>).enable();
+      } else {
+        $('order_shipping_option_id_' + <%= _option.id -%>).disable();
+      }
+    }
+  <%- end -%>
+}
+
+function updateTotal() {
+  // belt clip
+  if( $('product_clip').checked) {
+    _bc_total_deposit  = parseFloat( $('bc_deposit_value').innerHTML.substring(1));
+    _bc_total_shipping = parseFloat( $('bc_shipping_value').innerHTML.substring(1));
+    if( $('bc_install_fee_value').visible()) {
+      if( $('bc_install_fee_value').innerHTML == '') {
+        _bc_total_install_fee = 0;
+      } else {
+        _bc_total_install_fee = parseFloat( $('bc_install_fee_value').innerHTML.substring(1));
+      }
+      $('bc_total_value').innerHTML = ( '$' + (_bc_total_deposit + _bc_total_shipping + _bc_total_install_fee) + '.00');
+    } else {
+      $('bc_total_value').innerHTML = ( '$' + (_bc_total_deposit + _bc_total_shipping) + '.00');
+    }
+    
+  } else {
+    // chest strap
+    _cs_total_deposit  = parseFloat( $('cs_deposit_value').innerHTML.substring(1));
+    _cs_total_shipping = parseFloat( $('cs_shipping_value').innerHTML.substring(1));
+    if( $('cs_install_fee_value').visible()) {
+      if( $('cs_install_fee_value').innerHTML == '') {
+        _cs_total_install_fee = 0;
+      } else {
+        _cs_total_install_fee = parseFloat( $('cs_install_fee_value').innerHTML.substring(1));
+      }
+      $('cs_total_value').innerHTML = ( '$' + (_cs_total_deposit + _cs_total_shipping + _cs_total_install_fee) + '.00');
+    } else {
+      $('cs_total_value').innerHTML = ( '$' + (_cs_total_deposit + _cs_total_shipping) + '.00');
+    }
+  }
+}
+
+function updateCost( _element) {
+  // hide / show radio buttons and checkboxes
+  dealerInstallFee();
+  shippingChoices();
+  
+  // values for loaded coupon code
+  couponDeposit();
+  couponInstallFee();
+  
+  if( $('product_clip').checked) {
+    _bc_shipping = couponShipping();
+    
+    // values from radio buttons
+    if( $('bc_hidden_shipping').value == '') {
+      // get selected element value, if shipping is user opted
+      $('bc_shipping_value').innerHTML = $( _element.id + '_value').innerHTML;
+    } else {
+      // get shipping from coupon code, if shipping is defined there
+      $('bc_shipping_value').innerHTML = ("$" + _bc_shipping + ".00");
+    }
+  } else {
+    _cs_shipping = couponShipping();
+    
+    // values from radio buttons
+    if( $('cs_hidden_shipping').value == '') {
+      // get selected element value, if shipping is user opted
+      $('cs_shipping_value').innerHTML = $( _element.id + '_value').innerHTML;
+    } else {
+      // get shipping from coupon code, if shipping is defined there
+      $('cs_shipping_value').innerHTML = ("$" + _cs_shipping + ".00");
+    }
+  }
+
+  updateTotal();
 }
 
 document.observe('dom:loaded', function() {
   toggleProductDetails();
   updateCost();
-  // <%- for _element in ['product_complete', 'product_clip'] -%>
-  //   $('<%= _element -%>').observe('onclick', updateCost);
-  // <%- end -%>
-  // <%- for _option in @shipping_options -%>
-  //   $('order_shipping_option_id_<%= _option.id -%>').observe('onclick', updateCost);
-  // <%- end -%>
 });

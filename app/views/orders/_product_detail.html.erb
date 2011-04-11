@@ -1,7 +1,6 @@
 <!-- TODO: this can further be DRYed -->
 <%= render :partial => 'shipping_options', :locals => { :f => f} %>
 
-<% debugger %>
 <% if !confirmation_mode? || (@product == "complete") %>
 <div id="halo_complete_box" style="display: block; float:left; margin-top: 20px; width: 100%">
   <% if confirmation_mode? %>
@@ -11,29 +10,43 @@
   <% end %>
   <table width="100%" class="colored">
     <tr><th>Shopping cart items</th><th style="text-align:right;">Price</th></tr>
-    <tr><td>Deposit</td><td style="text-align:right;"><%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.deposit) %></td></tr>
+    <tr><td>Deposit</td>
+      <td style="text-align:right;">
+        <div id="cs_deposit_value"><%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.deposit) %></div>
+      </td>
+    </tr>
     <% unless @complete_tariff.blank? || @complete_tariff.months_advance.to_i.zero? %>
-      <tr class="altrow"><td><%= pluralize(@complete_tariff.months_advance, "month") %> advance (<%= USD_value(@complete_tariff.monthly_recurring) %> x <%= @complete_tariff.months_advance %>)</td><td style="text-align:right;"><%= USD_value(@complete_tariff.advance_charge) %></td></tr>
+      <tr class="altrow">
+        <td><%= pluralize(@complete_tariff.months_advance, "month") %> advance (<%= USD_value(@complete_tariff.monthly_recurring) %> x <%= @complete_tariff.months_advance %>)</td>
+        <td style="text-align:right;"><%= USD_value(@complete_tariff.advance_charge) %></td>
+      </tr>
     <% end -%>
     <% unless @complete_tariff.blank? || @complete_tariff.months_trial.to_i.zero? %>
-      <tr class="altrow red"><td><%= pluralize(@complete_tariff.months_trial, "month") %> trial (Free <%= USD_value(@complete_tariff.monthly_recurring) %> x <%= @complete_tariff.months_trial %>)</td><td style="text-align:right;"><%= USD_value(0) %></td></tr>
+      <tr class="altrow red">
+        <td><%= pluralize(@complete_tariff.months_trial, "month") %> trial (Free <%= USD_value(@complete_tariff.monthly_recurring) %> x <%= @complete_tariff.months_trial %>)</td>
+        <td style="text-align:right;"><%= USD_value(0) %></td>
+      </tr>
     <% end -%>
-    <tr><td>Shipping</td><td style="text-align:right;"><div id="cs_shipping_value"><%= selected_shipping_option( @complete_tariff) %></div></td></tr>
-    <% if @order.dealer_install_fee_applies %>
-      <tr><td>Dealer Install Fee</td><td style="text-align:right;">
-        <div id="cs_install_fee_value">
-          <%= @complete_tariff.blank? ? '?' : USD_value( @complete_tariff.dealer_install_fee) %>
-        </div>
-      </td></tr>
-    <% end %>
+    <tr>
+      <td>Shipping</td>
+      <td style="text-align:right;"><div id="cs_shipping_value"><%= selected_shipping_option( @complete_tariff) %></div></td>
+    </tr>
+    <tr>
+      <td>
+        <div id="cs_install_fee_title">Dealer Install Fee</div>
+      </td>
+      <td style="text-align:right;">
+        <div id="cs_install_fee_value"><%= @complete_tariff.blank? ? '?' : USD_value( @complete_tariff.dealer_install_fee) %></div>
+      </td>
+    </tr>
     <tr class="altrow"><td style="text-align:right;">Total*</td><td style="text-align:right;">
       <% if confirmation_mode? %>
       <%= f.hidden_field "cost", :disabled => true %>
       <% end -%>
       <div>
-        <%= hidden_field_tag 'hidden_cs_deposit', @complete_tariff.deposit || 0 %>
-        <%= hidden_field_tag 'hidden_cs_shipping', @complete_tariff.shipping || 0 %>
-        <%= hidden_field_tag 'hidden_cs_install_fee', @complete_tariff.dealer_install_fee || 0 %>
+        <%= hidden_field_tag 'cs_hidden_deposit', @complete_tariff.deposit %>
+        <%= hidden_field_tag 'cs_hidden_shipping', @complete_tariff.shipping %>
+        <%= hidden_field_tag 'cs_hidden_install_fee', @complete_tariff.dealer_install_fee %>
       </div>
       <strong><div id="cs_total_value"><%= selected_total_cost( @complete_tariff, @order) %></div></strong>
     </td></tr>
@@ -50,29 +63,38 @@
 <div id="halo_clip_box" style="display: <%= confirmation_mode? ? 'block' : 'none' %>; float:left; margin-top: 20px; width: 100%">
   <table width="100%" class="colored">
     <tr><th>Shopping cart items</th><th style="text-align:right;">Price</th></tr>
-    <tr><td>Deposit</td><td style="text-align:right;"><%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.deposit) %></td></tr>
+    <tr>
+      <td>Deposit</td>
+      <td style="text-align:right;">
+        <div id="bc_deposit_value"><%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.deposit) %></div>
+      </td>
+    </tr>
     <% unless @clip_tariff.blank? || @clip_tariff.months_advance.to_i.zero? %>
       <tr class="altrow"><td><%= @clip_tariff.blank? ? '?' : pluralize(@clip_tariff.months_advance, "month") %> advance (<%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %> x <%= @clip_tariff.blank? ? '?' : @clip_tariff.months_advance %>)</td><td style="text-align:right;"><%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.advance_charge) %></td></tr>
     <% end -%>
     <% unless @clip_tariff.blank? || @clip_tariff.months_trial.to_i.zero? %>
       <tr class="altrow red"><td><%= @clip_tariff.blank? ? '?' : pluralize(@clip_tariff.months_trial, "month") %> trial (Free <%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %> x <%= @clip_tariff.blank? ? '?' : @clip_tariff.months_trial %>)</td><td style="text-align:right;"><%= USD_value(0) %></td></tr>
     <% end -%>
-    <tr><td>Shipping</td><td style="text-align:right;"><div id="bc_shipping_value"><%= selected_shipping_option( @clip_tariff) %></div></td></tr>
-    <% if @order.dealer_install_fee_applies %>
-      <tr><td>Dealer Install Fee</td><td style="text-align:right;">
-        <div id="bc_install_fee_value">
-          <%= @clip_tariff.blank? ? '?' : USD_value( @clip_tariff.dealer_install_fee) %>
-        </div>
-      </td></tr>
-    <% end %>
+    <tr>
+      <td>Shipping</td>
+      <td style="text-align:right;">
+        <div id="bc_shipping_value"><%= selected_shipping_option( @clip_tariff) %></div>
+      </td>
+    </tr>
+    <tr>
+      <td><div id="bc_install_fee_title">Dealer Install Fee</div></td>
+      <td style="text-align:right;">
+        <div id="bc_install_fee_value"><%= @clip_tariff.blank? ? '?' : USD_value( @clip_tariff.dealer_install_fee) %></div>
+      </td>
+    </tr>
     <tr class="altrow"><td style="text-align:right;">Total*</td><td style="text-align:right;">
       <% if confirmation_mode? %>
         <%= f.hidden_field "cost", :disabled => true %>
       <% end -%>
       <div>
-        <%= hidden_field_tag 'hidden_bc_deposit', @clip_tariff.deposit %>
-        <%= hidden_field_tag 'hidden_bc_shipping', @clip_tariff.shipping %>
-        <%= hidden_field_tag 'hidden_bc_install_fee', @clip_tariff.dealer_install_fee %>
+        <%= hidden_field_tag 'bc_hidden_deposit', @clip_tariff.deposit %>
+        <%= hidden_field_tag 'bc_hidden_shipping', @clip_tariff.shipping %>
+        <%= hidden_field_tag 'bc_hidden_install_fee', @clip_tariff.dealer_install_fee %>
       </div>
       <strong><div id="bc_total_value"><%= selected_total_cost( @clip_tariff, @order) %></div></strong>
     </td></tr>
