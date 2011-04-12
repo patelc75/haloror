@@ -25,7 +25,10 @@
     <table id="product_detail_box" width="100%">
       <tr>
         <td width="50%"><%= render :partial => 'product_listing', :locals => {:f => f} %></td>
-        <td><%= render :partial => 'product_detail', :locals => {:f => f} %></td>
+        <td>
+          <%= render :partial => 'product_detail', :locals => {:f => f} %>
+          <%= f.hidden_field :coupon_code, :id => 'hidden_coupon_code' %>
+        </td>
       </tr>
     </table>
   </fieldset>

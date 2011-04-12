@@ -718,10 +718,10 @@ class User < ActiveRecord::Base
       _hash = { :installed_date => installed_at, :cancelled_date => cancelled_at }
       #   * some values from user intake
       if ( _ui = self.user_intakes.first )
-        # 
-        #  Fri Feb 11 22:27:44 IST 2011, ramonrails
-        #   * https://redmine.corp.halomonitor.com/issues/4185
-        if _ui.order_successful? && _ui.subscription_successful? # update --only-- when order is successful
+        # # 
+        # #  Fri Feb 11 22:27:44 IST 2011, ramonrails
+        # #   * https://redmine.corp.halomonitor.com/issues/4185
+        # if _ui.order_successful? && _ui.subscription_successful? # update --only-- when order is successful
           _hash[ :prorate_start_date]   = _ui.pro_rata_start_date
           _hash[ :recurring_start_date] = _ui.subscription_start_date
           #   * some values from order
@@ -765,7 +765,7 @@ class User < ActiveRecord::Base
             #   * update attributes only when we have some values to update
             self.invoice.update_attributes( _hash) unless _hash.blank?
           end
-        end # update --only-- when order is successful
+        # end # update --only-- when order is successful
       end # ui required to create invoice
 
     end

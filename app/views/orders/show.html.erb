@@ -17,6 +17,9 @@
     <%= hash_to_html( _response.attributes) %>
   <% end %>
   
+  <h3>User Intake</h3>
+  <%= hash_to_html( @order.user_intake.attributes) %>
+  
 <% else %>
   <p>Please contact 1-866-546-2540 for assistance</p>
 <% end %>

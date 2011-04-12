@@ -1,7 +1,7 @@
 <% form_for :order, :action => 'new' do |f| %>
   <div id="coupon_code" class="textright">
     <%= f.label :coupon_code, "Coupon Code" %> <span class="tiny">(if any)</span>
-    <%= f.text_field :coupon_code, :style => "width: 150px" %>
+    <%= f.text_field :coupon_code, :style => "width: 150px", :onchange => "$('hidden_coupon_code').value = this.value;" %>
     <span class="tiny">Example: WINTER</span>
     
     <%= f.submit "Apply", :disable_with => 'Applying...', :class => 'button green-button small' %>

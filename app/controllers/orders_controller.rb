@@ -24,10 +24,15 @@ class OrdersController < ApplicationController
     @order = Order.new(session[:order]) # recall if any order data was remembered
     @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
     #   * if present, pick the coupon code
-    _coupon_code = if params.has_key?( "order")
-      params["order"]["coupon_code"]
-    else 
-      params.has_key?('coupon_code') ? params[:coupon_code] : nil
+    # 
+    #  Wed Apr 13 01:42:05 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4318
+    #   * coupon_code is now in separate form on the page
+    #   * so, pick coupon_code only when specified, else assume it to be in @order
+    if (params.has_key?( "order") && params["order"].has_key?( "coupon_code"))
+      _coupon_code = params["order"]["coupon_code"]
+    elsif params.has_key?('coupon_code')
+      _coupon_code = params['coupon_code']
     end
     #   * default prices will be picked if coupon code is blank
     @complete_tariff = DeviceModel.complete_coupon( @order.group, _coupon_code)
@@ -94,6 +99,7 @@ class OrdersController < ApplicationController
       @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
       @same_address = @order.subscribed_for_self?
       # @same_address = (session[:order].blank? ? "checked" : (session[:order][:bill_address_same] || @order.bill_address_same || @order.ship_and_bill_address_same))
+      session[:order] = @order.attributes
     end
     # 
     #  Fri Apr  8 02:07:19 IST 2011, ramonrails
