@@ -16,7 +16,7 @@
         <% end %>
       
       <% else %>
-        <ul id="shipping_choices" class="no-style">
+        <ul id="shipping_choices" class="no-style" style="padding-left: 0px;">
           <% for _option in ShippingOption.ordered( "price ASC") %>
           <li>
             <%= radio_button_tag 'order[shipping_option_id]', "#{_option.id}", ( !@shipping_option_id.blank? && (_option.id == @shipping_option_id)), :onclick => "updateCost( this);" %>
@@ -28,15 +28,7 @@
     </td>
 
     <td>
-      <div id="coupon_code">
-        <%= f.label :coupon_code, "Coupon Code" %> <span class="tiny">(if any)</span>
-        <%= f.text_field :coupon_code, :style => "width: 150px" %>
-        <br />
-        <span class="tiny">Example: WINTER</span>
-        <%= f.submit "Apply", :disable_with => 'Applying...', :class => 'button green-button small' %>
-      </div>
-      <br />
-      <div>
+      <div class="span-4">
         <% unless current_user == :false %>
         <% if current_user.is_admin? || current_user.is_super_admin? %>
           <%= f.check_box :dealer_install_fee_applies, :disabled => confirmation_mode?, :onchange => 'dealerInstallFee(); updateTotal();' %>

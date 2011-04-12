@@ -33,7 +33,6 @@ class OrdersController < ApplicationController
     @complete_tariff = DeviceModel.complete_coupon( @order.group, _coupon_code)
     @clip_tariff = DeviceModel.clip_coupon( @order.group, _coupon_code)
     
-    debugger
     if request.post? && !['Apply', 'Applying...'].include?(params[:commit])
       @shipping_option_id = session[:shipping_option_id] = params[:order][:shipping_option_id]
       @product = params[:product]

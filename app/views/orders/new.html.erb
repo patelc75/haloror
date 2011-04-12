@@ -7,7 +7,6 @@
   | <a href="/orders">Online Store Orders table</a>
 <% end %></p>
 <% if confirmation_mode? %>
-  <% debugger %>
   <h1>Please verify your order</h1>
 <% end %>
 
@@ -16,6 +15,8 @@
     <%= error_messages_for :order %>
   </div>
 <% end -%>
+
+<%= render :partial => 'order_coupon_code' %>
 
 <% form_for @order, :url => {:action => (confirmation_mode? ? "create" : "new")}, :html => {:id => 'form1', :class => "#{confirmation_mode? ? 'confirm-form' : 'form'}"} do |f| %>
  	<fieldset style="border: 2px solid ; padding: 10px;">    
