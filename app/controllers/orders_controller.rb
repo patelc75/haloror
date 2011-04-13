@@ -17,7 +17,7 @@ class OrdersController < ApplicationController
     # Tue Nov  2 04:24:51 IST 2010
     #   https://redmine.corp.halomonitor.com/issues/3653#note-7
     @groups = (logged_in? ? Group.for_user(current_user) : [Group.direct_to_consumer])
-    @confirmation = nil
+    @_confirmation = nil
     @shipping_options = ShippingOption.ordered( 'price ASC')
     @shipping_option_id = session[:shipping_option_id]
     @product = session[:product]
@@ -38,7 +38,8 @@ class OrdersController < ApplicationController
     @complete_tariff = DeviceModel.complete_coupon( @order.group, _coupon_code)
     @clip_tariff = DeviceModel.clip_coupon( @order.group, _coupon_code)
     
-    if request.post? && !['Apply', 'Applying...'].include?(params[:commit])
+    if request.post? # !['Apply', 'Applying...'].include?(params[:commit])
+      # if ( params["commit"] != 'Apply') #  && params.has_key?( "order")
       @shipping_option_id = session[:shipping_option_id] = params[:order][:shipping_option_id]
       @product = params[:product]
       order_params = params[:order] # we need to remember these
@@ -84,13 +85,14 @@ class OrdersController < ApplicationController
       # get to confirmation mode only when no validation errors
       # validations must pass before confirmation page
       # https://redmine.corp.halomonitor.com/issues/2718
-      @confirmation = (@order.errors.count.zero? && !@product.blank? && !session[:order].blank?)
+      @_confirmation = (@order.errors.count.zero? && !@product.blank? && !@order.blank?) # !session[:order].blank?)
       #
       # https://redmine.corp.halomonitor.com/issues/2764
       complete_temp = DeviceModel.complete_coupon(@order.group, @order.coupon_code)
       clip_temp = DeviceModel.clip_coupon(@order.group, @order.coupon_code)
       @complete_tariff = complete_temp unless complete_temp.blank?
       @clip_tariff = clip_temp unless clip_temp.blank?
+    # end
       
     else # store mode
       # back button needs this
@@ -101,26 +103,30 @@ class OrdersController < ApplicationController
       # @same_address = (session[:order].blank? ? "checked" : (session[:order][:bill_address_same] || @order.bill_address_same || @order.ship_and_bill_address_same))
       session[:order] = @order.attributes
     end
-    # 
-    #  Fri Apr  8 02:07:19 IST 2011, ramonrails
-    #   * CHANGED: business logic relies on BLANK value. made it work with BLANK/FALSE
-    if params[:commit] == 'Apply'
-      @order.skip_validation = true
-      @confirmation = nil
-    end
-    @shipping_option = ShippingOption.find( @shipping_option_id) unless (@shipping_option_id.blank? || @shipping_option_id.to_i == 0)
+    # # 
+    # #  Fri Apr  8 02:07:19 IST 2011, ramonrails
+    # #   * CHANGED: business logic relies on BLANK value. made it work with BLANK/FALSE
+    # if params["commit"] == "Apply"
+    #   # @order.skip_validation = true
+    #   @_confirmation = nil
+    #   @order.errors.add_to_base( "Coupon code values loaded as applicable")
+    # end
 
-    # Fri Oct 29 05:34:34 IST 2010
-    # WARNING: switched off for sometime. migraton must be run on servers
-    # # Thu Oct 28 07:03:01 IST 2010
-    # #   if we do not have default coupon codes, we need to migrate the database
-    # #   without these, the online store might crash
-    # if Group.has_default_coupon_codes?
-      #
-      # usually, this block executes
-      respond_to do |format|
-        format.html # new.html.erb
-      end
+    unless @shipping_option_id.blank? || (@shipping_option_id.to_i == 0)
+      @shipping_option = ShippingOption.find( @shipping_option_id)
+    end
+
+    # # Fri Oct 29 05:34:34 IST 2010
+    # # WARNING: switched off for sometime. migraton must be run on servers
+    # # # Thu Oct 28 07:03:01 IST 2010
+    # # #   if we do not have default coupon codes, we need to migrate the database
+    # # #   without these, the online store might crash
+    # # if Group.has_default_coupon_codes?
+    #   #
+    #   # usually, this block executes
+    #   respond_to do |format|
+    #     format.html # new.html.erb
+    #   end
     # else
     #   # Thu Oct 28 07:04:47 IST 2010
     #   #   we should never reach here, but if we did;
