@@ -22,6 +22,8 @@ class Order < ActiveRecord::Base
   before_update :check_kit_serial_validation
 
   validates_presence_of :group, :unless => :skip_validation?
+  validates_presence_of :device_model_size, :if => :size_applies_to_ordered_product?
+  validates_presence_of :shipping_option, :if => :shipping_option_applies?
   
   named_scope :ordered, lambda { |*args| { :order => (args.blank? ? 'created_at DESC' : args.flatten.first.to_s) } }
   
@@ -113,6 +115,21 @@ class Order < ActiveRecord::Base
   # = public : instance methods =
   # =============================
 
+  # 
+  #  Thu Apr 14 03:11:48 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4318
+  def size_applies_to_ordered_product?
+    #   * product gets loaded as 'complete' or 'clip' during initialization
+    self.product == 'complete'
+  end
+
+  # 
+  #  Thu Apr 14 03:34:00 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4318
+  def shipping_option_applies?
+    product_cost.shipping.blank?
+  end
+  
   # 
   #  Mon Mar  7 23:07:53 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4248
