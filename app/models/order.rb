@@ -253,7 +253,7 @@ class Order < ActiveRecord::Base
   def create_order_items
     device_model = product_from_catalog
     _cost = product_cost
-    # create a recurring order item
+    #   * recurring order item
     if order_items.create({
         :cost              => _cost.monthly_recurring,
         :quantity          => 1,
@@ -264,7 +264,9 @@ class Order < ActiveRecord::Base
       # 
       #  Thu Mar 17 01:00:16 IST 2011, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/3923
-      # create order item for each product charge
+      #   * create order item for each product charge
+      #   * shipping is special here. when blank? it will not create a row
+      #   * the code block below will create the shipping from shipping_options then
       ['deposit', 'shipping', 'advance_charge', 'dealer_install_fee'].each do |_col|
         _description = _col.gsub(/_/,' ').capitalize
         _amount      = _cost.send( _col.to_sym)
@@ -280,6 +282,16 @@ class Order < ActiveRecord::Base
           end
         end
       end
+      #   * shipping is special. when blank, pick shipping option instead of its direct value
+      if _cost.shipping.blank?
+        order_items.create({
+            :cost              => shipping_option.price,
+            :quantity          => 1,
+            :device_model_id   => device_model.id,
+            :description       => shipping_option.description
+          })
+      end
+      #   * product size as separate row
       if load_product_type == 'complete'
         order_items.create({
             :device_model_id => device_model.id,
