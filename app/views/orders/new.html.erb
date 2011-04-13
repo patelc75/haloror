@@ -16,7 +16,7 @@
   </div>
 <% end -%>
 
-<%= render :partial => 'order_coupon_code' %>
+<!-- <%# render :partial => 'order_coupon_code' %> -->
 
 <% form_for @order, :url => {:action => (confirmation_mode? ? "create" : "new")}, :html => {:id => 'form1', :class => "#{confirmation_mode? ? 'confirm-form' : 'form'}"} do |f| %>
  	<fieldset style="border: 2px solid ; padding: 10px;">    
@@ -27,7 +27,7 @@
         <td width="50%"><%= render :partial => 'product_listing', :locals => {:f => f} %></td>
         <td>
           <%= render :partial => 'product_detail', :locals => {:f => f} %>
-          <%= f.hidden_field :coupon_code, :id => 'hidden_coupon_code' %>
+          <!-- <%# f.hidden_field :coupon_code, :id => 'hidden_coupon_code' %> -->
         </td>
       </tr>
     </table>
@@ -197,7 +197,7 @@
   </fieldset>
   <p class="textright">
     <%= link_to "< Back", store_path, :id => "back_link", :class => 'largebutton' if confirmation_mode? %>
-    <%= f.submit "#{confirmation_mode? ? 'Place Order >' : 'Continue >'}", :disable_with => "Please wait...", :class => 'largebutton' %>
+    <%= f.submit "#{confirmation_mode? ? 'Place Order >' : 'Continue >'}", :disable_with => "Please wait...", :class => 'largebutton', :id => "submit_button" %>
   </p>
 <% end -%>
 

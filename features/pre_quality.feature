@@ -511,12 +511,12 @@ Feature: Pre quality
     And I press "Submit"
     Then page content should have "successfully created"
     And last user intake should have a senior profile
-    And the last senior should not have an invoice
+    And the last senior should have an invoice
     And user intake "last" should have "Ready for Approval" status
     When I edit the last user intake
     And I press "Approve"
     Then page content should have "successfully updated"
-    And the last senior should not have an invoice
+    And the last senior should have an invoice
     And user intake "last" should have "Ready to Install" status
     When panic button test data is received for user intake "last"
     Then user intake "last" should have "Installed" status
@@ -524,7 +524,7 @@ Feature: Pre quality
     #   * https://redmine.corp.halomonitor.com/issues/4111#note-8
     When panic button test data is received for user intake "last"
     Then last user intake retains its existing panic timestamp
-    And the last senior should not have an invoice
+    And the last senior should have an invoice
 
   Scenario: Online Order > User Intake > Submit > Approve > Panic > Ready to Bill > Bill > Installed
     Given the product catalog exists
@@ -539,17 +539,17 @@ Feature: Pre quality
     When I edit the last user intake
     And I press "Submit"
     Then page content should have "successfully updated"
-    And the last user intake does not have any invoice
+    And the last senior should have an invoice
     #   * approve
     When I edit the last user intake
     And I press "Approve"
     Then page content should have "successfully updated"
     And user intake "last" should have "Ready to Install" status
-    And the last user intake does not have any invoice
+    And the last senior should have an invoice
     #   * panic
     When panic button test data is received for user intake "last"
     Then user intake "last" should have "Ready to Bill" status
-    And the last user intake does not have any invoice
+    And the last senior should have an invoice
     #   * bill
     When I edit the last user intake
     And I press "Bill"

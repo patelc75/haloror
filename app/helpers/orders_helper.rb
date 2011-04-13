@@ -47,6 +47,6 @@ module OrdersHelper
   end
 
   def confirmation_mode?
-    @confirmation == true rescue false
+    !@_confirmation.nil? && (@_confirmation == true) # rescue false
   end
 end

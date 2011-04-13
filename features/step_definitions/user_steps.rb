@@ -489,10 +489,14 @@ Then /^user "([^\"]*)" should have attribute "([^\"]*)"$/ do |login, attribute|
   user.attributes.keys.should include( attribute)
 end
 
-Then /^the last senior should not have an invoice$/ do
+Then /^the last senior (should|should not) have an invoice$/ do |_state|
   (_ui = UserIntake.last).should_not be_blank
   (_senior = _ui.senior).should_not be_blank
-  _senior.invoice.should be_blank
+  if _state == 'should'
+    _senior.invoice.should_not be_blank
+  else
+    _senior.invoice.should be_blank
+  end
 end
 
 # ===================================
