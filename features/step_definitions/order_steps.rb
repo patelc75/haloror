@@ -24,11 +24,16 @@ Then /^last order should have coupon code values copied$/ do
     :device_model_id      => :device_model_id,
     :cc_expiry_date       => :expiry_date,
     :cc_deposit           => :deposit,
-    :cc_shipping          => :shipping,
     :cc_monthly_recurring => :monthly_recurring,
     :cc_months_advance    => :months_advance,
     :cc_months_trial      => :months_trial
   }.each { |k, v| _order.send( k).should == _coupon.send( v) }
+  #   * shipping is special case
+  if _coupon.shipping.blank?
+    _order.cc_shipping.should == _order.shipping_option.price
+  else
+    _order.cc_shipping.should == _coupon.shipping
+  end
 end
 
 Then /^shipping values get copied from (.+) for last order$/ do |_where, |
