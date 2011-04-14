@@ -302,6 +302,11 @@ class OrdersController < ApplicationController
           goto = "new"
         end # save
       end # session[:order]
+      # 
+      #  Thu Apr 14 03:18:00 IST 2011, ramonrails
+      #   * 
+      @complete_tariff = DeviceModel.complete_coupon( @order.group, @order.coupon_code)
+      @clip_tariff = DeviceModel.clip_coupon( @order.group, @order.coupon_code)
       
       respond_to do |format|
         format.html { render :action => goto }
