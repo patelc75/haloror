@@ -3,10 +3,10 @@
 # Given /^no coupon codes exist$/ do
 #   DeviceModelPrice.delete_all
 # end
-Given /^"([^"]*)" coupon_code for "([^"]*)" group has (.+) shipping$/ do |_coupon_code, _group_name, _shipping|
+Given /^"([^"]*)" coupon_code for "([^"]*)" group has "([^"]*)" shipping$/ do |_coupon_code, _group_name, _shipping|
   (_group = Group.find_by_name(_group_name)).should_not be_blank
   (_coupon = DeviceModelPrice.first( :conditions => { :coupon_code => _coupon_code, :group_id => _group.id} )).should_not be_blank
-  _coupon.update_attribute( :shipping, _shipping.to_i).should be_true
+  _coupon.update_attribute( :shipping, (_shipping.blank? ? nil : _shipping.to_i)).should be_true
 end
 
 # =========

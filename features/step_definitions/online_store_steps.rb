@@ -74,6 +74,7 @@ end
 When /^I am placing an online order for "([^\"]*)" group$/ do |_name|
   When %{I switch "#{_name}" group for online store}
   When %{I choose "product_complete"}
+  When %{I choose "S_22_28_inches"}
   When %{I fill the shipping details for online store}
   When %{I fill the billing details for online store}
   When %{I fill the credit card details for online store}

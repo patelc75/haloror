@@ -251,7 +251,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
       | UPS Overnight shipping | 60    |
       | UPS 2 day shipping     | 28    |
       | UPS Ground Shipping    | 16    |
-    And "default" coupon_code for "direct_to_consumer" group has <_ship> shipping
+    And "default" coupon_code for "direct_to_consumer" group has "<_ship>" shipping
     When I go to the online store
     And I choose "product_complete"
     And I choose "S_22_28_inches"
@@ -260,7 +260,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I check "order_bill_address_same"
     And I choose "UPS 2 day shipping"
     And I press "Continue"
-    Then page content should have "UPS 2 day shipping"
+    Then page content should have "<_applicable_shipping>"
     When I press "Place Order"
     Then page content should have "Thank you for your order"
     And the payment gateway response should have 1 log
@@ -268,9 +268,9 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And shipping values get copied from <_where> for last order
     
     Examples:
-      | _ship | _where          |
-      | 0     | shipping option |
-      | 9     | coupon code     |
+      | _ship | _where          | _applicable_shipping     |
+      |       | shipping option | UPS 2 day shipping       |
+      | 9     | coupon code     | applies from coupon code |
 
   Scenario: Separate order items for every charge
     When I go to the online store

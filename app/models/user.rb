@@ -799,6 +799,49 @@ class User < ActiveRecord::Base
   end
 
   # 
+  #  Thu Apr 14 22:07:18 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4318
+  #   * shifted from user_admin_controller > assign_role
+  #   * TODO: this should ideally go to a Role observer
+  def add_role( _role, _object = nil)
+    unless _role.blank?
+      #   * assign role
+      self.has_role _role, _object
+      #   * check and update group in intake + order, as appropriate
+      if (_role == 'halouser') && !_object.blank? && _object.is_a?( Group) # if halouser role assigned, change user_intakes as well
+        #   * Symptom: user intake disappeared when group changed for halouser
+        #   * WARNING: Multiple user intakes is possible? Very risky business logic here
+        # 
+        #  Tue Feb  8 02:40:03 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4119#note-17
+        #   * update associated user intake with no group assigned yet
+        #  Thu Feb 10 01:50:51 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4119#note-25
+        #   * config > roles can change status of senior.is_halouser_of?( self.group)
+        #   * changing the role of "sole" halouser to a different group will also change the group of user intake
+        #   * adding additional halousers to the group will not change the group of user intake
+        #   * in other words, a user intake will not auto-change the group as long as a user from user_intake.users has a halouser role for that group
+        # 
+        #  Thu Feb 10 02:31:26 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4119#note-29
+        user_intakes.select {|e| e.halouser.blank? }.each do |ui| # pick user intakes orphaned of halouser
+          ui.group = _object # assign halouser's group
+          ui.send( :update_without_callbacks)
+          # 
+          #  Mon Feb 21 22:39:14 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4226#note-5
+          #   * update the order to show the same group as user intake
+          #   * update only when an order is associated. user intakes can also be created without an order
+          if (_order = ui.order)
+            _order.group = ui.group
+            _order.send( :update_without_callbacks)
+          end
+        end
+      end
+    end
+  end
+
+  # 
   #  Wed Jan 26 23:36:14 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4088
   #   * include group name for halouser, admin roles
@@ -819,6 +862,23 @@ class User < ActiveRecord::Base
     _role
   end
 
+  # returns the users main role
+  # as determined by the role with the greatest permissions
+  def main_role
+    if self.is_super_admin?
+      return 'super_admin'
+    elsif self.is_admin?
+      return 'admin'
+    elsif self.is_operator?
+      return 'operator'
+    elsif self.is_halouser?
+      return 'halouser'
+    elsif self.is_caregiver?
+      return 'caregiver'
+    end
+    return ''
+  end
+  
   # 
   #  Wed Jan 26 22:49:44 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4088
@@ -3232,23 +3292,6 @@ class User < ActiveRecord::Base
   # returns the instance variable @is_caregiver
   def is_new_caregiver
     return @is_caregiver
-  end
-  
-  # returns the users main role
-  # as determined by the role with the greatest permissions
-  def main_role
-    if self.is_super_admin?
-      return 'super_admin'
-    elsif self.is_admin?
-      return 'admin'
-    elsif self.is_operator?
-      return 'operator'
-    elsif self.is_halouser?
-      return 'halouser'
-    elsif self.is_caregiver?
-      return 'caregiver'
-    end
-    return ''
   end
   
   # we need this method because we do not want to get "make_activation_code" public

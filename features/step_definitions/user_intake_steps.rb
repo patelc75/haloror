@@ -517,7 +517,8 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
       _count = /^(\d+) (.+)$/.match( what)[1].to_i # match the data pattern and extract as argument 1, 2
       ui.users.length.should == _count
     else
-      assert false, 'add this condition'
+      pending
+      # assert false, 'implement this condition'
     end
 
     #  SHOULD NOT cases
@@ -538,7 +539,8 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
     when "credit card value"
       ui.credit_debit_card_proceessed.should be_false
     else
-      assert false, 'add this condition'
+      pending
+      # assert false, 'add this condition'
     end
   end
 end
@@ -819,6 +821,12 @@ Then /^panic warning email (should|should not) be dispatched$/ do |_condition|
   else
     _count.should == 0
   end
+end
+
+Then /^last user intake group should be "([^"]*)"$/ do |_group_name|
+  (_ui = UserIntake.last).should_not be_blank
+  _ui.group.should_not be_blank
+  _ui.group.name.should == _group_name
 end
 
 # ============================

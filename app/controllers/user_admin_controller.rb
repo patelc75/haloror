@@ -175,42 +175,20 @@ class UserAdminController < ApplicationController
     #   * https://redmine.corp.halomonitor.com/issues/4119
     unless user_id.blank?
       _user = User.find(user_id) # fetch user for use later in this script
-      unless _user.blank? || group_name.blank? # check if user was found
-        _group = Group.find_by_name(group_name) # fetch group for buffer
-        _user.has_role role_name, _group
-        if (role_name == 'halouser') && !_group.blank? # if halouser role assigned, change user_intakes as well
-          #   * Symptom: user intake disappeared when group changed for halouser
-          #   * WARNING: Multiple user intakes is possible? Very risky business logic here
-          # 
-          #  Tue Feb  8 02:40:03 IST 2011, ramonrails
-          #   * https://redmine.corp.halomonitor.com/issues/4119#note-17
-          #   * update associated user intake with no group assigned yet
-          #  Thu Feb 10 01:50:51 IST 2011, ramonrails
-          #   * https://redmine.corp.halomonitor.com/issues/4119#note-25
-          #   * config > roles can change status of senior.is_halouser_of?( self.group)
-          #   * changing the role of "sole" halouser to a different group will also change the group of user intake
-          #   * adding additional halousers to the group will not change the group of user intake
-          #   * in other words, a user intake will not auto-change the group as long as a user from user_intake.users has a halouser role for that group
-          # 
-          #  Thu Feb 10 02:31:26 IST 2011, ramonrails
-          #   * https://redmine.corp.halomonitor.com/issues/4119#note-29
-          _user.user_intakes.select {|e| e.halouser.blank? }.each do |ui| # pick user intakes orphaned of halouser
-            ui.group = _group # assign halouser's group
-            ui.send( :update_without_callbacks)
-            # 
-            #  Mon Feb 21 22:39:14 IST 2011, ramonrails
-            #   * https://redmine.corp.halomonitor.com/issues/4226#note-5
-            #   * update the order to show the same group as user intake
-            #   * update only when an order is associated. user intakes can also be created without an order
-            if (_order = ui.order)
-              _order.group = ui.group
-              _order.send( :update_without_callbacks)
-            end
-          end
-        end
-      else
-        _user.has_role role_name
+      # 
+      #  Thu Apr 14 23:12:33 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4318
+      #   * shifted to user class for better OOPS
+      unless _user.blank?
+        _group = ( group_name.blank? ? nil : Group.find_by_name( group_name))
+        _user.add_role( role_name, _group) # nil is also handled here
       end
+      # unless _user.blank? || group_name.blank? # check if user was found
+      #   _group = Group.find_by_name(group_name) # fetch group for buffer
+      #   _user.add_role( role_name, _group)
+      # else
+      #   _user.has_role role_name
+      # end
       
       @success = true
       @message = "Role/Group Assigned"
