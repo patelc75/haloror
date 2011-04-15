@@ -75,6 +75,6 @@ Feature: Config roles and groups
     And I create admin of "reseller" group
     And I place an online order for "reseller" group
     And I switch senior of last order to become "halouser" of "newgroup"
-    Then last user intake should have group "newgroup"
-    And last order should have group "newgroup"
+    Then last user intake group should be "newgroup"
+    And last order group should be "newgroup"
     

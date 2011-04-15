@@ -36,6 +36,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Not same as shipping has separate shipping and billing data
     When I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the billing details for online store
     And I fill the credit card details for online store
@@ -52,6 +53,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario Outline: Success and Failure for credit cards
     When I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the billing details for online store
     And I fill in "<cvv>" for "CVV"
@@ -98,6 +100,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
 
   Scenario: Invalid card should log one payment gateway failure
     When I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I fill in "order_card_number" with "1234567890123456"
@@ -111,6 +114,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Valid card, invalid data should have 2 log entries
     When I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I fill in "order_ship_first_name" with "123"
@@ -123,6 +127,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Upfront (one time) and recurring amounts
     When I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "order_bill_address_same"
@@ -135,6 +140,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Signup Installation and Order Summary emails delivery
     When I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "order_bill_address_same"
@@ -146,6 +152,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
 
   Scenario: product selection and same_as_shipping remembred in session
     When I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "order_bill_address_same"
@@ -157,6 +164,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario Outline: product selection remembered from "order again"
     When I choose "<selected>"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I fill in "order_card_number" with "4111111111111111"
@@ -186,6 +194,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     #
   Scenario: Duplicate order. Do not attempt recurring when one_time fails
     When I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the test user for online store
     And I fill the credit card details for online store
     And I fill in "Card number" with "4222222222222"
@@ -212,6 +221,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
   # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
   Scenario: Caregivers are already activated from online store
     When I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "order_bill_address_same"
@@ -226,6 +236,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I create a coupon code for "reseller" group
     And I am placing an online order for "reseller" group
     And I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "order_bill_address_same"
@@ -240,15 +251,16 @@ Feature: Online (D)irect (T)o (C)ustomer store
       | UPS Overnight shipping | 60    |
       | UPS 2 day shipping     | 28    |
       | UPS Ground Shipping    | 16    |
-    And "default" coupon_code for "direct_to_consumer" group has <_ship> shipping
+    And "default" coupon_code for "direct_to_consumer" group has "<_ship>" shipping
     When I go to the online store
     And I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "order_bill_address_same"
     And I choose "UPS 2 day shipping"
     And I press "Continue"
-    Then page content should have "UPS 2 day shipping"
+    Then page content should have "<_applicable_shipping>"
     When I press "Place Order"
     Then page content should have "Thank you for your order"
     And the payment gateway response should have 1 log
@@ -256,13 +268,14 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And shipping values get copied from <_where> for last order
     
     Examples:
-      | _ship | _where          |
-      | 0     | shipping option |
-      | 9     | coupon code     |
+      | _ship | _where          | _applicable_shipping     |
+      |       | shipping option | UPS 2 day shipping       |
+      | 9     | coupon code     | applies from coupon code |
 
   Scenario: Separate order items for every charge
     When I go to the online store
     And I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "order_bill_address_same"

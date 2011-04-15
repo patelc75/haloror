@@ -196,8 +196,8 @@
     </div>
   </fieldset>
   <p class="textright">
-    <%= link_to "< Back", store_path, :id => "back_link", :class => 'largebutton' if confirmation_mode? %>
-    <%= f.submit "#{confirmation_mode? ? 'Place Order >' : 'Continue >'}", :disable_with => "Please wait...", :class => 'largebutton', :id => "submit_button" %>
+    <%= link_to "Back", store_path, :id => "back_link", :class => 'largebutton' if confirmation_mode? %>
+    <%= f.submit "#{confirmation_mode? ? 'Place Order' : 'Continue'}", :disable_with => "Please wait...", :class => 'largebutton', :id => "submit_button" %>
   </p>
 <% end -%>
 

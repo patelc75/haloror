@@ -92,6 +92,11 @@ class Order < ActiveRecord::Base
       self.ship_description = "Coupon Code: #{coupon_code}"
       self.ship_price       = _coupon.shipping
     end
+    # 
+    #  Thu Apr 14 21:20:45 IST 2011, ramonrails
+    #   * local copy of shipping price
+    self.cc_shipping = ship_price
+    #
     #   CHANGED: old code below
     # if !_coupon.shipping.blank? && _coupon.shipping == 0
     #   unless shipping_option.blank? # many-to-one relation
