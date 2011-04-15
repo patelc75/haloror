@@ -45,10 +45,34 @@ Feature: Server Side Alerts
       | `7.hours.ago`    | 1        | fastened | H122334455 |
       | `30.minutes.ago` | 1        | fastened | H122334455 |
       | `30.minutes.ago` | 1        | removed  | H122334455 |
-      | `7.hours.ago`    | 1        | removed  | H122334455 |
+      | `7.hours.ago`    | 1        | removed  | H122334455 | 
 
   @wip
-  Scenario: Simulate a GatewayOfflineAlert for a user
-    When I simulate a "MgmtQuery" with the timestamp "7.hours.ago" and device_id "145"
-    Then I should have "1" count of "DeviceLatestQuery"
-    And I should have "1" count of "GatewayOfflineAlert" 
+  Scenario Outline: Simulate a DeviceUnavailable for a user
+  When I simulate a "Vital" event with the following attributes: #step already written
+      | user      | test-user  |
+      | timestamp | <time_ago> |
+      | device    | <device>   |
+    And background scheduler has detected device unavailables
+    #   * we are adding some extra time to keep the last simulated event within the span window
+    Then device "<device>" should state the strap <event> between now and "`<time_ago> - 1.minute`"
+    And I should exactly have <how_many> counts of "DeviceUnavailable" and events
+    
+    Examples:
+      | time_ago         | how_many | event       | device     |
+      | `7.hours.ago`    | 1        | available   | H134567890 |
+      | `30.minutes.ago` | 1        | available   | H134567890 |
+      | `30.minutes.ago` | 1        | unavailable | H134567890 |
+      | `7.hours.ago`    | 3        | unavailable | H134567890 |
+      #   * no additional events created unless user is mapped to device
+      | `7.hours.ago`    | 1 | available   | H122334455 |
+      | `30.minutes.ago` | 1 | available   | H122334455 |
+      | `30.minutes.ago` | 1 | unavailable | H122334455 |
+      | `7.hours.ago`    | 1 | unavailable | H122334455 |
+
+
+   @wip
+   Scenario: Simulate a GatewayOfflineAlert for a user
+   When I simulate a "MgmtQuery" with the timestamp "7.hours.ago" and device_id "145"
+        Then I should have "1" count of "DeviceLatestQuery"
+        And I should have "1" count of "GatewayOfflineAlert"

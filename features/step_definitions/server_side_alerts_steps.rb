@@ -78,6 +78,9 @@ When /^background scheduler has detected strap offs$/ do
   StrapOffAlert.job_detect_straps_off
 end
 
+When /^background scheduler has detected device unavailables$/ do
+  StrapOffAlert.job_detect_unavailable_devices
+end
 # =========
 # = thens =
 # =========

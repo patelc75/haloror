@@ -301,6 +301,44 @@ class Vital < ActiveRecord::Base
     end
   end
 
+  def Vital.job_detect_unavailable_devices2
+    RAILS_DEFAULT_LOGGER.warn("Vital.job_detect_unavailable_devices running at #{Time.now}")
+    # Find devices that were previously DeviceUnavailable but now available again
+    conds = []
+    conds << "reconnected_at is null and updated_at > created_at"
+    conds << "id IN (SELECT id from devices where serial_number LIKE 'H1%' or serial_number LIKE 'H5%')"
+    #we are filtering on strap fastened because the strap off alert will handle that
+    conds << "device_id in (select status.id from device_strap_status status where is_fastened > 0)"  
+    
+    alerts = DeviceUnavailableAlert.find(:all, :conditions => conds.join(' and '))
+    alerts.each do |alert|
+      DeviceUnavailableAlert.transaction do
+        DeviceAvailableAlert.create(:device => alert.device)
+        alert.reconnected_at = Time.now
+        alert.save!
+      end
+    end
+
+    ['ethernet', 'dialup'].each do |_mode|
+      # Find devices where a) Vitals have not been posted to for a specific interval AND b) the chest strap is “fastened”
+      conds = []
+      conds << "(id in (select device_id from access_mode_statuses where mode = '#{_mode}') OR id not in (select device_id from access_mode_statuses))"
+      conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{SystemTimeout.send(_mode.to_sym).device_unavailable_timeout_sec} seconds')"
+      conds << "id IN (SELECT id from devices where serial_number LIKE 'H1%' or serial_number LIKE 'H5%')"  
+      conds << "id in (select status.id from device_strap_status status where is_fastened > 0)"
+
+      devices = Device.find(:all,  :conditions => conds.join(' and '))
+      devices.each do |device|
+        begin
+          Vital.process_device_unavailable(device)
+        rescue Exception => e
+          logger.fatal("Error processing unavailable device alert for device #{device.inspect}: #{e}")
+          raise e if ENV['RAILS_ENV'] == "development" || ENV['RAILS_ENV'] == "test"
+        end
+      end  
+    end
+  end
+  
   private
   def self.process_device_unavailable(device)
     alert = DeviceUnavailableAlert.find(:first,
