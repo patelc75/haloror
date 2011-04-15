@@ -572,13 +572,13 @@ Feature: Pre quality
     When I edit the last user intake
     And I press "Submit"
     Then page content should have "successfully updated"
-    And the last user intake does not have any invoice
+    And the last user intake should have an invoice
     #   * approve
     When I edit the last user intake
     And I press "Approve"
     Then page content should have "successfully updated"
     And user intake "last" should have "Ready to Install" status
-    And the last user intake does not have any invoice
+    And the last user intake should have an invoice
     #   * ship date
     When the last user intake had the product shipped 5 weeks ago
     #   * start subscription (same as "Bill")
@@ -606,13 +606,13 @@ Feature: Pre quality
     When I edit the last user intake
     And I press "Submit"
     Then page content should have "successfully updated"
-    And the last senior should not have an invoice
+    And the last senior should have an invoice
     #   * approve
     When I edit the last user intake
     And I press "Approve"
     Then page content should have "successfully updated"
     And user intake "last" should have "Ready to Install" status
-    And the last senior should not have an invoice
+    And the last senior should have an invoice
     #   * ship date
     When the last user intake had the product shipped 5 weeks ago
     And panic button test data is received for user intake "last"
@@ -638,13 +638,13 @@ Feature: Pre quality
     When I edit the last user intake
     And I press "Submit"
     Then page content should have "successfully updated"
-    And the last senior should not have an invoice
+    And the last senior should have an invoice
     #   * approve
     When I edit the last user intake
     And I press "Approve"
     Then page content should have "successfully updated"
     And user intake "last" should have "Ready to Install" status
-    And the last senior should not have an invoice
+    And the last senior should have an invoice
     #   * ship date
     When the last user intake had the product shipped 5 weeks ago
     #   * start subscription (same as "Bill")

@@ -496,6 +496,8 @@ Then /^(?:|the )last user intake (should|should not) have (.+)$/ do |condition, 
       ui.senior.status.should_not be_blank
     when "an agreement stamp"
       ui.legal_agreement_at.should_not be_blank
+    when "an invoice"
+      ui.senior.invoice.should_not be_blank
     when "bill monthly value"
       ui.bill_monthly.should be_true
     when "credit card value"
@@ -797,11 +799,11 @@ Then /^the last user intake should start subscription from upcoming month$/ do
   end
 end
 
-Then /^the last user intake does not have any invoice$/ do
-  (_ui = UserIntake.last).should_not be_blank
-  (_senior = _ui.senior).should_not be_blank
-  _senior.invoice.should be_blank
-end
+# Then /^the last user intake does not have any invoice$/ do
+#   (_ui = UserIntake.last).should_not be_blank
+#   (_senior = _ui.senior).should_not be_blank
+#   _senior.invoice.should be_blank
+# end
 
 Then /^(.+) email(?:|s) to (.+) of last user intake with (subject|body|content|keyword) "([^\"]*)" should be sent for delivery$/ do |_count, _roles, part, data|
   _logins = _roles.split(',').collect {|e| e.gsub(/ /,'_').strip.to_sym }

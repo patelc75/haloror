@@ -23,6 +23,7 @@ Feature: Online store user intake
     When I go to the online store
     # And I select "group1" from "Group"
     And I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I fill in "Card number" with "<card>"
@@ -42,6 +43,7 @@ Feature: Online store user intake
     When I go to the online store
     # And I select "group1" from "Group"
     And I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I fill in "order_ship_first_name" with "user_first"
@@ -58,6 +60,7 @@ Feature: Online store user intake
     Given I logout
     When I go to the online store
     And I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I fill in "order_ship_first_name" with "user_first"
@@ -72,6 +75,7 @@ Feature: Online store user intake
     Given I logout
     When I go to the online store
     And I choose "product_complete"
+    And I choose "S_22_28_inches"
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I fill in "order_ship_first_name" with "user_first"
