@@ -292,13 +292,15 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "order_bill_address_same"
-    And I visit "/order/99TRIAL"
+    # And I visit "/order/99TRIAL"
+    And I fill in "Coupon Code" with "99TRIAL"
+    And I press "Apply"
     Then I should see "Pick a product"
     And the "Coupon Code" field should contain "99TRIAL"
-    When I choose "product_complete"
-    And I choose "S_22_28_inches"
-    And I fill the shipping details for online store
-    And I fill the credit card details for online store
+    # When I choose "product_complete"
+    # And I choose "S_22_28_inches"
+    # And I fill the shipping details for online store
+    # And I fill the credit card details for online store
     And I press "Continue"
     Then I should see "Please verify your order"
     When I press "Place Order"

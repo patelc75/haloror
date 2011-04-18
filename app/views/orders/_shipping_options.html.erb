@@ -42,7 +42,8 @@
         <span class="tiny">Example: WINTER</span>
 
         <% unless confirmation_mode? %>
-          <%= button_to_function "Apply", "location.href = 'http://' + document.domain +'/order/'+ $('order_coupon_code').value;", :class => "button green-button small" %>
+          <%= button_to_function "Apply GET", "location.href = 'http://' + document.domain +'/order/'+ $('order_coupon_code').value;", :class => "button green-button small" %>
+          <%= f.submit "Apply", :disable_with => 'Applying...' %>
         <% end %>
         <!-- <%# f.submit "Apply", :disable_with => 'Applying...', :class => 'button green-button small', :id => "apply_button" %> -->
       </div>

@@ -17,7 +17,6 @@
 <% end -%>
 
 <!-- <%# render :partial => 'order_coupon_code' %> -->
-
 <% form_for @order, :url => {:action => (confirmation_mode? ? "create" : "new")}, :html => {:id => 'form1', :class => "#{confirmation_mode? ? 'confirm-form' : 'form'}"} do |f| %>
  	<fieldset style="border: 2px solid ; padding: 10px;">    
 	<legend><span style="color:#008040;font-size:150%"><b>&nbsp;<%= confirmation_mode? ? 'Order summary' : 'Pick a product or call 1-888-971-4256' %>&nbsp;</b></span></legend>
@@ -198,6 +197,7 @@
   <p class="textright">
     <%= link_to "Back", store_path, :id => "back_link", :class => 'largebutton' if confirmation_mode? %>
     <%= f.submit "#{confirmation_mode? ? 'Place Order' : 'Continue'}", :disable_with => "Please wait...", :class => 'largebutton', :id => "submit_button" %>
+    <%= f.submit "Apply", :disable_with => 'Applying...' %>
   </p>
 <% end -%>
 
