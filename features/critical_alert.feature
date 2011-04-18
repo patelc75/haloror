@@ -50,6 +50,7 @@ Feature: Critical Alert
     And "caregiver-user" is active caregiver for senior "senior-user, test-user"
     And "operator-user" is active operator for group "safety_care"
 
+  @wip
   Scenario Outline: Simulate a <event> with successful text and email delivery to the call center
     When user "senior-user" has "halouser" role for group "safety_care"
     And user "test-user" has "halouser" role for group "safety_care"

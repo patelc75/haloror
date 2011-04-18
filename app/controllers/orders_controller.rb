@@ -30,10 +30,12 @@ class OrdersController < ApplicationController
     #   * coupon_code is now in separate form on the page
     #   * so, pick coupon_code only when specified, else assume it to be in @order
     if (params.has_key?( "order") && params["order"].has_key?( "coupon_code"))
-      _coupon_code = params["order"]["coupon_code"]
-    elsif params.has_key?('coupon_code')
-      _coupon_code = params['coupon_code']
+      _coupon_code ||= params["order"]["coupon_code"] unless params[:order][:coupon_code].blank?
     end
+    if params.has_key?('coupon_code')
+      _coupon_code ||= params['coupon_code'] unless params[:coupon_code].blank?
+    end
+    _coupon_code ||= @order.coupon_code unless @order.coupon_code.blank?
     #   * default prices will be picked if coupon code is blank
     @complete_tariff = DeviceModel.complete_coupon( @order.group, _coupon_code)
     @clip_tariff = DeviceModel.clip_coupon( @order.group, _coupon_code)
