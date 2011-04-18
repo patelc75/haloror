@@ -29,7 +29,9 @@ class OrdersController < ApplicationController
     #   * https://redmine.corp.halomonitor.com/issues/4318
     #   * coupon_code is now in separate form on the page
     #   * so, pick coupon_code only when specified, else assume it to be in @order
-    if (params.has_key?( "order") && params["order"].has_key?( "coupon_code"))
+    if !@order.coupon_code.blank?
+      _coupon_code = @order.coupon_code
+    elsif (params.has_key?( "order") && params["order"].has_key?( "coupon_code"))
       _coupon_code = params["order"]["coupon_code"]
     elsif params.has_key?('coupon_code')
       _coupon_code = params['coupon_code']
