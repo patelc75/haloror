@@ -303,3 +303,22 @@ Feature: Online (D)irect (T)o (C)ustomer store
     Then I should see "Please verify your order"
     When I press "Place Order"
     Then page content should have "Thank you for your order"
+
+  @now
+  Scenario: Shipping options remember selection on back button
+    Given the following shipping_options:
+      | description            | price |
+      | UPS Overnight shipping | 60    |
+      | UPS 2 day shipping     | 28    |
+      | UPS Ground Shipping    | 16    |
+    When I go to the online store
+    And I choose "product_complete"
+    And I choose "S_22_28_inches"
+    And I fill the shipping details for online store
+    And I fill the credit card details for online store
+    And I check "order_bill_address_same"
+    And I choose "UPS 2 day shipping"
+    And I press "Continue"
+    And I follow "Back"
+    Then the "UPS 2 day shipping" checkbox should be checked
+    

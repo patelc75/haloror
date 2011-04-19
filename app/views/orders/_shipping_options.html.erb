@@ -19,7 +19,7 @@
         <ul id="shipping_choices" class="no-style" style="padding-left: 0px;">
           <% for _option in ShippingOption.ordered( "price ASC") %>
           <li>
-            <%= radio_button_tag 'order[shipping_option_id]', "#{_option.id}", ( !@shipping_option_id.blank? && (_option.id == @shipping_option_id)), :onclick => "updateCost( this);" %>
+            <%= radio_button_tag 'order[shipping_option_id]', "#{_option.id}", (_option.id == @shipping_option_id.to_i), :onclick => "updateCost( this);" %>
             <span id="order_shipping_option_id_<%= _option.id %>_value"><%= "#{USD_value( _option.price)}" %></span> : <%= label_tag "order_shipping_option_id_#{_option.id}", "#{_option.description}" %>
           </li>
           <% end %>

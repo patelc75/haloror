@@ -20,9 +20,10 @@ class OrdersController < ApplicationController
     @_confirmation = nil
     @shipping_options = ShippingOption.ordered( 'price ASC')
     @shipping_option_id = session[:shipping_option_id]
+    @shipping_option_id ||= params[:order][:shipping_option_id] unless params[:order].blank?
     @product = session[:product]
     @order = Order.new(session[:order]) # recall if any order data was remembered
-    @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
+    @order.group = Group.find_by_id( session[:order_group_id].to_i) # if @order.group.blank? # assigned by before_filter
     #   * if present, pick the coupon code
     # 
     #  Wed Apr 13 01:42:05 IST 2011, ramonrails
@@ -47,7 +48,7 @@ class OrdersController < ApplicationController
       order_params = params[:order] # we need to remember these
       
       @order = Order.new(order_params) # the rendering does not loop another time. we need @order set here
-      @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
+      @order.group = Group.find_by_id( session[:order_group_id].to_i) # if @order.group.blank? # assigned by before_filter
       if @product.blank?
         @order.errors.add_to_base "Please select a product to order" if session[:product].blank?
         
@@ -100,7 +101,7 @@ class OrdersController < ApplicationController
       # back button needs this
       @order = (session[:order].blank? ? Order.new(:coupon_code => _coupon_code, :created_by => current_user.id, :updated_by => current_user.id) : Order.new(session[:order]))
       @order.coupon_code = _coupon_code
-      @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
+      @order.group = Group.find_by_id( session[:order_group_id].to_i) # if @order.group.blank? # assigned by before_filter
       @same_address = @order.subscribed_for_self?
       # @same_address = (session[:order].blank? ? "checked" : (session[:order][:bill_address_same] || @order.bill_address_same || @order.ship_and_bill_address_same))
       session[:order] = @order.attributes
@@ -222,7 +223,7 @@ class OrdersController < ApplicationController
       unless session[:order].blank?
 
         @order = Order.new(session[:order]) # pick from session, not params
-        @order.group = Group.find_by_id( session[:order_group_id].to_i) if @order.group.blank? # assigned by before_filter
+        @order.group = Group.find_by_id( session[:order_group_id].to_i) # if @order.group.blank? # assigned by before_filter
         # @order.group = Group.direct_to_consumer unless logged_in? # only assign this group when public order
 
         if @order.valid? && @order.save #verify_recaptcha(:model => @order, :message => "Error in reCAPTCHA verification") && @order.save
