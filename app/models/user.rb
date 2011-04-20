@@ -314,16 +314,11 @@ class User < ActiveRecord::Base
           end
         end
       end
-      # 
-      #  Fri Nov 12 18:09:50 IST 2010, ramonrails
-      #  emails can be dispatched only after roles
-      dispatch_emails # send emails as appropriate
-    # 
-    #  Mon Feb 14 22:36:04 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4185
-    update_invoice_attributes # update the invoice attributes as appropriate
-    # end
-    #
+    
+    dispatch_emails #  emails can be dispatched only after roles
+
+    update_invoice_attributes # https://redmine.corp.halomonitor.com/issues/4185
+
     #   * save the profile after roles are established
     #   * required to increment call center account number HM...
     # 
@@ -335,7 +330,7 @@ class User < ActiveRecord::Base
     #   * Skip saving a blank/non-assigned profile. When user object loads, it will re-build a profile anyways
     #   * This might have caused the missing profile issues. Maybe it got overwritten with a nothing_assigned one.
     profile.save unless profile.blank? || profile.nothing_assigned?
-    #
+
     log(status)
   end
   
@@ -1954,57 +1949,6 @@ class User < ActiveRecord::Base
       #  Fri Dec 10 21:04:14 IST 2010, ramonrails
       #   * "resend" needs options
       unless activation_email_sent? || activated? || (options.is_a?( Hash) && options.has_key?(:force) && (options[:force] == true))
-        # 
-        #  Tue Nov 23 22:21:44 IST 2010, ramonrails
-        #   * https://spreadsheets0.google.com/ccc?key=tCpmolOCVZKNceh1WmnrjMg&hl=en#gid=4
-        #   * signup_installation email is deprecated now
-        #   * Only 2 type of emails are dispatched for activation
-        #
-        # if self.is_halouser? # WARNING: DEPRECATED user[:is_new_halouser] == true
-        #   # Mon Nov  1 22:29:21 IST 2010
-        #   # QUESTION: Should this go out only during certain "states"?
-        #   UserMailer.deliver_signup_installation( self, self) unless self.activated? # || self.user_intakes.first.just_submitted?
-        #   
-        # else # user type?
-        # 
-        #  Tue Nov 23 18:54:13 IST 2010, ramonrails
-        #   * Invitation to be a caregiver
-        #   * https://redmine.corp.halomonitor.com/issues/3767
-        #
-        # #  Tue Nov 23 22:29:50 IST 2010, ramonrails
-        # # No emails should be dispatched on "Save", only "Submit" of user intake.
-        # # QUESTION: too complicated to implement like this. Needs discussion
-        #   * when admin is created, it is "saved", not "submitted"
-        #   * order "saves" all users instead of "submitting"
-        #   * user intake can "save" multiple times before a "submit"
-        #
-        # _can_send_email = if self.user_intakes.blank?
-        #   #   * When no user intake present. legacy data?
-        #   #   * Only send when submitted and validated data
-        #   #   * user intake "save" button skips the validation
-        #   need_validation == true
-        # else
-        #   #   * either we have a submitted user intake
-        #   #   * or we have an associated order (online store)
-        #   (user_intakes.first.submitted? || !user_intakes.first.order.blank?)
-        # end
-        # 
-        #  Fri Mar 18 01:22:24 IST 2011, ramonrails
-        #   * https://redmine.corp.halomonitor.com/issues/4244
-        # _can_send_email = if self.is_admin?
-        #   #   * admin does not have user_intake
-        #   #   * admin is "saved", not validated
-        #   true
-        # else
-        #   #   * any non-admin will have user_intake, or order
-        #   ( !user_intakes.blank? && ( user_intakes.first.submitted? || !user_intakes.first.order.blank? ))
-        # end
-        #
-        #  Tue Dec 21 00:29:04 IST 2010, ramonrails
-        #   * https://redmine.corp.halomonitor.com/issues/3895
-        #   * either we have a submitted user intake
-        #   * or we have an associated order (online store)
-        #   dispatch emails subject to the role
         if can_send_email?
           if self.is_caregiver?
             #   * Only caregiver email will dispatch when subscriber is caregiver
@@ -2031,16 +1975,11 @@ class User < ActiveRecord::Base
     return !activation_sent_at.blank? # when this is filled, activation was sent
   end
 
-  # 
-  #  Fri Mar 18 01:22:35 IST 2011, ramonrails
-  #   * https://redmine.corp.halomonitor.com/issues/4244
   def can_send_email?
-    if self.is_admin?
-      #   * admin does not have user_intake
-      #   * admin is "saved", not validated
+    if self.is_admin? #admin does not have user_intake; admin is "saved", not validated      
       true
-    else
-      #   * any non-admin will have user_intake, or order
+    else              
+      # either we have a submitted user intake or we have an associated order (online store)
       ( !user_intakes.blank? && ( user_intakes.first.submitted? || !user_intakes.first.order.blank? ))
     end
   end
