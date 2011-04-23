@@ -188,7 +188,7 @@
 
   </div>
 
-  <% unless (controller.class == UtilController) && (action_name == "terms") && @user_intake && !@user_intake.agreement_signed? %>
+  <% if defined?( @user_intake) && !@user_intake.agreement_signed? %>
   <div id="agreement_buttons">
 
     <div class="span-24 last text-right">
