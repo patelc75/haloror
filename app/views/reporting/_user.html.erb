@@ -17,6 +17,16 @@
     <% end %>
   </td>
   <td><span class="tiny"><%= h user.created_at %></span></td>
+  <td><span class="tiny">
+    <% if user.activation_code != nil %>
+      <% if current_user.is_super_admin? %>
+        <%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %> | 
+      <% end %>
+      <%= link_to 'Resend Email', resend_path(user.id) if user.can_send_email? %>
+    <% else %>
+      <span class="text-small"><%= user.activated_at.strftime(Time::DATE_FORMATS[:date_time]) %> </span> 
+    <% end %>        
+    </span></td>
   <td><span class="tiny"><%= h user.installed_at %></span></td>
   <td><span class="tiny"><%= h user.cancelled_at %></span></td>
 </tr>
