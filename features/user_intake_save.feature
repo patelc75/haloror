@@ -68,7 +68,7 @@ Feature: Save User Intake
     And I fill in "user_intake_subscriber_attributes_email" with "subscriber@example.com"
     And I select "verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
     And I uncheck "Add as #1 Caregiver"
-    And I uncheck "No Caregiver #1"
+    And I uncheck "Uncheck to add Caregiver #1"
     And I press "Save"
     Then page content should have "successfully saved"
 

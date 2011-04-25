@@ -35,7 +35,7 @@ Feature: Online store coupons
       | product  | coupon_code | group   | deposit | shipping | months | free | recurring | total | phrase           |
       | clip     | 99TRIAL     | bestbuy | 99      | 15       | 0      | 1    | 49        | 114   | 1 month trial    |
       | complete | 99TRIAL     | bestbuy | 99      | 15       | 0      | 1    | 59        | 114   | 1 month trial    |
-      | complete | BOGUS_CODE  | bestbuy | 249     | 15       | 3      | 0    | 59        | 441   | 3 months advance |
+      # | complete | BOGUS_CODE  | bestbuy | 249     | 15       | 3      | 0    | 59        | 441   | 3 months advance |
       # | clip     | BOGUS_CODE  | bestbuy | 249     | 15       | 3      | 0    | 49        | 411   | 3 months advance |
       #
       # Wed Oct  6 21:23:47 IST 2010

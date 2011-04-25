@@ -69,7 +69,7 @@ Feature: Manage user_intakes
     And I fill the senior details for user intake form
     And I fill the subscriber details for user intake form
     And I select "verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
-    And I check "user_intake_caregiver1_role_options_email_active"
+    And I check "caregiver1_email_flag"
     And I select "Yes" from "user_intake_caregiver1_role_options_is_keyholder"
     And I press "user_intake_submit"
     Then page content should have "User Intake was successfully created"
@@ -81,7 +81,7 @@ Feature: Manage user_intakes
     And I uncheck "Add as #1 caregiver"
     And I fill the senior details for user intake form
     And I fill the subscriber details for user intake form
-    And I check "user_intake_caregiver1_role_options_email_active"
+    And I check "caregiver1_email_flag"
     And I select "Yes" from "user_intake_caregiver1_role_options_is_keyholder"
     And I uncheck "user_intake_no_caregiver_1"
     And I press "user_intake_submit"
@@ -94,7 +94,7 @@ Feature: Manage user_intakes
     And I fill the senior details for user intake form
     And I fill the subscriber details for user intake form
     And I select "verizon" from "user_intake_subscriber_attributes__profile_attributes_carrier_id"
-    And I check "user_intake_caregiver1_role_options_email_active"
+    And I check "caregiver1_email_flag"
     And I select "Yes" from "user_intake_caregiver1_role_options_is_keyholder"
     And I uncheck "user_intake_no_caregiver_1"
     And I fill the caregiver1 details for user intake form

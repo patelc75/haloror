@@ -201,7 +201,7 @@ Factory.define :profile do |v|
   v.time_zone { Time.now.zone }
   v.home_phone { (0..9).to_a.shuffle.join('') }
   v.cell_phone { (0..9).to_a.shuffle.join('') }
-  v.account_number { (0..9).to_a.shuffle.join('') }[0..3]
+  v.account_number { (0..9).to_a.shuffle.join('')[0..3] }
   v.hospital_number { (0..9).to_a.shuffle.join('') }
   v.doctor_phone { (0..9).to_a.shuffle.join('') }
   v.association :carrier #, :factory => :carrier

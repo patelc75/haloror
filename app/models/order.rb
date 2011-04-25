@@ -140,8 +140,12 @@ class Order < ActiveRecord::Base
   #   * https://redmine.corp.halomonitor.com/issues/4248
   def coupon_code_valid?
     _coupon = product_cost # fetch the coupon code applicable for the selected group
-    errors.add_to_base( "Coupon code #{coupon_code} is not valid for the group #{group_name}") if _coupon.blank? || (_coupon.coupon_code != coupon_code)
-    errors.add_to_base( "Coupon code expired on #{_coupon.expiry_date}") if _coupon.expired?
+    if group.blank? || (_coupon.group != group)
+      errors.add_to_base( "Coupon code #{coupon_code} is not valid for the group #{group_name}")
+    end
+    if _coupon.expired?
+      errors.add_to_base( "Coupon code expired on #{_coupon.expiry_date}")
+    end
     ( !_coupon.blank? && !_coupon.expired? ) # valid?
   end
   

@@ -40,6 +40,10 @@ class OrdersController < ApplicationController
     #   * default prices will be picked if coupon code is blank
     @complete_tariff = DeviceModel.complete_coupon( @order.group, _coupon_code)
     @clip_tariff = DeviceModel.clip_coupon( @order.group, _coupon_code)
+    # 
+    #  Mon Apr 25 23:52:32 IST 2011, ramonrails
+    #   * coupon code should be what is fetched from database subject to the given parameters
+    @order.coupon_code = _coupon_code = ((@product == 'complete') ? @complete_tariff.coupon_code : @clip_tariff.coupon_code )
     
     if request.post? # !['Apply', 'Applying...'].include?(params[:commit])
       # if ( params["commit"] != 'Apply') #  && params.has_key?( "order")
@@ -99,8 +103,8 @@ class OrdersController < ApplicationController
       
     else # store mode
       # back button needs this
-      @order = (session[:order].blank? ? Order.new(:coupon_code => _coupon_code, :created_by => current_user.id, :updated_by => current_user.id) : Order.new(session[:order]))
-      @order.coupon_code = _coupon_code
+      @order = Order.new( session[:order] || {:coupon_code => _coupon_code, :created_by => current_user.id, :updated_by => current_user.id})
+      @order.coupon_code = ((@product == 'complete') ? @complete_tariff.coupon_code : @clip_tariff.coupon_code)
       @order.group = Group.find_by_id( session[:order_group_id].to_i) # if @order.group.blank? # assigned by before_filter
       @same_address = @order.subscribed_for_self?
       # @same_address = (session[:order].blank? ? "checked" : (session[:order][:bill_address_same] || @order.bill_address_same || @order.ship_and_bill_address_same))

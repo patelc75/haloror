@@ -1,32 +1,34 @@
-<tr>
-  <td><%= link_to user.id, user_path( user) %></td>
-  <td><%= h user.name %></td>
-  <td><%= h user.get_wearable_type %></td>
-  <td><%= h user.get_access_mode %></td>
-  <td><%= h user.status || 'Not Submitted' %></td>
-  <td><%= h user.important_role %></td>
-  <td>
-    <% _stamp = user.last_vital_timestamp %>
-    <% if _stamp.first == 'No Vitals' %>
+<div id="user_<%= user.id %>">
+  <tr>
+    <td><%= link_to( user.id, user_path( user)) %></td>
+    <td><%= h user.name %></td>
+    <td><%= h user.get_wearable_type %></td>
+    <td><%= h user.get_access_mode %></td>
+    <td><%= h user.status || 'Not Submitted' %></td>
+    <td><%= h user.important_role %></td>
+    <td>
+      <% _stamp = user.last_vital_timestamp %>
+      <% if _stamp.first == 'No Vitals' %>
       No Vitals
-    <% else %>
+      <% else %>
       <span class="<%= (_stamp.first < 1.day.ago) ? 'tiny text-red' : 'tiny' %>"><%= UtilityHelper.format_datetime( _stamp.first, current_user) %></span>
       <% if current_user.is_super_admin? && _stamp.length == 2 %>
-        <br /><span class="tiny text-blue">(Future:<%= h _stamp[1] %>)</span>
+      <br /><span class="tiny text-blue">(Future:<%= h _stamp[1] %>)</span>
       <% end %>
-    <% end %>
-  </td>
-  <td><span class="tiny"><%= h user.created_at %></span></td>
-  <td><span class="tiny">
-    <% if user.activation_code != nil %>
+      <% end %>
+    </td>
+    <td><span class="tiny"><%= h user.created_at %></span></td>
+    <td><span class="tiny">
+      <% if user.activation_code != nil %>
       <% if current_user.is_super_admin? %>
-        <%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %> | 
+      <%= link_to 'Activate', :controller => 'activate', :action => user.activation_code %> | 
       <% end %>
       <%= link_to 'Resend Email', resend_path(user.id) if user.can_send_email? %>
-    <% else %>
+      <% else %>
       <span class="text-small"><%= user.activated_at.strftime(Time::DATE_FORMATS[:date_time]) %> </span> 
-    <% end %>        
+      <% end %>        
     </span></td>
-  <td><span class="tiny"><%= h user.installed_at %></span></td>
-  <td><span class="tiny"><%= h user.cancelled_at %></span></td>
-</tr>
+    <td><span class="tiny"><%= h user.installed_at %></span></td>
+    <td><span class="tiny"><%= h user.cancelled_at %></span></td>
+  </tr>
+</div>

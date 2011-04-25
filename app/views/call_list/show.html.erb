@@ -10,13 +10,7 @@
 
 <div id="call_list-col">
   <div id="call_list-col-header">
-    Critical Alert Settings: <span style="color:#000;font-size:.75em">
-      <% if @user.profile.blank? -%>
-        <%= link_to "#{@user.name}'s", "#" -%>
-      <% else -%>
-        <%=link_to(@user.name + "'s", :controller => "profiles", :action => "edit_caregiver_profile", :id => @user.profile.id, :user_id => @user.id ) -%>
-      <% end -%> Caregivers
-    </span>
+    Critical Alert Settings: <span style="color:#000;font-size:.75em"><%= caregivers_list_header %></span>
   </div>
 	
 	<% 

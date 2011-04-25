@@ -9,7 +9,7 @@ Feature: User experience - triage
 
   Scenario: Audit column visible
     When I go to the triage page
-    Then page source has xpath "//th[@id='audit_column']"
+    Then page source should have xpath "//th[@id='audit_column']"
 
   # TODO
   # user intake bug. took quite some time and still not fixed.

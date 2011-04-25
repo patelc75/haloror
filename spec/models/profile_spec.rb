@@ -43,7 +43,7 @@ describe Profile do
         _users = User.find( @user_ids)
         _users[n].profile.save.should be_true
         _users[n].profile.account_number.should_not be_blank
-        _users[n].profile.account_number.should =~ /^(\d{4})$/
+        _users[n].profile.account_number.length.should == 4 # =~ /^(\d{4})$/
       end
     end
   end
@@ -82,7 +82,7 @@ describe Profile do
       @user_ids = []
       5.times do
         _user = Factory.create( :user) # get user
-        _user.profile.update_attribute( :account_number, "HM#{'%04d' % rand(9999)}")
+        _user.profile.update_attribute( :account_number, "#{'%04d' % rand(9999)}")
         _user.is_halouser # assign role
         @users << _user
         @user_ids << _user.id # collect for checking
@@ -90,7 +90,7 @@ describe Profile do
     end
     
     5.times.with_index do |n,i|
-      it "does not overwrite existing HM.... account numbers" do
+      it "does not overwrite existing account numbers" do
         _users = User.find( @user_ids)
         _users[n].profile.save.should be_true
         _users[n].profile.account_number.should == @users.select {|e| e.id == _users[n].id }.first.profile.account_number
