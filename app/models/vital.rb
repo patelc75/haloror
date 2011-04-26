@@ -316,7 +316,18 @@ class Vital < ActiveRecord::Base
       alerts.each do |alert|
         DeviceUnavailableAlert.transaction do
           DeviceAvailableAlert.create(:device => alert.device)
-          alert.reconnected_at = Time.now
+          alert.reconnected_at = Time.now 
+          
+          lv = LatestVital.find(:first, :conditions => {:id => alert.device.id})
+          alert.latest_vital_at = lv.updated_at if !lv.nil?      
+
+          dss = DeviceStrapStatus.find(:first, :conditions => {:id => alert.device.id})  
+          alert.is_fastened_at = dss.updated_at if !dss.nil?
+          alert.is_fastened = dss.is_fastened if !dss.nil?                         
+
+          ams = AccessModeStatus.find(:first, :conditions => {:device_id => alert.device.id})  
+          alert.access_mode = ams.mode if !ams.nil?
+          
           alert.save!
         end
       end

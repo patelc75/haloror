@@ -38,15 +38,8 @@ class CriticalDeviceAlert < DeviceAlert
   def self.job_process_crtical_alerts
     RAILS_DEFAULT_LOGGER.warn("CriticalDeviceAlert.job_process_crtical_alerts running at #{Time.now}")
     
-    # 
-    #  Thu Mar 10 01:29:01 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4260#note-6
-    #   * CHANGED: the query for critical alerts. SQL version was not working correctly
-    #   * WARNING: needs more code coverage. Please check and cover every possible scenario
     critical_alerts = []
-    # critical_alerts += Panic.find(:all, :include => [:user => :profile], :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{SystemTimeout.dialup.critical_event_delay_sec} seconds'", :order => "timestamp asc")
-    # critical_alerts += Fall.find(:all, :include => [:user => :profile], :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{SystemTimeout.dialup.critical_event_delay_sec} seconds'", :order => "timestamp asc")
-    # critical_alerts += GwAlarmButton.find(:all, :include => [:user => :profile], :conditions => "call_center_pending is true and now() > timestamp_server + interval '#{SystemTimeout.dialup.critical_event_delay_sec} seconds'", :order => "timestamp asc")
+
     [Panic, Fall, GwAlarmButton].each do |_klass|
       critical_alerts += _klass.all({
         :include    => [ :user => :profile ],
