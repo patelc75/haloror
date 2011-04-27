@@ -5,14 +5,17 @@ Feature: Online store user intake
   I want feature
 
   Background:
-    Given the following groups:
-      | name   |
-      | group1 |
-      | group2 |
+    # Given the following groups:
+    #   | name   |
+    #   | group1 |
+    #   | group2 |
     And the product catalog exists
-    And a user "test-user" exists with profile
+    And I am an authenticated super admin
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    Given a user "test-user" exists with profile
     And I am authenticated as "test-user" with password "12345"
-    And user "test-user" has "sales, admin" role for group "group1"
+    And user "test-user" has "sales, admin" role for group "bestbuy"
     
   Scenario: User Intake form does not accept Order ID input
     And I am on new user_intake page
@@ -20,7 +23,7 @@ Feature: Online store user intake
   
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario Outline: Successful order has associated user intake, Failed does not have it
-    When I go to the online store
+    And I am placing an online order for "bestbuy" group
     # And I select "group1" from "Group"
     And I choose "product_complete"
     And I choose "S_22_28_inches"
@@ -40,7 +43,7 @@ Feature: Online store user intake
 
   # https://redmine.corp.halomonitor.com/issues/3170
   Scenario: myHalo user has role for group
-    When I go to the online store
+    And I am placing an online order for "bestbuy" group
     # And I select "group1" from "Group"
     And I choose "product_complete"
     And I choose "S_22_28_inches"
@@ -90,7 +93,7 @@ Feature: Online store user intake
   #  1.6.0 tests
   Scenario: User intake checks for Order with different senior and subscriber
     When I go to the online store
-    And I am placing an online order for "group1" group
+    And I am placing an online order for "bestbuy" group
     And I uncheck "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"

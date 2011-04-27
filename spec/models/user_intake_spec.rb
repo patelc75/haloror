@@ -238,13 +238,13 @@ describe UserIntake do
       specify { @ui.caregiver1.should_not == @ui.subscriber }
       specify { @ui.caregiver1.should be_valid }
       specify { @ui.caregiver2.should be_valid }
-      specify { @ui.caregiver3.should be_valid }
+      # specify { @ui.caregiver3.should be_valid }
       specify { @ui.subscriber.profile.should_not == @ui.senior.profile } # both profiles are different
       specify { @ui.senior.is_halouser_of?( @ui.group).should be_true } # valid halouser role
       specify { @ui.subscriber.is_subscriber_of?( @ui.senior).should be_true } # subscriber role
       specify { @ui.caregiver1.is_caregiver_of?( @ui.senior).should be_true } # caregiver role
       specify { @ui.caregiver2.is_caregiver_of?( @ui.senior).should be_true }
-      specify { @ui.caregiver3.is_caregiver_of?( @ui.senior).should be_true }
+      # specify { @ui.caregiver3.is_caregiver_of?( @ui.senior).should be_true }
       specify { @ui.users.length.should == 5 }
     end
   

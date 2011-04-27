@@ -26,22 +26,22 @@ Feature: Pre quality
 
   # Create an admin (eg. admin1.5.1-rc1) for the new group at My Links > Sign up users with other roles
   Scenario: super admin > create an admin
-    When I create a "reseller" reseller group
-    And I am creating admin of "reseller" group
+    When I create a "bestbuy" reseller group
+    And I am creating admin of "bestbuy" group
     And I fill in "First Name" with "admin1.5.1-rc1"
     And I fill in "Email" with "admin1_5_1_rc1@example.com"
     And I press "subscribe"
     Then I should see "for activation of account"
     And email with activation code of last user should be sent for delivery
-    And user "last" should have "admin" role for group "reseller"
+    And user "last" should have "admin" role for group "bestbuy"
     # count of emails is ignored here to accommodate within timeline of 1.6.0 release
     # we must check the count also, or, users may get multiple similar emails
 
   # Login as admin created in previous section
   # Try clicking activation link in both emails
   Scenario: Activate an admin
-    When I create a "reseller" reseller group
-    And I create admin of "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create admin of "bestbuy" group
     And I logout
     And I am activating the last user as "reseller_admin"
     And I press "subscribe_button"
@@ -51,8 +51,8 @@ Feature: Pre quality
   # Create a new coupon code for the new group at My Links > Config > Coupon Codes
   Scenario: super admin > create an coupon code
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I am ready to create a coupon code for "reseller" group
+    When I create a "bestbuy" reseller group
+    And I am ready to create a coupon code for "bestbuy" group
     And I fill in the following:
       | Coupon code        | coupon1.5.1-rc1 |
       | Deposit            | 66              |
@@ -68,24 +68,24 @@ Feature: Pre quality
   Scenario: admin > online store has single group
     Given the product catalog exists
     And a group "bogus" exists
-    When I create a "reseller" reseller group
-    And I create admin of "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create admin of "bestbuy" group
     And I logout
     And I activate the last user as "reseller_admin"
     And I go to the online store
     # Verify the group name displays correctly
-    Then I should see "reseller"
+    Then I should see "bestbuy"
     # Verify there in “no” link adjacent to the group name for changing the group
     And page content should not have "bogus, switch"
     # Verify that manually forcing “/orders/switch_group” does not allow to switch the group, but snaps back to order page with the same group name visible
     When I am switching the group for online store
-    Then I should see "Group: reseller"
+    Then I should see "Group: bestbuy"
     And I should not see "Please select a group"
 
   Scenario: admin > coupon applies correctly
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I am ready to create a coupon code for "reseller" group
+    When I create a "bestbuy" reseller group
+    And I am ready to create a coupon code for "bestbuy" group
     And I fill in the following:
       | Coupon code        | coupon1.5.1-rc1 |
       | Deposit            | 66              |
@@ -95,7 +95,7 @@ Feature: Pre quality
       | Months trial       | 2               |
       | Dealer Install Fee | 99              |
     And I press "Save"
-    And I create admin of "reseller" group
+    And I create admin of "bestbuy" group
     And I activate the last user as "reseller_admin"
     And I am placing an online order for "re_reseller" group
     And I fill in "Coupon Code" with "coupon1.5.1-rc1"
@@ -197,13 +197,13 @@ Feature: Pre quality
   # Add caregiver: My Links > Config > Users > (find row for new halouser) > Caregiver > Add Caregiver > Add new caregiver with no email
   Scenario: admin > add a new caregiver with no email
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I create a coupon code for "reseller" group
-    And I create admin of "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I create admin of "bestbuy" group
     #   * "Admin" cannot create a caregiver anymore
     #   * activating an admin also makes it logged in
     # And I activate the last user as "reseller_admin"
-    And I place an online order for "reseller" group
+    And I place an online order for "bestbuy" group
     And I view the senior of last user intake
     And I follow links "Caregivers > add_caregiver_button"
     And I follow "Add new caregiver with no email"
@@ -226,12 +226,12 @@ Feature: Pre quality
   # Approve Subscription agreement after picking login/password
   Scenario: halouser > approve subscription agreement
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I create a coupon code for "reseller" group
-    And I create admin of "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I create admin of "bestbuy" group
     # Login as admin of the group created in Section 1
     And I activate the last user as "reseller_admin"
-    And I place an online order for "reseller" group
+    And I place an online order for "bestbuy" group
     And I logout
     # Try clicking activation link in both emails
     And I activate the "reseller_senior" senior of last order
@@ -246,9 +246,9 @@ Feature: Pre quality
       | H200220022    |
       | H100110011    |
     And critical alerts types exist
-    When I create a "reseller" reseller group
-    And I create a coupon code for "reseller" group
-    And I place an online order for "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I place an online order for "bestbuy" group
     # submit button is not available in trial period
     And panic button test data is received for user intake "last"
     Then panic warning email should be dispatched
@@ -301,11 +301,11 @@ Feature: Pre quality
 
   Scenario: halouser > submit user intake form - make all users distinct
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I create a coupon code for "reseller" group
-    And I create admin of "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I create admin of "bestbuy" group
     And I activate the last user as "reseller_admin"
-    And I place an online order for "reseller" group
+    And I place an online order for "bestbuy" group
     And I am listing user intakes
     And I follow "edit_link"
     And I uncheck "user_intake_subscriber_is_user"
@@ -335,11 +335,11 @@ Feature: Pre quality
   # https://redmine.corp.halomonitor.com/issues/3798
   Scenario: D2 - halouser == subscriber. Enable test mode (opt out of call center + caregivers away)
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I create a coupon code for "reseller" group
-    And I create admin of "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I create admin of "bestbuy" group
     And I activate the last user as "reseller_admin"
-    And I place an online order for "reseller" group
+    And I place an online order for "bestbuy" group
     Then senior of last user intake should be in test mode
     # Verify “Opt out of live call center” is checked in the profile of halouser
     And senior of last user intake should be opted out of call center
@@ -357,11 +357,11 @@ Feature: Pre quality
   # https://redmine.corp.halomonitor.com/issues/3798
   Scenario: halouser <> subscriber - Enable test mode (opt out of call center + caregivers away)
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I create a coupon code for "reseller" group
-    And I create admin of "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I create admin of "bestbuy" group
     And I activate the last user as "reseller_admin"
-    And I am placing an online order for "reseller" group
+    And I am placing an online order for "bestbuy" group
     And I uncheck "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
@@ -381,9 +381,9 @@ Feature: Pre quality
   # (5) Verify Credit Card/Manual Billing radio button User Intake Form
   Scenario: H4 - Intake + Install States spreadsheet
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I create a coupon code for "reseller" group
-    And I am placing an online order for "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I am placing an online order for "bestbuy" group
     # Uncheck “Same as Users Home Address”
     And I uncheck "order_bill_address_same"
     And I fill the shipping details for online store
@@ -429,11 +429,11 @@ Feature: Pre quality
   # (3) Activate user, subscriber, and caregiver via email link
   Scenario: Activating admin, senior, subsriber and caregivers
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I create a coupon code for "reseller" group
-    And I create admin of "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I create admin of "bestbuy" group
     And I activate the last user as "reseller_admin"
-    And I am placing an online order for "reseller" group
+    And I am placing an online order for "bestbuy" group
     And I fill in "Coupon Code" with "reseller_coupon"
     And I uncheck "order_bill_address_same"
     And I press "Continue"
@@ -476,9 +476,9 @@ Feature: Pre quality
     # QUESTION: If a subscriber subscribes for multiple halousers, how does he/she view all those user intakes?
   Scenario: Activated subscriber (not same as halouser) can edit user intake
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I create a coupon code for "reseller" group
-    And I am placing an online order for "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I am placing an online order for "bestbuy" group
     And I uncheck "order_bill_address_same"
     And I fill the shipping details for online store
     And I fill the billing details for online store
@@ -528,9 +528,9 @@ Feature: Pre quality
 
   Scenario: Online Order > User Intake > Submit > Approve > Panic > Ready to Bill > Bill > Installed
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I create a coupon code for "reseller" group
-    And I am placing an online order for "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I am placing an online order for "bestbuy" group
     And I uncheck "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
@@ -561,9 +561,9 @@ Feature: Pre quality
 
   Scenario: Online Order > User Intake > Submit > Approve > Ship date > Start Subscription > Panic > Installed
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I create a coupon code for "reseller" group
-    And I am placing an online order for "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I am placing an online order for "bestbuy" group
     And I uncheck "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"
@@ -594,9 +594,9 @@ Feature: Pre quality
 
   Scenario: Online Order > User Intake > Submit > Approve > Ship date > Panic > Start Subscription > Installed
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I create a coupon code for "reseller" group
-    And I am placing an online order for "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I am placing an online order for "bestbuy" group
     And I uncheck "order_bill_address_same"
     And I check "order_dealer_install_fee_applies"
     And I press "Continue"
@@ -626,9 +626,9 @@ Feature: Pre quality
 
   Scenario: Online Order > User Intake > Submit > Approve > Ship date [No Panic] > Start Subscription > Ready to Install
     Given the product catalog exists
-    When I create a "reseller" reseller group
-    And I create a coupon code for "reseller" group
-    And I am placing an online order for "reseller" group
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I am placing an online order for "bestbuy" group
     And I uncheck "order_bill_address_same"
     And I check "order_dealer_install_fee_applies"
     And I press "Continue"

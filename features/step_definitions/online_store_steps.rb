@@ -82,8 +82,10 @@ When /^I am placing an online order for "([^\"]*)" group$/ do |_name|
 end
 
 When /^I create a coupon code for "([^\"]*)" group$/ do |_name|
-  When %{I am ready to create a coupon code for "#{_name}" group}
-  When %{I press "Save"}
+  _names = _name.split(',').collect(&:strip).each do |_group_name|
+    When %{I am ready to create a coupon code for "#{_group_name}" group}
+    When %{I press "Save"}
+  end
 end
 
 When /^I am ready to create a coupon code for "([^\"]*)" group$/ do |_name|
