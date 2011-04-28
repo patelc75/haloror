@@ -184,15 +184,13 @@
         <% form_tag url_for(:controller => 'users', :action => 'toggle_test_mode', :id => user_row.id), :method => :post, :id => "user_form_#{user_row.id}" do %>
           <% if current_user.is_super_admin? %>
             <!-- admins cannot see this. super admin can -->
-            <%= image_tag("test_#{user_row.test_mode? ? 'en' : 'dis'}abled.gif") %>
+            <!--%= image_tag("test_#{user_row.test_mode? ? 'en' : 'dis'}abled.gif") %-->
             <%= submit_tag "#{user_row.test_mode? ? 'Dis' : 'En'}able Test Mode", :class => "small #{user_row.test_mode? ? 'blue-button' : 'gray-button'} button", :id => "#{user_row.test_mode? ? 'dis' : 'en'}able_test_mode_#{user_row.id}" %>
             <br />
           <% end %>
         <% end %>
       <% end %>
       <% end %>
-      &nbsp;
-
       <% if user_row.is_halouser? || user_row.is_caregiver? %>
         <% if user_row.activation_code != nil %>
           <% if current_user.is_super_admin? %>
@@ -203,7 +201,9 @@
           <span class="text-small"> Activated <%= user_row.activated_at.strftime(Time::DATE_FORMATS[:date_time]) %> </span> 
         <% end %>
       <% end %>
-
+      <br/>        
+      <%= image_tag( "briefcase.png", :alt => "Audit", :title => "Audit" ) %>
+      <%= link_to Audit, user_audits_path(user_row), {:id => "audit_log"} %></td>      
       <%#=link_to_remote_redbox('Profile', :url =>{ :controller => "profiles", :action => "edit_caregiver_profile", :id => user_row.profile[:id], :frame => true }, :html => {:method => :get})%>
       <!-- %if user_row.user_intakes and user_row.user_intakes.length > 0%-->
       <% if false %>

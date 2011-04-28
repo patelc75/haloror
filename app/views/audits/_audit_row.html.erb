@@ -1,17 +1,18 @@
 <tr>
-  <td>
-    <%= audit_row.version %> 
-  </td>
+  <td><%= audit_row.id %></td>
+  <td><%= audit_row.version %></td>
+  <td><%= audit_row.auditable_type.downcase.pluralize %></td>
   <td><%= audit_row.action %></td>
-  <td>
-    <% if audit_row.auditable_type == 'User' %>
-      <%= link_to "#{truncate( audit_row.changes.to_s, 30, "...")}", user_audit_path( audit_row.auditable_id, audit_row.id) %>
-    <% elsif audit_row.auditable_type == 'Invoice' %>
+  <td align="center">
+    <% if audit_row.auditable_type == 'Invoice' %>     
+      <!--%= link_to "#{truncate( audit_row.changes.to_s, 30, "...")}", user_audit_path( audit_row.auditable_id, audit_row.id) %-->
       <%= link_to "#{truncate( audit_row.changes.to_s, 30, "...")}", invoice_audit_path( audit_row.auditable_id, audit_row.id) %>
+    <% else %>
+      <%= link_to image_tag( "briefcase.png", :alt => "Audit", :title => "Audit" ), user_audit_path( audit_row.auditable_id, audit_row.id) %>      
     <% end %>
   </td>
-  <td><%= audit_row.ip %></td>
   <td><%= audit_row.referer %></td>
   <td><span class="timestamp"><%= audit_row.created_at %></span></td>
   <td><%= "(#{audit_row.user_id}) #{audit_row.user.name}" unless audit_row.user_id.blank? %></td>
+  <td><%= audit_row.ip %></td>  
 </tr>

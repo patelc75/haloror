@@ -1,13 +1,15 @@
 <div><%= will_paginate @audits %></div>
 <table class="bluegrey prepend-top">
   <tr>
-    <th>Version</th>
-    <th>From action</th>
+    <th>ID</th>
+    <th>Ver</th>
+    <th>Table</th>
+    <th>Action</th>
     <th>Changes</th>
-    <th>IP address</th>
     <th>Referrer URL</th>
     <th>Created at</th>
     <th>By user</th>
+    <th>IP address</th>
   </tr>
   <%= render :partial => 'audit_row', :collection => @audits %>
 </table>
