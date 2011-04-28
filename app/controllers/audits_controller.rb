@@ -18,7 +18,7 @@ class AuditsController < ApplicationController
       profile = Profile.first(:conditions => { :user_id => _model_id })  
       @audits += Audit.all( :conditions => { :auditable_id => profile.id, :auditable_type => 'Profile' } ) 
       user_intake_object = @model_object.user_intakes[0]            
-      @audits += Audit.all( :conditions => { :auditable_id => user_intake_object.id, :auditable_type => 'Profile' } ) if !user_intake_object.nil?    
+      @audits += Audit.all( :conditions => { :auditable_id => user_intake_object.id, :auditable_type => 'UserIntake' } ) if !user_intake_object.nil?    
     end
 
     @audits.sort! {|a,b| b.created_at <=> a.created_at } if @audits.length > 1
