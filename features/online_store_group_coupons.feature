@@ -6,9 +6,9 @@ Feature: Online store group coupons
   Background:
     Given the product catalog exists
     
-  Scenario: If user is not logged in, then pick the direct_to_consumer "default" coupon code
-    When I go to the online store
-    Then I should see "Direct to consumer"
+  # Scenario: If user is not logged in, then pick the direct_to_consumer "default" coupon code
+  #   When I go to the online store
+  #   Then I should see "Direct to consumer"
 
   Scenario Outline: A public user can only redeem coupons available to DTC group
     When I go to the online store

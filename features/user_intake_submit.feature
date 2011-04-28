@@ -78,14 +78,17 @@ Feature: Business - user intake - submit
   #   When I edit user intake with gateway serial "H200120023"
   #   Then page source should have xpath "input[@id='user_intake_submit']"
     
-  Scenario: For only direct_to_consumer group, show warning when clicking "Approve" if there is no ship date
-    Given a group "direct_to_consumer" exists
-    And the following user intakes:
-      | gateway_serial | group_name         |
-      | H200120023     | direct_to_consumer |
-    And senior of user intake "H200120023" has "Ready for Approval" status
-    When I edit user intake with gateway serial "H200120023"
-    Then page content should have "Warning, Shipped at"
+  # 
+  #  Thu Apr 28 03:12:43 IST 2011, ramonrails
+  #   * OBSOLETE. These attributes are not available on the user intake form now, as checked visually
+  # Scenario: For only direct_to_consumer group, show warning when clicking "Approve" if there is no ship date
+  #   Given a group "direct_to_consumer" exists
+  #   And the following user intakes:
+  #     | gateway_serial | group_name         |
+  #     | H200120023     | direct_to_consumer |
+  #   And senior of user intake "H200120023" has "Ready for Approval" status
+  #   When I edit user intake with gateway serial "H200120023"
+  #   Then page content should have "Warning, Shipped at"
 
   Scenario: When the approve button is clicked, partially disable test mode of user
     Given the following user intakes:
@@ -100,7 +103,7 @@ Feature: Business - user intake - submit
     And caregivers of user intake "H200120023" are away
     And senior of last user intake should have "Ready to Install" state
     # Verify “Opt out of live call center” is un-checked, but caregivers are still away at Config > Users > (pick row) > Caregivers
-    And senior of last user intake should not be opted out of call center
+    And senior of last user intake should be opted in to call center
     And caregivers of last user intake should be away
     # Press panic button (or cURL if hardware not available) and verify “Ready to Bill” state
     When panic button test data is received for user intake "H200120023"

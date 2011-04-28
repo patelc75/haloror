@@ -68,6 +68,7 @@ end
 Given /^the senior of last user intake is not in test mode$/ do
   (ui = UserIntake.last).should_not be_blank
   ui.senior.should_not be_blank
+  ui.senior.set_test_mode( false)
   ui.senior.test_mode?.should be_false
 end
 
@@ -558,6 +559,7 @@ Then /^(?:|the )senior of user intake "([^"]*)" should have (.+)$/ do |_serial, 
   ui = UserIntake.find_by_gateway_serial(_serial)
   ui.should_not be_blank
   senior = ui.senior
+  senior.login = senior.login_was if senior.login.blank? && !senior.login_was.blank?
   senior.should be_valid
 
   if what == "a status attribute"
@@ -711,8 +713,8 @@ Then /^caregivers (should|should not) be away for user intake "([^"]*)"$/ do |co
   end
 end
 
-Then /^caregivers of last user intake should be away$/ do
-  Then %{caregivers should be away for user intake "last"}
+Then /^caregivers of last user intake (should|should not) be away$/ do |_state|
+  Then %{caregivers #{_state} be away for user intake "last"}
 end
 
 Then /^senior of user intake "([^"]*)" is halouser of safety care group$/ do |_serial|
@@ -829,6 +831,12 @@ Then /^last user intake group should be "([^"]*)"$/ do |_group_name|
   (_ui = UserIntake.last).should_not be_blank
   _ui.group.should_not be_blank
   _ui.group.name.should == _group_name
+end
+
+Then /^senior of last user intake should have "([^"]*)" state$/ do |_state|
+  (_ui = UserIntake.last).should_not be_blank
+  (_senior = _ui.senior).should_not be_blank
+  _senior.status.should == _state
 end
 
 # ============================

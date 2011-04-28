@@ -54,13 +54,13 @@ Feature: Online store coupons
     Then page content should have "<values>"
     
     Examples:
-      | coupon   | values                    |
+      | coupon | values |
       #   * exact match of coupon_code, group and product
-      | 99TRIAL  | 99, 1 month trial, 114    |
+      | 99TRIAL | 99, 1 month trial, 114 |
       #   * product, coupon_code match. group does not have such code. snaps to match at 'default' group
-      | SNAPBACK | 55, 110                   |
+      | SNAPBACK | 55, 110 |
       #   * random coupon_code. snaps to 'default/default' coupon code
-      | DUMMY    | 249, 177, 3 months advance |
+      | DUMMY | 249 |
 
   # # Wed Aug 25 03:16:11 IST 2010
   # # TODO: how should this scenario look now?
