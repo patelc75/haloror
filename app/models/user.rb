@@ -3415,7 +3415,7 @@ class User < ActiveRecord::Base
   #   this can help to idenitfy all the issue quickly
   # WARNING: (Wed Oct  6 05:12:20 IST 2010) Needs code coverage. smoke tested for now
   def autofill_login
-    if login.blank? # && !email.blank? # !user.blank? && user.login.blank?
+    if login_was.blank? #check the database value of login, not the value in memory
       hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
       # only when user_type is not nil, but login is
       self.login = "_AUTO_#{hex}" # _AUTO_xxx is treated as blank
@@ -3434,8 +3434,10 @@ class User < ActiveRecord::Base
   # Sets the salt and encrypts the password 
   def encrypt_password
     unless password.blank?
-      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
-      self.crypted_password = encrypt(password)
+      if new_record?
+        self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") 
+        self.crypted_password = encrypt(password)
+      end
     end
   end
   
