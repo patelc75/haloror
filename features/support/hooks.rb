@@ -19,13 +19,13 @@ Before do
   # DatabaseCleaner.start
 end
 
-# Scenario teardown
-#
-After do |scenario|
-  # #
-  # # Clean all dirty data
-  # DatabaseCleaner.clean
-  #
-  # Tell Cucumber to quit after this scenario is done - if it failed.
-  Cucumber.wants_to_quit = true if scenario.failed?
-end
+# # Scenario teardown
+# #
+# After do |scenario|
+#   # #
+#   # # Clean all dirty data
+#   # DatabaseCleaner.clean
+#   #
+#   # Tell Cucumber to quit after this scenario is done - if it failed.
+#   Cucumber.wants_to_quit = true if scenario.failed?
+# end

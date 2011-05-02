@@ -68,7 +68,7 @@ end
 Given /^the senior of last user intake is not in test mode$/ do
   (ui = UserIntake.last).should_not be_blank
   ui.senior.should_not be_blank
-  ui.senior.set_test_mode( false)
+  ui.senior.set_test_mode!( false)
   ui.senior.test_mode?.should be_false
 end
 

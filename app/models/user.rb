@@ -168,8 +168,8 @@ class User < ActiveRecord::Base
   #   * https://redmine.corp.halomonitor.com/issues/4124#note-11
   #   * login is always required now
   #   * when not available/required, it gets _AUTO_generated
-  validates_presence_of     :login # , :if => :password_required?
-  validates_uniqueness_of   :login, :case_sensitive => false # , :if => :login_not_blank?
+  validates_presence_of     :login, :if => :password_required?
+  validates_uniqueness_of   :login, :case_sensitive => false, :if => :login_not_blank?
   
   # before_save :encrypt_password # shifted to a method where we can make multiple calls
   #
@@ -223,6 +223,12 @@ class User < ActiveRecord::Base
     self.lazy_roles = {} # lazy loading roles of this user
     self.lazy_options = {} # lazy loading options of this user, if this is a caregiver
     self.lazy_associations = {} # user intake and other associations that user should have when saved
+  end
+
+  def before_validate
+    if login.blank? && !login_was.blank?
+      self.login = self.login_was
+    end
   end
 
   def before_save
@@ -3415,12 +3421,19 @@ class User < ActiveRecord::Base
   #   this can help to idenitfy all the issue quickly
   # WARNING: (Wed Oct  6 05:12:20 IST 2010) Needs code coverage. smoke tested for now
   def autofill_login
-    if login_was.blank? #check the database value of login, not the value in memory
-      hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
-      # only when user_type is not nil, but login is
-      self.login = "_AUTO_#{hex}" # _AUTO_xxx is treated as blank
-      self.password = hex
-      self.password_confirmation = hex
+    # 
+    #  Thu Apr 28 22:06:24 IST 2011, ramonrails
+    #   * never changed? we need a valid login
+    if login.blank?
+      if login_was.blank? #check the database value of login, not the value in memory
+        hex = Digest::MD5.hexdigest((Time.now.to_i+rand(9999999999)).to_s)[0..20]
+        # only when user_type is not nil, but login is
+        self.login = "_AUTO_#{hex}" # _AUTO_xxx is treated as blank
+        self.password = hex
+        self.password_confirmation = hex
+      else
+        login = login_was
+      end
     end
   end
 
