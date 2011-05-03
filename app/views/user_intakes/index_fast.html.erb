@@ -1,6 +1,7 @@
 <!-- <meta http-equiv="refresh" content="30"> -->
 <!-- <meta http-equiv="refresh" content="30"> -->
-<h3>User Intake Forms</h3>
+<h3>User Intake Forms</h3> 
+<div class="span-24 box" style="margin-bottom:15px;padding:5px">
 <div class="span-24 last">
   <%= '<font color="red">' + flash[:notice] + '</font><br><br>' if flash[:notice] %>
 <form id="group_form_id" action="/user_intakes/index_fast" method="GET">
@@ -25,9 +26,9 @@
     </tr>
   </table>
   <div>
-  </div>
-    
+  </div>    
 </form>
+</div>  
 </div>
 <div class="span-24 last">
   <% form_tag add_notes_user_intakes_path, :method => :post do %>
