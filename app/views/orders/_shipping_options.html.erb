@@ -35,14 +35,15 @@
           <%= f.label :dealer_install_fee_applies, "Dealer Install Fee" %>
         <% end %>
         <% end %>
-      </div>
-      <div id="coupon_code" class="textright">
+      </div>  
+      <br>
+      <div id="coupon_code" class="textleft">
         <%= f.label :coupon_code, "Coupon Code" %> <span class="tiny">(if any)</span>
         <%= f.text_field :coupon_code, :disabled => confirmation_mode? %>
         <span class="tiny">Example: WINTER</span>
 
         <% unless confirmation_mode? %>
-          <%= button_to_function "Apply", "location.href = 'http://' + document.domain +'/order/'+ $('order_coupon_code').value;", :class => "button green-button small" %>
+          <%= button_to_function "Apply", "location.href = 'http://' + document.domain +'/order/'+ $('order_coupon_code').value;" %>
         <% end %>
         <!-- <%# f.submit "Apply", :disable_with => 'Applying...', :class => 'button green-button small', :id => "apply_button" %> -->
       </div>
