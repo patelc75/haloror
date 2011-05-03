@@ -71,7 +71,7 @@ class UserIntakesController < ApplicationController
     #   * search user name, id
     if !params["search"].blank? && !params["search"]["q"].blank?
       @q = params["search"]["q"]
-      _ids = (_ids & UserIntake.all( :include => :users, :conditions => ["users.name LIKE ? OR users.id = ?", "%#{@q}%", @q.to_i], :select => :id).collect(&:id) )
+      _ids = (_ids & UserIntake.all( :include => {:users => :profile}, :conditions => ["profiles.first_name LIKE ? OR profiles.last_name LIKE ? OR users.id = ?", "%#{@q}%", "%#{@q}%", @q.to_i], :select => :id).collect(&:id) )
     end
     #   * search status
     if !params["search"].blank? && !params["search"]["status"].blank?
