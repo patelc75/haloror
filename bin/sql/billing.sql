@@ -28,7 +28,7 @@ SELECT distinct (users.id) as user_id, profiles.first_name, profiles.last_name, 
   order by users.created_at desc
   limit 1000;                        
                       
--- Caregivers of installed users (derived from caregivers_by_user_id Pg function)     
+-- Caregivers of installed or pending users (derived from caregivers_by_user_id Pg function)     
 select users.email, profiles.first_name, profiles.last_name, users.id as user_id, roles_users_options.position as pos, roles_users_options.removed as removed, roles_users_options.active as active, roles_users_options.phone_active as phone, roles_users_options.email_active as email, roles_users_options.text_active as txt, roles_users_options.relationship as rel, roles_users_options.is_keyholder as key 
        from roles_users, users, roles_users_options, roles, profiles 
        where (roles_users.user_id = users.id and roles_users_options.roles_user_id = roles_users.id) 

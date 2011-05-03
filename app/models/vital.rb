@@ -303,9 +303,9 @@ class Vital < ActiveRecord::Base
 
   def Vital.job_detect_unavailable_devices2
     RAILS_DEFAULT_LOGGER.warn("Vital.job_detect_unavailable_devices running at #{Time.now}")
-    # Find devices that were previously DeviceUnavailable but now available again  
-        
-    ['ethernet', 'dialup'].each do |_mode|     
+    
+    # Find devices that were previously DeviceUnavailable but now available again   
+    ['ethernet', 'dialup'].each do |_mode|        
       conds = []                               
       conds << "(device_id in (select device_id from access_mode_statuses where mode = '#{_mode}')" + (_mode == 'ethernet' ? " OR id not in (select device_id from access_mode_statuses))" : ")")
       conds << "device_id in (select v.id from latest_vitals v where v.updated_at >= now() - interval '#{SystemTimeout.send(_mode.to_sym).device_unavailable_timeout_sec} seconds')"    
@@ -317,24 +317,15 @@ class Vital < ActiveRecord::Base
         DeviceUnavailableAlert.transaction do
           DeviceAvailableAlert.create(:device => alert.device)
           alert.reconnected_at = Time.now 
-          
-          lv = LatestVital.find(:first, :conditions => {:id => alert.device.id})
-          alert.latest_vital_at = lv.updated_at if !lv.nil?      
-
-          dss = DeviceStrapStatus.find(:first, :conditions => {:id => alert.device.id})  
-          alert.is_fastened_at = dss.updated_at if !dss.nil?
-          alert.is_fastened = dss.is_fastened if !dss.nil?                         
-
-          ams = AccessModeStatus.find(:first, :conditions => {:device_id => alert.device.id})  
-          alert.access_mode = ams.mode if !ams.nil?
-          
+          Vital.populate_debugging_fields(alert)          
           alert.save!
         end
       end
     end
     
+    # Find devices where a) Vitals have not been posted to for a specific interval AND b) the chest strap is “fastened”
     ['ethernet', 'dialup'].each do |_mode|
-      # Find devices where a) Vitals have not been posted to for a specific interval AND b) the chest strap is “fastened”          
+                
       conds = []
       conds << "(id in (select device_id from access_mode_statuses where mode = '#{_mode}')" + (_mode == 'ethernet' ? " OR id not in (select device_id from access_mode_statuses))" : ")")
       conds << "id in (select v.id from latest_vitals v where v.updated_at < now() - interval '#{SystemTimeout.send(_mode.to_sym).device_unavailable_timeout_sec} seconds')"
@@ -362,12 +353,23 @@ class Vital < ActiveRecord::Base
     if alert
       alert.number_attempts += 1
       alert.save!
-    else
+    else                                                                
       alert = DeviceUnavailableAlert.new
-      alert.device = device
+      alert.device = device   
+      Vital.populate_debugging_fields(alert)                
       alert.save!
     end
+  end   
+  
+  def self.populate_debugging_fields(alert)
+    lv = LatestVital.find(:first, :conditions => {:id => alert.device.id})
+    alert.latest_vital_at = lv.updated_at if !lv.nil?      
+
+    dss = DeviceStrapStatus.find(:first, :conditions => {:id => alert.device.id})  
+    alert.is_fastened_at = dss.updated_at if !dss.nil?
+    alert.is_fastened = dss.is_fastened if !dss.nil?                         
+
+    ams = AccessModeStatus.find(:first, :conditions => {:device_id => alert.device.id})  
+    alert.access_mode = ams.mode if !ams.nil?
   end
-
-
 end

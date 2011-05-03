@@ -21,7 +21,7 @@ Quantity:<%= item.quantity %>, Cost:<%= item.formatted_cost(item.quantity) %>
 <% if item.recurring_monthly == true %> 
 <%= item.status %>
 <% end %>  
-<br/>
+
 <% end -%>
 Card Number <%= @order.masked_card_number %> (exp <%= @order.card_expiry.year %>) has been charged <%= number_to_currency(@order.cost, :precision => 2, :unit => '$') %>
 
