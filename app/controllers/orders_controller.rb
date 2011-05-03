@@ -65,8 +65,8 @@ class OrdersController < ApplicationController
         #   This can probably be obsolete and attributes can go directly to session[:order]
         order_params.merge!(
             "cost" => (@product == 'complete' ? \
-              DeviceModel.complete_coupon(@order.group, @order.coupon_code).upfront_charge.to_s : \
-              DeviceModel.clip_coupon(@order.group, @order.coupon_code).upfront_charge.to_s),
+              DeviceModel.complete_coupon(@order.group, @order.coupon_code).upfront_charge( @order).to_s : \
+              DeviceModel.clip_coupon(@order.group, @order.coupon_code).upfront_charge( @order).to_s),
             "product" => @product
             )
         session[:product] = @product # same as params[:product]. Will be used later in create

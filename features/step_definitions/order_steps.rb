@@ -78,7 +78,7 @@ Then /^upfront charge for last order should include dealer install fee charges$/
   (_order = Order.last).should_not be_blank
   (_cost = _order.product_cost).should_not be_blank
   _recurring_sum = _order.order_items.recurring_charges.sum( :cost)
-  _order.order_items.reject {|e| e.recurring_monthly != true }.sum( :conditions => { :cost => _cost.upfront_charge}).should_not be_blank
+  _order.order_items.reject {|e| e.recurring_monthly != true }.sum( :conditions => { :cost => _cost.upfront_charge( _order)}).should_not be_blank
 end
 
 Then /^last order group should be "([^"]*)"$/ do |_group_name|
