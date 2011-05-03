@@ -19,7 +19,7 @@
 <!-- <%# render :partial => 'order_coupon_code' %> -->
 
 <% form_for @order, :url => {:action => (confirmation_mode? ? "create" : "new")}, :html => {:id => 'form1', :class => "#{confirmation_mode? ? 'confirm-form' : 'form'}"} do |f| %>
- 	<fieldset style="border: 2px solid ; padding: 10px;">    
+ 	<fieldset style="border: 3px solid ; padding: 10px;">    
 	<legend><span style="color:#008040;font-size:150%"><b>&nbsp;<%= confirmation_mode? ? 'Order summary' : 'Pick a product or call 1-888-971-4256' %>&nbsp;</b></span></legend>
     <a name="top"></a>
     <table id="product_detail_box" width="100%">
@@ -33,7 +33,7 @@
     </table>
   </fieldset>
   <br /><br />
-	<fieldset style="border: 2px solid; padding: 10px;">   		 
+	<fieldset style="border: 3px solid; padding: 10px;">   		 
     <legend><span style="color:#008040;font-size:150%"><b>&nbsp;Billing and Shipping<%= ' Summary' if confirmation_mode? %></b></span></legend>
     <table width="100%">
       <tr align="left">

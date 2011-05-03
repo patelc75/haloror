@@ -1,6 +1,6 @@
 <% javascript 'shipping_options' %>
 
-<table class="colored">
+<table class="colored" style="border-color:#B3B3B3">
   <tr>
     <th class="span-8">Please pick shipping option</th>
     <th>Other</th>
@@ -27,7 +27,7 @@
       <% end %>
     </td>
 
-    <td>
+    <td style="valigin:top; border-style:solid; border-left-width:1px; padding-left:15px; border-left-color:#B3B3B3">
       <div>
         <% unless current_user == :false %>
         <% if current_user.is_admin? || current_user.is_super_admin? %>
