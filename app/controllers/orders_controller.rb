@@ -45,6 +45,12 @@ class OrdersController < ApplicationController
     #   * coupon code should be what is fetched from database subject to the given parameters
     @order.coupon_code = _coupon_code = ((@product == 'complete') ? @complete_tariff.coupon_code : @clip_tariff.coupon_code )
     
+    # 
+    #  Thu May  5 03:29:20 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4248
+    #   * throw a message on page for incorrect coupon code
+    flash[:notice] = "#{params[:coupon_code]} is not valid for this group" if @order.coupon_code != params[:coupon_code]
+    
     if request.post? # !['Apply', 'Applying...'].include?(params[:commit])
       # if ( params["commit"] != 'Apply') #  && params.has_key?( "order")
       @shipping_option_id = session[:shipping_option_id] = params[:order][:shipping_option_id]
