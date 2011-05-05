@@ -140,9 +140,9 @@ class Order < ActiveRecord::Base
   #   * https://redmine.corp.halomonitor.com/issues/4248
   def coupon_code_valid?
     _coupon = product_cost # fetch the coupon code applicable for the selected group
-    # if group.blank? || (_coupon.group_id != group_id)
-    #   errors.add_to_base( "Coupon code #{coupon_code} is not valid for the group #{group_name}")
-    # end
+    if group.blank? || (_coupon.group_id != group_id)
+      errors.add_to_base( "Coupon code #{coupon_code} is not valid for the group #{group_name}")
+    end
     if _coupon.expired?
       errors.add_to_base( "Coupon code expired on #{_coupon.expiry_date}")
     end
@@ -346,7 +346,7 @@ class Order < ActiveRecord::Base
     value = 0
     order_items.each do |order_item|
       tariff = order_item.device_model.coupon( :group => group, :coupon_code => coupon_code) unless order_item.device_model.blank?
-      value += (tariff.deposit + tariff.shipping + tariff.upfront_charge) unless tariff.blank?
+      value += (tariff.deposit + tariff.shipping + tariff.upfront_charge( dealer_install_fee_applies)) unless tariff.blank?
     end
     value
   end
@@ -391,7 +391,7 @@ class Order < ActiveRecord::Base
     #
     # charges pro-rata or upfront
     if options.blank? # no options means charge upfront
-      _cost = (product_cost.blank? ? 0 : product_cost.upfront_charge)
+      _cost = (product_cost.blank? ? 0 : product_cost.upfront_charge( dealer_install_fee_applies))
       # 
       #  Thu Nov 25 00:18:02 IST 2010, ramonrails
       #   * "purchase" changed
@@ -539,8 +539,21 @@ class Order < ActiveRecord::Base
   #   * https://redmine.corp.halomonitor.com/issues/4253
   #   * pick from local columns, else pick from coupon_code
   #   * CHANGED: This is just a clone of methods for coupon_code. This one uses local columns
-  def upfront_charge
-    advance_charge.to_i + cc_deposit.to_i + cc_shipping.to_i + cc_dealer_install_fee.to_i
+  #   usage:
+  #   * upfront_charge( true) => apply dealer_install_fee
+  #   * upfront_charge( order) => check order.dealer_install_fee_applies to apply
+  def upfront_charge( _object = nil)
+    # advance_charge.to_i + cc_deposit.to_i + cc_shipping.to_i + cc_dealer_install_fee.to_i
+    _charge = advance_charge.to_i + cc_deposit.to_i + cc_shipping.to_i
+    #   * identify if the dealer_install_fee_applies
+    _apply = if _object.is_a?( Order)
+      _object.dealer_install_fee_applies
+    elsif _object.is_a?( Boolean)
+      _object == true
+    else
+      false
+    end
+    _charge += cc_dealer_install_fee.to_i if _apply
   end
 
   def card_successful?

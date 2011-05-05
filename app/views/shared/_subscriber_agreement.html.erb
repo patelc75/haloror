@@ -69,7 +69,7 @@
         <li>
           <strong>PAYMENT TERMS</strong>
           <ol>
-            <li><strong>Fees</strong>. The Subscriber agrees to pay a deposit the amount of <strong><%= (@user_intake && @user_intake.order) ? @user_intake.order.product_cost.upfront_charge : '__________' %></strong> and fees in the amount of <strong><%= (@user_intake && @user_intake.order) ? @user_intake.order.product_cost.monthly_recurring : '______________' %></strong> per month.</li>
+            <li><strong>Fees</strong>. The Subscriber agrees to pay a deposit the amount of <strong><%= (@user_intake && @user_intake.order) ? @user_intake.order.product_cost.upfront_charge( @user_intake.order) : '__________' %></strong> and fees in the amount of <strong><%= (@user_intake && @user_intake.order) ? @user_intake.order.product_cost.monthly_recurring : '______________' %></strong> per month.</li>
             <li><strong>Payment</strong>. The Subscriber shall remit payment of the fees to Provider identified in section 1.8.</li>
           </ol>
         </li>

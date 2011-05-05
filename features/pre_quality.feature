@@ -434,7 +434,7 @@ Feature: Pre quality
     And I create admin of "bestbuy" group
     And I activate the last user as "reseller_admin"
     And I am placing an online order for "bestbuy" group
-    And I fill in "Coupon Code" with "reseller_coupon"
+    And I fill in "Coupon Code" with "bestbuy_coupon"
     And I uncheck "order_bill_address_same"
     And I press "Continue"
     And I press "Place Order"

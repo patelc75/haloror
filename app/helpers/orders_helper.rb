@@ -30,18 +30,24 @@ module OrdersHelper
     if _tariff.blank?
       '?'
     else
-      _charge = if _tariff.shipping.blank?
-        if @shipping_option.blank?
-          _tariff.upfront_charge
-        else
-          _tariff.upfront_charge + @shipping_option.price
-        end
-      else
-        _tariff.upfront_charge
-      end
-      #   * apply dealer_install_fee charge only when checkbox "on"
-      #   * omitting this charge from tariff requires more complex code. this is easier and simpler
-      _charge -= _tariff.dealer_install_fee.to_i unless _order.dealer_install_fee_applies
+      _charge = _tariff.upfront_charge( _order)
+      _charge += @shipping_option.price if ( _tariff.shipping.blank? && !@shipping_option.blank?)
+      #
+      # _charge = if _tariff.shipping.blank?
+      #   if @shipping_option.blank?
+      #     _tariff.upfront_charge
+      #   else
+      #     _tariff.upfront_charge + @shipping_option.price
+      #   end
+      # else
+      #   _tariff.upfront_charge
+      # end
+      # 
+      #  Tue May  3 21:39:31 IST 2011, ramonrails
+      #   * updated upfront_charge method to accommodate the dealer_install_fee condition
+      # #   * apply dealer_install_fee charge only when checkbox "on"
+      # #   * omitting this charge from tariff requires more complex code. this is easier and simpler
+      # _charge -= _tariff.dealer_install_fee.to_i unless _order.dealer_install_fee_applies
       USD_value( _charge)
     end
   end

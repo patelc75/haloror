@@ -4,6 +4,8 @@ var shipping_options = new Array();
   shipping_options.push( new Array( <%= _option.id %>, '<%= _option.description %>', <%= _option.price %>));
 <%- end -%>
 
+// javascript for order page
+
 function couponDeposit() {
   if( $('product_clip').checked) {
     if( $('bc_hidden_deposit') != null) {
@@ -20,7 +22,7 @@ function couponInstallFee() {
   if( $('product_clip').checked) {
     if( $('bc_hidden_install_fee') != null) {
       _bc_install_fee = parseFloat( $('bc_hidden_install_fee').value );
-    }    
+    }
   } else {
     if( $('cs_hidden_install_fee') != null) {
       _cs_install_fee = parseFloat( $('cs_hidden_install_fee').value );
@@ -43,24 +45,32 @@ function couponShipping() {
 }
 
 function dealerInstallFee() {
-  if( $('product_clip').checked) {
-    if( $('order_dealer_install_fee_applies').checked) {
-      $('bc_install_fee_value').show();
-      $('bc_install_fee_title').show();
-    } else {
-      $('bc_install_fee_value').hide();
-      $('bc_install_fee_title').hide();
-    }
+  // hide objects when value is NULL
+  if( $('order_dealer_install_fee_applies') == null) {
+    $('bc_install_fee_value').hide();
+    $('bc_install_fee_title').hide();
+    $('cs_install_fee_value').hide();
+    $('cs_install_fee_title').hide();
   } else {
-    if( $('order_dealer_install_fee_applies').checked) {
-      $('cs_install_fee_value').show();
-      $('cs_install_fee_title').show();
+    if( $('product_clip').checked) {
+      if( $('order_dealer_install_fee_applies').checked) {
+        $('bc_install_fee_value').show();
+        $('bc_install_fee_title').show();
+      } else {
+        $('bc_install_fee_value').hide();
+        $('bc_install_fee_title').hide();
+      }
     } else {
-      $('cs_install_fee_value').hide();
-      $('cs_install_fee_title').hide();
+      if( $('order_dealer_install_fee_applies').checked) {
+        $('cs_install_fee_value').show();
+        $('cs_install_fee_title').show();
+      } else {
+        $('cs_install_fee_value').hide();
+        $('cs_install_fee_title').hide();
+      }
     }
+    updateTotal();
   }
-  updateTotal();
 }
 
 function shippingChoices() {
@@ -96,7 +106,7 @@ function updateTotal() {
     } else {
       $('bc_total_value').innerHTML = ( '$' + (_bc_total_deposit + _bc_total_shipping) + '.00');
     }
-    
+
   } else {
     // chest strap
     _cs_total_deposit  = parseFloat( $('cs_deposit_value').innerHTML.substring(1));
@@ -118,14 +128,14 @@ function updateCost( _element) {
   // hide / show radio buttons and checkboxes
   dealerInstallFee();
   shippingChoices();
-  
+
   // values for loaded coupon code
   couponDeposit();
   couponInstallFee();
-  
+
   if( $('product_clip').checked) {
     _bc_shipping = couponShipping();
-    
+
     // values from radio buttons
     if( $('bc_hidden_shipping').value == '') {
       // get selected element value, if shipping is user opted
@@ -136,11 +146,13 @@ function updateCost( _element) {
     }
   } else {
     _cs_shipping = couponShipping();
-    
+
     // values from radio buttons
     if( $('cs_hidden_shipping').value == '') {
       // get selected element value, if shipping is user opted
-      $('cs_shipping_value').innerHTML = $( _element.id + '_value').innerHTML;
+      if( _element != null) {
+        $('cs_shipping_value').innerHTML = $( _element.id + '_value').innerHTML;
+      }
     } else {
       // get shipping from coupon code, if shipping is defined there
       $('cs_shipping_value').innerHTML = ("$" + _cs_shipping + ".00");

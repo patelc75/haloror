@@ -127,8 +127,23 @@ class DeviceModelPrice < ActiveRecord::Base
     monthly_recurring.to_i * months_advance.to_i
   end
   
-  def upfront_charge
-    advance_charge.to_i + deposit.to_i + shipping.to_i + dealer_install_fee.to_i
+  # 
+  #  Tue May  3 14:16:20 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4402#note-5
+  #   * dealer_install_fee is conditional
+  #   usage:
+  #   * upfront_charge( true) => apply dealer_install_fee
+  #   * upfront_charge( order) => check order.dealer_install_fee_applies to apply
+  def upfront_charge( _object = nil)
+    _charge = advance_charge.to_i + deposit.to_i + shipping.to_i
+    #   * identify if the dealer_install_fee_applies
+    _apply = if _object.is_a?( Order)
+      _object.dealer_install_fee_applies
+    else
+      _object == true
+    end
+    _charge += dealer_install_fee.to_i if _apply
+    _charge
   end
   
   def discounted
