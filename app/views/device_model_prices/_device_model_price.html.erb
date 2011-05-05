@@ -3,43 +3,43 @@
   <%= f.error_messages %>
 
   <p>
-    <%= f.label :group_id, "Group" %>
+    <%= f.label :group_id, "<b>Group</b>" %>
     <%= f.select :group_id, @groups.collect {|e| [e.name, e.id]}.insert( 0, ['Please select a group', '']) %>
   </p>
   <p>
-    <%= f.label :device_model_id, "Product" %> (choose 1200xxx for complete kits)<br />
+    <%= f.label :device_model_id, "<b>Product</b>" %> (choose 1200xxx for complete kits)<br />
     <%= f.select :device_model_id, DeviceModel.all.collect {|p| [p.model_type, p.id]} %>
   </p>
   <p>
-    <%= f.label :coupon_code, "Coupon Code Name" %><br />
+    <%= f.label :coupon_code, "<b>Coupon Code Name</b>" %><br />
     <%= f.text_field :coupon_code %>
   </p>
   <p>
-    <%= f.label :expiry_date %><br />
+    <%= f.label :expiry_date, "<b>Expiration</b> Date" %><br />
     <%= f.date_select :expiry_date %>
   </p>
   <p>
-    <%= f.label :deposit %><br />
+    <%= f.label :deposit, "<b>Deposit</b> amount" %><br />
     <%= f.text_field :deposit %>
   </p>
   <p>
-    <%= f.label :shipping, "Shipping (leave blank for standard shipping options)" %><br />
+    <%= f.label :shipping, "<b>Shipping</b> amount (leave blank to allow standard shipping options)" %><br />
     <%= f.text_field :shipping %>
   </p>
   <p>
-    <%= f.label :monthly_recurring %><br />
+    <%= f.label :monthly_recurring, "<b>Monthly recurring</b> amount (eg. 59)"  %><br />
     <%= f.text_field :monthly_recurring %>
   </p>
   <p>
-    <%= f.label :months_advance %><br />
+    <%= f.label :months_advance, "Num of <b>months to pay in advance</b> (enter 0 for none)" %><br />
     <%= f.text_field :months_advance %>
   </p>
   <p>
-    <%= f.label :months_trial %><br />
+    <%= f.label :months_trial, "Num of <b>free trial months</b> (enter 0 for none)"  %><br />
     <%= f.text_field :months_trial %>
   </p>
   <p>
-    <%= f.label :dealer_install_fee %><br />
+    <%= f.label :dealer_install_fee, "<b>Dealer Install Fee</b> (enter 0 for none)"  %><br />
     <%= f.text_field :dealer_install_fee %>
   </p>
   <p>
