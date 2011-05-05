@@ -53,20 +53,20 @@ function dealerInstallFee() {
     if( $('cs_install_fee_title') != null ) { $('cs_install_fee_title').hide(); }
   } else {
     if( $('product_clip').checked) {
-      if( $('order_dealer_install_fee_applies').checked) {
-        $('bc_install_fee_value').show();
-        $('bc_install_fee_title').show();
+      if( ($('order_dealer_install_fee_applies') != null) && $('order_dealer_install_fee_applies').checked) {
+        if( $('bc_install_fee_value') != null) { $('bc_install_fee_value').show();}
+        if( $('bc_install_fee_title') != null) { $('bc_install_fee_title').show();}
       } else {
-        $('bc_install_fee_value').hide();
-        $('bc_install_fee_title').hide();
+        if( $('bc_install_fee_value') != null) { $('bc_install_fee_value').hide();}
+        if( $('bc_install_fee_title') != null) { $('bc_install_fee_title').hide();}
       }
     } else {
-      if( $('order_dealer_install_fee_applies').checked) {
-        $('cs_install_fee_value').show();
-        $('cs_install_fee_title').show();
+      if( ($('order_dealer_install_fee_applies') != null) && $('order_dealer_install_fee_applies').checked) {
+        if( $('cs_install_fee_value') != null) { $('cs_install_fee_value').show();}
+        if( $('cs_install_fee_title') != null) { $('cs_install_fee_title').show();}
       } else {
-        $('cs_install_fee_value').hide();
-        $('cs_install_fee_title').hide();
+        if( $('cs_install_fee_value') != null) { $('cs_install_fee_value').hide();}
+        if( $('cs_install_fee_title') != null) { $('cs_install_fee_title').hide();}
       }
     }
     updateTotal();
