@@ -97,6 +97,29 @@ and timestamp < now();
 and p.user_id in (1)
 limit 1000;
 
+--------------------- Steps for 10 minutes post fall plus S/W version------------------------------
+select f.id, f.user_id, f.timestamp,
+(select di.software_version from device_infos di
+where f.user_id = di.user_id
+and (di.serial_number like '%H1%' or di.serial_number like '%H5%')
+and f.timestamp > di.created_at
+order by di.created_at desc limit 1) as software_version,
+ (select steps.steps from steps  where (steps.user_id=f.user_id and f.timestamp + interval '1 minutes' > steps.begin_timestamp and steps.begin_timestamp > f.timestamp) order by steps.begin_timestamp desc  limit 1) as Step_1,
+ (select steps.steps from steps  where (steps.user_id=f.user_id and f.timestamp + interval '2 minutes' > steps.begin_timestamp and steps.begin_timestamp > f.timestamp) order by steps.begin_timestamp desc limit 1) as Step_2,
+ (select steps.steps from steps  where (steps.user_id=f.user_id and f.timestamp + interval '3 minutes' > steps.begin_timestamp and steps.begin_timestamp > f.timestamp) order by steps.begin_timestamp desc limit 1) as Step_3,  
+ (select steps.steps from steps  where (steps.user_id=f.user_id and f.timestamp + interval '4 minutes' > steps.begin_timestamp and steps.begin_timestamp > f.timestamp) order by steps.begin_timestamp desc limit 1) as Step_4,
+ (select steps.steps from steps  where (steps.user_id=f.user_id and f.timestamp + interval '5 minutes' > steps.begin_timestamp and steps.begin_timestamp > f.timestamp) order by steps.begin_timestamp desc  limit 1) as Step_5,
+ (select steps.steps from steps  where (steps.user_id=f.user_id and f.timestamp + interval '6 minutes' > steps.begin_timestamp and steps.begin_timestamp > f.timestamp) order by steps.begin_timestamp desc limit 1) as Step_6,
+ (select steps.steps from steps  where (steps.user_id=f.user_id and f.timestamp + interval '7 minutes' > steps.begin_timestamp and steps.begin_timestamp > f.timestamp) order by steps.begin_timestamp desc limit 1) as Step_7,  
+ (select steps.steps from steps  where (steps.user_id=f.user_id and f.timestamp + interval '8 minutes' > steps.begin_timestamp and steps.begin_timestamp > f.timestamp) order by steps.begin_timestamp desc limit 1) as Step_8,
+ (select steps.steps from steps  where (steps.user_id=f.user_id and f.timestamp + interval '9 minutes' > steps.begin_timestamp and steps.begin_timestamp > f.timestamp) order by steps.begin_timestamp desc limit 1) as Step_9,  
+ (select steps.steps from steps  where (steps.user_id=f.user_id and f.timestamp + interval '10 minutes' > steps.begin_timestamp and steps.begin_timestamp > f.timestamp) order by steps.begin_timestamp desc limit 1) as Step_10
+from falls f
+where f.user_id in ()
+and timestamp > now() - interval '2 weeks'
+and timestamp < now()
+order by user_id asc, timestamp desc limit 1000;
+
 ----- debugging statements -------------------------------------------------------------------------------
 select * from falls where user_id = 1;
 select * from events where event_type in ('BatteryPlugged', 'BatteryUnplugged') and user_id = 1 order by timestamp asc;
