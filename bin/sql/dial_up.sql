@@ -1,3 +1,13 @@
+--------- Queries in this section here are used by engineering and tech support ---------
+select dial_up_alerts.id, users.id as user_id, dial_up_alerts.device_id, phone_number, username, password, alt_number, alt_username, alt_password, last_successful_number, timestamp as las_suc_num 
+from dial_up_alerts, users, devices_users 
+where users.id = devices_users.user_id 
+and dial_up_alerts.device_id = devices_users.device_id 
+and timestamp > now() - interval '1 week'
+order by user_id asc, timestamp desc limit 1000;
+
+
+--------- Queries in this section here are used by health server development ------------
 select id, device_id as did, phone_number as phone_num, status, configured as conf, num_failures as num_f, consecutive_fails as consec_f, ever_connected as ever, dialup_type as type, created_at 
 from dial_up_statuses 
 where status = 'fail' 

@@ -10,7 +10,9 @@ ActionController::Routing::Routes.draw do |map|
   #     device_models.resources :rma_items
   #     device_models.resources :device_model_prices # prices based on coupon codes
   #   end
-  # end    map.resources :access_modes  map.resources :carriers
+  # end    
+  map.resources :access_modes  
+  map.resources :carriers
   map.resources :shipping_options
   map.resources :device_model_prices
   map.resources :groups
@@ -25,10 +27,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :self_test_results
   map.resources :dial_ups,:collection => {:dial_up_num => :get}
   map.resources :dial_up_statuses,:collection => {:last_successful => :get}
-  map.resources :dial_up_alerts
-
-  # map.resources :vitals # already mapped
-  
+  map.resources :dial_up_alerts  
   map.resources :oscope_start_msgs
   map.resources :oscope_stop_msgs
   map.resources :oscope_msgs
