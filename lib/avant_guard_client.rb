@@ -14,11 +14,12 @@ class AvantGuardClient
   # (ideally, the heartbeat should run from the task scheduler, of course)
 
   def self.heartbeat
-  	RAILS_DEFAULT_LOGGER.warn("AvantGuardClient.heartbeat running at #{Time.now}")
-  	#Avantguard does not support heartbeat since they have geographically redundant servers
+    RAILS_DEFAULT_LOGGER.warn("AvantGuardClient.heartbeat running at #{Time.now}")
+    #Avantguard does not support heartbeat since they have geographically redundant servers
   end
 
   def self.alert(event_type, user_id, account_num, timestamp = Time.now)
+    #Savon::Request.log = false
     msg = nil
     alarm_code = event_type_numeric( event_type)
     if !account_num.blank?
@@ -29,6 +30,7 @@ class AvantGuardClient
       client = Savon::Client.new do
         wsdl.document = "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx?WSDL"
         wsdl.endpoint = "https://portal.agmonitoring.com/testsgssignalservice/receiver.asmx"
+        wsdl.namespace = "http://tempuri.org"
       end
 
       # client.http.headers["SOAPAction"] = '"Signal"'
@@ -36,7 +38,7 @@ class AvantGuardClient
       response = client.request :soap, "signal" do # |soap|
         #soap.header["API-KEY"] = "foobar"
         #soap.input = "DoSimpleRequest"
-        #soap.action = "DoSimpleRequest"
+        #soap.action = "Signal"
         #body = Hash.new
         #body["wsdl:uniqueId"] = 12345
         soap.body = {
@@ -63,16 +65,16 @@ class AvantGuardClient
   def self.event_type_numeric(event_type)
     # FIXME: TODO: fill out these event types properly
     case event_type
-      when "Fall" then "E15001001"
-      when "Panic" then "E15002002"
-      when "GwAlarmButton" then "R15001001"
+    when "Fall"                   then "E15001001"
+    when "Panic"                  then "E15002002"
+    when "GwAlarmButton"          then "R15001001"
       #when "CallCenterFollowUp" then "004"
-      when "BatteryReminder" then "100"
-  	  when "StrapOff" then "101"
-  	  when "GatewayOfflineAlert" then "102"
-  	  when "DeviceUnavailableAlert" then "103"
-      else "000"
-  	end
+    when "BatteryReminder"        then "100"
+    when "StrapOff"               then "101"
+    when "GatewayOfflineAlert"    then "102"
+    when "DeviceUnavailableAlert" then "103"
+    else "000"
+    end
   end
 
   private
