@@ -40,7 +40,7 @@ class AvantGuardClient
         #body = Hash.new
         #body["wsdl:uniqueId"] = 12345
         soap.body = {
-          "Username"     => "Chirag.Patel",
+          "UserName"     => "Chirag.Patel",
           "UserPassword" => "cpHalo32",
           "Account"      => "#{account_num}",
           "SignalFormat" => "CID",
