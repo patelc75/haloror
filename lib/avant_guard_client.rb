@@ -19,6 +19,7 @@ class AvantGuardClient
   end
   
   def self.alert(event_type,user_id,account_num,timestamp=Time.now)            	            
+    #Savon::Request.log = false
     msg = nil
     alarm_code = event_type_numeric(event_type)
     if !account_num.blank?        
@@ -28,30 +29,30 @@ class AvantGuardClient
       
       client = Savon::Client.new do 
         wsdl.document = "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx?WSDL"
-        wsdl.endpoint = "https://portal.agmonitoring.com/testsgssignalservice/receiver.asmx"
+        wsdl.endpoint = "https://portal.agmonitoring.com/testsgssignalservice/receiver.asmx"      
+        wsdl.namespace = "http://tempuri.org"
       end
       
       #client.http.headers["SOAPAction"] = '"Signal"'
       
-      response = client.request "signal" do |soap|
+      response = client.request "Signal" do |soap|
         #soap.header["API-KEY"] = "foobar"
         #soap.input = "DoSimpleRequest"
-        #soap.action = "DoSimpleRequest"
+        #soap.action = "Signal"
         #body = Hash.new
         #body["wsdl:uniqueId"] = 12345   
         soap.body = { 
-          :Username => "Chirag.Patel",
-          :UserPassword => "cpHalo32",
-          :Account => "#{account_num}",
-          :SignalFormat => "CID",
-          :SignalCode => "E100"        
+          "UserName" => "Chirag.Patel",
+          "UserPassword" => "cpHalo32",
+          "Account" => "#{account_num}",
+          "SignalFormat" => "CID",
+          "SignalCode" => "E100"                  
         }
-        
         msg = soap
       end    	        
-      RAILS_DEFAULT_LOGGER.warn("AvantGuard::client = " + "%s\r\n"% [client.to_yaml])
-      RAILS_DEFAULT_LOGGER.warn("AvantGuard::soap.body = " + "%s\r\n"% [msg.body.to_yaml])
-      RAILS_DEFAULT_LOGGER.warn("AvantGuard::response = " + "%s\r\n"% [response.to_yaml])
+      RAILS_DEFAULT_LOGGER.warn("AvantGuard::client = " + "%s\r\n\n"% [client.to_yaml])
+      puts ("AvantGuard::soap.body = " + "%s\r\n\n"% [msg.body.to_yaml])
+      RAILS_DEFAULT_LOGGER.warn("AvantGuard::response = " + "%s\r\n\n"% [response.to_yaml])
       
       return true
     else
