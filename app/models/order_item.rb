@@ -5,6 +5,7 @@ class OrderItem < ActiveRecord::Base
   belongs_to :device_model
   
   named_scope :recurring_charges, :conditions => { :recurring_monthly => true }
+  named_scope :one_time_charges, :conditions => ["recurring_monthly IS NULL OR recurring_monthly = ?", false]
   
   # FIXME: this should not be static!  but while it is, this should be in device class. Why here?
   # WARNING: do not change anything in this hash. lot of code is depenent on this

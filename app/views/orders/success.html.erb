@@ -5,7 +5,7 @@
 <script language="JavaScript" type="text/javascript" src="http://affiliate.halomonitoring.com/sale.php?amount=<%= @order.cost %>&trans_id=<%= @order.full_number %>">
 </script>
 <p>
-  Your card has been charged <strong><%= number_to_currency(@order.cost, :precision => 2, :unit => '$') %></strong>. 
+  Your card has been charged <strong><%= number_to_currency(@order.one_time_charge, :precision => 2, :unit => '$') %></strong>. 
   Order confirmation has been emailed to <strong><%= @order.bill_email %></strong>
 </p>
 <table width="100%" class="bluegrey">
