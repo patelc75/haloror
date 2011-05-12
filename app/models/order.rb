@@ -140,7 +140,7 @@ class Order < ActiveRecord::Base
   #   * https://redmine.corp.halomonitor.com/issues/4248
   def coupon_code_valid?
     _coupon = product_cost # fetch the coupon code applicable for the selected group
-    if group.blank? || (_coupon.group_id != group_id)
+    if (group.blank? && (_coupon.group_id == Group.default!)) || (_coupon.group_id != group_id)
       errors.add_to_base( "Coupon code #{coupon_code} is not valid for the group #{group_name}")
     end
     if _coupon.expired?
@@ -273,6 +273,18 @@ class Order < ActiveRecord::Base
   # tariff card for the product found in catalog
   def product_cost
     product_from_catalog.coupon( :group => (group || Group.direct_to_consumer), :coupon_code => coupon_code)
+  end
+  
+  # 
+  #  Fri May 13 00:44:52 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4455
+  #   Usage:
+  #   * one_time_charge  => sum of non-recurring amount
+  #   * recurring_charge => monthly recurring charge
+  ["one_time", "recurring"].each do |_name|
+    define_method "#{_name}_charge".to_sym do
+      order_items.send("#{_name}_charges").sum( :cost)
+    end
   end
   
   # create order_item enteries for this order
