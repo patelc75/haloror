@@ -46,7 +46,8 @@ class AvantGuardClient
           "UserPassword" => "cpHalo32",
           "Account"      => "#{account_num}",
           "SignalFormat" => "CID",
-          "SignalCode"   => "E100"
+          "SignalCode"   => "#{event_type_numeric(event_type)}",
+          "Date"         => "#{timestamp.strftime("%Y-%m-%dT%l:%M:%S%z")}"
         }
 
         msg = soap
@@ -65,7 +66,7 @@ class AvantGuardClient
   def self.event_type_numeric(event_type)
     # FIXME: TODO: fill out these event types properly
     case event_type
-    when "Fall"                   then "E15001001"
+    when "Fall"                   then "E100"
     when "Panic"                  then "E15002002"
     when "GwAlarmButton"          then "R15001001"
       #when "CallCenterFollowUp" then "004"

@@ -6,21 +6,10 @@ class CriticalDeviceAlert < DeviceAlert
   def before_create 
     self.timestamp_server = Time.now.utc
     self.call_center_timed_out = false
-    # 
-    #  Mon Feb 28 23:24:26 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4223
-    #   * call_center_pending flags ON when any halouser-group is call_center
-    #   * WARNING: nil returned in group array will cause save! to fail
+
+    # call_center_pending flags ON when any halouser-group is call_center
+    # WARNING: nil returned in group array will cause save! to fail
     self.call_center_pending = user.is_halouser_of_what.compact.any?(&:is_call_center?) # unless user.blank?
-    # groups = user.is_halouser_for_what
-    # groups.each do |group|
-    #   if !group.nil? and group.sales_type == "call_center"
-    #     self.call_center_pending = true
-    #   end
-    # end
-    #
-    # ramonrails: Thu Oct 14 02:05:58 IST 2010
-    #   return TRUE to continue executing further callbacks
     true
   # rescue Exception => e
   #   CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
