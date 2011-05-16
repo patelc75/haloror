@@ -18,7 +18,9 @@
     <% unless @complete_tariff.blank? || @complete_tariff.months_advance.to_i.zero? %>
       <tr class="altrow">
         <td><%= pluralize(@complete_tariff.months_advance, "month") %> advance (<%= USD_value(@complete_tariff.monthly_recurring) %> x <%= @complete_tariff.months_advance %>)</td>
-        <td style="text-align:right;"><%= USD_value(@complete_tariff.advance_charge) %></td>
+        <td style="text-align:right;">
+          <div id="cs_months_advance"><%= USD_value(@complete_tariff.advance_charge) %></div>
+        </td>
       </tr>
     <% end -%>
     <% unless @complete_tariff.blank? || @complete_tariff.months_trial.to_i.zero? %>
@@ -72,10 +74,18 @@
       </td>
     </tr>
     <% unless @clip_tariff.blank? || @clip_tariff.months_advance.to_i.zero? %>
-      <tr class="altrow"><td><%= @clip_tariff.blank? ? '?' : pluralize(@clip_tariff.months_advance, "month") %> advance (<%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %> x <%= @clip_tariff.blank? ? '?' : @clip_tariff.months_advance %>)</td><td style="text-align:right;"><%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.advance_charge) %></td></tr>
+      <tr class="altrow">
+        <td><%= @clip_tariff.blank? ? '?' : pluralize(@clip_tariff.months_advance, "month") %> advance (<%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %> x <%= @clip_tariff.blank? ? '?' : @clip_tariff.months_advance %>)</td>
+        <td style="text-align:right;">
+          <div id="bc_months_advance"><%= @clip_tariff.blank? ? '0' : USD_value(@clip_tariff.advance_charge) %></div>
+        </td>
+      </tr>
     <% end -%>
     <% unless @clip_tariff.blank? || @clip_tariff.months_trial.to_i.zero? %>
-      <tr class="altrow red"><td><%= @clip_tariff.blank? ? '?' : pluralize(@clip_tariff.months_trial, "month") %> trial (Free <%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %> x <%= @clip_tariff.blank? ? '?' : @clip_tariff.months_trial %>)</td><td style="text-align:right;"><%= USD_value(0) %></td></tr>
+      <tr class="altrow red">
+        <td><%= @clip_tariff.blank? ? '?' : pluralize(@clip_tariff.months_trial, "month") %> trial (Free <%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %> x <%= @clip_tariff.blank? ? '?' : @clip_tariff.months_trial %>)</td>
+        <td style="text-align:right;"><%= USD_value(0) %></td>
+      </tr>
     <% end -%>
     <tr>
       <td>Shipping</td>

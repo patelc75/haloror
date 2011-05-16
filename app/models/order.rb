@@ -565,16 +565,21 @@ class Order < ActiveRecord::Base
   #   * pick from local columns, else pick from coupon_code
   #   * CHANGED: This is just a clone of methods for coupon_code. This one uses local columns
   #   usage:
-  #   * upfront_charge( true) => apply dealer_install_fee
   #   * upfront_charge( order) => check order.dealer_install_fee_applies to apply
   def upfront_charge( _object = nil)
     # advance_charge.to_i + cc_deposit.to_i + cc_shipping.to_i + cc_dealer_install_fee.to_i
-    _charge = advance_charge.to_i + cc_deposit.to_i + cc_shipping.to_i
+    _charge = if _object.is_a?( Order)
+      _object.upfront_charge
+    else
+      if self.new_record?
+        product_cost.upfront_charge
+      else
+        advance_charge.to_i + cc_deposit.to_i + cc_shipping.to_i
+      end
+    end
     #   * identify if the dealer_install_fee_applies
     _apply = if _object.is_a?( Order)
       _object.dealer_install_fee_applies
-    elsif _object.is_a?( Boolean)
-      _object == true
     else
       false
     end

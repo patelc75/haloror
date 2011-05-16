@@ -135,13 +135,13 @@ class DeviceModelPrice < ActiveRecord::Base
   #   * upfront_charge( true) => apply dealer_install_fee
   #   * upfront_charge( order) => check order.dealer_install_fee_applies to apply
   def upfront_charge( _object = nil)
-    _charge = advance_charge.to_i + deposit.to_i + shipping.to_i
-    #   * identify if the dealer_install_fee_applies
-    _apply = if _object.is_a?( Order)
-      _object.dealer_install_fee_applies
+    _charge = if _object.is_a?( Order)
+      _object.upfront_charge
     else
-      _object == true
+      advance_charge.to_i + deposit.to_i + shipping.to_i
     end
+    #   * identify if the dealer_install_fee_applies
+    _apply  = (_object.is_a?( Order) ? _object.dealer_install_fee_applies : true)
     _charge += dealer_install_fee.to_i if _apply
     _charge
   end

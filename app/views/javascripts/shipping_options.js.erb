@@ -96,30 +96,40 @@ function updateTotal() {
   if( $('product_clip').checked) {
     _bc_total_deposit  = parseFloat( $('bc_deposit_value').innerHTML.substring(1));
     _bc_total_shipping = parseFloat( $('bc_shipping_value').innerHTML.substring(1));
+    if( $('bc_months_advance') == null) {
+      _bc_total_advance = 0
+    } else {
+      _bc_total_advance  = parseFloat( $('bc_months_advance').innerHTML.substring(1));
+    }
     if( ($('bc_install_fee_value') != null) && $('bc_install_fee_value').visible()) {
       if( $('bc_install_fee_value').innerHTML == '') {
         _bc_total_install_fee = 0;
       } else {
         _bc_total_install_fee = parseFloat( $('bc_install_fee_value').innerHTML.substring(1));
       }
-      $('bc_total_value').innerHTML = ( '$' + (_bc_total_deposit + _bc_total_shipping + _bc_total_install_fee) + '.00');
+      $('bc_total_value').innerHTML = ( '$' + (_bc_total_deposit + _bc_total_shipping + _bc_total_install_fee + _bc_total_advance) + '.00');
     } else {
-      $('bc_total_value').innerHTML = ( '$' + (_bc_total_deposit + _bc_total_shipping) + '.00');
+      $('bc_total_value').innerHTML = ( '$' + (_bc_total_deposit + _bc_total_shipping + _bc_total_advance) + '.00');
     }
 
   } else {
     // chest strap
     _cs_total_deposit  = parseFloat( $('cs_deposit_value').innerHTML.substring(1));
     _cs_total_shipping = parseFloat( $('cs_shipping_value').innerHTML.substring(1));
+    if( $('cs_months_advance') == null) {
+      _cs_total_advance = 0
+    } else {
+      _cs_total_advance  = parseFloat( $('cs_months_advance').innerHTML.substring(1));
+    }
     if( ($('cs_install_fee_value') != null) && $('cs_install_fee_value').visible()) {
       if( $('cs_install_fee_value').innerHTML == '') {
         _cs_total_install_fee = 0;
       } else {
         _cs_total_install_fee = parseFloat( $('cs_install_fee_value').innerHTML.substring(1));
       }
-      $('cs_total_value').innerHTML = ( '$' + (_cs_total_deposit + _cs_total_shipping + _cs_total_install_fee) + '.00');
+      $('cs_total_value').innerHTML = ( '$' + (_cs_total_deposit + _cs_total_shipping + _cs_total_install_fee + _cs_total_advance) + '.00');
     } else {
-      $('cs_total_value').innerHTML = ( '$' + (_cs_total_deposit + _cs_total_shipping) + '.00');
+      $('cs_total_value').innerHTML = ( '$' + (_cs_total_deposit + _cs_total_shipping + _cs_total_advance) + '.00');
     }
   }
 }
