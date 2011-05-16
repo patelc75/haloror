@@ -47,7 +47,9 @@ class AvantGuardClient
           "Account"      => "#{account_num}",
           "SignalFormat" => "CID",
           "SignalCode"   => "#{event_type_numeric(event_type)}",
-          "Date"         => "#{timestamp.strftime("%Y-%m-%dT%l:%M:%S%z")}"
+          #Looks like the preferred date formats include 'MM/dd/yyyy hh:mm:ss' (when the region of the account is US) 
+          #and 'yyyy-MM-dd hh:mm:ss' (which is my preferred format as there is no ambiguity).
+          "Date"         => "#{timestamp.strftime("%Y-%m-%d %H:%M:%S")}"       
         }
 
         msg = soap
