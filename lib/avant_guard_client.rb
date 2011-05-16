@@ -18,7 +18,7 @@ class AvantGuardClient
     #Avantguard does not support heartbeat since they have geographically redundant servers
   end
 
-  def self.alert(event_type, user_id, account_num, timestamp = Time.now)
+  def self.alert(event_type, user_id, account_num, timestamp = Time.now, lat=nil, long=nil)
     #Savon::Request.log = false
     msg = nil
     alarm_code = event_type_numeric( event_type)
@@ -49,9 +49,12 @@ class AvantGuardClient
           "SignalCode"   => "#{event_type_numeric(event_type)}",
           #Looks like the preferred date formats include 'MM/dd/yyyy hh:mm:ss' (when the region of the account is US) 
           #and 'yyyy-MM-dd hh:mm:ss' (which is my preferred format as there is no ambiguity).
-          "Date"         => "#{timestamp.strftime("%Y-%m-%d %H:%M:%S")}"       
+          "Date"         => "#{timestamp.strftime("%Y-%m-%d %H:%M:%S")}"                   
         }
-
+                                                                        
+        soap.body["Latitude"]  = "#{lat}"  if !lat.nil?
+        soap.body["Longitude"] = "#{long}" if !long.nil?                   
+        
         msg = soap
       end
       # RAILS_DEFAULT_LOGGER.warn("AvantGuard::client    = " + "%s\r\n"% [client.to_yaml])
