@@ -545,7 +545,20 @@ class Order < ActiveRecord::Base
   def advance_charge
     cc_monthly_recurring.to_i * cc_months_advance.to_i
   end
+
+  # 
+  #  Sun May 15 19:21:39 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4455
+  def one_time_charge
+    order_items.one_time_charges.sum(:cost).to_i
+  end
   
+  # 
+  #  Sun May 15 19:21:39 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4455
+  def recurring_charge
+    order_items.recurring_charges.sum(:cost).to_i
+  end
   # 
   #  Wed Mar 30 04:20:35 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4253
