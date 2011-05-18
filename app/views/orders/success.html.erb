@@ -43,8 +43,15 @@
     <td><%= item.formatted_cost %></td>
     <td><%= item.formatted_cost(item.quantity) %></td>
     <td><%= item.status %></td>    
-  </tr>
+  </tr>  
   <% end -%>
+  <tr align="left" style="background-color:#DEDEDE">
+    <td><strong>TOTAL</strong></td>
+    <td></td>
+    <td></td>
+    <td><strong><%= number_to_currency(@order.one_time_charge, :precision => 2, :unit => '$') %></strong></td>
+    <td></td>    
+  </tr>  
 </table>
 <br>
 <table width="100%" class="bluegrey">
