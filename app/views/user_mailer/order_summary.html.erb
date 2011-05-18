@@ -10,20 +10,20 @@ Halo Monitoring, Inc.
 Huntsville, AL 35816                                                    
 Phone 888.971.HALO (888-971-4256)
 Fax 866.275.1904
+--------------------------------------
 
 Order number: <%= @order.full_number %>
 Order date: <%= @order.created_at.to_s(:date_time_timezone) %>
 Group: <%= @order.group_name %>
 
 ORDER ITEMS
-<% @order.order_items.each do |item| %><%= item.description %>
-Quantity:<%= item.quantity %>, Cost:<%= item.formatted_cost(item.quantity) %>
-<% if item.recurring_monthly == true %> 
-<%= item.status %>
+<% @order.order_items.each do |item| %><%= item.description %>: <%= item.formatted_cost(item.quantity) %>
+<% if item.recurring_monthly == true %><%= item.status %>
 <% end %>  
-
 <% end -%>
 Card Number <%= @order.masked_card_number %> (exp <%= @order.card_expiry.year %>) has been charged <%= number_to_currency(@order.one_time_charge, :precision => 2, :unit => '$') %>
+
+--------------------------------------
 
 SHIPPING
   Name    : <%= @order[:ship_first_name] %> <%= @order[:ship_last_name] %>
