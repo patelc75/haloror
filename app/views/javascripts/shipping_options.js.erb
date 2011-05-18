@@ -16,6 +16,7 @@ function couponDeposit() {
       _cs_shipping = parseFloat( $('cs_hidden_deposit').value );
     }
   }
+  updateTotal();
 }
 
 function couponInstallFee() {
@@ -28,6 +29,7 @@ function couponInstallFee() {
       _cs_install_fee = parseFloat( $('cs_hidden_install_fee').value );
     }
   }
+  updateTotal();
 }
 
 function couponShipping() {
@@ -89,6 +91,7 @@ function shippingChoices() {
       }
     }
   <%- end -%>
+  updateTotal();
 }
 
 function updateTotal() {

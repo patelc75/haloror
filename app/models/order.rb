@@ -572,7 +572,7 @@ class Order < ActiveRecord::Base
       _object.upfront_charge
     else
       if self.new_record?
-        product_cost.upfront_charge || 0
+        product_cost.upfront_charge
       else
         advance_charge.to_i + cc_deposit.to_i + cc_shipping.to_i
       end
