@@ -28,36 +28,57 @@ class AvantGuardClient
       end
 
       client = Savon::Client.new do
-        wsdl.document = "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx?WSDL"
-        wsdl.endpoint = "https://portal.agmonitoring.com/testsgssignalservice/receiver.asmx"
+        wsdl.document  = "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx?WSDL"
+        wsdl.endpoint  = "https://portal.agmonitoring.com/testsgssignalservice/receiver.asmx"
         wsdl.namespace = "http://tempuri.org"
       end
 
       # client.http.headers["SOAPAction"] = '"Signal"'
 
-      response = client.request :soap, "signal" do # |soap|
-        #soap.header["API-KEY"] = "foobar"
-        #soap.input = "DoSimpleRequest"
-        #soap.action = "Signal"
-        #body = Hash.new
-        #body["wsdl:uniqueId"] = 12345
+      # response = client.request( "signal", "xmlns" => "http://tempuri.org") do # |soap|
+      #soap.header["API-KEY"] = "foobar"
+      #soap.input = "DoSimpleRequest"
+      #soap.action = "Signal"
+      #body = Hash.new
+      #body["wsdl:uniqueId"] = 12345
+      response = client.request :signal do
+        # soap.xml = %{<?xml version="1.0" encoding="utf-8"?>
+        # <SOAP-ENV:Envelope
+        #   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        #   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        #   xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+        #   SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+        #   xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+        #   <SOAP-ENV:Body>
+        #     <Signal xmlns="http://tempuri.org/">
+        #       <UserName xsi:type="xsd:string">Chirag.Patel</UserName>
+        #       <UserPassword xsi:type="xsd:string">cpHalo32</UserPassword>
+        #       <Account xsi:type="xsd:string">#{account_num}</Account>
+        #       <SignalFormat xsi:type="xsd:string">CID</SignalFormat>
+        #       <SignalCode xsi:type="xsd:string">#{event_type_numeric(event_type)}</SignalCode>
+        #       <Date xsi:type="xsd:dateTime">#{timestamp.strftime("%Y-%m-%d %H:%M:%S")}</Date>
+        #       <Longitude xsi:type="xsd:decimal">#{long || ''}</Longitude>
+        #       <Latitude xsi:type="xsd:decimal">#{lat || ''}</Latitude>
+        #     </Signal>
+        #   </SOAP-ENV:Body>
+        # </SOAP-ENV:Envelope>}
+
         soap.body = {
           "UserName"     => "Chirag.Patel",
           "UserPassword" => "cpHalo32",
           "Account"      => "#{account_num}",
           "SignalFormat" => "CID",
           "SignalCode"   => "#{event_type_numeric(event_type)}",
-          #Looks like the preferred date formats include 'MM/dd/yyyy hh:mm:ss' (when the region of the account is US) 
+          #Looks like the preferred date formats include 'MM/dd/yyyy hh:mm:ss' (when the region of the account is US)
           #and 'yyyy-MM-dd hh:mm:ss' (which is my preferred format as there is no ambiguity).
-          "Date"         => "#{timestamp.strftime("%Y-%m-%d %H:%M:%S")}"                   
+          "Date"         => "#{timestamp.strftime("%Y-%m-%d %H:%M:%S")}"
         }
-                                                                        
         soap.body["Latitude"]  = "#{lat}"  if !lat.nil?
-        soap.body["Longitude"] = "#{long}" if !long.nil?                   
+        soap.body["Longitude"] = "#{long}" if !long.nil?
         
         msg = soap
       end
-      # RAILS_DEFAULT_LOGGER.warn("AvantGuard::client    = " + "%s\r\n"% [client.to_yaml])
+      RAILS_DEFAULT_LOGGER.warn("AvantGuard::client    = " + "%s\r\n"% [client.to_yaml])
       RAILS_DEFAULT_LOGGER.warn("AvantGuard::soap.body = " + "%s\r\n"% [msg.body.to_yaml])
       RAILS_DEFAULT_LOGGER.warn("AvantGuard::response  = " + "%s\r\n"% [response.to_yaml])
 
