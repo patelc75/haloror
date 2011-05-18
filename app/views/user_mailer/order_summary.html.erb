@@ -23,7 +23,7 @@ Quantity:<%= item.quantity %>, Cost:<%= item.formatted_cost(item.quantity) %>
 <% end %>  
 
 <% end -%>
-Card Number <%= @order.masked_card_number %> (exp <%= @order.card_expiry.year %>) has been charged <%= number_to_currency(@order.cost, :precision => 2, :unit => '$') %>
+Card Number <%= @order.masked_card_number %> (exp <%= @order.card_expiry.year %>) has been charged <%= number_to_currency(@order.one_time_charge, :precision => 2, :unit => '$') %>
 
 SHIPPING
   Name    : <%= @order[:ship_first_name] %> <%= @order[:ship_last_name] %>

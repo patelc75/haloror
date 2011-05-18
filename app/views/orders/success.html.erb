@@ -2,7 +2,7 @@
 <% if logged_in? && current_user.is_super_admin? %>
 <p><a href="/orders">Online Store Orders table</a></p>
 <% end %>
-<script language="JavaScript" type="text/javascript" src="http://affiliate.halomonitoring.com/sale.php?amount=<%= @order.cost %>&trans_id=<%= @order.full_number %>">
+<script language="JavaScript" type="text/javascript" src="http://affiliate.halomonitoring.com/sale.php?amount=<%= @order.one_time_charge %>&trans_id=<%= @order.full_number %>">
 </script>
 <p>
   Your card has been charged <strong><%= number_to_currency(@order.one_time_charge, :precision => 2, :unit => '$') %></strong>. 
