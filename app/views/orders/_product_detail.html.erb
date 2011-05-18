@@ -33,11 +33,9 @@
       <td>Shipping</td>
       <td style="text-align:right;"><div id="cs_shipping_value"><%= selected_shipping_option( @complete_tariff) %></div></td>
     </tr>
-    <% if @order.dealer_install_fee_applies %>
+    <% if logged_in? %>
     <tr>
-      <td>
-        <div id="cs_install_fee_title">Dealer Install Fee</div>
-      </td>
+      <td><div id="cs_install_fee_title">Dealer Install Fee</div></td>
       <td style="text-align:right;">
         <div id="cs_install_fee_value"><%= @complete_tariff.blank? ? '?' : USD_value( @complete_tariff.dealer_install_fee) %></div>
       </td>
@@ -45,7 +43,7 @@
     <% end %>
     <tr class="altrow"><td style="text-align:right;">Total*</td><td style="text-align:right;">
       <% if confirmation_mode? %>
-      <%= f.hidden_field "cost", :disabled => true %>
+        <%= f.hidden_field "cost", :disabled => true %>
       <% end -%>
       <div>
         <%= hidden_field_tag 'cs_hidden_deposit', @complete_tariff.deposit %>
@@ -93,7 +91,7 @@
         <div id="bc_shipping_value"><%= selected_shipping_option( @clip_tariff) %></div>
       </td>
     </tr>
-    <% if @order.dealer_install_fee_applies %>
+    <% if logged_in? %>
     <tr>
       <td><div id="bc_install_fee_title">Dealer Install Fee</div></td>
       <td style="text-align:right;">

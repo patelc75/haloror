@@ -109,7 +109,10 @@ class OrdersController < ApplicationController
       
     else # store mode
       # back button needs this
-      @order = Order.new( session[:order] || {:coupon_code => _coupon_code, :created_by => current_user.id, :updated_by => current_user.id})
+      # 
+      #  Thu May 19 01:04:21 IST 2011, ramonrails
+      #   *  warning: Object#id will be deprecated; use Object#object_id
+      @order = Order.new( session[:order] || {:coupon_code => _coupon_code, :created_by => current_user, :updated_by => current_user})
       @order.coupon_code = ((@product == 'complete') ? @complete_tariff.coupon_code : @clip_tariff.coupon_code)
       @order.group = Group.find_by_id( session[:order_group_id].to_i) # if @order.group.blank? # assigned by before_filter
       @same_address = @order.subscribed_for_self?

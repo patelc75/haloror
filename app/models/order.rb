@@ -572,11 +572,12 @@ class Order < ActiveRecord::Base
       _object.upfront_charge
     else
       if self.new_record?
-        product_cost.upfront_charge
+        product_cost.upfront_charge || 0
       else
         advance_charge.to_i + cc_deposit.to_i + cc_shipping.to_i
       end
     end
+    _charge ||= 0
     #   * identify if the dealer_install_fee_applies
     _apply = if _object.is_a?( Order)
       _object.dealer_install_fee_applies

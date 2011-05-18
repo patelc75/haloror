@@ -140,9 +140,10 @@ class DeviceModelPrice < ActiveRecord::Base
     else
       advance_charge.to_i + deposit.to_i + shipping.to_i
     end
+    _charge ||= 0
     #   * identify if the dealer_install_fee_applies
     _apply  = (_object.is_a?( Order) ? _object.dealer_install_fee_applies : true)
-    _charge += dealer_install_fee.to_i if _apply
+    _charge += dealer_install_fee.to_i if (_apply && !dealer_install_fee.blank?)
     _charge
   end
   

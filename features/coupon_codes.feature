@@ -34,13 +34,13 @@ Feature: Manage coupon codes
     When I select "reseller" from "Group"
     And I select "12001002-1 -- Chest Strap" from "Product"
     And I fill in the following:
-      | Coupon Code        | cc_160_pq1 |
-      | Deposit            | 66         |
-      | Shipping           | 6          |
-      | Monthly recurring  | 77         |
-      | Months advance     | 0          |
-      | Months trial       | 2          |
-      | Dealer install fee | 12         |
+      | Coupon Code              | cc_160_pq1 |
+      | Deposit                  | 66         |
+      | Shipping                 | 6          |
+      | Monthly recurring        | 77         |
+      | months to pay in advance | 0          |
+      | free trial months        | 2          |
+      | Dealer install fee       | 12         |
     And I select "31 Dec, 2015" as the "Expiry date" date
     And I press "Save"
     Then I should see "successfully"
