@@ -42,6 +42,7 @@ class AvantGuardClient
       #body = Hash.new
       #body["wsdl:uniqueId"] = 12345
       response = client.request :signal do
+        # soap.xml can be use to send custom XML. This XML matches the .NET utility output used by AvantGuard. See https://redmine.corp.halomonitor.com/issues/4461#note-4
         # soap.xml = %{<?xml version="1.0" encoding="utf-8"?>
         # <SOAP-ENV:Envelope
         #   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
