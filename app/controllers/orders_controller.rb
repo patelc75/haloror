@@ -49,7 +49,9 @@ class OrdersController < ApplicationController
     #  Thu May  5 03:29:20 IST 2011, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/4248
     #   * throw a message on page for incorrect coupon code
-    flash[:notice] = "#{params[:coupon_code]} is not valid for this group" if @order.coupon_code != params[:coupon_code]
+    if (@order.coupon_code != params[:coupon_code]) && !params[:coupon_code].blank?
+      flash[:notice] = "#{params[:coupon_code]} is not valid for this group"
+    end
     
     if request.post? # !['Apply', 'Applying...'].include?(params[:commit])
       # if ( params["commit"] != 'Apply') #  && params.has_key?( "order")
