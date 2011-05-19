@@ -47,4 +47,25 @@ where users.id = invoices.user_id
 and (cancelled_date > now() - interval '1 month' or cancelled_date is null)
 and profiles.user_id = users.id;                  
 
+-- Halousers that are not installed and shipped_at is greater than 7 days ago
+select distinct users.user_id, first_name, last_name, status, user_intakes.shipped_at 
+from users_by_role('halouser') as users, user_intakes, user_intakes_users
+where users.user_id = user_intakes_users.user_id
+and user_intakes_users.user_intake_id = user_intakes.id
+and now() > user_intakes.shipped_at + interval '7 days'
+and (users.status not like 'Installed'
+and users.status not like 'Cancelled'
+or users.status is null)
+order by shipped_at;
+
+-- Halousers with a user intake but no invoice
+select distinct users.user_id, user_intakes.order_id, first_name, last_name, status, user_intakes.created_at 
+from users_by_role('halouser') as users, user_intakes, user_intakes_users
+where users.user_id = user_intakes_users.user_id
+and user_intakes_users.user_intake_id = user_intakes.id
+and users.user_id not in (select user_id from invoices)
+and users.demo_mode is not true
+order by user_intakes.created_at;
+
+
 
