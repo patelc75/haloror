@@ -81,21 +81,23 @@ function dealerInstallFee() {
 }
 
 function shippingChoices() {
-  <%- for _option in @shipping_options -%>
-    if( $('product_clip').checked) {
-      if( $('bc_hidden_shipping').value == '') {
-        $('order_shipping_option_id_' + <%= _option.id -%>).enable();
+  if( $('product_clip') != null) {
+    <%- for _option in @shipping_options -%>
+      if( $('product_clip').checked) {
+        if( $('bc_hidden_shipping').value == '') {
+          $('order_shipping_option_id_' + <%= _option.id -%>).enable();
+        } else {
+          $('order_shipping_option_id_' + <%= _option.id -%>).disable();
+        }
       } else {
-        $('order_shipping_option_id_' + <%= _option.id -%>).disable();
+        if( $('cs_hidden_shipping').value == '') {
+          $('order_shipping_option_id_' + <%= _option.id -%>).enable();
+        } else {
+          $('order_shipping_option_id_' + <%= _option.id -%>).disable();
+        }
       }
-    } else {
-      if( $('cs_hidden_shipping').value == '') {
-        $('order_shipping_option_id_' + <%= _option.id -%>).enable();
-      } else {
-        $('order_shipping_option_id_' + <%= _option.id -%>).disable();
-      }
-    }
-  <%- end -%>
+    <%- end -%>
+  }
   updateTotal();
 }
 
