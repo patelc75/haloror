@@ -54,7 +54,7 @@ function dealerInstallFee() {
     if( $('cs_install_fee_value') != null ) { $('cs_install_fee_value').hide(); }
     if( $('cs_install_fee_title') != null ) { $('cs_install_fee_title').hide(); }
   } else {
-    if( $('confirmation_mode') == null) {
+    if( $('product_clip') != null) {
       clip_selected = $('product_clip').checked;
     } else {
       clip_selected = ( $('clip_selected') != null);
@@ -101,7 +101,7 @@ function shippingChoices() {
 
 function updateTotal() {
   // belt clip
-  if( $('confirmation_mode') == null) {
+  if( $('product_clip') != null) {
     clip_selected = $('product_clip').checked;
   } else {
     clip_selected = ( $('clip_selected') != null);
@@ -156,7 +156,7 @@ function updateCost( _element) {
   couponDeposit();
   couponInstallFee();
 
-  if( $('confirmation_mode') == null) {
+  if( $('product_clip') != null) {
     clip_selected = $('product_clip').checked;
   } else {
     clip_selected = ( $('clip_selected') != null);
