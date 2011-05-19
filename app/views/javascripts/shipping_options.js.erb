@@ -54,7 +54,12 @@ function dealerInstallFee() {
     if( $('cs_install_fee_value') != null ) { $('cs_install_fee_value').hide(); }
     if( $('cs_install_fee_title') != null ) { $('cs_install_fee_title').hide(); }
   } else {
-    if( $('product_clip').checked) {
+    if( $('confirmation_mode') == null) {
+      clip_selected = $('product_clip').checked;
+    } else {
+      clip_selected = ( $('clip_selected') != null);
+    }
+    if( clip_selected) {
       if( ($('order_dealer_install_fee_applies') != null) && $('order_dealer_install_fee_applies').checked) {
         if( $('bc_install_fee_value') != null) { $('bc_install_fee_value').show();}
         if( $('bc_install_fee_title') != null) { $('bc_install_fee_title').show();}
@@ -96,7 +101,12 @@ function shippingChoices() {
 
 function updateTotal() {
   // belt clip
-  if( $('product_clip').checked) {
+  if( $('confirmation_mode') == null) {
+    clip_selected = $('product_clip').checked;
+  } else {
+    clip_selected = ( $('clip_selected') != null);
+  }
+  if( clip_selected) {
     _bc_total_deposit  = parseFloat( $('bc_deposit_value').innerHTML.substring(1));
     _bc_total_shipping = parseFloat( $('bc_shipping_value').innerHTML.substring(1));
     if( $('bc_months_advance') == null) {
@@ -146,7 +156,12 @@ function updateCost( _element) {
   couponDeposit();
   couponInstallFee();
 
-  if( $('product_clip').checked) {
+  if( $('confirmation_mode') == null) {
+    clip_selected = $('product_clip').checked;
+  } else {
+    clip_selected = ( $('clip_selected') != null);
+  }
+  if( clip_selected) {
     _bc_shipping = couponShipping();
 
     // values from radio buttons
@@ -178,6 +193,9 @@ function updateCost( _element) {
 }
 
 document.observe('dom:loaded', function() {
-  toggleProductDetails();
+  if( $('confirmation_mode').value != 'true') {
+    toggleProductDetails();
+    shippingChoices();
+  }
   updateCost();
 });
