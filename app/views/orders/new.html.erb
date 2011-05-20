@@ -17,6 +17,7 @@
 <% end -%>
 
 <!-- <%# render :partial => 'order_coupon_code' %> -->
+<%= hidden_field_tag "confirmation_mode", confirmation_mode? %>
 
 <% form_for @order, :url => {:action => (confirmation_mode? ? "create" : "new")}, :html => {:id => 'form1', :class => "#{confirmation_mode? ? 'confirm-form' : 'form'}"} do |f| %>
  	<fieldset style="border: 3px solid ; padding: 10px;">    
@@ -241,14 +242,21 @@
   // }
   
   function toggleProductDetails() {
-    if (document.getElementById('product_complete').checked == true) {
+    if( $('confirmation_mode') == true) {
+      show_complete = ( $('complete_selected') != null)
+      show_clip     = ( $('clip_selected') != null)
+    } else {
+      show_complete = ( $('product_complete').checked == true)
+      show_clip     = ( $('product_clip').checked == true)
+    }
+    if (show_complete) {
       showDiv('halo_complete_box');
       showDiv('product_sizes');
     } else {
       hideDiv('halo_complete_box');
       hideDiv('product_sizes');
     }
-    if (document.getElementById('product_clip').checked == true) {
+    if (show_clip) {
       showDiv('halo_clip_box');
       hideDiv('product_sizes');
     } else {
