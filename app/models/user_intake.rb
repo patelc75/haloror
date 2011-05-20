@@ -13,9 +13,9 @@ class UserIntake < ActiveRecord::Base
   belongs_to :order
   belongs_to :creator, :class_name => "User", :foreign_key => "created_by"
   belongs_to :updater, :class_name => "User", :foreign_key => "updated_by"
+  belongs_to :device_model # https://redmine.corp.halomonitor.com/issues/4291
   has_and_belongs_to_many :users # replaced with has_many :through
   has_many :user_intakes_users, :dependent => :destroy
-  has_one :device_model # https://redmine.corp.halomonitor.com/issues/4291
 
   # https://redmine.corp.halomonitor.com/issues/3475
   #   Add two new fields in user intake form (Transmitter Serial # and Gateway Serial #)

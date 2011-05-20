@@ -21,6 +21,7 @@ class OrdersController < ApplicationController
     @shipping_options = ShippingOption.ordered( 'price ASC')
     @shipping_option_id = session[:shipping_option_id]
     @shipping_option_id ||= params[:order][:shipping_option_id] unless params[:order].blank?
+    @shipping_option_id ||= @shipping_options.first.id
     @product = session[:product]
     @order = Order.new(session[:order]) # recall if any order data was remembered
     @order.group = Group.find_by_id( session[:order_group_id].to_i) # if @order.group.blank? # assigned by before_filter

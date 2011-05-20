@@ -724,10 +724,16 @@ class User < ActiveRecord::Base
         # #   * https://redmine.corp.halomonitor.com/issues/4185
         # if _ui.order_successful? && _ui.subscription_successful? # update --only-- when order is successful
           _hash[ :prorate_start_date]   = _ui.pro_rata_start_date
-          _hash[ :recurring_start_date] = _ui.subscription_start_date
           #   * some values from order
           if ( _order = _ui.order )
             _hash[ :coupon_code] = _order.coupon_code
+            # 
+            #  Sat May 21 00:40:26 IST 2011, ramonrails
+            #   * https://redmine.corp.halomonitor.com/issues/4486
+            #   * "Recurring start date" in Invoices should be populated when Bill button is clicked, not when order is placed
+            if _order.subscription_successful? && pro_rata_successful? # means "Bill" button was clicked
+              _hash[ :recurring_start_date] = _ui.subscription_start_date
+            end
             # 
             #  Fri Feb 11 22:27:49 IST 2011, ramonrails
             #   * https://redmine.corp.halomonitor.com/issues/4185
