@@ -13,10 +13,10 @@ class Order < ActiveRecord::Base
   #  Wed Mar  9 01:01:27 IST 2011, ramonrails
   #   * coupon code changes for tickets #4253, #4067, #4060, #3923
   belongs_to :shipping_option
+  belongs_to :device_model
   has_many :order_items
   has_many :payment_gateway_responses
   has_one :user_intake
-  has_one :device_model
 
   attr_accessor :product, :bill_address_same, :need_validation
   before_update :check_kit_serial_validation
@@ -961,6 +961,10 @@ class Order < ActiveRecord::Base
       #  Thu Mar 24 00:58:45 IST 2011, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/4291
       user_intake.device_model_size = device_model_size
+      # 
+      #  Sat May 21 10:51:34 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4486
+      user_intake.device_model = device_model
       user_intake.group = group # halouser role is for group
       user_intake.senior_attributes = {:email => ship_email, :profile_attributes => senior_profile}
       #

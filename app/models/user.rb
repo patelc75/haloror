@@ -731,7 +731,7 @@ class User < ActiveRecord::Base
             #  Sat May 21 00:40:26 IST 2011, ramonrails
             #   * https://redmine.corp.halomonitor.com/issues/4486
             #   * "Recurring start date" in Invoices should be populated when Bill button is clicked, not when order is placed
-            if _order.subscription_successful? && pro_rata_successful? # means "Bill" button was clicked
+            if _order.subscription_successful? && _order.pro_rata_successful? # means "Bill" button was clicked
               _hash[ :recurring_start_date] = _ui.subscription_start_date
             end
             # 

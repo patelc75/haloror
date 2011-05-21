@@ -1,10 +1,10 @@
 class DeviceModel < ActiveRecord::Base
   belongs_to :device_type
-  belongs_to :order
   has_many :device_revisions
   has_many :rma_items
   has_many :coupon_codes, :class_name => "DeviceModelPrice", :dependent => :destroy # just easier and DRY
   has_one :user_intake
+  has_one :order
   # validates_presence_of :part_number
   # validates_uniqueness_of :part_number
   named_scope :recent_on_top, :order => "created_at DESC"
