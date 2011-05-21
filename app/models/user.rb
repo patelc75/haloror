@@ -185,6 +185,7 @@ class User < ActiveRecord::Base
   
   named_scope :all_except_demo, :conditions => { :demo_mode => [nil, false] } # https://redmine.corp.halomonitor.com/issues/3274
   named_scope :all_demo, :conditions => { :demo_mode => true } # https://redmine.corp.halomonitor.com/issues/4077
+  named_scope :cancelled, :conditions => ["cancelled_at IS NOT NULL"]
   named_scope :vips, :conditions => ["vip = ?", true] # https://redmine.corp.halomonitor.com/issues/3894
   # 
   #  Tue Jan  4 22:56:00 IST 2011, ramonrails
@@ -3414,7 +3415,11 @@ class User < ActiveRecord::Base
     #  Thu Dec 30 23:17:56 IST 2010, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/3950
     self.cancelled_at = Time.now
-    self.send(:update_without_callbacks)
+    # 
+    #  Sun May 22 01:13:40 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4486
+    #   * update_without_callbacks does not allow updating invoices table for values
+    # self.send(:update_without_callbacks)
     triage_audit_logs.create( :status => User::STATUS[:cancelled], :description => "MyHalo account of #{name} is now cancelled.") 
   end
   

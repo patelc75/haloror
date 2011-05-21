@@ -33,7 +33,7 @@ class UserIntake < ActiveRecord::Base
   named_scope :without_group, :conditions => { :group_id => nil }
   named_scope :recent_on_top, :order => "updated_at DESC"
 
-  #acts_as_audited
+  acts_as_audited
 
   # hold the data temporarily
   # user type is identified by the role it has subject to this user intake and other users
