@@ -214,7 +214,10 @@ class UserIntake < ActiveRecord::Base
   def after_initialize
     self.lazy_action = '' # keep it text. we need it for Approve, Bill actions
     self.need_validation = true # assume, the user will not hit "save"
-    self.installation_datetime ||= (order.created_at + 7.days) if ordered_direct_to_consumer?
+    # 
+    #  Tue May 24 00:31:48 IST 2011, ramonrails
+    #   * date should not be 7 days ahead, as discussed with Chirag on chat
+    # self.installation_datetime ||= (order.created_at + 7.days) if ordered_direct_to_consumer?
     decide_card_or_bill
     # 
     #   * we begin from this state
