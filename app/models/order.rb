@@ -812,11 +812,13 @@ class Order < ActiveRecord::Base
         #   * start and 
         #   * start = last month, end = this month
         #   last month
-        _days       = ((_start.end_of_month - _start) / 1.day).round # include both days
+        _days       = (_start.end_of_month - _start).round # include both days
+        # _days       = ((_start.end_of_month - _start) / 1.day).round # include both days
         _daily_cost = (_cost / (_start.end_of_month.day * 1.00)) # per day cost for this month
         _amount     += (_days * _daily_cost).round(2)
         #   this month
-        _days       = ((_stop - _stop.beginning_of_month) / 1.day).round # include both days
+        _days       = (_stop - _stop.beginning_of_month).round # include both days
+        # _days       = ((_stop - _stop.beginning_of_month) / 1.day).round # include both days
         _daily_cost = (_cost / (_stop.end_of_month.day * 1.00)) # per day cost for this month
         _amount     += (_days * _daily_cost).round(2)
         
