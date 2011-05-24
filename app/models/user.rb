@@ -742,21 +742,28 @@ class User < ActiveRecord::Base
             _hash[ :prorate] = _order.pro_rated_amount if ( _ui.order_successful? && _ui.subscription_successful? )
             #   * some values from coupon_code
             if ( _coupon = _order.product_cost )
-              if _coupon.shipping.blank?
-                _hash[ :shipping] = _order.shipping_option.price unless _order.shipping_option.blank?
-              else
-                _hash[ :shipping] = _coupon.shipping
-              end
+              # 
+              #  Wed May 25 04:40:55 IST 2011, ramonrails
+              #   * https://redmine.corp.halomonitor.com/issues/4486#note-36
+              _hash[ :shipping] = (_order.cc_shipping || _coupon.shipping) # prefer cached values
+              _hash[ :shipping] ||= _order.shipping_option.price unless _order.shipping_option.blank?
+              # if _coupon.shipping.blank?
+              #   _hash[ :shipping] = _order.shipping_option.price unless _order.shipping_option.blank?
+              # else
+              #   _hash[ :shipping] = _coupon.shipping
+              # end
               # 
               #  Fri Feb 11 22:27:53 IST 2011, ramonrails
               #   * https://redmine.corp.halomonitor.com/issues/4185
-              _hash[ :recurring] = _coupon.monthly_recurring if ( _ui.order_successful? && _ui.subscription_successful? )
-              _hash[ :deposit]   = _coupon.deposit
+              #   * https://redmine.corp.halomonitor.com/issues/4486#note-36
+              _hash[ :recurring] = (_order.cc_monthly_recurring || _coupon.monthly_recurring) if ( _ui.order_successful? && _ui.subscription_successful? )
+              _hash[ :deposit]   = (_order.cc_deposit || _coupon.deposit)
               # 
               #  Fri Mar 11 0:28:13 IST 2011, ramonrails
               #   * https://redmine.corp.halomonitor.com/issues/4067
+              #   * https://redmine.corp.halomonitor.com/issues/4486#note-36
               if _order.dealer_install_fee_applies
-                _hash[ :install_fee_amount] = _coupon.dealer_install_fee
+                _hash[ :install_fee_amount] = (_order.cc_dealer_install_fee || _coupon.dealer_install_fee)
                 _hash[ :install_fee_charged_at] = installed_at # QUESTION: install fee charged when installed?
               end
             end
