@@ -102,28 +102,38 @@ class DeviceModel < ActiveRecord::Base
     #   * next search for 'default' coupon code for 'default' group
     #   * none of the above found, return nil
     if ( !options.blank? && options.is_a?(Hash) && !options[:group].blank? && !coupon_codes.blank? )
-      #
-      # we do have coupon_codes available for this device_model
-      _coupon = if options[:coupon_code].blank?
-        #
-        # 'default' coupon code for this group exists?
-        coupon_codes.for_group( options[:group]).for_coupon_code( 'default').first
-      else
-        #
-        # fetch given coupon code for 'default' group. we may find it
-        _match = coupon_codes.for_group( options[:group]).for_coupon_code( options[:coupon_code]).first
-        # 
-        #  Thu Jan 13 00:07:28 IST 2011, ramonrails
-        #   * https://redmine.corp.halomonitor.com/issues/4006
-        # group_name/coupon_name exists for product, group_name/coupon_name applied
-        # group_name/coupon_name missing for product, default/coupon_name applied
-        # default/coupon_name missing for product, default/default applied
-        _match ||= coupon_codes.for_group( Group.default!).for_coupon_code( options[:coupon_code]).first
-      end
+      # 
+      #  Wed May 25 03:25:16 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4486#note-34
+      _coupon_code = ( options[:coupon_code].blank? ? 'default' : options[:coupon_code])
+      _group       = ( options[:group].blank? ? Group.default! : options[:group])
+      #   * Coupon code selection order: ml_chirag/bogus > ml_chirag/default > default_default
+      _coupon   = coupon_codes.for_group( _group).for_coupon_code( _coupon_code).first
+      _coupon ||= coupon_codes.for_group( _group).for_coupon_code( 'default').first
+      _coupon ||= coupon_codes.for_group( Group.default!).for_coupon_code( 'default').first
+      #   * OBSOLETE: logic was causing apparent error which is fixed above
+      # #
+      # # we do have coupon_codes available for this device_model
+      # _coupon = if options[:coupon_code].blank?
+      #   #
+      #   # 'default' coupon code for this group exists?
+      #   coupon_codes.for_group( options[:group]).for_coupon_code( 'default').first
+      # else
+      #   #
+      #   # fetch given coupon code for 'default' group. we may find it
+      #   _match = coupon_codes.for_group( options[:group]).for_coupon_code( options[:coupon_code]).first
+      #   # 
+      #   #  Thu Jan 13 00:07:28 IST 2011, ramonrails
+      #   #   * https://redmine.corp.halomonitor.com/issues/4006
+      #   # group_name/coupon_name exists for product, group_name/coupon_name applied
+      #   # group_name/coupon_name missing for product, default/coupon_name applied
+      #   # default/coupon_name missing for product, default/default applied
+      #   _match ||= coupon_codes.for_group( Group.default!).for_coupon_code( options[:coupon_code]).first
+      # end
     end
     #
     # nothing found, we must look for 'default' coupon code of 'default' group
-    _coupon = DeviceModelPrice.default( self) if _coupon.blank?
+    _coupon ||= DeviceModelPrice.default( self) # if _coupon.blank?
     _coupon
   end
 end

@@ -503,7 +503,7 @@ class UserIntake < ActiveRecord::Base
   #  Fri Feb  4 00:25:57 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4146
   def pro_rata_end_date
-    subscription_start_date - 1.day unless subscription_start_date.blank?
+    subscription_start_date - 1.day # unless subscription_start_date.blank?
   end
   
   # 
