@@ -30,7 +30,7 @@ class AvantGuardClient
       client = Savon::Client.new do
         wsdl.document  = "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx?WSDL"
         wsdl.endpoint  = "https://portal.agmonitoring.com/testsgssignalservice/receiver.asmx"
-        wsdl.namespace = "http://tempuri.org"
+        wsdl.namespace = "https://tempuri.org"
       end
 
       # client.http.headers["SOAPAction"] = '"Signal"'

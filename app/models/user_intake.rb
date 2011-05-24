@@ -530,15 +530,10 @@ class UserIntake < ActiveRecord::Base
       #   * if no subscription started yet, consider this month
       _date = Time.now
       if _date.day == 1
-        _date # if today is 1st, why wait? start the subscription from today
+        _date.to_date # if today is 1st, why wait? start the subscription from today
       else
-        (_date + 1.month).beginning_of_month # .to_date # today is not 1st, let this month be pro-rated
+        (_date + 1.month).beginning_of_month.to_date # .to_date # today is not 1st, let this month be pro-rated
       end
-    # end
-    # 
-    #  Tue May 24 20:07:26 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4486
-    _date.to_date
   end
   
   # 
