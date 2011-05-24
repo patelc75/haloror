@@ -493,7 +493,10 @@ class UserIntake < ActiveRecord::Base
     # 
     #  Tue May 24 20:07:41 IST 2011, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/4486
-    _date.to_date
+    #   * https://redmine.corp.halomonitor.com/attachments/3294/invalid_prorate_start_dates.jpg
+    _date = _date.to_date
+    _date = Date.today if _date > Date.today
+    _date
   end
   
   # 
