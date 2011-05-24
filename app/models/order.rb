@@ -180,8 +180,19 @@ class Order < ActiveRecord::Base
     if ( _coupon = product_cost )
     # if order_items && order_items.first.device_model && order_items.first.device_model.coupon_codes
     #   _coupon = order_items.first.device_model.coupon_codes.first
-      { "code name" => _coupon.coupon_code, "deposit" => _coupon.deposit, "shipping" => _coupon.shipping, "monthly_recurring" => _coupon.monthly_recurring, "months_advance" => _coupon.months_advance, "months_trial" => _coupon.months_trial }
-    else                           
+      # 
+      #  Tue May 24 21:39:44 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4486
+      #   * pick local copy first, then look for related coupon code
+      {
+        "code name"         => (coupon_code           || _coupon.coupon_code),
+        "deposit"           => (cc_deposit            || _coupon.deposit),
+        "shipping"          => (cc_shipping           || _coupon.shipping),
+        "monthly_recurring" => (cc_monthly_recurring  || _coupon.monthly_recurring),
+        "months_advance"    => (cc_months_advance     || _coupon.months_advance),
+        "months_trial"      => (cc_months_trial       || _coupon.months_trial)
+      }
+    else
      {} 
     end
   end

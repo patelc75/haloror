@@ -467,6 +467,9 @@ class UserIntake < ActiveRecord::Base
   end
   
   # when billing starts, the monthly recurring amount is charged pro-rated since this date
+  #  Tue May 24 20:29:19 IST 2011, ramonrails
+  #   * amount is charged from the copy of recurring rate stored in order at the time of placing it
+  #   * changes to the coupon code after placing the order does not affect this
   def pro_rata_start_date
     # 
     #  Tue Nov 23 00:53:04 IST 2010, ramonrails
@@ -487,6 +490,10 @@ class UserIntake < ActiveRecord::Base
     unless (order.blank? || order.product_cost.blank? || _date.blank?)
       _date += ( order.cc_monthly_recurring || order.product_cost.recurring_delay).to_i.months
     end
+    # 
+    #  Tue May 24 20:07:41 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4486
+    _date.to_date
   end
   
   # 
@@ -525,6 +532,10 @@ class UserIntake < ActiveRecord::Base
         (_date + 1.month).beginning_of_month # .to_date # today is not 1st, let this month be pro-rated
       end
     # end
+    # 
+    #  Tue May 24 20:07:26 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4486
+    _date.to_date
   end
   
   # 
