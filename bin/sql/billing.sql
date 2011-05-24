@@ -36,8 +36,9 @@ select users.email, profiles.first_name, profiles.last_name, users.id as user_id
        and profiles.user_id = users.id 
        and roles.authorizable_id in (select user_id from users_by_role_and_group('halouser', 'safety_care')) and users.email != 'no_email@halomonitoring.com' and users.email != 'noemail@halomonitoring.com' and users.email != 'no-email@halomonitoring.com' and users.email not like 'no-email__@halomonitoring.com' limit 1000;
 
+-- CSV version of the invoices table
 -- Sort feature in Invoice - by Group, by Installed date, by Termination date -----------------------------
--- (psql -F ',' -A haloror > (run the query) > \o outputfile.csv > (use mutt to email)---------------------
+-- (psql -F ',' -A haloror > \o outputfile.csv > (run the query) > (use mutt to email)---------------------
 select 
 (select group_or_first_name from roles_by_user_id(invoices.user_id) where role = 'halouser' and group_or_first_name != 'safety_care' limit 1) as group,
 profiles.first_name, profiles.last_name, users.demo_mode,
@@ -46,6 +47,17 @@ from invoices, users, profiles
 where users.id = invoices.user_id
 and (cancelled_date > now() - interval '1 month' or cancelled_date is null)
 and profiles.user_id = users.id;                  
+
+--Otto's version of the invoices table
+select 
+(select group_or_first_name from roles_by_user_id(invoices.user_id) where role = 'halouser' and group_or_first_name != 'safety_care' limit 1) as group,
+profiles.first_name, profiles.last_name, users.demo_mode,
+invoices.*
+from invoices, users, profiles
+where users.id = invoices.user_id
+and (cancelled_date > '2011-04-01' or cancelled_date is null)
+and profiles.user_id = users.id; 
+
 
 -- Halousers that are not installed and shipped_at is greater than 7 days ago
 select distinct users.user_id, first_name, last_name, status, user_intakes.shipped_at 
