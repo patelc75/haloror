@@ -449,7 +449,8 @@ class UserIntake < ActiveRecord::Base
   #   * decide whether pro-rata and subscription can be charged right now, or a trial period is running?
   def can_charge_subscription?
     #   * cannot charge subscription until trial period is running
-    !order.blank? && !subscription_deferred?
+    #   * can only charge with a valid shipped_at or panic event
+    !order.blank? && !subscription_deferred? && ( senior.any_panic_received? || !shipped_at.blank?)
   end
 
   # 
@@ -480,12 +481,9 @@ class UserIntake < ActiveRecord::Base
     #   * check panic button press
     _date = panic_received_at
     #   * no panic? check shipping date
-    _date ||= (shipped_at + 7.days) if ( _date.blank? && !shipped_at.blank? )
+    _date ||= (shipped_at + 7.days) unless shipped_at.blank? # if ( _date.blank? && !shipped_at.blank? )
     #   * no panic or shipping? nothing returned
-    # 
-    # 
-    #  Wed May 25 23:37:17 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4486#note-42
+    # # 
     # #  Wed Mar 30 03:46:04 IST 2011, ramonrails
     # #   * https://redmine.corp.halomonitor.com/issues/4253
     # #   * pick local values that were copied
@@ -499,14 +497,7 @@ class UserIntake < ActiveRecord::Base
     # #   * https://redmine.corp.halomonitor.com/attachments/3294/invalid_prorate_start_dates.jpg
     # _date ||= Date.today
     # _date = Date.today if _date > Date.today
-    # 
-    #  Thu May 26 00:10:07 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4486#note-42
-    if _date.blank?
-      errors.add_to_base( "No panic received. Not yet shipped. Cannot identify pro rata start date.")
-    end
-    
-    _date
+    # _date
   end
   
   # 
