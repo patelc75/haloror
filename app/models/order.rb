@@ -786,8 +786,9 @@ class Order < ActiveRecord::Base
   #  Fri Mar  4 03:20:57 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4215
   def pro_rated_amount
-    _start = user_intake.pro_rata_start_date
-    _stop  = user_intake.subscription_start_date
+    _start  = user_intake.pro_rata_start_date
+    _stop   = user_intake.subscription_start_date
+    _amount = 0 # default
 
     unless _start.blank? || _stop.blank?
       #   * calculate month specific cost
@@ -797,8 +798,7 @@ class Order < ActiveRecord::Base
       # 
       #  Wed Mar 30 03:48:10 IST 2011, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/4253
-      _cost        = (cc_monthly_recurring || product_cost.monthly_recurring)
-      _amount      = 0 # default
+      _cost = (cc_monthly_recurring || product_cost.monthly_recurring)
 
       #   * same month. we want "round" here to keep "both days inclusive"
       #   * just get the difference between two dates

@@ -483,19 +483,29 @@ class UserIntake < ActiveRecord::Base
     _date ||= (shipped_at + 7.days) if ( _date.blank? && !shipped_at.blank? )
     #   * no panic or shipping? nothing returned
     # 
-    #  Wed Mar 30 03:46:04 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4253
-    #   * pick local values that were copied
-    #   * when missing?, pick from device_model_prices
-    unless (order.blank? || order.product_cost.blank? || _date.blank?)
-      _date += ( order.cc_monthly_recurring || order.product_cost.recurring_delay).to_i.months
-    end
     # 
-    #  Tue May 24 20:07:41 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4486
-    #   * https://redmine.corp.halomonitor.com/attachments/3294/invalid_prorate_start_dates.jpg
-    _date ||= Date.today
-    _date = Date.today if _date > Date.today
+    #  Wed May 25 23:37:17 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4486#note-42
+    # #  Wed Mar 30 03:46:04 IST 2011, ramonrails
+    # #   * https://redmine.corp.halomonitor.com/issues/4253
+    # #   * pick local values that were copied
+    # #   * when missing?, pick from device_model_prices
+    # unless (order.blank? || order.product_cost.blank? || _date.blank?)
+    #   _date += ( order.cc_monthly_recurring || order.product_cost.recurring_delay).to_i.months
+    # end
+    # # 
+    # #  Tue May 24 20:07:41 IST 2011, ramonrails
+    # #   * https://redmine.corp.halomonitor.com/issues/4486
+    # #   * https://redmine.corp.halomonitor.com/attachments/3294/invalid_prorate_start_dates.jpg
+    # _date ||= Date.today
+    # _date = Date.today if _date > Date.today
+    # 
+    #  Thu May 26 00:10:07 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4486#note-42
+    if _date.blank?
+      errors.add_to_base( "No panic received. Not yet shipped. Cannot identify pro rata start date.")
+    end
+    
     _date
   end
   
