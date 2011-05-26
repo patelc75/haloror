@@ -497,14 +497,18 @@ class UserIntake < ActiveRecord::Base
     # #   * https://redmine.corp.halomonitor.com/attachments/3294/invalid_prorate_start_dates.jpg
     # _date ||= Date.today
     # _date = Date.today if _date > Date.today
-    # _date
+    # 
+    #  Thu May 26 19:32:15 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4486#note-47
+    _date = _date.to_date unless _date.blank?
+    _date
   end
   
   # 
   #  Fri Feb  4 00:25:57 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4146
   def pro_rata_end_date
-    subscription_start_date - 1.day # unless subscription_start_date.blank?
+    (subscription_start_date - 1.day).to_date # unless subscription_start_date.blank?
   end
   
   # 
@@ -529,7 +533,7 @@ class UserIntake < ActiveRecord::Base
     #   _subscribed_at
     # else
       #   * if no subscription started yet, consider this month
-      _date = Time.now
+      _date = Date.today
       if _date.day == 1
         _date.to_date # if today is 1st, why wait? start the subscription from today
       else
