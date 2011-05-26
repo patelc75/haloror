@@ -13,9 +13,9 @@ class UserIntake < ActiveRecord::Base
   belongs_to :order
   belongs_to :creator, :class_name => "User", :foreign_key => "created_by"
   belongs_to :updater, :class_name => "User", :foreign_key => "updated_by"
+  belongs_to :device_model # https://redmine.corp.halomonitor.com/issues/4291
   has_and_belongs_to_many :users # replaced with has_many :through
   has_many :user_intakes_users, :dependent => :destroy
-  has_one :device_model # https://redmine.corp.halomonitor.com/issues/4291
 
   # https://redmine.corp.halomonitor.com/issues/3475
   #   Add two new fields in user intake form (Transmitter Serial # and Gateway Serial #)
@@ -33,7 +33,7 @@ class UserIntake < ActiveRecord::Base
   named_scope :without_group, :conditions => { :group_id => nil }
   named_scope :recent_on_top, :order => "updated_at DESC"
 
-  #acts_as_audited
+  acts_as_audited
 
   # hold the data temporarily
   # user type is identified by the role it has subject to this user intake and other users
@@ -214,7 +214,10 @@ class UserIntake < ActiveRecord::Base
   def after_initialize
     self.lazy_action = '' # keep it text. we need it for Approve, Bill actions
     self.need_validation = true # assume, the user will not hit "save"
-    self.installation_datetime ||= (order.created_at + 7.days) if ordered_direct_to_consumer?
+    # 
+    #  Tue May 24 00:31:48 IST 2011, ramonrails
+    #   * date should not be 7 days ahead, as discussed with Chirag on chat
+    # self.installation_datetime ||= (order.created_at + 7.days) if ordered_direct_to_consumer?
     decide_card_or_bill
     # 
     #   * we begin from this state
@@ -446,7 +449,8 @@ class UserIntake < ActiveRecord::Base
   #   * decide whether pro-rata and subscription can be charged right now, or a trial period is running?
   def can_charge_subscription?
     #   * cannot charge subscription until trial period is running
-    !order.blank? && !subscription_deferred?
+    #   * can only charge with a valid shipped_at or panic event
+    !order.blank? && !subscription_deferred? && ( senior.any_panic_received? || !shipped_at.blank?)
   end
 
   # 
@@ -464,6 +468,9 @@ class UserIntake < ActiveRecord::Base
   end
   
   # when billing starts, the monthly recurring amount is charged pro-rated since this date
+  #  Tue May 24 20:29:19 IST 2011, ramonrails
+  #   * amount is charged from the copy of recurring rate stored in order at the time of placing it
+  #   * changes to the coupon code after placing the order does not affect this
   def pro_rata_start_date
     # 
     #  Tue Nov 23 00:53:04 IST 2010, ramonrails
@@ -474,23 +481,30 @@ class UserIntake < ActiveRecord::Base
     #   * check panic button press
     _date = panic_received_at
     #   * no panic? check shipping date
-    _date ||= (shipped_at + 7.days) if ( _date.blank? && !shipped_at.blank? )
+    _date ||= (shipped_at + 7.days) unless shipped_at.blank? # if ( _date.blank? && !shipped_at.blank? )
     #   * no panic or shipping? nothing returned
-    # 
-    #  Wed Mar 30 03:46:04 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4253
-    #   * pick local values that were copied
-    #   * when missing?, pick from device_model_prices
-    unless (order.blank? || order.product_cost.blank? || _date.blank?)
-      _date += ( order.cc_monthly_recurring || order.product_cost.recurring_delay).to_i.months
-    end
+    # # 
+    # #  Wed Mar 30 03:46:04 IST 2011, ramonrails
+    # #   * https://redmine.corp.halomonitor.com/issues/4253
+    # #   * pick local values that were copied
+    # #   * when missing?, pick from device_model_prices
+    # unless (order.blank? || order.product_cost.blank? || _date.blank?)
+    #   _date += ( order.cc_monthly_recurring || order.product_cost.recurring_delay).to_i.months
+    # end
+    # # 
+    # #  Tue May 24 20:07:41 IST 2011, ramonrails
+    # #   * https://redmine.corp.halomonitor.com/issues/4486
+    # #   * https://redmine.corp.halomonitor.com/attachments/3294/invalid_prorate_start_dates.jpg
+    # _date ||= Date.today
+    # _date = Date.today if _date > Date.today
+    # _date
   end
   
   # 
   #  Fri Feb  4 00:25:57 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4146
   def pro_rata_end_date
-    subscription_start_date - 1.day unless subscription_start_date.blank?
+    subscription_start_date - 1.day # unless subscription_start_date.blank?
   end
   
   # 
@@ -517,11 +531,10 @@ class UserIntake < ActiveRecord::Base
       #   * if no subscription started yet, consider this month
       _date = Time.now
       if _date.day == 1
-        _date # if today is 1st, why wait? start the subscription from today
+        _date.to_date # if today is 1st, why wait? start the subscription from today
       else
-        (_date + 1.month).beginning_of_month # .to_date # today is not 1st, let this month be pro-rated
+        (_date + 1.month).beginning_of_month.to_date # .to_date # today is not 1st, let this month be pro-rated
       end
-    # end
   end
   
   # 

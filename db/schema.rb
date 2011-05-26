@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110329225848) do
+ActiveRecord::Schema.define(:version => 20110521195318) do
 
   create_table "access_logs", :force => true do |t|
     t.integer  "user_id"
@@ -551,6 +551,9 @@ ActiveRecord::Schema.define(:version => 20110329225848) do
     t.datetime "gw_timestamp"
     t.integer  "severity"
     t.boolean  "call_center_timed_out"
+    t.float    "lat"
+    t.float    "long"
+    t.float    "altitude"
   end
 
   create_table "firmware_upgrades", :force => true do |t|
@@ -635,6 +638,9 @@ ActiveRecord::Schema.define(:version => 20110329225848) do
     t.boolean  "call_center_pending"
     t.datetime "timestamp_server"
     t.boolean  "call_center_timed_out"
+    t.float    "lat"
+    t.float    "long"
+    t.float    "altitude"
   end
 
   create_table "halo_debug_msgs", :force => true do |t|
@@ -885,6 +891,9 @@ ActiveRecord::Schema.define(:version => 20110329225848) do
     t.datetime "gw_timestamp"
     t.boolean  "test_mode"
     t.boolean  "call_center_timed_out"
+    t.float    "lat"
+    t.float    "long"
+    t.float    "altitude"
   end
 
   create_table "payment_gateway_responses", :force => true do |t|

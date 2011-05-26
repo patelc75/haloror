@@ -1,0 +1,20 @@
+<div>
+  <h1>Subscription cannot be charged for the following reason(s):</h1>
+  <ul>
+    <% if @user_intake.order.blank? %>
+    <li>User Intake does not have any associated Order</li>
+    <% end %>
+    
+    <% if @user_intake.subscription_deferred? %>
+    <li>Subscription is deferred by advance/trial months</li>
+    <% end %>
+    
+    <% unless @user_intake.senior.any_panic_received? %>
+    <li>Panic event is not received for <%= @user_intake.senior.name %></li>
+    <% end %>
+    
+    <% if @user_intake.shipped_at.blank? %>
+    <li>Shipping date is not given yet</li>
+    <% end %>
+  </ul>
+</div>

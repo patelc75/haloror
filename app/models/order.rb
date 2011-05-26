@@ -13,10 +13,10 @@ class Order < ActiveRecord::Base
   #  Wed Mar  9 01:01:27 IST 2011, ramonrails
   #   * coupon code changes for tickets #4253, #4067, #4060, #3923
   belongs_to :shipping_option
+  belongs_to :device_model
   has_many :order_items
   has_many :payment_gateway_responses
   has_one :user_intake
-  has_one :device_model
 
   attr_accessor :product, :bill_address_same, :need_validation
   before_update :check_kit_serial_validation
@@ -180,8 +180,19 @@ class Order < ActiveRecord::Base
     if ( _coupon = product_cost )
     # if order_items && order_items.first.device_model && order_items.first.device_model.coupon_codes
     #   _coupon = order_items.first.device_model.coupon_codes.first
-      { "code name" => _coupon.coupon_code, "deposit" => _coupon.deposit, "shipping" => _coupon.shipping, "monthly_recurring" => _coupon.monthly_recurring, "months_advance" => _coupon.months_advance, "months_trial" => _coupon.months_trial }
-    else                           
+      # 
+      #  Tue May 24 21:39:44 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4486
+      #   * pick local copy first, then look for related coupon code
+      {
+        "code name"         => (coupon_code           || _coupon.coupon_code),
+        "deposit"           => (cc_deposit            || _coupon.deposit),
+        "shipping"          => (cc_shipping           || _coupon.shipping),
+        "monthly_recurring" => (cc_monthly_recurring  || _coupon.monthly_recurring),
+        "months_advance"    => (cc_months_advance     || _coupon.months_advance),
+        "months_trial"      => (cc_months_trial       || _coupon.months_trial)
+      }
+    else
      {} 
     end
   end
@@ -775,8 +786,9 @@ class Order < ActiveRecord::Base
   #  Fri Mar  4 03:20:57 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4215
   def pro_rated_amount
-    _start = user_intake.pro_rata_start_date
-    _stop  = user_intake.subscription_start_date
+    _start  = user_intake.pro_rata_start_date
+    _stop   = user_intake.subscription_start_date
+    _amount = 0 # default
 
     unless _start.blank? || _stop.blank?
       #   * calculate month specific cost
@@ -786,8 +798,7 @@ class Order < ActiveRecord::Base
       # 
       #  Wed Mar 30 03:48:10 IST 2011, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/4253
-      _cost        = (cc_monthly_recurring || product_cost.monthly_recurring)
-      _amount      = 0 # default
+      _cost = (cc_monthly_recurring || product_cost.monthly_recurring)
 
       #   * same month. we want "round" here to keep "both days inclusive"
       #   * just get the difference between two dates
@@ -801,11 +812,19 @@ class Order < ActiveRecord::Base
         #   * start and 
         #   * start = last month, end = this month
         #   last month
-        _days       = ((_start.end_of_month - _start) / 1.day).round # include both days
+        # 
+        #  Wed May 25 04:35:03 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4486#note-35
+        _days       = (_start.end_of_month - _start).round # include both days
+        # _days       = ((_start.end_of_month - _start) / 1.day).round # include both days
         _daily_cost = (_cost / (_start.end_of_month.day * 1.00)) # per day cost for this month
         _amount     += (_days * _daily_cost).round(2)
         #   this month
-        _days       = ((_stop - _stop.beginning_of_month) / 1.day).round # include both days
+        # 
+        #  Wed May 25 04:35:20 IST 2011, ramonrails
+        #   * https://redmine.corp.halomonitor.com/issues/4486#note-35
+        _days       = (_stop - _stop.beginning_of_month).round # include both days
+        # _days       = ((_stop - _stop.beginning_of_month) / 1.day).round # include both days
         _daily_cost = (_cost / (_stop.end_of_month.day * 1.00)) # per day cost for this month
         _amount     += (_days * _daily_cost).round(2)
         
@@ -961,6 +980,10 @@ class Order < ActiveRecord::Base
       #  Thu Mar 24 00:58:45 IST 2011, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/4291
       user_intake.device_model_size = device_model_size
+      # 
+      #  Sat May 21 10:51:34 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4486
+      user_intake.device_model = device_model
       user_intake.group = group # halouser role is for group
       user_intake.senior_attributes = {:email => ship_email, :profile_attributes => senior_profile}
       #

@@ -185,6 +185,7 @@ class User < ActiveRecord::Base
   
   named_scope :all_except_demo, :conditions => { :demo_mode => [nil, false] } # https://redmine.corp.halomonitor.com/issues/3274
   named_scope :all_demo, :conditions => { :demo_mode => true } # https://redmine.corp.halomonitor.com/issues/4077
+  named_scope :cancelled, :conditions => ["cancelled_at IS NOT NULL"]
   named_scope :vips, :conditions => ["vip = ?", true] # https://redmine.corp.halomonitor.com/issues/3894
   # 
   #  Tue Jan  4 22:56:00 IST 2011, ramonrails
@@ -724,31 +725,45 @@ class User < ActiveRecord::Base
         # #   * https://redmine.corp.halomonitor.com/issues/4185
         # if _ui.order_successful? && _ui.subscription_successful? # update --only-- when order is successful
           _hash[ :prorate_start_date]   = _ui.pro_rata_start_date
-          _hash[ :recurring_start_date] = _ui.subscription_start_date
           #   * some values from order
           if ( _order = _ui.order )
             _hash[ :coupon_code] = _order.coupon_code
+            # 
+            #  Sat May 21 00:40:26 IST 2011, ramonrails
+            #   * https://redmine.corp.halomonitor.com/issues/4486
+            #   * "Recurring start date" in Invoices should be populated when Bill button is clicked, not when order is placed
+            #   * means "Bill" button, or, start-subscription was clicked
+            if _order.subscription_successful? && _order.pro_rata_successful?
+              _hash[ :recurring_start_date] = _ui.subscription_start_date
+            end
             # 
             #  Fri Feb 11 22:27:49 IST 2011, ramonrails
             #   * https://redmine.corp.halomonitor.com/issues/4185
             _hash[ :prorate] = _order.pro_rated_amount if ( _ui.order_successful? && _ui.subscription_successful? )
             #   * some values from coupon_code
             if ( _coupon = _order.product_cost )
-              if _coupon.shipping.blank?
-                _hash[ :shipping] = _order.shipping_option.price unless _order.shipping_option.blank?
-              else
-                _hash[ :shipping] = _coupon.shipping
-              end
+              # 
+              #  Wed May 25 04:40:55 IST 2011, ramonrails
+              #   * https://redmine.corp.halomonitor.com/issues/4486#note-36
+              _hash[ :shipping] = (_order.cc_shipping || _coupon.shipping) # prefer cached values
+              _hash[ :shipping] ||= _order.shipping_option.price unless _order.shipping_option.blank?
+              # if _coupon.shipping.blank?
+              #   _hash[ :shipping] = _order.shipping_option.price unless _order.shipping_option.blank?
+              # else
+              #   _hash[ :shipping] = _coupon.shipping
+              # end
               # 
               #  Fri Feb 11 22:27:53 IST 2011, ramonrails
               #   * https://redmine.corp.halomonitor.com/issues/4185
-              _hash[ :recurring] = _coupon.monthly_recurring if ( _ui.order_successful? && _ui.subscription_successful? )
-              _hash[ :deposit]   = _coupon.deposit
+              #   * https://redmine.corp.halomonitor.com/issues/4486#note-36
+              _hash[ :recurring] = (_order.cc_monthly_recurring || _coupon.monthly_recurring) if ( _ui.order_successful? && _ui.subscription_successful? )
+              _hash[ :deposit]   = (_order.cc_deposit || _coupon.deposit)
               # 
               #  Fri Mar 11 0:28:13 IST 2011, ramonrails
               #   * https://redmine.corp.halomonitor.com/issues/4067
+              #   * https://redmine.corp.halomonitor.com/issues/4486#note-36
               if _order.dealer_install_fee_applies
-                _hash[ :install_fee_amount] = _coupon.dealer_install_fee
+                _hash[ :install_fee_amount] = (_order.cc_dealer_install_fee || _coupon.dealer_install_fee)
                 _hash[ :install_fee_charged_at] = installed_at # QUESTION: install fee charged when installed?
               end
             end
@@ -2248,6 +2263,9 @@ class User < ActiveRecord::Base
     save(false)
   end
   
+  # 
+  #  Tue May 24 22:23:47 IST 2011, ramonrails
+  #   * OBSOLETE: Where is this used?
   def get_patients
     #   @x = Array.new
     #   for role in roles
@@ -2552,6 +2570,9 @@ class User < ActiveRecord::Base
     
   end
   
+  # 
+  #  Tue May 24 22:19:44 IST 2011, ramonrails
+  #   * OBSOLETE: These methods are already provided by authorization plugin we use. Why create them again?
   def is_moderator_of_any?(groups)
     groups.each do |group|
       if self.is_moderator_of? group
@@ -2561,6 +2582,9 @@ class User < ActiveRecord::Base
     return false
   end
   
+  # 
+  #  Tue May 24 22:19:44 IST 2011, ramonrails
+  #   * OBSOLETE: These methods are already provided by authorization plugin we use. Why create them again?
   def is_installer_of_any?(groups)
     groups.each do |group|
       if self.is_installer_of? group
@@ -2569,6 +2593,9 @@ class User < ActiveRecord::Base
     end
     return false
   end
+  # 
+  #  Tue May 24 22:19:44 IST 2011, ramonrails
+  #   * OBSOLETE: These methods are already provided by authorization plugin we use. Why create them again?
   def is_sales_of_any?(groups)
     groups.each do |group|
       if self.is_sales_of? group
@@ -2577,6 +2604,9 @@ class User < ActiveRecord::Base
     end
     return false
   end
+  # 
+  #  Tue May 24 22:19:44 IST 2011, ramonrails
+  #   * OBSOLETE: These methods are already provided by authorization plugin we use. Why create them again?
   def is_operator_of_any?(groups)
     groups.each do |group|
       if self.is_operator_of? group
@@ -2586,6 +2616,9 @@ class User < ActiveRecord::Base
     return false
   end
   
+  # 
+  #  Tue May 24 22:19:44 IST 2011, ramonrails
+  #   * OBSOLETE: These methods are already provided by authorization plugin we use. Why create them again?
   def is_admin_of_any?(groups)
     groups.each do |group|
       if self.is_admin_of? group
@@ -2595,6 +2628,7 @@ class User < ActiveRecord::Base
     return false
   end
   
+  #   * return => profile name, login, email (in the preference order)
   def name
     (profile.blank? ? (login.blank? ? email : login) : profile.name)
   end
@@ -2636,52 +2670,52 @@ class User < ActiveRecord::Base
   end
   def get_cg_instruction(key, operator, caregiver)
     instructions = { 
-      CallCenterWizard::CAREGIVER_MOBILE_PHONE => "Mobile " + format_phone(caregiver.profile.cell_phone) + "?",
-      CallCenterWizard::CAREGIVER_HOME_PHONE   => "Home " + format_phone(caregiver.profile.home_phone) + "?",
-      CallCenterWizard::CAREGIVER_WORK_PHONE   => "Work " + format_phone(caregiver.profile.work_phone) + "?",
-      CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => "Accept responsibility?",
-      CallCenterWizard::CAREGIVER_AT_HOUSE     => "At House?",
-      CallCenterWizard::CAREGIVER_GO_TO_HOUSE  => "Can you go to house?",
-      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE  => "Go to house and press GW button",
-      CallCenterWizard::CAREGIVER_THANK_YOU    => "Thank You!",
-      CallCenterWizard::AMBULANCE              => "Is Ambulance Needed?",
-      CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
-      CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911 => "Thank You, Agent will call.",
-      CallCenterWizard::PRE_AGENT_CALL_911     => "Can you call an ambulance?",
-      CallCenterWizard::AGENT_CALL_911         => "Ambulance dispatched properly?",
-      CallCenterWizard::AMBULANCE_DISPATCHED   => "Ambulance dispatched.",
-      CallCenterWizard::CAREGIVER_GOOD_BYE     => "Thank You.  Good Bye.",
-      CallCenterWizard::THE_END                => "Resolved the Event",
-      CallCenterWizard::RECONTACT_CAREGIVER => "Recontact Caregiver Home" + format_phone(caregiver.profile.home_phone) + "?",
-      CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY => 'Recontact Caregiver Accept Responsibility',
-      CallCenterWizard::RECONTACT_CAREGIVER_ABLE_TO_RESET => "Caregiver Able to Reset Gateway.",
-      CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET => "Caregiver is not Able to Reset Gateway.",
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE                         => "Mobile " + format_phone(caregiver.profile.cell_phone) + "?",
+      CallCenterWizard::CAREGIVER_HOME_PHONE                           => "Home " + format_phone(caregiver.profile.home_phone) + "?",
+      CallCenterWizard::CAREGIVER_WORK_PHONE                           => "Work " + format_phone(caregiver.profile.work_phone) + "?",
+      CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY                => "Accept responsibility?",
+      CallCenterWizard::CAREGIVER_AT_HOUSE                             => "At House?",
+      CallCenterWizard::CAREGIVER_GO_TO_HOUSE                          => "Can you go to house?",
+      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE                          => "Go to house and press GW button",
+      CallCenterWizard::CAREGIVER_THANK_YOU                            => "Thank You!",
+      CallCenterWizard::AMBULANCE                                      => "Is Ambulance Needed?",
+      CallCenterWizard::ON_BEHALF                                      => "Will you call 911 on behalf of #{self.name}?",
+      CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911                   => "Thank You, Agent will call.",
+      CallCenterWizard::PRE_AGENT_CALL_911                             => "Can you call an ambulance?",
+      CallCenterWizard::AGENT_CALL_911                                 => "Ambulance dispatched properly?",
+      CallCenterWizard::AMBULANCE_DISPATCHED                           => "Ambulance dispatched.",
+      CallCenterWizard::CAREGIVER_GOOD_BYE                             => "Thank You.  Good Bye.",
+      CallCenterWizard::THE_END                                        => "Resolved the Event",
+      CallCenterWizard::RECONTACT_CAREGIVER                            => "Recontact Caregiver Home" + format_phone(caregiver.profile.home_phone) + "?",
+      CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY      => 'Recontact Caregiver Accept Responsibility',
+      CallCenterWizard::RECONTACT_CAREGIVER_ABLE_TO_RESET              => "Caregiver Able to Reset Gateway.",
+      CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET          => "Caregiver is not Able to Reset Gateway.",
       CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET_CONTINUE => "Caregiver Able to Reset Gateway.",
-      CallCenterWizard::CALL_HALO_ADMIN => "Call Halo Admin."
+      CallCenterWizard::CALL_HALO_ADMIN                                => "Call Halo Admin."
     }
     instruction = instructions[key]
     return instruction
   end
   def get_instruction(key, operator)
     instructions = { 
-      CallCenterWizard::USER_HOME_PHONE        => "Home " + format_phone(self.profile.home_phone) + "?",
-      CallCenterWizard::USER_MOBILE_PHONE      => "Mobile " + format_phone(self.profile.cell_phone)+ "?",
-      CallCenterWizard::USER_OK                => "Call caregivers?",
-      CallCenterWizard::USER_AMBULANCE         => "Agent to dispatch ambulance?",
-      CallCenterWizard::ON_BEHALF              => "Will you call 911 on behalf of #{self.name}?",
-      CallCenterWizard::PRE_AGENT_CALL_911     => "Can dispatcher dispatch an ambulance?",
-      CallCenterWizard::AGENT_CALL_911         => "Ambulance dispatched properly?",
-      CallCenterWizard::AMBULANCE_DISPATCHED   => "Ambulance dispatched.",
-      CallCenterWizard::USER_GOOD_BYE          => "Thank You.  Good Bye.",
-      CallCenterWizard::THE_END                => "Resolved the Event",
-      CallCenterWizard::RECONTACT_USER => "Recontact User?",
-      CallCenterWizard::RECONTACT_USER_OK => 'Recontact OK.',
-      CallCenterWizard::RECONTACT_USER_ABLE_TO_RESET => "User Able to Reset Gateway.",
-      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET =>  "User is Not Able to Reset Gateway.",
+      CallCenterWizard::USER_HOME_PHONE                           => "Home " + format_phone(self.profile.home_phone) + "?",
+      CallCenterWizard::USER_MOBILE_PHONE                         => "Mobile " + format_phone(self.profile.cell_phone)+ "?",
+      CallCenterWizard::USER_OK                                   => "Call caregivers?",
+      CallCenterWizard::USER_AMBULANCE                            => "Agent to dispatch ambulance?",
+      CallCenterWizard::ON_BEHALF                                 => "Will you call 911 on behalf of #{self.name}?",
+      CallCenterWizard::PRE_AGENT_CALL_911                        => "Can dispatcher dispatch an ambulance?",
+      CallCenterWizard::AGENT_CALL_911                            => "Ambulance dispatched properly?",
+      CallCenterWizard::AMBULANCE_DISPATCHED                      => "Ambulance dispatched.",
+      CallCenterWizard::USER_GOOD_BYE                             => "Thank You.  Good Bye.",
+      CallCenterWizard::THE_END                                   => "Resolved the Event",
+      CallCenterWizard::RECONTACT_USER                            => "Recontact User?",
+      CallCenterWizard::RECONTACT_USER_OK                         => 'Recontact OK.',
+      CallCenterWizard::RECONTACT_USER_ABLE_TO_RESET              => "User Able to Reset Gateway.",
+      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET          =>  "User is Not Able to Reset Gateway.",
       CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE =>  "User Able to Reset Gateway.",
-      CallCenterWizard::HELP_COMING_SOON =>  "Help Coming Soon.",
-      CallCenterWizard::AMBULANCE_COMING_SOON =>  "Help coming soon.",
-      CallCenterWizard::CALL_HALO_ADMIN => "Call Halo Admin."
+      CallCenterWizard::HELP_COMING_SOON                          =>  "Help Coming Soon.",
+      CallCenterWizard::AMBULANCE_COMING_SOON                     =>  "Help coming soon.",
+      CallCenterWizard::CALL_HALO_ADMIN                           => "Call Halo Admin."
     }
     instruction = instructions[key]
     return instruction
@@ -2690,28 +2724,28 @@ class User < ActiveRecord::Base
     now = Time.now
     minutes = ((now - event.timestamp_server) / (60)).round
     scripts = {
-      CallCenterWizard::CAREGIVER_MOBILE_PHONE => get_able_to_reach_script_cell(caregiver, "Caregiver"),      
-      CallCenterWizard::CAREGIVER_HOME_PHONE   => get_able_to_reach_script_home(caregiver, "Caregiver"),
-      CallCenterWizard::CAREGIVER_WORK_PHONE   => get_able_to_reach_script_work(caregiver, "Caregiver"),
-      CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY      => get_caregiver_responisibility_script(caregiver, event, operator),
-      CallCenterWizard::CAREGIVER_AT_HOUSE     => get_caregiver_are_you_at_house_script(caregiver),
-      CallCenterWizard::CAREGIVER_GO_TO_HOUSE  => get_caregiver_go_to_house_script(caregiver),
-      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE  => get_on_behalf_script_orig(self.profile.first_name),
-      CallCenterWizard::CAREGIVER_THANK_YOU    => get_caregiver_thank_you_script(caregiver),
-      CallCenterWizard::AMBULANCE              => get_caregiver_script(caregiver, operator, event),
-      CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.profile.first_name),
-      CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911 => get_thank_you_pre_agent(),
-      CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
-      CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
-      CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulance_dispatched(),
-      CallCenterWizard::CAREGIVER_GOOD_BYE     => get_caregiver_good_bye_script(),
-      CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event.",
-      CallCenterWizard::RECONTACT_CAREGIVER => get_caregiver_recontact(minutes),
-      CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY => get_caregiver_recontact_responsibilty(),
-      CallCenterWizard::RECONTACT_CAREGIVER_ABLE_TO_RESET => get_caregiver_able_to_reset(),
-      CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET => get_caregiver_not_able_to_reset(),
+      CallCenterWizard::CAREGIVER_MOBILE_PHONE                         => get_able_to_reach_script_cell(caregiver, "Caregiver"),      
+      CallCenterWizard::CAREGIVER_HOME_PHONE                           => get_able_to_reach_script_home(caregiver, "Caregiver"),
+      CallCenterWizard::CAREGIVER_WORK_PHONE                           => get_able_to_reach_script_work(caregiver, "Caregiver"),
+      CallCenterWizard::CAREGIVER_ACCEPT_RESPONSIBILITY                => get_caregiver_responisibility_script(caregiver, event, operator),
+      CallCenterWizard::CAREGIVER_AT_HOUSE                             => get_caregiver_are_you_at_house_script(caregiver),
+      CallCenterWizard::CAREGIVER_GO_TO_HOUSE                          => get_caregiver_go_to_house_script(caregiver),
+      CallCenterWizard::ON_BEHALF_GO_TO_HOUSE                          => get_on_behalf_script_orig(self.profile.first_name),
+      CallCenterWizard::CAREGIVER_THANK_YOU                            => get_caregiver_thank_you_script(caregiver),
+      CallCenterWizard::AMBULANCE                                      => get_caregiver_script(caregiver, operator, event),
+      CallCenterWizard::ON_BEHALF                                      => get_on_behalf_script(self.profile.first_name),
+      CallCenterWizard::THANK_YOU_PRE_AGENT_CALL_911                   => get_thank_you_pre_agent(),
+      CallCenterWizard::PRE_AGENT_CALL_911                             => get_ambulance_start_script(operator, event),
+      CallCenterWizard::AGENT_CALL_911                                 => get_ambulance_script(operator, event),      
+      CallCenterWizard::AMBULANCE_DISPATCHED                           => get_ambulance_dispatched(),
+      CallCenterWizard::CAREGIVER_GOOD_BYE                             => get_caregiver_good_bye_script(),
+      CallCenterWizard::THE_END                                        => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event.",
+      CallCenterWizard::RECONTACT_CAREGIVER                            => get_caregiver_recontact(minutes),
+      CallCenterWizard::RECONTACT_CAREGIVER_ACCEPT_RESPONSIBILITY      => get_caregiver_recontact_responsibilty(),
+      CallCenterWizard::RECONTACT_CAREGIVER_ABLE_TO_RESET              => get_caregiver_able_to_reset(),
+      CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET          => get_caregiver_not_able_to_reset(),
       CallCenterWizard::RECONTACT_CAREGIVER_NOT_ABLE_TO_RESET_CONTINUE => get_caregiver_not_able_to_reset_continue(),
-      CallCenterWizard::CALL_HALO_ADMIN => get_call_halo_admin()
+      CallCenterWizard::CALL_HALO_ADMIN                                => get_call_halo_admin()
     }
     script = scripts[key]
     return script
@@ -2721,24 +2755,24 @@ class User < ActiveRecord::Base
     now = Time.now
     minutes = ((now - event.timestamp_server) / (60)).round
     scripts = {
-      CallCenterWizard::USER_HOME_PHONE        => get_able_to_reach_script_home(self, "HaloUser"),
-      CallCenterWizard::USER_MOBILE_PHONE      => get_able_to_reach_script_cell(self, "HaloUser"),
-      CallCenterWizard::USER_AMBULANCE         => get_user_script(operator, event, self.profile.home_phone),
-      CallCenterWizard::USER_OK                => get_user_ok_script(operator, event),
-      CallCenterWizard::ON_BEHALF              => get_on_behalf_script(self.profile.first_name),
-      CallCenterWizard::PRE_AGENT_CALL_911     => get_ambulance_start_script(operator, event),
-      CallCenterWizard::AGENT_CALL_911         => get_ambulance_script(operator, event),      
-      CallCenterWizard::AMBULANCE_DISPATCHED   => get_ambulance_dispatched(),
-      CallCenterWizard::USER_GOOD_BYE          => get_user_good_bye_script,
-      CallCenterWizard::THE_END                => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event.",
-      CallCenterWizard::RECONTACT_USER => get_user_recontact(minutes, operator),
-      CallCenterWizard::RECONTACT_USER_OK => get_user_recontact_ok(),
-      CallCenterWizard::RECONTACT_USER_ABLE_TO_RESET => get_user_able_to_reset(),
-      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET => get_user_not_able_to_reset(),
+      CallCenterWizard::USER_HOME_PHONE                           => get_able_to_reach_script_home(self, "HaloUser"),
+      CallCenterWizard::USER_MOBILE_PHONE                         => get_able_to_reach_script_cell(self, "HaloUser"),
+      CallCenterWizard::USER_AMBULANCE                            => get_user_script(operator, event, self.profile.home_phone),
+      CallCenterWizard::USER_OK                                   => get_user_ok_script(operator, event),
+      CallCenterWizard::ON_BEHALF                                 => get_on_behalf_script(self.profile.first_name),
+      CallCenterWizard::PRE_AGENT_CALL_911                        => get_ambulance_start_script(operator, event),
+      CallCenterWizard::AGENT_CALL_911                            => get_ambulance_script(operator, event),      
+      CallCenterWizard::AMBULANCE_DISPATCHED                      => get_ambulance_dispatched(),
+      CallCenterWizard::USER_GOOD_BYE                             => get_user_good_bye_script,
+      CallCenterWizard::THE_END                                   => "Please click <a style=\"color: white;\" href=\"/call_center/resolved/#{event.id}\">here to Resolve</a> the event.",
+      CallCenterWizard::RECONTACT_USER                            => get_user_recontact(minutes, operator),
+      CallCenterWizard::RECONTACT_USER_OK                         => get_user_recontact_ok(),
+      CallCenterWizard::RECONTACT_USER_ABLE_TO_RESET              => get_user_able_to_reset(),
+      CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET          => get_user_not_able_to_reset(),
       CallCenterWizard::RECONTACT_USER_NOT_ABLE_TO_RESET_CONTINUE => get_user_not_able_to_reset_continue(),
-      CallCenterWizard::HELP_COMING_SOON => get_help_coming_soon(),
-      CallCenterWizard::AMBULANCE_COMING_SOON => get_help_coming_soon(),
-      CallCenterWizard::CALL_HALO_ADMIN => get_call_halo_admin()
+      CallCenterWizard::HELP_COMING_SOON                          => get_help_coming_soon(),
+      CallCenterWizard::AMBULANCE_COMING_SOON                     => get_help_coming_soon(),
+      CallCenterWizard::CALL_HALO_ADMIN                           => get_call_halo_admin()
         }
         script = scripts[key]
         return script
@@ -3408,7 +3442,11 @@ class User < ActiveRecord::Base
     #  Thu Dec 30 23:17:56 IST 2010, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/3950
     self.cancelled_at = Time.now
-    self.send(:update_without_callbacks)
+    # 
+    #  Sun May 22 01:13:40 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4486
+    #   * update_without_callbacks does not allow updating invoices table for values
+    # self.send(:update_without_callbacks)
     triage_audit_logs.create( :status => User::STATUS[:cancelled], :description => "MyHalo account of #{name} is now cancelled.") 
   end
   

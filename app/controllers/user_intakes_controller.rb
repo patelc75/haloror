@@ -340,10 +340,21 @@ class UserIntakesController < ApplicationController
     # 
     #  Thu Feb  3 01:19:04 IST 2011, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/4137
-    @user_intake.charge_pro_rata_and_subscription
+    if @user_intake.can_charge_subscription?
+      @user_intake.charge_pro_rata_and_subscription
+    else
+      redirect_to :action => 'cannot_charge_subscription', :id => params[:id]
+    end
     #   * old method was not considering the pro-rata charges
     #   * payment gateway was also returning error due to subscription start date in the past
     # @user_intake.order.charge_subscription if @user_intake.order # begin charge for subscription
+  end
+  
+  # 
+  #  Thu May 26 03:18:54 IST 2011, ramonrails
+  #   * https://redmine.corp.halomonitor.com/issues/4486
+  def cannot_charge_subscription
+    @user_intake = UserIntake.find( params[:id])
   end
 
   def paper_copy_submission
