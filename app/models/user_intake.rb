@@ -470,7 +470,13 @@ class UserIntake < ActiveRecord::Base
   #   * FIXME: now we have not received 2 months payment but user gets benefit
   def subscription_deferred?
     #   * trial period will end one day less than trial-period-span-months-window
-    !order.blank? && !order.product_cost.blank? && (Date.today < (order.created_at.to_date + order.product_cost.recurring_delay.months))
+    _defer = if (order.cc_months_advance.blank? && order.cc_months_trial.blank?)
+      order.product_cost.recurring_delay.to_i
+    else
+      order.cc_months_advance.to_i + order.cc_months_trial.to_i
+    end
+    !order.blank? && (Date.today < (order.created_at.to_date >> _defer))
+    # !order.blank? && !order.product_cost.blank? && (Date.today < (order.created_at.to_date + order.product_cost.recurring_delay.months))
   end
   
   # when billing starts, the monthly recurring amount is charged pro-rated since this date
