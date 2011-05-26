@@ -386,6 +386,12 @@ class UserIntake < ActiveRecord::Base
           if self.senior.any_panic_received?
             self.senior.update_attribute( :status, User::STATUS[:installed]) # force_status!( :installed)
           end
+          
+          # 
+          #  Fri May 27 00:46:10 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4486#note-56
+          self.senior.save # update_invoice_attributes
+          
           # self.senior.status = User::STATUS[:installed]
           # self.senior.send( :update_without_callbacks)
           # 

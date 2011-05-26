@@ -652,3 +652,19 @@ Feature: Pre quality
     # And panic button test data is not received for user intake "last"
     And I start the subscription for the last user intake
     Then user intake "last" should have "Ready to Install" status
+
+  Scenario: Order > Invoice ship date > User intake > start subscription > dates are populated
+    Given the product catalog exists
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I am placing an online order for "bestbuy" group
+    And I uncheck "order_bill_address_same"
+    And I press "Continue"
+    And I press "Place Order"
+    Then I should see "Success"
+    And the last user intake should have an invoice
+    #   * ship date
+    When the last user intake had the product shipped 5 weeks ago
+    #   * start subscription (same as "Bill")
+    And I start the subscription for the last user intake
+    And the last invoice should have prorate_start_date, recurring_start_date, prorate, recurring columns filled
