@@ -105,10 +105,12 @@ class DeviceModel < ActiveRecord::Base
       # 
       #  Wed May 25 03:25:16 IST 2011, ramonrails
       #   * https://redmine.corp.halomonitor.com/issues/4486#note-34
+      #   * When group or coupon code is not given, assume 'default'
       _coupon_code = ( options[:coupon_code].blank? ? 'default' : options[:coupon_code])
       _group       = ( options[:group].blank? ? Group.default! : options[:group])
-      #   * Coupon code selection order: ml_chirag/bogus > ml_chirag/default > default_default
+      #   * Coupon code selection order: ml_chirag/bogus > default/bogus > ml_chirag/default > default/default
       _coupon   = coupon_codes.for_group( _group).for_coupon_code( _coupon_code).first
+      _coupon ||= coupon_codes.for_group( Group.default!).for_coupon_code( _coupon_code).first
       _coupon ||= coupon_codes.for_group( _group).for_coupon_code( 'default').first
       _coupon ||= coupon_codes.for_group( Group.default!).for_coupon_code( 'default').first
       #   * OBSOLETE: logic was causing apparent error which is fixed above
