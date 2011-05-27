@@ -791,6 +791,11 @@ class Order < ActiveRecord::Base
     _amount = 0 # default
 
     unless _start.blank? || _stop.blank?
+      # 
+      #  Thu May 26 19:30:00 IST 2011, ramonrails
+      #   * https://redmine.corp.halomonitor.com/issues/4486#note-47
+      _start = _start.to_date
+      _stop  = _stop.to_date
       #   * calculate month specific cost
       #   * WARNING: do not use "round". It will give incorrect results
       _months_diff = ((_stop - _start) / 1.month).to_i # to_i will show sandwitched complete months

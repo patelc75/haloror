@@ -386,6 +386,12 @@ class UserIntake < ActiveRecord::Base
           if self.senior.any_panic_received?
             self.senior.update_attribute( :status, User::STATUS[:installed]) # force_status!( :installed)
           end
+          
+          # 
+          #  Fri May 27 00:46:10 IST 2011, ramonrails
+          #   * https://redmine.corp.halomonitor.com/issues/4486#note-56
+          self.senior.save # update_invoice_attributes
+          
           # self.senior.status = User::STATUS[:installed]
           # self.senior.send( :update_without_callbacks)
           # 
@@ -464,7 +470,13 @@ class UserIntake < ActiveRecord::Base
   #   * FIXME: now we have not received 2 months payment but user gets benefit
   def subscription_deferred?
     #   * trial period will end one day less than trial-period-span-months-window
-    !order.blank? && !order.product_cost.blank? && (Date.today < (order.created_at.to_date + order.product_cost.recurring_delay.months))
+    _defer = if (order.cc_months_advance.blank? && order.cc_months_trial.blank?)
+      order.product_cost.recurring_delay.to_i
+    else
+      order.cc_months_advance.to_i + order.cc_months_trial.to_i
+    end
+    !order.blank? && (Date.today < (order.created_at.to_date >> _defer))
+    # !order.blank? && !order.product_cost.blank? && (Date.today < (order.created_at.to_date + order.product_cost.recurring_delay.months))
   end
   
   # when billing starts, the monthly recurring amount is charged pro-rated since this date
@@ -497,14 +509,18 @@ class UserIntake < ActiveRecord::Base
     # #   * https://redmine.corp.halomonitor.com/attachments/3294/invalid_prorate_start_dates.jpg
     # _date ||= Date.today
     # _date = Date.today if _date > Date.today
-    # _date
+    # 
+    #  Thu May 26 19:32:15 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4486#note-47
+    _date = _date.to_date unless _date.blank?
+    _date
   end
   
   # 
   #  Fri Feb  4 00:25:57 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4146
   def pro_rata_end_date
-    subscription_start_date - 1.day # unless subscription_start_date.blank?
+    (subscription_start_date - 1.day).to_date # unless subscription_start_date.blank?
   end
   
   # 
@@ -529,7 +545,7 @@ class UserIntake < ActiveRecord::Base
     #   _subscribed_at
     # else
       #   * if no subscription started yet, consider this month
-      _date = Time.now
+      _date = Date.today
       if _date.day == 1
         _date.to_date # if today is 1st, why wait? start the subscription from today
       else

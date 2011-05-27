@@ -120,14 +120,15 @@ class Panic < CriticalDeviceAlert
               _intake.update_attribute( :panic_received_at, _time_now)
               #   send "<halouser> installed" email" 
               user.notify_about_installation
-              #   update User.installed_at
               # 
+              #   update User.installed_at
               #  Tue May 24 23:08:25 IST 2011, ramonrails
               #   * https://redmine.corp.halomonitor.com/issues/4486
               #   * Installed at should not be updated when panic button is sent before "Ready for Approval" state
-              # user.update_attribute( :installed_at, _time_now) # unless user.status.blank?
-              # make all caregivers active
+              #   * status.blank? means 'Not Submitted'
+              user.update_attribute( :installed_at, _time_now) unless user.status.blank?
               # 
+              # make all caregivers active
               #  Fri Feb  4 01:06:31 IST 2011, ramonrails
               #   * https://redmine.corp.halomonitor.com/issues/4147
               # all caregivers are active now

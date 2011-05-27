@@ -264,7 +264,7 @@ class User < ActiveRecord::Base
           # 
           #  Thu Jan 27 00:51:51 IST 2011, ramonrails
           #   * https://redmine.corp.halomonitor.com/issues/4088
-          self.installed_at = Time.now # mark the timestamo when status changed to 'Installed'
+          self.installed_at = Time.now # mark the timestamp when status changed to 'Installed'
           # 
           #  Mon Feb  7 21:24:27 IST 2011, ramonrails
           #   * https://redmine.corp.halomonitor.com/issues/4146#note-6
@@ -724,22 +724,24 @@ class User < ActiveRecord::Base
         # #  Fri Feb 11 22:27:44 IST 2011, ramonrails
         # #   * https://redmine.corp.halomonitor.com/issues/4185
         # if _ui.order_successful? && _ui.subscription_successful? # update --only-- when order is successful
-          _hash[ :prorate_start_date]   = _ui.pro_rata_start_date
           #   * some values from order
           if ( _order = _ui.order )
             _hash[ :coupon_code] = _order.coupon_code
             # 
             #  Sat May 21 00:40:26 IST 2011, ramonrails
             #   * https://redmine.corp.halomonitor.com/issues/4486
+            #   * https://redmine.corp.halomonitor.com/issues/4486#note-51
             #   * "Recurring start date" in Invoices should be populated when Bill button is clicked, not when order is placed
             #   * means "Bill" button, or, start-subscription was clicked
             if _order.subscription_successful? && _order.pro_rata_successful?
               _hash[ :recurring_start_date] = _ui.subscription_start_date
+              _hash[ :prorate_start_date]   = _ui.pro_rata_start_date
+              # 
+              #  Fri Feb 11 22:27:49 IST 2011, ramonrails
+              #   * https://redmine.corp.halomonitor.com/issues/4185
+              #   * https://redmine.corp.halomonitor.com/issues/4486#note-52
+              _hash[ :prorate] = _order.pro_rated_amount # if ( _ui.order_successful? && _ui.subscription_successful? )
             end
-            # 
-            #  Fri Feb 11 22:27:49 IST 2011, ramonrails
-            #   * https://redmine.corp.halomonitor.com/issues/4185
-            _hash[ :prorate] = _order.pro_rated_amount if ( _ui.order_successful? && _ui.subscription_successful? )
             #   * some values from coupon_code
             if ( _coupon = _order.product_cost )
               # 

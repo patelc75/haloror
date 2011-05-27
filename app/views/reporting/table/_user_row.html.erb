@@ -61,11 +61,14 @@
       <span style="font-size: 80%;">
         <br /><%= user_row.login.blank? ? "(no login)" : user_row.login %>
         <% if user_row.demo_mode? %>
-        <br /><%= image_tag( 'warning_16.png', :alt => "Demo", :title => "Demo") %> Demo
+          <br /><%= image_tag( 'warning_16.png', :alt => "Demo", :title => "Demo") %> Demo
         <% end %> 
         <% if user_row.vip? %>
-        <br /><%= image_tag( 'warning_go.png', :alt => "VIP", :title => "VIP") %> VIP
-        <% end %>        
+          <br /><%= image_tag( 'warning_go.png', :alt => "VIP", :title => "VIP") %> VIP
+        <% end %>
+        <% unless user_row.installed_at.blank? %>
+          <br /><%= user_row.installed_at %>
+        <% end %>
       </span>
       <% if caregiver && user_row.profile %>
     </a>
