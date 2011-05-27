@@ -470,11 +470,16 @@ class UserIntake < ActiveRecord::Base
   #   * FIXME: now we have not received 2 months payment but user gets benefit
   def subscription_deferred?
     #   * trial period will end one day less than trial-period-span-months-window
-    _defer = if (order.cc_months_advance.blank? && order.cc_months_trial.blank?)
-      order.product_cost.recurring_delay.to_i
-    else
-      order.cc_months_advance.to_i + order.cc_months_trial.to_i
-    end
+    # _defer = if (order.cc_months_advance.blank? && order.cc_months_trial.blank?)
+    #   order.product_cost.recurring_delay.to_i
+    # else
+    #   order.cc_months_advance.to_i + order.cc_months_trial.to_i
+    # end
+    # 
+    #  Fri May 27 21:59:53 IST 2011, ramonrails
+    #   * https://redmine.corp.halomonitor.com/issues/4504
+    #   * when user intake is created directly, this failed on order == nil
+    _defer = ( order.blank? ? 0 : ( order.cc_months_advance.to_i + order.cc_months_trial.to_i ))
     !order.blank? && (Date.today < (order.created_at.to_date >> _defer))
     # !order.blank? && !order.product_cost.blank? && (Date.today < (order.created_at.to_date + order.product_cost.recurring_delay.months))
   end

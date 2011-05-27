@@ -107,7 +107,7 @@ class UserIntakesController < ApplicationController
       format.xml  { render :xml => @user_intakes }
     end    
   end
-  
+
   def single_row 
     @user_intakes = [UserIntake.find_by_id(params[:id])]
     #@user_intakes = @user_intakes.paginate :page => params[:page],:order => 'created_at desc',:per_page => 10    
@@ -174,7 +174,7 @@ class UserIntakesController < ApplicationController
       redirect_to :controller => :user_intakes, :action => "single_row", :id => @user_intake.id
     end
   end
-  
+
   # POST /user_intakes
   # POST /user_intakes.xml
   def create
@@ -349,7 +349,7 @@ class UserIntakesController < ApplicationController
     #   * payment gateway was also returning error due to subscription start date in the past
     # @user_intake.order.charge_subscription if @user_intake.order # begin charge for subscription
   end
-  
+
   # 
   #  Thu May 26 03:18:54 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4486
@@ -377,11 +377,11 @@ class UserIntakesController < ApplicationController
     end
     redirect_to :back # just go back to the last triage
   end
-  
+
   # ===========
   # = private =
   # ===========
-  
+
   def set_current_user
     Thread.current[:user] = current_user
   end

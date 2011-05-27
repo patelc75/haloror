@@ -668,3 +668,15 @@ Feature: Pre quality
     #   * start subscription (same as "Bill")
     And I start the subscription for the last user intake
     And the last invoice should have prorate_start_date, recurring_start_date, prorate, recurring columns filled
+
+  Scenario: Online order > Panic > status remains 'Not Submitted'
+        Given the product catalog exists
+    When I create a "bestbuy" reseller group
+    And I create a coupon code for "bestbuy" group
+    And I am placing an online order for "bestbuy" group
+    And I uncheck "order_bill_address_same"
+    And I press "Continue"
+    And I press "Place Order"
+    Then I should see "Success"
+    When panic button test data is received for user intake "last"
+    Then user intake "last" should have "Not Submitted" status
