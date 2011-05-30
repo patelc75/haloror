@@ -14,7 +14,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :access_modes  
   map.resources :carriers
   map.resources :shipping_options
-  map.resources :device_model_prices
+  map.resources :device_model_prices, :collection => { :expired => :get, :usable => :get }
   map.resources :groups
   map.resources :installation_in_progress
   map.resources :time_zones

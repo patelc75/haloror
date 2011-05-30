@@ -26,10 +26,7 @@ class DeviceModelPrice < ActiveRecord::Base
   # = filters and scopes =
   # ======================
   
-  named_scope :recent_on_top, :order => "created_at DESC"
-  named_scope :for_group, lambda {|_group| { :conditions => { :group_id => _group.id } }} # used in device_model.rb
-  named_scope :for_coupon_code, lambda {|arg| { :conditions => { :coupon_code => arg.to_s } }}
-  named_scope :for_device_model, lambda {|_device| { :conditions => { :device_model_id => _device.id } }} # used in group.rb
+  named_scope :active, lambda { { :conditions => ["expiry_date >= ?", Date.today], :order => 'expiry_date ASC' }}
   named_scope :contains, lambda {|*args|
     _str = "%#{args.flatten.first}%"
     _num = args.flatten.first.to_i
@@ -45,6 +42,11 @@ class DeviceModelPrice < ActiveRecord::Base
     ## { :joins => "LEFT OUTER JOIN groups ON device_model_prices.group_id = groups.id LEFT OUTER JOIN device_models ON device_model_prices.device_model_id = device_models.id", :conditions => _conditions }
     { :include => [ :group, :device_model], :conditions => _conditions}
     }
+  named_scope :expired, lambda { { :conditions => ["expiry_date < ?", Date.today], :order => 'expiry_date DESC' }}
+  named_scope :for_coupon_code, lambda {|arg| { :conditions => { :coupon_code => arg.to_s } }}
+  named_scope :for_device_model, lambda {|_device| { :conditions => { :device_model_id => _device.id } }} # used in group.rb
+  named_scope :for_group, lambda {|_group| { :conditions => { :group_id => _group.id } }} # used in device_model.rb
+  named_scope :recent_on_top, :order => "created_at DESC"
 
   # =============
   # = callbacks =

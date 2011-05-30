@@ -1,59 +1,33 @@
-<%=render :partial => 'reporting/nav_config'%>
+<%= render :partial => 'reporting/nav_config' %>
 
-<div class="span-12">
-  <h3>Coupon Codes</h3>
-</div>
-<div class="span-4 border">
-  <%= link_to 'New coupon code', new_device_model_price_path, :class => "button green-button medium" %>
-</div>
-<div class="span-8 last">
-  <% form_tag( {:action => "index"}, :method => :get) do %>
-    <%= text_field_tag "search", @search, :class => "span-5" %>
-    <%= submit_tag "Search", :class => "button medium white-button" %>
-  <% end -%>
+<div class="span-24">
+  <div class="span-12">
+    <h3>Coupon Codes</h3>
+  </div>
+  <div class="span-4 border">
+    <%= link_to 'New coupon code', new_device_model_price_path, :class => "button green-button medium" %>
+  </div>
+  <div class="span-8 last">
+    <% form_tag( {:action => "index"}, :method => :get) do %>
+      <%= text_field_tag "search", @search, :class => "span-5" %>
+      <%= submit_tag "Search", :class => "button medium white-button" %>
+    <% end -%>
+  </div>
 </div>
 
-<div class="span-12">
-  <%= will_paginate %>
-</div>
-<div class="span-12 last text-right">
+<div class="span-24">
+  <div class="span-12">
+    <%= will_paginate %>
+  </div>
+  <div class="span-12 last text-right">
+    <%= link_to "All", device_model_prices_path, :class => "button small blue-button" %> |
+    <%= link_to "Usable", usable_device_model_prices_path, :class => "button small blue-button" %> |
+    <%= link_to "Expired", expired_device_model_prices_path, :class => "button small blue-button" %>
+  </div>
 </div>
 <table class="bluegrey">
-  <tr>
-    <th>ID</th>
-    <th>Group</th>
-    <th>Part Num</th>
-    <th>Model</th>
-    <th>Coupon<br> Code</th>
-    <th>Expiry<br> Date</th>
-    <th>Deposit</th>
-    <th>Shipping</th>
-    <th>Monthly<br> recurring</th>
-    <th>Months<br> advance</th>
-    <th>Months<br> trial</th>
-    <th>Dealer<br> Install Fee</th>
-    <th/><th/><th/>
-  </tr>
-
-<% for _coupon in @device_model_prices %>
-  <tr class="<%= cycle('', 'altrow') %>">
-    <td><%= h _coupon.id %></td>
-    <td><%=h _coupon.group_name %></td>
-    <td><%=h _coupon.part_number %></td>
-    <td><%=h _coupon.device_type %></td>
-    <td><%=h _coupon.coupon_code %></td>
-    <td><%=h _coupon.expiry_date %></td>
-    <td><%=h _coupon.deposit %></td>
-    <td><%=h _coupon.shipping %></td>
-    <td><%=h _coupon.monthly_recurring %></td>
-    <td><%=h _coupon.months_advance %></td>
-    <td><%=h _coupon.months_trial %></td>
-    <td><%=h _coupon.dealer_install_fee %></td>
-    <td><%= link_to 'Show', _coupon %></td>
-    <td><%= link_to 'Edit', edit_device_model_price_path(_coupon) %></td>
-    <td><%= link_to 'Destroy', _coupon, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
+  <%= render :partial => 'coupon_header_row' %>
+  <%= render :partial => 'coupon_row', :collection => @device_model_prices %>
 </table>
 <%= will_paginate %>
 <br />

@@ -1,0 +1,17 @@
+<tr class="<%= cycle('', 'altrow') %>">
+  <td><%= h coupon_row.id %></td>
+  <td><%=h coupon_row.group_name %></td>
+  <td><%=h coupon_row.part_number %></td>
+  <td><%=h coupon_row.device_type %></td>
+  <td><%=h coupon_row.coupon_code %></td>
+  <td><%=h coupon_row.expiry_date %></td>
+  <td><%=h coupon_row.deposit %></td>
+  <td><%=h coupon_row.shipping %></td>
+  <td><%=h coupon_row.monthly_recurring %></td>
+  <td><%=h coupon_row.months_advance %></td>
+  <td><%=h coupon_row.months_trial %></td>
+  <td><%=h coupon_row.dealer_install_fee %></td>
+  <td><%= link_to 'Show', coupon_row %></td>
+  <td><%= link_to 'Edit', edit_device_model_price_path(coupon_row) %></td>
+  <td><%= link_to 'Destroy', coupon_row, :confirm => 'Are you sure?', :method => :delete %></td>
+</tr>

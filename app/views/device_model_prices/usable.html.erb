@@ -1,0 +1,13 @@
+<%= render :partial => 'reporting/nav_config' %>
+<h1 id="expired_coupon_codes">Usable Coupon Codes</h1>
+<div class="text-right">
+  <%= link_to "All", device_model_prices_path, :class => "button small blue-button" %> |
+  <%= link_to "Usable", usable_device_model_prices_path, :class => "button small blue-button" %> |
+  <%= link_to "Expired", expired_device_model_prices_path, :class => "button small blue-button" %>
+</div>
+<table class="bluegrey">
+  <%= render :partial => 'coupon_header_row' %>
+  <%= render :partial => 'coupon_row', :collection => @device_model_prices %>
+</table>
+<%= will_paginate %>
+<br />

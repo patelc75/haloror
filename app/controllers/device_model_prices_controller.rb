@@ -91,4 +91,12 @@ class DeviceModelPricesController < ApplicationController
       format.xml  { head :ok }
     end
   end
+  
+  def expired
+    @device_model_prices = DeviceModelPrice.expired.paginate :per_page => 20, :page => params[:page]
+  end
+
+  def usable
+    @device_model_prices = DeviceModelPrice.active.paginate :per_page => 20, :page => params[:page]
+  end
 end
