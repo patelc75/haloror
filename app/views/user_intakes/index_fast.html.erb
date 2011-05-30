@@ -9,11 +9,11 @@
     <tr>
       <td>
         Select <label for="group_name">Group</label>:
-        <%= select_tag 'search[group_name]', options_for_select( @group_names, (@group.name unless @group.blank?)) %> <br />
+        <%= select_tag 'search[group_name]', options_from_collection_for_select( @groups.insert( 0, Group.new( :name => 'All States')), :id, :name, @group) %> <br />
       </td>
       <td>
         Select <label for="status_name">Status</label>:
-        <%= select_tag 'search[status]', options_for_select( @statuses, @status) %> <br />
+        <%= select_tag 'search[status]', options_for_select( @statuses, (params["search"]["status"] rescue '')) %> <br />
       </td>
       <td>
         <label for="search[q]">Search phrase</label>

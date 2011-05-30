@@ -36,6 +36,12 @@ class Profile < ActiveRecord::Base
 
   #before_create             :check_phone_numbers
 
+  # 
+  #  Sat May 28 04:58:01 IST 2011, ramonrails
+  #   Usage:
+  #   * contains( 'try') => first_name or last_name contains 'try'
+  named_scope :contains, lambda {|arg| { :conditions => ["profiles.first_name LIKE ? OR profiles.last_name LIKE ?", "%#{arg}%", "%#{arg}%"] }}
+
   #def check_phone_numbers
   #  self.home_phone = self.home_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'')
   #  self.work_phone = self.work_phone.squeeze.tr("-().{}@^~+=","").gsub(/[a-z]/,'') if self.work_phone

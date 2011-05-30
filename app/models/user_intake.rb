@@ -32,6 +32,8 @@ class UserIntake < ActiveRecord::Base
   # validates_presence_of :local_primary, :global_primary, :unless => :skip_validation # https://redmine.corp.halomonitor.com/issues/2809
   named_scope :without_group, :conditions => { :group_id => nil }
   named_scope :recent_on_top, :order => "updated_at DESC"
+  named_scope :where_group, lambda {|arg| { :conditions => { :group_id => arg} }}
+  named_scope :where_user, lambda {|arg| { :include => :users, :conditions => ["users.id IN (?)", [arg].flatten] }}
 
   acts_as_audited
 

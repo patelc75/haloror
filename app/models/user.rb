@@ -191,12 +191,25 @@ class User < ActiveRecord::Base
   #  Tue Jan  4 22:56:00 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/3961
   #   * the search is now case-insensitive. User can search in any "text-case"
-  named_scope :filtered, lambda {|arg| query = "%#{arg}%".upcase; { :include => :profile, :conditions => ["users.id = ? OR upper(users.login) LIKE ? OR upper(profiles.first_name) LIKE ? OR upper(profiles.last_name) LIKE ?", arg.to_i, query, query, query]}}
-  named_scope :where_status, lambda {|arg| { :conditions => { :status => arg } }}
-  named_scope :where_id, lambda {|*arg| { :conditions => { :id => arg.first} }}
-  named_scope :ordered, lambda {|*args| { :include => :profile, :order => ( args.flatten.first || "id ASC" ) }} # Wed Oct 13 02:52:36 IST 2010 ramonrails
-  named_scope :where_login_or_email, lambda {|arg| { :conditions => ["login = ? OR email = ?", arg, arg] }}
   named_scope :contains, lambda {|arg| { :conditions => ["login LIKE ? OR email LIKE ?", "%#{arg}%", "%#{arg}%"] }}
+  named_scope :filtered, lambda {|arg| query = "%#{arg}%".upcase; { :include => :profile, :conditions => ["users.id = ? OR upper(users.login) LIKE ? OR upper(profiles.first_name) LIKE ? OR upper(profiles.last_name) LIKE ?", arg.to_i, query, query, query]}}
+  named_scope :ordered, lambda {|*args| { :include => :profile, :order => ( args.flatten.first || "id ASC" ) }} # Wed Oct 13 02:52:36 IST 2010 ramonrails
+  named_scope :where_id, lambda {|*arg| { :conditions => { :id => arg.first} }}
+  named_scope :where_login_or_email, lambda {|arg| { :conditions => ["login = ? OR email = ?", arg, arg] }}
+  # 
+  #  Sat May 28 04:56:15 IST 2011, ramonrails
+  #  Usage:
+  #   * where_status( '')              => nil or ''
+  #   * where_status( 'Not Submitted') => nil or ''
+  #   * where_status( 'Installed)      => 'Installed'
+  named_scope :where_status, lambda {|arg|
+      if ['', 'Not Submitted'].include?( arg)
+        _conditions = ["status = '' OR status IS NULL"]
+      else
+        _conditions = { :status => arg }
+      end
+      { :conditions => _conditions }
+    }
 
   # ===============================
   # = triggers, events, callbacks =
@@ -2496,7 +2509,7 @@ class User < ActiveRecord::Base
     #             {:id => roles.find_all_by_authorizable_type('Group').collect(&:authorizable_id).compact.uniq})
     #             # self.is_halouser_of_what will not work here. user can have more roles than halouser
     _group_ids = group_membership_ids
-    Group.all(:conditions => (_group_ids.blank? ? {} : { :id => _group_ids}), :order => 'name')
+    Group.all( :conditions => { :id => _group_ids}, :order => 'name')
     #   group roles of user, uniq, sorted
     #   this method also works but requires "group_roles" method
     # return group_roles.collect {|role| Group.find(role.authorizable_id) }.uniq.sort {|a, b| a <=> b}
@@ -2524,7 +2537,11 @@ class User < ActiveRecord::Base
   #   * super admin => return all group ids to which this user belongs
   #   * any other user => return the group ids, this user has role for
   def group_membership_ids
-    is_super_admin? ? [] : roles.where_authorizable_type('Group').all(:select => :authorizable_id).collect(&:authorizable_id).compact.uniq
+    if is_super_admin?
+      Group.all( :select => 'id').collect(&:id)
+    else
+      roles.where_authorizable_type('Group').all(:select => :authorizable_id).collect(&:authorizable_id).compact.uniq
+    end
   end
   
   def group_memberships_by_role(role)

@@ -46,7 +46,7 @@ class UserIntakesController < ApplicationController
   end
 
   def index_fast
-    @statuses = User.unique_statuses
+    @statuses = ['All'] + User.unique_statuses.map {|s| s.blank? ? 'Not Submitted' : s}
     _group_ids = {} # show all user intakes, unless this hash changes
     # 
     #  Thu Dec 23 20:19:59 IST 2010, ramonrails
@@ -57,28 +57,44 @@ class UserIntakesController < ApplicationController
     if params["search"].blank? || params["search"]["group_name"].blank?
       #   * fetch user intakes "visible" as per the role
       #   * any role, incuding super_admin must go through the IDs collect
-      _group_ids = @groups.collect(&:id).flatten.compact.uniq
+      _group_ids = current_user.group_membership_ids # @groups.collect(&:id).flatten.compact.uniq
+      @group = ''
     else
       # 
       #  Fri Mar  4 00:26:45 IST 2011, ramonrails
       #   * WARNING: This will not work correct when search if by text phrase
       #   *   This method assumes that given group_names are for current user
       #   * fetch the group use is looking for
-      @group = Group.find_by_name(params["search"]["group_name"])
-      _group_ids = @group.id # intakes only for this group
+      # @group = Group.find( params["search"]["group_name"])
+      _group_ids = @group = params[:search][:group_name] # @group.id # intakes only for this group
     end
-    _ids = UserIntake.all( :conditions => { :group_id => _group_ids}).collect(&:id)
+    # _ids = UserIntake.all( :conditions => { :group_id => _group_ids}).collect(&:id)
+    _ids = UserIntake.where_group( _group_ids).collect(&:id)
     #   * search user name, id
     if !params["search"].blank? && !params["search"]["q"].blank?
       @q = params["search"]["q"]
-      _ids = (_ids & UserIntake.all( :include => {:users => :profile}, :conditions => ["profiles.first_name LIKE ? OR profiles.last_name LIKE ? OR users.id = ?", "%#{@q}%", "%#{@q}%", @q.to_i], :select => :id).collect(&:id) )
+      # collect users matching search phrase in login or email
+      _user_ids = User.all( :conditions => ["login LIKE (?) OR email LIKE (?)", "%#{@q}%", "%#{@q}%"], :select => 'id, login').collect(&:id)
+      # collect users with profile first or last name matching
+      _user_ids += Profile.all( :conditions => ["first_name LIKE (?) OR last_name LIKE (?)", "%#{@q}%", "%#{@q}%"], :select => 'user_id').collect(&:user_id)
+      # fetch all connected user_intakes to the above users, intersect UI ids from earlier collected ones
+      _ids = (_ids & UserIntakesUser.all( :select => :user_intake_id, :conditions => { :user_id => _user_ids}).collect(&:user_intake_id))
     end
     #   * search status
-    if !params["search"].blank? && !params["search"]["status"].blank?
-      @status = params["search"]["status"]
-      _ids = (_ids & UserIntake.all( :include => :users, :conditions => ["users.status LIKE ?", "%#{@status}%"], :select => :id).collect(&:id) )
+    if !params["search"].blank? && !params["search"]["status"].blank? && (params["search"]["status"] != 'All')
+      # _status = params["search"]["status"]
+      # _query = "users.status LIKE ?"
+      # if (_status == 'Not Submitted')
+      #   _query += " OR users.status IS NULL"
+      #   _status = ''
+      # end
+      # _ids = (_ids & UserIntake.all( :include => :users, :conditions => [_query, "%#{@status}%"], :select => :id).collect(&:id) )
+      _user_ids = User.where_status( params[:search][:status]).collect(&:id)
+      # _ids = ( _ids &  UserIntakesUser.all( :select => :user_intake_id, :conditions => { :user_id => _user_ids}).collect(&:user_intake_id).compact)
+      _ids = ( _ids & UserIntakesUser.all( :select => :user_intake_id, :conditions => { :user_id => _user_ids}).collect(&:user_intake_id))
+      # _uis += UserIntake.find( _ids, :limit => 25)
     end
-    #   * Now fetch the intakes, apply conditions and paginate them at once
+    # * Now fetch the intakes, apply conditions and paginate them at once
     @user_intakes = UserIntake.paginate :conditions => { :id => _ids }, :order => "updated_at DESC", :per_page => 15, :page => params[:page]
     #
     #   * Earlier logic. Same as above, but just optimized DRYed code above
