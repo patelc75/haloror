@@ -17,6 +17,7 @@ class FlexController < ApplicationController
     @default_battery_outlet_status = 'Unknown'
     @default_battery_level_status = 'Normal'
     
+    debugger
     # build query hash
     build_query_hash
     #current_user must be a caregiver for user with id userID or self

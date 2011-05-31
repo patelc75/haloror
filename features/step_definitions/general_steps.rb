@@ -154,6 +154,10 @@ end
 # = whens =
 # =========
 
+When /^I watch the flex chart$/ do
+  visit url_for( :controller => 'chart', :action => 'flex')
+end
+
 When /^I select "([^"]*)" date as "([^"]*)"$/ do |_element, _dynamic|
   _value = if _dynamic.include?("`")
     _dynamic.split("`").enum_with_index.collect {|p, i| (i%2).zero? ? p.strip : eval(p).to_s }.join(' ').strip
