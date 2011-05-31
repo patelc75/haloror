@@ -70,7 +70,7 @@ class FlexController < ApplicationController
   def get_data_for_user(user, last_reading_only = true)
     user_data = user
     #  Tue Mar 22 00:24:03 IST 2011, ramonrails
-    averaging = ( @query[:num_points].to_i > 0 ) # @query[:num_points].to_i == 0 ? false : true
+    averaging = ( @query[:num_points].to_i != 0 ) # @query[:num_points].to_i == 0 ? false : true
     vital_data = nil
     # get vital data
     if !@query[:enddate].blank? && !@query[:startdate].blank? && !last_reading_only

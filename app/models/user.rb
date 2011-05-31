@@ -195,6 +195,9 @@ class User < ActiveRecord::Base
   named_scope :filtered, lambda {|arg| query = "%#{arg}%".upcase; { :include => :profile, :conditions => ["users.id = ? OR upper(users.login) LIKE ? OR upper(profiles.first_name) LIKE ? OR upper(profiles.last_name) LIKE ?", arg.to_i, query, query, query]}}
   named_scope :ordered, lambda {|*args| { :include => :profile, :order => ( args.flatten.first || "id ASC" ) }} # Wed Oct 13 02:52:36 IST 2010 ramonrails
   named_scope :where_id, lambda {|*arg| { :conditions => { :id => arg.first} }}
+  # 
+  #  Tue May 31 22:10:57 IST 2011, ramonrails
+  #   * OBSOLETE: Use "contains" instead. This is kept here for backward compatibility. Can be removed.
   named_scope :where_login_or_email, lambda {|arg| { :conditions => ["login = ? OR email = ?", arg, arg] }}
   # 
   #  Sat May 28 04:56:15 IST 2011, ramonrails
