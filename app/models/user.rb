@@ -70,17 +70,17 @@ class User < ActiveRecord::Base
   # = attributes and accessibility =
   # ================================
   
+  # Virtual attribute for the unencrypted password
+  cattr_accessor :current_user #stored in memory instead of table
+  attr_accessor :password # , :password_confirmation
+  attr_accessor :current_password,:username_confirmation
+  attr_accessor :need_validation
+  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active
+  attr_accessor :caregiver_position, :lazy_roles, :lazy_options, :lazy_associations
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
   attr_accessible :login, :email, :password, :password_confirmation
   attr_accessible :need_validation
-  attr_accessor :need_validation
-  attr_accessor :is_keyholder, :phone_active, :email_active, :text_active, :active, :need_validation
-  attr_accessor :caregiver_position, :lazy_roles, :lazy_options, :lazy_associations
-  # Virtual attribute for the unencrypted password
-  cattr_accessor :current_user #stored in memory instead of table
-  attr_accessor :password
-  attr_accessor :current_password,:username_confirmation
   
   # ==========================
   # = includes and libraries =
@@ -249,13 +249,6 @@ class User < ActiveRecord::Base
   end
 
   def before_save
-    #
-    # Mon Oct  4 19:27:23 IST 2010, v1.6.0
-    # activation code should be created for .create as well as .save
-    make_activation_code # generate activation code as appropriate
-    autofill_login # pre-fill login and password with _AUTO_xxx login, unless already
-    #
-    encrypt_password
     # https://redmine.corp.halomonitor.com/issues/3215
     # WARNING: we need to confirm which logic holds true to shift user to "Installed" mode
     #   * when alert_status == "normal"
@@ -293,6 +286,13 @@ class User < ActiveRecord::Base
         self.status_changed_at = Time.now if self.status_changed_at_change.blank?
       end
     end
+    #
+    # Mon Oct  4 19:27:23 IST 2010, v1.6.0
+    # activation code should be created for .create as well as .save
+    make_activation_code # generate activation code as appropriate
+    autofill_login # pre-fill login and password with _AUTO_xxx login, unless already
+    #
+    encrypt_password
   end
 
   # https://redmine.corp.halomonitor.com/issues/398
@@ -3507,10 +3507,10 @@ class User < ActiveRecord::Base
   # Sets the salt and encrypts the password 
   def encrypt_password
     unless password.blank?
-      if new_record?
-        self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") 
+      # if self.new_record?
+        self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if self.new_record?
         self.crypted_password = encrypt(password)
-      end
+      # end
     end
   end
   
@@ -3527,7 +3527,7 @@ class User < ActiveRecord::Base
     if(skip_validation || self.is_new_caregiver || self[:is_new_user] || self[:is_new_subscriber] || self[:is_new_halouser])
       return false
     else
-      crypted_password.blank? || !password.blank?
+      !password.blank? || crypted_password.blank?
     end
   end
   

@@ -45,7 +45,7 @@ window.onload = function(){
   <span style="padding-left:30px;">
     <% if current_user.is_super_admin? && !@user.new_record? %>
       <% @kit_serial_number = KitSerialNumber.find_by_user_id(@user.id,:order => 'created_at desc') %>
-      <%= link_to('Change Password', change_password_user_path( @user) ) unless @user.blank? || @user.profile.blank? %> | <%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id unless @user.blank? %> | 
+      <%= link_to('Change Username/Password', change_password_user_path( @user) ) unless @user.blank? || @user.profile.blank? %> | <%= link_to "Print Profile Page", :controller => 'users',:action => 'signup_details',:id => @user.id unless @user.blank? %> | 
       <% if @kit_serial_number %>
         <%= link_to "Enter CS and GW serial numbers for #{@kit_serial_number.serial_number}",:controller => 'users',:action => 'edit_serial_number' ,:id => @user.id %> 
       <%else%>

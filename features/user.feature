@@ -44,7 +44,7 @@ Feature: User status
      | New Password        | abc123 |
      | Retype New Password | abc123 |
     And I press "update"
-    Then I should see "Password Changed"
+    Then I should see "User was successfully updated"
     Given I am authenticated as "test-user" with password "abc123"
     Then page content should have "Welcome, test-user"
     
