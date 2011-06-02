@@ -2,34 +2,31 @@ class FlexController < ApplicationController
   before_filter :authenticate_admin_halouser_caregiver_operator?
   include UtilityHelper
   
-  def chart
-    
-    @query = {}
-
-    # gather data from these models
-    @models = [Vital, SkinTemp, Step, Battery, Fall]
-
-    # array to store all user data in; users[0] is the default user
-    @users = []
+  def chart    
+    @query  = {}
+    @models = [ Vital, SkinTemp, Step, Battery, Fall] # gather data from these models
+    @users  = [] # array to store all user data in; users[0] is the default user
 
     # default statuses
-    @default_connectivity_status = 'Device Available'  
+    @default_connectivity_status   = 'Device Available'  
     @default_battery_outlet_status = 'Unknown'
-    @default_battery_level_status = 'Normal'
+    @default_battery_level_status  = 'Normal'
     
-    # build query hash
     build_query_hash
-    #current_user must be a caregiver for user with id userID or self
+    #   * current_user must be a caregiver for user with id userID or self
+    #   * @default_user is assigned within build_query_hash
     groups = @default_user.group_memberships
-    if current_user != :false && (@default_user.id == current_user.id || current_user.patients.include?(@default_user) || current_user.is_super_admin? || current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups))
-      # gather data
+    #   * current_user is User class
+    #   * @default_user is current_user and same class
+    if (current_user.class.name == "User") && ( @default_user.eql?( current_user) || current_user.patients.include?(@default_user) || current_user.is_super_admin? || current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups))
       gather_data
     
-      if params[:test]
-        render :partial => 'chart_data_test', :locals => {:query => @query, :users => @users}
-      else
-        render :partial => 'chart_data', :locals => {:query => @query, :users => @users}
-      end
+      render :partial => (params[:test] ? 'chart_data_test' : 'chart_data'), :locals => {:query => @query, :users => @users}
+      # if params[:test]
+      #   render :partial => 'chart_data_test', :locals => {:query => @query, :users => @users}
+      # else
+      #   render :partial => 'chart_data', :locals => {:query => @query, :users => @users}
+      # end
     else
       redirect_to :action => 'unauthorized', :controller => 'security'
     end
@@ -42,29 +39,45 @@ class FlexController < ApplicationController
   protected
   
   def gather_data
-    sent_first = false
-    # get data for default user
-    if(@default_user.is_halouser?)
-      @users << get_data_for_user(@default_user, false)
-      sent_first = true
+    # 
+    #  Fri Jun  3 01:18:34 IST 2011, ramonrails
+    #   * Optimized logic. Same as earlier. Just less code
+    #   * TODO: TEST THIS THOROUGHLY
+    #   * collect default_user (only if halouser) + patients
+    _users = ( @default_user.is_halouser? ? [@default_user] : []) + @default_user.patients
+    #   * fetch all readings for first user from array, popped (removed from array)
+    #   * "false" = ( last_reading_only = false)
+    unless _users.blank?
+      @users << get_data_for_user( _users.shift, false)
+      #   * now fetch last_reading_only for remaining users
+      _users.each {|_user| @users << get_data_for_user( _user)}
     end
-    # get lastreading for each user the @default_user is a caregiver of
-    if(sent_first)
-      @default_user.patients.each do |patient|
-        @users << get_data_for_user(patient)
-      end
-    else
-      patients = @default_user.patients
-      if patients && patients.size > 0
-        @users << get_data_for_user(patients[0], false)
-        if patients.size > 1
-          patients = patients.slice(1, patients.size - 1)
-          patients.each do |patient|
-            @users << get_data_for_user(patient)
-          end
-        end
-      end
-    end
+    #
+    #   OBSOLETE: OLD LOGIC. Result is same as new code above
+    #
+    # sent_first = false
+    # # get data for default user
+    # if( @default_user.is_halouser?)
+    #   @users << get_data_for_user(@default_user, false)
+    #   sent_first = true
+    # end
+    # # get lastreading for each user the @default_user is a caregiver of
+    # if(sent_first)
+    #   @default_user.patients.each do |patient|
+    #     @users << get_data_for_user(patient)
+    #   end
+    # else
+    #   patients = @default_user.patients
+    #   if patients && patients.size > 0
+    #     @users << get_data_for_user(patients[0], false)
+    #     if patients.size > 1
+    #       patients = patients.slice(1, patients.size - 1)
+    #       patients.each do |patient|
+    #         @users << get_data_for_user(patient)
+    #       end
+    #     end
+    #   end
+    # end
   end
   
   def get_data_for_user(user, last_reading_only = true)
@@ -289,35 +302,46 @@ class FlexController < ApplicationController
   end
   
   def build_query_hash
-    unless @query = params[:ChartQuery]
-      @query = {}
-    end
+    @query = ( params[ :ChartQuery] || {})
+    # unless @query = params[:ChartQuery]
+    #   @query = {}
+    # end
     
-    # if no user id from chart, we want to run initialization
-    if @query[:userID].nil? && session[:halo_user_id].blank?
-      initialize_chart 
-    elsif @query[:userID].nil?
-      @default_user = User.find(session[:halo_user_id])
-      @query[:userID] = session[:halo_user_id]
+    #   * session[ :halo_user_id] was assigned in chart_controller > flex
+    _query_user_id   = @query[ :userID]
+    _session_user_id = session[ :halo_user_id]
+    
+    if _query_user_id.blank?
+      if _session_user_id.blank?
+        initialize_chart # if no user id from chart, we want to run initialization
+      else
+        @default_user    = User.find( _session_user_id)
+        @query[ :userID] = _session_user_id
+      end
     else
-      @default_user = User.find(@query[:userID])
+      @default_user = User.find( _query_user_id)
     end
-    
-    
-    
-    
+    # 
+    # if @query[:userID].nil? && session[:halo_user_id].blank?
+    #   initialize_chart 
+    # elsif @query[:userID].nil?
+    #   @default_user = User.find(session[:halo_user_id])
+    #   @query[:userID] = session[:halo_user_id]
+    # else
+    #   @default_user = User.find(@query[:userID])
+    # end
+
     # map userID to user_id
-    @query[:user_id] = @query[:userID]
-    
-    @query[:enddate] = Time.now if @query[:enddate].blank? && !@query[:startdate].blank?
+    @query[ :user_id] = @query[ :userID]
+    @query[ :enddate] = Time.now if ( @query[ :enddate].blank? && !@query[ :startdate].blank?)
   end
   
   def initialize_chart
-    @query[:num_points] = 0                        # we want discreet data
-    @query[:userID] = current_user.id              # default user is the one who's currently logged in
-    @default_user = current_user
-    @query[:enddate] = Time.now.to_datetime                    # enddate is now
-    @query[:startdate] = (@query[:enddate] - 600).to_datetime   # startdate is enddate - 10 minutes
+    @query[ :startdate]  = (@query[ :enddate] - 10.minutes).to_datetime  # startdate is enddate - 10 minutes
+    @query[ :enddate]    = Time.now.to_datetime                  # enddate is now
+    @query[ :num_points] = 0                                     # we want discreet data
+    @query[ :userID]     = current_user.id                       # default user is the one who's currently logged in
+    @default_user        = current_user
   end
   
   def average_data_record(user, interval, num_points, start_time)
