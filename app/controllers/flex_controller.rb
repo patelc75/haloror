@@ -333,7 +333,7 @@ class FlexController < ApplicationController
 
     # map userID to user_id
     @query[ :user_id] = @query[ :userID]
-    @query[ :enddate] = Time.now if ( @query[ :enddate].blank? && !@query[ :startdate].blank?)
+    @query[ :enddate] = Time.now if @query[ :enddate].blank? # && !@query[ :startdate].blank?)
   end
   
   def initialize_chart

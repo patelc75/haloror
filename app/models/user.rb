@@ -2301,7 +2301,7 @@ class User < ActiveRecord::Base
     # end
     # 
     # patients
-    self.is_super_admin? ? User.halousers : self.is_caregiver_of_what # will return all seniors for whom this user is a caregiver
+    self.is_caregiver_of_what # will return all seniors for whom this user is a caregiver
   end
 
   # not required. this is already handled exactly like this by rails-authorization plugin
