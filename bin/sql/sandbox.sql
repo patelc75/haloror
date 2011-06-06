@@ -1,17 +1,39 @@
-/* refs #3666 debugging safetycare account number ------------------------------------------------------------------------------------------------*/
+-- kill Pg query --------------------------------
+SELECT 
+    pg_terminate_backend(19021) 
+FROM 
+    pg_stat_activity 
+WHERE -- don't kill my own connection!
+    procpid <> pg_backend_pid();
+                                    
+UtilityHelper.change_password_by_user_id(1599, 'bestswimer')
+
+-- look for sucscribers for a given user
+select * from users_by_user_intake_id(select user_intake_id from user_intakes_users where user_id = 901 limit 1);
+select user_intake_id from user_intakes_users where user_id = 1477 limit 1;
+select * from users_by_user_intake_id(89);
+                                               
+-- change group for user intake when broken!
+select * from groups where name like 'ml_kevinkelly';          -- group_id = 145
+select * from roles where authorizable_id = 145;               -- role_id = 782      
+select * from users_by_user_intake_id(112);                    -- user_id = 1543
+insert into roles_users (user_id, role_id) values (1543, 782); -- update group                                          
+update user_intakes set group_id = 145 where id = 112;         -- update group
+	
+-- refs #3666 debugging safetycare account number ------------------------------------------------------------------------------------------------
 select id, first_name, last_name, account_number from profiles where account_number is not null order by account_number desc;
 select id, first_name, last_name, account_number from profiles where account_number = '1125' order by account_number desc;
 update profiles set account_number = '1111' where id in (459, 405, 1085, 711, 1108, 34, 1094, 999, 552, 967, 980, 47, 158);
 update profiles set account_number = NULL where id in (459, 405, 1085, 711, 1108, 34, 1094, 999, 552, 967, 980, 47, 158);
 select id, first_name, last_name, account_number from profiles where id in (11, 459, 405, 1085, 711, 1108, 34, 1094, 999, 552, 967, 980, 47, 158);
 
-/* Users with associated profiles ----------------------------------------------------------------------------------------------------------------*/
+-- Users with associated profiles ----------------------------------------------------------------------------------------------------------------
 select users.id, profiles.first_name, profiles.last_name, users.activated_at, users.status, users.demo_mode from users, profiles where users.id in (1288, 1303) and profiles.user_id = users.id;
 select users.id, profiles.first_name, profiles.last_name, users.activated_at, users.status, users.demo_mode from users, profiles where users.id in (1295, 1296, 1297, 1298, 1299) and profiles.user_id = users.id order by users.id asc;
 select users.id, profiles.first_name, profiles.last_name, users.activated_at, users.activation_code, users.status, users.demo_mode from users, profiles where profiles.user_id = users.id order by users.id desc;
 select users.id, users.login, profiles.first_name, profiles.last_name, users.activated_at, users.status, users.demo_mode from users, profiles where users.id in (select user_id from user_intakes_users where user_intake_id = 33) and profiles.user_id = users.id order by users.id asc;
 
-/* device_infos debugging ------------------------------------------------------------------------------------------------------------*/
+-- device_infos debugging ------------------------------------------------------------------------------------------------------------
 select * from mgmt_responses where id in (3712791, 3713124);
 select user_id, software_version, mgmt_response_id from device_infos where software_version like '%1319%'; 
 s
