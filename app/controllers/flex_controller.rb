@@ -2,91 +2,73 @@ class FlexController < ApplicationController
   before_filter :authenticate_admin_halouser_caregiver_operator?
   include UtilityHelper
   
-  def chart    
-    @query  = {}
-    @models = [ Vital, SkinTemp, Step, Battery, Fall] # gather data from these models
-    @users  = [] # array to store all user data in; users[0] is the default user
+  def chart
+    
+    @query = {}
+
+    # gather data from these models
+    @models = [Vital, SkinTemp, Step, Battery]
+
+    # array to store all user data in; users[0] is the default user
+    @users = []
 
     # default statuses
-    @default_connectivity_status   = 'Device Available'  
+    @default_connectivity_status = 'Device Available'  
     @default_battery_outlet_status = 'Unknown'
-    @default_battery_level_status  = 'Normal'
+    @default_battery_level_status = 'Normal'
     
+    # build query hash
     build_query_hash
-    #   * current_user must be a caregiver for user with id userID or self
-    #   * @default_user is assigned within build_query_hash
+    #current_user must be a caregiver for user with id userID or self
     groups = @default_user.group_memberships
-    #   * current_user is User class
-    #   * @default_user is current_user and same class
-    if (current_user.class.name == "User") && ( @default_user.eql?( current_user) || current_user.patients.include?(@default_user) || current_user.is_super_admin? || current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups))
+    if current_user != :false && (@default_user.id == current_user.id || current_user.patients.include?(@default_user) || current_user.is_super_admin? || current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups))
+      # gather data
       gather_data
     
-      render :partial => (params[:test] ? 'chart_data_test' : 'chart_data'), :locals => {:query => @query, :users => @users}
-      # if params[:test]
-      #   render :partial => 'chart_data_test', :locals => {:query => @query, :users => @users}
-      # else
-      #   render :partial => 'chart_data', :locals => {:query => @query, :users => @users}
-      # end
+      if params[:test]
+        render :partial => 'chart_data_test', :locals => {:query => @query, :users => @users}
+      else
+        render :partial => 'chart_data', :locals => {:query => @query, :users => @users}
+      end
     else
       redirect_to :action => 'unauthorized', :controller => 'security'
     end
   end
   
-  # =============
-  # = protected =
-  # =============
-  
   protected
   
   def gather_data
-    # 
-    #  Fri Jun  3 01:18:34 IST 2011, ramonrails
-    #   * Optimized logic. Same as earlier. Just less code
-    #   * TODO: TEST THIS THOROUGHLY
-    #   * collect default_user (only if halouser) + patients
-    _users = ( @default_user.is_halouser? ? [@default_user] : []) + @default_user.patients
-    #   * fetch all readings for first user from array, popped (removed from array)
-    #   * "false" = ( last_reading_only = false)
-    unless _users.blank?
-      @users << get_data_for_user( _users.shift, false)
-      #   * now fetch last_reading_only for remaining users
-      _users.each {|_user| @users << get_data_for_user( _user)}
+    sent_first = false
+    # get data for default user
+    if(@default_user.is_halouser?)
+      @users << get_data_for_user(@default_user, false)
+      sent_first = true
     end
-    #
-    #   OBSOLETE: OLD LOGIC. Result is same as new code above
-    #
-    # sent_first = false
-    # # get data for default user
-    # if( @default_user.is_halouser?)
-    #   @users << get_data_for_user(@default_user, false)
-    #   sent_first = true
-    # end
-    # # get lastreading for each user the @default_user is a caregiver of
-    # if(sent_first)
-    #   @default_user.patients.each do |patient|
-    #     @users << get_data_for_user(patient)
-    #   end
-    # else
-    #   patients = @default_user.patients
-    #   if patients && patients.size > 0
-    #     @users << get_data_for_user(patients[0], false)
-    #     if patients.size > 1
-    #       patients = patients.slice(1, patients.size - 1)
-    #       patients.each do |patient|
-    #         @users << get_data_for_user(patient)
-    #       end
-    #     end
-    #   end
-    # end
+    # get lastreading for each user the @default_user is a caregiver of
+    if(sent_first)
+      @default_user.patients.each do |patient|
+        @users << get_data_for_user(patient)
+      end
+    else
+      patients = @default_user.patients
+      if patients && patients.size > 0
+        @users << get_data_for_user(patients[0], false)
+        if patients.size > 1
+          patients = patients.slice(1, patients.size - 1)
+          patients.each do |patient|
+            @users << get_data_for_user(patient)
+          end
+        end
+      end
+    end
   end
   
   def get_data_for_user(user, last_reading_only = true)
     user_data = user
-    #  Tue Mar 22 00:24:03 IST 2011, ramonrails
-    averaging = ( @query[:num_points].to_i != 0 ) # @query[:num_points].to_i == 0 ? false : true
+    averaging = @query[:num_points].to_i == 0 ? false : true
     vital_data = nil
     # get vital data
-    if !@query[:enddate].blank? && !@query[:startdate].blank? && !last_reading_only
+    if !@query[:enddate].blank? and !@query[:startdate].blank? and !last_reading_only
       if averaging 
         interval = (@query[:enddate].to_time - @query[:startdate].to_time) / @query[:num_points].to_i
         vital_data = average_data_record(user, interval, @query[:num_points].to_i, @query[:startdate].to_time)
@@ -145,30 +127,21 @@ class FlexController < ApplicationController
     @models.each do |model|
       time_previous = nil
       get_model_data(model).each do |row|
-        # 
-        #  Tue Mar 22 00:09:13 IST 2011, ramonrails
-        #   * https://redmine.corp.halomonitor.com/issues/4282
-        #   * WARNING: needs more test coverage
-        timestamp = ( row[:timestamp] || row[:begin_timestamp] )
-        # if row[:timestamp]
-        #   timestamp = row[:timestamp]
-        # else
-        #   timestamp = row[:begin_timestamp]
-        # end
+        if row[:timestamp]
+          timestamp = row[:timestamp]
+        else
+          timestamp = row[:begin_timestamp]
+        end
         
-        #   * WARNING: needs more test coverage
-        move_on = ( time_previous == timestamp )
-        # move_on = false
-        # if time_previous == timestamp
-        #   move_on = true
-        # end
+        move_on = false
+        if time_previous == timestamp
+          move_on = true
+        end
         time_previous = timestamp
         unless move_on
-          #   * WARNING: needs more test coverage
-          data[timestamp] ||= []
-          # unless data[timestamp]
-          #   data[timestamp] = []
-          # end
+          unless data[timestamp]
+            data[timestamp] = []
+          end
           if model.class_name == "Vital"
             row[:adl] = row.adl
           end
@@ -193,7 +166,7 @@ class FlexController < ApplicationController
   
   def average_chart_data
     #average_data(num_points, start_time, end_time, id, column)
-    columns = {'Vital' => ['heartrate','activity'],'SkinTemp' => 'skin_temp','Step' => 'steps','Battery' => 'percentage', 'Fall' => 'count'}
+    columns = {'Vital' => ['heartrate','activity'],'SkinTemp' => 'skin_temp','Step' => 'steps','Battery' => 'percentage'}
         
     
     data = {}
@@ -243,11 +216,7 @@ class FlexController < ApplicationController
       reading[:activity] = vitals.activity
       reading[:adl] = vitals.adl
       
-      # 
-      #  Tue Mar 22 03:29:18 IST 2011, ramonrails
-      #   * https://redmine.corp.halomonitor.com/issues/4282
-      #   * We need to hard code "0" for orientation (which represents Fall)
-      reading[:orientation] = 0 # vitals.orientation
+      reading[:orientation] = vitals.orientation
     end
     
     if battery = Battery.find(:first, :conditions => "user_id = #{user.id} AND timestamp <= '#{now.to_s}'", :order => 'timestamp desc')
@@ -261,19 +230,6 @@ class FlexController < ApplicationController
     if steps = Step.find(:first, :conditions => "user_id = #{user.id} AND begin_timestamp <= '#{now.to_s}'", :order => 'begin_timestamp desc')
       reading[:steps] = steps.steps
     end
-
-    # 
-    #  Tue Mar 22 00:35:53 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4282
-    #   * we do not need "Fall" reading. Only data readings are required
-    # reading[ :timestamp] = now
-    # reading[ :fall]      = ((Fall.count( :conditions => [ "user_id = ? AND timestamp <= '#{now}'", user ]) > 0) ? 1 : 0)
-    # # if !@query[:enddate].blank? && !@query[:startdate].blank?
-    # #   #   * required for _chart_data.rxml output
-    # #   reading[ :timestamp] = @query[ :enddate].to_time
-    # #   #   * number of falls within the time span
-    # #   reading[ :falls]     = Fall.count( :conditions => [ "user_id = ? AND timestamp >= ? AND timestamp < ?", user, @query[:startdate].to_time, @query[:enddate].to_time ])
-    # # end
     
     return reading
   end
@@ -302,46 +258,35 @@ class FlexController < ApplicationController
   end
   
   def build_query_hash
-    @query = ( params[ :ChartQuery] || {})
-    # unless @query = params[:ChartQuery]
-    #   @query = {}
-    # end
-    
-    #   * session[ :halo_user_id] was assigned in chart_controller > flex
-    _query_user_id   = @query[ :userID]
-    _session_user_id = session[ :halo_user_id]
-    
-    if _query_user_id.blank?
-      if _session_user_id.blank?
-        initialize_chart # if no user id from chart, we want to run initialization
-      else
-        @default_user    = User.find( _session_user_id)
-        @query[ :userID] = _session_user_id
-      end
-    else
-      @default_user = User.find( _query_user_id)
+    unless @query = params[:ChartQuery]
+      @query = {}
     end
-    # 
-    # if @query[:userID].nil? && session[:halo_user_id].blank?
-    #   initialize_chart 
-    # elsif @query[:userID].nil?
-    #   @default_user = User.find(session[:halo_user_id])
-    #   @query[:userID] = session[:halo_user_id]
-    # else
-    #   @default_user = User.find(@query[:userID])
-    # end
-
+    
+    # if no user id from chart, we want to run initialization
+    if @query[:userID].nil? && session[:halo_user_id].blank?
+      initialize_chart 
+    elsif @query[:userID].nil?
+      @default_user = User.find(session[:halo_user_id])
+      @query[:userID] = session[:halo_user_id]
+    else
+      @default_user = User.find(@query[:userID])
+    end
+    
+    
+    
+    
     # map userID to user_id
-    @query[ :user_id] = @query[ :userID]
-    @query[ :enddate] = Time.now if @query[ :enddate].blank? # && !@query[ :startdate].blank?)
+    @query[:user_id] = @query[:userID]
+    
+    @query[:enddate] = Time.now if @query[:enddate].blank? && !@query[:startdate].blank?
   end
   
   def initialize_chart
-    @query[ :startdate]  = (@query[ :enddate] - 10.minutes).to_datetime  # startdate is enddate - 10 minutes
-    @query[ :enddate]    = Time.now.to_datetime                  # enddate is now
-    @query[ :num_points] = 0                                     # we want discreet data
-    @query[ :userID]     = current_user.id                       # default user is the one who's currently logged in
-    @default_user        = current_user
+    @query[:num_points] = 0                        # we want discreet data
+    @query[:userID] = current_user.id              # default user is the one who's currently logged in
+    @default_user = current_user
+    @query[:enddate] = Time.now                    # enddate is now
+    @query[:startdate] = @query[:enddate] - 600   # startdate is enddate - 10 minutes
   end
   
   def average_data_record(user, interval, num_points, start_time)
@@ -383,11 +328,7 @@ class FlexController < ApplicationController
       vital_row = {:type => 'Vital', :heartrate => heart_rate, :hrv => hrv, :activity => activity, :orientation => orientation, :adl => adl}
       timestamp = Time.parse(result['ts'])
       data[timestamp] = [] unless data[timestamp]
-      # 
-      #  Tue Mar 22 22:40:55 IST 2011, ramonrails
-      #   * https://redmine.corp.halomonitor.com/issues/4282
-      #   * orientation will be removed from this. orientation now represents Fall count during the time span
-      data[timestamp] << ( vital_row.reject {|k,v| k == :orientation } )
+      data[timestamp] << vital_row
     end
     select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime(start_time, user)}', 'skin_temps', 'skin_temp')"
     SkinTemp.connection.select_all(select).collect do |result|
@@ -428,19 +369,6 @@ class FlexController < ApplicationController
       data[timestamp] = [] unless data[timestamp]
       data[timestamp] << battery_percentage_row 
     end
-    # 
-    #  Mon Mar 18 22:25:15 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4282
-    #   * We do not need "Fall" tag anymore. Orientation replaces it
-    _start_time = start_time
-    num_points.to_i.times do
-      _timestamp        = (_start_time + interval) # add up interval seconds
-      _falls_count      = Fall.count( :conditions => ["user_id = ? AND timestamp >= ? AND timestamp < ?", user.id, _start_time, _timestamp])
-      data[ _timestamp] ||= [] # https://redmine.corp.halomonitor.com/issues/4282#note-11
-      data[ _timestamp] << { :type => 'Fall', :count => _falls_count } # used in _chart_data_.rxml
-      _start_time       += interval # next span
-    end
-
     return data
   end
   

@@ -8,15 +8,12 @@ class ChartController < ApplicationController
   layout "application"
   
   def flex
-    _user_id = ( params[:id] || current_user.id)
-    # if !params[:id].blank? 
-      groups = User.find( _user_id).group_memberships # params[:id]
-      _user_has_access = ( current_user.is_super_admin? || current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups))
-      session[:halo_user_id] = ( _user_has_access ? _user_id : nil)
-      # if(current_user.is_super_admin? || current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups))
-      #   session[:halo_user_id] = _user_id # params[:id]
-      # end
-    # end
+    if !params[:id].blank? 
+      groups = User.find(params[:id]).group_memberships
+      if(current_user.is_super_admin? || current_user.is_admin_of_any?(groups) || current_user.is_operator_of_any?(groups))
+        session[:halo_user_id] = params[:id]
+      end
+    end
   end
 
   
