@@ -238,8 +238,15 @@ class Panic < CriticalDeviceAlert
     self.respond_to?(:lat) && self.respond_to?(:long) # && !lat.blank? && !long.blank?
   end
 
+  def coordinates
+    if can_map?
+      _return = [lat, long].compact.join(',')
+      _return = nil if _return.blank?
+    end
+  end
+  
   def location
-    _location = [lat, long].compact.join(',') if can_map?
+    _location = coordinates
     if _location.blank?
       _location = (user.blank? ? 'U.S.A.' : (user.location || 'U.S.A.'))
     end
