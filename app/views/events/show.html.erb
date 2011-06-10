@@ -3,7 +3,7 @@
     <div class="float-left right-gap"><%= image_tag "profilephoto.png" %></div>
     <span class="text-large"><%= @event.user.name unless @event.blank? || @event.user.blank? %></span><br />
     _________________________________________<br />
-    <span class="tiny"><%= @event.timestamp %></span><br />
+    <span class="tiny">Panic at: <%= @event.timestamp %></span><br />
     <%= @event.coordinates %>
     <%= @location %>
     <% if @event.user && @event.user.profile %>
@@ -15,6 +15,6 @@
     <% end %>
   </div>
   <div class="span-10 last">
-    <img src="http://maps.google.com/maps/api/staticmap?center=<%= @location %>&zoom=<%= @zoom %>&size=435x384&maptype=roadmap&markers=color:blue%7Clabel:S%7C<%= @location %>&sensor=false"></img>
+    <img src="http://maps.google.com/maps/api/staticmap?center=<%= @location %>&zoom=<%= @zoom %>&size=435x384&maptype=roadmap&markers=color:blue%7C<%= @location %>&sensor=false"></img>
   </div>
 </div>
