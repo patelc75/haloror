@@ -1,3 +1,4 @@
-
-<%= link_to 'Edit', edit_event_path(@event) %> |
-<%= link_to 'Back', events_path %>
+<div>
+  <h2>Location: <%= @location %></h2>
+  <img src="http://maps.google.com/maps/api/staticmap?center=<%= @location %>&zoom=<%= @zoom %>&size=512x512&maptype=roadmap&markers=color:blue%7Clabel:S%7C<%= @location %>&sensor=false"></img>
+</div>

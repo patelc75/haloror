@@ -2210,12 +2210,13 @@ class User < ActiveRecord::Base
     # )
   end
   
-  def address
-    address = self.profile.address
-    pcity = self.profile.city
-    pstate = self.profile.state
-    zipcode = self.profile.zipcode
-    address && pcity && pstate && zipcode ? address + ', ' + pcity + ', ' + pstate + ' ' + zipcode : nil
+  def location
+    profile.location rescue ''
+    # address = self.profile.address
+    # pcity = self.profile.city
+    # pstate = self.profile.state
+    # zipcode = self.profile.zipcode
+    # address && pcity && pstate && zipcode ? address + ', ' + pcity + ', ' + pstate + ' ' + zipcode : nil
   end
 
   # 

@@ -115,6 +115,16 @@ class Event < ActiveRecord::Base
   end
 
   # instance methods ------------------------------
+  def can_map?
+    self.respond_to?( :lat) && self.respond_to?( :long)
+  end
+
+  def location
+    _location = [lat, long].compact.join(',') if can_map?
+    if _location.blank?
+      _location = (user.blank? ? 'U.S.A.' : (user.location || 'U.S.A.'))
+    end
+  end
 
   # returns boolean for the type of event
   #   these names are collected from the local development database. just run the following query in console

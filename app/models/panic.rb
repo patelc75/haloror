@@ -233,4 +233,15 @@ class Panic < CriticalDeviceAlert
     "\n\nA Halo operator will be handling the event immediately.\n\n" +
     "- Halo Staff"
   end
+
+  def can_map?
+    self.respond_to?(:lat) && self.respond_to?(:long) # && !lat.blank? && !long.blank?
+  end
+
+  def location
+    _location = [lat, long].compact.join(',') if can_map?
+    if _location.blank?
+      _location = (user.blank? ? 'U.S.A.' : (user.location || 'U.S.A.'))
+    end
+  end
 end

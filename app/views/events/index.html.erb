@@ -2,10 +2,22 @@
 
 <table>
   <tr>
+    <td>User</td>
+    <td>Timestamp</td>
+    <td>Device</td>
+    <td>Latitude</td>
+    <td>Longitude</td>
+    <td>Altitude</td>
   </tr>
   
 <% for event in @events %>
   <tr>
+    <td><%= h( event.user.blank? ? '' : event.user.name) %></td>
+    <td><%= h event.timestamp %></td>
+    <td><%= h( event.device.blank? ? '' : event.device.device_type) %></td>
+    <td><%= h event.lat %></td>
+    <td><%= h event.long %></td>
+    <td><%= h event.altitude %></td>
     <td><%= link_to 'Show', event_path(event) %></td>
     <td><%= link_to 'Edit', edit_event_path(event) %></td>
     <td><%= link_to 'Destroy', event_path(event), :confirm => 'Are you sure?', :method => :delete %></td>

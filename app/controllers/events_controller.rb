@@ -1,6 +1,25 @@
 class EventsController < ApplicationController
   before_filter :authenticate_admin_halouser_caregiver_operator?
   include UtilityHelper
+  
+  # def index
+  #   @events = Panic.paginate :page => params[:page], :per_page => 15
+  # end
+  
+  def show
+    _row = Event.find( params[:id])
+    _event = if _row.panic?
+      Panic.find( _row.event)
+    elsif _row.fall?
+      Fall.find( _row.event)
+    end
+    if _event.blank?
+      @location, @zoom = 'U.S.A.', '3'
+    else
+      @location, @zoom = _event.location, '14'
+    end
+  end
+  
   def user
     @alert_types = AlertType.types_as_array.sort
     @alert_types.delete("GwAlarmButtonTimeout")  

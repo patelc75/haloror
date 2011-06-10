@@ -90,6 +90,9 @@
         <% if (current_user.is_admin? || current_user.is_super_admin?) && (event.fall? || event.panic?) %>
           <br /><span class="tiny">(gw_timestamp: <%= event.event.gw_timestamp if event.event and event.event.gw_timestamp %> )</span>
         <% end %>
+        <% if event.panic? || event.fall? %>
+          (<%= link_to 'Map', event_path( event) %>)
+        <% end %>
       </div>
       <div style="float:left;padding-top:5px;width:125px">
         <%= image_for_event(event)%>

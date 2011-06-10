@@ -21,4 +21,15 @@ class Fall < CriticalDeviceAlert
   def call_center_number_valid?
     !user.call_center_account.blank? #rescue false # fetch the call center account number, or, false
   end
+
+  def can_map?
+    self.respond_to?(:lat) && self.respond_to?(:long) # && !lat.blank? && !long.blank?
+  end
+
+  def location
+    _location = [lat, long].compact.join(',') if can_map?
+    if _location.blank?
+      _location = (user.blank? ? 'U.S.A.' : (user.location || 'U.S.A.'))
+    end
+  end
 end

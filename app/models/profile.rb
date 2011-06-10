@@ -167,6 +167,10 @@ class Profile < ActiveRecord::Base
   #     user.update_without_callbacks unless user.new_record? # else do not bother, user in memory has the data. it will save
   #   end
   # end
+  
+  def location
+    [address, city, state, zipcode].compact.join(', ')
+  end
 
   def skip_validation
     !need_validation
