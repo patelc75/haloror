@@ -4,8 +4,8 @@
     <span class="text-large"><%= @event.user.name unless @event.blank? || @event.user.blank? %></span><br />
     _________________________________________<br />
     <span class="tiny">Panic at: <%= @event.timestamp %></span><br />
-    <%= @event.coordinates %>
-    <%= @event.user.location %>
+    <%= @event.coordinates %><br />
+    <%= @event.user.location %><br />
     <% if @event.user && @event.user.profile %>
       <% ['home', 'work', 'cell'].each do |_what| %>
       <% unless @event.user.profile.send( "#{_what}_phone".to_sym).blank? %>
