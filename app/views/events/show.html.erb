@@ -21,7 +21,7 @@
 
 <hr />
 
-<% content_for :head %>
+<% content_for :head do %>
   <%= GMap.header %>
   <%= @map.to_html %>
 <% end %>

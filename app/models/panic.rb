@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'google_geocode'
+
 class Panic < CriticalDeviceAlert
   set_table_name('panics')
 
@@ -242,7 +245,9 @@ class Panic < CriticalDeviceAlert
     if can_map?
       [lat, long].compact.join(',')
     else
-      nil
+      gg = GoogleGeocode.new YAML.load_file(RAILS_ROOT +'/config/gmaps_api_key.yml')[ENV['RAILS_ENV']]
+      loc = gg.locate( user.location)
+      loc ? "#{loc.latitude},#{loc.longitude}" : nil
     end
   end
   

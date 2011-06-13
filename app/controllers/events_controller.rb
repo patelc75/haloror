@@ -1,6 +1,11 @@
+require 'rubygems'
+require 'google_geocode'
+# require 'ym4r'
+
 class EventsController < ApplicationController
   before_filter :authenticate_admin_halouser_caregiver_operator?
   include UtilityHelper
+  # include Ym4r::GoogleMaps
   
   # def index
   #   @events = Panic.paginate :page => params[:page], :per_page => 15
@@ -16,17 +21,22 @@ class EventsController < ApplicationController
     if @event.blank?
       @location, @zoom = 'U.S.A.', '3'
     else
-      @location, @zoom = (@event.coordinates || @event.location), '14'
+      @location, @zoom = (@event.coordinates || @event.location), '10'
     end
     
-    # 
-    #  Mon Jun 13 22:22:01 IST 2011, ramonrails
-    #   * also do a map through gem
-    @map = GMap.new( "map_div")
-    @map.control_init( :large_map => true, :map_type => true)
-    @map.set_map_type_init( GMapType::G_HYBRID_MAP)
-    @map.center_zoom_init( @event.location, 10)
-    @map.overlay_init( GMarker.new( @event.location, :title => @event.user.name, :info_window => @event.user.location))
+    @map = GMap.new("map_div")
+    @map.control_init(:large_map => true,:map_type => true)
+    @map.center_zoom_init([38.134557,-95.537109],4)
+    @map.icon_global_init(GIcon.new(:image => "/images/icon_incident.png", :icon_size => GSize.new(15,15),:icon_anchor => GPoint.new(7,7),:info_window_anchor => GPoint.new(9,2)),"icon_incident")
+    @map.icon_global_init(GIcon.new(:image => "/images/icon_construction.png", :icon_size => GSize.new(15,15),:icon_anchor => GPoint.new(7,7),:info_window_anchor => GPoint.new(9,2)),"icon_construction")
+    # # 
+    # #  Mon Jun 13 22:22:01 IST 2011, ramonrails
+    # #   * also do a map through gem
+    # @map = GMap.new( "map_div", :width => 600, :height => 600)
+    # @map.control_init( :large_map => true, :map_type => true)
+    # @map.set_map_type_init( GMapType::G_HYBRID_MAP)
+    # @map.center_zoom_init( @event.location, 10)
+    # @map.overlay_init( GMarker.new( @event.location, :title => @event.user.name, :info_window => @event.user.location))
   end
   
   def user

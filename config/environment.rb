@@ -55,7 +55,8 @@ Rails::Initializer.run do |config|
   #config.gem "ambethia-recaptcha", :lib => "recaptcha/rails"
   config.gem "markaby"
   config.gem "ezcrypto" # Thu Sep 16 00:15:34 IST 2010
-  config.gem "ym4r"
+  config.gem 'google_geocode'
+  # config.gem "ym4r_gm"
 end
 
 # Add new inflection rules using the following format 

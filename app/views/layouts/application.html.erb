@@ -23,6 +23,8 @@
 
   <title>Halo Monitoring</title>
   <meta name="save" content="history">
+  
+  <%= yield :head %>
 
   <% if params[:controller] == 'chart' and params[:action] == 'flex' %>
 
