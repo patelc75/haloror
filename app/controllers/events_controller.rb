@@ -18,6 +18,15 @@ class EventsController < ApplicationController
     else
       @location, @zoom = (@event.coordinates || @event.location), '14'
     end
+    
+    # 
+    #  Mon Jun 13 22:22:01 IST 2011, ramonrails
+    #   * also do a map through gem
+    @map = GMap.new( "map_div")
+    @map.control_init( :large_map => true, :map_type => true)
+    @map.set_map_type_init( GMapType::G_HYBRID_MAP)
+    @map.center_zoom_init( @event.location, 10)
+    @map.overlay_init( GMarker.new( @event.location, :title => @event.user.name, :info_window => @event.user.location))
   end
   
   def user

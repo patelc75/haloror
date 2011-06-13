@@ -18,3 +18,11 @@
     <img src="http://maps.google.com/maps/api/staticmap?center=<%= @location %>&zoom=<%= @zoom %>&size=435x384&maptype=roadmap&markers=color:blue%7C<%= @location %>&sensor=false"></img>
   </div>
 </div>
+
+<hr />
+
+<% content_for :head %>
+  <%= GMap.header %>
+  <%= @map.to_html %>
+<% end %>
+<%= @map.div( :width => 600, :height => 400) %>
