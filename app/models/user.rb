@@ -2218,6 +2218,7 @@ class User < ActiveRecord::Base
     # zipcode = self.profile.zipcode
     # address && pcity && pstate && zipcode ? address + ', ' + pcity + ', ' + pstate + ' ' + zipcode : nil
   end
+  alias_method :address, :location
 
   # 
   #  Thu Feb 24 01:15:24 IST 2011, ramonrails
