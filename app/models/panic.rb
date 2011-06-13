@@ -240,8 +240,9 @@ class Panic < CriticalDeviceAlert
 
   def coordinates
     if can_map?
-      _return = [lat, long].compact.join(',')
-      _return = nil if _return.blank?
+      [lat, long].compact.join(',')
+    else
+      nil
     end
   end
   
