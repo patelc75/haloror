@@ -315,11 +315,14 @@ class FlexController < ApplicationController
       if _session_user_id.blank?
         initialize_chart # if no user id from chart, we want to run initialization
       else
-        @default_user    = User.find( _session_user_id)
-        @query[ :userID] = _session_user_id
+        @default_user    = User.find( _session_user_id || current_user.id)
+        @query[ :userID] = @default_user.id
       end
     else
-      @default_user = User.find( _query_user_id)
+      @default_user = User.find( _query_user_id || current_user.id)
+      if _session_user_id.blank?
+        session[ :halo_user_id] = @default_user.id
+      end
     end
     # 
     # if @query[:userID].nil? && session[:halo_user_id].blank?
