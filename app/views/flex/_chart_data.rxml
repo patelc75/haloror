@@ -1,7 +1,16 @@
 xml.instruct! :xml, :version => "1.0"
 xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate], :enddate => query[:enddate], :serverdate => UtilityHelper.format_datetime_flex(Time.now, nil)) do
   users.each do |user|
-    xml.User(:id => user[:id], :is_admin => user.is_super_admin?, :first_name => user.profile[:first_name], :last_name => user.profile[:last_name], :connectivity_status => user[:status][:connectivity], :time_remaining => user[:battery][:time_remaining], :timezone => UtilityHelper.get_timezone_offset(user)) do
+    xml.User( {
+      :id                  => user[:id],
+      :is_admin            => user.is_super_admin?,
+      :first_name          => (user.profile.blank? ? '' : user.profile[ :first_name]),
+      :last_name           => (user.profile.blank? ? '' : user.profile[ :last_name]),
+      :connectivity_status => ((!user[ :status].blank? && !user[ :status][ :connectivity]) ? user[ :status][ :connectivity] : ''),
+      :time_remaining      => ((!user[ :battery].blank? && !user[ :battery][ :time_remaining].blank?) ? user[ :battery][ :time_remaining] : ''),
+      :timezone            => UtilityHelper.get_timezone_offset( user)
+    }) do
+    # xml.User(:id => user[:id], :is_admin => user.is_super_admin?, :first_name => user.profile[:first_name], :last_name => user.profile[:last_name], :connectivity_status => user[:status][:connectivity], :time_remaining => user[:battery][:time_remaining], :timezone => UtilityHelper.get_timezone_offset(user)) do
       if !user[:last_reading][:timestamp].blank?
         xml.LastReading(:datetime => UtilityHelper.format_datetime_flex(user[:last_reading][:timestamp], user)) do
           xml.heartrate(user[:last_reading][:heartrate])
@@ -19,20 +28,20 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
           xml.battery_percentage(user[:battery][:percentage].to_f/100)
           if user[:weight_scale]
             xml.weight_scale do
-          	  xml.weight(user[:weight_scale][:weight])
-          	  xml.unit(user[:weight_scale][:weight_unit])
-          	  xml.battery(user[:weight_scale][:battery])
-          	  xml.serial_number(user[:weight_scale][:serial_number])
-          	  xml.timestamp(UtilityHelper.format_datetime_flex(user[:weight_scale][:timestamp], user))
+              xml.weight(user[:weight_scale][:weight])
+              xml.unit(user[:weight_scale][:weight_unit])
+              xml.battery(user[:weight_scale][:battery])
+              xml.serial_number(user[:weight_scale][:serial_number])
+              xml.timestamp(UtilityHelper.format_datetime_flex(user[:weight_scale][:timestamp], user))
             end
           end
           if user[:blood_pressure]
             xml.blood_pressure do
-          	  xml.systolic(user[:blood_pressure][:systolic]+user[:blood_pressure][:diastolic])
-          	  xml.diastolic(user[:blood_pressure][:diastolic])
-          	  xml.battery(user[:blood_pressure][:battery])
-          	  xml.serial_number(user[:blood_pressure][:serial_number])
-          	  xml.timestamp(UtilityHelper.format_datetime_flex(user[:blood_pressure][:timestamp], user))
+              xml.systolic(user[:blood_pressure][:systolic]+user[:blood_pressure][:diastolic])
+              xml.diastolic(user[:blood_pressure][:diastolic])
+              xml.battery(user[:blood_pressure][:battery])
+              xml.serial_number(user[:blood_pressure][:serial_number])
+              xml.timestamp(UtilityHelper.format_datetime_flex(user[:blood_pressure][:timestamp], user))
             end
           end
         end
@@ -53,7 +62,7 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
           xml.battery_percentage(0)
         end
       end
-      
+
       xml.DataReadings do
         if user[:data_readings].length > 0
           user[:data_readings].sort_by { |d| d}.each do |timestamp, group|
@@ -79,27 +88,27 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
                     end
                     xml.adl(reading[:adl])                    
                   end
-                  
+
                 elsif reading.class.to_s == 'SkinTemp' || reading[:type] == 'SkinTemp'
                   if reading[:skin_temp]
                     xml.skin_temp(reading[:skin_temp])
                   end
-                  
+
                 elsif reading.class.to_s == 'Step' || reading[:type] == 'Step'
                   if reading[:steps]
                     xml.steps(reading[:steps])
                   end
-                  
+
                 elsif reading.class.to_s == 'Battery' || reading[:type] == 'Battery'
                   if reading[:percentage]
                     xml.battery(".#{reading[:percentage]}")
                   end
-                # 
-                #  Mon Mar 18 23:39:26 IST 2011, ramonrails
-                #   * https://redmine.corp.halomonitor.com/issues/4282
-                #   * We do not need "Fall". Orientation represents the "Fall" now
+                  # 
+                  #  Mon Mar 18 23:39:26 IST 2011, ramonrails
+                  #   * https://redmine.corp.halomonitor.com/issues/4282
+                  #   * We do not need "Fall". Orientation represents the "Fall" now
                 elsif reading.class.to_s == 'Fall' || reading[:type] == 'Fall'
-                    xml.orientation( reading[:count] || 1 ) # default = at least one fall took us here?
+                  xml.orientation( reading[:count] || 1 ) # default = at least one fall took us here?
                 else
                   reading.class.to_s
                 end
@@ -118,4 +127,4 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
       end
     end
   end
-end
+end # DataRoot

@@ -333,15 +333,17 @@ class FlexController < ApplicationController
 
     # map userID to user_id
     @query[ :user_id] = @query[ :userID]
-    @query[ :enddate] = Time.now if @query[ :enddate].blank? # && !@query[ :startdate].blank?)
+    if @query[ :enddate].blank?
+      @query[ :enddate] = Time.now.to_datetime # && !@query[ :startdate].blank?)
+    end
   end
   
   def initialize_chart
-    @query[ :startdate]  = (@query[ :enddate] - 10.minutes).to_datetime  # startdate is enddate - 10 minutes
-    @query[ :enddate]    = Time.now.to_datetime                  # enddate is now
-    @query[ :num_points] = 0                                     # we want discreet data
-    @query[ :userID]     = current_user.id                       # default user is the one who's currently logged in
     @default_user        = current_user
+    @query[ :enddate]    = Time.now.to_datetime                  # enddate is now
+    @query[ :startdate]  = (@query[ :enddate] - 10.minutes).to_datetime  # startdate is enddate - 10 minutes
+    @query[ :num_points] = 0                                     # we want discreet data
+    @query[ :userID]     = @default_user.id                      # default user is the one who's currently logged in
   end
   
   def average_data_record(user, interval, num_points, start_time)

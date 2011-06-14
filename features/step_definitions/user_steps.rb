@@ -194,6 +194,11 @@ end
 # = whens =
 # =========
 
+When /^I fetch chart XML for the last halouser$/ do
+  (_user = User.halousers.last).should_not be_blank
+  visit "/flex/chart/#{_user.id}"
+end
+
 When /^I am changing the password for "([^"]*)"$/ do |_login|
   (_user = User.find_by_login( _login)).should_not be_blank
   visit "/profiles/change_password_init/#{_user.id}?user_id=#{_user.id}"

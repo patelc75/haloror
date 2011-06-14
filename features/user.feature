@@ -47,4 +47,11 @@ Feature: User status
     Then I should see "Password Changed"
     Given I am authenticated as "test-user" with password "abc123"
     Then page content should have "Welcome, test-user"
+  
+  Scenario: Create halouser from online store > check its flex chart > find required XML
+    Given the product catalog exists
+    When I place an online order for "bestbuy" group
+    Then I should see "Success"
+    When I fetch chart XML for the last halouser
+    Then I should see "<User"
     
