@@ -201,7 +201,8 @@ end
 
 When /^I am changing the password for "([^"]*)"$/ do |_login|
   (_user = User.find_by_login( _login)).should_not be_blank
-  visit "/profiles/change_password_init/#{_user.id}?user_id=#{_user.id}"
+  visit change_password_user_path( :id => _user)
+  # visit "/profiles/change_password_init/#{_user.id}?user_id=#{_user.id}"
 end
 
 When /^I activate the "([^\"]*)" senior of last order$/ do |_name|

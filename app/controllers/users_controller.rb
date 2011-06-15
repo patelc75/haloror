@@ -476,10 +476,13 @@ class UsersController < ApplicationController
       #
       # just a regular update
       @user = User.find(params[:id])
-      @user.skip_validation = (params[:user].keys.include?( "skip_validation"))
+      # 
+      #  Thu Jun  2 02:46:02 IST 2011, ramonrails
+      #   * skip_validation if any of the given attributes was received in hash
+      @user.skip_validation = !(params[:user].keys & ["need_validation", "password"]).blank?
       respond_to do |format|
         if @user.update_attributes!(params[:user])
-          puts "look closer"
+          # puts "look closer"
 
           flash[:notice] = 'User was successfully updated.'
           format.html { redirect_to  :controller => "users", :action => "show", :id => @user } # user_url does not fit
