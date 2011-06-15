@@ -48,6 +48,7 @@ class FlexController < ApplicationController
     #   * fetch all readings for first user from array, popped (removed from array)
     #   * "false" = ( last_reading_only = false)
     unless _users.blank?
+      #   * "shift" is fetching the top element and removing it
       @users << get_data_for_user( _users.shift, false)
       #   * now fetch last_reading_only for remaining users
       _users.each {|_user| @users << get_data_for_user( _user)}
@@ -81,60 +82,72 @@ class FlexController < ApplicationController
   end
   
   def get_data_for_user(user, last_reading_only = true)
-    user_data = user
+    user_data  = user
     #  Tue Mar 22 00:24:03 IST 2011, ramonrails
-    averaging = ( @query[:num_points].to_i != 0 ) # @query[:num_points].to_i == 0 ? false : true
+    averaging  = ( @query[:num_points].to_i != 0 ) # @query[:num_points].to_i == 0 ? false : true
     vital_data = nil
     # get vital data
     if !@query[:enddate].blank? && !@query[:startdate].blank? && !last_reading_only
       if averaging 
-        interval = (@query[:enddate].to_time - @query[:startdate].to_time) / @query[:num_points].to_i
-        vital_data = average_data_record(user, interval, @query[:num_points].to_i, @query[:startdate].to_time)
-        #  vital_data = average_chart_data
+        interval     = (@query[:enddate].to_time - @query[:startdate].to_time) / @query[:num_points].to_i
+        vital_data   = average_data_record(user, interval, @query[:num_points].to_i, @query[:startdate].to_time)
+        # vital_data = average_chart_data
       else
-        vital_data = discrete_chart_data
+        vital_data   = discrete_chart_data
       end
     else
-      vital_data = {}
+      vital_data     = {}
     end
     
     user_data[:data_readings] = vital_data
     
     # get last reading
-    user_data[:last_reading] = get_last_reading_for_user(user)
+    user_data[:last_reading]  = get_last_reading_for_user(user)
     
     # get connectivity status
-    user_data[:status] = {}
+    user_data[:status]        = {}
     
-    unless user_data[:status][:connectivity]
-      event_string = UtilityHelper.camelcase_to_spaced(Event.get_connectivity_state_by_user(user).event_type.to_s) 
-      user_data[:status][:connectivity] = event_string
-    end
+    #   * same result as old logic
+    user_data[:status][:connectivity] ||= UtilityHelper.camelcase_to_spaced(Event.get_connectivity_state_by_user(user).event_type.to_s)
+    #   * OBSOLETE
+    # unless user_data[:status][:connectivity]
+    #   event_string = UtilityHelper.camelcase_to_spaced(Event.get_connectivity_state_by_user(user).event_type.to_s) 
+    #   user_data[:status][:connectivity] = event_string
+    # end
     
     # get battery status
-    unless user_data[:status][:battery_outlet] = user.battery_status
-      user_data[:status][:battery_outlet] = @default_battery_outlet_status
-    end
+    #   * same result as old logic
+    user_data[:status][:battery_outlet] = ( user.battery_status || @default_battery_outlet_status)
+    #   * OBSOLETE
+    # unless user_data[:status][:battery_outlet] = user.battery_status
+    #   user_data[:status][:battery_outlet] = @default_battery_outlet_status
+    # end
     
-    unless user_data[:status][:battery_level] = get_status('battery', user)
-      user_data[:status][:battery_level] = @default_battery_level_status
-    end
+    #   * same result as old logic
+    user_data[:status][:battery_level] = ( get_status('battery', user) || @default_battery_level_status)
+    #   * OBSOLETE
+    # unless user_data[:status][:battery_level] = get_status('battery', user)
+    #   user_data[:status][:battery_level] = @default_battery_level_status
+    # end
     
     now = Time.now
 
     # get last battery reading
-    unless user_data[:battery] = Battery.find(:first, :order => 'timestamp desc', :conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'")
-      user_data[:battery] = {}
-    end
+    #   * same result as old logic
+    user_data[:battery] = ( Battery.find(:first, :order => 'timestamp desc', :conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'") || {})
+    #   * OBSOLETE
+    # unless user_data[:battery] = Battery.find(:first, :order => 'timestamp desc', :conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'")
+    #   user_data[:battery] = {}
+    # end
     
     # get events
-    user_data[:events] = Event.find(:all, :conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'", :order => 'timestamp desc', :limit => 10)
+    user_data[:events]         = Event.find(:all, :conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'", :order => 'timestamp desc', :limit => 10)
     
     # get blood_pressures
     user_data[:blood_pressure] = BloodPressure.find(:first,:conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'",:order => 'timestamp desc')
     
     # get weight scales
-    user_data[:weight_scale] = WeightScale.find(:first,:conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'",:order => 'timestamp desc')
+    user_data[:weight_scale]   = WeightScale.find(:first,:conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'",:order => 'timestamp desc')
     
     return user_data
   end
@@ -320,6 +333,7 @@ class FlexController < ApplicationController
       end
     else
       @default_user = User.find( _query_user_id || current_user.id)
+      #   * WARNING: Do not DRY this condition in single row. Some ruby behavior causes it to run anyways
       if _session_user_id.blank?
         session[ :halo_user_id] = @default_user.id
       end
@@ -350,43 +364,51 @@ class FlexController < ApplicationController
   end
   
   def average_data_record(user, interval, num_points, start_time)
-    data = {}
+    data      = {}
     timestamp = nil
-    select = "select * from average_data_record_vitals(#{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime(start_time, user)}')"
+    select    = "SELECT * FROM average_data_record_vitals( #{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime(start_time, user)}')"
     Vital.connection.select_all(select).collect do |result|
-      heart_rate = result['average_heartrate']
-      if !heart_rate.blank?
-        heart_rate = heart_rate.to_f.round(1)
-      else
-        heart_rate = -1
-      end
+      # 
+      #  Wed Jun 15 22:58:04 IST 2011, ramonrails
+      #   * WARNING: manually smoke tested only https://redmine.corp.halomonitor.com/issues/4508#note-24
+      heart_rate  = ( result[ 'average_heartrate'].blank?    ? -1 : result[ 'average_heartrate'].to_f.round(1))
+      activity    = ( result[ 'average_activity'].blank?     ? -1 : result[ 'average_activity'].to_f.round(1))
+      hrv         = ( result[ 'average_hrv'].blank?          ? -1 : result[ 'average_hrv'].to_f.round(1))
+      orientation = ( result[ 'average_orientation'].blank?  ? -1 : result[ 'average_orientation'].to_f.round(1))
+      #
+      # heart_rate = result['average_heartrate']
+      # if !heart_rate.blank?
+      #   heart_rate = heart_rate.to_f.round(1)
+      # else
+      #   heart_rate = -1
+      # end
+      #
+      # activity = result['average_activity']
+      # if !activity.blank?
+      #   activity = activity.to_f.round(1)
+      # else
+      #   activity = -1
+      # end
+      # 
+      # hrv = result['average_hrv']
+      # if !hrv.blank?
+      #   hrv = hrv.to_f.round(1)
+      # else
+      #   hrv = -1
+      # end
+      # 
+      # orientation = result['average_orientation']
+      # if !orientation.blank?
+      #   orientation = orientation.to_f.round(1)
+      # else
+      #   orientation = -1
+      # end
       
-      activity = result['average_activity']
-      if !activity.blank?
-        activity = activity.to_f.round(1)
-      else
-        activity = -1
-      end
+      temp_vital      = Vital.new(:user_id => user.id, :orientation => orientation, :activity => activity)
+      adl             = temp_vital.adl
       
-      hrv = result['average_hrv']
-      if !hrv.blank?
-        hrv = hrv.to_f.round(1)
-      else
-        hrv = -1
-      end
-      
-      orientation = result['average_orientation']
-      if !orientation.blank?
-        orientation = orientation.to_f.round(1)
-      else
-        orientation = -1
-      end
-      
-      temp_vital = Vital.new(:user_id => user.id, :orientation => orientation, :activity => activity)
-      adl = temp_vital.adl
-      
-      vital_row = {:type => 'Vital', :heartrate => heart_rate, :hrv => hrv, :activity => activity, :orientation => orientation, :adl => adl}
-      timestamp = Time.parse(result['ts'])
+      vital_row       = {:type => 'Vital', :heartrate => heart_rate, :hrv => hrv, :activity => activity, :orientation => orientation, :adl => adl}
+      timestamp       = Time.parse(result['ts'])
       data[timestamp] = [] unless data[timestamp]
       # 
       #  Tue Mar 22 22:40:55 IST 2011, ramonrails
@@ -394,43 +416,52 @@ class FlexController < ApplicationController
       #   * orientation will be removed from this. orientation now represents Fall count during the time span
       data[timestamp] << ( vital_row.reject {|k,v| k == :orientation } )
     end
-    select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime(start_time, user)}', 'skin_temps', 'skin_temp')"
+    
+    select = "SELECT * FROM average_data_record( #{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime(start_time, user)}', 'skin_temps', 'skin_temp')"
     SkinTemp.connection.select_all(select).collect do |result|
-      average = result['average']
-      if !average.blank?
-        average = average.to_f.round(1)
-      else
-        average = -1
-      end
-      skin_temp_row = {:type => 'SkinTemp', :skin_temp => average}
-      timestamp = Time.parse(result['ts'])
-      data[timestamp] = [] unless data[timestamp]
+      # average = result['average']
+      # if !average.blank?
+      #   average = average.to_f.round(1)
+      # else
+      #   average = -1
+      # end
+      average         = ( result['average'].blank? ? -1 : result['average'].to_f.round(1))
+      skin_temp_row   = {:type => 'SkinTemp', :skin_temp => average}
+      timestamp       = Time.parse(result['ts'])
+      data[timestamp] ||= []
+      # data[timestamp] = [] unless data[timestamp]
       data[timestamp] << skin_temp_row 
     end
-    select = "select * from sum_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime(start_time, user)}', 'steps', 'steps')"
+    
+    select = "SELECT * FROM sum_data_record( #{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime(start_time, user)}', 'steps', 'steps')"
     Step.connection.select_all(select).collect do |result|
-      sum_result = result['sum_result']
-      if !sum_result.blank?
-        sum_result = sum_result.to_f.round(1)
-      else
-        sum_result = -1
-      end
-      steps_row = {:type => 'Step', :steps => sum_result}
-      timestamp = Time.parse(result['ts'])
-      data[timestamp] = [] unless data[timestamp]
+      # sum_result = result['sum_result']
+      # if !sum_result.blank?
+      #   sum_result = sum_result.to_f.round(1)
+      # else
+      #   sum_result = -1
+      # end
+      sum_result        = ( result['sum_result'].blank? ? -1 : result['sum_result'].to_f.round(1))
+      steps_row         = {:type => 'Step', :steps => sum_result}
+      timestamp         = Time.parse(result['ts'])
+      data[timestamp] ||= []
+      # data[timestamp] = [] unless data[timestamp]
       data[timestamp] << steps_row
     end
-    select = "select * from average_data_record(#{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime(start_time, user)}', 'batteries', 'percentage')"
+    
+    select = "SELECT * FROM average_data_record( #{user.id}, '#{interval} seconds', #{num_points}, '#{UtilityHelper.format_datetime(start_time, user)}', 'batteries', 'percentage')"
     Battery.connection.select_all(select).collect do |result|
-      average = result['average']
-      if !average.blank?
-        average = average.to_f.round(1)
-      else
-        average = -1
-      end
+      # average = result['average']
+      # if !average.blank?
+      #   average = average.to_f.round(1)
+      # else
+      #   average = -1
+      # end
+      average                = ( result['average'].blank? ? -1 : result['average'].to_f.round(1))
       battery_percentage_row = {:type => 'Battery', :percentage => average}
-      timestamp = Time.parse(result['ts'])
-      data[timestamp] = [] unless data[timestamp]
+      timestamp              = Time.parse(result['ts'])
+      data[timestamp]      ||= []
+      # data[timestamp] = [] unless data[timestamp]
       data[timestamp] << battery_percentage_row 
     end
     # 
@@ -448,6 +479,5 @@ class FlexController < ApplicationController
 
     return data
   end
-  
-  
+
 end
