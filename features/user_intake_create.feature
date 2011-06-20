@@ -33,20 +33,20 @@ Feature: Create user intake
     And I press "user_intake_submit"
     Then page content should have "Invalid user intake"
   
-  # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
-  #   * check for demo_mode and vip toggles
-  Scenario: Submit. user profile ok. subscriber = user
-    When I fill the senior details for user intake form
-    And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
-    And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
-    And I check "user_intake_subscriber_is_user"
-    And I check "user_intake_senior_attributes_demo_mode"
-    And I check "user_intake_senior_attributes_vip"
-    And I press "user_intake_submit"
-    Then page content should have "successfully created"
-    And last user intake should not have caregivers
-    And senior of last user intake should be in demo mode
-    And senior of last user intake should be in vip mode
+  # # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170
+  # #   * check for demo_mode and vip toggles
+  # Scenario: Submit. user profile ok. subscriber = user
+  #   When I fill the senior details for user intake form
+  #   And I fill in "user_intake_senior_attributes_email" with "senior@example.com"
+  #   And I select "verizon" from "user_intake_senior_attributes__profile_attributes_carrier_id"
+  #   And I check "user_intake_subscriber_is_user"
+  #   And I check "user_intake_senior_attributes_demo_mode"
+  #   And I check "user_intake_senior_attributes_vip"
+  #   And I press "user_intake_submit"
+  #   Then page content should have "successfully created"
+  #   And last user intake should not have caregivers
+  #   And senior of last user intake should be in demo mode
+  #   And senior of last user intake should be in vip mode
 
     # skipped for 1.6.0 release
   # # WARNING: Code coverage required : https://redmine.corp.halomonitor.com/issues/3170

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require File.join( RAILS_ROOT, 'spec', 'spec_helper')
 
 describe "/user_logs/index" do
   before(:each) do

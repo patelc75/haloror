@@ -18,7 +18,7 @@ Feature: User intake parts
       | H234567890     |
     When I bring senior of user intake "H234567890" into test mode
     Then senior of user intake "H234567890" should not be a member of "safety_care" group
-    And all caregivers for senior of user intake "H234567890" should be away
+    And caregivers should be away for user intake "H234567890"
     And user intake "H234567890" senior should have "test_mode" flag ON
 
   # Thu Sep 23 23:03:40 IST 2010
@@ -43,16 +43,16 @@ Feature: User intake parts
   #   Then last user intake should not have credit card value
   #   And last user intake should have bill monthly value
 
-  @user_intake
-  Scenario: Validation: "Desired Installation Date" must be 48 hours after submitted_at
-    Given I am ready to submit a user intake
-    When I press "user_intake_submit"
-    Then "installation_datetime" for last user intake should be 48 hours after "submitted_at"
+  # @user_intake
+  # Scenario: Validation: "Desired Installation Date" must be 48 hours after submitted_at
+  #   Given I am ready to submit a user intake
+  #   When I press "user_intake_submit"
+  #   Then "installation_datetime" for last user intake should be 48 hours after "submitted_at"
     
-  @user_intake
-  Scenario: "Desired Installation Date" should auto-fill to order date + 7.days for direct_to_consumer group
-    Given a group "direct_to_consumer" exists
-    And I am ready to submit a user intake
-    When I select "direct_to_consumer" from "Group"
-    And I press "user_intake_submit"
-    Then "installation_datetime" for last user intake should be 7 days after "submitted_at"
+  # @user_intake
+  # Scenario: "Desired Installation Date" should auto-fill to order date + 7.days for direct_to_consumer group
+  #   Given a group "direct_to_consumer" exists
+  #   And I am ready to submit a user intake
+  #   When I select "direct_to_consumer" from "Group"
+  #   And I press "user_intake_submit"
+  #   Then "installation_datetime" for last user intake should be 7 days after "submitted_at"

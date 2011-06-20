@@ -90,35 +90,35 @@ Feature: Business - user intake - submit
   #   When I edit user intake with gateway serial "H200120023"
   #   Then page content should have "Warning, Shipped at"
 
-  Scenario: When the approve button is clicked, partially disable test mode of user
-    Given the following user intakes:
-      | gateway_serial |
-      | H200120023     |
-    And senior of user intake "H200120023" has "Ready for Approval" status
-    And I am editing user intake "H200120023"
-    # Login as super_admin, click “Approve” button on user intake form, and verify “Ready to Install” state
-    When I press "Approve"
-    Then senior of user intake "H200120023" is in test mode
-    And senior of user intake "H200120023" is halouser of safety care group
-    And caregivers of user intake "H200120023" are away
-    And senior of last user intake should have "Ready to Install" state
-    # Verify “Opt out of live call center” is un-checked, but caregivers are still away at Config > Users > (pick row) > Caregivers
-    #  Fri Apr 29 01:18:40 IST 2011, ramonrails
-    #   * code seems ok but this is causing failure
-    # And senior of last user intake should be opted in to call center
-    And caregivers of last user intake should be away
-    # Press panic button (or cURL if hardware not available) and verify “Ready to Bill” state
-    When panic button test data is received for user intake "H200120023"
-    And senior of last user intake should have "Ready to Install" state
-    # As super_admin, click the "Bill" button on user intake form and verify “Installed” state
-    When I edit the last user intake
-    And I press "Bill"
-    And senior of last user intake should have "Installed" state
-    # Verify 3 transactions (upfront, prorate, recurring) at My Links > Reporting > Online Store Orders
-    When I visit "/payment_gateway_responses"
-    Then page content should have "purchase, prorate, recurring"
-    # Verify caregivers are active at Config > Users > (pick row) > Caregivers
-    And caregivers of last user intake should not be away
+  # Scenario: When the approve button is clicked, partially disable test mode of user
+  #   Given the following user intakes:
+  #     | gateway_serial |
+  #     | H200120023     |
+  #   And senior of user intake "H200120023" has "Ready for Approval" status
+  #   And I am editing user intake "H200120023"
+  #   # Login as super_admin, click “Approve” button on user intake form, and verify “Ready to Install” state
+  #   When I press "Approve"
+  #   Then senior of user intake "H200120023" is in test mode
+  #   And senior of user intake "H200120023" is halouser of safety care group
+  #   And caregivers of user intake "H200120023" are away
+  #   And senior of last user intake should have "Ready to Install" state
+  #   # Verify “Opt out of live call center” is un-checked, but caregivers are still away at Config > Users > (pick row) > Caregivers
+  #   #  Fri Apr 29 01:18:40 IST 2011, ramonrails
+  #   #   * code seems ok but this is causing failure
+  #   # And senior of last user intake should be opted in to call center
+  #   And caregivers of last user intake should be away
+  #   # Press panic button (or cURL if hardware not available) and verify “Ready to Bill” state
+  #   When panic button test data is received for user intake "H200120023"
+  #   And senior of last user intake should have "Ready to Install" state
+  #   # As super_admin, click the "Bill" button on user intake form and verify “Installed” state
+  #   When I edit the last user intake
+  #   And I press "Bill"
+  #   And senior of last user intake should have "Installed" state
+  #   # Verify 3 transactions (upfront, prorate, recurring) at My Links > Reporting > Online Store Orders
+  #   When I visit "/payment_gateway_responses"
+  #   Then page content should have "purchase, prorate, recurring"
+  #   # Verify caregivers are active at Config > Users > (pick row) > Caregivers
+  #   And caregivers of last user intake should not be away
 
   Scenario: When creating a user intake with device serials, devices are attached once only
     Given the following devices:

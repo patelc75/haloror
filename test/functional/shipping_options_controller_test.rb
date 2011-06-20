@@ -1,4 +1,4 @@
-require 'test_helper'
+require File.join( RAILS_ROOT, 'test', 'test_helper')
 
 class ShippingOptionsControllerTest < ActionController::TestCase
   def test_should_get_index

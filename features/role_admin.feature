@@ -18,10 +18,10 @@ Feature: Admin roles
     And user "admin-user" has "admin" roles for group "group1"
     And I am authenticated as "admin-user" with password "12345"
     
-  Scenario: I can seniors with a link to their Caregivers
-    When I follow links "Config > Users"
-    Then page content should have "Config:, Users table"
-    And I should see "Caregivers" link
+  # Scenario: I can seniors with a link to their Caregivers
+  #   When I follow links "Config > Users"
+  #   Then page content should have "Config:, Users table"
+  #   And I should see "Caregivers" link
 
   Scenario: I can see list of caregivers and link to Non-critical Events
     When I navigate to caregiver page for "senior-user" user
@@ -53,10 +53,10 @@ Feature: Admin roles
     And I follow "Non-critical Alerts"
     Then I should see email active for "non-critical-alert-1"
 
-  # shorthand: Given I am adding a new caregiver for "senior-user"
-  Scenario: Admin can create new caregiver for a new halouser
-    When I follow links "Config > Users > Caregivers > add_caregiver_button"
-    Then I should see "Please call tech support 1-888-971-HALO"
+  # # shorthand: Given I am adding a new caregiver for "senior-user"
+  # Scenario: Admin can create new caregiver for a new halouser
+  #   When I follow links "Config > Users > Caregivers > add_caregiver_button"
+  #   Then I should see "Please call tech support 1-888-971-HALO"
     
   Scenario: Add a new caregiver and check result
     Given I am adding a new caregiver for "senior-user"

@@ -41,7 +41,7 @@ Feature: Manage coupon codes
       | months to pay in advance | 0          |
       | free trial months        | 2          |
       | Dealer install fee       | 12         |
-    And I select "31 Dec, 2015" as the "Expiry date" date
+    And I select "31 Dec, 2015" as the "Expiration date" date
     And I press "Save"
     Then I should see "successfully"
     And coupon code "cc_160_pq1" should have a related device model, group

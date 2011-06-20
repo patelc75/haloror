@@ -1,5 +1,5 @@
-require 'spec_helper'
-
-describe DeviceInfo do
-  
-end
+# require 'spec_helper'
+# 
+# describe DeviceInfo do
+#   
+# end

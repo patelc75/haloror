@@ -586,8 +586,9 @@ Then /^subscriber of last user intake is also the caregiver$/ do
 end
 
 # Use: Then caregivers should be away for user intake "12345"
-# Then /^all caregivers for senior of user intake "([^"]*)" should be away$/ do |_serial|
-# end
+Then /^all caregivers for senior of user intake "([^"]*)" should be away$/ do |_serial|
+  Then %{caregivers should be away for user intake "#{_serial}"}
+end
 
 Then /^senior of user intake "([^"]*)" should not be a member of "([^"]*)" group$/ do |_serial, group_name|
   (ui = UserIntake.find_by_gateway_serial( _serial)).should_not be_blank

@@ -29,7 +29,8 @@ Feature: Online store coupons
     And I fill the shipping details for online store
     And I fill the credit card details for online store
     And I check "order_bill_address_same"
-    Then page content should have "<deposit>, <shipping>, <phrase>, <total>, <recurring>"
+    And I press "Continue"
+    Then page content should have "<deposit>, <shipping>, <phrase>, <recurring>"
 
     Examples:
       | product  | coupon_code | group   | deposit | shipping | months | free | recurring | total | phrase           |
@@ -56,9 +57,9 @@ Feature: Online store coupons
     Examples:
       | coupon | values |
       #   * exact match of coupon_code, group and product
-      | 99TRIAL | 99, 1 month trial, 114 |
+      | 99TRIAL | 99, 1 month trial |
       #   * product, coupon_code match. group does not have such code. snaps to match at 'default' group
-      | SNAPBACK | 55, 110 |
+      | SNAPBACK | 55 |
       #   * random coupon_code. snaps to 'default/default' coupon code
       | DUMMY | 249 |
 
