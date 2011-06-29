@@ -8,7 +8,7 @@
     <td><%= h user.important_role %></td>
     <td>
       <% _stamp = user.last_vital_timestamp %>
-      <% if _stamp.first == 'No Vitals' %>
+      <% if _stamp.nil? or _stamp.first == 'No Vitals' %>
       No Vitals
       <% else %>
       <span class="<%= (_stamp.first < 1.day.ago) ? 'tiny text-red' : 'tiny' %>"><%= UtilityHelper.format_datetime( _stamp.first, current_user) %></span>
