@@ -450,6 +450,8 @@ class Order < ActiveRecord::Base
         # * <tt>money</tt> -- The amount to be purchased as an Integer value in cents.
         # * <tt>creditcard</tt> -- The CreditCard details for the transaction.
         # * <tt>options</tt> -- A hash of optional parameters.
+        #RAILS_DEFAULT_LOGGER.warn("-=-=-=-=-=-Order.charge_credit_card-=-=-=-=-=-=-=-=-=")    
+        #RAILS_DEFAULT_LOGGER.warn("_cost=#{_cost} options=#{options.to_yaml}\n")            
         @one_time_fee_response = payment_gateway_server.purchase( _cost*100, credit_card,
           :billing_address => {
             :first_name => bill_first_name,
@@ -581,7 +583,8 @@ class Order < ActiveRecord::Base
   #   * CHANGED: This is just a clone of methods for coupon_code. This one uses local columns
   #   usage:
   #   * upfront_charge( order) => check order.dealer_install_fee_applies to apply
-  def upfront_charge( _object = nil)
+  def upfront_charge( _object = nil) 
+    
     # advance_charge.to_i + cc_deposit.to_i + cc_shipping.to_i + cc_dealer_install_fee.to_i
     _charge = if _object.is_a?( Order)
       _object.upfront_charge
@@ -590,7 +593,7 @@ class Order < ActiveRecord::Base
         product_cost.upfront_charge.to_i
       else
         advance_charge.to_i + cc_deposit.to_i + cc_shipping.to_i
-      end
+      end                                                                                                           
     end
     #   * identify if the dealer_install_fee_applies
     _apply = if _object.is_a?( Order)
@@ -598,7 +601,10 @@ class Order < ActiveRecord::Base
     else
       false
     end
-    _charge += cc_dealer_install_fee.to_i if _apply
+    _charge += cc_dealer_install_fee.to_i if _apply    
+    #RAILS_DEFAULT_LOGGER.warn("-=-=-=-=-=-Order.upfront_charge-=-=-=-=-=-=-=-=-=")    
+    #RAILS_DEFAULT_LOGGER.warn("_object=#{_object} _charge=#{_charge}   cc_dealer_install_fee=#{cc_dealer_install_fee}")    
+    #throw "debug" if _object.nil?
   end
 
   def card_successful?
