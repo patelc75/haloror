@@ -100,53 +100,15 @@ class FlexController < ApplicationController
     end
     
     user_data[:data_readings] = vital_data
-    
-    # get last reading
     user_data[:last_reading]  = get_last_reading_for_user(user)
-    
-    # get connectivity status
     user_data[:status]        = {}
-    
-    #   * same result as old logic
     user_data[:status][:connectivity] ||= UtilityHelper.camelcase_to_spaced(Event.get_connectivity_state_by_user(user).event_type.to_s)
-    #   * OBSOLETE
-    # unless user_data[:status][:connectivity]
-    #   event_string = UtilityHelper.camelcase_to_spaced(Event.get_connectivity_state_by_user(user).event_type.to_s) 
-    #   user_data[:status][:connectivity] = event_string
-    # end
-    
-    # get battery status
-    #   * same result as old logic
     user_data[:status][:battery_outlet] = ( user.battery_status || @default_battery_outlet_status)
-    #   * OBSOLETE
-    # unless user_data[:status][:battery_outlet] = user.battery_status
-    #   user_data[:status][:battery_outlet] = @default_battery_outlet_status
-    # end
-    
-    #   * same result as old logic
     user_data[:status][:battery_level] = ( get_status('battery', user) || @default_battery_level_status)
-    #   * OBSOLETE
-    # unless user_data[:status][:battery_level] = get_status('battery', user)
-    #   user_data[:status][:battery_level] = @default_battery_level_status
-    # end
-    
     now = Time.now
-
-    # get last battery reading
-    #   * same result as old logic
     user_data[:battery] = ( Battery.find(:first, :order => 'timestamp desc', :conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'") || {})
-    #   * OBSOLETE
-    # unless user_data[:battery] = Battery.find(:first, :order => 'timestamp desc', :conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'")
-    #   user_data[:battery] = {}
-    # end
-    
-    # get events
     user_data[:events]         = Event.find(:all, :conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'", :order => 'timestamp desc', :limit => 10)
-    
-    # get blood_pressures
     user_data[:blood_pressure] = BloodPressure.find(:first,:conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'",:order => 'timestamp desc')
-    
-    # get weight scales
     user_data[:weight_scale]   = WeightScale.find(:first,:conditions => "user_id = '#{user.id}' AND timestamp <= '#{now.to_s}'",:order => 'timestamp desc')
     
     return user_data
