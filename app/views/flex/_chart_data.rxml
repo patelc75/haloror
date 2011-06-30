@@ -6,7 +6,7 @@ xml.DataRoot(:num_points => query[:num_points], :startdate => query[:startdate],
       :is_admin            => user.is_super_admin?,
       :first_name          => (user.profile.blank? ? '' : user.profile[ :first_name]),
       :last_name           => (user.profile.blank? ? '' : user.profile[ :last_name]),
-      :connectivity_status => ((!user[ :status].blank? && !user[ :status][ :connectivity]) ? user[ :status][ :connectivity] : ''),
+      :connectivity_status => ((!user[ :status].blank? && !user[ :status][ :connectivity].blank?) ? user[ :status][ :connectivity] : ''),
       :time_remaining      => ((!user[ :battery].blank? && !user[ :battery][ :time_remaining].blank?) ? user[ :battery][ :time_remaining] : ''),
       :timezone            => UtilityHelper.get_timezone_offset( user)
     }) do
