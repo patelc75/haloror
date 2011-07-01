@@ -117,7 +117,7 @@ ActionController::Routing::Routes.draw do |map|
   map.new_caregiver_profile '/profiles/new_caregiver_profile/:user_id', :controller => 'profiles', :action => 'new_caregiver_profile'
   map.new_user_invoice '/invoices/new/:id', :controller => 'invoices', :action => 'new'
   map.registration '/registration', :controller => 'users', :action => 'registration'
-  map.reporting '/reporting', :controller => 'reporting', :action => 'users'
+  #map.reporting '/reporting/users', :controller => 'reporting', :action => 'users'
   map.resend '/installs/resend/:id',:controller => 'installs',:action => 'resend'
   map.signup '/signup/:group', :controller => 'users', :action => 'new'
   map.store '/order/:coupon_code', :controller => 'orders', :action => 'new', :coupon_code => '', :method => :get
@@ -126,7 +126,7 @@ ActionController::Routing::Routes.draw do |map|
   map.terms '/terms', :controller => 'util', :action => 'terms'
   map.triage '/triage', :controller => 'users', :action => 'triage'
   map.undismiss_triage '/triage/:user_id/undismiss', :controller => 'triage_audit_logs', :action => 'new', :is_dismissed => false
-  map.users_in_group '/reporting/users/:group_name', :controller => 'reporting', :action => 'users'
+  #map.users_in_group '/reporting/users/:group_name', :controller => 'reporting', :action => 'users'
   map.user_intake_form '/user/user_intake_form',:controller => 'users',:action => 'user_intake_form'
   map.user_intake_post '/user/user_intake_form',:controller => 'users',:action => 'user_intake_form', :method => :post
   
