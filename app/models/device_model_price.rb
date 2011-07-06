@@ -143,11 +143,14 @@ class DeviceModelPrice < ActiveRecord::Base
       advance_charge.to_i + deposit.to_i + shipping.to_i
     end
     #   * identify if the dealer_install_fee_applies
-    _apply  = (_object.is_a?( Order) ? _object.dealer_install_fee_applies : false)    
-    _charge += dealer_install_fee.to_i if (_apply && !dealer_install_fee.blank?)
-    _charge   
+    _apply  = (_object.is_a?( Order) ? _object.dealer_install_fee_applies : false )    
+    _charge += dealer_install_fee.to_i if (_apply && !dealer_install_fee.blank?)    
+
+    #debugger if _object == true
     #RAILS_DEFAULT_LOGGER.warn("-=-=-=-=-=-DeviceModelPrice.upfront_charge-=-=-=-=-=-=-=-=-=")
-    #RAILS_DEFAULT_LOGGER.warn("_object=#{_object} _charge=#{_charge}   dealer_install_fee=#{dealer_install_fee} _object.dealer_install_fee_applies=#{(_object.dealer_install_fee_applies) if !_object.nil? and _object != false}")          
+    #RAILS_DEFAULT_LOGGER.warn("_object=#{_object} _charge=#{_charge}   dealer_install_fee=#{dealer_install_fee}") #_object.dealer_install_fee_applies=# =>{(_object.dealer_install_fee_applies) if !_object.nil? and _object != false}")          
+
+    _charge   
   end
   
   def discounted

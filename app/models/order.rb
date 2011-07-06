@@ -190,7 +190,8 @@ class Order < ActiveRecord::Base
         "shipping"          => (cc_shipping           || _coupon.shipping),
         "monthly_recurring" => (cc_monthly_recurring  || _coupon.monthly_recurring),
         "months_advance"    => (cc_months_advance     || _coupon.months_advance),
-        "months_trial"      => (cc_months_trial       || _coupon.months_trial)
+        "months_trial"      => (cc_months_trial       || _coupon.months_trial),
+        "dealer_install_fee"=> (cc_dealer_install_fee || _coupon.dealer_install_fee)        
       }
     else
      {} 
@@ -320,7 +321,7 @@ class Order < ActiveRecord::Base
       #   * create order item for each product charge
       #   * shipping is special here. when blank? it will not create a row
       #   * the code block below will create the shipping from shipping_options then
-      ['deposit', 'shipping', 'advance_charge', 'dealer_install_fee'].each do |_col|
+      ['deposit', 'shipping', 'advance_charge'].each do |_col|
         _description = _col.gsub(/_/,' ').capitalize
         _amount      = _cost.send( _col.to_sym)
         unless _amount.to_i == 0
@@ -334,6 +335,15 @@ class Order < ActiveRecord::Base
             errors.add_to_base( "Cannot create charge for #{_description} of #{USD_value(_amount)}")
           end
         end
+      end
+      
+      if dealer_install_fee_applies
+        order_items.create({
+            :cost              => _cost.send('dealer_install_fee'.to_sym),
+            :quantity          => 1,
+            :device_model_id   => device_model.id,
+            :description       => 'dealer_install_fee'.gsub(/_/,' ').capitalize  
+          })
       end
       #   * shipping is special. when blank, pick shipping option instead of its direct value
       if _cost.shipping.blank?
@@ -373,7 +383,7 @@ class Order < ActiveRecord::Base
     value = 0
     order_items.each do |order_item|
       tariff = order_item.device_model.coupon( :group => group, :coupon_code => coupon_code) unless order_item.device_model.blank?
-      value += (tariff.deposit + tariff.shipping + tariff.upfront_charge( dealer_install_fee_applies)) unless tariff.blank?
+      value += (tariff.deposit + tariff.shipping + tariff.upfront_charge( self)) unless tariff.blank?
     end
     value
   end
@@ -416,12 +426,9 @@ class Order < ActiveRecord::Base
   def charge_credit_card( options = {})
     # mode is set (in environment config files) to :test for development and test, :production when production
     #
-    # charges pro-rata or upfront
-    if options.blank? # no options means charge upfront
-      _cost = (product_cost.blank? ? 0 : product_cost.upfront_charge( dealer_install_fee_applies))
-      # 
-      #  Thu Nov 25 00:18:02 IST 2010, ramonrails
-      #   * "purchase" changed
+    # charges pro-rata or upfront          
+    if options.blank? # no options means charge upfront 
+      _cost = (product_cost.blank? ? 0 : product_cost.upfront_charge( self))
       _action = "deposit + shipping"
     else
       _cost = options[ :pro_rata]
@@ -593,18 +600,17 @@ class Order < ActiveRecord::Base
         product_cost.upfront_charge.to_i
       else
         advance_charge.to_i + cc_deposit.to_i + cc_shipping.to_i
-      end                                                                                                           
+      end                                                                                                           
     end
-    #   * identify if the dealer_install_fee_applies
     _apply = if _object.is_a?( Order)
-      _object.dealer_install_fee_applies
+      _object.dealer_install_fee_applies  #if dealer install fee checkbox was checked
     else
       false
     end
     _charge += cc_dealer_install_fee.to_i if _apply    
     #RAILS_DEFAULT_LOGGER.warn("-=-=-=-=-=-Order.upfront_charge-=-=-=-=-=-=-=-=-=")    
-    #RAILS_DEFAULT_LOGGER.warn("_object=#{_object} _charge=#{_charge}   cc_dealer_install_fee=#{cc_dealer_install_fee}")    
-    #throw "debug" if _object.nil?
+    #RAILS_DEFAULT_LOGGER.warn("_object=#{_object} _charge=#{_charge}   cc_dealer_install_fee=#{cc_dealer_install_fee} _apply=#{_apply}")    
+    _charge
   end
 
   def card_successful?

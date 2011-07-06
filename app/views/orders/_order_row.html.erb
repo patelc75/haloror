@@ -1,4 +1,4 @@
-<tr>
+<tr>      
   <table class="<%= cycle('', 'altrow') %>" style="margin-bottom: 2px;">
     <tr>
       <td>
@@ -11,7 +11,7 @@
         <% end %>
       </td>
       <td>
-        <span class="tiny">Card Number: </span><%= order_row.masked_card_number %>, <span class="tiny">charged </span><%= number_to_currency(order_row.cost, :precision => 2, :unit => '$') %>
+        <span class="tiny">Card Number: </span><%= order_row.masked_card_number %>, <span class="tiny">charged </span><%= number_to_currency(order_row.upfront_charge(order_row), :precision => 2, :unit => '$') %>
         <%= link_to "Payments", order_payment_gateway_responses_path( order_row.id) %>
       </td>
     </tr>
