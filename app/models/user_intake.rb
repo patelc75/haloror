@@ -287,7 +287,9 @@ class UserIntake < ActiveRecord::Base
     #   * user is "Ready to Install"
     #   * last user action was "Approve"
     # QUESTION: admin can approve?
-    if (lazy_action == "Approve") && (senior.status == User::STATUS[:approval_pending]) # && !self.updater.blank? && self.updater.is_super_admin?
+    if (lazy_action == "Submit") && (senior.status == User::STATUS[:approval_pending])
+      UserMailer.deliver_user_intake_submitted(senior, "support@halomonitoring.com")            
+    elsif (lazy_action == "Approve") && (senior.status == User::STATUS[:approval_pending]) # && !self.updater.blank? && self.updater.is_super_admin?
       self.senior.status = User::STATUS[:install_pending]
       self.senior.send( :update_without_callbacks)
       self.senior.opt_in_call_center # start getting alerts, caregivers away, test_mode true

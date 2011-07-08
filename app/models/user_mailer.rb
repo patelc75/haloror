@@ -33,6 +33,13 @@ class UserMailer < ActionMailer::ARMailer
     body        :user => _senior
   end
 
+  def user_intake_submitted( _senior, _email = nil)
+    _email ||= _senior.email
+    setup_email( _email)
+    @subject += "User Intake submitted for #{_senior.name}"
+    body        :user => _senior
+  end
+  
   # 
   #  Fri Feb  4 00:03:10 IST 2011, ramonrails
   #   * https://redmine.corp.halomonitor.com/issues/4146
