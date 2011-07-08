@@ -68,9 +68,12 @@ end
 Then /^order items for each charge should be created separately for last order$/ do
   (_order = Order.last).should_not be_blank
   _order.order_items.recurring_charges.should_not be_blank
-  (_cost = _order.product_cost).should_not be_blank
-  [_cost.deposit, _cost.shipping, _cost.advance_charge, _cost.dealer_install_fee].reject(&:zero?).each do |_amount|
+  (_cost = _order.product_cost).should_not be_blank      
+  [_cost.deposit, _cost.shipping, _cost.advance_charge].reject(&:zero?).each do |_amount|
     _order.order_items.first( :conditions => { :cost => _amount }).should_not be_blank
+  end 
+  if _order.dealer_install_fee_applies == true                         
+    _order.order_items.first( :conditions => { :cost => _cost.dealer_install_fee }).should_not be_blank                                                              
   end
 end
 
