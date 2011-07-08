@@ -1983,11 +1983,13 @@ class User < ActiveRecord::Base
   #  Fri Dec 10 21:04:05 IST 2010, ramonrails
   #   * added "options" option for "resend" action
   #
+  # Usage: specify options in the input has parameter
+  #   dispatch_emails( :force => "true") #force it send emails even if it's already been sent or already activated
   def dispatch_emails( options = {})
     unless email.blank? # cannot send without valid email
       #  Fri Dec 10 21:04:14 IST 2010, ramonrails
-      #   * "resend" needs options
-      unless activation_email_sent? || activated? || (options.is_a?( Hash) && options.has_key?(:force) && (options[:force] == true))
+      #   * "resend" needs options     
+      if (!activation_email_sent? && !activated?) || (options.is_a?( Hash) && options.has_key?(:force) && (options[:force] == true))
         if can_send_email?
           if self.is_caregiver?
             #   * Only caregiver email will dispatch when subscriber is caregiver
@@ -2209,7 +2211,7 @@ class User < ActiveRecord::Base
     #   )
     # )
   end
-  
+
   def location
     profile.location rescue ''
     # address = self.profile.address

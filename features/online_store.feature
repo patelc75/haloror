@@ -134,7 +134,7 @@ Feature: Online (D)irect (T)o (C)ustomer store
     And I press "Continue"
     And I press "Place Order"
     Then page content should have "Thank you"
-    And the payment gateway should have log for 314 USD
+    And the payment gateway should have log for 264 USD
     # And the payment gateway should have log for 59 USD
 
   # https://redmine.corp.halomonitor.com/issues/3170
