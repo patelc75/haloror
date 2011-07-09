@@ -3,10 +3,12 @@ module ServerInstance
   
   def self.current_host
     if Thread.current[:host].nil?
-      `hostname`.strip
+      hostname = `hostname`.strip 
     else
-      Thread.current[:host]
-    end
+      hostname = Thread.current[:host]
+    end  
+    hostname = "www.myhalomonitor.com" if (hostname.include?("dfw-web3") || hostname.include?("dfw-web4")) 
+    return hostname
   end
   
   def self.current_host=(host)
