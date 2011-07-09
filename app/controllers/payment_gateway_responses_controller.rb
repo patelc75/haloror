@@ -1,5 +1,5 @@
 class PaymentGatewayResponsesController < ApplicationController
-
+  before_filter :authenticate_super_admin?  
   def index
     if params[:order_id] 
       conds = ["order_id = #{params[:order_id]}"]      
