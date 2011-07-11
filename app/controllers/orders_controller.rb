@@ -1,5 +1,5 @@
 class OrdersController < ApplicationController     
-  before_filter :authenticate_super_admin? 
+  before_filter :authenticate_super_admin?, :except => :new 
   before_filter :group_selected?, :only => :new
   
   # keeping RESTful
