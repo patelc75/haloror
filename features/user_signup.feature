@@ -34,8 +34,8 @@ Feature: Bus user signup
     When I create a coupon code for "mygroup" group
     And I place an online order for "mygroup" group
     And the "halouser" of last user intake is not activated
-    When I view the senior of last user intake
+    When I view the senior of last user intake      
     And I follow "Resend Email"
     Then I should see "Activation email sent again"
-    And 1 email to halouser of last user intake with subject "Please activate your new myHalo account" should be sent for delivery
+    And 2 email to halouser of last user intake with subject "Please activate your new myHalo account" should be sent for delivery
     And email with activation code of last user should be sent for delivery
