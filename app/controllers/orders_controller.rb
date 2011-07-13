@@ -1,5 +1,5 @@
 class OrdersController < ApplicationController     
-  before_filter :authenticate_super_admin?, :only => [:index, :show]
+  before_filter :authenticate_super_admin?, :only => [:index, :show, :update_kit_serial]
   before_filter :group_selected?, :only => :new
   
   # keeping RESTful
@@ -41,7 +41,7 @@ class OrdersController < ApplicationController
     end
     if params.has_key?('coupon_code')
       _coupon_code ||= params['coupon_code'] unless params[:coupon_code].blank?
-    end
+    end           
     _coupon_code ||= @order.coupon_code unless @order.coupon_code.blank?
     #   * default prices will be picked if coupon code is blank
     @complete_tariff = DeviceModel.complete_coupon( @order.group, _coupon_code)
