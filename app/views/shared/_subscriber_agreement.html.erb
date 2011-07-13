@@ -1,3 +1,13 @@
+<!-------------------------------- STEPS --------------------------------
+
+1. Open 72001036-1F_Halo Subscriber Agreement.doc in Microsoft Word
+2. File > Save as Web Page > Save as "72001036-1F_Halo Subscriber Agreement.htm"
+3. Open "72001036-1F_Halo Subscriber Agreement.htm"  in http://www.wordhtmlcleaner.co.uk
+4. Copy and paste the "Cleaned HTML" into this html.erb file starting around the tag: <u>1.  DEFINITIONS</u>  
+5. Load 72001036-1F_Halo Subscriber Agreement.htm in a web browser and fill in any underlines with erb code
+
+-------------------------------- STEPS --------------------------------> 
+
 <div class="container">
   <h3>
   <% if defined?( @user_intake) %>
@@ -7,7 +17,7 @@
       <% if @user_intake.paper_copy_submitted? %>
         A paper copy of this agreement was processed on <%= UtilityHelper.format_datetime(@user_intake.paper_copy_submitted_on, current_user) %>
       <% else %>
-        You must approve this subscriber agreement before system can be activated. Please review this document and click Approve below.
+        You must approve this subscriber agreement before system can be activated. Please review this Agreement and click “Agree” below at the end of the document.
       <% end %>
     <% end %>
   <% end %>
@@ -19,12 +29,6 @@
       <p>
         THIS SUBSCRIBER AGREEMENT, (this “Agreement”) made and entered into this <strong><%= Date.today.day %></strong> day of <strong><%= Date::MONTHNAMES[Date.today.month] %></strong>, <strong><%= Date.today.year %></strong>, between <strong><%= (@user_intake && @user_intake.subscriber) ? @user_intake.subscriber.name : '______________' %></strong> (the &quot;<strong>Subscriber</strong>&quot;) and <strong>Halo Monitoring, Inc.</strong> and its subsidiaries or affiliates involved in providing the products and services described herein (&quot;<strong>Halo</strong>&quot;).
       </p>
-<!-- STEPS
-1. Open 72001036-1F_Halo Subscriber Agreement.doc in Microsoft Word
-2. File > Save as Web Page > 72001036-1F_Halo Subscriber Agreement.htm
-3. Open 72001036-1F_Halo Subscriber Agreement.htm  in http://www.wordhtmlcleaner.co.uk
-4. Copy and paste the "Cleaned HTML" starting with this tag: <p align=center ><b >MYHALO SUBSCRIBER AGREEMENT</b> here
--->
 <p ><b><u>1.  DEFINITIONS</u></b><b></b>
 <p ><b
 >1.1       </b><u>Subscriber</u>.  Subscriber shall mean the individual signing
