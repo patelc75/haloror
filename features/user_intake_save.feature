@@ -114,7 +114,7 @@ Feature: Save User Intake
       | H500445566    |
     When I create a "reseller" reseller group
     And I am creating a user intake
-    And I select "reseller_group" from "group"
+    And I select "reseller" from "group"
     And I fill the senior details for user intake form
     And I fill in the following:
       | Gateway Serial     | H200112233      |
