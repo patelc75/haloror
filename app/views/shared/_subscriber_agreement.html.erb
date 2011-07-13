@@ -12,186 +12,477 @@
     <% end %>
   <% end %>
   </h3><br/><br/>
-  <div class="box fixed-height">
+  <div class="box fixed-height">  
+    <div float="right">72001036-1F</div>
     <div>
       <h1 id="halo_subscriber_agreement"><center>HALO SUBSCRIBER AGREEMENT</center></h1>
       <p>
         THIS SUBSCRIBER AGREEMENT, (this “Agreement”) made and entered into this <strong><%= Date.today.day %></strong> day of <strong><%= Date::MONTHNAMES[Date.today.month] %></strong>, <strong><%= Date.today.year %></strong>, between <strong><%= (@user_intake && @user_intake.subscriber) ? @user_intake.subscriber.name : '______________' %></strong> (the &quot;<strong>Subscriber</strong>&quot;) and <strong>Halo Monitoring, Inc.</strong> and its subsidiaries or affiliates involved in providing the products and services described herein (&quot;<strong>Halo</strong>&quot;).
       </p>
-      <ol class="detailed">
-        <li><strong>DEFINITIONS</strong>
-          <ol>
-            <li><strong>Subscriber</strong>. Subscriber shall mean the individual signing this agreement and responsible for payment. By signing this agreement, the Subscriber acknowledges that they are the User, as defined below, or that they are authorized by the User to act on their behalf for purposes of this agreement.</li>
-            <li><strong>User</strong>. User shall mean the individual who will be directly using the Halo Equipment and services. In most cases the User and Subscriber is the same individual.</li>
-            <li><strong>Caregivers</strong>. Caregivers shall mean those individuals the Subscriber designates as entitled to receive certain User Health Data in certain situations.</li>
-            <li><strong>Emergency Personnel</strong>. Emergency Personnel shall mean 911 operators, police, sheriff’s deputies, firefighters, paramedics, and other governmental or volunteer emergency responders.</li>
-            <li><strong>Equipment</strong>. Equipment shall mean the Halo monitoring equipment, including that portion designed to be worn by an individual, which detects and measures certain Health Data and, in emergency situations, transmits the Health Data to Caregivers or Emergency Personnel.</li>
-            <li><strong>Health Data</strong>. Health Data shall mean the data, files, reports and other information collected through and associated with the Equipment. The Health Data shall also mean any information provided by the Subscriber or User to Halo using the User Intake Form or through the Internet Portal.</li>
-            <li><strong>Internet Portal</strong>. Internet Portal shall mean the password-protected Internet website that the Subscriber may access to update and instruct Halo regarding the use of the Health Data. This information is provided initially by the User Intake Form and the Subscriber shall update Halo in writing of any changes in phone numbers for themselves, the User, or the Caregiver(s), and any other changes if they cannot, or chose not to, use the Internet Portal for this purpose.</li>
-            <li><strong>Provider</strong>. Provider shall refer to ___________________________________ (Halo Authorized Partner providing service).</li>
-          </ol>
-        </li>
-        <li>
-          <strong>SUBSCRIBER&rsquo;S RIGHTS AND OBLIGATIONS</strong>
-          <ol>
-            <li><strong>Equipment Requirements</strong>. The Subscriber will provide at Subscriber’s sole expense suitable electric, broadband Internet, and/or telephone service to allow installation and operation of the Equipment. The Subscriber will pay all the charges for such services including taxes if applicable.</li>
-            <li><strong>License Grant</strong>. Subscriber hereby grants Halo a license to access and use the Health Data in connection with the services provided by Halo. The Subscriber also grants Halo the right to access, utilize, create and publish derivative works from any and all Health Data. The derivative works may use Health Data for creating statistics of a larger population. When doing so, Halo does not include any personal identifying information; nor will the Provider be identified. For example, Halo might publish fall statistics or the number of hours the Equipment is worn during sleep for the entire User population.</li>
-            <li><strong>Authorization</strong>. The Subscriber hereby authorizes Halo to share the Health Data, only with entities and individuals for the purpose of providing medical care and for the purpose of sharing information with others selected by the Subscriber. The Subscriber agrees that this authorization permits the disclosure of health or treatment information to Caregivers and Emergency Personnel that may also contain sensitive health information.<br /> This authorization will remain in effect and permit the ongoing disclosure by Halo of the Health Data until the Subscriber deletes the User’s profile in the Internet Portal entirely or revokes the authorization by notifying Halo in writing. The Subscriber agrees that any revocation will not apply to actions Halo has already taken in reliance on prior authorization.</li>
-            <li><strong>User Intake Form</strong>. The Subscriber shall use the User Intake Form to designate the identity of the User’s Caregivers and place any limitations on the use of Health Data. The Subscriber is responsible for the accuracy and completeness of the information provided to Halo using the User Intake Form. If the Internet Portal is used to subsequently update the information supplied on the User Intake Form, the Subscriber is responsible for the security of his or her passwords and for any use of the Subscriber’s account. The Subscriber is at least 18 years of age. The Subscriber’s use of the Internet Portal and Equipment shall comply with all applicable laws, regulations, and ordinances, including any laws relating to the export of data or software. The Subscriber shall not disrupt the proper operation of the Equipment or the Internet Portal.</li>
-            <li><strong>HIPAA</strong>. The Subscriber shall only transmit, create or display health or other information that the Subscriber is authorized to use, transmit, create or display. The Subscriber acknowledges that Halo is not a “covered entity” under the Health Insurance Portability and Accountability Act of 1996 and the regulations promulgated thereunder (“HIPAA”). As a result, HIPAA does not apply to the transmission of Health Data by Halo to any third party.</li>
-            <li><strong>Telephone provider</strong>. The Subscriber acknowledges that if the User’s telephone line is occupied, the Equipment will not be able to obtain access to the phone line unless the User has his or her telephone provider install a RJ31X jack. If the User has such jack installed, the Subscriber consents to an interrupt of the User’s telephone in the event the Equipment detects an emergency or lifethreatening situation.</li>
-            <li><strong>Report</strong>. The Subscriber shall report to Provider, as soon as practical, any perceived defect in the Equipment or Internet Portal. The Subscriber shall provide to Halo an evaluation of the Equipment, Internet Portal, and services provided by Halo upon Halo’s reasonable request.</li>
-            <li><strong>Use of Panic Button</strong>. The Subscriber agrees that the Equipment’s panic button should be used only in the event of an emergency. The Subscriber acknowledges that Caregivers and Emergency Personnel will be notified, even if the panic button was activated accidentally or in error.</li>
-          </ol>
-        </li>
-        <li>
-          <strong>HALO&rsquo;S RIGHTS AND OBLIGATIONS</strong>
-          <ol>
-            <li><strong>Relay of Health Data</strong>. Halo shall use its reasonable best efforts to contact Emergency Personnel and Caregivers in the event the Equipment detects an emergency situation or receives notice that the Equipment’s panic button has been activated. Halo will transmit pertinent Health Data to the Caregivers and Emergency Personnel, in accordance with the account settings in the User’s Health Data file as established by the Subscriber or User.</li>
-          </ol>
-        </li>
-        <li>
-          <strong>PRIVACY POLICY</strong>
-          <ol>
-            <li>The Subscriber acknowledges that only the Subscriber and User have access to the Health Data. The Subscriber or User are the only individuals who can view and edit the information supplied in the Intake Form or over Internet Portal; and the information will only be shared with others as described in Section 2.0 and section 4.2 below. The Subscriber, User and Caregiver can add or delete a Caregiver for the User’s records.</li>
-            <li>From time to time, Halo may aggregate data to publish trend statistics and associations. Halo may make health information available for research purposes or to better refine the algorithms and services provided through Halo. All health information will be de-identified and no data can be used to personally identify any User.</li>
-            <li>Halo&quot;s servers automatically record log information about Subscriber or Users use of the Internet portal (such as number of sign-ins and number of times a link was clicked). The log information will be used to operate and improve the service.</li>
-            <li>Halo adheres to the US Safe Harbor privacy principles. For more information about the Safe Harbor framework or our registration, see the Department of Commerce’s web site at <%= link_to "http://www.export.gov/safeharbor/", "http://www.export.gov/safeharbor/", :popup => true %>.</li>
-          </ol>
-        </li>
-        <li>
-          <strong>TERM AND TERMINATION</strong>
-          <ol>
-            <li><strong>Term</strong>. This Agreement and the Subscriber or User’s right to use the Equipment and Internet Portal shall be from the date hereof through one year from such date, and will be automatically renewed for subsequent one year periods, if not terminated earlier pursuant to <strong>Section 5.2</strong>. Upon termination of this Agreement, if the Subscriber has rented or leased the Equipment, the Subscriber agrees to return the Equipment to Provider in the same condition in which it was received by the Subscriber, with reasonable wear and tear excepted. If the Subscriber fails to do so within 10 days of termination, the Subscriber will be responsible for the full price of the Equipment.</li>
-            <li><strong>Termination</strong>. This Agreement may be terminated a) by either party upon 30 days’ written notice; b) upon 10 days’ written notice in the event of a material breach by either party that remains uncured for 60 days after reasonable notice.</li>
-          </ol>
-        </li>
-        <li>
-          <strong>PAYMENT TERMS</strong>
-          <ol>
-            <li><strong>Fees</strong>. The Subscriber agrees to pay a deposit the amount of <strong><%= (@user_intake && @user_intake.order) ? @user_intake.order.product_cost.upfront_charge( @user_intake.order) : '__________' %></strong> and fees in the amount of <strong><%= (@user_intake && @user_intake.order) ? @user_intake.order.product_cost.monthly_recurring : '______________' %></strong> per month.</li>
-            <li><strong>Payment</strong>. The Subscriber shall remit payment of the fees to Provider identified in section 1.8.</li>
-          </ol>
-        </li>
-        <li>
-          <strong>DISCLAIMERS</strong>
-          <ol>
-            <li><strong>Medical Advice</strong>. Halo does not offer medical advice. Any content accessed through Halo, the Equipment, or the Internet Portal is for informational purposes only, and is not intended to cover all possible uses, directions, precautions, drug interactions, or adverse effects. The content of the Internet Portal and/or the Equipment should not be used for the diagnosis or treatment of any medical condition. The Subscriber or User should consult his or her doctor or other qualified health care provider if he or she has any questions about a medical condition, or before taking any drug, changing his or her diet or commencing or discontinuing any course of treatment. The Subscriber or User will not ignore or delay obtaining professional medical advice because of information accessed through Halo. The Subscriber or User shall call 911 or his or her doctor for all medical emergencies.</li>
-            <li><strong>Power/Phone Failure</strong>. Halo is not responsible for the failure of the User’s telephone, internet or power services. In the event of such a failure, the Equipment may not be able to transmit the User’s Health Data to Halo.</li>
-            <li><strong>Indemnification</strong>. In the event any person, not a party of this Agreement, including Subscriber’s and/or User’s insurance company, shall make any claim against Provider/Halo for any reason whatsoever, including but not limited to the installation, maintenance, operation or non-operation of the System, the Subscriber agrees to indemnify, defend, and hold Provider/Halo harmless for any and all claims and lawsuits including the payment of all damages, expenses, costs and attorney’s fees whether these claims be based upon alleged intentional conduct, active or passive negligence, or strict or product liability, on the part of the Provider, its agent, servants or employees. The Subscriber shall and does hereby indemnify and save Provider/Halo, its distributors and agents harmless from any and all liability resulting from the selection, possession, operation, control, use and maintenance of the Equipment. In the event of litigation, to protect Provider/Halo’s rights hereunder, the Subscriber agrees to pay all reasonable attorney’s fees, collection agent fees, or court costs resulting from such litigation.</li>
-            <li><strong>Hold Harmless</strong>. Subscriber hereby releases, discharges and agrees to hold Provider/Halo harmless from any and all claims, liabilities, damages, losses or expenses, arising from or caused by any hazard covered by insurance in or on the premises of User whether said claim is made by Subscriber or User, their agents or insurance company, or by any other parties claiming under or through Subscriber or User.</li>
-            <li><strong>Warranty or Representation</strong>. Provider/Halo does not represent or warrant that the Equipment may not be compromised or circumvented or the Equipment will prevent any personal injury, loss of life or property, or damage, or that the Equipment will in all cases provide the protection for which it is maintained or intended. Provider/Halo expressly disclaims any implied warranties, including the implied warranties of merchantability or fitness for a particular purpose, and the Subscriber has not relied upon any representation or warranty. The Subscriber acknowledges that any affirmation of fact or promise made by Provider/Halo or its agents, servants or employees, shall not be deemed to create any express warranty unless included in the Agreement in writing. WITH THE EXCEPTION OF THE HARDWARE WARRANTY DESCRIBED IN ADDENDUM I, NEITHER HALO NOR PROVIDER NOR ANY OF HALO'S LICENSORS MAKE ANY OTHER WARRANTY, EXPRESS OR IMPLIED, WITH RESPECT TO THE HALO SYSTEM AND ALL OTHER WARRANTIES, WHETHER EXPRESS OR IMPLIED, ARE HEREBY DISCLAIMED, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL HALO BE LIABLE FOR ANY INCIDENTAL, INDIRECT, SPECIAL, CONSEQUENTIAL OR PUNITIVE DAMAGES, LOSSES, COSTS OR EXPENSES OF ANY KIND, HOWEVER CAUSED AND WHETHER BASED IN CONTRACT, TORT, STRICT LIABILITY OR ANY OTHER THEORY OF LIABILITY.</li>
-            <li><strong>Limitation of Liability</strong>. It is understood and agreed that Provider/Halo is not an insurer of person, life, limb or property and that insurance, if any; covering personal injury, life and property loss or damage shall be obtained by the Subscriber, if so desired. Provider/Halo is being paid for the monitoring of Equipment designed to reduce certain risks. Provider/Halo and the Subscriber acknowledge that the amounts being charged are not sufficient to in any way guarantee no loss or damage, and that Provider/Halo is not assuming responsibility for any personal injury, life or property loss or damage, even if due to Provider/Halo’s negligent performance or failure to perform any obligation under this Agreement or failure of the Equipment to operate as intended, or for any other reason whatsoever.<br /> IN NO EVENT SHALL HALO BE LIABLE TO SUBSCRIBER, USER, OR CAREGIVER FOR ANY INCIDENTAL, INDIRECT, SPECIAL, CONSEQUENTIAL OR PUNITIVE DAMAGES, LOSSES, COSTS OR EXPENSES OF ANY KIND, HOWEVER CAUSED AND WHETHER BASED IN CONTRACT, TORT, STRICT LIABILITY OR ANY OTHER THEORY OF LIABILITY, EVEN IF SUBSCRIBER, USER, OR CARGEIVER HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES, LOSSES, COSTS OR EXPENSES. IN ALL EVENTS, THE LIABILITY OF HALO AND PROVIDER AND SHALL BE LIMITED TO THE FEES PAID FOR THE HALO PRODUCTS AND SERVICES</li>
-            <li><strong>Third-Party Service Providers</strong>. Halo may screen, modify, refuse or remove certain content or third-party services from the Internet Portal, but it is not responsible for and does not endorse any third-party content or services. Halo further does not endorse any third-party service providers, other health care providers, products, services, opinions or websites access through the Internet Portal. USE OF THE SERVICES AND RELIANCE ON THIS CONTENT IS SOLELY AT THE RISK OF THE SUBSCRIBER AND/OR USER. HALO MAY NOT BE HELD LIABLE FOR ANY DAMAGES ARISING OUT OF OR RELATED TO THE SUBSCRIBER’S AND/OR USER”S USE OF ANY THIRD-PARTY SERVICE OR CONTENT.</li>
-          </ol>
-        </li>
-        <li>
-          <strong>MISCELLANEOUS</strong>
-          <ol>
-            <li><strong>Governing Law and Venue</strong>. This Agreement shall be governed and construed in all respects in accordance with the laws of the State of Alabama without regard to its conflict of laws provisions. Each Party hereby irrevocably consents to the exclusive jurisdiction of federal and state courts located in Huntsville, Alabama for any dispute relating to or arising from this Agreement.</li>
-            <li>
-              <strong>Notices</strong>. All notices required or permitted hereunder shall be in writing addressed to the respective parties as set forth herein, unless another address shall have been designated, and shall be delivered by hand or by registered or certified mail, postage prepaid.<br />
-              If to Halo: HALO MONITORING, INC.<br />
-              515 Sparkman Drive<br />
-              Suite 303<br />
-              Huntsville, Alabama 35801<br /><br />
-              If to Subscriber:<br />
-              ____________________________________<br />
-              ____________________________________<br />
-              ____________________________________
-            </li>
-            <li><strong>Agreement Binding on Successors</strong>. This Agreement shall be binding on and shall inure to the benefit of the parties hereto, and their heirs, administrators, successors, and assigns.</li>
-            <li><strong>Waiver</strong>. No waiver by either party of any default shall be deemed as a waiver of any prior or subsequent default of the same or other provisions of this Agreement.</li>
-            <li><strong>Severability</strong>. If any provision hereof is held invalid or unenforceable by a court of competent jurisdiction, such invalidity shall not affect the validity or operation of any other provision and such invalid provision shall be deemed to be severed from the Agreement.</li>
-            <li><strong>Assignability</strong>. This Agreement and the rights and obligations thereunder with respect to the Subscriber are personal to the Subscriber and may not be assigned by any act of the Subscriber or by operation of law without the prior written consent of Halo.</li>
-            <li><strong>Integration</strong>. This Agreement constitutes the entire understanding of the parties, and revokes and supersedes all prior agreements between the parties and is intended as a final expression of their Agreement. It shall not be modified or amended except in writing signed by the parties hereto and specifically referring to this Agreement. This Agreement shall take precedence over any other documents that may be in conflict therewith.</li>
-            <li><strong>Survival of Covenants</strong>. The representations and warranties, covenants, and obligations of Subscriber in Sections 6 and 7 shall survive the termination of this Agreement.</li>
-            <li><strong>Governing Law; Dispute Resolution</strong>. In the event of any dispute between the parties regarding this Agreement, the parties agree to submit the resolution of such dispute to binding arbitration in accordance with Chapter 1, Title 9, of the United States Code (Federal Arbitration Act). The arbitration shall be administered by the American Arbitration Association in accordance with its Commercial Arbitration Rules. Judgment upon an award rendered pursuant to the arbitration may be entered in any court having jurisdiction or application may be made to such court for judicial acceptance of the award, and an order of enforcement, as the case may be. The costs and expenses of the arbitration proceeding, including the fees of the arbitrator, legal fees, witness fees, and all other costs and expenses, shall be assessed in the discretion of the arbitrator. The situs of the arbitration shall be Huntsville, Alabama.</li>
-            <li><strong>Waiver of Jury Trial</strong>. THE PARTIES ACKNOWLEDGE THAT BY AGREEING TO BINDING ARBITRATION THEY HAVE IRREVOCABLY WAIVED ANY RIGHT THEY MAY HAVE HAD TO A JURY TRIAL BY A COURT WITH REGARD TO A DISPUTE.</li>
-          </ol>
-        </li>
-      </ol>
-      <p>IN WITNESS WHEREOF, the parties hereto have caused this Subscriber Agreement to be signed and delivered by, as of the date first hereinabove written.</p>
-    </div>
-
-    <div>
-      <h2>ADDENDUM I: TO HALO SUBSCRIBER AGREEMENT</h2>
-      <h3>myHalo Hardware Warranty Information</h3>
-      <p>Unless otherwise specified, all equipment has a 12-month limited warranty, from the date of purchase, against defects in material and workmanship. Any defective part will be replaced or repaired if used in the manner described in the myHalo Personal Monitoring and Alert System User Guide.</p>
-
-      <h3>Limited Lifetime Warranty on Select Products</h3>
-      <p>
-        Select products have a limited lifetime warranty. Any defective part will be replaced or repaired if used in the manner described in the User Guide. The warranty does not protect against intentional misuse or damage, including damage during shipment or damage from lightning. The following products are included in this category:
-        <ol>
-          <li>Home Gateway</li>
-          <li>Transmitter (does not include battery or fabric electrode strap)</li>
-        </ol>
-      </p>
-
-      <h3>Exclusion of Warranties</h3>
-      <p>Neither Halo, nor provider, nor any of Halo's licensors make any other warranty, expressed or implied, with respect to the Halo system and all other warranties, whether expressed or implied, are hereby disclaimed, including, without limitation, the implied warranties of merchantability and fitness for a particular purpose. In no event shall Halo be liable for any incidental, indirect, special, consequential or punitive damages, losses, costs or expenses of any kind, however caused and whether based in contract, tort, strict liability or any other theory of liability.</p>
-
-      <h3>Contact Information</h3>
-      <p>You may contact Halo Monitoring online at http://www.halomonitoring.com, phone:<br />
-        1-888-971-HALO (4256), or email: support@halomonitoring.com
-      </p>
-    </div>
-
-    <div>
-      <h2>ADDENDUM II: TO HALO SUBSCRIBER AGREEMENT</h2>
-      <p><strong>This form must be completed when the Subscriber Agreement is signed or at Installation if Halo or their representative do the installation for the User</strong>. By signing below I acknowledge the following:</p>
-      <ul>
-        <li><strong>Account Activation</strong>. After calling at 1-888-971-4256 and completing the installation process, it will take up to 24 hours for critical events including falls and panic button presses to be monitored and responded to by the Call Center. Also, any subsequent profile updates for the user and/or caregiver may also take up to 24 hours to update and change how and who the Call Center contacts for critical events.</li>
-        <li><strong>Quick Start and User Guide</strong>. I have received and read the myHalo User Guide.</li>
-        <li><strong>RJ31X Jack</strong>. If the User’s standard telephone line is occupied, the Equipment will not be able to obtain access to the phone line unless the Subscriber has his or her telephone provider install a RJ31X jack. If the Subscriber has such jack installed, the Equipment will interrupt the User’s telephone in the event it detects an emergency or life-threatening situation. This is necessary to ensure the Call Center receives notification of the event. Contact a professional phone line installer for further details. If you have a home alarm system connected to the phone line, the installer will need to coordinate with the alarm system company to ensure that your home alarm service is not disabled or disrupted.</li>
-        <li><strong>Uninterruptible Power Supply</strong>. The Subscriber may wish to use an optional UPS (Uninterruptible Power Supply) in conjunction with the myHalo Equipment. Doing so will provide battery backup power for the myHalo Home Gateway during an AC power failure and can allow continued communication between the Home Gateway and the standard phone line during the power outage. Refer UPS to manufacturer’s installation instructions.</li>
-        <li><strong>Surge Protector</strong>. If the Subscriber elects not to use a UPS as described above, it is advised the Subscriber install a UL rated surge protector to protect both the power connection and any phone line connections to the Equipment. In the event of a power surge or line spike, the Equipment may be damaged and prevent its operation otherwise. YOUR WARRANTY DOES NOT PROTECT AGAINST LIGHTNING DAMAGE.</li>
-        <li><strong>Caregiver Role</strong>. It is highly recommended that you have at least one family member, friend, neighbor, or professional configured as caregiver for your account. This allows Halo to contact someone you trust to be involved in the case you need assistance.</li>
-      </ul>
-      <p>
-        <div class="span-11">Subscriber Name: <%= (@user_intake && @user_intake.subscriber) ? @user_intake.subscriber.name : '____________________' %></div>
-        <div class="span-11 last">Date: <%= Date.today.to_s(:rfc822) %></div>
-        <div class="clear"></div>
-      </p>
-    </div>
-
-    <div class="clear">&nbsp;</div>
-    <div>
-      <h2>ADDENDUM III: TO HALO SUBSCRIBER AGREEMENT</h2>
-      <h3>Termination of Services Exit Form</h3>
-      <p>This form is to be completed by the Subscriber to acknowledge that all services to be provided by Halo under the Subscriber Agreement with Halo have been, or are being terminated, at the Subscribers request, or in accordance with other termination provisions of the Subscriber agreement, on the earlier of the date and time indicated here: date__________time_______, or on the date and time when the Halo Equipment is removed or disconnected from service (the “Termination Date”).</p>
-      <p>If the Subscriber has rented or leased the Equipment, the Subscriber agrees that they will return all Halo Equipment in good repair, shipping prepaid, to Provider (as identified in section 1.8) at the address indicated below within 10 days of Termination Date. The Provider will return the Equipment deposit within 30 days of receipt of the Equipment in satisfactory repair, less deduction for any missing or damaged Equipment.</p>
-      <p>
-        <div class="span-11">Subscriber Name: <%= (@user_intake && @user_intake.subscriber) ? @user_intake.subscriber.name : '____________________' %></div>
-        <div class="span-11 last">Date: ____________________________</div>
-        <div class="clear"></div>
-      </p>
-      <p>Unless otherwise indicated below, the addresses for Notice in the Subscriber Agreement shall be used for return of Equipment and deposit, if applicable.</p>
-      <p><strong>Address for Equipment Return:</strong></p>
-      <p>
-        <% 3.times do %>
-        ________________________________<br />
-        <% end %>
-      </p>
-      <p><strong>Subscriber&quot;s Address for Return of Deposit</strong></p>
-      <p>
-        <% if @user_intake && @user_intake.order %>
-        <%= @user_intake.order.bill_address %><br />
-        <%= @user_intake.order.bill_city %>, <%= @user_intake.order.bill_state %> <%= @user_intake.order.bill_zip %> U.S.A.
-        <% else %>
-        <% 3.times do %>
-        ________________________________<br />
-        <% end %>
-        <% end %>
-      </p>
-    </div>
-
-  </div>
-
+<!-- STEPS
+1. Open 72001036-1F_Halo Subscriber Agreement.doc in Microsoft Word
+2. File > Save as Web Page > 72001036-1F_Halo Subscriber Agreement.htm
+3. Open 72001036-1F_Halo Subscriber Agreement.htm  in http://www.wordhtmlcleaner.co.uk
+4. Copy and paste the "Cleaned HTML" starting with this tag: <p align=center ><b >MYHALO SUBSCRIBER AGREEMENT</b> here
+-->
+<p ><b><u>1.  DEFINITIONS</u></b><b></b>
+<p ><b
+>1.1       </b><u>Subscriber</u>.  Subscriber shall mean the individual signing
+this Agreement and responsible for payment.   By signing this Agreement, the Subscriber acknowledges
+that they are the User, as defined below, or that they are authorized by the
+User to act on their behalf for purposes of this Agreement.
+<p ><b>1.2       </b><u>User.</u>  User shall mean the individual who will
+be directly using the myHalo Equipment and services.  In most cases the User and Subscriber are the same
+individual.
+<p ><b>1.3       </b><u>Caregivers</u>.  Caregivers shall mean
+those individuals the Subscriber designates as entitled to receive certain User Health Data in certain
+situations.
+<p ><b
+>1.4       </b><u>Emergency Personnel</u>.  Emergency Personnel
+shall mean 911 operators, police, sheriff's deputies, firefighters, paramedics,
+and other governmental or volunteer emergency responders.
+<p ><b
+>1.5       </b><u>Equipment</u>.  Equipment shall mean
+the myHalo monitoring equipment, including
+that portion designed to be worn by an individual, which detects and
+measures certain Health Data and, in emergency situations, transmits the Health
+Data to Caregivers or Emergency Personnel.
+<p ><b
+>1.6</b>       <u>Health Data</u>.  Health Data shall
+mean any Personal Health Information (PHI) including data, files, user login
+activity, reports and other information collected through and associated with
+the Equipment.  The Health Data shall also mean
+any information provided by the Subscriber or User to Halo using the User
+Intake Form or through the Internet Portal.
+<p ><b
+>1.7       </b><u>Internet Portal</u>.  Internet Portal shall
+mean the password-protected Internet
+website that the Subscriber may access to update and instruct Halo regarding the use of the Health Data. 
+This information is provided initially by the User Intake Form and the Subscriber shall
+update Halo by mail, fax, or by phone call to 1-888-971-4256, followed by a
+confirmation in writing, for any changes in phone numbers for themselves, the
+User, or the Caregiver(s), and any other changes if they cannot, or chose not
+to, use the Internet Portal for this purpose.
+<p ><b
+>1.8       </b><u>Provider</u>.  Provider shall refer
+to _______________________ (Halo or Halo Authorized Agent/Dealer providing
+service).
+<p > 
+<p ><b
+><u>2.  SUBSCRIBER'S RIGHTS AND
+OBLIGATIONS</u></b><b></b>
+<p ><b
+>2.1       </b><u>Equipment Requirements</u>.  The Subscriber will provide at
+Subscriber's sole expense suitable electric, broadband Internet, and/or
+telephone service to allow installation and operation of the Equipment.  The Subscriber shall pay all the charges
+for such services including taxes if applicable.
+<p ><b
+>2.2       </b><u>User
+Intake Form</u>. The Subscriber shall use the User Intake Form to designate the identity of the User's Caregivers and place any
+limitations on the use of Health
+Data.  The Subscriber is responsible for the accuracy and
+completeness of the information provided to Halo using the User Intake Form including any subsequent updates.  If the Internet Portal
+is used to input the information supplied on the User
+Intake Form, the Subscriber is
+responsible for the security of his or her passwords and for any use of the
+Subscriber's account.  The Subscriber is at least 18 years of
+age.  The Subscriber's use of the Internet Portal and Equipment
+shall comply with all applicable laws, regulations, and ordinances, including
+any laws relating to the export of data or software.  The Subscriber shall
+not disrupt the proper operation of the Equipment or the Internet Portal.
+<p ><b
+>2.3       </b><u>HIPAA.</u>  The Subscriber shall only transmit, create or display health
+or other information that the Subscriber is authorized to use, transmit, create
+or display. The Subscriber acknowledges that Halo is not a &#210;covered entity&#211;
+under the Health Insurance Portability and Accountability Act of 1996 and the regulations
+promulgated thereunder (&#210;HIPAA&#211;).  As a result, HIPAA does not apply
+to the transmission of Health Data by Halo to any third party.
+<p ><b
+>2.4       </b><u>Telephone provider</u>. The Subscriber acknowledges
+that if the User's telephone
+line is occupied and no Ethernet connection is made to the Gateway, the
+Equipment will not be able to obtain access to the phone line unless the User has his or her telephone provider
+install a RJ31X jack for connecting the myHalo Equipment.  If the User
+has such jack installed, the Subscriber consents to an interrupt of the User's telephone in the event the
+Equipment detects an emergency or life-threatening situation.  
+<p ><b
+>2.5       </b><u>Equipment
+Operation and</u><b> </b><u>Reporting Problems</u>.  The Subscriber, User or their designated
+Caregiver is responsible for determining that the Equipment and supporting
+Internet and/or phone line continue to work properly by monitoring the status
+LEDs on the Equipment (Gateway) and/or viewing the User's on line web portal
+display and event reports.  The
+Subscriber shall report to Halo or Provider, as soon as practical, any
+perceived defect in the Equipment or Internet Portal.  The Subscriber shall
+provide to Halo an evaluation of the Equipment, Internet Portal, and services
+provided by Halo upon Halo's reasonable request. 
+<br/><b >2.6</b>   <u>The Subscriber acknowledges the following</u>: 
+<br/>&#225;      
+<b >Account Activation.</b> Subscriber must first fill out and
+submit the User Intake Form (via website, fax or phone) to Halo at least 48
+hours before attempting installation. 
+Also, any subsequent profile updates for the User and/or Caregiver may
+also take 24 to 48 hours to update and change how and who Halo contacts for emergency
+events.
+<br/>&#225;      
+<b >Quick Start and User Guide.</b> 
+The Subscriber has received and read the myHalo Personal Monitoring and
+Alert System User Guide which is included with every myHalo system and may be
+found on the Halomonitoring.com/support web page.
+<br/>&#225;      
+<b >RJ31X Jack.  </b>For
+phone line only connections (no Internet connection), if the User's standard
+telephone line is occupied, the Equipment will not be able to obtain access to
+the phone line unless the Subscriber has his or her telephone provider install
+a RJ31X wall jack for connecting the myHalo Equipment to the phone line.  If the Subscriber has such a wall jack
+installed and the Equipment connected to it will interrupt the User's telephone
+in the event it detects an emergency or life-threatening situation.  This is necessary to ensure that the
+call center receives notification of the event.  Contact a professional phone line installer for further
+details. If you have a home alarm system connected to the phone line, the
+installer will need to coordinate with the alarm system company to ensure that
+your home alarm service is not disabled or disrupted.
+<br/>&#225;      
+<b >Uninterruptible Power Supply.</b> 
+The Subscriber may wish to use an optional UPS (Uninterruptible Power
+Supply) in conjunction with the myHalo Equipment.  Doing so will provide battery backup power for the myHalo
+Home Gateway, and any associated modem and or router if used with the Gateway,
+for a limited time during an AC power failure and can allow continued
+communication between the Home Gateway and the standard phone line during the
+power outage.  Refer to UPS
+manufacturer's installation instructions.
+<br/>&#225;      
+<b >Surge Protector.</b> 
+If the Subscriber elects not to use a UPS as described above, it is
+advised the Subscriber install a UL rated surge protector to protect both the
+power connection and any phone line connections to the Equipment.  In the event of a power surge or line
+spike, the Equipment may be damaged and prevent its operation.  YOUR WARRANTY DOES NOT PROTECT AGAINST
+LIGHTNING DAMAGE and the Subscriber is responsible for this type of damage.
+<br/>&#225;      
+<b >Caregiver Role.</b> 
+It is highly recommended that at least one family member, friend,
+neighbor, or professional be configured as a Caregiver for the account.  This allows Halo to contact someone
+trusted to be involved in the case of emergency assistance.   The Caregiver is not a substitute
+for emergency service.  Halo will
+contact Emergency Personnel in the event Halo is unable to reach the User or a
+Caregiver.
+<p > <b >2.</b>7      <u>Caregiver(s)
+alerts</u> are provided as setup in the Caregiver profile(s); however, the
+Caregiver alerts are not intended as a substitute for the myHalo call center
+and emergency responders for a User fall detected emergency. 
+<p ><b
+>2.8       </b><u>Use of Panic Button</u>. The Subscriber agrees that
+the Equipment's panic button should be used only in the event of an emergency.  The
+Subscriber acknowledges that Caregivers and Emergency Personnel will be
+notified, even if the panic button was activated accidentally or in error; and
+the alarm is not reset by pushing the red reset button on the front of the
+myHalo Gateway within two minutes to clear the alarm, or if the User or a
+Caregiver is not able to speak to the Call Center when they call to respond to
+the alarm.
+<p > 
+<p ><b ><u>3.  HALO'S RIGHTS AND OBLIGATIONS</u></b>
+<p ><u>Relay of Health Data</u>.  Halo shall use its
+reasonable best efforts to contact Emergency Personnel and Caregivers in the
+event the Equipment detects an emergency situation or receives notice that the
+Equipment's panic button has been activated.  Halo will transmit
+pertinent Health Data to the Caregivers and Emergency Personnel, in accordance
+with the account settings in the User's
+Health Data file as established by the Subscriber or User via the User Intake
+Form.
+<p ><b
+><u> </u></b>
+<p ><b
+><u>4.
+ PRIVACY POLICY </u></b>
+<br/><b >4.1          
+</b><u>Changes.</u>  The Subscriber
+acknowledges that only the Subscriber and User can request changes to the
+Health Data information supplied in the Intake Form.  This information will only be shared with others as
+described in this agreement.  In
+addition only the Subscriber
+or User can request a change to add or delete a Caregiver on the User's Intake
+form records.
+<br/><b >4.2          
+</b><u>License Grant</u>.  Subscriber hereby
+grants Halo and Provider a license to access and use the Health Data in
+connection with the services provided by Halo or Provider.  The Subscriber also grants Halo the
+right to access, utilize, create and publish derivative works from any and all
+Health Data.  The derivative works
+may use Health Data for creating statistics of a larger population or for the
+purposes of improving the Equipment and service.  When doing so, Halo does
+not include any personal identifying information; nor will the Provider be
+identified.  For example, Halo
+might publish fall statistics or the number of hours the Equipment is worn
+during sleep for the entire User population.
+<br/><b >4.3          
+</b><u>Authorization</u>.  The Subscriber
+hereby authorizes Halo and Provider to share the Health Data, only with
+entities and individuals for the purpose of providing emergency care
+and for the purpose of sharing information with others selected by the
+Subscriber.  The Subscriber agrees
+that this authorization permits the disclosure of health or treatment
+information to Caregivers and Emergency Personnel that may also contain
+sensitive health information.This authorization will remain in effect and
+permit the ongoing disclosure by Halo or Provider of the Health Data until
+the Subscriber cancels the monitoring services or revokes the authorization by
+notifying Halo in writing. The Subscriber agrees that any
+revocation will not apply to actions Halo or Provider have already taken in
+reliance on prior authorization.
+<p ><b
+> </b>
+<p ><b
+><u>5.  TERM AND TERMINATION</u></b>
+<p ><b
+>5.1</b>       <u>Term</u>.  This Agreement and
+the Subscriber or User's right
+to use the Equipment and Internet Portal shall be from the date hereof through
+one year from such date, and will be automatically renewed for subsequent one
+year periods, if not terminated earlier pursuant to Section 5.2.  
+<p ><b
+>5.2</b>       <u>Termination of Services and Return of
+Equipment</u>.  This
+Agreement may be terminated a) by the Subscriber cancelling the service, where
+the Subscriber will not be billed for an additional month if notice is given by
+the 20<sup>th</sup> of the current month; or b) by Halo or Provider upon 30
+days' written notice.  The Subscriber and Halo acknowledge
+that all services to be provided by Halo and Provider under this Subscriber
+Agreement with Halo will be terminated, at the Subscriber's request by calling
+Halo at 1-888-971-4256 and requesting a specific Termination (cancellation)
+date, or in accordance with other termination provisions of this Subscriber
+Agreement.  If the Subscriber has
+rented or leased the Equipment, the Subscriber agrees that at the Termination
+date they will return all myHalo Equipment in good repair, with reasonable wear and tear excepted, shipping
+prepaid, within 10 days of the Termination (cancellation) Date to Provider (as
+identified in section 1.8) or to the address indicated in Section 9.2 Notices,
+if no Provider is identified in Section 1.8.   If
+the Subscriber fails to do so within 10 days of termination, the Subscriber
+will be responsible for the full price of the Equipment, not to exceed $450
+less any Equipment deposits.  The Provider will return the
+Equipment deposit to the Subscriber's billing address within 30 days of receipt
+of the Equipment in satisfactory repair, less deduction for any missing or
+damaged Equipment or subscription payment(s) due. 
+<p ><b
+> </b>
+<p ><b
+><u>6.  PAYMENT TERMS</u></b>
+<p ><b
+>6.1       </b><u>Fees</u>.  The Subscriber agrees
+to pay a deposit the amount of <strong><%= (@user_intake && @user_intake.order) ? @user_intake.order.product_cost.monthly_recurring : '______________' %></strong>
+and fees in the amount of <strong><%= (@user_intake && @user_intake.order) ? @user_intake.order.product_cost.monthly_recurring : '______________' %></strong> per
+month.   Applicable sales tax may be added to monthly fees.   Halo or Provider reserves the
+right to increase monitoring fees annually up to 7% per year, but not within
+the first year of service.
+<p ><b
+>6.2       </b><u>Payment</u>.  The Subscriber shall remit payment of the fees directly
+to Halo or Provider.  
+<p ><b>6.3</b>       <u>Collection
+Costs</u>. To the extent permitted by law, Subscriber shall pay any costs and
+fees Halo reasonably incurs to collect amounts owed to Halo.
+<p ><b
+><u> </u></b>
+<p ><b
+><u>7.  DISCLAIMERS</u></b>
+<p ><b
+>7.1</b>       <u>Fall
+Detection Accuracy</u>:  The myHalo
+Equipment is designed to be able to detect serious falls most of the time.  The User/Subscriber acknowledges that
+Halo does not guarantee to be able to detect all serious falls.  The User/Subscriber also acknowledge
+that they are responsible to conduct or have conducted the range test described
+in the User Installation Guide and that for any regions out of range the
+Equipment will not report a fall until the User is back within range.  
+<p ><b
+>7.2       </b><u>Medical Advice</u>.<b> </b><b > </b>Halo does not offer medical advice and
+the equipment provided is not a medical device. Any content accessed through the
+myHalo, the Equipment, or the Internet Portal is for informational purposes
+only, and is not intended to cover all possible uses, directions, precautions,
+interactions, or adverse effects. The content of the Internet Portal and/or the
+Equipment shall not be used for the diagnosis or treatment of any medical
+condition. The Subscriber or User should consult his or her doctor or other
+qualified health care provider if he or she has any questions about a medical
+condition, or before taking any drug, changing his or her diet or commencing or
+discontinuing any course of treatment. The Subscriber or User will not ignore
+or delay obtaining professional medical advice because of information accessed
+through myHalo. The Subscriber or User shall call 911 or his or her doctor for
+all medical emergencies.
+<p ><b
+>7.3</b>       <u>Power/Phone Failure</u>. Halo is not responsible for
+the failure of the User's telephone,
+Internet or power services.  In the event of such a failure,
+the Equipment may not be able to transmit the User's Health Data.<b ></b>
+<p ><b
+>7.4       </b><u>Indemnification.</u>  In the event any person, not a party of this Agreement,
+including Subscriber's and/or User's
+insurance company, shall make any claim against Provider/Halo or their agents for
+any reason whatsoever, including but not limited to the installation,
+maintenance, operation or non-operation of the Equipment, the Subscriber agrees
+to indemnify, defend, and hold Provider/Halo and their agents harmless for any
+and all claims and lawsuits including the payment of all damages, expenses,
+costs and attorney's fees whether these claims be based upon alleged
+intentional conduct, active or passive negligence, or strict or product liability,
+on the part of the Provider/Halo, its agents, servants or employees.  The Subscriber shall and does hereby indemnify and save
+Provider/Halo, its distributors and agents harmless from any and all liability
+resulting from the selection, possession, operation, control, use and
+maintenance of the Equipment.  In the event of litigation, to
+protect Provider/Halo's and their agents rights hereunder, the Subscriber agrees
+to pay all reasonable attorney's fees, collection agent fees, or court costs
+resulting from such litigation. 
+<p ><b
+>7.5       </b><u>Hold Harmless.</u>  Subscriber hereby releases, discharges and agrees to hold
+Provider/Halo and their agents harmless from any and all claims, liabilities,
+damages, losses or expenses, arising from or caused by any hazard covered by
+insurance in or on the premises of User
+whether said claim is made by Subscriber or User, their agents or insurance company, or by any other
+parties claiming under or through Subscriber or User.
+<p ><b
+>7.6       </b><u>Warranty or Representation.</u> Provider/Halo does not
+represent or warrant that the Equipment may not be compromised or circumvented
+or the Equipment will prevent any personal injury, loss of life or property, or
+damage, or that the Equipment will in all cases provide the protection for
+which it is maintained or intended.  Provider/Halo expressly disclaims
+any implied warranties, including the implied warranties of merchantability or
+fitness for a particular purpose, and the Subscriber has not relied upon any
+representation or warranty. The Subscriber acknowledges that any affirmation of
+fact or promise made by Provider/Halo or its agents, servants or employees,
+shall not be deemed to create any express warranty unless included in the
+Agreement in writing. WITH THE EXCEPTION
+OF THE HARDWARE WARRANTY DESCRIBED IN SECTION 8, NEITHER HALO, NOR PROVIDER, NOR ANY OF HALO'S
+LICENSORS MAKE ANY OTHER WARRANTY, EXPRESS OR IMPLIED, WITH RESPECT TO THE HALO
+ EQUIPMENT AND ALL OTHER
+WARRANTIES, WHETHER EXPRESS OR IMPLIED, ARE HEREBY DISCLAIMED, INCLUDING,
+WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE. 
+<p ><b
+>7.7       </b><u>Limitation of Liability.</u>  It is understood and agreed that Provider and Halo are not an
+insurer of person, life, limb or property and that insurance, if any; covering
+personal injury, life and property loss or damage shall be obtained by the
+Subscriber, if so desired.  Provider and/or Halo are being
+paid for the monitoring of Equipment designed to reduce the risks associated
+with living independently, but cannot eliminate all risk.  Provider, Halo and the Subscriber acknowledge that the
+amounts being charged are not sufficient to in any way guarantee no loss or damage,
+and that Provider and Halo are not assuming responsibility for any personal
+injury, life or property loss or damage, even if due to Provider/Halo's
+negligent performance or failure to perform any obligation under this Agreement
+or failure of the Equipment to operate as intended, or for any other reason
+whatsoever.  
+<p ><b
+>IN
+NO EVENT SHALL PROVIDER OR HALO BE LIABLE TO SUBSCRIBER, USER, OR CAREGIVER FOR
+ANY INCIDENTAL, INDIRECT, SPECIAL, CONSEQUENTIAL OR PUNITIVE DAMAGES, LOSSES,
+COSTS OR EXPENSES OF ANY KIND, HOWEVER CAUSED AND WHETHER BASED IN CONTRACT,
+TORT, STRICT LIABILITY OR ANY OTHER THEORY OF LIABILITY, EVEN IF SUBSCRIBER,
+USER, OR CARGEIVER HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES,
+LOSSES, COSTS OR EXPENSES.  IN ALL
+EVENTS, THE LIABILITY OF HALO AND PROVIDER AND SHALL BE LIMITED TO THE FEES
+PAID FOR THE HALO PRODUCTS AND SERVICES </b>
+<p ><b
+>7.8       </b><u>Third-Party Service Providers</u>.<b > </b>Halo may screen, modify, refuse or remove certain content or third-party
+services from the Internet Portal, but it is not responsible for and does not
+endorse any third-party content or services.  Halo further does not
+endorse any third-party service providers, health care providers, products,
+services, opinions or websites access through the Internet Portal.  USE
+OF THE SERVICES AND RELIANCE ON THIS CONTENT IS SOLELY AT THE RISK OF THE SUBSCRIBER AND/OR USER.  HALO AND PROVIDER MAY NOT BE HELD LIABLE
+FOR ANY DAMAGES ARISING OUT OF OR RELATED TO THE SUBSCRIBER'S AND/OR USER'S USE OF ANY THIRD-PARTY
+SERVICE OR CONTENT.
+<p > 
+<p ><b
+>8.     </b><b
+><u>Limited Lifetime Warranty on Select Equipment</u></b>
+<p >Select equipment items have a limited
+lifetime hardware warranty which applies to all Subscribers having a
+continuous, monthly subscription with up to date payments. Any defective part
+will be replaced or repaired if used in the manner described in the myHalo
+Personal Monitoring and Alert System User Guide. The warranty does not protect
+against intentional misuse or damage, including damage during return shipment
+to Halo, or damage from lightning. The following products are included in this
+category:<b ><u></u></b>
+<br/>1. Home
+Gateway
+<br/>2.
+Transmitter (<u>does not include battery or fabric electrode strap</u>)<b
+><u></u></b>
+<br/><b ><u> Warranty Contact Information</u></b>
+<br/>You may contact Halo by:  Phone 1-888-971-HALO (4256), FAX 1-866-275-1904, email: support@halomonitoring.com,
+or by mail to 515 Sparkman Drive, Huntsville, Alabama, 35816.
+<br/><b > </b>
+<p ><b
+><u>9.  MISCELLANEOUS</u></b>
+<br/><b >9.1</b>       <u>Governing
+Law and Venue</u>.  This Agreement
+shall be governed and construed in all respects in accordance with the laws of
+the State of Alabama without regard to its conflict of laws provisions.  Each Party hereby irrevocably consents
+to the exclusive jurisdiction of federal and state courts located in
+Huntsville, Alabama for any dispute relating to or arising from this Agreement.
+<br/><b >9.2</b>       <u>Notices</u>.
+ All notices required or permitted
+hereunder shall be in writing addressed to the respective parties as set forth
+herein, unless another address shall have been designated, and shall be delivered
+by hand or by registered or certified mail, postage prepaid.
+<br/>If to Halo:                                HALO
+MONITORING, INC. 
+<br/>                                    515
+Sparkman Drive
+<br/>                                    Huntsville,
+Alabama 35801
+<br/> 
+<br/>If to Subscriber:<b
+>            Notice
+will be sent to the Subscriber address on the User Intake Form                        </b>
+<br/><b >9.3</b>       <u>Agreement
+Binding on Successors</u>.  This
+Agreement shall be binding on and shall inure to the benefit of the parties
+hereto, and their heirs, administrators, successors, and assigns.
+<br/><b >9.4</b>       <u>Waiver</u>.
+ No waiver by either party of any
+default shall be deemed as a waiver of any prior or subsequent default of the
+same or other provisions of this Agreement.
+<br/><b >9.5</b>       <u>Severability.</u>
+ If any provision hereof is held
+invalid or unenforceable by a court of competent jurisdiction, such invalidity
+shall not affect the validity or operation of any other provision and such invalid
+provision shall be deemed to be severed from the Agreement.
+<br/><b >9.6</b>       <u>Assignability.</u>
+ This Agreement and the rights and
+obligations thereunder with respect to the Subscriber are personal to the
+Subscriber and may not be assigned by any act of the Subscriber or by operation
+of law without the prior written consent of Halo.
+<br/><b >9.7</b>       <u>Integration.</u>
+ This Agreement constitutes the
+entire understanding of the parties, and revokes and supersedes all prior
+agreements between the parties and is intended as a final expression of their Agreement.
+ It shall not be modified or
+amended except in writing signed by the parties hereto and specifically
+referring to this Agreement.  This
+Agreement shall take precedence over any other documents that may be in
+conflict with it.
+<br/><b >9.8</b>       <u>Survival
+of Covenants.</u>  The
+representations and warranties, covenants, and obligations of Subscriber in <u>Sections
+6</u> and <u>7</u> shall survive the termination of this Agreement.
+<br/><b >9.9       </b><u>Governing Law; Dispute Resolution</u>.  In the event of any dispute between the parties regarding this
+Agreement, the parties agree to submit the resolution of such dispute to
+binding arbitration in accordance with Chapter 1, Title 9, of the United States
+Code (Federal Arbitration Act).  The
+arbitration shall be administered by the American Arbitration Association in
+accordance with its Commercial Arbitration Rules.  Judgment upon an award rendered pursuant to the arbitration
+may be entered in any court having jurisdiction or application may be made to
+such court for judicial acceptance of the award, and an order of enforcement,
+as the case may be.  The costs and
+expenses of the arbitration proceeding, including the fees of the arbitrator,
+legal fees, witness fees, and all other costs and expenses, shall be assessed
+in the discretion of the arbitrator.  The situs of the arbitration shall be Huntsville, Alabama.
+<br/><b >9.10</b>     <u>Waiver
+of Jury Trial</u>.  THE PARTIES
+ACKNOWLEDGE THAT BY AGREEING TO BINDING ARBITRATION THEY HAVE IRREVOCABLY
+WAIVED ANY RIGHT THEY MAY HAVE HAD TO A JURY TRIAL BY A COURT WITH REGARD TO A
+DISPUTE. 
+<p >IN WITNESS WHEREOF, the parties hereto
+have caused this Subscriber Agreement to be signed and delivered by, as of the
+date first written above.
+</div> 
+</div>
   <% if defined?( @user_intake) && !@user_intake.agreement_signed? %>
   <div id="agreement_buttons">
 
-    <div class="span-24 last text-right">
+    <div class="span-22 last text-right">
       <br/>
       <% form_for @user_intake, :url => {:controller => 'user_intakes', :action => 'update', :id => @user_intake.id, :redirect_hash => @redirect_hash} do |f| -%>
         <%= f.text_field :paper_copy_submitted_on, :value => Date.today.to_s, :class => "hidden" %>
