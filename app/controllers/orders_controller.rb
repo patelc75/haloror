@@ -1,6 +1,5 @@
 class OrdersController < ApplicationController     
-  before_filter :authenticate_super_admin?, :only => [:index, :update_kit_serial]
-  before_filter :authenticate_admin?,       :only => [:show]
+  before_filter :authenticate_super_admin?, :only => [:show, :update_kit_serial]
 
   before_filter :group_selected?, :only => :new
   
@@ -9,7 +8,11 @@ class OrdersController < ApplicationController
     
   def index
   	cond = ""
-  	cond += "id = #{params[:id]}" if params[:id]
+    if params[:id]
+  	  cond += "id = #{params[:id]}" 
+  	else
+  	  authenticate_super_admin?
+  	end
     @orders = Order.paginate :page => params[:page],:order => 'created_at desc',:per_page => 20,:conditions => cond
   end
   
