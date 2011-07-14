@@ -10,7 +10,7 @@ Feature: User intake additions
     And the following groups:
       | name       |
       | halo_group |
-      | group 1    |
+      | group_1    |
     And the following carriers:
       | name    |
       | verizon |
