@@ -35,7 +35,6 @@ class CriticalMailer < ActionMailer::ARMailer
     message_text << "MEDICAL" + "\n" + (user.profile.allergies.blank? ? "(No medical / allergy information)" : user.profile.allergies) + "\n\n"
     message_text << "PET INFO" + "\n" + (user.profile.pet_information.blank? ? "(No pet information)" : user.profile.pet_information) + "\n\n"
     message_text << "You received this email because you’re a Halo call center agent.\n\n"    
-    
     setup_message(event.to_s_short + " (" + account_num + " " + timestamp + ")", message_text, :use_email_log, :use_host_name_in_from_addr)     
     setup_operators(event, :recepients, :include_phone_call) 
     self.priority  = event.priority
@@ -142,7 +141,7 @@ class CriticalMailer < ActionMailer::ARMailer
   #if email_log != :no_email_log, then send BCC to email_log@halomonitoring.com
   #if from_addr != :use_host_name_in_from_addr, then myHalo@halomonitoring.com instead of hostname in from addr
   def setup_message(subject, msg_body, email_log=nil, from_addr=nil)
-    @from        = from_addr != :use_host_name_in_from_addr ? "myHalo@halomonitoring.com" : "no-reply@"+ServerInstance.current_host 
+    @from        = from_addr != :use_host_name_in_from_addr ? "myHalo@halomonitoring.com" : "no-reply@"+ServerInstance.current_host(true)
     @subject     = "[" + ServerInstance.current_host_short_string + "] "
     @subject     += subject unless subject.blank?
     @sent_on     = Time.now
@@ -214,7 +213,7 @@ class CriticalMailer < ActionMailer::ARMailer
 
   def setup_daily(subject)
     @recipients = daily_recipients
-    @from        = "no-reply@"+ServerInstance.current_host
+    @from        = "no-reply@"+ServerInstance.current_host(true)
     @subject     = "[" + ServerInstance.current_host_short_string + "] #{subject}"
     @sent_on     = Time.now
   end

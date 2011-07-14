@@ -1,13 +1,15 @@
 module ServerInstance
   @@prefixes = ["crit2", "sdev-crit2", "sdev", "idev", "ldev", "dev", "cdev", "atl-web1"]
   
-  def self.current_host
+  def self.current_host(show_full_domain = false)
     if Thread.current[:host].nil?
       hostname = `hostname`.strip 
     else
       hostname = Thread.current[:host]
     end  
-    hostname = "www.myhalomonitor.com" if (hostname.include?("dfw-web3") || hostname.include?("dfw-web4")) 
+    if show_full_domain == false
+      hostname = "www.myhalomonitor.com" if (hostname.include?("dfw-web3") || hostname.include?("dfw-web4")) 
+    end
     return hostname
   end
   

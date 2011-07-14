@@ -212,7 +212,7 @@ module UtilityHelper
     
   def self.safe_send_email(message, to)
     begin
-      params_hash = {:mail => "#{ServerInstance.current_host()}.Message = #{message}", 
+      params_hash = {:mail => "#{ServerInstance.current_host(true)}.Message = #{message}", 
                         :to => to, 
                         :from => 'no-reply@halomonitoring.com', 
                         :priority => 100 }
