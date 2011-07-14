@@ -3472,7 +3472,7 @@ class User < ActiveRecord::Base
     #  Sun May 22 01:13:40 IST 2011, ramonrails
     #   * https://redmine.corp.halomonitor.com/issues/4486
     #   * update_without_callbacks does not allow updating invoices table for values
-    # self.send(:update_without_callbacks)
+    self.send(:update_without_callbacks)
     triage_audit_logs.create( :status => User::STATUS[:cancelled], :description => "MyHalo account of #{name} is now cancelled.") 
   end
   
