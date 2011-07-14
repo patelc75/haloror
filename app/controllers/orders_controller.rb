@@ -1,5 +1,7 @@
 class OrdersController < ApplicationController     
-  before_filter :authenticate_super_admin?, :only => [:index, :show, :update_kit_serial]
+  before_filter :authenticate_super_admin?, :only => [:index, :update_kit_serial]
+  before_filter :authenticate_admin?,       :only => [:show]
+
   before_filter :group_selected?, :only => :new
   
   # keeping RESTful
