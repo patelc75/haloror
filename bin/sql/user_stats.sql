@@ -1,7 +1,7 @@
 /* TO HELP DEBUG THE CONFIG > USER STATS PAGE */
  curl -v -k -H "Content-Type: text/xml" -d "<panic><device_id>1</device_id><duration_press>1000</duration_press><gw_timestamp>Mn Dec 25 15:52:55 -0600 2007</gw_timestamp><user_id>886</user_id><timestamp>Mon Dec 25 15:52:55 -0600 2007</timestamp></panic>" "https://sdev.myhalomonitor.com/panics?gateway_id=0&auth=9ad3cad0f0e130653ec377a47289eaf7f22f83edb81e406c7bd7919ea725e024" 
 
-/* All users grouped by states (no conditions) */	
+--------- All users grouped by states (no conditions) -----------
 select count (*),status from users group by status;
 
 /* All users grouped by demo_mode */	

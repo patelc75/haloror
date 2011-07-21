@@ -124,6 +124,16 @@ class Event < ActiveRecord::Base
     if _location.blank?
       _location = (user.blank? ? 'U.S.A.' : (user.location || 'U.S.A.'))
     end
+  end 
+  
+  def filter_on_events_page?
+    return_val = false 
+    
+    [DialUpAlert, AccessMode, DialUpStatus].each do |klass|  
+      return_val = true if self.event_type == klass.class_name
+    end                
+    
+    return_val
   end
 
   # returns boolean for the type of event
