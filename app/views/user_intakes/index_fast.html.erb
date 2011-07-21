@@ -35,9 +35,13 @@
   <table class="bluegrey">
     <tr>
       <% if current_user.is_super_admin? %>
-      <th class="span-1">Id</th>
+      <th class="span-1">ID</th>
       <% end %>
       <th class="span-1">UID</th>
+      <th class="span-1">OID</th>      
+      <% if current_user.is_super_admin? %>
+      <th class="span-1">Inv</th>      
+      <% end %>
       <th class="span-4"><%= image_tag "profile.png", :alt => "Senior", :title => "Senior" %>&nbsp;Name</th>
       <th>Status</th>
       <th>Group</th>   

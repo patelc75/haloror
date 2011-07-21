@@ -6,8 +6,12 @@
         <span class="text-large"><%= link_to( order_row.id, order_path( order_row)) %></span> ( <%= order_row.full_number %> )
         <span class="tiny">Created at :</span> <%= UtilityHelper.format_datetime(order_row.created_at,current_user) %>
         <% if order_row.user_intake %>
-          <br />
-          <span>User Intake: <%= link_to( order_row.user_intake.id, user_intake_path( order_row.user_intake)) %></span>
+          <br />               
+          <span>User Intake: <%= link_to order_row.user_intake.id, :controller => "user_intakes", :action => "edit", :id => order_row.user_intake.id %>
+          </span> |  User: <%= link_to( "#{order_row.user_intake.senior.id} #{order_row.user_intake.senior.name}", user_path( order_row.user_intake.senior)) rescue '?' %>      
+          <% if current_user.is_super_admin? %>
+          | <%= link_to 'Invoice', new_user_invoice_path( :id => order_row.user_intake.senior.id) %>
+          <% end %>          
         <% end %>
       </td>
       <td>

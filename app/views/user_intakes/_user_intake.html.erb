@@ -85,6 +85,10 @@
 
     <div class="span-22 last">
         <div class="span-6">  <!-- <%#= 'hidden' if @user_intake.group_id == Group.direct_to_consumer.id %> -->
+        <% if @user_intake.order_id %>
+        <%= link_to "Order #{@user_intake.order_id}",:controller => 'orders',:action => 'index',:id => @user_intake.order_id %>    
+        <% end %>
+        <br/>
         <%= f.label :group_id, "Group" %>
         <%= f.select :group_id, @groups.collect {|p| [p.name, p.id]}, {:include_blank => "Choose a Group"}, :onchange => "show_when_dropdown_selected(this);" %>
         <br />

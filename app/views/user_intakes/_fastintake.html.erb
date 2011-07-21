@@ -1,9 +1,17 @@
 <tr>
   <% if current_user.is_super_admin? %>
   <td><%= link_to( fastintake.id, edit_user_intake_path( fastintake)) %></td>
-  <% end %>
+  <% end %>  
   <td><%= link_to( fastintake.senior.id, user_path( fastintake.senior)) rescue '?' %></td>
-  <td><%= link_to (fastintake.senior ? fastintake.senior.name : "(unnamed)"), :action => :single_row, :id => fastintake.id %></td>
+  <td><% if fastintake.order_id.blank? %>
+    <%= image_tag('exclamationgrey.png') %>
+  <% else %>
+    <%= link_to fastintake.order_id,:controller => 'orders',:action => 'index',:id => fastintake.order_id %>
+  <% end %></td>      
+  <% if current_user.is_super_admin? %>
+  <td><%= link_to 'Inv', new_user_invoice_path( :id => fastintake.senior.id) %></td>
+  <% end %>                            
+  <td><%= link_to (fastintake.senior ? fastintake.senior.name : "(unnamed)"), :action => :single_row, :id => fastintake.id %></td>                            
   <td><%= fastintake.senior.status_text %></td>
   <td><%= fastintake.group.name rescue '?' %></td>
   <td><%= UtilityHelper.format_datetime(fastintake.shipped_at, current_user, Time::DATE_FORMATS[:day_date_short])  %></td>      	

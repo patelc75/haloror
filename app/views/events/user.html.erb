@@ -84,7 +84,6 @@
   <% vital = Vital.find(:first, :conditions => "heartrate <> -1 AND user_id = #{@user.id} AND timestamp > '#{event[:timestamp]}' AND timestamp <= '#{event[:timestamp] + 600}'", :order => "timestamp desc")%>
   <% skintemp = SkinTemp.find(:first, :conditions => "user_id = #{@user.id} AND timestamp > '#{event[:timestamp]}' AND timestamp <= '#{event[:timestamp] + 600}'", :order => "timestamp desc") %>
   <% end %>   
-  <% debugger if event.event_type == "StrapFastened" %>
   <% if !(event.filter_on_events_page? and !current_user.is_super_admin?) %>
   <div id="event_event_<%= event.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:80px">
     <div class="row">

@@ -137,8 +137,10 @@
       <br />
       <% if user_row.is_halouser? %>
         <% unless user_row.user_intakes.blank? %>
-          <%= image_tag('caregivers.png') %> <%= link_to 'User Intake', :controller => "user_intakes", :action => "edit", :id => user_row.user_intakes.first.id %>
-          <br />
+          <%= image_tag( "briefcase.png", :alt => "Intake", :title => "Intake" ) %> <%= link_to 'User Intake', :controller => "user_intakes", :action => "edit", :id => user_row.user_intakes.first.id %>
+          <br />      
+          <%= image_tag( "briefcase.png", :alt => "Order", :title => "Order" ) %> <%= link_to 'Order',:controller => 'orders',:action => 'index',:id => user_row.user_intakes.first.order_id %>    
+          <br />      
         <% end %>
         <%= image_tag('caregivers.png') %> <%= link_to 'Caregivers', :controller => 'call_list', :action => 'show', :id => user_row.id %> 
         <% if current_user.is_super_admin? %>
@@ -150,11 +152,12 @@
         <br />
         <%= image_tag('chart_bar.png') %> <a href="/chart/flex/<%=user_row[:id]%>">Chart</a>
         <% if current_user.is_super_admin? %>
-          <br />
+          <br />          
+          <%= image_tag( "briefcase.png", :alt => "Invoice", :title => "Invoice" ) %>
           <% if user_row.invoice.blank? %>
-            <%= link_to 'Invoice', new_user_invoice_path( :id => user_row), :class => "button small blue-button" %>
+            <%= link_to 'Invoice', new_user_invoice_path( :id => user_row) %>
           <% else %>
-            <%= link_to 'Invoice', invoice_path( user_row.invoice), :class => "button small green-button" %>
+            <%= link_to 'Invoice', invoice_path( user_row.invoice) %>
           <% end %>
         <% end %>
       <% end %>
