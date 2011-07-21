@@ -14,7 +14,8 @@
       <td>&nbsp;&nbsp;</td>
       <td>Alert Group</td>
     </tr>
-    <% at = @alert_types %>
+    <% at = @alert_types %> 
+    <% FILTERED_EVENTS_FOR_NON_SUPER_ADMINS.each { |klass| at.delete(klass.class_name)} if !current_user.is_super_admin? %>          
     <% ag = AlertGroup.types_as_array %>
     <tr>
       <td><%= calendar_date_select_tag "begin_time", @user_begin_time, :time => true, :popup => 'force' %></td>
@@ -82,7 +83,8 @@
   <% if !event.timestamp.nil? %>
   <% vital = Vital.find(:first, :conditions => "heartrate <> -1 AND user_id = #{@user.id} AND timestamp > '#{event[:timestamp]}' AND timestamp <= '#{event[:timestamp] + 600}'", :order => "timestamp desc")%>
   <% skintemp = SkinTemp.find(:first, :conditions => "user_id = #{@user.id} AND timestamp > '#{event[:timestamp]}' AND timestamp <= '#{event[:timestamp] + 600}'", :order => "timestamp desc") %>
-  <% end %>
+  <% end %>   
+  <% debugger if event.event_type == "StrapFastened" %>
   <% if !(event.filter_on_events_page? and !current_user.is_super_admin?) %>
   <div id="event_event_<%= event.id %>" class="active" style="padding-left:10px;background:url('/images/call_list-item.gif') no-repeat;height:80px">
     <div class="row">

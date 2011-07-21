@@ -129,7 +129,7 @@ class Event < ActiveRecord::Base
   def filter_on_events_page?
     return_val = false 
     
-    [DialUpAlert, AccessMode, DialUpStatus].each do |klass|  
+    FILTERED_EVENTS_FOR_NON_SUPER_ADMINS.each do |klass|  
       return_val = true if self.event_type == klass.class_name
     end                
     

@@ -300,3 +300,5 @@ CONNECTIVITY_STATUS_ICONS = {
   "StrapRemoved" => "strap_removed",
   "Dialup" => "status_dial_up" # we are using this existing image as default value
   }
+       
+FILTERED_EVENTS_FOR_NON_SUPER_ADMINS = [DialUpAlert, AccessMode, DialUpStatus, StrapFastened, StrapRemoved]
