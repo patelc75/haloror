@@ -1,9 +1,13 @@
 <tr class="<%= cycle('', 'altrow') %>">
-  <td><div class="span-2 border"><%= link_to "#{invoice_row.user.id}", invoice_path( invoice_row) %></div></td>                                 
-  <td><div class="span-2 border"><%= link_to invoice_row.user.user_intakes.first.order_id,:controller => 'orders',:action => 'index',:id => invoice_row.user.user_intakes.first.order_id %></div></td>
+  <td><div class="span-2 border"><%= link_to "#{invoice_row.id}", invoice_path( invoice_row) %></div></td>                                 
+  <% if !invoice_row.user.user_intakes.blank? %>
+  <td><div class="span-2 border"><%= link_to invoice_row.user.user_intakes.first.order_id, :controller => 'orders',:action => 'index',:id => invoice_row.user.user_intakes.first.order_id  %></div></td>
   <td><div class="span-2 border"><%= link_to invoice_row.user.user_intakes.first.id, :controller => "user_intakes", :action => "edit", :id => invoice_row.user.user_intakes.first.id %></div></td>
+  <% else %><td></td><td></td><% end %>
   <td><div class="span-1 border"><%= link_to image_tag(!invoice_row.notes.blank? ? 'note.png' : 'cross-grey.png', :title => "Notes", :alt => "Notes"), invoice_invoice_notes_path( invoice_row) %></div></td>
-  <td><div class="span-5 border"><%= link_to invoice_row.user_name, :controller => 'reporting', :action => 'users', :user_name => invoice_row.user.id unless invoice_row.user.blank? %></div></td>
+  <td><div class="span-5 border"><%= link_to "#{invoice_row.user_id} #{invoice_row.user_name}", :controller => 'reporting', :action => 'users', :user_name => invoice_row.user.id unless invoice_row.user.blank? %></div></td>
+  <% subscribee = invoice_row.user.has_subscribers[0] if invoice_row.user.has_subscriber? %>
+  <td><div class="span-5 border"><%= link_to "#{subscribee.id} #{subscribee.name}", :controller => 'reporting', :action => 'users', :user_name => subscribee.name.id unless subscribee.nil? %></div></td>  
   <td><div class="span-5 border"><%= invoice_row.group_names %></div></td>
   <td><div class="span-3 border"><span class="tiny"><%=h invoice_row.prorate_start_date %></div></span></td>
   <td><div class="span-3 border"><span class="tiny"><%=h invoice_row.installed_date %></div></span></td>

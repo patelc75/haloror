@@ -27,6 +27,8 @@
        end
      end
    end
+   subscribee = user.has_subscribers[0] if user.has_subscriber?
+   names << "<b>Subscriber</b>: " +  subscribee.name if !subscribee.nil?
 -%>
 <div>
 <%  names.uniq.sort.each do |name| -%>

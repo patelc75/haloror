@@ -1,6 +1,15 @@
 <%= render :partial => 'invoice_header' %>              
 <br/>
-<h1 id="invoice_">Invoice <%= @invoice.invoice_num %><span class="tiny">(User: <%= @invoice.user_name %>)</span></h1>
+<h1 id="invoice_">Invoice &nbsp;<%= link_to image_tag(!@invoice.notes.blank? ? 'note.png' : 'cross-grey.png', :title => "Notes", :alt => "Notes"), invoice_invoice_notes_path( @invoice) %></h1>
+<p><% subscribee = @invoice.user.has_subscribers[0] if @invoice.user.has_subscriber? %>        
+<p>User:  <%= link_to "#{@invoice.user_id} #{@invoice.user_name}", user_path(@invoice.user) unless @invoice.user.nil? %></p>  
+<p>Subscriber: <%= link_to "#{subscribee.id} #{subscribee.name}", user_path(subscribee) unless subscribee.nil? %></p>  
+<p>Groups: <%= @invoice.group_names %></p>  
+<% if !@invoice.user.user_intakes.blank? %>
+<p> Order ID: <%= link_to @invoice.user.user_intakes.first.order_id, :controller => 'orders',:action => 'index',:id => @invoice.user.user_intakes.first.order_id  %></p>
+<p> User Intake ID: <%= link_to @invoice.user.user_intakes.first.id, :controller => "user_intakes", :action => "edit", :id => @invoice.user.user_intakes.first.id %></p>
+<% end %>
+<p>Invoice #: <%= h @invoice.id %></p>   
 <p><span style="background-color: #9ED3FA;">Prorate Start Date:</span> <%= h @invoice.prorate_start_date %></p>
 <p><span style="background-color: #9ED3FA;">Installed Date:</span>  <%= h @invoice.installed_date %></p>
 <p><span style="background-color: #9ED3FA;">Recurring Start Date:</span>  <%= h @invoice.recurring_start_date %></p>
@@ -10,7 +19,6 @@
 <p><span style="background-color: #9ED3FA;">Recurring:</span>  <%= h @invoice.recurring %></p>  
 <p><span style="background-color: #9ED3FA;">Deposit Amount:</span>  <%= h @invoice.deposit %></p>
 <p><span style="background-color: #9ED3FA;">Cancelled Date:</span>  <%= h @invoice.cancelled_date %></p>
-<p><span style="background-color: #D6D6D6;">Invoice #:</span>  <%= h @invoice.invoice_num %></p>   
 <p><span style="background-color: #FFB3B3;">Deposit Holder:</span>  <%= h @invoice.deposit_holder %></p>
 <p><span style="background-color: #FFB3B3;">Payment Collector:</span>  <%= h @invoice.payment_collector %></p>
 <p><span style="background-color: #FFB3B3;">Payment Type:</span>  <%= h @invoice.payment_type %></p>
