@@ -164,24 +164,19 @@ class UserAdminController < ApplicationController
     end
     render :action => 'assign_role', :layout => false
   end
-  
+
   def assign_role
     group_name = params[:role][:group_name]
+    user_id_dest = params[:role][:user_id_dest]
     role_name = params[:role][:role_name]
     user_id = params[:role][:user_id] rescue nil # may error otherwise
     
-    # 
-    #  Sat Jan 29 00:51:18 IST 2011, ramonrails
-    #   * https://redmine.corp.halomonitor.com/issues/4119
     unless user_id.blank?
       _user = User.find(user_id) # fetch user for use later in this script
-      # 
-      #  Thu Apr 14 23:12:33 IST 2011, ramonrails
-      #   * https://redmine.corp.halomonitor.com/issues/4318
-      #   * shifted to user class for better OOPS
       unless _user.blank?
-        _group = ( group_name.blank? ? nil : Group.find_by_name( group_name))
-        _user.add_role( role_name, _group) # nil is also handled here
+        _dest = ( group_name.blank? ? nil : Group.find_by_name( group_name))
+        _dest = ( user_id_dest.blank? ? nil : User.find( user_id_dest)) if _dest.nil?
+        _user.add_role( role_name, _dest) # nil is also handled here
       end
       # unless _user.blank? || group_name.blank? # check if user was found
       #   _group = Group.find_by_name(group_name) # fetch group for buffer
@@ -199,16 +194,22 @@ class UserAdminController < ApplicationController
     
     render :layout => false 
   end
-  
+
   def remove_role
-    group = params[:group]
+    group = params[:group]    
+    user_id_dest = params[:role][:user_id_dest]    
     role = params[:role]
     user_id = params[:remove][:user_id]
     
     unless user_id.blank?
-      unless group[:name].blank?
-        g = Group.find_by_name(group[:name])
-        r = Role.find(:first, :conditions => "name = '#{role[:name]}' AND authorizable_type = 'Group' AND authorizable_id = #{g.id}")
+      if !group.blank? or !user_id_dest.blank?
+        if !group.blank?
+          g = Group.find_by_name(group[:name])
+          r = Role.find(:first, :conditions => "name = '#{role[:name]}' AND authorizable_type = 'Group' AND authorizable_id = #{g.id}")
+        else
+          u = User.find(user_id_dest)
+          r = Role.find(:first, :conditions => "name = '#{role[:name]}' AND authorizable_type = 'User' AND authorizable_id = #{u.id}")          
+        end
         if r
           roles_users = RolesUser.find(:all, :conditions => "user_id = #{user_id} AND role_id = #{r.id}")
           RolesUser.delete(roles_users)
