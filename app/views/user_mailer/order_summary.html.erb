@@ -15,8 +15,8 @@ Fax 866.275.1904
 Order number: <%= @order.full_number %>
 Order date: <%= @order.created_at.to_s(:date_time_timezone) %>
 Group: <%= @order.group_name %>
-<% if !@order.coupon_code.blank? %>
-Coupon code: <%= @order.coupon_code %>
+<% if !@order.coupon_code.nil? %>
+Coupon code: <%= @order.coupon_code_name %>
 <% end %>
 
 ORDER ITEMS  

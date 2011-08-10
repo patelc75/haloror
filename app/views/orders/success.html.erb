@@ -22,8 +22,8 @@
 	(888-971-4256)<br>
 	Fax 866.275.1904</td>	
     <td><%= @order.full_number %><br>
-      <% if !@order.coupon_code.blank? %>
-      Coupon code: <%= @order.coupon_code %>
+      <% if !@order.coupon_code.nil? %>
+      Coupon code: <%= @order.coupon_code_name %>
       <% end %>
     </td>
     <td><%= @order.created_at.to_s(:day_date) %></td>
