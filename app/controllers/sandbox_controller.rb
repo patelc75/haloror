@@ -15,7 +15,11 @@ class SandboxController < ApplicationController
 							   #:reminder_num => 3,
 							   #:user_id => 278,
 							   #:time_remaining => 1000,
-							   #:battery_critical_id => 7014)
+							   #:battery_critical_id => 7014)  
+		response = AvantGuardClient.alert_test()       
+		#resp2 = AvantGuardClient.alert("Fall", 1, "HM1234")
+		RAILS_DEFAULT_LOGGER.warn response.to_yaml 
+		debugger
   end        
   
   def debug_critical_health_client

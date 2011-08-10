@@ -8,7 +8,8 @@ class AvantGuardClient
   IP_ADDRESS = "12.29.157.39"
   TCP_PORT = 1025
   TCP_PORT_HEARTBEAT = 1025
-
+  HTTP_URL  =  "http://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx"
+  HTTPS_URL = "https://portal.agmonitoring.com/testsgssignalservice/receiver.asmx"  
   # Test manually with:
   # ruby bin/safetycare_test_listener.rb &
   # script/runner 'SafetyCareClient.alert("0123", "001")'
@@ -20,20 +21,34 @@ class AvantGuardClient
     #Avantguard does not support heartbeat since they have geographically redundant servers
   end
 
-  def self.alert_test() 
-    url = URI.parse('https://portal.agmonitoring.com/testsgssignalservice/receiver.asmx')
+  #This method is used to test the Avantguard web service. It can be called as a standalone from script/console like this:
+  # resp2 = AvantGuardClient.alert_test()     
+  def self.alert_test()                                              
+
+    url = URI.parse(HTTPS_URL)    
+    
+    # Code snippet on how to use Net:HTTP: http://snippets.aktagon.com/snippets/305-Example-of-how-to-use-Ruby-s-NET-HTTP 
     http_endpoint = Net::HTTP.new(url.host, url.port)
-    http_endpoint.use_ssl = true
-    http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    #http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_PEER
-    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap12:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap12=\"http://www.w3.org/2003/05/soap-envelope\"><soap12:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>G27500</Account><SignalFormat>CID</SignalFormat><SignalCode>E100</SignalCode>><TestSignalFlag>true</TestSignalFlag></Signal></soap12:Body></soap12:Envelope>"
+
+    if url.scheme == 'https'
+      http_endpoint.use_ssl = true      
+      http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_NONE 
+
+      #verify the certificate -- not working with Avantguard, getting "OpenSSL::SSL::SSLError: certificate verify failed"
+      #http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_PEER 
+    end
+        
+    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>G27500</Account><SignalFormat>CID</SignalFormat><SignalCode>E100</SignalCode>><TestSignalFlag>true</TestSignalFlag></Signal></soap:Body></soap:Envelope>"
     #Configuration.instance.logger.debug content
     #http_header = {'Content-Type' => 'text/xml'}
      
     request = Net::HTTP::Post.new(url.request_uri)
-    request.set_form_data(content) 
-    request.set_content_type("text/xml") 
+    #request.set_form_data({'data' => content})  #this doesn't work
+    #request.body = content
+    soap = AvantGuardClient.alert("Fall", 1, "HM1234")   
+    request.body = soap.to_xml
     debugger
+    request.set_content_type("text/xml") 
     res = http_endpoint.start {|http| http_endpoint.request(request) }
     return res
     #another method of doing ita    
@@ -57,7 +72,7 @@ class AvantGuardClient
     alarm_code = event_type_numeric( event_type)
     if !account_num.blank?
       Savon.configure do |config|
-        config.soap_version = 2  # use SOAP 1.2
+        config.soap_version = 1  # use SOAP 1.2
       end
 
       client = Savon::Client.new do
@@ -110,16 +125,16 @@ class AvantGuardClient
         soap.body["Latitude"]  = "#{lat}"  if !lat.nil?
         soap.body["Longitude"] = "#{long}" if !long.nil?
         
-        msg = soap
+        msg = soap   
       end
-      RAILS_DEFAULT_LOGGER.warn("AvantGuard::client    = " + "%s\r\n"% [client.to_yaml])
-      RAILS_DEFAULT_LOGGER.warn("AvantGuard::soap.body = " + "%s\r\n"% [msg.body.to_yaml])
-      RAILS_DEFAULT_LOGGER.warn("AvantGuard::response  = " + "%s\r\n"% [response.to_yaml])
+      #RAILS_DEFAULT_LOGGER.warn("AvantGuard::client    = " + "%s\r\n"% [client.to_yaml])
+      #RAILS_DEFAULT_LOGGER.warn("AvantGuard::soap.body = " + "%s\r\n"% [msg.body.to_yaml])
+      #RAILS_DEFAULT_LOGGER.warn("AvantGuard::response  = " + "%s\r\n"% [response.to_yaml])
 
-      return true
+      return msg
     else
       UtilityHelper.log_message_critical("CmsClient.alert::Missing account number! for user_id = #{user_id}")
-      return false
+      return nil
     end
   end
 
