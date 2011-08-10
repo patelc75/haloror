@@ -22,7 +22,7 @@
 	(888-971-4256)<br>
 	Fax 866.275.1904</td>	
     <td><%= @order.full_number %><br>
-      <% if !@order.coupon_code.nil? %>
+      <% if !@order.coupon_code_name.nil? %>
       Coupon code: <%= @order.coupon_code_name %>
       <% end %>
     </td>
