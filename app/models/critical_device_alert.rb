@@ -8,8 +8,13 @@ class CriticalDeviceAlert < DeviceAlert
     self.call_center_timed_out = false
 
     # call_center_pending flags ON when any halouser-group is call_center
-    # WARNING: nil returned in group array will cause save! to fail
-    self.call_center_pending = user.is_halouser_of_what.compact.any?(&:is_call_center?) # unless user.blank?
+    # WARNING: nil returned in group array will cause save! to fail   
+    self.call_center_pending = 
+      if (!self.resolved.blank?)  #if resolved = 'manual' or 'auto'
+        false
+      else
+        user.is_halouser_of_what.compact.any?(&:is_call_center?) # unless user.blank?
+      end 
     true
   # rescue Exception => e
   #   CriticalMailer.deliver_monitoring_failure("Exception: #{e}", event)
@@ -18,7 +23,7 @@ class CriticalDeviceAlert < DeviceAlert
 
   def after_create 
     Event.create_event( self.user_id, self.class.to_s, self.id, self.timestamp)
-    unless (ServerInstance.host?( "ATL-WEB1", "CRIT2"))
+    if (!ServerInstance.host?( "ATL-WEB1", "CRIT2") and self.resolved.blank?)
       DeviceAlert.notify_caregivers( self)
     end
     true #   return TRUE to continue executing further callbacks
@@ -40,16 +45,11 @@ class CriticalDeviceAlert < DeviceAlert
 
     #sort by timestamp, instead of timestamp_server in case GW sends them out of order in the alert_bundle
     unless critical_alerts.blank?
-      # WARNING: The current implementation of sort_by generates an array of tuples containing the original collection element and the mapped value
-      # critical_alerts.sort_by { |event| event[:timestamp] }.each do |crit|
-      #   * QUESTION: why do we sort this? we are looping through the array anyways
       critical_alerts.sort! {|a,b| a.timestamp <=> b.timestamp } if critical_alerts.length > 1
       critical_alerts.each do |crit|
         crit.call_center_timed_out = true
-        crit.timestamp_call_center = Time.now #if (crit.respond_to?(:call_center_number_valid?) ? crit.call_center_number_valid? : true)
-        # https://redmine.corp.halomonitor.com/issues/3076
-        # crit.send(:update_without_callbacks) # save
-        crit.save
+        crit.timestamp_call_center = Time.now #if (crit.respond_to?(:call_center_number_valid?) ? crit.call_center_number_valid? : true)        
+        crit.save # crit.send(:update_without_callbacks) # save         
         RAILS_DEFAULT_LOGGER.warn("CriticalDeviceAlert.job_process_crtical_alerts: Critical alert sent to call center: #{crit.class}(#{crit.id}), #{Time.now}\n")  
       end
     end

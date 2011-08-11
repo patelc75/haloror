@@ -8,6 +8,7 @@
 # subject|body|content does not matter. we will just check entire email content anyways
 #
 Then /^(.+) email(?:|s) to "([^\"]*)" with (subject|body|content|keyword) "([^\"]*)" should be sent for delivery$/ do |_count, email, part, data|
+  #debugger
   Email.all.select {|e| e.to == email && e.mail.include?( data) }.length.should == parsed_count( _count)
 end
 
@@ -45,6 +46,6 @@ def parsed_count( _count)
   case _count
   when 'an'; 1;
   when 'no'; 0;
-  else; _count.to_i;
+  else; _count.delete("^0-9").to_i;
   end
 end
