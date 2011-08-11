@@ -134,7 +134,7 @@ class Event < ActiveRecord::Base
     end                
     
     [Panic, Fall, GwAlarmButton].each do |klass|
-      return_val = true if self.event_type == klass.class_name and self.event.resolved == "auto"
+      return_val = true if self.event_type == klass.class_name and self.event.resolved.include? "auto"
     end                  
     
     return_val
