@@ -14,11 +14,11 @@ select user_intake_id from user_intakes_users where user_id = 1477 limit 1;
 select * from users_by_user_intake_id(89);
                                                
 -- change group for user intake when broken!
-select * from groups where name like 'ml_lauramurner';         -- get group_id 
+select * from groups where name like 'ml_rickmontgomery';      -- get group_id 
 select * from roles where authorizable_id = 239;               -- get role_id
 select * from users_by_user_intake_id(188);                    -- get user_id, don't need this if user_id known
 insert into roles_users (user_id, role_id) values (1754, 782); -- update group                                          
-update user_intakes set group_id = 239 where id = 188;         -- update group
+update user_intakes set group_id = 239 where id = 196;         -- update group
 	
 -- refs #3666 debugging safetycare account number ------------------------------------------------------------------------------------------------
 select id, first_name, last_name, account_number from profiles where account_number is not null order by account_number desc;
