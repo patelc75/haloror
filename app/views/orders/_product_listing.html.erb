@@ -5,7 +5,7 @@
   <tr>
     <td>
       <div class="span-2"><%= radio_button_tag( 'product', 'complete', (@product == "complete")) unless confirmation_mode? %></div> 
-      <div class="span-10"><label for="product_complete">myHalo Complete</label><b>&nbsp;(<%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.monthly_recurring) %>/mo)</b></span></div>
+      <div class="span-10 last"><label for="product_complete">myHalo Complete</label><b>&nbsp;(<%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.monthly_recurring) %>/mo)</b></span></div>
       <%= hidden_field_tag "complete_selected" if confirmation_mode? %>
       </td>
       <div class="sizes" id="product_sizes" style="display:none">
@@ -29,7 +29,7 @@
   <tr>
     <td>  
       <div class="span-2"><%= radio_button_tag "product", "clip", (@product == "clip") unless confirmation_mode? %></div>
-      <div class="span-2"><span style="font-size:120%"><label for="product_clip">myHalo Clip</label><b>&nbsp;(<%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %>/mo)</b></span></div>
+      <div class="span-2 last"><span style="font-size:120%"><label for="product_clip">myHalo Clip</label><b>&nbsp;(<%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %>/mo)</b></span></div>
       <%= hidden_field_tag "clip_selected" if confirmation_mode? %>  
     </td>
     <td><%= image_tag 'myhalo-belt-clip.jpg' %></td>
