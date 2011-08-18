@@ -4,9 +4,11 @@
   <% if !confirmation_mode? || (@product == "complete") %>
   <tr>
     <td>
-      <div class="span-1"><%= radio_button_tag( 'product', 'complete', (@product == "complete")) unless confirmation_mode? %></div> 
-      <div class="span-6 last"><label for="product_complete">myHalo Complete</label><b>&nbsp;(<%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.monthly_recurring) %>/mo)</b></span></div>
+      <table><tr>
+      <td class="middle"><div class="span-1"><%= radio_button_tag( 'product', 'complete', (@product == "complete")) unless confirmation_mode? %></td> 
+      <td class="middle"><label for="product_complete">myHalo Complete</label><b>&nbsp;(<%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.monthly_recurring) %>/mo)</b></span></td>
       <%= hidden_field_tag "complete_selected" if confirmation_mode? %>
+      </tr></table>
       <div class="sizes" id="product_sizes" style="display:none">
         <% DeviceModel.myhalo_complete.sizes.each do |_size| %>
         <div class="prepend-1">
@@ -26,10 +28,12 @@
   <% end -%>
   <% if !confirmation_mode? || (@product == "clip") %>
   <tr>
-    <td>  
-      <div class="span-1"><%= radio_button_tag "product", "clip", (@product == "clip") unless confirmation_mode? %></div>
-      <div class="span-6 last"><span style="font-size:120%"><label for="product_clip">myHalo Clip</label><b>&nbsp;(<%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %>/mo)</b></span></div>
-      <%= hidden_field_tag "clip_selected" if confirmation_mode? %>  
+    <td> 
+      <table><tr>       
+      <td class="middle"><%= radio_button_tag "product", "clip", (@product == "clip") unless confirmation_mode? %></td>
+      <td class="middle"><span style="font-size:120%"><label for="product_clip">myHalo Clip</label><b>&nbsp;(<%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %>/mo)</b></span></td>
+      <%= hidden_field_tag "clip_selected" if confirmation_mode? %>   
+    </tr></table>      
     </td>
     <td><%= image_tag 'myhalo-belt-clip.jpg' %></td>
     <%= observe_field(:product_clip,
