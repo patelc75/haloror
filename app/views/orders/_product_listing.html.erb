@@ -8,12 +8,14 @@
       <%= hidden_field_tag "complete_selected" if confirmation_mode? %>
       <br />
       <div class="sizes" id="product_sizes" style="display:none">
+        <table>
         <% DeviceModel.myhalo_complete.sizes.each do |_size| %>
-          <div class="prepend-1">
+          <tr>
             <%= radio_button_tag "order[device_model_size]", _size, (@order.device_model_size == _size), :id => _size.gsub(/ /,'_').gsub(/-/,'_') %>
             <%= label_tag( "#{_size.gsub(/ /,'_').gsub(/-/,'_')}", _size) %><br />
-          </div>
+          </tr
         <% end %>
+        </table>
       </div>
       
     </td>
