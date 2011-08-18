@@ -13,7 +13,7 @@
           <tr>
             <%= radio_button_tag "order[device_model_size]", _size, (@order.device_model_size == _size), :id => _size.gsub(/ /,'_').gsub(/-/,'_') %>
             <%= label_tag( "#{_size.gsub(/ /,'_').gsub(/-/,'_')}", _size) %><br />
-          </tr
+          </tr>
         <% end %>
         </table>
       </div>
