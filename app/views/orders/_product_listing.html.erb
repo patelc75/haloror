@@ -4,20 +4,19 @@
   <% if !confirmation_mode? || (@product == "complete") %>
   <tr>
     <td>
-      <%= radio_button_tag( 'product', 'complete', (@product == "complete")) unless confirmation_mode? %> <span style="font-size:120%"><label for="product_complete">myHalo Complete</label><b>&nbsp;(<%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.monthly_recurring) %>/mo)</b></span>
+      <table><tr>
+      <td><%= radio_button_tag( 'product', 'complete', (@product == "complete")) unless confirmation_mode? %></td> 
+      <td><span style="font-size:120%"><label for="product_complete">myHalo Complete</label><b>&nbsp;(<%= @complete_tariff.blank? ? '?' : USD_value(@complete_tariff.monthly_recurring) %>/mo)</b></span>
       <%= hidden_field_tag "complete_selected" if confirmation_mode? %>
-      <br />
+      </td>
+      </tr></table>
       <div class="sizes" id="product_sizes" style="display:none">
-        <table>
         <% DeviceModel.myhalo_complete.sizes.each do |_size| %>
-          <tr>
+        <div class="prepend-1">
             <%= radio_button_tag "order[device_model_size]", _size, (@order.device_model_size == _size), :id => _size.gsub(/ /,'_').gsub(/-/,'_') %>
             <%= label_tag( "#{_size.gsub(/ /,'_').gsub(/-/,'_')}", _size) %><br />
-          </tr>
+        </div>
         <% end %>
-        </table>
-      </div>
-      
     </td>
     <td><%= image_tag 'myhalo-chest-strap.gif' %></td>
     <% unless confirmation_mode? %>
@@ -30,9 +29,12 @@
   <% end -%>
   <% if !confirmation_mode? || (@product == "clip") %>
   <tr>
-    <td>
-      <%= radio_button_tag "product", "clip", (@product == "clip") unless confirmation_mode? %><span style="font-size:120%"><label for="product_clip">myHalo Clip</label><b>&nbsp;(<%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %>/mo)</b></span>
-      <%= hidden_field_tag "clip_selected" if confirmation_mode? %>
+    <td>  
+      <table><tr>
+      <td><%= radio_button_tag "product", "clip", (@product == "clip") unless confirmation_mode? %></td>
+      <td><span style="font-size:120%"><label for="product_clip">myHalo Clip</label><b>&nbsp;(<%= @clip_tariff.blank? ? '?' : USD_value(@clip_tariff.monthly_recurring) %>/mo)</b></span></td>
+      <%= hidden_field_tag "clip_selected" if confirmation_mode? %>  
+      </tr></table>      
     </td>
     <td><%= image_tag 'myhalo-belt-clip.jpg' %></td>
     <%= observe_field(:product_clip,
