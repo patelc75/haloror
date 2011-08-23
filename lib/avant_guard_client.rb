@@ -24,7 +24,7 @@ class AvantGuardClient
   end
 
   #This method is used to test the Avantguard web service. It can be called as a standalone from script/console like this:
-  # resp2 = AvantGuardClient.alert_test()     
+  # resp = AvantGuardClient.alert_test()
   def self.alert_test()                                              
 
     url = URI.parse(HTTPS_URL)    
@@ -70,36 +70,49 @@ class AvantGuardClient
 
   end 
 
+  def self.send(dest_url, content)
+    url = URI.parse(dest_url)        
+    # Code snippet on how to use Net:HTTP: http://snippets.aktagon.com/snippets/305-Example-of-how-to-use-Ruby-s-NET-HTTP 
+    http_endpoint = Net::HTTP.new(url.host, url.port)
+
+    if url.scheme == 'https'
+      http_endpoint.use_ssl = true      
+      http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_NONE 
+      #http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_PEER   #verify the certificate -- not working with Avantguard, getting "OpenSSL::SSL::SSLError: certificate verify failed"          
+    end        
+
+    request = Net::HTTP::Post.new(url.request_uri)
+    request.body = content
+    request.set_content_type("text/xml") 
+    res = http_endpoint.start do |http|
+      http_endpoint.request(request) 
+    end                            
+    return res
+  end
+         
+  def self.update_account(profile)
+    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>#{account_num}</Account><SignalFormat>CID</SignalFormat><SignalCode>#{alarm_code}</SignalCode>><TestSignalFlag>false</TestSignalFlag></Signal></soap:Body></soap:Envelope>"
+
+    res = send(HTTPS_URL, content)
+  end
+  
   #Usage: AvantGuardClient.alert("Fall", 1, "G27500")
   def self.alert(event_type, user_id, account_num, timestamp = Time.now, lat=nil, long=nil)
     alarm_code = event_type_numeric( event_type)
     
     content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>#{account_num}</Account><SignalFormat>CID</SignalFormat><SignalCode>#{alarm_code}</SignalCode>><TestSignalFlag>false</TestSignalFlag></Signal></soap:Body></soap:Envelope>"
-    responses = []
+    response = true
 
     if !account_num.blank?    
-      [HTTPS_URL, HTTPS_URL2].each do |dest_url|            
-        url = URI.parse(dest_url)        
-        # Code snippet on how to use Net:HTTP: http://snippets.aktagon.com/snippets/305-Example-of-how-to-use-Ruby-s-NET-HTTP 
-        http_endpoint = Net::HTTP.new(url.host, url.port)
-
-        if url.scheme == 'https'
-          http_endpoint.use_ssl = true      
-          http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_NONE 
-          #http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_PEER   #verify the certificate -- not working with Avantguard, getting "OpenSSL::SSL::SSLError: certificate verify failed"          
-        end        
-
-        request = Net::HTTP::Post.new(url.request_uri)
-        request.body = content
-        request.set_content_type("text/xml") 
-        res = http_endpoint.start do |http|
-          http_endpoint.request(request) 
-        end                            
-        #TODO: If res is not 200 OK, thrown a critical exception!
-        responses << res   
+      [HTTPS_URL, HTTPS_URL2].each do |dest_url| 
+        http_response = send(dest_url, content)           
+        if (http_response.nil? or http_response.code != "200") 
+          UtilityHelper.log_message_critical("AvantGuard.alert::Exception:: #{e} : #{event.to_s}", e)          
+          response = false
+        end
       end
-    end
-    return responses #return an array of responses
+    end       
+    return response
   end
     
   def self.alert_savon(event_type, user_id, account_num, timestamp = Time.now, lat=nil, long=nil)
