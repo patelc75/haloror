@@ -89,7 +89,7 @@
       <div style="float:left;padding-top:5px;width:140px">
         <%= event[:timestamp].in_time_zone.to_s(:date_time_timezone) %>
         <% if event.event.respond_to?(:resolved) && !event.event.resolved.blank? %>
-          <%= image_tag( "tick.png", :alt => "#{event.event.resolved_reason} at #{event.event.resolved_timestamp}", :title => "#{event.event.resolved_reason} at #{event.event.resolved_timestamp}") %>            
+          <%= image_tag( "tick.png", :alt => "Resolved by GW:#{event.event.resolved_reason} at #{event.event.resolved_timestamp}", :title => "#{event.event.resolved_reason} at #{event.event.resolved_timestamp}") %>            
         <% end %>
         <% if (event.panic? || event.fall?) and (!event.event.lat.nil?) %>
           <%= link_to 'Map', event_path( event) %>
