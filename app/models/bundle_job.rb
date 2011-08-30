@@ -137,11 +137,16 @@ class BundleJob
       end
     end
     
-    def process_xml_file(xml_file_path_and_name)
-      unless (xml_string = File.read(xml_file_path_and_name)).blank?
+    def process_xml_file(xml_file_path_and_name)                     
+      unless (xml_string = File.read(xml_file_path_and_name)).blank?         
         unless (bundle_hash = Hash.from_xml(xml_string)).blank?
           self.process_xml_data(bundle_hash)
-        end
+        end     
+        device = Device.find(:first, :conditions=> "serial_number='#{xml_file_path_and_name[/H\d{9}/]}'")
+        Bundle.create(:timestamp => bundle_hash[bundle_hash.keys.first]["timestamp"], 
+                      :timestamp_server => Time.now, 
+                      :device_id => (device.nil? ? nil : device.id), 
+                      :bundle_type => bundle_hash.keys.first)         
       end
     end
 
