@@ -9,9 +9,11 @@ class AvantGuardClient
   IP_ADDRESS2 = "12.29.157.39"
   TCP_PORT = 1025
   TCP_PORT_HEARTBEAT = 1025
-  HTTP_URL   =  "http://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx"
-  HTTPS_URL  =  "https://portal.agmonitoring.com/testsgssignalservice/receiver.asmx"  
-  HTTPS_URL2 =  "https://portal.agmonitoring.com/testsgssignalservice/receiver.asmx"  
+  HTTPS_URL_TEST  =  "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx"  
+  HTTPS_URL2_TEST =  "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx"  
+  HTTPS_URL_PROD  =  "https://portal.agmonitoring.com/SgsSignalService/Receiver.asmx"  
+  HTTPS_URL2_PROD =  "https://portal.agmonitoring.com/SgsSignalService/Receiver.asmx"
+
   # Test manually with:
   # ruby bin/safetycare_test_listener.rb &
   # script/runner 'SafetyCareClient.alert("0123", "001")'
