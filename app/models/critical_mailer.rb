@@ -92,7 +92,6 @@ class CriticalMailer < ActionMailer::ARMailer
 
 #================== Other   ======================================    
   def generic_email(to, subject, body, email_log=nil)  
-    RAILS_DEFAULT_LOGGER.warn("Exception generic_email subject #{subject}")    
     setup_message(subject, body, email_log)
     @recipients = []
     @recipients  << to
