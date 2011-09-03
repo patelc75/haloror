@@ -209,7 +209,7 @@ module UtilityHelper
   def self.safe_send_email(message, to, subject=nil)
     begin
       if (ENV['RAILS_ENV'] == 'production' or ENV['RAILS_ENV'] == 'staging')
-        email = CriticalMailer.deliver_test_email(to, subject, message)        
+        email = CriticalMailer.deliver_generic_email(to, subject, message)        
       else
         email = Email.create(params_hash)
       end
