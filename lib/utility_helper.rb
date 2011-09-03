@@ -206,13 +206,9 @@ module UtilityHelper
     safe_send_email(body, 'exceptions_critical@halomonitoring.com', message)
   end
     
-  def self.safe_send_email(message, to, subject=nil)
+  def self.safe_send_email(body, to, subject=nil)
     begin
-      if (ENV['RAILS_ENV'] == 'production' or ENV['RAILS_ENV'] == 'staging')
-        email = CriticalMailer.deliver_generic_email(to, subject, message)        
-      else
-        email = Email.create(params_hash)
-      end
+      email = CriticalMailer.deliver_generic_email(to, subject, body)        
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.warn("Exception in UtilityHelper.self.safe_send_email #{e}")
     rescue
