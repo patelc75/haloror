@@ -199,7 +199,7 @@ module UtilityHelper
       body  = "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
     end
     RAILS_DEFAULT_LOGGER.warn(body)
-    safe_send_email(body, 'exceptions@halomonitoring.com', "[#{ServerInstance.current_host_short_string}]#{message}")
+    safe_send_email(body, 'exceptions@halomonitoring.com', message)
   end
 
   def self.log_message_critical(message, exception=nil) 
@@ -207,7 +207,7 @@ module UtilityHelper
       message  = "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
     end
     RAILS_DEFAULT_LOGGER.warn(message)  
-    safe_send_email(message, 'exceptions_critical@halomonitoring.com', "[#{ServerInstance.current_host_short_string}]#{message}")
+    safe_send_email(message, 'exceptions_critical@halomonitoring.com', message)
   end
     
   def self.safe_send_email(message, to, subject=nil)

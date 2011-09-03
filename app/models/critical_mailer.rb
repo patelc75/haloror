@@ -91,7 +91,7 @@ class CriticalMailer < ActionMailer::ARMailer
   end
 
 #================== Other   ======================================    
-  def test_email(to, subject, body) 
+  def generic_email(to, subject, body) 
     setup_message(subject, body)
     @recipients = []
     @recipients  << to

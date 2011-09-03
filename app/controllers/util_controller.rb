@@ -59,7 +59,7 @@ class UtilController < ApplicationController
   end
   
   def deliver_test_email
-    email = CriticalMailer.deliver_test_email(params[:to], params[:subject], params[:body])
+    email = CriticalMailer.deliver_generic_email(params[:to], params[:subject], params[:body])
   end
   
   def deliver_test_spawn_email
@@ -69,7 +69,7 @@ class UtilController < ApplicationController
     spawn do
       RAILS_DEFAULT_LOGGER.warn("spawning email")
       sleep(30)
-      email = CriticalMailer.deliver_test_email(to, subject, body)
+      email = CriticalMailer.deliver_generic_email(to, subject, body)
       RAILS_DEFAULT_LOGGER.warn("spawning email sent")
     end
   end
