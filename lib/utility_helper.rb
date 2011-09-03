@@ -195,33 +195,20 @@ module UtilityHelper
   end
   
   def self.log_message(message, exception=nil) 
-    if !exception.nil?
-      body  = "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
-    end
-    RAILS_DEFAULT_LOGGER.warn(body)
+    body = exception.nil? ? message : "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
+    RAILS_DEFAULT_LOGGER.warn(body)                          
     safe_send_email(body, 'exceptions@halomonitoring.com', message)
   end
 
   def self.log_message_critical(message, exception=nil) 
-    if !exception.nil?
-      message  = "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
-    end
-    RAILS_DEFAULT_LOGGER.warn(message)  
-    safe_send_email(message, 'exceptions_critical@halomonitoring.com', message)
+    body = exception.nil? ? message : "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
+    RAILS_DEFAULT_LOGGER.warn(body)  
+    safe_send_email(body, 'exceptions_critical@halomonitoring.com', message)
   end
     
   def self.safe_send_email(message, to, subject=nil)
     begin
-      #params_hash = {:mail => "#{ServerInstance.current_host(true)}.Message = #{message}", 
-      #                  :to => to, 
-      #                  :from => 'no-reply@halomonitoring.com', 
-      #                  :priority => 100,
-      #                  :subject => subject }
       if (ENV['RAILS_ENV'] == 'production' or ENV['RAILS_ENV'] == 'staging')
-        #params_hash = {:mail => "message", :to => "chirag@halomonitoring.com", :from => 'no-reply@halomonitoring.com', :priority => 100, :subject => "subject" }
-        #email = Email.new(params_hash)
-        #ar_sendmail = ActionMailer::ARSendmail.new  
-        #ar_sendmail.deliver([email])
         email = CriticalMailer.deliver_test_email(to, subject, message)        
       else
         email = Email.create(params_hash)
