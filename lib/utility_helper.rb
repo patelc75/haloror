@@ -208,7 +208,7 @@ module UtilityHelper
     
   def self.safe_send_email(body, to, subject=nil)
     begin
-      email = CriticalMailer.deliver_generic_email(to, subject, body)        
+      email = CriticalMailer.deliver_generic_email(to, subject, body, :no_email_log)        
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.warn("Exception in UtilityHelper.self.safe_send_email #{e}")
     rescue
