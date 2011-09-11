@@ -6,8 +6,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "sco
 # Given
 
 Given /^debug$/ do
-  save_and_open_page
-  debugger # permanent. required here
+  #save_and_open_page
+  debugger # permanent. required here   
+  0
 end
 
 Given /^I am (?:|an )authenticated(?: user)$/ do
