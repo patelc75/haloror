@@ -10,9 +10,9 @@ class AvantGuardClient
   TCP_PORT = 1025
   TCP_PORT_HEARTBEAT = 1025
   HTTPS_URL_TEST  =  "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx"  
-  HTTPS_URL2_TEST =  "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx"  
+  HTTPS_URL_TEST2 =  "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx"  
   HTTPS_URL_PROD  =  "https://portal.agmonitoring.com/SgsSignalService/Receiver.asmx"  
-  HTTPS_URL2_PROD =  "https://portal.agmonitoring.com/SgsSignalService/Receiver.asmx"
+  HTTPS_URL_PROD2 =  "https://portal.agmonitoring.com/SgsSignalService/Receiver.asmx"
 
   # Test manually with:
   # ruby bin/safetycare_test_listener.rb &
@@ -29,7 +29,7 @@ class AvantGuardClient
   # resp = AvantGuardClient.alert_test()
   def self.alert_test()                                              
 
-    url = URI.parse(HTTPS_URL)    
+    url = URI.parse(HTTPS_URL_TEST_TEST)    
     
     # Code snippet on how to use Net:HTTP: http://snippets.aktagon.com/snippets/305-Example-of-how-to-use-Ruby-s-NET-HTTP 
     http_endpoint = Net::HTTP.new(url.host, url.port)
@@ -95,7 +95,7 @@ class AvantGuardClient
   def self.update_account(profile)
     content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>#{account_num}</Account><SignalFormat>CID</SignalFormat><SignalCode>#{alarm_code}</SignalCode>><TestSignalFlag>false</TestSignalFlag></Signal></soap:Body></soap:Envelope>"
 
-    res = send(HTTPS_URL, content)
+    res = send(HTTPS_URL_TEST, content)
   end
   
   #Usage: AvantGuardClient.alert("Fall", 1, "G27500")
@@ -106,7 +106,7 @@ class AvantGuardClient
     response = true
 
     if !account_num.blank?    
-      [HTTPS_URL, HTTPS_URL2].each do |dest_url| 
+      [HTTPS_URL_PROD, HTTPS_URL_PROD2].each do |dest_url| 
         http_response = send(dest_url, content)           
         if (http_response.nil? or http_response.code != "200") 
           UtilityHelper.log_message_critical("AvantGuard.alert::Exception:: #{e} : #{event.to_s}", e)          
