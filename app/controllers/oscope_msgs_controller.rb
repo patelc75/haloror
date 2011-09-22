@@ -31,7 +31,8 @@ class OscopeMsgsController < RestfulAuthController
       if !params[:oscope_msgs].nil? 
         o_msgs_attributes = params[:oscope_msgs]   
         msgs_attributes = o_msgs_attributes[:oscope_msg] #o_msgs[:oscope_msg] is automatically stored as an array of <oscope_msg> nodes by Rails       
-
+        OscopeStartMsg.create!( o_msgs_attributes[:oscope_start_msg]) if !o_msgs_attributes[:oscope_start_msg].blank? 
+        OscopeStopMsg.create!( o_msgs_attributes[:oscope_stop_msg])   if !o_msgs_attributes[:oscope_stop_msg].blank? 
       elsif !params[:oscope_msg].nil?   
         msgs_attributes = params[:oscope_msg] #params is a hash but everything underneath is arrays. 
       end
