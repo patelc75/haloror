@@ -3,7 +3,7 @@ Feature: Bundle job
   In order to process the bundled job from device
   As a system user
   I want to automate the process of data input from bundle file
-
+                             
   Background:
     Given a user exists with the following attributes:
       | id | 44 |
@@ -14,7 +14,7 @@ Feature: Bundle job
   @wip
   Scenario: Load the bundle file and verify data
     When I process the bundle job "spec/H200000023_1240875421.tar.bz2"
-    Then I should have the following counts of data:
+    And I should have the following counts of data:
       | batteries               | 93 |
       | battery unplugged       | 1  |
       | vitals                  | 93 |
@@ -23,19 +23,22 @@ Feature: Bundle job
       | oscope msgs             | 4  |
       | points                  | 4  |
       | dial up statuses        | 4  |
-      | dial up last successful | 1  |
-    And I do not see "dialup/H200000023_1240875421" folder
+      | dial up last successful | 1  | 
+      | bundles                 | 10 |         
+    And I do not see "dialup/H200000023_1240875421" folder 
       
   Scenario Outline: Verify OScopeMsg XML with & without points
     When I process the xml file "spec/data/oscope_msg_<part_name>.xml"
     Then I should have the following counts of data:
-      | oscope msgs | <oscope> |
-      | points      | <points> |
+      | oscope msgs       | <oscope> |
+      | points            | <points> |
+      | oscope start msgs | <starts> |  
+      | oscope stop msgs  | <stops>  |        
   
     Examples:
-      | part_name | oscope | points |
-      | points    | 2      | 4      |
-      | no_points | 2      | 0      |
+      | part_name | oscope | points | starts | stops |
+      | points    | 2      | 4      | 0      | 0     |
+      | no_points | 2      | 0      | 1      | 1     |
 
   Scenario: Dial Up Status XML
     When I process the xml file "spec/data/dial_up_status.xml"

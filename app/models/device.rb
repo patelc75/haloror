@@ -16,6 +16,7 @@ class Device < ActiveRecord::Base
   has_one :device_info
 
   has_many :access_modes
+  has_many :bundles  
   has_many :batteries
   has_many :battery_charge_completes
   has_many :battery_criticals

@@ -14,11 +14,12 @@ select user_intake_id from user_intakes_users where user_id = 1477 limit 1;
 select * from users_by_user_intake_id(89);
                                                
 -- change group for user intake when broken!
-select * from groups where name like 'ml_kevinkelly';          -- group_id = 145
-select * from roles where authorizable_id = 145;               -- role_id = 782      
-select * from users_by_user_intake_id(133);                    -- user_id = 1599
-insert into roles_users (user_id, role_id) values (1599, 782); -- update group                                          
-update user_intakes set group_id = 145 where id = 133;         -- update group
+select * from groups where name like 'ml_rickmontgomery';      -- get group_id 
+select * from roles where authorizable_id = 239;               -- get role_id
+select * from users_by_user_intake_id(203);                    -- get user_id, don't need this if user_id known
+select * from user_intakes where id = 203;		                 -- check what the group_id is
+insert into roles_users (user_id, role_id) values (1754, 782); -- update group                                          
+update user_intakes set group_id = 127 where id = 203;         -- update group
 	
 -- refs #3666 debugging safetycare account number ------------------------------------------------------------------------------------------------
 select id, first_name, last_name, account_number from profiles where account_number is not null order by account_number desc;
@@ -36,7 +37,8 @@ select users.id, users.login, profiles.first_name, profiles.last_name, users.act
 -- device_infos debugging ------------------------------------------------------------------------------------------------------------
 select * from mgmt_responses where id in (3712791, 3713124);
 select user_id, software_version, mgmt_response_id from device_infos where software_version like '%1319%'; 
-s
+
+-- get the timestamp from the mgmt response when the device was upgraded (I think)
 select di.user_id, di.device_id, di.software_version, mr.timestamp_server from device_infos di, mgmt_responses mr 
 where di.mgmt_response_id = mr.id
 and di.software_version not like '%2.01.01.421%'
@@ -91,16 +93,20 @@ WHERE p.proname ~ '^(users_by_user_intake_id)$'
 /* make sure user intake is updating user.installed_at---------------------------------------------------------------------------------------------------*/
 select id, login, installed_at from users where id in (1263, 1284, 1277, 1243, 1309, 1317, 1310, 1295, 1288, 1306, 1294, 1267, 1258, 1289, 1251);
 
-/* check test panics for all users---------------------------------------------------------------------------------------------------*/
+-- check test panics for all users---------------------------------------------------------------------------------------
 select panics.id, panics.user_id, profiles.first_name, profiles.last_name, timestamp, test_mode from panics, profiles 
 where test_mode = true
 and panics.user_id = profiles.user_id
 limit 100;
 
-/* device_infos with a particular software verison--------------------------------------------------------------------------------------------------*/
+-- device_infos with a particular software verison------------------------------------------------------------------
 select device_id, software_version, software_version_current as cur, software_version_new as new, created_at from device_infos where software_version like '%02.00.00.1334%' order by device_id desc, created_at desc;
+                                                           
+-- get the software version history ordered by upgraded at for a given user ----------------------------------------
+select di.device_id, di.serial_number, di.user_id, u.login, p.first_name, p.last_name, di.software_version, di.software_version_current as cur, di.software_version_new as new, di.created_at as upgraded_at from device_infos di, users u, profiles p where di.user_id = u.id and di.user_id = p.user_id and device_id in (select device_id from devices_by_user_id(231)) order by di.created_at desc nulls last;     
 
-select device_id, software_version, software_version_current as cur, software_version_new as new, created_at from device_infos where device_id in (select device_id from device_infos where software_version like '%02.00.00.1334%') order by device_id desc, created_at desc nulls last;
+select di.device_id, di.serial_number, di.user_id, u.login, di.software_version, di.created_at as upgraded_at from device_infos di, users u, profiles p where di.user_id = u.id and di.user_id = p.user_id and device_id in (select device_id from devices_by_user_id(231)) order by di.created_at desc nulls last;
+
 
 select users.id as uid, devices.id as did, profiles.first_name, profiles.last_name, users.status 
 from users, profiles, devices left outer join devices_users on devices_users.device_id = devices.id

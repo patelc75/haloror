@@ -195,34 +195,20 @@ module UtilityHelper
   end
   
   def self.log_message(message, exception=nil) 
-    if !exception.nil?
-      message  = "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
-    end
-    RAILS_DEFAULT_LOGGER.warn(message)
-    safe_send_email(message, 'exceptions@halomonitoring.com')
+    body = exception.nil? ? message : "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
+    RAILS_DEFAULT_LOGGER.warn(body)                          
+    safe_send_email(body, 'exceptions@halomonitoring.com', message)
   end
 
   def self.log_message_critical(message, exception=nil) 
-    if !exception.nil?
-      message  = "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
-    end
-    RAILS_DEFAULT_LOGGER.warn(message)  
-    safe_send_email(message, 'exceptions_critical@halomonitoring.com')
+    body = exception.nil? ? message : "[#{ServerInstance.current_host_short_string}]#{message}\n#{UtilityHelper.get_stacktrace(exception)}"
+    RAILS_DEFAULT_LOGGER.warn(body)  
+    safe_send_email(body, 'exceptions_critical@halomonitoring.com', message)
   end
     
-  def self.safe_send_email(message, to)
+  def self.safe_send_email(body, to, subject=nil)
     begin
-      params_hash = {:mail => "#{ServerInstance.current_host(true)}.Message = #{message}", 
-                        :to => to, 
-                        :from => 'no-reply@halomonitoring.com', 
-                        :priority => 100 }
-      if (ENV['RAILS_ENV'] == 'production' or ENV['RAILS_ENV'] == 'staging')
-        email = Email.new(params_hash)
-        ar_sendmail = ActionMailer::ARSendmail.new  
-        ar_sendmail.deliver([email])
-      else
-        email = Email.create(params_hash)
-      end
+      email = CriticalMailer.deliver_generic_email(to, subject, body, :no_email_log)        
     rescue Exception => e
       RAILS_DEFAULT_LOGGER.warn("Exception in UtilityHelper.self.safe_send_email #{e}")
     rescue

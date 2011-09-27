@@ -54,35 +54,42 @@ Feature: Critical Alert
   Scenario Outline: Simulate a <event> with successful text and email delivery to the call center
     When user "senior-user" has "halouser" role for group "safety_care"
     And user "test-user" has "halouser" role for group "safety_care"
-    And I simulate a "<event>" with delivery to the call center for user login "senior-user" with a "valid" "call center account number"
+    And I simulate a "<event>" with delivery to the call center for user login "senior-user" with a "valid" "call center account number" and a resolved status of "<resolved>"    
     Then I should have 1 count of "<event>"
-    And I should have a "<event>" alert "not pending" to the call center with a "valid" call center delivery timestamp
+    And I should have a "<event>" alert "not pending" to the call center with a "<timestamp>" call center delivery timestamp
     # And user "caregiver-user" has "caregiver" roles for user "senior-user"
-    And 1 email to "caregiver@cucumber.com" with keyword "<action>" should be sent for delivery
-    And 1 email to "1234567890@cingularme.com" with keyword "<action>" should be sent for delivery
-    And 1 email to "operator@cucumber.com" with keyword "<caps>" should be sent for delivery
-    And 1 email to "0987654321@cingularme.com" with keyword "<caps>" should be sent for delivery
+    And "<num_emails>" email to "caregiver@cucumber.com" with keyword "<action>" should be sent for delivery
+    And "<num_emails>" email to "1234567890@cingularme.com" with keyword "<action>" should be sent for delivery
+    And "<num_emails>" email to "operator@cucumber.com" with keyword "<caps>" should be sent for delivery
+    And "<num_emails>" email to "0987654321@cingularme.com" with keyword "<caps>" should be sent for delivery
 
     Examples:
-      | event         | action   | caps  |
-      | Fall          | fell     | FALL  |
-      | Panic         | panicked | PANIC |
-      | GwAlarmButton | cleared  | CLEAR |
+       | event         | action   | caps  | num_emails | resolved | timestamp |
+       | Fall          | fell     | FALL  | 0          | manual   | missing   |
+       | Panic         | panicked | PANIC | 0          | auto     | missing   |
+       | GwAlarmButton | cleared  | CLEAR | 0          | manual   | missing   |
+       | Fall          | fell     | FALL  | 1          |          | valid     |
+       | Panic         | panicked | PANIC | 1          |          | valid     |
+       | GwAlarmButton | cleared  | CLEAR | 1          |          | valid     |
 
   Scenario Outline: Simulate a <event> for a user with no call center group (eg. "safety_care")
-    When I simulate a "<event>" with delivery to the call center for user login "test-user" with a "invalid" "call center account number"
+    #When I simulate a "<event>" with delivery to the call center for user login "test-user" with a "invalid" "call center account number"
+    When I simulate a "<event>" with delivery to the call center for user login "test-user" with a "valid" "call center account number" and a resolved status of "<resolved>"        
     Then I should have 1 count of "<event>"
     And I should have a "<event>" alert "not pending" to the call center with a "missing" call center delivery timestamp
-    And 1 email to "caregiver@cucumber.com" with keyword "<action>" should be sent for delivery
-    And 1 email to "1234567890@cingularme.com" with keyword "<action>" should be sent for delivery
+    And "<num_emails>" email to "caregiver@cucumber.com" with keyword "<action>" should be sent for delivery
+    And "<num_emails>" email to "1234567890@cingularme.com" with keyword "<action>" should be sent for delivery
     And no email to "operator@cucumber.com" with keyword "<caps>" should be sent for delivery
     And no email to "0987654321@cingularme.com" with keyword "<caps>" should be sent for delivery
 
-    Examples:
-      | event         | action   | caps  |
-      | Fall          | fell     | FALL  |
-      | Panic         | panicked | PANIC |
-      | GwAlarmButton | cleared  | CLEAR |
+    Examples:    
+      | event         | action   | caps  | num_emails | resolved |
+      | Fall          | fell     | FALL  | 0          | manual   | 
+      | Panic         | panicked | PANIC | 0          | auto     | 
+      | GwAlarmButton | cleared  | CLEAR | 0          | manual   | 
+      | Fall          | fell     | FALL  | 1          |          | 
+      | Panic         | panicked | PANIC | 1          |          |
+      | GwAlarmButton | cleared  | CLEAR | 1          |          |     
 
   # 
   #  Wed Mar  9 03:39:08 IST 2011, ramonrails
@@ -100,18 +107,49 @@ Feature: Critical Alert
     And critical alerts are processed by a background job
     Then I should have 1 counts of "Panic"
     And I should have 1 counts of "GwAlarmButton"
+    And I should have 1 counts of "Fall"
     And I should have a "Panic" alert "not pending" to the call center with a "valid" call center delivery timestamp
     And I should have a "GwAlarmButton" alert "not pending" to the call center with a "valid" call center delivery timestamp
+    And I should have a "Fall" alert "not pending" to the call center with a "valid" call center delivery timestamp
     And 1 email to "caregiver@cucumber.com" with keyword "<action>" should be sent for delivery
     And 1 email to "1234567890@cingularme.com" with keyword "<action>" should be sent for delivery
     And 1 email to "operator@cucumber.com" with keyword "<caps>" should be sent for delivery
     And 1 email to "0987654321@cingularme.com" with keyword "<caps>" should be sent for delivery
 
-    Examples:
+    Examples:                                                    
       | event         | action   | caps  |
       | Panic         | panicked | PANIC |
       | GwAlarmButton | cleared  | CLEAR |
+      | Fall          | fell     | FALL  |
+                                          
+  Scenario Outline: Simulate an alert_bundle with no text and email delivery to the call center because they are resolved
+    When user "senior-user" has "halouser" role for group "safety_care"
+    When user "senior-user" has valid call center account
+    And system timeout exists with no tolerence
+    And I simulate a "alert bundle resolved" event with the following attributes:
+      | device           | H567053101      |
+      | user             | senior-user     |
+      | path             | /alert_bundle   |
+      | timestamp        | `2.minutes.ago` |
+      | timestamp_server | `1.minute.ago`  |
+    And critical alerts are processed by a background job
+    Then I should have 1 counts of "Panic"
+    And I should have 1 counts of "GwAlarmButton"
+    And I should have 1 counts of "Fall"
+    And I should have a "Panic" alert "not pending" to the call center with a "missing" call center delivery timestamp
+    And I should have a "GwAlarmButton" alert "not pending" to the call center with a "missing" call center delivery timestamp
+    And I should have a "Fall" alert "not pending" to the call center with a "missing" call center delivery timestamp
+    And 0 email to "caregiver@cucumber.com" with keyword "<action>" should be sent for delivery
+    And 0 email to "1234567890@cingularme.com" with keyword "<action>" should be sent for delivery
+    And 0 email to "operator@cucumber.com" with keyword "<caps>" should be sent for delivery
+    And 0 email to "0987654321@cingularme.com" with keyword "<caps>" should be sent for delivery
 
+    Examples:                                                    
+      | event         | action   | caps  |
+      | Panic         | panicked | PANIC |
+      | GwAlarmButton | cleared  | CLEAR |
+      | Fall          | fell     | FALL  | 
+                
   # https://redmine.corp.halomonitor.com/issues/3170
   # Scenario: Simulate a fall for a user with an invalid call center account number
   #   When user "test-user" has "halouser" role for group "safety_care"
@@ -123,7 +161,7 @@ Feature: Critical Alert
   # "Missing user profile!" is a common phrase passed on to 2 methods called at CriticalDeviceEventObserver
   # we are noe checking more specific subject
   Scenario: Simulate a fall for a user with an with invalid profile
-    When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "profile"
+    When I simulate a "Fall" with delivery to the call center for user login "test-user" with a "invalid" "profile" and a resolved status of ""
     Then I should have 1 count of "Fall"
     And I should have a "Fall" alert "not pending" to the call center with a "missing" call center delivery timestamp
     And 2 emails to "exceptions_critical@halomonitoring.com" with subject "Missing user profile!" should be sent for delivery
@@ -136,7 +174,7 @@ Feature: Critical Alert
     Given user "test-user" has 3 caregivers
     And a caregiver of "test-user" can raise exception
     When user "test-user" has "halouser" role for group "safety_care"
-    And I simulate a "Panic" with delivery to the call center for user login "test-user" with a "valid" "call center account number"
+    And I simulate a "Panic" with delivery to the call center for user login "test-user" with a "valid" "call center account number" and a resolved status of "" 
     Then I should have 1 count of "Panic"
     And I should have a "Panic" alert "not pending" to the call center with a "valid" call center delivery timestamp
     #   * usually only 1 email is sent
