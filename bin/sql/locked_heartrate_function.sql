@@ -72,7 +72,9 @@ COST 100;
 --parameters: user_id, locked heartarate, begin, end, interval
 select * from locked_heartrate_function(470,  now()-interval '1 week', now(), '30 minutes'); --LDEV
 select * from locked_heartrate_function(1,    now()-interval '1 week', now(), '0 seconds');  --localhost
-select * from locked_heartrate_function(1065, now()-interval '1 week', now(), '30 minutes'); --www
+select * from locked_heartrate_function(1065, now()-interval '1 week', now(), '30 minutes'); --www   
+
+select * from locked_heartrate_function(1247,  timestamp '2010-11-18 19:15:45'-interval '1 week', now(), '30 minutes');
 
 select * from locked_heartrates;
 delete from locked_heartrates;
