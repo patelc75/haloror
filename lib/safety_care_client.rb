@@ -3,10 +3,11 @@ require 'timeout'
 
 class SafetyCareClient
   # SafetyCare addresses
-  # TODO: FIXME: change this when finished testing?
-  IP_ADDRESS = "74.43.4.37"
-  TCP_PORT = 19925
-
+  # TODO: FIXME: change this when finished testing?     
+  ALERT_IP_ADDRESS = "74.43.4.37"
+  ALERT_TCP_PORT = 19925
+  HEARTBEAT_IP_ADDRESS = "74.43.4.37"
+  HEARTBEAT_TCP_PORT = 19920
   # For use with the bin/safetycare_test_listener.rb tester
   #SAFETYCARE_ADDRESS = "localhost"
   #SAFETYCARE_PORT = 2000
