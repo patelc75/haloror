@@ -21,7 +21,7 @@ class SafetyCareClient
   def self.heartbeat()
   	RAILS_DEFAULT_LOGGER.warn("SafetyCareClient.heartbeat running at #{Time.now}")  	
     Timeout::timeout(5) {
-      sock = TCPSocket.open(IP_ADDRESS, TCP_PORT)
+      sock = TCPSocket.open(ALERT_IP_ADDRESS, ALERT_TCP_PORT)
       sock.write(64.chr) # 64.chr => @
       sock.close
     }
@@ -33,7 +33,7 @@ class SafetyCareClient
       #don't need to filter because safetycare filters by IP
       #if ServerInstance.in_hostname?('dfw-web1') or ServerInstance.in_hostname?('dfw-web2') or ServerInstance.in_hostname?('atl-web1')
       Timeout::timeout(2) {
-        sock = TCPSocket.open(IP_ADDRESS, TCP_PORT)
+        sock = TCPSocket.open(HEARTBEAT_IP_ADDRESS, HEARTBEAT_TCP_PORT)
         sock.write("%s%s\r\n" % [account_num, alarm_code])
         response = sock.readline
         sock.close
