@@ -12,7 +12,7 @@ class AvantGuardClient
   HTTPS_URL_TEST  =  "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx"  
   HTTPS_URL_TEST2 =  "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx"  
   HTTPS_URL_PROD  =  "https://portal.agmonitoring.com/SgsSignalService/Receiver.asmx"  
-  HTTPS_URL_PROD2 =  "https://portal.agmonitoring.com/SgsSignalService/Receiver.asmx"
+  HTTPS_URL_PROD2 =  "https://portal2.agmonitoring.com/SgsSignalService/Receiver.asmx"
 
   # Test manually with:
   # ruby bin/safetycare_test_listener.rb &
@@ -106,13 +106,14 @@ class AvantGuardClient
     response = true
 
     if !account_num.blank?    
-      [HTTPS_URL_PROD, HTTPS_URL_PROD2].each do |dest_url| 
-        http_response = send(dest_url, content)           
+      #[HTTPS_URL_PROD, HTTPS_URL_PROD2].each do |dest_url|      
+        #only 1 alert sent per source server. DFW-WEB3 sends to the AvantGuard primary, ATL-WEB1 sends to the AvantGuard secondary
+        http_response = send(ServerInstance.host?("ATL-WEB1", "CRIT2") ? HTTPS_URL_PROD2 : HTTPS_URL_PROD, content)                                  
         if (http_response.nil? or http_response.code != "200") 
           UtilityHelper.log_message_critical("AvantGuard.alert::Exception:: #{e} : #{event.to_s}", e)          
           response = false
         end
-      end
+      #end
     end       
     return response
   end
