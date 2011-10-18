@@ -7,7 +7,14 @@ class SandboxController < ApplicationController
     #CriticalMailer.deliver_device_not_worn_daily()
     #MgmtQuery.job_gw_offline
     #MgmtQuery.job_gw_offline
-    #Email.notify_by_priority
+    #Email.notify_by_priority                  
+    params_hash = {:mail => "message", 
+                      :to => "to", 
+                      :from => 'no-reply@halomonitoring.com', 
+                      :priority => 100,
+                      :subj => "subject" }
+    debugger                  
+    email = Email.new(params_hash)
     CriticalDeviceAlert.job_process_crtical_alerts #Rufus job
     #BundleJob.process_xml_file("dialup/H200000025_1258657676_2.xml") #Rufus job
     #BatteryReminder.send_reminders()
@@ -15,7 +22,11 @@ class SandboxController < ApplicationController
 							   #:reminder_num => 3,
 							   #:user_id => 278,
 							   #:time_remaining => 1000,
-							   #:battery_critical_id => 7014)
+							   #:battery_critical_id => 7014)  
+		response = AvantGuardClient.alert_test()       
+		#resp2 = AvantGuardClient.alert("Fall", 1, "HM1234")
+		RAILS_DEFAULT_LOGGER.warn response.to_yaml 
+		debugger
   end        
   
   def debug_critical_health_client

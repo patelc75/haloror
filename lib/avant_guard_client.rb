@@ -1,11 +1,18 @@
 require 'socket'
 require 'timeout'
-require 'savon'
+#require 'savon'   
+require 'net/https'  
+require 'uri'
 
 class AvantGuardClient
   IP_ADDRESS = "12.29.157.39"
+  IP_ADDRESS2 = "12.29.157.39"
   TCP_PORT = 1025
   TCP_PORT_HEARTBEAT = 1025
+  HTTPS_URL_TEST  =  "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx"  
+  HTTPS_URL_TEST2 =  "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx"  
+  HTTPS_URL_PROD  =  "https://portal.agmonitoring.com/SgsSignalService/Receiver.asmx"  
+  HTTPS_URL_PROD2 =  "https://portal.agmonitoring.com/SgsSignalService/Receiver.asmx"
 
   # Test manually with:
   # ruby bin/safetycare_test_listener.rb &
@@ -18,13 +25,105 @@ class AvantGuardClient
     #Avantguard does not support heartbeat since they have geographically redundant servers
   end
 
+  #This method is used to test the Avantguard web service. It can be called as a standalone from script/console like this:
+  # resp = AvantGuardClient.alert_test()
+  def self.alert_test()                                              
+
+    url = URI.parse(HTTPS_URL_TEST_TEST)    
+    
+    # Code snippet on how to use Net:HTTP: http://snippets.aktagon.com/snippets/305-Example-of-how-to-use-Ruby-s-NET-HTTP 
+    http_endpoint = Net::HTTP.new(url.host, url.port)
+
+    if url.scheme == 'https'
+      http_endpoint.use_ssl = true      
+      http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_NONE 
+
+      #verify the certificate -- not working with Avantguard, getting "OpenSSL::SSL::SSLError: certificate verify failed"
+      #http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_PEER 
+    end
+        
+    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>G27500</Account><SignalFormat>CID</SignalFormat><SignalCode>E100</SignalCode>><TestSignalFlag>false</TestSignalFlag></Signal></soap:Body></soap:Envelope>"
+    #Configuration.instance.logger.debug content
+    #http_header = {'Content-Type' => 'text/xml'}
+     
+    request = Net::HTTP::Post.new(url.request_uri)
+    #request.set_form_data({'data' => content})  #this doesn't work
+    request.body = content
+    
+    #Tried using Savon but didn't work. Got the invalid soap action error
+    #soap = AvantGuardClient.alert_savon("Fall", 1, "HM1234")   
+    #request.body = soap.to_xml
+
+    request.set_content_type("text/xml") 
+    res = http_endpoint.start {|http| http_endpoint.request(request) }
+    return res
+    #another method of doing ita    
+    #request = Net::HTTP::Get.new(url.request_uri)
+    #response = http_endpoint.request(request)
+    #response.body
+    #response.status
+    #response["header-here"] # All headers are lowercase 
+    
+    #yet another method of doing it
+    #Net::HTTP.start('http://www.google.com') do |http|
+    #  response = http.get('/')
+    #  puts response
+    #end
+
+  end 
+
+  def self.send(dest_url, content)
+    url = URI.parse(dest_url)        
+    # Code snippet on how to use Net:HTTP: http://snippets.aktagon.com/snippets/305-Example-of-how-to-use-Ruby-s-NET-HTTP 
+    http_endpoint = Net::HTTP.new(url.host, url.port)
+
+    if url.scheme == 'https'
+      http_endpoint.use_ssl = true      
+      http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_NONE 
+      #http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_PEER   #verify the certificate -- not working with Avantguard, getting "OpenSSL::SSL::SSLError: certificate verify failed"          
+    end        
+
+    request = Net::HTTP::Post.new(url.request_uri)
+    request.body = content
+    request.set_content_type("text/xml") 
+    res = http_endpoint.start do |http|
+      http_endpoint.request(request) 
+    end                            
+    return res
+  end
+         
+  def self.update_account(profile)
+    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>#{account_num}</Account><SignalFormat>CID</SignalFormat><SignalCode>#{alarm_code}</SignalCode>><TestSignalFlag>false</TestSignalFlag></Signal></soap:Body></soap:Envelope>"
+
+    res = send(HTTPS_URL_TEST, content)
+  end
+  
+  #Usage: AvantGuardClient.alert("Fall", 1, "G27500")
   def self.alert(event_type, user_id, account_num, timestamp = Time.now, lat=nil, long=nil)
+    alarm_code = event_type_numeric( event_type)
+    
+    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>#{account_num}</Account><SignalFormat>CID</SignalFormat><SignalCode>#{alarm_code}</SignalCode>><TestSignalFlag>false</TestSignalFlag></Signal></soap:Body></soap:Envelope>"
+    response = true
+
+    if !account_num.blank?    
+      [HTTPS_URL_PROD, HTTPS_URL_PROD2].each do |dest_url| 
+        http_response = send(dest_url, content)           
+        if (http_response.nil? or http_response.code != "200") 
+          UtilityHelper.log_message_critical("AvantGuard.alert::Exception:: #{e} : #{event.to_s}", e)          
+          response = false
+        end
+      end
+    end       
+    return response
+  end
+    
+  def self.alert_savon(event_type, user_id, account_num, timestamp = Time.now, lat=nil, long=nil)
     #Savon::Request.log = false
     msg = nil
     alarm_code = event_type_numeric( event_type)
     if !account_num.blank?
       Savon.configure do |config|
-        config.soap_version = 2  # use SOAP 1.2
+        config.soap_version = 1  # use SOAP 1.2
       end
 
       client = Savon::Client.new do
@@ -77,16 +176,16 @@ class AvantGuardClient
         soap.body["Latitude"]  = "#{lat}"  if !lat.nil?
         soap.body["Longitude"] = "#{long}" if !long.nil?
         
-        msg = soap
+        msg = soap   
       end
-      RAILS_DEFAULT_LOGGER.warn("AvantGuard::client    = " + "%s\r\n"% [client.to_yaml])
-      RAILS_DEFAULT_LOGGER.warn("AvantGuard::soap.body = " + "%s\r\n"% [msg.body.to_yaml])
-      RAILS_DEFAULT_LOGGER.warn("AvantGuard::response  = " + "%s\r\n"% [response.to_yaml])
+      #RAILS_DEFAULT_LOGGER.warn("AvantGuard::client    = " + "%s\r\n"% [client.to_yaml])
+      #RAILS_DEFAULT_LOGGER.warn("AvantGuard::soap.body = " + "%s\r\n"% [msg.body.to_yaml])
+      #RAILS_DEFAULT_LOGGER.warn("AvantGuard::response  = " + "%s\r\n"% [response.to_yaml])
 
-      return true
+      return msg
     else
       UtilityHelper.log_message_critical("CmsClient.alert::Missing account number! for user_id = #{user_id}")
-      return false
+      return nil
     end
   end
 

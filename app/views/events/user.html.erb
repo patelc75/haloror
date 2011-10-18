@@ -51,7 +51,6 @@
     - <%#= UtilityHelper.format_datetime(@user_begin_time.to_time, current_user) %>  <%#= UtilityHelper.format_datetime(@user_end_time.to_time, current_user) %> 
     <b><%= @user_begin_time %></b> to <b><%= @user_end_time %></b> in
     <%= current_user.profile.time_zone if current_user.profile %> timezone
-
     <br>
     <% end %>
   </span>
@@ -89,8 +88,8 @@
     <div class="row">
       <div style="float:left;padding-top:5px;width:140px">
         <%= event[:timestamp].in_time_zone.to_s(:date_time_timezone) %>
-        <% if (current_user.is_admin? || current_user.is_super_admin?) && (event.fall? || event.panic?) %>
-          <br /><span class="tiny">(gw_timestamp: <%= event.event.gw_timestamp if event.event and event.event.gw_timestamp %> )</span>
+        <% if event.event.respond_to?(:resolved) && !event.event.resolved.blank? %>
+          <%= image_tag( "tick.png", :alt => "Resolved by GW: #{event.event.resolved_reason} at #{event.event.resolved_timestamp}", :title => "#{event.event.resolved_reason} at #{event.event.resolved_timestamp}") %>            
         <% end %>
         <% if (event.panic? || event.fall?) and (!event.event.lat.nil?) %>
           <%= link_to 'Map', event_path( event) %>
@@ -102,7 +101,10 @@
       <div style="float:left;padding-top:5px;width:300px;padding-right:25px">
         <%=event.event.to_s%>
         <% if current_user.is_admin? or current_user.is_super_admin? %>
-        <span class="tiny">(server:<%= event.timestamp_server.to_s(:date_time_timezone) if !event.timestamp_server.nil? and !event.timestamp_server.blank? %>)</span>
+        <span class="tiny">(server: <%= event.timestamp_server.to_s(:date_time_seconds_2) if !event.timestamp_server.nil? and !event.timestamp_server.blank? %>)</span>
+          <% if (event.fall? || event.panic?) %>
+            <span class="tiny">(gw_timestamp: <%= event.event.gw_timestamp.to_s(:date_time_seconds_2) if event.event and event.event.gw_timestamp %> )</span>            
+          <% end %>               
         <% end %>
       </div>
       <div style="float:left;padding-top:5px;width:100px">

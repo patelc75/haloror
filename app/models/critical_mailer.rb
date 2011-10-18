@@ -91,8 +91,8 @@ class CriticalMailer < ActionMailer::ARMailer
   end
 
 #================== Other   ======================================    
-  def test_email(to, subject, body) 
-    setup_message(subject, body)
+  def generic_email(to, subject, body, email_log=nil)  
+    setup_message(subject, body, email_log)
     @recipients = []
     @recipients  << to
     self.priority = Priority::IMMEDIATE

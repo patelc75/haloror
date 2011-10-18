@@ -963,6 +963,14 @@ class Order < ActiveRecord::Base
     user_intake.blank? ? false : user_intake.legal_agreement_at.blank?
   end
   
+  def coupon_code_name
+    if !coupon_code.blank? and coupon_code.chomp != "default"
+      coupon_code
+    else
+      nil
+    end
+  end
+  
   # ===================
   # = private methods =
   # ===================

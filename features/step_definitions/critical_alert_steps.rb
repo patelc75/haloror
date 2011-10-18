@@ -14,8 +14,8 @@ end
 # =========
 # = whens =
 # =========
-
-When /^I simulate a "([^\"]*)" with delivery to the call center for user login "([^\"]*)" with a "([^\"]*)" "([^\"]*)"$/ do |model, login, valid, error_type|
+#Example: And I simulate a "<event>" with delivery to the call center for user login "senior-user" with a "valid" "call center account number" and a resolved status of "<resolved>"
+When /^I simulate a "([^\"]*)" with delivery to the call center for user login "([^\"]*)" with a "([^\"]*)" "([^\"]*)" and a resolved status of "([^\"]*)"$/ do |model, login, valid, error_type, resolved|
   # user = nil
   user = User.find_by_login(login, :include => :profile)
 
@@ -48,7 +48,8 @@ When /^I simulate a "([^\"]*)" with delivery to the call center for user login "
     :timestamp        => 2.minutes.ago, # Time.now-2.minutes
     :user             => user,
     :device_id        => Device.find_by_serial_number("1234567890").id,
-    :timestamp_server => 1.minute.ago
+    :timestamp_server => 1.minute.ago,
+    :resolved         => resolved
   }.merge( model.classify.constantize.new.respond_to?( :magnitude) ? { :magnitude => 23 } : {})
   #   * create the model row
   # Factory.create( model.gsub(/ /,'_').to_sym, _attributes )

@@ -4,18 +4,25 @@
     <duration_press>322</duration_press>
     <gw_timestamp>Tue Mar 08 19:37:41 UTC 2011</gw_timestamp>
     <timestamp>Tue Mar 08 19:37:39 UTC 2011</timestamp>
-    <user_id>56</user_id>
+    <user_id>56</user_id>   
+    <resolved>manual</resolved>     
+    <resolved_reason>older_than_time_alarm_sent</resolved_reason>    
+    <resolved_timestamp>Tue Mar 08 19:17:39 UTC 2011</resolved_timestamp>        
   </panic>       
   <gw_alarm_button>
     <device_id>214</device_id>
     <timestamp>Tue Mar 08 19:37:46 UTC 2011</timestamp>
-    <user_id>56</user_id>
+    <user_id>56</user_id>      
+    <resolved>auto</resolved>    
+    <resolved_reason></resolved_reason>
   </gw_alarm_button>  
   <fall>
     <device_id>214</device_id>                         
     <magnitude>5</magnitude>    
     <timestamp>Tue Mar 08 19:37:51 UTC 2011</timestamp>
     <gw_timestamp>Tue Mar 08 19:37:53 UTC 2011</gw_timestamp>
-    <user_id>56</user_id>
-  </fall>
+    <user_id>56</user_id>      
+    <resolved>manual</resolved>        
+    <resolved_timestamp>Tue Mar 08 19:14:39 UTC 2011</resolved_timestamp>                
+  </fall>    
 </alert_bundle>
