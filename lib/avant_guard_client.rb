@@ -26,10 +26,10 @@ class AvantGuardClient
   end
 
   #This method is used to test the Avantguard web service. It can be called as a standalone from script/console like this:
-  # resp = AvantGuardClient.alert_test()
-  def self.alert_test()                                              
+  # resp = AvantGuardClient.request_test()
+  def self.request_test()                                              
 
-    url = URI.parse(HTTPS_URL_TEST_TEST)    
+    url = URI.parse(HTTPS_URL_TEST)    
     
     # Code snippet on how to use Net:HTTP: http://snippets.aktagon.com/snippets/305-Example-of-how-to-use-Ruby-s-NET-HTTP 
     http_endpoint = Net::HTTP.new(url.host, url.port)
@@ -41,8 +41,11 @@ class AvantGuardClient
       #verify the certificate -- not working with Avantguard, getting "OpenSSL::SSL::SSLError: certificate verify failed"
       #http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_PEER 
     end
-        
-    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>G27500</Account><SignalFormat>CID</SignalFormat><SignalCode>E100</SignalCode>><TestSignalFlag>false</TestSignalFlag></Signal></soap:Body></soap:Envelope>"
+    
+    # this is an 'Signal' alarm    
+    #content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>G27500</Account><SignalFormat>CID</SignalFormat><SignalCode>E100</SignalCode>><TestSignalFlag>false</TestSignalFlag></Signal></soap:Body></soap:Envelope>" 
+
+    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Login xmlns=\"http://tempuri.org/\"><userName>Chirag.Patel</userName><password>cpHalo32</password><newPassword></newPassword><applicationName></applicationName><applicationVersion></applicationVersion><clientPlatform></clientPlatform><impersonatedUserName></impersonatedUserName></Login></soap:Body></soap:Envelope>"    
     #Configuration.instance.logger.debug content
     #http_header = {'Content-Type' => 'text/xml'}
      
@@ -93,7 +96,7 @@ class AvantGuardClient
   end
          
   def self.update_account(profile)
-    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>#{account_num}</Account><SignalFormat>CID</SignalFormat><SignalCode>#{alarm_code}</SignalCode>><TestSignalFlag>false</TestSignalFlag></Signal></soap:Body></soap:Envelope>"
+    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body>-----------PUT XML BODY IN HERE-----------</soap:Body></soap:Envelope>"
 
     res = send(HTTPS_URL_TEST, content)
   end
@@ -102,7 +105,7 @@ class AvantGuardClient
   def self.alert(event_type, user_id, account_num, timestamp = Time.now, lat=nil, long=nil)
     alarm_code = event_type_numeric( event_type)
     
-    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>#{account_num}</Account><SignalFormat>CID</SignalFormat><SignalCode>#{alarm_code}</SignalCode>><TestSignalFlag>false</TestSignalFlag></Signal></soap:Body></soap:Envelope>"
+    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>#{account_num}</Account><SignalFormat>CID</SignalFormat><SignalCode>E100</SignalCode>><Point>#{alarm_code}</Point><TestSignalFlag>false</TestSignalFlag></Signal></soap:Body></soap:Envelope>"
     response = true
 
     if !account_num.blank?    
@@ -189,13 +192,17 @@ class AvantGuardClient
       return nil
     end
   end
+  
+  def event_resolution
+      
+  end
 
   def self.event_type_numeric(event_type)
     # FIXME: TODO: fill out these event types properly
     case event_type
-    when "Fall"                   then "E100"
-    when "Panic"                  then "E15002002"
-    when "GwAlarmButton"          then "R15001001"
+    when "Fall"                   then "1"
+    when "Panic"                  then "2"
+    when "GwAlarmButton"          then "3"
       #when "CallCenterFollowUp" then "004"
     when "BatteryReminder"        then "100"
     when "StrapOff"               then "101"

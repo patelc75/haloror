@@ -13,7 +13,16 @@ class CriticalDeviceAlert < DeviceAlert
       if (!self.resolved.blank?)  #if resolved = 'manual' or 'auto'
         false
       else
-        user.is_halouser_of_what.compact.any?(&:is_call_center?) # unless user.blank?
+        #debugger
+        if self.class.name == "GwAlarmButton"
+          matching_fall  = Fall.find (:first,:conditions => { :timestamp => self.resolved_timestamp, :user_id => user.id })
+          matching_panic = Panic.find(:first,:conditions => { :timestamp => self.resolved_timestamp, :user_id => user.id })           
+          return_val = matching_fall.nil? and matching_panic.nil? ? true : false  
+          self.resolved = "manual" if return_val == false  #so no caregiver emails are sent in the after_create()
+        end            
+
+        return_val = user.is_halouser_of_what.compact.any?(&:is_call_center?) # unless user.blank?
+        return_val                                                                    
       end 
     true
   # rescue Exception => e
@@ -46,7 +55,7 @@ class CriticalDeviceAlert < DeviceAlert
     #sort by timestamp, instead of timestamp_server in case GW sends them out of order in the alert_bundle
     unless critical_alerts.blank?
       critical_alerts.sort! {|a,b| a.timestamp <=> b.timestamp } if critical_alerts.length > 1
-      critical_alerts.each do |crit|
+      critical_alerts.each do |crit| 
         crit.call_center_timed_out = true
         crit.timestamp_call_center = Time.now #if (crit.respond_to?(:call_center_number_valid?) ? crit.call_center_number_valid? : true)        
         crit.save # crit.send(:update_without_callbacks) # save         
