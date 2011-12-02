@@ -13,10 +13,9 @@ class CriticalDeviceAlert < DeviceAlert
       if (!self.resolved.blank?)  #if resolved = 'manual' or 'auto'
         false
       else
-        #debugger
         if self.class.name == "GwAlarmButton"
-          matching_fall  = Fall.find (:first,:conditions => { :timestamp => self.resolved_timestamp, :user_id => user.id })
-          matching_panic = Panic.find(:first,:conditions => { :timestamp => self.resolved_timestamp, :user_id => user.id })           
+          matching_fall  = Fall.find (:first,:conditions => { :resolved_timestamp => self.timestamp, :user_id => user.id })
+          matching_panic = Panic.find(:first,:conditions => { :resolved_timestamp => self.timestamp, :user_id => user.id })           
           return_val = matching_fall.nil? and matching_panic.nil? ? true : false  
           self.resolved = "manual" if return_val == false  #so no caregiver emails are sent in the after_create()
         end            
