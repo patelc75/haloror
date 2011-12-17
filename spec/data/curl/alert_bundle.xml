@@ -1,6 +1,7 @@
 <alert_bundle>
   <timestamp>Tue Mar 08 19:37:56 UTC 2011</timestamp>
   <panic>
+    <device_id>214</device_id>
     <duration_press>322</duration_press>
     <gw_timestamp>Tue Mar 08 19:37:41 UTC 2011</gw_timestamp>
     <timestamp>Tue Mar 08 19:37:39 UTC 2011</timestamp>
