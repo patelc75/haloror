@@ -6,7 +6,7 @@ class CriticalDeviceAlert < DeviceAlert
   def before_create 
     self.timestamp_server = Time.now.utc
     self.call_center_timed_out = false
-    return_val = false
+    pending = false
 
     # call_center_pending flags ON when any halouser-group is call_center
     # WARNING: nil returned in group array will cause save! to fail   
@@ -17,12 +17,12 @@ class CriticalDeviceAlert < DeviceAlert
         if self.class.name == "GwAlarmButton"
           matching_fall  = Fall.find (:first,:conditions => { :resolved_timestamp => self.timestamp, :user_id => user.id })
           matching_panic = Panic.find(:first,:conditions => { :resolved_timestamp => self.timestamp, :user_id => user.id })           
-          return_val = matching_fall.nil? and matching_panic.nil? ? true : false  
-          self.resolved = "manual" if return_val == false  #so no caregiver emails are sent in the after_create()
+          pending = matching_fall.nil? and matching_panic.nil? ? true : false  
+          self.resolved = "manual" if pending == false  #so no caregiver emails are sent in the after_create()
         end            
 
-        return_val = user.is_halouser_of_what.compact.any?(&:is_call_center?) if return_val == true # unless user.blank?
-        return_val                                                                    
+        pending = user.is_halouser_of_what.compact.any?(&:is_call_center?) if pending == true # unless user.blank?
+        pending                                                                    
       end 
     true
   # rescue Exception => e
