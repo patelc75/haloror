@@ -3287,6 +3287,7 @@ class User < ActiveRecord::Base
          return info 
       end
     end
+    return ""
   end
   
   # sets the instance variable @is_caregiver to the value of b

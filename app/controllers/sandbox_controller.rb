@@ -8,13 +8,8 @@ class SandboxController < ApplicationController
     #MgmtQuery.job_gw_offline
     #MgmtQuery.job_gw_offline
     #Email.notify_by_priority                  
-    params_hash = {:mail => "message", 
-                      :to => "to", 
-                      :from => 'no-reply@halomonitoring.com', 
-                      :priority => 100,
-                      :subj => "subject" }
-    debugger                  
-    email = Email.new(params_hash)
+    #debugger
+    #email = Email.new(params_hash)
     CriticalDeviceAlert.job_process_crtical_alerts #Rufus job
     #BundleJob.process_xml_file("dialup/H200000025_1258657676_2.xml") #Rufus job
     #BatteryReminder.send_reminders()
