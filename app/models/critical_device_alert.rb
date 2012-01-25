@@ -20,7 +20,10 @@ class CriticalDeviceAlert < DeviceAlert
           matching_fall  = Fall.find (:first,:conditions => { :resolved_timestamp => self.timestamp, :user_id => user.id })
           matching_panic = Panic.find(:first,:conditions => { :resolved_timestamp => self.timestamp, :user_id => user.id })           
           pend = (matching_fall.nil? and matching_panic.nil?)
-          self.resolved = "manual" if pend == false  #so no caregiver emails are sent in the after_create()
+          if pend == false 
+            self.resolved = "manual"  #so no caregiver emails are sent in the after_create()
+            self.resolved_timestamp = matching_fall.nil? ? matching_panic.timestamp : matching_fall.timestamp
+          end
           pend = user.is_halouser_of_what.compact.any?(&:is_call_center?) if pend == true          
         end            
         pend                                                                    
