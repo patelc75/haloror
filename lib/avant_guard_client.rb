@@ -13,8 +13,9 @@ class AvantGuardClient
   HTTPS_URL_TEST2  =  "https://portal.agmonitoring.com/testSgsSignalService/Receiver.asmx"  
   HTTPS_URL_PROD   =  "https://portal.agmonitoring.com/SgsSignalService/Receiver.asmx"  
   HTTPS_URL_PROD2  =  "https://portal2.agmonitoring.com/SgsSignalService/Receiver.asmx" 
-  HTTPS_STAGES_API =  "https://portal.agmonitoring.com/teststagesexternalgateway/Gateway.asmx?op=Login"
-
+  #HTTPS_STAGES_API =  "https://portal.agmonitoring.com/teststagesexternalgateway/Gateway.asmx?op=Login"
+  HTTPS_STAGES_API =  "https://portal.agmonitoring.com/teststagesexternalgateway/Gateway.asmx"
+  
   # Test manually with:
   # ruby bin/safetycare_test_listener.rb &
   # script/runner 'SafetyCareClient.alert("0123", "001")'
@@ -30,7 +31,7 @@ class AvantGuardClient
   # resp = AvantGuardClient.request_test()
   def self.request_test()                                              
 
-    url = URI.parse(HTTPS_URL_TEST)    
+    url = URI.parse(HTTPS_STAGES_API)    
     
     # Code snippet on how to use Net:HTTP: http://snippets.aktagon.com/snippets/305-Example-of-how-to-use-Ruby-s-NET-HTTP 
     http_endpoint = Net::HTTP.new(url.host, url.port)
@@ -43,10 +44,24 @@ class AvantGuardClient
       #http_endpoint.verify_mode = OpenSSL::SSL::VERIFY_PEER 
     end
     
-    # this is an 'Signal' alarm    
+    # 'Signal' alarm    
     #content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Signal xmlns=\"http://tempuri.org/\"><PollMessageFlag>false</PollMessageFlag><UserName>Chirag.Patel</UserName><UserPassword>cpHalo32</UserPassword><Receiver>string</Receiver><Line>string</Line><Account>G27500</Account><SignalFormat>CID</SignalFormat><SignalCode>E100</SignalCode>><TestSignalFlag>false</TestSignalFlag></Signal></soap:Body></soap:Envelope>" 
 
-    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Login xmlns=\"http://tempuri.org/\"><userName>Chirag.Patel</userName><password>cpHalo32</password><newPassword></newPassword><applicationName></applicationName><applicationVersion></applicationVersion><clientPlatform></clientPlatform><impersonatedUserName></impersonatedUserName></Login></soap:Body></soap:Envelope>"    
+    #'Login' request - will return sessionNum, sessionPassword, and DevNum which will be used for the DeviceStatus request
+    content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Login xmlns=\"http://tempuri.org/\"><userName>Chirag.Patel</userName><password>Halo4Avant</password></Login></soap:Body></soap:Envelope>"
+
+    # another 'Login' request but include empty xml for unneeded nodes such as clientPlatform
+    #content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><Login xmlns=\"http://tempuri.org/\"><userName>Chirag.Patel</userName><password>cpHalo32</password><newPassword></newPassword><applicationName></applicationName><applicationVersion></applicationVersion><clientPlatform></clientPlatform><impersonatedUserName></impersonatedUserName></Login></soap:Body></soap:Envelope>"           
+
+    # 'XTAdvancedSearch' request
+    #content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><XtAdvancedSearch xmlns=\"http://tempuri.org/\"><sessionNum>1030621</sessionNum><sessionPassword>c2t4azrgJvk=</sessionPassword></XtAdvancedSearch></soap:Body></soap:Envelope>"
+
+    #'DeviceList' request - called with parameters returned from 'Login' request
+    #content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><DeviceList xmlns=\"http://tempuri.org/\"><sessionNum> 1030621</sessionNum><sessionPassword>c2t4azrgJvk=</sessionPassword><SiteNum></SiteNum><DevNum>3008425</DevNum><CallingSource></CallingSource></DeviceList></soap:Body></soap:Envelope>"
+
+    #'DeviceList' request - called with parameters returned from 'Login' request
+    #content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><DeviceList xmlns=\"http://tempuri.org/\"><sessionNum> 1030621</sessionNum><sessionPassword>c2t4azrgJvk=</sessionPassword><SiteNum>3008151</SiteNum><DevNum>3008425</DevNum></DeviceList></soap:Body></soap:Envelope>"    
+        
     #Configuration.instance.logger.debug content
     #http_header = {'Content-Type' => 'text/xml'}
      
@@ -112,7 +127,7 @@ class AvantGuardClient
     if !account_num.blank?    
       #[HTTPS_URL_PROD, HTTPS_URL_PROD2].each do |dest_url|      
         #only 1 alert sent per source server. DFW-WEB3 sends to the AvantGuard primary, ATL-WEB1 sends to the AvantGuard secondary
-        http_response = send(ServerInstance.host?("ATL-WEB1", "CRIT2") ? HTTPS_URL_PROD2 : HTTPS_URL_PROD, content)                                  
+        http_response = send(ServerInstance.host?("ATL-WEB1", "CRIT2") ? HTTPS_URL_TEST2 : HTTPS_URL_TEST, content)                                  
         if (http_response.nil? or http_response.code != "200") 
           UtilityHelper.log_message_critical("AvantGuard.alert::Exception:: #{e} : #{event.to_s}", e)          
           response = false
