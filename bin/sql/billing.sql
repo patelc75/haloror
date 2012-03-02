@@ -36,6 +36,16 @@ select users.email, profiles.first_name, profiles.last_name, users.id as user_id
        and profiles.user_id = users.id 
        and roles.authorizable_id in (select user_id from users_by_role_and_group('halouser', 'safety_care')) and users.email != 'no_email@halomonitoring.com' and users.email != 'noemail@halomonitoring.com' and users.email != 'no-email@halomonitoring.com' and users.email not like 'no-email__@halomonitoring.com' limit 1000;
 
+-- Subscribers of installed or pending users (derived from caregivers_by_user_id Pg function)     
+select users.email, profiles.first_name, profiles.last_name, profiles.home_phone, profiles.cell_phone, users.id as subscriber_id, roles.authorizable_id as user_id
+		       from roles_users, users, roles, profiles 
+		       where roles_users.user_id = users.id 
+		       and roles.id = roles_users.role_id 
+		       and roles.name = 'subscriber' 
+		       and profiles.user_id = users.id 
+		       and roles.authorizable_id in (select user_id from users_by_role_and_group('halouser', 'safety_care'))
+limit 1000;
+		
 -- CSV version of the invoices table
 -- Sort feature in Invoice - by Group, by Installed date, by Termination date -----------------------------
 -- (psql -F ',' -A haloror > \o outputfile.csv > (run the query) > (use mutt to email)---------------------
